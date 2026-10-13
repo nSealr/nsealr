@@ -1,0 +1,204 @@
+{
+  "observed_date": "2026-10-13",
+  "rust": "1.95.0",
+  "clang": "19.1.7",
+  "vectors": {
+    "bip340_verify_valid": 9,
+    "bip340_verify_invalid": 10,
+    "bip340_sign_exact": 8,
+    "nip44_conversation_valid": 35,
+    "nip44_conversation_invalid": 8,
+    "providers": [
+      "k256=0.14.0",
+      "secp256k1=0.33.1"
+    ]
+  },
+  "link_runs": [
+    {
+      "name": "link-rustcrypto-thumbv8m.main-none-eabihf",
+      "command": [
+        "cargo",
+        "+1.95.0",
+        "rustc",
+        "--locked",
+        "--release",
+        "--bin",
+        "freestanding",
+        "--no-default-features",
+        "--features",
+        "rustcrypto,link-probe",
+        "--target",
+        "thumbv8m.main-none-eabihf",
+        "--",
+        "-C",
+        "link-arg=--entry=_start"
+      ],
+      "env": {
+        "CC_thumbv8m_main_none_eabihf": "clang"
+      },
+      "exit_code": 0,
+      "log": "link-rustcrypto-thumbv8m.main-none-eabihf.log",
+      "elf_sha256": "31c1e382034d20de657c4f63f7b0ea5c5dce8b1ed37d21a966a0355c6adccba6",
+      "readelf": {
+        "exit_code": 0,
+        "log": "link-rustcrypto-thumbv8m.main-none-eabihf-readelf.log"
+      },
+      "nm": {
+        "exit_code": 0,
+        "log": "link-rustcrypto-thumbv8m.main-none-eabihf-nm.log"
+      },
+      "size": {
+        "exit_code": 0,
+        "log": "link-rustcrypto-thumbv8m.main-none-eabihf-size.log"
+      }
+    },
+    {
+      "name": "link-rustcrypto-riscv32imafc-unknown-none-elf",
+      "command": [
+        "cargo",
+        "+1.95.0",
+        "rustc",
+        "--locked",
+        "--release",
+        "--bin",
+        "freestanding",
+        "--no-default-features",
+        "--features",
+        "rustcrypto,link-probe",
+        "--target",
+        "riscv32imafc-unknown-none-elf",
+        "--",
+        "-C",
+        "link-arg=--entry=_start"
+      ],
+      "env": {
+        "CC_riscv32imafc_unknown_none_elf": "clang"
+      },
+      "exit_code": 0,
+      "log": "link-rustcrypto-riscv32imafc-unknown-none-elf.log",
+      "elf_sha256": "8d05d06d84dbbd10cfcfa08076c1d454ec8663585367374729352633c5312b91",
+      "readelf": {
+        "exit_code": 0,
+        "log": "link-rustcrypto-riscv32imafc-unknown-none-elf-readelf.log"
+      },
+      "nm": {
+        "exit_code": 0,
+        "log": "link-rustcrypto-riscv32imafc-unknown-none-elf-nm.log"
+      },
+      "size": {
+        "exit_code": 0,
+        "log": "link-rustcrypto-riscv32imafc-unknown-none-elf-size.log"
+      }
+    },
+    {
+      "name": "link-libsecp-thumbv8m.main-none-eabihf",
+      "command": [
+        "cargo",
+        "+1.95.0",
+        "rustc",
+        "--locked",
+        "--release",
+        "--bin",
+        "freestanding",
+        "--no-default-features",
+        "--features",
+        "libsecp,link-probe",
+        "--target",
+        "thumbv8m.main-none-eabihf",
+        "--",
+        "-C",
+        "link-arg=--entry=_start"
+      ],
+      "env": {
+        "CC_thumbv8m_main_none_eabihf": "clang"
+      },
+      "exit_code": 0,
+      "log": "link-libsecp-thumbv8m.main-none-eabihf.log",
+      "elf_sha256": "ebf1761320687f2106f38af1aa3e3aa5b4f90f0c46aa92bc22ab96e1faf45207",
+      "readelf": {
+        "exit_code": 0,
+        "log": "link-libsecp-thumbv8m.main-none-eabihf-readelf.log"
+      },
+      "nm": {
+        "exit_code": 0,
+        "log": "link-libsecp-thumbv8m.main-none-eabihf-nm.log"
+      },
+      "size": {
+        "exit_code": 0,
+        "log": "link-libsecp-thumbv8m.main-none-eabihf-size.log"
+      }
+    },
+    {
+      "name": "link-libsecp-riscv32imafc-unknown-none-elf",
+      "command": [
+        "cargo",
+        "+1.95.0",
+        "rustc",
+        "--locked",
+        "--release",
+        "--bin",
+        "freestanding",
+        "--no-default-features",
+        "--features",
+        "libsecp,link-probe",
+        "--target",
+        "riscv32imafc-unknown-none-elf",
+        "--",
+        "-C",
+        "link-arg=--entry=_start"
+      ],
+      "env": {
+        "CC_riscv32imafc_unknown_none_elf": "clang"
+      },
+      "exit_code": 101,
+      "log": "link-libsecp-riscv32imafc-unknown-none-elf.log"
+    },
+    {
+      "name": "link-libsecp-riscv32imafc-unknown-none-elf-corrected-abi",
+      "command": [
+        "cargo",
+        "+1.95.0",
+        "rustc",
+        "--locked",
+        "--release",
+        "--bin",
+        "freestanding",
+        "--no-default-features",
+        "--features",
+        "libsecp,link-probe",
+        "--target",
+        "riscv32imafc-unknown-none-elf",
+        "--",
+        "-C",
+        "link-arg=--entry=_start"
+      ],
+      "env": {
+        "CC_riscv32imafc_unknown_none_elf": "clang",
+        "CFLAGS_riscv32imafc_unknown_none_elf": "-mabi=ilp32f -march=rv32imafc"
+      },
+      "exit_code": 0,
+      "log": "link-libsecp-riscv32imafc-unknown-none-elf-corrected-abi.log",
+      "elf_sha256": "ed4a33fdeef83f5eefa9bfe2bb4122987beb9a098585c4e72c24c93cc25b6ff8",
+      "readelf": {
+        "exit_code": 0,
+        "log": "link-libsecp-riscv32imafc-unknown-none-elf-corrected-abi-readelf.log"
+      },
+      "nm": {
+        "exit_code": 0,
+        "log": "link-libsecp-riscv32imafc-unknown-none-elf-corrected-abi-nm.log"
+      },
+      "size": {
+        "exit_code": 0,
+        "log": "link-libsecp-riscv32imafc-unknown-none-elf-corrected-abi-size.log"
+      }
+    }
+  ],
+  "not_measured": [
+    "hardware execution",
+    "peak stack/RAM",
+    "runtime performance",
+    "physical side channels",
+    "fault resistance"
+  ],
+  "fixture_provenance_in": "README.md and fetch_vectors.py"
+}

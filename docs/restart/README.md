@@ -9,12 +9,14 @@ The objective is a useful Nostr signer ecosystem with accessible connected hardw
 3. [Execution and acceptance](execution.md)
 4. [Measured source baseline](baseline.md)
 5. [Machine-readable implementation graph](work-items.json)
+6. [Decision validation and feasibility limits](validation.md)
+7. [Client and optical qualification](client-qualification.md)
 
-The graph records **46 implementation tasks**, their dependencies, scope, acceptance and required resources. All remain open in this foundation: a research result or administrative rename is not a completed implementation gate. Ready tasks still require source reconciliation before work starts.
+The graph records **47 implementation tasks**, their dependencies, scope, acceptance and required resources. All remain open in this foundation: a research result or administrative rename is not a completed implementation gate. Ready tasks still require source reconciliation before work starts.
 
 ## Start here on the next session
 
-Verify the actual checkout and the graph. Begin R00 (repeatable baseline), P01 (per-profile requirements/threat models), S01/S02 (identity and secret boundaries), A01 (source disposition) and H01/E01 (component evidence and CAD qualification) in disjoint scopes. The 2026-10-13 audit contains evidence to ingest into these tasks, not permission to mark them complete without reviewing their full acceptance criteria.
+Verify the actual checkout and run `python3 scripts/validate_restart_plan.py`. Begin R00 (repeatable baseline), P01 (per-profile requirements/threat models), S01/S02 (identity and secret boundaries), A01 (source disposition), E01 (required CAD operations) and O01 (coordination/evidence) in disjoint scopes. Collect component sources in parallel, but H01 acceptance depends on P01. The 2026-10-13 audit contains evidence to ingest into these tasks, not permission to mark them complete without reviewing their full acceptance criteria.
 
 Then rehearse A02 locally: selected source only, explicit provenance, new clean contracts and green behavior checks. Archive a source repository only after its disposition is verified. Physical resources can block one profile without blocking the others.
 
@@ -25,3 +27,23 @@ The first software milestone is a real request → device review → one-use aut
 The first public release is whichever retained profile satisfies its own safety and usability gates. General Board/SDK delivery has its own non-Nostr acceptance and does not wait for a complete wallet, SSH or FIDO application.
 
 Old documentation, firmware profiles and fixtures remain source material during migration. Names and behavior inherited from them are not a compatibility commitment. Remove replaced active code when the replacement is verified; history remains in Git.
+
+```mermaid
+flowchart TD
+    Clients[Nostr clients] --> Bridge[nSealr Bridge]
+    Bridge --> Connected[Connected requests]
+    Bridge --> Optical[QR requests]
+    Connected --> ESP[Commercial ESP32 without SE]
+    Connected --> Custom[nSealr custom Board]
+    Optical --> Pi[Offline Pi]
+    Optical --> P4[Offline ESP32-P4]
+    Engine[Shared Rust Nostr engine] -. used by .-> ESP
+    Engine -. used by .-> Custom
+    Engine -. used by .-> Pi
+    Engine -. used by .-> P4
+    SDK[board-sdk: generic board services] --> Custom
+    SDK --> Other[Independent non-Nostr firmware]
+    HW[hardware: electronics and mechanics] --> SDK
+```
+
+The diagram is the target architecture. It does not claim the depicted applications or PCB are already implemented. The SDK supports one trusted firmware image initially; future SSH/FIDO/wallet firmware needs separate application qualification.

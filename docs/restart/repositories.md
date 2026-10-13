@@ -2,6 +2,8 @@
 
 Five active repositories are the target. Boundaries follow release ownership and independent consumers, not individual boards or implementation languages.
 
+Keep the repository name **`board-sdk`**. It serves embedded firmware authors; the public TypeScript integration package (proposed `@nsealr/sdk`, subject to package ownership checks before publication) serves client/Bridge developers inside `nsealr`. An unqualified repository named `sdk` would blur these two boundaries. Neither name limits the Board SDK to Nostr: it must build a standalone non-Nostr example without importing the product engine. There is no technical prohibition on `sdk`; the more explicit name is the adopted navigation choice.
+
 | Current source | Destination | Disposition |
 | --- | --- | --- |
 | `firmware` | `nsealr` | Same GitHub repository renamed; keep history and three stars |

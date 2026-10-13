@@ -1,5 +1,5 @@
 {
-  "schema_version": 1,
+  "schema_version": 2,
   "project": "nSealr restart",
   "as_of": "2026-10-13",
   "adoption_status": "accepted_restart_direction_implementation_open",
@@ -7,8 +7,13 @@
   "baseline_manifest": "baseline.md",
   "operating_model": "execution.md",
   "status_semantics": {
-    "ready": "No predecessor task is required; reconcile scope and current source before starting.",
-    "planned": "Predecessors or physical resources are still required."
+    "planned": "Dependencies or resources remain; preparatory research may proceed but acceptance cannot close.",
+    "ready": "Dependencies integrated and declared resources available; reconcile source and claim scope before assigning.",
+    "running": "Assigned bounded work on recorded inputs.",
+    "blocked": "Assigned work stopped on a recorded missing resource or condition and next action.",
+    "review": "Exact candidate under independent review.",
+    "verified": "Acceptance evidence and independent review pass on exact recorded inputs/candidate.",
+    "integrated": "Verified result integrated with affected integration gates passing."
   },
   "definition_of_done": [
     "Acceptance met on exact candidate commit/artifacts.",
@@ -75,7 +80,8 @@
       "candidate_commits": {},
       "reviewer": null,
       "review_verdict": null,
-      "result_artifacts": []
+      "result_artifacts": [],
+      "requires_physical_evidence": false
     },
     {
       "id": "P01",
@@ -106,7 +112,8 @@
       "candidate_commits": {},
       "reviewer": null,
       "review_verdict": null,
-      "result_artifacts": []
+      "result_artifacts": [],
+      "requires_physical_evidence": false
     },
     {
       "id": "P02",
@@ -125,7 +132,8 @@
         "Choose initial client/version candidates and record source-backed protocol support and known gaps; this is test planning rather than completion of every profile integration.",
         "Define separate connected, QR and Board-developer evidence requirements and success measures; actual client timing/interactions/pilots belong to the corresponding implementation/release tasks.",
         "Prepare opt-in research scripts; participant recruitment and identification of an independent Board developer are performed by the profile that needs them, not a universal prerequisite.",
-        "No release waits for observations or a participant from an unrelated profile."
+        "No release waits for observations or a participant from an unrelated profile.",
+        "Use client-qualification.md as initial source-backed candidates, reconcile source/lockfiles before execution and test desktop browser versions. Source support is not actual interoperability; pilot numerical goals are hypotheses, not market validation."
       ],
       "required_evidence": [
         "per-profile compatibility test plan",
@@ -137,7 +145,8 @@
       "candidate_commits": {},
       "reviewer": null,
       "review_verdict": null,
-      "result_artifacts": []
+      "result_artifacts": [],
+      "requires_physical_evidence": false
     },
     {
       "id": "S01",
@@ -168,7 +177,8 @@
       "candidate_commits": {},
       "reviewer": null,
       "review_verdict": null,
-      "result_artifacts": []
+      "result_artifacts": [],
+      "requires_physical_evidence": false
     },
     {
       "id": "S02",
@@ -184,7 +194,8 @@
       "acceptance": [
         "Remove secret-bearing Debug and unnecessary Clone/public secret access; test exposed formatting behavior using public fixture material.",
         "Define lifetimes, copies, zeroization boundaries and internal-memory allocation; do not claim compiler-proof physical erasure from ownership alone.",
-        "Qualify maintained crypto/zeroization implementations against exact embedded targets and independent vectors before replacing local primitives."
+        "Select maintained crypto/zeroization candidates using independent vectors, pinned features and no_std compile plus final-link probes for the first target; qualify every actual device in its own implementation/release task, not as a universal prerequisite.",
+        "Test raw BIP-340 event-digest signing and NIP-44 unhashed shared-x derivation explicitly; high-level prehash and generic ECDH helpers are not interchangeable. Preserve C/Rust ABI link failures and exact corrected flags when evaluating a C backend."
       ],
       "required_evidence": [
         "secret-flow inventory",
@@ -196,7 +207,8 @@
       "candidate_commits": {},
       "reviewer": null,
       "review_verdict": null,
-      "result_artifacts": []
+      "result_artifacts": [],
+      "requires_physical_evidence": false
     },
     {
       "id": "S03",
@@ -217,7 +229,8 @@
         "Derive identity and canonical event bytes inside the trusted device boundary.",
         "Bind preview, selected identity, full operation and one-use approval; reject mutation, replay, cancellation races and unreviewed metadata.",
         "Bound resource use and handle long/hostile Unicode content without misleading truncation.",
-        "An independently computed event ID and signature verifier agree for positive and adversarial vectors."
+        "An independently computed event ID and signature verifier agree for positive and adversarial vectors.",
+        "This task establishes portable authorization/parser semantics with host-executable negative tests. Physical UI/input and peripheral isolation remain each profile's actual-device acceptance; do not wait for all boards to implement the state machine."
       ],
       "required_evidence": [
         "state-transition design",
@@ -229,7 +242,8 @@
       "candidate_commits": {},
       "reviewer": null,
       "review_verdict": null,
-      "result_artifacts": []
+      "result_artifacts": [],
+      "requires_physical_evidence": false
     },
     {
       "id": "S04",
@@ -252,7 +266,8 @@
         "Cover PIN creation/change/exhaustion, brownout, rollback, recovery, destructive reset and update ownership; model persistent-state transitions.",
         "Preserve NIP-06 compatibility without treating currently unrecommended derivation as the default; prove expected-public-key recovery.",
         "Independent cryptographic review rejects unsupported non-exportability or dual-SE independence claims.",
-        "Distinguish developer, owner-secured and product-qualified states; validate MCU and SE erasure/re-enrollment and irreversible-state limits when replacing firmware."
+        "Specify developer, owner-secured and product-qualified transitions, MCU/SE erasure/re-enrollment and irreversible-state limits. The specification is not evidence that these transitions already work on hardware.",
+        "Separate MCU owner firmware roots from vendor-controlled SE applet/update authority; document offline operation, maintenance service, licensing/API access and update/rollback consequences. Specify physical erasure/re-enrollment tests here: MCU feasibility in H02, SE reset/re-enrollment feasibility in H02S, and complete lifecycle in V02/V03."
       ],
       "required_evidence": [
         "custody protocol",
@@ -266,7 +281,8 @@
       "reviewer": null,
       "review_verdict": null,
       "result_artifacts": [],
-      "profile": "custom_board"
+      "profile": "custom_board",
+      "requires_physical_evidence": false
     },
     {
       "id": "H01",
@@ -284,9 +300,11 @@
       ],
       "acceptance": [
         "For every candidate record exact part/package/silicon, official document ID/revision/date/URL/hash and relevant errata.",
-        "Triage viable alternatives; read and sign off all sections affecting the selected design, with per-pin and requirement citations.",
+        "Triage viable alternatives. Read and sign off the sections required for each admitted MCU feasibility probe; record selected-design review work that must close before H04.",
         "Identify unavailable/restricted documentation and unsupported features before freezing a part.",
-        "No full-manual-review claim is made from a link inventory."
+        "No full-manual-review claim is made from a link inventory.",
+        "Treat openness and reproducible developer access to exact API/errata/update terms as selection criteria. An inaccessible SE manual is an unresolved gate for selecting that SE, not a reason to block unrelated MCU/USB/display research.",
+        "Close the register/triage milestone with complete host-relevant review and explicit unresolved SE documents if necessary; do not represent that as part selection. Mandatory selected-SE documents remain hard gates in H02S/H04, allowing independent host bench work."
       ],
       "required_evidence": [
         "manual register",
@@ -298,7 +316,8 @@
       "candidate_commits": {},
       "reviewer": null,
       "review_verdict": null,
-      "result_artifacts": []
+      "result_artifacts": [],
+      "requires_physical_evidence": false
     },
     {
       "id": "H02",
@@ -307,8 +326,7 @@
       "status": "planned",
       "owner_role": "hardware_firmware",
       "depends_on": [
-        "H01",
-        "S04"
+        "H01"
       ],
       "scope": [
         "STM32U5",
@@ -316,10 +334,11 @@
         "shared feasibility harness"
       ],
       "acceptance": [
-        "Run comparable USB/display/physical-input/crypto and SE API probes on identified boards.",
+        "Run comparable USB/display/physical-input/crypto probes on identified candidate MCU boards; this host milestone does not wait for an SE driver or restricted SE API.",
         "Prove secure boot and recoverable signed-update feasibility after provisioning on sacrificial samples.",
         "Measure resource/pin/power envelope and document toolchain gaps; do not build two full product ports.",
-        "Select one host from requirements and measurements; defer complete lifecycle qualification to V02/H08."
+        "Select one host from requirements and measurements; defer complete lifecycle qualification to V02/H08.",
+        "Keep the host comparison bounded; SE-specific command/custody feasibility closes separately in H02S before H04 architecture freeze."
       ],
       "required_evidence": [
         "board and silicon IDs",
@@ -328,15 +347,58 @@
         "MCU decision"
       ],
       "required_resources": [
-        "candidate development boards",
-        "SE evaluation hardware",
-        "measurement equipment"
+        "host_bench",
+        "bench_instruments",
+        "physical_operator",
+        "sacrificial_units"
       ],
       "assignee": null,
       "candidate_commits": {},
       "reviewer": null,
       "review_verdict": null,
-      "result_artifacts": []
+      "result_artifacts": [],
+      "requires_physical_evidence": true
+    },
+    {
+      "id": "H02S",
+      "title": "Qualify selected SE commands and custody assumptions on the bench",
+      "stage": "R1",
+      "status": "planned",
+      "owner_role": "hardware_firmware",
+      "depends_on": [
+        "H01",
+        "S04"
+      ],
+      "scope": [
+        "exact SE configuration and API",
+        "wrapped-key release and relock",
+        "PIN persistence and authenticated channel"
+      ],
+      "acceptance": [
+        "Resolve lawful access to mandatory API/errata/update and developer distribution terms for the exact SE candidate before running commands.",
+        "On identified evaluation hardware demonstrate the required algorithms and exact key/ciphertext handling, authenticated-channel enrollment, wrapped-key release/relock, PIN persistence and reset assumptions from S04.",
+        "Record command traces using public fixture material and controlled power/reset faults; reject unsupported native BIP-340/non-exportability claims.",
+        "Reject or revise the candidate when a required service, lifecycle guarantee or reproducible developer access cannot be demonstrated. Complete product lifecycle remains V02/V03."
+      ],
+      "required_evidence": [
+        "exact SE configuration and document register",
+        "command/provisioning traces",
+        "negative/reset tests",
+        "selection review"
+      ],
+      "required_resources": [
+        "se_bench",
+        "host_bench",
+        "bench_instruments",
+        "physical_operator",
+        "sacrificial_units"
+      ],
+      "assignee": null,
+      "candidate_commits": {},
+      "reviewer": null,
+      "review_verdict": null,
+      "result_artifacts": [],
+      "requires_physical_evidence": true
     },
     {
       "id": "H03",
@@ -367,18 +429,20 @@
         "parts/sample verification"
       ],
       "required_resources": [
-        "reference panel and connector samples",
-        "battery sample if retained"
+        "panel_power_samples",
+        "bench_instruments",
+        "physical_operator"
       ],
       "assignee": null,
       "candidate_commits": {},
       "reviewer": null,
       "review_verdict": null,
-      "result_artifacts": []
+      "result_artifacts": [],
+      "requires_physical_evidence": true
     },
     {
       "id": "E01",
-      "title": "Qualify stable KiCad and a pinned MCP adapter",
+      "title": "Qualify the required stable KiCad operations and automation path",
       "stage": "R1",
       "status": "ready",
       "owner_role": "cad_automation",
@@ -389,9 +453,10 @@
       ],
       "acceptance": [
         "Pin KiCad 10.0.7 and adapter revision after checking current support; begin with read-only operations.",
-        "On disposable projects verify supported mutations, undo/rollback, disconnect/crash recovery, layer/coordinate/flip correctness and save/reopen.",
+        "On disposable projects qualify each actually required operation and its rollback/save/reopen semantics; coordinate/layer/flip/crash tests apply to operations being enabled. Unused adapter capabilities are not prerequisites for schematic capture.",
         "Use native-project CLI ERC/DRC and hash-linked exports; distinguish stable PCB IPC from development-only schematic/headless features.",
-        "Promote only demonstrated operations; retain one writer per CAD project and independently reviewed source-generation fallback."
+        "Promote only demonstrated operations; retain one writer per CAD project and independently reviewed source-generation fallback.",
+        "Require a clean pinned dependency installation or a fully reviewed maintained correction; a new binding combination does not inherit old runtime evidence. Native CLI and independently reviewed source generation can unblock required CAD work while extra MCP operations remain disabled."
       ],
       "required_evidence": [
         "toolchain lock",
@@ -403,7 +468,8 @@
       "candidate_commits": {},
       "reviewer": null,
       "review_verdict": null,
-      "result_artifacts": []
+      "result_artifacts": [],
+      "requires_physical_evidence": false
     },
     {
       "id": "A01",
@@ -433,7 +499,8 @@
       "candidate_commits": {},
       "reviewer": null,
       "review_verdict": null,
-      "result_artifacts": []
+      "result_artifacts": [],
+      "requires_physical_evidence": false
     },
     {
       "id": "A02",
@@ -467,7 +534,8 @@
       "candidate_commits": {},
       "reviewer": null,
       "review_verdict": null,
-      "result_artifacts": []
+      "result_artifacts": [],
+      "requires_physical_evidence": false
     },
     {
       "id": "O01",
@@ -488,7 +556,8 @@
         "Use Astra xhigh for requested hardware/security agents, isolated editing worktrees and one CAD writer.",
         "Validate task dependencies and generated views; demonstrate resume from a fresh session without relying on chat memory.",
         "Autonomy preserves existing authorization and respects concrete irreversible-action boundaries without repetitive confirmations.",
-        "Track readiness and release evidence separately for all active profiles; no global gate on an unrelated product."
+        "Track readiness and release evidence separately for all active profiles; no global gate on an unrelated product.",
+        "Run the structural/evidence validator and negative tests in CI; demonstrate a fresh-session handoff and truthful resource availability. The check cannot verify physical measurements or replace substantive independent review."
       ],
       "required_evidence": [
         "control-file diff",
@@ -500,7 +569,8 @@
       "candidate_commits": {},
       "reviewer": null,
       "review_verdict": null,
-      "result_artifacts": []
+      "result_artifacts": [],
+      "requires_physical_evidence": false
     },
     {
       "id": "V01",
@@ -523,7 +593,8 @@
         "A real client request reaches trusted display; physical approval returns a valid BIP-340 signature for the exact event and identity.",
         "Host never receives the identity secret; transport and device pairing credentials have explicit lifecycles.",
         "Reject/cancel/replay/substitution/malformed/disconnect cases pass on hardware.",
-        "Use public test identities and record actual flashable build, memory map and board version."
+        "Use public test identities and record actual flashable build, memory map and board version.",
+        "On this exact target measure peak stack/RAM, worst-case parser/crypto/transport time and entropy failure behavior; qualify backend features and final binary ABI. Compile/link-only probes do not close this device gate."
       ],
       "required_evidence": [
         "device binary/hash",
@@ -532,14 +603,17 @@
         "demo procedure"
       ],
       "required_resources": [
-        "selected development hardware"
+        "accessible_kit",
+        "physical_operator",
+        "bench_instruments"
       ],
       "assignee": null,
       "candidate_commits": {},
       "reviewer": null,
       "review_verdict": null,
       "result_artifacts": [],
-      "profile": "esp32_no_se"
+      "profile": "esp32_no_se",
+      "requires_physical_evidence": true
     },
     {
       "id": "V02",
@@ -551,7 +625,8 @@
         "K01",
         "H02",
         "S04",
-        "B02"
+        "B02",
+        "H02S"
       ],
       "scope": [
         "selected host storage",
@@ -563,7 +638,8 @@
         "Execute complete PIN/custody/backup/restore lifecycle with expected-public-key checks.",
         "Inject power loss at every persistent-state transition; prove safe recovery and no PIN-attempt rollback.",
         "Test unsigned/rollback image rejection, interrupted updates, debug/lifecycle state and post-provisioning recovery.",
-        "Verify RNG behavior, secret memory placement and wipe limits on the actual target; independently review remaining exposure."
+        "Verify RNG behavior, secret memory placement and wipe limits on the actual target; independently review remaining exposure.",
+        "On this exact target measure peak stack/RAM, worst-case parser/crypto/transport time and entropy failure behavior; qualify backend features and final binary ABI. Compile/link-only probes do not close this device gate."
       ],
       "required_evidence": [
         "provisioning record",
@@ -572,15 +648,19 @@
         "security review"
       ],
       "required_resources": [
-        "sacrificial provisioned boards",
-        "power control and debug equipment"
+        "sacrificial_units",
+        "host_bench",
+        "se_bench",
+        "bench_instruments",
+        "physical_operator"
       ],
       "assignee": null,
       "candidate_commits": {},
       "reviewer": null,
       "review_verdict": null,
       "result_artifacts": [],
-      "profile": "custom_board"
+      "profile": "custom_board",
+      "requires_physical_evidence": true
     },
     {
       "id": "C01",
@@ -600,20 +680,25 @@
       ],
       "acceptance": [
         "Implement actual serving direction and tested local browser path on named client/OS versions.",
-        "Device authorization authenticates client/session provenance; untrusted origin labels never become authority.",
-        "Handle availability, reconnect, account selection, revocation and error states with understandable UX."
+        "Define provenance trust explicitly: browser origin is authenticated only inside the browser/extension boundary, and a NIP-46 peer key is not an attested app name. A host-terminated encrypted RPC does not prove forwarded plaintext provenance to the device. Bind and review actual device operations; require device-verifiable evidence for stronger end-to-end claims.",
+        "Handle availability, reconnect, account selection, revocation and error states with understandable UX.",
+        "Execute the pinned candidate matrix in client-qualification.md, including explicit unsupported NIP-04, delayed response/cancel/reconnect and distinct peer/user keys. Publish only measured client/workflow support."
       ],
       "required_evidence": [
         "compatibility traces",
         "serving/pairing tests",
         "user-flow review"
       ],
-      "required_resources": [],
+      "required_resources": [
+        "accessible_kit",
+        "physical_operator"
+      ],
       "assignee": null,
       "candidate_commits": {},
       "reviewer": null,
       "review_verdict": null,
-      "result_artifacts": []
+      "result_artifacts": [],
+      "requires_physical_evidence": true
     },
     {
       "id": "C02",
@@ -635,19 +720,26 @@
         "Distinguish relay RPC transport encryption from user-message key operations.",
         "Pass official vectors and named client message flows, including applicable NIP-17/59 semantics.",
         "Define device-enforced permissions and leakage boundaries; do not expose stable conversation keys by convenience.",
-        "Document supported payload bounds as product limits rather than protocol maxima."
+        "Document supported payload bounds as product limits rather than protocol maxima.",
+        "Bare pubkey/payload decrypt methods do not carry signed outer-event context. Distinguish primitive permissions from verified-message operations; never claim an unseen outer signature was device-verified.",
+        "For NIP-17/59 bind reviewed recipient/plaintext to ciphertext and the subsequent seal signature; reject opaque or unmatched seal signing rather than blind-signing to satisfy a client. Trace actual client call ordering and cancellation.",
+        "Follow current NIP-44 extended-length framing with checked padding arithmetic and pre-allocation product caps; add vectors at 65535/65536 and oversize rejection even if the cap is smaller. Never export conversation keys to remove prompts."
       ],
       "required_evidence": [
         "official vector results",
         "DM interoperability traces",
         "independent security review"
       ],
-      "required_resources": [],
+      "required_resources": [
+        "accessible_kit",
+        "physical_operator"
+      ],
       "assignee": null,
       "candidate_commits": {},
       "reviewer": null,
       "review_verdict": null,
-      "result_artifacts": []
+      "result_artifacts": [],
+      "requires_physical_evidence": true
     },
     {
       "id": "H04",
@@ -659,7 +751,8 @@
         "H01",
         "H02",
         "H03",
-        "S04"
+        "S04",
+        "H02S"
       ],
       "scope": [
         "selected BOM architecture",
@@ -668,9 +761,10 @@
       ],
       "acceptance": [
         "Select one exact MCU/SE/panel/power architecture with resolved advisory and documentation requirements.",
-        "Keep security buses private; prove isolation and mode transitions for maker interfaces, including power-off/backfeed.",
+        "Keep security buses private; substantiate interface/mode isolation and power-off/backfeed design with cited electrical limits, calculations and representative bench tests. Repeat on assembled PCB in H08/H09; pre-layout evidence is not assembled-board proof.",
         "Freeze pin/resource/mechanical budgets and manufacturing provisioning/test requirements.",
-        "No unresolved blocker is relabeled as an accepted compromise."
+        "No unresolved blocker is relabeled as an accepted compromise.",
+        "Resolve exact package/variant pin mux, DMA/peripheral ownership, internal secret-memory placement and display/camera coexistence. Do not infer peripheral availability from GPIO count or a different evaluation-board package."
       ],
       "required_evidence": [
         "architecture decision",
@@ -683,7 +777,8 @@
       "candidate_commits": {},
       "reviewer": null,
       "review_verdict": null,
-      "result_artifacts": []
+      "result_artifacts": [],
+      "requires_physical_evidence": false
     },
     {
       "id": "H05",
@@ -717,7 +812,8 @@
       "candidate_commits": {},
       "reviewer": null,
       "review_verdict": null,
-      "result_artifacts": []
+      "result_artifacts": [],
+      "requires_physical_evidence": false
     },
     {
       "id": "H06",
@@ -734,6 +830,7 @@
         "mechanical model"
       ],
       "acceptance": [
+        "Before routing, select assembler/fabricator service assumptions and freeze stackup, clearances, drill/annular ring, assembly/test access and component-placement limits; record source/revision. Reconfirm exports against those rules in H07.",
         "Route the real netlist with justified stackup, return paths, decoupling, thermal and USB constraints.",
         "Check enclosure/panel/cable fit and assembly/test access with exact part geometry.",
         "DRC and independent geometry/render/netlist review identify and resolve all violations and justified exceptions."
@@ -749,7 +846,8 @@
       "candidate_commits": {},
       "reviewer": null,
       "review_verdict": null,
-      "result_artifacts": []
+      "result_artifacts": [],
+      "requires_physical_evidence": false
     },
     {
       "id": "H07",
@@ -781,7 +879,8 @@
       "candidate_commits": {},
       "reviewer": null,
       "review_verdict": null,
-      "result_artifacts": []
+      "result_artifacts": [],
+      "requires_physical_evidence": false
     },
     {
       "id": "H08",
@@ -810,15 +909,16 @@
         "EVT defect register"
       ],
       "required_resources": [
-        "assembled prototype lot",
-        "bench equipment",
-        "physical operator"
+        "evt_assemblies",
+        "bench_instruments",
+        "physical_operator"
       ],
       "assignee": null,
       "candidate_commits": {},
       "reviewer": null,
       "review_verdict": null,
-      "result_artifacts": []
+      "result_artifacts": [],
+      "requires_physical_evidence": true
     },
     {
       "id": "H09",
@@ -845,14 +945,17 @@
         "distribution requirements assessment"
       ],
       "required_resources": [
-        "corrected assemblies",
-        "external test capability as required"
+        "dvt_assemblies",
+        "bench_instruments",
+        "physical_operator",
+        "external_lab"
       ],
       "assignee": null,
       "candidate_commits": {},
       "reviewer": null,
       "review_verdict": null,
-      "result_artifacts": []
+      "result_artifacts": [],
+      "requires_physical_evidence": true
     },
     {
       "id": "S05",
@@ -874,7 +977,9 @@
       "acceptance": [
         "Independent security review covers exact pilot software/hardware and applicable physical attacks.",
         "Close all blocking findings; vendor mitigations must meet the accepted guarantees.",
-        "Prove backup restoration and firmware authenticity; record explicit real-identity admission or restrict pilot to test identities."
+        "Prove backup restoration and firmware authenticity; record explicit real-identity admission or restrict pilot to test identities.",
+        "Before any real-identity pilot, rehearse pilot signing-root control, unit identity/provisioning, owner enrollment, shipping state, revocation and recovery; production-scale R01 is not the first safe key ceremony.",
+        "If H09 changed relevant hardware/firmware/lifecycle inputs, repeat affected V03 tests on the final admitted DVT revision before closing pilot admission; EVT results alone do not qualify changed assemblies."
       ],
       "required_evidence": [
         "external review report",
@@ -882,14 +987,17 @@
         "pilot admission record"
       ],
       "required_resources": [
-        "independent qualified reviewer/laboratory"
+        "external_lab",
+        "provisioning_operator",
+        "dvt_assemblies"
       ],
       "assignee": null,
       "candidate_commits": {},
       "reviewer": null,
       "review_verdict": null,
       "result_artifacts": [],
-      "profile": "custom_board"
+      "profile": "custom_board",
+      "requires_physical_evidence": false
     },
     {
       "id": "P03",
@@ -919,15 +1027,17 @@
         "resolved findings"
       ],
       "required_resources": [
-        "opt-in participants",
-        "support capacity"
+        "participants",
+        "support_capacity",
+        "dvt_assemblies"
       ],
       "assignee": null,
       "candidate_commits": {},
       "reviewer": null,
       "review_verdict": null,
       "result_artifacts": [],
-      "profile": "custom_board"
+      "profile": "custom_board",
+      "requires_physical_evidence": false
     },
     {
       "id": "R01",
@@ -960,13 +1070,19 @@
         "final independent review",
         "cost model"
       ],
-      "required_resources": [],
+      "required_resources": [
+        "dvt_assemblies",
+        "provisioning_operator",
+        "physical_operator",
+        "bench_instruments"
+      ],
       "assignee": null,
       "candidate_commits": {},
       "reviewer": null,
       "review_verdict": null,
       "result_artifacts": [],
-      "profile": "custom_board"
+      "profile": "custom_board",
+      "requires_physical_evidence": true
     },
     {
       "id": "R02",
@@ -998,7 +1114,8 @@
       "reviewer": null,
       "review_verdict": null,
       "result_artifacts": [],
-      "profile": "custom_board"
+      "profile": "custom_board",
+      "requires_physical_evidence": false
     },
     {
       "id": "F01",
@@ -1025,13 +1142,18 @@
         "negative tests",
         "independent review"
       ],
-      "required_resources": [],
+      "required_resources": [
+        "dvt_assemblies",
+        "physical_operator",
+        "bench_instruments"
+      ],
       "assignee": null,
       "candidate_commits": {},
       "reviewer": null,
       "review_verdict": null,
       "result_artifacts": [],
-      "profile": "custom_board"
+      "profile": "custom_board",
+      "requires_physical_evidence": true
     },
     {
       "id": "T01",
@@ -1051,7 +1173,8 @@
         "Replace universal target-readiness booleans with requirements for the claimed profile; represent supported/configured/verified/unavailable/unknown distinctly.",
         "No-SE is explicit; missing required SE fails closed. Unsupported methods and custody modes never trigger silent downgrades.",
         "Bridge routes by versioned methods/algorithms/limits and transport; a device claim alone is not proof of security state.",
-        "Keep public compatibility contracts and independent vectors common while allowing distinct timing and custody."
+        "Keep public compatibility contracts and independent vectors common while allowing distinct timing and custody.",
+        "Record separate capabilities for NIP-44 primitives, verified message context and usable NIP-17/59 workflows. Advertise payload/queue limits and unsupported operations without silent downgrade."
       ],
       "required_evidence": [
         "schema and vectors",
@@ -1063,7 +1186,8 @@
       "candidate_commits": {},
       "reviewer": null,
       "review_verdict": null,
-      "result_artifacts": []
+      "result_artifacts": [],
+      "requires_physical_evidence": false
     },
     {
       "id": "K01",
@@ -1084,10 +1208,10 @@
       "acceptance": [
         "Implement canonical signing and verify every output under the selected identity using qualified libraries.",
         "Prove one-use consent and exact-review binding with negative tests; preserve independent Python/vector verification.",
-        "Compile for selected embedded and Linux targets without board-specific Nostr semantics or mandatory SE dependencies.",
+        "Build the host engine and no_std compile/final-link probes for an initial embedded target without board-specific Nostr semantics or mandatory SE dependencies; other profile hardware does not gate this common milestone.",
         "Define bounded secret ownership across complete operations; avoid repeatedly copying keys across language/process adapters.",
         "Reject duplicate JSON members, trailing bytes, invalid Unicode and Nostr kind outside 0..65535; keep an independent NIP-01 oracle rather than only cross-language parity.",
-        "Replace eager full-page storage where measured memory warrants it; report actual target stack/peak RAM, worst-case parse time and QR buffering. Host size_of results are not target measurements."
+        "Bound parse/review storage and work in the portable implementation, preserving independent edge-case vectors. Record available static size/build evidence; actual stack/peak RAM, parse/crypto latency, entropy and QR buffering are mandatory in each device implementation task before that profile releases."
       ],
       "required_evidence": [
         "target builds",
@@ -1100,7 +1224,8 @@
       "candidate_commits": {},
       "reviewer": null,
       "review_verdict": null,
-      "result_artifacts": []
+      "result_artifacts": [],
+      "requires_physical_evidence": false
     },
     {
       "id": "D01",
@@ -1126,13 +1251,18 @@
         "bench probes",
         "profile guarantee matrix"
       ],
-      "required_resources": [],
+      "required_resources": [
+        "accessible_kit",
+        "physical_operator",
+        "bench_instruments"
+      ],
       "assignee": null,
       "candidate_commits": {},
       "reviewer": null,
       "review_verdict": null,
       "result_artifacts": [],
-      "profile": "esp32_no_se"
+      "profile": "esp32_no_se",
+      "requires_physical_evidence": true
     },
     {
       "id": "D02",
@@ -1161,13 +1291,19 @@
         "recovery evidence",
         "independent review"
       ],
-      "required_resources": [],
+      "required_resources": [
+        "accessible_kit",
+        "sacrificial_units",
+        "physical_operator",
+        "bench_instruments"
+      ],
       "assignee": null,
       "candidate_commits": {},
       "reviewer": null,
       "review_verdict": null,
       "result_artifacts": [],
-      "profile": "esp32_no_se"
+      "profile": "esp32_no_se",
+      "requires_physical_evidence": true
     },
     {
       "id": "D03",
@@ -1197,13 +1333,20 @@
         "pilot/recovery results",
         "build reproduction"
       ],
-      "required_resources": [],
+      "required_resources": [
+        "accessible_kit",
+        "participants",
+        "support_capacity",
+        "independent_developer",
+        "physical_operator"
+      ],
       "assignee": null,
       "candidate_commits": {},
       "reviewer": null,
       "review_verdict": null,
       "result_artifacts": [],
-      "profile": "esp32_no_se"
+      "profile": "esp32_no_se",
+      "requires_physical_evidence": true
     },
     {
       "id": "Q01",
@@ -1234,7 +1377,8 @@
       "candidate_commits": {},
       "reviewer": null,
       "review_verdict": null,
-      "result_artifacts": []
+      "result_artifacts": [],
+      "requires_physical_evidence": false
     },
     {
       "id": "QH01",
@@ -1257,7 +1401,8 @@
         "Preserve identity/request binding and output verification across manual optical round trips.",
         "Enforce frame/byte/time bounds, reject mixed/replayed requests and separate seed import/export from signing output.",
         "Test actual client deadlines and repeated scans; never extend scope with cached blanket approval or exported identity keys.",
-        "Expose unsupported DM/automation capabilities accurately and plan any future compound operation separately."
+        "Expose unsupported DM/automation capabilities accurately and plan any future compound operation separately.",
+        "Do not confuse nostrconnect pairing QR with an offline transaction. Compare bounded single-frame and maintained multipart UR implementations on actual screens/cameras before framing freeze; CRC/sequence checks do not authenticate a sender. Bound decoder state and work, not only completed payload size."
       ],
       "required_evidence": [
         "QR vectors and malformed cases",
@@ -1269,7 +1414,8 @@
       "candidate_commits": {},
       "reviewer": null,
       "review_verdict": null,
-      "result_artifacts": []
+      "result_artifacts": [],
+      "requires_physical_evidence": false
     },
     {
       "id": "Q02",
@@ -1291,7 +1437,8 @@
         "Use the shared Rust engine for product signing semantics; preserve Python as independent oracle and reuse useful adapters during migration.",
         "Choose and measure the minimal driver/FFI boundary; any retained UI/input code remains in the trusted computing base.",
         "On the actual kit scan, import a public test identity, review, approve/reject, sign, return QR and verify independently.",
-        "Prove session-only custody and no secret writes through logs, swap, dumps or image tooling; preserve a working path until parity passes."
+        "Prove session-only custody and no secret writes through logs, swap, dumps or image tooling; preserve a working path until parity passes.",
+        "On this exact target measure peak stack/RAM, worst-case parser/crypto/transport time and entropy failure behavior; qualify backend features and final binary ABI. Compile/link-only probes do not close this device gate."
       ],
       "required_evidence": [
         "Pi image/source manifest",
@@ -1299,13 +1446,18 @@
         "differential vectors",
         "secret persistence tests"
       ],
-      "required_resources": [],
+      "required_resources": [
+        "pi_kit",
+        "physical_operator",
+        "bench_instruments"
+      ],
       "assignee": null,
       "candidate_commits": {},
       "reviewer": null,
       "review_verdict": null,
       "result_artifacts": [],
-      "profile": "pi_qr"
+      "profile": "pi_qr",
+      "requires_physical_evidence": true
     },
     {
       "id": "Q03",
@@ -1327,7 +1479,8 @@
         "Build and flash exact P4 target with the selected camera/runtime adapter; share core semantics with ESP32 signer and Pi.",
         "Exercise complete QR request/review/approval/signature cycle, malformed optical input and cancellation on hardware.",
         "Qualify secret placement, no persistent secrets, actual communication modes and authenticated update/recovery.",
-        "No claim that P4-family support establishes a particular camera or radio-free board."
+        "No claim that P4-family support establishes a particular camera or radio-free board.",
+        "On this exact target measure peak stack/RAM, worst-case parser/crypto/transport time and entropy failure behavior; qualify backend features and final binary ABI. Compile/link-only probes do not close this device gate."
       ],
       "required_evidence": [
         "flashable image",
@@ -1335,13 +1488,18 @@
         "parser/resource tests",
         "boot/channel evidence"
       ],
-      "required_resources": [],
+      "required_resources": [
+        "p4_kit",
+        "physical_operator",
+        "bench_instruments"
+      ],
       "assignee": null,
       "candidate_commits": {},
       "reviewer": null,
       "review_verdict": null,
       "result_artifacts": [],
-      "profile": "p4_qr"
+      "profile": "p4_qr",
+      "requires_physical_evidence": true
     },
     {
       "id": "Q04",
@@ -1371,13 +1529,20 @@
         "optical pilot/recovery",
         "maker reproduction"
       ],
-      "required_resources": [],
+      "required_resources": [
+        "pi_kit",
+        "participants",
+        "support_capacity",
+        "independent_developer",
+        "physical_operator"
+      ],
       "assignee": null,
       "candidate_commits": {},
       "reviewer": null,
       "review_verdict": null,
       "result_artifacts": [],
-      "profile": "pi_qr"
+      "profile": "pi_qr",
+      "requires_physical_evidence": true
     },
     {
       "id": "Q05",
@@ -1407,13 +1572,20 @@
         "optical pilot/recovery",
         "maker reproduction"
       ],
-      "required_resources": [],
+      "required_resources": [
+        "p4_kit",
+        "participants",
+        "support_capacity",
+        "independent_developer",
+        "physical_operator"
+      ],
       "assignee": null,
       "candidate_commits": {},
       "reviewer": null,
       "review_verdict": null,
       "result_artifacts": [],
-      "profile": "p4_qr"
+      "profile": "p4_qr",
+      "requires_physical_evidence": true
     },
     {
       "id": "B01",
@@ -1447,7 +1619,8 @@
       "reviewer": null,
       "review_verdict": null,
       "result_artifacts": [],
-      "profile": "board_sdk"
+      "profile": "board_sdk",
+      "requires_physical_evidence": false
     },
     {
       "id": "B02",
@@ -1477,13 +1650,19 @@
         "bench traces",
         "API review"
       ],
-      "required_resources": [],
+      "required_resources": [
+        "host_bench",
+        "se_bench",
+        "physical_operator",
+        "bench_instruments"
+      ],
       "assignee": null,
       "candidate_commits": {},
       "reviewer": null,
       "review_verdict": null,
       "result_artifacts": [],
-      "profile": "board_sdk"
+      "profile": "board_sdk",
+      "requires_physical_evidence": true
     },
     {
       "id": "V03",
@@ -1505,20 +1684,26 @@
       "acceptance": [
         "Repeat Nostr custody, one-use consent, PIN, backup and boot/update/power-cut tests on identified custom assemblies.",
         "Bind actual SDK, bootloader, component, board revision and application in the evidence manifest.",
-        "Generic SDK/board acceptance does not substitute for custom Board signer application/security acceptance."
+        "Generic SDK/board acceptance does not substitute for custom Board signer application/security acceptance.",
+        "On this exact target measure peak stack/RAM, worst-case parser/crypto/transport time and entropy failure behavior; qualify backend features and final binary ABI. Compile/link-only probes do not close this device gate."
       ],
       "required_evidence": [
         "custom Board signer hardware traces",
         "custody fault campaign",
         "review results"
       ],
-      "required_resources": [],
+      "required_resources": [
+        "evt_assemblies",
+        "physical_operator",
+        "bench_instruments"
+      ],
       "assignee": null,
       "candidate_commits": {},
       "reviewer": null,
       "review_verdict": null,
       "result_artifacts": [],
-      "profile": "custom_board"
+      "profile": "custom_board",
+      "requires_physical_evidence": true
     },
     {
       "id": "B03",
@@ -1540,7 +1725,8 @@
         "Apply relevant release_gate_template conditions to the platform without claiming application-level Nostr/FIDO/wallet assurance.",
         "Independent developer builds the non-Nostr example without nsealr and reproduces board bring-up and allowed firmware ownership transitions.",
         "Publish exact schematic/BOM/SDK/bootloader compatibility, production test evidence and lifecycle limitations.",
-        "Close independent findings for generic security services before advertising their guarantees; no custom Board signer/client-pilot dependency."
+        "Close independent findings for generic security services before advertising their guarantees; no custom Board signer/client-pilot dependency.",
+        "Independently qualify generic-board small-lot production/test yield, authorized provisioning, firmware-signing/update/recovery and shipping state before a platform release. This evidence belongs here and cannot be borrowed from downstream Nostr production R01."
       ],
       "required_evidence": [
         "platform release manifest",
@@ -1548,13 +1734,20 @@
         "hardware/service review",
         "lifecycle evidence"
       ],
-      "required_resources": [],
+      "required_resources": [
+        "dvt_assemblies",
+        "independent_developer",
+        "provisioning_operator",
+        "physical_operator",
+        "bench_instruments"
+      ],
       "assignee": null,
       "candidate_commits": {},
       "reviewer": null,
       "review_verdict": null,
       "result_artifacts": [],
-      "profile": "board_sdk"
+      "profile": "board_sdk",
+      "requires_physical_evidence": true
     },
     {
       "id": "QP01",
@@ -1581,14 +1774,16 @@
         "channel and toolchain evidence"
       ],
       "required_resources": [
-        "selected kit and physical operator"
+        "pi_kit",
+        "physical_operator"
       ],
       "assignee": null,
       "candidate_commits": {},
       "reviewer": null,
       "review_verdict": null,
       "result_artifacts": [],
-      "profile": "pi_qr"
+      "profile": "pi_qr",
+      "requires_physical_evidence": true
     },
     {
       "id": "QP02",
@@ -1615,17 +1810,19 @@
         "channel and toolchain evidence"
       ],
       "required_resources": [
-        "selected kit and physical operator"
+        "p4_kit",
+        "physical_operator"
       ],
       "assignee": null,
       "candidate_commits": {},
       "reviewer": null,
       "review_verdict": null,
       "result_artifacts": [],
-      "profile": "p4_qr"
+      "profile": "p4_qr",
+      "requires_physical_evidence": true
     }
   ],
-  "revision": 3,
+  "revision": 4,
   "scope_document": "repositories.md",
   "active_profiles": [
     "esp32_no_se",
@@ -1663,5 +1860,150 @@
     "board_sdk": "B03",
     "custom_board": "R02"
   },
-  "sequencing_note": "The connected Bridge integration C01 is first proven on the accessible device V01 and reused by the custom Signer path. This is an implementation sequence, not a claim that the custom-board custody design or generic SDK intrinsically depends on a commercial no-SE board. Pi, P4 and accessible releases do not wait for custom fabrication; Board SDK does not wait for the Nostr app."
+  "sequencing_note": "The connected Bridge integration C01 is first proven on the accessible device V01 and reused by the custom Signer path. This is an implementation sequence, not a claim that the custom-board custody design or generic SDK intrinsically depends on a commercial no-SE board. Pi, P4 and accessible releases do not wait for custom fabrication; Board SDK does not wait for the Nostr app.",
+  "validation_document": "validation.md",
+  "release_forbidden_ancestors": {
+    "esp32_no_se": [
+      "H04",
+      "H07",
+      "H08",
+      "H09",
+      "B02",
+      "V02",
+      "V03",
+      "Q02",
+      "Q03",
+      "QP01",
+      "QP02",
+      "H02",
+      "H02S",
+      "H03"
+    ],
+    "pi_qr": [
+      "H04",
+      "H07",
+      "H08",
+      "H09",
+      "C01",
+      "C02",
+      "V01",
+      "V02",
+      "Q03",
+      "QP02",
+      "H02",
+      "H02S",
+      "H03"
+    ],
+    "p4_qr": [
+      "H04",
+      "H07",
+      "H08",
+      "H09",
+      "C01",
+      "C02",
+      "V01",
+      "V02",
+      "Q02",
+      "QP01",
+      "H02",
+      "H02S",
+      "H03"
+    ],
+    "board_sdk": [
+      "K01",
+      "C01",
+      "C02",
+      "V01",
+      "V02",
+      "V03",
+      "P03",
+      "QP01",
+      "QP02",
+      "Q02",
+      "Q03"
+    ],
+    "custom_board": []
+  },
+  "resources": {
+    "accessible_kit": {
+      "status": "unknown",
+      "owner_role": "hardware_operator",
+      "next_action": "Identify and obtain the selected no-SE MCU board, direct display and physical input; record revision and availability."
+    },
+    "pi_kit": {
+      "status": "unknown",
+      "owner_role": "hardware_operator",
+      "next_action": "Identify and obtain the exact Pi, camera, display/input and boot media; record radio/channel inspection."
+    },
+    "p4_kit": {
+      "status": "unknown",
+      "owner_role": "hardware_operator",
+      "next_action": "Identify and obtain the exact P4 kit, camera/display and companion-radio configuration."
+    },
+    "host_bench": {
+      "status": "unknown",
+      "owner_role": "hardware_operator",
+      "next_action": "Obtain candidate MCU development boards and record silicon/board revisions before comparing."
+    },
+    "se_bench": {
+      "status": "unknown",
+      "owner_role": "hardware_operator",
+      "next_action": "Resolve selected SE API/errata access and obtain exact configured evaluation hardware."
+    },
+    "bench_instruments": {
+      "status": "unknown",
+      "owner_role": "hardware_operator",
+      "next_action": "Record calibrated or checked supply, current measurement, scope/debug and controllable power-cut setup appropriate to each procedure."
+    },
+    "physical_operator": {
+      "status": "unknown",
+      "owner_role": "maintainer",
+      "next_action": "Assign an identified person for wiring, inspection, measurement and authorized physical operations; AI cannot manipulate absent hardware."
+    },
+    "panel_power_samples": {
+      "status": "unknown",
+      "owner_role": "hardware_operator",
+      "next_action": "Obtain exact display/connector and retained battery/power samples after the architecture shortlist."
+    },
+    "sacrificial_units": {
+      "status": "unknown",
+      "owner_role": "hardware_operator",
+      "next_action": "Reserve identified sacrificial evaluation assemblies for lifecycle/fuse/recovery experiments; obtain concrete irreversible-operation authorization first."
+    },
+    "evt_assemblies": {
+      "status": "unknown",
+      "owner_role": "manufacturing",
+      "next_action": "Complete reviewed package and concrete order authorization; obtain identified EVT assemblies."
+    },
+    "dvt_assemblies": {
+      "status": "unknown",
+      "owner_role": "hardware_validation",
+      "next_action": "Identify corrected DVT assemblies or justify unchanged EVT revision and repeat required measurements."
+    },
+    "external_lab": {
+      "status": "unknown",
+      "owner_role": "security_validation",
+      "next_action": "Select qualified external security/electrical test expertise for the claimed guarantees and intended distribution."
+    },
+    "participants": {
+      "status": "unknown",
+      "owner_role": "product_research",
+      "next_action": "Recruit opt-in participants for the particular admitted profile; arrange recovery protocol and protect participant data."
+    },
+    "support_capacity": {
+      "status": "unknown",
+      "owner_role": "maintainer",
+      "next_action": "Assign pilot support and incident/stop responsibility for the particular released profile."
+    },
+    "independent_developer": {
+      "status": "unknown",
+      "owner_role": "platform_release",
+      "next_action": "Recruit a developer independent of implementation to reproduce clean build/flash and permitted lifecycle transitions."
+    },
+    "provisioning_operator": {
+      "status": "unknown",
+      "owner_role": "release_security",
+      "next_action": "Identify authorized operator, protected signing setup and controlled unit provisioning/test process before any real-secret ceremony."
+    }
+  }
 }

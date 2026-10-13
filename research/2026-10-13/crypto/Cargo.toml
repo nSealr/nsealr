@@ -1,0 +1,34 @@
+[package]
+name = "nsealr-crypto-feasibility-spike"
+version = "0.0.0"
+edition = "2021"
+publish = false
+
+[workspace]
+
+[lib]
+path = "src/lib.rs"
+
+[features]
+link-probe=[]
+default = ["rustcrypto", "libsecp"]
+rustcrypto = ["dep:k256"]
+libsecp = ["dep:secp256k1"]
+
+[dependencies]
+k256 = { version = "=0.14.0", default-features = false, features = ["schnorr", "ecdh"], optional = true }
+secp256k1 = { version = "=0.33.1", default-features = false, features = ["lowmemory"], optional = true }
+sha2 = { version = "=0.11.0", default-features = false }
+hmac = { version = "=0.13.0", default-features = false }
+
+[profile.release]
+opt-level = "s"
+lto = true
+codegen-units = 1
+panic = "abort"
+
+[[bin]]
+name="freestanding"
+path="src/bin/freestanding.rs"
+test=false
+required-features=["link-probe"]

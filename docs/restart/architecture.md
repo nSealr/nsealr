@@ -14,6 +14,8 @@ Use maintained cryptographic implementations after target qualification. Do not 
 
 Bridge is TypeScript where browser/Node integration needs it. Prefer one coherent public SDK with explicit browser/Node entry points and internal modules, rather than publishing internal package boundaries. NIP-07 and NIP-46 integration must route through actual device approval; a NIP-46 client is not a hardware-backed signing server. Enforce origin/session/peer/user identity and queue/time bounds at the boundary that owns them.
 
+Do not elevate host labels into hardware-authenticated identity. A browser extension can authenticate an origin within its browser boundary; a device cannot infer it from an untrusted label. A host-terminated encrypted NIP-46 request also does not authenticate the forwarded plaintext to the device. Stronger provenance requires a concrete device-verifiable protocol; local consent must bind the actual operation regardless. See [client qualification](client-qualification.md) for encryption-context and DM-review requirements.
+
 Pi adapters may remain Python where that is the simplest maintained integration, using one defined engine boundary. The existing Python signer can serve as a differential test oracle; it is not a reason to maintain two permanent normative engines. A narrow vendor C adapter for camera or USB is acceptable when measured support warrants it; it must have explicit ownership, version pinning and boundary tests.
 
 ## Custody and trusted review
