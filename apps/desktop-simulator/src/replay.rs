@@ -306,7 +306,7 @@ pub(crate) fn assert_review_pages(
 }
 
 /// Resolve a `source_vector` reference (`"vectors/<cat>/<file>.json"`) against the
-/// single configurable vector root, so it follows any Phase 07 repoint.
+/// single configurable vector root, including an explicit environment override.
 pub(crate) fn resolve_source_vector(source_vector: &str) -> std::path::PathBuf {
     let rel = source_vector
         .strip_prefix("vectors/")

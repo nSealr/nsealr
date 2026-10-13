@@ -1,0 +1,48 @@
+{
+  "name": "browser-provider-local-service-esp32-usb-unavailable",
+  "format": "nsealr-access-surface-vector-v0",
+  "surface": "browser_provider_nip07",
+  "transport": "local_service",
+  "client": {
+    "surface": "browser_extension",
+    "origin": "https://example.com",
+    "app_name": "Example Nostr Client",
+    "instance_id": "extension-test-1"
+  },
+  "client_grant": {
+    "client_id": "facd24ac7fee854a64a630cd128424d0a0da0120629c7cf723bb9d2a87bf1311",
+    "origin": "https://example.com",
+    "surface": "browser_extension",
+    "allowed_operations": ["select_account_route", "dispatch_signer_request"],
+    "approved_at": 1900000000,
+    "expires_at": 2000000000
+  },
+  "route_selection_vector": "esp32-usb-sign-event-slot-0",
+  "sign_event_request_vector": "examples/request-kind-1-basic.json",
+  "expected": {
+    "get_public_key": {
+      "public_key": "4f355bdcb7cc0af728ef3cceb9615d90684bb5b2ca5f859ab0f0b704075871aa"
+    },
+    "sign_event_without_dispatcher": {
+      "response": {
+        "version": 1,
+        "request_id": "req-kind-1-basic",
+        "ok": false,
+        "error": {
+          "code": "signer_route_unavailable",
+          "message": "Signer dispatch is not configured",
+          "retryable": false
+        }
+      }
+    }
+  },
+  "safety": {
+    "stores_production_secrets": false,
+    "contains_secret_material": false,
+    "creates_grants": false,
+    "dispatches_without_signer": false,
+    "requires_shared_request_validation": true,
+    "requires_signed_response_verification": true
+  },
+  "scope": "NIP-07 browser provider over local companion service. This is a secretless access-surface contract, not a signer family, grant source, relay session, or production signing claim."
+}

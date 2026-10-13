@@ -1,0 +1,62 @@
+{
+  "name": "auth-challenge-response-step",
+  "format": "nsealr-nip46-relay-response-step-v0",
+  "direction": "remote_signer_to_client",
+  "event": {
+    "id": "167ce7944235c06d4f8471f07df8cf571e5dd1f2a68b576fa57f5a7ecf59405d",
+    "kind": 24133,
+    "pubkey": "4f355bdcb7cc0af728ef3cceb9615d90684bb5b2ca5f859ab0f0b704075871aa",
+    "created_at": 1710000005,
+    "content": "nip44-v2-auth-challenge-response-ciphertext-placeholder",
+    "tags": [
+      [
+        "p",
+        "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+      ]
+    ],
+    "sig": "8e1ac02176f5fe2e7d3809033a03c296553557c1d5be4d8f0bd9503f27f7b8358e09d4c9299acc360d5ee11b2de01dcd63dde321d96ec753c2c19a195c9fa227"
+  },
+  "decrypted_message": {
+    "id": "nip46-auth-1",
+    "result": "auth_url",
+    "error": "https://remote-signer.example.com/auth?challenge=nip46-auth-1"
+  },
+  "expected_step": {
+    "format": "nsealr-nip46-relay-response-step-v0",
+    "envelope": {
+      "format": "nsealr-nip46-relay-event-envelope-v0",
+      "direction": "remote_signer_to_client",
+      "sender_pubkey": "4f355bdcb7cc0af728ef3cceb9615d90684bb5b2ca5f859ab0f0b704075871aa",
+      "recipient_pubkey": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+      "encrypted_content": "nip44-v2-auth-challenge-response-ciphertext-placeholder",
+      "has_signed_event_fields": true,
+      "event_id_verified": true,
+      "event_signature_verified": true,
+      "decrypts_content": false,
+      "opens_relay": false,
+      "creates_grants": false,
+      "stores_production_secrets": false
+    },
+    "message_id": "nip46-auth-1",
+    "response_message": {
+      "id": "nip46-auth-1",
+      "result": "auth_url",
+      "error": "https://remote-signer.example.com/auth?challenge=nip46-auth-1"
+    },
+    "result_type": "auth_challenge",
+    "auth_url": "https://remote-signer.example.com/auth?challenge=nip46-auth-1",
+    "signed_event_shape_checked": false,
+    "signed_event_id_verified": false,
+    "signed_event_signature_verified": false,
+    "result_pubkey_bound_to_sender": false,
+    "decrypts_content": false,
+    "opens_relay": false,
+    "creates_grants": false,
+    "acknowledges_connect": false,
+    "dispatches_signer": false,
+    "relay_event_signature_verified": true,
+    "stores_production_secrets": false,
+    "persists_session_state": false
+  },
+  "scope": "NIP-46 relay response step evaluation for an already decrypted auth challenge response. It validates and verifies the relay event signature plus safe auth URL metadata without opening relays, decrypting NIP-44 content, acknowledging connect, creating grants, dispatching a signer, opening the URL, or persisting session state."
+}

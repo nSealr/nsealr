@@ -6,14 +6,13 @@
 //! integration test (`tests/vectors.rs`) drive it, so there is exactly one
 //! vector-loading + replay code path (no duplicate loaders).
 //!
-//! # The single configurable vector-source root (decision spec §6.5)
+//! # The single configurable vector-source root
 //!
 //! [`vectors_root`] is the *one* place that resolves where category directories
 //! live. It honours the `NSEALR_VECTORS_ROOT` environment override and otherwise
-//! defaults to the sibling `specs` checkout (`<workspace>/../specs/vectors`, the
-//! same convention every other integration script in this workspace uses).
-//! Phase 07 repoints this single function at a pinned released artifact without
-//! touching any replay code.
+//! defaults to the complete pinned snapshot in this repository at
+//! `tests/fixtures/specs/vectors`. A standalone checkout needs no sibling repo.
+//! See `tests/fixtures/specs/SOURCE.json` for provenance and file hashes.
 #![deny(missing_docs)]
 
 use std::path::{Path, PathBuf};
@@ -25,26 +24,25 @@ pub mod replay;
 /// `<category>/` subdirectories.
 pub const VECTORS_ROOT_ENV: &str = "NSEALR_VECTORS_ROOT";
 
-/// The single configurable point for the vector-source root (decision spec §6.5).
+/// The single configurable point for the vector-source root.
 ///
 /// Returns the directory that directly contains the `specs/vectors/<category>/`
 /// subdirectories. Every loader in this crate resolves paths relative to this
-/// one function; Phase 07 repoints it at a released artifact.
+/// one function. An explicit override is never silently replaced by the snapshot.
 pub fn vectors_root() -> PathBuf {
     if let Some(overridden) = std::env::var_os(VECTORS_ROOT_ENV) {
         return PathBuf::from(overridden);
     }
-    // Default: the sibling `specs` checkout. This crate's manifest dir is
-    // `<workspace>/apps/desktop-simulator`; the workspace root is two levels up,
-    // and the `specs` repo is its sibling (`ROOT.parent.join("specs")`).
+    // This crate's manifest directory is `<workspace>/apps/desktop-simulator`.
+    // Resolve the committed snapshot from the workspace, independent of CWD.
     let manifest_dir = Path::new(env!("CARGO_MANIFEST_DIR"));
     let workspace_root = manifest_dir
         .ancestors()
         .nth(2)
         .expect("crate manifest dir has a workspace-root ancestor");
     workspace_root
-        .parent()
-        .expect("workspace root has a parent (the repo org root)")
+        .join("tests")
+        .join("fixtures")
         .join("specs")
         .join("vectors")
 }

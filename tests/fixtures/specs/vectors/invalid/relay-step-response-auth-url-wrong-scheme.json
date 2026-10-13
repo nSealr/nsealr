@@ -1,0 +1,29 @@
+{
+  "name": "relay-step-response-auth-url-wrong-scheme",
+  "format": "pre-signing-invalid-vector-v0",
+  "category": "nip46-relay-step",
+  "expected_error": "auth challenge URL must be an http(s) URL without credentials or fragment",
+  "relay_step": {
+    "format": "nsealr-nip46-relay-response-step-v0",
+    "direction": "remote_signer_to_client",
+    "event": {
+      "kind": 24133,
+      "pubkey": "4f355bdcb7cc0af728ef3cceb9615d90684bb5b2ca5f859ab0f0b704075871aa",
+      "content": "nip44-v2-auth-challenge-response-ciphertext-placeholder",
+      "tags": [
+        [
+          "p",
+          "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+        ]
+      ],
+      "id": "df1cb12cf664880cb5c331be1b1e4ff84c983f77e8c9a195db1bc1c38c850b3b",
+      "created_at": 1710000001,
+      "sig": "cc1561bc1c1b5fc779368f4b6e38ed78993be7816b35e6f58508f4f447218b1f91b2f9adda32c6bd8247c958430e8980be3527d5f5e77ec42a5c8dc759fce93f"
+    },
+    "decrypted_message": {
+      "id": "nip46-auth-1",
+      "result": "auth_url",
+      "error": "nostr:npub1exampleauthchallenge"
+    }
+  }
+}

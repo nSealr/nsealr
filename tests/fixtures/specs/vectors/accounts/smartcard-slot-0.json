@@ -1,0 +1,27 @@
+{
+  "format": "nsealr-account-descriptor-v0",
+  "account_id": "acct-smartcard-slot-0",
+  "label": "Smartcard slot 0",
+  "public_key": "4f355bdcb7cc0af728ef3cceb9615d90684bb5b2ca5f859ab0f0b704075871aa",
+  "signer_route": {
+    "type": "smartcard",
+    "repository": "smartcard",
+    "transport": "smartcard",
+    "custody": "card_persistent",
+    "trusted_review": "display_less",
+    "policy_support": "manual_only"
+  },
+  "recovery": {
+    "type": "card_slot",
+    "card_id": "card-dev-slot-0",
+    "slot_id": "slot-0",
+    "backup_required": true
+  },
+  "capabilities": {
+    "methods": ["get_public_key", "sign_event"],
+    "physical_review": false,
+    "physical_approval": false,
+    "persistent_grants": false
+  },
+  "policy_profile_id": "policy-manual-only-displayless-smartcard"
+}

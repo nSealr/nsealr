@@ -1,0 +1,21 @@
+{
+  "format": "nsealr-policy-profile-v0",
+  "policy_id": "policy-manual-only-displayless-smartcard",
+  "label": "Manual-only display-less smartcard policy",
+  "route_types": ["smartcard"],
+  "mode": "manual_only",
+  "grants_allowed": false,
+  "manual_review_required": [
+    "sign_event",
+    "connect",
+    "nip04_decrypt",
+    "nip44_decrypt",
+    "unknown_method"
+  ],
+  "forbidden_permissions": ["wildcard", "export_secret", "decrypt_without_review", "trusted_review_claim"],
+  "risk_tiers": {
+    "sign_event": "external_review",
+    "decrypt": "manual",
+    "unknown": "manual"
+  }
+}

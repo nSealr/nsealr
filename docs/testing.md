@@ -34,7 +34,8 @@ Run just the Rust gates with `make rust-ci`.
 
 `apps/desktop-simulator` is the permanent parity oracle. Its test suite
 glob-discovers every in-scope `nSealr/specs` `vectors/<category>/*.json` file
-(over the sibling `specs` checkout, root overridable via `NSEALR_VECTORS_ROOT`),
+(over the complete committed snapshot in `tests/fixtures/specs/vectors`,
+root overridable via `NSEALR_VECTORS_ROOT`),
 replays each one end-to-end through `nsealr-core`'s public API, and asserts the
 vector's own expected outcome. A completeness rule fails the suite if a
 `vectors/` category is neither in-scope nor on the documented exclusion list, so

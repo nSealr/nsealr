@@ -125,18 +125,13 @@ closure.
 
 ## Known limits
 
-- **`desktop-simulator` is cross-path-reproducible only up to one embedded
-  string.** The harness binary bakes its own build directory into itself as the
-  `NSEALR_VECTORS_ROOT` fallback, via `env!("CARGO_MANIFEST_DIR")` (decision
-  spec §6.5 — the single configurable vector-source root, repointed at a pinned
-  released artifact in Phase 07). `--remap-path-prefix` remaps source-file
-  paths but **not** `env!`, so two builds of this binary at different absolute
-  paths differ solely in that one embedded default path. This is a deliberate
-  developer-convenience default, not a determinism defect: the CI gate asserts
-  the harness binary is byte-identical for **same-tree** double builds, which
-  fully covers timestamp/build-id/codegen non-determinism. The device backbone
-  `nsealr-core`, which every shipped app is built from, has no such default and
-  is fully path-independent.
+- **`desktop-simulator` is checked for same-tree reproducibility only.** It
+  embeds its build directory via `env!("CARGO_MANIFEST_DIR")` to locate the
+  committed `tests/fixtures/specs/vectors` snapshot. The runtime
+  `NSEALR_VECTORS_ROOT` override changes where it reads vectors, not the binary.
+  `--remap-path-prefix` does not rewrite `env!`, so no cross-path byte-identity
+  claim is made for this harness. The separate cross-path check covers the
+  `nsealr-core` target library, not a completed device application.
 - **`trim-paths` is not used.** The cleaner `[profile] trim-paths` Cargo option
   is not stabilized on the pinned stable toolchain (`1.95.0`); enabling it would
   require nightly, which the reproducibility pin forbids. The stable
