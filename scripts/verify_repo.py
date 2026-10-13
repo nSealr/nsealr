@@ -8,7 +8,7 @@ import sys
 
 
 ROOT = Path(__file__).resolve().parents[1]
-REPO = ROOT.name
+REPO = "nsealr"
 
 COMMON_FILES = [
     "README.md",
@@ -26,7 +26,7 @@ REQUIRED_DIRS = {
     "specs": ["protocols", "schemas", "vectors", "examples", "docs", "scripts"],
     "companion": ["apps", "packages", "docs", "scripts"],
     "raspberry": ["app", "os", "docs", "scripts"],
-    "firmware": ["crates", "apps", "ci", "boards", "docs", "scripts"],
+    "nsealr": ["crates", "apps", "ci", "boards", "docs", "scripts"],
     "smartcard": ["applet", "tools", "docs", "scripts"],
     "hardware": ["pcb", "bom", "enclosures", "docs", "scripts"],
     "website": ["content", "public", "design", "docs", "scripts"],

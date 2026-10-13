@@ -1,3 +1,5 @@
+> Historical implementation baseline. The [restart plan](restart/README.md) governs new architecture, product scope and migration decisions.
+
 # Roadmap
 
 ## Foundation: the Rust workspace (done)

@@ -1,3 +1,5 @@
+> Historical implementation baseline. The [restart plan](restart/README.md) governs new architecture, product scope and migration decisions.
+
 # Architecture
 
 `nSealr/firmware` is the all-Rust cargo workspace for every nSealr signer
