@@ -2,27 +2,28 @@ name: CI
 
 on:
   push:
+    branches: [main]
   pull_request:
   workflow_dispatch:
+
+permissions:
+  contents: read
 
 jobs:
   verify:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v5
-      - uses: actions/setup-python@v6
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5.1.0
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1 # v6.3.0
         with:
           python-version: "3.12.15"
-      - name: Install pinned Rust toolchain
-        # `rustup toolchain install` reads rust-toolchain.toml and installs
-        # the pinned channel plus its declared components (rustfmt, clippy,
-        # llvm-tools-preview) and the riscv32imafc target. (`rustup show` as
-        # an installer is deprecated since rustup 1.28.)
-        run: |
-          rustup toolchain install
-          cargo --version
-      - name: Install cargo-deny and cargo-llvm-cov
-        run: |
-          cargo install --locked cargo-deny --version 0.20.2
-          cargo install --locked cargo-llvm-cov --version 0.9.1
-      - run: make ci
+          check-latest: false
+      # The existing hash-pinned installer records actual toolchain and source
+      # inputs. Hosted OS/runner and service availability are not hermetic.
+      - name: Bootstrap exact public product and pinned tools
+        run: python3 tools/baseline/bootstrap.py "${RUNNER_TEMP}/nsealr-product"
+      - name: Complete product acceptance
+        run: python3 "${RUNNER_TEMP}/nsealr-product/nsealr/tools/baseline/run.py" "${RUNNER_TEMP}/nsealr-product"

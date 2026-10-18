@@ -76,4 +76,24 @@ repro-build:
 
 rust-ci: cargo-fmt cargo-clippy cargo-test vector-harness cargo-deny coverage-ratchet repro-build
 
-ci: test lint audit docs rust-ci
+contract-ci:
+	$(MAKE) -C protocols/contracts/v1 ci
+
+bridge-ci:
+	pnpm ci
+
+pi-ci:
+	$(MAKE) -C apps/pi ci
+
+integration-tests:
+	python3 -B -m unittest discover -s tests/integration -p 'test_*.py' -v
+
+integration:
+	python3 -B -m tests.integration.run
+
+product-gates:
+	python3 scripts/check_product_gates.py
+	python3 -B -m unittest discover -s scripts -p 'test_product_gates.py' -v
+
+.PHONY: contract-ci bridge-ci pi-ci integration-tests integration product-gates
+ci: test lint audit docs rust-ci contract-ci bridge-ci pi-ci integration-tests product-gates integration

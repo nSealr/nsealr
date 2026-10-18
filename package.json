@@ -44,7 +44,7 @@
     "browser-runtime-bundle:check": "node tools/bridge/check_browser_runtime_bundle.mjs",
     "browser-runtime-imports:check": "node tools/bridge/check_browser_runtime_imports.mjs",
     "build": "node tools/bridge/build_packages.mjs",
-    "ci": "pnpm build && pnpm typecheck && pnpm test && pnpm consumer-smoke && pnpm examples-smoke && pnpm readme-examples:check && pnpm api-docs:check && pnpm api-review:check && pnpm package-registry:check && pnpm browser-runtime-imports:check && pnpm browser-runtime-bundle:check && pnpm browser-extension-security:check && pnpm public-imports:check && pnpm release-plan:check && pnpm release-artifacts:safety && pnpm pack-smoke",
+    "ci": "pnpm build && pnpm typecheck && pnpm test && pnpm consumer-smoke && pnpm examples-smoke && pnpm readme-examples:check && pnpm api-docs:check && pnpm api-review:check && pnpm package-registry:check && pnpm browser-runtime-imports:check && pnpm browser-runtime-bundle:check && pnpm browser-extension-security:check && pnpm public-imports:check && pnpm release-plan:check && pnpm release-artifacts:safety && pnpm pack-smoke && pnpm product-boundaries:check && pnpm current-guides:check",
     "consumer-smoke": "pnpm --filter @nsealr/consumer-smoke smoke",
     "current-guides:check": "node --import tsx/esm tools/bridge/check_current_guides.mjs && node --import tsx/esm tools/bridge/test_current_guides.mjs",
     "examples-smoke": "pnpm --filter @nsealr/sdk-examples verify",
