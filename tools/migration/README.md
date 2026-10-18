@@ -1,6 +1,6 @@
 # A02 isolated migration tooling
 
-The coordinator admitted the exact732f742 package at0a8bb620 after independent
+The coordinator admitted the exact 732f742 package at 0a8bb620 after independent
 review b9d5d96e. The original preparation records below remain historical.
 `assemble.py` performs only that admitted selected-file import, starting from
 empty Git and exact public core ancestry. `transforms.py` declares every later
