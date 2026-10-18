@@ -40,18 +40,29 @@ The S01 tuple applies original R00 provenance, metadata-v1, then this third
 overlay. The third patch touches different files from metadata-v1 and must also
 apply directly after the original R00 patch without needing metadata-v1.
 `tools/baseline/bootstrap.py` is an active caller that currently applies only
-the vulnerable original patch. Extend that caller to apply and verify the
-follow-up by default, retaining its original overlay record and adding a
-separate follow-up record. A small shared application function may remove the
+the vulnerable original patch. Its actual CLI offers only destination,
+`--mirrors` and `--core-only`; there is no configurable input-profile option.
+Update active `tools/baseline/inputs.json` to the exact current specs and companion
+commits above, changing no other repository/runtime pins. Extend the default
+caller to apply and verify all three overlays in the S01 order, reading the
+existing metadata-v1 patch/manifest at their current S01 paths without rewriting
+or duplicating them. Retain the original overlay record and add distinct v1 and
+follow-up records. A small shared application function may remove the
 duplicate verification sequence; no optional disable switch or absence fallback
 is permitted. Add meaningful boundary tests in `tools/baseline/test_bootstrap.py`
 and update `tools/baseline/README.md` to explain the ordered correction and the
-historical pins. `run.py` already verifies the complete recorded source diff;
+historical reproduction refs. Do not add a generic profile system or silently
+follow repository main branches. `run.py` already verifies the complete recorded source diff;
 it needs no change merely to support another declared patch.
 
-This narrowly expands editable scope to those bootstrap, README, test and new
-overlay files, plus new S01 addendum/evidence files. Existing R00 input pins,
-patches and evidence stay immutable, as do the original S01 75 indexed artifacts.
+This narrowly expands editable scope to those bootstrap, active inputs, README,
+test and new overlay files, plus new S01 addendum/evidence files. Historical R00
+input pins remain immutable at their existing evidence refs; original R00
+patches/evidence and the original S01 75 indexed artifacts stay byte-identical.
+Document the verified remote refs `evidence/r00-full-20261018` (`f853757a5080003036aacb797999410398816f16`)
+and `evidence/r00-reviewed-20261018` (`303b4c9d9386147220abaf2cf754c5c47e458dff`)
+for historical tooling, pins, inherited failures and observations. Their old
+provenance limitation remains disclosed; new correction evidence is additive.
 Canonical lab and other author trees remain read-only. A02 must independently
 select/import the corrected tooling tuple before replacing these overlays.
 
@@ -78,7 +89,7 @@ select/import the corrected tooling tuple before replacing these overlays.
    hidden files, never omitted vectors. No URL/signature/identity/CLI assertion
    changes belong to this repair.
 4. Bootstrap verifies ordered patch digests, pinned lab commit, preimage and
-   postimage hashes, recording both overlays. Wrong source, modified patch or
+   postimage hashes, recording all three overlays. Wrong source, modified patch or
    modified target must fail before the affected patch is applied. Public core
    CI continues to execute bootstrap boundary tests without private source.
 
@@ -98,17 +109,28 @@ Exercise the actual bootstrap overlay helper with a fresh lab preimage and the
 historical core/specs pair (core `9194e292aa8a3176874cc9bf5814cefc26b6fe1a`, specs
 `8bb8cca71355bcf8d81a093bcee9f3fe6915b121`) using only R00 plus follow-up, proving
 the correction is independent of metadata-v1. Do not force v1 into the old tuple.
-The current S01 core snapshot intentionally does not match immutable R00 specs
-pins; document that ordinary full bootstrap at this current core still detects
-that mismatch. This addendum does not silently replace historical input pins.
+Verify historical refs and their exact original inputs remain reachable. A
+deliberately mismatched current-core/old-specs control must still reject, while
+the active current default must succeed with its coherent pinned tuple.
 
 For the current S01 tuple, preserve commands, environments, hashes, UTC times,
-exit codes and source states in new evidence files. Run the complete affected
+exit codes and source states in new evidence files. From the committed repair,
+run the real public default bootstrap entry point into an absent owned directory:
+`python3 tools/baseline/bootstrap.py ABSENT_DEST --mirrors /home/tux/nsealr`.
+Mirrors provide only Git transport; do not inject caches or replace the default
+pins/overlay path in this positive acceptance. Require successful fresh source
+checkout, pinned installation, all three overlay records and runtime manifest.
+This bounded new installation uses the same R00 runtime pins and does not rewrite
+or retroactively upgrade historical cold-run evidence. Host/kernel/TLS/compiler
+and authorized Git transport remain declared external inputs.
+
+Use that freshly bootstrapped current tuple to run the complete affected
 lab CI, explicit actual fixture parity and v1 discovery guards, bootstrap
 boundary suite and one uninterrupted final `make integration` with all 20
 steps. Run affected core CI for bootstrap changes. Reconcile unchanged product
 objects to the prior eight-suite evidence instead of claiming a second run.
-Runtime/cache reuse remains explicit: this is not a cold-install replay.
+Earlier S01 runs reused runtime/cache inputs and remain labeled accordingly;
+the new installation's actual isolation and executed gates are reported separately.
 Retain live, interactive browser and physical hardware exclusions.
 
 Commit repair separately from final result metadata; preserve old evidence
