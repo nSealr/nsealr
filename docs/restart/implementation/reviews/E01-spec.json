@@ -1,0 +1,30 @@
+{
+  "schema_version": 1,
+  "task": "E01",
+  "candidate": "5a3f401a25d7a1be0e8a6b12945dc91df57fff9c",
+  "author": "/root/cad_execution",
+  "reviewer": "/root",
+  "verdict": "pass",
+  "observed_utc": "2026-10-18T15:57:21.998691+00:00",
+  "files": [
+    {
+      "path": "docs/restart/implementation/E01/brief.md",
+      "sha256": "d6ca1977e883c39aeb7f386b2d659149273ce5c36d4161fb45ab3997f44a0136"
+    },
+    {
+      "path": "docs/restart/implementation/E01/inputs.json",
+      "sha256": "caa01ced9553c31def8f92fc4fe8778797252cefb10913d4a439d1935996caac"
+    }
+  ],
+  "assessment": "Seven bounded CAD contracts adequately exercise the minimal native/GUI/read-only PCB IPC preparation path, independent pad/net/coordinate checks, rule negatives, persisted save/reopen and post-save crash. Source-generation and legacy pcbnew are explicit bounded alternatives, not stable IPC. No production hardware, bottom-side, zones, vias, arbitrary write transaction or unsafe save-crash recovery is admitted. Each later required operation needs its own qualification.",
+  "resolved_findings": [
+    "Corrected official tar URL and recorded archive/extracted image hashes separately.",
+    "Use clean Python3.12.15 pinned resolver installation; no inheritance of 3.12.13 runtime evidence."
+  ],
+  "sources_checked": [
+    "https://www.kicad.org/download/linux/",
+    "https://dev-docs.kicad.org/en/apis-and-binding/ipc-api/for-addon-developers/",
+    "https://docs.kicad.org/10.0/en/cli/cli.html"
+  ],
+  "limits": "Specification approval only. Actual commands/semantic outputs and distinct final review required before task acceptance."
+}
