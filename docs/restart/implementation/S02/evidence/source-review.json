@@ -1,0 +1,50 @@
+{
+  "method": "Targeted current registry-source inspection, not a full cryptographic audit. Versions/checksums pinned in product and research Cargo.lock.",
+  "files": [
+    {
+      "registry_source": "k256-0.14.0/README.md",
+      "sha256": "211dc24bf0f6623ce12f1782a25c56b66aadf3abe208a261225a711ff65a4743",
+      "inspected_for": "Security Notes: timing assumptions and audit limitation"
+    },
+    {
+      "registry_source": "k256-0.14.0/src/schnorr/signing.rs",
+      "sha256": "16a51fd4383ea6faecc0cad3c2faf6fec77947c09abb147813f01d73541f8798",
+      "inspected_for": "sign_raw vs high-level prehash; SigningKey Drop; temporary-array limitation"
+    },
+    {
+      "registry_source": "elliptic-curve-0.14.1/src/ecdh.rs",
+      "sha256": "663395368ddf3e501011785d12fbaa94a35eaa37373d0365870d4f7df3b30c80",
+      "inspected_for": "SharedSecret raw serialized x and drop wiping"
+    },
+    {
+      "registry_source": "elliptic-curve-0.14.1/src/scalar/nonzero.rs",
+      "sha256": "6e6629fb925e31a2379c3f296fbc71420444b1edb89d7272e7b99fea3d7b417d",
+      "inspected_for": "NonZeroScalar Zeroize implementation; no Drop implementation"
+    },
+    {
+      "registry_source": "secp256k1-0.33.1/src/ecdh.rs",
+      "sha256": "3f214e7c25ce212ca86cdef79cd3bf090484079b456d8000862f36ae959d0df8",
+      "inspected_for": "default hashed ECDH vs shared_secret_point; Copy/shared-secret erase semantics"
+    },
+    {
+      "registry_source": "zeroize-1.9.1/src/lib.rs",
+      "sha256": "0ec1dcf0d7c33b0bab02f85d79d37f29bbb8f034f648513797859a7b37bca637",
+      "inspected_for": "current-location volatile/fence zeroization and copy/register limitations"
+    },
+    {
+      "registry_source": "sha2-0.11.0/src/block_api.rs",
+      "sha256": "7d858102344cc8be2d22b207296c44087b91b2e7309c5598497c48c1182c89cc",
+      "inspected_for": "feature-gated core Drop"
+    },
+    {
+      "registry_source": "digest-0.11.3/src/buffer_macros/fixed.rs",
+      "sha256": "53bc025e5a428d5340fd68e7b581840891fc62fea15cc08e8f6c16466b903160",
+      "inspected_for": "ZeroizeOnDrop core and buffer type checks"
+    },
+    {
+      "registry_source": "block-buffer-0.12.1/src/lib.rs",
+      "sha256": "1e1f665e68a16b6a18ea547aec36d9855163bd79a27c2b293a7a7708dde68a28",
+      "inspected_for": "feature-gated buffer Drop"
+    }
+  ]
+}
