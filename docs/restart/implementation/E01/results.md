@@ -72,3 +72,10 @@ AppImage. Helper binaries are hash checked; host rendering tools and OS details
 are recorded. This is a fresh dependency installation on the recorded host,
 not a hermetic or fresh-machine bootstrap. Run `verify` to recheck every archived
 hash; a new campaign requires the pinned tools and dependencies.
+
+The [validation record](validation.json) preserves one repository formatting
+failure: `git diff --check c06a9e2..HEAD` exits 2 for trailing spaces and EOF blank
+lines emitted by native SVG export, native version output and Xvfb. Those raw
+bytes remain unchanged and hash linked. A separately scoped authored-source/
+document check passes; this is not reported as a full-diff pass. Source lint and
+the restart-plan validator pass. No CI configuration or gate was weakened.
