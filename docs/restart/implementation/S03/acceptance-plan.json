@@ -157,7 +157,7 @@
       "test_name": "s03_nip01_bytes_match_independent_oracle",
       "arrange": "Tiny empty-content operation plus each control, slash, quote, backslash, U+2028/U+2029, supplementary scalar, NUL, composed/decomposed text; tags with duplicate ordered values.",
       "actions": "Derive fixture identity inside owner; serialize/hash with core and independently from semantic inputs.",
-      "expected": "Exact canonical byte equality and 32-byte SHA256 equality; no normalization, unexpected escaping, extra whitespace or double hash.",
+      "expected": "Exact canonical byte equality and 32-byte SHA256 equality; no normalization, unexpected escaping, extra whitespace or double hash. Exact seven escape spellings are enumerated in canonical_escape_contract: quote/backslash plus five named controls; all other C0 scalars use lowercase u00xx.",
       "oracle": "Fixed hand-inspected tiny strings plus Python json.dumps ensure_ascii=False,separators=(comma,colon),allow_nan=False and hashlib.sha256; compare to raw UTF8 bytes.",
       "baseline_strategy": "No canonicalizer exists at baseline: preserve reviewed expected bytes before implementation, not an API-not-found test.",
       "status": "planned_not_executed"
@@ -235,7 +235,8 @@
       "expected": "No omitted field, hidden suffix, ellipsis, collapsed whitespace or ambiguous index; each accepted operation is entirely inspectable. Capacity failure rejects before approval.",
       "oracle": "Independent field inventory and reversible inspection-string grammar; comparing only screenshots or author snapshots is insufficient.",
       "baseline_strategy": "Reproduce legacy summary renderer truncation while returning Ok; full QR pagination controls identify which prior path already avoided ellipses.",
-      "status": "planned_not_executed"
+      "status": "planned_not_executed",
+      "claim_limit": "ASCII exact-inspection/conformance baseline only; public-profile readable Unicode and usability need device/P02 evidence. An expanded renderer requires owned review and preserves exact values/binding."
     },
     {
       "id": "R02",
@@ -252,7 +253,8 @@
       "expected": "Distinct accepted scalar strings have distinct inspection text; canonical signed bytes stay unchanged; escape tokens are not split across frames.",
       "oracle": "Explicit ASCII inspection grammar; Unicode TR36 spoofing cases.",
       "baseline_strategy": "Reproduce existing U+XXXX and backslash rendering collisions in legacy display_safe_text consumers.",
-      "status": "planned_not_executed"
+      "status": "planned_not_executed",
+      "claim_limit": "ASCII exact-inspection/conformance baseline only; public-profile readable Unicode and usability need device/P02 evidence. An expanded renderer requires owned review and preserves exact values/binding."
     },
     {
       "id": "R03",
@@ -270,7 +272,8 @@
       "expected": "No Approved state until every exact flat page has successful local presentation and acknowledgement plus distinct final consent. Failure/cancel leaves no authority; no generic trusted=true override.",
       "oracle": "Handwritten expected traversal state transitions; adversarial local I/O driver explicitly models trusted adapter faults.",
       "baseline_strategy": "Capture legacy logical Next skipping scroll windows and approval without current_frame calls; retain baseline output.",
-      "status": "planned_not_executed"
+      "status": "planned_not_executed",
+      "claim_limit": "ASCII exact-inspection/conformance baseline only; public-profile readable Unicode and usability need device/P02 evidence. An expanded renderer requires owned review and preserves exact values/binding."
     },
     {
       "id": "A01",
@@ -401,10 +404,10 @@
         "G10"
       ],
       "test_name": "s03_all_limits_bound_storage_and_work",
-      "arrange": "Every configured input/content/tag count/fields/field bytes/aggregate/canonical bytes/page count/geometry boundary and one pending slot.",
-      "actions": "Test below/at/above each independently using smaller trusted test limits where input cap would dominate; long UTF8/escaped expansion; deep malformed arrays; repeated short requests while busy; checked multiplication/addition overflow.",
-      "expected": "No panic/unbounded allocation/recursion or retained queue growth; reject before write/crypto/approval; operation counters remain within derived configured bound. Record static type sizes and target build only.",
-      "oracle": "Numerical tuple in brief; independent counting formulas and limits configured locally, never via request JSON.",
+      "arrange": "Every configured input/content/tag count/fields/field bytes/aggregate/canonical bytes/page count/geometry boundary and one pending slot. Compact 4096-byte arena with span indexing; maximum field count and aggregate data together.",
+      "actions": "Test below/at/above each independently using smaller trusted test limits where input cap would dominate; long UTF8/escaped expansion; deep malformed arrays; repeated short requests while busy; checked multiplication/addition overflow. Record size_of PendingOperation and AuthorizationSession plus separately inventoried external/transient/backend storage; ensure no per-field fixed 256-byte array creates a 64 KiB retained layout.",
+      "expected": "No panic/unbounded allocation/recursion or retained queue growth; reject before write/crypto/approval; operation counters remain within derived configured bound. Record static type sizes and target build only. PendingOperation <=8192 bytes; complete retained AuthorizationSession <=16384 bytes including all inline fields and pending storage once. No retained canonical/page copies or alternate queue.",
+      "oracle": "Numerical tuple in brief; independent counting formulas and limits configured locally, never via request JSON. Chosen memory budgets and 5318-byte arena/index/request-ID base calculation from brief; actual measured type sizes, not an inferred logical-byte maximum.",
       "baseline_strategy": "Preserve baseline fixed-limit successes and reproduce depth/grammar weaknesses; no repetition of unrelated S02 suites.",
       "status": "planned_not_executed"
     },
@@ -510,7 +513,8 @@
       "fixture/oracle/source/artifact SHA256",
       "before-fix failure reason and after-fix result",
       "static type sizes and checked configured work counters",
-      "distinct final review"
+      "distinct final review",
+      "PendingOperation and complete retained session type sizes against 8192/16384-byte limits; separate input/canonical/render/hash/backend scratch inventory"
     ],
     "never_claim": [
       "actual physical button origin",
@@ -520,7 +524,8 @@
       "target stack/peak RAM/latency",
       "full public catalog",
       "production output enabled",
-      "external security certification"
+      "external security certification",
+      "public-profile Unicode readability or usability from the ASCII conformance cursor"
     ],
     "do_not_add": [
       "new orchestration service",
@@ -534,6 +539,76 @@
     "K01": "Remaining public catalog reviewers, production signing and output binding/verification, provider scratch and actual signing dependency final link; retest all S03 semantics at integrated output boundary.",
     "T01": "Qualified per-profile capability/limit/readiness schemas and host routing replacement; no universal bool or persistent_grants flag grants consent.",
     "C02": "DM/relay-auth context and catalog; cannot borrow public-note grants.",
-    "device_tasks": "Real screen/input, monotonic lifetime/reset, entropy/custody/memory/timing/peripheral isolation and receiver behavior."
+    "device_tasks": "Real screen/input, monotonic lifetime/reset, entropy/custody/memory/timing/peripheral isolation and receiver behavior.",
+    "P02": "Per-profile compatibility/adoption/usability gates, including actual readable Unicode review with exact inspection, jointly with device qualification. Owned renderer changes must be reviewed."
+  },
+  "source_reconciliation": {
+    "observed_main_commit": "7b5553685dac56029a4379be12054154b6b5e0b5",
+    "source_input_unchanged": "3cbd818a0bcd4016eb8983dad7605cb57280d913",
+    "unchanged_audited_files": 41,
+    "changed_audited_paths": [
+      "docs/restart/README.md",
+      "docs/restart/work-items.json"
+    ],
+    "details": "source-audit.json input_reconciliation; S03 acceptance unchanged; P01/S02 integrated and S03 running issue 17 does not waive exact-brief approval."
+  },
+  "canonical_escape_contract": [
+    {
+      "scalar": "U+0022",
+      "meaning": "quote",
+      "spelling": "\\\""
+    },
+    {
+      "scalar": "U+005C",
+      "meaning": "backslash",
+      "spelling": "\\\\"
+    },
+    {
+      "scalar": "U+0008",
+      "meaning": "backspace",
+      "spelling": "\\b"
+    },
+    {
+      "scalar": "U+000C",
+      "meaning": "form feed",
+      "spelling": "\\f"
+    },
+    {
+      "scalar": "U+000A",
+      "meaning": "line feed",
+      "spelling": "\\n"
+    },
+    {
+      "scalar": "U+000D",
+      "meaning": "carriage return",
+      "spelling": "\\r"
+    },
+    {
+      "scalar": "U+0009",
+      "meaning": "tab",
+      "spelling": "\\t"
+    }
+  ],
+  "retained_memory_contract": {
+    "decoded_string_arena_bytes": 4096,
+    "maximum_tag_fields": 256,
+    "tag_field_span_bytes": 4,
+    "maximum_tag_span_bytes": 1024,
+    "content_span_bytes": 4,
+    "tag_boundary_entries": 33,
+    "tag_boundary_entry_bytes": 2,
+    "request_id_storage_bytes": 128,
+    "base_payload_index_bytes": 5318,
+    "pending_operation_max_bytes": 8192,
+    "complete_authorization_session_max_bytes": 16384,
+    "counting_rule": "Pending operation is included once in the complete session size. All inline metadata, current review cursor/frame and backend-key fields count. No retained canonical byte buffer, full page list, duplicate operation or per-slot FixedStr<256> arrays.",
+    "separate_inventory": [
+      "caller-owned input buffers",
+      "temporary canonical-output buffer and writer if used",
+      "one-page rendering scratch",
+      "hashing and cryptographic backend transient scratch",
+      "backend-key size contribution"
+    ],
+    "acceptance": "Record actual size_of values and assert both caps. Exceeding caps requires specification review, not silent budget increase. Host/static evidence is not whole-program target stack/peak RAM evidence."
   }
 }

@@ -4,8 +4,13 @@ Preparation candidate, 2026-10-18. Author: `/root/s03_author`. Repository:
 `nSealr/nsealr`; input `3cbd818a0bcd4016eb8983dad7605cb57280d913`; branch
 `restart/s03-authorization`. This brief, `source-audit.json` and
 `acceptance-plan.json` are the entire preparation change. No implementation or
-acceptance pass is claimed. The coordinator must reconcile P01/S02 lifecycle
-metadata and record distinct approval of this exact specification before code.
+acceptance pass is claimed. Main
+`7b5553685dac56029a4379be12054154b6b5e0b5` now records graph revision 11,
+P01/S02 integrated and S03 running under issue 17. Comparison of all 43 audited
+inputs found 41 byte-identical files; only the task graph and restart README
+changed, for lifecycle/handoff guidance. The audit records both changed hashes
+and confirms unchanged S03 acceptance. The source input remains pinned above;
+distinct approval of this exact specification is still required before code.
 
 The requirement authority is S03's five unchanged acceptance statements in
 `docs/restart/work-items.json`, P01 PROD-01/04/05/09/10, the P01 event-review
@@ -139,7 +144,10 @@ policy, not a claimed NIP-01 maximum or trustworthy current time.
 Canonical bytes are compact UTF-8 JSON `[0,pubkey,created_at,kind,tags,content]`
 with lowercase 64-hex custody-derived pubkey, canonical decimal integers,
 ordered arrays and preserved decoded strings. Escape quote/backslash and the
-seven named JSON control forms as specified; other C0 controls use lowercase
+five named JSON controls using exactly these seven spellings:
+quote U+0022 → `\"`, backslash U+005C → `\\`, backspace U+0008 → `\b`,
+form feed U+000C → `\f`, line feed U+000A → `\n`, carriage return U+000D →
+`\r`, and tab U+0009 → `\t`. Remaining C0 controls use lowercase
 `\u00xx` to satisfy JSON grammar. Slash and other Unicode scalars remain
 verbatim. The latter C0 choice resolves NIP-01's abbreviated escape list using
 RFC 8259, and must be independently vector-tested. Compute SHA-256 with the
@@ -202,6 +210,15 @@ show empty strings explicitly. Bound wrapping without splitting an escape token.
 No ellipsis, omitted suffix, collapsed whitespace or “safe replacement” is
 permitted in an authority-bearing review. If any field or index cannot be
 rendered completely within limits, reject before approval.
+
+This ASCII cursor is a portable conformance and exact-inspection baseline, not
+acceptance of public-profile Unicode readability or usability. Product screens
+must pass their device and P02 usability/adoption gates. They may combine a
+faithful readable Unicode presentation with the exact inspection view, but must
+preserve all signed values and their role/index binding. Adding that presentation
+requires an owned, reviewed renderer change and evidence for its fonts, shaping,
+bidi handling and navigation; normalization, hidden truncation or blind-signing
+fallback cannot stand in for readable complete review.
 
 Use one incremental review cursor over the immutable operation, not a stored
 copy of every page. Preflight all pages and checked page counts before review;
@@ -285,6 +302,35 @@ capacity. Template depth is schema-fixed, at most five containers including the
 legacy envelope; unsupported nesting fails immediately, without recursion.
 Legacy wire frame/envelope limits stay at their existing stricter values; the
 new core ceilings do not silently advertise larger serial/QR capacities.
+
+Retained decoded strings use one compact 4096-byte arena shared by content and
+tag fields. Store checked offsets/lengths into it: at most 256 four-byte spans
+(`u16` offset and length, 1024 bytes), one content span, and 33 `u16` tag
+boundaries (66 bytes). Request ID has its separate bounded 128-byte storage.
+Equivalent compact layouts are acceptable; allocating a 256-byte `FixedStr`
+for every tag-field slot is not. That Cartesian layout would consume 65536
+bytes before content despite the aggregate limit. No allocator framework is
+needed, and the parser writes each decoded value once into the checked arena.
+
+The retained `PendingOperation` budget is **8192 bytes**, and the complete
+`AuthorizationSession` budget is **16384 bytes**, counting its pending operation
+once and including all inline metadata, review cursor/frame and backend-key
+fields. The approximately 5.2 KiB arena/span/tag-index/request-ID base leaves
+room in the pending budget for public identity, hashes, numeric fields and
+alignment; the session budget leaves room for lifecycle/display state without
+another operation copy. Canonicalization streams from the immutable arena;
+neither the up-to-8192 canonical bytes nor all review pages are retained in the
+owner. Record actual `size_of` values and enforce these bounds in L01 before
+acceptance, rather than infer memory cost from logical byte limits.
+
+Record the backend key's contribution within the retained total. Separately
+inventory caller-owned input buffers, any temporary canonical-output
+buffer/writer, one-page rendering scratch and hashing/backend scratch.
+Those transient/external buffers are not a hidden retained queue and
+must not be described as covered by the 16 KiB owner budget. The whole-program
+stack/peak RAM remains a measured device gate. An implementation exceeding the
+chosen retained budgets requires revised specification and review before code
+continues; do not silently raise the bounds.
 
 Check input length before decoding/storing and individual/aggregate capacity
 before each write. Count canonical/review expansion with checked arithmetic
