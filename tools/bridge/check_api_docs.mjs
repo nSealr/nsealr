@@ -50,12 +50,31 @@ function collectExports(entryPath, seen = new Set()) {
 
   const source = readSource(entryPath);
   const symbols = new Set();
+  const namespaces = new Map();
+  for (const statement of source.statements) {
+    if (ts.isImportDeclaration(statement) && ts.isStringLiteral(statement.moduleSpecifier) &&
+        statement.importClause?.namedBindings && ts.isNamespaceImport(statement.importClause.namedBindings)) {
+      const specifier = statement.moduleSpecifier.text;
+      if (specifier.startsWith("@nsealr/")) {
+        const parts = specifier.split("/");
+        const packageName = parts.slice(0, 2).join("/");
+        const subpath = parts.length > 2 ? `./${parts.slice(2).join("/")}` : ".";
+        const target = sourceManifest(packageName).exports[subpath];
+        if (!target?.import) throw new Error(`unmapped namespace ${specifier}`);
+        namespaces.set(statement.importClause.namedBindings.name.text,
+          sourcePathForDistImport(packageName, target.import));
+      }
+    }
+  }
 
   for (const statement of source.statements) {
     if (ts.isExportDeclaration(statement)) {
       if (statement.exportClause && ts.isNamedExports(statement.exportClause)) {
         for (const element of statement.exportClause.elements) {
-          symbols.add(element.name.text);
+          const name = element.name.text;
+          symbols.add(name);
+          const namespace = namespaces.get(element.propertyName?.text ?? name);
+          if (namespace) for (const symbol of collectExports(namespace, new Set())) symbols.add(`${name}.${symbol}`);
         }
       } else if (statement.moduleSpecifier && ts.isStringLiteral(statement.moduleSpecifier)) {
         const resolvedPath = resolveSourceModule(entryPath, statement.moduleSpecifier.text);
@@ -138,14 +157,14 @@ function renderApiDocs() {
     "# Public API Surface",
     "",
     "This file is generated from the public package entrypoints by",
-    "`scripts/check_api_docs.mjs`. It documents the pre-release package surface",
+    "`tools/bridge/check_api_docs.mjs`. It documents the pre-release package surface",
     "that consumers may import after the package gates pass.",
     "",
     "Regenerate and verify it with:",
     "",
     "```sh",
-    "make api-docs-update",
-    "make api-docs",
+    "pnpm api-docs:update",
+    "pnpm api-docs:check",
     "```",
     "",
     "The packages are still pre-release. Breaking changes are allowed before the",
@@ -192,13 +211,15 @@ function renderApiDocs() {
 function main() {
   const args = process.argv.slice(2);
   const shouldWrite = args.includes("--write");
-  const unknownArgs = args.filter((arg) => arg !== "--write");
+  const stdout = args.includes("--stdout");
+  const unknownArgs = args.filter((arg) => arg !== "--write" && arg !== "--stdout");
   if (unknownArgs.length > 0) {
     console.error(usage());
     process.exit(2);
   }
 
   const expected = renderApiDocs();
+  if (stdout) { process.stdout.write(expected); return; }
   if (shouldWrite) {
     writeFileSync(docPath, expected);
     console.log(`wrote ${docPath}`);
@@ -206,13 +227,13 @@ function main() {
   }
 
   if (!existsSync(docPath)) {
-    console.error("docs/api.md is missing; run make api-docs-update");
+    console.error("docs/api.md is missing; run pnpm api-docs:update");
     process.exit(1);
   }
 
   const actual = readFileSync(docPath, "utf-8");
   if (actual !== expected) {
-    console.error("docs/api.md is out of date; run make api-docs-update");
+    console.error("docs/api.md is out of date; run pnpm api-docs:update");
     process.exit(1);
   }
 

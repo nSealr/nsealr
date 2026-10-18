@@ -1,22 +1,17 @@
 # @nsealr/sdk
 
-Platform-neutral facade over curated nSealr companion packages.
+The sole public nSealr TypeScript package. The root and `@nsealr/sdk/browser`
+expose browser-safe provider, local-service client and core/policy/protocol/QR/
+review namespaces. `@nsealr/sdk/node` additionally exposes the host client,
+framing and NIP-46 namespaces. Owned runtime and declarations are included in
+this package; consumers do not install internal workspace packages.
 
-Browser runtime code should import `@nsealr/sdk/browser`, which exposes only
-the browser-safe provider, local-service client, and pure core/policy/protocol/
-QR/review helpers.
-
-## Boundary
-
-- Export curated package namespaces for app, browser-extension, and companion
-  integrations.
-- Export a browser-safe `./browser` subpath so extension and web callers do not
-  import the broader SDK root by accident.
-- Keep `@nsealr/dev-signer` out of the public SDK surface.
-- Keep Node-only fixture loading and host transport adapters in their own
-  packages instead of importing them through this facade.
-- Store no production keys, mnemonics, passphrases, grants, or browser-side
-  signing material.
+The SDK stores no user identity/signing keys. Device review and approval remain
+signer responsibilities. The Node NIP-46 runtime owns a bounded, in-memory
+client transport key; it does not persist that key or confer signing approval.
+Smartcard APIs are retired. `@nsealr/dev-signer` and fixture loaders stay private
+and outside the packed production graph. Real browser, relay and attached-device
+qualification remains separate from deterministic package tests.
 
 ```ts nsealr-readme-example
 import assert from "node:assert/strict";
