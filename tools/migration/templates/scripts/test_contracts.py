@@ -23,6 +23,7 @@ class ArtifactProvenanceTests(unittest.TestCase):
         self.manifest={'artifact_format':1,'artifact_id':'nsealr-contracts-v1','source_commit':verifier.ORIGIN,
                        'initial_import_commit':self.original,'files':[{'path':p,'sha256':verifier.sha(d),'original_sha256':verifier.sha(d)} for p,d in self.files.items()]}
         self.write_manifest()
+        self.valid_manifest=json.loads(json.dumps(self.manifest))
         self.git('add','.');self.commit('Explicit migration postimage')
         self.baseline=self.git('rev-parse','HEAD').decode().strip()
         consumers=json.dumps({name:['vectors/*.json'] for name in ['bridge','engine','pi']}).encode()
@@ -41,6 +42,9 @@ class ArtifactProvenanceTests(unittest.TestCase):
         p=self.artifact/path
         if p.exists():self.manifest['files'].append({'path':path,'sha256':verifier.sha(p.read_bytes()),'original_sha256':verifier.sha(p.read_bytes())})
         self.write_manifest()
+    def restore_manifest(self):
+        self.manifest=json.loads(json.dumps(self.valid_manifest));self.write_manifest()
+        self.assertEqual(self.check()['files'],5)
 
     def test_complete_artifact_counts_hidden_file(self):self.assertEqual(self.check()['files'],5)
     def test_missing_manifest_rejects_before_iteration(self):
@@ -51,17 +55,17 @@ class ArtifactProvenanceTests(unittest.TestCase):
         for path in ['vectors/check.json','vectors/hidden/.gitkeep']:
             with self.subTest(path=path):
                 (self.artifact/path).unlink();self.reject();self.forge(path);self.reject()
-                (self.artifact/path).write_bytes(self.files[path]);self.forge(path)
+                (self.artifact/path).write_bytes(self.files[path]);self.restore_manifest()
     def test_extra_normal_and_hidden_files_reject_even_with_forged_inventory(self):
         for path in ['vectors/extra.json','vectors/.extra']:
             with self.subTest(path=path):
                 (self.artifact/path).write_bytes(b'{}');self.reject();self.forge(path);self.reject()
-                (self.artifact/path).unlink();self.forge(path)
+                (self.artifact/path).unlink();self.restore_manifest()
     def test_tampered_normal_and_hidden_files_reject_forged_digests(self):
         for path in ['vectors/check.json','vectors/hidden/.gitkeep']:
             with self.subTest(path=path):
                 (self.artifact/path).write_bytes(b'forged');self.reject();self.forge(path);self.reject()
-                (self.artifact/path).write_bytes(self.files[path]);self.forge(path)
+                (self.artifact/path).write_bytes(self.files[path]);self.restore_manifest()
     def test_new_git_commit_and_forged_manifest_cannot_replace_frozen_source(self):
         (self.artifact/'vectors/check.json').write_bytes(b'forged');self.forge('vectors/check.json')
         self.git('add','.');self.commit('Unreviewed rewrite');self.reject()

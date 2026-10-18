@@ -13,7 +13,7 @@ INITIAL_IMPORT='86569e073da4faec0811d67137bbb0fd4f74c7c6'
 # This immutable migration postimage binds the active reviewed data, independently
 # of working-tree digests. A later contract change needs a declared/reviewed
 # source transition and a new baseline; merely editing manifest.json is invalid.
-BASELINE='98a8df4a73a999ca3944bd9756e0be1e0e7bf221'
+BASELINE='98a8df4a71c0da19908de0e5ec39ea5fb798325a'
 DATA_DIRS=('protocols','schemas','vectors','examples')
 CONSUMERS_SHA256='REPLACE_CONSUMERS_SHA256'
 
