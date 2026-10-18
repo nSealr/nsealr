@@ -10,10 +10,10 @@ Read [the execution handoff](handoff.md), then the assigned task and its brief. 
 
 | Task | Author | Work branch | Writable boundary |
 | --- | --- | --- | --- |
-| R00 | `/root/baseline_execution` | `nsealr:restart/r00-bootstrap` | Bootstrap/integration tooling and R00 brief/evidence |
-| S01 | `/root/bridge_execution` | `companion:restart/s01-bridge` | NIP-46 identity/session and bounded transport behavior plus S01 brief/evidence |
-| S02 | `/root/secret_execution` | `nsealr:restart/s02-secrets` | Secret types, their consumers, qualified crypto dependencies and S02 brief/evidence |
-| P01, O01 | `/root` | `nsealr:restart/coordinator` | Product requirements, task state, coordination instructions and evidence |
+| R00 | `/root/baseline_execution` | `nsealr:restart/r00-bootstrap` | Bootstrap/integration tooling; `docs/restart/implementation/R00/brief.md` in that branch |
+| S01 | `/root/bridge_execution` | `companion:restart/s01-bridge` | NIP-46 and transport; `docs/restart/S01/brief.md` in companion's branch |
+| S02 | `/root/secret_execution` | `nsealr:restart/s02-secrets` | Secret types/consumers/crypto; `docs/restart/implementation/S02/brief.md` in that branch |
+| P01, O01 | `/root` | `nsealr:restart/coordinator` | Product and coordination; `P01/brief.md` and `O01/brief.md` beside this file |
 
 The three specialists were started successfully using `gpt-6-astra` with `xhigh` reasoning in this session. This records accepted runtime assignments, not a promise about future model availability. Each author has a distinct worktree. No agent writes another author's files or the coordinator's task graph. A separate reviewer must assess the precise final candidate before integration. One writer owns each CAD project when CAD work begins.
 
