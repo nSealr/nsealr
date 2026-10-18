@@ -1,0 +1,103 @@
+diff --git a/protocols/contracts/v1/scripts/verify_specs.py b/protocols/contracts/v1/scripts/verify_specs.py
+index 3ac0ff3a69ba738c82c4836e3114c1384518a01d..fccb3b2b78c40efa347b8f7ae91cdef5ed99da56 100644
+--- a/protocols/contracts/v1/scripts/verify_specs.py
++++ b/protocols/contracts/v1/scripts/verify_specs.py
+@@ -2207,46 +2207,22 @@ def check_route_refusal_contract_vector(rel: str, errors: list[str]) -> None:
+             errors.append(f"{case_path}: external_review_acknowledgement must be an object")
+             continue
+         mode = acknowledgement.get("mode")
+-        if selection.get("trusted_review") == "display_less":
+-            if mode != "required":
+-                errors.append(f"{case_path}: display-less routes must require external review acknowledgement")
+-            if "without_dispatcher" in case:
+-                errors.append(f"{case_path}: display-less route must not bypass acknowledgement before dispatcher")
+-            check_route_refusal_error(
+-                f"{case_path}.without_dispatcher_after_ack",
+-                case.get("without_dispatcher_after_ack"),
+-                "signer_route_unavailable",
+-                errors,
+-            )
+-            check_route_refusal_error(
+-                f"{case_path}.external_review_acknowledgement.missing_error",
+-                acknowledgement.get("missing_error"),
+-                "external_review_acknowledgement_required",
+-                errors,
+-            )
+-            check_route_refusal_error(
+-                f"{case_path}.external_review_acknowledgement.mismatch_error",
+-                acknowledgement.get("mismatch_error"),
+-                "external_review_acknowledgement_mismatch",
+-                errors,
+-            )
+-        else:
+-            if mode != "unsupported":
+-                errors.append(f"{case_path}: trusted-review routes must reject external review acknowledgement")
+-            if "without_dispatcher_after_ack" in case:
+-                errors.append(f"{case_path}: trusted-review route must use without_dispatcher")
+-            check_route_refusal_error(
+-                f"{case_path}.without_dispatcher",
+-                case.get("without_dispatcher"),
+-                "signer_route_unavailable",
+-                errors,
+-            )
+-            check_route_refusal_error(
+-                f"{case_path}.external_review_acknowledgement.unsupported_error",
+-                acknowledgement.get("unsupported_error"),
+-                "external_review_acknowledgement_unsupported",
+-                errors,
+-            )
++        if mode != "unsupported":
++            errors.append(f"{case_path}: trusted-review routes must reject external review acknowledgement")
++        if "without_dispatcher_after_ack" in case:
++            errors.append(f"{case_path}: trusted-review route must use without_dispatcher")
++        check_route_refusal_error(
++            f"{case_path}.without_dispatcher",
++            case.get("without_dispatcher"),
++            "signer_route_unavailable",
++            errors,
++        )
++        check_route_refusal_error(
++            f"{case_path}.external_review_acknowledgement.unsupported_error",
++            acknowledgement.get("unsupported_error"),
++            "external_review_acknowledgement_unsupported",
++            errors,
++        )
+ 
+     if seen_route_vectors != set(route_vectors):
+         errors.append(f"{vector_path}: cases must cover every route selection vector")
+diff --git a/protocols/contracts/v1/tests/test_verify_specs.py b/protocols/contracts/v1/tests/test_verify_specs.py
+index 4f41416c8a0a60c30670170745116d1e09918a38..9fdfe2403ac7b4c6e34a792b59f07e7afc8e7b2a 100644
+--- a/protocols/contracts/v1/tests/test_verify_specs.py
++++ b/protocols/contracts/v1/tests/test_verify_specs.py
+@@ -540,9 +540,9 @@ class VerifySpecsTests(unittest.TestCase):
+     def test_route_refusal_contract_vectors_reject_acknowledgement_drift(self) -> None:
+         vector = deepcopy(load_json("vectors/route-refusals/signer-route-refusals-v0.json"))
+         vector["cases"][0]["external_review_acknowledgement"]["mode"] = "required"
+-        vector["cases"][-1]["without_dispatcher"] = {
++        vector["cases"][-1]["without_dispatcher_after_ack"] = {
+             "error_code": "signer_route_unavailable",
+-            "message": "bad display-less shortcut",
++            "message": "unexpected host acknowledgement shortcut",
+             "retryable": False,
+         }
+         vector["safety"]["dispatches_without_signer"] = True
+@@ -559,7 +559,7 @@ class VerifySpecsTests(unittest.TestCase):
+ 
+         joined = "\n".join(errors)
+         self.assertIn("trusted-review routes must reject external review acknowledgement", joined)
+-        self.assertIn("display-less route must not bypass acknowledgement before dispatcher", joined)
++        self.assertIn("trusted-review route must use without_dispatcher", joined)
+         self.assertIn("safety boundary mismatch", joined)
+ 
+     def test_grant_descriptors_reject_stale_decision_field(self) -> None:
+@@ -936,7 +936,9 @@ class VerifySpecsTests(unittest.TestCase):
+                 errors,
+             )
+ 
+-            self.assertIn("grant route_type must be a nSealr persistent policy route", "\n".join(errors))
++            expected = ("route_type is unknown" if route_type == "smartcard"
++                        else "grant route_type must be a nSealr persistent policy route")
++            self.assertIn(expected, "\n".join(errors))
+ 
+         grant = deepcopy(load_json("vectors/grants/esp32-usb-kind-1-session.json"))
+         grant["permission"] = {"method": "nip44_decrypt"}

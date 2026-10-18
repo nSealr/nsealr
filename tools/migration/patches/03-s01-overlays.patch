@@ -1,0 +1,465 @@
+diff --git a/tests/integration/check_fixture_snapshots.py b/tests/integration/check_fixture_snapshots.py
+index 762e8650387a3a66bc0a9370f74cced11812b021..2c240efde09c493423987d0521c9ca1fdd017bed 100644
+--- a/tests/integration/check_fixture_snapshots.py
++++ b/tests/integration/check_fixture_snapshots.py
+@@ -3,6 +3,10 @@
+ 
+ from __future__ import annotations
+ 
++import hashlib
++import json
++import subprocess
++
+ from collections.abc import Mapping, Sequence
+ from pathlib import Path
+ from typing import Iterable
+@@ -114,7 +118,62 @@ class FixtureSnapshotError(AssertionError):
+ 
+ 
+ def iter_snapshot_files(root: Path) -> Iterable[Path]:
+-    return sorted(path for path in root.rglob("*") if path.is_file() and not path.name.startswith("."))
++    return sorted(path for path in root.rglob("*") if path.is_file())
++
++
++def vector_files(root: Path) -> set[str]:
++    vector_root = root / "vectors"
++    if not vector_root.is_dir() or vector_root.is_symlink():
++        raise FixtureSnapshotError(f"missing or nonregular vectors directory: {vector_root}")
++    paths = set()
++    for path in vector_root.rglob("*"):
++        if path.is_symlink() or not (path.is_dir() or path.is_file()):
++            raise FixtureSnapshotError(f"nonregular vector entry: {path}")
++        if path.is_file():
++            paths.add(path.relative_to(root).as_posix())
++    return paths
++
++
++def validate_provenance(snapshot_root: Path, specs: Path) -> None:
++    """Require a complete snapshot of the claimed committed upstream bytes."""
++    metadata_path = snapshot_root / "SOURCE.json"
++    if not metadata_path.is_file() or metadata_path.is_symlink():
++        raise FixtureSnapshotError(f"missing or nonregular SOURCE.json: {snapshot_root}")
++    try:
++        metadata = json.loads(metadata_path.read_text())
++    except (OSError, UnicodeError, ValueError) as exc:
++        raise FixtureSnapshotError(f"invalid SOURCE.json: {exc}") from exc
++    if not isinstance(metadata, dict):
++        raise FixtureSnapshotError("SOURCE.json must be an object")
++    commit = subprocess.check_output(["git", "rev-parse", "HEAD"], cwd=specs, text=True).strip()
++    if metadata.get("repository") != "https://github.com/nSealr/specs" or metadata.get("commit") != commit:
++        raise FixtureSnapshotError("SOURCE.json upstream repository/commit mismatch")
++    tree = subprocess.check_output(
++        ["git", "ls-tree", "-rz", "--full-tree", commit, "--", "vectors/"], cwd=specs,
++    )
++    blobs = {}
++    for entry in tree.split(b"\0"):
++        if not entry:
++            continue
++        header, relative = entry.split(b"\t", 1)
++        mode, kind, oid = header.decode().split()
++        if kind != "blob" or mode not in ("100644", "100755"):
++            raise FixtureSnapshotError(f"nonregular committed vector: {relative!r}")
++        blobs[relative.decode()] = oid
++    recorded = metadata.get("files")
++    if (not isinstance(recorded, dict) or not blobs or set(recorded) != set(blobs)
++            or set(blobs) != vector_files(specs) or set(blobs) != vector_files(snapshot_root)):
++        raise FixtureSnapshotError("SOURCE.json vector inventory mismatch")
++    for relative, oid in blobs.items():
++        source = (specs / relative).read_bytes()
++        committed = subprocess.check_output(["git", "cat-file", "blob", oid], cwd=specs)
++        snapshot = (snapshot_root / relative).read_bytes()
++        if source != committed:
++            raise FixtureSnapshotError(f"upstream vector differs from claimed commit: {relative}")
++        if snapshot != source:
++            raise FixtureSnapshotError(f"snapshot vector differs from specs: {relative}")
++        if hashlib.sha256(source).hexdigest() != recorded[relative]:
++            raise FixtureSnapshotError(f"SOURCE.json hash mismatch: {relative}")
+ 
+ 
+ def compare_fixture_snapshots(
+@@ -135,6 +194,12 @@ def compare_fixture_snapshots(
+         if not snapshot_root.exists():
+             raise FixtureSnapshotError(f"{repository}: missing fixture snapshot root: {snapshot_root}")
+ 
++        # Core owns a complete import. Partial consumers keep their own glob contract.
++        # Require metadata independently of iteration, even with empty required globs.
++        if (repository == "firmware" or (snapshot_root / "SOURCE.json").exists()
++                or (snapshot_root / "SOURCE.json").is_symlink()):
++            validate_provenance(snapshot_root, specs)
++
+         for pattern in required_globs.get(repository, ()):
+             for source in sorted(path for path in specs.glob(pattern) if path.is_file()):
+                 relative = source.relative_to(specs)
+@@ -143,6 +208,8 @@ def compare_fixture_snapshots(
+ 
+         for snapshot in iter_snapshot_files(snapshot_root):
+             relative = snapshot.relative_to(snapshot_root)
++            if relative == Path("SOURCE.json"):
++                continue
+             source = specs / relative
+             if not source.exists():
+                 failures.append(f"{repository}: {relative} is missing from specs")
+diff --git a/tests/integration/integration_companion_nip46_cli.py b/tests/integration/integration_companion_nip46_cli.py
+index 3e8722cfcf7717d6c7527fc6d0eb5090ffcfbd2b..93df128a77117ca203be0ac45625b55cc429e075 100644
+--- a/tests/integration/integration_companion_nip46_cli.py
++++ b/tests/integration/integration_companion_nip46_cli.py
+@@ -386,7 +386,7 @@ def invalid_auth_challenge_relay_step_vectors(specs: Path) -> list[dict[str, Any
+         if (
+             vector.get("category") == "nip46-relay-step"
+             and isinstance(relay_step, dict)
+-            and relay_step.get("format") == "nsealr-nip46-relay-response-step-v0"
++            and relay_step.get("format") == "nsealr-nip46-relay-response-step-v1"
+             and isinstance(decrypted_message, dict)
+             and decrypted_message.get("result") == "auth_url"
+         ):
+@@ -394,6 +394,25 @@ def invalid_auth_challenge_relay_step_vectors(specs: Path) -> list[dict[str, Any
+     return vectors
+ 
+ 
++AUTH_CHALLENGE_NEGATIVE_PATHS = (
++    "relay-step-response-auth-url-with-credentials.json",
++    "relay-step-response-auth-url-with-fragment.json",
++    "relay-step-response-auth-url-wrong-scheme.json",
++)
++
++
++def assert_auth_challenge_vector_inventory(specs: Path, vectors: list[dict[str, Any]]) -> None:
++    """Require every pinned v1 auth-negative case, not merely a nonempty loop."""
++    required = [specs / "vectors/invalid" / name for name in AUTH_CHALLENGE_NEGATIVE_PATHS]
++    missing = [path.name for path in required if not path.is_file()]
++    if missing:
++        raise AssertionError(f"missing required NIP-46 auth-negative paths: {missing}")
++    expected = [load_json(path) for path in required]
++    key = lambda item: json.dumps(item, sort_keys=True, separators=(",", ":"))
++    if sorted(map(key, vectors)) != sorted(map(key, expected)):
++        raise AssertionError("NIP-46 auth-negative discovery does not match the complete required path inventory")
++
++
+ def invalid_policy_file_vectors(specs: Path) -> list[dict[str, Any]]:
+     vectors = []
+     for vector_path in sorted((specs / "vectors/invalid").glob("*.json")):
+@@ -664,8 +683,7 @@ def main() -> int:
+         assert_approval_matches(auth_challenge_approval_path, auth_challenge["approval"])
+ 
+         invalid_auth_challenge_vectors = invalid_auth_challenge_relay_step_vectors(SPECS)
+-        if not invalid_auth_challenge_vectors:
+-            raise AssertionError("missing shared invalid NIP-46 auth challenge relay-step vectors")
++        assert_auth_challenge_vector_inventory(SPECS, invalid_auth_challenge_vectors)
+         for vector in invalid_auth_challenge_vectors:
+             invalid_auth_step_path = temp / f"{vector['name']}-step.json"
+             invalid_auth_review_path = temp / f"{vector['name']}-review.json"
+@@ -676,6 +694,7 @@ def main() -> int:
+                 out_path=invalid_auth_review_path,
+             )
+             assert_auth_challenge_review_rejected(command, invalid_auth_review_path, vector["expected_error"])
++            print(f"NIP-46 v1 auth-negative executed: {vector['name']}")
+ 
+         session_path = temp / "connect-session-checkpoint.json"
+         command = build_nip46_session_checkpoint_command(
+diff --git a/tests/integration/test_fixture_snapshots.py b/tests/integration/test_fixture_snapshots.py
+index bcbddeb211c5383892e5fa65a18b9cf6bd4307ba..a42ef6048f48a8b1e8ec04b3057ccafb4932f7a7 100644
+--- a/tests/integration/test_fixture_snapshots.py
++++ b/tests/integration/test_fixture_snapshots.py
+@@ -136,17 +136,17 @@ class FixtureSnapshotTests(unittest.TestCase):
+         with TemporaryDirectory() as tmp:
+             org = Path(tmp)
+             (org / "specs" / "vectors" / "devices").mkdir(parents=True)
+-            (org / "firmware" / "tests" / "fixtures" / "specs" / "vectors" / "devices").mkdir(parents=True)
++            (org / "companion" / "tests" / "fixtures" / "specs" / "vectors" / "devices").mkdir(parents=True)
+             (org / "specs" / "vectors" / "devices" / "status.json").write_text(
+                 '{"status":"ok"}\n',
+                 encoding="utf-8",
+             )
+-            (org / "firmware" / "tests" / "fixtures" / "specs" / "vectors" / "devices" / "status.json").write_text(
++            (org / "companion" / "tests" / "fixtures" / "specs" / "vectors" / "devices" / "status.json").write_text(
+                 '{"status":"ok"}\n',
+                 encoding="utf-8",
+             )
+ 
+-            compare_fixture_snapshots(org=org, repositories=("firmware",))
++            compare_fixture_snapshots(org=org, repositories=("companion",))
+ 
+     def test_mismatched_snapshot_reports_repo_and_path(self) -> None:
+         with TemporaryDirectory() as tmp:
+@@ -214,5 +214,187 @@ class FixtureSnapshotTests(unittest.TestCase):
+                 )
+ 
+ 
++class ProvenanceSnapshotTests(unittest.TestCase):
++    def setUp(self):
++        import hashlib
++        import json
++        import subprocess
++        self.temporary = TemporaryDirectory()
++        self.addCleanup(self.temporary.cleanup)
++        self.org = Path(self.temporary.name)
++        self.specs = self.org / "specs"
++        self.snapshot = self.org / "firmware/tests/fixtures/specs"
++        self.metadata_path = self.snapshot / "SOURCE.json"
++        self.vector = "vectors/nip46-relay-steps/sign-event-response-step.json"
++        self.hidden = "vectors/hidden/.gitkeep"
++        for root in (self.specs, self.snapshot):
++            for relative, content in ((self.vector, b'{"valid":true}\n'), (self.hidden, b"")):
++                target = root / relative
++                target.parent.mkdir(parents=True, exist_ok=True)
++                target.write_bytes(content)
++        self.git("init", "-q")
++        self.git("add", "vectors")
++        self.git("-c", "user.name=Fixture test", "-c", "user.email=test@invalid.example",
++                 "commit", "-qm", "Independent committed bytes")
++        self.metadata = {
++            "repository": "https://github.com/nSealr/specs", "commit": self.git("rev-parse", "HEAD").decode().strip(),
++            "files": {relative: hashlib.sha256((self.specs / relative).read_bytes()).hexdigest()
++                      for relative in (self.vector, self.hidden)},
++        }
++        self.write_metadata()
++
++    def git(self, *args):
++        import subprocess
++        return subprocess.check_output(["git", *args], cwd=self.specs, stderr=subprocess.STDOUT)
++
++    def write_metadata(self):
++        import json
++        self.metadata_path.write_text(json.dumps(self.metadata))
++
++    def check(self):
++        return compare_fixture_snapshots(org=self.org, repositories=("firmware",), required_snapshot_globs={})
++
++    def forge(self, relative):
++        import hashlib
++        path = self.snapshot / relative
++        if path.exists():
++            self.metadata["files"][relative] = hashlib.sha256(path.read_bytes()).hexdigest()
++        else:
++            self.metadata["files"].pop(relative, None)
++        self.write_metadata()
++
++    def test_complete_snapshot_counts_hidden_vector(self):
++        self.assertEqual(self.check(), 2)
++
++    def test_missing_manifest_rejects_before_iteration(self):
++        self.metadata_path.unlink()
++        with self.assertRaisesRegex(FixtureSnapshotError, "SOURCE.json"):
++            self.check()
++
++    def test_missing_manifest_and_v1_vector_rejects(self):
++        self.metadata_path.unlink()
++        (self.snapshot / self.vector).unlink()
++        with self.assertRaisesRegex(FixtureSnapshotError, "SOURCE.json"):
++            self.check()
++
++    def test_missing_vectors_with_retained_or_forged_inventory_reject(self):
++        for relative in (self.vector, self.hidden):
++            path = self.snapshot / relative
++            original = path.read_bytes()
++            path.unlink()
++            with self.subTest(relative=relative, forged=False), self.assertRaises(FixtureSnapshotError):
++                self.check()
++            self.forge(relative)
++            with self.subTest(relative=relative, forged=True), self.assertRaises(FixtureSnapshotError):
++                self.check()
++            path.write_bytes(original)
++            self.forge(relative)
++        self.assertEqual(self.check(), 2)
++
++    def test_extra_normal_and_hidden_vectors_reject_even_with_forged_inventory(self):
++        for relative in ("vectors/extra.json", "vectors/.extra"):
++            path = self.snapshot / relative
++            path.write_bytes(b"{}")
++            self.forge(relative)
++            with self.subTest(relative=relative), self.assertRaises(FixtureSnapshotError):
++                self.check()
++            path.unlink()
++            self.forge(relative)
++
++    def test_tampered_normal_and_hidden_vectors_reject_forged_digest(self):
++        for relative in (self.vector, self.hidden):
++            path = self.snapshot / relative
++            original = path.read_bytes()
++            path.write_bytes(b"forged")
++            self.forge(relative)
++            with self.subTest(relative=relative), self.assertRaisesRegex(FixtureSnapshotError, "differs from specs"):
++                self.check()
++            path.write_bytes(original)
++            self.forge(relative)
++
++    def test_dirty_upstream_and_snapshot_with_forged_digest_reject(self):
++        for relative in (self.vector, self.hidden):
++            source, snapshot = self.specs / relative, self.snapshot / relative
++            original = source.read_bytes()
++            source.write_bytes(b"forged")
++            snapshot.write_bytes(b"forged")
++            self.forge(relative)
++            with self.subTest(relative=relative), self.assertRaisesRegex(FixtureSnapshotError, "claimed commit"):
++                self.check()
++            source.write_bytes(original)
++            snapshot.write_bytes(original)
++            self.forge(relative)
++
++    def test_wrong_provenance_or_hash_rejects(self):
++        import copy
++        valid = copy.deepcopy(self.metadata)
++        for key, value in (("commit", "0" * 40), ("repository", "https://example.invalid/specs"),
++                           ("files", {}), ("files", {**valid["files"], self.hidden: "0" * 64})):
++            self.metadata = {**valid, key: value}
++            self.write_metadata()
++            with self.subTest(key=key, value=value), self.assertRaises(FixtureSnapshotError):
++                self.check()
++
++    def test_malformed_or_nonobject_manifest_rejects(self):
++        for text in ("{", "[]", "null"):
++            self.metadata_path.write_text(text)
++            with self.subTest(text=text), self.assertRaises(FixtureSnapshotError):
++                self.check()
++
++    def test_source_worktree_inventory_drift_rejects(self):
++        path = self.specs / self.hidden
++        path.unlink()
++        with self.assertRaises(FixtureSnapshotError):
++            self.check()
++        path.write_bytes(b"")
++        extra = self.specs / "vectors/.extra"
++        extra.write_bytes(b"")
++        with self.assertRaises(FixtureSnapshotError):
++            self.check()
++
++    def test_nonregular_source_snapshot_and_manifest_reject(self):
++        for root in (self.specs, self.snapshot):
++            path = root / self.hidden
++            path.unlink()
++            path.symlink_to(root / self.vector)
++            with self.subTest(root=root), self.assertRaises(FixtureSnapshotError):
++                self.check()
++            path.unlink()
++            path.write_bytes(b"")
++        data = self.metadata_path.read_bytes()
++        other = self.snapshot / "metadata"
++        other.write_bytes(data)
++        self.metadata_path.unlink()
++        self.metadata_path.symlink_to(other)
++        with self.assertRaises(FixtureSnapshotError):
++            self.check()
++
++    def test_committed_nonregular_vector_rejects(self):
++        path = self.specs / self.hidden
++        path.unlink()
++        path.symlink_to(self.specs / self.vector)
++        self.git("add", "vectors")
++        self.git("-c", "user.name=Fixture test", "-c", "user.email=test@invalid.example",
++                 "commit", "-qm", "Unsupported symlink")
++        self.metadata["commit"] = self.git("rev-parse", "HEAD").decode().strip()
++        self.write_metadata()
++        with self.assertRaisesRegex(FixtureSnapshotError, "nonregular committed"):
++            self.check()
++
++    def test_partial_consumer_manifest_is_validated_when_present(self):
++        destination = self.org / "companion/tests/fixtures/specs"
++        destination.parent.mkdir(parents=True)
++        self.snapshot.rename(destination)
++        (destination / "SOURCE.json").unlink()
++        self.assertEqual(compare_fixture_snapshots(org=self.org, repositories=("companion",), required_snapshot_globs={}), 2)
++        (destination / "SOURCE.json").symlink_to(destination / "missing")
++        with self.assertRaises(FixtureSnapshotError):
++            compare_fixture_snapshots(org=self.org, repositories=("companion",), required_snapshot_globs={})
++        (destination / "SOURCE.json").unlink()
++        (destination / "SOURCE.json").write_text("{}")
++        with self.assertRaises(FixtureSnapshotError):
++            compare_fixture_snapshots(org=self.org, repositories=("companion",), required_snapshot_globs={})
++
++
+ if __name__ == "__main__":
+     unittest.main()
+diff --git a/tests/integration/test_integration_companion_nip46_cli.py b/tests/integration/test_integration_companion_nip46_cli.py
+index 4eb41f141f16db3b4e072cdd2a80caa0b62c70a6..fccc669903b0c66583c62a7bb69daa836eaa4703 100644
+--- a/tests/integration/test_integration_companion_nip46_cli.py
++++ b/tests/integration/test_integration_companion_nip46_cli.py
+@@ -1,5 +1,6 @@
+ from __future__ import annotations
+ 
++import json
+ import tempfile
+ import unittest
+ from pathlib import Path
+@@ -14,6 +15,7 @@ from scripts.integration_companion_nip46_cli import (
+     build_nip46_decide_command,
+     build_nip46_policy_file_command,
+     build_nip46_session_checkpoint_command,
++    assert_auth_challenge_vector_inventory,
+     invalid_auth_challenge_relay_step_vectors,
+     invalid_connection_token_response_vectors,
+     invalid_connection_uri_vectors,
+@@ -273,7 +275,7 @@ class IntegrationCompanionNip46CliTests(unittest.TestCase):
+   "name": "auth-challenge",
+   "category": "nip46-relay-step",
+   "relay_step": {
+-    "format": "nsealr-nip46-relay-response-step-v0",
++    "format": "nsealr-nip46-relay-response-step-v1",
+     "decrypted_message": {
+       "result": "auth_url"
+     }
+@@ -288,7 +290,7 @@ class IntegrationCompanionNip46CliTests(unittest.TestCase):
+   "name": "public-key",
+   "category": "nip46-relay-step",
+   "relay_step": {
+-    "format": "nsealr-nip46-relay-response-step-v0",
++    "format": "nsealr-nip46-relay-response-step-v1",
+     "decrypted_message": {
+       "result": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+     }
+@@ -302,6 +304,56 @@ class IntegrationCompanionNip46CliTests(unittest.TestCase):
+ 
+         self.assertEqual([vector["name"] for vector in vectors], ["auth-challenge"])
+ 
++    def test_auth_negative_inventory_requires_each_case_and_rejects_extras(self) -> None:
++        names = (
++            "relay-step-response-auth-url-with-credentials.json",
++            "relay-step-response-auth-url-with-fragment.json",
++            "relay-step-response-auth-url-wrong-scheme.json",
++        )
++        with tempfile.TemporaryDirectory(prefix="nsealr-auth-inventory-") as directory:
++            specs = Path(directory)
++            invalid = specs / "vectors/invalid"
++            invalid.mkdir(parents=True)
++            originals = {}
++            for name in names:
++                vector = {"name": name.removesuffix(".json"), "category": "nip46-relay-step",
++                          "relay_step": {"format": "nsealr-nip46-relay-response-step-v1",
++                                         "decrypted_message": {"result": "auth_url"}}}
++                originals[name] = json.dumps(vector)
++                (invalid / name).write_text(originals[name])
++            # Malformed and unrelated vectors must not be selected as auth negatives.
++            (invalid / "malformed.json").write_text(json.dumps({"category": "nip46-relay-step", "relay_step": None}))
++            unrelated = json.loads(originals[names[0]])
++            unrelated["category"] = "other"
++            (invalid / "wrong-category.json").write_text(json.dumps(unrelated))
++            vectors = invalid_auth_challenge_relay_step_vectors(specs)
++            self.assertEqual(len(vectors), 3)
++            assert_auth_challenge_vector_inventory(specs, vectors)
++            for name in names:
++                with self.subTest(missing=name):
++                    (invalid / name).unlink()
++                    with self.assertRaises(AssertionError):
++                        assert_auth_challenge_vector_inventory(specs, invalid_auth_challenge_relay_step_vectors(specs))
++                    (invalid / name).write_text(originals[name])
++                with self.subTest(stale_version=name):
++                    stale = json.loads(originals[name])
++                    stale["relay_step"]["format"] = "nsealr-nip46-relay-response-step-v0"
++                    (invalid / name).write_text(json.dumps(stale))
++                    with self.assertRaises(AssertionError):
++                        assert_auth_challenge_vector_inventory(specs, invalid_auth_challenge_relay_step_vectors(specs))
++                    (invalid / name).write_text(originals[name])
++            extra = json.loads(originals[names[0]])
++            extra["name"] = "unexpected-extra"
++            (invalid / "extra.json").write_text(json.dumps(extra))
++            with self.assertRaises(AssertionError):
++                assert_auth_challenge_vector_inventory(specs, invalid_auth_challenge_relay_step_vectors(specs))
++            (invalid / "extra.json").unlink()
++            vectors = invalid_auth_challenge_relay_step_vectors(specs)
++            for omitted in range(3):
++                with self.subTest(selected_case_omitted=omitted), self.assertRaises(AssertionError):
++                    assert_auth_challenge_vector_inventory(specs, vectors[:omitted] + vectors[omitted + 1:])
++            assert_auth_challenge_vector_inventory(specs, vectors)
++
+     def test_invalid_policy_file_vectors_are_discovered_by_category(self) -> None:
+         with tempfile.TemporaryDirectory(prefix="nsealr-nip46-invalid-policy-") as temp_dir:
+             specs = Path(temp_dir)

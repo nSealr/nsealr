@@ -1,0 +1,219 @@
+diff --git a/apps/pi/README.md b/apps/pi/README.md
+new file mode 100644
+index 0000000000000000000000000000000000000000..2009cd40429c70f7915ac3ac6626b54bedd01dfd
+--- /dev/null
++++ b/apps/pi/README.md
+@@ -0,0 +1,23 @@
++# Pi QR vault reference and adapters
++
++This component owns the retained Python reference harness, Pi-facing adapters,
++and independent signing/review comparisons in the nSealr integration repository.
++It is not a qualified Pi image or a second approved production signing engine.
++K01 owns the portable engine; QP01 establishes the kit/image feasibility; Q02 owns
++shared-engine Pi integration and physical qualification in the [task plan](../../plan/work-items.json).
++
++The `nsealr-account-descriptor-v0` route is `raspberry_qr_vault` with policy
++`policy-manual-only-qr-vault` and `persistent_grants: false`. Each signing request
++requires local trusted review and physical approval. Imported sources live only
++in the current RAM session; Python wiping is best effort and does not establish
++physical power-cycle or production secret-custody guarantees.
++
++Run `make -C apps/pi ci` from the repository root using the pinned Python
++environment. The component tests consume the single [contract artifact](../../protocols/contracts/v1/)
++and exercise independent Python/libsecp256k1 behavior plus injected camera,
++display and GPIO boundaries. Optional physical drivers are not a main build
++prerequisite. A successful safe probe is setup evidence, not full qualification.
++
++See [architecture](docs/architecture.md), [testing](docs/testing.md), and the
++[stateless image profile](os/stateless-qr-vault-profile.md) for retained behavior
++and explicit physical limitations. Current requirements are in [docs/product](../../docs/product/).
+diff --git a/apps/pi/docs/architecture.md b/apps/pi/docs/architecture.md
+index 00249ce0d637f381f7712adfa57816154b90cb85..39640527f2fb161d361e8cc394b45f69d976ca27 100644
+--- a/apps/pi/docs/architecture.md
++++ b/apps/pi/docs/architecture.md
+@@ -1,6 +1,6 @@
+ # Architecture
+ 
+-`nSealr/raspberry` is the Raspberry/Pi signer implementation family. Its
++`apps/pi/` in `nSealr/nsealr` contains the Raspberry/Pi reference harness and adapters. Its
+ first line is the Pi Zero / SeedSigner-style QR vault flow.
+ 
+ ## Responsibilities
+@@ -43,7 +43,7 @@ image or a production security claim.
+ ## Identity And Policy Boundary
+ 
+ The Raspberry route is pinned by the shared
+-`nSealr/specs` `nsealr-account-descriptor-v0` vector
++`protocols/contracts/v1/` `nsealr-account-descriptor-v0` vector
+ `raspberry-qr-nip06-account-0`: route type `raspberry_qr_vault`, transport
+ `qr`, custody `stateless_session`, trusted review `device_display`, and policy
+ support `manual_only`.
+@@ -79,7 +79,7 @@ acceptance model. The Raspberry microSD remains boot media. Secret export is a
+ separate danger-zone recovery flow with local review and physical confirmation,
+ not part of ordinary signing.
+ 
+-Feature target and current status are tracked in `nSealr/specs`
++Feature target and current status are tracked in `protocols/contracts/v1/`
+ `vectors/features/signer-feature-matrix-v0.json`. The Raspberry QR vault is in
+ the stateless QR vault parity group with the ESP32 QR vault: features can be at
+ different implementation stages, but shared features must keep the same
+@@ -89,7 +89,7 @@ behavior through the common `contract_id` and vectors.
+ 
+ - `nsealr_vault.qr`: v0 `nsealr1:` QR envelope helpers.
+ - `nsealr_vault.limits`: nSealr v0 constrained-signer implementation
+-  limits mirrored from `nSealr/specs`.
++  limits mirrored from `protocols/contracts/v1/`.
+ - `nsealr_vault.crypto`: NIP-01 canonical event serialization, event id
+   computation, x-only public key derivation, and BIP-340 signing.
+ - `nsealr_vault.nip06`: BIP-39 seed and BIP-32 path derivation for
+@@ -98,7 +98,7 @@ behavior through the common `contract_id` and vectors.
+   for future Pi display/button adapters. It validates English mnemonic words
+   and checksum before deriving a one-shot NIP-06 session secret provider.
+ - `nsealr_vault.review`: deterministic event review model checked against
+-  shared `nSealr/specs` review vectors.
++  shared `protocols/contracts/v1/` review vectors.
+ - `nsealr_vault.display`: deterministic trusted-display page model for raw
+   event kind, signer author pubkey, complete content, complete tags, and final
+   approval decisions.
+@@ -160,7 +160,7 @@ QR decoding and signing-request validation apply the shared v0 hardening limits
+ before trusted review or signing. The Raspberry implementation rejects
+ malformed, padded, invalid UTF-8, or oversized QR envelopes and rejects unsafe
+ event templates, unknown signing-request fields, and resource-limit violations
+-using the shared invalid-vector expectations from `nSealr/specs`.
++using the shared invalid-vector expectations from `protocols/contracts/v1/`.
+ 
+ The current CLI is a development harness. It intentionally requires an explicit
+ `--approve` flag before producing a `sign_event` response so automated tests and
+@@ -203,7 +203,7 @@ uses stdin/hex harnesses for tests; a real Pi camera adapter should pass decoded
+ QR text or bytes directly without creating seed files.
+ 
+ `NsecSessionSecretProvider` is the matching package-owned boundary for NIP-19
+-`nsec` imports and is checked against the shared `nSealr/specs` NIP-19 vector.
++`nsec` imports and is checked against the shared `protocols/contracts/v1/` NIP-19 vector.
+ It decodes canonical lowercase Bech32, verifies the checksum, requires the
+ `nsec` human-readable prefix, requires a 32-byte private-key payload, and
+ refuses reuse after one session. The CLI `--nsec-stdin` harness models a future
+@@ -345,7 +345,7 @@ record the displayed frames with `--display-frame-log`, giving display adapters
+ a deterministic acceptance trace before real Pi display drivers are wired in.
+ The in-process flow result also carries the exact frame/button/decision
+ transcript produced during the review loop, which lets tests compare future
+-adapter harnesses with shared `nSealr/specs` review-transcript vectors.
++adapter harnesses with shared `protocols/contracts/v1/` review-transcript vectors.
+ The file-backed CLI can write this trace with `--review-transcript-log`, giving
+ cross-repo smoke tests the same oracle without importing Raspberry internals.
+ 
+@@ -380,13 +380,13 @@ machine a deterministic way to reject an approved signing step if it is no
+ longer bound to the request that was reviewed.
+ 
+ The screen page model and digest calculation are checked against shared
+-`nSealr/specs` review-screen vectors so Raspberry and ESP32 QR vault targets
++`protocols/contracts/v1/` review-screen vectors so Raspberry and ESP32 QR vault targets
+ can implement the same review-to-approval contract without copying platform
+ code.
+ 
+ `review_transcript_for_screen_review` records the renderer-neutral frame shown
+ before each physical-style button input, the terminal decision, and the
+-approval state. It is checked against shared `nSealr/specs`
++approval state. It is checked against shared `protocols/contracts/v1/`
+ review-transcript vectors so Raspberry display/GPIO adapters and ESP32 firmware
+ adapter tests can use the same frame/button/decision oracle.
+ The stricter `run_detail_button_qr_vault_flow` path also consumes detail-mode
+diff --git a/apps/pi/docs/testing.md b/apps/pi/docs/testing.md
+index df7f52e3072ec6b577d02be356b8cd1a03068dee..3fbc9c737f3fe0b7aa54cd778400db4d6bd9a691 100644
+--- a/apps/pi/docs/testing.md
++++ b/apps/pi/docs/testing.md
+@@ -31,7 +31,7 @@ default are left unchanged.
+   `persistent_grants: false`, and the shared
+   `raspberry-qr-sign-event-account-0` route-selection vector with secretless QR
+   transport routing.
+-- Signing tests against `nSealr/specs` fixtures.
++- Signing tests against `protocols/contracts/v1/` fixtures.
+ - Review model tests against every shared review vector for raw event kind,
+   created_at, signer author pubkey, complete content, and complete structured
+   tags.
+@@ -39,22 +39,22 @@ default are left unchanged.
+ - Trusted-display page tests for event, content, tag, and final
+   approval-decision pages.
+ - Trusted-display screen review tests against every shared
+-  `nSealr/specs` review-screen vector.
++  `protocols/contracts/v1/` review-screen vector.
+ - Bounded trusted-display frame tests for deterministic title truncation,
+   body-line wrapping, page indicators, and action hints before real display
+   drivers exist.
+-- Trusted-display frame conformance tests against shared `nSealr/specs`
++- Trusted-display frame conformance tests against shared `protocols/contracts/v1/`
+   review-display-frame vectors.
+ - Trusted-display detail-page conformance tests against shared
+-  `nSealr/specs` review-detail-page vectors, covering complete physical
++  `protocols/contracts/v1/` review-detail-page vectors, covering complete physical
+   Event/Content/Tags/Decision pages, scroll-window indicators, compact line
+   styles, continuation indentation, visible JSON-style control escapes,
+   explicit codepoint fallback, and unchanged approval digests.
+ - Physical-button approval session tests that require all trusted-review pages
+   to be traversed before approval while allowing early rejection.
+-- Review transcript tests against shared `nSealr/specs` vectors, covering
++- Review transcript tests against shared `protocols/contracts/v1/` vectors, covering
+   displayed frame, button sequence, terminal decision, and approval state.
+-- Detail-mode review transcript tests against shared `nSealr/specs` vectors,
++- Detail-mode review transcript tests against shared `protocols/contracts/v1/` vectors,
+   covering `Next/Scroll` traversal across long tag windows without changing the
+   `screen-pages` approval digest.
+ - Approval-digest tests proving an approved signing request is rejected when
+@@ -83,7 +83,7 @@ default are left unchanged.
+ - Button-driven display-frame log tests proving future display adapters receive
+   bounded frames before physical-style input is consumed.
+ - Button-driven flow transcript tests proving the displayed frame/button/
+-  decision trace can match shared `nSealr/specs` review-transcript vectors
++  decision trace can match shared `protocols/contracts/v1/` review-transcript vectors
+   under transcript-compatible display limits.
+ - CLI transcript-log tests proving the file-backed button harness can export
+   that trace for cross-repo integration and future adapter acceptance tests.
+@@ -161,7 +161,7 @@ default are left unchanged.
+   secret transfer.
+ - NIP-19 `nsec` import tests proving lowercase Bech32 checksum validation,
+   `nsec` prefix enforcement, 32-byte payload enforcement, one-shot RAM-only
+-  session-provider behavior, consumption of the shared `nSealr/specs` NIP-19
++  session-provider behavior, consumption of the shared `protocols/contracts/v1/` NIP-19
+   vector, and `sign`/`flow` stdin harness coverage without writing output after
+   invalid input.
+ - Session import review tests proving SeedQR/BIP-39 and NIP-19 `nsec` session
+@@ -190,7 +190,7 @@ default are left unchanged.
+   secp256k1 scalar material is rejected, and generated secrets do not appear
+   in the source review output.
+ - Session-source backup tests proving BIP-39 words/SeedQR and NIP-19 `nsec`
+-  recovery payloads match shared `nSealr/specs` backup vectors and are revealed
++  recovery payloads match shared `protocols/contracts/v1/` backup vectors and are revealed
+   only after the separate danger-zone review reaches the final approval page.
+ - Session-source backup IO tests proving bounded danger-zone review frames are
+   displayed before local button reads, approved flows emit the recovery payload
+@@ -210,7 +210,7 @@ default are left unchanged.
+   code can derive the reviewed author public key from the selected RAM-only
+   source before the one-shot signing provider is consumed.
+ - Shared nSealr v0 implementation-limit conformance test against the
+-  `nSealr/specs` limits profile.
++  `protocols/contracts/v1/` limits profile.
+ - Shared pre-signing invalid-vector rejection for unsafe event templates,
+   resource-limit violations, and malformed QR requests where the Raspberry
+   parser owns the boundary.
+@@ -250,7 +250,7 @@ procedure.
+ 
+ ## Single-Repository CI
+ 
+-Unit tests prefer the sibling `nSealr/specs` repository when the full local
++Unit tests prefer the sibling `protocols/contracts/v1/` repository when the full local
+ workspace is present. GitHub Actions checks out `nSealr/raspberry` by itself,
+ so tests fall back to fixture snapshots under `tests/fixtures/specs` in
+ single-repository CI. Cross-repository drift remains guarded by
+diff --git a/apps/pi/tests/test_vault_core.py b/apps/pi/tests/test_vault_core.py
+index 48c131d31421944df6f3cb03551b74069749aa37..3b998ffdb9d891ed5a563f52faea2be285a4faa0 100644
+--- a/apps/pi/tests/test_vault_core.py
++++ b/apps/pi/tests/test_vault_core.py
+@@ -2842,7 +2842,7 @@ class VaultCoreTests(unittest.TestCase):
+             [
+                 (ROOT / "README.md").read_text(encoding="utf-8"),
+                 (ROOT / "docs/architecture.md").read_text(encoding="utf-8"),
+-                (ROOT / "docs/roadmap.md").read_text(encoding="utf-8"),
++                (ROOT.parents[1] / "plan/work-items.json").read_text(encoding="utf-8"),
+                 (ROOT / "docs/testing.md").read_text(encoding="utf-8"),
+             ]
+         )

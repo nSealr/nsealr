@@ -1,0 +1,2192 @@
+diff --git a/apps/bridge/browser-extension/package.json b/apps/bridge/browser-extension/package.json
+index f0e18f3b1fe7d1157554cd41a88e3a6b2339b869..1e6ced4b30dc8ab63091672a8aca482b78e2b417 100644
+--- a/apps/bridge/browser-extension/package.json
++++ b/apps/bridge/browser-extension/package.json
+@@ -1,21 +1,4 @@
+ {
+-  "name": "@nsealr/browser-extension",
+-  "version": "0.1.0",
+-  "private": true,
+-  "description": "Private browser-extension boundary scaffold for nSealr NIP-07 integration.",
+-  "license": "MIT",
+-  "type": "module",
+-  "scripts": {
+-    "package-build": "node --no-warnings --import tsx/esm src/package-build-cli.ts",
+-    "package-plan": "node --no-warnings --import tsx/esm src/package-plan-cli.ts",
+-    "package-verify": "node --no-warnings --import tsx/esm src/package-verify-cli.ts",
+-    "origin-permission-approve": "node --no-warnings --import tsx/esm src/origin-permission-cli.ts approve",
+-    "origin-permission-store-create": "node --no-warnings --import tsx/esm src/origin-permission-cli.ts store-create",
+-    "origin-permission-store-revoke": "node --no-warnings --import tsx/esm src/origin-permission-cli.ts store-revoke",
+-    "origin-permission-store-upsert": "node --no-warnings --import tsx/esm src/origin-permission-cli.ts store-upsert",
+-    "route-config-approve": "node --no-warnings --import tsx/esm src/route-config-cli.ts approve",
+-    "route-config-review": "node --no-warnings --import tsx/esm src/route-config-cli.ts review"
+-  },
+   "dependencies": {
+     "@nsealr/browser-provider": "workspace:*",
+     "@nsealr/client": "workspace:*",
+@@ -23,8 +6,25 @@
+     "@nsealr/policy": "workspace:*",
+     "@nsealr/protocol": "workspace:*"
+   },
++  "description": "Private browser-extension boundary scaffold for nSealr NIP-07 integration.",
+   "devDependencies": {
+     "esbuild": "0.27.7",
+     "tsx": "4.21.0"
+-  }
++  },
++  "license": "MIT",
++  "name": "@nsealr/browser-extension",
++  "private": true,
++  "scripts": {
++    "origin-permission-approve": "node --no-warnings --import tsx/esm src/origin-permission-cli.ts approve",
++    "origin-permission-store-create": "node --no-warnings --import tsx/esm src/origin-permission-cli.ts store-create",
++    "origin-permission-store-revoke": "node --no-warnings --import tsx/esm src/origin-permission-cli.ts store-revoke",
++    "origin-permission-store-upsert": "node --no-warnings --import tsx/esm src/origin-permission-cli.ts store-upsert",
++    "package-build": "node --no-warnings --import tsx/esm src/package-build-cli.ts",
++    "package-plan": "node --no-warnings --import tsx/esm src/package-plan-cli.ts",
++    "package-verify": "node --no-warnings --import tsx/esm src/package-verify-cli.ts",
++    "route-config-approve": "node --no-warnings --import tsx/esm src/route-config-cli.ts approve",
++    "route-config-review": "node --no-warnings --import tsx/esm src/route-config-cli.ts review"
++  },
++  "type": "module",
++  "version": "0.1.0"
+ }
+diff --git a/apps/bridge/cli/package.json b/apps/bridge/cli/package.json
+index d4fab985a6c6da8992b4fa5e51f055eefd319635..4fe471ea4981c6cd3b5378310078226da0f33743 100644
+--- a/apps/bridge/cli/package.json
++++ b/apps/bridge/cli/package.json
+@@ -1,15 +1,7 @@
+ {
+-  "name": "@nsealr/cli",
+-  "version": "0.1.0",
+-  "private": true,
+-  "type": "module",
+-  "license": "MIT",
+   "bin": {
+     "nsealr": "./src/index.ts"
+   },
+-  "scripts": {
+-    "nsealr": "node --disable-warning=DEP0205 --import tsx src/index.ts"
+-  },
+   "dependencies": {
+     "@nsealr/client": "workspace:*",
+     "@nsealr/core": "workspace:*",
+@@ -21,12 +13,19 @@
+     "@nsealr/protocol": "workspace:*",
+     "@nsealr/qr": "workspace:*",
+     "@nsealr/review": "workspace:*",
+-    "@nsealr/smartcard": "workspace:*",
+     "@nsealr/transport": "workspace:*",
+     "commander": "14.0.2",
+     "serialport": "13.0.0"
+   },
+   "devDependencies": {
+     "tsx": "4.21.0"
+-  }
++  },
++  "license": "MIT",
++  "name": "@nsealr/cli",
++  "private": true,
++  "scripts": {
++    "nsealr": "node --disable-warning=DEP0205 --import tsx src/index.ts"
++  },
++  "type": "module",
++  "version": "0.1.0"
+ }
+diff --git a/apps/bridge/cli/src/index.ts b/apps/bridge/cli/src/index.ts
+index 121c649ec20d3758a72505c74e808639daaf05cb..f19f502742ecc2aee536d5261a1f026fed1c3090 100644
+--- a/apps/bridge/cli/src/index.ts
++++ b/apps/bridge/cli/src/index.ts
+@@ -30,7 +30,7 @@ import {
+   type NativeHostBrowser
+ } from "@nsealr/client";
+ import { verifySignedEventResponse, type SignEventRequest } from "@nsealr/core";
+-import { devSignRequest, SmartcardSimulator } from "@nsealr/dev-signer";
++import { devSignRequest } from "@nsealr/dev-signer";
+ import {
+   loadSpecsFixtures,
+   validateAccessSurfaceFixture,
+@@ -85,7 +85,6 @@ import {
+   screenReviewForRequest,
+   type ReviewDetailPageLimits
+ } from "@nsealr/review";
+-import { SmartcardSigner } from "@nsealr/smartcard";
+ import {
+   SerialLineStreamPort,
+   exchangeSerialLineRequest,
+@@ -1350,51 +1349,6 @@ export function buildCli(options: BuildCliOptions = {}): Command {
+       writeNewText(options.out, serializeLocalGrantStore(nextStore));
+     });
+ 
+-  program
+-    .command("smartcard-sim-sign")
+-    .requiredOption("--secret-key <hex>")
+-    .requiredOption("--request <path>")
+-    .option("--request-format <format>", "Request format: json, qr, or qr-animated", "json")
+-    .option("--review-acknowledged", "Confirm external review before sending an event id to a display-less smartcard")
+-    .option("--approval-digest <hex>", "Required with --review-acknowledged; binds acknowledgement to a reviewed request digest")
+-    .requiredOption("--out <path>")
+-    .option("--output-format <format>", "Output format: json, qr, or qr-animated", "json")
+-    .description("Sign a request through the test-only smartcard APDU simulator")
+-    .action(
+-      async (options: {
+-        secretKey: string;
+-        request: string;
+-        requestFormat: string;
+-        reviewAcknowledged?: boolean;
+-        approvalDigest?: string;
+-        out: string;
+-        outputFormat: string;
+-      }) => {
+-        assertFormat(options.requestFormat);
+-        assertFormat(options.outputFormat);
+-        const request = readValue(options.request, options.requestFormat);
+-        const validation = validateRequest(request);
+-        if (!validation.ok) throw new Error(validation.error);
+-        if ((request as { method?: string }).method !== "sign_event") {
+-          throw new Error("smartcard-sim-sign supports sign_event requests only");
+-        }
+-        if (options.approvalDigest !== undefined && options.reviewAcknowledged !== true) {
+-          throw new Error("approval digest requires --review-acknowledged");
+-        }
+-        let acknowledgement: Parameters<SmartcardSigner["signEventRequest"]>[1];
+-        if (options.reviewAcknowledged === true) {
+-          const approvalDigest = options.approvalDigest;
+-          if (approvalDigest === undefined) {
+-            throw new Error("approval_digest is required for display-less smartcard signing");
+-          }
+-          acknowledgement = { acknowledged: true, source: "external-review", approvalDigest };
+-        }
+-        const signer = new SmartcardSigner(new SmartcardSimulator(options.secretKey));
+-        const response = await signer.signEventRequest(request as SignEventRequest, acknowledgement);
+-        writeValue(options.out, response, options.outputFormat);
+-      }
+-    );
+-
+   const serialFrame = program.command("serial-frame").description("Encode and decode newline serial frames");
+ 
+   serialFrame
+diff --git a/apps/bridge/consumer-smoke/package.json b/apps/bridge/consumer-smoke/package.json
+index 05688bf1a2488913497d8e650d8a3b5be4a2c79f..8df46ee5f702d31a0f9e23cf1468aa2ea482328e 100644
+--- a/apps/bridge/consumer-smoke/package.json
++++ b/apps/bridge/consumer-smoke/package.json
+@@ -1,12 +1,4 @@
+ {
+-  "name": "@nsealr/consumer-smoke",
+-  "version": "0.1.0",
+-  "private": true,
+-  "type": "module",
+-  "license": "MIT",
+-  "scripts": {
+-    "smoke": "node --no-warnings --import tsx/esm src/index.ts"
+-  },
+   "dependencies": {
+     "@nsealr/browser-provider": "workspace:*",
+     "@nsealr/client": "workspace:*",
+@@ -19,10 +11,17 @@
+     "@nsealr/qr": "workspace:*",
+     "@nsealr/review": "workspace:*",
+     "@nsealr/sdk": "workspace:*",
+-    "@nsealr/smartcard": "workspace:*",
+     "@nsealr/transport": "workspace:*"
+   },
+   "devDependencies": {
+     "tsx": "4.21.0"
+-  }
++  },
++  "license": "MIT",
++  "name": "@nsealr/consumer-smoke",
++  "private": true,
++  "scripts": {
++    "smoke": "node --no-warnings --import tsx/esm src/index.ts"
++  },
++  "type": "module",
++  "version": "0.1.0"
+ }
+diff --git a/apps/bridge/consumer-smoke/src/index.ts b/apps/bridge/consumer-smoke/src/index.ts
+index 086862bfc57582de6cd4e1d6c40386ffbd796d23..37d7e6e56bd3a63f6bdedd2d93a4e9491c7423be 100644
+--- a/apps/bridge/consumer-smoke/src/index.ts
++++ b/apps/bridge/consumer-smoke/src/index.ts
+@@ -15,7 +15,7 @@ function readPackageManifest(path: string): PackageManifest {
+ }
+ 
+ function workspaceRoot(): string {
+-  return join(dirname(fileURLToPath(import.meta.url)), "..", "..", "..");
++  return join(dirname(fileURLToPath(import.meta.url)), "..", "..", "..", "..");
+ }
+ 
+ function collectPublicPackages(): string[] {
+diff --git a/apps/bridge/sdk-examples/package.json b/apps/bridge/sdk-examples/package.json
+index 15afb562988b8fe26fc73d779ad10fe5c2c00afa..ffd53a31cb81cfe952214c15a02d7e8fc0ddcf18 100644
+--- a/apps/bridge/sdk-examples/package.json
++++ b/apps/bridge/sdk-examples/package.json
+@@ -1,12 +1,4 @@
+ {
+-  "name": "@nsealr/sdk-examples",
+-  "version": "0.1.0",
+-  "private": true,
+-  "type": "module",
+-  "license": "MIT",
+-  "scripts": {
+-    "verify": "node --no-warnings --import tsx/esm src/index.ts"
+-  },
+   "dependencies": {
+     "@nsealr/browser-provider": "workspace:*",
+     "@nsealr/client": "workspace:*",
+@@ -19,10 +11,17 @@
+     "@nsealr/qr": "workspace:*",
+     "@nsealr/review": "workspace:*",
+     "@nsealr/sdk": "workspace:*",
+-    "@nsealr/smartcard": "workspace:*",
+     "@nsealr/transport": "workspace:*"
+   },
+   "devDependencies": {
+     "tsx": "4.21.0"
+-  }
++  },
++  "license": "MIT",
++  "name": "@nsealr/sdk-examples",
++  "private": true,
++  "scripts": {
++    "verify": "node --no-warnings --import tsx/esm src/index.ts"
++  },
++  "type": "module",
++  "version": "0.1.0"
+ }
+diff --git a/apps/bridge/sdk-examples/src/index.ts b/apps/bridge/sdk-examples/src/index.ts
+index 22652841a40071889a2e13185f7e4929ea05da59..688693f2ca13c6d35d885a4d465644d24eae245e 100644
+--- a/apps/bridge/sdk-examples/src/index.ts
++++ b/apps/bridge/sdk-examples/src/index.ts
+@@ -45,13 +45,6 @@ import {
+   renderReviewDetailPages,
+   reviewEventTemplate
+ } from "@nsealr/review";
+-import {
+-  CommandApdu,
+-  GET_PUBLIC_KEY_INS,
+-  NSEALR_CLA,
+-  ResponseApdu,
+-  SW_NO_ERROR
+-} from "@nsealr/smartcard";
+ import * as sdk from "@nsealr/sdk";
+ import * as sdkBrowser from "@nsealr/sdk/browser";
+ import { exchangeSerialLineRequest, type SerialLinePort } from "@nsealr/transport";
+@@ -87,8 +80,6 @@ const response: SignEventResponse = {
+   }
+ };
+ const publicKey = response.result.event.pubkey;
+-const companionRoot = fileURLToPath(new URL("../../..", import.meta.url));
+-const siblingSpecsRoot = join(dirname(companionRoot), "specs");
+ 
+ const sdkClient: LocalClientIdentity = {
+   surface: "sdk",
+@@ -316,13 +307,7 @@ async function nip46BridgeExample(): Promise<void> {
+   assert.equal(denied.type, "permission_denied");
+ }
+ 
+-async function smartcardAndTransportExample(): Promise<void> {
+-  const command = new CommandApdu(NSEALR_CLA, GET_PUBLIC_KEY_INS);
+-  assert.equal(CommandApdu.fromHex(command.toHex()).toHex(), command.toHex());
+-
+-  const apduResponse = new ResponseApdu(Uint8Array.of(1, 2, 3), SW_NO_ERROR);
+-  assert.equal(ResponseApdu.fromHex(apduResponse.toHex()).statusWord, SW_NO_ERROR);
+-
++async function transportExample(): Promise<void> {
+   let writtenLine: string | undefined;
+   let closed = false;
+   const port: SerialLinePort = {
+@@ -383,7 +368,6 @@ function sdkFacadeExample(): void {
+     content: "sdk facade"
+   }).length, 64);
+   assert.equal(typeof sdk.browserProvider.createNip07Provider, "function");
+-  assert.equal(typeof sdk.smartcard.CommandApdu, "function");
+   assert.equal(sdkBrowser.client.NATIVE_HOST_NAME, NATIVE_HOST_NAME);
+   assert.equal(typeof sdkBrowser.browserProvider.createNip07Provider, "function");
+   assert.equal(sdkBrowser.protocol.validateRequest({
+@@ -413,19 +397,14 @@ function sequence(prefix: string): () => string {
+   };
+ }
+ 
+-function specsRootForExamples(): string {
+-  if (existsSync(join(siblingSpecsRoot, "vectors")) && existsSync(join(siblingSpecsRoot, "examples"))) {
+-    return resolveSpecsRoot(siblingSpecsRoot);
+-  }
+-  return resolveSpecsRoot(join(companionRoot, "tests", "fixtures", "specs"));
+-}
++function specsRootForExamples(): string { return resolveSpecsRoot(); }
+ 
+ await requestAndQrExample();
+ await fixturesPolicyReviewAndFramingExample();
+ await localServiceExample();
+ await browserProviderExample();
+ await nip46BridgeExample();
+-await smartcardAndTransportExample();
++await transportExample();
+ sdkFacadeExample();
+ 
+ console.log("nSealr SDK examples passed");
+diff --git a/apps/bridge/service/package.json b/apps/bridge/service/package.json
+index c1c7c0c1502106d167f1f9634032dbfb5fb08b64..2dc618974bbc7f0bdc30a0eedcbf9c4450cdc828 100644
+--- a/apps/bridge/service/package.json
++++ b/apps/bridge/service/package.json
+@@ -1,12 +1,4 @@
+ {
+-  "name": "@nsealr/service",
+-  "version": "0.1.0",
+-  "private": true,
+-  "type": "module",
+-  "license": "MIT",
+-  "scripts": {
+-    "service": "node --no-warnings --import tsx/esm src/index.ts"
+-  },
+   "dependencies": {
+     "@nsealr/client": "workspace:*",
+     "@nsealr/policy": "workspace:*",
+@@ -17,5 +9,13 @@
+     "@nsealr/fixtures": "workspace:*",
+     "@nsealr/framing": "workspace:*",
+     "tsx": "4.21.0"
+-  }
++  },
++  "license": "MIT",
++  "name": "@nsealr/service",
++  "private": true,
++  "scripts": {
++    "service": "node --no-warnings --import tsx/esm src/index.ts"
++  },
++  "type": "module",
++  "version": "0.1.0"
+ }
+diff --git a/package.json b/package.json
+index 8a5b4a2a387d17e68d7483a24707068480581f6f..c816c0a62d4b73385b9d5d3d888e533f02effe07 100644
+--- a/package.json
++++ b/package.json
+@@ -1,45 +1,10 @@
+ {
+-  "name": "@nsealr/companion-workspace",
+-  "version": "0.1.0",
+-  "private": true,
+-  "description": "Secretless host-side companion packages for nSealr signer integrations.",
+-  "license": "MIT",
+-  "repository": {
+-    "type": "git",
+-    "url": "git+https://github.com/nSealr/companion.git"
+-  },
+   "bugs": {
+-    "url": "https://github.com/nSealr/companion/issues"
+-  },
+-  "homepage": "https://github.com/nSealr/companion#readme",
+-  "packageManager": "pnpm@10.33.4",
+-  "type": "module",
+-  "scripts": {
+-    "nsealr": "pnpm --filter @nsealr/cli nsealr",
+-    "nsealr-service": "pnpm --filter @nsealr/service service",
+-    "build": "node scripts/build_packages.mjs",
+-    "test": "vitest run --maxWorkers=4",
+-    "typecheck": "tsc --noEmit",
+-    "lint": "tsc --noEmit",
+-    "consumer-smoke": "pnpm --filter @nsealr/consumer-smoke smoke",
+-    "examples-smoke": "pnpm --filter @nsealr/sdk-examples verify",
+-    "readme-examples:check": "node scripts/check_readme_examples.mjs",
+-    "api-docs:check": "node scripts/check_api_docs.mjs",
+-    "api-docs:update": "node scripts/check_api_docs.mjs --write",
+-    "api-review:check": "node scripts/check_api_review.mjs",
+-    "package-registry:check": "node scripts/check_package_registry.mjs",
+-    "browser-runtime-imports:check": "node scripts/check_browser_runtime_imports.mjs",
+-    "browser-runtime-bundle:check": "node scripts/check_browser_runtime_bundle.mjs",
+-    "browser-extension-security:check": "node scripts/check_browser_extension_security.mjs",
+-    "public-imports:check": "node scripts/check_public_imports.mjs",
+-    "release-plan": "node scripts/release_plan.mjs",
+-    "release-plan:check": "node scripts/check_release_plan.mjs",
+-    "pack-smoke": "node scripts/pack_smoke.mjs",
+-    "release-artifacts:safety": "node scripts/check_release_artifacts_safety.mjs",
+-    "release-artifacts": "node scripts/prepare_release_artifacts.mjs --out release-artifacts/packages",
+-    "ci": "pnpm build && pnpm typecheck && pnpm test && pnpm consumer-smoke && pnpm examples-smoke && pnpm readme-examples:check && pnpm api-docs:check && pnpm api-review:check && pnpm package-registry:check && pnpm browser-runtime-imports:check && pnpm browser-runtime-bundle:check && pnpm browser-extension-security:check && pnpm public-imports:check && pnpm release-plan:check && pnpm release-artifacts:safety && pnpm pack-smoke"
++    "url": "https://github.com/nSealr/nsealr/issues"
+   },
++  "description": "Secretless host-side companion packages for nSealr signer integrations.",
+   "devDependencies": {
++    "@nsealr/fixtures": "workspace:*",
+     "@types/node": "24.10.1",
+     "esbuild": "0.27.7",
+     "nostr-tools": "^2.23.3",
+@@ -47,10 +12,46 @@
+     "typescript": "6.0.3",
+     "vitest": "4.1.5"
+   },
++  "homepage": "https://github.com/nSealr/nsealr#readme",
++  "license": "MIT",
++  "name": "@nsealr/bridge-workspace",
++  "packageManager": "pnpm@10.33.4",
+   "pnpm": {
+     "onlyBuiltDependencies": [
+       "@serialport/bindings-cpp",
+       "esbuild"
+     ]
+-  }
++  },
++  "private": true,
++  "repository": {
++    "type": "git",
++    "url": "git+https://github.com/nSealr/nsealr.git"
++  },
++  "scripts": {
++    "api-docs:check": "node tools/bridge/check_api_docs.mjs",
++    "api-docs:update": "node tools/bridge/check_api_docs.mjs --write",
++    "api-review:check": "node tools/bridge/check_api_review.mjs",
++    "browser-extension-security:check": "node tools/bridge/check_browser_extension_security.mjs",
++    "browser-runtime-bundle:check": "node tools/bridge/check_browser_runtime_bundle.mjs",
++    "browser-runtime-imports:check": "node tools/bridge/check_browser_runtime_imports.mjs",
++    "build": "node tools/bridge/build_packages.mjs",
++    "ci": "pnpm build && pnpm typecheck && pnpm test && pnpm consumer-smoke && pnpm examples-smoke && pnpm readme-examples:check && pnpm api-docs:check && pnpm api-review:check && pnpm package-registry:check && pnpm browser-runtime-imports:check && pnpm browser-runtime-bundle:check && pnpm browser-extension-security:check && pnpm public-imports:check && pnpm release-plan:check && pnpm release-artifacts:safety && pnpm pack-smoke",
++    "consumer-smoke": "pnpm --filter @nsealr/consumer-smoke smoke",
++    "examples-smoke": "pnpm --filter @nsealr/sdk-examples verify",
++    "lint": "tsc --noEmit",
++    "nsealr": "pnpm --filter @nsealr/cli nsealr",
++    "nsealr-service": "pnpm --filter @nsealr/service service",
++    "pack-smoke": "node tools/bridge/pack_smoke.mjs",
++    "package-registry:check": "node tools/bridge/check_package_registry.mjs",
++    "public-imports:check": "node tools/bridge/check_public_imports.mjs",
++    "readme-examples:check": "node tools/bridge/check_readme_examples.mjs",
++    "release-artifacts": "node tools/bridge/prepare_release_artifacts.mjs --out release-artifacts/packages",
++    "release-artifacts:safety": "node tools/bridge/check_release_artifacts_safety.mjs",
++    "release-plan": "node tools/bridge/release_plan.mjs",
++    "release-plan:check": "node tools/bridge/check_release_plan.mjs",
++    "test": "vitest run --maxWorkers=4",
++    "typecheck": "tsc --noEmit"
++  },
++  "type": "module",
++  "version": "0.1.0"
+ }
+diff --git a/packages/browser-provider/package.json b/packages/browser-provider/package.json
+index a594456aac4ed7eaba9c6f594081e6a7e513772e..2bb3afae6f1cc21ec7b989ed5a29fd662f703de7 100644
+--- a/packages/browser-provider/package.json
++++ b/packages/browser-provider/package.json
+@@ -1,7 +1,27 @@
+ {
+-  "name": "@nsealr/browser-provider",
+-  "version": "0.1.0",
++  "bugs": {
++    "url": "https://github.com/nSealr/nsealr/issues"
++  },
++  "dependencies": {
++    "@nsealr/client": "workspace:*",
++    "@nsealr/core": "workspace:*",
++    "@nsealr/protocol": "workspace:*"
++  },
+   "description": "NIP-07 browser provider adapter for routing Nostr signing requests through nSealr companion.",
++  "devDependencies": {
++    "@nsealr/fixtures": "workspace:*"
++  },
++  "exports": {
++    ".": {
++      "import": "./dist/index.js",
++      "types": "./dist/index.d.ts"
++    }
++  },
++  "files": [
++    "dist",
++    "README.md"
++  ],
++  "homepage": "https://github.com/nSealr/nsealr#readme",
+   "keywords": [
+     "nostr",
+     "nsealr",
+@@ -9,39 +29,16 @@
+     "nip07",
+     "browser-extension"
+   ],
+-  "type": "module",
+   "license": "MIT",
++  "name": "@nsealr/browser-provider",
++  "private": true,
+   "repository": {
++    "directory": "packages/browser-provider",
+     "type": "git",
+-    "url": "git+https://github.com/nSealr/companion.git",
+-    "directory": "packages/browser-provider"
+-  },
+-  "bugs": {
+-    "url": "https://github.com/nSealr/companion/issues"
++    "url": "git+https://github.com/nSealr/nsealr.git"
+   },
+-  "homepage": "https://github.com/nSealr/companion#readme",
+   "sideEffects": false,
+-  "files": [
+-    "dist",
+-    "README.md"
+-  ],
+-  "exports": {
+-    ".": {
+-      "types": "./dist/index.d.ts",
+-      "import": "./dist/index.js"
+-    }
+-  },
++  "type": "module",
+   "types": "./dist/index.d.ts",
+-  "dependencies": {
+-    "@nsealr/client": "workspace:*",
+-    "@nsealr/core": "workspace:*",
+-    "@nsealr/protocol": "workspace:*"
+-  },
+-  "devDependencies": {
+-    "@nsealr/fixtures": "workspace:*"
+-  },
+-  "publishConfig": {
+-    "access": "public",
+-    "provenance": true
+-  }
++  "version": "0.1.0"
+ }
+diff --git a/packages/client/package.json b/packages/client/package.json
+index cfacaa63560aec22f50f923bb731fa56e9f1ff87..ebe1c10f6b75f05341b370bf2ac96a1f663ff490 100644
+--- a/packages/client/package.json
++++ b/packages/client/package.json
+@@ -1,7 +1,36 @@
+ {
+-  "name": "@nsealr/client",
+-  "version": "0.1.0",
++  "bugs": {
++    "url": "https://github.com/nSealr/nsealr/issues"
++  },
++  "dependencies": {
++    "@nsealr/core": "workspace:*",
++    "@nsealr/policy": "workspace:*",
++    "@nsealr/protocol": "workspace:*",
++    "@nsealr/review": "workspace:*"
++  },
+   "description": "Secretless local companion service and native-messaging client boundary for nSealr integrations.",
++  "devDependencies": {
++    "@nsealr/fixtures": "workspace:*"
++  },
++  "exports": {
++    ".": {
++      "import": "./dist/index.js",
++      "types": "./dist/index.d.ts"
++    },
++    "./browser": {
++      "import": "./dist/browser.js",
++      "types": "./dist/browser.d.ts"
++    },
++    "./client-identity": {
++      "import": "./dist/client-identity.js",
++      "types": "./dist/client-identity.d.ts"
++    }
++  },
++  "files": [
++    "dist",
++    "README.md"
++  ],
++  "homepage": "https://github.com/nSealr/nsealr#readme",
+   "keywords": [
+     "nostr",
+     "nsealr",
+@@ -9,48 +38,16 @@
+     "native-messaging",
+     "sdk"
+   ],
+-  "type": "module",
+   "license": "MIT",
++  "name": "@nsealr/client",
++  "private": true,
+   "repository": {
++    "directory": "packages/client",
+     "type": "git",
+-    "url": "git+https://github.com/nSealr/companion.git",
+-    "directory": "packages/client"
+-  },
+-  "bugs": {
+-    "url": "https://github.com/nSealr/companion/issues"
++    "url": "git+https://github.com/nSealr/nsealr.git"
+   },
+-  "homepage": "https://github.com/nSealr/companion#readme",
+   "sideEffects": false,
+-  "files": [
+-    "dist",
+-    "README.md"
+-  ],
+-  "exports": {
+-    ".": {
+-      "types": "./dist/index.d.ts",
+-      "import": "./dist/index.js"
+-    },
+-    "./browser": {
+-      "types": "./dist/browser.d.ts",
+-      "import": "./dist/browser.js"
+-    },
+-    "./client-identity": {
+-      "types": "./dist/client-identity.d.ts",
+-      "import": "./dist/client-identity.js"
+-    }
+-  },
++  "type": "module",
+   "types": "./dist/index.d.ts",
+-  "dependencies": {
+-    "@nsealr/core": "workspace:*",
+-    "@nsealr/policy": "workspace:*",
+-    "@nsealr/protocol": "workspace:*",
+-    "@nsealr/review": "workspace:*"
+-  },
+-  "devDependencies": {
+-    "@nsealr/fixtures": "workspace:*"
+-  },
+-  "publishConfig": {
+-    "access": "public",
+-    "provenance": true
+-  }
++  "version": "0.1.0"
+ }
+diff --git a/packages/core/package.json b/packages/core/package.json
+index 220fce0a485abe57298b8d98fbcf314d265d1463..4304c1eb0e08cfea7d05c8b72f0823f3f52cbf7f 100644
+--- a/packages/core/package.json
++++ b/packages/core/package.json
+@@ -1,7 +1,27 @@
+ {
+-  "name": "@nsealr/core",
+-  "version": "0.1.0",
++  "bugs": {
++    "url": "https://github.com/nSealr/nsealr/issues"
++  },
++  "dependencies": {
++    "@noble/ciphers": "2.1.1",
++    "@noble/curves": "2.2.0",
++    "@noble/hashes": "2.2.0"
++  },
+   "description": "Nostr event hashing and signed-event verification helpers for nSealr.",
++  "devDependencies": {
++    "@nsealr/fixtures": "workspace:*"
++  },
++  "exports": {
++    ".": {
++      "import": "./dist/index.js",
++      "types": "./dist/index.d.ts"
++    }
++  },
++  "files": [
++    "dist",
++    "README.md"
++  ],
++  "homepage": "https://github.com/nSealr/nsealr#readme",
+   "keywords": [
+     "nostr",
+     "nsealr",
+@@ -9,39 +29,16 @@
+     "bip340",
+     "verification"
+   ],
+-  "type": "module",
+   "license": "MIT",
++  "name": "@nsealr/core",
++  "private": true,
+   "repository": {
++    "directory": "packages/core",
+     "type": "git",
+-    "url": "git+https://github.com/nSealr/companion.git",
+-    "directory": "packages/core"
+-  },
+-  "bugs": {
+-    "url": "https://github.com/nSealr/companion/issues"
++    "url": "git+https://github.com/nSealr/nsealr.git"
+   },
+-  "homepage": "https://github.com/nSealr/companion#readme",
+   "sideEffects": false,
+-  "files": [
+-    "dist",
+-    "README.md"
+-  ],
+-  "exports": {
+-    ".": {
+-      "types": "./dist/index.d.ts",
+-      "import": "./dist/index.js"
+-    }
+-  },
++  "type": "module",
+   "types": "./dist/index.d.ts",
+-  "dependencies": {
+-    "@noble/ciphers": "2.1.1",
+-    "@noble/curves": "2.2.0",
+-    "@noble/hashes": "2.2.0"
+-  },
+-  "devDependencies": {
+-    "@nsealr/fixtures": "workspace:*"
+-  },
+-  "publishConfig": {
+-    "access": "public",
+-    "provenance": true
+-  }
++  "version": "0.1.0"
+ }
+diff --git a/packages/dev-signer/package.json b/packages/dev-signer/package.json
+index 94ebe88c4e482c94078b435b0f555492a6db94a7..6e3be03bfb6f918d098008cae70cf4fb4336746c 100644
+--- a/packages/dev-signer/package.json
++++ b/packages/dev-signer/package.json
+@@ -1,44 +1,43 @@
+ {
+-  "name": "@nsealr/dev-signer",
+-  "version": "0.1.0",
+-  "private": true,
++  "bugs": {
++    "url": "https://github.com/nSealr/nsealr/issues"
++  },
++  "dependencies": {
++    "@noble/curves": "2.2.0",
++    "@nsealr/core": "workspace:*",
++    "@nsealr/protocol": "workspace:*"
++  },
+   "description": "Private test-only software signer for nSealr companion tests.",
++  "devDependencies": {
++    "@nsealr/fixtures": "workspace:*"
++  },
++  "exports": {
++    ".": {
++      "import": "./dist/index.js",
++      "types": "./dist/index.d.ts"
++    }
++  },
++  "files": [
++    "dist",
++    "README.md"
++  ],
++  "homepage": "https://github.com/nSealr/nsealr#readme",
+   "keywords": [
+     "nostr",
+     "nsealr",
+     "signer",
+     "testing"
+   ],
+-  "type": "module",
+   "license": "MIT",
++  "name": "@nsealr/dev-signer",
++  "private": true,
+   "repository": {
++    "directory": "packages/dev-signer",
+     "type": "git",
+-    "url": "git+https://github.com/nSealr/companion.git",
+-    "directory": "packages/dev-signer"
++    "url": "git+https://github.com/nSealr/nsealr.git"
+   },
+-  "bugs": {
+-    "url": "https://github.com/nSealr/companion/issues"
+-  },
+-  "homepage": "https://github.com/nSealr/companion#readme",
+   "sideEffects": false,
+-  "files": [
+-    "dist",
+-    "README.md"
+-  ],
+-  "exports": {
+-    ".": {
+-      "types": "./dist/index.d.ts",
+-      "import": "./dist/index.js"
+-    }
+-  },
++  "type": "module",
+   "types": "./dist/index.d.ts",
+-  "dependencies": {
+-    "@noble/curves": "2.2.0",
+-    "@nsealr/core": "workspace:*",
+-    "@nsealr/protocol": "workspace:*",
+-    "@nsealr/smartcard": "workspace:*"
+-  },
+-  "devDependencies": {
+-    "@nsealr/fixtures": "workspace:*"
+-  }
++  "version": "0.1.0"
+ }
+diff --git a/packages/dev-signer/src/index.ts b/packages/dev-signer/src/index.ts
+index e15d2d5954a228a3b91ba4cc95ab7410e9027ce2..6c17e09f158fd42814450f4137b70d6b94ef7be4 100644
+--- a/packages/dev-signer/src/index.ts
++++ b/packages/dev-signer/src/index.ts
+@@ -1,2 +1 @@
+ export * from "./dev-signer.js";
+-export * from "./smartcard-simulator.js";
+diff --git a/packages/fixtures/package.json b/packages/fixtures/package.json
+index 40e060113b7c233011071b9f8a8a97fcc51718c0..903ed4358d42953e342231d66f633dcaa7160afd 100644
+--- a/packages/fixtures/package.json
++++ b/packages/fixtures/package.json
+@@ -1,7 +1,27 @@
+ {
+-  "name": "@nsealr/fixtures",
+-  "version": "0.1.0",
++  "bugs": {
++    "url": "https://github.com/nSealr/nsealr/issues"
++  },
++  "dependencies": {
++    "@nsealr/policy": "workspace:*",
++    "@nsealr/review": "workspace:*"
++  },
+   "description": "Shared nSealr specs fixture loading and fixture validation helpers.",
++  "exports": {
++    ".": {
++      "import": "./dist/index.js",
++      "types": "./dist/index.d.ts"
++    },
++    "./specs-root": {
++      "import": "./dist/specs-root.js",
++      "types": "./dist/specs-root.d.ts"
++    }
++  },
++  "files": [
++    "dist",
++    "README.md"
++  ],
++  "homepage": "https://github.com/nSealr/nsealr#readme",
+   "keywords": [
+     "nostr",
+     "nsealr",
+@@ -9,39 +29,16 @@
+     "fixtures",
+     "conformance"
+   ],
+-  "type": "module",
+   "license": "MIT",
++  "name": "@nsealr/fixtures",
++  "private": true,
+   "repository": {
++    "directory": "packages/fixtures",
+     "type": "git",
+-    "url": "git+https://github.com/nSealr/companion.git",
+-    "directory": "packages/fixtures"
+-  },
+-  "bugs": {
+-    "url": "https://github.com/nSealr/companion/issues"
++    "url": "git+https://github.com/nSealr/nsealr.git"
+   },
+-  "homepage": "https://github.com/nSealr/companion#readme",
+   "sideEffects": false,
+-  "files": [
+-    "dist",
+-    "README.md"
+-  ],
+-  "exports": {
+-    ".": {
+-      "types": "./dist/index.d.ts",
+-      "import": "./dist/index.js"
+-    },
+-    "./specs-root": {
+-      "types": "./dist/specs-root.d.ts",
+-      "import": "./dist/specs-root.js"
+-    }
+-  },
++  "type": "module",
+   "types": "./dist/index.d.ts",
+-  "dependencies": {
+-    "@nsealr/policy": "workspace:*",
+-    "@nsealr/review": "workspace:*"
+-  },
+-  "publishConfig": {
+-    "access": "public",
+-    "provenance": true
+-  }
++  "version": "0.1.0"
+ }
+diff --git a/packages/fixtures/src/fixtures.ts b/packages/fixtures/src/fixtures.ts
+index 904a18e5b54ad8a8d3c13bdfcbc090e0a956d21f..b40ae1f8919e13ae7abcdea587d6264a874893c6 100644
+--- a/packages/fixtures/src/fixtures.ts
++++ b/packages/fixtures/src/fixtures.ts
+@@ -416,7 +416,7 @@ export type SpecsFixtureSet = {
+     format: "nsealr-persistent-secret-custody-contract-v0";
+     contract_id: "persistent-secret-custody-v0";
+     solution: "custom_hardware_wallet";
+-    repository: "hardware";
++    repository: "nsealr";
+     current_status: "research";
+     scope: string;
+     requirements: {
+@@ -589,7 +589,7 @@ export function validatePersistentSecretCustodyFixture(name: string, fixture: un
+   if (fixture.contract_id !== "persistent-secret-custody-v0") {
+     throw new Error(`invalid persistent-secret custody contract ${name}: contract_id drift`);
+   }
+-  if (fixture.solution !== "custom_hardware_wallet" || fixture.repository !== "hardware") {
++  if (fixture.solution !== "custom_hardware_wallet" || fixture.repository !== "nsealr") {
+     throw new Error(`invalid persistent-secret custody contract ${name}: solution boundary drift`);
+   }
+   if (fixture.current_status !== "research") {
+diff --git a/packages/fixtures/src/specs-root.ts b/packages/fixtures/src/specs-root.ts
+index a0aad601794f14b7a120c062df49dc88a99393c4..af6922016324af8c50c38e93374d23059779d350 100644
+--- a/packages/fixtures/src/specs-root.ts
++++ b/packages/fixtures/src/specs-root.ts
+@@ -1,15 +1,18 @@
+-import { existsSync } from "node:fs";
++import { existsSync, readFileSync } from "node:fs";
+ import { resolve } from "node:path";
++import { fileURLToPath } from "node:url";
+ 
+-export function resolveSpecsRoot(preferredRoot = resolve("../specs")): string {
+-  if (existsSync(resolve(preferredRoot, "vectors")) && existsSync(resolve(preferredRoot, "examples"))) {
+-    return preferredRoot;
++/** Resolve the one artifact independently of process CWD; no snapshot fallback. */
++export function resolveSpecsRoot(preferredRoot?: string): string {
++  const root = resolve(preferredRoot ?? process.env.NSEALR_CONTRACTS_ROOT ??
++    fileURLToPath(new URL("../../../protocols/contracts/v1/", import.meta.url)));
++  const manifest = resolve(root, "manifest.json");
++  if (!existsSync(manifest) || !existsSync(resolve(root, "vectors")) || !existsSync(resolve(root, "examples"))) {
++    throw new Error(`authoritative contract artifact is missing: ${root}`);
+   }
+-
+-  const fallbackRoot = resolve(process.cwd(), "tests/fixtures/specs");
+-  if (existsSync(resolve(fallbackRoot, "vectors")) && existsSync(resolve(fallbackRoot, "examples"))) {
+-    return fallbackRoot;
++  const identity = JSON.parse(readFileSync(manifest, "utf8"));
++  if (identity.artifact_format !== 1 || identity.artifact_id !== "nsealr-contracts-v1") {
++    throw new Error("unsupported contract artifact identity");
+   }
+-
+-  return preferredRoot;
++  return root;
+ }
+diff --git a/packages/framing/package.json b/packages/framing/package.json
+index 6cd681eeaecc583557a31a85d56cacd9ee80b49c..d3585f9a084c2be0300c5e09a7ee589913657655 100644
+--- a/packages/framing/package.json
++++ b/packages/framing/package.json
+@@ -1,7 +1,26 @@
+ {
+-  "name": "@nsealr/framing",
+-  "version": "0.1.0",
++  "bugs": {
++    "url": "https://github.com/nSealr/nsealr/issues"
++  },
++  "dependencies": {
++    "@noble/hashes": "2.2.0",
++    "@nsealr/protocol": "workspace:*"
++  },
+   "description": "nSealr serial-frame encoding and decoding for USB CDC and UART experiments.",
++  "devDependencies": {
++    "@nsealr/fixtures": "workspace:*"
++  },
++  "exports": {
++    ".": {
++      "import": "./dist/index.js",
++      "types": "./dist/index.d.ts"
++    }
++  },
++  "files": [
++    "dist",
++    "README.md"
++  ],
++  "homepage": "https://github.com/nSealr/nsealr#readme",
+   "keywords": [
+     "nostr",
+     "nsealr",
+@@ -9,38 +28,16 @@
+     "serial",
+     "framing"
+   ],
+-  "type": "module",
+   "license": "MIT",
++  "name": "@nsealr/framing",
++  "private": true,
+   "repository": {
++    "directory": "packages/framing",
+     "type": "git",
+-    "url": "git+https://github.com/nSealr/companion.git",
+-    "directory": "packages/framing"
+-  },
+-  "bugs": {
+-    "url": "https://github.com/nSealr/companion/issues"
++    "url": "git+https://github.com/nSealr/nsealr.git"
+   },
+-  "homepage": "https://github.com/nSealr/companion#readme",
+   "sideEffects": false,
+-  "files": [
+-    "dist",
+-    "README.md"
+-  ],
+-  "exports": {
+-    ".": {
+-      "types": "./dist/index.d.ts",
+-      "import": "./dist/index.js"
+-    }
+-  },
++  "type": "module",
+   "types": "./dist/index.d.ts",
+-  "dependencies": {
+-    "@noble/hashes": "2.2.0",
+-    "@nsealr/protocol": "workspace:*"
+-  },
+-  "devDependencies": {
+-    "@nsealr/fixtures": "workspace:*"
+-  },
+-  "publishConfig": {
+-    "access": "public",
+-    "provenance": true
+-  }
++  "version": "0.1.0"
+ }
+diff --git a/packages/nip46/package.json b/packages/nip46/package.json
+index 71c18aab025a55776a5b676e07d29c8da1726eab..34bef8f8ae33b951f0a41c44015ec420568d62ab 100644
+--- a/packages/nip46/package.json
++++ b/packages/nip46/package.json
+@@ -1,7 +1,29 @@
+ {
+-  "name": "@nsealr/nip46",
+-  "version": "0.1.0",
++  "bugs": {
++    "url": "https://github.com/nSealr/nsealr/issues"
++  },
++  "dependencies": {
++    "@noble/curves": "2.2.0",
++    "@noble/hashes": "2.2.0",
++    "@nsealr/core": "workspace:*",
++    "@nsealr/protocol": "workspace:*",
++    "nostr-tools": "2.23.3"
++  },
+   "description": "Already-decrypted NIP-46 bridge, connect-review approval, connection-token descriptor, relay-event envelope, relay-step, and permission helpers for nSealr companion.",
++  "devDependencies": {
++    "@nsealr/fixtures": "workspace:*"
++  },
++  "exports": {
++    ".": {
++      "import": "./dist/index.js",
++      "types": "./dist/index.d.ts"
++    }
++  },
++  "files": [
++    "dist",
++    "README.md"
++  ],
++  "homepage": "https://github.com/nSealr/nsealr#readme",
+   "keywords": [
+     "nostr",
+     "nsealr",
+@@ -9,41 +31,16 @@
+     "nip46",
+     "nostr-connect"
+   ],
+-  "type": "module",
+   "license": "MIT",
++  "name": "@nsealr/nip46",
++  "private": true,
+   "repository": {
++    "directory": "packages/nip46",
+     "type": "git",
+-    "url": "git+https://github.com/nSealr/companion.git",
+-    "directory": "packages/nip46"
+-  },
+-  "bugs": {
+-    "url": "https://github.com/nSealr/companion/issues"
++    "url": "git+https://github.com/nSealr/nsealr.git"
+   },
+-  "homepage": "https://github.com/nSealr/companion#readme",
+   "sideEffects": false,
+-  "files": [
+-    "dist",
+-    "README.md"
+-  ],
+-  "exports": {
+-    ".": {
+-      "types": "./dist/index.d.ts",
+-      "import": "./dist/index.js"
+-    }
+-  },
++  "type": "module",
+   "types": "./dist/index.d.ts",
+-  "dependencies": {
+-    "@noble/curves": "2.2.0",
+-    "@noble/hashes": "2.2.0",
+-    "@nsealr/core": "workspace:*",
+-    "@nsealr/protocol": "workspace:*",
+-    "nostr-tools": "2.23.3"
+-  },
+-  "devDependencies": {
+-    "@nsealr/fixtures": "workspace:*"
+-  },
+-  "publishConfig": {
+-    "access": "public",
+-    "provenance": true
+-  }
++  "version": "0.1.0"
+ }
+diff --git a/packages/policy/package.json b/packages/policy/package.json
+index b612d5c88d20279e1649147206b2034b62144d64..0e434349c24ba4336b04384516dc5dcd06097c39 100644
+--- a/packages/policy/package.json
++++ b/packages/policy/package.json
+@@ -1,7 +1,22 @@
+ {
+-  "name": "@nsealr/policy",
+-  "version": "0.1.0",
++  "bugs": {
++    "url": "https://github.com/nSealr/nsealr/issues"
++  },
++  "dependencies": {
++    "@noble/hashes": "2.2.0"
++  },
+   "description": "Secretless account, route, grant, policy-change, and policy-decision helpers for nSealr companion.",
++  "exports": {
++    ".": {
++      "import": "./dist/index.js",
++      "types": "./dist/index.d.ts"
++    }
++  },
++  "files": [
++    "dist",
++    "README.md"
++  ],
++  "homepage": "https://github.com/nSealr/nsealr#readme",
+   "keywords": [
+     "nostr",
+     "nsealr",
+@@ -9,34 +24,16 @@
+     "policy",
+     "permissions"
+   ],
+-  "type": "module",
+   "license": "MIT",
++  "name": "@nsealr/policy",
++  "private": true,
+   "repository": {
++    "directory": "packages/policy",
+     "type": "git",
+-    "url": "git+https://github.com/nSealr/companion.git",
+-    "directory": "packages/policy"
+-  },
+-  "bugs": {
+-    "url": "https://github.com/nSealr/companion/issues"
++    "url": "git+https://github.com/nSealr/nsealr.git"
+   },
+-  "homepage": "https://github.com/nSealr/companion#readme",
+   "sideEffects": false,
+-  "files": [
+-    "dist",
+-    "README.md"
+-  ],
+-  "exports": {
+-    ".": {
+-      "types": "./dist/index.d.ts",
+-      "import": "./dist/index.js"
+-    }
+-  },
++  "type": "module",
+   "types": "./dist/index.d.ts",
+-  "dependencies": {
+-    "@noble/hashes": "2.2.0"
+-  },
+-  "publishConfig": {
+-    "access": "public",
+-    "provenance": true
+-  }
++  "version": "0.1.0"
+ }
+diff --git a/packages/policy/src/policy.test.ts b/packages/policy/src/policy.test.ts
+index d769978ef824e2b49d7a576992293179db9cf22e..60ac4a912401f9f7c7da24107514f2146c333707 100644
+--- a/packages/policy/src/policy.test.ts
++++ b/packages/policy/src/policy.test.ts
+@@ -1,4 +1,5 @@
+-import { existsSync, readFileSync, readdirSync } from "node:fs";
++import { resolveSpecsRoot } from "@nsealr/fixtures/specs-root";
++import { readFileSync, readdirSync } from "node:fs";
+ import { resolve } from "node:path";
+ import { describe, expect, it } from "vitest";
+ import {
+@@ -17,16 +18,6 @@ import {
+ 
+ const specsRoot = resolveSpecsRoot();
+ 
+-function resolveSpecsRoot(preferredRoot = resolve("../specs")): string {
+-  if (existsSync(resolve(preferredRoot, "vectors")) && existsSync(resolve(preferredRoot, "examples"))) {
+-    return preferredRoot;
+-  }
+-  const fallbackRoot = resolve(process.cwd(), "tests/fixtures/specs");
+-  if (existsSync(resolve(fallbackRoot, "vectors")) && existsSync(resolve(fallbackRoot, "examples"))) {
+-    return fallbackRoot;
+-  }
+-  return preferredRoot;
+-}
+ 
+ function loadJson(path: string): unknown {
+   return JSON.parse(readFileSync(path, "utf8"));
+diff --git a/packages/policy/src/policy.ts b/packages/policy/src/policy.ts
+index cf98f5127c0a4a485940d748caedb7de86710101..ccac634d7f82e95814f3a8c258e3718826983994 100644
+--- a/packages/policy/src/policy.ts
++++ b/packages/policy/src/policy.ts
+@@ -18,7 +18,7 @@ export type RouteCustody =
+ 
+ export type SignerRoute = {
+   type: RouteType;
+-  repository?: "raspberry" | "firmware" | "smartcard" | "hardware";
++  repository?: "nsealr";
+   transport: "qr" | "usb" | "smartcard" | "nfc" | "nip46_relay" | "embedded";
+   custody: RouteCustody;
+   trusted_review: "device_display" | "external_review" | "external_policy" | "display_less";
+@@ -204,11 +204,11 @@ const ROUTE_TYPES = new Set<RouteType>([
+ ]);
+ const QR_ROUTE_TYPES = new Set<RouteType>(["raspberry_qr_vault", "esp32_qr_vault"]);
+ const ROUTE_REPOSITORIES = new Map<RouteType, string>([
+-  ["raspberry_qr_vault", "raspberry"],
+-  ["esp32_qr_vault", "firmware"],
+-  ["esp32_usb_nip46", "firmware"],
+-  ["smartcard", "smartcard"],
+-  ["custom_hardware_wallet", "hardware"]
++  ["raspberry_qr_vault", "nsealr"],
++  ["esp32_qr_vault", "nsealr"],
++  ["esp32_usb_nip46", "nsealr"],
++  ["smartcard", "nsealr"],
++  ["custom_hardware_wallet", "nsealr"]
+ ]);
+ const ROUTE_TRANSPORTS = new Set(["qr", "usb", "smartcard", "nfc", "nip46_relay", "embedded"]);
+ const CUSTODY_MODES = new Set([
+diff --git a/packages/protocol/package.json b/packages/protocol/package.json
+index 52f6e7dfd8516f35a4d1d8eff721119fe344842d..7ae696042cc2d102f478328ab00ee5f10c077a11 100644
+--- a/packages/protocol/package.json
++++ b/packages/protocol/package.json
+@@ -1,7 +1,22 @@
+ {
+-  "name": "@nsealr/protocol",
+-  "version": "0.1.0",
++  "bugs": {
++    "url": "https://github.com/nSealr/nsealr/issues"
++  },
+   "description": "nSealr request and response validation with shared v0 implementation limits.",
++  "devDependencies": {
++    "@nsealr/fixtures": "workspace:*"
++  },
++  "exports": {
++    ".": {
++      "import": "./dist/index.js",
++      "types": "./dist/index.d.ts"
++    }
++  },
++  "files": [
++    "dist",
++    "README.md"
++  ],
++  "homepage": "https://github.com/nSealr/nsealr#readme",
+   "keywords": [
+     "nostr",
+     "nsealr",
+@@ -9,34 +24,16 @@
+     "protocol",
+     "validation"
+   ],
+-  "type": "module",
+   "license": "MIT",
++  "name": "@nsealr/protocol",
++  "private": true,
+   "repository": {
++    "directory": "packages/protocol",
+     "type": "git",
+-    "url": "git+https://github.com/nSealr/companion.git",
+-    "directory": "packages/protocol"
+-  },
+-  "bugs": {
+-    "url": "https://github.com/nSealr/companion/issues"
++    "url": "git+https://github.com/nSealr/nsealr.git"
+   },
+-  "homepage": "https://github.com/nSealr/companion#readme",
+   "sideEffects": false,
+-  "files": [
+-    "dist",
+-    "README.md"
+-  ],
+-  "exports": {
+-    ".": {
+-      "types": "./dist/index.d.ts",
+-      "import": "./dist/index.js"
+-    }
+-  },
++  "type": "module",
+   "types": "./dist/index.d.ts",
+-  "devDependencies": {
+-    "@nsealr/fixtures": "workspace:*"
+-  },
+-  "publishConfig": {
+-    "access": "public",
+-    "provenance": true
+-  }
++  "version": "0.1.0"
+ }
+diff --git a/packages/qr/package.json b/packages/qr/package.json
+index 3f616b778c959fca71c30eb6893b4648ed74f5b5..92fd93ca429d0ab131c0568971f17587ea1febf1 100644
+--- a/packages/qr/package.json
++++ b/packages/qr/package.json
+@@ -1,7 +1,26 @@
+ {
+-  "name": "@nsealr/qr",
+-  "version": "0.1.0",
++  "bugs": {
++    "url": "https://github.com/nSealr/nsealr/issues"
++  },
++  "dependencies": {
++    "@noble/hashes": "2.2.0",
++    "@nsealr/protocol": "workspace:*"
++  },
+   "description": "Static and animated nSealr QR envelope encoding and decoding.",
++  "devDependencies": {
++    "@nsealr/fixtures": "workspace:*"
++  },
++  "exports": {
++    ".": {
++      "import": "./dist/index.js",
++      "types": "./dist/index.d.ts"
++    }
++  },
++  "files": [
++    "dist",
++    "README.md"
++  ],
++  "homepage": "https://github.com/nSealr/nsealr#readme",
+   "keywords": [
+     "nostr",
+     "nsealr",
+@@ -9,38 +28,16 @@
+     "qr",
+     "airgap"
+   ],
+-  "type": "module",
+   "license": "MIT",
++  "name": "@nsealr/qr",
++  "private": true,
+   "repository": {
++    "directory": "packages/qr",
+     "type": "git",
+-    "url": "git+https://github.com/nSealr/companion.git",
+-    "directory": "packages/qr"
+-  },
+-  "bugs": {
+-    "url": "https://github.com/nSealr/companion/issues"
++    "url": "git+https://github.com/nSealr/nsealr.git"
+   },
+-  "homepage": "https://github.com/nSealr/companion#readme",
+   "sideEffects": false,
+-  "files": [
+-    "dist",
+-    "README.md"
+-  ],
+-  "exports": {
+-    ".": {
+-      "types": "./dist/index.d.ts",
+-      "import": "./dist/index.js"
+-    }
+-  },
++  "type": "module",
+   "types": "./dist/index.d.ts",
+-  "dependencies": {
+-    "@noble/hashes": "2.2.0",
+-    "@nsealr/protocol": "workspace:*"
+-  },
+-  "devDependencies": {
+-    "@nsealr/fixtures": "workspace:*"
+-  },
+-  "publishConfig": {
+-    "access": "public",
+-    "provenance": true
+-  }
++  "version": "0.1.0"
+ }
+diff --git a/packages/review/package.json b/packages/review/package.json
+index 273809e74658cb6176821034ef359f69f9ef80e8..e04f4cbc148d20b3bbc9a37f0e6299d6e50ba93a 100644
+--- a/packages/review/package.json
++++ b/packages/review/package.json
+@@ -1,7 +1,22 @@
+ {
+-  "name": "@nsealr/review",
+-  "version": "0.1.0",
++  "bugs": {
++    "url": "https://github.com/nSealr/nsealr/issues"
++  },
++  "dependencies": {
++    "@noble/hashes": "2.2.0"
++  },
+   "description": "Deterministic Nostr event review summaries and constrained-display page rendering.",
++  "exports": {
++    ".": {
++      "import": "./dist/index.js",
++      "types": "./dist/index.d.ts"
++    }
++  },
++  "files": [
++    "dist",
++    "README.md"
++  ],
++  "homepage": "https://github.com/nSealr/nsealr#readme",
+   "keywords": [
+     "nostr",
+     "nsealr",
+@@ -9,34 +24,16 @@
+     "review",
+     "hardware-wallet"
+   ],
+-  "type": "module",
+   "license": "MIT",
++  "name": "@nsealr/review",
++  "private": true,
+   "repository": {
++    "directory": "packages/review",
+     "type": "git",
+-    "url": "git+https://github.com/nSealr/companion.git",
+-    "directory": "packages/review"
+-  },
+-  "bugs": {
+-    "url": "https://github.com/nSealr/companion/issues"
++    "url": "git+https://github.com/nSealr/nsealr.git"
+   },
+-  "homepage": "https://github.com/nSealr/companion#readme",
+   "sideEffects": false,
+-  "files": [
+-    "dist",
+-    "README.md"
+-  ],
+-  "exports": {
+-    ".": {
+-      "types": "./dist/index.d.ts",
+-      "import": "./dist/index.js"
+-    }
+-  },
++  "type": "module",
+   "types": "./dist/index.d.ts",
+-  "dependencies": {
+-    "@noble/hashes": "2.2.0"
+-  },
+-  "publishConfig": {
+-    "access": "public",
+-    "provenance": true
+-  }
++  "version": "0.1.0"
+ }
+diff --git a/packages/review/src/review.test.ts b/packages/review/src/review.test.ts
+index 26fcb11f9123a5a1705580800b8acd546228b62c..82794a4010bdc1283960a25124a64816cc046d66 100644
+--- a/packages/review/src/review.test.ts
++++ b/packages/review/src/review.test.ts
+@@ -1,4 +1,5 @@
+-import { existsSync, readFileSync, readdirSync } from "node:fs";
++import { resolveSpecsRoot } from "@nsealr/fixtures/specs-root";
++import { readFileSync, readdirSync } from "node:fs";
+ import { resolve } from "node:path";
+ import { describe, expect, it } from "vitest";
+ import {
+@@ -15,16 +16,6 @@ import {
+ 
+ const specsRoot = resolveSpecsRoot();
+ 
+-function resolveSpecsRoot(preferredRoot = resolve("../specs")): string {
+-  if (existsSync(resolve(preferredRoot, "vectors")) && existsSync(resolve(preferredRoot, "examples"))) {
+-    return preferredRoot;
+-  }
+-  const fallbackRoot = resolve(process.cwd(), "tests/fixtures/specs");
+-  if (existsSync(resolve(fallbackRoot, "vectors")) && existsSync(resolve(fallbackRoot, "examples"))) {
+-    return fallbackRoot;
+-  }
+-  return preferredRoot;
+-}
+ 
+ function loadJson(path: string): unknown {
+   return JSON.parse(readFileSync(path, "utf8"));
+diff --git a/packages/sdk/package.json b/packages/sdk/package.json
+index 059ebb85d60fbee982780acf020e7fac670c58a9..5569887b9934324e0713dd5140218d9a1a78b672 100644
+--- a/packages/sdk/package.json
++++ b/packages/sdk/package.json
+@@ -1,41 +1,7 @@
+ {
+-  "name": "@nsealr/sdk",
+-  "version": "0.1.0",
+-  "description": "Platform-neutral SDK facade for nSealr browser, companion, and signer integrations.",
+-  "keywords": [
+-    "nostr",
+-    "nsealr",
+-    "signer",
+-    "sdk",
+-    "browser-extension"
+-  ],
+-  "type": "module",
+-  "license": "MIT",
+-  "repository": {
+-    "type": "git",
+-    "url": "git+https://github.com/nSealr/companion.git",
+-    "directory": "packages/sdk"
+-  },
+   "bugs": {
+-    "url": "https://github.com/nSealr/companion/issues"
++    "url": "https://github.com/nSealr/nsealr/issues"
+   },
+-  "homepage": "https://github.com/nSealr/companion#readme",
+-  "sideEffects": false,
+-  "files": [
+-    "dist",
+-    "README.md"
+-  ],
+-  "exports": {
+-    ".": {
+-      "types": "./dist/index.d.ts",
+-      "import": "./dist/index.js"
+-    },
+-    "./browser": {
+-      "types": "./dist/browser.d.ts",
+-      "import": "./dist/browser.js"
+-    }
+-  },
+-  "types": "./dist/index.d.ts",
+   "dependencies": {
+     "@nsealr/browser-provider": "workspace:*",
+     "@nsealr/client": "workspace:*",
+@@ -45,11 +11,48 @@
+     "@nsealr/policy": "workspace:*",
+     "@nsealr/protocol": "workspace:*",
+     "@nsealr/qr": "workspace:*",
+-    "@nsealr/review": "workspace:*",
+-    "@nsealr/smartcard": "workspace:*"
++    "@nsealr/review": "workspace:*"
++  },
++  "description": "Platform-neutral SDK facade for nSealr browser, companion, and signer integrations.",
++  "exports": {
++    ".": {
++      "import": "./dist/index.js",
++      "types": "./dist/index.d.ts"
++    },
++    "./browser": {
++      "import": "./dist/browser.js",
++      "types": "./dist/browser.d.ts"
++    },
++    "./node": {
++      "import": "./dist/node.js",
++      "types": "./dist/node.d.ts"
++    }
+   },
++  "files": [
++    "dist",
++    "README.md"
++  ],
++  "homepage": "https://github.com/nSealr/nsealr#readme",
++  "keywords": [
++    "nostr",
++    "nsealr",
++    "signer",
++    "sdk",
++    "browser-extension"
++  ],
++  "license": "MIT",
++  "name": "@nsealr/sdk",
+   "publishConfig": {
+     "access": "public",
+     "provenance": true
+-  }
++  },
++  "repository": {
++    "directory": "packages/sdk",
++    "type": "git",
++    "url": "git+https://github.com/nSealr/nsealr.git"
++  },
++  "sideEffects": false,
++  "type": "module",
++  "types": "./dist/index.d.ts",
++  "version": "0.1.0"
+ }
+diff --git a/packages/sdk/src/index.ts b/packages/sdk/src/index.ts
+index 28dcf2a5c1a81de581779bab94ca12db6eae3574..05dd46b722ef5c0d8693a397297e2623d5caa229 100644
+--- a/packages/sdk/src/index.ts
++++ b/packages/sdk/src/index.ts
+@@ -1,23 +1,2 @@
+-import * as browserProvider from "@nsealr/browser-provider";
+-import * as client from "@nsealr/client";
+-import * as core from "@nsealr/core";
+-import * as framing from "@nsealr/framing";
+-import * as nip46 from "@nsealr/nip46";
+-import * as policy from "@nsealr/policy";
+-import * as protocol from "@nsealr/protocol";
+-import * as qr from "@nsealr/qr";
+-import * as review from "@nsealr/review";
+-import * as smartcard from "@nsealr/smartcard";
+-
+-export {
+-  browserProvider,
+-  client,
+-  core,
+-  framing,
+-  nip46,
+-  policy,
+-  protocol,
+-  qr,
+-  review,
+-  smartcard
+-};
++// The root is platform-neutral; Node consumers explicitly use ./node.
++export * from "./browser.js";
+diff --git a/packages/sdk/src/node.ts b/packages/sdk/src/node.ts
+new file mode 100644
+index 0000000000000000000000000000000000000000..82d03ae9cc65fda15af52447088a479826b20908
+--- /dev/null
++++ b/packages/sdk/src/node.ts
+@@ -0,0 +1,21 @@
++import * as browserProvider from "@nsealr/browser-provider";
++import * as client from "@nsealr/client";
++import * as core from "@nsealr/core";
++import * as framing from "@nsealr/framing";
++import * as nip46 from "@nsealr/nip46";
++import * as policy from "@nsealr/policy";
++import * as protocol from "@nsealr/protocol";
++import * as qr from "@nsealr/qr";
++import * as review from "@nsealr/review";
++
++export {
++  browserProvider,
++  client,
++  core,
++  framing,
++  nip46,
++  policy,
++  protocol,
++  qr,
++  review
++};
+diff --git a/packages/transport/package.json b/packages/transport/package.json
+index 7b7aa360f52b49e625019593262d47564997cc29..e2494826b70e6a3af6db6fda8fb841e281b4edb7 100644
+--- a/packages/transport/package.json
++++ b/packages/transport/package.json
+@@ -1,7 +1,27 @@
+ {
+-  "name": "@nsealr/transport",
+-  "version": "0.1.0",
++  "bugs": {
++    "url": "https://github.com/nSealr/nsealr/issues"
++  },
++  "dependencies": {
++    "@nsealr/core": "workspace:*",
++    "@nsealr/framing": "workspace:*",
++    "@nsealr/protocol": "workspace:*"
++  },
+   "description": "Secretless signer transport adapters and verified exchange boundaries for nSealr companion.",
++  "devDependencies": {
++    "@nsealr/fixtures": "workspace:*"
++  },
++  "exports": {
++    ".": {
++      "import": "./dist/index.js",
++      "types": "./dist/index.d.ts"
++    }
++  },
++  "files": [
++    "dist",
++    "README.md"
++  ],
++  "homepage": "https://github.com/nSealr/nsealr#readme",
+   "keywords": [
+     "nostr",
+     "nsealr",
+@@ -9,39 +29,16 @@
+     "transport",
+     "serial"
+   ],
+-  "type": "module",
+   "license": "MIT",
++  "name": "@nsealr/transport",
++  "private": true,
+   "repository": {
++    "directory": "packages/transport",
+     "type": "git",
+-    "url": "git+https://github.com/nSealr/companion.git",
+-    "directory": "packages/transport"
+-  },
+-  "bugs": {
+-    "url": "https://github.com/nSealr/companion/issues"
++    "url": "git+https://github.com/nSealr/nsealr.git"
+   },
+-  "homepage": "https://github.com/nSealr/companion#readme",
+   "sideEffects": false,
+-  "files": [
+-    "dist",
+-    "README.md"
+-  ],
+-  "exports": {
+-    ".": {
+-      "types": "./dist/index.d.ts",
+-      "import": "./dist/index.js"
+-    }
+-  },
++  "type": "module",
+   "types": "./dist/index.d.ts",
+-  "dependencies": {
+-    "@nsealr/core": "workspace:*",
+-    "@nsealr/framing": "workspace:*",
+-    "@nsealr/protocol": "workspace:*"
+-  },
+-  "devDependencies": {
+-    "@nsealr/fixtures": "workspace:*"
+-  },
+-  "publishConfig": {
+-    "access": "public",
+-    "provenance": true
+-  }
++  "version": "0.1.0"
+ }
+diff --git a/pnpm-lock.yaml b/pnpm-lock.yaml
+index a21a3b751f0f03bee15e7144023af52e579a487e..2675936e6b3aca6883100ce1631adadf014989f0 100644
+--- a/pnpm-lock.yaml
++++ b/pnpm-lock.yaml
+@@ -8,6 +8,9 @@ importers:
+ 
+   .:
+     devDependencies:
++      '@nsealr/fixtures':
++        specifier: workspace:*
++        version: link:packages/fixtures
+       '@types/node':
+         specifier: 24.10.1
+         version: 24.10.1
+@@ -27,23 +30,23 @@ importers:
+         specifier: 4.1.5
+         version: 4.1.5(@types/node@24.10.1)(vite@8.0.10(@types/node@24.10.1)(esbuild@0.27.7)(tsx@4.21.0))
+ 
+-  apps/browser-extension:
++  apps/bridge/browser-extension:
+     dependencies:
+       '@nsealr/browser-provider':
+         specifier: workspace:*
+-        version: link:../../packages/browser-provider
++        version: link:../../../packages/browser-provider
+       '@nsealr/client':
+         specifier: workspace:*
+-        version: link:../../packages/client
++        version: link:../../../packages/client
+       '@nsealr/core':
+         specifier: workspace:*
+-        version: link:../../packages/core
++        version: link:../../../packages/core
+       '@nsealr/policy':
+         specifier: workspace:*
+-        version: link:../../packages/policy
++        version: link:../../../packages/policy
+       '@nsealr/protocol':
+         specifier: workspace:*
+-        version: link:../../packages/protocol
++        version: link:../../../packages/protocol
+     devDependencies:
+       esbuild:
+         specifier: 0.27.7
+@@ -52,44 +55,41 @@ importers:
+         specifier: 4.21.0
+         version: 4.21.0
+ 
+-  apps/cli:
++  apps/bridge/cli:
+     dependencies:
+       '@nsealr/client':
+         specifier: workspace:*
+-        version: link:../../packages/client
++        version: link:../../../packages/client
+       '@nsealr/core':
+         specifier: workspace:*
+-        version: link:../../packages/core
++        version: link:../../../packages/core
+       '@nsealr/dev-signer':
+         specifier: workspace:*
+-        version: link:../../packages/dev-signer
++        version: link:../../../packages/dev-signer
+       '@nsealr/fixtures':
+         specifier: workspace:*
+-        version: link:../../packages/fixtures
++        version: link:../../../packages/fixtures
+       '@nsealr/framing':
+         specifier: workspace:*
+-        version: link:../../packages/framing
++        version: link:../../../packages/framing
+       '@nsealr/nip46':
+         specifier: workspace:*
+-        version: link:../../packages/nip46
++        version: link:../../../packages/nip46
+       '@nsealr/policy':
+         specifier: workspace:*
+-        version: link:../../packages/policy
++        version: link:../../../packages/policy
+       '@nsealr/protocol':
+         specifier: workspace:*
+-        version: link:../../packages/protocol
++        version: link:../../../packages/protocol
+       '@nsealr/qr':
+         specifier: workspace:*
+-        version: link:../../packages/qr
++        version: link:../../../packages/qr
+       '@nsealr/review':
+         specifier: workspace:*
+-        version: link:../../packages/review
+-      '@nsealr/smartcard':
+-        specifier: workspace:*
+-        version: link:../../packages/smartcard
++        version: link:../../../packages/review
+       '@nsealr/transport':
+         specifier: workspace:*
+-        version: link:../../packages/transport
++        version: link:../../../packages/transport
+       commander:
+         specifier: 14.0.2
+         version: 14.0.2
+@@ -101,119 +101,113 @@ importers:
+         specifier: 4.21.0
+         version: 4.21.0
+ 
+-  apps/consumer-smoke:
++  apps/bridge/consumer-smoke:
+     dependencies:
+       '@nsealr/browser-provider':
+         specifier: workspace:*
+-        version: link:../../packages/browser-provider
++        version: link:../../../packages/browser-provider
+       '@nsealr/client':
+         specifier: workspace:*
+-        version: link:../../packages/client
++        version: link:../../../packages/client
+       '@nsealr/core':
+         specifier: workspace:*
+-        version: link:../../packages/core
++        version: link:../../../packages/core
+       '@nsealr/fixtures':
+         specifier: workspace:*
+-        version: link:../../packages/fixtures
++        version: link:../../../packages/fixtures
+       '@nsealr/framing':
+         specifier: workspace:*
+-        version: link:../../packages/framing
++        version: link:../../../packages/framing
+       '@nsealr/nip46':
+         specifier: workspace:*
+-        version: link:../../packages/nip46
++        version: link:../../../packages/nip46
+       '@nsealr/policy':
+         specifier: workspace:*
+-        version: link:../../packages/policy
++        version: link:../../../packages/policy
+       '@nsealr/protocol':
+         specifier: workspace:*
+-        version: link:../../packages/protocol
++        version: link:../../../packages/protocol
+       '@nsealr/qr':
+         specifier: workspace:*
+-        version: link:../../packages/qr
++        version: link:../../../packages/qr
+       '@nsealr/review':
+         specifier: workspace:*
+-        version: link:../../packages/review
++        version: link:../../../packages/review
+       '@nsealr/sdk':
+         specifier: workspace:*
+-        version: link:../../packages/sdk
+-      '@nsealr/smartcard':
+-        specifier: workspace:*
+-        version: link:../../packages/smartcard
++        version: link:../../../packages/sdk
+       '@nsealr/transport':
+         specifier: workspace:*
+-        version: link:../../packages/transport
++        version: link:../../../packages/transport
+     devDependencies:
+       tsx:
+         specifier: 4.21.0
+         version: 4.21.0
+ 
+-  apps/sdk-examples:
++  apps/bridge/sdk-examples:
+     dependencies:
+       '@nsealr/browser-provider':
+         specifier: workspace:*
+-        version: link:../../packages/browser-provider
++        version: link:../../../packages/browser-provider
+       '@nsealr/client':
+         specifier: workspace:*
+-        version: link:../../packages/client
++        version: link:../../../packages/client
+       '@nsealr/core':
+         specifier: workspace:*
+-        version: link:../../packages/core
++        version: link:../../../packages/core
+       '@nsealr/fixtures':
+         specifier: workspace:*
+-        version: link:../../packages/fixtures
++        version: link:../../../packages/fixtures
+       '@nsealr/framing':
+         specifier: workspace:*
+-        version: link:../../packages/framing
++        version: link:../../../packages/framing
+       '@nsealr/nip46':
+         specifier: workspace:*
+-        version: link:../../packages/nip46
++        version: link:../../../packages/nip46
+       '@nsealr/policy':
+         specifier: workspace:*
+-        version: link:../../packages/policy
++        version: link:../../../packages/policy
+       '@nsealr/protocol':
+         specifier: workspace:*
+-        version: link:../../packages/protocol
++        version: link:../../../packages/protocol
+       '@nsealr/qr':
+         specifier: workspace:*
+-        version: link:../../packages/qr
++        version: link:../../../packages/qr
+       '@nsealr/review':
+         specifier: workspace:*
+-        version: link:../../packages/review
++        version: link:../../../packages/review
+       '@nsealr/sdk':
+         specifier: workspace:*
+-        version: link:../../packages/sdk
+-      '@nsealr/smartcard':
+-        specifier: workspace:*
+-        version: link:../../packages/smartcard
++        version: link:../../../packages/sdk
+       '@nsealr/transport':
+         specifier: workspace:*
+-        version: link:../../packages/transport
++        version: link:../../../packages/transport
+     devDependencies:
+       tsx:
+         specifier: 4.21.0
+         version: 4.21.0
+ 
+-  apps/service:
++  apps/bridge/service:
+     dependencies:
+       '@nsealr/client':
+         specifier: workspace:*
+-        version: link:../../packages/client
++        version: link:../../../packages/client
+       '@nsealr/policy':
+         specifier: workspace:*
+-        version: link:../../packages/policy
++        version: link:../../../packages/policy
+       '@nsealr/transport':
+         specifier: workspace:*
+-        version: link:../../packages/transport
++        version: link:../../../packages/transport
+       serialport:
+         specifier: 13.0.0
+         version: 13.0.0
+     devDependencies:
+       '@nsealr/fixtures':
+         specifier: workspace:*
+-        version: link:../../packages/fixtures
++        version: link:../../../packages/fixtures
+       '@nsealr/framing':
+         specifier: workspace:*
+-        version: link:../../packages/framing
++        version: link:../../../packages/framing
+       tsx:
+         specifier: 4.21.0
+         version: 4.21.0
+@@ -280,9 +274,6 @@ importers:
+       '@nsealr/protocol':
+         specifier: workspace:*
+         version: link:../protocol
+-      '@nsealr/smartcard':
+-        specifier: workspace:*
+-        version: link:../smartcard
+     devDependencies:
+       '@nsealr/fixtures':
+         specifier: workspace:*
+@@ -392,25 +383,6 @@ importers:
+       '@nsealr/review':
+         specifier: workspace:*
+         version: link:../review
+-      '@nsealr/smartcard':
+-        specifier: workspace:*
+-        version: link:../smartcard
+-
+-  packages/smartcard:
+-    dependencies:
+-      '@nsealr/core':
+-        specifier: workspace:*
+-        version: link:../core
+-      '@nsealr/protocol':
+-        specifier: workspace:*
+-        version: link:../protocol
+-      '@nsealr/review':
+-        specifier: workspace:*
+-        version: link:../review
+-    devDependencies:
+-      '@nsealr/fixtures':
+-        specifier: workspace:*
+-        version: link:../fixtures
+ 
+   packages/transport:
+     dependencies:
+diff --git a/pnpm-workspace.yaml b/pnpm-workspace.yaml
+index c263bee35b4a4d34ce4666289ed3df73183b52ab..0b5960fedfeffbf1b6021b1304047e36a1eae3e4 100644
+--- a/pnpm-workspace.yaml
++++ b/pnpm-workspace.yaml
+@@ -1,4 +1,3 @@
+ packages:
+-  - "apps/*"
++  - "apps/bridge/*"
+   - "packages/*"
+-
+diff --git a/tools/bridge/build_packages.mjs b/tools/bridge/build_packages.mjs
+index a50638d696b3e2ec4e9d26e39d5d7c934f44800a..ca986e34779654855a0148c876458ea6632e6bad 100644
+--- a/tools/bridge/build_packages.mjs
++++ b/tools/bridge/build_packages.mjs
+@@ -14,7 +14,6 @@ const packageOrder = [
+   "qr",
+   "client",
+   "fixtures",
+-  "smartcard",
+   "dev-signer",
+   "transport",
+   "browser-provider",
+diff --git a/tools/bridge/check_api_docs.mjs b/tools/bridge/check_api_docs.mjs
+index 252c8366cd21635be4c485f8a64663fdf8ee1aac..ff8d4ff6205dd8f5c2c55d3150a5668c69b72ec8 100644
+--- a/tools/bridge/check_api_docs.mjs
++++ b/tools/bridge/check_api_docs.mjs
+@@ -3,10 +3,10 @@ import { dirname, join, resolve } from "node:path";
+ import * as ts from "typescript";
+ import { packageDirName, publicPackages, root, sourceManifest } from "./package_set.mjs";
+ 
+-const docPath = join(root, "docs", "api.md");
++const docPath = join(root, "docs", "bridge", "api.md");
+ 
+ function usage() {
+-  return "usage: node scripts/check_api_docs.mjs [--write]";
++  return "usage: node tools/bridge/check_api_docs.mjs [--write]";
+ }
+ 
+ function readSource(path) {
+diff --git a/tools/bridge/check_api_review.mjs b/tools/bridge/check_api_review.mjs
+index 7e8cf6ac03c39165a267aa701514d28b8dcdabb0..6930fdb390bf7e5ce956a7bddd37a957e47710b3 100644
+--- a/tools/bridge/check_api_review.mjs
++++ b/tools/bridge/check_api_review.mjs
+@@ -5,8 +5,8 @@ import { readFileSync } from "node:fs";
+ import { join } from "node:path";
+ import { publicPackages, root } from "./package_set.mjs";
+ 
+-const apiDocsPath = join(root, "docs", "api.md");
+-const reviewPath = join(root, "docs", "api-review.md");
++const apiDocsPath = join(root, "docs", "bridge", "api.md");
++const reviewPath = join(root, "docs", "bridge", "api-review.md");
+ 
+ const apiDocs = readFileSync(apiDocsPath, "utf-8");
+ const review = readFileSync(reviewPath, "utf-8");
+diff --git a/tools/bridge/check_browser_extension_security.mjs b/tools/bridge/check_browser_extension_security.mjs
+index 85024d5088dda82ba5ad8779c4c42e452d243122..fda7ffa8625e385d49813a039546a9a719f60f9b 100644
+--- a/tools/bridge/check_browser_extension_security.mjs
++++ b/tools/bridge/check_browser_extension_security.mjs
+@@ -6,7 +6,7 @@ import * as ts from "typescript";
+ import { root } from "./package_set.mjs";
+ 
+ const auditedRoots = [
+-  "apps/browser-extension/src",
++  "apps/bridge/browser-extension/src",
+   "packages/browser-provider/src",
+   "packages/sdk/src"
+ ].map((path) => join(root, path));
+@@ -114,7 +114,7 @@ function assertPackageManifest(path) {
+ }
+ 
+ for (const manifest of [
+-  "apps/browser-extension/package.json",
++  "apps/bridge/browser-extension/package.json",
+   "packages/browser-provider/package.json",
+   "packages/sdk/package.json"
+ ].map((path) => join(root, path))) {
+diff --git a/tools/bridge/check_browser_runtime_bundle.mjs b/tools/bridge/check_browser_runtime_bundle.mjs
+index 93e01f789a22971e8361bde64c6c61366d2eac93..06408f2b24967f46539ec8b7cf8bc175a261e00b 100644
+--- a/tools/bridge/check_browser_runtime_bundle.mjs
++++ b/tools/bridge/check_browser_runtime_bundle.mjs
+@@ -5,10 +5,10 @@ import { build } from "esbuild";
+ import { root } from "./package_set.mjs";
+ 
+ const entryPoints = [
+-  "apps/browser-extension/src/nsealr-background-entrypoint.ts",
+-  "apps/browser-extension/src/nsealr-content-script-entrypoint.ts",
+-  "apps/browser-extension/src/nsealr-popup-entrypoint.ts",
+-  "apps/browser-extension/src/nsealr-page-script-entrypoint.ts"
++  "apps/bridge/browser-extension/src/nsealr-background-entrypoint.ts",
++  "apps/bridge/browser-extension/src/nsealr-content-script-entrypoint.ts",
++  "apps/bridge/browser-extension/src/nsealr-popup-entrypoint.ts",
++  "apps/bridge/browser-extension/src/nsealr-page-script-entrypoint.ts"
+ ].map((path) => join(root, path));
+ 
+ const result = await build({
+diff --git a/tools/bridge/check_browser_runtime_imports.mjs b/tools/bridge/check_browser_runtime_imports.mjs
+index dd2a43f5589f06ec86dea2f3a7d7a6620abace1f..18e7db23bfa1140c9562b7baf3905a1123e67d9a 100644
+--- a/tools/bridge/check_browser_runtime_imports.mjs
++++ b/tools/bridge/check_browser_runtime_imports.mjs
+@@ -6,10 +6,10 @@ import * as ts from "typescript";
+ import { packageDirName, root, sourceManifest } from "./package_set.mjs";
+ 
+ const browserRuntimeEntrypoints = [
+-  "apps/browser-extension/src/nsealr-background-entrypoint.ts",
+-  "apps/browser-extension/src/nsealr-content-script-entrypoint.ts",
+-  "apps/browser-extension/src/nsealr-popup-entrypoint.ts",
+-  "apps/browser-extension/src/nsealr-page-script-entrypoint.ts",
++  "apps/bridge/browser-extension/src/nsealr-background-entrypoint.ts",
++  "apps/bridge/browser-extension/src/nsealr-content-script-entrypoint.ts",
++  "apps/bridge/browser-extension/src/nsealr-popup-entrypoint.ts",
++  "apps/bridge/browser-extension/src/nsealr-page-script-entrypoint.ts",
+   "packages/browser-provider/src/index.ts",
+   "packages/framing/src/index.ts",
+   "packages/sdk/src/browser.ts"
+diff --git a/tools/bridge/check_readme_examples.mjs b/tools/bridge/check_readme_examples.mjs
+index c78e4dc0e3177a82e795fa2a6fd473ad9eba0d7a..da9a59bb2dd53e8cb928951792a1e4625ab5c174 100644
+--- a/tools/bridge/check_readme_examples.mjs
++++ b/tools/bridge/check_readme_examples.mjs
+@@ -5,7 +5,7 @@ import { join } from "node:path";
+ import { packageDirName, publicPackages, root, run } from "./package_set.mjs";
+ 
+ const marker = "nsealr-readme-example";
+-const tempParent = join(root, "apps", "sdk-examples", ".tmp");
++const tempParent = join(root, "apps", "bridge", "sdk-examples", ".tmp");
+ const tempRoot = join(tempParent, "readme-examples");
+ 
+ function readmePath(packageName) {
+diff --git a/tools/bridge/package_set.mjs b/tools/bridge/package_set.mjs
+index 276e16a22932fcb5ef377513d6e61b81edf6e74e..aa0d1f9ac1e4cc3da0c91e30f258711bd4eddb27 100644
+--- a/tools/bridge/package_set.mjs
++++ b/tools/bridge/package_set.mjs
+@@ -5,7 +5,7 @@ import { readdirSync, readFileSync } from "node:fs";
+ import { dirname, join } from "node:path";
+ import { fileURLToPath } from "node:url";
+ 
+-export const root = dirname(fileURLToPath(new URL("../package.json", import.meta.url)));
++export const root = dirname(fileURLToPath(new URL("../../package.json", import.meta.url)));
+ 
+ const packagesRoot = join(root, "packages");
+ 
+@@ -66,12 +66,10 @@ export function packageManagerCommand() {
+   const packageManager = readJson(join(root, "package.json")).packageManager;
+   assert.match(packageManager, /^pnpm@\d+\.\d+\.\d+$/u, "root packageManager must pin pnpm");
+   const env = { ...process.env };
+-  for (const key of Object.keys(env)) {
+-    if (key.startsWith("npm_config_")) {
+-      delete env[key];
+-    }
+-  }
+-  return { command: "npm", prefixArgs: ["exec", "--yes", `--package=${packageManager}`, "--", "pnpm"], env };
++  const version = spawnSync("pnpm", ["--version"], { env, encoding: "utf8" });
++  assert.equal(version.status, 0, "pinned pnpm must be available in the bootstrap PATH");
++  assert.equal(version.stdout.trim(), packageManager.slice("pnpm@".length), "pnpm version must match packageManager exactly");
++  return { command: "pnpm", prefixArgs: [], env };
+ }
+ 
+ export function run(command, args, options = {}) {
+diff --git a/tsconfig.json b/tsconfig.json
+index ecbc4171e0ed7266899f671a5d39f2c0be53e4d3..053eeddf6328f5dca2af9b03a62b3a8ebe65180c 100644
+--- a/tsconfig.json
++++ b/tsconfig.json
+@@ -1,15 +1,24 @@
+ {
+   "compilerOptions": {
+-    "target": "ES2022",
+-    "module": "NodeNext",
+-    "moduleResolution": "NodeNext",
+-    "strict": true,
+     "esModuleInterop": true,
+     "forceConsistentCasingInFileNames": true,
+-    "skipLibCheck": true,
++    "module": "NodeNext",
++    "moduleResolution": "NodeNext",
+     "resolveJsonModule": true,
+-    "types": ["node", "vitest/globals"]
++    "skipLibCheck": true,
++    "strict": true,
++    "target": "ES2022",
++    "types": [
++      "node",
++      "vitest/globals"
++    ]
+   },
+-  "include": ["apps/**/*.ts", "packages/**/*.ts"],
+-  "exclude": ["apps/*/dist", "packages/*/dist"]
++  "exclude": [
++    "apps/bridge/*/dist",
++    "packages/*/dist"
++  ],
++  "include": [
++    "apps/**/*.ts",
++    "packages/**/*.ts"
++  ]
+ }

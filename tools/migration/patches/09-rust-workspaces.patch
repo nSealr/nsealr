@@ -1,0 +1,634 @@
+diff --git a/Cargo.lock b/Cargo.lock
+index 965e36918d4aa6c76a59be6c9d7cb7e545e1753a..f48d5b0f755e976714989355175c81c26dd0b0df 100644
+--- a/Cargo.lock
++++ b/Cargo.lock
+@@ -36,14 +36,6 @@ dependencies = [
+  "hybrid-array",
+ ]
+ 
+-[[package]]
+-name = "desktop-simulator"
+-version = "0.0.0"
+-dependencies = [
+- "nsealr-core",
+- "serde_json",
+-]
+-
+ [[package]]
+ name = "digest"
+ version = "0.11.3"
+@@ -55,18 +47,6 @@ dependencies = [
+  "zeroize",
+ ]
+ 
+-[[package]]
+-name = "equivalent"
+-version = "1.0.2"
+-source = "registry+https://github.com/rust-lang/crates.io-index"
+-checksum = "877a4ace8713b0bcf2a4e7eec82529c029f1d0619886d18145fea96c3ffe5c0f"
+-
+-[[package]]
+-name = "hashbrown"
+-version = "0.17.1"
+-source = "registry+https://github.com/rust-lang/crates.io-index"
+-checksum = "ed5909b6e89a2db4456e54cd5f673791d7eca6732202bbf2a9cc504fe2f9b84a"
+-
+ [[package]]
+ name = "hybrid-array"
+ version = "0.4.15"
+@@ -76,34 +56,12 @@ dependencies = [
+  "typenum",
+ ]
+ 
+-[[package]]
+-name = "indexmap"
+-version = "2.14.0"
+-source = "registry+https://github.com/rust-lang/crates.io-index"
+-checksum = "d466e9454f08e4a911e14806c24e16fba1b4c121d1ea474396f396069cf949d9"
+-dependencies = [
+- "equivalent",
+- "hashbrown",
+-]
+-
+-[[package]]
+-name = "itoa"
+-version = "1.0.18"
+-source = "registry+https://github.com/rust-lang/crates.io-index"
+-checksum = "8f42a60cbdf9a97f5d2305f08a87dc4e09308d1276d28c869c684d7777685682"
+-
+ [[package]]
+ name = "libc"
+ version = "0.2.190"
+ source = "registry+https://github.com/rust-lang/crates.io-index"
+ checksum = "ce5d3ddc6d3fa000eb1536d85e147bfe31aacaba692ed6a876f95cb7c855be78"
+ 
+-[[package]]
+-name = "memchr"
+-version = "2.8.3"
+-source = "registry+https://github.com/rust-lang/crates.io-index"
+-checksum = "cf8baf1c55e62ffcace7a9f06f4bd9cd3f0c4beb022d3b367256b91b87513d98"
+-
+ [[package]]
+ name = "nsealr-core"
+ version = "0.0.0"
+@@ -112,67 +70,6 @@ dependencies = [
+  "zeroize",
+ ]
+ 
+-[[package]]
+-name = "proc-macro2"
+-version = "1.0.107"
+-source = "registry+https://github.com/rust-lang/crates.io-index"
+-checksum = "985e7ec9bb745e6ce6535b544d84d6cd6f7ad8bd711c398938ae983b91a766d9"
+-dependencies = [
+- "unicode-ident",
+-]
+-
+-[[package]]
+-name = "quote"
+-version = "1.0.47"
+-source = "registry+https://github.com/rust-lang/crates.io-index"
+-checksum = "1fbf4db142a473a8d80c26bbf18454ed458bf8d26c8219c331daecfdbd079001"
+-dependencies = [
+- "proc-macro2",
+-]
+-
+-[[package]]
+-name = "serde"
+-version = "1.0.229"
+-source = "registry+https://github.com/rust-lang/crates.io-index"
+-checksum = "4148590afebada386688f18773da617792bf2ef03ffc1e4cbd2b1d45b023e0ba"
+-dependencies = [
+- "serde_core",
+-]
+-
+-[[package]]
+-name = "serde_core"
+-version = "1.0.229"
+-source = "registry+https://github.com/rust-lang/crates.io-index"
+-checksum = "67dca2c9c51e58a4791a4b1ed58308b39c64224d349a935ab5039aa360942a48"
+-dependencies = [
+- "serde_derive",
+-]
+-
+-[[package]]
+-name = "serde_derive"
+-version = "1.0.229"
+-source = "registry+https://github.com/rust-lang/crates.io-index"
+-checksum = "e7a5d71263a5a7d47b41f6b3f06ba276f10cc18b0931f1799f710578e2309348"
+-dependencies = [
+- "proc-macro2",
+- "quote",
+- "syn",
+-]
+-
+-[[package]]
+-name = "serde_json"
+-version = "1.0.151"
+-source = "registry+https://github.com/rust-lang/crates.io-index"
+-checksum = "c841b55ecdae098c80dcae9cf767f6f8a0c2cdb3416bbef72181df4d0fe73f14"
+-dependencies = [
+- "indexmap",
+- "itoa",
+- "memchr",
+- "serde",
+- "serde_core",
+- "zmij",
+-]
+-
+ [[package]]
+ name = "sha2"
+ version = "0.11.0"
+@@ -184,37 +81,14 @@ dependencies = [
+  "digest",
+ ]
+ 
+-[[package]]
+-name = "syn"
+-version = "3.0.3"
+-source = "registry+https://github.com/rust-lang/crates.io-index"
+-checksum = "53e9bae58849f64dfa4f5d5ae372c8341f7305f82a3868709269343628b659a3"
+-dependencies = [
+- "proc-macro2",
+- "quote",
+- "unicode-ident",
+-]
+-
+ [[package]]
+ name = "typenum"
+ version = "1.20.1"
+ source = "registry+https://github.com/rust-lang/crates.io-index"
+ checksum = "b6f5e870be6c3b371b77fe0ee0bafb859fa4964b4404c27de1d380043c4dda20"
+ 
+-[[package]]
+-name = "unicode-ident"
+-version = "1.0.24"
+-source = "registry+https://github.com/rust-lang/crates.io-index"
+-checksum = "e6e4313cd5fcd3dad5cafa179702e2b244f760991f45397d14d4ebf38247da75"
+-
+ [[package]]
+ name = "zeroize"
+ version = "1.9.1"
+ source = "registry+https://github.com/rust-lang/crates.io-index"
+ checksum = "e13084392c5e4bc371903e2935a5eaeed24905a7511356b883835e18a78f6879"
+-
+-[[package]]
+-name = "zmij"
+-version = "1.0.23"
+-source = "registry+https://github.com/rust-lang/crates.io-index"
+-checksum = "29666d0abbfad1e3dc4dcf6144730dd3a3ab225bbbdac83319345b1b44ccfc1b"
+diff --git a/Cargo.toml b/Cargo.toml
+index 323049e8b1b17d6fa8387ab6f61f20147b44fe91..f438331d7d80ae41a37e725847c779afc4282b84 100644
+--- a/Cargo.toml
++++ b/Cargo.toml
+@@ -1,13 +1,8 @@
+-# nSealr firmware — Rust cargo workspace.
+-#
+-# The all-Rust tree (`crates/`, `apps/`) is the sole firmware backbone; the
+-# legacy C++ `host_core` and ESP-IDF app that used to live under `firmware/`
+-# were retired in Phase 03 Task 05. Only crates that already have contents are
+-# listed as members; `apps/*` and future infra crates are added by the phases
+-# that create them.
++# Portable no_std engine workspace. Host tools resolve independently.
+ [workspace]
+ resolver = "2"
+-members = ["crates/nsealr-core", "apps/desktop-simulator"]
++members = ["crates/nsealr-core"]
++exclude = ["apps/desktop-simulator"]
+ 
+ # Reproducible release profile (docs/reproducible-build.md, `make repro-build`).
+ # `codegen-units = 1` removes codegen parallelism as a variance source, trading
+diff --git a/Makefile b/Makefile
+index b71abb1f6a09aeb69cfd654048ce6b24c833b487..1158927e0bb33afe5c33edb286f9ffca2c2243f0 100644
+--- a/Makefile
++++ b/Makefile
+@@ -1,16 +1,11 @@
+-# nSealr firmware — all-Rust workspace gates.
+-#
+-# The C++ `host_core` and the ESP-IDF `esp32_s3_usb_signer` app were retired in
+-# Phase 03 Task 05; `crates/nsealr-core` is the sole signer backbone and
+-# `apps/desktop-simulator` is its vector-parity oracle. Only one toolchain (Rust)
+-# remains, so `make ci` is a single Rust gate set plus the generic Python
+-# repo/board validators.
+-
++# nSealr integration gates; embedded and host Cargo graphs remain separate.
+ .PHONY: test lint audit docs ci cargo-fmt cargo-clippy cargo-test cargo-deny \
+ 	coverage-ratchet vector-harness repro-build rust-ci
+ 
+ RISCV_TARGET := riscv32imafc-unknown-none-elf
+-RUST_COVERAGE_JSON := build/rust-coverage.json
++RUST_COVERAGE_JSON := build/rust-core-coverage.json
++HOST_COVERAGE_JSON := build/rust-host-coverage.json
++HOST_MANIFEST := apps/desktop-simulator/Cargo.toml
+ 
+ # ---------------------------------------------------------------------------
+ # Generic (toolchain-agnostic) Python gates.
+@@ -43,10 +38,12 @@ docs:
+ # ---------------------------------------------------------------------------
+ cargo-fmt:
+ 	cargo fmt --all --check
++	cargo fmt --manifest-path $(HOST_MANIFEST) --all --check
+ 
+ cargo-clippy:
+ 	cargo clippy --all-targets -- -D warnings -D dead_code
+ 	cargo clippy --all-targets --all-features -- -D warnings -D dead_code
++	cargo clippy --manifest-path $(HOST_MANIFEST) --all-targets --all-features -- -D warnings -D dead_code
+ 
+ cargo-test:
+ 	cargo test --workspace
+@@ -55,18 +52,20 @@ cargo-test:
+ 
+ cargo-deny:
+ 	cargo deny check
++	cargo deny --manifest-path $(HOST_MANIFEST) check --config deny.toml
+ 
+ # The desktop-simulator parity oracle: exhaustively replays every in-scope
+ # specs/vectors/<category>/*.json file through nsealr-core's public API and
+ # enforces the category completeness rule (Phase 03 Task 04). Every Rust app in
+ # this workspace must pass this gate before claiming vector compliance.
+ vector-harness:
+-	cargo test -p desktop-simulator
++	cargo test --manifest-path $(HOST_MANIFEST) --locked --offline
+ 
+ coverage-ratchet:
+ 	@mkdir -p build
+ 	cargo llvm-cov --workspace --all-features --summary-only --json --output-path $(RUST_COVERAGE_JSON)
+-	python3 ci/check_coverage_ratchet.py $(RUST_COVERAGE_JSON) ci/ratchet.json
++	cargo llvm-cov --manifest-path $(HOST_MANIFEST) --workspace --all-features --summary-only --json --output-path $(HOST_COVERAGE_JSON)
++	python3 ci/check_coverage_ratchet.py $(RUST_COVERAGE_JSON) ci/ratchet.json $(HOST_COVERAGE_JSON)
+ 
+ # Reproducible-build gate: two clean release builds must be byte-identical, and
+ # the nsealr-core device rlib must reproduce byte-for-byte from a second checkout
+diff --git a/apps/desktop-simulator/.cargo/config.toml b/apps/desktop-simulator/.cargo/config.toml
+new file mode 100644
+index 0000000000000000000000000000000000000000..36ebb1f666f8a5ca315279c2297a9d54fb557796
+--- /dev/null
++++ b/apps/desktop-simulator/.cargo/config.toml
+@@ -0,0 +1,4 @@
++[source.crates-io]
++replace-with = "vendored-sources"
++[source.vendored-sources]
++directory = "../../vendor"
+diff --git a/apps/desktop-simulator/Cargo.lock b/apps/desktop-simulator/Cargo.lock
+new file mode 100644
+index 0000000000000000000000000000000000000000..965e36918d4aa6c76a59be6c9d7cb7e545e1753a
+--- /dev/null
++++ b/apps/desktop-simulator/Cargo.lock
+@@ -0,0 +1,220 @@
++# This file is automatically @generated by Cargo.
++# It is not intended for manual editing.
++version = 4
++
++[[package]]
++name = "block-buffer"
++version = "0.12.1"
++source = "registry+https://github.com/rust-lang/crates.io-index"
++checksum = "d2f6c7dbe95a6ed67ad9f18e57daf93a2f034c524b99fd2b76d18fdfeb6660aa"
++dependencies = [
++ "hybrid-array",
++ "zeroize",
++]
++
++[[package]]
++name = "cfg-if"
++version = "1.0.5"
++source = "registry+https://github.com/rust-lang/crates.io-index"
++checksum = "4e7648175b45a9a48536d676f68d918270699102aa8dab5496df06904c914600"
++
++[[package]]
++name = "cpufeatures"
++version = "0.3.1"
++source = "registry+https://github.com/rust-lang/crates.io-index"
++checksum = "5ca28b0ae3115b884660db4118d803791fd6756b6e88f39c0f3f7859060d7566"
++dependencies = [
++ "libc",
++]
++
++[[package]]
++name = "crypto-common"
++version = "0.2.2"
++source = "registry+https://github.com/rust-lang/crates.io-index"
++checksum = "ce6e4c961d6cd6c9a86db418387425e8bdeaf05b3c8bc1411e6dca4c252f1453"
++dependencies = [
++ "hybrid-array",
++]
++
++[[package]]
++name = "desktop-simulator"
++version = "0.0.0"
++dependencies = [
++ "nsealr-core",
++ "serde_json",
++]
++
++[[package]]
++name = "digest"
++version = "0.11.3"
++source = "registry+https://github.com/rust-lang/crates.io-index"
++checksum = "f1dd6dbb5841937940781866fa1281a1ff7bd3bf827091440879f9994983d5c2"
++dependencies = [
++ "block-buffer",
++ "crypto-common",
++ "zeroize",
++]
++
++[[package]]
++name = "equivalent"
++version = "1.0.2"
++source = "registry+https://github.com/rust-lang/crates.io-index"
++checksum = "877a4ace8713b0bcf2a4e7eec82529c029f1d0619886d18145fea96c3ffe5c0f"
++
++[[package]]
++name = "hashbrown"
++version = "0.17.1"
++source = "registry+https://github.com/rust-lang/crates.io-index"
++checksum = "ed5909b6e89a2db4456e54cd5f673791d7eca6732202bbf2a9cc504fe2f9b84a"
++
++[[package]]
++name = "hybrid-array"
++version = "0.4.15"
++source = "registry+https://github.com/rust-lang/crates.io-index"
++checksum = "27f864f10dfb56725ce5ce5472bc52252c8f93a4ab86327122cebf62c5f59a17"
++dependencies = [
++ "typenum",
++]
++
++[[package]]
++name = "indexmap"
++version = "2.14.0"
++source = "registry+https://github.com/rust-lang/crates.io-index"
++checksum = "d466e9454f08e4a911e14806c24e16fba1b4c121d1ea474396f396069cf949d9"
++dependencies = [
++ "equivalent",
++ "hashbrown",
++]
++
++[[package]]
++name = "itoa"
++version = "1.0.18"
++source = "registry+https://github.com/rust-lang/crates.io-index"
++checksum = "8f42a60cbdf9a97f5d2305f08a87dc4e09308d1276d28c869c684d7777685682"
++
++[[package]]
++name = "libc"
++version = "0.2.190"
++source = "registry+https://github.com/rust-lang/crates.io-index"
++checksum = "ce5d3ddc6d3fa000eb1536d85e147bfe31aacaba692ed6a876f95cb7c855be78"
++
++[[package]]
++name = "memchr"
++version = "2.8.3"
++source = "registry+https://github.com/rust-lang/crates.io-index"
++checksum = "cf8baf1c55e62ffcace7a9f06f4bd9cd3f0c4beb022d3b367256b91b87513d98"
++
++[[package]]
++name = "nsealr-core"
++version = "0.0.0"
++dependencies = [
++ "sha2",
++ "zeroize",
++]
++
++[[package]]
++name = "proc-macro2"
++version = "1.0.107"
++source = "registry+https://github.com/rust-lang/crates.io-index"
++checksum = "985e7ec9bb745e6ce6535b544d84d6cd6f7ad8bd711c398938ae983b91a766d9"
++dependencies = [
++ "unicode-ident",
++]
++
++[[package]]
++name = "quote"
++version = "1.0.47"
++source = "registry+https://github.com/rust-lang/crates.io-index"
++checksum = "1fbf4db142a473a8d80c26bbf18454ed458bf8d26c8219c331daecfdbd079001"
++dependencies = [
++ "proc-macro2",
++]
++
++[[package]]
++name = "serde"
++version = "1.0.229"
++source = "registry+https://github.com/rust-lang/crates.io-index"
++checksum = "4148590afebada386688f18773da617792bf2ef03ffc1e4cbd2b1d45b023e0ba"
++dependencies = [
++ "serde_core",
++]
++
++[[package]]
++name = "serde_core"
++version = "1.0.229"
++source = "registry+https://github.com/rust-lang/crates.io-index"
++checksum = "67dca2c9c51e58a4791a4b1ed58308b39c64224d349a935ab5039aa360942a48"
++dependencies = [
++ "serde_derive",
++]
++
++[[package]]
++name = "serde_derive"
++version = "1.0.229"
++source = "registry+https://github.com/rust-lang/crates.io-index"
++checksum = "e7a5d71263a5a7d47b41f6b3f06ba276f10cc18b0931f1799f710578e2309348"
++dependencies = [
++ "proc-macro2",
++ "quote",
++ "syn",
++]
++
++[[package]]
++name = "serde_json"
++version = "1.0.151"
++source = "registry+https://github.com/rust-lang/crates.io-index"
++checksum = "c841b55ecdae098c80dcae9cf767f6f8a0c2cdb3416bbef72181df4d0fe73f14"
++dependencies = [
++ "indexmap",
++ "itoa",
++ "memchr",
++ "serde",
++ "serde_core",
++ "zmij",
++]
++
++[[package]]
++name = "sha2"
++version = "0.11.0"
++source = "registry+https://github.com/rust-lang/crates.io-index"
++checksum = "446ba717509524cb3f22f17ecc096f10f4822d76ab5c0b9822c5f9c284e825f4"
++dependencies = [
++ "cfg-if",
++ "cpufeatures",
++ "digest",
++]
++
++[[package]]
++name = "syn"
++version = "3.0.3"
++source = "registry+https://github.com/rust-lang/crates.io-index"
++checksum = "53e9bae58849f64dfa4f5d5ae372c8341f7305f82a3868709269343628b659a3"
++dependencies = [
++ "proc-macro2",
++ "quote",
++ "unicode-ident",
++]
++
++[[package]]
++name = "typenum"
++version = "1.20.1"
++source = "registry+https://github.com/rust-lang/crates.io-index"
++checksum = "b6f5e870be6c3b371b77fe0ee0bafb859fa4964b4404c27de1d380043c4dda20"
++
++[[package]]
++name = "unicode-ident"
++version = "1.0.24"
++source = "registry+https://github.com/rust-lang/crates.io-index"
++checksum = "e6e4313cd5fcd3dad5cafa179702e2b244f760991f45397d14d4ebf38247da75"
++
++[[package]]
++name = "zeroize"
++version = "1.9.1"
++source = "registry+https://github.com/rust-lang/crates.io-index"
++checksum = "e13084392c5e4bc371903e2935a5eaeed24905a7511356b883835e18a78f6879"
++
++[[package]]
++name = "zmij"
++version = "1.0.23"
++source = "registry+https://github.com/rust-lang/crates.io-index"
++checksum = "29666d0abbfad1e3dc4dcf6144730dd3a3ab225bbbdac83319345b1b44ccfc1b"
+diff --git a/apps/desktop-simulator/Cargo.toml b/apps/desktop-simulator/Cargo.toml
+index 51597af457cf8c4a9494d4b8f5a1ec716dcf9080..851a3d23e4986ce4bd1f02009d724cc23837962f 100644
+--- a/apps/desktop-simulator/Cargo.toml
++++ b/apps/desktop-simulator/Cargo.toml
+@@ -34,3 +34,10 @@ nsealr-core = { path = "../../crates/nsealr-core", version = "0.0.0", features =
+ # re-serialized into the parsers are byte-faithful to the canonical vectors;
+ # `Value` equality stays order-independent regardless.
+ serde_json = { version = "1", features = ["preserve_order"] }
++
++[workspace]
++resolver = "2"
++members = ["."]
++
++[profile.release]
++codegen-units = 1
+diff --git a/apps/desktop-simulator/rust-toolchain.toml b/apps/desktop-simulator/rust-toolchain.toml
+new file mode 100644
+index 0000000000000000000000000000000000000000..633163f83aa8cd448647768aa8fe2dc8c9321cf8
+--- /dev/null
++++ b/apps/desktop-simulator/rust-toolchain.toml
+@@ -0,0 +1,5 @@
++# Independently pinned host vector replay toolchain.
++[toolchain]
++channel = "1.95.0"
++profile = "minimal"
++components = ["rustfmt", "clippy", "llvm-tools-preview"]
+diff --git a/ci/check_coverage_ratchet.py b/ci/check_coverage_ratchet.py
+index f8ba14f2267f687c0baf383c6ab0146ab0fce9eb..d79f7f248978921482c3df2f350b44dc204d922e 100644
+--- a/ci/check_coverage_ratchet.py
++++ b/ci/check_coverage_ratchet.py
+@@ -28,10 +28,10 @@ from pathlib import Path
+ EPSILON = 1e-6
+ 
+ 
+-def workspace_packages() -> dict[str, Path]:
++def workspace_packages(manifest="Cargo.toml") -> dict[str, Path]:
+     """Return {package name: package root dir} for workspace members only."""
+     out = subprocess.run(
+-        ["cargo", "metadata", "--no-deps", "--format-version", "1"],
++        ["cargo", "metadata", "--no-deps", "--format-version", "1", "--manifest-path", manifest],
+         check=True,
+         capture_output=True,
+         text=True,
+@@ -39,7 +39,7 @@ def workspace_packages() -> dict[str, Path]:
+     meta = json.loads(out)
+     return {
+         pkg["name"]: Path(pkg["manifest_path"]).resolve().parent
+-        for pkg in meta["packages"]
++        for pkg in meta["packages"] if pkg["id"] in meta["workspace_members"]
+     }
+ 
+ 
+@@ -68,21 +68,23 @@ def measured_line_coverage(cov_json: Path, roots: dict[str, Path]) -> dict[str,
+         total[owner] += lines["count"]
+ 
+     return {
+-        name: (100.0 if total[name] == 0 else 100.0 * covered[name] / total[name])
++        name: (0.0 if total[name] == 0 else 100.0 * covered[name] / total[name])
+         for name in roots
+     }
+ 
+ 
+ def main(argv: list[str]) -> int:
+-    if len(argv) != 3:
+-        print(f"usage: {argv[0]} <cargo-llvm-cov-json> <ratchet-json>", file=sys.stderr)
++    if len(argv) != 4:
++        print(f"usage: {argv[0]} <cargo-llvm-cov-json> <ratchet-json> <host-coverage-json>", file=sys.stderr)
+         return 2
+ 
+     cov_json = Path(argv[1])
+     ratchet = json.loads(Path(argv[2]).read_text())
+     floors: dict[str, float] = ratchet["coverage"]["floors"]
+ 
+-    roots = workspace_packages()
++    core_roots = workspace_packages()
++    host_roots = workspace_packages("apps/desktop-simulator/Cargo.toml")
++    roots = {**core_roots, **host_roots}
+     missing_floor = sorted(set(roots) - set(floors))
+     stale_floor = sorted(set(floors) - set(roots))
+     if missing_floor:
+@@ -100,7 +102,8 @@ def main(argv: list[str]) -> int:
+         )
+         return 1
+ 
+-    measured = measured_line_coverage(cov_json, roots)
++    measured = {**measured_line_coverage(cov_json, core_roots),
++                **measured_line_coverage(Path(argv[3]), host_roots)}
+     failed = False
+     print("package                        measured   floor   status")
+     print("-" * 58)
+diff --git a/ci/repro_build.sh b/ci/repro_build.sh
+index bbb0a3608d583f601d765efaa6558556327d8eec..81cebd7c8e238edb829eae536c87de37d5491730 100755
+--- a/ci/repro_build.sh
++++ b/ci/repro_build.sh
+@@ -51,13 +51,13 @@ build_release() {
+ 	local src="$1" td="$2" flags
+ 	flags="--remap-path-prefix=${src}=/nsealr"
+ 	RUSTFLAGS="$flags" cargo build --release --offline --locked \
+-		-p desktop-simulator --target-dir "$td" >/dev/null
++		--manifest-path apps/desktop-simulator/Cargo.toml --target-dir "$td/host" >/dev/null
+ 	RUSTFLAGS="$flags" cargo build --release --offline --locked \
+-		-p nsealr-core --target "$TRIPLE" --target-dir "$td" >/dev/null
++		-p nsealr-core --target "$TRIPLE" --target-dir "$td/core" >/dev/null
+ }
+ 
+-DS_REL="release/desktop-simulator"
+-RLIB_REL="${TRIPLE}/release/libnsealr_core.rlib"
++DS_REL="host/release/desktop-simulator"
++RLIB_REL="core/${TRIPLE}/release/libnsealr_core.rlib"
+ 
+ echo "repro-build: same-tree clean build A"
+ rm -rf "$ROOT/target/repro-a" "$ROOT/target/repro-b"
+@@ -76,7 +76,7 @@ SCRATCH="$(mktemp -d "${TMPDIR:-/tmp}/nsealr-repro.XXXXXX")"
+ # Physical path: rustc sees the resolved path, so the remap prefix must too.
+ SCRATCH="$(cd "$SCRATCH" && pwd -P)"
+ trap 'rm -rf "$SCRATCH"' EXIT
+-rsync -a --exclude='/target' --exclude='/.git' "$ROOT/" "$SCRATCH/"
++rsync -a --exclude='target/' --exclude='node_modules/' --exclude='.venv/' --exclude='build/' --exclude='dist/' --exclude='/.git' "$ROOT/" "$SCRATCH/"
+ (cd "$SCRATCH" && build_release "$SCRATCH" "$SCRATCH/target/repro-x")
+ X_RLIB="$(sha "$SCRATCH/target/repro-x/$RLIB_REL")"
+ 
+diff --git a/rust-toolchain.toml b/rust-toolchain.toml
+index fb1dd8c5ba2d39ec0608c02277260dcd31cb81f5..50cbb4a515c844a1bdff5f675687e55f3d615945 100644
+--- a/rust-toolchain.toml
++++ b/rust-toolchain.toml
+@@ -1,10 +1,4 @@
+-# Pinned Rust toolchain for the nSealr firmware workspace.
+-#
+-# The channel is pinned to an explicit stable version for reproducibility; it is
+-# only ever bumped deliberately (ratchets tighten, never drift). The Xtensa
+-# ESP32-S3 is NOT a rustup target — it needs the `esp` channel installed via
+-# `espup`, which cannot be pinned here; that toolchain is set up in Phase 05
+-# Task 00. The ESP32-P4 is RISC-V and builds on this stock target.
++# Embedded engine compiler and actual RISC-V build target.
+ [toolchain]
+ channel = "1.95.0"
+ profile = "minimal"

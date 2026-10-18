@@ -1,0 +1,28 @@
+cargo test --workspace
+   Compiling nsealr-core v0.0.0 (/home/tux/nsealr/.restart-tools/goal/a02/tools/migration/.runtime/rehearsal-01/repository/crates/nsealr-core)
+error: failed to run custom build command for `nsealr-core v0.0.0 (/home/tux/nsealr/.restart-tools/goal/a02/tools/migration/.runtime/rehearsal-01/repository/crates/nsealr-core)`
+
+Caused by:
+  process didn't exit successfully: `/home/tux/nsealr/.restart-tools/goal/a02/tools/migration/.runtime/rehearsal-01/repository/target/debug/build/nsealr-core-f03da4d14c16e165/build-script-build` (exit status: 101)
+  --- stdout
+  cargo:rerun-if-changed=/home/tux/nsealr/.restart-tools/goal/a02/tools/migration/.runtime/rehearsal-01/repository/crates/nsealr-core/../../ci/project_core_fixtures.py
+  cargo:rerun-if-changed=/home/tux/nsealr/.restart-tools/goal/a02/tools/migration/.runtime/rehearsal-01/repository/crates/nsealr-core/../../ci/core-test-projections.json
+  cargo:rerun-if-changed=/home/tux/nsealr/.restart-tools/goal/a02/tools/migration/.runtime/rehearsal-01/repository/crates/nsealr-core/../../protocols/contracts/v1
+
+  --- stderr
+  Traceback (most recent call last):
+    File "/home/tux/nsealr/.restart-tools/goal/a02/tools/migration/.runtime/rehearsal-01/repository/crates/nsealr-core/../../ci/project_core_fixtures.py", line 55, in <module>
+      if __name__=='__main__':project(Path(sys.argv[1]))
+                              ^^^^^^^^^^^^^^^^^^^^^^^^^^
+    File "/home/tux/nsealr/.restart-tools/goal/a02/tools/migration/.runtime/rehearsal-01/repository/crates/nsealr-core/../../ci/project_core_fixtures.py", line 42, in project
+      'body_line_styles:vec!['+','.join({'meta':'ReviewBodyLineStyle::Meta','value':'ReviewBodyLineStyle::Value'}[s] for s in p['body_line_styles'])+']']
+                               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    File "/home/tux/nsealr/.restart-tools/goal/a02/tools/migration/.runtime/rehearsal-01/repository/crates/nsealr-core/../../ci/project_core_fixtures.py", line 42, in <genexpr>
+      'body_line_styles:vec!['+','.join({'meta':'ReviewBodyLineStyle::Meta','value':'ReviewBodyLineStyle::Value'}[s] for s in p['body_line_styles'])+']']
+                                        ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^
+  KeyError: 'normal'
+
+  thread 'main' (1660499) panicked at crates/nsealr-core/build.rs:11:5:
+  contract test-data projection failed
+  note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+make: *** [Makefile:49: cargo-test] Error 101
