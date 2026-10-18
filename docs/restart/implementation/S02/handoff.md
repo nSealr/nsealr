@@ -6,6 +6,14 @@ Product candidate `b64afa7a8e3dd9e0e155eea55bf402715ddf32ad`, based on
 committed at `9b9da56`. This document requests independent exact-candidate review;
 it does not approve or close S02. [Tracking issue](https://github.com/nSealr/nsealr/issues/4).
 
+Draft PR: [#10](https://github.com/nSealr/nsealr/pull/10). After coordinator PR #8
+merged, the branch was rebased onto `61b0c39131012c40ff76321bb3650def6e7a9d83`.
+`evidence/rebase-reconciliation.json` compares all 670 changed product/dependency
+source files with the original tested candidate: zero differences. The new base
+changes only restart documentation/task metadata. Original evidence remains under
+`evidence/integration/`; the refreshed whole-candidate run is recorded separately
+under `evidence/rebased-integration/`, without overwriting the first run.
+
 | Parent acceptance | Evidence and practical limit |
 | --- | --- |
 | Remove secret Debug/unnecessary Clone/public access | `evidence/baseline-exposure.*` reproduces old public exposure; `secret_boundary.rs` checks fixed redaction, intake, cancellation and checksum failure; 11 external compile-fail doctests deny cloning/raw fields/direct builder/ownership replay. Full candidate command logs are in `evidence/integration/`. |
