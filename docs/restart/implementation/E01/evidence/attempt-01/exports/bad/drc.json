@@ -1,0 +1,124 @@
+{
+    "$schema": "https://schemas.kicad.org/drc.v1.json",
+    "coordinate_units": "mm",
+    "date": "2026-10-18T18:02:35",
+    "ignored_checks": [
+        {
+            "description": "Footprint has no courtyard defined",
+            "key": "missing_courtyard"
+        },
+        {
+            "description": "Track endpoint not centered on via",
+            "key": "track_not_centered_on_via"
+        },
+        {
+            "description": "Tuning profile track geometries",
+            "key": "tuning_profile_track_geometries"
+        },
+        {
+            "description": "Footprint doesn't match symbol's footprint filters",
+            "key": "footprint_filters_mismatch"
+        },
+        {
+            "description": "Footprint component type doesn't match footprint pads",
+            "key": "footprint_type_mismatch"
+        }
+    ],
+    "included_severities": [
+        "error",
+        "warning",
+        "exclusion"
+    ],
+    "kicad_version": "10.0.7",
+    "schematic_parity": [
+        {
+            "description": "Pad net (/GND) doesn't match net given by schematic (unconnected-(R2-Pad2))",
+            "items": [
+                {
+                    "description": "Pad 2 [/GND] of R2 on F.Cu",
+                    "pos": {
+                        "x": 40.9125,
+                        "y": 32.54
+                    },
+                    "uuid": "924e3af1-8dd2-4923-b7ed-7850386385f0"
+                }
+            ],
+            "severity": "warning",
+            "type": "net_conflict"
+        }
+    ],
+    "source": "canary.kicad_pcb",
+    "unconnected_items": [
+        {
+            "description": "Missing connection between items",
+            "items": [
+                {
+                    "description": "Track [/VOUT] on F.Cu, length 6.4600 mm",
+                    "pos": {
+                        "x": 37.5,
+                        "y": 39.0
+                    },
+                    "uuid": "782a2b45-a78f-4a59-8948-5a27285daefb"
+                },
+                {
+                    "description": "Pad 2 [/VOUT] of R1 on F.Cu",
+                    "pos": {
+                        "x": 35.9125,
+                        "y": 32.54
+                    },
+                    "uuid": "c0884966-4afb-4558-917f-64fb8e38aaa3"
+                }
+            ],
+            "severity": "error",
+            "type": "unconnected_items"
+        }
+    ],
+    "violations": [
+        {
+            "description": "Items shorting two nets (nets /VIN and /VOUT)",
+            "items": [
+                {
+                    "description": "Track [/VIN] on F.Cu, length 1.8250 mm",
+                    "pos": {
+                        "x": 34.0875,
+                        "y": 32.54
+                    },
+                    "uuid": "6185d7a0-9523-4d41-93f4-24f6189e1cef"
+                },
+                {
+                    "description": "Pad 2 [/VOUT] of R1 on F.Cu",
+                    "pos": {
+                        "x": 35.9125,
+                        "y": 32.54
+                    },
+                    "uuid": "c0884966-4afb-4558-917f-64fb8e38aaa3"
+                }
+            ],
+            "severity": "error",
+            "type": "shorting_items"
+        },
+        {
+            "description": "Front solder mask aperture bridges items with different nets",
+            "items": [
+                {
+                    "description": "Track [/VIN] on F.Cu, length 1.8250 mm",
+                    "pos": {
+                        "x": 34.0875,
+                        "y": 32.54
+                    },
+                    "uuid": "6185d7a0-9523-4d41-93f4-24f6189e1cef"
+                },
+                {
+                    "description": "Pad 2 [/VOUT] of R1 on F.Cu",
+                    "pos": {
+                        "x": 35.9125,
+                        "y": 32.54
+                    },
+                    "uuid": "c0884966-4afb-4558-917f-64fb8e38aaa3"
+                }
+            ],
+            "severity": "error",
+            "type": "solder_mask_bridge"
+        }
+    ]
+}

@@ -1,0 +1,107 @@
+{
+    "$schema": "https://schemas.kicad.org/drc.v1.json",
+    "coordinate_units": "mm",
+    "date": "2026-10-18T18:04:58",
+    "ignored_checks": [
+        {
+            "description": "Footprint has no courtyard defined",
+            "key": "missing_courtyard"
+        },
+        {
+            "description": "Track endpoint not centered on via",
+            "key": "track_not_centered_on_via"
+        },
+        {
+            "description": "Tuning profile track geometries",
+            "key": "tuning_profile_track_geometries"
+        },
+        {
+            "description": "Footprint doesn't match symbol's footprint filters",
+            "key": "footprint_filters_mismatch"
+        },
+        {
+            "description": "Footprint component type doesn't match footprint pads",
+            "key": "footprint_type_mismatch"
+        }
+    ],
+    "included_severities": [
+        "error",
+        "warning"
+    ],
+    "kicad_version": "10.0.7",
+    "schematic_parity": [],
+    "source": "canary.kicad_pcb",
+    "unconnected_items": [
+        {
+            "description": "Missing connection between items",
+            "items": [
+                {
+                    "description": "Track [/VOUT] on F.Cu, length 6.4600 mm",
+                    "pos": {
+                        "x": 37.5,
+                        "y": 39.0
+                    },
+                    "uuid": "1452ed5b-48c8-4b71-9ca8-a89e04d186c8"
+                },
+                {
+                    "description": "Pad 2 [/VOUT] of R1 on F.Cu",
+                    "pos": {
+                        "x": 35.9125,
+                        "y": 32.54
+                    },
+                    "uuid": "fb538872-9135-4327-8e68-0b90ac7f9d66"
+                }
+            ],
+            "severity": "error",
+            "type": "unconnected_items"
+        }
+    ],
+    "violations": [
+        {
+            "description": "Items shorting two nets (nets /VIN and /VOUT)",
+            "items": [
+                {
+                    "description": "Track [/VIN] on F.Cu, length 1.8250 mm",
+                    "pos": {
+                        "x": 34.0875,
+                        "y": 32.54
+                    },
+                    "uuid": "9b714738-621c-4e7b-aaf5-30d3dc7ac864"
+                },
+                {
+                    "description": "Pad 2 [/VOUT] of R1 on F.Cu",
+                    "pos": {
+                        "x": 35.9125,
+                        "y": 32.54
+                    },
+                    "uuid": "fb538872-9135-4327-8e68-0b90ac7f9d66"
+                }
+            ],
+            "severity": "error",
+            "type": "shorting_items"
+        },
+        {
+            "description": "Front solder mask aperture bridges items with different nets",
+            "items": [
+                {
+                    "description": "Track [/VIN] on F.Cu, length 1.8250 mm",
+                    "pos": {
+                        "x": 34.0875,
+                        "y": 32.54
+                    },
+                    "uuid": "9b714738-621c-4e7b-aaf5-30d3dc7ac864"
+                },
+                {
+                    "description": "Pad 2 [/VOUT] of R1 on F.Cu",
+                    "pos": {
+                        "x": 35.9125,
+                        "y": 32.54
+                    },
+                    "uuid": "fb538872-9135-4327-8e68-0b90ac7f9d66"
+                }
+            ],
+            "severity": "error",
+            "type": "solder_mask_bridge"
+        }
+    ]
+}

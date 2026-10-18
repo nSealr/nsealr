@@ -1,0 +1,56 @@
+{
+  "schema": 1,
+  "scope": "Synthetic divider and exact pinned tuple; design-specific qualification still required",
+  "implementation_commit": "1524af02c70ab5e74bd7089d9055b2568e7a2250",
+  "run": "evidence/attempt-02",
+  "native_operations": [
+    "new native schematic and local libraries",
+    "new front-side two-layer fixture PCB with straight F.Cu tracks",
+    "native GUI open/save/reopen",
+    "reopen after process crash following completed save",
+    "CLI ERC/DRC with schematic parity",
+    "CLI PDF/XML netlist/BOM/SVG/CPL/Gerber/drill export",
+    "closed-project snapshot restore after rejected candidate"
+  ],
+  "mcp_read_allowlist": [
+    "kicad_get_board_summary",
+    "kicad_get_footprints",
+    "kicad_get_pads",
+    "kicad_get_board_text"
+  ],
+  "mcp_write_allowlist": [],
+  "required_contract_results": {
+    "CAD-01": "passed bounded campaign; independent final review required",
+    "CAD-02": "passed bounded campaign; independent final review required",
+    "CAD-03": "passed bounded campaign; independent final review required",
+    "CAD-04": "passed bounded campaign; independent final review required",
+    "CAD-05": "passed bounded campaign; independent final review required",
+    "CAD-06": "passed bounded campaign; independent final review required",
+    "CAD-07": "passed bounded campaign; independent final review required"
+  },
+  "disabled": [
+    "all live MCP writes",
+    "schematic IPC",
+    "headless IPC",
+    "IPC export",
+    "bottom-side placement and flip",
+    "nonzero footprint rotations",
+    "vias",
+    "zones/fill",
+    "differential routing",
+    "custom IPC rules/netclasses",
+    "3D/STEP fit",
+    "SPICE",
+    "general autorouting",
+    "crash during save",
+    "unsaved-edit recovery",
+    "multiwriter and arbitrary transaction rollback"
+  ],
+  "known_limits": [
+    "FutureVersionError: live 10.0.7 vs binding API 10.0.6",
+    "fresh-process board_jobs, board_rules, schematic, schematic_types import failures",
+    "five default ignored DRC classes explicitly retained",
+    "legacy pcbnew fallback is pinned fixture construction, not stable IPC",
+    "no physical or factory qualification"
+  ]
+}
