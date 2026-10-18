@@ -1,0 +1,83 @@
+{
+  "tooling_source_commit": "e2fae138ac545d3cf5f848ecc0aaea7f8365c394",
+  "scope": "Preflight tooling only; no product tests, import, repository assembly or recovery bundle creation.",
+  "runtime_reuse": {
+    "python": "/home/tux/nsealr/.restart-tools/goal/r00/tools/baseline/.work/final/.tools/python/bin/python3",
+    "resolved_python": "/home/tux/nsealr/.restart-tools/goal/r00/tools/baseline/.work/final/.tools/python/bin/python3.12",
+    "binary_sha256": "eaaa308032c4aa063df5880c4c293cd458b4629d503fbc2c03ec163d71f7f790",
+    "source": "Existing R00 final pinned runtime, explicitly reused; no cold-install claim."
+  },
+  "commands": [
+    {
+      "label": "runtime-version",
+      "command": [
+        "/home/tux/nsealr/.restart-tools/goal/r00/tools/baseline/.work/final/.tools/python/bin/python3",
+        "--version"
+      ],
+      "cwd": "/home/tux/nsealr/.restart-tools/goal/a02",
+      "started_utc": "2026-10-18T17:31:06.929319+00:00",
+      "ended_utc": "2026-10-18T17:31:06.930675+00:00",
+      "exit_code": 0,
+      "log": "docs/restart/implementation/A02/preflight-evidence/runtime-version.log",
+      "log_sha256": "9bdce2f3bc127762fcb79db8faf0385c42e81e916436db64486d7162bc1d04e0"
+    },
+    {
+      "label": "tool-tests",
+      "command": [
+        "/home/tux/nsealr/.restart-tools/goal/r00/tools/baseline/.work/final/.tools/python/bin/python3",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "tools/migration",
+        "-p",
+        "test_*.py",
+        "-v"
+      ],
+      "cwd": "/home/tux/nsealr/.restart-tools/goal/a02",
+      "started_utc": "2026-10-18T17:31:06.930759+00:00",
+      "ended_utc": "2026-10-18T17:31:07.298281+00:00",
+      "exit_code": 0,
+      "log": "docs/restart/implementation/A02/preflight-evidence/tool-tests.log",
+      "log_sha256": "6d07f7f68052808b11a6b1615b714f8a8c63573f01d65dad42a6b5e0289473e8"
+    },
+    {
+      "label": "prepare",
+      "command": [
+        "/home/tux/nsealr/.restart-tools/goal/r00/tools/baseline/.work/final/.tools/python/bin/python3",
+        "tools/migration/rehearse.py",
+        "prepare",
+        "--manifest",
+        "docs/restart/implementation/A02/preflight-inputs.json",
+        "--source-root",
+        "/home/tux/nsealr",
+        "--destination",
+        "/home/tux/nsealr/.restart-tools/goal/a02/tools/migration/.runtime/preflight-01"
+      ],
+      "cwd": "/home/tux/nsealr/.restart-tools/goal/a02",
+      "started_utc": "2026-10-18T17:31:07.298350+00:00",
+      "ended_utc": "2026-10-18T17:31:07.803000+00:00",
+      "exit_code": 0,
+      "log": "docs/restart/implementation/A02/preflight-evidence/prepare.log",
+      "log_sha256": "63b0a5b07f4a068ea520bd470d48c66fef56850defcda1e4ad5b4215213d40df"
+    },
+    {
+      "label": "preflight",
+      "command": [
+        "/home/tux/nsealr/.restart-tools/goal/r00/tools/baseline/.work/final/.tools/python/bin/python3",
+        "tools/migration/rehearse.py",
+        "preflight",
+        "--destination",
+        "/home/tux/nsealr/.restart-tools/goal/a02/tools/migration/.runtime/preflight-01"
+      ],
+      "cwd": "/home/tux/nsealr/.restart-tools/goal/a02",
+      "started_utc": "2026-10-18T17:32:03.205011+00:00",
+      "ended_utc": "2026-10-18T17:32:03.625054+00:00",
+      "exit_code": 2,
+      "expected_exit_code": 2,
+      "classification": "Valid frozen inventory, import remains deliberately blocked.",
+      "log": "docs/restart/implementation/A02/preflight-evidence/preflight.log",
+      "log_sha256": "63b0a5b07f4a068ea520bd470d48c66fef56850defcda1e4ad5b4215213d40df"
+    }
+  ]
+}

@@ -1,0 +1,1042 @@
+{
+  "format": 1,
+  "mode": "preflight-only",
+  "purpose": "Provisional exact-object inventory; not an admitted migration tuple. No import or assembly operation exists in this increment.",
+  "specification": {
+    "commit": "709f09183e7d54937a8562151dd5ac1fbeefc615",
+    "path": "docs/restart/implementation/A02/brief.md",
+    "sha256": "05b8eddee2da7c53ecab68f048c2035387464c9a9659d1936913bc60174c59bd",
+    "review_commit": "a6756825ed39ad39e33fa5f1917b6ac4f7c70538",
+    "review_path": "docs/restart/implementation/reviews/A02-spec/review.json",
+    "review_sha256": "1affc6a897fa32ee39ea135a3e22cd8bc444c8250cd653ee8f7da9c3eeb2cbab"
+  },
+  "graph": {
+    "source": "nsealr",
+    "path": "docs/restart/work-items.json"
+  },
+  "sources": [
+    {
+      "name": "nsealr",
+      "directory": "firmware",
+      "repository": "nSealr/nsealr",
+      "visibility": "public",
+      "commit": "7b5553685dac56029a4379be12054154b6b5e0b5",
+      "tree": "ddeaca15a6ed5ab00765bcb3d90867cd32b15a7c",
+      "root_license": {
+        "path": "LICENSE",
+        "sha256": "29162f01bca1fe74659e6da905b5c4d14c87df052bf92de1e60336cf02bb1b09"
+      },
+      "rules": [
+        {
+          "id": "core-snapshot-metadata",
+          "action": "retire",
+          "reason": "Replaced by the new contract artifact inventory after final S01 reconciliation.",
+          "path": "tests/fixtures/specs/SOURCE.json"
+        },
+        {
+          "id": "core-snapshot-license",
+          "action": "retire",
+          "reason": "CC0 notice retained at the authoritative specs artifact.",
+          "path": "tests/fixtures/specs/LICENSE"
+        },
+        {
+          "id": "core-snapshot",
+          "action": "deduplicate",
+          "reason": "Require exact comparison against final admitted specs before removing the duplicate.",
+          "prefix": "tests/fixtures/specs/",
+          "canonical_source": "specs"
+        },
+        {
+          "id": "single-plan",
+          "action": "transform",
+          "reason": "Move the only graph atomically after complete current evidence closure.",
+          "path": "docs/restart/work-items.json",
+          "destination": "plan/work-items.json"
+        },
+        {
+          "id": "core-layout-Cargo.toml",
+          "action": "transform",
+          "reason": "Adapt actual workspaces/fixture root/plan/CI while retaining existing assertions; reviewed patch required.",
+          "path": "Cargo.toml",
+          "destination": "Cargo.toml"
+        },
+        {
+          "id": "core-layout-Cargo.lock",
+          "action": "transform",
+          "reason": "Adapt actual workspaces/fixture root/plan/CI while retaining existing assertions; reviewed patch required.",
+          "path": "Cargo.lock",
+          "destination": "Cargo.lock"
+        },
+        {
+          "id": "core-layout-.cargo-config.toml",
+          "action": "transform",
+          "reason": "Adapt actual workspaces/fixture root/plan/CI while retaining existing assertions; reviewed patch required.",
+          "path": ".cargo/config.toml",
+          "destination": ".cargo/config.toml"
+        },
+        {
+          "id": "core-layout-rust-toolchain.toml",
+          "action": "transform",
+          "reason": "Adapt actual workspaces/fixture root/plan/CI while retaining existing assertions; reviewed patch required.",
+          "path": "rust-toolchain.toml",
+          "destination": "rust-toolchain.toml"
+        },
+        {
+          "id": "core-layout-Makefile",
+          "action": "transform",
+          "reason": "Adapt actual workspaces/fixture root/plan/CI while retaining existing assertions; reviewed patch required.",
+          "path": "Makefile",
+          "destination": "Makefile"
+        },
+        {
+          "id": "core-layout-apps-desktop-simulator-Cargo.toml",
+          "action": "transform",
+          "reason": "Adapt actual workspaces/fixture root/plan/CI while retaining existing assertions; reviewed patch required.",
+          "path": "apps/desktop-simulator/Cargo.toml",
+          "destination": "apps/desktop-simulator/Cargo.toml"
+        },
+        {
+          "id": "core-layout-apps-desktop-simulator-src-lib.rs",
+          "action": "transform",
+          "reason": "Adapt actual workspaces/fixture root/plan/CI while retaining existing assertions; reviewed patch required.",
+          "path": "apps/desktop-simulator/src/lib.rs",
+          "destination": "apps/desktop-simulator/src/lib.rs"
+        },
+        {
+          "id": "core-layout-ci-repro_build.sh",
+          "action": "transform",
+          "reason": "Adapt actual workspaces/fixture root/plan/CI while retaining existing assertions; reviewed patch required.",
+          "path": "ci/repro_build.sh",
+          "destination": "ci/repro_build.sh"
+        },
+        {
+          "id": "core-layout-.github-workflows-ci.yml",
+          "action": "transform",
+          "reason": "Adapt actual workspaces/fixture root/plan/CI while retaining existing assertions; reviewed patch required.",
+          "path": ".github/workflows/ci.yml",
+          "destination": ".github/workflows/ci.yml"
+        },
+        {
+          "id": "core-layout-scripts-validate_restart_plan.py",
+          "action": "transform",
+          "reason": "Adapt actual workspaces/fixture root/plan/CI while retaining existing assertions; reviewed patch required.",
+          "path": "scripts/validate_restart_plan.py",
+          "destination": "scripts/validate_restart_plan.py"
+        },
+        {
+          "id": "core-layout-scripts-test_validate_restart_plan.py",
+          "action": "transform",
+          "reason": "Adapt actual workspaces/fixture root/plan/CI while retaining existing assertions; reviewed patch required.",
+          "path": "scripts/test_validate_restart_plan.py",
+          "destination": "scripts/test_validate_restart_plan.py"
+        }
+      ],
+      "default": {
+        "id": "public-core-ancestry",
+        "action": "retain",
+        "reason": "Preserve current public source and evidence unchanged; future merged modules remain included.",
+        "destination": "{path}"
+      }
+    },
+    {
+      "name": "companion",
+      "directory": "companion",
+      "repository": "nSealr/companion",
+      "visibility": "public",
+      "commit": "678796900e462f5504e47fe934e2e5f23d85824f",
+      "tree": "4a5c5fc349dfef6516d6e7871f8c94fae8a16354",
+      "root_license": {
+        "path": "LICENSE",
+        "sha256": "29162f01bca1fe74659e6da905b5c4d14c87df052bf92de1e60336cf02bb1b09"
+      },
+      "rules": [
+        {
+          "id": "retired-smartcard",
+          "action": "retire",
+          "reason": "Retired active smartcard package; archive/history remains.",
+          "prefix": "packages/smartcard/"
+        },
+        {
+          "id": "host-snapshot-metadata",
+          "action": "retire",
+          "reason": "Metadata replaced by the authoritative contract artifact.",
+          "path": "tests/fixtures/specs/SOURCE.json"
+        },
+        {
+          "id": "host-snapshot-license",
+          "action": "retire",
+          "reason": "CC0 notice retained in authoritative artifact.",
+          "path": "tests/fixtures/specs/LICENSE"
+        },
+        {
+          "id": "host-snapshots",
+          "action": "deduplicate",
+          "reason": "Compare every copied fixture with canonical source before removal.",
+          "prefix": "tests/fixtures/specs/",
+          "canonical_source": "specs"
+        },
+        {
+          "id": "host-package-browser-provider",
+          "action": "transform",
+          "reason": "Retain behavior/tests; exact private-package/SDK/root changes require declared patches.",
+          "prefix": "packages/browser-provider/",
+          "destination": "packages/browser-provider/{suffix}"
+        },
+        {
+          "id": "host-package-client",
+          "action": "transform",
+          "reason": "Retain behavior/tests; exact private-package/SDK/root changes require declared patches.",
+          "prefix": "packages/client/",
+          "destination": "packages/client/{suffix}"
+        },
+        {
+          "id": "host-package-core",
+          "action": "transform",
+          "reason": "Retain behavior/tests; exact private-package/SDK/root changes require declared patches.",
+          "prefix": "packages/core/",
+          "destination": "packages/core/{suffix}"
+        },
+        {
+          "id": "host-package-dev-signer",
+          "action": "transform",
+          "reason": "Retain behavior/tests; exact private-package/SDK/root changes require declared patches.",
+          "prefix": "packages/dev-signer/",
+          "destination": "packages/dev-signer/{suffix}"
+        },
+        {
+          "id": "host-package-fixtures",
+          "action": "transform",
+          "reason": "Retain behavior/tests; exact private-package/SDK/root changes require declared patches.",
+          "prefix": "packages/fixtures/",
+          "destination": "packages/fixtures/{suffix}"
+        },
+        {
+          "id": "host-package-framing",
+          "action": "transform",
+          "reason": "Retain behavior/tests; exact private-package/SDK/root changes require declared patches.",
+          "prefix": "packages/framing/",
+          "destination": "packages/framing/{suffix}"
+        },
+        {
+          "id": "host-package-nip46",
+          "action": "transform",
+          "reason": "Retain behavior/tests; exact private-package/SDK/root changes require declared patches.",
+          "prefix": "packages/nip46/",
+          "destination": "packages/nip46/{suffix}"
+        },
+        {
+          "id": "host-package-policy",
+          "action": "transform",
+          "reason": "Retain behavior/tests; exact private-package/SDK/root changes require declared patches.",
+          "prefix": "packages/policy/",
+          "destination": "packages/policy/{suffix}"
+        },
+        {
+          "id": "host-package-protocol",
+          "action": "transform",
+          "reason": "Retain behavior/tests; exact private-package/SDK/root changes require declared patches.",
+          "prefix": "packages/protocol/",
+          "destination": "packages/protocol/{suffix}"
+        },
+        {
+          "id": "host-package-qr",
+          "action": "transform",
+          "reason": "Retain behavior/tests; exact private-package/SDK/root changes require declared patches.",
+          "prefix": "packages/qr/",
+          "destination": "packages/qr/{suffix}"
+        },
+        {
+          "id": "host-package-review",
+          "action": "transform",
+          "reason": "Retain behavior/tests; exact private-package/SDK/root changes require declared patches.",
+          "prefix": "packages/review/",
+          "destination": "packages/review/{suffix}"
+        },
+        {
+          "id": "host-package-sdk",
+          "action": "transform",
+          "reason": "Retain behavior/tests; exact private-package/SDK/root changes require declared patches.",
+          "prefix": "packages/sdk/",
+          "destination": "packages/sdk/{suffix}"
+        },
+        {
+          "id": "host-package-transport",
+          "action": "transform",
+          "reason": "Retain behavior/tests; exact private-package/SDK/root changes require declared patches.",
+          "prefix": "packages/transport/",
+          "destination": "packages/transport/{suffix}"
+        },
+        {
+          "id": "bridge-browser-extension",
+          "action": "transform",
+          "reason": "Retain non-smartcard consumer behavior; adapt path/package references with case ledger.",
+          "prefix": "apps/browser-extension/",
+          "destination": "apps/bridge/browser-extension/{suffix}"
+        },
+        {
+          "id": "bridge-cli",
+          "action": "transform",
+          "reason": "Retain non-smartcard consumer behavior; adapt path/package references with case ledger.",
+          "prefix": "apps/cli/",
+          "destination": "apps/bridge/cli/{suffix}"
+        },
+        {
+          "id": "bridge-consumer-smoke",
+          "action": "transform",
+          "reason": "Retain non-smartcard consumer behavior; adapt path/package references with case ledger.",
+          "prefix": "apps/consumer-smoke/",
+          "destination": "apps/bridge/consumer-smoke/{suffix}"
+        },
+        {
+          "id": "bridge-sdk-examples",
+          "action": "transform",
+          "reason": "Retain non-smartcard consumer behavior; adapt path/package references with case ledger.",
+          "prefix": "apps/sdk-examples/",
+          "destination": "apps/bridge/sdk-examples/{suffix}"
+        },
+        {
+          "id": "bridge-service",
+          "action": "transform",
+          "reason": "Retain non-smartcard consumer behavior; adapt path/package references with case ledger.",
+          "prefix": "apps/service/",
+          "destination": "apps/bridge/service/{suffix}"
+        },
+        {
+          "id": "host-config-package.json",
+          "action": "transform",
+          "reason": "Adapt root workspace membership and private/public SDK package boundary.",
+          "path": "package.json",
+          "destination": "package.json"
+        },
+        {
+          "id": "host-config-pnpm-lock.yaml",
+          "action": "transform",
+          "reason": "Adapt root workspace membership and private/public SDK package boundary.",
+          "path": "pnpm-lock.yaml",
+          "destination": "pnpm-lock.yaml"
+        },
+        {
+          "id": "host-config-pnpm-workspace.yaml",
+          "action": "transform",
+          "reason": "Adapt root workspace membership and private/public SDK package boundary.",
+          "path": "pnpm-workspace.yaml",
+          "destination": "pnpm-workspace.yaml"
+        },
+        {
+          "id": "host-config-tsconfig.json",
+          "action": "transform",
+          "reason": "Adapt root workspace membership and private/public SDK package boundary.",
+          "path": "tsconfig.json",
+          "destination": "tsconfig.json"
+        },
+        {
+          "id": "host-config-vitest.config.ts",
+          "action": "transform",
+          "reason": "Adapt root workspace membership and private/public SDK package boundary.",
+          "path": "vitest.config.ts",
+          "destination": "vitest.config.ts"
+        },
+        {
+          "id": "host-doc-api-review.md",
+          "action": "transform",
+          "reason": "Retained consumer documentation; current paths/API need reviewed update.",
+          "path": "docs/api-review.md",
+          "destination": "docs/bridge/api-review.md"
+        },
+        {
+          "id": "host-doc-api.md",
+          "action": "transform",
+          "reason": "Retained consumer documentation; current paths/API need reviewed update.",
+          "path": "docs/api.md",
+          "destination": "docs/bridge/api.md"
+        },
+        {
+          "id": "host-doc-architecture.md",
+          "action": "transform",
+          "reason": "Retained consumer documentation; current paths/API need reviewed update.",
+          "path": "docs/architecture.md",
+          "destination": "docs/bridge/architecture.md"
+        },
+        {
+          "id": "host-doc-audit-checklist.md",
+          "action": "transform",
+          "reason": "Retained consumer documentation; current paths/API need reviewed update.",
+          "path": "docs/audit-checklist.md",
+          "destination": "docs/bridge/audit-checklist.md"
+        },
+        {
+          "id": "host-doc-release.md",
+          "action": "transform",
+          "reason": "Retained consumer documentation; current paths/API need reviewed update.",
+          "path": "docs/release.md",
+          "destination": "docs/bridge/release.md"
+        },
+        {
+          "id": "host-doc-sdk-examples.md",
+          "action": "transform",
+          "reason": "Retained consumer documentation; current paths/API need reviewed update.",
+          "path": "docs/sdk-examples.md",
+          "destination": "docs/bridge/sdk-examples.md"
+        },
+        {
+          "id": "host-doc-testing.md",
+          "action": "transform",
+          "reason": "Retained consumer documentation; current paths/API need reviewed update.",
+          "path": "docs/testing.md",
+          "destination": "docs/bridge/testing.md"
+        },
+        {
+          "id": "host-tools",
+          "action": "transform",
+          "reason": "Preserve relevant build/security/consumer checks; adapt one packed SDK surface.",
+          "prefix": "scripts/",
+          "destination": "tools/bridge/{suffix}"
+        },
+        {
+          "id": "host-notice",
+          "action": "retain",
+          "reason": "Preserve selected source MIT notice.",
+          "path": "LICENSE",
+          "destination": "LICENSES/companion-MIT.txt"
+        }
+      ],
+      "default": {
+        "id": "not-selected",
+        "action": "exclude",
+        "reason": "Separate owner or unselected source; preserve source history, no content import."
+      }
+    },
+    {
+      "name": "raspberry",
+      "directory": "raspberry",
+      "repository": "nSealr/raspberry",
+      "visibility": "public",
+      "commit": "d1534d9dcfba8fe4a35cea2ed3529e32a5003dc6",
+      "tree": "01f23b340f2f37e555494f6c9ac0a37a8d88fd31",
+      "root_license": {
+        "path": "LICENSE",
+        "sha256": "29162f01bca1fe74659e6da905b5c4d14c87df052bf92de1e60336cf02bb1b09"
+      },
+      "rules": [
+        {
+          "id": "pi-snapshot-metadata",
+          "action": "retire",
+          "reason": "Metadata replaced by authoritative artifact.",
+          "path": "tests/fixtures/specs/SOURCE.json"
+        },
+        {
+          "id": "pi-snapshot-license",
+          "action": "retire",
+          "reason": "CC0 notice retained in authoritative artifact.",
+          "path": "tests/fixtures/specs/LICENSE"
+        },
+        {
+          "id": "pi-snapshots",
+          "action": "deduplicate",
+          "reason": "Retain independent expected data once, with exact comparison.",
+          "prefix": "tests/fixtures/specs/",
+          "canonical_source": "specs"
+        },
+        {
+          "id": "pi-app-nsealr_vault-",
+          "action": "transform",
+          "reason": "Keep independent Python implementation/adapters and all existing tests; only explicit migration patches.",
+          "prefix": "app/nsealr_vault/",
+          "destination": "apps/pi/app/nsealr_vault/{suffix}"
+        },
+        {
+          "id": "pi-tests-",
+          "action": "transform",
+          "reason": "Keep independent Python implementation/adapters and all existing tests; only explicit migration patches.",
+          "prefix": "tests/",
+          "destination": "apps/pi/tests/{suffix}"
+        },
+        {
+          "id": "pi-support-pyproject.toml",
+          "action": "transform",
+          "reason": "Retained Pi harness/build/adapter support; no production support claim.",
+          "path": "pyproject.toml",
+          "destination": "apps/pi/pyproject.toml"
+        },
+        {
+          "id": "pi-support-requirements.txt",
+          "action": "transform",
+          "reason": "Retained Pi harness/build/adapter support; no production support claim.",
+          "path": "requirements.txt",
+          "destination": "apps/pi/requirements.txt"
+        },
+        {
+          "id": "pi-support-Makefile",
+          "action": "transform",
+          "reason": "Retained Pi harness/build/adapter support; no production support claim.",
+          "path": "Makefile",
+          "destination": "apps/pi/Makefile"
+        },
+        {
+          "id": "pi-support-os-stateless-qr-vault-profile.md",
+          "action": "transform",
+          "reason": "Retained Pi harness/build/adapter support; no production support claim.",
+          "path": "os/stateless-qr-vault-profile.md",
+          "destination": "apps/pi/os/stateless-qr-vault-profile.md"
+        },
+        {
+          "id": "pi-support-docs-architecture.md",
+          "action": "transform",
+          "reason": "Retained Pi harness/build/adapter support; no production support claim.",
+          "path": "docs/architecture.md",
+          "destination": "apps/pi/docs/architecture.md"
+        },
+        {
+          "id": "pi-support-docs-testing.md",
+          "action": "transform",
+          "reason": "Retained Pi harness/build/adapter support; no production support claim.",
+          "path": "docs/testing.md",
+          "destination": "apps/pi/docs/testing.md"
+        },
+        {
+          "id": "pi-support-docs-audit-checklist.md",
+          "action": "transform",
+          "reason": "Retained Pi harness/build/adapter support; no production support claim.",
+          "path": "docs/audit-checklist.md",
+          "destination": "apps/pi/docs/audit-checklist.md"
+        },
+        {
+          "id": "pi-notice",
+          "action": "retain",
+          "reason": "Preserve selected source MIT notice.",
+          "path": "LICENSE",
+          "destination": "apps/pi/LICENSE"
+        }
+      ],
+      "default": {
+        "id": "not-selected",
+        "action": "exclude",
+        "reason": "Separate owner or unselected source; preserve source history, no content import."
+      }
+    },
+    {
+      "name": "specs",
+      "directory": "specs",
+      "repository": "nSealr/specs",
+      "visibility": "public",
+      "commit": "45f8b6ff1123f3f55be4ce457fd1008e91043cc2",
+      "tree": "6fa7f0530bb4cb05a35aee956a19088325de959b",
+      "root_license": {
+        "path": "LICENSE",
+        "sha256": "e0456cbab4f7b5e7203e678faff37eadbdfef02e822db3b7a52a1dd9d3dc514a"
+      },
+      "rules": [
+        {
+          "id": "smartcard-vectors",
+          "action": "retire",
+          "reason": "Active smartcard-only tests retired explicitly; source history retained.",
+          "prefix": "vectors/smartcard/"
+        },
+        {
+          "id": "smartcard-protocol",
+          "action": "retire",
+          "reason": "Active smartcard protocol retired; source history retained.",
+          "path": "protocols/smartcard-apdu-v0.md"
+        },
+        {
+          "id": "contracts-protocols",
+          "action": "transform",
+          "reason": "Authoritative artifact; retain independent expected data and tests, explicitly review mixed retired cases.",
+          "prefix": "protocols/",
+          "destination": "protocols/contracts/v1/protocols/{suffix}"
+        },
+        {
+          "id": "contracts-schemas",
+          "action": "transform",
+          "reason": "Authoritative artifact; retain independent expected data and tests, explicitly review mixed retired cases.",
+          "prefix": "schemas/",
+          "destination": "protocols/contracts/v1/schemas/{suffix}"
+        },
+        {
+          "id": "contracts-vectors",
+          "action": "transform",
+          "reason": "Authoritative artifact; retain independent expected data and tests, explicitly review mixed retired cases.",
+          "prefix": "vectors/",
+          "destination": "protocols/contracts/v1/vectors/{suffix}"
+        },
+        {
+          "id": "contracts-examples",
+          "action": "transform",
+          "reason": "Authoritative artifact; retain independent expected data and tests, explicitly review mixed retired cases.",
+          "prefix": "examples/",
+          "destination": "protocols/contracts/v1/examples/{suffix}"
+        },
+        {
+          "id": "contracts-tests",
+          "action": "transform",
+          "reason": "Authoritative artifact; retain independent expected data and tests, explicitly review mixed retired cases.",
+          "prefix": "tests/",
+          "destination": "protocols/contracts/v1/tests/{suffix}"
+        },
+        {
+          "id": "contract-tool-scripts-verify_specs.py",
+          "action": "transform",
+          "reason": "Preserve independent contract verifier/generator and metadata-v1 semantics; adapt paths explicitly.",
+          "path": "scripts/verify_specs.py",
+          "destination": "protocols/contracts/v1/scripts/verify_specs.py"
+        },
+        {
+          "id": "contract-tool-scripts-generate_fixtures.py",
+          "action": "transform",
+          "reason": "Preserve independent contract verifier/generator and metadata-v1 semantics; adapt paths explicitly.",
+          "path": "scripts/generate_fixtures.py",
+          "destination": "protocols/contracts/v1/scripts/generate_fixtures.py"
+        },
+        {
+          "id": "contract-tool-requirements.txt",
+          "action": "transform",
+          "reason": "Preserve independent contract verifier/generator and metadata-v1 semantics; adapt paths explicitly.",
+          "path": "requirements.txt",
+          "destination": "protocols/contracts/v1/requirements.txt"
+        },
+        {
+          "id": "contract-tool-docs-S01-metadata-v1.md",
+          "action": "transform",
+          "reason": "Preserve independent contract verifier/generator and metadata-v1 semantics; adapt paths explicitly.",
+          "path": "docs/S01-metadata-v1.md",
+          "destination": "protocols/contracts/v1/docs/S01-metadata-v1.md"
+        },
+        {
+          "id": "contract-notice",
+          "action": "retain",
+          "reason": "Preserve selected CC0 source notice.",
+          "path": "LICENSE",
+          "destination": "protocols/contracts/v1/LICENSE"
+        }
+      ],
+      "default": {
+        "id": "not-selected",
+        "action": "exclude",
+        "reason": "Separate owner or unselected source; preserve source history, no content import."
+      }
+    },
+    {
+      "name": "lab",
+      "directory": "lab",
+      "repository": "nSealr/lab",
+      "visibility": "private",
+      "commit": "3303ab17a28ed32419576627d5abb93db3999635",
+      "tree": "1e3ac62680ecc24d3918e70a74c75733494dd3bb",
+      "root_license": {
+        "path": "LICENSE",
+        "sha256": "e0456cbab4f7b5e7203e678faff37eadbdfef02e822db3b7a52a1dd9d3dc514a"
+      },
+      "rules": [
+        {
+          "id": "lab-check_fixture_snapshots",
+          "action": "transform",
+          "reason": "Selected CC0 integration tooling only; per-file privacy/notice review and final corrected helper overlay required.",
+          "path": "scripts/check_fixture_snapshots.py",
+          "destination": "tests/integration/check_fixture_snapshots.py"
+        },
+        {
+          "id": "lab-test-check_fixture_snapshots",
+          "action": "transform",
+          "reason": "Preserve useful assertions; explicit per-case changes and privacy review required.",
+          "path": "tests/test_fixture_snapshots.py",
+          "destination": "tests/integration/test_fixture_snapshots.py"
+        },
+        {
+          "id": "lab-integration_feature_matrix",
+          "action": "transform",
+          "reason": "Selected CC0 integration tooling only; per-file privacy/notice review and final corrected helper overlay required.",
+          "path": "scripts/integration_feature_matrix.py",
+          "destination": "tests/integration/integration_feature_matrix.py"
+        },
+        {
+          "id": "lab-test-integration_feature_matrix",
+          "action": "transform",
+          "reason": "Preserve useful assertions; explicit per-case changes and privacy review required.",
+          "path": "tests/test_integration_feature_matrix.py",
+          "destination": "tests/integration/test_integration_feature_matrix.py"
+        },
+        {
+          "id": "lab-integration_companion_fixtures",
+          "action": "transform",
+          "reason": "Selected CC0 integration tooling only; per-file privacy/notice review and final corrected helper overlay required.",
+          "path": "scripts/integration_companion_fixtures.py",
+          "destination": "tests/integration/integration_companion_fixtures.py"
+        },
+        {
+          "id": "lab-test-integration_companion_fixtures",
+          "action": "transform",
+          "reason": "Preserve useful assertions; explicit per-case changes and privacy review required.",
+          "path": "tests/test_integration_companion_fixtures.py",
+          "destination": "tests/integration/test_integration_companion_fixtures.py"
+        },
+        {
+          "id": "lab-integration_companion_policy_cli",
+          "action": "transform",
+          "reason": "Selected CC0 integration tooling only; per-file privacy/notice review and final corrected helper overlay required.",
+          "path": "scripts/integration_companion_policy_cli.py",
+          "destination": "tests/integration/integration_companion_policy_cli.py"
+        },
+        {
+          "id": "lab-test-integration_companion_policy_cli",
+          "action": "transform",
+          "reason": "Preserve useful assertions; explicit per-case changes and privacy review required.",
+          "path": "tests/test_integration_companion_policy_cli.py",
+          "destination": "tests/integration/test_integration_companion_policy_cli.py"
+        },
+        {
+          "id": "lab-integration_companion_nip46_cli",
+          "action": "transform",
+          "reason": "Selected CC0 integration tooling only; per-file privacy/notice review and final corrected helper overlay required.",
+          "path": "scripts/integration_companion_nip46_cli.py",
+          "destination": "tests/integration/integration_companion_nip46_cli.py"
+        },
+        {
+          "id": "lab-test-integration_companion_nip46_cli",
+          "action": "transform",
+          "reason": "Preserve useful assertions; explicit per-case changes and privacy review required.",
+          "path": "tests/test_integration_companion_nip46_cli.py",
+          "destination": "tests/integration/test_integration_companion_nip46_cli.py"
+        },
+        {
+          "id": "lab-integration_companion_serial_frame_cli",
+          "action": "transform",
+          "reason": "Selected CC0 integration tooling only; per-file privacy/notice review and final corrected helper overlay required.",
+          "path": "scripts/integration_companion_serial_frame_cli.py",
+          "destination": "tests/integration/integration_companion_serial_frame_cli.py"
+        },
+        {
+          "id": "lab-test-integration_companion_serial_frame_cli",
+          "action": "transform",
+          "reason": "Preserve useful assertions; explicit per-case changes and privacy review required.",
+          "path": "tests/test_integration_companion_serial_frame_cli.py",
+          "destination": "tests/integration/test_integration_companion_serial_frame_cli.py"
+        },
+        {
+          "id": "lab-integration_companion_service_context",
+          "action": "transform",
+          "reason": "Selected CC0 integration tooling only; per-file privacy/notice review and final corrected helper overlay required.",
+          "path": "scripts/integration_companion_service_context.py",
+          "destination": "tests/integration/integration_companion_service_context.py"
+        },
+        {
+          "id": "lab-integration_companion_route_identity",
+          "action": "transform",
+          "reason": "Selected CC0 integration tooling only; per-file privacy/notice review and final corrected helper overlay required.",
+          "path": "scripts/integration_companion_route_identity.py",
+          "destination": "tests/integration/integration_companion_route_identity.py"
+        },
+        {
+          "id": "lab-integration_companion_sdk_browser",
+          "action": "transform",
+          "reason": "Selected CC0 integration tooling only; per-file privacy/notice review and final corrected helper overlay required.",
+          "path": "scripts/integration_companion_sdk_browser.py",
+          "destination": "tests/integration/integration_companion_sdk_browser.py"
+        },
+        {
+          "id": "lab-test-integration_companion_sdk_browser",
+          "action": "transform",
+          "reason": "Preserve useful assertions; explicit per-case changes and privacy review required.",
+          "path": "tests/test_integration_companion_sdk_browser.py",
+          "destination": "tests/integration/test_integration_companion_sdk_browser.py"
+        },
+        {
+          "id": "lab-integration_browser_extension_package_plan",
+          "action": "transform",
+          "reason": "Selected CC0 integration tooling only; per-file privacy/notice review and final corrected helper overlay required.",
+          "path": "scripts/integration_browser_extension_package_plan.py",
+          "destination": "tests/integration/integration_browser_extension_package_plan.py"
+        },
+        {
+          "id": "lab-test-integration_browser_extension_package_plan",
+          "action": "transform",
+          "reason": "Preserve useful assertions; explicit per-case changes and privacy review required.",
+          "path": "tests/test_integration_browser_extension_package_plan.py",
+          "destination": "tests/integration/test_integration_browser_extension_package_plan.py"
+        },
+        {
+          "id": "lab-integration_browser_extension_package_build",
+          "action": "transform",
+          "reason": "Selected CC0 integration tooling only; per-file privacy/notice review and final corrected helper overlay required.",
+          "path": "scripts/integration_browser_extension_package_build.py",
+          "destination": "tests/integration/integration_browser_extension_package_build.py"
+        },
+        {
+          "id": "lab-test-integration_browser_extension_package_build",
+          "action": "transform",
+          "reason": "Preserve useful assertions; explicit per-case changes and privacy review required.",
+          "path": "tests/test_integration_browser_extension_package_build.py",
+          "destination": "tests/integration/test_integration_browser_extension_package_build.py"
+        },
+        {
+          "id": "lab-integration_browser_extension_origin_permission_cli",
+          "action": "transform",
+          "reason": "Selected CC0 integration tooling only; per-file privacy/notice review and final corrected helper overlay required.",
+          "path": "scripts/integration_browser_extension_origin_permission_cli.py",
+          "destination": "tests/integration/integration_browser_extension_origin_permission_cli.py"
+        },
+        {
+          "id": "lab-integration_browser_extension_origin_review_control",
+          "action": "transform",
+          "reason": "Selected CC0 integration tooling only; per-file privacy/notice review and final corrected helper overlay required.",
+          "path": "scripts/integration_browser_extension_origin_review_control.py",
+          "destination": "tests/integration/integration_browser_extension_origin_review_control.py"
+        },
+        {
+          "id": "lab-integration_browser_extension_origin_approval_control",
+          "action": "transform",
+          "reason": "Selected CC0 integration tooling only; per-file privacy/notice review and final corrected helper overlay required.",
+          "path": "scripts/integration_browser_extension_origin_approval_control.py",
+          "destination": "tests/integration/integration_browser_extension_origin_approval_control.py"
+        },
+        {
+          "id": "lab-integration_browser_native_messaging_manifest",
+          "action": "transform",
+          "reason": "Selected CC0 integration tooling only; per-file privacy/notice review and final corrected helper overlay required.",
+          "path": "scripts/integration_browser_native_messaging_manifest.py",
+          "destination": "tests/integration/integration_browser_native_messaging_manifest.py"
+        },
+        {
+          "id": "lab-test-integration_browser_native_messaging_manifest",
+          "action": "transform",
+          "reason": "Preserve useful assertions; explicit per-case changes and privacy review required.",
+          "path": "tests/test_integration_browser_native_messaging_manifest.py",
+          "destination": "tests/integration/test_integration_browser_native_messaging_manifest.py"
+        },
+        {
+          "id": "lab-integration_hardware_validation",
+          "action": "transform",
+          "reason": "Selected CC0 integration tooling only; per-file privacy/notice review and final corrected helper overlay required.",
+          "path": "scripts/integration_hardware_validation.py",
+          "destination": "tests/integration/external/integration_hardware_validation.py"
+        },
+        {
+          "id": "lab-test-integration_hardware_validation",
+          "action": "transform",
+          "reason": "Preserve useful assertions; explicit per-case changes and privacy review required.",
+          "path": "tests/test_integration_hardware_validation.py",
+          "destination": "tests/integration/test_integration_hardware_validation.py"
+        },
+        {
+          "id": "lab-integration_raspberry_hardware_probe",
+          "action": "transform",
+          "reason": "Selected CC0 integration tooling only; per-file privacy/notice review and final corrected helper overlay required.",
+          "path": "scripts/integration_raspberry_hardware_probe.py",
+          "destination": "tests/integration/integration_raspberry_hardware_probe.py"
+        },
+        {
+          "id": "lab-test-integration_raspberry_hardware_probe",
+          "action": "transform",
+          "reason": "Preserve useful assertions; explicit per-case changes and privacy review required.",
+          "path": "tests/test_integration_raspberry_hardware_probe.py",
+          "destination": "tests/integration/test_integration_raspberry_hardware_probe.py"
+        },
+        {
+          "id": "lab-integration_vault_companion",
+          "action": "transform",
+          "reason": "Selected CC0 integration tooling only; per-file privacy/notice review and final corrected helper overlay required.",
+          "path": "scripts/integration_vault_companion.py",
+          "destination": "tests/integration/integration_vault_companion.py"
+        },
+        {
+          "id": "lab-test-integration_vault_companion",
+          "action": "transform",
+          "reason": "Preserve useful assertions; explicit per-case changes and privacy review required.",
+          "path": "tests/test_integration_vault_companion.py",
+          "destination": "tests/integration/test_integration_vault_companion.py"
+        },
+        {
+          "id": "lab-integration_support",
+          "action": "transform",
+          "reason": "Selected CC0 integration tooling only; per-file privacy/notice review and final corrected helper overlay required.",
+          "path": "scripts/integration_support.py",
+          "destination": "tests/integration/integration_support.py"
+        },
+        {
+          "id": "lab-test-integration_support",
+          "action": "transform",
+          "reason": "Preserve useful assertions; explicit per-case changes and privacy review required.",
+          "path": "tests/test_integration_support.py",
+          "destination": "tests/integration/test_integration_support.py"
+        },
+        {
+          "id": "lab-browser_integration_support",
+          "action": "transform",
+          "reason": "Selected CC0 integration tooling only; per-file privacy/notice review and final corrected helper overlay required.",
+          "path": "scripts/browser_integration_support.py",
+          "destination": "tests/integration/browser_integration_support.py"
+        },
+        {
+          "id": "lab-retired-scripts-integration_smartcard_protocol.py",
+          "action": "retire",
+          "reason": "Explicit smartcard retirement; do not require archived card behavior for main product.",
+          "path": "scripts/integration_smartcard_protocol.py"
+        },
+        {
+          "id": "lab-retired-tests-test_integration_smartcard_protocol.py",
+          "action": "retire",
+          "reason": "Explicit smartcard retirement; do not require archived card behavior for main product.",
+          "path": "tests/test_integration_smartcard_protocol.py"
+        },
+        {
+          "id": "lab-retired-scripts-integration_smartcard_companion.py",
+          "action": "retire",
+          "reason": "Explicit smartcard retirement; do not require archived card behavior for main product.",
+          "path": "scripts/integration_smartcard_companion.py"
+        },
+        {
+          "id": "lab-retired-tests-test_integration_smartcard_companion.py",
+          "action": "retire",
+          "reason": "Explicit smartcard retirement; do not require archived card behavior for main product.",
+          "path": "tests/test_integration_smartcard_companion.py"
+        },
+        {
+          "id": "lab-notice",
+          "action": "retain",
+          "reason": "Preserve selected CC0 tooling notice; no private history import.",
+          "path": "LICENSE",
+          "destination": "LICENSES/lab-tooling-CC0.txt"
+        }
+      ],
+      "default": {
+        "id": "not-selected",
+        "action": "exclude",
+        "reason": "Separate owner or unselected source; preserve source history, no content import."
+      }
+    },
+    {
+      "name": "board-sdk",
+      "directory": "board-sdk",
+      "repository": "nSealr/board-sdk",
+      "visibility": "public",
+      "commit": "043e64ceb745a323f9a332cc02fae2993388fabe",
+      "tree": "818ada7d6edd6a71aa94ab73e195d5be0e924a26",
+      "root_license": {
+        "path": "LICENSE",
+        "sha256": "25568053e878aa2d966a2c7f48d312fc12f9e7d115fed66728a8b1075d866b45"
+      },
+      "rules": [],
+      "default": {
+        "id": "not-selected",
+        "action": "exclude",
+        "reason": "Separate owner or unselected source; preserve source history, no content import."
+      }
+    },
+    {
+      "name": "hardware",
+      "directory": "hardware",
+      "repository": "nSealr/hardware",
+      "visibility": "public",
+      "commit": "340697d6713a671e9e01b0dc874ec999ab071601",
+      "tree": "f59e790ff66cf035d44980a5225b3343337a0529",
+      "root_license": {
+        "path": "LICENSE",
+        "sha256": "736ccce80f3081f160339b52801847f671aa50c5b6086bd3195a349545e1ce11"
+      },
+      "rules": [],
+      "default": {
+        "id": "not-selected",
+        "action": "exclude",
+        "reason": "Separate owner or unselected source; preserve source history, no content import."
+      }
+    },
+    {
+      "name": "website",
+      "directory": "website",
+      "repository": "nSealr/website",
+      "visibility": "public",
+      "commit": "9cec39a89d6a2d2cc5747b8aae9d4b47a52eb7cd",
+      "tree": "cc168e7ececfb2e4d64bb530cadbfcd4dc2b69a9",
+      "root_license": {
+        "path": "LICENSE",
+        "sha256": "29162f01bca1fe74659e6da905b5c4d14c87df052bf92de1e60336cf02bb1b09"
+      },
+      "rules": [],
+      "default": {
+        "id": "not-selected",
+        "action": "exclude",
+        "reason": "Separate owner or unselected source; preserve source history, no content import."
+      }
+    },
+    {
+      "name": ".github",
+      "directory": ".github",
+      "repository": "nSealr/.github",
+      "visibility": "public",
+      "commit": "67dad0dfea9ced6b822454f504b26c2a04f43021",
+      "tree": "3f38baeb4a3cec3c18df1005733027e2e864605d",
+      "root_license": {
+        "path": "LICENSE",
+        "sha256": "29162f01bca1fe74659e6da905b5c4d14c87df052bf92de1e60336cf02bb1b09"
+      },
+      "rules": [],
+      "default": {
+        "id": "not-selected",
+        "action": "exclude",
+        "reason": "Separate owner or unselected source; preserve source history, no content import."
+      }
+    },
+    {
+      "name": "smartcard",
+      "directory": "smartcard",
+      "repository": "nSealr/smartcard",
+      "visibility": "public",
+      "commit": "ec5da94a05882122e8a794f55f1af3f96a95c696",
+      "tree": "c41139680efce9eb58c89a863caf232d80c55d09",
+      "root_license": {
+        "path": "LICENSE",
+        "sha256": "29162f01bca1fe74659e6da905b5c4d14c87df052bf92de1e60336cf02bb1b09"
+      },
+      "rules": [],
+      "default": {
+        "id": "not-selected",
+        "action": "exclude",
+        "reason": "Separate owner or unselected source; preserve source history, no content import."
+      }
+    },
+    {
+      "name": "workspace",
+      "directory": "workspace",
+      "repository": "nSealr/workspace",
+      "visibility": "private",
+      "commit": "e7d3a2654973628d040354805370f6520e3704ad",
+      "tree": "b9ea1a001f90521c162c81ae070a37250e844c7c",
+      "root_license": null,
+      "rules": [],
+      "default": {
+        "id": "not-selected",
+        "action": "exclude",
+        "reason": "Separate owner or unselected source; preserve source history, no content import."
+      }
+    },
+    {
+      "name": "hardware-legacy-tropic01-universal",
+      "directory": "hardware-legacy-tropic01-universal",
+      "repository": "nSealr/hardware-legacy-tropic01-universal",
+      "visibility": "private",
+      "commit": "699e034f034cd324fe05de94bc01eec04edec88f",
+      "tree": "ccba69e56a7e127ccda0a1539241494a094ec8b9",
+      "root_license": null,
+      "rules": [],
+      "default": {
+        "id": "not-selected",
+        "action": "exclude",
+        "reason": "Separate owner or unselected source; preserve source history, no content import."
+      }
+    }
+  ],
+  "admission": {
+    "final_coordinator_supplied_main_commit": null,
+    "actual_main_ci": null,
+    "repaired_S01_review_observed": {
+      "commit": "a3dec9063b81a981176b48b00e5f59d8b6f4288e",
+      "candidate": "f4c35c1c455528501c91747eb503dc78b4050f9d",
+      "tested_source": "7a32eed82f542e818fad1c48d6815a38930eac32",
+      "limitation": "Distinct passing candidate review is not the final adopted main/CI tuple."
+    },
+    "selected_rights_privacy_review": null,
+    "complete_case_dispositions": null,
+    "current_evidence_closure_review": null,
+    "import_allowed": false
+  },
+  "source_evolution": "Reconcile any newer main, including S03 modules, by changing exact pins and regenerating full inventory; never overwrite new merged source from an older tree."
+}
