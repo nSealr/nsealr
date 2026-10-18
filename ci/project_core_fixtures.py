@@ -49,7 +49,7 @@ def project(output):
         fields=[key+':'+quote(proposal[key])+'.parse().unwrap()' for key in ['proposal_id','account_id','route_type','action','current_policy_id','proposed_policy_id']]
         fields+=['proposed_grant_ids','requested_by:PolicyChangeRequester {surface:'+quote(requester['surface'])+'.parse().unwrap(),client_pubkey:'+quote(requester['client_pubkey'])+'.parse().unwrap(),label:'+('Some('+quote(requester['label'])+'.parse().unwrap())' if requester.get('label') is not None else 'None')+'}', 'created_at:'+str(proposal['created_at'])]
         fields+=[key+':'+str(proposal[key]).lower() for key in ['device_review_required','physical_approval_required','companion_authoritative','contains_secret_material']]
-        policies.append('fn '+name+'() -> PolicyChangeFixture { let mut proposed_grant_ids=PolicyChangeGrantIds::new(); for id in '+strings(proposal['proposed_grant_ids'])+' { proposed_grant_ids.try_push(id).unwrap(); } PolicyChangeFixture { proposal:PolicyChangeProposal {'+','.join(fields)+'},proposal_id:'+quote(review['proposal_id'])+',approval_digest:'+quote(review['approval_digest'])+',pages:'+pages(review['pages'])+'} }')
+        policies.append('fn '+name+'() -> PolicyChangeFixture { let mut proposed_grant_ids=PolicyChangeGrantIds::new(); '+''.join('proposed_grant_ids.try_push('+quote(grant)+').unwrap();' for grant in proposal['proposed_grant_ids'])+' PolicyChangeFixture { proposal:PolicyChangeProposal {'+','.join(fields)+'},proposal_id:'+quote(review['proposal_id'])+',approval_digest:'+quote(review['approval_digest'])+',pages:'+pages(review['pages'])+'} }')
     (output/'policy-fixtures.rs').write_text('\n'.join(policies))
 
 if __name__=='__main__':project(Path(sys.argv[1]))
