@@ -1,0 +1,35 @@
+{"label": "lab-ci", "argv": ["make", "-k", "ci"], "cwd": "/home/tux/nsealr/.restart-tools/goal/s01-integration/docs/restart/implementation/S01/.work/current-default/lab", "started": "2026-10-18T17:04:12.289916+00:00", "log": "01-lab-ci.log"}
+python3 -m venv .venv
+.venv/bin/python -m pip install --disable-pip-version-check -r requirements.txt
+Looking in links: /home/tux/nsealr/.restart-tools/goal/s01-integration/docs/restart/implementation/S01/.work/current-default/.tools/wheels
+Requirement already satisfied: PyYAML==6.0.3 in ./.venv/lib/python3.12/site-packages (from -r requirements.txt (line 1)) (6.0.3)
+.venv/bin/python scripts/verify_repo.py
+nSealr lab baseline verification passed
+.venv/bin/python scripts/validate_repo.py
+nSealr Lab validation passed
+.venv/bin/python scripts/audit_drift.py
+nSealr drift audit passed
+.venv/bin/python -m unittest discover -s tests
+.........................................................................................................................................................................
+----------------------------------------------------------------------
+Ran 169 tests in 0.299s
+
+OK
+.venv/bin/python scripts/verify_repo.py
+nSealr lab baseline verification passed
+.venv/bin/python scripts/validate_repo.py
+nSealr Lab validation passed
+.venv/bin/python scripts/audit_drift.py
+nSealr drift audit passed
+.venv/bin/python scripts/verify_repo.py
+nSealr lab baseline verification passed
+.venv/bin/python scripts/validate_repo.py
+nSealr Lab validation passed
+.venv/bin/python scripts/audit_drift.py
+nSealr drift audit passed
+.venv/bin/python scripts/verify_repo.py
+nSealr lab baseline verification passed
+.venv/bin/python scripts/validate_repo.py
+nSealr Lab validation passed
+.venv/bin/python scripts/audit_drift.py
+nSealr drift audit passed
