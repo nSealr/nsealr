@@ -1404,7 +1404,7 @@
       "id": "P01",
       "title": "Define the retained portfolio and per-profile threat models",
       "stage": "R0",
-      "status": "verified",
+      "status": "integrated",
       "owner_role": "product_security",
       "depends_on": [],
       "scope": [
@@ -1483,6 +1483,10 @@
         {
           "path": "docs/restart/implementation/reviews/coordination-integration-20261018.json",
           "sha256": "c3ab6669229330f2a7d7dd12f7597ee40172506fa199200efc117e9cc1110c79"
+        },
+        {
+          "path": "docs/restart/implementation/coordination/integration-20261018.json",
+          "sha256": "923fa825f834cbb5c3e0d51f2083e64da91366dc6f7b2bb30c0c37d453fb1643"
         }
       ],
       "requires_physical_evidence": false,
@@ -1497,13 +1501,17 @@
       "reviewed_input_commits": {
         "nSealr/nsealr": "768e8a35ae541f53f5da9c7bea7bf5c577fb474d"
       },
-      "result_manifest": "docs/restart/implementation/P01/result.json"
+      "result_manifest": "docs/restart/implementation/P01/result.json",
+      "integration_commits": {
+        "nSealr/nsealr": "3cbd818a0bcd4016eb8983dad7605cb57280d913"
+      },
+      "integration_record": "docs/restart/implementation/coordination/integration-20261018.json"
     },
     {
       "id": "P02",
       "title": "Define compatibility and adoption test plans by profile",
       "stage": "R1",
-      "status": "planned",
+      "status": "ready",
       "owner_role": "product_integration",
       "depends_on": [
         "P01"
@@ -1991,7 +1999,7 @@
       "id": "S03",
       "title": "Make authorization bind exactly one canonical operation",
       "stage": "R2",
-      "status": "planned",
+      "status": "running",
       "owner_role": "device_security",
       "depends_on": [
         "P01",
@@ -2015,18 +2023,23 @@
         "negative test logs"
       ],
       "required_resources": [],
-      "assignee": null,
+      "assignee": "/root/s03_author",
       "candidate_commits": {},
       "reviewer": null,
       "review_verdict": null,
       "result_artifacts": [],
-      "requires_physical_evidence": false
+      "requires_physical_evidence": false,
+      "input_commits": {
+        "nSealr/nsealr": "3cbd818a0bcd4016eb8983dad7605cb57280d913"
+      },
+      "assignment_record": "https://github.com/nSealr/nsealr/issues/17",
+      "github_issue": "https://github.com/nSealr/nsealr/issues/17"
     },
     {
       "id": "S04",
       "title": "Specify custom-board SE-assisted custody and owner lifecycle",
       "stage": "R1",
-      "status": "planned",
+      "status": "ready",
       "owner_role": "device_security",
       "depends_on": [
         "P01"
@@ -2065,7 +2078,7 @@
       "id": "H01",
       "title": "Build the versioned component and manual review register",
       "stage": "R1",
-      "status": "planned",
+      "status": "ready",
       "owner_role": "hardware",
       "depends_on": [
         "P01"
@@ -4963,7 +4976,7 @@
       "id": "O01",
       "title": "Install minimal agent coordination and evidence controls",
       "stage": "R0",
-      "status": "verified",
+      "status": "integrated",
       "owner_role": "coordinator",
       "depends_on": [],
       "scope": [
@@ -5157,6 +5170,10 @@
         {
           "path": "docs/restart/implementation/reviews/coordination-integration-20261018.json",
           "sha256": "c3ab6669229330f2a7d7dd12f7597ee40172506fa199200efc117e9cc1110c79"
+        },
+        {
+          "path": "docs/restart/implementation/coordination/integration-20261018.json",
+          "sha256": "923fa825f834cbb5c3e0d51f2083e64da91366dc6f7b2bb30c0c37d453fb1643"
         }
       ],
       "requires_physical_evidence": false,
@@ -5171,7 +5188,11 @@
       "reviewed_input_commits": {
         "nSealr/nsealr": "768e8a35ae541f53f5da9c7bea7bf5c577fb474d"
       },
-      "result_manifest": "docs/restart/implementation/O01/result.json"
+      "result_manifest": "docs/restart/implementation/O01/result.json",
+      "integration_commits": {
+        "nSealr/nsealr": "3cbd818a0bcd4016eb8983dad7605cb57280d913"
+      },
+      "integration_record": "docs/restart/implementation/coordination/integration-20261018.json"
     },
     {
       "id": "V01",
@@ -5762,7 +5783,7 @@
       "id": "T01",
       "title": "Define per-profile capabilities and real readiness evidence",
       "stage": "portfolio_v2",
-      "status": "planned",
+      "status": "ready",
       "owner_role": "protocol_security",
       "depends_on": [
         "P01"
@@ -6196,7 +6217,7 @@
       "id": "B01",
       "title": "Define and extract the Nostr-independent Board SDK",
       "stage": "portfolio_v2",
-      "status": "planned",
+      "status": "ready",
       "owner_role": "platform_architecture",
       "depends_on": [
         "P01",
@@ -6430,7 +6451,7 @@
       "requires_physical_evidence": true
     }
   ],
-  "revision": 10,
+  "revision": 11,
   "scope_document": "repositories.md",
   "active_profiles": [
     "esp32_no_se",
