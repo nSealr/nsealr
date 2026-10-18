@@ -15,3 +15,12 @@ The local audit executed the software suites, core target compilation and select
 Security review identified boundary work for peer/user identity, secret ownership, one-use approval and bounded input handling. Existing tests remain useful but cannot certify these properties merely by passing. Tasks S01–S03 and K01 own correction and regression evidence.
 
 The complete local audit, raw logs, source pins and GitHub preservation inventory are retained in the maintainer's private restart archive. Public claims must be independently reproducible from source and selected evidence before release; this summary does not substitute for those artifacts.
+
+## Reproduced software baseline, 18 October 2026
+
+R00 now supplies a [pinned cold bootstrap](../../tools/baseline/README.md) and an
+[executed report with raw command evidence](implementation/R00/result.md).
+The full legacy integration recipe passed with the declared provenance-checker
+overlay. Companion's stale generated API document remains a failing CI gate;
+live and physical qualification remain explicitly unclaimed. The report binds
+its tested inputs and distinguishes final code from later evidence metadata.

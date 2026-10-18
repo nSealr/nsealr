@@ -1,0 +1,162 @@
+[
+  {
+    "label": "python-packages",
+    "argv": [
+      "python3",
+      "-m",
+      "pip",
+      "install",
+      "--no-deps",
+      "/home/tux/nsealr/.restart-tools/goal/r00/tools/baseline/.work/second/.tools/wheels/pip-25.3-py3-none-any.whl",
+      "/home/tux/nsealr/.restart-tools/goal/r00/tools/baseline/.work/second/.tools/wheels/setuptools-80.9.0-py3-none-any.whl",
+      "/home/tux/nsealr/.restart-tools/goal/r00/tools/baseline/.work/second/.tools/wheels/wheel-0.45.1-py3-none-any.whl",
+      "/home/tux/nsealr/.restart-tools/goal/r00/tools/baseline/.work/second/.tools/wheels/packaging-25.0-py3-none-any.whl",
+      "/home/tux/nsealr/.restart-tools/goal/r00/tools/baseline/.work/second/.tools/wheels/pyyaml-6.0.3-cp312-cp312-manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_28_x86_64.whl",
+      "/home/tux/nsealr/.restart-tools/goal/r00/tools/baseline/.work/second/.tools/wheels/mnemonic-0.21-py3-none-any.whl",
+      "/home/tux/nsealr/.restart-tools/goal/r00/tools/baseline/.work/second/.tools/wheels/secp256k1-0.14.0-cp312-cp312-manylinux_2_17_x86_64.manylinux2014_x86_64.whl",
+      "/home/tux/nsealr/.restart-tools/goal/r00/tools/baseline/.work/second/.tools/wheels/cffi-2.1.1-cp312-cp312-manylinux2014_x86_64.manylinux_2_17_x86_64.whl",
+      "/home/tux/nsealr/.restart-tools/goal/r00/tools/baseline/.work/second/.tools/wheels/pycparser-3.11-py3-none-any.whl"
+    ],
+    "cwd": "/home/tux/nsealr/.restart-tools/goal/r00/tools/baseline/.work/second",
+    "started": "2026-10-18T15:13:32.920695+00:00",
+    "log": "00-python-packages.log",
+    "ended": "2026-10-18T15:13:34.614524+00:00",
+    "exit_code": 0,
+    "sha256": "efd483af3d8109f91a3fa51074616ba6bd64e8b4f2c4efd7ba5ae605fa24e6d4"
+  },
+  {
+    "label": "python-dependency-check",
+    "argv": [
+      "python3",
+      "-m",
+      "pip",
+      "check"
+    ],
+    "cwd": "/home/tux/nsealr/.restart-tools/goal/r00/tools/baseline/.work/second",
+    "started": "2026-10-18T15:13:34.614746+00:00",
+    "log": "01-python-dependency-check.log",
+    "ended": "2026-10-18T15:13:34.721629+00:00",
+    "exit_code": 0,
+    "sha256": "763d9da88f08f54ccd94a1563ca8c84e03f8730f41d2caae03571186c61dfd49"
+  },
+  {
+    "label": "rustup-install",
+    "argv": [
+      "/home/tux/nsealr/.restart-tools/goal/r00/tools/baseline/.work/second/.tools/downloads/rustup-init",
+      "-y",
+      "--no-modify-path",
+      "--profile",
+      "minimal",
+      "--default-toolchain",
+      "none"
+    ],
+    "cwd": "/home/tux/nsealr/.restart-tools/goal/r00/tools/baseline/.work/second",
+    "started": "2026-10-18T15:13:34.721862+00:00",
+    "log": "02-rustup-install.log",
+    "ended": "2026-10-18T15:13:34.775838+00:00",
+    "exit_code": 0,
+    "sha256": "0b9ce62fbec7ba8c5881fdb698a9976db04c25e17a6715b22c76fa74ea1b6e5f"
+  },
+  {
+    "label": "rust-toolchain",
+    "argv": [
+      "rustup",
+      "toolchain",
+      "install",
+      "1.95.0",
+      "--profile",
+      "minimal",
+      "--component",
+      "rustfmt,clippy,llvm-tools-preview",
+      "--target",
+      "riscv32imafc-unknown-none-elf"
+    ],
+    "cwd": "/home/tux/nsealr/.restart-tools/goal/r00/tools/baseline/.work/second",
+    "started": "2026-10-18T15:13:34.776033+00:00",
+    "log": "03-rust-toolchain.log",
+    "ended": "2026-10-18T15:13:42.173272+00:00",
+    "exit_code": 0,
+    "sha256": "4843e1b3f1f604849cfd5ea3a30b94ae7c7489cbadcadcffc8c49813c351bb47"
+  },
+  {
+    "label": "rust-default",
+    "argv": [
+      "rustup",
+      "default",
+      "1.95.0"
+    ],
+    "cwd": "/home/tux/nsealr/.restart-tools/goal/r00/tools/baseline/.work/second",
+    "started": "2026-10-18T15:13:42.173515+00:00",
+    "log": "04-rust-default.log",
+    "ended": "2026-10-18T15:13:42.196168+00:00",
+    "exit_code": 0,
+    "sha256": "e0309a62dd344222d4666c354738f0a0c76ecd8d4cf5513e8c6de6c4086a29c8"
+  },
+  {
+    "label": "companion-frozen-install",
+    "argv": [
+      "pnpm",
+      "install",
+      "--frozen-lockfile"
+    ],
+    "cwd": "/home/tux/nsealr/.restart-tools/goal/r00/tools/baseline/.work/second/companion",
+    "started": "2026-10-18T15:13:42.196334+00:00",
+    "log": "05-companion-frozen-install.log",
+    "ended": "2026-10-18T15:13:43.514648+00:00",
+    "exit_code": 0,
+    "sha256": "729e60cf32247095ffc64f5447ea4d9d79345c7fbb3fc967d966ac11f23f88c4"
+  },
+  {
+    "label": "website-frozen-install",
+    "argv": [
+      "pnpm",
+      "install",
+      "--frozen-lockfile"
+    ],
+    "cwd": "/home/tux/nsealr/.restart-tools/goal/r00/tools/baseline/.work/second/website",
+    "started": "2026-10-18T15:13:43.514977+00:00",
+    "log": "06-website-frozen-install.log",
+    "ended": "2026-10-18T15:13:45.457317+00:00",
+    "exit_code": 0,
+    "sha256": "d5a066a1f43b9ecf90dd32fd946c2b26fd2be79b6c53de1cdd89024a833b9a0a"
+  },
+  {
+    "label": "lab-setup",
+    "argv": [
+      "make",
+      "setup"
+    ],
+    "cwd": "/home/tux/nsealr/.restart-tools/goal/r00/tools/baseline/.work/second/lab",
+    "started": "2026-10-18T15:13:45.457589+00:00",
+    "log": "07-lab-setup.log",
+    "ended": "2026-10-18T15:13:46.755667+00:00",
+    "exit_code": 0,
+    "sha256": "fb1be58e81d8a1e523512b2c3ebe673a622407bf9d97ff75783a3c8c97bbcb76"
+  },
+  {
+    "label": "raspberry-setup",
+    "argv": [
+      "make",
+      "setup"
+    ],
+    "cwd": "/home/tux/nsealr/.restart-tools/goal/r00/tools/baseline/.work/second/raspberry",
+    "started": "2026-10-18T15:13:46.756002+00:00",
+    "log": "08-raspberry-setup.log",
+    "ended": "2026-10-18T15:13:49.275727+00:00",
+    "exit_code": 0,
+    "sha256": "2974b49c100065c155cf19726fdf152b515a335afb1bb244835ea4cc6e13d5b0"
+  },
+  {
+    "label": "smartcard-setup",
+    "argv": [
+      "make",
+      "setup"
+    ],
+    "cwd": "/home/tux/nsealr/.restart-tools/goal/r00/tools/baseline/.work/second/smartcard",
+    "started": "2026-10-18T15:13:49.276097+00:00",
+    "log": "09-smartcard-setup.log",
+    "ended": "2026-10-18T15:13:51.765843+00:00",
+    "exit_code": 0,
+    "sha256": "fb42aacdc08858a47963e11684e4cc73ae39fd2773e0bdb8f3ff25b5aa578561"
+  }
+]

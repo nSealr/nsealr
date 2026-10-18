@@ -1,0 +1,26 @@
+from pathlib import Path
+import sys,json,subprocess,hashlib
+sys.path.insert(0,str(Path('tools/baseline').resolve()))
+from bootstrap import Recorder,sha256,write_json
+base=Path('tools/baseline/.work/first').resolve()
+env=json.loads((base/'environment.json').read_text());env['PYTHONDONTWRITEBYTECODE']='1'
+out=Path('tools/baseline/.work/diagnostics').resolve()
+r=Recorder(out,env)
+probe=Path('tools/baseline/.work/api-probe').resolve()
+r.run('api-fresh-copy',['git','clone','--no-local',str(base/'companion'),str(probe)],Path.cwd())
+(probe/'node_modules').symlink_to(base/'companion/node_modules')
+r.run('api-original-check',['node','scripts/check_api_docs.mjs'],probe,required=False)
+r.run('api-original-review-check',['node','scripts/check_api_review.mjs'],probe,required=False)
+before=sha256(probe/'docs/api.md')
+r.run('api-regenerate',['node','scripts/check_api_docs.mjs','--write'],probe)
+r.run('api-generated-check',['node','scripts/check_api_docs.mjs'],probe)
+r.run('api-generated-review-check',['node','scripts/check_api_review.mjs'],probe,required=False)
+after=sha256(probe/'docs/api.md')
+(out/'api-drift.patch').write_bytes(subprocess.check_output(['git','diff','--','docs/api.md'],cwd=probe))
+write_json(out/'api-drift.json',dict(source_commit='13414320537d0208fc3ef8e43bd0723c98c1d5e0',before_sha256=before,generated_sha256=after,diff_sha256=sha256(out/'api-drift.patch'),limit='Disposable generation only; no API review approval inferred; source dependency tree from cold first bootstrap reused for this diagnostic'))
+r.run('pinned-service-context',['python3','scripts/integration_companion_service_context.py'],base/'lab',required=False)
+r.env=dict(env,npm_config_loglevel='notice',PATH='/home/tux/.local/bin:'+env['PATH'])
+write_json(out/'host-launcher-environment.json',r.env)
+r.run('host-launcher-versions',['node','--version'],base/'lab')
+r.run('host-npm-version',['npm','--version'],base/'lab')
+r.run('host-launcher-service-context',['python3','scripts/integration_companion_service_context.py'],base/'lab',required=False)

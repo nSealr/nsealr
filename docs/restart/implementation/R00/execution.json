@@ -1,0 +1,113 @@
+{
+  "task": "R00",
+  "author": "/root/baseline_execution",
+  "recorded_utc": "2026-10-18T15:26:09.480842+00:00",
+  "input_commits": {
+    "nSealr/nsealr": "768e8a35ae541f53f5da9c7bea7bf5c577fb474d",
+    "nSealr/companion": "13414320537d0208fc3ef8e43bd0723c98c1d5e0",
+    "nSealr/raspberry": "d1534d9dcfba8fe4a35cea2ed3529e32a5003dc6",
+    "nSealr/specs": "8bb8cca71355bcf8d81a093bcee9f3fe6915b121",
+    "nSealr/lab": "3303ab17a28ed32419576627d5abb93db3999635",
+    "nSealr/hardware": "340697d6713a671e9e01b0dc874ec999ab071601",
+    "nSealr/smartcard": "ec5da94a05882122e8a794f55f1af3f96a95c696",
+    "nSealr/website": "9cec39a89d6a2d2cc5747b8aae9d4b47a52eb7cd"
+  },
+  "candidate_commits": {
+    "nSealr/nsealr": "7bcb9fb5685feae458be62e0b888ffe912a2e065"
+  },
+  "integration_base": "61b0c39131012c40ff76321bb3650def6e7a9d83",
+  "full_suite_candidate": "f853757a5080003036aacb797999410398816f16",
+  "relative_mirror_candidate": "e1336ef4c062ef37cecd00c96e20f551c02ecd31",
+  "outcome": "Executed reproducible baseline with one retained inherited companion API freshness failure; full integration passed",
+  "suite_results": [
+    {
+      "label": "firmware-ci",
+      "exit_code": 0,
+      "started": "2026-10-18T15:17:15.656740+00:00",
+      "ended": "2026-10-18T15:17:35.474119+00:00",
+      "sha256": "84123c8c0393c3db73f80b1481b267c8248869738b88f357ead3376547bd12d6"
+    },
+    {
+      "label": "specs-ci",
+      "exit_code": 0,
+      "started": "2026-10-18T15:17:35.474714+00:00",
+      "ended": "2026-10-18T15:17:36.795176+00:00",
+      "sha256": "4c4a00919f11fc7af7da3f7cf7a0806eac25f70b401b5b4d6f4c8196452fd2f0"
+    },
+    {
+      "label": "companion-ci",
+      "exit_code": 2,
+      "started": "2026-10-18T15:17:36.795552+00:00",
+      "ended": "2026-10-18T15:18:09.024466+00:00",
+      "sha256": "c2eef41c8f614046da1370b94a95cc89f10300b39b80011636d133e654ab74b7"
+    },
+    {
+      "label": "raspberry-ci",
+      "exit_code": 0,
+      "started": "2026-10-18T15:18:09.024777+00:00",
+      "ended": "2026-10-18T15:18:18.723775+00:00",
+      "sha256": "6c7adb0d8d6994851aababe966d038ed267d128e7281a1b82beca8e5b8b4c3e4"
+    },
+    {
+      "label": "smartcard-ci",
+      "exit_code": 0,
+      "started": "2026-10-18T15:18:18.724044+00:00",
+      "ended": "2026-10-18T15:18:24.857262+00:00",
+      "sha256": "40c0e9fde10a4068a022e624e47cfd1fb0afbf0f65a0883da8994c9a3496acff"
+    },
+    {
+      "label": "hardware-ci",
+      "exit_code": 0,
+      "started": "2026-10-18T15:18:24.857588+00:00",
+      "ended": "2026-10-18T15:18:25.463452+00:00",
+      "sha256": "af46c199f4dd4dd22ae6fc643721cf3eadcd3abd15e17dad551aba556c5f40b5"
+    },
+    {
+      "label": "website-ci",
+      "exit_code": 0,
+      "started": "2026-10-18T15:18:25.463719+00:00",
+      "ended": "2026-10-18T15:18:32.055727+00:00",
+      "sha256": "fde5e43d6bf5351f5994ac3cd545172abd89b8ddb8ee14d014d30794d04fbc15"
+    },
+    {
+      "label": "lab-ci",
+      "exit_code": 0,
+      "started": "2026-10-18T15:18:32.055974+00:00",
+      "ended": "2026-10-18T15:18:38.882595+00:00",
+      "sha256": "e453bf8d1a702f68227c835c48a81852a99953a4b09cc18028d206d642b7fd81"
+    },
+    {
+      "label": "full-integration",
+      "exit_code": 0,
+      "started": "2026-10-18T15:18:38.882931+00:00",
+      "ended": "2026-10-18T15:23:42.723659+00:00",
+      "sha256": "554461d1df7f09d3adc4e7a41752df8f5f75458371c3eb9f457ede7cc4076d2c"
+    }
+  ],
+  "replays": [
+    {
+      "source": "fresh Git clone",
+      "candidate": "f853757a5080003036aacb797999410398816f16",
+      "cold_install": true,
+      "smoke_exit": 0
+    },
+    {
+      "source": "committed author checkout; freshly fetched source copies",
+      "candidate": "e1336ef4c062ef37cecd00c96e20f551c02ecd31",
+      "relative_mirrors": "../../..",
+      "cold_install": true,
+      "smoke_exit": 0
+    }
+  ],
+  "evidence_index": "docs/restart/implementation/R00/artifacts.json",
+  "evidence_index_sha256": "5fac987371a721a1ca1ac1f1abe25f103a4cecb1eaab5ed69989ed55038b3187",
+  "known_failure": "companion docs/api.md freshness; regeneration passes freshness but correctly invalidates api-review digest; no review record rewritten",
+  "skip_record": "docs/restart/implementation/R00/evidence/final/suites/skips.json",
+  "source_boundary": "Pinned migration repositories were locally authorized source transports. No private histories imported; selected CC0 lab patch/test delta and observed software output only.",
+  "host_isolation": "New destination, fresh dependencies/tool installs and separate caches; host Debian13/glibc2.41/kernel/GCC14.2/trust roots are not hermetic or container-isolated.",
+  "review_status": "Awaiting distinct final review; this execution record does not close R00 or any physical/security gate.",
+  "preserved_refs": {
+    "full": "refs/tags/evidence/r00-full-20261018",
+    "relative_mirror": "refs/tags/evidence/r00-relative-20261018"
+  }
+}

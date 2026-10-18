@@ -1,0 +1,98 @@
+{
+  "format": "nsealr-raspberry-seedsigner-compatibility-probe-v0",
+  "target": "raspberry-pi-zero-seedsigner-compatible-qr-vault",
+  "ready_for_hardware_acceptance": false,
+  "production_signing_enabled": false,
+  "persistent_secret_present": false,
+  "tropic01_used": false,
+  "checks": [
+    {
+      "id": "board_model",
+      "required": true,
+      "status": "blocked",
+      "expected": "Raspberry Pi Zero-class board model",
+      "observed": "board model not readable"
+    },
+    {
+      "id": "gpio_python_module",
+      "required": true,
+      "status": "blocked",
+      "expected": "Python module available: RPi.GPIO",
+      "observed": "module not found"
+    },
+    {
+      "id": "spi_python_module",
+      "required": true,
+      "status": "blocked",
+      "expected": "Python module available: spidev",
+      "observed": "module not found"
+    },
+    {
+      "id": "camera_python_module",
+      "required": true,
+      "status": "blocked",
+      "expected": "Python module available: picamera or picamera2",
+      "observed": "module not found"
+    },
+    {
+      "id": "boot_camera_enabled",
+      "required": true,
+      "status": "blocked",
+      "expected": "boot config readable",
+      "observed": "no supported boot config path found"
+    },
+    {
+      "id": "boot_spi_enabled",
+      "required": true,
+      "status": "blocked",
+      "expected": "boot config readable",
+      "observed": "no supported boot config path found"
+    },
+    {
+      "id": "swap_disabled",
+      "required": true,
+      "status": "fail",
+      "expected": "no active swap entries",
+      "observed": "/dev/nvme0n1p3                          partition\t66206716\t8692752\t\t-2"
+    },
+    {
+      "id": "wireless_absent_or_blocked",
+      "required": true,
+      "status": "blocked",
+      "expected": "wireless absent or blocked before signing",
+      "observed": "board model not readable"
+    },
+    {
+      "id": "remote_access_disabled",
+      "required": true,
+      "status": "pass",
+      "expected": "ssh/sshd systemd services disabled or inactive before signing",
+      "observed": "ssh: enabled=masked; active=inactive; sshd: enabled=masked; active=inactive"
+    }
+  ],
+  "acceptance_blockers": [
+    "board_model",
+    "gpio_python_module",
+    "spi_python_module",
+    "camera_python_module",
+    "boot_camera_enabled",
+    "boot_spi_enabled",
+    "swap_disabled",
+    "wireless_absent_or_blocked"
+  ],
+  "human_actions_required": [
+    "Run the probe on the target Raspberry Pi Zero-class board.",
+    "Install the GPIO Python dependency used by the SeedSigner-compatible button HAT.",
+    "Install the SPI Python dependency used by the ST7789 display HAT.",
+    "Install the Pi camera Python dependency used by the OV5647/ZeroCam QR scanner.",
+    "Enable the Pi camera path in the boot config before hardware acceptance.",
+    "Enable SPI in the boot config before hardware acceptance.",
+    "Disable swap before signing acceptance so RAM-only secrets cannot page to storage.",
+    "Use a non-wireless Pi Zero or record clear Wi-Fi/Bluetooth block evidence."
+  ],
+  "limitations": [
+    "This is a non-destructive development probe, not a completed hardware acceptance report.",
+    "A passing probe does not prove QR scan quality, trusted display readability, GPIO approval UX, or production security.",
+    "The Raspberry/Pi stateless QR vault remains RAM-only and must not add persistent secret storage or TROPIC01."
+  ]
+}
