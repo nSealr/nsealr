@@ -1,0 +1,606 @@
+{
+  "format": "nsealr.t01.acceptance-plan.v1",
+  "phase": "specification_only",
+  "prepared_at": "2026-10-18",
+  "author": "/root/t01_author",
+  "base_commit": "7b5553685dac56029a4379be12054154b6b5e0b5",
+  "execution_status": "Not executed as implementation acceptance; only preparation consistency checks may run before distinct brief approval.",
+  "criteria": [
+    {
+      "id": "T01-1",
+      "acceptance": "Replace universal target-readiness booleans with requirements for the claimed profile; represent supported/configured/verified/unavailable/unknown distinctly.",
+      "suites": [
+        "A",
+        "P",
+        "S"
+      ],
+      "requirements": [
+        "PROD-01",
+        "PROD-04",
+        "PROD-05",
+        "PROD-08",
+        "PROD-11",
+        "release_gate_template"
+      ]
+    },
+    {
+      "id": "T01-2",
+      "acceptance": "No-SE is explicit; missing required SE fails closed. Unsupported methods and custody modes never trigger silent downgrades.",
+      "suites": [
+        "P",
+        "R"
+      ],
+      "requirements": [
+        "PROD-08",
+        "PROD-11",
+        "PROD-12",
+        "P01 per-profile threat models"
+      ]
+    },
+    {
+      "id": "T01-3",
+      "acceptance": "Bridge routes by versioned methods/algorithms/limits and transport; a device claim alone is not proof of security state.",
+      "suites": [
+        "A",
+        "S",
+        "R",
+        "L"
+      ],
+      "requirements": [
+        "PROD-01",
+        "PROD-04",
+        "PROD-09",
+        "PROD-10"
+      ]
+    },
+    {
+      "id": "T01-4",
+      "acceptance": "Keep public compatibility contracts and independent vectors common while allowing distinct timing and custody.",
+      "suites": [
+        "P",
+        "S",
+        "R",
+        "L"
+      ],
+      "requirements": [
+        "PROD-08",
+        "PROD-09",
+        "PROD-12",
+        "A02 single authoritative artifact"
+      ]
+    },
+    {
+      "id": "T01-5",
+      "acceptance": "Record separate capabilities for NIP-44 primitives, verified message context and usable NIP-17/59 workflows. Advertise payload/queue limits and unsupported operations without silent downgrade.",
+      "suites": [
+        "L",
+        "D"
+      ],
+      "requirements": [
+        "PROD-07",
+        "PROD-08",
+        "PROD-09",
+        "P01 connected setup and authentication",
+        "C02 acceptance"
+      ]
+    }
+  ],
+  "oracle_policy": {
+    "decision_vectors": "Hand-authored table cases with reasons derived from P01/profile matrix and reviewed before implementation. Rust, TypeScript and Python each consume immutable expected decisions; no implementation generates its own expected outputs.",
+    "schema_vectors": "Independent JSON Schema/negative raw-text cases, including properties a parsed object no longer preserves. Direct source byte tests required.",
+    "crypto_vectors": "Existing independent Nostr/BIP340 signatures and identity fixtures retained; T01 does not implement NIP44 crypto. C02 must later run official crypto/context vectors.",
+    "independence": "Cross-language agreement supplements but does not replace manually reviewed requirement-derived expected results. Python crypto oracle is not redirected through Rust.",
+    "fixtures": "One A02 contract artifact with manifest/hash/provenance; conformance-only synthetic profile/evidence fixtures cannot be loaded as production release evidence."
+  },
+  "baseline_reproductions": [
+    {
+      "gap": "G01",
+      "action": "At existing public API set every legacy readiness bool true while no hardware/evidence record exists. Record enabled diagnostic plus development acceptance behavior.",
+      "meaning": "Demonstrates insufficient representational/evidence contract; does not claim legacy production handler actually signs."
+    },
+    {
+      "gap": "G04",
+      "action": "Pass existing otherwise-valid capability object with an unknown nested security_claim field and duplicate method entries through TS validateResponse and schema checker.",
+      "meaning": "Capture validator disagreement before replacement."
+    },
+    {
+      "gap": "G05",
+      "action": "Change connected account fixture to manual_only and persistent_grants false, keep all other fields valid, call existing parseAccountDescriptor/selectAccountRoute.",
+      "meaning": "Capture explicit rejection of accepted P01 initial consent model; new code must accept this case under new format."
+    }
+  ],
+  "suites": [
+    {
+      "id": "A",
+      "title": "State vocabulary and authority boundaries",
+      "source_gaps": [
+        "G01",
+        "G02",
+        "G03",
+        "G06"
+      ],
+      "criteria": [
+        "T01-1",
+        "T01-3"
+      ],
+      "cases": [
+        {
+          "id": "A-01",
+          "input_or_action": "For one feature vary support/configuration/availability/verification independently, including supported but unconfigured and configured but unavailable.",
+          "independent_expected_result": "Preserve distinctions; configured does not mean verified/available; no universal signing_enabled field."
+        },
+        {
+          "id": "A-02",
+          "input_or_action": "Provide unknown or absent required runtime observation/evidence, and contradictory configured+unsupported values.",
+          "independent_expected_result": "Unknown blocks the relevant requirement; contradictions reject; no default true or development waiver."
+        },
+        {
+          "id": "A-03",
+          "input_or_action": "Feed wire verified/approved/signing_enabled/missing_gates/development_accepted_gates/security_rank, evidence URL/hash and physically_approved assertions at every nested position.",
+          "independent_expected_result": "Strict descriptor rejection; zero trusted observations, zero local consent/authorization and zero crypto calls."
+        },
+        {
+          "id": "A-04",
+          "input_or_action": "Supply a valid-looking descriptor public key without custody proof, including different actual selected key.",
+          "independent_expected_result": "No local identity proof created; existing expected-key checks reject mismatches; descriptor consistency is not attestation."
+        },
+        {
+          "id": "A-05",
+          "input_or_action": "Change a trusted provider from available to unavailable after assessment and before dispatch/execution.",
+          "independent_expected_result": "Fresh observation blocks use; cached diagnostic is not execution authority; S03 owner unchanged."
+        },
+        {
+          "id": "A-06",
+          "input_or_action": "Use matching descriptor and release digest but absent/wrong actual implementation or attached hardware evidence.",
+          "independent_expected_result": "Can establish only descriptor/manifest consistency; no attached-hardware authenticity label or release assertion."
+        }
+      ],
+      "commands": [
+        "T-RUST",
+        "T-TS",
+        "T-PY",
+        "T-S03"
+      ]
+    },
+    {
+      "id": "P",
+      "title": "Per-profile requirements and release evidence",
+      "source_gaps": [
+        "G01",
+        "G05",
+        "G08",
+        "G10"
+      ],
+      "criteria": [
+        "T01-1",
+        "T01-2",
+        "T01-4"
+      ],
+      "cases": [
+        {
+          "id": "P-01",
+          "input_or_action": "Truth-table fixture for each of esp32_no_se, pi_qr, p4_qr and custom_board with its complete typed conformance inputs.",
+          "independent_expected_result": "Exactly its own requirement set is selected; synthetic inputs are visibly conformance_only and never admit a product release."
+        },
+        {
+          "id": "P-02",
+          "input_or_action": "For each profile remove each required group R-ID/R-AUTH/R-CATALOG/R-SECRET/R-BOUNDS/R-RECOVERY/R-LIFECYCLE/R-RELEASE and R-MSG where applicable.",
+          "independent_expected_result": "The expected specific blocker appears; missing unrelated profile evidence produces no blocker."
+        },
+        {
+          "id": "P-03",
+          "input_or_action": "Pi reports boot enforcement unavailable with accepted synthetic evidence of that limitation and the required image/substitution controls; separately omit that evidence or claim secure boot.",
+          "independent_expected_result": "The scoped limitation does not require a fabricated secure_boot=true. Missing limitation evidence blocks R-LIFECYCLE; unsupported secure-boot claim rejects."
+        },
+        {
+          "id": "P-04",
+          "input_or_action": "No-SE ESP32 uses absent SE plus mcu_wrapped_persistent and its own runtime controls; separately select volatile demonstration mode.",
+          "independent_expected_result": "No custom-SE requirement is imported. Volatile engineering mode cannot satisfy persistent first-release requirements."
+        },
+        {
+          "id": "P-05",
+          "input_or_action": "Custom profile lacks a required SE, has unknown config, wrong part/config revision or failed provider.",
+          "independent_expected_result": "Required-component/custody blocker; never select no-SE/MCU custody or another method."
+        },
+        {
+          "id": "P-06",
+          "input_or_action": "Pi and P4 use session-only custody and manual consent; attempt persistent identity storage, grants, USB operation, DM, 10050 or 22242.",
+          "independent_expected_result": "Reject each initial-profile mismatch; no requirement on connected C02/custom-board evidence."
+        },
+        {
+          "id": "P-07",
+          "input_or_action": "Connected ESP32/custom route uses manual_only and no persistent grants; separately attempt automation.",
+          "independent_expected_result": "Manual route is compatible given other inputs. Initial automation rejects; F01 absence never blocks the manual route."
+        },
+        {
+          "id": "P-08",
+          "input_or_action": "Attempt to load synthetic test evidence, mismatched firmware/bootloader/board/SDK/config/limits, missing procedure results or an evidence path supplied by device.",
+          "independent_expected_result": "Production release checker rejects; hash equality alone never satisfies physical procedure evidence."
+        },
+        {
+          "id": "P-09",
+          "input_or_action": "Pass board_sdk or an external NIP-46 route as a nSealr signer profile.",
+          "independent_expected_result": "Board SDK is outside Nostr routing; external signer cannot inherit nSealr physical/custody claims. No build dependency on board-sdk is introduced."
+        }
+      ],
+      "commands": [
+        "T-RUST",
+        "T-PY",
+        "T-TS",
+        "T-INDEPENDENCE"
+      ]
+    },
+    {
+      "id": "S",
+      "title": "Schema, strict ingress and version transition",
+      "source_gaps": [
+        "G02",
+        "G04",
+        "G06"
+      ],
+      "criteria": [
+        "T01-1",
+        "T01-3",
+        "T01-4"
+      ],
+      "cases": [
+        {
+          "id": "S-01",
+          "input_or_action": "Valid full descriptor and compact manifest-reference descriptor resolve to the same exact trusted local manifest and bounded deltas.",
+          "independent_expected_result": "Identical semantic capability result; labels remain untrusted; no arbitrary reference retrieval."
+        },
+        {
+          "id": "S-02",
+          "input_or_action": "Use unknown/wrong hash manifest, changed immutable field through compact delta, extra nested field, duplicate IDs/array entries or wrong enum.",
+          "independent_expected_result": "Reject with deterministic reason before routing; no permissive normalization or fallback."
+        },
+        {
+          "id": "S-03",
+          "input_or_action": "Raw duplicate member (including escaped spelling), trailing object, BOM, invalid UTF-8/surrogate, wrong type, oversized token/label/depth/descriptor.",
+          "independent_expected_result": "Reject from original bytes within discovery budget; JSON Schema is not treated as duplicate detector."
+        },
+        {
+          "id": "S-04",
+          "input_or_action": "Use version 1 request, old account/route format, get_signing_status, unknown version or method revision.",
+          "independent_expected_result": "Explicit unsupported contract/method; no old handler or automatic retry. Valid version 2 discovery/control request succeeds within its declared bounds."
+        },
+        {
+          "id": "S-05",
+          "input_or_action": "Migrate common fixture loaders; mutate one authoritative file, add unclassified file, point a consumer at stale snapshot or generate expected answers automatically.",
+          "independent_expected_result": "Provenance/coverage check fails; independent fixture hash remains authoritative; restoring exact source passes."
+        },
+        {
+          "id": "S-06",
+          "input_or_action": "Inspect exported SDK/browser/Node types, CLI/service examples and Python reference responses after cutover.",
+          "independent_expected_result": "Only new active capability/account/route contracts exposed; unchanged external Nostr methods/events remain valid. Frozen historical evidence is preserved byte-for-byte."
+        }
+      ],
+      "commands": [
+        "T-RUST",
+        "T-TS",
+        "T-PY",
+        "T-CONSUMERS",
+        "T-PROVENANCE"
+      ]
+    },
+    {
+      "id": "R",
+      "title": "Real Bridge route and dispatch boundary",
+      "source_gaps": [
+        "G04",
+        "G05",
+        "G07"
+      ],
+      "criteria": [
+        "T01-2",
+        "T01-3",
+        "T01-4"
+      ],
+      "cases": [
+        {
+          "id": "R-01",
+          "input_or_action": "Service dispatch through selected account to recording USB adapter using matching method/catalog/algorithm/custody/profile/transport/limits.",
+          "independent_expected_result": "Exactly one bounded request written with original operation and request/identity binding; route does not confer consent."
+        },
+        {
+          "id": "R-02",
+          "input_or_action": "Equivalent semantic request through a valid QR adapter with different declared finite deadline/capacity and volatile custody.",
+          "independent_expected_result": "Same public operation contract and expected event output semantics; differences remain explicit. No custom-board dependency."
+        },
+        {
+          "id": "R-03",
+          "input_or_action": "Individually vary requested account/profile/manifest/contract/method revision/catalog/algorithm/custody/transport/codec.",
+          "independent_expected_result": "Deterministic mismatch rejection and zero transport writes. Never choose another account, custody, algorithm, weaker version or transport."
+        },
+        {
+          "id": "R-04",
+          "input_or_action": "Rogue descriptor claims every feature available and huge limits while local adapter/manifest supports less.",
+          "independent_expected_result": "Intersection remains bounded by local implementation; unsupported method rejected. No release label or local authorization inferred."
+        },
+        {
+          "id": "R-05",
+          "input_or_action": "Change capabilities, account, connection or limits between selection and dispatch; replay old route snapshot.",
+          "independent_expected_result": "Pending host work invalidates and old snapshot rejects. Reconnect requires rebinding and cannot preserve approval."
+        },
+        {
+          "id": "R-06",
+          "input_or_action": "Transport responds with wrong request, expected user, canonical ID or signature while claiming readiness.",
+          "independent_expected_result": "S01 verification rejects; no publication success, retries or authority inferred from readiness. Positive independently valid fixture retained."
+        }
+      ],
+      "commands": [
+        "T-TS",
+        "T-CONSUMERS",
+        "T-S03"
+      ]
+    },
+    {
+      "id": "L",
+      "title": "Finite byte, work, state and deadline limits",
+      "source_gaps": [
+        "G02",
+        "G07"
+      ],
+      "criteria": [
+        "T01-3",
+        "T01-4",
+        "T01-5"
+      ],
+      "cases": [
+        {
+          "id": "L-01",
+          "input_or_action": "For every declared numerical dimension use limit-1, exact limit and limit+1, including UTF-8 multibyte strings and original JSON whitespace expansion.",
+          "independent_expected_result": "At/below accepts when other dimensions fit; above rejects before retention/expensive processing. Compact JSON length cannot hide oversized ingress."
+        },
+        {
+          "id": "L-02",
+          "input_or_action": "Supply absent/null/unlimited/negative/fractional/unsafe integer, unknown units, contradictory aggregate caps or zero in required positive dimensions.",
+          "independent_expected_result": "Manifest/descriptor rejects; zero allowed only for disabled queues/caches with no corresponding retained data."
+        },
+        {
+          "id": "L-03",
+          "input_or_action": "Use checked base64/JSON/padding arithmetic near safe-integer overflow and synthetic NIP-44 lengths 65535/65536 with actual lower local caps.",
+          "independent_expected_result": "No wrap/truncation/allocation; fail early on overflow or smaller cap. This proves limit handling, not crypto correctness at those lengths."
+        },
+        {
+          "id": "L-04",
+          "input_or_action": "Flood many tiny frames, pending discovery/operations, repeated scans, malformed reassembly, delayed consumer and disconnect/cancel.",
+          "independent_expected_result": "Cumulative retained byte/count/work cap never exceeded; reservations released on terminal paths; one pending discovery and zero conformance queue/cache enforced."
+        },
+        {
+          "id": "L-05",
+          "input_or_action": "Full descriptor exceeds current serial response capacity; equivalent compact reference fits; unknown compact reference supplied.",
+          "independent_expected_result": "Full form unavailable on that transport without capacity inflation; known compact form resolves correctly and fits actual frame; unknown form rejects."
+        },
+        {
+          "id": "L-06",
+          "input_or_action": "Clock at just before/equal/after deadline, rollback/overflow/unavailable local clock, peer-requested longer timeout.",
+          "independent_expected_result": "Declared clock ownership respected; exact expiry rejects and pending state clears; peer cannot extend S03 lifetime."
+        },
+        {
+          "id": "L-07",
+          "input_or_action": "Record size_of profile/descriptor/parser output and measure bounded retained allocations in host harness; preserve S03 owner budgets.",
+          "independent_expected_result": "Within declared conformance bounds; all scratch/caller buffers accounted separately. No measurement is labeled MCU stack/RAM/latency evidence."
+        }
+      ],
+      "commands": [
+        "T-RUST",
+        "T-TS",
+        "T-PY",
+        "T-S03"
+      ]
+    },
+    {
+      "id": "D",
+      "title": "Primitive, context and usable workflow separation",
+      "source_gaps": [
+        "G09",
+        "G10"
+      ],
+      "criteria": [
+        "T01-5"
+      ],
+      "cases": [
+        {
+          "id": "D-01",
+          "input_or_action": "Host NIP-46 relay encryption exists but user device exposes no NIP-44 feature.",
+          "independent_expected_result": "No user-message primitive or workflow capability inferred from RPC crypto."
+        },
+        {
+          "id": "D-02",
+          "input_or_action": "Only nip44_v2_primitive is supported, with bare pubkey/payload input and no signed outer event.",
+          "independent_expected_result": "Primitive route may pass its explicit permission/bounds, but verified-context and usable-workflow routes reject; no unseen signature marked checked."
+        },
+        {
+          "id": "D-03",
+          "input_or_action": "Primitive and verified context supported but no admitted named client sequence, or workflow claims absent subordinate features.",
+          "independent_expected_result": "Workflow route rejects; contradictory claimed workflow descriptor rejects."
+        },
+        {
+          "id": "D-04",
+          "input_or_action": "Synthetic admitted one-to-one text workflow has peer/sender copies, required 10050 setup and named conditional 22242 flow; all local constraints match.",
+          "independent_expected_result": "Positive test route selects exact workflow only. Real manifest remains unavailable pending C02/target/client evidence."
+        },
+        {
+          "id": "D-05",
+          "input_or_action": "Substitute recipient/plaintext/ciphertext/seal context, request opaque seal signing, cancel/replay compound context or present stale relay challenge.",
+          "independent_expected_result": "T01 routing refuses unadmitted/insufficient-context operations; no blind-sign route added. C02 must later prove actual cryptographic/context binding."
+        },
+        {
+          "id": "D-06",
+          "input_or_action": "Select relay requiring AUTH without qualified 22242 workflow, or recipient has no valid 10050 advertisement.",
+          "independent_expected_result": "Workflow unavailable; no arbitrary-relay/unprotected-mailbox fallback or treating signed setup as published."
+        },
+        {
+          "id": "D-07",
+          "input_or_action": "Request NIP-04, group/file/ephemeral wrap, conversation-key export, offline DM/10050/22242 or a different call order.",
+          "independent_expected_result": "Explicit unsupported; no fallback or automatic promotion from sign_event or generic ECC."
+        }
+      ],
+      "commands": [
+        "T-TS",
+        "T-PY",
+        "T-RUST"
+      ]
+    }
+  ],
+  "commands": [
+    {
+      "id": "B-PLAN",
+      "phase": "preparation_existing",
+      "cwd": "T01 worktree",
+      "command": "python3 scripts/validate_restart_plan.py",
+      "expected": "Exit 0 on unchanged base graph; no claim of runtime acceptance."
+    },
+    {
+      "id": "B-CORE",
+      "phase": "implementation_baseline_existing",
+      "cwd": "approved nsealr root before cutover",
+      "command": "cargo test --locked --offline -p nsealr-core policy::signing_policy",
+      "expected": "Preserve existing observed behavior; run saved direct cases showing universal all-true status without evidence, not a false claim of actual signing."
+    },
+    {
+      "id": "B-HOST",
+      "phase": "implementation_baseline_existing",
+      "cwd": "approved companion root before A02 mapping",
+      "command": "pnpm exec vitest run packages/protocol/src/protocol.test.ts packages/policy/src/policy.test.ts --maxWorkers=4",
+      "expected": "Save current tests plus behavioral repros for accepted unknown capability fields and rejection of manual connected descriptors. Tests expected to expose requirement mismatch before repair."
+    },
+    {
+      "id": "B-SPECS",
+      "phase": "implementation_baseline_existing",
+      "cwd": "approved specs root before A02 mapping",
+      "command": "python3 scripts/verify_specs.py",
+      "expected": "Save baseline; success proves old contract consistency only."
+    },
+    {
+      "id": "T-RUST",
+      "phase": "implementation_proposed",
+      "cwd": "approved consolidated root",
+      "command": "cargo test --locked --offline -p nsealr-core --test profile_capabilities",
+      "expected": "New explicit A/P/S/L/D cases pass; tests consume common independent fixtures. Entry point must be created with approved implementation."
+    },
+    {
+      "id": "T-TS",
+      "phase": "implementation_proposed",
+      "cwd": "approved consolidated root",
+      "command": "pnpm exec vitest run packages/protocol/src/capabilities.test.ts packages/policy/src/profile-routing.test.ts packages/client/src/profile-dispatch.test.ts --maxWorkers=4",
+      "expected": "New S/R/L/D behavioral cases pass through parser, route selection, service and recording transport; zero writes on rejection."
+    },
+    {
+      "id": "T-PY",
+      "phase": "implementation_proposed",
+      "cwd": "approved consolidated root",
+      "command": "python3 -m unittest discover -s protocols/contracts/v1/tests -p test_profile_capabilities.py",
+      "expected": "Independent Python decision/schema fixture checker passes; cannot import Rust or TypeScript implementation as oracle."
+    },
+    {
+      "id": "T-S03",
+      "phase": "implementation_reconciled",
+      "cwd": "approved consolidated root",
+      "command": "cargo test --locked --offline -p nsealr-core",
+      "expected": "Frozen S03 one-use/replay/cancel/reset/parser tests pass; public production signing remains unavailable. Record final S03 case list at tuple reconciliation."
+    },
+    {
+      "id": "T-CONSUMERS",
+      "phase": "implementation_reconciled",
+      "cwd": "approved consolidated root",
+      "commands": [
+        "cargo test --locked --offline --manifest-path apps/desktop-simulator/Cargo.toml",
+        "pnpm typecheck",
+        "pnpm test",
+        "pnpm build",
+        "pnpm consumer-smoke",
+        "pnpm examples-smoke",
+        "pnpm browser-runtime-bundle:check",
+        "pnpm browser-extension-security:check",
+        "pnpm pack-smoke",
+        "python3 -m unittest discover -s apps/pi/tests"
+      ],
+      "expected": "All retained real consumers use one active contract. Python environment must contain approved R00 requirements and apps/pi package; mapping/entry points rechecked against adopted A02 before execution."
+    },
+    {
+      "id": "T-PROVENANCE",
+      "phase": "implementation_reconciled",
+      "cwd": "approved consolidated root",
+      "command": "python3 protocols/contracts/v1/scripts/verify_specs.py",
+      "expected": "One active artifact manifest, exact hashes/consumer coverage and independent vectors. Add focused mutation checks to existing contract/provenance test entry points; exact adopted A02 checker command must be recorded before code."
+    },
+    {
+      "id": "T-INDEPENDENCE",
+      "phase": "implementation_existing_and_reconciled",
+      "cwd": "approved consolidated root",
+      "command": "cargo build --locked --offline -p nsealr-core --target riscv32imafc-unknown-none-elf",
+      "expected": "Actual no_std core builds without custom Board/SDK dependency; no fabricated MCU app or empty standalone-SDK proof."
+    },
+    {
+      "id": "T-CI",
+      "phase": "implementation_reconciled",
+      "cwd": "approved consolidated root",
+      "commands": [
+        "make ci",
+        "pnpm ci"
+      ],
+      "expected": "Run all affected consolidated CI once coherent, including host workspace and Python/common contracts. Reconcile exact adopted A02 integration recipe before implementation; inherited failures/skips stay explicit, no lowered gates."
+    }
+  ],
+  "resources": {
+    "available": [
+      "Local source checkouts and isolated worktree",
+      "R00-approved software toolchains and host test runtime",
+      "Public disposable test identities and independent fixture sources"
+    ],
+    "unavailable": [
+      "Identified ESP32/Pi/P4/custom assemblies",
+      "Physical operator/bench/entropy/boot/PIN/power-cut measurements"
+    ],
+    "consequence": "Portable T01 contract/runtime routing work can finish without hardware; no device/property/production release is qualified."
+  },
+  "required_evidence": [
+    "Exact source/candidate and all schema/vector/manifest hashes",
+    "Recorded before/after behavioral observations with expected reason",
+    "Commands, cwd, environment/tool versions, exit codes and output hashes",
+    "Consumer cutover/retirement inventory and frozen evidence equivalence",
+    "Bounded memory/work counters and transport writes for adversarial cases",
+    "Distinct exact-candidate review addressing requirement adequacy, implementation and maintainability"
+  ],
+  "stop_conditions": [
+    "Distinct brief approval or coordinator-approved A02/S03 input reconciliation missing.",
+    "Local authority can be minted from wire data or runtime evaluator output.",
+    "A required SE/custody/method/algorithm/version/transport mismatch silently falls back.",
+    "Any old universal security-ready boolean remains an active consumer signal.",
+    "Limits are unbounded, inferred from protocol maxima, exceed local hard capacity or lose S01 retention checks.",
+    "A simulated/test evidence record admits real profile release.",
+    "An unsupported DM context/workflow is inferred from primitive or host transport support.",
+    "Inputs, scope, capacities or semantic requirements change without affected spec review."
+  ],
+  "completion_limits": [
+    "T01 acceptance is portable schema/evaluator/real Bridge routing and common conformance evidence only.",
+    "K01 owns actual product signing; C02 owns DM crypto/context/client workflows; device/release tasks own physical proof.",
+    "Root owns graph transitions/integration; distinct reviewer must inspect exact final candidate."
+  ],
+  "preparation_checks": {
+    "scope": "Documentation/source-reference consistency only; not implementation or physical acceptance.",
+    "environment": {
+      "python": "Python 3.13.5",
+      "git": "git version 2.47.3"
+    },
+    "results": [
+      {
+        "command": "python3 scripts/validate_restart_plan.py",
+        "exit_code": 0,
+        "result": "47 tasks; structural graph validation passed on unchanged preparation base."
+      },
+      {
+        "command": "Python json.loads plus Git-object SHA-256 verification of every source-audit inspected_files entry and cross-reference validation of criteria/suites/commands/gaps",
+        "exit_code": 0,
+        "result": "44 immutable source file hashes; all five criteria mapped; 41 independently specified cases; three owned preparation files only."
+      },
+      {
+        "command": "git diff --cached --check",
+        "exit_code": 0,
+        "result": "All three staged new files pass whitespace check; staged scope contains exactly the authorized preparation paths."
+      }
+    ]
+  }
+}
