@@ -1,10 +1,10 @@
 {
-  "name": "relay-step-response-signed-event-sender-mismatch",
+  "name": "relay-step-response-signed-event-user-mismatch",
   "format": "pre-signing-invalid-vector-v0",
   "category": "nip46-relay-step",
-  "expected_error": "signed-event response pubkey does not match relay event sender",
+  "expected_error": "result pubkey does not match expected user pubkey",
   "relay_step": {
-    "format": "nsealr-nip46-relay-response-step-v0",
+    "format": "nsealr-nip46-relay-response-step-v1",
     "direction": "remote_signer_to_client",
     "event": {
       "kind": 24133,
@@ -22,7 +22,8 @@
     },
     "decrypted_message": {
       "id": "nip46-req-1",
-      "result": "{\"id\":\"2977f107ad2668dbd9f09b8594eff3b5276e21bfe098e60ae3e905e3c861e4d3\",\"pubkey\":\"bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb\",\"created_at\":1710000000,\"kind\":1,\"tags\":[],\"content\":\"nSealr fixture: mismatched relay response signer.\",\"sig\":\"2eec0351eb1d651140922d4b1f1bd8135f4474aabf42ec5bda7011087c1a072d71be863646dc162e4d96eacf14afeed2618a4acb0e1134a273a2b8e73039e654\"}"
-    }
+      "result": "{\"id\":\"2977f107ad2668dbd9f09b8594eff3b5276e21bfe098e60ae3e905e3c861e4d3\",\"pubkey\":\"4f355bdcb7cc0af728ef3cceb9615d90684bb5b2ca5f859ab0f0b704075871aa\",\"created_at\":1710000000,\"kind\":1,\"tags\":[],\"content\":\"nSealr fixture: basic kind 1 event.\",\"sig\":\"2eec0351eb1d651140922d4b1f1bd8135f4474aabf42ec5bda7011087c1a072d71be863646dc162e4d96eacf14afeed2618a4acb0e1134a273a2b8e73039e654\"}"
+    },
+    "expected_user_pubkey": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
   }
 }

@@ -1,10 +1,10 @@
 {
-  "name": "relay-step-response-public-key-sender-mismatch",
+  "name": "relay-step-response-public-key-user-mismatch",
   "format": "pre-signing-invalid-vector-v0",
   "category": "nip46-relay-step",
-  "expected_error": "public-key response does not match relay event sender",
+  "expected_error": "result pubkey does not match expected user pubkey",
   "relay_step": {
-    "format": "nsealr-nip46-relay-response-step-v0",
+    "format": "nsealr-nip46-relay-response-step-v1",
     "direction": "remote_signer_to_client",
     "event": {
       "kind": 24133,
@@ -23,6 +23,7 @@
     "decrypted_message": {
       "id": "nip46-get-public-key-1",
       "result": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
-    }
+    },
+    "expected_user_pubkey": "4f355bdcb7cc0af728ef3cceb9615d90684bb5b2ca5f859ab0f0b704075871aa"
   }
 }

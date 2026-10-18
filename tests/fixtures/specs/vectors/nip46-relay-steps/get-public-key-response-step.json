@@ -1,6 +1,6 @@
 {
   "name": "get-public-key-response-step",
-  "format": "nsealr-nip46-relay-response-step-v0",
+  "format": "nsealr-nip46-relay-response-step-v1",
   "direction": "remote_signer_to_client",
   "event": {
     "id": "6b5ac3fd19bded40154f212cf38586483fcfdf9119734b1cdb303b363e6e6443",
@@ -21,7 +21,7 @@
     "result": "4f355bdcb7cc0af728ef3cceb9615d90684bb5b2ca5f859ab0f0b704075871aa"
   },
   "expected_step": {
-    "format": "nsealr-nip46-relay-response-step-v0",
+    "format": "nsealr-nip46-relay-response-step-v1",
     "envelope": {
       "format": "nsealr-nip46-relay-event-envelope-v0",
       "direction": "remote_signer_to_client",
@@ -45,7 +45,8 @@
     "signed_event_shape_checked": false,
     "signed_event_id_verified": false,
     "signed_event_signature_verified": false,
-    "result_pubkey_bound_to_sender": true,
+    "result_pubkey": "4f355bdcb7cc0af728ef3cceb9615d90684bb5b2ca5f859ab0f0b704075871aa",
+    "result_pubkey_bound_to_expected_user": true,
     "decrypts_content": false,
     "opens_relay": false,
     "creates_grants": false,
@@ -55,5 +56,6 @@
     "stores_production_secrets": false,
     "persists_session_state": false
   },
-  "scope": "NIP-46 relay response step evaluation for an already decrypted get_public_key result. It validates the plaintext response shape, verifies the relay event signature, and binds the result pubkey to the relay event sender without opening relays, decrypting NIP-44 content, acknowledging connect, creating grants, dispatching a signer, or persisting session state."
+  "scope": "NIP-46 relay response step evaluation for an already decrypted get_public_key result. It validates the plaintext response shape, verifies the relay event signature, and binds the result pubkey to the explicitly expected user identity without opening relays, decrypting NIP-44 content, acknowledging connect, creating grants, dispatching a signer, or persisting session state.",
+  "expected_user_pubkey": "4f355bdcb7cc0af728ef3cceb9615d90684bb5b2ca5f859ab0f0b704075871aa"
 }
