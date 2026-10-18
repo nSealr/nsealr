@@ -5,7 +5,7 @@ import tempfile
 import unittest
 from pathlib import Path
 
-from scripts.integration_raspberry_hardware_probe import (
+from tests.integration.integration_raspberry_hardware_probe import (
     assert_safe_probe_report,
     build_hardware_probe_command,
 )

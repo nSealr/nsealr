@@ -3,7 +3,7 @@ from __future__ import annotations
 import unittest
 from pathlib import Path
 
-from scripts.hardware_companion_serial_smoke import (
+from tests.integration.optional.hardware_companion_serial_smoke import (
     assert_expected_response,
     build_request_command,
     build_serial_line_exchange_command,

@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Shared helpers for cross-repo integration scripts."""
+"""Shared helpers for integrated integration scripts."""
 
 from __future__ import annotations
 
@@ -12,7 +12,7 @@ from typing import Mapping
 
 DEP0205_SUPPRESSION = "--disable-warning=DEP0205"
 PNPM_VERSION = "10.33.4"
-PINNED_PNPM_COMMAND = ["npm", "exec", "--yes", f"--package=pnpm@{PNPM_VERSION}", "--", "pnpm"]
+PINNED_PNPM_COMMAND = ["pnpm"]
 
 
 def _node_options_with_dep0205_suppressed(existing: str | None) -> str:
@@ -24,6 +24,9 @@ def _node_options_with_dep0205_suppressed(existing: str | None) -> str:
 
 def pinned_command(command: list[str]) -> list[str]:
     if command and command[0] == "pnpm":
+        version = subprocess.run(["pnpm", "--version"], check=True, capture_output=True, text=True)
+        if version.stdout.strip() != PNPM_VERSION:
+            raise RuntimeError("pnpm version differs from the pinned product toolchain")
         return [*PINNED_PNPM_COMMAND, *command[1:]]
     return command
 

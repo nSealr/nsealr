@@ -10,13 +10,13 @@ from pathlib import Path
 from typing import Any
 
 try:
-    from scripts.browser_integration_support import (
+    from tests.integration.browser_integration_support import (
         CommandPlan,
         build_browser_package_plan_command,
         run_failure_without_stdout,
         run_json_command,
     )
-    from scripts.integration_support import build_pnpm_workspace, install_pnpm_workspace, run_command
+    from tests.integration.integration_support import build_pnpm_workspace, install_pnpm_workspace, run_command
 except ModuleNotFoundError:  # pragma: no cover - direct script execution
     from browser_integration_support import (
         CommandPlan,
@@ -27,9 +27,8 @@ except ModuleNotFoundError:  # pragma: no cover - direct script execution
     from integration_support import build_pnpm_workspace, install_pnpm_workspace, run_command
 
 
-ROOT = Path(__file__).resolve().parents[1]
-ORG = ROOT.parent
-COMPANION = ORG / "companion"
+ROOT = Path(__file__).resolve().parents[2]
+COMPANION = ROOT
 PACKAGE_PLAN_FORMAT = "nsealr-browser-extension-package-plan-v0"
 PACKAGE_PLAN_DIGEST_FORMAT = "nsealr-browser-extension-package-plan-digest-v0"
 PACKAGE_PLAN_REVIEW_FORMAT = "nsealr-browser-extension-package-plan-review-v0"
@@ -159,22 +158,22 @@ def assert_package_plan(
     expected_entrypoints = [
         {
             "role": "background_service_worker",
-            "source": "apps/browser-extension/src/nsealr-background-entrypoint.ts",
+            "source": "apps/bridge/browser-extension/src/nsealr-background-entrypoint.ts",
             "output": "nsealr-background-entrypoint.js",
         },
         {
             "role": "content_script",
-            "source": "apps/browser-extension/src/nsealr-content-script-entrypoint.ts",
+            "source": "apps/bridge/browser-extension/src/nsealr-content-script-entrypoint.ts",
             "output": "nsealr-content-script-entrypoint.js",
         },
         {
             "role": "page_script",
-            "source": "apps/browser-extension/src/nsealr-page-script-entrypoint.ts",
+            "source": "apps/bridge/browser-extension/src/nsealr-page-script-entrypoint.ts",
             "output": "nsealr-page-script-entrypoint.js",
         },
         {
             "role": "action_popup",
-            "source": "apps/browser-extension/src/nsealr-popup-entrypoint.ts",
+            "source": "apps/bridge/browser-extension/src/nsealr-popup-entrypoint.ts",
             "output": "nsealr-popup-entrypoint.js",
         },
     ]
@@ -215,7 +214,7 @@ def assert_package_plan_review(
 
 def main() -> int:
     if not COMPANION.exists():
-        raise FileNotFoundError(f"missing sibling repository: {COMPANION}")
+        raise FileNotFoundError(f"missing product component: {COMPANION}")
 
     install_pnpm_workspace(COMPANION)
     build_pnpm_workspace(COMPANION)
@@ -294,7 +293,7 @@ def main() -> int:
     if "unsupported" not in write_result.stderr:
         raise AssertionError("browser package-plan write-option rejection message drifted")
 
-    print("nSealr cross-repo browser-extension package-plan CLI verification passed")
+    print("nSealr integrated browser-extension package-plan CLI verification passed")
     return 0
 
 

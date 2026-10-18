@@ -9,15 +9,14 @@ import tempfile
 from pathlib import Path
 
 try:
-    from scripts.integration_support import build_pnpm_workspace, env_for_command, install_pnpm_workspace, run_command
+    from tests.integration.integration_support import build_pnpm_workspace, env_for_command, install_pnpm_workspace, run_command
 except ModuleNotFoundError:  # pragma: no cover - direct script execution
     from integration_support import build_pnpm_workspace, env_for_command, install_pnpm_workspace, run_command
 
 
-ROOT = Path(__file__).resolve().parents[1]
-ORG = ROOT.parent
-COMPANION = ORG / "companion"
-SPECS = ORG / "specs"
+ROOT = Path(__file__).resolve().parents[2]
+COMPANION = ROOT
+SPECS = ROOT / "protocols/contracts/v1"
 
 
 def service_command(*args: str) -> list[str]:
@@ -141,7 +140,7 @@ def approve_route_driver_storage(
 def main() -> int:
     for repo in (COMPANION, SPECS):
         if not repo.exists():
-            raise FileNotFoundError(f"missing sibling repository: {repo}")
+            raise FileNotFoundError(f"missing product component: {repo}")
 
     install_pnpm_workspace(COMPANION)
     build_pnpm_workspace(COMPANION)
@@ -191,7 +190,7 @@ def main() -> int:
             )
             if f"{option} is duplicated" not in duplicate.stderr:
                 raise AssertionError(f"review-storage duplicate {option} error drifted")
-            for unexpected in ("at Option.parseArg", "apps/cli/src/index.ts", "DEP0205"):
+            for unexpected in ("at Option.parseArg", "apps/bridge/cli/src/index.ts", "DEP0205"):
                 if unexpected in duplicate.stderr:
                     raise AssertionError(f"review-storage duplicate {option} leaked CLI diagnostic noise")
             if duplicate_review_path.exists():

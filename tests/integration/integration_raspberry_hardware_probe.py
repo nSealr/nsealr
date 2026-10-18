@@ -9,14 +9,13 @@ from dataclasses import dataclass
 from pathlib import Path
 
 try:
-    from scripts.integration_support import run_command
+    from tests.integration.integration_support import run_command
 except ModuleNotFoundError:  # pragma: no cover - direct script execution
     from integration_support import run_command
 
 
-ROOT = Path(__file__).resolve().parents[1]
-ORG = ROOT.parent
-RASPBERRY = ORG / "raspberry"
+ROOT = Path(__file__).resolve().parents[2]
+RASPBERRY = ROOT / "apps/pi"
 
 
 @dataclass(frozen=True)
@@ -56,7 +55,7 @@ def assert_safe_probe_report(path: Path) -> None:
 
 def main() -> int:
     if not RASPBERRY.exists():
-        raise FileNotFoundError(f"missing sibling repository: {RASPBERRY}")
+        raise FileNotFoundError(f"missing product component: {RASPBERRY}")
 
     run_command(["make", "setup"], RASPBERRY)
     with tempfile.TemporaryDirectory(prefix="nsealr-raspberry-probe-") as temp_dir:
@@ -65,7 +64,7 @@ def main() -> int:
         run_command(command.argv, command.cwd)
         assert_safe_probe_report(probe_path)
 
-    print("nSealr cross-repo Raspberry hardware-probe smoke passed")
+    print("nSealr integrated Raspberry hardware-probe smoke passed")
     return 0
 
 

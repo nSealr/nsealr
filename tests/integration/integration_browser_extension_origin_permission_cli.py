@@ -10,7 +10,7 @@ from pathlib import Path
 from typing import Any
 
 try:
-    from scripts.browser_integration_support import (
+    from tests.integration.browser_integration_support import (
         build_browser_origin_permission_approval_command,
         build_browser_origin_permission_store_create_command,
         build_browser_origin_permission_store_revoke_command,
@@ -18,7 +18,7 @@ try:
         run_failure_without_stdout,
         run_json_command,
     )
-    from scripts.integration_support import build_pnpm_workspace, install_pnpm_workspace, run_command
+    from tests.integration.integration_support import build_pnpm_workspace, install_pnpm_workspace, run_command
 except ModuleNotFoundError:  # pragma: no cover - direct script execution
     from browser_integration_support import (
         build_browser_origin_permission_approval_command,
@@ -31,9 +31,8 @@ except ModuleNotFoundError:  # pragma: no cover - direct script execution
     from integration_support import build_pnpm_workspace, install_pnpm_workspace, run_command
 
 
-ROOT = Path(__file__).resolve().parents[1]
-ORG = ROOT.parent
-COMPANION = ORG / "companion"
+ROOT = Path(__file__).resolve().parents[2]
+COMPANION = ROOT
 ORIGIN_PERMISSION_REVIEW_FORMAT = "nsealr-browser-origin-permission-review-v0"
 ORIGIN_PERMISSION_APPROVAL_FORMAT = "nsealr-browser-origin-permission-approval-v0"
 ORIGIN_PERMISSION_STORE_FORMAT = "nsealr-browser-origin-permission-store-v0"
@@ -128,7 +127,7 @@ def assert_store(store: dict[str, Any], *, updated_at: int, approvals: list[dict
 
 def main() -> int:
     if not COMPANION.exists():
-        raise FileNotFoundError(f"missing sibling repository: {COMPANION}")
+        raise FileNotFoundError(f"missing product component: {COMPANION}")
 
     install_pnpm_workspace(COMPANION)
     build_pnpm_workspace(COMPANION)
@@ -196,7 +195,7 @@ def main() -> int:
         if "backward" not in backwards.stderr:
             raise AssertionError("origin-permission backward-timestamp rejection message drifted")
 
-    print("nSealr cross-repo browser-extension origin-permission CLI verification passed")
+    print("nSealr integrated browser-extension origin-permission CLI verification passed")
     return 0
 
 

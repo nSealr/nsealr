@@ -11,15 +11,14 @@ from pathlib import Path
 from typing import Any
 
 try:
-    from scripts.integration_support import build_pnpm_workspace, env_for_command, install_pnpm_workspace, run_command
+    from tests.integration.integration_support import build_pnpm_workspace, env_for_command, install_pnpm_workspace, run_command
 except ModuleNotFoundError:  # pragma: no cover - direct script execution
     from integration_support import build_pnpm_workspace, env_for_command, install_pnpm_workspace, run_command
 
 
-ROOT = Path(__file__).resolve().parents[1]
-ORG = ROOT.parent
-COMPANION = ORG / "companion"
-SPECS = ORG / "specs"
+ROOT = Path(__file__).resolve().parents[2]
+COMPANION = ROOT
+SPECS = ROOT / "protocols/contracts/v1"
 
 
 @dataclass(frozen=True)
@@ -128,7 +127,7 @@ def assert_rejected_without_output(command: CommandPlan, out_path: Path, expecte
 def main() -> int:
     for repo in (COMPANION, SPECS):
         if not repo.exists():
-            raise FileNotFoundError(f"missing sibling repository: {repo}")
+            raise FileNotFoundError(f"missing product component: {repo}")
 
     vectors = policy_change_vectors(SPECS)
     if not vectors:
@@ -137,7 +136,7 @@ def main() -> int:
     install_pnpm_workspace(COMPANION)
     build_pnpm_workspace(COMPANION)
 
-    with tempfile.TemporaryDirectory(prefix="nsealr-policy-cli-cross-repo-") as temp_dir:
+    with tempfile.TemporaryDirectory(prefix="nsealr-policy-cli-integrated-") as temp_dir:
         temp = Path(temp_dir)
         for vector in vectors:
             proposal_path = temp / f"{vector['name']}-proposal.json"
@@ -165,7 +164,7 @@ def main() -> int:
         )
         assert_rejected_without_output(command, invalid_review_path, "companion_authoritative must be false")
 
-    print("nSealr cross-repo companion policy-change review CLI verification passed")
+    print("nSealr integrated companion policy-change review CLI verification passed")
     return 0
 
 

@@ -5,7 +5,7 @@ import tempfile
 import unittest
 from pathlib import Path
 
-from scripts.integration_vault_companion import (
+from tests.integration.integration_vault_companion import (
     assert_display_frame_log,
     assert_review_transcript_log,
     assert_screen_review_files_equal,

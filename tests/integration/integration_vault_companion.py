@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Run the first cross-repo QR smoke test."""
+"""Run the first integrated QR smoke test."""
 
 from __future__ import annotations
 
@@ -9,16 +9,15 @@ from dataclasses import dataclass
 from pathlib import Path
 
 try:
-    from scripts.integration_support import build_pnpm_workspace, install_pnpm_workspace, run_command
+    from tests.integration.integration_support import build_pnpm_workspace, install_pnpm_workspace, run_command
 except ModuleNotFoundError:  # pragma: no cover - direct script execution
     from integration_support import build_pnpm_workspace, install_pnpm_workspace, run_command
 
 
-ROOT = Path(__file__).resolve().parents[1]
-ORG = ROOT.parent
-COMPANION = ORG / "companion"
-RASPBERRY = ORG / "raspberry"
-SPECS = ORG / "specs"
+ROOT = Path(__file__).resolve().parents[2]
+COMPANION = ROOT
+RASPBERRY = ROOT / "apps/pi"
+SPECS = ROOT / "protocols/contracts/v1"
 
 
 @dataclass(frozen=True)
@@ -534,7 +533,7 @@ def assert_session_backup_result_file(path: Path, vector: dict[str, object], for
 def main() -> int:
     for repo in (COMPANION, RASPBERRY, SPECS):
         if not repo.exists():
-            raise FileNotFoundError(f"missing sibling repository: {repo}")
+            raise FileNotFoundError(f"missing product component: {repo}")
 
     install_pnpm_workspace(COMPANION)
     build_pnpm_workspace(COMPANION)
@@ -557,7 +556,7 @@ def main() -> int:
         (SPECS / "vectors/session-source-backups/nsec-test-key-1-backup.json").read_text(encoding="utf-8")
     )
 
-    with tempfile.TemporaryDirectory(prefix="nsealr-cross-repo-") as temp_dir:
+    with tempfile.TemporaryDirectory(prefix="nsealr-integrated-") as temp_dir:
         temp = Path(temp_dir)
         template_path = temp / "template.json"
         request_path = temp / "request.qr"
@@ -831,7 +830,7 @@ def main() -> int:
             COMPANION,
         )
 
-    print("nSealr cross-repo Raspberry QR flow/companion smoke test passed")
+    print("nSealr integrated Raspberry QR flow/companion smoke test passed")
     return 0
 
 

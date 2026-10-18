@@ -9,15 +9,14 @@ from dataclasses import dataclass
 from pathlib import Path
 
 try:
-    from scripts.integration_support import build_pnpm_workspace, install_pnpm_workspace, run_command
+    from tests.integration.integration_support import build_pnpm_workspace, install_pnpm_workspace, run_command
 except ModuleNotFoundError:  # pragma: no cover - direct script execution
     from integration_support import build_pnpm_workspace, install_pnpm_workspace, run_command
 
 
-ROOT = Path(__file__).resolve().parents[1]
-ORG = ROOT.parent
-COMPANION = ORG / "companion"
-SPECS = ORG / "specs"
+ROOT = Path(__file__).resolve().parents[2]
+COMPANION = ROOT
+SPECS = ROOT / "protocols/contracts/v1"
 
 
 @dataclass(frozen=True)
@@ -143,7 +142,7 @@ def write_route_identity_script(path: Path) -> None:
 def main() -> int:
     for repo in (COMPANION, SPECS):
         if not repo.exists():
-            raise FileNotFoundError(f"missing sibling repository: {repo}")
+            raise FileNotFoundError(f"missing product component: {repo}")
 
     install_pnpm_workspace(COMPANION)
     build_pnpm_workspace(COMPANION)
@@ -163,7 +162,7 @@ def main() -> int:
         except OSError:
             pass
 
-    print("nSealr cross-repo companion route identity smoke test passed")
+    print("nSealr integrated companion route identity smoke test passed")
     return 0
 
 

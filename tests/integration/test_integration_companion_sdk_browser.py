@@ -4,7 +4,7 @@ import unittest
 from pathlib import Path
 from tempfile import TemporaryDirectory
 
-from scripts.integration_companion_sdk_browser import (
+from tests.integration.integration_companion_sdk_browser import (
     build_browser_runtime_imports_command,
     build_sdk_browser_command,
     write_sdk_browser_script,

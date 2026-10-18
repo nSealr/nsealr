@@ -3,7 +3,7 @@ import unittest
 from pathlib import Path
 from tempfile import TemporaryDirectory
 
-from scripts.integration_hardware_validation import (
+from tests.integration.external.integration_hardware_validation import (
     build_hardware_validation_command,
     validate_esp32_qr_secondary_target_alignment,
 )

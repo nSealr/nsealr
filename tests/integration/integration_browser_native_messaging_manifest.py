@@ -9,7 +9,7 @@ from pathlib import Path
 from typing import Any
 
 try:
-    from scripts.browser_integration_support import (
+    from tests.integration.browser_integration_support import (
         CommandPlan,
         build_browser_package_plan_command,
         build_native_host_install_approval_command,
@@ -20,7 +20,7 @@ try:
         run_json_command,
         run_json_file_command,
     )
-    from scripts.integration_support import build_pnpm_workspace, install_pnpm_workspace, run_command
+    from tests.integration.integration_support import build_pnpm_workspace, install_pnpm_workspace, run_command
 except ModuleNotFoundError:  # pragma: no cover - direct script execution
     from browser_integration_support import (
         CommandPlan,
@@ -36,9 +36,8 @@ except ModuleNotFoundError:  # pragma: no cover - direct script execution
     from integration_support import build_pnpm_workspace, install_pnpm_workspace, run_command
 
 
-ROOT = Path(__file__).resolve().parents[1]
-ORG = ROOT.parent
-COMPANION = ORG / "companion"
+ROOT = Path(__file__).resolve().parents[2]
+COMPANION = ROOT
 SERVICE_HOST_PATH = "/Applications/nSealr/nsealr-service"
 CHROMIUM_NATIVE_MANIFEST_PATH = "/Users/example/Library/Application Support/Google/Chrome/NativeMessagingHosts/dev.nsealr.companion.json"
 FIREFOX_NATIVE_MANIFEST_PATH = "/Users/example/Library/Application Support/Mozilla/NativeMessagingHosts/dev.nsealr.companion.json"
@@ -211,7 +210,7 @@ def assert_native_host_install_execution(
 
 def main() -> int:
     if not COMPANION.exists():
-        raise FileNotFoundError(f"missing sibling repository: {COMPANION}")
+        raise FileNotFoundError(f"missing product component: {COMPANION}")
 
     install_pnpm_workspace(COMPANION)
     build_pnpm_workspace(COMPANION)
@@ -375,7 +374,7 @@ def main() -> int:
         if "unknown option" not in install_result.stderr and "unsupported" not in install_result.stderr:
             raise AssertionError("native-host install-option rejection message drifted")
 
-    print("nSealr cross-repo browser native-messaging manifest verification passed")
+    print("nSealr integrated browser native-messaging manifest verification passed")
     return 0
 
 

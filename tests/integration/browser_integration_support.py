@@ -10,7 +10,7 @@ from pathlib import Path
 from typing import Any
 
 try:
-    from scripts.integration_support import env_for_command, pinned_command, run_command
+    from tests.integration.integration_support import env_for_command, pinned_command, run_command
 except ModuleNotFoundError:  # pragma: no cover - direct script execution
     from integration_support import env_for_command, pinned_command, run_command
 

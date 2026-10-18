@@ -13,15 +13,14 @@ from pathlib import Path
 from typing import Any
 
 try:
-    from scripts.integration_support import build_pnpm_workspace, install_pnpm_workspace, run_command
+    from tests.integration.integration_support import build_pnpm_workspace, install_pnpm_workspace, run_command
 except ModuleNotFoundError:  # pragma: no cover - direct script execution
     from integration_support import build_pnpm_workspace, install_pnpm_workspace, run_command
 
 
-ROOT = Path(__file__).resolve().parents[1]
-ORG = ROOT.parent
-COMPANION = ORG / "companion"
-SPECS = ORG / "specs"
+ROOT = Path(__file__).resolve().parents[2]
+COMPANION = ROOT
+SPECS = ROOT / "protocols/contracts/v1"
 SERIAL_FRAME_PREFIX = "nsealr1f:"
 
 
@@ -118,7 +117,7 @@ def decode_serial_frame(line: str) -> dict[str, Any]:
 def main() -> int:
     for repo in (COMPANION, SPECS):
         if not repo.exists():
-            raise FileNotFoundError(f"missing sibling repository: {repo}")
+            raise FileNotFoundError(f"missing product component: {repo}")
 
     request_path = SPECS / "examples/request-get-capabilities.json"
     response_path = SPECS / "examples/response-get-capabilities-esp32-s3-scaffold.json"
@@ -199,7 +198,7 @@ def main() -> int:
         if load_json(unwrapped_signing_status_response_path) != dynamic_status_response:
             raise AssertionError("unwrapped signing-status response does not match expected response")
 
-    print("nSealr cross-repo companion serial-frame CLI verification passed")
+    print("nSealr integrated companion serial-frame CLI verification passed")
     return 0
 
 

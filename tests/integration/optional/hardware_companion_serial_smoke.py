@@ -19,15 +19,14 @@ from pathlib import Path
 from typing import Any, Optional
 
 try:
-    from scripts.integration_support import PINNED_PNPM_COMMAND, run_command
+    from tests.integration.integration_support import PINNED_PNPM_COMMAND, run_command
 except ModuleNotFoundError:  # pragma: no cover - direct script execution
     from integration_support import PINNED_PNPM_COMMAND, run_command
 
 
-ROOT = Path(__file__).resolve().parents[1]
-ORG = ROOT.parent
-COMPANION = ORG / "companion"
-SPECS = ORG / "specs"
+ROOT = Path(__file__).resolve().parents[3]
+COMPANION = ROOT
+SPECS = ROOT / "protocols/contracts/v1"
 PREFIX = "nsealr1f:"
 
 
@@ -211,9 +210,9 @@ def run_smoke(
     exchange_mode: str = "companion-serial-line",
 ) -> dict[str, Any]:
     if not COMPANION.exists():
-        raise FileNotFoundError(f"missing sibling repository: {COMPANION}")
+        raise FileNotFoundError(f"missing product component: {COMPANION}")
     if method == "sign-event-disabled" and not SPECS.exists():
-        raise FileNotFoundError(f"missing sibling repository: {SPECS}")
+        raise FileNotFoundError(f"missing product component: {SPECS}")
 
     pnpm = pnpm_command()
     subprocess.run([*pnpm, "install"], cwd=COMPANION, check=True)

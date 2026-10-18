@@ -12,7 +12,7 @@ from pathlib import Path
 from typing import Any
 
 try:
-    from scripts.browser_integration_support import (
+    from tests.integration.browser_integration_support import (
         build_browser_origin_permission_approval_command,
         build_browser_origin_permission_store_create_command,
         build_browser_origin_permission_store_upsert_command,
@@ -24,7 +24,7 @@ try:
         run_failure_without_stdout,
         run_json_command,
     )
-    from scripts.integration_support import build_pnpm_workspace, install_pnpm_workspace, run_command
+    from tests.integration.integration_support import build_pnpm_workspace, install_pnpm_workspace, run_command
 except ModuleNotFoundError:  # pragma: no cover - direct script execution
     from browser_integration_support import (
         build_browser_origin_permission_approval_command,
@@ -41,9 +41,8 @@ except ModuleNotFoundError:  # pragma: no cover - direct script execution
     from integration_support import build_pnpm_workspace, install_pnpm_workspace, run_command
 
 
-ROOT = Path(__file__).resolve().parents[1]
-ORG = ROOT.parent
-COMPANION = ORG / "companion"
+ROOT = Path(__file__).resolve().parents[2]
+COMPANION = ROOT
 PACKAGE_BUILD_FORMAT = "nsealr-browser-extension-package-build-v0"
 PACKAGE_DIGEST_FORMAT = "nsealr-browser-extension-package-digest-v0"
 PACKAGE_PLAN_FORMAT = "nsealr-browser-extension-package-plan-v0"
@@ -796,7 +795,7 @@ def assert_origin_permission_store(store: dict[str, Any], approval: dict[str, An
 
 def main() -> int:
     if not COMPANION.exists():
-        raise FileNotFoundError(f"missing sibling repository: {COMPANION}")
+        raise FileNotFoundError(f"missing product component: {COMPANION}")
 
     install_pnpm_workspace(COMPANION)
     build_pnpm_workspace(COMPANION)
@@ -1100,7 +1099,7 @@ def main() -> int:
         if source_tree_out_dir.exists():
             raise AssertionError("browser package-build wrote output inside the companion source tree")
 
-    print("nSealr cross-repo browser-extension package-build verification passed")
+    print("nSealr integrated browser-extension package-build verification passed")
     return 0
 
 

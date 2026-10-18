@@ -4,7 +4,7 @@ import tempfile
 import unittest
 from pathlib import Path
 
-from scripts.integration_companion_policy_cli import build_policy_review_command, policy_change_vectors
+from tests.integration.integration_companion_policy_cli import build_policy_review_command, policy_change_vectors
 
 
 class IntegrationCompanionPolicyCliTests(unittest.TestCase):

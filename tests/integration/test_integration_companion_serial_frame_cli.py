@@ -3,7 +3,7 @@ from __future__ import annotations
 import unittest
 from pathlib import Path
 
-from scripts.integration_companion_serial_frame_cli import (
+from tests.integration.integration_companion_serial_frame_cli import (
     build_create_request_command,
     build_unwrap_response_command,
     build_wrap_request_command,
