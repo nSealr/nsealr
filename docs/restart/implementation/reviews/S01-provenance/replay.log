@@ -1,0 +1,38 @@
+{"case": "clean_default_full_snapshot_checker", "expected": "accept", "observed": "accept", "pass": true, "detail": {"compared_files": 547}}
+{"case": "ordinary_vector_tamper_with_recomputed_manifest", "expected": "reject", "observed": "reject", "pass": true, "detail": "FixtureSnapshotError: snapshot vector differs from specs: vectors/nip46-relay-steps/sign-event-response-step.json"}
+{"case": "missing_real_vector_with_manifest_retained", "expected": "reject", "observed": "reject", "pass": true, "detail": "FixtureSnapshotError: SOURCE.json vector inventory mismatch"}
+{"case": "extra_real_vector_with_recomputed_manifest", "expected": "reject", "observed": "reject", "pass": true, "detail": "FixtureSnapshotError: SOURCE.json vector inventory mismatch"}
+{"case": "missing_gitkeep_recomputed_manifest", "expected": "reject", "observed": "reject", "pass": true, "detail": "FixtureSnapshotError: SOURCE.json vector inventory mismatch"}
+{"case": "gitkeep_tamper_recomputed_manifest", "expected": "reject", "observed": "reject", "pass": true, "detail": "FixtureSnapshotError: snapshot vector differs from specs: vectors/.gitkeep"}
+{"case": "missing_SOURCE_json", "expected": "reject", "observed": "reject", "pass": true, "detail": "FixtureSnapshotError: missing or nonregular SOURCE.json: /home/tux/nsealr/.restart-tools/goal/s01-provenance-review/docs/restart/implementation/reviews/S01-provenance/.work/current/firmware/tests/fixtures/specs"}
+{"case": "missing_SOURCE_and_real_v1_vector", "expected": "reject", "observed": "reject", "pass": true, "detail": "FixtureSnapshotError: missing or nonregular SOURCE.json: /home/tux/nsealr/.restart-tools/goal/s01-provenance-review/docs/restart/implementation/reviews/S01-provenance/.work/current/firmware/tests/fixtures/specs"}
+{"case": "wrong_commit", "expected": "reject", "observed": "reject", "pass": true, "detail": "FixtureSnapshotError: SOURCE.json upstream repository/commit mismatch"}
+{"case": "wrong_repository", "expected": "reject", "observed": "reject", "pass": true, "detail": "FixtureSnapshotError: SOURCE.json upstream repository/commit mismatch"}
+{"case": "v1_discovery_complete", "expected": "accept", "observed": "accept", "pass": true, "detail": {"names": ["relay-step-response-auth-url-with-credentials", "relay-step-response-auth-url-with-fragment", "relay-step-response-auth-url-wrong-scheme"]}}
+{"case": "v1_discovery_empty", "expected": "reject", "observed": "reject", "pass": true, "detail": "AssertionError: NIP-46 auth-negative discovery does not match the complete required path inventory"}
+{"case": "v1_omitted_selected_case_0", "expected": "reject", "observed": "reject", "pass": true, "detail": "AssertionError: NIP-46 auth-negative discovery does not match the complete required path inventory"}
+{"case": "v1_substituted_selected_content_0", "expected": "reject", "observed": "reject", "pass": true, "detail": "AssertionError: NIP-46 auth-negative discovery does not match the complete required path inventory"}
+{"case": "v1_omitted_selected_case_1", "expected": "reject", "observed": "reject", "pass": true, "detail": "AssertionError: NIP-46 auth-negative discovery does not match the complete required path inventory"}
+{"case": "v1_substituted_selected_content_1", "expected": "reject", "observed": "reject", "pass": true, "detail": "AssertionError: NIP-46 auth-negative discovery does not match the complete required path inventory"}
+{"case": "v1_omitted_selected_case_2", "expected": "reject", "observed": "reject", "pass": true, "detail": "AssertionError: NIP-46 auth-negative discovery does not match the complete required path inventory"}
+{"case": "v1_substituted_selected_content_2", "expected": "reject", "observed": "reject", "pass": true, "detail": "AssertionError: NIP-46 auth-negative discovery does not match the complete required path inventory"}
+{"case": "v1_duplicate_selected_case", "expected": "reject", "observed": "reject", "pass": true, "detail": "AssertionError: NIP-46 auth-negative discovery does not match the complete required path inventory"}
+{"case": "restored_default_full_snapshot_checker", "expected": "accept", "observed": "accept", "pass": true, "detail": {"compared_files": 547}}
+bootstrap-boundaries: ['/home/tux/nsealr/.restart-tools/goal/r00/tools/baseline/.work/final/.tools/python/bin/python3', '-m', 'unittest', '-v', 'test_bootstrap.py']
+direct-fixture-boundaries: ['/home/tux/nsealr/.restart-tools/goal/r00/tools/baseline/.work/final/.tools/python/bin/python3', 'tests/test_fixture_snapshots.py', '-v']
+lab-init: ['git', 'init', '/home/tux/nsealr/.restart-tools/goal/s01-provenance-review/docs/restart/implementation/reviews/S01-provenance/.work/historical/lab']
+lab-fetch: ['git', 'fetch', '--depth=1', '/home/tux/nsealr/lab', '3303ab17a28ed32419576627d5abb93db3999635']
+lab-checkout: ['git', 'checkout', '--detach', 'FETCH_HEAD']
+specs-init: ['git', 'init', '/home/tux/nsealr/.restart-tools/goal/s01-provenance-review/docs/restart/implementation/reviews/S01-provenance/.work/historical/specs']
+specs-fetch: ['git', 'fetch', '--depth=1', '/home/tux/nsealr/specs', '8bb8cca71355bcf8d81a093bcee9f3fe6915b121']
+specs-checkout: ['git', 'checkout', '--detach', 'FETCH_HEAD']
+overlay-check: ['git', 'apply', '--check', '/home/tux/nsealr/.restart-tools/goal/s01-provenance-review/tools/baseline/overlays/lab-provenance.patch']
+overlay-apply: ['git', 'apply', '/home/tux/nsealr/.restart-tools/goal/s01-provenance-review/tools/baseline/overlays/lab-provenance.patch']
+provenance-followup-overlay-check: ['git', 'apply', '--check', '/home/tux/nsealr/.restart-tools/goal/s01-provenance-review/tools/baseline/overlays/lab-provenance-followup.patch']
+provenance-followup-overlay-apply: ['git', 'apply', '/home/tux/nsealr/.restart-tools/goal/s01-provenance-review/tools/baseline/overlays/lab-provenance-followup.patch']
+{"case": "historical_clean_with_empty_required_globs", "expected_reject": false, "observed_reject": false, "passed": true, "detail": 222}
+{"case": "historical_missing_SOURCE", "expected_reject": true, "observed_reject": true, "passed": true, "detail": "missing or nonregular SOURCE.json: /home/tux/nsealr/.restart-tools/goal/s01-provenance-review/docs/restart/implementation/reviews/S01-provenance/.work/historical/firmware/tests/fixtures/specs"}
+{"case": "historical_missing_SOURCE_and_real_vector", "expected_reject": true, "observed_reject": true, "passed": true, "detail": "missing or nonregular SOURCE.json: /home/tux/nsealr/.restart-tools/goal/s01-provenance-review/docs/restart/implementation/reviews/S01-provenance/.work/historical/firmware/tests/fixtures/specs"}
+{"case": "historical_forged_hidden_digest", "expected_reject": true, "observed_reject": true, "passed": true, "detail": "snapshot vector differs from specs: vectors/.gitkeep"}
+{"case": "historical_restored", "expected_reject": false, "observed_reject": false, "passed": true, "detail": 222}
+{"case": "current_manifest_cannot_relabel_historical_specs", "expected_reject": true, "observed_reject": true, "passed": true, "detail": "SOURCE.json upstream repository/commit mismatch"}
