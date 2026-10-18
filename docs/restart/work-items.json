@@ -57,7 +57,7 @@
       "id": "R00",
       "title": "Make the measured baseline reproducible",
       "stage": "R0",
-      "status": "running",
+      "status": "review",
       "owner_role": "integration",
       "depends_on": [],
       "scope": [
@@ -77,8 +77,10 @@
       ],
       "required_resources": [],
       "assignee": "/root/baseline_execution",
-      "candidate_commits": {},
-      "reviewer": null,
+      "candidate_commits": {
+        "nSealr/nsealr": "1f4d891052611434d67316ad928c4e6413f9f876"
+      },
+      "reviewer": "/root",
       "review_verdict": null,
       "result_artifacts": [],
       "requires_physical_evidence": false,
@@ -169,7 +171,7 @@
       "id": "S01",
       "title": "Close Bridge identity and bounded-input security gaps",
       "stage": "R0",
-      "status": "running",
+      "status": "review",
       "owner_role": "host_security",
       "depends_on": [],
       "scope": [
@@ -191,8 +193,10 @@
       ],
       "required_resources": [],
       "assignee": "/root/bridge_execution",
-      "candidate_commits": {},
-      "reviewer": null,
+      "candidate_commits": {
+        "nSealr/companion": "143e6fb260431dc9cb97a72d6c019e3c6c5c6bf1"
+      },
+      "reviewer": "/root/independent_bridge_review",
       "review_verdict": null,
       "result_artifacts": [],
       "requires_physical_evidence": false,
@@ -207,7 +211,7 @@
       "id": "S02",
       "title": "Constrain secret ownership and cryptographic implementation",
       "stage": "R0",
-      "status": "running",
+      "status": "review",
       "owner_role": "device_security",
       "depends_on": [],
       "scope": [
@@ -228,8 +232,10 @@
       ],
       "required_resources": [],
       "assignee": "/root/secret_execution",
-      "candidate_commits": {},
-      "reviewer": null,
+      "candidate_commits": {
+        "nSealr/nsealr": "61641047d13b5bb265246b181edc38f4dc2073e7"
+      },
+      "reviewer": "/root/independent_security_review",
       "review_verdict": null,
       "result_artifacts": [],
       "requires_physical_evidence": false,
@@ -506,7 +512,7 @@
       "id": "A01",
       "title": "Inventory reuse and consumers for the five-repository mapping",
       "stage": "R0",
-      "status": "ready",
+      "status": "running",
       "owner_role": "architecture",
       "depends_on": [],
       "scope": [
@@ -526,13 +532,31 @@
         "repository decision"
       ],
       "required_resources": [],
-      "assignee": null,
+      "assignee": "/root",
       "candidate_commits": {},
       "reviewer": null,
       "review_verdict": null,
       "result_artifacts": [],
       "requires_physical_evidence": false,
-      "github_issue": "https://github.com/nSealr/nsealr/issues/6"
+      "github_issue": "https://github.com/nSealr/nsealr/issues/6",
+      "input_commits": {
+        "nSealr/nsealr": "768e8a35ae541f53f5da9c7bea7bf5c577fb474d",
+        "nSealr/companion": "13414320537d0208fc3ef8e43bd0723c98c1d5e0",
+        "nSealr/workspace": "e7d3a2654973628d040354805370f6520e3704ad",
+        "nSealr/smartcard": "ec5da94a05882122e8a794f55f1af3f96a95c696",
+        "nSealr/.github": "67dad0dfea9ced6b822454f504b26c2a04f43021",
+        "nSealr/board-sdk": "043e64ceb745a323f9a332cc02fae2993388fabe",
+        "nSealr/raspberry": "d1534d9dcfba8fe4a35cea2ed3529e32a5003dc6",
+        "nSealr/hardware": "340697d6713a671e9e01b0dc874ec999ab071601",
+        "nSealr/lab": "3303ab17a28ed32419576627d5abb93db3999635",
+        "nSealr/website": "9cec39a89d6a2d2cc5747b8aae9d4b47a52eb7cd",
+        "nSealr/specs": "8bb8cca71355bcf8d81a093bcee9f3fe6915b121",
+        "nSealr/hardware-legacy-tropic01-universal": "699e034f034cd324fe05de94bc01eec04edec88f"
+      },
+      "specification_input_commits": {
+        "nSealr/nsealr": "61b0c39131012c40ff76321bb3650def6e7a9d83"
+      },
+      "assignment_record": "https://github.com/nSealr/nsealr/pull/11"
     },
     {
       "id": "A02",
@@ -1866,7 +1890,7 @@
       "requires_physical_evidence": true
     }
   ],
-  "revision": 6,
+  "revision": 7,
   "scope_document": "repositories.md",
   "active_profiles": [
     "esp32_no_se",
