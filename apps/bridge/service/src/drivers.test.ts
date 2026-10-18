@@ -26,7 +26,7 @@ const dispatchRequest: SignerDispatchRequest = {
     account_id: "acct-esp32-usb-slot-0",
     public_key: "4f355bdcb7cc0af728ef3cceb9615d90684bb5b2ca5f859ab0f0b704075871aa",
     route_type: "esp32_usb_nip46",
-    repository: "firmware",
+    repository: "nsealr",
     transport: "usb",
     custody: "device_persistent",
     trusted_review: "device_display",
