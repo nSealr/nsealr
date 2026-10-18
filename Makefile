@@ -52,7 +52,7 @@ cargo-test:
 
 cargo-deny:
 	cargo deny check
-	cargo deny --manifest-path $(HOST_MANIFEST) check --config deny.toml
+	cargo deny --manifest-path $(HOST_MANIFEST) --config deny.toml check
 
 # The desktop-simulator parity oracle: exhaustively replays every in-scope
 # specs/vectors/<category>/*.json file through nsealr-core's public API and
