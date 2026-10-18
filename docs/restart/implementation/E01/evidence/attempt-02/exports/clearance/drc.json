@@ -1,0 +1,99 @@
+{
+    "$schema": "https://schemas.kicad.org/drc.v1.json",
+    "coordinate_units": "mm",
+    "date": "2026-10-18T18:04:56",
+    "ignored_checks": [
+        {
+            "description": "Footprint has no courtyard defined",
+            "key": "missing_courtyard"
+        },
+        {
+            "description": "Track endpoint not centered on via",
+            "key": "track_not_centered_on_via"
+        },
+        {
+            "description": "Tuning profile track geometries",
+            "key": "tuning_profile_track_geometries"
+        },
+        {
+            "description": "Footprint doesn't match symbol's footprint filters",
+            "key": "footprint_filters_mismatch"
+        },
+        {
+            "description": "Footprint component type doesn't match footprint pads",
+            "key": "footprint_type_mismatch"
+        }
+    ],
+    "included_severities": [
+        "error",
+        "warning",
+        "exclusion"
+    ],
+    "kicad_version": "10.0.7",
+    "schematic_parity": [],
+    "source": "canary.kicad_pcb",
+    "unconnected_items": [],
+    "violations": [
+        {
+            "description": "Clearance violation ( clearance 0.2000 mm; actual 0.0500 mm)",
+            "items": [
+                {
+                    "description": "Track [/GND] on F.Cu, length 13.0000 mm",
+                    "pos": {
+                        "x": 43.0,
+                        "y": 29.7
+                    },
+                    "uuid": "a94dc080-593c-4936-925c-a49c68b83541"
+                },
+                {
+                    "description": "Track [/VIN] on F.Cu, length 9.0875 mm",
+                    "pos": {
+                        "x": 25.0,
+                        "y": 30.0
+                    },
+                    "uuid": "abf40643-172c-4f46-960d-27d51d66e6f8"
+                }
+            ],
+            "severity": "error",
+            "type": "clearance"
+        },
+        {
+            "description": "Clearance violation ( clearance 0.2000 mm; actual 0.0500 mm)",
+            "items": [
+                {
+                    "description": "Track [/GND] on F.Cu, length 13.0000 mm",
+                    "pos": {
+                        "x": 43.0,
+                        "y": 29.7
+                    },
+                    "uuid": "a94dc080-593c-4936-925c-a49c68b83541"
+                },
+                {
+                    "description": "Track [/VIN] on F.Cu, length 2.5400 mm",
+                    "pos": {
+                        "x": 34.0875,
+                        "y": 30.0
+                    },
+                    "uuid": "ce24ab21-6e11-439a-8ed3-fa5073ced9f9"
+                }
+            ],
+            "severity": "error",
+            "type": "clearance"
+        },
+        {
+            "description": "Track has unconnected end",
+            "items": [
+                {
+                    "description": "Track [/GND] on F.Cu, length 13.0000 mm",
+                    "pos": {
+                        "x": 43.0,
+                        "y": 29.7
+                    },
+                    "uuid": "a94dc080-593c-4936-925c-a49c68b83541"
+                }
+            ],
+            "severity": "warning",
+            "type": "track_dangling"
+        }
+    ]
+}

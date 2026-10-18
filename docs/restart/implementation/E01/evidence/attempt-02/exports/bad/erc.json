@@ -1,0 +1,68 @@
+{
+    "$schema": "https://schemas.kicad.org/erc.v1.json",
+    "coordinate_units": "mm",
+    "date": "2026-10-18T18:04:52",
+    "ignored_checks": [
+        {
+            "description": "Global label only appears once in the schematic",
+            "key": "single_global_label"
+        },
+        {
+            "description": "Four connection points are joined together",
+            "key": "four_way_junction"
+        },
+        {
+            "description": "SPICE model issue",
+            "key": "simulation_model_issue"
+        },
+        {
+            "description": "Assigned footprint doesn't match footprint filters",
+            "key": "footprint_filter"
+        }
+    ],
+    "included_severities": [
+        "error",
+        "warning",
+        "exclusion"
+    ],
+    "kicad_version": "10.0.7",
+    "sheets": [
+        {
+            "path": "/",
+            "uuid_path": "/0d308768-c2e8-5359-adfc-88034f225509",
+            "violations": [
+                {
+                    "description": "Pin not connected",
+                    "items": [
+                        {
+                            "description": "Symbol R2 Pin 2 [Passive, Line]",
+                            "pos": {
+                                "x": 76.2,
+                                "y": 92.71
+                            },
+                            "uuid": "f5a08a1c-71d3-46bc-9d0d-ed73e0ef87aa"
+                        }
+                    ],
+                    "severity": "error",
+                    "type": "pin_not_connected"
+                },
+                {
+                    "description": "Label not connected",
+                    "items": [
+                        {
+                            "description": "Label 'GND'",
+                            "pos": {
+                                "x": 76.2,
+                                "y": 99.06
+                            },
+                            "uuid": "ecf214d7-2452-5fae-8225-ffcf0dba4926"
+                        }
+                    ],
+                    "severity": "error",
+                    "type": "label_dangling"
+                }
+            ]
+        }
+    ],
+    "source": "canary.kicad_sch"
+}
