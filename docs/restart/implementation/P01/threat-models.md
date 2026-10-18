@@ -1,6 +1,6 @@
 # Per-profile threat models — specification candidate
 
-Read with [requirements](requirements.md). Status: candidate for independent review; no profile is qualified. The controls below are required behaviors with acceptance owners, not claims about current code or assemblies.
+Read with [requirements](requirements.md). Review/integration status is recorded only in the task graph; no profile is qualified. The controls below are required behaviors with acceptance owners, not claims about current code or assemblies.
 
 ## Common assets, actors and trust
 

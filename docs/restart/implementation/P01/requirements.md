@@ -72,3 +72,18 @@ Read with [the threat models](threat-models.md). The requirement owner is respon
 P01 can accept semantic scope and threat assumptions through source-backed review. Numeric capacities, actual recovery ergonomics and exact hardware admission remain measured task/release gates; this document does not close them. If final P01 review identifies a missing semantic decision, resolve it before acceptance rather than treating this document's existence as proof.
 
 Primary additional sources: [NIP-19](https://github.com/nostr-protocol/nips/blob/37db639582d857e12468dcccd99b2c7f1d657da9/19.md), [NIP-49](https://github.com/nostr-protocol/nips/blob/37db639582d857e12468dcccd99b2c7f1d657da9/49.md); opened and reviewed on 2026-10-18. Their definitions support the format/KDF comparison, not a claim of tested nSealr recovery.
+
+Protocol baseline for the common flows is Nostr specifications commit
+`37db639582d857e12468dcccd99b2c7f1d657da9`:
+[NIP-01](https://github.com/nostr-protocol/nips/blob/37db639582d857e12468dcccd99b2c7f1d657da9/01.md)
+for event serialization,
+[NIP-07](https://github.com/nostr-protocol/nips/blob/37db639582d857e12468dcccd99b2c7f1d657da9/07.md) and
+[NIP-46](https://github.com/nostr-protocol/nips/blob/37db639582d857e12468dcccd99b2c7f1d657da9/46.md)
+for client methods/remote transport, and
+[NIP-44](https://github.com/nostr-protocol/nips/blob/37db639582d857e12468dcccd99b2c7f1d657da9/44.md),
+[NIP-17](https://github.com/nostr-protocol/nips/blob/37db639582d857e12468dcccd99b2c7f1d657da9/17.md) and
+[NIP-59](https://github.com/nostr-protocol/nips/blob/37db639582d857e12468dcccd99b2c7f1d657da9/59.md)
+for encryption versus complete private-message context. Public-event tag
+semantics have their individual pinned references in the event review contract.
+The selected catalog, recovery default and workflow qualification are product
+decisions; protocol source support alone proves no implemented client workflow.
