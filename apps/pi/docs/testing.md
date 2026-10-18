@@ -31,7 +31,7 @@ default are left unchanged.
   `persistent_grants: false`, and the shared
   `raspberry-qr-sign-event-account-0` route-selection vector with secretless QR
   transport routing.
-- Signing tests against `nSealr/specs` fixtures.
+- Signing tests against `protocols/contracts/v1/` fixtures.
 - Review model tests against every shared review vector for raw event kind,
   created_at, signer author pubkey, complete content, and complete structured
   tags.
@@ -39,22 +39,22 @@ default are left unchanged.
 - Trusted-display page tests for event, content, tag, and final
   approval-decision pages.
 - Trusted-display screen review tests against every shared
-  `nSealr/specs` review-screen vector.
+  `protocols/contracts/v1/` review-screen vector.
 - Bounded trusted-display frame tests for deterministic title truncation,
   body-line wrapping, page indicators, and action hints before real display
   drivers exist.
-- Trusted-display frame conformance tests against shared `nSealr/specs`
+- Trusted-display frame conformance tests against shared `protocols/contracts/v1/`
   review-display-frame vectors.
 - Trusted-display detail-page conformance tests against shared
-  `nSealr/specs` review-detail-page vectors, covering complete physical
+  `protocols/contracts/v1/` review-detail-page vectors, covering complete physical
   Event/Content/Tags/Decision pages, scroll-window indicators, compact line
   styles, continuation indentation, visible JSON-style control escapes,
   explicit codepoint fallback, and unchanged approval digests.
 - Physical-button approval session tests that require all trusted-review pages
   to be traversed before approval while allowing early rejection.
-- Review transcript tests against shared `nSealr/specs` vectors, covering
+- Review transcript tests against shared `protocols/contracts/v1/` vectors, covering
   displayed frame, button sequence, terminal decision, and approval state.
-- Detail-mode review transcript tests against shared `nSealr/specs` vectors,
+- Detail-mode review transcript tests against shared `protocols/contracts/v1/` vectors,
   covering `Next/Scroll` traversal across long tag windows without changing the
   `screen-pages` approval digest.
 - Approval-digest tests proving an approved signing request is rejected when
@@ -83,7 +83,7 @@ default are left unchanged.
 - Button-driven display-frame log tests proving future display adapters receive
   bounded frames before physical-style input is consumed.
 - Button-driven flow transcript tests proving the displayed frame/button/
-  decision trace can match shared `nSealr/specs` review-transcript vectors
+  decision trace can match shared `protocols/contracts/v1/` review-transcript vectors
   under transcript-compatible display limits.
 - CLI transcript-log tests proving the file-backed button harness can export
   that trace for cross-repo integration and future adapter acceptance tests.
@@ -161,7 +161,7 @@ default are left unchanged.
   secret transfer.
 - NIP-19 `nsec` import tests proving lowercase Bech32 checksum validation,
   `nsec` prefix enforcement, 32-byte payload enforcement, one-shot RAM-only
-  session-provider behavior, consumption of the shared `nSealr/specs` NIP-19
+  session-provider behavior, consumption of the shared `protocols/contracts/v1/` NIP-19
   vector, and `sign`/`flow` stdin harness coverage without writing output after
   invalid input.
 - Session import review tests proving SeedQR/BIP-39 and NIP-19 `nsec` session
@@ -190,7 +190,7 @@ default are left unchanged.
   secp256k1 scalar material is rejected, and generated secrets do not appear
   in the source review output.
 - Session-source backup tests proving BIP-39 words/SeedQR and NIP-19 `nsec`
-  recovery payloads match shared `nSealr/specs` backup vectors and are revealed
+  recovery payloads match shared `protocols/contracts/v1/` backup vectors and are revealed
   only after the separate danger-zone review reaches the final approval page.
 - Session-source backup IO tests proving bounded danger-zone review frames are
   displayed before local button reads, approved flows emit the recovery payload
@@ -210,7 +210,7 @@ default are left unchanged.
   code can derive the reviewed author public key from the selected RAM-only
   source before the one-shot signing provider is consumed.
 - Shared nSealr v0 implementation-limit conformance test against the
-  `nSealr/specs` limits profile.
+  `protocols/contracts/v1/` limits profile.
 - Shared pre-signing invalid-vector rejection for unsafe event templates,
   resource-limit violations, and malformed QR requests where the Raspberry
   parser owns the boundary.
@@ -250,7 +250,7 @@ procedure.
 
 ## Single-Repository CI
 
-Unit tests prefer the sibling `nSealr/specs` repository when the full local
+Unit tests prefer the sibling `protocols/contracts/v1/` repository when the full local
 workspace is present. GitHub Actions checks out `nSealr/raspberry` by itself,
 so tests fall back to fixture snapshots under `tests/fixtures/specs` in
 single-repository CI. Cross-repository drift remains guarded by
