@@ -29,8 +29,6 @@ const externalNip46RouteVector = fixtures.routeSelections.find(
   (selection) => selection.name === "external-nip46-sign-event-bunker"
 );
 if (!externalNip46RouteVector) throw new Error("external NIP-46 route selection fixture is missing");
-const smartcardRouteVector = fixtures.routeSelections.find((selection) => selection.name === "smartcard-sign-event-slot-0");
-if (!smartcardRouteVector) throw new Error("smartcard route selection fixture is missing");
 const routeRefusalContract = fixtures.routeRefusals.find((contract) => contract.name === "signer-route-refusals-v0");
 if (!routeRefusalContract) throw new Error("route-refusal contract fixture is missing");
 const client: LocalClientIdentity = {
@@ -522,98 +520,32 @@ describe("local service boundary", () => {
     }]);
   });
 
-  it("requires explicit external review acknowledgement for display-less smartcard dispatch", () => {
+  it("rejects retired routes before invoking any signer dispatcher", () => {
     let called = false;
-    expect(handleLocalServiceRequest({
-      version: 1,
-      request_id: "svc-smartcard-dispatch-no-review",
-      operation: "dispatch_signer_request",
-      params: {
-        client,
-        route_request: smartcardRouteVector.request,
-        request
-      }
-    }, {
-      accounts: fixtures.accounts,
-      grants: [grant],
-      now: 1_900_000_000,
-      signerDispatcher: () => {
-        called = true;
-        return response;
-      }
-    })).toMatchObject({
-      ok: false,
-      error: {
-        code: "external_review_acknowledgement_required",
-        message: "display-less signer dispatch requires external review acknowledgement"
-      }
-    });
-    expect(called).toBe(false);
-
-    expect(handleLocalServiceRequest({
-      version: 1,
-      request_id: "svc-smartcard-dispatch-wrong-review",
-      operation: "dispatch_signer_request",
-      params: {
-        client,
-        route_request: smartcardRouteVector.request,
-        request,
-        external_review_acknowledgement: externalReviewAcknowledgement("0".repeat(64))
-      }
-    }, {
-      accounts: fixtures.accounts,
-      grants: [grant],
-      now: 1_900_000_000,
-      signerDispatcher: () => {
-        called = true;
-        return response;
-      }
-    })).toMatchObject({
-      ok: false,
-      error: {
-        code: "external_review_acknowledgement_mismatch",
-        message: "external review approval_digest does not match signer request"
-      }
-    });
-    expect(called).toBe(false);
+    for (const acknowledgement of [undefined, externalReviewAcknowledgement()]) {
+      const result = handleLocalServiceRequest({
+        version: 1, request_id: "retired-card-route", operation: "dispatch_signer_request",
+        params: { client, route_request: { ...routeVector.request, route_type: "smartcard" }, request,
+          ...(acknowledgement === undefined ? {} : { external_review_acknowledgement: acknowledgement }) }
+      }, { accounts: fixtures.accounts, grants: [grant], now: 1_900_000_000,
+        signerDispatcher: () => { called = true; return response; } });
+      expect(result).toMatchObject({ ok: false, error: { code: "invalid_service_request" } });
+      expect(called).toBe(false);
+    }
   });
 
-  it("passes acknowledged display-less smartcard requests through the injected dispatcher", () => {
-    const acknowledgement = externalReviewAcknowledgement();
-    const dispatched: unknown[] = [];
-
-    expect(handleLocalServiceRequest({
-      version: 1,
-      request_id: "svc-smartcard-dispatch-reviewed",
-      operation: "dispatch_signer_request",
-      params: {
-        client,
-        route_request: smartcardRouteVector.request,
-        request,
-        external_review_acknowledgement: acknowledgement
-      }
-    }, {
-      accounts: fixtures.accounts,
-      grants: [grant],
-      now: 1_900_000_000,
-      signerDispatcher: (dispatchRequest) => {
-        dispatched.push(dispatchRequest);
-        return response;
-      }
-    })).toEqual({
-      version: 1,
-      request_id: "svc-smartcard-dispatch-reviewed",
-      ok: true,
-      result: {
-        signer_response: response
-      }
-    });
-    expect(dispatched).toEqual([{
-      client,
-      route_selection: smartcardRouteVector.selection,
-      request,
-      external_review_acknowledgement: acknowledgement
-    }]);
+  it("refuses host acknowledgement bypass while preserving active dispatch", () => {
+    let calls = 0;
+    const context = { accounts: fixtures.accounts, grants: [grant], now: 1_900_000_000,
+      signerDispatcher: () => { calls += 1; return response; } };
+    const base = { version: 1, request_id: "active-route-control", operation: "dispatch_signer_request",
+      params: { client, route_request: routeVector.request, request } };
+    expect(handleLocalServiceRequest({ ...base, params: { ...base.params,
+      external_review_acknowledgement: externalReviewAcknowledgement() } }, context))
+      .toMatchObject({ ok: false, error: { code: "external_review_acknowledgement_unsupported" } });
+    expect(calls).toBe(0);
+    expect(handleLocalServiceRequest(base, context)).toMatchObject({ ok: true, result: { signer_response: response } });
+    expect(calls).toBe(1);
   });
 
   it("rejects external review acknowledgement on non-display-less dispatch routes", () => {
@@ -754,7 +686,7 @@ describe("local service boundary", () => {
       operation: "dispatch_signer_request",
       params: {
         client,
-        route_request: smartcardRouteVector.request,
+        route_request: routeVector.request,
         request,
         external_review_acknowledgement: {
           ...externalReviewAcknowledgement(),

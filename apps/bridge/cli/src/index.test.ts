@@ -2119,67 +2119,11 @@ describe("nsealr CLI", () => {
     expect(loadJson(reviewPath)).toEqual(renderReviewDetailPages(reviewEventTemplate(request.params.event_template), limits));
   });
 
-  it("runs request -> smartcard-sim-sign -> verify-response after explicit review acknowledgement", async () => {
-    const tempRoot = mkdtempSync(join(tmpdir(), "nsealr-cli-smartcard-"));
-    const key = loadJson(resolve(specsRoot, "vectors/keys/test-key-1.json")) as { secret_key: string };
-    const request = loadJson(resolve(specsRoot, "examples/request-kind-1-basic.json"));
-    const screenReview = loadJson(resolve(specsRoot, "vectors/review-screens/kind-1-basic.json")) as {
-      screen_review: { approval_digest: string };
-    };
-    const requestPath = join(tempRoot, "request.json");
+  it("rejects the retired smartcard command without creating signer output", async () => {
+    const tempRoot = mkdtempSync(join(tmpdir(), "nsealr-cli-retired-command-"));
     const responsePath = join(tempRoot, "response.json");
-    const mismatchResponsePath = join(tempRoot, "mismatch-response.json");
-
-    writeFileSync(requestPath, `${JSON.stringify(request, null, 2)}\n`, "utf8");
-
-    await expect(
-      runCli(["smartcard-sim-sign", "--secret-key", key.secret_key, "--request", requestPath, "--out", responsePath])
-    ).rejects.toThrow("smartcard signing requires explicit review acknowledgement");
-
-    await expect(
-      runCli([
-        "smartcard-sim-sign",
-        "--secret-key",
-        key.secret_key,
-        "--request",
-        requestPath,
-        "--review-acknowledged",
-        "--out",
-        responsePath
-      ])
-    ).rejects.toThrow("approval_digest is required for display-less smartcard signing");
+    await expect(runCli(["smartcard-sim-sign", "--out", responsePath]))
+      .rejects.toThrow(/unknown command/u);
     expect(existsSync(responsePath)).toBe(false);
-
-    await expect(
-      runCli([
-        "smartcard-sim-sign",
-        "--secret-key",
-        key.secret_key,
-        "--request",
-        requestPath,
-        "--review-acknowledged",
-        "--approval-digest",
-        "00".repeat(32),
-        "--out",
-        mismatchResponsePath
-      ])
-    ).rejects.toThrow("approval_digest_mismatch");
-    expect(existsSync(mismatchResponsePath)).toBe(false);
-
-    await runCli([
-      "smartcard-sim-sign",
-      "--secret-key",
-      key.secret_key,
-      "--request",
-      requestPath,
-      "--review-acknowledged",
-      "--approval-digest",
-      screenReview.screen_review.approval_digest,
-      "--out",
-      responsePath
-    ]);
-    await runCli(["verify-response", "--request", requestPath, "--response", responsePath]);
-
-    expect(validateResponse(loadJson(responsePath)).ok).toBe(true);
   });
 });

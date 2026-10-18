@@ -5,23 +5,21 @@ export type RouteType =
   | "raspberry_qr_vault"
   | "esp32_qr_vault"
   | "esp32_usb_nip46"
-  | "smartcard"
   | "custom_hardware_wallet"
   | "external_nip46";
 
 export type RouteCustody =
   | "stateless_session"
   | "device_persistent"
-  | "card_persistent"
   | "custom_hardware_persistent"
   | "external_signer";
 
 export type SignerRoute = {
   type: RouteType;
   repository?: "nsealr";
-  transport: "qr" | "usb" | "smartcard" | "nfc" | "nip46_relay" | "embedded";
+  transport: "qr" | "usb" | "nip46_relay" | "embedded";
   custody: RouteCustody;
-  trusted_review: "device_display" | "external_review" | "external_policy" | "display_less";
+  trusted_review: "device_display" | "external_review" | "external_policy";
   policy_support: "manual_only" | "scoped_automation" | "external";
 };
 
@@ -198,7 +196,6 @@ const ROUTE_TYPES = new Set<RouteType>([
   "raspberry_qr_vault",
   "esp32_qr_vault",
   "esp32_usb_nip46",
-  "smartcard",
   "custom_hardware_wallet",
   "external_nip46"
 ]);
@@ -207,18 +204,16 @@ const ROUTE_REPOSITORIES = new Map<RouteType, string>([
   ["raspberry_qr_vault", "nsealr"],
   ["esp32_qr_vault", "nsealr"],
   ["esp32_usb_nip46", "nsealr"],
-  ["smartcard", "nsealr"],
   ["custom_hardware_wallet", "nsealr"]
 ]);
-const ROUTE_TRANSPORTS = new Set(["qr", "usb", "smartcard", "nfc", "nip46_relay", "embedded"]);
+const ROUTE_TRANSPORTS = new Set(["qr", "usb", "nip46_relay", "embedded"]);
 const CUSTODY_MODES = new Set([
   "stateless_session",
   "device_persistent",
-  "card_persistent",
   "custom_hardware_persistent",
   "external_signer"
 ]);
-const REVIEW_MODES = new Set(["device_display", "external_review", "external_policy", "display_less"]);
+const REVIEW_MODES = new Set(["device_display", "external_review", "external_policy"]);
 const POLICY_SUPPORT_MODES = new Set(["manual_only", "scoped_automation", "external"]);
 const POLICY_REVIEW_REQUIREMENTS = new Set([
   "connect",
@@ -244,7 +239,6 @@ const DEVICE_METHODS = new Set(["get_capabilities", "get_signing_status", "get_p
 const DECRYPT_METHODS = new Set(["nip04_decrypt", "nip44_decrypt"]);
 const POLICY_DECISION_ROUTE_TYPES = new Set<RouteType>([
   "esp32_usb_nip46",
-  "smartcard",
   "custom_hardware_wallet",
   "external_nip46"
 ]);
@@ -429,13 +423,6 @@ function validateRecovery(recovery: unknown): Record<string, unknown> {
     requireBoolean(recovery.backup_required, "device_slot recovery backup_required");
     return recovery;
   }
-  if (recovery.type === "card_slot") {
-    assertOnlyKeys(recovery, ["type", "card_id", "slot_id", "backup_required"], "card_slot recovery");
-    requireString(recovery.card_id, "card_slot recovery card_id");
-    requireString(recovery.slot_id, "card_slot recovery slot_id");
-    requireBoolean(recovery.backup_required, "card_slot recovery backup_required");
-    return recovery;
-  }
   if (recovery.type === "hardware_wallet_slot") {
     assertOnlyKeys(recovery, ["type", "device_id", "slot_id", "backup_required"], "hardware_wallet_slot recovery");
     requireString(recovery.device_id, "hardware_wallet_slot recovery device_id");
@@ -487,20 +474,6 @@ function validateRouteSemantics(
       throw new Error("ESP32 USB/NIP-46 routes require physical review and approval");
     }
     if (!capabilities.persistent_grants) throw new Error("ESP32 USB/NIP-46 routes require persistent grant support");
-    return;
-  }
-
-  if (route.type === "smartcard") {
-    if (route.transport !== "smartcard") throw new Error("smartcard routes must use smartcard transport");
-    if (route.custody !== "card_persistent") throw new Error("smartcard routes must use card_persistent custody");
-    if (route.trusted_review !== "display_less") throw new Error("smartcard routes must remain display_less");
-    if (route.policy_support !== "manual_only") {
-      throw new Error("display-less smartcard routes must use manual_only policy support");
-    }
-    if (capabilities.physical_review || capabilities.physical_approval) {
-      throw new Error("display-less smartcard routes must not claim physical review or approval");
-    }
-    if (capabilities.persistent_grants) throw new Error("display-less smartcard routes must not support persistent grants");
     return;
   }
 
@@ -613,9 +586,6 @@ export function parsePolicyProfile(value: unknown): PolicyProfile {
   if (!forbiddenPermissions.includes("export_secret")) throw new Error("forbidden_permissions must include export_secret");
   if (routeTypes.some((route) => QR_ROUTE_TYPES.has(route)) && (mode !== "manual_only" || grantsAllowed !== false)) {
     throw new Error("QR vault routes must remain manual_only with grants_allowed false");
-  }
-  if (routeTypes.includes("smartcard") && (mode !== "manual_only" || grantsAllowed !== false)) {
-    throw new Error("display-less smartcard routes must remain manual_only with grants_allowed false");
   }
   if (routeTypes.includes("external_nip46") && (mode !== "manual_only" || grantsAllowed !== false)) {
     throw new Error("external NIP-46 routes must remain external-policy manual without nSealr grants");

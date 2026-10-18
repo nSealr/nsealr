@@ -25,8 +25,6 @@ const request = JSON.parse(readFileSync(resolve(specsRoot, "examples/request-kin
 const response = JSON.parse(readFileSync(resolve(specsRoot, "examples/response-kind-1-basic.json"), "utf8"));
 const routeVector = fixtures.routeSelections.find((selection) => selection.name === "esp32-usb-sign-event-slot-0");
 if (!routeVector) throw new Error("route selection fixture is missing");
-const smartcardRouteVector = fixtures.routeSelections.find((selection) => selection.name === "smartcard-sign-event-slot-0");
-if (!smartcardRouteVector) throw new Error("smartcard route selection fixture is missing");
 const client: LocalClientIdentity = {
   surface: "browser_extension",
   origin: "https://example.com",
@@ -143,38 +141,19 @@ describe("local service client", () => {
     });
   });
 
-  it("passes external review acknowledgement through dispatch options for display-less routes", async () => {
-    const acknowledgement = externalReviewAcknowledgement();
-    const dispatched: unknown[] = [];
-    const service = new LocalServiceClient({
-      exchange: (message) => handleLocalServiceRequest(message, {
-        accounts: fixtures.accounts,
-        grants: [grant],
-        now: 1_900_000_000,
-        signerDispatcher: (dispatchRequest) => {
-          dispatched.push(dispatchRequest);
-          return response;
-        }
-      })
-    });
-
-    await expect(service.dispatchSignerRequest(client, smartcardRouteVector.request, request, {
-      requestId: "client-smartcard-dispatch",
-      externalReviewAcknowledgement: acknowledgement
-    })).resolves.toEqual({
-      version: 1,
-      request_id: "client-smartcard-dispatch",
-      ok: true,
-      result: {
-        signer_response: response
-      }
-    });
-    expect(dispatched).toEqual([{
-      client,
-      route_selection: smartcardRouteVector.selection,
-      request,
-      external_review_acknowledgement: acknowledgement
-    }]);
+  it("rejects host acknowledgement options before active signer dispatch", async () => {
+    let calls = 0;
+    const service = new LocalServiceClient({ exchange: (message) => handleLocalServiceRequest(message, {
+      accounts: fixtures.accounts, grants: [grant], now: 1_900_000_000,
+      signerDispatcher: () => { calls += 1; return response; }
+    }) });
+    await expect(service.dispatchSignerRequest(client, routeVector.request, request, {
+      requestId: "client-host-acknowledgement", externalReviewAcknowledgement: externalReviewAcknowledgement()
+    })).resolves.toMatchObject({ ok: false, error: { code: "external_review_acknowledgement_unsupported" } });
+    expect(calls).toBe(0);
+    await expect(service.dispatchSignerRequest(client, routeVector.request, request))
+      .resolves.toMatchObject({ ok: true, result: { signer_response: response } });
+    expect(calls).toBe(1);
   });
 
   it("rejects malformed or mismatched service responses before callers trust them", async () => {
