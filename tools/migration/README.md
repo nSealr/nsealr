@@ -1,4 +1,38 @@
-# A02 inventory and preflight
+# A02 isolated migration tooling
+
+The coordinator admitted the exact732f742 package at0a8bb620 after independent
+review b9d5d96e. The original preparation records below remain historical.
+`assemble.py` performs only that admitted selected-file import, starting from
+empty Git and exact public core ancestry. `transforms.py` declares every later
+path, preimage, postimage and mode before mutation. `patches/series.json` is the
+ordered exact replay input; transformation authoring templates may have evolved
+and must not be rerun as a substitute for those frozen patch bytes.
+
+`replay.py` assembles into an absent private destination, reapplies each exact
+patch, verifies each tree and commit, compares the first assembly, bundles the
+candidate and restores/checks every allowed object. It never adds a remote or
+publishes a package. Source recovery bundles remain private backup, never target
+intake. `test_assemble.py` exercises unselected branch and unreachable-object
+exclusion; `test_replay.py` checks patch/declaration tampering.
+
+Example (use the pinned interpreter and the protected approved sanitizer output):
+
+```sh
+python3 tools/migration/replay.py --author-repo "$PWD" \
+  --source-root /home/tux/nsealr \
+  --privacy-root "$PWD/tools/migration/.runtime/privacy-01" \
+  --destination "$PWD/tools/migration/.runtime/new-replay" \
+  --expected-target "$PWD/tools/migration/.runtime/rehearsal-01/repository"
+```
+
+The approved two-file exception requires its protected exact sanitized inputs;
+never substitute private source history or original excluded document addresses.
+Execution exports include only explicit public logs and approved source records.
+Actual product acceptance is `make ci` in the assembled repository, using its
+pinned bootstrap. Evidence, final distinct review and coordinator adoption remain
+separate; no tooling exit code itself changes the task graph or permits archival.
+
+## Historical preparation usage
 
 These tools read exact Git commits, write a protected local inventory, and create
 and verify protected recovery bundles. They have no target import, assembly,
