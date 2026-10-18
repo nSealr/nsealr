@@ -1,0 +1,52 @@
+{
+  "source": "7a32eed82f542e818fad1c48d6815a38930eac32",
+  "core": "9194e292aa8a3176874cc9bf5814cefc26b6fe1a",
+  "specs": "8bb8cca71355bcf8d81a093bcee9f3fe6915b121",
+  "lab": "3303ab17a28ed32419576627d5abb93db3999635",
+  "v1_overlay_not_applied": true,
+  "cases": [
+    {
+      "case": "historical_clean_with_empty_required_globs",
+      "expected_reject": false,
+      "observed_reject": false,
+      "passed": true,
+      "detail": 222
+    },
+    {
+      "case": "historical_missing_SOURCE",
+      "expected_reject": true,
+      "observed_reject": true,
+      "passed": true,
+      "detail": "missing or nonregular SOURCE.json: /home/tux/nsealr/.restart-tools/goal/s01-provenance-review/docs/restart/implementation/reviews/S01-provenance/.work/historical/firmware/tests/fixtures/specs"
+    },
+    {
+      "case": "historical_missing_SOURCE_and_real_vector",
+      "expected_reject": true,
+      "observed_reject": true,
+      "passed": true,
+      "detail": "missing or nonregular SOURCE.json: /home/tux/nsealr/.restart-tools/goal/s01-provenance-review/docs/restart/implementation/reviews/S01-provenance/.work/historical/firmware/tests/fixtures/specs"
+    },
+    {
+      "case": "historical_forged_hidden_digest",
+      "expected_reject": true,
+      "observed_reject": true,
+      "passed": true,
+      "detail": "snapshot vector differs from specs: vectors/.gitkeep"
+    },
+    {
+      "case": "historical_restored",
+      "expected_reject": false,
+      "observed_reject": false,
+      "passed": true,
+      "detail": 222
+    },
+    {
+      "case": "current_manifest_cannot_relabel_historical_specs",
+      "expected_reject": true,
+      "observed_reject": true,
+      "passed": true,
+      "detail": "SOURCE.json upstream repository/commit mismatch"
+    }
+  ],
+  "passed": true
+}

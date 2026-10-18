@@ -1,0 +1,150 @@
+{
+  "verdict": "PASS",
+  "blockers": [],
+  "reviewer": "/root/independent_controls_review",
+  "author": "/root/baseline_execution",
+  "recorded_at": "2026-10-18T17:17:12.853691+00:00",
+  "candidate": "f4c35c1c455528501c91747eb503dc78b4050f9d",
+  "candidate_tree": "b271fb56d87e6d15438399834e18914a3e42ced7",
+  "tested_repair_source": "7a32eed82f542e818fad1c48d6815a38930eac32",
+  "reviewer_authored_candidate_files": false,
+  "assigned_configuration": "Coordinator requested Astra xhigh; assignment record, not hosted-identity introspection.",
+  "scope": "Independent security/correctness review of the accepted S01 provenance follow-up, including exact final additive evidence. Not a new independent qualification of unchanged Bridge product source or physical hardware.",
+  "specification": {
+    "commit": "e4e46cf4abedf45951d33ec915d91de60bcb35ec",
+    "sha256": "f7e721b5d5d5ae9285d24ca4cc562cd5ff9208f9a45c448a742bb207bf455086",
+    "accepted_by_distinct_specification_review": "176995fda93dc1a9d1f3db80b07ec06959211b61"
+  },
+  "original_findings": {
+    "commit": "30ae87dd31c3c292b22f4758d4fad9fea63a7b37",
+    "review_sha256": "ed89cabb9708bf4d985bb83091dd46a79f68e32abe1bfc6e8f71a238a02db20f",
+    "probe_sha256": "39bce90e92a473930768d7b92aa76b70c8163ad495ea8fbdd1e9976e65ab4caf",
+    "original_result": "17 pass, 3 bypasses; original candidate raw fixture bytes were correct. Original artifacts/review preserved.",
+    "resolution": "Exact original mutation/discovery functions independently replayed against corrected owned copy: 20/20 pass; all three bypasses reject."
+  },
+  "acceptance_map": [
+    {
+      "requirement": "Observable contract 1: mandatory complete-core provenance; honest partial consumers",
+      "verdict": "PASS",
+      "evidence": "Manifest validated before iteration, including empty required globs. Direct tests cover missing, malformed, nonobject, symlink metadata; named partial consumer without metadata remains partial, supplied metadata validates. Original missing-SOURCE and missing-SOURCE-plus-real-v1-vector mutations independently reject."
+    },
+    {
+      "requirement": "Observable contract 2: complete committed inventory and byte provenance",
+      "verdict": "PASS",
+      "evidence": "Git ls-tree inventories regular committed blobs, including hidden paths; nonempty manifest/source/snapshot inventory equality is mandatory. cat-file anchors upstream bytes; snapshot equality and SHA256 checked. Real-Git direct tests reject forged digest, missing/extra/hidden vectors, simultaneous dirty source/snapshot and unsupported nonregular entries. All actual 221 Git blobs independently matched."
+    },
+    {
+      "requirement": "Observable contract 3: real fixture comparison and metadata-v1 integrity",
+      "verdict": "PASS",
+      "evidence": "Only validated SOURCE excluded, hidden files counted. Independent original semantic probe clean/restored count547; increase is exactly core vectors/.gitkeep. Original v1 overlay byte-identical; empty/omitted/substituted/duplicate inventories reject. Full20 actual run executes all3 URL negatives with real CLI failure/error/no-output assertions."
+    },
+    {
+      "requirement": "Observable contract 4: default bootstrap pin and overlay boundary enforcement",
+      "verdict": "PASS",
+      "evidence": "Active specs45f8/companion678 pins; all other pins unchanged. R00->metadata-v1->follow-up mandatory order, no optional disable or silent missing fallback. Actual source/patch/preimage/postimage checks and separate records. Eleven independent boundary tests pass; code rejects changed declared/actual commit, patch, preimage, output or missing follow-up."
+    },
+    {
+      "requirement": "Historical independence and immutable evidence",
+      "verdict": "PASS",
+      "evidence": "Six independently executed old-core9194/old-specs8bb controls pass with actual helper and R00+follow-up only, v1 files remain exact preimages. Current manifest/old specs mismatch rejects. Both remote historical tags and original input SHA verified. Original75 artifacts and old2 overlays unchanged."
+    },
+    {
+      "requirement": "Fresh default installation and affected execution",
+      "verdict": "PASS",
+      "evidence": "Actual default CLI absent-destination guard and recorded successful invocation at7a, mirrors used solely for exact Git transport, no cache-copy code path. Fifteen downloaded archive/wheel pins independently rehashed. Raw new runtime evidence matches60 published artifacts. CoreCI, lab169, parity547, v1 inventory, one uninterrupted20-step integration all exit0; complete pinned Makefile recipe matches raw command sequence."
+    },
+    {
+      "requirement": "Final source correspondence, CI, licensing and publication bounds",
+      "verdict": "PASS",
+      "evidence": "Finalf4 adds115 S01 evidence files only; all8 repair files equal tested7a. All131 artifact hashes/74 logs and73 command bindings verified.20 unchanged top-level product objects equal41f5; six unaffected suites explicitly reused. Three selected CC0 overlays, license and before/after hashes verified; exactly4 lab files modified. Both7a and finalf4 push/PR CI successful; no merge/task closure performed."
+    }
+  ],
+  "source_sha256_bindings": {
+    "docs/restart/implementation/S01/check-historical-provenance.py": "c7e597b5e4f25ea97204d6611288f3a0451b5e2d18e5c4c628760fae1be297d1",
+    "docs/restart/implementation/S01/replay-provenance-review.py": "626d49b7de8319261dd1445e53998f09aba60a16381078a84d7d884145326474",
+    "tools/baseline/README.md": "79c9c4bd5d0e1bc7eaa33c6c107f36847f47863731c19ff9f2a6447afde4ece5",
+    "tools/baseline/bootstrap.py": "f563add1751b37a51d13753364ae892c26b4518aa5e2bc5c46e2d12041dbd837",
+    "tools/baseline/inputs.json": "8f496f5ea75dd4457a4bce6afcc34549351b8b6e9897c44fd2b5b92e7c4f1f35",
+    "tools/baseline/overlays/lab-provenance-followup.json": "3a630a028151f1a4f0719e4f4ae86cad2db2178e7b6fe1d27e222e10bb5a61ed",
+    "tools/baseline/overlays/lab-provenance-followup.patch": "a3c39719523a6dcfc7695da045bf00233453aa65e8c70ace97d16388733251d5",
+    "tools/baseline/test_bootstrap.py": "1d4dbc0ebdab8112cf66a1b4cb03fadc39f914f220f837e223ee78d88eeb113d"
+  },
+  "additional_candidate_bindings": {
+    "docs/restart/implementation/S01/provenance-followup-brief.md": "f7e721b5d5d5ae9285d24ca4cc562cd5ff9208f9a45c448a742bb207bf455086",
+    "docs/restart/implementation/S01/integration-brief.md": "009902d3534adfe3287eea01f5dab17af65ad9f9be143a9ef90302905e4e233f",
+    "docs/restart/implementation/S01/provenance-followup-artifacts.json": "0d84fe87813e074d4f16da17f3b786e19510b6d9edf78be560fe269c4acb5fd3",
+    "docs/restart/implementation/S01/provenance-followup-execution.json": "ca4d105b4e8ffaad5cb4b5a868a776b289def61c08d6e9ac9014d6adf52dd9ca",
+    "docs/restart/implementation/S01/provenance-followup-result.md": "7020ece844dbee453de109e333110764d7e67c99d07d0ea28015d946e2cbef80",
+    "docs/restart/implementation/S01/lab-metadata-v1.json": "d9c06a6e0d2b0fdf1f5d04422227e5a31e5a45ff0e45bbc8adc38f8edeb79365",
+    "docs/restart/implementation/S01/lab-metadata-v1.patch": "e6b4d86b553bdaa655a7850727d76268a1d7e29b04f8e2be0f95849c3f0a098c",
+    "tools/baseline/overlays/lab-provenance.json": "ce13e0627df1d9b79fa2bcaa2932a9e3e56adfcbcd9242d8a2424bb99a8f8d06",
+    "tools/baseline/overlays/lab-provenance.patch": "da2f2e821a6c484f22aaeeeb78fad42949c9870b6d54135de292bcde6c5e4bc8",
+    "tools/baseline/run.py": "602a3161fdc5231730ae1fb216b05e746fb6d8a8c64ebc6482a3f9c210f5491d",
+    "tests/fixtures/specs/SOURCE.json": "ede07769fdaa3c007120dc217c9b764a901c5d2167a87053c32f569e8a328015",
+    ".github/workflows/ci.yml": "5a9cfe4b8af9546aa3662c3a6f33ddbb76761795447f8034e7b3e40270f1f835"
+  },
+  "independent_execution": {
+    "driver": "replay.py",
+    "exit_code": 0,
+    "original_semantic_probe_cases": 20,
+    "bootstrap_boundary_tests": 11,
+    "direct_fixture_tests": 36,
+    "historical_controls": 6,
+    "structural_validator": "47 tasks valid; structural only",
+    "runtime": "Pinned existing R00 Python3.12.15, reused explicitly; environment.json records binary SHA and import path. Disposable review copies only.",
+    "initial_setup_failure": "Initial direct-file invocation omitted required lab PYTHONPATH and failed import. Initial logs/command exit1 retained; corrected invocation same candidate passes36. No source repair needed.",
+    "source_and_evidence_audit": "audit.py exits0; audit-result.json and final-evidence-checks.json bind detailed independent checks."
+  },
+  "remote_ci": "remote-ci.json; four exact-head push/PR checks all completed successfully",
+  "nonblocking_observations": [
+    "Whole final diff --check exits2 solely for three original rustup log trailing spaces. Non-log diff clean; immutable raw output preserved.",
+    "Fresh runtime after state includes recorded generated bytecode; tracked diff hashes and four declared lab files are unchanged."
+  ],
+  "limits": [
+    "This scoped review resolves the provenance follow-up. Root must combine it with prior distinct identity/transport/specs reviews and actual normal integration before S01 lifecycle closure.",
+    "No physical device, live relay, installed interactive browser, secure-element, provisioning, entropy or manufacturing claim.",
+    "Fresh installation retains declared host/kernel/libc/compiler/TLS/HOME and authorized Git transport inputs; not an OS-isolated build. Earlier reused-runtime results remain historical.",
+    "Review is bound to finalf4 and its frozen7a control bytes. Rebase or later integration requires explicit source/evidence equivalence and affected checks; changed controls require affected distinct review.",
+    "A02 must select/import the corrected default tuple and overlay manifests; no A02 implementation/import accepted here."
+  ],
+  "review_artifact_sha256": {
+    ".gitignore": "3cba886152bff7a7f8618aaa079dbb9aeee4b0214d890efa7154838f2cf42ebb",
+    "audit-result.json": "254d0d55f62526ac71d3aeab0a85e39dea74f04f57d09479b25e180f2e69616c",
+    "audit.log": "254d0d55f62526ac71d3aeab0a85e39dea74f04f57d09479b25e180f2e69616c",
+    "audit.py": "0f2cd3268c9109e12553d55a7322e276a3492fcad2229c58f69efe07f54328ea",
+    "commands/00-bootstrap-boundaries.log": "3117c50c3db9db773218d665462f36d5301c0149d4aa0f6a33aa8a5ce3fb0458",
+    "commands/01-direct-fixture-boundaries.log": "49a87e6ded4c11775f1fb0006e1c3dedfd55cbd97f6d321b3a4cc45b03ff8c03",
+    "commands/02-lab-init.log": "6d2f74513026826d4e4834ee19d7b26cf8cc4008329e46fa6d91f4d300cf52f0",
+    "commands/03-lab-fetch.log": "fa18e88e972c2892271958e1ae7016a6d4c77c7ebd2703a2ef483bd50238f53f",
+    "commands/04-lab-checkout.log": "f4c576bf28e7bff3be557c73ea0870a348e41c38da0cdcbbacab328bec149cb2",
+    "commands/05-specs-init.log": "42c75700d5e78067503586818f0a0785ae02f62f642e59ea172504047c6f424e",
+    "commands/06-specs-fetch.log": "9fa6de435bf55254dd0daa4317df8009d7eac343bd330c5f580553759236f618",
+    "commands/07-specs-checkout.log": "fd4c8ed4a0d9e86d16776fb277f2f211036fdbf5c56396cc34ca4ee0ca3d42ee",
+    "commands/08-overlay-check.log": "bbad8a7de70946b4c54d8197cd9e494ccaf04d3b0e57f5ad27657efea4a468bc",
+    "commands/09-overlay-apply.log": "ca865f4f0256d377567c3df980efe6670c157921891c6f93d141967f2e427481",
+    "commands/10-provenance-followup-overlay-check.log": "9fc449a3845c0975c00b881fc43bcbc0ade89319ad7412c8f3b83604a124fae0",
+    "commands/11-provenance-followup-overlay-apply.log": "c0483f4453ce4474a92cfb09465930641db1e16eab3a3d6666ba69e918b672f7",
+    "commands/commands.json": "5a62b4c01031cab39347487b5cb76466fa590d7326ff2586968f107a3b11ea33",
+    "composite-boundary.json": "ba26196d57341fbf786a579737af6a104e442a0b5e2ca64836b666a64674b97e",
+    "environment.json": "c3f2bf524a734d6979770228370a0beca84eacff64cbddf45859050788358928",
+    "final-evidence-checks.json": "f38290ed8f97697959154a8e58c01c0287e0188798ba0892c9058ea85ef465a4",
+    "historical-result.json": "4a5e0986037902c2693a4bfaab3675231bf6ade4c2755d33056c3fa6cf24493f",
+    "initial-commands.json": "e9f4d4b1565ff6f967b3697a20c4077400b8398d0d42c47e74c463e474ecec29",
+    "initial-direct-import.log": "72de9d11d6c211a3670a96f5970748430fa1faf4ca5f6f9f16a4c5ce1f62eb3d",
+    "initial-import-attempt.log": "0d578d690817ed458cd5ffbbb79fab7b9795ade43af5228daf894c7b5fb9fb8a",
+    "probe-result.json": "c71d57fbae5b70b946d28ee0196ec6e20f07b26b3db394e968b716adaab5e851",
+    "remote-ci.json": "f4d6b7705c5f44f510a31b702bcc0fe866d5fc835572e4fd606c85454d87ae1a",
+    "replay.log": "e8969f4228b5af3eccf8e53019b1d70d712e8bea21d076910af2f68aeae46d05",
+    "replay.py": "e483e10e425e29d30c99938315ab199e2e49090dba5937845a2dcab5131a97d2",
+    "review.md": "b089fe85ed5b96bf5d4c60113f823da225895167bf3085203a73d5cd6190f175"
+  },
+  "merge_performed": false,
+  "task_closed": false,
+  "composite_acceptance_boundary": {
+    "path": "composite-boundary.json",
+    "assessment": "All five canonical acceptance dependencies are mapped to preserved distinct Bridge/specs reviews plus the corrected final integration evidence. Verified actual reviewed-delivery/main whole-tree equality and unchanged reviewed product bytes support reuse; no unchanged hostile campaign rerun claimed. This scoped correction review and verified mapping support coordinator composition, not automatic lifecycle closure.",
+    "reused_review_artifacts_verified": 45,
+    "initial_main_requirements": "768e8a35ae541f53f5da9c7bea7bf5c577fb474d",
+    "core_integration_base": "9194e292aa8a3176874cc9bf5814cefc26b6fe1a"
+  }
+}
