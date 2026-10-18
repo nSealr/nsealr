@@ -357,7 +357,13 @@ mod tests {
         let decision_frame = session.current_frame().unwrap();
         assert_eq!(decision_frame.title, "Decision");
         assert_eq!(decision_frame.page_indicator, "Page 4/4");
-        assert_eq!(decision_frame.action_hint, include_str!(concat!(env!("OUT_DIR"), "/field-26b3d3b407ad92a687368648.txt")));
+        assert_eq!(
+            decision_frame.action_hint,
+            include_str!(concat!(
+                env!("OUT_DIR"),
+                "/field-26b3d3b407ad92a687368648.txt"
+            ))
+        );
         assert!(!session.can_sign());
 
         let approval = session.handle_button(ReviewButton::Approve);
@@ -391,7 +397,10 @@ mod tests {
         assert_eq!(decision_frame.body_lines.len(), 1);
         assert_eq!(
             decision_frame.body_lines.as_slice()[0],
-            include_str!(concat!(env!("OUT_DIR"), "/field-2e727214870520e091c3f4b4.txt")),
+            include_str!(concat!(
+                env!("OUT_DIR"),
+                "/field-2e727214870520e091c3f4b4.txt"
+            )),
         );
 
         let rejection = session.handle_button(ReviewButton::Reject);
@@ -498,7 +507,10 @@ mod tests {
         // A page title wider than the limits propagates the render error.
         let long_title_request = crate::review::test_fixtures::trusted_review_request(
             "req-render-error",
-            include_str!(concat!(env!("OUT_DIR"), "/field-a9dbf5d6f075ebea8a12c272.txt")),
+            include_str!(concat!(
+                env!("OUT_DIR"),
+                "/field-a9dbf5d6f075ebea8a12c272.txt"
+            )),
             &[(
                 "A title wider than 24 chars",
                 &["line"],

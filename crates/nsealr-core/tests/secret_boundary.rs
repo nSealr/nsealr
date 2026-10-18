@@ -11,7 +11,10 @@ use nsealr_core::{
     },
 };
 
-const NSEC: &str = include_str!(concat!(env!("OUT_DIR"), "/field-0ba18333d64bc1b3cabb124c.txt"));
+const NSEC: &str = include_str!(concat!(
+    env!("OUT_DIR"),
+    "/field-0ba18333d64bc1b3cabb124c.txt"
+));
 const MNEMONIC: &str =
     "abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon about";
 

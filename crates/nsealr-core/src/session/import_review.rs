@@ -246,8 +246,10 @@ pub(crate) mod tests {
 
     // Secret-key hex copied from the READ-ONLY
     // specs/vectors/nip19/nsec-test-key-1.json (`secret_key`).
-    pub(crate) const NSEC_TEST_KEY_1_SECRET_HEX: &str =
-        include_str!(concat!(env!("OUT_DIR"), "/field-00a983250903242d0fac6fbe.txt"));
+    pub(crate) const NSEC_TEST_KEY_1_SECRET_HEX: &str = include_str!(concat!(
+        env!("OUT_DIR"),
+        "/field-00a983250903242d0fac6fbe.txt"
+    ));
 
     /// Builds an expected page from fixture literals (the Rust analogue of the
     /// C++ generated `TrustedReviewPage` vector initialisers).
@@ -294,7 +296,10 @@ pub(crate) mod tests {
         let mut keyring = StatelessSessionKeyring::new();
         keyring
             .add_nsec(
-                include_str!(concat!(env!("OUT_DIR"), "/field-43257d08c218769553577c83.txt")),
+                include_str!(concat!(
+                    env!("OUT_DIR"),
+                    "/field-43257d08c218769553577c83.txt"
+                )),
                 nip19::decode_nsec(NSEC_TEST_KEY_1).unwrap(),
             )
             .unwrap();
@@ -308,14 +313,26 @@ pub(crate) mod tests {
         let nsec_review = build_session_import_review(keyring.source_at(0).unwrap());
         let seed_review = build_session_import_review(keyring.source_at(1).unwrap());
 
-        assert_eq!(nsec_review.review_id, include_str!(concat!(env!("OUT_DIR"), "/field-2d4d3d3dc78fd3f8fd1e0b12.txt")));
+        assert_eq!(
+            nsec_review.review_id,
+            include_str!(concat!(
+                env!("OUT_DIR"),
+                "/field-2d4d3d3dc78fd3f8fd1e0b12.txt"
+            ))
+        );
         assert_eq!(
             nsec_review.approval_digest,
-            include_str!(concat!(env!("OUT_DIR"), "/field-c11303196c42435ee677fcd7.txt")),
+            include_str!(concat!(
+                env!("OUT_DIR"),
+                "/field-c11303196c42435ee677fcd7.txt"
+            )),
         );
         assert_eq!(
             session_key_source_fingerprint(keyring.source_at(0).unwrap()),
-            include_str!(concat!(env!("OUT_DIR"), "/field-29f4e64e397d69751482cd54.txt")),
+            include_str!(concat!(
+                env!("OUT_DIR"),
+                "/field-29f4e64e397d69751482cd54.txt"
+            )),
         );
         assert_eq!(
             nsec_review.pages,
@@ -323,25 +340,56 @@ pub(crate) mod tests {
                 fixture_page(
                     "Import source",
                     &[
-                        include_str!(concat!(env!("OUT_DIR"), "/field-6dd4dc156f010143ffdc9c63.txt")),
-                        include_str!(concat!(env!("OUT_DIR"), "/field-8c586f5424f1c5a7c760787c.txt")),
-                        include_str!(concat!(env!("OUT_DIR"), "/field-23493328bbc0b80ce19da7cf.txt")),
+                        include_str!(concat!(
+                            env!("OUT_DIR"),
+                            "/field-6dd4dc156f010143ffdc9c63.txt"
+                        )),
+                        include_str!(concat!(
+                            env!("OUT_DIR"),
+                            "/field-8c586f5424f1c5a7c760787c.txt"
+                        )),
+                        include_str!(concat!(
+                            env!("OUT_DIR"),
+                            "/field-23493328bbc0b80ce19da7cf.txt"
+                        )),
                         "Secret: hidden",
                     ],
                     ReviewPageAction::Next,
                     "Page 1/2",
-                    include_str!(concat!(env!("OUT_DIR"), "/field-2f5ab9da98202f6323eca880.txt")),
+                    include_str!(concat!(
+                        env!("OUT_DIR"),
+                        "/field-2f5ab9da98202f6323eca880.txt"
+                    )),
                 ),
                 fixture_page(
                     "Import?",
-                    &[include_str!(concat!(env!("OUT_DIR"), "/field-de4a1599a44e5f90a8fe577d.txt")), include_str!(concat!(env!("OUT_DIR"), "/field-661d9099db5dc29def4b229d.txt")), "Approve to load"],
+                    &[
+                        include_str!(concat!(
+                            env!("OUT_DIR"),
+                            "/field-de4a1599a44e5f90a8fe577d.txt"
+                        )),
+                        include_str!(concat!(
+                            env!("OUT_DIR"),
+                            "/field-661d9099db5dc29def4b229d.txt"
+                        )),
+                        "Approve to load"
+                    ],
                     ReviewPageAction::ApproveOrReject,
                     "Page 2/2",
-                    include_str!(concat!(env!("OUT_DIR"), "/field-f041f5111e68e53efea04f26.txt")),
+                    include_str!(concat!(
+                        env!("OUT_DIR"),
+                        "/field-f041f5111e68e53efea04f26.txt"
+                    )),
                 ),
             ],
         );
-        assert!(pages_contain_text(&nsec_review.pages, include_str!(concat!(env!("OUT_DIR"), "/field-6dd4dc156f010143ffdc9c63.txt"))));
+        assert!(pages_contain_text(
+            &nsec_review.pages,
+            include_str!(concat!(
+                env!("OUT_DIR"),
+                "/field-6dd4dc156f010143ffdc9c63.txt"
+            ))
+        ));
         assert!(pages_contain_text(&nsec_review.pages, "Secret: hidden"));
         assert!(!pages_contain_text(
             &nsec_review.pages,
@@ -350,14 +398,26 @@ pub(crate) mod tests {
 
         assert_ne!(seed_review.review_id, nsec_review.review_id);
         assert_ne!(seed_review.approval_digest, nsec_review.approval_digest);
-        assert_eq!(seed_review.review_id, include_str!(concat!(env!("OUT_DIR"), "/field-b18b167e9736d988f540e1a9.txt")));
+        assert_eq!(
+            seed_review.review_id,
+            include_str!(concat!(
+                env!("OUT_DIR"),
+                "/field-b18b167e9736d988f540e1a9.txt"
+            ))
+        );
         assert_eq!(
             seed_review.approval_digest,
-            include_str!(concat!(env!("OUT_DIR"), "/field-4cf00376a14fdfab84c989cf.txt")),
+            include_str!(concat!(
+                env!("OUT_DIR"),
+                "/field-4cf00376a14fdfab84c989cf.txt"
+            )),
         );
         assert_eq!(
             session_key_source_fingerprint(keyring.source_at(1).unwrap()),
-            include_str!(concat!(env!("OUT_DIR"), "/field-b7001c6d270a7901642d6c97.txt")),
+            include_str!(concat!(
+                env!("OUT_DIR"),
+                "/field-b7001c6d270a7901642d6c97.txt"
+            )),
         );
         assert_eq!(
             seed_review.pages,
@@ -365,26 +425,57 @@ pub(crate) mod tests {
                 fixture_page(
                     "Import source",
                     &[
-                        include_str!(concat!(env!("OUT_DIR"), "/field-8e2965e1c0002b0ed4c5c1d6.txt")),
-                        include_str!(concat!(env!("OUT_DIR"), "/field-0fc85cec22a551367a37bfde.txt")),
-                        include_str!(concat!(env!("OUT_DIR"), "/field-5d9168bfcaf1443d3925ac13.txt")),
+                        include_str!(concat!(
+                            env!("OUT_DIR"),
+                            "/field-8e2965e1c0002b0ed4c5c1d6.txt"
+                        )),
+                        include_str!(concat!(
+                            env!("OUT_DIR"),
+                            "/field-0fc85cec22a551367a37bfde.txt"
+                        )),
+                        include_str!(concat!(
+                            env!("OUT_DIR"),
+                            "/field-5d9168bfcaf1443d3925ac13.txt"
+                        )),
                         "Words: 24",
                         "Secret: hidden",
                     ],
                     ReviewPageAction::Next,
                     "Page 1/2",
-                    include_str!(concat!(env!("OUT_DIR"), "/field-2f5ab9da98202f6323eca880.txt")),
+                    include_str!(concat!(
+                        env!("OUT_DIR"),
+                        "/field-2f5ab9da98202f6323eca880.txt"
+                    )),
                 ),
                 fixture_page(
                     "Import?",
-                    &[include_str!(concat!(env!("OUT_DIR"), "/field-de4a1599a44e5f90a8fe577d.txt")), include_str!(concat!(env!("OUT_DIR"), "/field-661d9099db5dc29def4b229d.txt")), "Approve to load"],
+                    &[
+                        include_str!(concat!(
+                            env!("OUT_DIR"),
+                            "/field-de4a1599a44e5f90a8fe577d.txt"
+                        )),
+                        include_str!(concat!(
+                            env!("OUT_DIR"),
+                            "/field-661d9099db5dc29def4b229d.txt"
+                        )),
+                        "Approve to load"
+                    ],
                     ReviewPageAction::ApproveOrReject,
                     "Page 2/2",
-                    include_str!(concat!(env!("OUT_DIR"), "/field-f041f5111e68e53efea04f26.txt")),
+                    include_str!(concat!(
+                        env!("OUT_DIR"),
+                        "/field-f041f5111e68e53efea04f26.txt"
+                    )),
                 ),
             ],
         );
-        assert!(pages_contain_text(&seed_review.pages, include_str!(concat!(env!("OUT_DIR"), "/field-8e2965e1c0002b0ed4c5c1d6.txt"))));
+        assert!(pages_contain_text(
+            &seed_review.pages,
+            include_str!(concat!(
+                env!("OUT_DIR"),
+                "/field-8e2965e1c0002b0ed4c5c1d6.txt"
+            ))
+        ));
         assert!(pages_contain_text(&seed_review.pages, "Words: 24"));
         assert!(pages_contain_text(&seed_review.pages, "Secret: hidden"));
         assert!(!pages_contain_text(&seed_review.pages, "attack"));
@@ -413,18 +504,36 @@ pub(crate) mod tests {
         let mut keyring = StatelessSessionKeyring::new();
         keyring
             .add_bip39_seed(
-                include_str!(concat!(env!("OUT_DIR"), "/field-a075e44ca789a3eaed354231.txt")),
+                include_str!(concat!(
+                    env!("OUT_DIR"),
+                    "/field-a075e44ca789a3eaed354231.txt"
+                )),
                 crate::bip39::WordIndexes::from_slice(&NIP06_INDEXES).unwrap(),
             )
             .unwrap();
         let source = keyring.source_at(0).unwrap();
 
-        assert_eq!(session_key_source_fingerprint(source), include_str!(concat!(env!("OUT_DIR"), "/field-8e86cbbca24ca3c385e2aa97.txt")));
+        assert_eq!(
+            session_key_source_fingerprint(source),
+            include_str!(concat!(
+                env!("OUT_DIR"),
+                "/field-8e86cbbca24ca3c385e2aa97.txt"
+            ))
+        );
         let review = build_session_import_review(source);
-        assert_eq!(review.review_id, include_str!(concat!(env!("OUT_DIR"), "/field-5aa5a49b704a22f1d76a1014.txt")));
+        assert_eq!(
+            review.review_id,
+            include_str!(concat!(
+                env!("OUT_DIR"),
+                "/field-5aa5a49b704a22f1d76a1014.txt"
+            ))
+        );
         assert_eq!(
             review.approval_digest,
-            include_str!(concat!(env!("OUT_DIR"), "/field-20b467526a956b621936fc7c.txt")),
+            include_str!(concat!(
+                env!("OUT_DIR"),
+                "/field-20b467526a956b621936fc7c.txt"
+            )),
         );
         assert_eq!(
             review.pages,
@@ -432,22 +541,47 @@ pub(crate) mod tests {
                 fixture_page(
                     "Import source",
                     &[
-                        include_str!(concat!(env!("OUT_DIR"), "/field-8e2965e1c0002b0ed4c5c1d6.txt")),
-                        include_str!(concat!(env!("OUT_DIR"), "/field-2b83a71001ef5129649c7737.txt")),
-                        include_str!(concat!(env!("OUT_DIR"), "/field-dc910ee0a02bd86991eae40b.txt")),
+                        include_str!(concat!(
+                            env!("OUT_DIR"),
+                            "/field-8e2965e1c0002b0ed4c5c1d6.txt"
+                        )),
+                        include_str!(concat!(
+                            env!("OUT_DIR"),
+                            "/field-2b83a71001ef5129649c7737.txt"
+                        )),
+                        include_str!(concat!(
+                            env!("OUT_DIR"),
+                            "/field-dc910ee0a02bd86991eae40b.txt"
+                        )),
                         "Words: 12",
                         "Secret: hidden",
                     ],
                     ReviewPageAction::Next,
                     "Page 1/2",
-                    include_str!(concat!(env!("OUT_DIR"), "/field-2f5ab9da98202f6323eca880.txt")),
+                    include_str!(concat!(
+                        env!("OUT_DIR"),
+                        "/field-2f5ab9da98202f6323eca880.txt"
+                    )),
                 ),
                 fixture_page(
                     "Import?",
-                    &[include_str!(concat!(env!("OUT_DIR"), "/field-de4a1599a44e5f90a8fe577d.txt")), include_str!(concat!(env!("OUT_DIR"), "/field-661d9099db5dc29def4b229d.txt")), "Approve to load"],
+                    &[
+                        include_str!(concat!(
+                            env!("OUT_DIR"),
+                            "/field-de4a1599a44e5f90a8fe577d.txt"
+                        )),
+                        include_str!(concat!(
+                            env!("OUT_DIR"),
+                            "/field-661d9099db5dc29def4b229d.txt"
+                        )),
+                        "Approve to load"
+                    ],
                     ReviewPageAction::ApproveOrReject,
                     "Page 2/2",
-                    include_str!(concat!(env!("OUT_DIR"), "/field-f041f5111e68e53efea04f26.txt")),
+                    include_str!(concat!(
+                        env!("OUT_DIR"),
+                        "/field-f041f5111e68e53efea04f26.txt"
+                    )),
                 ),
             ],
         );

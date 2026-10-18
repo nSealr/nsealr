@@ -902,14 +902,11 @@ mod tests {
 
     include!(concat!(env!("OUT_DIR"), "/policy-fixtures.rs"));
 
-
     // Proposal + expected review copied from the READ-ONLY
     // specs/vectors/policy-changes/esp32-usb-enable-kind-1-automation.json.
 
-
     // Proposal + expected review copied from the READ-ONLY specs/vectors/
     // policy-changes/custom-hardware-wallet-enable-kind-1-automation.json.
-
 
     /// The Rust analogue of the C++ `assert_trusted_review_pages` (title, lines,
     /// action; the policy-change builder leaves indicator/styles/logical id
@@ -962,15 +959,24 @@ mod tests {
         let review = build_policy_change_review(&fixture.proposal).unwrap();
         assert!(pages_contain_text(
             review.pages.as_slice(),
-            include_str!(concat!(env!("OUT_DIR"), "/field-dfdf25ff15dd94cd69f2d9db.txt"))
+            include_str!(concat!(
+                env!("OUT_DIR"),
+                "/field-dfdf25ff15dd94cd69f2d9db.txt"
+            ))
         ));
         assert!(pages_contain_text(
             review.pages.as_slice(),
-            include_str!(concat!(env!("OUT_DIR"), "/field-c7922db5f8394d251c8774e5.txt")),
+            include_str!(concat!(
+                env!("OUT_DIR"),
+                "/field-c7922db5f8394d251c8774e5.txt"
+            )),
         ));
         assert!(pages_contain_text(
             review.pages.as_slice(),
-            include_str!(concat!(env!("OUT_DIR"), "/field-26fcd1fa0e66fcf7b2e4ac8b.txt")),
+            include_str!(concat!(
+                env!("OUT_DIR"),
+                "/field-26fcd1fa0e66fcf7b2e4ac8b.txt"
+            )),
         ));
     }
 
@@ -1232,8 +1238,14 @@ mod tests {
         assert_eq!(
             requester_lines,
             [
-                include_str!(concat!(env!("OUT_DIR"), "/field-b1571212e7117a363e3c164f.txt")),
-                include_str!(concat!(env!("OUT_DIR"), "/field-026314cb947f57cec32c723b.txt")),
+                include_str!(concat!(
+                    env!("OUT_DIR"),
+                    "/field-b1571212e7117a363e3c164f.txt"
+                )),
+                include_str!(concat!(
+                    env!("OUT_DIR"),
+                    "/field-026314cb947f57cec32c723b.txt"
+                )),
             ],
         );
         assert_ne!(review.approval_digest, esp32_usb_fixture().approval_digest,);
@@ -1442,8 +1454,14 @@ mod tests {
         assert_eq!(
             policy_lines,
             [
-                include_str!(concat!(env!("OUT_DIR"), "/field-08a0fee686fad4cf25223d77.txt")),
-                include_str!(concat!(env!("OUT_DIR"), "/field-2c85fc0acfaa83e3d184462d.txt")),
+                include_str!(concat!(
+                    env!("OUT_DIR"),
+                    "/field-08a0fee686fad4cf25223d77.txt"
+                )),
+                include_str!(concat!(
+                    env!("OUT_DIR"),
+                    "/field-2c85fc0acfaa83e3d184462d.txt"
+                )),
                 "Grants: 4",
                 "Grant: grant-0",
                 "Grant: grant-1",

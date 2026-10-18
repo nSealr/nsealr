@@ -208,13 +208,17 @@ mod tests {
 
     // Mnemonic copied from the READ-ONLY
     // specs/vectors/keys/nip06-account-0-leader.json (`mnemonic`).
-    const NIP06_ACCOUNT_0_MNEMONIC: &str =
-        include_str!(concat!(env!("OUT_DIR"), "/field-674779247edd20ec33c77f12.txt"));
+    const NIP06_ACCOUNT_0_MNEMONIC: &str = include_str!(concat!(
+        env!("OUT_DIR"),
+        "/field-674779247edd20ec33c77f12.txt"
+    ));
     // Standard digits + compact hex copied from the READ-ONLY
     // specs/vectors/seedqr/seedsigner-vector-1.json (`standard_seedqr_digits`,
     // `compact_seedqr_hex`).
-    const SEEDQR_VECTOR_1_DIGITS: &str =
-        include_str!(concat!(env!("OUT_DIR"), "/field-de90d1677498ead6f9e1bb73.txt"));
+    const SEEDQR_VECTOR_1_DIGITS: &str = include_str!(concat!(
+        env!("OUT_DIR"),
+        "/field-de90d1677498ead6f9e1bb73.txt"
+    ));
     pub(crate) const SEEDQR_VECTOR_1_COMPACT: [u8; 32] = [
         0x0e, 0x74, 0xb6, 0x41, 0x07, 0xf9, 0x4c, 0xc0, 0xcc, 0xfa, 0xe6, 0xa1, 0x3d, 0xcb, 0xec,
         0x36, 0x62, 0x15, 0x4f, 0xec, 0x67, 0xe0, 0xe0, 0x09, 0x99, 0xc0, 0x78, 0x92, 0x59, 0x7d,
@@ -339,7 +343,13 @@ mod tests {
 
         assert!(result.approved);
         assert!(result.loaded);
-        assert_eq!(result.review.review_id, include_str!(concat!(env!("OUT_DIR"), "/field-2d4d3d3dc78fd3f8fd1e0b12.txt")));
+        assert_eq!(
+            result.review.review_id,
+            include_str!(concat!(
+                env!("OUT_DIR"),
+                "/field-2d4d3d3dc78fd3f8fd1e0b12.txt"
+            ))
+        );
         assert_eq!(result.transcript.len(), 2);
         assert!(!result.transcript.step(0).loaded);
         assert!(result.transcript.step(1).loaded);

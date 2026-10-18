@@ -648,8 +648,10 @@ mod tests {
 
     // Secret-key hex copied from the READ-ONLY
     // specs/vectors/nip19/nsec-test-key-1.json (`secret_key`).
-    const NSEC_TEST_KEY_1_SECRET_HEX: &str =
-        include_str!(concat!(env!("OUT_DIR"), "/field-00a983250903242d0fac6fbe.txt"));
+    const NSEC_TEST_KEY_1_SECRET_HEX: &str = include_str!(concat!(
+        env!("OUT_DIR"),
+        "/field-00a983250903242d0fac6fbe.txt"
+    ));
 
     fn fixture_keyring() -> StatelessSessionKeyring {
         let mut keyring = StatelessSessionKeyring::new();
@@ -661,7 +663,10 @@ mod tests {
             .unwrap();
         keyring
             .add_nsec(
-                include_str!(concat!(env!("OUT_DIR"), "/field-43257d08c218769553577c83.txt")),
+                include_str!(concat!(
+                    env!("OUT_DIR"),
+                    "/field-43257d08c218769553577c83.txt"
+                )),
                 nip19::decode_nsec(NSEC_TEST_KEY_1).unwrap(),
             )
             .unwrap();
@@ -681,10 +686,19 @@ mod tests {
         let seed_review = build_session_source_backup_review(keyring.source_at(0).unwrap());
         let nsec_review = build_session_source_backup_review(keyring.source_at(1).unwrap());
 
-        assert_eq!(seed_review.review_id, include_str!(concat!(env!("OUT_DIR"), "/field-7165496758e0bfb765981111.txt")));
+        assert_eq!(
+            seed_review.review_id,
+            include_str!(concat!(
+                env!("OUT_DIR"),
+                "/field-7165496758e0bfb765981111.txt"
+            ))
+        );
         assert_eq!(
             seed_review.approval_digest,
-            include_str!(concat!(env!("OUT_DIR"), "/field-9e0a403217a3b26ce2dc5ddc.txt")),
+            include_str!(concat!(
+                env!("OUT_DIR"),
+                "/field-9e0a403217a3b26ce2dc5ddc.txt"
+            )),
         );
         assert_eq!(
             seed_review.pages,
@@ -692,34 +706,73 @@ mod tests {
                 fixture_page(
                     "Backup source",
                     &[
-                        include_str!(concat!(env!("OUT_DIR"), "/field-16d631e27f0baf3d3424d042.txt")),
-                        include_str!(concat!(env!("OUT_DIR"), "/field-8e2965e1c0002b0ed4c5c1d6.txt")),
-                        include_str!(concat!(env!("OUT_DIR"), "/field-0fc85cec22a551367a37bfde.txt")),
-                        include_str!(concat!(env!("OUT_DIR"), "/field-5d9168bfcaf1443d3925ac13.txt")),
-                        include_str!(concat!(env!("OUT_DIR"), "/field-6ec9d632dd551e8e7f88554c.txt")),
-                        include_str!(concat!(env!("OUT_DIR"), "/field-de4a1599a44e5f90a8fe577d.txt")),
+                        include_str!(concat!(
+                            env!("OUT_DIR"),
+                            "/field-16d631e27f0baf3d3424d042.txt"
+                        )),
+                        include_str!(concat!(
+                            env!("OUT_DIR"),
+                            "/field-8e2965e1c0002b0ed4c5c1d6.txt"
+                        )),
+                        include_str!(concat!(
+                            env!("OUT_DIR"),
+                            "/field-0fc85cec22a551367a37bfde.txt"
+                        )),
+                        include_str!(concat!(
+                            env!("OUT_DIR"),
+                            "/field-5d9168bfcaf1443d3925ac13.txt"
+                        )),
+                        include_str!(concat!(
+                            env!("OUT_DIR"),
+                            "/field-6ec9d632dd551e8e7f88554c.txt"
+                        )),
+                        include_str!(concat!(
+                            env!("OUT_DIR"),
+                            "/field-de4a1599a44e5f90a8fe577d.txt"
+                        )),
                     ],
                     ReviewPageAction::Next,
                     "Page 1/2",
-                    include_str!(concat!(env!("OUT_DIR"), "/field-9df51caaff2eadc815c008bd.txt")),
+                    include_str!(concat!(
+                        env!("OUT_DIR"),
+                        "/field-9df51caaff2eadc815c008bd.txt"
+                    )),
                 ),
                 fixture_page(
                     "Show secret?",
                     &[
                         "Anyone can sign",
-                        include_str!(concat!(env!("OUT_DIR"), "/field-357ceabd6d24fad4485fb1fd.txt")),
-                        include_str!(concat!(env!("OUT_DIR"), "/field-a0b000199898e081af0f8038.txt"))
+                        include_str!(concat!(
+                            env!("OUT_DIR"),
+                            "/field-357ceabd6d24fad4485fb1fd.txt"
+                        )),
+                        include_str!(concat!(
+                            env!("OUT_DIR"),
+                            "/field-a0b000199898e081af0f8038.txt"
+                        ))
                     ],
                     ReviewPageAction::ApproveOrReject,
                     "Page 2/2",
-                    include_str!(concat!(env!("OUT_DIR"), "/field-4048a69eca4093fa5e7dae60.txt")),
+                    include_str!(concat!(
+                        env!("OUT_DIR"),
+                        "/field-4048a69eca4093fa5e7dae60.txt"
+                    )),
                 ),
             ],
         );
-        assert_eq!(nsec_review.review_id, include_str!(concat!(env!("OUT_DIR"), "/field-4d8d98eb5b0140135888c3eb.txt")));
+        assert_eq!(
+            nsec_review.review_id,
+            include_str!(concat!(
+                env!("OUT_DIR"),
+                "/field-4d8d98eb5b0140135888c3eb.txt"
+            ))
+        );
         assert_eq!(
             nsec_review.approval_digest,
-            include_str!(concat!(env!("OUT_DIR"), "/field-4eaac09186a4da6fb4d8e84b.txt")),
+            include_str!(concat!(
+                env!("OUT_DIR"),
+                "/field-4eaac09186a4da6fb4d8e84b.txt"
+            )),
         );
         assert_eq!(
             nsec_review.pages,
@@ -727,36 +780,75 @@ mod tests {
                 fixture_page(
                     "Backup source",
                     &[
-                        include_str!(concat!(env!("OUT_DIR"), "/field-16d631e27f0baf3d3424d042.txt")),
-                        include_str!(concat!(env!("OUT_DIR"), "/field-6dd4dc156f010143ffdc9c63.txt")),
-                        include_str!(concat!(env!("OUT_DIR"), "/field-8c586f5424f1c5a7c760787c.txt")),
-                        include_str!(concat!(env!("OUT_DIR"), "/field-23493328bbc0b80ce19da7cf.txt")),
-                        include_str!(concat!(env!("OUT_DIR"), "/field-9d85dfa476dca265cea2a87c.txt")),
-                        include_str!(concat!(env!("OUT_DIR"), "/field-de4a1599a44e5f90a8fe577d.txt")),
+                        include_str!(concat!(
+                            env!("OUT_DIR"),
+                            "/field-16d631e27f0baf3d3424d042.txt"
+                        )),
+                        include_str!(concat!(
+                            env!("OUT_DIR"),
+                            "/field-6dd4dc156f010143ffdc9c63.txt"
+                        )),
+                        include_str!(concat!(
+                            env!("OUT_DIR"),
+                            "/field-8c586f5424f1c5a7c760787c.txt"
+                        )),
+                        include_str!(concat!(
+                            env!("OUT_DIR"),
+                            "/field-23493328bbc0b80ce19da7cf.txt"
+                        )),
+                        include_str!(concat!(
+                            env!("OUT_DIR"),
+                            "/field-9d85dfa476dca265cea2a87c.txt"
+                        )),
+                        include_str!(concat!(
+                            env!("OUT_DIR"),
+                            "/field-de4a1599a44e5f90a8fe577d.txt"
+                        )),
                     ],
                     ReviewPageAction::Next,
                     "Page 1/2",
-                    include_str!(concat!(env!("OUT_DIR"), "/field-9df51caaff2eadc815c008bd.txt")),
+                    include_str!(concat!(
+                        env!("OUT_DIR"),
+                        "/field-9df51caaff2eadc815c008bd.txt"
+                    )),
                 ),
                 fixture_page(
                     "Show secret?",
                     &[
                         "Anyone can sign",
-                        include_str!(concat!(env!("OUT_DIR"), "/field-357ceabd6d24fad4485fb1fd.txt")),
-                        include_str!(concat!(env!("OUT_DIR"), "/field-a0b000199898e081af0f8038.txt"))
+                        include_str!(concat!(
+                            env!("OUT_DIR"),
+                            "/field-357ceabd6d24fad4485fb1fd.txt"
+                        )),
+                        include_str!(concat!(
+                            env!("OUT_DIR"),
+                            "/field-a0b000199898e081af0f8038.txt"
+                        ))
                     ],
                     ReviewPageAction::ApproveOrReject,
                     "Page 2/2",
-                    include_str!(concat!(env!("OUT_DIR"), "/field-4048a69eca4093fa5e7dae60.txt")),
+                    include_str!(concat!(
+                        env!("OUT_DIR"),
+                        "/field-4048a69eca4093fa5e7dae60.txt"
+                    )),
                 ),
             ],
         );
 
         assert!(pages_contain_text(
             &seed_review.pages,
-            include_str!(concat!(env!("OUT_DIR"), "/field-16d631e27f0baf3d3424d042.txt"))
+            include_str!(concat!(
+                env!("OUT_DIR"),
+                "/field-16d631e27f0baf3d3424d042.txt"
+            ))
         ));
-        assert!(pages_contain_text(&seed_review.pages, include_str!(concat!(env!("OUT_DIR"), "/field-a0b000199898e081af0f8038.txt"))));
+        assert!(pages_contain_text(
+            &seed_review.pages,
+            include_str!(concat!(
+                env!("OUT_DIR"),
+                "/field-a0b000199898e081af0f8038.txt"
+            ))
+        ));
         assert!(!pages_contain_text(&seed_review.pages, "attack"));
         assert!(!pages_contain_text(&seed_review.pages, "expire"));
         assert!(!pages_contain_text(&nsec_review.pages, NSEC_TEST_KEY_1));
@@ -777,18 +869,33 @@ mod tests {
         let seed_payload = session_source_backup_payload(keyring.source_at(0).unwrap()).unwrap();
         let nsec_payload = session_source_backup_payload(keyring.source_at(1).unwrap()).unwrap();
 
-        assert_eq!(seed_payload.backup_format, include_str!(concat!(env!("OUT_DIR"), "/field-a47f26d423875df383373be2.txt")));
+        assert_eq!(
+            seed_payload.backup_format,
+            include_str!(concat!(
+                env!("OUT_DIR"),
+                "/field-a47f26d423875df383373be2.txt"
+            ))
+        );
         assert_eq!(
             seed_payload.mnemonic,
-            include_str!(concat!(env!("OUT_DIR"), "/field-94f83171351503a9b6fa3349.txt")),
+            include_str!(concat!(
+                env!("OUT_DIR"),
+                "/field-94f83171351503a9b6fa3349.txt"
+            )),
         );
         assert_eq!(
             seed_payload.standard_seedqr_digits,
-            include_str!(concat!(env!("OUT_DIR"), "/field-de90d1677498ead6f9e1bb73.txt")),
+            include_str!(concat!(
+                env!("OUT_DIR"),
+                "/field-de90d1677498ead6f9e1bb73.txt"
+            )),
         );
         assert_eq!(
             seed_payload.compact_seedqr_hex,
-            include_str!(concat!(env!("OUT_DIR"), "/field-99551ec9c0d3a519ee1eefe8.txt")),
+            include_str!(concat!(
+                env!("OUT_DIR"),
+                "/field-99551ec9c0d3a519ee1eefe8.txt"
+            )),
         );
         assert!(seed_payload.nsec.is_empty());
         assert_eq!(nsec_payload.backup_format, "nip19_nsec");
@@ -839,7 +946,10 @@ mod tests {
         let mut keyring = StatelessSessionKeyring::new();
         keyring
             .add_nsec(
-                include_str!(concat!(env!("OUT_DIR"), "/field-43257d08c218769553577c83.txt")),
+                include_str!(concat!(
+                    env!("OUT_DIR"),
+                    "/field-43257d08c218769553577c83.txt"
+                )),
                 nip19::decode_nsec(NSEC_TEST_KEY_1).unwrap(),
             )
             .unwrap();
@@ -964,7 +1074,13 @@ mod tests {
         assert_eq!(io.frames.len(), 2);
         assert_eq!(io.frames[0].title, "Backup source");
         assert_eq!(io.frames[0].page_indicator, "Page 1/2");
-        assert!(frame_lines_contain(&io.frames[0], include_str!(concat!(env!("OUT_DIR"), "/field-16d631e27f0baf3d3424d042.txt"))));
+        assert!(frame_lines_contain(
+            &io.frames[0],
+            include_str!(concat!(
+                env!("OUT_DIR"),
+                "/field-16d631e27f0baf3d3424d042.txt"
+            ))
+        ));
         assert!(!frame_lines_contain(&io.frames[0], NSEC_TEST_KEY_1));
         assert!(!frame_lines_contain(
             &io.frames[0],

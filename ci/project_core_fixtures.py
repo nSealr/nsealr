@@ -39,7 +39,7 @@ def project(output):
         for p in data['pages']:
             fields=[key+':'+quote(p[key]) for key in ['title','page_indicator','logical_page_id']]
             fields+=['action:'+action(p['action']),'lines:vec!'+strings(p['lines']),
-                     'body_line_styles:vec!['+','.join({'meta':'ReviewBodyLineStyle::Meta','value':'ReviewBodyLineStyle::Value'}[s] for s in p['body_line_styles'])+']']
+                     'body_line_styles:vec!['+','.join({'meta':'ReviewBodyLineStyle::Meta','value':'ReviewBodyLineStyle::Value','normal':'ReviewBodyLineStyle::Normal'}[s] for s in p['body_line_styles'])+']']
             expected.append('ExpectedDetailPage {'+','.join(fields)+'}')
         details.append('ReviewDetailPageVector {name:'+quote(data['name'])+',request_json:'+quote(json.dumps(request,ensure_ascii=False,separators=(',',':')))+',approval_digest:'+quote(data['approval_digest'])+',limits:'+limits(data['limits'])+',pages:vec!['+','.join(expected)+']}')
     (output/'detail-fixtures.rs').write_text('fn review_detail_page_vectors() -> Vec<ReviewDetailPageVector> { vec!['+','.join(details)+'] }')

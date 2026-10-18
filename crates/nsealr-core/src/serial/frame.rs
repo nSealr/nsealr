@@ -227,17 +227,30 @@ mod tests {
     // Byte-for-byte fixtures copied from
     // specs/vectors/transports/serial-frame-request-kind-1-basic.json
     // (`payload_base64url` and `frame`).
-    const PAYLOAD: &[u8] = include_bytes!(concat!(env!("OUT_DIR"), "/field-7bc474eb9fd65cd1f1cdfd09.txt"));
-    const FRAME: &[u8] = include_bytes!(concat!(env!("OUT_DIR"), "/field-275b00adc2cdd30c17c95c67.txt"));
+    const PAYLOAD: &[u8] = include_bytes!(concat!(
+        env!("OUT_DIR"),
+        "/field-7bc474eb9fd65cd1f1cdfd09.txt"
+    ));
+    const FRAME: &[u8] = include_bytes!(concat!(
+        env!("OUT_DIR"),
+        "/field-275b00adc2cdd30c17c95c67.txt"
+    ));
 
     // Shared-invalid serial-frame fixtures copied from specs/vectors/invalid/
     // serial-frame-{checksum-mismatch,malformed-payload,unsupported-type}.json
     // (`frame`); the oversized fixture is rebuilt byte-identically below.
-    const INVALID_CHECKSUM_MISMATCH: &[u8] = include_bytes!(concat!(env!("OUT_DIR"), "/field-e0d0a83f41b5e91f7fa970f3.txt"));
-    const INVALID_MALFORMED_PAYLOAD: &[u8] =
-        include_bytes!(concat!(env!("OUT_DIR"), "/field-413fb7a5114a44f4a3116270.txt"));
-    const INVALID_UNSUPPORTED_TYPE: &[u8] =
-        include_bytes!(concat!(env!("OUT_DIR"), "/field-7f2f44571178f3ab692d1043.txt"));
+    const INVALID_CHECKSUM_MISMATCH: &[u8] = include_bytes!(concat!(
+        env!("OUT_DIR"),
+        "/field-e0d0a83f41b5e91f7fa970f3.txt"
+    ));
+    const INVALID_MALFORMED_PAYLOAD: &[u8] = include_bytes!(concat!(
+        env!("OUT_DIR"),
+        "/field-413fb7a5114a44f4a3116270.txt"
+    ));
+    const INVALID_UNSUPPORTED_TYPE: &[u8] = include_bytes!(concat!(
+        env!("OUT_DIR"),
+        "/field-7f2f44571178f3ab692d1043.txt"
+    ));
 
     /// The oversized fixture from specs/vectors/invalid/serial-frame-oversized.json
     /// (`frame`): `nsealr1f:` + 1100 'x' characters (1109 bytes), rebuilt

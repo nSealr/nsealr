@@ -100,9 +100,10 @@ mod tests {
     fn validates_lowercase_hex_public_key() {
         assert!(is_valid_nostr_public_key(DEVELOPMENT_FIXTURE_PUBLIC_KEY));
         // 64 lowercase hex.
-        assert!(is_valid_nostr_public_key(
-            include_str!(concat!(env!("OUT_DIR"), "/field-ee1c3ae16e811a2b5ee33b50.txt"))
-        ));
+        assert!(is_valid_nostr_public_key(include_str!(concat!(
+            env!("OUT_DIR"),
+            "/field-ee1c3ae16e811a2b5ee33b50.txt"
+        ))));
         // Wrong length (63 / 65).
         assert!(!is_valid_nostr_public_key(
             "4f355bdcb7cc0af728ef3cceb9615d90684bb5b2ca5f859ab0f0b704075871a"

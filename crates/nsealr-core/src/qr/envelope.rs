@@ -1284,29 +1284,56 @@ pub(crate) mod tests {
     // Byte-for-byte fixtures copied from
     // specs/vectors/transports/qr-envelope-kind-1-basic.json (`envelope`,
     // `payload_base64url`).
-    pub(crate) const KIND1_BASIC_ENVELOPE: &[u8] = include_bytes!(concat!(env!("OUT_DIR"), "/field-b69c96b873204e5c324385c0.txt"));
-    const KIND1_BASIC_PAYLOAD: &[u8] = include_bytes!(concat!(env!("OUT_DIR"), "/field-7bc474eb9fd65cd1f1cdfd09.txt"));
+    pub(crate) const KIND1_BASIC_ENVELOPE: &[u8] = include_bytes!(concat!(
+        env!("OUT_DIR"),
+        "/field-b69c96b873204e5c324385c0.txt"
+    ));
+    const KIND1_BASIC_PAYLOAD: &[u8] = include_bytes!(concat!(
+        env!("OUT_DIR"),
+        "/field-7bc474eb9fd65cd1f1cdfd09.txt"
+    ));
 
     // Byte-for-byte fixture copied from
     // specs/vectors/transports/qr-envelope-kind-1-long-events-many-tags.json
     // (`envelope`): a maximal valid request (nine tags, 281-byte content).
-    const KIND1_LONG_MANY_TAGS_ENVELOPE: &[u8] = include_bytes!(concat!(env!("OUT_DIR"), "/field-fd77c72125a90d057af49e71.txt"));
+    const KIND1_LONG_MANY_TAGS_ENVELOPE: &[u8] = include_bytes!(concat!(
+        env!("OUT_DIR"),
+        "/field-fd77c72125a90d057af49e71.txt"
+    ));
 
     // Animated fixture copied from
     // specs/vectors/transports/qr-animated-response-kind-1-basic.json (`frames`,
     // `payload_base64url`; ANIMATED_JSON is the same fixture's `decoded` in the
     // canonical serialization pinned by the C++ kAnimatedQrResponseKind1BasicJson).
-    pub(crate) const ANIMATED_FRAME_1: &[u8] = include_bytes!(concat!(env!("OUT_DIR"), "/field-cb806983fcebd0885ee3bd03.txt"));
-    pub(crate) const ANIMATED_FRAME_2: &[u8] = include_bytes!(concat!(env!("OUT_DIR"), "/field-be6cb4d91daa59ce1e0697cb.txt"));
-    pub(crate) const ANIMATED_FRAME_3: &[u8] = include_bytes!(concat!(env!("OUT_DIR"), "/field-f119cf383068a629770f4634.txt"));
-    pub(crate) const ANIMATED_PAYLOAD: &[u8] = include_bytes!(concat!(env!("OUT_DIR"), "/field-a6eb1c7c7419fbd99df6825c.txt"));
-    pub(crate) const ANIMATED_JSON: &[u8] = include_bytes!(concat!(env!("OUT_DIR"), "/field-155b661f07a03facadcc50eb.txt"));
+    pub(crate) const ANIMATED_FRAME_1: &[u8] = include_bytes!(concat!(
+        env!("OUT_DIR"),
+        "/field-cb806983fcebd0885ee3bd03.txt"
+    ));
+    pub(crate) const ANIMATED_FRAME_2: &[u8] = include_bytes!(concat!(
+        env!("OUT_DIR"),
+        "/field-be6cb4d91daa59ce1e0697cb.txt"
+    ));
+    pub(crate) const ANIMATED_FRAME_3: &[u8] = include_bytes!(concat!(
+        env!("OUT_DIR"),
+        "/field-f119cf383068a629770f4634.txt"
+    ));
+    pub(crate) const ANIMATED_PAYLOAD: &[u8] = include_bytes!(concat!(
+        env!("OUT_DIR"),
+        "/field-a6eb1c7c7419fbd99df6825c.txt"
+    ));
+    pub(crate) const ANIMATED_JSON: &[u8] = include_bytes!(concat!(
+        env!("OUT_DIR"),
+        "/field-155b661f07a03facadcc50eb.txt"
+    ));
 
     // Shared-invalid QR-envelope fixtures copied from specs/vectors/invalid/
     // qr-envelope-{padded,malformed,invalid-utf8}.json (`envelope`); the oversized
     // fixture (qr-envelope-oversized.json) is `nsealr1:` + 940 'A's (948 bytes),
     // rebuilt programmatically below, byte-identical to the fixture.
-    const INVALID_PADDED: &[u8] = include_bytes!(concat!(env!("OUT_DIR"), "/field-bcf1804c40fb794ae802d43c.txt"));
+    const INVALID_PADDED: &[u8] = include_bytes!(concat!(
+        env!("OUT_DIR"),
+        "/field-bcf1804c40fb794ae802d43c.txt"
+    ));
     const INVALID_MALFORMED: &[u8] = b"nsealr:abc";
     const INVALID_UTF8: &[u8] = b"nsealr1:_w";
 
@@ -1419,7 +1446,13 @@ pub(crate) mod tests {
         let (_, json) = decode_static(KIND1_BASIC_ENVELOPE).unwrap();
         let request = parse_qr_signing_request(&json).unwrap();
         assert_eq!(request.version, 1);
-        assert_eq!(request.request_id(), include_bytes!(concat!(env!("OUT_DIR"), "/field-ef8f1cdc03d2b7514fa6d71d.txt")));
+        assert_eq!(
+            request.request_id(),
+            include_bytes!(concat!(
+                env!("OUT_DIR"),
+                "/field-ef8f1cdc03d2b7514fa6d71d.txt"
+            ))
+        );
         assert_eq!(request.method(), "sign_event");
         assert!(request.has_params);
     }
@@ -1446,7 +1479,13 @@ pub(crate) mod tests {
         let request = parse_qr_signing_request(&json).unwrap();
         assert_eq!(request.event_template.created_at, 1_710_000_000);
         assert_eq!(request.event_template.kind, 1);
-        assert_eq!(request.content(), include_bytes!(concat!(env!("OUT_DIR"), "/field-1b208157932014fa782660ac.txt")));
+        assert_eq!(
+            request.content(),
+            include_bytes!(concat!(
+                env!("OUT_DIR"),
+                "/field-1b208157932014fa782660ac.txt"
+            ))
+        );
         let (start, end) = request.event_template.tags_json;
         assert_eq!(&json[start..end], b"[]");
     }
@@ -1709,31 +1748,256 @@ pub(crate) mod tests {
     #[test]
     fn qr_signing_request_rejects_shared_invalid_request_vectors() {
         let vectors: &[(&str, &[u8])] = &[
-            (include_str!(concat!(env!("OUT_DIR"), "/field-24c565533b2c031cce3404d6.txt")), include_bytes!(concat!(env!("OUT_DIR"), "/field-88270f2336c3bec26b9b8102.txt"))),
-            (include_str!(concat!(env!("OUT_DIR"), "/field-343dfba9674203b8ae5e049f.txt")), include_bytes!(concat!(env!("OUT_DIR"), "/field-692fd02b9af23295ea9e3f54.txt"))),
-            (include_str!(concat!(env!("OUT_DIR"), "/field-a9f28b492e9d40dcbb54c161.txt")), include_bytes!(concat!(env!("OUT_DIR"), "/field-392edda1d20e90455b184512.txt"))),
-            (include_str!(concat!(env!("OUT_DIR"), "/field-a33c1ff0bff84fd58102c97e.txt")), include_bytes!(concat!(env!("OUT_DIR"), "/field-8035bcb7ff6c7b69d10d9005.txt"))),
-            (include_str!(concat!(env!("OUT_DIR"), "/field-d01a036c56103bac5db2833c.txt")), include_bytes!(concat!(env!("OUT_DIR"), "/field-e2d8d202b6a418eb3e27a8e4.txt"))),
-            (include_str!(concat!(env!("OUT_DIR"), "/field-a13fcba3d0d0645295d4b83e.txt")), include_bytes!(concat!(env!("OUT_DIR"), "/field-6d36b8ad33903e0c72537245.txt"))),
-            (include_str!(concat!(env!("OUT_DIR"), "/field-0187d5ed5d3b8b77e48ef519.txt")), include_bytes!(concat!(env!("OUT_DIR"), "/field-567d875b28f2f1c9dcd84c4c.txt"))),
-            (include_str!(concat!(env!("OUT_DIR"), "/field-fc6215b9edc02850921efd59.txt")), include_bytes!(concat!(env!("OUT_DIR"), "/field-a639ba28eef6d1ce4f06e1bd.txt"))),
-            (include_str!(concat!(env!("OUT_DIR"), "/field-01183b580c2afd82aee32f20.txt")), include_bytes!(concat!(env!("OUT_DIR"), "/field-245bbf0348274249096379c6.txt"))),
-            (include_str!(concat!(env!("OUT_DIR"), "/field-f3f5f97a7f0c05599c615490.txt")), include_bytes!(concat!(env!("OUT_DIR"), "/field-4b05e434cfd67cd9a75ecb4b.txt"))),
-            (include_str!(concat!(env!("OUT_DIR"), "/field-5936ea3644e2c886e6c18700.txt")), include_bytes!(concat!(env!("OUT_DIR"), "/field-f1b6d702634ac412d6ac89ce.txt"))),
-            (include_str!(concat!(env!("OUT_DIR"), "/field-88730efa77091611955c71b7.txt")), include_bytes!(concat!(env!("OUT_DIR"), "/field-bfb321d6d7c2a5aa3703dd9c.txt"))),
-            (include_str!(concat!(env!("OUT_DIR"), "/field-85a8b70c362257648b261d39.txt")), include_bytes!(concat!(env!("OUT_DIR"), "/field-0af857de4a48d6ec2d683150.txt"))),
-            (include_str!(concat!(env!("OUT_DIR"), "/field-47633ca2891092f5a178a3cf.txt")), include_bytes!(concat!(env!("OUT_DIR"), "/field-4e2e8353b45bb26b551944be.txt"))),
-            (include_str!(concat!(env!("OUT_DIR"), "/field-a8e4d74626214bd56a3873ba.txt")), include_bytes!(concat!(env!("OUT_DIR"), "/field-a0ead41b24fcf49b107f5ee6.txt"))),
-            (include_str!(concat!(env!("OUT_DIR"), "/field-e5248f375a7cdce2c8aa721d.txt")), include_bytes!(concat!(env!("OUT_DIR"), "/field-15a804309e663e5eb2bc4791.txt"))),
-            (include_str!(concat!(env!("OUT_DIR"), "/field-8c23f2b7b75b9f3fdf57fc8e.txt")), include_bytes!(concat!(env!("OUT_DIR"), "/field-0a36357aaf25b74bcc5a133d.txt"))),
-            (include_str!(concat!(env!("OUT_DIR"), "/field-8db3104d26d8106b5f55d616.txt")), include_bytes!(concat!(env!("OUT_DIR"), "/field-2cef7d540519e1d0667de472.txt"))),
-            (include_str!(concat!(env!("OUT_DIR"), "/field-3c7557ad4529bd78fe06da9a.txt")), include_bytes!(concat!(env!("OUT_DIR"), "/field-6b33788fa062b8aa8c163525.txt"))),
-            (include_str!(concat!(env!("OUT_DIR"), "/field-bd723d16fe4c12661fa410af.txt")), include_bytes!(concat!(env!("OUT_DIR"), "/field-9f12fcb31538612f9548d6c4.txt"))),
-            (include_str!(concat!(env!("OUT_DIR"), "/field-c557f62900487f92ed686095.txt")), include_bytes!(concat!(env!("OUT_DIR"), "/field-694f49d5b74d9e18fb5d344e.txt"))),
-            (include_str!(concat!(env!("OUT_DIR"), "/field-96b3432119f33bc1e3678da0.txt")), include_bytes!(concat!(env!("OUT_DIR"), "/field-85d66b86eaf4b9800deff84a.txt"))),
-            (include_str!(concat!(env!("OUT_DIR"), "/field-a39b76315e5cc2d5abf10106.txt")), include_bytes!(concat!(env!("OUT_DIR"), "/field-91956a747800a262375e2b7e.txt"))),
-            (include_str!(concat!(env!("OUT_DIR"), "/field-0c791d113112c983e86db3ba.txt")), include_bytes!(concat!(env!("OUT_DIR"), "/field-d398a64ecb2d39f66153a5b1.txt"))),
-            (include_str!(concat!(env!("OUT_DIR"), "/field-f87a96b2d9df38ed94b99fe4.txt")), include_bytes!(concat!(env!("OUT_DIR"), "/field-bfe77a9543df538a8b0265f4.txt"))),
+            (
+                include_str!(concat!(
+                    env!("OUT_DIR"),
+                    "/field-24c565533b2c031cce3404d6.txt"
+                )),
+                include_bytes!(concat!(
+                    env!("OUT_DIR"),
+                    "/field-88270f2336c3bec26b9b8102.txt"
+                )),
+            ),
+            (
+                include_str!(concat!(
+                    env!("OUT_DIR"),
+                    "/field-343dfba9674203b8ae5e049f.txt"
+                )),
+                include_bytes!(concat!(
+                    env!("OUT_DIR"),
+                    "/field-692fd02b9af23295ea9e3f54.txt"
+                )),
+            ),
+            (
+                include_str!(concat!(
+                    env!("OUT_DIR"),
+                    "/field-a9f28b492e9d40dcbb54c161.txt"
+                )),
+                include_bytes!(concat!(
+                    env!("OUT_DIR"),
+                    "/field-392edda1d20e90455b184512.txt"
+                )),
+            ),
+            (
+                include_str!(concat!(
+                    env!("OUT_DIR"),
+                    "/field-a33c1ff0bff84fd58102c97e.txt"
+                )),
+                include_bytes!(concat!(
+                    env!("OUT_DIR"),
+                    "/field-8035bcb7ff6c7b69d10d9005.txt"
+                )),
+            ),
+            (
+                include_str!(concat!(
+                    env!("OUT_DIR"),
+                    "/field-d01a036c56103bac5db2833c.txt"
+                )),
+                include_bytes!(concat!(
+                    env!("OUT_DIR"),
+                    "/field-e2d8d202b6a418eb3e27a8e4.txt"
+                )),
+            ),
+            (
+                include_str!(concat!(
+                    env!("OUT_DIR"),
+                    "/field-a13fcba3d0d0645295d4b83e.txt"
+                )),
+                include_bytes!(concat!(
+                    env!("OUT_DIR"),
+                    "/field-6d36b8ad33903e0c72537245.txt"
+                )),
+            ),
+            (
+                include_str!(concat!(
+                    env!("OUT_DIR"),
+                    "/field-0187d5ed5d3b8b77e48ef519.txt"
+                )),
+                include_bytes!(concat!(
+                    env!("OUT_DIR"),
+                    "/field-567d875b28f2f1c9dcd84c4c.txt"
+                )),
+            ),
+            (
+                include_str!(concat!(
+                    env!("OUT_DIR"),
+                    "/field-fc6215b9edc02850921efd59.txt"
+                )),
+                include_bytes!(concat!(
+                    env!("OUT_DIR"),
+                    "/field-a639ba28eef6d1ce4f06e1bd.txt"
+                )),
+            ),
+            (
+                include_str!(concat!(
+                    env!("OUT_DIR"),
+                    "/field-01183b580c2afd82aee32f20.txt"
+                )),
+                include_bytes!(concat!(
+                    env!("OUT_DIR"),
+                    "/field-245bbf0348274249096379c6.txt"
+                )),
+            ),
+            (
+                include_str!(concat!(
+                    env!("OUT_DIR"),
+                    "/field-f3f5f97a7f0c05599c615490.txt"
+                )),
+                include_bytes!(concat!(
+                    env!("OUT_DIR"),
+                    "/field-4b05e434cfd67cd9a75ecb4b.txt"
+                )),
+            ),
+            (
+                include_str!(concat!(
+                    env!("OUT_DIR"),
+                    "/field-5936ea3644e2c886e6c18700.txt"
+                )),
+                include_bytes!(concat!(
+                    env!("OUT_DIR"),
+                    "/field-f1b6d702634ac412d6ac89ce.txt"
+                )),
+            ),
+            (
+                include_str!(concat!(
+                    env!("OUT_DIR"),
+                    "/field-88730efa77091611955c71b7.txt"
+                )),
+                include_bytes!(concat!(
+                    env!("OUT_DIR"),
+                    "/field-bfb321d6d7c2a5aa3703dd9c.txt"
+                )),
+            ),
+            (
+                include_str!(concat!(
+                    env!("OUT_DIR"),
+                    "/field-85a8b70c362257648b261d39.txt"
+                )),
+                include_bytes!(concat!(
+                    env!("OUT_DIR"),
+                    "/field-0af857de4a48d6ec2d683150.txt"
+                )),
+            ),
+            (
+                include_str!(concat!(
+                    env!("OUT_DIR"),
+                    "/field-47633ca2891092f5a178a3cf.txt"
+                )),
+                include_bytes!(concat!(
+                    env!("OUT_DIR"),
+                    "/field-4e2e8353b45bb26b551944be.txt"
+                )),
+            ),
+            (
+                include_str!(concat!(
+                    env!("OUT_DIR"),
+                    "/field-a8e4d74626214bd56a3873ba.txt"
+                )),
+                include_bytes!(concat!(
+                    env!("OUT_DIR"),
+                    "/field-a0ead41b24fcf49b107f5ee6.txt"
+                )),
+            ),
+            (
+                include_str!(concat!(
+                    env!("OUT_DIR"),
+                    "/field-e5248f375a7cdce2c8aa721d.txt"
+                )),
+                include_bytes!(concat!(
+                    env!("OUT_DIR"),
+                    "/field-15a804309e663e5eb2bc4791.txt"
+                )),
+            ),
+            (
+                include_str!(concat!(
+                    env!("OUT_DIR"),
+                    "/field-8c23f2b7b75b9f3fdf57fc8e.txt"
+                )),
+                include_bytes!(concat!(
+                    env!("OUT_DIR"),
+                    "/field-0a36357aaf25b74bcc5a133d.txt"
+                )),
+            ),
+            (
+                include_str!(concat!(
+                    env!("OUT_DIR"),
+                    "/field-8db3104d26d8106b5f55d616.txt"
+                )),
+                include_bytes!(concat!(
+                    env!("OUT_DIR"),
+                    "/field-2cef7d540519e1d0667de472.txt"
+                )),
+            ),
+            (
+                include_str!(concat!(
+                    env!("OUT_DIR"),
+                    "/field-3c7557ad4529bd78fe06da9a.txt"
+                )),
+                include_bytes!(concat!(
+                    env!("OUT_DIR"),
+                    "/field-6b33788fa062b8aa8c163525.txt"
+                )),
+            ),
+            (
+                include_str!(concat!(
+                    env!("OUT_DIR"),
+                    "/field-bd723d16fe4c12661fa410af.txt"
+                )),
+                include_bytes!(concat!(
+                    env!("OUT_DIR"),
+                    "/field-9f12fcb31538612f9548d6c4.txt"
+                )),
+            ),
+            (
+                include_str!(concat!(
+                    env!("OUT_DIR"),
+                    "/field-c557f62900487f92ed686095.txt"
+                )),
+                include_bytes!(concat!(
+                    env!("OUT_DIR"),
+                    "/field-694f49d5b74d9e18fb5d344e.txt"
+                )),
+            ),
+            (
+                include_str!(concat!(
+                    env!("OUT_DIR"),
+                    "/field-96b3432119f33bc1e3678da0.txt"
+                )),
+                include_bytes!(concat!(
+                    env!("OUT_DIR"),
+                    "/field-85d66b86eaf4b9800deff84a.txt"
+                )),
+            ),
+            (
+                include_str!(concat!(
+                    env!("OUT_DIR"),
+                    "/field-a39b76315e5cc2d5abf10106.txt"
+                )),
+                include_bytes!(concat!(
+                    env!("OUT_DIR"),
+                    "/field-91956a747800a262375e2b7e.txt"
+                )),
+            ),
+            (
+                include_str!(concat!(
+                    env!("OUT_DIR"),
+                    "/field-0c791d113112c983e86db3ba.txt"
+                )),
+                include_bytes!(concat!(
+                    env!("OUT_DIR"),
+                    "/field-d398a64ecb2d39f66153a5b1.txt"
+                )),
+            ),
+            (
+                include_str!(concat!(
+                    env!("OUT_DIR"),
+                    "/field-f87a96b2d9df38ed94b99fe4.txt"
+                )),
+                include_bytes!(concat!(
+                    env!("OUT_DIR"),
+                    "/field-bfe77a9543df538a8b0265f4.txt"
+                )),
+            ),
         ];
         for (name, json) in vectors {
             assert!(
@@ -1751,7 +2015,13 @@ pub(crate) mod tests {
     fn long_events_many_tags_shared_vector_parses() {
         let (_, json) = decode_static(KIND1_LONG_MANY_TAGS_ENVELOPE).unwrap();
         let request = parse_qr_signing_request(&json).unwrap();
-        assert_eq!(request.request_id(), include_bytes!(concat!(env!("OUT_DIR"), "/field-1371212056e9e66ac9642836.txt")));
+        assert_eq!(
+            request.request_id(),
+            include_bytes!(concat!(
+                env!("OUT_DIR"),
+                "/field-1371212056e9e66ac9642836.txt"
+            ))
+        );
         assert_eq!(request.event_template.created_at, 1_710_000_120);
         assert_eq!(request.event_template.tag_count, 9);
         let tag0: Vec<&[u8]> = request.tag(0).collect();
