@@ -1,6 +1,6 @@
-# Public-event review contract — P01 candidate
+# Public-event review contract
 
-This is the semantic oracle for PROD-05/06, subject to independent P01 review. It does not replace target bounds or executable renderer fixtures. The Nostr source pin is `37db639582d857e12468dcccd99b2c7f1d657da9`; reviewed NIP-01/02/09/10/18/25/65 define network semantics. The stricter rejection/display choices below are explicit nSealr product decisions.
+This is the semantic oracle for PROD-05/06, with review/integration status recorded in the task graph. It does not replace target bounds or executable renderer fixtures. The Nostr source pin is `37db639582d857e12468dcccd99b2c7f1d657da9`; reviewed NIP-01/02/09/10/18/25/65 define network semantics. The stricter rejection/display choices below are explicit nSealr product decisions.
 
 ## Common structure and presentation
 
@@ -40,3 +40,17 @@ For each kind: a minimal valid operation, complete complex operation, wrong type
 Independent fixtures establish canonical bytes and expected presentation roles. Hardware tests establish actual readability and physical input. Numeric limits and exact UI layout remain per-profile evidence; this candidate cannot qualify them by prose.
 
 Primary reviewed sources: [NIP-09](https://github.com/nostr-protocol/nips/blob/37db639582d857e12468dcccd99b2c7f1d657da9/09.md), [NIP-10](https://github.com/nostr-protocol/nips/blob/37db639582d857e12468dcccd99b2c7f1d657da9/10.md), [NIP-18](https://github.com/nostr-protocol/nips/blob/37db639582d857e12468dcccd99b2c7f1d657da9/18.md), [NIP-25](https://github.com/nostr-protocol/nips/blob/37db639582d857e12468dcccd99b2c7f1d657da9/25.md), [NIP-65](https://github.com/nostr-protocol/nips/blob/37db639582d857e12468dcccd99b2c7f1d657da9/65.md), opened 2026-10-18.
+
+## Connected message-specific operations
+
+Kind 10050 is admitted only for the connected DM setup/replacement flow in
+[requirements](requirements.md#connected-only-message-setup-and-authentication).
+The common structure and full additional-data presentation rules apply; show
+every `relay` URI and whole-list replacement, require empty content, reject
+malformed/duplicate relay entries and make an empty withdrawal explicit.
+
+Kind 22242 is admitted only for a qualified relay-authentication flow: display
+the exact relay and connection challenge, enforce the selected freshness/time
+model and invalidate on challenge/session change. Other tags/payload are
+unsupported. It is neither a public post nor implicit message consent. Initial
+manual offline profiles reject both operations.

@@ -18,7 +18,7 @@ Retain four separately qualified Signer profiles: commercial ESP32 without SE ov
 | PROD-04 | The signer validates and owns the exact canonical event, full review state and physical consent. The first execution attempt consumes one operation-bound authorization. Cancel, lock, expiry, reset and identity/policy change invalidate it. A bounded cached-result retransmission cannot execute signing again. | S03/K01; AUTH-01–05 and actual device/transport negative tests |
 | PROD-05 | Every signed field/tag is inspectable with honest semantics. The exact field/tag rules in [event review](event-review-contract.md) distinguish interpreted data, completely shown uninterpreted data and rejection. Unsupported kinds or ambiguous/unrenderable input reject before authorization. Never fall back to blind signing. Host names, previews and origins are not authenticated by the device merely because supplied. | S03/K01; renderer fixtures, actual screens and client workflows |
 | PROD-06 | The first common public catalog is get-public-key plus kinds 0, 1, 3, 5, 6, 7 and 10002, as precisely scoped below. | K01 and per-profile UI, C01/QH01 and client qualification |
-| PROD-07 | Connected first public releases include bounded NIP-44 and the admitted NIP-17/59 message workflow. Primitive encrypt/decrypt permission is distinct from verified-message review. An incompatible client call sequence is explicitly unsupported. No NIP-04 fallback or opaque seal signing. | C02; D03 and V03/S05/custom release |
+| PROD-07 | Connected first public releases include bounded NIP-44 and the admitted NIP-17/59 one-to-one text-message workflow, including locally reviewed DM-relay setup/replacement (10050) and NIP-42 when the selected relay requires it. Primitive encrypt/decrypt permission is distinct from verified-message review. An incompatible client call sequence is explicitly unsupported. No NIP-04 fallback or opaque seal signing. | C02; D03 and V03/S05/custom release |
 | PROD-08 | Initial Pi/P4 profiles are manual, session-only signers. Local recovery import is separate from an operation QR. Power loss requires local reload. No message encryption/decryption or persistent/automatic grants in their first release. | Q01/QH01/Q02/Q03; Q04/Q05 |
 | PROD-09 | A versioned profile manifest declares finite input/content/tag/frame bounds, cumulative retained bytes, pending counts, parse work, deadlines and output limits. Enforcement precedes unbounded allocation/expensive processing. Exact maxima are accepted from measured feasibility, not protocol maxima or inherited defaults. | S01/T01/K01/Q01/QH01; QP01/QP02 and each target measurement |
 | PROD-10 | The receiver independently validates response correlation, expected user identity, canonical ID and signature. Publication is reported separately from successful signing. A connect acknowledgement or selected origin label never grants device consent. | S01/C01/QH01; V01/V03/Q02/Q03 |
@@ -38,7 +38,50 @@ Retain four separately qualified Signer profiles: commercial ESP32 without SE ov
 | 5: deletion request | Exact IDs/coordinates and reason; explain that signing cannot ensure erasure from relays and copies. |
 | 10002: relay preferences | Every relay and read/write role plus replacement effect. |
 
-Relay authentication (22242/NIP-42) and HTTP authorization (27235/NIP-98) require a separate named-client workflow, exact challenge/URL/method/body-hash scope and freshness model. They are not implied by public posting. Zaps/payments, arbitrary app kinds, concurrent multi-account, persistent automation and generic opaque signing remain outside the first catalog. F01 is optional and cannot bypass the first-release gates.
+Relay authentication (22242/NIP-42) is mandatory for an admitted DM workflow when its relay requires AUTH, as specified below. Other relay authentication and HTTP authorization (27235/NIP-98) require a separate named-client workflow, exact challenge/URL/method/body-hash scope and freshness model. They are not implied by public posting. Zaps/payments, arbitrary app kinds, concurrent multi-account, persistent automation and generic opaque signing remain outside the first catalog. F01 is optional and cannot bypass the first-release gates.
+
+## Connected-only message setup and authentication
+
+The initial admitted NIP-17/59 flow is one-to-one plain-text rumor kind 14,
+sealed and gift-wrapped to the peer and sender individually. Group/file-message,
+message-reaction, edit/deletion and disappearing-message extensions are deferred.
+This does not reduce the separate common public-event catalog.
+
+A newly generated identity must be able to configure receiving relays without
+exporting its secret. Connected message profiles therefore support a distinct
+locally reviewed kind-10050 setup/replacement action. Show the selected identity,
+every exact relay URI and the fact that this replaces the whole DM-receiving
+list. Require empty content and well-formed unique `relay` entries using admitted
+WebSocket URL rules; malformed known tags reject. Other permitted metadata must
+be fully shown under the event-review rules, never hidden. An empty list requires
+an explicit withdrawal prompt: the identity will not be advertised as ready to
+receive messages. No trustworthy before/after diff is assumed without verified
+prior state. This action is connected-only and belongs to C02 plus the connected
+renderer/engine tasks; it does not enable 10050 on the initial offline profiles.
+
+C02/client qualification must exercise a fresh identity's setup, signature and
+publication, then receiving on those relays. Outgoing delivery uses only relays
+from the intended recipient's checked kind-10050 event; an absent/invalid list
+means the recipient is unavailable, with no arbitrary-relay fallback. Check the
+advertisement's author, ID and signature, and document discovery/freshness
+limits rather than claiming global latest-state proof from a hostile relay.
+A signed setup event and successful publication remain different outcomes.
+
+If a selected DM relay requires NIP-42, that named workflow must qualify it before
+admission. Authentication is a distinct kind-22242 action bound to the exact
+relay URI, current connection challenge and a declared freshness/time model,
+with local consent separate from message approval. Reconnect/challenge change,
+cancellation and timeout invalidate pending authentication. Show the full
+challenge with bounded inspectable presentation; reject unsupported tags, hidden
+payload, stale/wrong relay or replayed challenge. Publish no AUTH event as an
+ordinary post. A client/relay that cannot meet this contract is unsupported for
+that message workflow; no silent fallback to an unprotected mailbox. C02 owns
+this evidence and connected device/client tasks exercise it. NIP-98 and other
+authentication flows still require separate admission.
+
+Sources: the pinned [NIP-17 Publishing/Relays sections](https://github.com/nostr-protocol/nips/blob/37db639582d857e12468dcccd99b2c7f1d657da9/17.md#publishing)
+and [NIP-42](https://github.com/nostr-protocol/nips/blob/37db639582d857e12468dcccd99b2c7f1d657da9/42.md).
+These are requirements for future implementation, not tested client support.
 
 ## Recovery decision and user journeys
 
