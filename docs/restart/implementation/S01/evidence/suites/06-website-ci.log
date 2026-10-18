@@ -1,0 +1,148 @@
+{"label": "website-ci", "argv": ["make", "-k", "ci"], "cwd": "/home/tux/nsealr/.restart-tools/goal/s01-integration/docs/restart/implementation/S01/.work/runtime/website", "started": "2026-10-18T16:23:34.467344+00:00", "log": "06-website-ci.log"}
+pnpm install --frozen-lockfile
+pnpm exec astro check
+[2m16:23:36[22m [34m[content][39m Syncing content
+[2m16:23:36[22m [34m[content][39m Synced content
+[2m16:23:36[22m [34m[types][39m Generated [2m224ms[22m
+[2m16:23:36[22m [34m[check][39m Getting diagnostics for Astro files in /home/tux/nsealr/.restart-tools/goal/s01-integration/docs/restart/implementation/S01/.work/runtime/website...
+Result (41 files): 
+- 0 errors
+- 0 warnings
+- 0 hints
+
+pnpm run build
+
+> @nsealr/website@0.0.0 build /home/tux/nsealr/.restart-tools/goal/s01-integration/docs/restart/implementation/S01/.work/runtime/website
+> node scripts/compute_csp_hash.mjs && astro build && pagefind --site dist && node scripts/build_og.mjs
+
+compute_csp_hash: vercel.json written with sha256-arpLf66IHYJ/xiPewTkqf5xxfZc+nd3HSOA72isTwVw=
+[2m16:23:38[22m [34m[content][39m Syncing content
+[2m16:23:38[22m [34m[content][39m Synced content
+[2m16:23:38[22m [34m[types][39m Generated [2m182ms[22m
+[2m16:23:38[22m [34m[build][39m output: [34m"static"[39m
+[2m16:23:38[22m [34m[build][39m mode: [34m"static"[39m
+[2m16:23:38[22m [34m[build][39m directory: [34m/home/tux/nsealr/.restart-tools/goal/s01-integration/docs/restart/implementation/S01/.work/runtime/website/dist/[39m
+[2m16:23:38[22m [34m[build][39m Collecting build info...
+[2m16:23:38[22m [34m[build][39m [32m✓ Completed in 196ms.[39m
+[2m16:23:38[22m [34m[build][39m Building static entrypoints...
+[2m16:23:39[22m [34m[vite][39m [32m✓ built in 1.03s[39m
+[2m16:23:39[22m [34m[build][39m [32m✓ Completed in 1.05s.[39m
+
+[42m[30m building client (vite) [39m[49m
+[2m16:23:39[22m [34m[vite][39m transforming...
+[2m16:23:39[22m [34m[vite][39m [32m✓[39m 6 modules transformed.
+[2m16:23:39[22m [34m[vite][39m rendering chunks...
+[2m16:23:39[22m [34m[vite][39m [32m✓ built in 12ms[39m
+
+[42m[30m generating static routes [39m[49m
+[2m16:23:39[22m [32m▶[39m src/pages/404.astro
+[2m16:23:39[22m   [34m└─[39m [2m/404.html[22m [2m(+5ms)[22m 
+[2m16:23:39[22m [32m▶[39m src/pages/about.astro
+[2m16:23:39[22m   [34m└─[39m [2m/about/index.html[22m [2m(+1ms)[22m 
+[2m16:23:39[22m [32m▶[39m src/pages/blog/categories/[category].astro
+[2m16:23:39[22m   [34m└─[39m [2m/blog/categories/research/index.html[22m [2m(+1ms)[22m 
+[2m16:23:40[22m [35mλ[39m src/pages/blog/rss.xml.ts
+[2m16:23:40[22m   [34m└─[39m [2m/blog/rss.xml[22m [2m(+11ms)[22m 
+[2m16:23:40[22m [32m▶[39m src/pages/blog/tags/[tag].astro
+[2m16:23:40[22m   [34m├─[39m [2m/blog/tags/contracts/index.html[22m [2m(+1ms)[22m 
+[2m16:23:40[22m   [34m├─[39m [2m/blog/tags/security/index.html[22m [2m(+1ms)[22m 
+[2m16:23:40[22m   [34m├─[39m [2m/blog/tags/approval-digest/index.html[22m [2m(+1ms)[22m 
+[2m16:23:40[22m   [34m├─[39m [2m/blog/tags/nostr/index.html[22m [2m(+1ms)[22m 
+[2m16:23:40[22m   [34m├─[39m [2m/blog/tags/hardware/index.html[22m [2m(+1ms)[22m 
+[2m16:23:40[22m   [34m└─[39m [2m/blog/tags/threat-model/index.html[22m [2m(+1ms)[22m 
+[2m16:23:40[22m [32m▶[39m src/pages/blog/tags/index.astro
+[2m16:23:40[22m   [34m└─[39m [2m/blog/tags/index.html[22m [2m(+1ms)[22m 
+[2m16:23:40[22m [32m▶[39m src/pages/blog/[...page].astro
+[2m16:23:40[22m   [34m└─[39m [2m/blog/index.html[22m [2m(+1ms)[22m 
+[2m16:23:40[22m [32m▶[39m src/pages/blog/[...slug].astro
+[2m16:23:40[22m   [34m├─[39m [2m/blog/2026-05-15-why-hardware-signer-for-nostr/index.html[22m [2m(+3ms)[22m 
+[2m16:23:40[22m   [34m└─[39m [2m/blog/2026-05-15-approval-digest-bind-review-to-signature/index.html[22m [2m(+2ms)[22m 
+[2m16:23:40[22m [32m▶[39m src/pages/contributing.astro
+[2m16:23:40[22m   [34m└─[39m [2m/contributing/index.html[22m [2m(+1ms)[22m 
+[2m16:23:40[22m [32m▶[39m src/pages/docs/index.astro
+[2m16:23:40[22m   [34m└─[39m [2m/docs/index.html[22m [2m(+1ms)[22m 
+[2m16:23:40[22m [32m▶[39m src/pages/docs/[...slug].astro
+[2m16:23:40[22m   [34m├─[39m [2m/docs/getting-started/faq/index.html[22m [2m(+5ms)[22m 
+[2m16:23:40[22m   [34m├─[39m [2m/docs/getting-started/glossary/index.html[22m [2m(+3ms)[22m 
+[2m16:23:40[22m   [34m├─[39m [2m/docs/getting-started/overview/index.html[22m [2m(+2ms)[22m 
+[2m16:23:40[22m   [34m├─[39m [2m/docs/getting-started/quickstart/index.html[22m [2m(+2ms)[22m 
+[2m16:23:40[22m   [34m├─[39m [2m/docs/guides/build-raspberry-qr-vault/index.html[22m [2m(+3ms)[22m 
+[2m16:23:40[22m   [34m├─[39m [2m/docs/guides/companion-cli-cheatsheet/index.html[22m [2m(+3ms)[22m 
+[2m16:23:40[22m   [34m├─[39m [2m/docs/getting-started/use/index.html[22m [2m(+2ms)[22m 
+[2m16:23:40[22m   [34m├─[39m [2m/docs/guides/flash-esp32-firmware/index.html[22m [2m(+3ms)[22m 
+[2m16:23:40[22m   [34m├─[39m [2m/docs/guides/smartcard-apdu-probes/index.html[22m [2m(+2ms)[22m 
+[2m16:23:40[22m   [34m├─[39m [2m/docs/guides/verify-signed-event/index.html[22m [2m(+2ms)[22m 
+[2m16:23:40[22m   [34m├─[39m [2m/docs/security/safety-contracts/index.html[22m [2m(+2ms)[22m 
+[2m16:23:40[22m   [34m├─[39m [2m/docs/security/threat-model/index.html[22m [2m(+2ms)[22m 
+[2m16:23:40[22m   [34m├─[39m [2m/docs/security/trust-boundaries/index.html[22m [2m(+2ms)[22m 
+[2m16:23:40[22m   [34m├─[39m [2m/docs/specs/event-canonicalization/index.html[22m [2m(+2ms)[22m 
+[2m16:23:40[22m   [34m├─[39m [2m/docs/specs/feature-matrix/index.html[22m [2m(+2ms)[22m 
+[2m16:23:40[22m   [34m├─[39m [2m/docs/specs/nip46-bridge/index.html[22m [2m(+4ms)[22m 
+[2m16:23:40[22m   [34m├─[39m [2m/docs/specs/nip46-relay-session/index.html[22m [2m(+2ms)[22m 
+[2m16:23:40[22m   [34m├─[39m [2m/docs/specs/qr-envelope/index.html[22m [2m(+2ms)[22m 
+[2m16:23:40[22m   [34m├─[39m [2m/docs/specs/signing-request/index.html[22m [2m(+2ms)[22m 
+[2m16:23:40[22m   [34m├─[39m [2m/docs/specs/serial-transport/index.html[22m [2m(+2ms)[22m 
+[2m16:23:40[22m   [34m├─[39m [2m/docs/system/companion/index.html[22m [2m(+2ms)[22m 
+[2m16:23:40[22m   [34m├─[39m [2m/docs/system/product-shape/index.html[22m [2m(+2ms)[22m 
+[2m16:23:40[22m   [34m├─[39m [2m/docs/system/transports/index.html[22m [2m(+2ms)[22m 
+[2m16:23:40[22m   [34m├─[39m [2m/docs/signers/custom-wallet/index.html[22m [2m(+3ms)[22m 
+[2m16:23:40[22m   [34m├─[39m [2m/docs/signers/esp32-usb/index.html[22m [2m(+2ms)[22m 
+[2m16:23:40[22m   [34m├─[39m [2m/docs/signers/esp32-qr/index.html[22m [2m(+2ms)[22m 
+[2m16:23:40[22m   [34m├─[39m [2m/docs/signers/smartcard/index.html[22m [2m(+2ms)[22m 
+[2m16:23:40[22m   [34m└─[39m [2m/docs/signers/raspberry-qr/index.html[22m [2m(+2ms)[22m 
+[2m16:23:40[22m [32m▶[39m src/pages/index.astro
+[2m16:23:40[22m   [34m└─[39m [2m/index.html[22m [2m(+1ms)[22m 
+[2m16:23:40[22m [32m✓ Completed in 140ms.
+[39m
+[42m[30m generating optimized images [39m[49m
+[2m16:23:40[22m   [32m▶[39m /_astro/nsealr-logo.7q1Snzaf_2mn5I3.webp [2m(before: 91kB, after: 0kB)[22m [2m(+20ms)[22m [2m(1/8)[22m
+[2m16:23:40[22m   [32m▶[39m /_astro/nsealr-logo.7q1Snzaf_1vfG7p.webp [2m(before: 91kB, after: 1kB)[22m [2m(+4ms)[22m [2m(2/8)[22m
+[2m16:23:40[22m   [32m▶[39m /_astro/nsealr-logo.7q1Snzaf_E8hvL.webp [2m(before: 91kB, after: 2kB)[22m [2m(+4ms)[22m [2m(3/8)[22m
+[2m16:23:40[22m   [32m▶[39m /_astro/nsealr-logo.7q1Snzaf_Z1cK5E9.webp [2m(before: 91kB, after: 0kB)[22m [2m(+3ms)[22m [2m(4/8)[22m
+[2m16:23:40[22m   [32m▶[39m /_astro/nsealr-logo.7q1Snzaf_ZlLOAT.webp [2m(before: 91kB, after: 0kB)[22m [2m(+3ms)[22m [2m(5/8)[22m
+[2m16:23:40[22m   [32m▶[39m /_astro/nsealr-logo.7q1Snzaf_ubqrl.webp [2m(before: 91kB, after: 1kB)[22m [2m(+4ms)[22m [2m(6/8)[22m
+[2m16:23:40[22m   [32m▶[39m /_astro/nsealr-logo.7q1Snzaf_29hulQ.webp [2m(before: 91kB, after: 26kB)[22m [2m(+20ms)[22m [2m(7/8)[22m
+[2m16:23:40[22m   [32m▶[39m /_astro/nsealr-logo.7q1Snzaf_bBwRA.webp [2m(before: 91kB, after: 65kB)[22m [2m(+77ms)[22m [2m(8/8)[22m
+[2m16:23:40[22m [32m✓ Completed in 135ms.
+[39m
+[2m16:23:40[22m [34m[@astrojs/sitemap][39m `sitemap-index.xml` created at `dist`
+[2m16:23:40[22m [34m[build][39m 44 page(s) built in [1m1.55s[22m
+[2m16:23:40[22m [34m[build][39m [1mComplete![22m
+
+Running Pagefind v1.5.2 (Extended)
+Running from: "/home/tux/nsealr/.restart-tools/goal/s01-integration/docs/restart/implementation/S01/.work/runtime/website"
+Source:       "dist"
+Output:       "dist/pagefind"
+
+[Walking source directory]
+Found 44 files matching **/*.{html}
+
+[Parsing files]
+Did not find a data-pagefind-body element on the site.
+↳ Indexing all <body> elements on the site.
+
+[Reading languages]
+Discovered 1 language: en
+
+[Building search indexes]
+Total: 
+  Indexed 1 language
+  Indexed 44 pages
+  Indexed 2105 words
+  Indexed 0 filters
+  Indexed 0 sorts
+
+Finished in 0.031 seconds
+og: dist/og/blog/2026-05-15-approval-digest-bind-review-to-signature.png
+og: dist/og/blog/2026-05-15-why-hardware-signer-for-nostr.png
+python3 scripts/validate_site.py
+nSealr website validation passed
+python3 -m unittest discover -s tests
+.........
+----------------------------------------------------------------------
+Ran 9 tests in 0.087s
+
+OK
+python3 scripts/verify_repo.py
+nSealr website baseline verification passed
+python3 -m compileall -q scripts tests
