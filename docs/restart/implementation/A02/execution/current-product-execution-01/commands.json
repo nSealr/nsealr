@@ -1,0 +1,93 @@
+[
+  {
+    "command": [
+      "/home/tux/nsealr/.restart-tools/goal/r00/tools/baseline/.work/final/.tools/python/bin/python3",
+      "-B",
+      "tools/migration/bootstrap_stage.py",
+      "--target",
+      "/home/tux/nsealr/.restart-tools/goal/a02/tools/migration/.runtime/rehearsal-01/repository",
+      "--output",
+      "/home/tux/nsealr/.restart-tools/goal/a02/tools/migration/.runtime/rehearsal-01/bootstrap"
+    ],
+    "cwd": "/home/tux/nsealr/.restart-tools/goal/a02",
+    "ended_utc": "2026-10-18T19:53:20.162451+00:00",
+    "environment_sha256": "1329698bcbfb60c23fcd6617913d050c6e9d7e2f46108c49c01bb2a19625fae5",
+    "exit_code": 0,
+    "explicit_environment_sha256": "636340c82387f958d710735c4daeaf33d2e803b51bb9e1d51f7160beaa889051",
+    "label": "bootstrap-transform",
+    "log": "00-bootstrap-transform.log",
+    "sha256": "3b2f1c5e47b662aef57b840abc9c17a15a7954f06f3b38226104e9b4433cc74a",
+    "started_utc": "2026-10-18T19:53:20.065781+00:00"
+  },
+  {
+    "command": [
+      "/home/tux/nsealr/.restart-tools/goal/r00/tools/baseline/.work/final/.tools/python/bin/python3",
+      "-B",
+      "tools/migration/current_docs_stage.py",
+      "--target",
+      "/home/tux/nsealr/.restart-tools/goal/a02/tools/migration/.runtime/rehearsal-01/repository",
+      "--output",
+      "/home/tux/nsealr/.restart-tools/goal/a02/tools/migration/.runtime/rehearsal-01/current_docs"
+    ],
+    "cwd": "/home/tux/nsealr/.restart-tools/goal/a02",
+    "ended_utc": "2026-10-18T19:53:20.334227+00:00",
+    "environment_sha256": "1329698bcbfb60c23fcd6617913d050c6e9d7e2f46108c49c01bb2a19625fae5",
+    "exit_code": 0,
+    "explicit_environment_sha256": "636340c82387f958d710735c4daeaf33d2e803b51bb9e1d51f7160beaa889051",
+    "label": "current_docs-transform",
+    "log": "01-current_docs-transform.log",
+    "sha256": "50dc1affcc1811f6dde7a07293e3eb4f8bf48a8ab07fb7bae481299a4d9766ec",
+    "started_utc": "2026-10-18T19:53:20.162570+00:00"
+  },
+  {
+    "command": [
+      "pnpm",
+      "current-guides:check"
+    ],
+    "cwd": "/home/tux/nsealr/.restart-tools/goal/a02/tools/migration/.runtime/rehearsal-01/repository",
+    "ended_utc": "2026-10-18T19:53:21.184187+00:00",
+    "environment_sha256": "1329698bcbfb60c23fcd6617913d050c6e9d7e2f46108c49c01bb2a19625fae5",
+    "exit_code": 0,
+    "explicit_environment_sha256": "636340c82387f958d710735c4daeaf33d2e803b51bb9e1d51f7160beaa889051",
+    "label": "active-guides",
+    "log": "02-active-guides.log",
+    "sha256": "edc299d24a90e358079bbc215059740489b1312f59752ee661475d261d035021",
+    "started_utc": "2026-10-18T19:53:20.334436+00:00"
+  },
+  {
+    "command": [
+      "make",
+      "test"
+    ],
+    "cwd": "/home/tux/nsealr/.restart-tools/goal/a02/tools/migration/.runtime/rehearsal-01/repository",
+    "ended_utc": "2026-10-18T19:53:24.743532+00:00",
+    "environment_sha256": "1329698bcbfb60c23fcd6617913d050c6e9d7e2f46108c49c01bb2a19625fae5",
+    "exit_code": 0,
+    "explicit_environment_sha256": "636340c82387f958d710735c4daeaf33d2e803b51bb9e1d51f7160beaa889051",
+    "label": "source-integrity-bootstrap",
+    "log": "03-source-integrity-bootstrap.log",
+    "sha256": "27d28094c451a601b3ab6a19857f3824424363d8b1a768ae6eaf6cbf12ec6277",
+    "started_utc": "2026-10-18T19:53:21.184355+00:00"
+  },
+  {
+    "command": [
+      "python3",
+      "-B",
+      "-m",
+      "unittest",
+      "discover",
+      "-s",
+      "protocols/contracts/v1/tests",
+      "-v"
+    ],
+    "cwd": "/home/tux/nsealr/.restart-tools/goal/a02/tools/migration/.runtime/rehearsal-01/repository",
+    "ended_utc": "2026-10-18T19:53:25.083754+00:00",
+    "environment_sha256": "1329698bcbfb60c23fcd6617913d050c6e9d7e2f46108c49c01bb2a19625fae5",
+    "exit_code": 1,
+    "explicit_environment_sha256": "636340c82387f958d710735c4daeaf33d2e803b51bb9e1d51f7160beaa889051",
+    "label": "contract-oracle",
+    "log": "04-contract-oracle.log",
+    "sha256": "cd73be20538abf4e953a6a08540f859ec57459c47cae3b9454a11f5284ce79a5",
+    "started_utc": "2026-10-18T19:53:24.743716+00:00"
+  }
+]

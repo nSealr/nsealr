@@ -1,0 +1,118 @@
+diff --git a/tests/integration/optional/hardware_companion_serial_smoke.py b/tests/integration/optional/hardware_companion_serial_smoke.py
+index d43a348c3eb8e3ba41e296ddaa625d7c471bc9a2..7889adcee7fee3a1afbc3c093d271a65ecd7f83f 100644
+--- a/tests/integration/optional/hardware_companion_serial_smoke.py
++++ b/tests/integration/optional/hardware_companion_serial_smoke.py
+@@ -19,9 +19,9 @@ from pathlib import Path
+ from typing import Any, Optional
+ 
+ try:
+-    from tests.integration.integration_support import PINNED_PNPM_COMMAND, run_command
++    from tests.integration.integration_support import PINNED_PNPM_COMMAND, pinned_command, run_command
+ except ModuleNotFoundError:  # pragma: no cover - direct script execution
+-    from integration_support import PINNED_PNPM_COMMAND, run_command
++    from integration_support import PINNED_PNPM_COMMAND, pinned_command, run_command
+ 
+ 
+ ROOT = Path(__file__).resolve().parents[3]
+@@ -37,7 +37,7 @@ class CommandPlan:
+ 
+ 
+ def pnpm_command() -> list[str]:
+-    return [*PINNED_PNPM_COMMAND]
++    return pinned_command(["pnpm"])
+ 
+ 
+ def build_request_command(
+@@ -215,7 +215,7 @@ def run_smoke(
+         raise FileNotFoundError(f"missing product component: {SPECS}")
+ 
+     pnpm = pnpm_command()
+-    subprocess.run([*pnpm, "install"], cwd=COMPANION, check=True)
++    subprocess.run([*pnpm, "install", "--frozen-lockfile"], cwd=COMPANION, check=True)
+     with tempfile.TemporaryDirectory(prefix="nsealr-companion-hw-serial-") as tmp:
+         temp_root = Path(tmp)
+         request_path = temp_root / "request.json"
+diff --git a/tests/integration/run.py b/tests/integration/run.py
+new file mode 100644
+index 0000000000000000000000000000000000000000..dbf99c9c923b37df993235c956932ed4fe713f50
+--- /dev/null
++++ b/tests/integration/run.py
+@@ -0,0 +1,38 @@
++#!/usr/bin/env python3
++"""Execute every retained product integration obligation in one invocation."""
++from pathlib import Path
++import subprocess
++import sys
++
++ROOT = Path(__file__).resolve().parents[2]
++# Original recipe numbers are provenance identifiers, not task state.
++PRODUCT_STEPS = (
++    (1, "check_fixture_snapshots"),
++    (2, "integration_feature_matrix"),
++    (3, "integration_companion_fixtures"),
++    (4, "integration_companion_policy_cli"),
++    (5, "integration_companion_nip46_cli"),
++    (6, "integration_companion_serial_frame_cli"),
++    (7, "integration_companion_service_context"),
++    (8, "integration_companion_route_identity"),
++    (9, "integration_companion_sdk_browser"),
++    (10, "integration_browser_extension_package_plan"),
++    (11, "integration_browser_extension_package_build"),
++    (12, "integration_browser_extension_origin_permission_cli"),
++    (13, "integration_browser_extension_origin_review_control"),
++    (14, "integration_browser_extension_origin_approval_control"),
++    (15, "integration_browser_native_messaging_manifest"),
++    (17, "integration_raspberry_hardware_probe"),
++    (19, "integration_vault_companion"),
++)
++
++
++def main():
++    for count, (original, module) in enumerate(PRODUCT_STEPS, 1):
++        print(f"[{count}/{len(PRODUCT_STEPS)} original {original}] {module}", flush=True)
++        subprocess.run([sys.executable, "-B", "-m", "tests.integration." + module], cwd=ROOT, check=True)
++    print("All 17 retained product integration steps passed. External hardware and optional physical resources are separate.", flush=True)
++
++
++if __name__ == "__main__":
++    main()
+diff --git a/tests/integration/test_browser_extension_chromium_smoke.py b/tests/integration/test_browser_extension_chromium_smoke.py
+index 5e15855d328f6beaf23d340999903bcabf2161e7..b2986b23bbf0f0f7bde3d285ccf6d76d7dc045cc 100644
+--- a/tests/integration/test_browser_extension_chromium_smoke.py
++++ b/tests/integration/test_browser_extension_chromium_smoke.py
+@@ -8,7 +8,7 @@ import unittest
+ from pathlib import Path
+ from unittest.mock import patch
+ 
+-from scripts import browser_extension_chromium_smoke as smoke
++from tests.integration.optional import browser_extension_chromium_smoke as smoke
+ 
+ 
+ class BrowserExtensionChromiumSmokeTests(unittest.TestCase):
+diff --git a/tests/integration/test_hardware_companion_serial_smoke.py b/tests/integration/test_hardware_companion_serial_smoke.py
+index 577b854683e2f422064aa7727b0f430517a59e8c..3361bde5272e12f043708cfd61c3d725f0a0798e 100644
+--- a/tests/integration/test_hardware_companion_serial_smoke.py
++++ b/tests/integration/test_hardware_companion_serial_smoke.py
+@@ -1,6 +1,8 @@
+ from __future__ import annotations
+ 
+ import unittest
++import subprocess
++from unittest.mock import patch
+ from pathlib import Path
+ 
+ from tests.integration.optional.hardware_companion_serial_smoke import (
+@@ -86,7 +88,12 @@ class HardwareCompanionSerialSmokeTests(unittest.TestCase):
+         self.assertIsNone(extract_first_protocol_frame("nsealr1f:response:partial"))
+ 
+     def test_pnpm_command_always_uses_pinned_runner(self) -> None:
+-        self.assertEqual(pnpm_command(), ["npm", "exec", "--yes", "--package=pnpm@10.33.4", "--", "pnpm"])
++        with patch("tests.integration.integration_support.subprocess.run") as run:
++            run.return_value = subprocess.CompletedProcess(["pnpm"], 0, stdout="10.33.4\n")
++            self.assertEqual(pnpm_command(), ["pnpm"])
++            run.return_value = subprocess.CompletedProcess(["pnpm"], 0, stdout="0.0.0\n")
++            with self.assertRaisesRegex(RuntimeError, "pinned product toolchain"):
++                pnpm_command()
+ 
+     def test_expected_response_accepts_disabled_sign_event_only(self) -> None:
+         assert_expected_response(

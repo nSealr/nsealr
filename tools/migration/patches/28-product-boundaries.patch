@@ -1,0 +1,257 @@
+diff --git a/package.json b/package.json
+index 2ed170472ae7d3a9ef65360eb57cbc8c9c8d28b1..6c539f54c8e98ea4bb5ae3be4bf90de6db04805c 100644
+--- a/package.json
++++ b/package.json
+@@ -46,12 +46,14 @@
+     "build": "node tools/bridge/build_packages.mjs",
+     "ci": "pnpm build && pnpm typecheck && pnpm test && pnpm consumer-smoke && pnpm examples-smoke && pnpm readme-examples:check && pnpm api-docs:check && pnpm api-review:check && pnpm package-registry:check && pnpm browser-runtime-imports:check && pnpm browser-runtime-bundle:check && pnpm browser-extension-security:check && pnpm public-imports:check && pnpm release-plan:check && pnpm release-artifacts:safety && pnpm pack-smoke",
+     "consumer-smoke": "pnpm --filter @nsealr/consumer-smoke smoke",
++    "current-guides:check": "node --import tsx/esm tools/bridge/check_current_guides.mjs && node --import tsx/esm tools/bridge/test_current_guides.mjs",
+     "examples-smoke": "pnpm --filter @nsealr/sdk-examples verify",
+     "lint": "tsc --noEmit",
+     "nsealr": "pnpm --filter @nsealr/cli nsealr",
+     "nsealr-service": "pnpm --filter @nsealr/service service",
+     "pack-smoke": "node tools/bridge/pack_smoke.mjs",
+     "package-registry:check": "node tools/bridge/check_package_registry.mjs",
++    "product-boundaries:check": "node tools/bridge/check_product_boundaries.mjs && node tools/bridge/test_product_boundaries.mjs",
+     "public-imports:check": "node tools/bridge/check_public_imports.mjs",
+     "readme-examples:check": "node tools/bridge/check_readme_examples.mjs",
+     "release-artifacts": "node tools/bridge/prepare_release_artifacts.mjs --out release-artifacts/packages",
+diff --git a/tools/bridge/check_current_guides.mjs b/tools/bridge/check_current_guides.mjs
+new file mode 100644
+index 0000000000000000000000000000000000000000..8a967563f601455121b6e819585b3115321d8f99
+--- /dev/null
++++ b/tools/bridge/check_current_guides.mjs
+@@ -0,0 +1,80 @@
++#!/usr/bin/env node
++// Validate command/flag names against the actual Commander tree without actions.
++import assert from "node:assert/strict";
++import {readFileSync,readdirSync,existsSync} from "node:fs";
++import {join} from "node:path";
++import {pathToFileURL} from "node:url";
++import * as ts from "typescript";
++import {buildCli} from "../../apps/bridge/cli/src/index.ts";
++import {root} from "./package_set.mjs";
++import {checkFeatureClaims,checkCurrentOwnerLinks} from "./check_product_boundaries.mjs";
++const cli=buildCli();
++const source=ts.createSourceFile("cli.ts",readFileSync(join(root,"apps/bridge/cli/src/index.ts"),"utf8"),ts.ScriptTarget.Latest,true);
++const objects=new Map();
++function walk(node,fn){fn(node);ts.forEachChild(node,child=>walk(child,fn));}
++walk(source,node=>{if(ts.isVariableDeclaration(node)&&ts.isIdentifier(node.name)&&node.initializer&&ts.isObjectLiteralExpression(node.initializer))objects.set(node.name.text,node.initializer.properties.map(p=>p.name?.text).filter(Boolean));});
++const actions=new Map();
++walk(source,node=>{
++ if(!ts.isCallExpression(node)||!ts.isPropertyAccessExpression(node.expression)||node.expression.name.text!=="action")return;
++ const fn=node.arguments[0];if(!fn||!ts.isArrowFunction(fn)||!fn.parameters[0]||!ts.isIdentifier(fn.parameters[0].name))return;
++ let chain=node.expression.expression,command;
++ while(ts.isCallExpression(chain)&&ts.isPropertyAccessExpression(chain.expression)){
++  if(chain.expression.name.text==="command"&&chain.arguments[0]&&ts.isStringLiteral(chain.arguments[0]))command=chain.arguments[0].text;
++  chain=chain.expression.expression;
++ }
++ if(!command)return;
++ const parameter=fn.parameters[0].name.text,values=new Set();
++ walk(fn.body,n=>{
++  if(ts.isBinaryExpression(n)&&ts.isIdentifier(n.left)&&n.left.text===parameter&&ts.isStringLiteral(n.right)&&[ts.SyntaxKind.EqualsEqualsEqualsToken,ts.SyntaxKind.ExclamationEqualsEqualsToken].includes(n.operatorToken.kind))values.add(n.right.text);
++  if(ts.isElementAccessExpression(n)&&ts.isIdentifier(n.expression)&&ts.isIdentifier(n.argumentExpression)&&n.argumentExpression.text===parameter)for(const value of objects.get(n.expression.text)??[])values.add(value);
++ });
++ if(values.size)actions.set(command,values);
++});
++export function checkCliExcerpt(text){
++ const tokens=(text.replace(/\\\s*\n/gu," ").match(/"[^"\n]*"|'[^'\n]*'|[^\s]+/gu)??[]).map(x=>x.replace(/^['"]|['"]$/gu,""));
++ const begin=tokens.indexOf("nsealr");assert(begin>=0,"CLI excerpt must contain nsealr");
++ let command=cli;const positionals=[];
++ for(let i=begin+1;i<tokens.length;i++){
++  const token=tokens[i];if(token==="...")continue;
++  if(token.startsWith("--")){
++   const option=command.options.find(o=>o.long===token.split("=")[0]);assert(option,`unknown flag ${token} for ${command.name()}`);
++   if((option.required||option.optional)&&!token.includes("="))i++;
++   continue;
++  }
++  if(token.startsWith("-")){assert(command.options.some(o=>o.short===token),`unknown flag ${token}`);continue;}
++  const child=command.commands.find(c=>c.name()===token);
++  if(child){command=child;continue;}
++  assert(!command.commands.length,`unknown command ${token} under ${command.name()}`);
++  positionals.push(token);
++ }
++ const domain=actions.get(command.name());
++ if(domain&&positionals[0]&&!/[<$]/u.test(positionals[0]))assert(domain.has(positionals[0]),`unsupported ${command.name()} action ${positionals[0]}`);
++ return command;
++}
++export function checkGuide(path,text){
++ if(path.endsWith(".test.ts"))return;
++ checkCurrentOwnerLinks(text);checkFeatureClaims(text);
++ for(const match of text.matchAll(/`([^`]+)`/gu))if(/^(?:pnpm\s+)?nsealr\s/u.test(match[1].trim()))checkCliExcerpt(match[1].trim());
++ for(const line of text.replace(/\\\s*\n/gu," ").split("\n"))if(/^\s*(?:pnpm\s+)?nsealr\s/u.test(line))checkCliExcerpt(line.trim());
++}
++export function allCurrentCommandExamples(){
++ const examples=[];
++ function visit(command,prefix){
++  const path=[...prefix,command.name()];
++  if(!command.commands.length){
++   const positional=actions.get(command.name())?.values().next().value;
++   examples.push([...path,...(positional?[positional]:[])].join(" "));
++   for(const option of command.options)if(option.long)examples.push([...path,...(positional?[positional]:[]),option.long,...(option.required||option.optional?["example"]:[])].join(" "));
++  }
++  for(const child of command.commands)visit(child,path);
++ }
++ visit(cli,[]);return examples;
++}
++function markdown(dir){return readdirSync(dir,{withFileTypes:true}).flatMap(e=>e.isDirectory()?markdown(join(dir,e.name)):e.isFile()&&e.name.endsWith(".md")?[join(dir,e.name)]:[]);}
++export function main(){
++ const paths=["README.md","AGENTS.md",...markdown(join(root,"docs/bridge")),...markdown(join(root,"docs/product")),...markdown(join(root,"apps/pi/docs"))];
++ for(const name of readdirSync(join(root,"packages")))if(existsSync(join(root,"packages",name,"README.md")))paths.push(join(root,"packages",name,"README.md"));
++ for(const path of paths)checkGuide(path,readFileSync(path.startsWith("/")?path:join(root,path),"utf8"));
++ console.log(`current guide command/flag, public owner and feature claims checked in ${paths.length} files`);
++}
++if(import.meta.url===pathToFileURL(process.argv[1]).href)main();
+diff --git a/tools/bridge/check_product_boundaries.mjs b/tools/bridge/check_product_boundaries.mjs
+new file mode 100644
+index 0000000000000000000000000000000000000000..c9d03cf2c655341f03380ac3ffd0dffd32a68db4
+--- /dev/null
++++ b/tools/bridge/check_product_boundaries.mjs
+@@ -0,0 +1,62 @@
++#!/usr/bin/env node
++// Product-source claim and validator ownership checks complement runtime tests.
++import assert from "node:assert/strict";
++import {readFileSync, readdirSync} from "node:fs";
++import {join, relative} from "node:path";
++import {pathToFileURL} from "node:url";
++import * as ts from "typescript";
++import {root} from "./package_set.mjs";
++
++export function checkProductionSource(path, text) {
++  if (path.endsWith(".test.ts") || path.startsWith("packages/dev-signer/") || path.startsWith("packages/fixtures/")) return;
++  const source = ts.createSourceFile(path,text,ts.ScriptTarget.Latest,true);
++  const keyName = (node) => ts.isIdentifier(node) || ts.isStringLiteral(node) ? node.text :
++    ts.isComputedPropertyName(node) && ts.isStringLiteral(node.expression) ? node.expression.text : undefined;
++  function visit(node) {
++    if ((ts.isFunctionDeclaration(node) || ts.isVariableDeclaration(node)) && node.name &&
++        ["validateRequest","validateResponse"].includes(keyName(node.name))) {
++      assert.equal(path,"packages/protocol/src/protocol.ts",`${path}: shared validator has a different owner`);
++    }
++    if (ts.isPropertyAssignment(node) && keyName(node.name)==="stores_production_secrets") {
++      assert.equal(node.initializer.kind,ts.SyntaxKind.FalseKeyword,`${path}: production signing-secret custody claim is forbidden`);
++    }
++    ts.forEachChild(node,visit);
++  }
++  visit(source);
++}
++export function checkFeatureClaims(text) {
++  for (const sentence of text.split(/[.\n]/u)) {
++    if (/\bTROPIC01\b/iu.test(sentence) && /stateless|QR\s+vault/iu.test(sentence)) {
++      assert(/\b(?:not|never|unsupported|forbidden|reject\w*|exclud\w*)\b/iu.test(sentence),
++        "stateless QR vault cannot claim TROPIC01 custody");
++    }
++  }
++}
++export function checkFeatureData(matrix) {
++  for (const name of ["raspberry_qr_vault","esp32_qr_vault"]) {
++    assert.equal(matrix.solutions[name].features.persistent_secret_custody.current,"forbidden");
++    assert.equal(matrix.solutions[name].features.persistent_secret_custody.target,"forbidden");
++    assert(!Object.keys(matrix.solutions[name].features).some((key)=>/tropic01/iu.test(key)),"no TROPIC01 feature in stateless QR profile");
++  }
++}
++export function checkCurrentOwnerLinks(text) {
++  for (const match of text.matchAll(/https:\/\/github\.com\/nSealr\/([^\s/#)]+)([^\s)]*)/gu)) {
++    assert(!["firmware","raspberry","vault","companion","specs","lab","smartcard"].includes(match[1]),"stale public repository alias in current navigation");
++    if (/\/apps\/pi(?:\/|$)/u.test(match[2])) assert.equal(match[1],"nsealr","Pi component must link to its current public owner");
++  }
++}
++export function sourceFiles(directory) {
++ return readdirSync(directory,{withFileTypes:true}).flatMap((entry)=>{
++  const path=join(directory,entry.name);
++  if (entry.isDirectory()) return ["src"].includes(entry.name) || !["node_modules","dist","target",".tmp"].includes(entry.name) ? sourceFiles(path) : [];
++  return entry.isFile() && path.endsWith(".ts") ? [path] : [];
++ });
++}
++export function main() {
++ for(const directory of ["packages","apps/bridge"]) for(const path of sourceFiles(join(root,directory))) {
++  checkProductionSource(relative(root,path),readFileSync(path,"utf8"));
++ }
++ checkFeatureData(JSON.parse(readFileSync(join(root,"protocols/contracts/v1/vectors/features/signer-feature-matrix-v0.json"),"utf8")));
++ console.log("production source custody, validator ownership and stateless feature boundaries passed");
++}
++if (import.meta.url===pathToFileURL(process.argv[1]).href) main();
+diff --git a/tools/bridge/check_public_imports.mjs b/tools/bridge/check_public_imports.mjs
+index 444563902b00275fce15f4f42860c9f0195a45d0..1a67967b72081625caeb6d4fdb9dbe22c795c9a1 100644
+--- a/tools/bridge/check_public_imports.mjs
++++ b/tools/bridge/check_public_imports.mjs
+@@ -111,9 +111,13 @@ function moduleSpecifierText(node) {
+ }
+ 
+ function checkSourceFile(ownerPackage, packageSourceRoot, sourcePath) {
++  return checkSourceText(ownerPackage, packageSourceRoot, sourcePath, readFileSync(sourcePath, "utf-8"));
++}
++
++export function checkSourceText(ownerPackage, packageSourceRoot, sourcePath, sourceText) {
+   const source = ts.createSourceFile(
+     sourcePath,
+-    readFileSync(sourcePath, "utf-8"),
++    sourceText,
+     ts.ScriptTarget.Latest,
+     true
+   );
+diff --git a/tools/bridge/test_current_guides.mjs b/tools/bridge/test_current_guides.mjs
+new file mode 100644
+index 0000000000000000000000000000000000000000..77ad67654dd5147c85c5c5aa9822425f0d05bccb
+--- /dev/null
++++ b/tools/bridge/test_current_guides.mjs
+@@ -0,0 +1,16 @@
++import assert from "node:assert/strict";
++import {checkGuide,checkCliExcerpt,allCurrentCommandExamples} from "./check_current_guides.mjs";
++const stale=[
++ "nsealr route --request req.json --signer raspberry-qr",
++ "nsealr verify --request req.json --response resp.json",
++ "nsealr request --kind 1 --content hello",
++ "nsealr request validate --file req.json",
++ "nsealr audit export --request req.json",
++ "nsealr fixture verify --route esp32-usb --fixture sign-event-disabled",
++ "nsealr nip46 decide --payload-file decrypted.json",
++];
++for(const id of ["22d92bfa3cba175cb486230c6a38dce63bffc1536d6438b42e18d931dc831335","952ea32a0de834c901ff6caa2b5d5e0c0615664b7e76735cb1601a87113ffcd3","f92de0975ed8c8305a907083f7a06234f4488c9c8867542e4320758d97488d3e"]){
++ for(const command of stale){assert.throws(()=>checkGuide("docs/guide.md",`\`${command}\``),/unknown|unsupported/u);checkGuide("apps/bridge/cli/src/rejection.test.ts",`\`${command}\``);}
++ const examples=allCurrentCommandExamples();assert(examples.length>100,"cover the actual full CLI tree and every registered option");for(const command of examples)checkCliExcerpt(command);
++ console.log(`PASS ${id}: seven historical stale-command classes rejected; ${examples.length} actual current command/option forms accepted`);
++}
+diff --git a/tools/bridge/test_product_boundaries.mjs b/tools/bridge/test_product_boundaries.mjs
+new file mode 100644
+index 0000000000000000000000000000000000000000..61a081043e2bc3c1f8b415acba2e689d5460e730
+--- /dev/null
++++ b/tools/bridge/test_product_boundaries.mjs
+@@ -0,0 +1,37 @@
++#!/usr/bin/env node
++import assert from "node:assert/strict";
++import {join} from "node:path";
++import {checkProductionSource,checkFeatureClaims,checkFeatureData,checkCurrentOwnerLinks} from "./check_product_boundaries.mjs";
++import {checkSourceText} from "./check_public_imports.mjs";
++import {assertNoPrivatePackageReferences,root} from "./package_set.mjs";
++const executed=[];
++function check(identity, callback) {callback();executed.push(identity);console.log(`PASS ${identity}`);}
++check("17279524b14390ef046f228aca1bca86cdb53bf1086206cdc9f390d4758de0dd",()=>{
++ for (const text of ["function validateRequest(x) { return true; }","export const validateResponse = () => true;"]) assert.throws(()=>checkProductionSource("apps/bridge/service/src/mutation.ts",text),/different owner/u);
++ checkProductionSource("apps/bridge/service/src/example.ts",'import {validateRequest} from "@nsealr/protocol"; validateRequest(input);');
++ checkProductionSource("packages/protocol/src/protocol.ts","export function validateRequest(x) { return x; }");
++});
++const importCases=()=>{
++ for (const text of ['import {devSignRequest} from "@nsealr/dev-signer";','export * from "@nsealr/dev-signer";','await import("@nsealr/dev-signer");']) assert.throws(()=>checkSourceText("@nsealr/sdk",join(root,"packages/sdk/src"),join(root,"packages/sdk/src/mutation.ts"),text),/non-public|test-only/u);
++ assert.throws(()=>assertNoPrivatePackageReferences({dependencies:{"@nsealr/dev-signer":"0.1.0"}}),/private/u);
++ checkSourceText("@nsealr/sdk",join(root,"packages/sdk/src"),join(root,"packages/sdk/src/positive.ts"),'export * from "@nsealr/protocol";');
++ checkSourceText("@nsealr/dev-signer",join(root,"packages/dev-signer/src"),join(root,"packages/dev-signer/src/positive.ts"),'import {validateRequest} from "@nsealr/protocol";');
++ assertNoPrivatePackageReferences({dependencies:{"nostr-tools":"2.23.3"}});
++};
++for(const id of ["22395efa9f7fff63f3c5a16df222bb3e1fb5db59d6a170ff8614cf66b0c9fe1e","5c005c269d5192537af02c9176bb32723fc32fcef71c0fe86cd3da7c831b1bfd"])check(id,importCases);
++check("b9cee4b876e69c9af01cc704d96612e0c37037ed0ffd4cdca693f159d4e7fe34",()=>{
++ for(const key of ["stores_production_secrets",'"stores_production_secrets"','["stores_production_secrets"]']) assert.throws(()=>checkProductionSource("apps/bridge/service/src/mutation.ts",`const state={${key}:true};`),/custody/u);
++ checkProductionSource("apps/bridge/service/src/positive.ts","const state={stores_production_secrets:false,clientTransportSecret: new Uint8Array(32)};");
++ checkProductionSource("apps/bridge/service/src/rejection.test.ts","const mutation={stores_production_secrets:true};");
++});
++check("6c1bc0ee0023c497e9030f98c0f04507fc23f98e6c1efb69dec1422f6af205f0",()=>{
++ for(const url of ["https://github.com/nSealr/raspberry","https://github.com/nSealr/board-sdk/tree/main/apps/pi"])assert.throws(()=>checkCurrentOwnerLinks(url),/alias|owner/u);
++ checkCurrentOwnerLinks("https://github.com/nSealr/nsealr/tree/main/apps/pi");
++});
++for(const id of ["592cff524db06bc8f42bb806609350cd0f87df15621236b9fccd9f2626a7ea08","cd29a3bff1f2024239a136fafc7112e671dbde856cb27716c7f4f72e571bce6d","f04c62a5f9ba82470e652915b34c879021182aa4b2a9143e4b78c398b614cf12"])check(id,()=>{
++ assert.throws(()=>checkFeatureClaims("The stateless QR vault includes TROPIC01 key wrapping."),/cannot claim/u);
++ for(const text of ["Rejection of stateless QR vault TROPIC01 usage.","The stateless QR vault must not add TROPIC01."]) checkFeatureClaims(text);
++ const matrix={solutions:Object.fromEntries(["raspberry_qr_vault","esp32_qr_vault"].map(name=>[name,{features:{persistent_secret_custody:{current:"forbidden",target:"forbidden"}}}]))};
++ checkFeatureData(matrix);matrix.solutions.raspberry_qr_vault.features.persistent_secret_custody.current="implemented";assert.throws(()=>checkFeatureData(matrix));
++});
++console.log(`${executed.length} admitted source/privacy/capability replacement obligations passed; recipe and CLI obligations are separate gates`);

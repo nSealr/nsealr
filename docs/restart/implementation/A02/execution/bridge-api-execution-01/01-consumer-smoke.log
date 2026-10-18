@@ -1,0 +1,31 @@
+
+> @nsealr/bridge-workspace@0.1.0 consumer-smoke /home/tux/nsealr/.restart-tools/goal/a02/tools/migration/.runtime/rehearsal-01/repository
+> pnpm --filter @nsealr/consumer-smoke smoke
+
+
+> @nsealr/consumer-smoke@0.1.0 smoke /home/tux/nsealr/.restart-tools/goal/a02/tools/migration/.runtime/rehearsal-01/repository/apps/bridge/consumer-smoke
+> node --no-warnings --import tsx/esm src/index.ts
+
+/home/tux/nsealr/.restart-tools/goal/a02/tools/migration/.runtime/rehearsal-01/repository/apps/bridge/consumer-smoke:
+ ERR_PNPM_RECURSIVE_RUN_FIRST_FAIL  @nsealr/consumer-smoke@0.1.0 smoke: `node --no-warnings --import tsx/esm src/index.ts`
+Exit status 1
+ ELIFECYCLE  Command failed with exit code 1.
+
+node:internal/modules/run_main:107
+    triggerUncaughtException(
+    ^
+Error [ERR_MODULE_NOT_FOUND]: Cannot find package '@noble/ciphers' imported from /home/tux/nsealr/.restart-tools/goal/a02/tools/migration/.runtime/rehearsal-01/repository/packages/sdk/dist/index.js
+    at Object.getPackageJSONURL (node:internal/modules/package_json_reader:331:9)
+    at packageResolve (node:internal/modules/esm/resolve:784:25)
+    at moduleResolve (node:internal/modules/esm/resolve:873:18)
+    at defaultResolve (node:internal/modules/esm/resolve:1006:11)
+    at nextResolve (node:internal/modules/esm/hooks:785:28)
+    at resolveBase (file:///home/tux/nsealr/.restart-tools/goal/a02/tools/migration/.runtime/rehearsal-01/repository/node_modules/.pnpm/tsx@4.21.0/node_modules/tsx/dist/esm/index.mjs?1792352430578:2:3744)
+    at resolveDirectory (file:///home/tux/nsealr/.restart-tools/goal/a02/tools/migration/.runtime/rehearsal-01/repository/node_modules/.pnpm/tsx@4.21.0/node_modules/tsx/dist/esm/index.mjs?1792352430578:2:4243)
+    at resolveTsPaths (file:///home/tux/nsealr/.restart-tools/goal/a02/tools/migration/.runtime/rehearsal-01/repository/node_modules/.pnpm/tsx@4.21.0/node_modules/tsx/dist/esm/index.mjs?1792352430578:2:4984)
+    at resolve (file:///home/tux/nsealr/.restart-tools/goal/a02/tools/migration/.runtime/rehearsal-01/repository/node_modules/.pnpm/tsx@4.21.0/node_modules/tsx/dist/esm/index.mjs?1792352430578:2:5361)
+    at nextResolve (node:internal/modules/esm/hooks:785:28) {
+  code: 'ERR_MODULE_NOT_FOUND'
+}
+
+Node.js v24.22.0

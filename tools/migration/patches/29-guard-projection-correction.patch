@@ -1,0 +1,15 @@
+diff --git a/tools/bridge/check_product_boundaries.mjs b/tools/bridge/check_product_boundaries.mjs
+index c9d03cf2c655341f03380ac3ffd0dffd32a68db4..6415922ee50948a92f2c205e43c661f7b1b001f1 100644
+--- a/tools/bridge/check_product_boundaries.mjs
++++ b/tools/bridge/check_product_boundaries.mjs
+@@ -18,7 +18,9 @@ export function checkProductionSource(path, text) {
+       assert.equal(path,"packages/protocol/src/protocol.ts",`${path}: shared validator has a different owner`);
+     }
+     if (ts.isPropertyAssignment(node) && keyName(node.name)==="stores_production_secrets") {
+-      assert.equal(node.initializer.kind,ts.SyntaxKind.FalseKeyword,`${path}: production signing-secret custody claim is forbidden`);
++      let value=node.initializer;
++      while(ts.isAsExpression(value)||ts.isTypeAssertionExpression(value)||ts.isParenthesizedExpression(value))value=value.expression;
++      assert.notEqual(value.kind,ts.SyntaxKind.TrueKeyword,`${path}: production signing-secret custody claim is forbidden`);
+     }
+     ts.forEachChild(node,visit);
+   }

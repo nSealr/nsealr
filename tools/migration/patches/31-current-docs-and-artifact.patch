@@ -1,0 +1,2704 @@
+diff --git a/README.md b/README.md
+index 609de58e7142d0381fb52bb239c261d649be1d9b..3943f82790265b206055fa7706df16324e5c0847 100644
+--- a/README.md
++++ b/README.md
+@@ -22,25 +22,33 @@ Connected and Offline describe interaction modes, **not security levels**. Each
+ 
+ - `crates/nsealr-core`: a portable Rust core with bounded protocol, review and session foundations. Its authorization and secret-handling design is under revalidation.
+ - `apps/desktop-simulator`: a host conformance harness. The current Rust path deliberately returns `signing_disabled`; it is not a working MCU signer.
+-- `boards/`, `tests/`, `ci/`, `scripts/`: experimental profiles, fixtures and checks inherited from the measured baseline. A profile file is not hardware qualification.
+-- `docs/restart/`: the accepted restart direction, migration gates and resumable work graph.
++- `apps/bridge/`, `packages/`: host clients, CLI, service, browser integration and the sole public TypeScript SDK. Internal packages are private.
++- `apps/pi/`: retained Python QR reference/application harness; engine adoption and physical Pi qualification remain separate tasks.
++- `protocols/contracts/v1/`: one authoritative artifact shared by independent Python, Rust and TypeScript consumers.
++- `boards/`, `tests/`, `ci/`, `scripts/`: experimental profiles and software checks. A profile file is not hardware qualification.
++- `plan/work-items.json`: the sole task graph; `plan/evidence-index.json` binds immutable historical evidence.
++- `docs/product/`: current product requirements; `docs/restart/` preserves decisions and historical review evidence.
+ 
+-Host and Pi code currently remain in their original repositories until selected code has migrated and passed its gates. We are consolidating ownership, not claiming consolidation has already happened.
++Selected host and Pi code now share this source checkout. Their original licensed source identities and declared migration changes remain recorded in A02 evidence. The Board SDK stays independent and Nostr-free; custom hardware is not a product build prerequisite.
+ 
+ Start with [the restart plan](docs/restart/README.md), [architecture](docs/restart/architecture.md), [repository mapping](docs/restart/repositories.md) and [agent instructions](AGENTS.md). Earlier phase documents describe the historical implementation; they do not freeze the new architecture.
+ 
+-## Build the existing Rust baseline
++## Build and verify
+ 
+-Install the toolchain pinned in `rust-toolchain.toml`, then run:
++Use the [pinned product bootstrap](tools/baseline/README.md) for a clean Linux
++x86_64/glibc runtime. With those tools on PATH:
+ 
+ ```sh
+-cargo test --workspace
+-cargo test -p nsealr-core --features std
+-cargo fmt --all --check
+-python3 scripts/verify_repo.py
++pnpm install --frozen-lockfile
++make ci
+ ```
+ 
+-`make ci` adds target compilation, lint, dependency, coverage and reproducibility gates. Host tests and a compiled core library do not demonstrate a complete device application or physical security.
++The complete gate covers independent contracts, core and host Rust workspaces,
++Bridge packages and packed consumers, Pi, source/evidence integrity and the
++17-step product integration. `make integration` runs that integration separately.
++Rust target compilation, coverage floors and reproducibility remain mandatory.
++Installed browsers, live relays, attached boards and physical security require
++separate evidence; successful software checks do not qualify a device release.
+ 
+ ## Project boundaries
+ 
+diff --git a/crates/nsealr-core/Cargo.toml b/crates/nsealr-core/Cargo.toml
+index d1e390044d1ee304b7772fad3589a728bc697adb..3270e8d900cd2bd86f9696427b4ad9b18a31bf21 100644
+--- a/crates/nsealr-core/Cargo.toml
++++ b/crates/nsealr-core/Cargo.toml
+@@ -3,7 +3,7 @@ name = "nsealr-core"
+ version = "0.0.0"
+ edition = "2021"
+ rust-version = "1.95"
+-description = "no_std backbone crate for the nSealr firmware family (empty scaffold; logic ported in later tasks)."
++description = "Portable no_std Nostr protocol, review, policy and session core for nSealr."
+ license = "MIT"
+ publish = false
+ 
+diff --git a/crates/nsealr-core/src/lib.rs b/crates/nsealr-core/src/lib.rs
+index b191031aff918e64dfbc5bf0a6fa443f65108f48..7e2b6655dc6fd1b9b38955f4a8cd3aba92245cf5 100644
+--- a/crates/nsealr-core/src/lib.rs
++++ b/crates/nsealr-core/src/lib.rs
+@@ -1,11 +1,10 @@
+ //! `nsealr-core` — the shared, `no_std` backbone crate for the nSealr firmware family.
+ //!
+-//! This crate is the single Rust home for the device-independent signer core
+-//! (transport framing, QR/serial review model, approval-digest binding, policy
+-//! state) that every nSealr target — the ESP32 QR vault, the USB/NIP-46 signer,
+-//! the custom board, and the Raspberry Pi vault — links against. The C++
+-//! `host_core` semantics are a decided rewrite into this crate; none of that
+-//! logic lives here yet (it is ported task by task in Phase 03).
++//! This crate contains the portable Rust protocol, transport framing, review,
++//! policy and session foundations used by the host conformance harness and
++//! intended device adapters. The separate Python Pi implementation remains an
++//! independent oracle until its explicitly reviewed engine adoption. Compiling
++//! this crate does not qualify an MCU application, custody or physical review.
+ //!
+ //! # Build configuration
+ //!
+@@ -14,8 +13,7 @@
+ //! [`std`] facade for host/desktop consumers and test tooling; it is off by
+ //! default and pulls in nothing on-device.
+ //!
+-//! Phase 03 ports the C++ `host_core` logic into this crate one milestone at a
+-//! time. Ported so far: the low-level primitives [`hash`] (SHA-256) and
++//! Implemented modules include: the low-level primitives [`hash`] (SHA-256) and
+ //! [`base64url`] (URL-safe unpadded Base64), the encoding layer [`bip39`]
+ //! (English mnemonic parsing), [`nip19`] (`nsec` Bech32), [`seedqr`]
+ //! (Standard/Compact SeedQR), and [`unicode`] (UTF-8 + JSON `\uXXXX` helpers), the
+diff --git a/docs/bridge/architecture.md b/docs/bridge/architecture.md
+index bcaca49b16737cf4ceb1faa1903402c90e8cc293..131cb9e29408a2485b21e2f8bbbc1d2fc9292510 100644
+--- a/docs/bridge/architecture.md
++++ b/docs/bridge/architecture.md
+@@ -1,1222 +1,53 @@
+-# Architecture
+-
+-`nSealr/companion` is the untrusted host-side software shared by all signer
+-lines.
+-
+-## Responsibilities
+-
+-- Construct signing requests from Nostr event templates.
+-- Move requests over selected transports.
+-- Verify signer responses against `nSealr/specs`.
+-- Provide CLI and automated harnesses before browser or GUI workflows.
+-- Reject mismatched event ids, pubkeys, signatures, and request ids.
+-
+-## Trust Boundary
+-
+-The companion must not be trusted with production private keys. A development
+-signer may exist only as an explicit test harness.
+-
+-Before any production signer I/O, production browser-extension packaging, full
+-NIP-46 relay session, or file-backed persistent grant use is added, companion
+-code must pass the M4.5
+-pre-signing hardening gate. Signing-request validation, NIP-46 bridge
+-conversion, QR/serial decoding, and policy-file parsing must share explicit
+-nSealr v0 limits and deterministic rejection behavior. CLI commands should
+-only adapt file/argument I/O around package-owned validation logic.
+-
+-The companion is infrastructure, not a first-class signer family. Per-solution
+-feature status lives in `nSealr/specs`
+-`vectors/features/signer-feature-matrix-v0.json`. When companion exposes a
+-feature used by multiple signer families, such as request validation, review
+-projection, policy decisions, transport framing, or response verification, it
+-must follow the shared `contract_id` instead of creating a host-only variant.
+-
+-Browser extension, npm SDK, CLI, local app, local service, and full NIP-46
+-relay support are companion access surfaces. They must stay thin over
+-package-owned logic. In particular, a browser extension may expose NIP-07
+-`window.nostr`, but it must not store production signing material or implement
+-browser-local production signing. An npm SDK may expose reusable helper
+-packages, but it must not export test-only signing as a production path.
+-
+-## Implemented Modules
+-
+-- `apps/cli`: command-line entrypoint.
+-- `apps/browser-extension`: private browser-extension boundary scaffold. It
+-  owns strict internal message parsing and provider-backed request handling for
+-  `get_public_key` and `sign_event`, validates provider outputs before browser
+-  callers can trust them, derives sender-bound client identity before provider
+-  selection, can compose that identity with the native-messaging local-service
+-  provider path, can request digest-bound local-service pairing intents for the
+-  same identity, can project those intents into deterministic pairing and
+-  browser-origin permission review metadata without approving clients, and can
+-  create origin permission approval artifacts only after explicit local pairing
+-  digest confirmation. It has a pure background-controller boundary over
+-  injected native messaging with optional response timeouts and request-scoped
+-  cancellation, a pure runtime-message adapter that maps raw browser sender
+-  metadata into the internal sender shape before background handling, an
+-  injected runtime `onMessage` listener installer with explicit teardown and
+-  asynchronous `sendResponse` handling, and a pure page-provider boundary that
+-  maps NIP-07
+-  `getPublicKey` and `signEvent` calls to validated background requests, and
+-  has a pure page-bridge envelope and page-side requester adapter for future
+-  page/content-script messaging. It also has a pure content-script bridge
+-  handler for sender-bound background forwarding, a pure content-window event
+-  adapter for source/origin gating before forwarding, an injected
+-  content-window message-listener installer with explicit teardown and injected
+-  response posting, and a pure page-script bootstrap that installs the provider
+-  over an injected bridge exchange.
+-  It can build a minimal MV3 manifest with `nativeMessaging` as the only
+-  permission, and an opt-in explicit-origin content-script manifest profile
+-  that exposes only the packaged page script to those explicit origins while
+-  still omitting host-permission fields, broad URL matches, extension storage,
+-  grants, and key custody. Content-script package builds must also embed a
+-  reviewed origin-permission store covering the packaged origins and methods;
+-  this is static developer-artifact data, not browser storage. It does not yet ship full extension
+-  packaging, automatic content-script/page-script injection, packaged
+-  bootstrap/config loading, native-host installation, permission UI, persistent
+-  grants, or signer dispatch. Its packaged runtime entrypoints are checked by
+-  source import hygiene and an esbuild browser bundle smoke before installable
+-  package generation is allowed. The first package-build CLI writes an explicit
+-  output directory only after successful in-memory bundling, embeds a
+-  digest-approved secretless static route config in the background bundle, and
+-  requires reviewed origin-permission store data before content scripts can be
+-  packaged. It returns the shared native-host name, explicit route, manifest
+-  permissions, popup mode, activeTab usage, origin, optional embedded extension,
+-  and pairing metadata plus a package digest and per-file byte counts plus
+-  SHA-256 hashes, writes no extension storage, installs no native-host
+-  manifest, and remains a developer artifact until a full bootstrap/config UX
+-  is reviewed.
+-- `packages/core`: NIP-01 event id and BIP-340 verification.
+-- `packages/protocol`: schema validation, typed request/response models, the
+-  central nSealr v0 implementation limit profile used by companion parsers,
+-  and signing-status consistency checks so a signer cannot claim
+-  `signing_enabled: true` while still reporting missing gates or
+-  `signing_enabled: false` without reporting at least one blocker. Gate lists
+-  are also checked for duplicates. Response request ids must follow the same
+-  v0 profile as requests, and signed-event responses are checked against the
+-  same integer-safety, content, and tag resource limits before transport or CLI
+-  callers can treat them as accepted output.
+-- `packages/fixtures`: shared event, key, trusted-review,
+-  review-display-frame, review-detail-page, QR review-transcript, NIP-46
+-  payload, NIP-46 policy-file, NIP-46 connection URI, NIP-46 relay-event,
+-  NIP-46 relay-step, NIP-46 session lifecycle, NIP-46 session gate,
+-  account-descriptor, policy-profile,
+-  grant-descriptor, policy-change review, policy-decision, route-selection,
+-  source public-key proof, access-surface, feature-matrix, persistent-secret
+-  custody contract, limit-profile, and invalid hardening fixture loading.
+-  Package code also owns QR review-transcript fixture validation, including
+-  `scroll` buttons and rendered-frame `body_line_styles`, so the CLI does not
+-  duplicate that contract.
+-  Package code also validates feature matrices so shared feature `contract_id`
+-  drift and Raspberry/ESP32 stateless QR vault target drift fail in companion
+-  conformance checks.
+-- `packages/policy`: secretless account, route, recovery, policy, grant
+-  descriptor parsing, policy-change review generation, and pure
+-  policy-decision evaluation. This package owns anti-secret,
+-  anti-QR-automation, NIP-06 recovery source-fingerprint validation,
+-  anti-decrypt-grant, and audit-event decision checks,
+-  including runtime policy-decision request parsing, deterministic expiry,
+-  revocation, and rate-limit decisions from explicit grant-usage snapshots,
+-  shared `nsealr-route-selection-v0` response parsing, and digest-bound
+-  `set_policy` review pages for persistent device routes, so CLI/browser/SDK
+-  code does not grow a parallel policy parser. The package does not persist
+-  usage history, grants, or authoritative device policy. External NIP-46
+-  account descriptors remain external-policy metadata and cannot claim nSealr
+-  physical review, physical approval, persistent grants, or nSealr-managed
+-  scoped automation. The v0 nSealr-managed grant menu is intentionally limited
+-  to `sign_event` kind `1`; broader automated event kinds or methods remain
+-  future-spec work and must not be added ad hoc in an access surface.
+-- `packages/review`: deterministic event-template review summary generation
+-  for untrusted companion previews and conformance checks.
+-- `packages/dev-signer`: private test-only signing implementation,
+-  deterministic smartcard APDU simulator, and development signer transport. It
+-  is not a production signer route and must not become a dependency of
+-  publishable production packages.
+-- `packages/transport`: signer transport interface plus JSON file, JSON-lines
+-  stdio, serial-frame, and serial-line adapters. It is intentionally
+-  secretless and does not depend on `@nsealr/dev-signer`.
+-- `packages/qr`: v0 `nsealr1:` QR envelope encoding and decoding.
+-- `packages/framing`: browser-runtime-clean checksum-protected serial line
+-  framing draft with the shared v0 serial-frame byte limit. It is a direct
+-  protocol package for future WebSerial/WebUSB experiments, not a transport
+-  opener.
+-- `packages/smartcard`: APDU codec, provider-based PC/SC APDU transport
+-  boundary, `SmartcardSigner` boundary, and response verification for the
+-  display-less smartcard line. The codec rejects non-integer byte/status-word
+-  fields, non-`Uint8Array` payloads, and oversized short-APDU payloads before
+-  simulator or PC/SC transport. Test-only APDU simulation is private
+-  `@nsealr/dev-signer` code, not public smartcard API.
+-- `packages/nip46`: decrypted NIP-46 payload bridge for `get_public_key`,
+-  `sign_event`, local `ping`, local `switch_relays` no-change metadata, and
+-  conversion from nSealr responses back to NIP-46 result/error strings. It also
+-  validates requested permission strings
+-  and policy files, and parses `connect` messages into review intents,
+-  deterministic review pages, and digest-bound local approval artifacts for
+-  later policy work. It now parses NIP-46
+-  `kind:24133` relay event envelopes into sender/recipient/content metadata,
+-  while explicitly leaving relay I/O, NIP-44 decryption, grant creation, and
+-  signer dispatch outside this package boundary. It also evaluates relay
+-  request and response steps only after a future NIP-44 layer provides
+-  plaintext, reusing the same bridge-decision path for requests and
+-  shape-checking plaintext responses while binding public-key and signed-event
+-  result pubkeys to the relay event sender. Signed-event response results are
+-  also NIP-01 id checked and BIP-340 verified. Auth challenge responses expose
+-  only safe http(s) URL metadata without credentials or fragments for later UI
+-  and do not open that URL. Signed relay-event envelopes are NIP-01 id checked
+-  and BIP-340 verified, while the package still avoids opening relays,
+-  acknowledging `connect`, creating grants, dispatching signers, or persisting
+-  session state.
+-  It also evaluates a pending-session request gate for
+-  `approved_pending_ack` checkpoints: relay sender/recipient binding and
+-  expiry are checked, but signer dispatch is rejected with
+-  `connect_ack_pending` until a future acknowledged-session contract exists.
+-  Permission matching is present as a pure boundary and is pinned by shared
+-  permission policy fixture checks. Bridge decision output is also present: a
+-  permitted request can become a signer request, `ping` can produce a local
+-  response, `connect` can produce a review intent, and missing permissions
+-  produce deterministic NIP-46 errors before signer transport. Permission
+-  storage and grant UX remain separate layers.
+-- `packages/client`: local companion service request/response protocol,
+-  native-messaging frame codec, service status, pairing intent generation,
+-  shared local-client identity parsing, deterministic pairing-review
+-  projection, grant enforcement, a strict
+-  secretless JSON grant-store contract, digest-bound storage-location review
+-  and approval artifacts, secretless account-route selection, signer-request
+-  validation, grant-gated signer-request dispatch through an explicitly injected
+-  dispatcher, display-less `sign_event` external-review acknowledgement binding,
+-  signer-response verification, response validation, and a
+-  high-level client wrapper. The wrapper checks request-id correlation,
+-  malformed responses, operation-specific result types, and route selections
+-  through the shared `@nsealr/policy` parser before callers can trust
+-  native-messaging responses. Its dispatch wrapper can pass the same
+-  digest-bound external-review acknowledgement accepted by the service for
+-  display-less routes, so SDK, desktop, CLI, and native-messaging callers do
+-  not need to fork that smartcard safety gate. The dispatch operation remains
+-  unavailable by default and adds no real transport driver by itself. Shared
+-  route-refusal fixtures now pin that behavior across every route-selection
+-  vector: no dispatcher yields `signer_route_unavailable`, display-less
+-  smartcard dispatch requires matching external review acknowledgement first,
+-  and trusted-review routes reject that acknowledgement because review belongs
+-  to the signer route. The package also
+-  exposes a route-aware dispatcher registry helper so host apps can attach
+-  multiple explicit account/route/transport handlers without putting
+-  route-selection conditionals in browser, SDK, or CLI access surfaces. This is
+-  the shared client/service boundary for future browser extension, SDK, and
+-  desktop work. The async service handler is the reviewed path for future
+-  host-owned signer drivers that need asynchronous transport I/O; the
+-  synchronous handler rejects async dispatchers deterministically.
+-- `packages/browser-provider`: NIP-07 provider adapter for browser-extension
+-  packaging. It accepts an injected companion backend plus explicit client
+-  identity, validates public keys, converts `signEvent` inputs into nSealr
+-  signer requests, verifies signed responses, and stores no browser-side
+-  production keys. Its local-service backend adapter can read the selected
+-  account public key through authorized route selection and routes `signEvent`
+-  through local-service dispatch, returning deterministic signer-unavailable
+-  responses until an explicit signer route dispatcher is configured. Its
+-  browser native-messaging adapter is intentionally thin: it validates the
+-  native-host name, calls an injected `sendNativeMessage`, and relies on
+-  `@nsealr/client` for shared local-service response validation, deterministic
+-  timeouts, cancellation, and request-id correlation.
+-- `apps/browser-extension` route configuration is stricter than general
+-  account-route selection. A packaged NIP-07 bridge must name an explicit
+-  browser-dispatchable route type: `esp32_usb_nip46`,
+-  `custom_hardware_wallet`, or future `external_nip46`. Account-only package
+-  routes, stateless QR vault routes, and display-less smartcard routes are
+-  rejected before package review or build so the extension cannot imply a
+-  transport it cannot safely drive.
+-- `packages/sdk`: public namespace facade for app, browser-extension, and
+-  companion integrations. It excludes private test signing from the public
+-  package surface. Browser runtime code must use the reviewed
+-  `@nsealr/sdk/browser` subpath, which re-exports
+-  `@nsealr/browser-provider`, `@nsealr/client/browser`, and pure
+-  core/policy/protocol/QR/review helpers without pulling in the broader SDK root.
+-- `apps/service`: private native-messaging host scaffold over
+-  `packages/client`. It processes multiple length-prefixed service messages on
+-  one stdio session, accepts explicit in-memory authorization context in tests,
+-  can load explicit storage-approved read-only secretless grant/account JSON
+-  context files for developer and integration harnesses, can load explicit
+-  storage-approved secretless route-driver stores for exact account/route/USB
+-  serial-line developer dispatch, returns deterministic native-frame errors,
+-  and can print validated Chromium/Firefox native-host manifest JSON plus
+-  digest-bound dry-run install-plan and install-approval JSON through the
+-  shared `@nsealr/client` manifest builder. Its explicit install-execution path
+-  verifies the approval digest again, ensures only the reviewed parent
+-  directory, and writes only the reviewed manifest path with exclusive create
+-  semantics.
+-  It is intentionally secretless and does not write grant/account storage,
+-  perform production grant persistence, open relays, or include default or
+-  production signer transport drivers.
+-
+-Each reusable package has its own `package.json`, source `src/index.ts`
+-entrypoint, and built `dist` JS/declaration export. Cross-package source imports
+-must go through `@nsealr/*` entrypoints, not relative paths into another
+-package's `src` directory. The repository verifier checks this boundary so
+-future extension, SDK, local-service, and CLI work cannot accidentally fork
+-validation or signing helper code.
+-
+-## Access Surface Boundary
+-
+-The intended access surfaces are:
+-
+-- CLI: operator and lab harness over package-owned logic.
+-- Local companion service: future IPC/API boundary for browser extension,
+-  desktop UI, and high-level SDK clients.
+-- Browser extension: NIP-07 provider that forwards requests to companion and
+-  returns only verified results.
+-- npm SDK: public package set for clients and tools that need nSealr request,
+-  transport, policy, and verification helpers.
+-- NIP-46 relay service: encrypted remote-signer compatibility after session,
+-  grant, and policy contracts are ready.
+-- Desktop/operator UI: account, route, diagnostics, policy proposal, and audit
+-  surface over the same local service.
+-
+-All of them must use the same request validator before contacting a signer
+-route and the same response verifier before returning signed events. None of
+-them may store production `nsec`, seed, mnemonic, passphrase, decrypted signing
+-material, or NIP-49 plaintext. Extension/session pairing data is still
+-sensitive and needs expiry, revocation, and origin/app binding before
+-production use.
+-
+-Native messaging is the preferred first serious browser-extension transport to
+-the local companion. A localhost HTTP/WebSocket API remains research until
+-origin binding, CSRF protection, pairing, rate limits, and kill-switch behavior
+-are explicitly specified and tested. The M4.7 threat-model decision selects
+-native messaging for browser alpha because it avoids exposing an always-on
+-loopback service to ordinary web pages. Desktop, CLI, and SDK callers should
+-reuse the same local-service semantics rather than defining a separate security
+-model.
+-
+-The first native-messaging scaffold accepts `service_status`,
+-`request_pairing`, `select_account_route`, `validate_signer_request`,
+-`dispatch_signer_request`, and `verify_signer_response`.
+-`@nsealr/client/browser` owns the browser-runtime local-service client
+-boundary, and `@nsealr/client/client-identity` remains the minimal
+-identity-only subpath. Browser extension, SDK, desktop, CLI, and native-host
+-code must reuse those contracts before deriving client ids, requesting pairing,
+-selecting account routes, or trusting pairing responses.
+-It rejects unsupported surfaces, non-origin URLs such as
+-`https://example.com/path`, deceptive localhost names, overlong app names,
+-invalid instance ids, and extra client fields. The service request parser also
+-rejects unsupported top-level request fields and unsupported per-operation
+-`params` fields before pairing, route selection, signer validation, or signer
+-dispatch can inspect payloads.
+-Pairing requests return a deterministic intent for later user review; they do
+-not approve the client. Validation and verification require explicit grants
+-supplied by the caller/test harness. When grant history is supplied, the latest
+-matching grant by `approved_at` wins, so newer revocation or narrower scope
+-cannot be bypassed by an older grant. Revoked, expired, missing, or
+-operation-scoped grants fail before signer payload handling. This lets browser,
+-SDK, and desktop code integrate against the authorization, validation, and
+-verification boundary before any signer I/O or persistent session state is
+-exposed. `@nsealr/client` now includes the caller-side wrapper for both object
+-exchange and native-messaging frame exchange; it validates service responses and
+-request-id correlation before returning them to higher-level callers.
+-The CLI `nsealr local review-pairing` command exposes the same deterministic
+-pairing-review projection for local/manual inspection. It validates the
+-digest-bound intent and writes review metadata only; it does not create grants,
+-approve clients, or write grant-store files.
+-The companion CLI also has `nsealr local approve-pairing`, which creates a
+-pairing approval artifact only after the caller supplies the reviewed pairing
+-digest. The artifact contains the approved grant metadata, but the command does
+-not append it to a grant store, choose storage locations, or contact signer
+-transports.
+-`nsealr local grant-store append-approval` is the first explicit grant-store
+-artifact builder. It validates a pairing approval artifact through
+-`@nsealr/client`, creates or extends a caller-supplied secretless grant-store
+-JSON object, and writes only a requested output path already covered by a
+-storage approval artifact. If an input grant store is supplied, the same storage
+-approval must cover that input as read-only. It never chooses a default storage
+-location, overwrites an existing output file, mutates the input store, approves
+-clients by itself, or contacts signer transports.
+-`nsealr local grant-store revoke-client` appends a latest-client revocation to
+-a new output grant-store artifact. Revocation is selected by
+-`client_id + origin + surface`, keeps prior grants in the history, and fails
+-deterministically if the storage approval does not cover the read-only input
+-and new output paths, if no matching grant exists, or if the latest matching
+-grant is already revoked.
+-`nsealr local review-storage` renders digest-bound review metadata for explicit
+-grant/account/route-driver store paths. `nsealr local approve-storage` then
+-creates an approval artifact only after the caller supplies the reviewed storage
+-digest. These commands require absolute, expanded, non-relative paths and
+-record read-only versus new-output access intent, but they do not choose default
+-paths, approve clients, dispatch signers, or turn reviewed paths into
+-production storage. Grant-store artifact builders consume those approvals before
+-writing requested output paths, and still refuse to replace existing output
+-files.
+-`nsealr local native-host` is the public CLI boundary for browser native-host
+-onboarding. It renders Chromium/Firefox manifests and digest-bound install
+-plans without installing anything, creates approval artifacts only after the
+-reviewed install digest is supplied, and executes only the approved manifest
+-write with exclusive-create semantics plus an execution report.
+-The private `@nsealr/service` app now runs a tested multi-message native-host
+-stdio loop, so a future browser extension can keep one native-messaging port
+-open and receive one deterministic response per length-prefixed service
+-request. It keeps equivalent native-host artifact helpers for service-level
+-harnesses, but operator-facing onboarding goes through the companion CLI and
+-the shared `@nsealr/client` manifest builder.
+-`@nsealr/client` also defines
+-the persistent grant-store JSON contract used to serialize approved and revoked
+-local client grants without secret material. The private service app can now
+-load explicit read-only grant/account context files for local harnesses only
+-when a digest-bound storage approval artifact covers those paths. It can also
+-load an explicit secretless route-driver store for exact account/route/USB
+-serial-line dispatch through the async local-service boundary only when the
+-same storage approval covers the driver-store path and a loaded account-store
+-contains a matching account id, route type, and transport. That driver store
+-does not contain keys, does not approve clients, does not choose default paths,
+-does not make QR vaults connected signers, and rejects remote, relative, or
+-whitespace-tainted serial path forms before opening only supported local serial
+-device identifiers. Per-driver timeout and ignored-log controls are bounded at
+-parse time. Serial-line open, timeout, protocol, I/O, close, and fallback
+-failures are normalized into deterministic local-service transport error codes
+-before they cross the service boundary.
+-Install approvals still keep `writes_files=false`; install execution is a
+-separate digest-confirmed gate that reports `writes_files=true` only after the
+-reviewed manifest writer runs. Default storage locations, grant/account file
+-writes, relay sessions, browser packaging, and production driver acceptance
+-remain separate gates.
+-
+-The browser-provider package is intentionally one layer above this service
+-boundary. Each provider instance is bound to a client identity so the future
+-native-messaging backend can route pairing, revocation, and origin decisions
+-without inferring identity from unsigned browser data. It does not include an
+-extension manifest, native-host install flow, permission UI, account routing,
+-persistent grants, NIP-04, NIP-44, or relay sessions. It is the package-level
+-contract that a future extension will expose as `window.nostr`.
+-The first local-service backend adapter uses the same local-service route
+-selection and dispatch operations. It still returns deterministic
+-signer-unavailable responses for `signEvent` unless the local service host
+-injects a reviewed signer route dispatcher.
+-The package also includes a browser native-messaging local-service client
+-adapter over an explicit `sendNativeMessage(hostName, message)` function. This
+-keeps browser API integration thin while reusing `LocalServiceClient` response
+-validation, optional deterministic response timeouts, request cancellation,
+-request-id correlation, and the shared native host name and manifest contract
+-exported by `@nsealr/client`. `dispatchSignerRequest` also carries the explicit
+-external-review acknowledgement option for display-less routes through this same
+-client boundary, so access surfaces cannot create a separate smartcard dispatch
+-path. Timeout and cancellation behavior lives in the client package so SDK,
+-browser extension, and future desktop callers cannot fork that boundary.
+-It does not install native-host manifests, persist grants, or open signer
+-transports.
+-The background browser entrypoint adapter is the browser-like wrapper over the
+-background controller and runtime-message listener. It accepts an explicit
+-runtime object with reviewed `onMessage` and `sendNativeMessage` capabilities,
+-installs the runtime listener, and forwards native-messaging calls through the
+-same local-service client path. It now accepts either an already parsed route
+-request or a secretless `nsealr-browser-extension-route-config-v0` selected
+-account config that is parsed into a `sign_event` route request before listener
+-installation. It does not read global browser objects, write extension storage,
+-create grants, dispatch signers, or hold key material.
+-The packaged background source entrypoint
+-`nsealr-background-entrypoint.ts` is a thin launcher over that reviewed adapter:
+-it accepts an explicit packaged global scope, resolves an unambiguous
+-`browser.runtime` or `chrome.runtime`, requires the secretless route config, and
+-then installs the background listener. It still does not read extension storage,
+-create grants, dispatch signers, or hold key material.
+-The private `@nsealr/browser-extension` app now defines the internal extension
+-message boundary for `get_public_key` and `sign_event`. The parser rejects
+-unsupported NIP-07/NIP-44/NIP-04-style methods, malformed request ids, extra
+-fields, and unsafe event templates before provider handling. The first handler
+-is still browser-API-free and receives an injected provider; it validates
+-public keys, checks signed events against the original request, and returns
+-secretless deterministic errors for malformed requests or malformed provider
+-outputs.
+-The same app now has a browser-API-free page-provider boundary that exposes the
+-minimal NIP-07 `getPublicKey` and `signEvent` methods over an injected
+-background requester. It constructs only validated internal extension messages,
+-rejects unsafe event templates before contacting the background boundary,
+-verifies signed event responses, forwards cancellation signals, and can install
+-the frozen provider on an explicit target without overwriting an existing
+-provider. It does not inject content scripts, write browser storage, create
+-grants, or hold key material.
+-The page-bridge boundary defines a validated `page_to_extension` envelope over
+-the internal browser-extension request format and an `extension_to_page`
+-response envelope over the internal response format. It rejects malformed
+-directions, mismatched request ids, unsafe inner requests, and mismatched
+-background responses before a future content script can forward data across the
+-isolated-world boundary. The matching page-side requester adapter wraps
+-validated internal requests in that envelope, validates the returned bridge
+-response, forwards cancellation signals through the injected bridge exchange,
+-and rejects malformed input before the bridge is contacted. It has no
+-`postMessage` listener, no browser runtime dependency, no storage, and no key
+-custody.
+-The content-script bridge handler composes the page-bridge parser with an
+-injected sender-aware background requester. It binds each accepted page
+-envelope to the explicit sender object supplied by the future browser adapter,
+-forwards cancellation as a background request option, and rejects malformed or
+-already-cancelled page messages before the background is contacted. It has no
+-`postMessage` listener, no browser runtime dependency, no storage, no grants,
+-and no key custody.
+-The content-script runtime requester is a thin adapter for the real
+-content-script-to-background hop. It accepts an injected runtime-message sender,
+-forwards the validated internal request, combines bootstrap and per-request
+-abort signals, and rejects already-cancelled or in-flight-cancelled requests
+-without relying on global `browser`/`chrome` APIs. It still performs no
+-storage, grants, signer dispatch, or key custody.
+-The content-script runtime bridge bootstrap composes the injected window
+-listener with that runtime requester. It wires expected page source, exact page
+-origin, explicit sender metadata, injected runtime-message sender, injected
+-response poster, cancellation, and diagnostics into one install/dispose handle
+-without touching global browser APIs, storage, grants, signer dispatch, or key
+-material.
+-The content-script entrypoint composer is the pre-packaging adapter for the
+-future browser content script. It injects the reviewed page script through
+-explicit document and extension-URL dependencies, installs the runtime bridge
+-through explicit window/runtime/poster dependencies, disposes both pieces
+-together, and removes the injected page script if bridge installation fails.
+-It still does not call global `document`, `window`, `browser`, or `chrome`
+-APIs directly and does not write storage, create grants, dispatch signers, or
+-hold key material.
+-The content-script browser entrypoint adapter is the first browser-like
+-composition over that composer. It accepts explicit document, page-window,
+-location, and runtime-like dependencies; derives the reviewed page origin,
+-runtime URL resolver, runtime message sender, and response poster; and then
+-delegates to the pure composer. It still does not read global browser objects,
+-choose storage locations, create grants, dispatch signers, or hold key
+-material. Trusted runtime sender identity remains a background/runtime-message
+-boundary, not content-script metadata.
+-The packaged content-script source entrypoint
+-`nsealr-content-script-entrypoint.ts` is the matching launcher over that
+-adapter: it resolves document, window, location, and an unambiguous
+-`browser.runtime` or `chrome.runtime` from an explicit packaged global scope
+-before installing the page-script injector plus runtime bridge. It does not add
+-host permissions, browser storage, grants, signer dispatch, or key custody.
+-The content-runtime adapters are the next browser API boundary below that
+-composer. They turn an injected runtime-like object into a reviewed extension
+-resource URL resolver and a runtime-message sender, reject unsafe resource
+-paths before `runtime.getURL`, and reject already-cancelled sends before
+-`runtime.sendMessage`. They do not read or write extension storage, register
+-listeners, dispatch signers, or hold key material.
+-Page-window and content-window boundaries share one page-origin validator:
+-HTTPS page origins are accepted, local HTTP origins are accepted for developer
+-harnesses, and path/query/fragment URLs or non-page schemes are rejected before
+-use as trusted bridge origins.
+-The content-window event adapter handles one already-received window message at
+-a time. It accepts only messages from the expected page source and normalized
+-page origin, ignores unrelated data without responding, and forwards only
+-nSealr page-bridge envelopes to the content-script bridge handler. It still
+-does not register a `postMessage` listener, call `window.postMessage`, use
+-browser runtime APIs, write storage, create grants, or hold key material.
+-The content-window listener installer is the next thin adapter around that
+-event handler. It registers a `message` listener only on an injected target,
+-returns an explicit `dispose()` handle, posts accepted bridge responses only
+-through an injected response poster, and reports malformed nSealr envelopes
+-through an injected error callback. If an accepted page-bridge request reaches
+-the listener and the downstream background path fails unexpectedly, the
+-listener reports the internal exception through that callback and posts a
+-generic `content_window_bridge_failed` response back to the page instead of
+-leaving the page-side provider waiting for a timeout. It still does not touch
+-global `window`, browser runtime APIs, extension storage, grants, provider
+-injection, signer dispatch, or key material.
+-The content-window response poster is the reviewed default poster for that
+-listener. It sends extension responses only through the `postMessage` function
+-on the accepted message source and only to a normalized HTTPS or localhost page
+-origin. It does not register listeners, touch global `window`, use browser
+-runtime APIs, write storage, create grants, dispatch signers, or hold key
+-material.
+-The page-window bridge exchange is the matching page-side adapter over an
+-injected window-like target. For each request it registers a temporary
+-`message` listener, posts the validated `page_to_extension` envelope only to
+-the exact reviewed page origin, ignores unrelated sources, origins, request
+-ids, and outbound envelopes, accepts only the matching `extension_to_page`
+-response, and removes the listener on response, abort, timeout, or posting
+-failure. It does not touch global `window`, browser runtime APIs, storage,
+-grants, signer dispatch, or key material.
+-The page-script bootstrap composes that requester with the NIP-07 page
+-provider and explicit-target installer. It gives the future injected page
+-script a single pure entrypoint while still requiring an injected bridge
+-exchange and still refusing to overwrite an existing `window.nostr` provider.
+-It does not include an injection mechanism, content-script registration,
+-browser runtime dependency, storage, grants, or key custody.
+-The page-script window-provider bootstrap is the page-side convenience wrapper
+-over the same provider installer and the page-window bridge exchange. It
+-installs the NIP-07 provider on an explicit target, posts through the injected
+-window-like bridge target, enforces exact origin and source filtering through
+-that exchange, and still contains no direct browser API dependency, storage,
+-grants, or key material.
+-The page-script browser provider entrypoint adapter is the browser-like wrapper
+-over that page-side bootstrap. It accepts an explicit page window and location,
+-derives the reviewed page origin, installs NIP-07 on that explicit target, and
+-uses the page-window bridge for requests. It still does not read global browser
+-objects, write storage, create grants, dispatch signers, or hold key material.
+-The packaged page-script source entrypoint
+-`nsealr-page-script-entrypoint.ts` is the matching launcher over that adapter:
+-it resolves the explicit packaged window and location scope and installs only
+-the reviewed NIP-07 page-window provider. It has no extension runtime, storage,
+-grants, signer dispatch, or key custody.
+-The page-script injection helper is the content-script-side DOM adapter. It
+-accepts only explicit document and extension-URL resolver dependencies, injects
+-the reviewed packaged page-script entrypoint resource as a module script with
+-a stable element id, rejects duplicate targets, unsafe script filenames,
+-unsupported URL protocols, wrong URL paths, and missing parents, and exposes
+-explicit teardown. Packaged extension filenames are intentionally distinct from
+-the internal pure modules such as `background.js`, `content-script.js`, and
+-`page-script.js`, so a future bundle cannot accidentally point the manifest or
+-page injection at a module that only exports helpers. It does not call global
+-`document`, `window`, `browser`, or `chrome` APIs directly.
+-The browser-extension package-plan boundary is a deterministic pre-bundling
+-artifact. It joins the reviewed manifest, shared native-host name, packaged
+-output filenames, and source launcher paths into
+-`nsealr-browser-extension-package-plan-v0`, then rejects drift such as
+-unprofiled storage permission, host permissions, native-host name mismatch,
+-mismatched background output, mismatched popup output, or mismatched
+-content-script output. It deliberately does not build an installable extension,
+-install native-host manifests, write browser storage, dispatch signers, or hold
+-key material.
+-The private `@nsealr/browser-extension` app exposes this boundary through
+-`pnpm --filter @nsealr/browser-extension package-plan -- --target ...`, which
+-prints JSON to stdout only. The command can now also render the explicit
+-extension-storage origin-approval manifest profile through
+-`--origin-permission-mode extension-storage`, requiring reviewed content-script
+-origins and pinning `activeTab` plus `storage` before package build. With
+-`--review`, it wraps the exact package plan in a digest-bound review envelope
+-that must be supplied intact to `package-build`. It still has no output-path
+-option and performs no filesystem install or browser-storage mutation.
+-The `route-config-review` command first projects the selected account/route
+-into `nsealr-browser-extension-route-config-review-v0`, binding the exact
+-secretless route config to a digest without writing storage or approving a
+-client grant. The `route-config-approve` command turns that review into a
+-digest-confirmed approval artifact after the reviewed route-config digest is
+-supplied. Its `package-build` command then writes only a reviewed developer
+-artifact to a new explicit output directory after in-memory bundling succeeds,
+-the supplied `package-plan --review` artifact matches the package plan being
+-built, and the supplied route-config approval matches the embedded route config. The
+-output directory must either be outside the companion source tree or a child of
+-`release-artifacts/browser-extension/`, so a package rehearsal cannot create
+-unreviewed files under `apps/`, `packages/`, docs, scripts, or tests. The
+-returned `nsealr-browser-extension-package-build-v0` result includes the
+-reviewed package-plan digest, route-config digest, selected account/route,
+-shared native-host name, content-script origins, optional embedded extension
+-id, local pairing digest, manifest permissions, popup mode, origin-permission
+-mode, activeTab usage, package digest, and per-file byte counts plus SHA-256
+-hashes for the manifest, packaged popup HTML, and bundled entrypoints. Lab
+-integration verifies both the explicit binding metadata and the files that were
+-actually written. It still installs no native-host manifest, writes no extension
+-storage, creates no grants, dispatches no signers, and holds no key material.
+-`package-verify` is the package-owned audit path for an already written
+-developer artifact: it requires the digest-bound `package-plan --review`
+-artifact in addition to the package-build result, parses both artifacts,
+-recomputes the package digest, rejects source-tree artifact paths outside
+-`release-artifacts/browser-extension/`, rechecks the exact manifest against the
+-externally reviewed package-plan digest and plan body, the exact popup HTML
+-against the deterministic template, popup bundle binding to the reviewed
+-`popup_mode`, native-host binding, selected route metadata, origin-permission
+-metadata in the packaged background script, content-script bridge entrypoint
+-binding, page-script provider entrypoint binding, file hashes, byte counts,
+-exact output directory contents, and bundled JavaScript browser-runtime
+-hygiene, and writes no files.
+-The same private app has a browser-API-free sender context boundary. The future
+-adapter must pass only sanitized `extension_id`, `page_origin` or `page_url`,
+-and optional reviewed app name. The boundary strips full URLs down to origins,
+-rejects mismatched origin/URL pairs, rejects deceptive localhost names and
+-extension-page origins, and creates the `browser_extension` local client
+-identity through `@nsealr/client/browser`. It stores no browser-side
+-production secrets and does not grant a page by itself.
+-The sender-aware handler composes both boundaries before provider selection: it
+-parses the internal request, validates sender-derived identity, and only then
+-asks the injected provider factory for a provider bound to that client context.
+-Malformed requests and malformed senders return deterministic secretless errors
+-without provider selection or signer I/O.
+-The runtime-message adapter is the pure boundary a future
+-`browser.runtime.onMessage` listener will call. It copies only sender id,
+-origin, and URL into the internal sender shape, ignores unrelated runtime
+-metadata such as tab or frame fields, validates the result through the same
+-sender parser, returns deterministic `invalid_sender` responses on sender
+-failure, and forwards request-scoped cancellation to the background controller.
+-It does not register browser listeners, call browser runtime APIs, write
+-storage, create grants, or hold key material.
+-It can emit `nsealr-browser-extension-pending-request-state-v0` snapshots
+-through an injected lifecycle for future visible pending/cancel UI. Those
+-snapshots expose only request id, method, extension id, page origin, optional
+-app name, selected route account/type when configured, status, and timestamps;
+-they do not include event templates, key material, grants, storage writes, or
+-signer dispatch. The lifecycle has a
+-small explicit active-request bound before publishing state. The same lifecycle
+-owns the per-request cancellation hook: cancelling an active snapshot aborts
+-the in-flight native-message path and emits one `cancelled` state instead of
+-leaking a later duplicate rejection. The background entrypoint owns an
+-in-memory lifecycle by default, and extension UI can query or cancel it through
+-separate `nsealr-browser-extension-control-v0` `list_pending_requests` and
+-`cancel_pending_request` runtime messages. Those messages accept
+-extension-internal senders only; page-origin senders cannot list or cancel
+-pending requests. A popup-control client now wraps those messages over an
+-injected `runtime.sendMessage`, validates response envelopes and secretless
+-active pending-state snapshots, rejects settled states and request-id
+-mismatches, and exposes only list/cancel operations for the packaged action
+-popup. The popup view renders
+-only safe pending-state metadata: request id, method, status, page origin,
+-optional app name, selected route account/type, timestamps, and explicit
+-no-key/no-event-payload chips. The
+-same internal control protocol can also request browser-origin permission
+-review metadata from the background controller for an explicit sanitized page
+-sender. That path does not approve the origin, write browser storage, create
+-grants, inject a provider, dispatch a signer, or carry key material. The popup
+-path is not a storage, grant, native-host installation, or signer-dispatch
+-boundary.
+-The runtime-message listener installer is a thin adapter over an injected
+-`runtime.onMessage`-like target. It registers exactly one listener, returns
+-`true` for asynchronous `sendResponse` delivery, sends deterministic responses
+-only through the injected responder, reports responder failures through an
+-injected error callback, and provides explicit teardown. It still does not
+-touch global `browser`/`chrome` APIs, extension storage, grants, signer
+-dispatch, or key material.
+-The origin permission boundary projects digest-bound local-service pairing
+-reviews into page-visible NIP-07 method effects and parses them before any
+-approval artifact is created. Approval requires the exact reviewed local pairing
+-digest, records the approved page-visible methods, and only authorizes a future
+-provider-injection step. It does not create local-service grants, write browser
+-storage, inject a provider, or contain key material. The matching
+-`nsealr-browser-origin-permission-store-v0` contract accepts only already
+-approved origin artifacts, sorts them deterministically, rejects duplicate
+-`origin + extension_id + local_pairing_digest` records, and answers exact
+-origin/extension/pairing-digest/method lookups. That store contract is still
+-pure data validation: its upsert/revoke helpers replace or remove exact
+-approved-origin records without calling browser storage APIs, choosing a
+-persistence backend, creating grants, dispatching signers, or storing secrets.
+-The private browser-extension CLI exposes the same approval, empty-store,
+-upsert, and revoke operations as stdout-only artifact commands. Those commands
+-let operators and tests produce reviewed JSON without adding browser storage,
+-default paths, grant creation, provider injection, signer dispatch, or key
+-material.
+-The origin-permission storage adapter is the first reviewed persistence
+-boundary for that data shape. It accepts only an explicit injected storage area,
+-reads and writes one fixed storage key, returns a deterministic empty store
+-when the key is absent, validates stored artifacts through the same parser, and
+-records every write as secretless extension-storage metadata. It still does not
+-read global browser APIs, create grants, inject a provider, dispatch signers,
+-or store production secrets; packaged manifests do not request storage
+-permission by default.
+-The packaged browser-global resolver is the only reviewed place that can adapt
+-`browser.storage.local` or `chrome.storage.local` into that injected storage
+-area. It rejects ambiguous `browser`/`chrome` globals, requires `get` and `set`
+-methods, and keeps the storage key/parser boundary in the package-owned
+-origin-permission storage module. Package builds use that resolver only for the
+-explicit storage-backed origin-approval profile.
+-The matching origin-permission review card is also pure: it renders the
+-already-validated review, the full pairing digest, requested method effects,
+-and approve/reject actions over injected controls. It accepts approval only
+-when the injected control returns a parseable approval artifact, and it still
+-does not persist storage, create grants, inject a provider, dispatch signers,
+-or hold key material.
+-The popup active-tab origin selector is another pure boundary for future
+-approval UI. It queries an injected `tabs` API for exactly one active tab,
+-normalizes the tab URL through the same sender/client-identity parser, and
+-returns secretless page-origin metadata plus a sender object suitable for the
+-existing background request path. It does not add manifest permissions, read or
+-write browser storage, create grants, inject a provider, dispatch signers, or
+-handle key material.
+-The default package does not include this permission surface; the
+-storage-backed origin-approval package profile requests `activeTab` explicitly
+-so the popup can read the active tab URL only after the user opens the action
+-popup.
+-The active-tab origin permission review orchestrator composes that selector
+-with the popup control client. It requests review metadata for the normalized
+-active-tab sender, parses the returned review, and rejects origin or extension
+-id mismatches, app-name mismatches, unsupported result fields, or
+-authorizing/secret-carrying control results before any card rendering or
+-approval path can consume it. It is still review-only and does not write
+-browser storage, create grants, inject a provider, dispatch a signer, or carry
+-key material.
+-The popup origin-permission view composer binds that orchestrator to the
+-existing approval card and popup refresh surface. It renders exactly the
+-reviewed active-tab origin state, delegates digest-bound approval/rejection to
+-injected controls, reports errors through the popup status/list region, and
+-does not itself call browser storage APIs, create grants, inject a provider,
+-dispatch a signer, or handle key material. The extension-internal control
+-protocol can now carry that reviewed origin permission plus the reviewed local
+-pairing digest back to the background controller. Approval constructs the
+-approval artifact in the background and writes the approved-origin store only
+-through an explicitly injected origin-permission storage adapter; missing
+-storage, digest mismatch, malformed storage-write metadata, or page-origin
+-senders fail deterministically without native messaging or signer dispatch.
+-The sender-aware request handler can also consume that approved-origin store as
+-an injected authorization gate. The gate accepts either a static reviewed store
+-or an async injected store loader, then checks the exact
+-origin/extension/pairing-digest/method tuple after request and sender parsing
+-but before provider selection, native messaging, route selection, or signer
+-dispatch. Denied, stale, malformed, ambiguous, or unavailable
+-origin-permission state returns `origin_permission_denied` deterministically.
+-The browser-like background entrypoint exposes the same injected gate, so
+-packaged runtime handling can be tested without introducing browser storage or
+-global browser APIs. The packaged background entrypoint forwards that option
+-rather than dropping it at the launcher boundary.
+-Package builds now have two origin-permission gate modes. The default embedded
+-mode keeps the reviewed approved-origin store in secretless background gate
+-data and requests no storage permission. The explicit `extension_storage` mode
+-does not embed approvals: it requests `storage`, resolves the reviewed storage
+-adapter at runtime, loads the store before provider selection, and lets the
+-action popup write new approvals only through the digest-confirmed background
+-approval path. Storage-backed packages bind approvals to the browser runtime's
+-actual extension id at runtime, so unpacked Chromium development builds do not
+-fail because their runtime id differs from reviewed package metadata. A
+-build-time extension id is optional metadata for `extension_storage` packages
+-and remains mandatory only for embedded-store content-script packages, where
+-the reviewed store must be keyed before packaging.
+-Build-time side effects remain unchanged: package builds write only package
+-files, never extension storage, grants, signer output, or native host
+-manifests.
+-Its manifest builder is intentionally restrictive: the default Chromium
+-manifest omits host permissions, optional host permissions, content scripts,
+-web-accessible resources, and storage; Firefox manifests require an explicit
+-reviewed extension id and otherwise follow the same zero-host-permission
+-boundary. An opt-in content-script profile may list explicit reviewed origins such as
+-`https://example.com/*` or local development origins such as
+-`http://localhost:5173/*`, but it rejects `<all_urls>`, wildcard schemes,
+-wildcard hosts, non-local `http`, duplicate matches, host-permission fields,
+-and implicit storage. When content scripts are enabled, the manifest exposes
+-only the packaged page-script entrypoint as a web-accessible resource for those
+-same explicit matches so page injection can work without granting wider host
+-access. A separate explicit origin-approval profile may add only `activeTab`
+-and `storage` for popup-mediated browser-origin approval; it still rejects host
+-permission fields and broad URL access. Origin injection and durable extension
+-metadata remain blocked on production permission UX.
+-
+-Executable SDK examples live in private app `@nsealr/sdk-examples`. They are
+-not another access surface and do not own production behavior. Their role is to
+-prove that a consumer can use the built public package entrypoints for request
+-validation, QR envelopes, local-service calls, browser-provider integration,
+-the browser-safe SDK facade, and already-decrypted NIP-46 decisions without
+-importing private test-only signing code or storing secrets. The
+-browser-provider example consumes the shared access-surface vector, so
+-SDK-facing examples stay pinned to the same secretless local-service
+-route-selection and signer-unavailable contract as package tests.
+-The public package import-hygiene gate checks production source separately from
+-package manifests and tarball contents. It rejects `@nsealr/*` imports that do
+-not resolve to reviewed public packages or exported subpaths, rejects relative
+-imports that escape the package `src` boundary, and keeps private apps plus the
+-test-only signer package out of production package code.
+-
+-## Current CLI Flow
+-
+-The M2 CLI flow is:
+-
+-1. Build a request from an unsigned Nostr event template.
+-2. Produce a development response with an explicit software test key.
+-3. Verify the response against the original request before any downstream use.
+-
+-The same commands support JSON files and v0 `nsealr1:` QR envelope files so the
+-desktop companion can drive the Raspberry QR vault flow before camera/display
+-hardware is integrated.
+-
+-`nsealr review-request` can render the same deterministic review JSON from a
+-JSON or QR `sign_event` request. With `--screen-review` it emits the
+-digest-bound screen-page model; with `--detail-pages` it emits the complete
+-constrained-display detail-page model used by Raspberry and ESP32 review UI
+-tests. Detail-page rendering defaults to the T-Display S3 sized profile and
+-accepts explicit title/body/compact line limits so lab and device adapters can
+-compare the same display envelope. These modes are deliberately labeled as
+-untrusted previews: they help users and automated tests see what a conforming
+-signer should display, but approval authority still belongs to the vault,
+-firmware, or card line holding the key.
+-
+-The development signer exists only for local testing. Production signer lines
+-must replace it with a hardware, vault, or smartcard transport while preserving
+-the same request/response verification boundary.
+-
+-## Transport Boundary
+-
+-Every transport implements a single `exchange(request)` contract. Transport
+-adapters are responsible for moving JSON request and response envelopes only.
+-The companion remains responsible for validating request/response shape and
+-cryptographically verifying successful signed-event responses after transport
+-completion.
+-
+-The shared transport boundary now enforces that verification before returning
+-from `exchange`: request shape is checked before sending, response shape and
+-`request_id` are checked after receiving, and successful `sign_event` responses
+-must pass NIP-01 event-id and BIP-340 signature verification against the
+-original request. Error responses such as `signing_disabled` can still return
+-as valid refusals.
+-
+-Trusted-review vectors are loaded from `nSealr/specs` so host tools and
+-device implementations can agree on what must be shown before approval. They do
+-not make the companion trusted; they are conformance data for signer UIs.
+-
+-Review-display-frame vectors are loaded and shape-checked as bounded rendering
+-contracts for small trusted screens. The companion treats them as conformance
+-data for Raspberry and ESP32 adapters, not as host-side approval authority.
+-
+-Review-detail-page vectors are also loaded and shape-checked as complete
+-physical review-page contracts for constrained signer displays. They preserve
+-the shared `approval_digest` but pin scroll windows, line styles, continuation
+-indentation, visible JSON-style escapes for decoded control characters, and
+-explicit codepoint fallback separately from the digest-bound `screen-pages`
+-model. The companion can render these pages for previews and cross-repo
+-comparison, but still treats them as conformance data, not as a trusted
+-approval surface.
+-
+-QR review-transcript vectors are also loaded and shape-checked by
+-`nsealr fixture verify`. They bind raw QR input to frame/button/decision
+-sequences for Raspberry and ESP32 adapter tests; the companion treats them as
+-conformance data, not as trusted approval authority. The transcript validator
+-lives in `packages/fixtures`, and `apps/cli` only calls it while iterating the
+-loaded fixture set.
+-
+-NIP-46 payload vectors are loaded and verified by `nsealr fixture verify` so the
+-host bridge and shared specs agree on decrypted `get_public_key`, `sign_event`,
+-local `ping`, response mapping, and permission policy behavior before relay and
+-encryption work begins.
+-
+-NIP-46 policy-file vectors are loaded and verified by `nsealr fixture verify` so
+-explicit approved-permission inputs stay normalized across specs, companion,
+-and lab integration. Package code owns the parser; the CLI only reads files and
+-passes parsed policies into bridge decisions. They are read-only conformance
+-files, not a grant store.
+-
+-Account, policy, and grant descriptors are loaded through `packages/policy`.
+-The companion may keep labels, public keys, signer routes, recovery
+-descriptors, capabilities, policy ids, and scoped grant metadata. It must not
+-store production `nsec`, mnemonic, seed, passphrase, NIP-49 ciphertext, or raw
+-private key material. The descriptor parser is closed-schema at the record,
+-route, capability, policy-profile, grant, client, permission, and rate-limit
+-levels, so unsigned metadata cannot silently alter route or policy meaning.
+-Stateless QR vault routes remain manual-only and cannot receive persistent
+-grants. Display-less smartcard routes also remain manual-only; they require
+-explicit external review acknowledgement and cannot claim trusted device review
+-or persistent grant automation. External NIP-46 routes remain external-policy
+-metadata and cannot receive nSealr-managed scoped automation grants. The local
+-service accepts that acknowledgement only as
+-`nsealr-external-review-acknowledgement-v0`, only for display-less
+-`sign_event`, and only when its `approval_digest` equals the digest recomputed
+-from the request; acknowledged metadata is rejected on routes with trusted
+-device review.
+-
+-Policy-change review vectors are also consumed through `packages/policy`.
+-Persistent-device account descriptors start on
+-`policy-manual-only-persistent-device`; switching to scoped automation is a
+-secretless `set_policy` proposal that renders deterministic device-review
+-pages and an approval digest. The companion can carry the proposal, but it does
+-not make the policy authoritative, write a grant store, or bypass local device
+-approval.
+-The CLI exposes only a thin `nsealr policy review-change` file adapter over the
+-same package function. That adapter now requires the account descriptor,
+-current policy profile, proposed policy profile, and proposed grant descriptors
+-that define the proposal context. Rejection happens before output is written
+-when the proposal does not match that context, and the command still does not
+-install policy or create grants.
+-
+-Route-selection vectors are also consumed through `packages/policy`. The
+-selector is pure and secretless: it accepts parsed account descriptors plus a
+-requested account/method and returns selected route metadata only. It does not
+-open transports, create grants, approve clients, dispatch signer I/O, or claim
+-route readiness. Route-selection request and response parsing also live in
+-`packages/policy` so browser extension, local service, CLI, SDK, and future UI
+-code do not fork account-id, route-type, repository, custody, transport,
+-review, policy-support, or secret-material validation.
+-
+-Access-surface vectors are loaded through `packages/fixtures` and consumed by
+-browser-provider tests. The current shared vector pins the NIP-07 browser
+-provider over local companion service route selection: an authorized browser
+-client can read the selected public key, while `signEvent` without an explicit
+-host signer dispatcher returns a deterministic `signer_route_unavailable`
+-protocol response. The vector is secretless and does not create grants, store
+-keys, install a browser extension, or enable production signing.
+-External NIP-46 bunker routes are treated the same way at this layer: they are
+-secretless external adapter metadata, not a built-in relay session, NIP-44
+-state machine, permission grant, or companion-owned key vault. The local
+-service can pass such a selected route to an explicitly injected dispatcher,
+-but it returns deterministic route-unavailable errors when no adapter has been
+-provided.
+-
+-Those descriptors model the resulting signing public key and route. The
+-mnemonic, BIP-39 passphrase namespace, standalone `nsec`, device slot,
+-smartcard slot, or external bunker is a key source or route; policy attaches to
+-the resulting public key. Companion can prepare a policy proposal and transport
+-it, but a persistent nSealr device must review and accept authoritative
+-policy changes locally before they affect signing.
+-
+-Policy-decision vectors are also consumed through `packages/policy`. The
+-current evaluator is pure and stateless: it accepts an explicit policy profile,
+-explicit grant descriptors, and an explicit request snapshot, then returns a
+-deterministic allow, deny, or manual-review decision plus a
+-`nsealr-grant-audit-event-v0` object. It deliberately does not create a grant
+-store, persist approvals, acknowledge NIP-46 `connect`, open relay sessions, or
+-contact signer transports.
+-
+-The current scoped-automation fixtures are deliberately minimal conformance
+-data. They prove bounded decisions, denial, manual-review routing, revocation,
+-expiry, rate limits, and audit-event shape before grant storage exists. They do
+-not introduce a separate grant decision mode: one-use behavior is represented by
+-a scoped grant whose rate limit allows one use. These fixtures are not the
+-final product policy menu and should not grow into companion-owned rule-engine
+-state. The policy profile vocabulary is closed in package code, so new
+-manual-review requirements, forbidden-permission names, or risk-tier strings
+-cannot be treated as live semantics by an access surface. These fixtures also
+-are not the default account policy for persistent nSealr devices; a reviewed
+-policy-change proposal must activate them.
+-
+-Pre-signing hardening vectors are the companion's rejection oracle for unsafe
+-input. They must be evaluated before signer transport, dev signing,
+-smartcard-sim signing, or NIP-46 routing can proceed, and failures must not
+-write output artifacts. The same invalid-vector suite also covers unsafe
+-signed-event response payloads so a real device output cannot bypass the v0
+-integer-safety, content, and tag limits after signing.
+-
+-The current adapters cover these development paths:
+-
+-- `DevSignerTransport`: in-memory test signer in private `@nsealr/dev-signer`
+-  for deterministic harnesses.
+-- `JsonFileTransport`: file handoff for QR vault and offline workflow tests.
+-- `JsonLineStdioTransport`: one-shot process bridge for external signer
+-  adapters and future hardware simulators. It bounds the pre-newline response
+-  buffer and captured stderr before returning or reporting process output, and
+-  terminates silent signer processes after a bounded response timeout.
+-- `SerialFrameTransport`: one-shot `nsealr1f:` request/response exchange for
+-  USB-serial, UART, and firmware smoke-test adapters. It treats
+-  `nsealr1f:error` as a transport diagnostic and includes the device error code
+-  in the thrown error instead of returning it as a signer response.
+-- `SerialLineTransport`: newline-oriented serial transport boundary with an
+-  injected port. It writes a validated `nsealr1f:` request frame, skips
+-  non-protocol device log lines, normalizes `LF`/`CRLF` line endings, rejects
+-  stalled writes and silent ports with deterministic timeouts, then returns
+-  through the same response shape, request-id, and signed-output verification
+-  gate as `SerialFrameTransport`.
+-- `SerialLineStreamPort`: dependency-free Node stream adapter for the
+-  serial-line boundary. It buffers chunked readable-stream output into complete
+-  lines, rejects any buffered line that exceeds the shared v0 serial-frame byte
+-  limit, writes newline-terminated request frames to a writable stream, and can
+-  close its underlying streams after failed exchanges.
+-- `exchangeSerialLineRequest`: package-owned one-shot serial-line exchange
+-  helper. It validates the request before opening a port, delegates exchange to
+-  `SerialLineTransport`, and closes the opened port in a `finally` block. CLI
+-  and future native bindings should use this boundary instead of duplicating
+-  validation/open/close sequencing.
+-- `nsealr serial-frame wrap-request` and `nsealr serial-frame unwrap-response`:
+-  offline CLI helpers for producing validated serial request frames and
+-  decoding validated serial response frames during ESP32 bring-up. With
+-  `--request`, response unwrapping also verifies the original request id and
+-  signed-output binding before writing output. These commands do not open a
+-  physical USB, CDC, HID, WebUSB, or WebSerial connection.
+-- `nsealr serial-line exchange`: one-shot local USB-serial CLI helper over
+-  `exchangeSerialLineRequest`. It opens a newline-oriented device path only
+-  after request validation, writes the chosen output format only after response
+-  verification, and is not a browser transport, relay session, persistent
+-  signer connection, or permission grant mechanism.
+-- `nsealr request get-capabilities`, `nsealr request get-public-key`, and
+-  `nsealr request get-signing-status`: host-side generators for non-sensitive
+-  parameterless device requests. They validate caller-supplied request ids
+-  before writing output and are useful for serial-frame hardware captures
+-  without involving signing.
+-
+-## Smartcard Boundary
+-
+-The first smartcard package covers the display-less APDU contract from
+-`nSealr/specs`: `GET_PUBLIC_KEY` and `SIGN_EVENT_ID`. It can protect key
+-material in a card-like boundary, but trusted event review must still happen
+-before the companion sends a 32-byte event id to a card.
+-The v0 command profile is intentionally exact: CLA `0x80`, P1/P2 `0x00`, no
+-Le byte, and one fixed payload shape per instruction. The private simulator and
+-shared vectors reject profile-shape mismatches before any signature is
+-produced.
+-
+-`SmartcardSigner` models the companion side of that boundary. It retrieves the
+-card public key, computes the NIP-01 event id from the requested template, asks
+-the card to sign only that 32-byte id, verifies the returned Schnorr signature,
+-and emits the standard signed-event response. It refuses to sign unless the
+-caller supplies an explicit review acknowledgement. That acknowledgement is a
+-workflow guard for display-less smartcards, not proof that the untrusted host is
+-a trusted display. The display-less signer boundary therefore accepts only
+-`external-review` acknowledgement; any future trusted-display smartcard product
+-must be modeled as a separate trusted-review surface. External
+-`approvalDigest` input is mandatory, and the signer recomputes the shared
+-screen-review digest and rejects missing or mismatched values before APDU
+-exchange. It also reuses the shared request validator before APDU exchange, so
+-package callers cannot bypass CLI validation with host-supplied `id`, `pubkey`,
+-`sig`, malformed tags, oversized content, or other unsafe `sign_event` shapes.
+-
+-`nsealr review-request --screen-review` renders the same deterministic screen
+-pages and `approval_digest` used by the shared vectors. `nsealr
+-smartcard-sim-sign` exposes the APDU flow through the private test-only
+-simulator in `@nsealr/dev-signer` and requires `--approval-digest` whenever
+-`--review-acknowledged` is used. Real PC/SC and NFC transports must implement
+-the same APDU exchange interface without weakening the review acknowledgement
+-requirement.
+-
+-The PC/SC boundary is provider-based: tests can inject fake readers and future
+-desktop adapters can inject a real PC/SC provider without making a native card
+-driver a required companion dependency. It normalizes provider enumeration
+-failures, malformed reader-list results, and reader connection failures into
+-`PcscUnavailableError` before any APDU exchange, and normalizes APDU transmit
+-failures into the same error family after a connection is opened. It also
+-validates transmit-result shape, response status bytes, response data shape, and
+-numeric response data bytes before constructing response APDUs, so a malformed
+-provider response cannot be silently truncated or surfaced as a generic runtime
+-type error. It is not a real-card compatibility claim.
+-
+-## NIP-46 Bridge Boundary
+-
+-The first NIP-46 module handles only already-decrypted JSON-RPC-like payloads
+-from NIP-46 kind `24133` content plus descriptor-only parsing for official
+-`bunker://` and `nostrconnect://` connection tokens. It does not implement
+-relay subscriptions, NIP-44 encryption/decryption, connection
+-acknowledgements, permission persistence, or active auth-flow browser UX. Relay
+-response-step evaluation accepts `connect` `result: "ack"` only as normalized
+-metadata while keeping `acknowledges_connect: false`; it accepts
+-`switch_relays` JSON relay-list and `null` results only as normalized metadata
+-without opening or switching relay transports; it also accepts the official
+-auth challenge shape only as normalized http(s) URL metadata without
+-credentials or fragments. It never opens the URL or treats these responses as
+-approval.
+-For client-initiated `nostrconnect://` flows, the package can also verify an
+-already decrypted connection-token response against the original local token
+-secret without storing or echoing that secret. The output is secretless
+-metadata that binds the response recipient to the client pubkey and discovers
+-the remote signer pubkey from the response envelope; it does not open relays,
+-derive NIP-44 keys, acknowledge `connect`, create grants, dispatch signers, or
+-persist session state.
+-The package can also project that metadata into deterministic auth-challenge
+-review pages and a digest-bound local approval artifact. That approval proves
+-which URL was reviewed, but still records `opens_url: false`,
+-`acknowledges_connect: false`, `creates_grants: false`, `opens_relay: false`,
+-`dispatches_signer: false`, and `persists_session_state: false`.
+-
+-The bridge maps `get_public_key` and `sign_event` messages into standard
+-nSealr v1 requests so any signer transport can handle them behind the same
+-verification boundary. `ping` is answered locally with `pong` because it does
+-not require a key-holding device. `switch_relays` is answered locally with
+-`result: "null"` no-change metadata until a later relay-session engine owns
+-live relay switching. Signed-event responses are returned as NIP-46 result
+-strings containing JSON-stringified Nostr events; public-key responses return
+-the hex key string; connect ack relay responses remain metadata-only session
+-input; switch-relays responses remain metadata-only relay-list input; nSealr
+-error responses become NIP-46 error strings.
+-
+-This keeps NIP-46 as a host transport/bridge layer. Trusted event review and
+-approval remain with the Raspberry, ESP32, smartcard-assisted, or future
+-hardware-wallet signer boundary.
+-
+-Permission parsing is intentionally separate from permission grants. The parser
+-accepts the NIP-46 `method[:params]` string form, validates numeric
+-`sign_event:<kind>` selectors, and rejects `connect` as a requested permission.
+-The matching helper derives a required permission from a later request and
+-checks it against an already-approved permission set. For compatibility and
+-request-review rendering, raw requested-permission parsing can represent broad
+-`sign_event`; `sign_event:<kind>` matches only that kind. Approved-permission
+-inputs are stricter: CLI `--permissions` and `nsealr-nip46-policy-v0` policy
+-files reject broad `sign_event` and require an explicit kind selector before a
+-request can reach a signer route. Shared specs fixtures now include the derived
+-requirement and positive/negative permission checks for conformance. The bridge
+-decision helper uses the same matching result to produce signer routing, local
+-`ping`, `connect` review, or permission-denied responses. Actual grant storage,
+-revocation, auth challenge UI/session handling, and user approval UX remain
+-future policy layers.
+-This broad NIP-46 permission matching is a read-only compatibility boundary;
+-it is not the nSealr-managed persistent grant descriptor menu, which remains
+-limited to `sign_event` kind `1` in v0.
+-
+-`nsealr nip46 decide` exposes that boundary as a file-backed test harness for
+-already-decrypted payloads. It writes the same deterministic decision JSON used
+-by shared vectors. The command accepts either an explicit permission string or
+-a read-only `nsealr-nip46-policy-v0` policy file pinned by shared specs
+-vectors, and both approved-permission paths reject broad `sign_event`. It does
+-not create or update policy files, open relay sessions, decrypt NIP-44
+-payloads, persist grants, or contact signer transports.
+-
+-`nsealr nip46 review-connect` exposes only the review projection for an
+-already-decrypted `connect` request. It writes deterministic pages with the
+-remote signer pubkey, secret presence, and requested permission labels. It does
+-not echo the secret value, return `ack`, persist a grant, or authorize the
+-client.
+-
+-`nsealr nip46 approve-connect` consumes that review projection and writes a
+-local approval artifact only when the reviewed connect digest is supplied back
+-to the CLI. The artifact binds the approval to the exact review pages while
+-recording `acknowledges_connect: false`, `creates_grants: false`,
+-`opens_relay: false`, `persists_session_state: false`, and
+-`stores_production_secrets: false`.
+-
+-`nsealr nip46 review-auth-challenge` and `nsealr nip46
+-approve-auth-challenge` expose the same boundary for auth URL response steps:
+-the first command renders the remote signer, client pubkey, and auth URL; the
+-second writes an approval only after the reviewed auth challenge digest is
+-supplied back. These commands are file-backed harnesses only. They do not open
+-the URL, acknowledge `connect`, open relays, create grants, dispatch signers,
+-store secrets, or persist session state.
+-
+-The NIP-46 package now also parses a shared session lifecycle checkpoint, but
+-this remains a checkpoint rather than a session engine. The
+-`approved_pending_ack` descriptor binds a reviewed connect digest, client and
+-remote-signer pubkeys, relay URLs, approval time, expiry, requested
+-permissions, and approved permission subsets while rejecting embedded secret
+-material and keeping NIP-44 key derivation, `connect` acknowledgement, relay
+-I/O, grant creation, signer dispatch, production secret storage, and session
+-persistence disabled. The package can also create that checkpoint from a
+-canonical connect review plus matching approval artifact, explicit client
+-pubkey, relay list, expiry, and approved permissions. Source vector paths stay
+-in specs fixture metadata, not in runtime session objects.
+-
+-The pending-session request gate consumes that checkpoint only as immutable
+-review metadata. It binds the relay envelope sender to the session client
+-pubkey, the recipient `p` tag to the remote-signer pubkey, and the decrypted
+-request to the normal NIP-46 permission requirement logic, then returns a
+-deterministic `connect_ack_pending` error. It does not use session permissions,
+-acknowledge `connect`, open relays, derive NIP-44 keys, create grants, dispatch
+-signers, store production secrets, or persist session state.
+-`nsealr nip46 gate-session-request` is only a file-backed harness over that
+-same package boundary. It reads a checkpoint, relay event, decrypted message,
+-and evaluation timestamp from local files and writes the deterministic gate
+-result without opening transports or creating session state.
+-
+-`connect` parsing is also intentionally non-committal. The bridge can extract
+-the remote-signer pubkey, optional secret, and requested permissions into a
+-review intent and deterministic review pages, but it does not return `ack`,
+-echo secrets, persist grants, or authorize a client. A later policy layer must
+-review and explicitly approve that intent. The same boundary is now covered by
+-a shared `nSealr/specs` NIP-46 vector and `nsealr fixture verify`.
+-
+-Connection-token parsing follows the same boundary. `bunker://` descriptors
+-validate the remote-signer pubkey and relay list for a client that wants to
+-talk to an external signer; `nostrconnect://` descriptors validate the client
+-pubkey, required secret presence, relay list, optional client metadata, and
+-requested permissions for a signer that is being asked to approve a client.
+-The returned descriptor intentionally includes only `secret_present`, never the
+-secret value. Parsing a token does not subscribe to relays, derive a NIP-44
+-session key, return a NIP-46 acknowledgement, create a grant, or choose a
+-signer route.
+-
+-`nsealr nip46 parse-connection-uri` is only a file-backed harness over that
+-package parser. It reads a local text file containing the token and writes the
+-same descriptor JSON after validation. The command intentionally avoids a
+-direct `--uri` argument so shared secrets are not encouraged into shell
+-history, process lists, or copied logs.
+-
+-## QR Envelope
+-
+-The companion follows the shared `nSealr/specs` QR v0 format:
+-
+-```text
+-nsealr1:<base64url-json>
+-nsealr1a:<payload-sha256-hex>:<index>/<total>:<base64url-json-chunk>:<frame-checksum-hex16>
+-```
+-
+-The static v0 envelope is deliberately uncompressed and single-part. The
+-animated v0 frame set keeps the same uncompressed JSON payload but splits the
+-base64url text across bounded `nsealr1a:` frames. Each frame carries the full
+-decoded JSON SHA-256 digest, a one-based index/total pair, and a short frame
+-checksum so receivers can reject missing, duplicated, reordered, or tampered
+-frames before parsing JSON. Compression and fountain codes remain out of scope.
+-The decoder enforces the shared static QR decoded JSON byte limit and rejects
+-padded base64url, invalid UTF-8, malformed JSON, and malformed prefixes before
+-any review or signing flow can consume the payload.
+-Animated decoding enforces separate decoded-JSON, frame-payload, and frame-count
+-limits from `nSealr/specs`, then still relies on request/response validation
+-to decide whether the reassembled payload is acceptable for the caller.
+-
+-## Serial Frame Draft
+-
+-The initial serial frame is one newline-terminated ASCII line:
+-
+-```text
+-nsealr1f:<type>:<base64url-json>:<checksum>\n
+-```
+-
+-Supported frame types are `request`, `response`, and `error`. The checksum is
+-the first 16 lowercase hexadecimal characters of SHA-256 over
+-`<type>:<base64url-json>`. This is not an authentication mechanism; it only
+-catches accidental framing and transport corruption before the companion applies
+-schema and signature verification.
+-The decoder enforces the shared complete-frame byte limit and rejects malformed
+-payloads before JSON parsing. The framing package is browser-runtime clean, but
+-browser access surfaces still need separate origin, permission, and transport
+-review before WebSerial/WebUSB support is exposed through `@nsealr/sdk/browser`.
++# Bridge implementation boundaries
++
++Current product requirements live in [the product contract](../product/contract.md).
++This document describes the integrated host implementation. The generated
++[SDK API inventory](api.md) and [API boundary review](api-review.md) identify the
++actual public surface and its limits. Original companion architecture prose is
++preserved in source history at commit 678796900e462f5504e47fe934e2e5f23d85824f.
++
++`apps/bridge` owns the CLI, local service, browser extension and development
++consumer examples. `packages` contains private implementation modules and the
++sole public `@nsealr/sdk`. The SDK root and browser entrypoint contain browser-safe
++namespaces. The explicit Node entrypoint adds host client, framing and NIP-46
++helpers. Packed runtime and declarations contain owned code, with explicit
++third-party production dependencies and their original license distributions.
++Fixtures and development signing helpers are outside the production package.
++
++Bridge prepares requests and untrusted previews, transports messages and verifies
++responses. It cannot approve device actions or hold user signing keys. Identity
++selection, origin permission, local grants and device consent are separate
++boundaries. Host policy metadata cannot silently mutate authoritative device
++policy. Route dispatch is unavailable until an explicit dispatcher is supplied;
++responses bind the original request and selected public key before acceptance.
++
++The local client keeps bounded request correlation, cancellation and timeout
++handling. Native messaging is an explicitly injected exchange. Pairing, storage
++and native-host installation use digest-bound review and approval artifacts;
++file output uses the reviewed destination. These software APIs do not establish
++production installer UX, storage custody or physical transport qualification.
++Card routes and APDU implementations are retired. Host review acknowledgements
++are unsupported and cannot bypass an active route's review requirements.
++
++The protocol module owns request and response validation. Core owns event
++serialization, hashing and verification. QR and serial framing handle bounded
++encoding, checksums and payload parsing before routing. Serial stream adapters
++retain their byte, line, pending-operation and lifecycle bounds. The Pi harness
++and Rust host harness consume the same authoritative contracts while preserving
++independent cryptographic/review implementations. No sibling fixture snapshot is
++an accepted fallback.
++
++Pure NIP-46 helpers parse descriptor or already-decrypted metadata and validate
++request/response steps. The explicit Node session manager and relay adapter have
++separate runtime side effects: authenticated transport authors, independently
++resolved user identity, signed encrypted messages, bounded pending requests,
++terminal close and wiping of the owned client transport-key copy. Metadata does
++not restore or authenticate a runtime session. Transport credentials are not
++user signing-key custody. Detailed S01 identity, retry and resource bounds remain
++in the API boundary review and retained tests.
++
++Browser extension permission, review and approval controls remain secretless.
++Deterministic package manifests and VM/DOM checks do not prove installed browser
++compatibility. The retained Firefox target still uses a service-worker manifest;
++Firefox background execution needs separate C01/P02 qualification and repair.
++No universal Firefox compatibility is claimed by package test success.
+diff --git a/docs/bridge/audit-checklist.md b/docs/bridge/audit-checklist.md
+index 27ef9370f8e7c44a0af21df4259f37327aa1b175..bb58ab5c3620335ac733de1ee0b4c2cb846d5dd7 100644
+--- a/docs/bridge/audit-checklist.md
++++ b/docs/bridge/audit-checklist.md
+@@ -4,7 +4,7 @@ Before companion work is complete:
+ 
+ - [ ] Tests cover expected and rejected behavior.
+ - [ ] No production private key custody is introduced.
+-- [ ] Protocol behavior matches `nSealr/specs`.
++- [ ] Protocol behavior matches the authoritative `protocols/contracts/v1` artifact.
+ - [ ] CLI output is deterministic where required.
+ - [ ] Error messages are actionable.
+ - [ ] Docs explain trust boundaries.
+diff --git a/docs/bridge/release.md b/docs/bridge/release.md
+index 323d31b6823b79e0e27dba7e2bbcfd665b39775d..04d31a885d7e7963216f328cfc729c1a2beddebb 100644
+--- a/docs/bridge/release.md
++++ b/docs/bridge/release.md
+@@ -1,87 +1,18 @@
+-# Release Policy
+-
+-The companion package set is pre-release. No `@nsealr/*` package should be
+-published until the package, policy, and access-surface gates are green.
+-
+-## Versioning
+-
+-- Public companion packages use one synchronized version.
+-- Current version: `0.1.0`.
+-- Breaking API changes are allowed before the first public release.
+-- After publication, SemVer applies to public package exports.
+-- Private `@nsealr/dev-signer` is not a production package and is never a public
+-  signing route.
+-
+-## Public Package Set
+-
+-- `@nsealr/browser-provider`
+-- `@nsealr/client`
+-- `@nsealr/core`
+-- `@nsealr/fixtures`
+-- `@nsealr/framing`
+-- `@nsealr/nip46`
+-- `@nsealr/policy`
+-- `@nsealr/protocol`
+-- `@nsealr/qr`
+-- `@nsealr/review`
+-- `@nsealr/sdk`
+-- `@nsealr/smartcard`
+-- `@nsealr/transport`
+-
+-## Release Gates
+-
+-Before any npm publication:
+-
+-- `make ci` must pass in `nSealr/companion`.
+-- `make integration` must pass in `nSealr/lab`.
+-- Package tarballs must contain only `dist`, README, and package metadata.
+-- Public package manifests must declare npm-facing descriptions, keywords,
+-  repository directories, issue tracker, homepage, MIT license, and public
+-  provenance `publishConfig`.
+-- `make package-registry` must confirm the publishable package set is derived
+-  from package manifests and excludes private/test-only packages from every
+-  public package manifest field.
+-- Packed tarballs must install into a temporary consumer project and import by
+-  package name.
+-- Executable SDK examples must pass against built package entrypoints.
+-- Public package README snippets must pass against built package entrypoints.
+-- `docs/api.md` must match the exported symbols of every public package
+-  entrypoint through `make api-docs`.
+-- `docs/api-review.md` must record the current `docs/api.md` digest through
+-  `make api-review`.
+-- The changelog must describe the release.
+-- No package may contain production private-key custody. Public package
+-  manifests and production code must not reference private `@nsealr/dev-signer`.
+-- Public claims must remain pre-production unless real signer acceptance gates
+-  are complete.
+-
+-## Rehearsal Workflow
+-
+-`.github/workflows/package-release.yml` is a manual package release rehearsal.
+-It runs `make ci`, renders the digest-bound package release plan with
+-`make release-plan`, prepares checked package tarballs with
+-`make release-artifacts`, and uploads those tarballs plus a manifest as a
+-GitHub Actions artifact.
+-
+-This workflow does not publish to npm. It is the reviewed artifact-preparation
+-path that a later publication workflow must build on. The release plan records
+-the exact public package set, synchronized version, tarball names, provenance
+-requirements, required local gates, and the rule that local npm publication is
+-not allowed. The uploaded manifest includes the `release_plan_digest`, then
+-records every package name, version, tarball filename, byte count, and SHA-256
+-digest so reviewers can verify that downloaded rehearsal artifacts match the
+-reviewed package plan exactly.
+-
+-The release artifact helper may delete and recreate only a child directory
+-under `release-artifacts/`. `make release-artifacts-safety` is part of CI and
+-proves dangerous output paths, missing `--out` values, duplicated `--out`
+-options, and unknown release-artifact options are rejected before cleanup.
+-
+-## Provenance
+-
+-Publication should happen only from a reviewed GitHub Actions release workflow
+-using npm trusted publishing or `npm publish --provenance`.
+-
+-Local `npm publish` is not an accepted release path. The first public package
+-publication still requires a separate reviewed workflow change that enables npm
+-trusted publishing or `npm publish --provenance` from CI.
++# SDK release policy
++
++`@nsealr/sdk` is the sole public package. Internal modules, apps, fixture tooling
++and `@nsealr/dev-signer` stay private. The current package is pre-release; there
++is no compatibility obligation for experimental APIs. External Nostr protocol
++interoperability and source/license provenance remain required.
++
++Before publication, `make ci`, `make integration` and `pnpm release-artifacts`
++must pass against the exact reviewed source. The generated API digest and
++boundary review must match. The tarball includes dist, README, MIT notice and
++package metadata, with no test signer, fixture loader or unpublished dependency.
++Its root/browser/Node entrypoints must pass isolated runtime and type consumers.
++Release output paths reject source directories and traversal before cleanup.
++
++Publication, version selection and trusted-publishing configuration are later
++coordinator actions. Migration rehearsals generate local artifacts only and do
++not publish to a registry. Software acceptance does not imply installed-browser,
++relay, hardware, production custody or physical security qualification.
+diff --git a/docs/bridge/sdk-examples.md b/docs/bridge/sdk-examples.md
+index e69fd4df1f5a922b5aebb673fcb57de42b01947d..e83095cf201fc15889bf73c4bbcdb5cf8ef06cb8 100644
+--- a/docs/bridge/sdk-examples.md
++++ b/docs/bridge/sdk-examples.md
+@@ -6,12 +6,12 @@ They are CI guards for public package usage, not production signer code.
+ Run them with:
+ 
+ ```sh
+-make examples-smoke
++pnpm examples-smoke
+ ```
+ 
+-The examples import public packages through their package entrypoints after
+-`dist` artifacts are built. The examples import every publishable public
+-package and cover:
++The development examples use retained internal modules and the public SDK after
++`dist` artifacts are built. The separate packed SDK check proves independent
++public consumption. Examples cover:
+ 
+ - request validation, response validation, event-id computation, signed-output
+   verification, and static QR envelope round-trip;
+@@ -25,10 +25,10 @@ package and cover:
+   client adaptation, and refused `signEvent` behavior over an injected backend;
+ - already-decrypted NIP-46 bridge decisions for permitted and denied requests;
+ - platform-neutral `@nsealr/sdk` facade imports for browser-provider, client,
+-  core, protocol, and smartcard namespaces;
++  core and protocol namespaces;
+ - browser-safe `@nsealr/sdk/browser` facade imports for the NIP-07 provider,
+   browser local-service client, and pure core/policy/protocol/QR/review helpers;
+-- smartcard APDU command/response round-trip and package-owned serial-line
++- package-owned serial-line
+   exchange against an in-memory port that returns `signing_disabled`.
+ 
+ The examples must stay secretless. They may use deterministic signed fixture
+@@ -41,7 +41,7 @@ Package README snippets are a separate public-doc gate. Mark runnable snippets
+ with `nsealr-readme-example` and verify them with:
+ 
+ ```sh
+-make readme-examples
++pnpm readme-examples:check
+ ```
+ 
+ README snippets are extracted from publishable package READMEs and executed
+diff --git a/docs/bridge/testing.md b/docs/bridge/testing.md
+index e3764f917300ac7d380a098692a02a4a49ce2195..004f4d16b4132f7fd029422b4527e873e80d52ab 100644
+--- a/docs/bridge/testing.md
++++ b/docs/bridge/testing.md
+@@ -1,827 +1,25 @@
+-# Testing
+-
+-## Current Baseline
+-
+-```sh
+-make ci
+-```
+-
+-The baseline check verifies repository structure, license policy, docs, CI,
+-TypeScript type safety, unit tests, integration tests, dependency audit, and
+-companion package-boundary rules.
+-The Makefile pins `pnpm@10.33.4`; it uses a global `pnpm` only when that exact
+-version is present and otherwise falls back to `npm exec` on development
+-machines that only have Node/npm. Package build, pack, and release-artifact
+-helpers also invoke the repository-pinned `pnpm` internally, so direct script
+-runs cannot silently inherit an older global `pnpm`.
+-The workspace Vitest command is bounded to four workers to avoid local or CI
+-fork-worker oversubscription while keeping the full test suite enabled.
+-
+-## Single-Repository CI
+-
+-Tests prefer the sibling `nSealr/specs` repository when the full local
+-workspace is present. GitHub Actions checks out `nSealr/companion` by itself,
+-so tests fall back to fixture snapshots under `tests/fixtures/specs` in
+-single-repository CI. Cross-repository drift remains guarded by
+-`nSealr/lab` integration, which runs against the live sibling repositories.
+-
+-## M2 Tests
+-
+-- NIP-01 canonicalization tests in `packages/core`.
+-- BIP-340 verification tests in `packages/core`.
+-- Request and response shape validation tests in `packages/protocol`, including
+-  signing-status consistency checks that reject `signing_enabled: true` while
+-  any `missing_gates` remain and `signing_enabled: false` without at least one
+-  missing-gate reason, response request-id profile checks, plus signed-event
+-  response integer-safety, content, and tag limit rejection.
+-- Shared fixture loading tests in `packages/fixtures`.
+-  Invalid hardening fixture loading is directory-driven so new shared invalid
+-  vectors are discovered from the sibling specs checkout or local snapshot
+-  instead of being maintained in a hand-written name list.
+-  Account-descriptor, policy-profile, grant-descriptor, policy-change review,
+-  policy-decision, route-selection, source public-key proof, and
+-  persistent-secret custody contract loading is also directory-driven through
+-  package-owned fixture/policy code. Policy parser
+-  tests pin the v0 nSealr-managed grant menu to `sign_event` kind `1` only, so
+-  broader automated methods or event kinds fail before CLI, browser, SDK, or
+-  local-service code can treat a grant descriptor as valid.
+-  QR review-transcript fixture validation also lives in this package and covers
+-  `scroll` buttons plus rendered-frame `body_line_styles` mismatch rejection,
+-  keeping `apps/cli` as a thin fixture-verification wrapper.
+-- Trusted-review model tests in `packages/review` against every shared review,
+-  review-screen `approval_digest`, and review detail-page vector from
+-  `nSealr/specs`, including visible JSON-style control escapes in event
+-  content and tags.
+-- Development signer verification tests in `packages/dev-signer`.
+-- Repository verification now requires explicit `@nsealr/*` package manifests,
+-  package READMEs with boundary sections, source `src/index.ts` entrypoints,
+-  built `dist` exports, synchronized package versions, changelog coverage, and
+-  npm-facing package metadata plus public provenance `publishConfig`,
+-  changelog coverage, and release/provenance policy; it rejects deep
+-  cross-package source imports and production package dependencies on private
+-  `@nsealr/dev-signer`.
+-- Client package tests cover native-messaging frame encoding/decoding,
+-  deterministic malformed-frame rejection, secretless local service status,
+-  deterministic pairing intents, browser-safe shared local-client identity
+-  parsing, unpaired/revoked/expired/scope-denied client rejection, latest-grant
+-  selection from in-memory grant history,
+-  unsupported local-service request and per-operation parameter field
+-  rejection,
+-  deterministic pairing-review projection, strict grant-store
+-  serialization/revocation, strict pairing-approval artifact parsing before
+-  grant-store persistence, latest-client revocation appending, secretless route
+-  selection, signer-request validation, signer-response verification, local
+-  client request-id correlation, malformed service-response rejection including
+-  pairing digest mismatch, grant-gated signer-request dispatch through an
+-  explicitly injected dispatcher, deterministic `signer_route_unavailable`
+-  behavior when no dispatcher is configured, shared route-refusal fixture
+-  coverage for every route-selection vector, route-aware dispatcher registry
+-  selection, external NIP-46 route metadata as an injected-dispatch-only
+-  adapter path with no built-in relay/session driver, missing-route refusal,
+-  ambiguous-handler rejection, display-less smartcard dispatch refusal without
+-  a matching external review acknowledgement, rejection of that acknowledgement
+-  on trusted-review routes, async dispatch through
+-  `handleLocalServiceRequestAsync`, deterministic refusal when async dispatch
+-  is accidentally used through the synchronous handler, malformed dispatch
+-  response rejection, and native-messaging exchange wrapping before any real
+-  signer transport driver exists.
+-- Browser-provider package tests cover NIP-07 `getPublicKey` validation,
+-  `signEvent` conversion into nSealr signer requests, signed-response
+-  verification, explicit client identity forwarding, signer refusal propagation,
+-  shared access-surface vector consumption for local-service route selection
+-  and signer-unavailable behavior, browser native-messaging local-service
+-  client adaptation, shared native host name use, invalid native-host-name
+-  rejection, and rejection before backend contact when an event template
+-  contains forbidden signer-owned fields.
+-- SDK examples also consume the shared browser-provider access-surface vector
+-  through built public package entrypoints and import `@nsealr/sdk/browser`,
+-  so the npm-facing facade does not drift into a separate browser/local-service
+-  behavior. The same browser facade now also imports `@nsealr/qr`, which keeps
+-  static and animated QR helpers under the browser-runtime import gate.
+-  The browser-runtime import hygiene check walks packaged browser-extension
+-  entrypoints plus `@nsealr/browser-provider`, `@nsealr/framing`, and the
+-  browser SDK facade. It fails if that runtime graph imports Node builtins, uses
+-  `Buffer`/`process`, or imports the Node-capable `@nsealr/client` root instead
+-  of `@nsealr/client/browser`. Run it directly with
+-  `make browser-runtime-imports`. The browser-runtime bundle smoke then
+-  runs esbuild against the packaged background, content-script, page-script,
+-  and popup entrypoints with `platform: browser` and browser-compatible IIFE
+-  output, and fails if bundled outputs contain Node builtin specifiers,
+-  `Buffer`, or `process`. Run it directly with
+-  `make browser-runtime-bundle`. The browser-extension security audit runs with
+-  `make browser-extension-security` and fails if the extension or
+-  browser-provider runtime starts depending on test signing packages,
+-  signing/key-generation libraries, unreviewed browser storage APIs, or direct
+-  signing helper calls. The only storage path allowed by design is the
+-  package-owned origin-permission storage adapter plus packaged-global
+-  resolver. These gates keep the extension as a secretless NIP-07 access
+-  surface over the local companion service. Installable extension packaging
+-  still needs a reviewed production bootstrap/config contract. Package-build
+-  tests cover the first private developer artifact
+-  builder: route-config tests require digest-bound review and approval for the
+-  secretless selected route, and require that the route config name an explicit
+-  browser-dispatchable route type instead of account-only, stateless QR-vault,
+-  or display-less smartcard routing; package-build requires that approval
+-  before embedding the route config, requires a new output directory outside
+-  the companion source tree unless it is under
+-  `release-artifacts/browser-extension/`, and package verification enforces
+-  the same safe artifact-location rule. It requires the reviewed package-plan
+-  artifact to match the manifest profile being built, writes manifest, popup
+-  HTML, and bundled entrypoints only after successful in-memory bundling,
+-  returns explicit route, shared native-host name, manifest-permissions,
+-  popup-mode, activeTab, origin, extension, and pairing metadata plus a package
+-  digest and per-file byte counts plus SHA-256 hashes. The package-owned
+-  `package-verify` script requires the digest-bound package-plan review
+-  artifact, parses that review plus the build result, recomputes the package
+-  digest, checks the written manifest exactly against the externally reviewed
+-  package-plan digest and plan body, checks the popup HTML exactly against the
+-  deterministic template,
+-  checks packaged popup-mode binding, packaged background native-host, route,
+-  and origin-permission metadata binding, packaged
+-  content-script and page-script bridge/provider entrypoint bindings, bundled
+-  entrypoint byte counts and SHA-256 hashes, and rejects unexpected output
+-  files plus Node runtime references in packaged JavaScript, so release
+-  rehearsals do not depend only on external lab assertions. Package build still
+-  performs no native-host installation, build-time browser storage writes, key
+-  custody, or signer dispatch. Firefox package-build output is covered through
+-  the same builder with explicit Gecko extension settings. Package-plan and
+-  package-build tests both cover the explicit storage-backed origin-approval
+-  profile and pin its `activeTab` plus `storage` permissions.
+-- Browser-extension app tests cover the private internal message parser for
+-  `get_public_key` and `sign_event`, including unsupported-method rejection,
+-  malformed-envelope rejection, and shared signer-request validation for event
+-  templates. Handler tests cover injected provider success paths, request
+-  rejection before provider contact, and malformed provider-output rejection
+-  before browser callers can trust returned pubkeys/events. Sender-boundary
+-  tests cover page-origin derivation from full URLs, origin/URL mismatch
+-  rejection, deceptive localhost rejection, extension-page-origin rejection,
+-  and shared local-client identity construction. Sender-aware handler tests
+-  prove malformed requests and malformed senders fail before provider
+-  selection, provider-selection failures produce deterministic errors, and the
+-  native-messaging provider selector binds sender-derived identity to the
+-  local-service dispatch path while `sign_event` remains deterministically
+-  unavailable until a signer route dispatcher is configured. Pairing tests prove the
+-  same sender-derived identity can request a digest-bound local-service pairing
+-  intent, deterministic pairing-review metadata, and deterministic
+-  browser-origin permission review metadata without creating grants, writing
+-  extension storage, injecting providers, or touching native host installation.
+-  They also prove origin permission approvals require explicit local pairing
+-  digest confirmation and still create no grants, storage writes, provider
+-  injection, or key material. Origin-permission store tests prove already
+-  approved origin artifacts can be normalized into deterministic secretless
+-  records, exact origin/extension/pairing-digest/method lookup is required,
+-  route-only approvals cannot authorize `sign_event`, duplicate approvals are
+-  rejected before shadowing, exact approved-origin upsert/revoke mutations do
+-  not keep stale method scopes or move the store clock backward, and malformed
+-  or secret-looking store fields fail before any storage-adapter write, grant,
+-  signer dispatch, or key material exists.
+-  Origin-permission storage-adapter tests prove the extension can load a
+-  deterministic empty store, parse an existing store, persist only the
+-  validated fixed-key artifact, upsert and revoke approved origins without
+-  touching unrelated records, remove the store only through an explicit injected
+-  remove dependency, and reject malformed dependencies, malformed reads,
+-  secret-looking stored objects, or stale write timestamps.
+-  Origin-permission CLI tests prove private artifact commands can approve a
+-  reviewed origin permission, create an empty store, upsert an approval, and
+-  revoke an exact origin/pairing key through package-owned parsers while
+-  rejecting digest mismatches, unsupported options, malformed approval inputs,
+-  and backward store timestamps. The CLI writes JSON to stdout only.
+-  Origin-permission view tests prove the future popup approval card renders the
+-  validated origin, app name, full local-pairing digest, method effects, and
+-  no-key/no-grant/no-storage-write chips, passes the exact digest to injected
+-  approval controls, accepts only parseable approval artifacts, handles
+-  rejection without creating an approval, and restores controls on malformed
+-  approval output.
+-  Popup active-tab origin tests prove future approval UI can resolve exactly
+-  one injected active tab into normalized sender/origin metadata, accepts local
+-  development HTTP origins, rejects browser-internal pages, rejects ambiguous
+-  tabs, malformed ids, invalid extension ids, and invalid injected APIs, and
+-  still stores no browser secrets or key material.
+-  Popup origin-permission orchestration tests prove selected active-tab
+-  metadata is passed to the review-control boundary, returned review origin and
+-  extension id plus app name must match the selected tab, unsupported result
+-  fields and authorizing or secret-carrying control results are rejected,
+-  unsupported active tabs fail before controls are contacted, and the result
+-  remains storage-free, grant-free, provider-injection-free,
+-  signer-dispatch-free, and secretless.
+-  Popup origin-permission view tests prove the active-tab review renders
+-  through the existing approval card, approval remains digest-bound and
+-  secretless, mismatched active-tab review metadata renders an unavailable
+-  state, and the popup refresh control can reload the review without browser
+-  storage, grants, provider injection, signer dispatch, or key material.
+-  Control, popup-control, background-controller, and browser-entrypoint tests
+-  now prove digest-confirmed origin permission approval is routed through the
+-  extension-internal control protocol into an explicitly injected storage
+-  adapter, without native messaging, grants, signer dispatch, or key material.
+-  Packaged-entrypoint tests now also prove the storage-backed origin-permission
+-  launcher uses the browser runtime sender id when no static extension id is
+-  configured, the explicit origin-permission popup launcher resolves only
+-  injected runtime, tabs, and document globals, renders the active-tab review,
+-  and sends digest-confirmed approval back through the same control protocol
+-  without signer dispatch or key material.
+-  Sender-aware handler and background-controller tests prove an injected
+-  approved-origin store can authorize exact `get_public_key` access while
+-  denying method-mismatched, stale-digest, or malformed-store requests before
+-  provider selection or native messaging. They also prove the same gate can
+-  load the store through an async injected loader, denies loader failures and
+-  ambiguous authorization sources, and still stops before provider selection or
+-  native messaging. Browser-entrypoint tests prove the
+-  same gate is forwarded through browser-like runtime handling over injected
+-  dependencies without calling native messaging on denied methods. Packaged
+-  entrypoint tests prove the launcher preserves the same authorization option.
+-  Background-controller tests prove request handling, pairing-intent requests,
+-  pairing-review projection, and origin-permission review projection share the
+-  same injected native-messaging boundary, silent or
+-  cancelled native messaging can be bounded by the shared local-service
+-  timeout/abort handling in `@nsealr/client`, and malformed browser requests
+-  fail before native messaging is contacted. Runtime-message tests prove raw
+-  browser sender metadata is reduced
+-  to the internal sender shape, invalid senders return deterministic
+-  `invalid_sender` responses before native messaging, and abort signals are
+-  forwarded before native messaging. They also prove the injected runtime
+-  listener installer returns `true` for asynchronous response delivery, sends
+-  responses only through the injected responder, converts unexpected handler
+-  failures into deterministic `runtime_handler_failed` responses instead of
+-  leaving callers without a response, reports responder failures through an
+-  injected error callback, and removes the listener through `dispose()`.
+-  Pending-request tests prove the injected
+-  `nsealr-browser-extension-pending-request-state-v0` lifecycle emits
+-  secretless pending/resolved/rejected/cancelled request state, cleans up
+-  active requests, rejects duplicate active ids, enforces the active-request
+-  bound before publishing state, aborts the native-message signal for UI-driven
+-  cancellation, suppresses stale duplicate rejection after cancellation, and
+-  never exposes event templates, key material, extension storage, grants, or
+-  signer dispatch. Pending-control and runtime-message
+-  tests prove the separate `nsealr-browser-extension-control-v0`
+-  `list_pending_requests`, `cancel_pending_request`, and
+-  `request_origin_permission_review` paths accept extension-internal senders,
+-  reject page-origin senders, reject oversized pending-state lists, reject
+-  settled states from `list_pending_requests`, keep list/cancel operations away
+-  from native messaging, return deterministic `list_failed` responses if the
+-  internal pending lifecycle cannot enumerate active requests, route
+-  origin-review requests through the background controller, and can use the
+-  background entrypoint's default in-memory lifecycle.
+-  Popup-control tests prove future visible UI can call the same list/cancel and
+-  origin-review protocol through injected `runtime.sendMessage`, rejects
+-  mismatched, settled, or unsafe response envelopes, and remains secretless. Popup-view
+-  tests prove the visible pending-request card renders request id, selected
+-  route account/type, timestamps, and no-key/no-event-payload state while
+-  keeping cancellation bound to the validated pending request id and absent
+-  from already settled states.
+-  Page-provider tests prove
+-  NIP-07 `getPublicKey` and `signEvent`
+-  calls become validated background requests, unsafe templates fail before the
+-  background boundary, malformed responses are rejected, and cancellation is
+-  forwarded without content-script injection. Install tests prove the frozen
+-  provider is attached only to an explicit target and does not overwrite an
+-  existing provider. Page-bridge tests prove future page/content-script
+-  envelopes reject malformed direction, mismatched request ids, malformed
+-  background responses, malformed bridge responses, invalid page-side requester
+-  input, and already-cancelled requests before any browser listener exists.
+-  Page-side requester tests also prove bridge-envelope wrapping and
+-  cancellation forwarding through an injected bridge exchange. Content-script
+-  bridge tests prove accepted page envelopes are bound to an explicit sender
+-  and injected background requester without adding browser listeners. They also
+-  prove the runtime requester forwards validated internal requests through an
+-  injected runtime-message sender, forwards cancellation, and rejects
+-  already-cancelled or in-flight-cancelled requests before trusting a runtime
+-  response. Content-script bootstrap tests prove the injected window listener,
+-  runtime-message sender, and response poster can be composed behind one
+-  install/dispose handle while still ignoring unrelated messages and reporting
+-  malformed accepted page envelopes. Content-script entrypoint tests prove the
+-  page-script injection helper and runtime bridge can be installed as one
+-  pre-packaging unit, forward accepted page requests to runtime messaging, clean
+-  up both resources through one dispose handle, and remove the injected script
+-  if bridge listener setup fails. Content-runtime API adapter tests prove
+-  reviewed resource paths are passed to injected `runtime.getURL`, unsafe paths
+-  are rejected before runtime contact, runtime messages are forwarded through
+-  injected `runtime.sendMessage`, and already-cancelled sends stop before the
+-  runtime API is called.
+-  Packaged-entrypoint filename tests prove the manifest and page-injection
+-  defaults use filenames reserved for packaged entrypoint modules,
+-  distinct from internal pure modules that only export helper functions.
+-  Packaged-entrypoint launcher tests prove the background, content-script,
+-  page-script, and popup packaged source modules call the reviewed browser
+-  adapters through explicit packaged global scopes; they accept unambiguous
+-  `browser.runtime` or `chrome.runtime`, reject ambiguous runtime globals before
+-  listener/script installation, and continue to avoid storage, grants, signer
+-  dispatch, and key custody.
+-  Package-plan tests prove the reviewed manifest, packaged output filenames,
+-  and source launcher paths stay aligned before bundle generation exists. They
+-  reject storage permission, host-permission, background-output,
+-  popup-output, content-script-output, and page-script web-accessible-resource
+-  drift without installing native-host manifests or writing extension storage.
+-  Package-plan
+-  CLI tests prove the private
+-  browser-extension script renders deterministic JSON from explicit target and
+-  content-script arguments, rejects incomplete or broad-match inputs, keeps the
+-  default embedded-origin profile storage-free, exposes the explicit
+-  `extension-storage` origin-approval profile only for reviewed content-script
+-  origins, renders a digest-bound review envelope for package-build gating, and
+-  has no output-path/install behavior.
+-  Package-build tests require a reviewed package-plan artifact plus explicit
+-  extension id, reviewed origin-permission store, and local pairing digest
+-  before content-script artifacts can embed an origin gate. Storage-backed
+-  package-build tests prove the build can omit static extension-id metadata and
+-  bind approvals to the runtime extension id instead. The default
+-  embedded-origin result remains extension-storage-free; every package-build
+-  profile remains grant-free, signer-dispatch-free, and secret-free.
+-  Content-script browser entrypoint tests prove explicit browser-like
+-  document/window/location/runtime dependencies compose into page-script
+-  injection, runtime messaging, response posting, and teardown without reading
+-  global browser objects or injecting after invalid dependency validation.
+-  Page-script browser provider entrypoint tests prove explicit browser-like
+-  window/location dependencies install NIP-07 over the page-window bridge,
+-  reject invalid dependencies before provider injection, and avoid global
+-  browser reads.
+-  Background browser entrypoint tests prove explicit browser-like runtime
+-  dependencies install runtime message handling over `runtime.onMessage`, route
+-  accepted requests through `runtime.sendNativeMessage`, dispose listeners, and
+-  reject invalid or cancelled dependencies before native messaging. Route-config
+-  tests prove the selected browser account config is secretless, fixed to
+-  `sign_event`, parsed through package-owned policy route-request validation,
+-  and rejected before listener installation when missing, duplicated,
+-  malformed, or carrying unsupported fields.
+-  Page-origin tests prove the browser-extension bridge accepts HTTPS page
+-  origins and local HTTP developer origins while rejecting non-origin URLs,
+-  unsupported schemes, extension URLs, and overlong values through one shared
+-  validator used by page-window and content-window boundaries.
+-  Content-window tests prove already-received page messages are source/origin
+-  gated, unrelated messages are ignored, and malformed nSealr envelopes fail
+-  before background contact without registering listeners or calling
+-  `postMessage`. They also prove the response-poster adapter posts only to
+-  reviewed `postMessage` targets and normalized page origins, and that the
+-  injected listener installer registers only on an explicit target, posts
+-  accepted responses only through an injected poster, reports malformed nSealr
+-  envelopes through an injected error callback, and returns deterministic
+-  `content_window_bridge_failed` responses for parseable accepted bridge
+-  requests when downstream handling fails unexpectedly,
+-  and removes the listener through `dispose()`. Page-window
+-  bridge-exchange tests prove the page side posts only to the exact reviewed
+-  origin, accepts only matching extension responses, ignores unrelated
+-  messages, and cleans up listeners on response, abort, timeout, and
+-  `postMessage` failure. Page-script bootstrap tests prove the explicit-target
+-  NIP-07 provider can be installed over either an injected bridge exchange or
+-  the injected page-window bridge without overwriting an existing provider or
+-  adding browser injection. Page-script injection tests prove the content-side
+-  DOM adapter rejects duplicate targets, unsafe script files, unsupported URL
+-  protocols, wrong URL paths, and missing parents while exposing explicit
+-  teardown.
+-  Manifest tests pin the minimal MV3 permission boundary: native messaging
+-  only, action popup, no host permission fields, no content scripts, no storage
+-  permission, and explicit Firefox extension ids. They also pin the opt-in
+-  explicit-origin content-script manifest profile and the separate
+-  storage-backed origin-approval profile, where `activeTab` and `storage` are
+-  explicit and still do not introduce host permissions. They reject broad URL access such as
+-  `<all_urls>`, wildcard hosts, non-local `http`, duplicate matches, host
+-  permission fields, and implicit storage.
+-- `make package-smoke` builds package artifacts, then runs the private
+-  `@nsealr/consumer-smoke` app. The smoke imports every public `@nsealr/*`
+-  package through its built package entrypoint plus the public
+-  `@nsealr/client/browser`, `@nsealr/client/client-identity`, and
+-  `@nsealr/sdk/browser` subpaths, and exercises a minimal no-signer consumer
+-  path. It also checks the `@nsealr/sdk` facade namespaces without
+-  importing private signing helpers. This catches broken exports that relative
+-  in-package tests would miss.
+-- `make examples-smoke` builds package artifacts, then runs private
+-  `@nsealr/sdk-examples`. The examples are executable documentation for public
+-  package usage. They import every publishable public package and cover
+-  request/QR handling, fixture loading, policy decisions, review rendering,
+-  serial framing, local companion-service calls, browser-provider refusal
+-  behavior, already-decrypted NIP-46 bridge decisions, `@nsealr/sdk` and
+-  `@nsealr/sdk/browser` facade namespace imports including QR, smartcard APDU
+-  round-trip, and in-memory serial-line transport refusal without importing
+-  `@nsealr/dev-signer`.
+-- `make readme-examples` builds package artifacts, then extracts
+-  `nsealr-readme-example` TypeScript snippets from every publishable package
+-  README and executes each snippet from the private SDK-example app context.
+-  This keeps public README examples aligned with built package entrypoints and
+-  prevents undocumented source/deep-import drift.
+-- `make api-docs` verifies that `docs/api.md` matches the exported symbols
+-  reachable from every public package entrypoint. `make api-docs-update`
+-  regenerates the file after an intentional public API change. This keeps the
+-  npm-facing surface visible and reviewable before publication.
+-- `make api-review` verifies that `docs/api-review.md` records the current
+-  `docs/api.md` digest and includes a review section for every publishable
+-  package. Intentional export changes must update both API docs and the API
+-  review before CI can pass.
+-- `make package-registry` verifies that the public package set is derived from
+-  actual package manifests, that private packages such as
+-  `@nsealr/dev-signer` cannot enter the publishable set, and that public
+-  packages do not reference private/test-only workspace packages anywhere in
+-  their publishable manifests.
+-- `make public-imports` verifies that production source for public packages
+-  imports other `@nsealr/*` packages only through reviewed public
+-  entrypoints/subpaths, keeps relative imports inside the package `src`
+-  boundary, and never imports private apps or the test-only signer package.
+-- `make release-plan-check` verifies the digest-bound public package release
+-  plan and review envelope. The plan lists every public package, tarball name,
+-  package directory, synchronized version, MIT license, publish provenance
+-  config, and required local gates, while proving private packages and local
+-  npm publishing stay excluded.
+-- `make pack-smoke` packs public `@nsealr/*` tarballs, verifies they contain
+-  only `dist`, README, and package metadata, verifies `workspace:*` dependency
+-  protocols were rewritten, installs the tarballs into a temporary npm consumer
+-  project, and imports them by package name. Packed public manifests must not
+-  mention private/test-only packages.
+-- `make release-artifacts-safety` proves the release-artifact helper refuses
+-  destructive output paths such as the repository root, `packages/`, or the
+-  top-level `release-artifacts/` directory before any cleanup occurs. It also
+-  rejects missing, duplicated, or unknown release-artifact CLI options so an
+-  ambiguous invocation cannot select the wrong cleanup target.
+-- `make release-artifacts` builds package artifacts, packs every public
+-  package, validates the same tarball boundaries, and writes
+-  `release-artifacts/packages/manifest.json` with the reviewed
+-  `release_plan_digest` plus each tarball filename, byte count, and SHA-256
+-  digest for the manual package release rehearsal workflow. It does not publish
+-  to npm.
+-- Service app tests prove the private native-messaging host scaffold stays a
+-  thin wrapper around `@nsealr/client`, passes injected in-memory authorization
+-  context to the local service, loads explicit read-only secretless
+-  grant/account JSON files for local harnesses only when a storage approval
+-  covers the paths, rejects secret-bearing or malformed account-store files,
+-  parses explicit storage-approved secretless route-driver stores, rejects
+-  empty, duplicate, broad, secret-bearing, non-USB, QR-vault, and unsupported
+-  serial-path driver mappings, bounds serial-line timeout and ignored-log
+-  controls, rejects stale route-driver entries that do not match the loaded
+-  account-store account id, route type, and transport, dispatches matching
+-  developer serial-line requests only through an injected opener or explicit
+-  route-driver file, maps serial-line open, timeout, protocol, I/O, and close
+-  failures to deterministic transport error codes, returns deterministic
+-  `signer_route_unavailable` for authorized dispatch without a configured
+-  driver, awaits async dispatchers through the async native-message helpers,
+-  and returns deterministic errors for malformed native-message frames.
+-- Local service tests cover deterministic pairing intent creation, digest-bound
+-  pairing-review projection, manual approval into a grant, strict secretless
+-  JSON grant-store parsing, serialization, persistent revocation history,
+-  tamper rejection, expiry rejection, authorization, and revocation/expiry/scope
+-  failures. The high-level client tests also reject operation/result mismatches
+-  such as a valid service-status result returned to a pairing, validation, or
+-  route-selection call.
+-- Negative response verification tests for request id mismatch, template
+-  mismatch, event id mismatch, and invalid signatures.
+-- Transport exchange tests proving successful `sign_event` responses are
+-  verified against the original request before file, stdio, or serial adapters
+-  return them to higher layers.
+-- End-to-end CLI tests for `request -> dev-sign -> verify-response`.
+-- CLI request-generation tests for parameterless device requests:
+-  `get_capabilities`, `get_public_key`, and `get_signing_status`, including
+-  caller-supplied request ids and rejection before writing output on invalid
+-  request ids.
+-- CLI `verify-response` tests reject invalid original requests before accepting
+-  otherwise valid response shapes.
+-- End-to-end CLI tests for QR envelope `request -> dev-sign -> verify-response`.
+-- CLI failure-mode tests for malformed event-template JSON and unsupported
+-  request methods.
+-- CLI review-request tests for rendering review JSON, digest-bound screen-review
+-  pages, constrained-display detail pages, and caller-supplied detail-page
+-  display limits from QR signing requests.
+-- CLI fixture verification tests against `nSealr/specs`, covering both
+-  signed-event fixtures, trusted-review fixtures, review-display-frame
+-  fixtures, review-detail-page fixtures, QR review-transcript fixtures, NIP-46
+-  payload fixtures, NIP-46 policy-file fixtures, NIP-46 connection URI
+-  fixtures, NIP-46 relay-event fixtures, NIP-46 relay-step fixtures,
+-  NIP-46 session lifecycle fixtures, NIP-46 session gate fixtures,
+-  account descriptors, policy profiles, grant descriptors, policy-change
+-  review vectors, policy-decision vectors, route-selection vectors, source
+-  public-key proof vectors, access-surface vectors, and persistent-secret
+-  custody contract vectors, plus the shared implementation-limit profile and
+-  invalid hardening vectors. Grant
+-  descriptor tests reject the removed `decision` field so the companion cannot
+-  revive an ambiguous grant mode outside expiry, rate-limit, revocation, audit,
+-  and device-confirmation semantics. Policy-profile parser tests also reject
+-  unsupported policy vocabulary so new manual-review, forbidden-permission, or
+-  risk-tier strings cannot appear without a specs update.
+-- CLI policy-change review tests covering contextual
+-  `nsealr policy review-change --proposal ... --account ... --current-policy
+-  ... --proposed-policy ... [--grant ...] --out ...` execution against shared
+-  policy-change vectors, including deterministic output and no output after a
+-  rejected companion-authoritative proposal.
+-- CLI fixture verification rejects review detail-page style drift, including
+-  unknown body-line style names and continuation lines that are not styled as
+-  `value`.
+-- Transport contract tests for in-memory development signing, JSON file
+-  handoff, one-shot JSON-lines stdio exchange, and serial-frame exchange.
+-- JSON-lines stdio transport tests proving unterminated oversized stdout is
+-  rejected before process-close fallback errors and stderr diagnostics are
+-  capped before being included in exit failures. They also prove silent signer
+-  processes are rejected by a deterministic response timeout.
+-- Transport boundary tests require outbound request payloads and inbound device
+-  response payloads to pass standard nSealr protocol validation for
+-  development signer, JSON file, JSON-lines stdio, and serial-frame adapters.
+-  Exchange tests also reject validly shaped responses with mismatched
+-  `request_id` values and surface `nsealr1f:error` payloads as deterministic
+-  transport diagnostics.
+-- CLI serial-frame tests covering validated request wrapping, response-frame
+-  unwrapping, and optional request-bound rejection before output is written.
+-- Fixture verification rejects valid serial frames whose decoded request
+-  metadata violates the shared specs profile.
+-- QR envelope round-trip and rejection tests.
+-- QR envelope encode-side limit tests proving static v0 QR writers reject
+-  payloads that would exceed `max_static_qr_decoded_json_bytes` before emitting
+-  an envelope.
+-- Animated QR frame-set tests against the shared specs vector, including
+-  reversed input order, missing-frame rejection, and frame-checksum rejection.
+-- CLI tests proving `qr-animated` request and response files round-trip through
+-  `request sign-event`, `dev-sign`, and `verify-response`.
+-- Serial frame round-trip, unsupported type, checksum mismatch, and encode-side
+-  `max_serial_frame_bytes` rejection tests.
+-- Shared `nSealr/specs` QR and serial transport vector conformance tests.
+-- Serial-line transport tests proving a future native USB/WebSerial adapter can
+-  write a request frame, ignore device log lines, normalize common serial line
+-  endings, reject stalled writes and silent ports with deterministic timeouts,
+-  close stream-backed ports, and reuse the verified serial-frame response path
+-  through an injected line port. The package-owned one-shot exchange helper is
+-  also tested to validate requests before opening a port and to close an opened
+-  port after the exchange.
+-- Stream-backed serial-line port tests proving chunked readable-stream output
+-  and writable-stream request frames behave like the injected port contract
+-  without a native serial dependency. They also prove unterminated oversized
+-  input is rejected without rejecting batched short complete lines.
+-- CLI serial-line tests proving `nsealr serial-line exchange` remains a thin
+-  file/argument wrapper around the package-owned one-shot serial-line exchange,
+-  writes output only after verification, and still rejects invalid requests
+-  before any port is opened. They also prove device `nsealr1f:error` frames are
+-  surfaced as deterministic transport errors without writing output.
+-- Shared `nSealr/specs` capability response conformance tests.
+-- Shared `nSealr/specs` ESP32-S3 signing-disabled response conformance
+-  tests.
+-- Shared `nSealr/specs` smartcard APDU vector conformance tests, including
+-  deterministic APDU rejection status vectors for wrong length, non-zero P1/P2,
+-  unsupported Le, unsupported CLA, and unsupported INS.
+-- Smartcard APDU codec tests covering deterministic rejection for non-integer
+-  byte/status-word fields, non-`Uint8Array` payloads, invalid Le values, and
+-  oversized short-APDU payloads before simulator or PC/SC transport.
+-- Smartcard signer tests covering mandatory review acknowledgement, APDU-backed
+-  public-key retrieval, event-id signing, Schnorr verification, and standard
+-  signed-event response verification, including rejection of invalid card
+-  signatures before returning a response.
+-- Smartcard signer negative tests covering shared unsafe request rejection
+-  before an event id is sent to a card transport and rejection of
+-  `trusted-display` acknowledgement plus missing or mismatched
+-  `approvalDigest` for display-less cards.
+-- CLI tests covering `review-request --screen-review` output against shared
+-  screen-review vectors, `review-request --detail-pages` output against shared
+-  detail-page vectors, and `smartcard-sim-sign --approval-digest` rejection.
+-- Smartcard PC/SC boundary tests covering fake reader exchange, malformed
+-  reader-list rejection, malformed transmit-result rejection, malformed response
+-  data-shape rejection, malformed response data-byte rejection, and clear
+-  provider/no-reader/connection setup and APDU transmit errors without requiring
+-  native PC/SC dependencies or hardware.
+-- CLI smartcard simulator tests covering rejection without
+-  `--review-acknowledged` and `request -> smartcard-sim-sign ->
+-  verify-response`.
+-- NIP-46 payload bridge tests covering already-decrypted `sign_event` and
+-  `get_public_key` messages, local `ping`, local `switch_relays` no-change
+-  metadata, nSealr response mapping, and rejection of unsafe or unsupported
+-  payloads. The same tests consume shared `nSealr/specs` NIP-46 payload
+-  vectors.
+-- NIP-46 requested-permission parser tests covering method-only permissions,
+-  `sign_event:<kind>` selectors, empty permission strings, and rejection of
+-  malformed or unsupported entries.
+-- NIP-46 `connect` intent and review renderer tests covering remote-signer
+-  pubkey validation, optional secret capture, secret-presence display without
+-  secret-value echo, requested permissions, and rejection of signer-transport
+-  routing for `connect`. The shared specs fixture suite now includes a
+-  `connect` policy-review intent, review-page vector, and digest-bound local
+-  approval artifact that still records no `ack`, grant, relay, signer dispatch,
+-  persisted session state, or production secret storage.
+-- NIP-46 connection-token parser tests covering `bunker://` and
+-  `nostrconnect://` descriptor parsing, relay validation, requested
+-  permissions, optional client metadata, required `nostrconnect` secret
+-  presence, unsupported parameter rejection, and proof that descriptor output
+-  does not echo shared secret values. Shared invalid hardening vectors cover
+-  malformed connection URI schemes, invalid or duplicate relays, relay
+-  credentials or fragments, unsafe `sign_event` permission kinds, duplicate
+-  secrets or permission strings, empty secrets, unsafe client metadata URLs,
+-  forbidden bunker client metadata, and missing `nostrconnect` secrets.
+-- NIP-46 relay event envelope tests covering shared `kind:24133` request and
+-  response vectors. The parser checks sender pubkey, exactly one recipient `p`
+-  tag, opaque encrypted content, tag arrays made only of strings, and optional
+-  signed relay-event fields. When signed fields are present it verifies the
+-  NIP-01 event id and BIP-340 relay event signature without decrypting NIP-44
+-  content, opening relays, creating grants, or reaching signer transport.
+-- NIP-46 relay step tests covering shared post-decryption request and response
+-  vectors. The request evaluator binds the validated relay event envelope,
+-  plaintext message, and reviewed permissions to the same bridge decision path
+-  used by local decrypted payloads. The response evaluator shape-checks
+-  plaintext signed-event, public-key, connect ack, switch-relays, ping, auth
+-  challenge, and error response messages, rejects arbitrary result/error pairs
+-  outside `auth_url`, rejects auth URLs with credentials, fragments, or
+-  non-http(s) schemes, rejects unsafe switch-relays relay lists, and rejects
+-  public-key or signed-event results that conflict with an explicitly expected
+-  user key. Response-step v1 preserves distinct transport and user identities.
+-  Signed relay-event envelopes and signed-event response results are NIP-01 id
+-  checked and BIP-340 verified. Neither opens relays, decrypts NIP-44 content,
+-  acknowledges `connect`, creates grants, dispatches signers, or persists
+-  session state.
+-- NIP-46 auth challenge review tests covering the shared auth URL review vector.
+-  Package code renders the remote signer pubkey, client pubkey, and URL into
+-  deterministic pages, binds them to `auth_challenge_digest`, writes approval
+-  artifacts only after digest confirmation, and keeps URL opening, relay I/O,
+-  `connect` acknowledgement, grants, signer dispatch, secret storage, and
+-  session persistence disabled.
+-- NIP-46 connection token response tests covering the shared `nostrconnect://`
+-  response vector. Package code verifies the returned secret against the
+-  original local token while keeping the output secretless, binds the response
+-  recipient to the client pubkey, discovers the remote signer pubkey from the
+-  response envelope, and keeps relay I/O, NIP-44 derivation, `connect`
+-  acknowledgement, grant creation, signer dispatch, secret storage, and session
+-  persistence disabled. Shared invalid hardening vectors also reject recipient
+-  mismatch, explicit token-response errors, and returned-secret mismatch
+-  deterministically through package code and fixture verification.
+-- NIP-46 session lifecycle checkpoint tests covering shared
+-  `approved_pending_ack` vectors. The parser validates client/signer pubkeys,
+-  relay URLs, connect digest shape, approval/expiry safety, requested
+-  permissions, approved permission subsets, and false side-effect flags, and it
+-  rejects embedded secret material, NIP-44 key derivation, relay opening,
+-  `connect` acknowledgement, grant creation, signer dispatch, production
+-  secret storage, and session persistence. Creation tests also prove a
+-  canonical connect review plus matching approval can produce the same
+-  checkpoint while rejecting approved permissions outside the reviewed request.
+-- NIP-46 pending-session request gate tests covering shared
+-  `connect_ack_pending` vectors. The evaluator binds the relay event sender to
+-  the session client pubkey, binds the recipient `p` tag to the remote-signer
+-  pubkey, derives the same permission requirement as the standard NIP-46 bridge,
+-  and rejects signer dispatch until a future acknowledged-session contract
+-  exists.
+-- NIP-46 permission matching tests covering derived `sign_event:<kind>`
+-  requirements, broad requested-permission compatibility, explicit approved
+-  `sign_event:<kind>` inputs, method-only grants, denied requests, and
+-  `connect` exclusion from post-connect request permissions. Package and CLI
+-  tests reject broad approved `sign_event` inputs before decision output is
+-  written. The CLI fixture verifier also rejects drift in shared permission
+-  policy checks.
+-- NIP-46 bridge decision tests covering permitted signer routing, denied signer
+-  routing, local `ping`, denied `ping`, and `connect` review intent output. The
+-  CLI fixture verifier also rejects drift in shared bridge decision vectors.
+-- CLI NIP-46 decision and review tests covering `nsealr nip46 decide` against
+-  shared permitted, denied, and `connect` bridge-decision vectors plus
+-  `nsealr nip46 review-connect` against the shared `connect` review-page vector
+-  and `nsealr nip46 approve-connect` against the shared connect approval vector.
+-  They also cover `nsealr nip46 review-auth-challenge` and
+-  `nsealr nip46 approve-auth-challenge` against the shared auth challenge
+-  review/approval vector without opening URLs, relays, or signer transports.
+-  Approved decision inputs must use
+-  explicit `sign_event:<kind>` selectors; broad `sign_event` is accepted only
+-  as requested-permission metadata for review. Digest-mismatch approval
+-  attempts fail before writing output.
+-- CLI NIP-46 connection URI tests covering `nsealr nip46 parse-connection-uri`
+-  against shared `bunker://` and `nostrconnect://` vectors, including
+-  no-secret-echo output and invalid-token refusal before output files are
+-  written.
+-- CLI NIP-46 session checkpoint tests covering `nsealr nip46
+-  create-session-checkpoint` from a review/approval pair, explicit relays,
+-  client pubkey, expiry, and policy-file approved permissions.
+-- CLI NIP-46 session gate tests covering `nsealr nip46 gate-session-request`
+-  against the shared `connect_ack_pending` vector and every shared invalid
+-  session-gate vector before output is written.
+-- CLI NIP-46 policy-file tests covering read-only
+-  `nsealr-nip46-policy-v0` permission input and rejection of ambiguous
+-  `--permissions` plus `--policy-file` usage. The positive case consumes the
+-  shared `nSealr/specs` policy-file vector instead of an inline local copy.
+-  The CLI fixture verifier also rejects drift in shared policy-file vectors.
+-- CLI local-service pairing review tests covering
+-  `nsealr local review-pairing`, including deterministic review metadata for a
+-  pairing intent and rejection of tampered pairing intents before output files
+-  are written.
+-- CLI local-service pairing approval tests covering
+-  `nsealr local approve-pairing`, including explicit reviewed-digest
+-  confirmation, expiry handling, and refusal to write approval artifacts when
+-  the digest does not match.
+-- CLI local storage-review and approval tests covering
+-  `nsealr local review-storage` and `nsealr local approve-storage`, including
+-  digest-bound metadata for explicit grant/account/route-driver locations, no
+-  creation of reviewed storage files, duplicated storage-location option
+-  rejection, stack-free executable validation errors, digest-confirmed approval
+-  artifacts, and refusal to write review or approval metadata for ambiguous
+-  paths or mismatched digests.
+-- CLI native-host onboarding tests covering
+-  `nsealr local native-host manifest`, `plan-install`, `approve-install`, and
+-  `execute-install`, including dry-run manifest/plan rendering, digest-bound
+-  approval, execution-report generation, exclusive-create manifest writes, and
+-  refusal to write approval, execution-report, or manifest files when reviewed
+-  digests or output paths do not match.
+-- CLI local grant-store artifact tests covering
+-  `nsealr local grant-store append-approval`, including new-store creation,
+-  explicit input-store extension without input-file mutation, required
+-  storage-approval coverage for grant-store input/output paths, existing-output
+-  refusal, and malformed approval rejection before output files are written.
+-- CLI local grant-store revocation tests covering
+-  `nsealr local grant-store revoke-client`, including output-only revocation
+-  appending behind storage-approval coverage, input-file immutability,
+-  deterministic authorization denial after revocation, and no-match rejection
+-  before output files are written.
+-- Policy package tests cover secretless account descriptors, NIP-06 recovery
+-  source fingerprints, manual-only QR vault policy, manual-only display-less
+-  smartcard policy, manual-only persistent-device defaults, scoped grants for
+-  ESP32 USB/NIP-46 and custom hardware-wallet routes, policy-change review
+-  pages and approval digests, policy-change account/policy/grant context
+-  mismatches, wildcard/decrypt/export rejection, rejection of
+-  grant targets outside ESP32 USB/NIP-46 and custom hardware-wallet persistent
+-  policy routes, closed-schema rejection for descriptor, route, capability,
+-  policy-profile, grant, client, permission, and rate-limit records, external
+-  NIP-46 metadata that cannot claim nSealr persistent grants or scoped
+-  automation, shared route-selection response parsing, and deterministic
+-  policy-decision transcripts for allowed, expired, revoked, decrypt,
+-  export-secret, and unknown-method requests.
+-- Pre-signing hardening tests must reject every shared invalid vector that
+-  reaches companion-owned parsing: unsafe event-template fields, unsafe integer
+-  values, resource-limit violations, malformed or ambiguous responses,
+-  malformed response request ids, contradictory or reason-less signing-status
+-  readiness, malformed QR/serial envelopes, malformed NIP-46 payloads, invalid
+-  NIP-46 connection URIs, invalid NIP-46 session lifecycle checkpoints,
+-  invalid NIP-46 session gates, invalid policy files, duplicate signing-status
+-  gate entries, and signed-event response integer-safety, content, or tag
+-  violations.
+-- Nostr conformance oracle tests must compare companion event id/signature
+-  behavior with `nostr-tools` in tests, while keeping production code free of
+-  unnecessary oracle coupling.
+-
+-## Next Test Additions
+-
+-- Third-party consumer import tests for future `@nsealr/*` publication:
+-  no test-only signer leakage and no production secret storage in public
+-  helpers.
+-- Package release workflow tests should eventually add trusted-publishing dry
+-  run or npm provenance verification once npm organization settings exist.
+-- Local companion service tests with a fake extension/app client: user approval
+-  UX, production storage writes, production signer dispatch, and additional
+-  built-package consumer tests after explicit policy gates exist. The current
+-  test suite already covers pairing intent generation,
+-  deterministic pairing-review projection, digest-bound storage-location
+-  review and approval artifacts, strict grant-store serialization/revocation,
+-  explicit storage-approved read-only context loading, selected account route,
+-  malformed native-message rejection, shared Chromium/Firefox native-host
+-  manifest building, digest-bound dry-run install-plan building,
+-  install-approval artifact generation in `@nsealr/client`, explicit
+-  approval-bound install-execution through a write-new adapter, multi-message
+-  native-host stdio behavior, public CLI native-host onboarding artifacts, and
+-  the private service CLI wrapper that renders manifests/plans/approvals,
+-  rejects duplicated singleton install options, and can write an approved
+-  manifest path without overwriting existing files.
+-  Current service
+-  route-driver tests cover the developer serial-line dispatch boundary through
+-  fake ports and supported local serial path forms only; hardware serial smoke
+-  remains a later gate before production driver acceptance.
+-- Browser extension provider tests over fake companion/local-service backends
+-  cover authorized selected-account public-key lookup, `signEvent` routing
+-  through local-service dispatch, explicit dispatcher success, deterministic
+-  signer-unavailable responses before a real signer transport driver exists,
+-  malformed companion outputs rejected through shared route-selection parsing,
+-  already-cancelled requests, in-flight cancellation, `AbortSignal` forwarding
+-  into injected exchanges, thrown native-host sender failures, and latest-grant
+-  revocation before browser callers trust route selection or signer dispatch.
+-- Local-service client tests cover the high-level dispatch wrapper carrying a
+-  digest-bound external-review acknowledgement through to display-less signer
+-  routes, so SDK, desktop, CLI, and native-messaging callers reuse the service
+-  safety gate instead of inventing a parallel smartcard path.
+-- Package consumer smoke currently runs against built JS/declaration artifacts,
+-  packed tarballs, every manifest-declared public export subpath from a
+-  temporary npm consumer, executable examples importing every publishable
+-  public package, and the digest-bound package release plan. README snippets
+-  for every publishable package are now executed from CI, and the public API
+-  review is digest-bound to `docs/api.md`. The remaining npm-facing gate is
+-  trusted-publishing/provenance activation.
+-- Named external NIP-46 client/version interoperability and device approval
+-  workflows. The in-repository relay harness does not establish those claims.
+-- Large QR payload strategy tests once chunking or compression is designed.
+-- Hardware serial smoke tests before adding WebUSB, HID, CDC, or persistent
+-  local transport session adapters.
+-
+-## Rule
+-
+-Production behavior changes require test-driven development.
+-
+-
+-## S01 boundary regressions
+-
+-`packages/nip46/src/session-security.test.ts` uses public fixture scalars and
+-nostr-tools as an independent signing/public-key oracle. It reproduces the
+-baseline manager's changed-user and conditional foreign-author acceptance;
+-its default SimplePool control replaces only WebSocket I/O and confirms foreign
+-author filtering. Identity discovery, curve points, signed content, request
+-correlation/replay, retry, cancellation and bounded unsettled operations are
+-covered independently of relay subscription filters.
+-
+-`packages/transport/src/stream-security.test.ts` reproduces exactly 20,000 queued
+-bytes from 10,000 short lines under a four-byte limit. It tests aggregate bytes,
+-line count, UTF-8 boundaries, pending reads/writes, backpressure, EOF, errors and
+-shared-duplex cleanup. F01 regressions cover synchronous/asynchronous destruction
+-with/without close events, delayed and queued errors, callback identity and
+-deduplication, thrown/suppressed errors, descriptor restoration and transactional
+-constructor rejection. Protocol/framing tests reject duplicate, escaped duplicate,
+-trailing and overly nested JSON without changing existing schema limits.
+-F02 additionally checks recorded destruction errors after EOF with emitted or
+-suppressed error/close events, alongside error-free EOF tail-draining controls.
+-
+-Run targeted checks after `pnpm build`:
+-
+-```sh
+-pnpm exec vitest run --maxWorkers=4 packages/nip46 packages/transport packages/protocol packages/framing
+-```
+-
+-`make ci` includes all browser/Node consumers and package gates. The separately
+-gated Docker harness uses `NSEALR_LIVE_E2E=1`; its results, image digest and all
+-baseline/failure evidence are recorded under `docs/restart/S01/`. This is an
+-in-repository signer harness, not third-party client or physical-device proof.
++# Bridge verification
++
++Run `pnpm ci` from the product root after the frozen dependency install. This
++executes build/type checking, all retained Vitest cases, consumer/examples/README
++checks, generated API and boundary review checks, registry/import/browser gates,
++release-output safety and an actual isolated packed SDK consumer.
++
++The packed check installs the tarball outside the workspace and verifies Node
++behavior, root/browser namespace boundaries, strict TypeScript imports, browser
++bundling/execution without Node globals and rejected hidden imports. Runtime
++external imports must each have an explicit production dependency. Browser VM
++execution is not installed-browser qualification.
++
++`make integration` executes all seventeen retained product integration steps in
++one invocation, including the independent Pi review/sign/verify flow. Source
++and contract tamper controls, optional Chromium/serial helper unit tests and
++admitted production-claim, validator-ownership, CLI-guide and recipe guardrails
++run in ordinary product CI. Optional actual browser/device commands are separate.
++
++Card implementation cases are deliberately retired; retained ordinary route
++checks and new card-command/route rejection cases preserve active safety bounds.
++The exact before/after case correspondence is migration evidence, not a replacement
++for running tests. The unchanged live-relay case requires explicit
++`NSEALR_LIVE_E2E=1` and a real local Docker relay; its default skip stays visible.
++No passing unit test closes physical resource or security admission gates.
+diff --git a/packages/client/src/service.ts b/packages/client/src/service.ts
+index 58d21926700f93306a08735b3f1983d28d929dc6..966f502f454a51f38b115c2d21e904bea19df533 100644
+--- a/packages/client/src/service.ts
++++ b/packages/client/src/service.ts
+@@ -898,7 +898,7 @@ function prepareSignerDispatch(
+       response: errorResponse(
+         request,
+         "external_review_acknowledgement_unsupported",
+-        "external review acknowledgement is only supported for display-less sign_event dispatch"
++        "host review acknowledgements are unsupported for signer dispatch"
+       )
+     };
+   }
+diff --git a/protocols/contracts/v1/adaptation.json b/protocols/contracts/v1/adaptation.json
+index 0018c29748100b4fdb17975c9ecd055c64a62767..adb678d3cef1b523397f0e5fef1d09f24530120a 100644
+--- a/protocols/contracts/v1/adaptation.json
++++ b/protocols/contracts/v1/adaptation.json
+@@ -100,5 +100,35 @@
+     "before_sha256": "0b2b72d6506de8f0a3c02d6036e759c7d6e3d3e55348742c9d4d483ca62eb0c6",
+     "path": "vectors/route-selections/raspberry-qr-sign-event-account-0.json",
+     "reason": "retire-card-members-and-reconcile-current-owner"
++  },
++  {
++    "after_sha256": "3533758639858826a740cdd3f01184eb3b1ec532108fd61c6874b80543f005ea",
++    "before_sha256": "a3e87f98ac91b49811467ad834f65771009f12674e0a23135ae90a16da58edcf",
++    "path": "protocols/identity-policy-v0.md",
++    "reason": "current-owner-and-retired-card-prose/refusal-text"
++  },
++  {
++    "after_sha256": "ddb020ea2cd50b1538fe99aa2b25332c17134e2637e57be0b4ec113dafeeb82d",
++    "before_sha256": "1744be29ea85ce96c7385869147b0d0dabd441873b64493149fedafd8db81f06",
++    "path": "protocols/feature-conformance-v0.md",
++    "reason": "current-owner-and-retired-card-prose/refusal-text"
++  },
++  {
++    "after_sha256": "f9a6a2a785302df178855c1d4deec0c4abb89942d2d3471c84ac5b9dde9d0b0b",
++    "before_sha256": "92eedbeecc7ca16ec26edad4c857b3886fabdfd7dffd48519109cbf0c02581a8",
++    "path": "protocols/signing-request-v0.md",
++    "reason": "current-owner-and-retired-card-prose/refusal-text"
++  },
++  {
++    "after_sha256": "164ad721795b108f9c631cb1bf0354da6afcaa32e403778634ae1405857397c6",
++    "before_sha256": "ffbae3f1ef579aa683560131cbd7a045dd85bcc2c4b754ef1d1e928da4ced492",
++    "path": "vectors/route-refusals/signer-route-refusals-v0.json",
++    "reason": "current-owner-and-retired-card-prose/refusal-text"
++  },
++  {
++    "after_sha256": "1cd69f13159affe6e9196b851670a3aa1b314b6e13753f929c3c4f57413af59d",
++    "before_sha256": "b2f0532ad94a0de294153eba79af348261213eeb089ad9d02e73567b133cdd66",
++    "path": "vectors/features/signer-feature-matrix-v0.json",
++    "reason": "current-owner-and-retired-card-prose/refusal-text"
+   }
+ ]
+diff --git a/protocols/contracts/v1/manifest.json b/protocols/contracts/v1/manifest.json
+index bfa57bff4292279cfcfe1be52d6d80fbfb8e7e5f..2093562b211d0a827c1cb30dbabe4f4975460caf 100644
+--- a/protocols/contracts/v1/manifest.json
++++ b/protocols/contracts/v1/manifest.json
+@@ -14,16 +14,16 @@
+       "sha256": "01ba4719c80b6fe911b091a7c05124b64eeece964e09c058ef8f9805daca546b"
+     },
+     {
+-      "adaptation": null,
++      "adaptation": "current-owner-and-retired-card-prose/refusal-text",
+       "original_sha256": "1744be29ea85ce96c7385869147b0d0dabd441873b64493149fedafd8db81f06",
+       "path": "protocols/feature-conformance-v0.md",
+-      "sha256": "1744be29ea85ce96c7385869147b0d0dabd441873b64493149fedafd8db81f06"
++      "sha256": "ddb020ea2cd50b1538fe99aa2b25332c17134e2637e57be0b4ec113dafeeb82d"
+     },
+     {
+-      "adaptation": null,
++      "adaptation": "current-owner-and-retired-card-prose/refusal-text",
+       "original_sha256": "a3e87f98ac91b49811467ad834f65771009f12674e0a23135ae90a16da58edcf",
+       "path": "protocols/identity-policy-v0.md",
+-      "sha256": "a3e87f98ac91b49811467ad834f65771009f12674e0a23135ae90a16da58edcf"
++      "sha256": "3533758639858826a740cdd3f01184eb3b1ec532108fd61c6874b80543f005ea"
+     },
+     {
+       "adaptation": null,
+@@ -62,10 +62,10 @@
+       "sha256": "65c87a730b915b90eb6146e9d78e9780d10e939d98609801b7135db15124803f"
+     },
+     {
+-      "adaptation": null,
++      "adaptation": "current-owner-and-retired-card-prose/refusal-text",
+       "original_sha256": "92eedbeecc7ca16ec26edad4c857b3886fabdfd7dffd48519109cbf0c02581a8",
+       "path": "protocols/signing-request-v0.md",
+-      "sha256": "92eedbeecc7ca16ec26edad4c857b3886fabdfd7dffd48519109cbf0c02581a8"
++      "sha256": "f9a6a2a785302df178855c1d4deec0c4abb89942d2d3471c84ac5b9dde9d0b0b"
+     },
+     {
+       "adaptation": null,
+@@ -248,10 +248,10 @@
+       "sha256": "30556bd40256dd76a995cac62f1161b534948a8a3d770c05f10af160c9fb57a1"
+     },
+     {
+-      "adaptation": "retire-card-members-and-reconcile-current-owner",
++      "adaptation": "current-owner-and-retired-card-prose/refusal-text",
+       "original_sha256": "fcdc1cfb960540cdac22cc11d49e61023f53c3e6caabe895310405e68329b5b5",
+       "path": "vectors/features/signer-feature-matrix-v0.json",
+-      "sha256": "b2f0532ad94a0de294153eba79af348261213eeb089ad9d02e73567b133cdd66"
++      "sha256": "1cd69f13159affe6e9196b851670a3aa1b314b6e13753f929c3c4f57413af59d"
+     },
+     {
+       "adaptation": null,
+@@ -1292,10 +1292,10 @@
+       "sha256": "cb18491fe055857aa246b3f3a613571ee12752f5ed92e599b3646250d43f5eeb"
+     },
+     {
+-      "adaptation": "retire-card-members-and-reconcile-current-owner",
++      "adaptation": "current-owner-and-retired-card-prose/refusal-text",
+       "original_sha256": "d8342e65e07e47d0b0979dc1dad188b425b9c56f188d2748a6d819d2547f0861",
+       "path": "vectors/route-refusals/signer-route-refusals-v0.json",
+-      "sha256": "ffbae3f1ef579aa683560131cbd7a045dd85bcc2c4b754ef1d1e928da4ced492"
++      "sha256": "164ad721795b108f9c631cb1bf0354da6afcaa32e403778634ae1405857397c6"
+     },
+     {
+       "adaptation": "retire-card-members-and-reconcile-current-owner",
+diff --git a/protocols/contracts/v1/protocols/feature-conformance-v0.md b/protocols/contracts/v1/protocols/feature-conformance-v0.md
+index 426eaf53be4a406955985955268159b1d317441f..495a7b178b8d9459964d1125b33d9fe927224f2d 100644
+--- a/protocols/contracts/v1/protocols/feature-conformance-v0.md
++++ b/protocols/contracts/v1/protocols/feature-conformance-v0.md
+@@ -23,19 +23,20 @@ Each feature has a canonical `contract_id`. A solution may mark that feature as:
+ If a feature is active (`required`, `optional`, or `research`), the solution
+ must use the canonical `contract_id` and pass the vectors behind that contract.
+ This keeps shared behavior aligned even when code is written in different
+-languages for Raspberry, ESP32, smartcard, companion, or custom hardware.
++languages for Pi, ESP32, Bridge, or custom hardware.
+ 
+-## First-Class Signer Families
++## Retained Conformance Components
+ 
+ - `raspberry_qr_vault`: nSealr Vault — Pi edition.
+ - `esp32_qr_vault`: nSealr Vault — ESP32 edition.
+ - `esp32_usb_nip46`: nSealr Key.
+-- `smartcard`: nSealr Card.
+ - `custom_hardware_wallet`: nSealr One.
+ 
+-Infrastructure repositories such as `companion`, `specs`, `lab`, `hardware`,
+-and `website` are not signer families by themselves. They implement, validate,
+-or document the contracts used by the families above.
++These existing identifiers describe conformance fixtures, not a new public
++profile or compatibility promise. Product software is owned by nsealr. Generic
++board software is owned by board-sdk; hardware, website and .github retain their
++separate responsibilities. A02 does not qualify a physical implementation or
++introduce the later capability/profile contract.
+ 
+ Browser extension, npm SDK, CLI, local companion service, desktop UI, and full
+ NIP-46 relay-session work are also not signer families. They are companion
+diff --git a/protocols/contracts/v1/protocols/identity-policy-v0.md b/protocols/contracts/v1/protocols/identity-policy-v0.md
+index 91d8f9ecba4f86ef0f259aea2e97f07061d3f1ba..9fb0b5f95d0688947a85d1cacdd26d27419ef66b 100644
+--- a/protocols/contracts/v1/protocols/identity-policy-v0.md
++++ b/protocols/contracts/v1/protocols/identity-policy-v0.md
+@@ -5,14 +5,13 @@ describe which signer owns an identity, how that identity can be recovered, and
+ which policy or grant metadata may be stored by the companion or test harnesses.
+ 
+ These files do not authorize companion-side production private-key custody. They
+-are routing and safety metadata for the five existing signer families.
++are routing and safety metadata for the retained signer components.
+ 
+ ## Current Product Model
+ 
+ The current official nSealr model is key-source first and account second. A
+ key source can be a BIP-39 mnemonic, the same mnemonic with a BIP-39
+-passphrase, a standalone imported or generated Nostr private key, a smartcard
+-slot, a future persistent device slot, or an external NIP-46 signer route. The
++passphrase, a standalone imported or generated Nostr private key, a future persistent device slot, or an external NIP-46 signer route. The
+ signing account is the resulting public key. Policy attaches to that final
+ public key and signer route, not to the mnemonic container itself.
+ 
+@@ -25,7 +24,7 @@ public key has its own policy profile.
+ Generated versus imported material is provenance metadata. The functional
+ custody distinction is whether a key source is a seed profile that can derive
+ multiple NIP-06 accounts, a standalone Nostr private key for one identity, a
+-card/device slot, or an external signer route.
++device slot, or an external signer route.
+ 
+ ## QR Vault Session Keyring
+ 
+@@ -100,19 +99,18 @@ Allowed route types are:
+ - `raspberry_qr_vault`
+ - `esp32_qr_vault`
+ - `esp32_usb_nip46`
+-- `smartcard`
+ - `custom_hardware_wallet`
+ - `external_nip46`
+ 
+ Account descriptors must not contain `secret_key`, `private_key`, `nsec`,
+ `mnemonic`, `seed`, `passphrase`, or `nip49_ciphertext` fields. Recovery data
+-may identify a NIP-06 path, ESP32/device slot, display-less smartcard slot,
++may identify a NIP-06 path, ESP32/device slot,
+ custom hardware-wallet slot, or external signer, but it must not embed the
+ recoverable secret.
+ 
+ Account descriptors identify public routing state for a resulting signing
+ identity. They are not key-source backup files and are not a substitute for a
+-device vault, card applet, QR session, or external signer.
++device vault, QR session, or external signer.
+ 
+ Stateless QR vault routes must use:
+ 
+@@ -128,20 +126,19 @@ They must not reference TROPIC01 or any persistent key-at-rest mechanism.
+ `nsealr-policy-profile-v0` describes the policy mode for one or more route
+ types. `manual_only` means every signing operation needs route-specific
+ explicit approval: local review and physical approval on trusted-display
+-devices, or explicit external review acknowledgement for display-less custody.
++devices. Host review acknowledgements are unsupported.
+ `scoped_automation` is only allowed for route families that have an explicit
+ policy authority, expiry, rate-limit, revocation, audit-log, and
+ device-policy confirmation constraints. In v0 this means ESP32 USB/NIP-46 and
+ custom hardware-wallet routes, plus external NIP-46 interoperability where the
+-external signer owns the policy. It does not apply to stateless QR vaults or
+-display-less smartcards.
++external signer owns the policy. It does not apply to stateless QR vaults.
+ 
+ Policy profiles are internal nSealr records. They are not Nostr events, are
+ not accepted from relays as authority, and are not updated by the companion
+ alone. Installing, updating, disabling, or deleting an authoritative device
+ policy requires local device review and physical approval on routes that have a
+-trusted display. Display-less routes must keep an explicit external-review
+-acknowledgement boundary.
++trusted display. Card routes are retired; a host acknowledgement cannot replace
++device review or approval.
+ 
+ The exact user-facing policy menu is intentionally not frozen in v0, but the
+ policy-profile vocabulary is closed. `manual_review_required`,
+@@ -156,7 +153,7 @@ knobs. Default product behavior remains manual review through
+ `policy-manual-only-persistent-device` unless a device locally accepts a
+ digest-bound policy-change proposal.
+ 
+-QR vault policies and display-less smartcard policies must remain
++QR vault policies must remain
+ `manual_only` with `grants_allowed: false`.
+ 
+ Policy profiles must forbid wildcard grants and secret export. Decrypt,
+diff --git a/protocols/contracts/v1/protocols/signing-request-v0.md b/protocols/contracts/v1/protocols/signing-request-v0.md
+index 722a23e62a36a0fe09f27b54c1d9face7c2d68a0..b2b85af741d66b49e81a5a49169d7c588554aad2 100644
+--- a/protocols/contracts/v1/protocols/signing-request-v0.md
++++ b/protocols/contracts/v1/protocols/signing-request-v0.md
+@@ -1,7 +1,7 @@
+ # Signing Request Protocol v0
+ 
+ This document defines the first nSealr signer request contract. It is the
+-shared protocol used by companion software, QR vaults, ESP32 signers, smartcard
++shared protocol used by companion software, QR vaults, ESP32 signers,
+ adapters, and future compatible implementations.
+ 
+ ## Envelope
+diff --git a/protocols/contracts/v1/vectors/features/signer-feature-matrix-v0.json b/protocols/contracts/v1/vectors/features/signer-feature-matrix-v0.json
+index a6dd6a27577595a72068c3d450689138681f73c2..76b95bbbb78459e053fa2b9e0d644bef89e27848 100644
+--- a/protocols/contracts/v1/vectors/features/signer-feature-matrix-v0.json
++++ b/protocols/contracts/v1/vectors/features/signer-feature-matrix-v0.json
+@@ -66,7 +66,7 @@
+       "id": "session_source_generation"
+     },
+     {
+-      "behavior": "The implementation never signs automatically; every sign_event decision requires route-specific explicit approval through local physical approval on trusted-display devices or external review acknowledgement for display-less custody.",
++      "behavior": "The implementation never signs automatically; every sign_event decision requires route-specific explicit approval through local physical approval on trusted-display devices.",
+       "contract_id": "manual-only-approval-policy-v0",
+       "id": "manual_only_policy"
+     },
+diff --git a/protocols/contracts/v1/vectors/route-refusals/signer-route-refusals-v0.json b/protocols/contracts/v1/vectors/route-refusals/signer-route-refusals-v0.json
+index 4d072900f7db7b3efa849c8c793973ab65f49f77..00523483338718df3fc356f08ea5e414d0f0c980 100644
+--- a/protocols/contracts/v1/vectors/route-refusals/signer-route-refusals-v0.json
++++ b/protocols/contracts/v1/vectors/route-refusals/signer-route-refusals-v0.json
+@@ -5,7 +5,7 @@
+         "mode": "unsupported",
+         "unsupported_error": {
+           "error_code": "external_review_acknowledgement_unsupported",
+-          "message": "external review acknowledgement is only supported for display-less sign_event dispatch",
++          "message": "host review acknowledgements are unsupported for signer dispatch",
+           "retryable": false
+         }
+       },
+@@ -23,7 +23,7 @@
+         "mode": "unsupported",
+         "unsupported_error": {
+           "error_code": "external_review_acknowledgement_unsupported",
+-          "message": "external review acknowledgement is only supported for display-less sign_event dispatch",
++          "message": "host review acknowledgements are unsupported for signer dispatch",
+           "retryable": false
+         }
+       },
+@@ -41,7 +41,7 @@
+         "mode": "unsupported",
+         "unsupported_error": {
+           "error_code": "external_review_acknowledgement_unsupported",
+-          "message": "external review acknowledgement is only supported for display-less sign_event dispatch",
++          "message": "host review acknowledgements are unsupported for signer dispatch",
+           "retryable": false
+         }
+       },
+@@ -59,7 +59,7 @@
+         "mode": "unsupported",
+         "unsupported_error": {
+           "error_code": "external_review_acknowledgement_unsupported",
+-          "message": "external review acknowledgement is only supported for display-less sign_event dispatch",
++          "message": "host review acknowledgements are unsupported for signer dispatch",
+           "retryable": false
+         }
+       },
+@@ -77,7 +77,7 @@
+         "mode": "unsupported",
+         "unsupported_error": {
+           "error_code": "external_review_acknowledgement_unsupported",
+-          "message": "external review acknowledgement is only supported for display-less sign_event dispatch",
++          "message": "host review acknowledgements are unsupported for signer dispatch",
+           "retryable": false
+         }
+       },
