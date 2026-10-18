@@ -409,7 +409,7 @@ function validateReviewDetailPageFixture(name: string, fixture: unknown): void {
 }
 
 function assertJsonEqual(actual: unknown, expected: unknown, error: string): void {
-  if (JSON.stringify(actual) !== JSON.stringify(expected)) {
+  if (!isDeepStrictEqual(actual, expected)) {
     throw new Error(error);
   }
 }
@@ -733,7 +733,7 @@ export function buildCli(options: BuildCliOptions = {}): Command {
         const requestShape = validateRequest(request);
         if (!requestShape.ok) throw new Error(`invalid review request fixture ${review.name}: ${requestShape.error}`);
         const actual = reviewEventTemplate(request.params?.event_template);
-        if (JSON.stringify(actual) !== JSON.stringify(review.review)) {
+        if (!isDeepStrictEqual(actual, review.review)) {
           throw new Error(`invalid review fixture ${review.name}: review output mismatch`);
         }
       }
@@ -741,7 +741,7 @@ export function buildCli(options: BuildCliOptions = {}): Command {
         const requestShape = validateRequest(reviewScreen.request);
         if (!requestShape.ok) throw new Error(`invalid review-screen request fixture ${reviewScreen.name}: ${requestShape.error}`);
         const actual = screenReviewForRequest(reviewScreen.request);
-        if (JSON.stringify(actual) !== JSON.stringify(reviewScreen.screen_review)) {
+        if (!isDeepStrictEqual(actual, reviewScreen.screen_review)) {
           throw new Error(`invalid review-screen fixture ${reviewScreen.name}: screen_review output mismatch`);
         }
       }
@@ -788,7 +788,7 @@ export function buildCli(options: BuildCliOptions = {}): Command {
           grants: fixtures.grants,
           request: policyDecision.request
         });
-        if (JSON.stringify(actual) !== JSON.stringify(policyDecision.decision)) {
+        if (!isDeepStrictEqual(actual, policyDecision.decision)) {
           throw new Error(`invalid policy decision fixture ${policyDecision.name}: policy decision mismatch`);
         }
       }
@@ -798,13 +798,13 @@ export function buildCli(options: BuildCliOptions = {}): Command {
           policyProfiles: fixtures.policyProfiles,
           grants: fixtures.grants
         });
-        if (JSON.stringify(actual) !== JSON.stringify(policyChange.review)) {
+        if (!isDeepStrictEqual(actual, policyChange.review)) {
           throw new Error(`invalid policy change fixture ${policyChange.name}: policy change review mismatch`);
         }
       }
       for (const routeSelection of fixtures.routeSelections) {
         const actual = selectAccountRoute(fixtures.accounts, routeSelection.request);
-        if (JSON.stringify(actual) !== JSON.stringify(routeSelection.selection)) {
+        if (!isDeepStrictEqual(actual, routeSelection.selection)) {
           throw new Error(`invalid route selection fixture ${routeSelection.name}: route selection mismatch`);
         }
       }
@@ -816,7 +816,7 @@ export function buildCli(options: BuildCliOptions = {}): Command {
       }
       for (const connectionUri of fixtures.nip46ConnectionUris) {
         const actual = parseNip46ConnectionUri(connectionUri.uri);
-        if (JSON.stringify(actual) !== JSON.stringify(connectionUri.expected_descriptor)) {
+        if (!isDeepStrictEqual(actual, connectionUri.expected_descriptor)) {
           throw new Error(`invalid NIP-46 connection URI fixture ${connectionUri.name}: descriptor mismatch`);
         }
         if (JSON.stringify(actual).includes(connectionUri.secret_probe)) {
@@ -834,7 +834,7 @@ export function buildCli(options: BuildCliOptions = {}): Command {
           connectionUri: sourceToken.uri,
           responseStep: tokenResponse.response_step
         });
-        if (JSON.stringify(actual) !== JSON.stringify(tokenResponse.expected_response)) {
+        if (!isDeepStrictEqual(actual, tokenResponse.expected_response)) {
           throw new Error(`invalid NIP-46 connection token response fixture ${tokenResponse.name}: response mismatch`);
         }
         if (JSON.stringify(actual).includes(sourceToken.secret_probe)) {
@@ -843,7 +843,7 @@ export function buildCli(options: BuildCliOptions = {}): Command {
       }
       for (const relayEvent of fixtures.nip46RelayEvents) {
         const actual = parseNip46RelayEventEnvelope(relayEvent.event, relayEvent.direction);
-        if (JSON.stringify(actual) !== JSON.stringify(relayEvent.expected_envelope)) {
+        if (!isDeepStrictEqual(actual, relayEvent.expected_envelope)) {
           throw new Error(`invalid NIP-46 relay event fixture ${relayEvent.name}: envelope mismatch`);
         }
       }
@@ -878,7 +878,7 @@ export function buildCli(options: BuildCliOptions = {}): Command {
       }
       for (const session of fixtures.nip46Sessions) {
         const actual = parseNip46SessionLifecycle(session.session);
-        if (JSON.stringify(actual) !== JSON.stringify(session.session)) {
+        if (!isDeepStrictEqual(actual, session.session)) {
           throw new Error(`invalid NIP-46 session fixture ${session.name}: session mismatch`);
         }
       }
@@ -897,7 +897,7 @@ export function buildCli(options: BuildCliOptions = {}): Command {
           event: gate.event,
           decrypted_message: gate.decrypted_message
         });
-        if (JSON.stringify(actual) !== JSON.stringify(gate.expected_gate)) {
+        if (!isDeepStrictEqual(actual, gate.expected_gate)) {
           throw new Error(`invalid NIP-46 session gate fixture ${gate.name}: gate mismatch`);
         }
       }

@@ -245,7 +245,7 @@ describe("identity, recovery, and policy contracts", () => {
     const account = loadJson(resolve(specsRoot, "vectors/accounts/esp32-usb-device-slot-0.json")) as { signer_route: Record<string, unknown> };
     expect(() => parseAccountDescriptor(account)).not.toThrow();
     account.signer_route.type = "smartcard";
-    expect(() => parseAccountDescriptor(account)).toThrow(/route type/u);
+    expect(() => parseAccountDescriptor(account)).toThrow(/signer_route.type/u);
   });
 
   it("rejects external NIP-46 policy automation", () => {
