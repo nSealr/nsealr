@@ -12,8 +12,11 @@ requiring the adapter's entire catalog. Promote only executed operations. Exact
 pins and source input hashes are in [inputs.json](inputs.json). The toolchain is
 KiCad 10.0.7 Lite AppImage, KiPilot 0.3.0 at
 `303e62010172bf99c2aa41c10237c18bcabcca7a`, official `kicad-python==0.8.0`,
-`protobuf==5.29.6`, `mcp==1.30.0`, Python 3.12.13 and pinned transitive packages.
-The AppImage's bundled Python/legacy `pcbnew` is only the disposable board
+`protobuf==5.29.6`, `mcp==1.30.0`, Python 3.12.15 and pinned transitive packages.
+The official download is a tar archive; archive and extracted AppImage hashes
+are pinned separately and verified locally. Python comes from the current R00
+pinned runtime; the changed Python tuple gets a fresh resolver/install and a
+complete new runtime qualification. The AppImage's bundled Python/legacy `pcbnew` is only the disposable board
 construction fallback, independently reviewed as source; it is not stable IPC.
 
 Current primary sources checked 2026-10-18:
@@ -61,7 +64,9 @@ placement/move/rotation/flip, bottom-side assembly, vias, zones/fill, differenti
 routing, interactive schematic IPC, headless IPC, custom rules/netclasses through
 IPC, 3D/STEP fit, SPICE, general autorouting and other catalog operations. Their
 coordinate/layer/flip/zone/rollback/crash cases must be qualified when introduced
-for H05/H06. Existing front-side fixture geometry does not qualify those cases.
+for H05/H06. Existing front-side fixture geometry does not qualify those cases. Factory hole,
+annular-ring, board-edge and other production tolerances remain H05/H06
+design-specific gates; CAD-03 promotes only the stated width/clearance rules.
 
 ## Evidence and acceptance commands
 
@@ -73,7 +78,7 @@ cache, documents and IPC runtime are isolated below the fresh runtime root.
 
 ```sh
 python3 tools/cad/qualify.py prepare --runtime "$CAD_E01_RUNTIME" --output "$CAD_E01_OUTPUT" --tool-root /home/tux/nsealr/.restart-tools/cad --display :96
-python3 tools/cad/qualify.py install --runtime "$CAD_E01_RUNTIME" --output "$CAD_E01_OUTPUT" --python /home/tux/nsealr/.restart-tools/validation4/engineering/binding-0.8.0/bin/python
+python3 tools/cad/qualify.py install --runtime "$CAD_E01_RUNTIME" --output "$CAD_E01_OUTPUT" --python /home/tux/nsealr/.restart-tools/goal/r00/tools/baseline/.work/final/.tools/python/bin/python3
 python3 tools/cad/qualify.py run --runtime "$CAD_E01_RUNTIME" --output "$CAD_E01_OUTPUT"
 python3 tools/cad/qualify.py verify --output "$CAD_E01_OUTPUT"
 python3 scripts/validate_restart_plan.py
