@@ -1,0 +1,86 @@
+[
+  {
+    "label": "fresh-lab",
+    "argv": [
+      "git",
+      "clone",
+      "--no-local",
+      "/home/tux/nsealr/.restart-tools/goal/r00/tools/baseline/.work/first/lab",
+      "/home/tux/nsealr/.restart-tools/goal/r00/tools/baseline/.work/probe-lab"
+    ],
+    "cwd": "/home/tux/nsealr/.restart-tools/goal/r00",
+    "started": "2026-10-18T15:16:40.803224+00:00",
+    "log": "00-fresh-lab.log",
+    "ended": "2026-10-18T15:16:40.839771+00:00",
+    "exit_code": 0,
+    "sha256": "b769ea8639ccbddeddc4d62d3f5bf379d3195be0a169e8a4630c284e4ed8fd80"
+  },
+  {
+    "label": "test-overlay",
+    "argv": [
+      "git",
+      "apply",
+      "--include=tests/test_fixture_snapshots.py",
+      "/home/tux/nsealr/.restart-tools/goal/r00/tools/baseline/overlays/lab-provenance.patch"
+    ],
+    "cwd": "/home/tux/nsealr/.restart-tools/goal/r00/tools/baseline/.work/probe-lab",
+    "started": "2026-10-18T15:16:40.840150+00:00",
+    "log": "01-test-overlay.log",
+    "ended": "2026-10-18T15:16:40.841663+00:00",
+    "exit_code": 0,
+    "sha256": "99d0ac7bc61f4e92fb11608220b7d5a07a6c5da1f5e50692eedd85529ed36e70"
+  },
+  {
+    "label": "original-checker-rejects-provenance",
+    "argv": [
+      "python3",
+      "-m",
+      "unittest",
+      "discover",
+      "-s",
+      "tests",
+      "-p",
+      "test_fixture_snapshots.py"
+    ],
+    "cwd": "/home/tux/nsealr/.restart-tools/goal/r00/tools/baseline/.work/probe-lab",
+    "started": "2026-10-18T15:16:40.841812+00:00",
+    "log": "02-original-checker-rejects-provenance.log",
+    "ended": "2026-10-18T15:16:40.889966+00:00",
+    "exit_code": 1,
+    "sha256": "cc9514154c9198fdabfa7605a7e1c8517efbfedf5ab0dba6d87690a8c8294982"
+  },
+  {
+    "label": "checker-overlay",
+    "argv": [
+      "git",
+      "apply",
+      "--include=scripts/check_fixture_snapshots.py",
+      "/home/tux/nsealr/.restart-tools/goal/r00/tools/baseline/overlays/lab-provenance.patch"
+    ],
+    "cwd": "/home/tux/nsealr/.restart-tools/goal/r00/tools/baseline/.work/probe-lab",
+    "started": "2026-10-18T15:16:40.890167+00:00",
+    "log": "03-checker-overlay.log",
+    "ended": "2026-10-18T15:16:40.891410+00:00",
+    "exit_code": 0,
+    "sha256": "d51551288328f088630d0131698bff16aa31c66cbf3b41cce172ddf893ee8b58"
+  },
+  {
+    "label": "corrected-checker-negative-suite",
+    "argv": [
+      "python3",
+      "-m",
+      "unittest",
+      "discover",
+      "-s",
+      "tests",
+      "-p",
+      "test_fixture_snapshots.py"
+    ],
+    "cwd": "/home/tux/nsealr/.restart-tools/goal/r00/tools/baseline/.work/probe-lab",
+    "started": "2026-10-18T15:16:40.891515+00:00",
+    "log": "04-corrected-checker-negative-suite.log",
+    "ended": "2026-10-18T15:16:40.941231+00:00",
+    "exit_code": 0,
+    "sha256": "241a626ff7c9a2fffbed60d4ce7b6e22508e0063be3869a1610e592bc76b35ac"
+  }
+]

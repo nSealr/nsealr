@@ -1,0 +1,31 @@
+{"label": "post-rebase-core-controls", "argv": ["make", "test", "lint", "audit", "docs"], "cwd": "/home/tux/nsealr/.restart-tools/goal/r00", "started": "2026-10-18T15:25:13.029703+00:00", "log": "00-post-rebase-core-controls.log"}
+python3 scripts/verify_repo.py
+nSealr nsealr baseline verification passed
+python3 scripts/validate_restart_plan.py
+Restart plan valid: 47 tasks; ready: E01, A01
+Structural check only; hardware, review quality and security remain evidence gates.
+python3 -m unittest discover -s scripts -p 'test_validate_restart_plan.py'
+..................
+----------------------------------------------------------------------
+Ran 18 tests in 0.009s
+
+OK
+python3 -m unittest discover -s tools/baseline -p 'test_*.py'
+negative: ['/home/tux/nsealr/.restart-tools/goal/r00/tools/baseline/.work/relative-final/.tools/python/bin/python3', '-c', 'import sys; print("out"); print("diagnostic", file=sys.stderr); sys.exit(7)']
+.download file:///home/tux/nsealr/.restart-tools/goal/r00/tools/baseline/.work/relative-final/.tools/tmp/tmpz6ncdd2l/source
+...
+----------------------------------------------------------------------
+Ran 4 tests in 0.154s
+
+OK
+python3 scripts/verify_repo.py
+nSealr nsealr baseline verification passed
+python3 -m compileall -q scripts
+python3 scripts/verify_repo.py
+nSealr nsealr baseline verification passed
+python3 scripts/validate_firmware.py
+nSealr firmware board-profile validation passed
+python3 scripts/verify_repo.py
+nSealr nsealr baseline verification passed
+python3 scripts/validate_firmware.py
+nSealr firmware board-profile validation passed

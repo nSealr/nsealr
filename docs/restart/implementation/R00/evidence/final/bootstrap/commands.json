@@ -1,0 +1,177 @@
+[
+  {
+    "label": "python-packages",
+    "argv": [
+      "python3",
+      "-m",
+      "pip",
+      "install",
+      "--no-deps",
+      "/home/tux/nsealr/.restart-tools/goal/r00/tools/baseline/.work/final/.tools/wheels/pip-25.3-py3-none-any.whl",
+      "/home/tux/nsealr/.restart-tools/goal/r00/tools/baseline/.work/final/.tools/wheels/setuptools-80.9.0-py3-none-any.whl",
+      "/home/tux/nsealr/.restart-tools/goal/r00/tools/baseline/.work/final/.tools/wheels/wheel-0.45.1-py3-none-any.whl",
+      "/home/tux/nsealr/.restart-tools/goal/r00/tools/baseline/.work/final/.tools/wheels/packaging-25.0-py3-none-any.whl",
+      "/home/tux/nsealr/.restart-tools/goal/r00/tools/baseline/.work/final/.tools/wheels/pyyaml-6.0.3-cp312-cp312-manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_28_x86_64.whl",
+      "/home/tux/nsealr/.restart-tools/goal/r00/tools/baseline/.work/final/.tools/wheels/mnemonic-0.21-py3-none-any.whl",
+      "/home/tux/nsealr/.restart-tools/goal/r00/tools/baseline/.work/final/.tools/wheels/secp256k1-0.14.0-cp312-cp312-manylinux_2_17_x86_64.manylinux2014_x86_64.whl",
+      "/home/tux/nsealr/.restart-tools/goal/r00/tools/baseline/.work/final/.tools/wheels/cffi-2.1.1-cp312-cp312-manylinux2014_x86_64.manylinux_2_17_x86_64.whl",
+      "/home/tux/nsealr/.restart-tools/goal/r00/tools/baseline/.work/final/.tools/wheels/pycparser-3.11-py3-none-any.whl"
+    ],
+    "cwd": "/home/tux/nsealr/.restart-tools/goal/r00/tools/baseline/.work/final",
+    "started": "2026-10-18T15:16:47.141954+00:00",
+    "log": "00-python-packages.log",
+    "ended": "2026-10-18T15:16:48.730046+00:00",
+    "exit_code": 0,
+    "sha256": "a70ce7ca7a38328e5f38050bb4ba3fc7252c197b9980727348fd85e29b2d01c5"
+  },
+  {
+    "label": "python-dependency-check",
+    "argv": [
+      "python3",
+      "-m",
+      "pip",
+      "check"
+    ],
+    "cwd": "/home/tux/nsealr/.restart-tools/goal/r00/tools/baseline/.work/final",
+    "started": "2026-10-18T15:16:48.730271+00:00",
+    "log": "01-python-dependency-check.log",
+    "ended": "2026-10-18T15:16:49.030859+00:00",
+    "exit_code": 0,
+    "sha256": "6f669a6a28fbe73d3ce0925ad91eb3b33a7e0e0b4164ae9f7dffbf2991175480"
+  },
+  {
+    "label": "rustup-install",
+    "argv": [
+      "/home/tux/nsealr/.restart-tools/goal/r00/tools/baseline/.work/final/.tools/downloads/rustup-init",
+      "-y",
+      "--no-modify-path",
+      "--profile",
+      "minimal",
+      "--default-toolchain",
+      "none"
+    ],
+    "cwd": "/home/tux/nsealr/.restart-tools/goal/r00/tools/baseline/.work/final",
+    "started": "2026-10-18T15:16:49.031123+00:00",
+    "log": "02-rustup-install.log",
+    "ended": "2026-10-18T15:16:49.065910+00:00",
+    "exit_code": 0,
+    "sha256": "d01618ffcd16e04c154538902a7f6db275883d6fe96e9483bce336672f7471bd"
+  },
+  {
+    "label": "rustup-disable-self-update",
+    "argv": [
+      "rustup",
+      "set",
+      "auto-self-update",
+      "disable"
+    ],
+    "cwd": "/home/tux/nsealr/.restart-tools/goal/r00/tools/baseline/.work/final",
+    "started": "2026-10-18T15:16:49.066276+00:00",
+    "log": "03-rustup-disable-self-update.log",
+    "ended": "2026-10-18T15:16:49.074846+00:00",
+    "exit_code": 0,
+    "sha256": "a235249cb7b68aa4761b2d674c7ff8871fed040601080ce24476d74bb8cff46e"
+  },
+  {
+    "label": "rust-toolchain",
+    "argv": [
+      "rustup",
+      "toolchain",
+      "install",
+      "1.95.0",
+      "--profile",
+      "minimal",
+      "--component",
+      "rustfmt,clippy,llvm-tools-preview",
+      "--target",
+      "riscv32imafc-unknown-none-elf"
+    ],
+    "cwd": "/home/tux/nsealr/.restart-tools/goal/r00/tools/baseline/.work/final",
+    "started": "2026-10-18T15:16:49.075106+00:00",
+    "log": "04-rust-toolchain.log",
+    "ended": "2026-10-18T15:16:56.276887+00:00",
+    "exit_code": 0,
+    "sha256": "9345b26bc24595995a09f37f060bcfe79bf91496452d1c5c2cfadeb7648cb84f"
+  },
+  {
+    "label": "rust-default",
+    "argv": [
+      "rustup",
+      "default",
+      "1.95.0"
+    ],
+    "cwd": "/home/tux/nsealr/.restart-tools/goal/r00/tools/baseline/.work/final",
+    "started": "2026-10-18T15:16:56.277193+00:00",
+    "log": "05-rust-default.log",
+    "ended": "2026-10-18T15:16:56.293854+00:00",
+    "exit_code": 0,
+    "sha256": "ca5ad72b6b197f26688c803d6472dc1da32b0f79d3636cf5cc6f84aa28e469d2"
+  },
+  {
+    "label": "companion-frozen-install",
+    "argv": [
+      "pnpm",
+      "install",
+      "--frozen-lockfile"
+    ],
+    "cwd": "/home/tux/nsealr/.restart-tools/goal/r00/tools/baseline/.work/final/companion",
+    "started": "2026-10-18T15:16:56.294246+00:00",
+    "log": "06-companion-frozen-install.log",
+    "ended": "2026-10-18T15:16:57.748185+00:00",
+    "exit_code": 0,
+    "sha256": "130793558b6650bffd86b6282a5f03eed17c8d4644c6522498e47f2d1e6d0e13"
+  },
+  {
+    "label": "website-frozen-install",
+    "argv": [
+      "pnpm",
+      "install",
+      "--frozen-lockfile"
+    ],
+    "cwd": "/home/tux/nsealr/.restart-tools/goal/r00/tools/baseline/.work/final/website",
+    "started": "2026-10-18T15:16:57.748538+00:00",
+    "log": "07-website-frozen-install.log",
+    "ended": "2026-10-18T15:16:59.787457+00:00",
+    "exit_code": 0,
+    "sha256": "1a8135e7601c0c252ad3aafba8cb81dc980514c7a82f5eda8d7da4a03ff8b37b"
+  },
+  {
+    "label": "lab-setup",
+    "argv": [
+      "make",
+      "setup"
+    ],
+    "cwd": "/home/tux/nsealr/.restart-tools/goal/r00/tools/baseline/.work/final/lab",
+    "started": "2026-10-18T15:16:59.787750+00:00",
+    "log": "08-lab-setup.log",
+    "ended": "2026-10-18T15:17:01.574825+00:00",
+    "exit_code": 0,
+    "sha256": "327bea01030a37f7e2a28a25ff3aeca8424d5961bf572792dc8c84125288109a"
+  },
+  {
+    "label": "raspberry-setup",
+    "argv": [
+      "make",
+      "setup"
+    ],
+    "cwd": "/home/tux/nsealr/.restart-tools/goal/r00/tools/baseline/.work/final/raspberry",
+    "started": "2026-10-18T15:17:01.575171+00:00",
+    "log": "09-raspberry-setup.log",
+    "ended": "2026-10-18T15:17:05.643593+00:00",
+    "exit_code": 0,
+    "sha256": "dbeb61caf80cb5ff04399978f21e105b568885a1448d2ef6c92dc50045b00f49"
+  },
+  {
+    "label": "smartcard-setup",
+    "argv": [
+      "make",
+      "setup"
+    ],
+    "cwd": "/home/tux/nsealr/.restart-tools/goal/r00/tools/baseline/.work/final/smartcard",
+    "started": "2026-10-18T15:17:05.643958+00:00",
+    "log": "10-smartcard-setup.log",
+    "ended": "2026-10-18T15:17:09.675310+00:00",
+    "exit_code": 0,
+    "sha256": "5a1932aec7243fbb8cff94e19a6b82ed8f99d04ef9541e856fec260eec392f7f"
+  }
+]

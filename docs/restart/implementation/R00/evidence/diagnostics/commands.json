@@ -1,0 +1,136 @@
+[
+  {
+    "label": "api-fresh-copy",
+    "argv": [
+      "git",
+      "clone",
+      "--no-local",
+      "/home/tux/nsealr/.restart-tools/goal/r00/tools/baseline/.work/first/companion",
+      "/home/tux/nsealr/.restart-tools/goal/r00/tools/baseline/.work/api-probe"
+    ],
+    "cwd": "/home/tux/nsealr/.restart-tools/goal/r00",
+    "started": "2026-10-18T15:17:45.470551+00:00",
+    "log": "00-api-fresh-copy.log",
+    "ended": "2026-10-18T15:17:45.521315+00:00",
+    "exit_code": 0,
+    "sha256": "f8242564b1ae5facdb926e4e864e09e2798bcdf2fe4f406579e50f7942eff03e"
+  },
+  {
+    "label": "api-original-check",
+    "argv": [
+      "node",
+      "scripts/check_api_docs.mjs"
+    ],
+    "cwd": "/home/tux/nsealr/.restart-tools/goal/r00/tools/baseline/.work/api-probe",
+    "started": "2026-10-18T15:17:45.521644+00:00",
+    "log": "01-api-original-check.log",
+    "ended": "2026-10-18T15:17:45.744791+00:00",
+    "exit_code": 1,
+    "sha256": "9af67f339d8b995ac6765f98e4f132be6eea79837cceb1537694db1ea6f98823"
+  },
+  {
+    "label": "api-original-review-check",
+    "argv": [
+      "node",
+      "scripts/check_api_review.mjs"
+    ],
+    "cwd": "/home/tux/nsealr/.restart-tools/goal/r00/tools/baseline/.work/api-probe",
+    "started": "2026-10-18T15:17:45.745166+00:00",
+    "log": "02-api-original-review-check.log",
+    "ended": "2026-10-18T15:17:45.774027+00:00",
+    "exit_code": 0,
+    "sha256": "98acd7028a9fdf8c4c1e219d502242763273fdeea6cff7e3267f5a4207c82bdf"
+  },
+  {
+    "label": "api-regenerate",
+    "argv": [
+      "node",
+      "scripts/check_api_docs.mjs",
+      "--write"
+    ],
+    "cwd": "/home/tux/nsealr/.restart-tools/goal/r00/tools/baseline/.work/api-probe",
+    "started": "2026-10-18T15:17:45.774255+00:00",
+    "log": "03-api-regenerate.log",
+    "ended": "2026-10-18T15:17:45.992168+00:00",
+    "exit_code": 0,
+    "sha256": "7c70dcad8589d895d2172fafd49145d031c8db5c523612a78011bbd27a6251e0"
+  },
+  {
+    "label": "api-generated-check",
+    "argv": [
+      "node",
+      "scripts/check_api_docs.mjs"
+    ],
+    "cwd": "/home/tux/nsealr/.restart-tools/goal/r00/tools/baseline/.work/api-probe",
+    "started": "2026-10-18T15:17:45.992399+00:00",
+    "log": "04-api-generated-check.log",
+    "ended": "2026-10-18T15:17:46.218193+00:00",
+    "exit_code": 0,
+    "sha256": "ad80ae84720ad5f3b3a2ffc9a42c5dc63ee32965c7b1b81767818539b75fc7ba"
+  },
+  {
+    "label": "api-generated-review-check",
+    "argv": [
+      "node",
+      "scripts/check_api_review.mjs"
+    ],
+    "cwd": "/home/tux/nsealr/.restart-tools/goal/r00/tools/baseline/.work/api-probe",
+    "started": "2026-10-18T15:17:46.218410+00:00",
+    "log": "05-api-generated-review-check.log",
+    "ended": "2026-10-18T15:17:46.247604+00:00",
+    "exit_code": 1,
+    "sha256": "f1f895a3ae9836656e9c43c5e64ddd2986bea207e465641e787e75dc98cf63e8"
+  },
+  {
+    "label": "pinned-service-context",
+    "argv": [
+      "python3",
+      "scripts/integration_companion_service_context.py"
+    ],
+    "cwd": "/home/tux/nsealr/.restart-tools/goal/r00/tools/baseline/.work/first/lab",
+    "started": "2026-10-18T15:17:46.249474+00:00",
+    "log": "06-pinned-service-context.log",
+    "ended": "2026-10-18T15:18:08.320959+00:00",
+    "exit_code": 0,
+    "sha256": "566780c08c5455a11d09bd062b7e6ec8e13d05f4b394331a109bcddf25fc0517"
+  },
+  {
+    "label": "host-launcher-versions",
+    "argv": [
+      "node",
+      "--version"
+    ],
+    "cwd": "/home/tux/nsealr/.restart-tools/goal/r00/tools/baseline/.work/first/lab",
+    "started": "2026-10-18T15:18:08.321355+00:00",
+    "log": "07-host-launcher-versions.log",
+    "ended": "2026-10-18T15:18:08.324373+00:00",
+    "exit_code": 0,
+    "sha256": "c8060dfa66fea7ad93dba1ea85d83c7157053a4e3fe3c7105457b4409c45cf4c"
+  },
+  {
+    "label": "host-npm-version",
+    "argv": [
+      "npm",
+      "--version"
+    ],
+    "cwd": "/home/tux/nsealr/.restart-tools/goal/r00/tools/baseline/.work/first/lab",
+    "started": "2026-10-18T15:18:08.324501+00:00",
+    "log": "08-host-npm-version.log",
+    "ended": "2026-10-18T15:18:08.381327+00:00",
+    "exit_code": 0,
+    "sha256": "7388187bafc4b4055d96671e94deaaddabcfff9081933429d365a5981122f279"
+  },
+  {
+    "label": "host-launcher-service-context",
+    "argv": [
+      "python3",
+      "scripts/integration_companion_service_context.py"
+    ],
+    "cwd": "/home/tux/nsealr/.restart-tools/goal/r00/tools/baseline/.work/first/lab",
+    "started": "2026-10-18T15:18:08.381589+00:00",
+    "log": "09-host-launcher-service-context.log",
+    "ended": "2026-10-18T15:18:26.956044+00:00",
+    "exit_code": 1,
+    "sha256": "3a31b2c989a8db1d7cbc8e0a77b444cd6f6c6c5b831d2a4ec4f765e025ae2f8c"
+  }
+]
