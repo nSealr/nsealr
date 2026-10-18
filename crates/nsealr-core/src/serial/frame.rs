@@ -227,17 +227,17 @@ mod tests {
     // Byte-for-byte fixtures copied from
     // specs/vectors/transports/serial-frame-request-kind-1-basic.json
     // (`payload_base64url` and `frame`).
-    const PAYLOAD: &[u8] = b"eyJ2ZXJzaW9uIjoxLCJyZXF1ZXN0X2lkIjoicmVxLWtpbmQtMS1iYXNpYyIsIm1ldGhvZCI6InNpZ25fZXZlbnQiLCJwYXJhbXMiOnsiZXZlbnRfdGVtcGxhdGUiOnsiY3JlYXRlZF9hdCI6MTcxMDAwMDAwMCwia2luZCI6MSwidGFncyI6W10sImNvbnRlbnQiOiJuU2VhbHIgZml4dHVyZTogYmFzaWMga2luZCAxIGV2ZW50LiJ9fX0";
-    const FRAME: &[u8] = b"nsealr1f:request:eyJ2ZXJzaW9uIjoxLCJyZXF1ZXN0X2lkIjoicmVxLWtpbmQtMS1iYXNpYyIsIm1ldGhvZCI6InNpZ25fZXZlbnQiLCJwYXJhbXMiOnsiZXZlbnRfdGVtcGxhdGUiOnsiY3JlYXRlZF9hdCI6MTcxMDAwMDAwMCwia2luZCI6MSwidGFncyI6W10sImNvbnRlbnQiOiJuU2VhbHIgZml4dHVyZTogYmFzaWMga2luZCAxIGV2ZW50LiJ9fX0:37f84b248fa1afb6\n";
+    const PAYLOAD: &[u8] = include_bytes!(concat!(env!("OUT_DIR"), "/field-7bc474eb9fd65cd1f1cdfd09.txt"));
+    const FRAME: &[u8] = include_bytes!(concat!(env!("OUT_DIR"), "/field-275b00adc2cdd30c17c95c67.txt"));
 
     // Shared-invalid serial-frame fixtures copied from specs/vectors/invalid/
     // serial-frame-{checksum-mismatch,malformed-payload,unsupported-type}.json
     // (`frame`); the oversized fixture is rebuilt byte-identically below.
-    const INVALID_CHECKSUM_MISMATCH: &[u8] = b"nsealr1f:request:eyJ2ZXJzaW9uIjoxLCJyZXF1ZXN0X2lkIjoicmVxLXNlcmlhbC1tYWxmb3JtZWQiLCJtZXRob2QiOiJzaWduX2V2ZW50IiwicGFyYW1zIjp7ImV2ZW50X3RlbXBsYXRlIjp7ImNyZWF0ZWRfYXQiOjE3MTAwMDAwMDAsImtpbmQiOjEsInRhZ3MiOltdLCJjb250ZW50Ijoib2sifX19:0000000000000000\n";
+    const INVALID_CHECKSUM_MISMATCH: &[u8] = include_bytes!(concat!(env!("OUT_DIR"), "/field-e0d0a83f41b5e91f7fa970f3.txt"));
     const INVALID_MALFORMED_PAYLOAD: &[u8] =
-        b"nsealr1f:request:not-valid-base64!:0000000000000000\n";
+        include_bytes!(concat!(env!("OUT_DIR"), "/field-413fb7a5114a44f4a3116270.txt"));
     const INVALID_UNSUPPORTED_TYPE: &[u8] =
-        b"nsealr1f:command:eyJub29wIjp0cnVlfQ:224b8206979b2488\n";
+        include_bytes!(concat!(env!("OUT_DIR"), "/field-7f2f44571178f3ab692d1043.txt"));
 
     /// The oversized fixture from specs/vectors/invalid/serial-frame-oversized.json
     /// (`frame`): `nsealr1f:` + 1100 'x' characters (1109 bytes), rebuilt

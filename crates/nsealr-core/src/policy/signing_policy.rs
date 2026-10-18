@@ -222,27 +222,27 @@ mod tests {
         assert_eq!(
             as_strs(&default_status.missing_gates),
             [
-                "runtime_signing_feature",
+                include_str!(concat!(env!("OUT_DIR"), "/field-f706f4392154dcd7560cd36b.txt")),
                 "parser_limits",
-                "trusted_review_display",
-                "physical_approval_controls",
-                "approval_digest_binding",
-                "unicode_review_rendering",
-                "key_provisioning",
-                "source_public_key_proof",
+                include_str!(concat!(env!("OUT_DIR"), "/field-9550a14f72fc08baf2aa14f3.txt")),
+                include_str!(concat!(env!("OUT_DIR"), "/field-214939ecb151b6a8878c69c5.txt")),
+                include_str!(concat!(env!("OUT_DIR"), "/field-9c587a8402b2f580ca422d36.txt")),
+                include_str!(concat!(env!("OUT_DIR"), "/field-e455bbf2dbf9036f9e8b55c3.txt")),
+                include_str!(concat!(env!("OUT_DIR"), "/field-543aa73676256058e56124d9.txt")),
+                include_str!(concat!(env!("OUT_DIR"), "/field-b0db970c9c0a12565d003468.txt")),
                 "secure_boot",
-                "flash_encryption",
+                include_str!(concat!(env!("OUT_DIR"), "/field-9c9ae63fa388c9c119c9ea5d.txt")),
                 "debug_lock",
-                "companion_signed_output_verification",
+                include_str!(concat!(env!("OUT_DIR"), "/field-8e88a54ab6b27c5030181301.txt")),
             ],
         );
 
         let mut development_accepted_gates = SigningGateNames::new();
         for gate in [
             "parser_limits",
-            "trusted_review_display",
-            "physical_approval_controls",
-            "approval_digest_binding",
+            include_str!(concat!(env!("OUT_DIR"), "/field-9550a14f72fc08baf2aa14f3.txt")),
+            include_str!(concat!(env!("OUT_DIR"), "/field-214939ecb151b6a8878c69c5.txt")),
+            include_str!(concat!(env!("OUT_DIR"), "/field-9c587a8402b2f580ca422d36.txt")),
         ] {
             development_accepted_gates.try_push(gate).unwrap();
         }
@@ -266,15 +266,15 @@ mod tests {
         assert!(!safety_status.signing_enabled);
         assert_eq!(
             as_strs(&safety_status.missing_gates),
-            ["runtime_signing_feature"],
+            [include_str!(concat!(env!("OUT_DIR"), "/field-f706f4392154dcd7560cd36b.txt"))],
         );
         assert_eq!(
             as_strs(&safety_status.development_accepted_gates),
             [
                 "parser_limits",
-                "trusted_review_display",
-                "physical_approval_controls",
-                "approval_digest_binding",
+                include_str!(concat!(env!("OUT_DIR"), "/field-9550a14f72fc08baf2aa14f3.txt")),
+                include_str!(concat!(env!("OUT_DIR"), "/field-214939ecb151b6a8878c69c5.txt")),
+                include_str!(concat!(env!("OUT_DIR"), "/field-9c587a8402b2f580ca422d36.txt")),
             ],
         );
 

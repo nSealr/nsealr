@@ -1284,29 +1284,29 @@ pub(crate) mod tests {
     // Byte-for-byte fixtures copied from
     // specs/vectors/transports/qr-envelope-kind-1-basic.json (`envelope`,
     // `payload_base64url`).
-    pub(crate) const KIND1_BASIC_ENVELOPE: &[u8] = b"nsealr1:eyJ2ZXJzaW9uIjoxLCJyZXF1ZXN0X2lkIjoicmVxLWtpbmQtMS1iYXNpYyIsIm1ldGhvZCI6InNpZ25fZXZlbnQiLCJwYXJhbXMiOnsiZXZlbnRfdGVtcGxhdGUiOnsiY3JlYXRlZF9hdCI6MTcxMDAwMDAwMCwia2luZCI6MSwidGFncyI6W10sImNvbnRlbnQiOiJuU2VhbHIgZml4dHVyZTogYmFzaWMga2luZCAxIGV2ZW50LiJ9fX0";
-    const KIND1_BASIC_PAYLOAD: &[u8] = b"eyJ2ZXJzaW9uIjoxLCJyZXF1ZXN0X2lkIjoicmVxLWtpbmQtMS1iYXNpYyIsIm1ldGhvZCI6InNpZ25fZXZlbnQiLCJwYXJhbXMiOnsiZXZlbnRfdGVtcGxhdGUiOnsiY3JlYXRlZF9hdCI6MTcxMDAwMDAwMCwia2luZCI6MSwidGFncyI6W10sImNvbnRlbnQiOiJuU2VhbHIgZml4dHVyZTogYmFzaWMga2luZCAxIGV2ZW50LiJ9fX0";
+    pub(crate) const KIND1_BASIC_ENVELOPE: &[u8] = include_bytes!(concat!(env!("OUT_DIR"), "/field-b69c96b873204e5c324385c0.txt"));
+    const KIND1_BASIC_PAYLOAD: &[u8] = include_bytes!(concat!(env!("OUT_DIR"), "/field-7bc474eb9fd65cd1f1cdfd09.txt"));
 
     // Byte-for-byte fixture copied from
     // specs/vectors/transports/qr-envelope-kind-1-long-events-many-tags.json
     // (`envelope`): a maximal valid request (nine tags, 281-byte content).
-    const KIND1_LONG_MANY_TAGS_ENVELOPE: &[u8] = b"nsealr1:eyJ2ZXJzaW9uIjoxLCJyZXF1ZXN0X2lkIjoicmVxLWtpbmQtMS1sb25nLWV2ZW50cy1tYW55LXRhZ3MiLCJtZXRob2QiOiJzaWduX2V2ZW50IiwicGFyYW1zIjp7ImV2ZW50X3RlbXBsYXRlIjp7ImNyZWF0ZWRfYXQiOjE3MTAwMDAxMjAsImtpbmQiOjEsInRhZ3MiOltbImUiLCJhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhIiwiIiwicm9vdCJdLFsidCIsIm5zZWFsciJdLFsidCIsImhhcmR3YXJlIl0sWyJ0IiwicmV2aWV3Il0sWyJ0Iiwic2VjdXJpdHkiXSxbInQiLCJxciJdLFsidCIsInZhdWx0Il0sWyJ0IiwiY29tcGFuaW9uIl0sWyJ0IiwidGVzdCJdXSwiY29udGVudCI6Inh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4In19fQ";
+    const KIND1_LONG_MANY_TAGS_ENVELOPE: &[u8] = include_bytes!(concat!(env!("OUT_DIR"), "/field-fd77c72125a90d057af49e71.txt"));
 
     // Animated fixture copied from
     // specs/vectors/transports/qr-animated-response-kind-1-basic.json (`frames`,
     // `payload_base64url`; ANIMATED_JSON is the same fixture's `decoded` in the
     // canonical serialization pinned by the C++ kAnimatedQrResponseKind1BasicJson).
-    pub(crate) const ANIMATED_FRAME_1: &[u8] = b"nsealr1a:e4ed45466ba40f9e902bf988eb5aab58082b17586b0da47f45f67ce0a4211ec3:1/3:eyJ2ZXJzaW9uIjoxLCJyZXF1ZXN0X2lkIjoicmVxLWtpbmQtMS1iYXNpYyIsIm9rIjp0cnVlLCJyZXN1bHQiOnsiZXZlbnQiOnsiaWQiOiIyOTc3ZjEwN2FkMjY2OGRiZDlmMDliODU5NGVmZjNiNTI3NmUyMWJmZTA5OGU2MGFlM2U5MDVlM2M4NjFlNGQzIiwicHVia2V5IjoiNGYzNTViZGNiN2NjMGFmNzI4ZWYzY2NlYjk2MTVkOTA2ODRi:1fa03ed6e4432e25";
-    pub(crate) const ANIMATED_FRAME_2: &[u8] = b"nsealr1a:e4ed45466ba40f9e902bf988eb5aab58082b17586b0da47f45f67ce0a4211ec3:2/3:YjViMmNhNWY4NTlhYjBmMGI3MDQwNzU4NzFhYSIsImNyZWF0ZWRfYXQiOjE3MTAwMDAwMDAsImtpbmQiOjEsInRhZ3MiOltdLCJjb250ZW50IjoiblNlYWxyIGZpeHR1cmU6IGJhc2ljIGtpbmQgMSBldmVudC4iLCJzaWciOiIyZWVjMDM1MWViMWQ2NTExNDA5MjJkNGIxZjFiZDgxMzVmNDQ3NGFhYmY0MmVjNWJkYTcwMTEwODdjMWEwNzJk:88908749e68c83f7";
-    pub(crate) const ANIMATED_FRAME_3: &[u8] = b"nsealr1a:e4ed45466ba40f9e902bf988eb5aab58082b17586b0da47f45f67ce0a4211ec3:3/3:NzFiZTg2MzY0NmRjMTYyZTRkOTZlYWNmMTRhZmVlZDI2MThhNGFjYjBlMTEzNGEyNzNhMmI4ZTczMDM5ZTY1NCJ9fX0:95d312093442c4d6";
-    pub(crate) const ANIMATED_PAYLOAD: &[u8] = b"eyJ2ZXJzaW9uIjoxLCJyZXF1ZXN0X2lkIjoicmVxLWtpbmQtMS1iYXNpYyIsIm9rIjp0cnVlLCJyZXN1bHQiOnsiZXZlbnQiOnsiaWQiOiIyOTc3ZjEwN2FkMjY2OGRiZDlmMDliODU5NGVmZjNiNTI3NmUyMWJmZTA5OGU2MGFlM2U5MDVlM2M4NjFlNGQzIiwicHVia2V5IjoiNGYzNTViZGNiN2NjMGFmNzI4ZWYzY2NlYjk2MTVkOTA2ODRiYjViMmNhNWY4NTlhYjBmMGI3MDQwNzU4NzFhYSIsImNyZWF0ZWRfYXQiOjE3MTAwMDAwMDAsImtpbmQiOjEsInRhZ3MiOltdLCJjb250ZW50IjoiblNlYWxyIGZpeHR1cmU6IGJhc2ljIGtpbmQgMSBldmVudC4iLCJzaWciOiIyZWVjMDM1MWViMWQ2NTExNDA5MjJkNGIxZjFiZDgxMzVmNDQ3NGFhYmY0MmVjNWJkYTcwMTEwODdjMWEwNzJkNzFiZTg2MzY0NmRjMTYyZTRkOTZlYWNmMTRhZmVlZDI2MThhNGFjYjBlMTEzNGEyNzNhMmI4ZTczMDM5ZTY1NCJ9fX0";
-    pub(crate) const ANIMATED_JSON: &[u8] = br#"{"version":1,"request_id":"req-kind-1-basic","ok":true,"result":{"event":{"id":"2977f107ad2668dbd9f09b8594eff3b5276e21bfe098e60ae3e905e3c861e4d3","pubkey":"4f355bdcb7cc0af728ef3cceb9615d90684bb5b2ca5f859ab0f0b704075871aa","created_at":1710000000,"kind":1,"tags":[],"content":"nSealr fixture: basic kind 1 event.","sig":"2eec0351eb1d651140922d4b1f1bd8135f4474aabf42ec5bda7011087c1a072d71be863646dc162e4d96eacf14afeed2618a4acb0e1134a273a2b8e73039e654"}}}"#;
+    pub(crate) const ANIMATED_FRAME_1: &[u8] = include_bytes!(concat!(env!("OUT_DIR"), "/field-cb806983fcebd0885ee3bd03.txt"));
+    pub(crate) const ANIMATED_FRAME_2: &[u8] = include_bytes!(concat!(env!("OUT_DIR"), "/field-be6cb4d91daa59ce1e0697cb.txt"));
+    pub(crate) const ANIMATED_FRAME_3: &[u8] = include_bytes!(concat!(env!("OUT_DIR"), "/field-f119cf383068a629770f4634.txt"));
+    pub(crate) const ANIMATED_PAYLOAD: &[u8] = include_bytes!(concat!(env!("OUT_DIR"), "/field-a6eb1c7c7419fbd99df6825c.txt"));
+    pub(crate) const ANIMATED_JSON: &[u8] = include_bytes!(concat!(env!("OUT_DIR"), "/field-155b661f07a03facadcc50eb.txt"));
 
     // Shared-invalid QR-envelope fixtures copied from specs/vectors/invalid/
     // qr-envelope-{padded,malformed,invalid-utf8}.json (`envelope`); the oversized
     // fixture (qr-envelope-oversized.json) is `nsealr1:` + 940 'A's (948 bytes),
     // rebuilt programmatically below, byte-identical to the fixture.
-    const INVALID_PADDED: &[u8] = b"nsealr1:eyJ2ZXJzaW9uIjoxfQ==";
+    const INVALID_PADDED: &[u8] = include_bytes!(concat!(env!("OUT_DIR"), "/field-bcf1804c40fb794ae802d43c.txt"));
     const INVALID_MALFORMED: &[u8] = b"nsealr:abc";
     const INVALID_UTF8: &[u8] = b"nsealr1:_w";
 
@@ -1419,7 +1419,7 @@ pub(crate) mod tests {
         let (_, json) = decode_static(KIND1_BASIC_ENVELOPE).unwrap();
         let request = parse_qr_signing_request(&json).unwrap();
         assert_eq!(request.version, 1);
-        assert_eq!(request.request_id(), b"req-kind-1-basic");
+        assert_eq!(request.request_id(), include_bytes!(concat!(env!("OUT_DIR"), "/field-ef8f1cdc03d2b7514fa6d71d.txt")));
         assert_eq!(request.method(), "sign_event");
         assert!(request.has_params);
     }
@@ -1446,7 +1446,7 @@ pub(crate) mod tests {
         let request = parse_qr_signing_request(&json).unwrap();
         assert_eq!(request.event_template.created_at, 1_710_000_000);
         assert_eq!(request.event_template.kind, 1);
-        assert_eq!(request.content(), b"nSealr fixture: basic kind 1 event.");
+        assert_eq!(request.content(), include_bytes!(concat!(env!("OUT_DIR"), "/field-1b208157932014fa782660ac.txt")));
         let (start, end) = request.event_template.tags_json;
         assert_eq!(&json[start..end], b"[]");
     }
@@ -1709,31 +1709,31 @@ pub(crate) mod tests {
     #[test]
     fn qr_signing_request_rejects_shared_invalid_request_vectors() {
         let vectors: &[(&str, &[u8])] = &[
-            ("request-content-over-limit", br#"{"version":1,"request_id":"invalid-content-over-limit","method":"sign_event","params":{"event_template":{"created_at":1710000000,"kind":1,"tags":[],"content":"xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"}}}"#),
-            ("request-created-at-float", br#"{"version":1,"request_id":"invalid-created-at-float","method":"sign_event","params":{"event_template":{"created_at":1710000000.5,"kind":1,"tags":[],"content":"invalid created_at"}}}"#),
-            ("request-created-at-negative", br#"{"version":1,"request_id":"invalid-created-at-negative","method":"sign_event","params":{"event_template":{"created_at":-1,"kind":1,"tags":[],"content":"invalid created_at"}}}"#),
-            ("request-created-at-string", br#"{"version":1,"request_id":"invalid-created-at-string","method":"sign_event","params":{"event_template":{"created_at":"1710000000","kind":1,"tags":[],"content":"invalid created_at"}}}"#),
-            ("request-created-at-unsafe-integer", br#"{"version":1,"request_id":"invalid-created-at-unsafe","method":"sign_event","params":{"event_template":{"created_at":9007199254740992,"kind":1,"tags":[],"content":"invalid created_at"}}}"#),
-            ("request-event-template-id", br#"{"version":1,"request_id":"invalid-template-id","method":"sign_event","params":{"event_template":{"id":"0000000000000000000000000000000000000000000000000000000000000000","created_at":1710000000,"kind":1,"tags":[],"content":"unsafe template"}}}"#),
-            ("request-event-template-missing", br#"{"version":1,"request_id":"invalid-template-missing","method":"sign_event","params":{}}"#),
-            ("request-event-template-not-object", br#"{"version":1,"request_id":"invalid-template-not-object","method":"sign_event","params":{"event_template":"not an object"}}"#),
-            ("request-event-template-pubkey", br#"{"version":1,"request_id":"invalid-template-pubkey","method":"sign_event","params":{"event_template":{"pubkey":"0000000000000000000000000000000000000000000000000000000000000000","created_at":1710000000,"kind":1,"tags":[],"content":"unsafe template"}}}"#),
-            ("request-event-template-sig", br#"{"version":1,"request_id":"invalid-template-sig","method":"sign_event","params":{"event_template":{"sig":"00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000","created_at":1710000000,"kind":1,"tags":[],"content":"unsafe template"}}}"#),
-            ("request-get-capabilities-params", br#"{"version":1,"request_id":"invalid-capabilities-params","method":"get_capabilities","params":{}}"#),
-            ("request-get-public-key-params", br#"{"version":1,"request_id":"invalid-public-key-params","method":"get_public_key","params":{}}"#),
-            ("request-json-over-limit", br#"{"version":1,"request_id":"invalid-request-json-over-limit","method":"sign_event","params":{"event_template":{"created_at":1710000000,"kind":1,"tags":[],"content":"xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"}}}"#),
-            ("request-kind-float", br#"{"version":1,"request_id":"invalid-kind-float","method":"sign_event","params":{"event_template":{"created_at":1710000000,"kind":1.5,"tags":[],"content":"invalid kind"}}}"#),
-            ("request-kind-negative", br#"{"version":1,"request_id":"invalid-kind-negative","method":"sign_event","params":{"event_template":{"created_at":1710000000,"kind":-1,"tags":[],"content":"invalid kind"}}}"#),
-            ("request-kind-string", br#"{"version":1,"request_id":"invalid-kind-string","method":"sign_event","params":{"event_template":{"created_at":1710000000,"kind":"1","tags":[],"content":"invalid kind"}}}"#),
-            ("request-kind-unsafe-integer", br#"{"version":1,"request_id":"invalid-kind-unsafe","method":"sign_event","params":{"event_template":{"created_at":1710000000,"kind":9007199254740992,"tags":[],"content":"invalid kind"}}}"#),
-            ("request-sign-event-missing-params", br#"{"version":1,"request_id":"invalid-sign-event-missing-params","method":"sign_event"}"#),
-            ("request-sign-event-params-not-object", br#"{"version":1,"request_id":"invalid-sign-event-params-not-object","method":"sign_event","params":[]}"#),
-            ("request-sign-event-unknown-param", br#"{"version":1,"request_id":"invalid-sign-event-unknown-param","method":"sign_event","params":{"event_template":{"created_at":1710000000,"kind":1,"tags":[],"content":"valid event template"},"policy_hint":"unsafe host-supplied hint"}}"#),
-            ("request-tag-field-too-long", br#"{"version":1,"request_id":"invalid-tag-field-too-long","method":"sign_event","params":{"event_template":{"created_at":1710000000,"kind":1,"tags":[["t","aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"]],"content":"tag field too long"}}}"#),
-            ("request-tag-item-not-string", br#"{"version":1,"request_id":"invalid-tag-item-not-string","method":"sign_event","params":{"event_template":{"created_at":1710000000,"kind":1,"tags":[["p",7]],"content":"invalid tag item"}}}"#),
-            ("request-tags-not-array", br#"{"version":1,"request_id":"invalid-tags-not-array","method":"sign_event","params":{"event_template":{"created_at":1710000000,"kind":1,"tags":"not-an-array","content":"invalid tags"}}}"#),
-            ("request-too-many-tags", br#"{"version":1,"request_id":"invalid-too-many-tags","method":"sign_event","params":{"event_template":{"created_at":1710000000,"kind":1,"tags":[[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[]],"content":"too many tags"}}}"#),
-            ("request-unknown-top-level-field", br#"{"version":1,"request_id":"invalid-top-level","method":"get_public_key","unexpected":true}"#),
+            (include_str!(concat!(env!("OUT_DIR"), "/field-24c565533b2c031cce3404d6.txt")), include_bytes!(concat!(env!("OUT_DIR"), "/field-88270f2336c3bec26b9b8102.txt"))),
+            (include_str!(concat!(env!("OUT_DIR"), "/field-343dfba9674203b8ae5e049f.txt")), include_bytes!(concat!(env!("OUT_DIR"), "/field-692fd02b9af23295ea9e3f54.txt"))),
+            (include_str!(concat!(env!("OUT_DIR"), "/field-a9f28b492e9d40dcbb54c161.txt")), include_bytes!(concat!(env!("OUT_DIR"), "/field-392edda1d20e90455b184512.txt"))),
+            (include_str!(concat!(env!("OUT_DIR"), "/field-a33c1ff0bff84fd58102c97e.txt")), include_bytes!(concat!(env!("OUT_DIR"), "/field-8035bcb7ff6c7b69d10d9005.txt"))),
+            (include_str!(concat!(env!("OUT_DIR"), "/field-d01a036c56103bac5db2833c.txt")), include_bytes!(concat!(env!("OUT_DIR"), "/field-e2d8d202b6a418eb3e27a8e4.txt"))),
+            (include_str!(concat!(env!("OUT_DIR"), "/field-a13fcba3d0d0645295d4b83e.txt")), include_bytes!(concat!(env!("OUT_DIR"), "/field-6d36b8ad33903e0c72537245.txt"))),
+            (include_str!(concat!(env!("OUT_DIR"), "/field-0187d5ed5d3b8b77e48ef519.txt")), include_bytes!(concat!(env!("OUT_DIR"), "/field-567d875b28f2f1c9dcd84c4c.txt"))),
+            (include_str!(concat!(env!("OUT_DIR"), "/field-fc6215b9edc02850921efd59.txt")), include_bytes!(concat!(env!("OUT_DIR"), "/field-a639ba28eef6d1ce4f06e1bd.txt"))),
+            (include_str!(concat!(env!("OUT_DIR"), "/field-01183b580c2afd82aee32f20.txt")), include_bytes!(concat!(env!("OUT_DIR"), "/field-245bbf0348274249096379c6.txt"))),
+            (include_str!(concat!(env!("OUT_DIR"), "/field-f3f5f97a7f0c05599c615490.txt")), include_bytes!(concat!(env!("OUT_DIR"), "/field-4b05e434cfd67cd9a75ecb4b.txt"))),
+            (include_str!(concat!(env!("OUT_DIR"), "/field-5936ea3644e2c886e6c18700.txt")), include_bytes!(concat!(env!("OUT_DIR"), "/field-f1b6d702634ac412d6ac89ce.txt"))),
+            (include_str!(concat!(env!("OUT_DIR"), "/field-88730efa77091611955c71b7.txt")), include_bytes!(concat!(env!("OUT_DIR"), "/field-bfb321d6d7c2a5aa3703dd9c.txt"))),
+            (include_str!(concat!(env!("OUT_DIR"), "/field-85a8b70c362257648b261d39.txt")), include_bytes!(concat!(env!("OUT_DIR"), "/field-0af857de4a48d6ec2d683150.txt"))),
+            (include_str!(concat!(env!("OUT_DIR"), "/field-47633ca2891092f5a178a3cf.txt")), include_bytes!(concat!(env!("OUT_DIR"), "/field-4e2e8353b45bb26b551944be.txt"))),
+            (include_str!(concat!(env!("OUT_DIR"), "/field-a8e4d74626214bd56a3873ba.txt")), include_bytes!(concat!(env!("OUT_DIR"), "/field-a0ead41b24fcf49b107f5ee6.txt"))),
+            (include_str!(concat!(env!("OUT_DIR"), "/field-e5248f375a7cdce2c8aa721d.txt")), include_bytes!(concat!(env!("OUT_DIR"), "/field-15a804309e663e5eb2bc4791.txt"))),
+            (include_str!(concat!(env!("OUT_DIR"), "/field-8c23f2b7b75b9f3fdf57fc8e.txt")), include_bytes!(concat!(env!("OUT_DIR"), "/field-0a36357aaf25b74bcc5a133d.txt"))),
+            (include_str!(concat!(env!("OUT_DIR"), "/field-8db3104d26d8106b5f55d616.txt")), include_bytes!(concat!(env!("OUT_DIR"), "/field-2cef7d540519e1d0667de472.txt"))),
+            (include_str!(concat!(env!("OUT_DIR"), "/field-3c7557ad4529bd78fe06da9a.txt")), include_bytes!(concat!(env!("OUT_DIR"), "/field-6b33788fa062b8aa8c163525.txt"))),
+            (include_str!(concat!(env!("OUT_DIR"), "/field-bd723d16fe4c12661fa410af.txt")), include_bytes!(concat!(env!("OUT_DIR"), "/field-9f12fcb31538612f9548d6c4.txt"))),
+            (include_str!(concat!(env!("OUT_DIR"), "/field-c557f62900487f92ed686095.txt")), include_bytes!(concat!(env!("OUT_DIR"), "/field-694f49d5b74d9e18fb5d344e.txt"))),
+            (include_str!(concat!(env!("OUT_DIR"), "/field-96b3432119f33bc1e3678da0.txt")), include_bytes!(concat!(env!("OUT_DIR"), "/field-85d66b86eaf4b9800deff84a.txt"))),
+            (include_str!(concat!(env!("OUT_DIR"), "/field-a39b76315e5cc2d5abf10106.txt")), include_bytes!(concat!(env!("OUT_DIR"), "/field-91956a747800a262375e2b7e.txt"))),
+            (include_str!(concat!(env!("OUT_DIR"), "/field-0c791d113112c983e86db3ba.txt")), include_bytes!(concat!(env!("OUT_DIR"), "/field-d398a64ecb2d39f66153a5b1.txt"))),
+            (include_str!(concat!(env!("OUT_DIR"), "/field-f87a96b2d9df38ed94b99fe4.txt")), include_bytes!(concat!(env!("OUT_DIR"), "/field-bfe77a9543df538a8b0265f4.txt"))),
         ];
         for (name, json) in vectors {
             assert!(
@@ -1751,7 +1751,7 @@ pub(crate) mod tests {
     fn long_events_many_tags_shared_vector_parses() {
         let (_, json) = decode_static(KIND1_LONG_MANY_TAGS_ENVELOPE).unwrap();
         let request = parse_qr_signing_request(&json).unwrap();
-        assert_eq!(request.request_id(), b"req-kind-1-long-events-many-tags");
+        assert_eq!(request.request_id(), include_bytes!(concat!(env!("OUT_DIR"), "/field-1371212056e9e66ac9642836.txt")));
         assert_eq!(request.event_template.created_at, 1_710_000_120);
         assert_eq!(request.event_template.tag_count, 9);
         let tag0: Vec<&[u8]> = request.tag(0).collect();

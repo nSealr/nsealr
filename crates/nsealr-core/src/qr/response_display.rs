@@ -775,9 +775,9 @@ mod tests {
     #[test]
     fn rejects_shared_top_level_invalid_response_vectors() {
         let vectors: &[(&str, &[u8])] = &[
-            ("response-error-with-result", br#"{"version":1,"request_id":"req-invalid-response-error-with-result","ok":false,"error":{"code":"user_rejected","message":"Rejected","retryable":false},"result":{"public_key":"4f355bdcb7cc0af728ef3cceb9615d90684bb5b2ca5f859ab0f0b704075871aa"}}"#),
-            ("response-request-id-invalid", br#"{"version":1,"request_id":"invalid response id","ok":true,"result":{"public_key":"4f355bdcb7cc0af728ef3cceb9615d90684bb5b2ca5f859ab0f0b704075871aa"}}"#),
-            ("response-unknown-top-level-field", br#"{"version":1,"request_id":"req-invalid-response-unknown-field","ok":false,"error":{"code":"user_rejected","message":"Rejected","retryable":false},"debug":"host-injected"}"#),
+            (include_str!(concat!(env!("OUT_DIR"), "/field-8893afc4ccc24b73dbc3eacd.txt")), include_bytes!(concat!(env!("OUT_DIR"), "/field-17b064543efbf513eb311440.txt"))),
+            (include_str!(concat!(env!("OUT_DIR"), "/field-3fb630cd6e6cc56e76380bac.txt")), include_bytes!(concat!(env!("OUT_DIR"), "/field-987661365b5911b05489d629.txt"))),
+            (include_str!(concat!(env!("OUT_DIR"), "/field-f541c3e32b61e25a40070959.txt")), include_bytes!(concat!(env!("OUT_DIR"), "/field-0fe013b9ad698c450cfb85a6.txt"))),
         ];
         for (name, response_json) in vectors {
             assert!(

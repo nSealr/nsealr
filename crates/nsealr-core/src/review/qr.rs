@@ -915,7 +915,7 @@ mod tests {
 
     /// The tagged request JSON the C++ tests embed inline (matching the
     /// READ-ONLY specs/vectors/review-screens/kind-1-tags.json request).
-    const TAGGED_REQUEST_JSON: &str = "{\"version\":1,\"request_id\":\"req-kind-1-tags\",\"method\":\"sign_event\",\"params\":{\"event_template\":{\"created_at\":1710000060,\"kind\":1,\"tags\":[[\"p\",\"4f355bdcb7cc0af728ef3cceb9615d90684bb5b2ca5f859ab0f0b704075871aa\",\"\",\"mention\"],[\"t\",\"nsealr\"]],\"content\":\"nSealr fixture: tagged kind 1 event.\"}}}";
+    const TAGGED_REQUEST_JSON: &str = include_str!(concat!(env!("OUT_DIR"), "/field-27fffd6dbc839c2f04dc554a.txt"));
 
     // Port of the C++ `test_qr_review_pages_match_shared_tagged_vector`.
     #[test]
@@ -940,7 +940,7 @@ mod tests {
     // Port of the C++ `test_qr_review_binds_configured_signer_identity`.
     #[test]
     fn review_binds_configured_signer_identity() {
-        let alternate_pubkey = "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa";
+        let alternate_pubkey = include_str!(concat!(env!("OUT_DIR"), "/field-ee1c3ae16e811a2b5ee33b50.txt"));
         let alternate_identity = SignerIdentity {
             public_key: alternate_pubkey,
         };
@@ -996,7 +996,7 @@ mod tests {
     // Port of the C++ `test_qr_display_review_pages_show_full_tag_values_without_ellipsis`.
     #[test]
     fn display_pages_show_full_tag_values_without_ellipsis() {
-        let pubkey = "4f355bdcb7cc0af728ef3cceb9615d90684bb5b2ca5f859ab0f0b704075871aa";
+        let pubkey = include_str!(concat!(env!("OUT_DIR"), "/field-17dba53b6e43a56b50d99b65.txt"));
         let request = parse(TAGGED_REQUEST_JSON);
 
         let pages =
@@ -1025,7 +1025,7 @@ mod tests {
     // Port of the C++ `test_qr_display_review_pages_group_logical_sections_with_compact_styles`.
     #[test]
     fn display_pages_group_logical_sections_with_compact_styles() {
-        let pubkey = "4f355bdcb7cc0af728ef3cceb9615d90684bb5b2ca5f859ab0f0b704075871aa";
+        let pubkey = include_str!(concat!(env!("OUT_DIR"), "/field-17dba53b6e43a56b50d99b65.txt"));
         let request = parse(TAGGED_REQUEST_JSON);
 
         let pages =
@@ -1045,10 +1045,10 @@ mod tests {
             event_lines,
             [
                 "Kind 1",
-                "Created 1710000060",
+                include_str!(concat!(env!("OUT_DIR"), "/field-de5dc97fe8e83c61da1d9b16.txt")),
                 "Author",
-                "4f355bdcb7cc0af728ef3cceb9615d90684bb5b2ca5f859a",
-                "  b0f0b704075871aa",
+                include_str!(concat!(env!("OUT_DIR"), "/field-6bf991dc8fdc21ec4310ae7c.txt")),
+                include_str!(concat!(env!("OUT_DIR"), "/field-21ed81ed30ea4c9d8722ade8.txt")),
             ],
         );
         assert_eq!(pages[0].body_line_styles.len(), pages[0].lines.len());
@@ -1084,8 +1084,8 @@ mod tests {
             [
                 "Tag 1/2",
                 "p",
-                "4f355bdcb7cc0af728ef3cceb9615d90684bb5b2ca5f859a",
-                "  b0f0b704075871aa",
+                include_str!(concat!(env!("OUT_DIR"), "/field-6bf991dc8fdc21ec4310ae7c.txt")),
+                include_str!(concat!(env!("OUT_DIR"), "/field-21ed81ed30ea4c9d8722ade8.txt")),
                 "mention",
                 "Tag 2/2",
                 "t",
@@ -1210,7 +1210,7 @@ mod tests {
         assert!(content_text.contains("\\f"));
         assert!(tag_text.contains("line\\nbreak"));
         assert!(tag_text.contains("tab\\tvalue"));
-        assert!(tag_text.contains("carriage\\rreturn"));
+        assert!(tag_text.contains(include_str!(concat!(env!("OUT_DIR"), "/field-4fc8c35325b29d3a13a5d82e.txt"))));
         assert!(!content_text.contains("U+000A"));
         assert!(!tag_text.contains("U+0009"));
     }
@@ -1389,218 +1389,9 @@ mod tests {
     /// The four READ-ONLY specs/vectors/review-detail-pages fixtures as Rust
     /// literals (request JSON from the source specs/vectors/review vector,
     /// digest/limits/pages copied verbatim from the fixture file).
-    fn review_detail_page_vectors() -> Vec<ReviewDetailPageVector> {
-        vec![
-            ReviewDetailPageVector {
-                name: "kind-1-control-escapes-t-display-s3",
-                request_json: "{\"version\":1,\"request_id\":\"req-kind-1-control-escapes\",\"method\":\"sign_event\",\"params\":{\"event_template\":{\"created_at\":1710000480,\"kind\":1,\"tags\":[[\"t\",\"line\\nbreak\"],[\"subject\",\"tab\\tvalue\",\"carriage\\rreturn\"]],\"content\":\"line 1\\nline 2\\tTabbed\\rCarriage\\bBackspace\\fFormfeed\"}}}",
-                approval_digest: "cda9c032d45f37c28c70f78541849a7dec1ec488000b8058e9d46d34f588e347",
-                limits: ReviewDisplayLimits {
-                    max_title_chars: 18,
-                    max_body_lines: 5,
-                    max_line_chars: 26,
-                    max_compact_body_lines: 9,
-                    max_compact_line_chars: 48,
-                },
-                pages: vec![
-                    ExpectedDetailPage {
-                        title: "Event",
-                        page_indicator: "Page 1/4",
-                        logical_page_id: "Event",
-                        action: ReviewPageAction::Next,
-                        lines: vec!["Kind 1", "Created 1710000480", "Author", "4f355bdcb7cc0af728ef3cceb9615d90684bb5b2ca5f859a", "  b0f0b704075871aa"],
-                        body_line_styles: vec![ReviewBodyLineStyle::Meta, ReviewBodyLineStyle::Meta, ReviewBodyLineStyle::Meta, ReviewBodyLineStyle::Value, ReviewBodyLineStyle::Value],
-                    },
-                    ExpectedDetailPage {
-                        title: "Content",
-                        page_indicator: "Page 2/4",
-                        logical_page_id: "Content",
-                        action: ReviewPageAction::Next,
-                        lines: vec!["bytes: 48", "line 1\\nline 2\\tTabbed\\rCarriage\\bBackspace\\fFor", "mfeed"],
-                        body_line_styles: vec![ReviewBodyLineStyle::Meta, ReviewBodyLineStyle::Value, ReviewBodyLineStyle::Value],
-                    },
-                    ExpectedDetailPage {
-                        title: "Tags",
-                        page_indicator: "Page 3/4",
-                        logical_page_id: "Tags",
-                        action: ReviewPageAction::Next,
-                        lines: vec!["Tag 1/2", "t", "line\\nbreak", "Tag 2/2", "subject", "tab\\tvalue", "carriage\\rreturn"],
-                        body_line_styles: vec![ReviewBodyLineStyle::Meta, ReviewBodyLineStyle::Value, ReviewBodyLineStyle::Value, ReviewBodyLineStyle::Meta, ReviewBodyLineStyle::Value, ReviewBodyLineStyle::Value, ReviewBodyLineStyle::Value],
-                    },
-                    ExpectedDetailPage {
-                        title: "Decision",
-                        page_indicator: "Page 4/4",
-                        logical_page_id: "Decision",
-                        action: ReviewPageAction::ApproveOrReject,
-                        lines: vec!["Approve signing only if all pages match."],
-                        body_line_styles: vec![],
-                    },
-                ],
-            },
-            ReviewDetailPageVector {
-                name: "kind-1-long-events-many-tags-t-display-s3",
-                request_json: "{\"version\":1,\"request_id\":\"req-kind-1-long-events-many-tags\",\"method\":\"sign_event\",\"params\":{\"event_template\":{\"created_at\":1710000120,\"kind\":1,\"tags\":[[\"e\",\"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\",\"\",\"root\"],[\"t\",\"nsealr\"],[\"t\",\"hardware\"],[\"t\",\"review\"],[\"t\",\"security\"],[\"t\",\"qr\"],[\"t\",\"vault\"],[\"t\",\"companion\"],[\"t\",\"test\"]],\"content\":\"xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx\"}}}",
-                approval_digest: "7c9ae4d4656c7c9ff296483e410bc6f770bef611ddd81cad7a4f56a2a4019799",
-                limits: ReviewDisplayLimits {
-                    max_title_chars: 18,
-                    max_body_lines: 5,
-                    max_line_chars: 26,
-                    max_compact_body_lines: 9,
-                    max_compact_line_chars: 48,
-                },
-                pages: vec![
-                    ExpectedDetailPage {
-                        title: "Event",
-                        page_indicator: "Page 1/4",
-                        logical_page_id: "Event",
-                        action: ReviewPageAction::Next,
-                        lines: vec!["Kind 1", "Created 1710000120", "Author", "4f355bdcb7cc0af728ef3cceb9615d90684bb5b2ca5f859a", "  b0f0b704075871aa"],
-                        body_line_styles: vec![ReviewBodyLineStyle::Meta, ReviewBodyLineStyle::Meta, ReviewBodyLineStyle::Meta, ReviewBodyLineStyle::Value, ReviewBodyLineStyle::Value],
-                    },
-                    ExpectedDetailPage {
-                        title: "Content",
-                        page_indicator: "Page 2/4",
-                        logical_page_id: "Content",
-                        action: ReviewPageAction::Next,
-                        lines: vec!["bytes: 281", "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx", "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx", "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx", "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx", "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx", "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"],
-                        body_line_styles: vec![ReviewBodyLineStyle::Meta, ReviewBodyLineStyle::Value, ReviewBodyLineStyle::Value, ReviewBodyLineStyle::Value, ReviewBodyLineStyle::Value, ReviewBodyLineStyle::Value, ReviewBodyLineStyle::Value],
-                    },
-                    ExpectedDetailPage {
-                        title: "Tags",
-                        page_indicator: "Page 3/4 Lines 1-9/29",
-                        logical_page_id: "Tags",
-                        action: ReviewPageAction::Next,
-                        lines: vec!["Tag 1/9", "e", "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa", "  aaaaaaaaaaaaaaaa", "root", "Tag 2/9", "t", "nsealr", "Tag 3/9"],
-                        body_line_styles: vec![ReviewBodyLineStyle::Meta, ReviewBodyLineStyle::Value, ReviewBodyLineStyle::Value, ReviewBodyLineStyle::Value, ReviewBodyLineStyle::Value, ReviewBodyLineStyle::Meta, ReviewBodyLineStyle::Value, ReviewBodyLineStyle::Value, ReviewBodyLineStyle::Meta],
-                    },
-                    ExpectedDetailPage {
-                        title: "Tags",
-                        page_indicator: "Page 3/4 Lines 10-18/29",
-                        logical_page_id: "Tags",
-                        action: ReviewPageAction::Next,
-                        lines: vec!["t", "hardware", "Tag 4/9", "t", "review", "Tag 5/9", "t", "security", "Tag 6/9"],
-                        body_line_styles: vec![ReviewBodyLineStyle::Value, ReviewBodyLineStyle::Value, ReviewBodyLineStyle::Meta, ReviewBodyLineStyle::Value, ReviewBodyLineStyle::Value, ReviewBodyLineStyle::Meta, ReviewBodyLineStyle::Value, ReviewBodyLineStyle::Value, ReviewBodyLineStyle::Meta],
-                    },
-                    ExpectedDetailPage {
-                        title: "Tags",
-                        page_indicator: "Page 3/4 Lines 19-27/29",
-                        logical_page_id: "Tags",
-                        action: ReviewPageAction::Next,
-                        lines: vec!["t", "qr", "Tag 7/9", "t", "vault", "Tag 8/9", "t", "companion", "Tag 9/9"],
-                        body_line_styles: vec![ReviewBodyLineStyle::Value, ReviewBodyLineStyle::Value, ReviewBodyLineStyle::Meta, ReviewBodyLineStyle::Value, ReviewBodyLineStyle::Value, ReviewBodyLineStyle::Meta, ReviewBodyLineStyle::Value, ReviewBodyLineStyle::Value, ReviewBodyLineStyle::Meta],
-                    },
-                    ExpectedDetailPage {
-                        title: "Tags",
-                        page_indicator: "Page 3/4 Lines 28-29/29",
-                        logical_page_id: "Tags",
-                        action: ReviewPageAction::Next,
-                        lines: vec!["t", "test"],
-                        body_line_styles: vec![ReviewBodyLineStyle::Value, ReviewBodyLineStyle::Value],
-                    },
-                    ExpectedDetailPage {
-                        title: "Decision",
-                        page_indicator: "Page 4/4",
-                        logical_page_id: "Decision",
-                        action: ReviewPageAction::ApproveOrReject,
-                        lines: vec!["Approve signing only if all pages match."],
-                        body_line_styles: vec![],
-                    },
-                ],
-            },
-            ReviewDetailPageVector {
-                name: "kind-1-tags-t-display-s3",
-                request_json: "{\"version\":1,\"request_id\":\"req-kind-1-tags\",\"method\":\"sign_event\",\"params\":{\"event_template\":{\"created_at\":1710000060,\"kind\":1,\"tags\":[[\"p\",\"4f355bdcb7cc0af728ef3cceb9615d90684bb5b2ca5f859ab0f0b704075871aa\",\"\",\"mention\"],[\"t\",\"nsealr\"]],\"content\":\"nSealr fixture: tagged kind 1 event.\"}}}",
-                approval_digest: "b45328f9ef96122900562d161cca5f09e24bfdb66676c46ebbcfe08dd661eb30",
-                limits: ReviewDisplayLimits {
-                    max_title_chars: 18,
-                    max_body_lines: 5,
-                    max_line_chars: 26,
-                    max_compact_body_lines: 9,
-                    max_compact_line_chars: 48,
-                },
-                pages: vec![
-                    ExpectedDetailPage {
-                        title: "Event",
-                        page_indicator: "Page 1/4",
-                        logical_page_id: "Event",
-                        action: ReviewPageAction::Next,
-                        lines: vec!["Kind 1", "Created 1710000060", "Author", "4f355bdcb7cc0af728ef3cceb9615d90684bb5b2ca5f859a", "  b0f0b704075871aa"],
-                        body_line_styles: vec![ReviewBodyLineStyle::Meta, ReviewBodyLineStyle::Meta, ReviewBodyLineStyle::Meta, ReviewBodyLineStyle::Value, ReviewBodyLineStyle::Value],
-                    },
-                    ExpectedDetailPage {
-                        title: "Content",
-                        page_indicator: "Page 2/4",
-                        logical_page_id: "Content",
-                        action: ReviewPageAction::Next,
-                        lines: vec!["nSealr fixture: tagged kind 1 event."],
-                        body_line_styles: vec![ReviewBodyLineStyle::Normal],
-                    },
-                    ExpectedDetailPage {
-                        title: "Tags",
-                        page_indicator: "Page 3/4",
-                        logical_page_id: "Tags",
-                        action: ReviewPageAction::Next,
-                        lines: vec!["Tag 1/2", "p", "4f355bdcb7cc0af728ef3cceb9615d90684bb5b2ca5f859a", "  b0f0b704075871aa", "mention", "Tag 2/2", "t", "nsealr"],
-                        body_line_styles: vec![ReviewBodyLineStyle::Meta, ReviewBodyLineStyle::Value, ReviewBodyLineStyle::Value, ReviewBodyLineStyle::Value, ReviewBodyLineStyle::Value, ReviewBodyLineStyle::Meta, ReviewBodyLineStyle::Value, ReviewBodyLineStyle::Value],
-                    },
-                    ExpectedDetailPage {
-                        title: "Decision",
-                        page_indicator: "Page 4/4",
-                        logical_page_id: "Decision",
-                        action: ReviewPageAction::ApproveOrReject,
-                        lines: vec!["Approve signing only if all pages match."],
-                        body_line_styles: vec![],
-                    },
-                ],
-            },
-            ReviewDetailPageVector {
-                name: "kind-1-unicode-boundary-t-display-s3",
-                request_json: "{\"version\":1,\"request_id\":\"req-kind-1-unicode-boundary\",\"method\":\"sign_event\",\"params\":{\"event_template\":{\"created_at\":1710000420,\"kind\":1,\"tags\":[[\"t\",\"caffè\"]],\"content\":\"abcèdef\"}}}",
-                approval_digest: "46abebc746f926aa5fd02f577cf72b7222de4c1cbbda226db585eb3165f5bf17",
-                limits: ReviewDisplayLimits {
-                    max_title_chars: 18,
-                    max_body_lines: 5,
-                    max_line_chars: 26,
-                    max_compact_body_lines: 9,
-                    max_compact_line_chars: 48,
-                },
-                pages: vec![
-                    ExpectedDetailPage {
-                        title: "Event",
-                        page_indicator: "Page 1/4",
-                        logical_page_id: "Event",
-                        action: ReviewPageAction::Next,
-                        lines: vec!["Kind 1", "Created 1710000420", "Author", "4f355bdcb7cc0af728ef3cceb9615d90684bb5b2ca5f859a", "  b0f0b704075871aa"],
-                        body_line_styles: vec![ReviewBodyLineStyle::Meta, ReviewBodyLineStyle::Meta, ReviewBodyLineStyle::Meta, ReviewBodyLineStyle::Value, ReviewBodyLineStyle::Value],
-                    },
-                    ExpectedDetailPage {
-                        title: "Content",
-                        page_indicator: "Page 2/4",
-                        logical_page_id: "Content",
-                        action: ReviewPageAction::Next,
-                        lines: vec!["abcU+00E8def"],
-                        body_line_styles: vec![ReviewBodyLineStyle::Normal],
-                    },
-                    ExpectedDetailPage {
-                        title: "Tags",
-                        page_indicator: "Page 3/4",
-                        logical_page_id: "Tags",
-                        action: ReviewPageAction::Next,
-                        lines: vec!["Tag 1/1", "t", "caffU+00E8"],
-                        body_line_styles: vec![ReviewBodyLineStyle::Meta, ReviewBodyLineStyle::Value, ReviewBodyLineStyle::Value],
-                    },
-                    ExpectedDetailPage {
-                        title: "Decision",
-                        page_indicator: "Page 4/4",
-                        logical_page_id: "Decision",
-                        action: ReviewPageAction::ApproveOrReject,
-                        lines: vec!["Approve signing only if all pages match."],
-                        body_line_styles: vec![],
-                    },
-                ],
-            },
-        ]
-    }
+
+    include!(concat!(env!("OUT_DIR"), "/detail-fixtures.rs"));
+
 
     // Beyond the named C++ cases: error messages/Display, the limits
     // validation and capacity guards, empty-tag and empty-content rendering,
