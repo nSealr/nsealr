@@ -1,0 +1,169 @@
+{
+  "source_candidate": "9e023ccef300ddeb738c377fe68b130a94123477",
+  "author_evidence_commit": "dc4709e833d0e92a38ec6f4788c8586d7999b30f",
+  "brief_sha256": "cc3c5dc506af71c1695ab178347f2ac54756bbcd158fffe52b046dd5bcc281de",
+  "evidence_only_successor": true,
+  "fixture_bytes_unchanged_since_da286979": true,
+  "author_artifacts_hash_verified": [
+    {
+      "path": "docs/restart/S01/evidence/f02/error-after-eof.mjs",
+      "sha256": "800db76a22c443d470f566bcb8f9ae83ca791003b50a8dcce5ad5eb8c0b11669"
+    },
+    {
+      "path": "docs/restart/S01/evidence/f02-final-build.json",
+      "sha256": "9776b834d7e232fd5c958c1e9454529e742bbcd878a2d3b7d14c8c09ad456fd7"
+    },
+    {
+      "path": "docs/restart/S01/evidence/f02-final-build.log",
+      "sha256": "90d3c0a3a40aa0ceb66174ebf300e20b56d67096e7e39c12d2c1727533b94384"
+    },
+    {
+      "path": "docs/restart/S01/evidence/f02-final-ci.json",
+      "sha256": "989d7c5d4b2f4952b3844472a58281eb1d1276e8fc3ad585cf4e79522525862e"
+    },
+    {
+      "path": "docs/restart/S01/evidence/f02-final-ci.log",
+      "sha256": "6ba92dd788a402d38fc02bed6838da92f082619a839043b450f17f6835faf60f"
+    },
+    {
+      "path": "docs/restart/S01/evidence/f02-final-live-relay.json",
+      "sha256": "317262cb69e2e2f099cddaf9ca95e08ef5f47f899d832a661dae375439402d87"
+    },
+    {
+      "path": "docs/restart/S01/evidence/f02-final-live-relay.log",
+      "sha256": "2dc7402b87196049dcf36a583d66ac8f06f39d2e459af18535243f5272da91c2"
+    },
+    {
+      "path": "docs/restart/S01/evidence/f02-final-targeted.json",
+      "sha256": "a0ce66d20a1787fe5275f2bc8f705217ca28844b13c245afd429ad1b5d6d92b7"
+    },
+    {
+      "path": "docs/restart/S01/evidence/f02-final-targeted.log",
+      "sha256": "b6c66e773c0b7fc63d23746c42846ef798abb9e9bffbff4ebd5d01dc9bed9501"
+    },
+    {
+      "path": "docs/restart/S01/evidence/f02-original-f01.json",
+      "sha256": "8c2aa199c7908a604f87765d1b717edc03a3297d16db2e3054e949443b0123ee"
+    },
+    {
+      "path": "docs/restart/S01/evidence/f02-original-f01.log",
+      "sha256": "7e014c0033621d7ae2e2dff0c917f80f397c67f624a9fe11a849e13d95e798b3"
+    },
+    {
+      "path": "docs/restart/S01/evidence/f02-regression-red.json",
+      "sha256": "8f358e60393ff735e6b6686e7b639de208493f079614f86d9d60835284b2d8f8"
+    },
+    {
+      "path": "docs/restart/S01/evidence/f02-regression-red.log",
+      "sha256": "ef7b0f758345367ba8dd57df1138acc8af3f6f33142bb16b134648511e53018a"
+    },
+    {
+      "path": "docs/restart/S01/evidence/f02-reviewer-green.json",
+      "sha256": "c73c135c154e3d63e8efe1f78c048361845ab7e3aa3001b503dba8127de3bf44"
+    },
+    {
+      "path": "docs/restart/S01/evidence/f02-reviewer-green.log",
+      "sha256": "33075da12df21ff1d9099ac2ab991b2084d63f757ce690f0f02626d68ea0a47b"
+    },
+    {
+      "path": "docs/restart/S01/evidence/f02-reviewer-red.json",
+      "sha256": "eb4af726d68c7f6575891dce8a880b0ea3ecaecd6ffe9e3925ceabe79f39bf56"
+    },
+    {
+      "path": "docs/restart/S01/evidence/f02-reviewer-red.log",
+      "sha256": "bba2fa093ac92cc929e0ab3cd16b1f92995981fb9210ae0f5935e779da115d09"
+    }
+  ],
+  "final_gates": [
+    {
+      "manifest": "docs/restart/S01/evidence/f02-final-build.json",
+      "command": [
+        "pnpm",
+        "build"
+      ],
+      "log_sha256": "90d3c0a3a40aa0ceb66174ebf300e20b56d67096e7e39c12d2c1727533b94384",
+      "exit_code": 0,
+      "classification": "author execution, independently hash-verified; not reviewer execution"
+    },
+    {
+      "manifest": "docs/restart/S01/evidence/f02-final-targeted.json",
+      "command": [
+        "pnpm",
+        "exec",
+        "vitest",
+        "run",
+        "--maxWorkers=4",
+        "packages/nip46",
+        "packages/transport",
+        "packages/protocol",
+        "packages/framing",
+        "packages/fixtures",
+        "apps/cli"
+      ],
+      "log_sha256": "b6c66e773c0b7fc63d23746c42846ef798abb9e9bffbff4ebd5d01dc9bed9501",
+      "exit_code": 0,
+      "classification": "author execution, independently hash-verified; not reviewer execution"
+    },
+    {
+      "manifest": "docs/restart/S01/evidence/f02-reviewer-green.json",
+      "command": [
+        "node",
+        "docs/restart/S01/evidence/f02/error-after-eof.mjs"
+      ],
+      "log_sha256": "33075da12df21ff1d9099ac2ab991b2084d63f757ce690f0f02626d68ea0a47b",
+      "exit_code": 0,
+      "classification": "author execution, independently hash-verified; not reviewer execution"
+    },
+    {
+      "manifest": "docs/restart/S01/evidence/f02-original-f01.json",
+      "command": [
+        "node",
+        "docs/restart/S01/evidence/f01-reviewer-probe.mjs"
+      ],
+      "log_sha256": "7e014c0033621d7ae2e2dff0c917f80f397c67f624a9fe11a849e13d95e798b3",
+      "exit_code": 0,
+      "classification": "author execution, independently hash-verified; not reviewer execution"
+    },
+    {
+      "manifest": "docs/restart/S01/evidence/f02-final-ci.json",
+      "command": [
+        "make",
+        "ci"
+      ],
+      "log_sha256": "6ba92dd788a402d38fc02bed6838da92f082619a839043b450f17f6835faf60f",
+      "exit_code": 0,
+      "classification": "author execution, independently hash-verified; not reviewer execution"
+    },
+    {
+      "manifest": "docs/restart/S01/evidence/f02-final-live-relay.json",
+      "command": [
+        "pnpm",
+        "exec",
+        "vitest",
+        "run",
+        "--maxWorkers=4",
+        "packages/nip46/src/session-live.e2e.test.ts"
+      ],
+      "log_sha256": "2dc7402b87196049dcf36a583d66ac8f06f39d2e459af18535243f5272da91c2",
+      "exit_code": 0,
+      "classification": "author execution, independently hash-verified; not reviewer execution"
+    }
+  ],
+  "node_source_hashes_verified": [
+    {
+      "url": "https://raw.githubusercontent.com/nodejs/node/v24.22.0/doc/api/stream.md",
+      "bytes": 159621,
+      "sha256": "74472b83ceb0c44a5ac8ded32afb5df61443ad9c89f7ad15d01ba5b79c745e65"
+    },
+    {
+      "url": "https://raw.githubusercontent.com/nodejs/node/v24.22.0/lib/internal/streams/destroy.js",
+      "bytes": 7355,
+      "sha256": "74aaae64ff7e4553fbf981baffb1f1dab7748c1e3fedfbef59eb8ab9ed4ec22d"
+    },
+    {
+      "url": "https://raw.githubusercontent.com/nodejs/node/v24.22.0/lib/internal/streams/end-of-stream.js",
+      "bytes": 10805,
+      "sha256": "5c317c5a14a7feedaddc594a2a7a7a6d7d955e6347d8e58172e2e34af43aeb29"
+    }
+  ]
+}

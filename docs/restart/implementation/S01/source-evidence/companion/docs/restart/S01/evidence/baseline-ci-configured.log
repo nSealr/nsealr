@@ -1,0 +1,72 @@
+pnpm install
+Scope: all 20 workspace projects
+Lockfile is up to date, resolution step is skipped
+Already up to date
+
+Done in 630ms using pnpm v10.33.4
+python3 scripts/verify_repo.py
+nSealr s01 baseline verification passed
+pnpm build
+
+> @nsealr/companion-workspace@0.1.0 build /home/tux/nsealr/.restart-tools/goal/s01
+> node scripts/build_packages.mjs
+
+nSealr package build artifacts generated
+python3 scripts/verify_repo.py
+nSealr s01 baseline verification passed
+pnpm test
+
+> @nsealr/companion-workspace@0.1.0 test /home/tux/nsealr/.restart-tools/goal/s01
+> vitest run --maxWorkers=4
+
+
+ RUN  v4.1.5 /home/tux/nsealr/.restart-tools/goal/s01
+
+
+ Test Files  76 passed | 1 skipped (77)
+      Tests  611 passed | 1 skipped (612)
+   Start at  17:09:00
+   Duration  2.76s (transform 986ms, setup 0ms, import 3.33s, tests 2.12s, environment 4ms)
+
+python3 scripts/verify_repo.py
+nSealr s01 baseline verification passed
+pnpm consumer-smoke
+
+> @nsealr/companion-workspace@0.1.0 consumer-smoke /home/tux/nsealr/.restart-tools/goal/s01
+> pnpm --filter @nsealr/consumer-smoke smoke
+
+
+> @nsealr/consumer-smoke@0.1.0 smoke /home/tux/nsealr/.restart-tools/goal/s01/apps/consumer-smoke
+> node --no-warnings --import tsx/esm src/index.ts
+
+nSealr package consumer smoke passed
+python3 scripts/verify_repo.py
+nSealr s01 baseline verification passed
+pnpm examples-smoke
+
+> @nsealr/companion-workspace@0.1.0 examples-smoke /home/tux/nsealr/.restart-tools/goal/s01
+> pnpm --filter @nsealr/sdk-examples verify
+
+
+> @nsealr/sdk-examples@0.1.0 verify /home/tux/nsealr/.restart-tools/goal/s01/apps/sdk-examples
+> node --no-warnings --import tsx/esm src/index.ts
+
+nSealr SDK examples passed
+python3 scripts/verify_repo.py
+nSealr s01 baseline verification passed
+pnpm readme-examples:check
+
+> @nsealr/companion-workspace@0.1.0 readme-examples:check /home/tux/nsealr/.restart-tools/goal/s01
+> node scripts/check_readme_examples.mjs
+
+nSealr README examples passed (14 snippets)
+python3 scripts/verify_repo.py
+nSealr s01 baseline verification passed
+pnpm api-docs:check
+
+> @nsealr/companion-workspace@0.1.0 api-docs:check /home/tux/nsealr/.restart-tools/goal/s01
+> node scripts/check_api_docs.mjs
+
+docs/api.md is out of date; run make api-docs-update
+ ELIFECYCLE  Command failed with exit code 1.
+make: *** [Makefile:36: api-docs] Error 1

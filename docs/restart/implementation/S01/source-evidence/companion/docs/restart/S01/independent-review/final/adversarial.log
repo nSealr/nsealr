@@ -1,0 +1,85 @@
+PASS foreign author cannot ack, select identity, or cancel a signing request; same-key valid control succeeds
+  actual loopback relay: five delivered wire events, one accepted callback
+PASS default adapter filters a malicious actual loopback WebSocket relay ignoring author/recipient/kind filters
+PASS ambiguous outer recipients and duplicate/trailing plaintext do not consume the valid correlation slot
+PASS correct transport cannot substitute user, canonical content, nested duplicate, id, or signature
+PASS invalid discovered curve point fails closed and retry selects a valid distinct user
+PASS timeout/reconnect survives old publication rejection and old-handler injection of the new request id
+PASS 100 retries cannot accumulate more than two unsettled publications after logical timeouts
+PASS 100 retries cannot accumulate subscription acquisitions; late handle closes once and cannot activate
+PASS response/publication/close ordering matrix never returns a signature before publication or after cancellation
+PASS strict JSON rejects escaped duplicate aliases at every container depth while accepting distinct keys
+  modeled chunk partitions: 30
+PASS all decoded chunk partitions obey aggregate byte/line model, discard overflow, and remove listeners
+PASS stream callback failure preserves first error across buffered data, pending read/write, and hostile redelivery
+PASS v1 metadata separates keys and expected-user binding without claiming session authority
+{
+  "candidate": "d385ddb0c775a1e863e9db0ee9ae38fee5f19057",
+  "results": [
+    {
+      "name": "foreign author cannot ack, select identity, or cancel a signing request; same-key valid control succeeds",
+      "outcome": "pass",
+      "milliseconds": 96
+    },
+    {
+      "name": "default adapter filters a malicious actual loopback WebSocket relay ignoring author/recipient/kind filters",
+      "outcome": "pass",
+      "milliseconds": 37
+    },
+    {
+      "name": "ambiguous outer recipients and duplicate/trailing plaintext do not consume the valid correlation slot",
+      "outcome": "pass",
+      "milliseconds": 116
+    },
+    {
+      "name": "correct transport cannot substitute user, canonical content, nested duplicate, id, or signature",
+      "outcome": "pass",
+      "milliseconds": 109
+    },
+    {
+      "name": "invalid discovered curve point fails closed and retry selects a valid distinct user",
+      "outcome": "pass",
+      "milliseconds": 50
+    },
+    {
+      "name": "timeout/reconnect survives old publication rejection and old-handler injection of the new request id",
+      "outcome": "pass",
+      "milliseconds": 158
+    },
+    {
+      "name": "100 retries cannot accumulate more than two unsettled publications after logical timeouts",
+      "outcome": "pass",
+      "milliseconds": 140
+    },
+    {
+      "name": "100 retries cannot accumulate subscription acquisitions; late handle closes once and cannot activate",
+      "outcome": "pass",
+      "milliseconds": 90
+    },
+    {
+      "name": "response/publication/close ordering matrix never returns a signature before publication or after cancellation",
+      "outcome": "pass",
+      "milliseconds": 222
+    },
+    {
+      "name": "strict JSON rejects escaped duplicate aliases at every container depth while accepting distinct keys",
+      "outcome": "pass",
+      "milliseconds": 1
+    },
+    {
+      "name": "all decoded chunk partitions obey aggregate byte/line model, discard overflow, and remove listeners",
+      "outcome": "pass",
+      "milliseconds": 2
+    },
+    {
+      "name": "stream callback failure preserves first error across buffered data, pending read/write, and hostile redelivery",
+      "outcome": "pass",
+      "milliseconds": 0
+    },
+    {
+      "name": "v1 metadata separates keys and expected-user binding without claiming session authority",
+      "outcome": "pass",
+      "milliseconds": 4
+    }
+  ]
+}

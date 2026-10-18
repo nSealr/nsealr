@@ -1,0 +1,36 @@
+{"emitClose":true,"asyncDestroy":false,"inputClosed":true,"outputClosed":true,"inheritedInput":[["prefinish",1]],"inheritedOutput":[["prefinish",1]],"actualInput":[["prefinish",1]],"actualOutput":[["prefinish",1]]}
+{"emitClose":true,"asyncDestroy":true,"inputClosed":true,"outputClosed":true,"inheritedInput":[["prefinish",1]],"inheritedOutput":[["prefinish",1]],"actualInput":[["prefinish",1]],"actualOutput":[["prefinish",1]]}
+{"emitClose":false,"asyncDestroy":false,"inputClosed":true,"outputClosed":true,"inheritedInput":[["prefinish",1]],"inheritedOutput":[["prefinish",1]],"actualInput":[["prefinish",1]],"actualOutput":[["prefinish",1]]}
+{"emitClose":false,"asyncDestroy":true,"inputClosed":true,"outputClosed":true,"inheritedInput":[["prefinish",1]],"inheritedOutput":[["prefinish",1]],"actualInput":[["close",1],["error",1],["prefinish",1]],"actualOutput":[["close",1],["error",1],["prefinish",1]]}
+node:internal/modules/run_main:107
+    triggerUncaughtException(
+    ^
+
+AssertionError [ERR_ASSERTION]: S01-QUEUE-03: input retains owned listeners after asynchronous close with emitClose:false
++ actual - expected
+
+  [
+    [
++     'close',
++     1
++   ],
++   [
++     'error',
++     1
++   ],
++   [
+      'prefinish',
+      1
+    ]
+  ]
+
+    at file:///home/tux/nsealr/.restart-tools/goal/bridge-review/docs/restart/S01/independent-review/async-destroy-cleanup.mjs:25:8 {
+  generatedMessage: false,
+  code: 'ERR_ASSERTION',
+  actual: [ [ 'close', 1 ], [ 'error', 1 ], [ 'prefinish', 1 ] ],
+  expected: [ [ 'prefinish', 1 ] ],
+  operator: 'deepStrictEqual',
+  diff: 'simple'
+}
+
+Node.js v24.22.0

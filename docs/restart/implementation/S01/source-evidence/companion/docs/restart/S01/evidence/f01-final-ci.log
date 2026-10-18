@@ -1,0 +1,332 @@
+pnpm install
+python3 scripts/verify_repo.py
+nSealr s01 baseline verification passed
+pnpm build
+
+> @nsealr/companion-workspace@0.1.0 build /home/tux/nsealr/.restart-tools/goal/s01
+> node scripts/build_packages.mjs
+
+nSealr package build artifacts generated
+python3 scripts/verify_repo.py
+nSealr s01 baseline verification passed
+pnpm test
+
+> @nsealr/companion-workspace@0.1.0 test /home/tux/nsealr/.restart-tools/goal/s01
+> vitest run --maxWorkers=4
+
+
+ RUN  v4.1.5 /home/tux/nsealr/.restart-tools/goal/s01
+
+
+ Test Files  79 passed | 1 skipped (80)
+      Tests  710 passed | 1 skipped (711)
+   Start at  17:49:16
+   Duration  3.23s (transform 926ms, setup 0ms, import 3.25s, tests 3.74s, environment 4ms)
+
+python3 scripts/verify_repo.py
+nSealr s01 baseline verification passed
+pnpm consumer-smoke
+
+> @nsealr/companion-workspace@0.1.0 consumer-smoke /home/tux/nsealr/.restart-tools/goal/s01
+> pnpm --filter @nsealr/consumer-smoke smoke
+
+
+> @nsealr/consumer-smoke@0.1.0 smoke /home/tux/nsealr/.restart-tools/goal/s01/apps/consumer-smoke
+> node --no-warnings --import tsx/esm src/index.ts
+
+nSealr package consumer smoke passed
+python3 scripts/verify_repo.py
+nSealr s01 baseline verification passed
+pnpm examples-smoke
+
+> @nsealr/companion-workspace@0.1.0 examples-smoke /home/tux/nsealr/.restart-tools/goal/s01
+> pnpm --filter @nsealr/sdk-examples verify
+
+
+> @nsealr/sdk-examples@0.1.0 verify /home/tux/nsealr/.restart-tools/goal/s01/apps/sdk-examples
+> node --no-warnings --import tsx/esm src/index.ts
+
+nSealr SDK examples passed
+python3 scripts/verify_repo.py
+nSealr s01 baseline verification passed
+pnpm readme-examples:check
+
+> @nsealr/companion-workspace@0.1.0 readme-examples:check /home/tux/nsealr/.restart-tools/goal/s01
+> node scripts/check_readme_examples.mjs
+
+nSealr README examples passed (14 snippets)
+python3 scripts/verify_repo.py
+nSealr s01 baseline verification passed
+pnpm api-docs:check
+
+> @nsealr/companion-workspace@0.1.0 api-docs:check /home/tux/nsealr/.restart-tools/goal/s01
+> node scripts/check_api_docs.mjs
+
+companion API docs are up to date
+python3 scripts/verify_repo.py
+nSealr s01 baseline verification passed
+pnpm api-review:check
+
+> @nsealr/companion-workspace@0.1.0 api-review:check /home/tux/nsealr/.restart-tools/goal/s01
+> node scripts/check_api_review.mjs
+
+companion API review is up to date
+python3 scripts/verify_repo.py
+nSealr s01 baseline verification passed
+pnpm package-registry:check
+
+> @nsealr/companion-workspace@0.1.0 package-registry:check /home/tux/nsealr/.restart-tools/goal/s01
+> node scripts/check_package_registry.mjs
+
+companion package registry passed (13 public, 1 private)
+python3 scripts/verify_repo.py
+nSealr s01 baseline verification passed
+pnpm browser-runtime-imports:check
+
+> @nsealr/companion-workspace@0.1.0 browser-runtime-imports:check /home/tux/nsealr/.restart-tools/goal/s01
+> node scripts/check_browser_runtime_imports.mjs
+
+companion browser runtime import hygiene passed (65 source files)
+python3 scripts/verify_repo.py
+nSealr s01 baseline verification passed
+pnpm browser-runtime-bundle:check
+
+> @nsealr/companion-workspace@0.1.0 browser-runtime-bundle:check /home/tux/nsealr/.restart-tools/goal/s01
+> node scripts/check_browser_runtime_bundle.mjs
+
+companion browser runtime bundle smoke passed (4 entrypoints)
+python3 scripts/verify_repo.py
+nSealr s01 baseline verification passed
+pnpm browser-extension-security:check
+
+> @nsealr/companion-workspace@0.1.0 browser-extension-security:check /home/tux/nsealr/.restart-tools/goal/s01
+> node scripts/check_browser_extension_security.mjs
+
+companion browser extension security audit passed
+python3 scripts/verify_repo.py
+nSealr s01 baseline verification passed
+pnpm public-imports:check
+
+> @nsealr/companion-workspace@0.1.0 public-imports:check /home/tux/nsealr/.restart-tools/goal/s01
+> node scripts/check_public_imports.mjs
+
+companion public package import hygiene passed
+python3 scripts/verify_repo.py
+nSealr s01 baseline verification passed
+pnpm release-plan:check
+
+> @nsealr/companion-workspace@0.1.0 release-plan:check /home/tux/nsealr/.restart-tools/goal/s01
+> node scripts/check_release_plan.mjs
+
+companion package release plan passed (13 public packages)
+python3 scripts/verify_repo.py
+nSealr s01 baseline verification passed
+pnpm release-artifacts:safety
+
+> @nsealr/companion-workspace@0.1.0 release-artifacts:safety /home/tux/nsealr/.restart-tools/goal/s01
+> node scripts/check_release_artifacts_safety.mjs
+
+companion release artifact output safety check passed
+python3 scripts/verify_repo.py
+nSealr s01 baseline verification passed
+pnpm pack-smoke
+
+> @nsealr/companion-workspace@0.1.0 pack-smoke /home/tux/nsealr/.restart-tools/goal/s01
+> node scripts/pack_smoke.mjs
+
+📦  @nsealr/browser-provider@0.1.0
+Tarball Contents
+dist/index.d.ts
+dist/index.js
+dist/provider.d.ts
+dist/provider.js
+package.json
+README.md
+Tarball Details
+/tmp/nsealr-pack-ocKlkl/nsealr-browser-provider-0.1.0.tgz
+📦  @nsealr/client@0.1.0
+Tarball Contents
+dist/browser.d.ts
+dist/browser.js
+dist/client-identity.d.ts
+dist/client-identity.js
+dist/grant-store.d.ts
+dist/grant-store.js
+dist/index.d.ts
+dist/index.js
+dist/local-service-client.d.ts
+dist/local-service-client.js
+dist/native-host-manifest.d.ts
+dist/native-host-manifest.js
+dist/native-messaging.d.ts
+dist/native-messaging.js
+dist/pairing-review.d.ts
+dist/pairing-review.js
+dist/service.d.ts
+dist/service.js
+dist/storage-review.d.ts
+dist/storage-review.js
+package.json
+README.md
+Tarball Details
+/tmp/nsealr-pack-ocKlkl/nsealr-client-0.1.0.tgz
+📦  @nsealr/core@0.1.0
+Tarball Contents
+dist/index.d.ts
+dist/index.js
+dist/nip44.d.ts
+dist/nip44.js
+dist/nostr.d.ts
+dist/nostr.js
+package.json
+README.md
+Tarball Details
+/tmp/nsealr-pack-ocKlkl/nsealr-core-0.1.0.tgz
+📦  @nsealr/fixtures@0.1.0
+Tarball Contents
+dist/fixtures.d.ts
+dist/fixtures.js
+dist/index.d.ts
+dist/index.js
+dist/specs-root.d.ts
+dist/specs-root.js
+package.json
+README.md
+Tarball Details
+/tmp/nsealr-pack-ocKlkl/nsealr-fixtures-0.1.0.tgz
+📦  @nsealr/framing@0.1.0
+Tarball Contents
+dist/index.d.ts
+dist/index.js
+dist/serial.d.ts
+dist/serial.js
+package.json
+README.md
+Tarball Details
+/tmp/nsealr-pack-ocKlkl/nsealr-framing-0.1.0.tgz
+📦  @nsealr/nip46@0.1.0
+Tarball Contents
+dist/index.d.ts
+dist/index.js
+dist/nip46.d.ts
+dist/nip46.js
+dist/relay-pool-adapter.d.ts
+dist/relay-pool-adapter.js
+dist/relay-transport.d.ts
+dist/relay-transport.js
+dist/session-manager.d.ts
+dist/session-manager.js
+dist/session-protocol.d.ts
+dist/session-protocol.js
+dist/session-store.d.ts
+dist/session-store.js
+package.json
+README.md
+Tarball Details
+/tmp/nsealr-pack-ocKlkl/nsealr-nip46-0.1.0.tgz
+📦  @nsealr/policy@0.1.0
+Tarball Contents
+dist/index.d.ts
+dist/index.js
+dist/policy.d.ts
+dist/policy.js
+package.json
+README.md
+Tarball Details
+/tmp/nsealr-pack-ocKlkl/nsealr-policy-0.1.0.tgz
+📦  @nsealr/protocol@0.1.0
+Tarball Contents
+dist/encoding.d.ts
+dist/encoding.js
+dist/index.d.ts
+dist/index.js
+dist/limits.d.ts
+dist/limits.js
+dist/protocol.d.ts
+dist/protocol.js
+package.json
+README.md
+Tarball Details
+/tmp/nsealr-pack-ocKlkl/nsealr-protocol-0.1.0.tgz
+📦  @nsealr/qr@0.1.0
+Tarball Contents
+dist/index.d.ts
+dist/index.js
+dist/qr.d.ts
+dist/qr.js
+package.json
+README.md
+Tarball Details
+/tmp/nsealr-pack-ocKlkl/nsealr-qr-0.1.0.tgz
+📦  @nsealr/review@0.1.0
+Tarball Contents
+dist/index.d.ts
+dist/index.js
+dist/review.d.ts
+dist/review.js
+package.json
+README.md
+Tarball Details
+/tmp/nsealr-pack-ocKlkl/nsealr-review-0.1.0.tgz
+📦  @nsealr/sdk@0.1.0
+Tarball Contents
+dist/browser.d.ts
+dist/browser.js
+dist/index.d.ts
+dist/index.js
+package.json
+README.md
+Tarball Details
+/tmp/nsealr-pack-ocKlkl/nsealr-sdk-0.1.0.tgz
+📦  @nsealr/smartcard@0.1.0
+Tarball Contents
+dist/apdu.d.ts
+dist/apdu.js
+dist/index.d.ts
+dist/index.js
+dist/pcsc.d.ts
+dist/pcsc.js
+dist/signer.d.ts
+dist/signer.js
+package.json
+README.md
+Tarball Details
+/tmp/nsealr-pack-ocKlkl/nsealr-smartcard-0.1.0.tgz
+📦  @nsealr/transport@0.1.0
+Tarball Contents
+dist/index.d.ts
+dist/index.js
+dist/transport.d.ts
+dist/transport.js
+package.json
+README.md
+Tarball Details
+/tmp/nsealr-pack-ocKlkl/nsealr-transport-0.1.0.tgz
+
+added 26 packages in 919ms
+nSealr packed package smoke passed
+python3 scripts/verify_repo.py
+nSealr s01 baseline verification passed
+pnpm lint
+
+> @nsealr/companion-workspace@0.1.0 lint /home/tux/nsealr/.restart-tools/goal/s01
+> tsc --noEmit
+
+python3 scripts/verify_repo.py
+nSealr s01 baseline verification passed
+pnpm audit --prod
+No known vulnerabilities found
+python3 scripts/verify_repo.py
+nSealr s01 baseline verification passed
+pnpm api-docs:check
+
+> @nsealr/companion-workspace@0.1.0 api-docs:check /home/tux/nsealr/.restart-tools/goal/s01
+> node scripts/check_api_docs.mjs
+
+companion API docs are up to date
+pnpm api-review:check
+
+> @nsealr/companion-workspace@0.1.0 api-review:check /home/tux/nsealr/.restart-tools/goal/s01
+> node scripts/check_api_review.mjs
+
+companion API review is up to date

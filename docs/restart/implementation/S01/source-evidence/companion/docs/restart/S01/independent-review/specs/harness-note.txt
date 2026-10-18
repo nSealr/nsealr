@@ -1,0 +1,8 @@
+Reviewer harness observation, not a product failure:
+The first parallel invocation of specs/run.py attempted to create the same isolated
+archive directory concurrently. One adversarial execution completed successfully;
+the other three runners raised FileExistsError at SNAPSHOT.mkdir before executing
+their requested commands or generating command manifests. A filesystem lock now
+serializes archive creation. The affected commands were subsequently run normally.
+The transient stderr was observed in tool output; no raw-log artifact is claimed
+for those pre-command runner failures.

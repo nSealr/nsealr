@@ -1,0 +1,73 @@
+pnpm install
+python3 scripts/verify_repo.py
+nSealr s01 baseline verification passed
+pnpm build
+
+> @nsealr/companion-workspace@0.1.0 build /home/tux/nsealr/.restart-tools/goal/s01
+> node scripts/build_packages.mjs
+
+nSealr package build artifacts generated
+python3 scripts/verify_repo.py
+nSealr s01 baseline verification passed
+pnpm test
+
+> @nsealr/companion-workspace@0.1.0 test /home/tux/nsealr/.restart-tools/goal/s01
+> vitest run --maxWorkers=4
+
+
+ RUN  v4.1.5 /home/tux/nsealr/.restart-tools/goal/s01
+
+ ❯ apps/cli/src/index.test.ts (55 tests | 2 failed) 228ms
+     × verifies all event fixtures from the specs repository 21ms
+     × verifies event and trusted-review fixtures from the specs repository 18ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 2 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  apps/cli/src/index.test.ts > nsealr CLI > verifies all event fixtures from the specs repository
+Error: invalid NIP-46 relay step fixture auth-challenge-response-step: step mismatch
+ ❯ Command.<anonymous> apps/cli/src/index.ts:855:17
+    853|           : evaluateNip46RelayRequestStep(relayStep);
+    854|         if (JSON.stringify(actual) !== JSON.stringify(relayStep.expect…
+    855|           throw new Error(`invalid NIP-46 relay step fixture ${relaySt…
+       |                 ^
+    856|         }
+    857|       }
+ ❯ Command.listener [as _actionHandler] node_modules/.pnpm/commander@14.0.2/node_modules/commander/lib/command.js:568:17
+ ❯ node_modules/.pnpm/commander@14.0.2/node_modules/commander/lib/command.js:1604:14
+ ❯ Command._chainOrCall node_modules/.pnpm/commander@14.0.2/node_modules/commander/lib/command.js:1488:12
+ ❯ Command._parseCommand node_modules/.pnpm/commander@14.0.2/node_modules/commander/lib/command.js:1603:27
+ ❯ node_modules/.pnpm/commander@14.0.2/node_modules/commander/lib/command.js:1367:27
+ ❯ Command._chainOrCall node_modules/.pnpm/commander@14.0.2/node_modules/commander/lib/command.js:1488:12
+ ❯ Command._dispatchSubcommand node_modules/.pnpm/commander@14.0.2/node_modules/commander/lib/command.js:1363:25
+ ❯ Command._parseCommand node_modules/.pnpm/commander@14.0.2/node_modules/commander/lib/command.js:1559:19
+ ❯ Command.parseAsync node_modules/.pnpm/commander@14.0.2/node_modules/commander/lib/command.js:1122:16
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/2]⎯
+
+ FAIL  apps/cli/src/index.test.ts > nsealr CLI > verifies event and trusted-review fixtures from the specs repository
+AssertionError: promise rejected "Error: invalid NIP-46 relay step fixture …" instead of resolving
+ ❯ apps/cli/src/index.test.ts:238:80
+
+
+Caused by: Error: invalid NIP-46 relay step fixture auth-challenge-response-step: step mismatch
+ ❯ Command.<anonymous> apps/cli/src/index.ts:855:17
+ ❯ Command.listener [as _actionHandler] node_modules/.pnpm/commander@14.0.2/node_modules/commander/lib/command.js:568:17
+ ❯ node_modules/.pnpm/commander@14.0.2/node_modules/commander/lib/command.js:1604:14
+ ❯ Command._chainOrCall node_modules/.pnpm/commander@14.0.2/node_modules/commander/lib/command.js:1488:12
+ ❯ Command._parseCommand node_modules/.pnpm/commander@14.0.2/node_modules/commander/lib/command.js:1603:27
+ ❯ node_modules/.pnpm/commander@14.0.2/node_modules/commander/lib/command.js:1367:27
+ ❯ Command._chainOrCall node_modules/.pnpm/commander@14.0.2/node_modules/commander/lib/command.js:1488:12
+ ❯ Command._dispatchSubcommand node_modules/.pnpm/commander@14.0.2/node_modules/commander/lib/command.js:1363:25
+ ❯ Command._parseCommand node_modules/.pnpm/commander@14.0.2/node_modules/commander/lib/command.js:1559:19
+ ❯ Command.parseAsync node_modules/.pnpm/commander@14.0.2/node_modules/commander/lib/command.js:1122:16
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/2]⎯
+
+
+ Test Files  1 failed | 78 passed | 1 skipped (80)
+      Tests  2 failed | 678 passed | 1 skipped (681)
+   Start at  17:25:58
+   Duration  3.27s (transform 1.04s, setup 0ms, import 3.40s, tests 3.65s, environment 4ms)
+
+ ELIFECYCLE  Test failed. See above for more details.
+make: *** [Makefile:20: test] Error 1

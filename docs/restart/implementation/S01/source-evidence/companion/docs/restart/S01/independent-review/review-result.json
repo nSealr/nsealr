@@ -1,0 +1,104 @@
+{
+  "recorded_utc": "2026-10-18T15:39:15.245246+00:00",
+  "reviewer": "/root/independent_bridge_review",
+  "assignee": "/root/bridge_execution",
+  "source_candidate": "d385ddb0c775a1e863e9db0ee9ae38fee5f19057",
+  "baseline": "13414320537d0208fc3ef8e43bd0723c98c1d5e0",
+  "author_evidence_commit": "143e6fb260431dc9cb97a72d6c019e3c6c5c6bf1",
+  "brief_sha256": "13bdd9cb6fada5e4994fbd81edbb1be937c7c8c74aee562e5c12f952c043a26b",
+  "verdict": "changes_requested",
+  "findings": [
+    {
+      "id": "F01",
+      "severity": "blocking_contract_nonconformance",
+      "requirement": "S01-QUEUE-03",
+      "source": "packages/transport/src/transport.ts",
+      "summary": "Asynchronous destruction with emitClose:false leaves owned error/close listeners after both streams report closed.",
+      "reproduction": "docs/restart/S01/independent-review/async-destroy-cleanup.mjs",
+      "observed_exit_code": 1,
+      "expected_exit_code": 0
+    }
+  ],
+  "positive_results": {
+    "independent_adversarial_cases_passed": 13,
+    "targeted_tests_passed": 232,
+    "targeted_tests_skipped": 1,
+    "default_adapter_loopback_events_sent": 5,
+    "default_adapter_loopback_events_accepted": 1
+  },
+  "remaining": [
+    "Resolve F01 and repeat affected review against exact changed candidate.",
+    "Review final root-owned specs v1 oracle/fixture migration and cross-repository consumers.",
+    "Obtain final affected full CI/live evidence for corrected candidate; no merge/task closure authorized by this review."
+  ],
+  "artifacts": [
+    {
+      "path": "docs/restart/S01/independent-review/REVIEW.md",
+      "sha256": "e48ae0ac4567bed9fb57e903fcfaa20ce1cd881a066b5afc6e5f40c1e788dfe8"
+    },
+    {
+      "path": "docs/restart/S01/independent-review/adversarial-first.log",
+      "sha256": "8f3aeba887f42e6e9642157d70be431d8e4afae273123f7efbac08a305a15b14"
+    },
+    {
+      "path": "docs/restart/S01/independent-review/adversarial.json",
+      "sha256": "dabd15b35d843d41518a620ea32f2b3440054f62f1157023e6a108cbc24e2944"
+    },
+    {
+      "path": "docs/restart/S01/independent-review/adversarial.log",
+      "sha256": "cb2f39f35c66a3949fb26bff69113621b1966c662c6b671ea4bf8575cac8f916"
+    },
+    {
+      "path": "docs/restart/S01/independent-review/adversarial.mjs",
+      "sha256": "f115041f38350b7d888f4d3d65c14afe0acc110176787c5a3afbd81853ed7d35"
+    },
+    {
+      "path": "docs/restart/S01/independent-review/async-destroy-cleanup.json",
+      "sha256": "89624f79784bcb6b304ac4ea64e96e7a19f7fd0915bafd6df4a06717d1f9bd26"
+    },
+    {
+      "path": "docs/restart/S01/independent-review/async-destroy-cleanup.log",
+      "sha256": "79eadf8dd88393f5b4ff34e88a12ff022e19c3c7868fa2389595c7c6dda80659"
+    },
+    {
+      "path": "docs/restart/S01/independent-review/async-destroy-cleanup.mjs",
+      "sha256": "57249c1b1474e911dddc442d55725b29c4af5dc22e6a7f4a6e2a9c4cceac36bd"
+    },
+    {
+      "path": "docs/restart/S01/independent-review/author-evidence-assessment.json",
+      "sha256": "71dde7852f82747f9b0f14a8e4e76062102fa38019cac9c012b36779a58487a1"
+    },
+    {
+      "path": "docs/restart/S01/independent-review/build.log",
+      "sha256": "f0dabcbc031b935141bb9b92dd81e4d2ba25cca2710d63cca51c6c4765b86a62"
+    },
+    {
+      "path": "docs/restart/S01/independent-review/evidence-check.json",
+      "sha256": "1e5e697030e4c7bc7389a1fd879901eb0078dee7e451e7ccd3a80407daf916c4"
+    },
+    {
+      "path": "docs/restart/S01/independent-review/evidence-check.log",
+      "sha256": "dd77e4ab2ae13a3637abff610f5e4cc95567a40d214d5da8bf4955ccbe4cbeef"
+    },
+    {
+      "path": "docs/restart/S01/independent-review/install.log",
+      "sha256": "e9be5aef3224c2d7d4359b01c6dc626e7cb65e25dde79346380aba76d7c5aeda"
+    },
+    {
+      "path": "docs/restart/S01/independent-review/run.py",
+      "sha256": "a342aa0f96942c54fb276b55fbefd3ab7f4c04ae2be74bda67f6e6a5f5f4445c"
+    },
+    {
+      "path": "docs/restart/S01/independent-review/targeted.json",
+      "sha256": "c1bc4cf3329fb206ccc2fc01a6c27590dd43620139b26519ba2b4e206f9ac567"
+    },
+    {
+      "path": "docs/restart/S01/independent-review/targeted.log",
+      "sha256": "0f016371c9df6a704fb3fc37e57061aa04253d156adfa55389bfcf34d0a0660e"
+    },
+    {
+      "path": "docs/restart/S01/independent-review/verify-evidence.py",
+      "sha256": "008b05e8f337823fde60c7b1820b023f525b75ae19f72f22bb303eb24e09ae6f"
+    }
+  ]
+}

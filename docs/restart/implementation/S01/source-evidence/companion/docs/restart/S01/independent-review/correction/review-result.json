@@ -1,0 +1,65 @@
+{
+  "recorded_utc": "2026-10-18T15:55:39.649372+00:00",
+  "reviewer": "/root/independent_bridge_review",
+  "assignee": "/root/bridge_execution",
+  "source_candidate": "da2869792af862e62022744585e5a4681c422838",
+  "author_evidence_commit": "84a6f10599dee61efe63442cb5fe1eaa69f585b5",
+  "original_finding_commit": "67804a5d1995504a69d2fe49618da8e263ec3d89",
+  "brief_sha256": "896f9d22cdd61cb8769f94162c240327433ceff2f0338ab4a2e5e33f085118ad",
+  "verdict": "changes_requested",
+  "findings": [
+    {
+      "id": "F02",
+      "requirement": "S01-QUEUE-03",
+      "severity": "blocking_contract_nonconformance",
+      "source": "packages/transport/src/transport.ts:125",
+      "summary": "After EOF, a suppressed destruction error retained in input.errored is ignored; readLine returns stale data and output remains live.",
+      "reproduction": "docs/restart/S01/independent-review/correction/error-after-eof.mjs",
+      "observed_exit_code": 1,
+      "expected_exit_code": 0
+    }
+  ],
+  "prior_finding": {
+    "id": "F01",
+    "original_reproduction_exit_code": 0,
+    "full_cleanup_approval": false
+  },
+  "artifacts": [
+    {
+      "path": "docs/restart/S01/independent-review/correction/REVIEW.md",
+      "sha256": "2f3af7df729cefa9ebf776c17d2fc25e4b6db3f850678b83dde2c22fe5d400f3"
+    },
+    {
+      "path": "docs/restart/S01/independent-review/correction/build.json",
+      "sha256": "2ecf528ade45755e567ae7c89fb83f51018e4a74a5aaf516d49b5f4ce364be2c"
+    },
+    {
+      "path": "docs/restart/S01/independent-review/correction/build.log",
+      "sha256": "f0dabcbc031b935141bb9b92dd81e4d2ba25cca2710d63cca51c6c4765b86a62"
+    },
+    {
+      "path": "docs/restart/S01/independent-review/correction/error-after-eof.json",
+      "sha256": "83ed4559240d2fe20877c8a7affc63e7c6318f54ea6cb12ea71213964ce9b214"
+    },
+    {
+      "path": "docs/restart/S01/independent-review/correction/error-after-eof.log",
+      "sha256": "5ac1b9b60be1049b9cdff2a633475f5c9b90a99eeee4da5ae2366afa70fbf6bf"
+    },
+    {
+      "path": "docs/restart/S01/independent-review/correction/error-after-eof.mjs",
+      "sha256": "800db76a22c443d470f566bcb8f9ae83ca791003b50a8dcce5ad5eb8c0b11669"
+    },
+    {
+      "path": "docs/restart/S01/independent-review/correction/original-f01.json",
+      "sha256": "96e144131d0e3d7fd324d5f3f44ec110e9849a3d1768a3bdb78e8939e7e2e723"
+    },
+    {
+      "path": "docs/restart/S01/independent-review/correction/original-f01.log",
+      "sha256": "7e014c0033621d7ae2e2dff0c917f80f397c67f624a9fe11a849e13d95e798b3"
+    },
+    {
+      "path": "docs/restart/S01/independent-review/correction/run.py",
+      "sha256": "161970d778578c74f6161dc300f91c61cdad9038521b31adda5ad86234f1b615"
+    }
+  ]
+}

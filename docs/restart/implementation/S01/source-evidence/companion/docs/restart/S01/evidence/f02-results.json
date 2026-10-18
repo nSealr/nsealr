@@ -1,0 +1,156 @@
+{
+  "recorded_utc": "2026-10-18T15:59:00.083502+00:00",
+  "task": "S01",
+  "author": "/root/bridge_execution",
+  "source_candidate": "9e023ccef300ddeb738c377fe68b130a94123477",
+  "previous_candidate": "da2869792af862e62022744585e5a4681c422838",
+  "previous_evidence": "84a6f10599dee61efe63442cb5fe1eaa69f585b5",
+  "independent_finding": {
+    "id": "F02 / S01-QUEUE-03",
+    "review_commit": "63cff320864552888c0666f972dacf7ea5ec2084",
+    "reviewer": "/root/independent_bridge_review",
+    "summary": "A recorded input.errored value was checked only for premature closure or a pending write. After EOF, suppressed destruction errors left stale data readable and output alive.",
+    "disposition": "Author correction complete and tested; renewed distinct review remains required. No approval or merge claim."
+  },
+  "regression_commit": "d43f0d50fdc6211ea02b42e3f237f0a6311d26e1",
+  "red_evidence_commit": "62dbfbc86a078e87c546e3af111bcc095da483bc",
+  "red_validation": [
+    {
+      "manifest": "docs/restart/S01/evidence/f02-regression-red.json",
+      "failed": 2,
+      "passed": 41,
+      "description": "Both suppressed-error after-EOF variants fail; emitted-error and error-free EOF controls pass"
+    },
+    {
+      "manifest": "docs/restart/S01/evidence/f02-reviewer-red.json",
+      "exit_code": 1,
+      "description": "Unmodified reviewer probe has two passing forwarded-error controls and two failing suppressed-error cases. Built product bytes were unchanged from da286979; regression commit only added tests."
+    }
+  ],
+  "change": "Only the input close/completion decision changed: known input.errored takes precedence over normal EOF, before the existing premature-close condition. The existing terminal-error path preserves the fault, discards buffered input, rejects future operations and destroys the peer. Completion wrapper, identity logic, metadata parser and fixture bytes are unchanged.",
+  "regressions": "Six additional cases: four error-event/close-event combinations plus two error-free EOF tail-draining controls. Stream-security now has 43 tests.",
+  "validation": [
+    {
+      "manifest": "docs/restart/S01/evidence/f02-final-build.json",
+      "description": "Exact-source package build"
+    },
+    {
+      "manifest": "docs/restart/S01/evidence/f02-final-targeted.json",
+      "tests_passed": 290,
+      "tests_skipped": 1
+    },
+    {
+      "manifest": "docs/restart/S01/evidence/f02-reviewer-green.json",
+      "cases_passed": 4,
+      "description": "Unmodified F02 probe; both suppressed-error cases reject with the identical fault and destroy the output"
+    },
+    {
+      "manifest": "docs/restart/S01/evidence/f02-original-f01.json",
+      "cases_passed": 4,
+      "description": "Unmodified original F01 probe; inherited listeners only after closure"
+    },
+    {
+      "manifest": "docs/restart/S01/evidence/f02-final-ci.json",
+      "tests_passed": 716,
+      "tests_skipped": 1,
+      "description": "All make ci build, test, API, browser, package, lint and dependency audit gates pass"
+    },
+    {
+      "manifest": "docs/restart/S01/evidence/f02-final-live-relay.json",
+      "tests_passed": 1,
+      "tests_skipped": 0,
+      "description": "Explicitly enabled Docker relay test covers the CI-gated skip"
+    }
+  ],
+  "fixture_preservation": {
+    "comparison_base": "da2869792af862e62022744585e5a4681c422838",
+    "path": "tests/fixtures/specs/vectors",
+    "git_diff_exit_code": 0,
+    "git_diff_output": "",
+    "python_oracle": "No edits outside this author worktree."
+  },
+  "lifecycle_limits": "Previously documented live/exclusively-owned/replaceable hook requirements and unresolved custom destruction callback limit still apply. This narrow repair does not broaden those claims.",
+  "live_relay": {
+    "docker_version": "29.5.3",
+    "repo_digests": [
+      "scsibug/nostr-rs-relay@sha256:48d54c2d2781577cf3ed2951112f0953dc2c5e7c9d2ea20c64e8c0fa37d16e4d"
+    ],
+    "remaining_containers": "",
+    "claim_limit": "Actual relay/WebSocket I/O with repository signer harness; no external-client or physical-device claim."
+  },
+  "retention": "All baseline, F01, F02 failure and intermediate records preserved. This result supersedes prior source-candidate terminal-cleanup claims.",
+  "handoff": {
+    "pull_request": "https://github.com/nSealr/companion/pull/1",
+    "remaining": "Renewed independent review of exact source, separately owned specs integration, coordinator integration/merge decision and complete S01 acceptance."
+  },
+  "artifacts": [
+    {
+      "path": "docs/restart/S01/evidence/f02/error-after-eof.mjs",
+      "sha256": "800db76a22c443d470f566bcb8f9ae83ca791003b50a8dcce5ad5eb8c0b11669"
+    },
+    {
+      "path": "docs/restart/S01/evidence/f02-final-build.json",
+      "sha256": "9776b834d7e232fd5c958c1e9454529e742bbcd878a2d3b7d14c8c09ad456fd7"
+    },
+    {
+      "path": "docs/restart/S01/evidence/f02-final-build.log",
+      "sha256": "90d3c0a3a40aa0ceb66174ebf300e20b56d67096e7e39c12d2c1727533b94384"
+    },
+    {
+      "path": "docs/restart/S01/evidence/f02-final-ci.json",
+      "sha256": "989d7c5d4b2f4952b3844472a58281eb1d1276e8fc3ad585cf4e79522525862e"
+    },
+    {
+      "path": "docs/restart/S01/evidence/f02-final-ci.log",
+      "sha256": "6ba92dd788a402d38fc02bed6838da92f082619a839043b450f17f6835faf60f"
+    },
+    {
+      "path": "docs/restart/S01/evidence/f02-final-live-relay.json",
+      "sha256": "317262cb69e2e2f099cddaf9ca95e08ef5f47f899d832a661dae375439402d87"
+    },
+    {
+      "path": "docs/restart/S01/evidence/f02-final-live-relay.log",
+      "sha256": "2dc7402b87196049dcf36a583d66ac8f06f39d2e459af18535243f5272da91c2"
+    },
+    {
+      "path": "docs/restart/S01/evidence/f02-final-targeted.json",
+      "sha256": "a0ce66d20a1787fe5275f2bc8f705217ca28844b13c245afd429ad1b5d6d92b7"
+    },
+    {
+      "path": "docs/restart/S01/evidence/f02-final-targeted.log",
+      "sha256": "b6c66e773c0b7fc63d23746c42846ef798abb9e9bffbff4ebd5d01dc9bed9501"
+    },
+    {
+      "path": "docs/restart/S01/evidence/f02-original-f01.json",
+      "sha256": "8c2aa199c7908a604f87765d1b717edc03a3297d16db2e3054e949443b0123ee"
+    },
+    {
+      "path": "docs/restart/S01/evidence/f02-original-f01.log",
+      "sha256": "7e014c0033621d7ae2e2dff0c917f80f397c67f624a9fe11a849e13d95e798b3"
+    },
+    {
+      "path": "docs/restart/S01/evidence/f02-regression-red.json",
+      "sha256": "8f358e60393ff735e6b6686e7b639de208493f079614f86d9d60835284b2d8f8"
+    },
+    {
+      "path": "docs/restart/S01/evidence/f02-regression-red.log",
+      "sha256": "ef7b0f758345367ba8dd57df1138acc8af3f6f33142bb16b134648511e53018a"
+    },
+    {
+      "path": "docs/restart/S01/evidence/f02-reviewer-green.json",
+      "sha256": "c73c135c154e3d63e8efe1f78c048361845ab7e3aa3001b503dba8127de3bf44"
+    },
+    {
+      "path": "docs/restart/S01/evidence/f02-reviewer-green.log",
+      "sha256": "33075da12df21ff1d9099ac2ab991b2084d63f757ce690f0f02626d68ea0a47b"
+    },
+    {
+      "path": "docs/restart/S01/evidence/f02-reviewer-red.json",
+      "sha256": "eb4af726d68c7f6575891dce8a880b0ea3ecaecd6ffe9e3925ceabe79f39bf56"
+    },
+    {
+      "path": "docs/restart/S01/evidence/f02-reviewer-red.log",
+      "sha256": "bba2fa093ac92cc929e0ab3cd16b1f92995981fb9210ae0f5935e779da115d09"
+    }
+  ]
+}
