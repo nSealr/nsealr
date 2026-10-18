@@ -91,7 +91,7 @@ def emit(manifest_path: Path, inventory_path: Path, cases_root: Path, source_roo
         artifact["current_unchanged_path"] = artifact["path"]
         artifact["source_url"] = "https://github.com/nSealr/nsealr/blob/" + entries["nsealr"]["commit"] + "/" + artifact["path"]
     (output / "closed-evidence.json").write_bytes(canonical(closure))
-    cases, omitted = [], Counter()
+    cases, omitted, opaque_exclusions = [], Counter(), []
     collection_records = {r["source"]: r for r in decode_json((cases_root / "summary.json").read_bytes())["sources"]}
     for name in ("companion", "specs", "raspberry", "lab"):
         record = decode_json((cases_root / (name + "-cases.json")).read_bytes())
@@ -106,6 +106,9 @@ def emit(manifest_path: Path, inventory_path: Path, cases_root: Path, source_roo
             row = file_map[(name, path)]
             if entries[name]["visibility"] == "private" and row["action"] == "exclude":
                 omitted[name] += 1
+                opaque_exclusions.append({"source": name, "case_identity_sha256": digest(canonical({"path": path, "case_id": case_name})),
+                                          "treatment": "exclude-private-repository-maintenance",
+                                          "reason": "Private taxonomy, repository Makefile/drift or sibling-orchestration maintenance; not a selected product consumer. Original case/source preserved in protected collection and Git recovery."})
                 continue
             decision, obligation = treatment(name, path, case_name, row["action"])
             cases.append({"source": name, "commit": record["source_commit"], "path": path,
@@ -180,6 +183,7 @@ def emit(manifest_path: Path, inventory_path: Path, cases_root: Path, source_roo
         core.close()
     (output / "case-dispositions.json").write_bytes(canonical({"cases": sorted(cases, key=lambda r:(r["source"], r.get("path",r.get("group","")), r["case_id"])),
         "counts": dict(Counter(r["treatment"] for r in cases)), "private_excluded_case_counts": dict(omitted),
+        "private_excluded_cases": opaque_exclusions,
         "private_full_collection_sha256": digest((cases_root / "lab-cases.json").read_bytes()),
         "selection_reconciliation": "Collection manifest preceded two checker selections/privacy metadata. Same exact source commits/trees and overlay postimages; selection changes are reflected here without repeating unchanged collection.",
         "after_migration_acceptance": "All retained/replacement/external cases require actual execution. No implementation or conformance claim is made by this ledger."}))

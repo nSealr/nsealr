@@ -676,6 +676,34 @@
       },
       "rules": [
         {
+          "id": "optional-qualification-test-hardware_companion_serial_smoke",
+          "action": "transform",
+          "reason": "Preserve existing lab CI mock safety/command/output tests for the retained optional qualification helper; no physical execution claim.",
+          "path": "tests/test_hardware_companion_serial_smoke.py",
+          "destination": "tests/integration/test_hardware_companion_serial_smoke.py"
+        },
+        {
+          "id": "optional-qualification-hardware_companion_serial_smoke",
+          "action": "transform",
+          "reason": "Retain optional qualification helper and mandatory mock regression controls. Actual browser/board execution remains resource-gated, outside product integration prerequisites.",
+          "path": "scripts/hardware_companion_serial_smoke.py",
+          "destination": "tests/integration/optional/hardware_companion_serial_smoke.py"
+        },
+        {
+          "id": "optional-qualification-test-browser_extension_chromium_smoke",
+          "action": "transform",
+          "reason": "Preserve existing lab CI mock safety/command/output tests for the retained optional qualification helper; no physical execution claim.",
+          "path": "tests/test_browser_extension_chromium_smoke.py",
+          "destination": "tests/integration/test_browser_extension_chromium_smoke.py"
+        },
+        {
+          "id": "optional-qualification-browser_extension_chromium_smoke",
+          "action": "transform",
+          "reason": "Retain optional qualification helper and mandatory mock regression controls. Actual browser/board execution remains resource-gated, outside product integration prerequisites.",
+          "path": "scripts/browser_extension_chromium_smoke.py",
+          "destination": "tests/integration/optional/browser_extension_chromium_smoke.py"
+        },
+        {
           "id": "lab-check_fixture_snapshots",
           "action": "transform",
           "reason": "Selected CC0 integration tooling only; per-file privacy/notice review and final corrected helper overlay required.",
