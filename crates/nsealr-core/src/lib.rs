@@ -1,11 +1,10 @@
 //! `nsealr-core` — the shared, `no_std` backbone crate for the nSealr firmware family.
 //!
-//! This crate is the single Rust home for the device-independent signer core
-//! (transport framing, QR/serial review model, approval-digest binding, policy
-//! state) that every nSealr target — the ESP32 QR vault, the USB/NIP-46 signer,
-//! the custom board, and the Raspberry Pi vault — links against. The C++
-//! `host_core` semantics are a decided rewrite into this crate; none of that
-//! logic lives here yet (it is ported task by task in Phase 03).
+//! This crate contains the portable Rust protocol, transport framing, review,
+//! policy and session foundations used by the host conformance harness and
+//! intended device adapters. The separate Python Pi implementation remains an
+//! independent oracle until its explicitly reviewed engine adoption. Compiling
+//! this crate does not qualify an MCU application, custody or physical review.
 //!
 //! # Build configuration
 //!
@@ -14,8 +13,7 @@
 //! [`std`] facade for host/desktop consumers and test tooling; it is off by
 //! default and pulls in nothing on-device.
 //!
-//! Phase 03 ports the C++ `host_core` logic into this crate one milestone at a
-//! time. Ported so far: the low-level primitives [`hash`] (SHA-256) and
+//! Implemented modules include: the low-level primitives [`hash`] (SHA-256) and
 //! [`base64url`] (URL-safe unpadded Base64), the encoding layer [`bip39`]
 //! (English mnemonic parsing), [`nip19`] (`nsec` Bech32), [`seedqr`]
 //! (Standard/Compact SeedQR), and [`unicode`] (UTF-8 + JSON `\uXXXX` helpers), the

@@ -898,7 +898,7 @@ function prepareSignerDispatch(
       response: errorResponse(
         request,
         "external_review_acknowledgement_unsupported",
-        "external review acknowledgement is only supported for display-less sign_event dispatch"
+        "host review acknowledgements are unsupported for signer dispatch"
       )
     };
   }
