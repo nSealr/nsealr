@@ -1,0 +1,316 @@
+{
+  "schema_version": 1,
+  "task": "S02",
+  "utc": "2026-10-18T15:41:33.346221+00:00",
+  "author": "/root/secret_execution",
+  "reviewer": "/root/independent_security_review",
+  "independence": "Reviewer did not author or modify any S02 product, specification or author evidence. Reviewer owns only its reconstruction/review reports and adversarial harness. GitHub operations share the maintainer account; account identity is not the independence claim.",
+  "verdict": "pass",
+  "blocking_findings": [],
+  "scope": "Independent exact-candidate source, specification/threat adequacy, dependency/provenance, evidence and adversarial review. Acceptable to integrate this bounded S02 change after normal repository gates; this does not close S02/O01, approve any later candidate, qualify a device or admit real signing keys.",
+  "candidate_commits": {
+    "nSealr/nsealr": "61641047d13b5bb265246b181edc38f4dc2073e7"
+  },
+  "comparison_base_commits": {
+    "nSealr/nsealr": "61b0c39131012c40ff76321bb3650def6e7a9d83"
+  },
+  "original_specification_inputs": {
+    "nSealr/nsealr": "768e8a35ae541f53f5da9c7bea7bf5c577fb474d"
+  },
+  "candidate_tree": "7aab562bbc872479b15b8b57368e1b89d2490408",
+  "candidate_dirty_state": "",
+  "pull_request": "https://github.com/nSealr/nsealr/pull/10",
+  "accepted_specification": {
+    "commit": "d9f8c2d4ecdf2efe8c5cd4e87fa4f6f31ca4f3b2",
+    "record": {
+      "path": "docs/restart/implementation/reviews/S02-spec.json",
+      "sha256": "2e69a5b5b326f32b9570973949fe3f41d0867da4df10d1492d0e680da6249909"
+    },
+    "candidate_brief": {
+      "path": "docs/restart/implementation/S02/brief.md",
+      "sha256": "4aadcc543ffca741444f3fade410c327c9d77428880b3e525fb51d75414de0c1"
+    },
+    "clarifications": "The saved distinct specification review accepts simulator replay.rs and test-only review/qr_flow.rs migration plus checksum validation on both seed insertion paths. These are represented in the final diff; no unrelated protocol/approval implementation or canonical graph is changed by S02."
+  },
+  "contract_assessment": [
+    {
+      "area": "Scalar and index ownership",
+      "assessment": "SecretKey, WordIndexes, private SessionSeedWordIndexes and SessionKeySource have fixed redacted Debug, private material fields and no Clone/Copy. SecretKey intake clears its mutable input on success and failure. Public conversion/export outputs remain deliberate caller-owned codec boundaries. From-slice index construction can hold invalid shape/range, but retained source insertion checks shape/range/checksum; invalid public input cannot bypass add_bip39_seed/add_source."
+    },
+    {
+      "area": "Keyring and import",
+      "assessment": "Insertion consumes secret owners; take_last transfers with mem::take and constructors no longer clone out of the eight-slot temporary. Source validity and capacity are checked before retained mutation. Import consumes pending source even on rejection/error; transcript capacity is checked before add_source. Independent decision-step overflow specifically returned Capacity without loading a source. Existing keyring entries survived exhaustive invalid inserts and full-ring import failure."
+    },
+    {
+      "area": "Backup and formatting",
+      "assessment": "Raw payload construction is crate-private; fields are private and reveal methods explicitly borrow for trusted local output. Payload exists as a wiping owner before fallible construction fills it. Non-IO flow returns one payload after its legacy approval decision; IO borrows for emission and returns no retained payload. Source/payload/nested flow Debug do not reveal material. Simulator backup mismatch diagnostics no longer echo secret encodings. This is memory/API hygiene, not a physical approval boundary."
+    },
+    {
+      "area": "Temporary lifetime and erasure",
+      "assessment": "Owned scalar/index/payload storage, decode/checksum buffers, fingerprint material and current SHA core/block buffer have maintained zeroization. The enabled SHA zeroize feature reaches digest and block-buffer; the public adapter exposes no Debug/Clone/serialization. Small arithmetic/encoding temporaries, Rust moves/registers and backend scratch are not claimed erased. Caller input/output, display/camera storage and labels remain explicitly allocated/cleared by their owners. No safe Rust post-drop memory read was used as proof."
+    },
+    {
+      "area": "Dependencies and hashing",
+      "assessment": "Product pins zeroize 1.9.1 without defaults and sha2 0.11.0 without defaults with zeroize. Archive digests match lock/checksum manifests and retained vendor bytes/notices; live crates.io confirms direct pins are non-yanked with matching checksums. RISC-V feature closure has no allocator, std or entropy dependency. The small adapter delegates SHA256 and preserves the existing known-answer/streaming contract. Targeted source inspection confirms SHA core and buffer Drop behavior; no whole-backend erasure claim follows."
+    },
+    {
+      "area": "Crypto selection and protocol semantics",
+      "assessment": "k256 0.14.0 with schnorr/ecdh and the secp256k1 0.33.1/sys 0.14.1 lowmemory alternative are confined to the existing feasibility probe. Raw sign_raw/verify_raw and libsecp raw signing use the intended message directly. Both ECDH wrappers use shared x before HKDF extract with nip44-v2. Fresh independent rerun passed every pinned official oracle plus wrong-prehash and hashed-ECDH negatives. Candidate selection is reasonable for later integration, subject to target timing and secret scratch obligations. Full NIP44 encryption is not claimed."
+    },
+    {
+      "area": "Entropy and target claims",
+      "assessment": "No production random provider or signer was added. Legacy generate functions are documented deterministic conversion. The entropy contract requires fallible whole-buffer fill, wiping partial failures, bounded scalar rejection, no unqualified fallback and source/FFI/weak-symbol/runtime/final-binary tracing plus actual invocation/fault tests per device. Qualified OS CSPRNG/DRBG is permitted. Statistical tests or this ISA link do not qualify entropy or select an ESP32 assembly. No source audit or successful link is substituted for physical evidence."
+    }
+  ],
+  "acceptance_review": [
+    {
+      "index": 0,
+      "outcome": "pass",
+      "basis": "Reviewed complete material-bearing APIs and consumer diff; reran all 11 external compile-fail doctests. Author redaction/IO/error tests and baseline exposure logs hash-verified. Explicit codecs remain allowed exports; stored source fields cannot be accessed externally."
+    },
+    {
+      "index": 1,
+      "outcome": "pass",
+      "basis": "Secret-flow inventory matches source and bounded fixed-array ownership. Independent state/transfer/error experiments pass. Current storage cleanup is distinguished from old move/compiler/register copies; device placement/internal RAM remains a later obligation."
+    },
+    {
+      "index": 2,
+      "outcome": "pass",
+      "basis": "Maintained package versions/licenses/features/source provenance checked; official vectors rerun; author ARM/RISC-V compile/link records reconciled. Independent actual-core RISC-V final link has no undefined symbols and exactly reproduces the author ELF SHA256. No physical or peak-memory claim."
+    },
+    {
+      "index": 3,
+      "outcome": "pass",
+      "basis": "Independent rerun yields 19 BIP340 verification and 8 exact signing cases per backend, 43 NIP44 conversation cases per backend, and both integration trap negatives. Preserved C ABI failure is the expected different floating-point ABI error; corrected command pins clang and -mabi=ilp32f -march=rv32imafc."
+    },
+    {
+      "index": 4,
+      "outcome": "pass",
+      "basis": "Entropy contract explicitly covers failure/partial/stuck/interrupted source, no fallback, FFI/weak/runtime provenance and actual device invocation. Source/feature inspection agrees that no production provider exists, so no runtime entropy quality is claimed."
+    }
+  ],
+  "independent_adversarial_experiment": {
+    "hypothesis": "Owned seed insertion might skip or miscompute checksums, corrupt existing slots on failure, or import before a final transcript-capacity error. Test against a separately computed oracle and adversarial state boundaries.",
+    "design": "Python integer assembly of ENT||CS plus hashlib/OpenSSL constructs all 2048 possible final words for 12/15/18/21/24-word lists whose preceding indexes are zero. External Rust crate calls only public candidate APIs; it does not use candidate checksum outputs as the oracle. Every insertion is checked against the oracle and an already retained scalar fingerprint, then valid sources are moved/reinserted. Supported backups are checked against independently reconstructed entropy/digits. Separate tests exercise full-ring insertion, the 33rd-button approval when transcript capacity is 32, and exact scalar-order boundary.",
+    "result": {
+      "cases": 10240,
+      "valid_accepted": 248,
+      "invalid_rejected": 9992,
+      "exact_backup_roundtrips": 136,
+      "existing_sources_preserved": true,
+      "full_ring_error": "Keyring(KeyringFull)",
+      "decision_step_overflow_error": "Capacity",
+      "scalar_boundary": "n-1 accepted; n and n+1 rejected; mutable inputs all zero afterward"
+    },
+    "limits": "Synthetic public low-entropy fixtures; no entropy-quality, physical-erasure, constant-time or exhaustive arbitrary mnemonic claim."
+  },
+  "evidence_reconciliation": {
+    "checks": 2809,
+    "result": "all pass",
+    "changed_source_files": 670,
+    "nonvendor_changed_source_files": 19,
+    "original_tested_product": "b64afa7a8e3dd9e0e155eea55bf402715ddf32ad",
+    "latest_author_tested_candidate": "3cabfe3c49ee41702001b18e223447da9d4d609c",
+    "reconciliation": "All 670 changed source/dependency file digests equal the original tested product and final 6164104 candidate. Changes since the latest author full run are evidence/docs only. Author log hashes and package source/archive/license/registry hashes are verified; complete checkset digest and reproducible verifier are preserved.",
+    "independent_core_elf_sha256": "d89d19f8b05cde63b635da4ca74a486f9ef107a9764c36f9d3d84094aa920d28",
+    "matches_author_core_elf": true,
+    "ci": "Both GitHub verify jobs completed SUCCESS on frozen PR10 head; saved timestamped query."
+  },
+  "nonblocking_observations": [
+    {
+      "id": "S02-R01",
+      "kind": "retained security gate",
+      "owner": "S03 and device integration",
+      "observation": "A caller can supply approval buttons through the existing public non-IO flow. API opacity is not an authority boundary inside the trusted image. The brief and handoff explicitly defer physical-origin, one-use authorization repair; this review does not qualify that behavior."
+    },
+    {
+      "id": "S02-R02",
+      "kind": "retained security gate",
+      "owner": "K01 and every custody implementation",
+      "observation": "k256 SigningKey Drop wipes its key but sign_raw nonce derivation arrays and NonZeroScalar temporaries lack universal Drop wiping; C bindings have explicit copy/erase limits too. These are documented, not silently accepted as full erasure. Real-key admission must resolve relevant scratch and target timing/memory requirements."
+    },
+    {
+      "id": "S02-R03",
+      "kind": "evidence retention improvement",
+      "owner": "Future crypto probe maintainer",
+      "observation": "Historical crypto providers reuse ELF output paths, so earlier provider ELFs are overwritten. Saved logs, commands and declared hashes are intact, but I cannot rehash every older binary from retained bytes. Preserve per-provider/per-target ELFs in isolated named artifact locations for later binary audits. This does not invalidate inspected source/vector/link-log evidence; actual core ELF was independently rebuilt to the exact declared hash."
+    }
+  ],
+  "limitations": [
+    "Not an external cryptographic audit, formal proof or hardware qualification.",
+    "Full expensive CI was not repeated: exact-candidate recorded full CI and live GitHub checks pass, and no source mutation required repeating them. Focused independent checks and adversarial experiment were executed.",
+    "No production identity, target execution, entropy provider, device RAM placement, timing, stack peak, side channel, boot/custody or physical UI was tested.",
+    "Reviewer cannot independently introspect hosted model identity; parent assigns the requested specialist role.",
+    "Changed product/specification/dependency inputs invalidate the affected review; a rebase or documentation-only candidate still requires explicit source/evidence reconciliation before relying on this verdict."
+  ],
+  "primary_sources_consulted": [
+    {
+      "url": "https://github.com/bitcoin/bips/blob/927b6de9915c9262615a6399de51b200f81e5aa4/bip-0340.mediawiki",
+      "scope": "Default signing and verification; raw message and scalar range"
+    },
+    {
+      "url": "https://github.com/nostr-protocol/nips/blob/37db639582d857e12468dcccd99b2c7f1d657da9/44.md",
+      "scope": "Conversation key pseudocode and official JSON checksum"
+    },
+    {
+      "url": "https://docs.rs/k256/0.14.0/k256/",
+      "scope": "Versioned security notes, algorithm/features and variable-time multiplication limitation"
+    },
+    {
+      "url": "https://docs.rs/zeroize/1.9.1/zeroize/",
+      "scope": "Versioned source checked locally for volatile/fence implementation and copy/register exclusions"
+    },
+    {
+      "url": "https://docs.rs/sha2/0.11.0/sha2/",
+      "scope": "Versioned maintained SHA adapter source and feature-gated wiping; exact sources also checked from locked registry archives"
+    }
+  ],
+  "product_file_hashes": [
+    {
+      "path": "Cargo.lock",
+      "sha256": "92be519cdf623cc5e96fba7420cad3e4cf5ff0f08574f8e5969a65c48df54b1b"
+    },
+    {
+      "path": "apps/desktop-simulator/src/replay.rs",
+      "sha256": "4896aed1dcecb6ca4f620363ddf028a6ce0e0761a4880630723e80fe79d21ca4"
+    },
+    {
+      "path": "apps/desktop-simulator/src/replay/session_reviews.rs",
+      "sha256": "3d6b898fafd8281defd2191982fd304e77f9b89868bed5cce8236170ebc3c1a1"
+    },
+    {
+      "path": "apps/desktop-simulator/src/replay/sources.rs",
+      "sha256": "3fedd66e5c5911c0b30e019b9e105b013c6dd962f75a8da2bb9e2b40efc37425"
+    },
+    {
+      "path": "crates/nsealr-core/Cargo.toml",
+      "sha256": "628a4f6591a0b6b5d8406bad3dc849e304f01d4a54394c530809967ebe0728e4"
+    },
+    {
+      "path": "crates/nsealr-core/src/bip39/mod.rs",
+      "sha256": "c4730ee476cca22c1c70737a4dcbc4b5a10388c73138859af3e4f74ad57a8968"
+    },
+    {
+      "path": "crates/nsealr-core/src/hash.rs",
+      "sha256": "6cd8c18667fca5623dec65718b2ab87084c1ff260a3589b311da34a1f3f577ae"
+    },
+    {
+      "path": "crates/nsealr-core/src/nip19.rs",
+      "sha256": "738499a70213b0c8aeb2299b47ac7c8a7839cd7f6b5f4316a37448c9878484f0"
+    },
+    {
+      "path": "crates/nsealr-core/src/review/qr_flow.rs",
+      "sha256": "97b8251a2bdc63ea7e2637918311b65f5bdd4cb4f731395f132ae38b75a7949d"
+    },
+    {
+      "path": "crates/nsealr-core/src/seedqr.rs",
+      "sha256": "261f7b9b71bbde22625b44d850786ec977d58876360a0caf4a067b2812398f09"
+    },
+    {
+      "path": "crates/nsealr-core/src/session/account.rs",
+      "sha256": "1966870403484b6552335d3843e86054b38a5a8747e2fd7675d4f1366f213e3e"
+    },
+    {
+      "path": "crates/nsealr-core/src/session/import_flow.rs",
+      "sha256": "498558d81732f8343257ca7666ce59c1b00fa7bf109e426c3fd0a1d5306bb180"
+    },
+    {
+      "path": "crates/nsealr-core/src/session/import_review.rs",
+      "sha256": "8cdb63ea696e5610585671053483e8d7679befcbf5c92522b874b2869382f267"
+    },
+    {
+      "path": "crates/nsealr-core/src/session/keyring.rs",
+      "sha256": "8cb2541f8092a102c81eb3c5dcf971a527fcf8d2247b911c33843bdfa8430003"
+    },
+    {
+      "path": "crates/nsealr-core/src/session/source_backup.rs",
+      "sha256": "05164dc0f75436635facefff898f637ebef77bf90c1b3f6f7c67d1a3bead209d"
+    },
+    {
+      "path": "crates/nsealr-core/src/session/source_generation.rs",
+      "sha256": "2956331b751626b74288225e9e402f6210068791c8b167e5a9cef5b76426dd12"
+    },
+    {
+      "path": "crates/nsealr-core/src/session/source_qr.rs",
+      "sha256": "e00b96d151b542877de2ee53d41202945fde7d5a7ef963bedd5cb67a500ea1d6"
+    },
+    {
+      "path": "crates/nsealr-core/src/text.rs",
+      "sha256": "fe7ba925fc341f44dba7cfd9cd6d86b658b878a5ffe731794b66ab8156e12f0e"
+    },
+    {
+      "path": "crates/nsealr-core/tests/secret_boundary.rs",
+      "sha256": "8d80855b9f75d010e4eace760105907fe15bc13cff36cca05ed16f389e090b94"
+    }
+  ],
+  "review_evidence_artifacts": [
+    {
+      "path": "docs/restart/implementation/reviews/S02/adversarial.rs",
+      "sha256": "45b6d1c12923de0c39c9448c35f91ae40001e1d5615cc52ca21547c9c8884f2a"
+    },
+    {
+      "path": "docs/restart/implementation/reviews/S02/evidence-verification.json",
+      "sha256": "8e7c4d66651e0f2c82beed7e88f3c2fe413465a042aa30268ad11a37e02aa5fd"
+    },
+    {
+      "path": "docs/restart/implementation/reviews/S02/independent-results/adversarial-exact-errors.log",
+      "sha256": "3cc681663cf47a18df0fa50614525c5664194307db1d4860fd7459fdef19fc3a"
+    },
+    {
+      "path": "docs/restart/implementation/reviews/S02/independent-results/adversarial.log",
+      "sha256": "a12225c6a3027a63b11cfe8bf0411eda78a1b633b6bd5abe609cf1e344395f92"
+    },
+    {
+      "path": "docs/restart/implementation/reviews/S02/independent-results/commands.json",
+      "sha256": "9172b103edf8865b1d92a5b5db06140e7b388c3957e9dfe5dbb22cfc6686edc0"
+    },
+    {
+      "path": "docs/restart/implementation/reviews/S02/independent-results/core-final-link.log",
+      "sha256": "3f3d320392aa8723ac3d9ba5a9cac7656b63361eda7c8b27c71b4a326e590729"
+    },
+    {
+      "path": "docs/restart/implementation/reviews/S02/independent-results/core-sections.log",
+      "sha256": "e871b1aadbe7d7cb0b7d56a1147954f56a989b4bc9ed26af3c7c560810b5c1af"
+    },
+    {
+      "path": "docs/restart/implementation/reviews/S02/independent-results/core-undefined.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "docs/restart/implementation/reviews/S02/independent-results/environment.log",
+      "sha256": "4fdff2578428e9c5c08ddd7a0d3079c1a106b1cdaa46e73e46f7cd32b0fb9cad"
+    },
+    {
+      "path": "docs/restart/implementation/reviews/S02/independent-results/evidence-verification.log",
+      "sha256": "ce9fad79897643f1dbd27731f86c9e84478d99ec8de5afb1151dce18c62b471c"
+    },
+    {
+      "path": "docs/restart/implementation/reviews/S02/independent-results/github-final.json",
+      "sha256": "9a2caca0b4f4dc4e0f00d348e40f6c9bf669958836677fdfec0c9ec7821f1d70"
+    },
+    {
+      "path": "docs/restart/implementation/reviews/S02/independent-results/official-crypto-vectors.log",
+      "sha256": "679d483ef7fa949661c3f91a21f8d52df0b359e0a26c140c4ae2f8a502c3c647"
+    },
+    {
+      "path": "docs/restart/implementation/reviews/S02/independent-results/public-contract-doctests.log",
+      "sha256": "7aea8d296e7049e667b9a26f16ba475818db9bf18a3310e8d270232fe1725ad2"
+    },
+    {
+      "path": "docs/restart/implementation/reviews/S02/independent-results/target-features.log",
+      "sha256": "37025e8f2142c8965a600d6dc3d2f63bf85c458bd9ddc6fb0350258d9469fe39"
+    },
+    {
+      "path": "docs/restart/implementation/reviews/S02/registry-observations.json",
+      "sha256": "a746f0f7da0faec173aa0ceb9202a58b1a019b58526923a9d54e5812bf4f428b"
+    },
+    {
+      "path": "docs/restart/implementation/reviews/S02/run-independent.py",
+      "sha256": "3a403b486c5ba8ae8a003c7196d8dc5eada0e5170cb918f98b09315d2296ee5d"
+    },
+    {
+      "path": "docs/restart/implementation/reviews/S02/verify-evidence.py",
+      "sha256": "5f4c2d4550066a561a51818e06dff27f06fb729f4872f652b6291a343d50fd6f"
+    }
+  ]
+}
