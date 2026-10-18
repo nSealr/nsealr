@@ -35,9 +35,9 @@ class Recorder:
                             "boundary": "Pinned user-space tools do not make the operating system or hosted runner hermetic."}
         write_private(root / "environment.json", canonical(self.environment))
 
-    def run(self, label: str, command: list[str], cwd: Path, expected: int = 0) -> bytes:
+    def run(self, label: str, command: list[str], cwd: Path, expected: int = 0, env: dict | None = None) -> bytes:
         started = now()
-        process = subprocess.run(command, cwd=cwd, capture_output=True)
+        process = subprocess.run(command, cwd=cwd, capture_output=True, env=env)
         filename = f"{len(self.rows):02d}-{label}.log"
         output = process.stdout + process.stderr
         write_private(self.root / filename, output)
@@ -45,6 +45,8 @@ class Recorder:
                           "started_utc": started, "ended_utc": now(), "exit_code": process.returncode,
                           "log": filename, "sha256": digest(output),
                           "environment_sha256": digest(canonical(self.environment))})
+        if env is not None:
+            self.rows[-1]["explicit_environment_sha256"] = digest(canonical(env))
         (self.root / "commands.json").write_bytes(canonical(self.rows))
         os.chmod(self.root / "commands.json", 0o600)
         if process.returncode != expected:

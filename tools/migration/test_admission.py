@@ -159,6 +159,14 @@ class RecoveryTests(unittest.TestCase):
         with self.assertRaisesRegex(PreflightError, "hash mismatch"):
             admission.overlay_chain(self.manifest, self.root)
 
+    def test_case_collection_refuses_changed_runtime_source_before_loading(self):
+        from collect_cases import collect
+        self.manifest["sources"][0]["name"] = "companion"
+        (self.repo / "selected.txt").write_text("unreviewed runtime replacement\n")
+        with patch.object(admission.Recorder, "run", side_effect=AssertionError("must not load tests")):
+            with self.assertRaisesRegex(PreflightError, "differs from exact source"):
+                collect(self.manifest, self.root, self.root, self.root / "cases")
+
 
 if __name__ == "__main__":
     unittest.main()
