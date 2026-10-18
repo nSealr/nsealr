@@ -1,0 +1,21 @@
+{"label": "full-integration", "argv": ["make", "integration"], "cwd": "/home/tux/nsealr/.restart-tools/goal/r00/tools/baseline/.work/first/lab", "started": "2026-10-18T15:13:50.703364+00:00", "log": "08-full-integration.log"}
+python3 -m venv .venv
+.venv/bin/python -m pip install --disable-pip-version-check -r requirements.txt
+Looking in links: /home/tux/nsealr/.restart-tools/goal/r00/tools/baseline/.work/first/.tools/wheels
+Requirement already satisfied: PyYAML==6.0.3 in ./.venv/lib/python3.12/site-packages (from -r requirements.txt (line 1)) (6.0.3)
+npm exec --yes --package=pnpm@10.33.4 -- make integration-pnpm
+make[1]: Entering directory '/home/tux/nsealr/.restart-tools/goal/r00/tools/baseline/.work/first/lab'
+.venv/bin/python scripts/check_fixture_snapshots.py
+Traceback (most recent call last):
+  File "/home/tux/nsealr/.restart-tools/goal/r00/tools/baseline/.work/first/lab/scripts/check_fixture_snapshots.py", line 167, in <module>
+    raise SystemExit(main())
+                     ^^^^^^
+  File "/home/tux/nsealr/.restart-tools/goal/r00/tools/baseline/.work/first/lab/scripts/check_fixture_snapshots.py", line 161, in main
+    checked = compare_fixture_snapshots()
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/tux/nsealr/.restart-tools/goal/r00/tools/baseline/.work/first/lab/scripts/check_fixture_snapshots.py", line 155, in compare_fixture_snapshots
+    raise FixtureSnapshotError("\n".join(failures))
+FixtureSnapshotError: firmware: SOURCE.json is missing from specs
+make[1]: *** [Makefile:38: integration-pnpm] Error 1
+make[1]: Leaving directory '/home/tux/nsealr/.restart-tools/goal/r00/tools/baseline/.work/first/lab'
+make: *** [Makefile:35: integration] Error 2

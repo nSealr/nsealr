@@ -1,0 +1,162 @@
+[
+  {
+    "label": "python-packages",
+    "argv": [
+      "python3",
+      "-m",
+      "pip",
+      "install",
+      "--no-deps",
+      "/home/tux/nsealr/.restart-tools/goal/r00/tools/baseline/.work/first/.tools/wheels/pip-25.3-py3-none-any.whl",
+      "/home/tux/nsealr/.restart-tools/goal/r00/tools/baseline/.work/first/.tools/wheels/setuptools-80.9.0-py3-none-any.whl",
+      "/home/tux/nsealr/.restart-tools/goal/r00/tools/baseline/.work/first/.tools/wheels/wheel-0.45.1-py3-none-any.whl",
+      "/home/tux/nsealr/.restart-tools/goal/r00/tools/baseline/.work/first/.tools/wheels/packaging-25.0-py3-none-any.whl",
+      "/home/tux/nsealr/.restart-tools/goal/r00/tools/baseline/.work/first/.tools/wheels/pyyaml-6.0.3-cp312-cp312-manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_28_x86_64.whl",
+      "/home/tux/nsealr/.restart-tools/goal/r00/tools/baseline/.work/first/.tools/wheels/mnemonic-0.21-py3-none-any.whl",
+      "/home/tux/nsealr/.restart-tools/goal/r00/tools/baseline/.work/first/.tools/wheels/secp256k1-0.14.0-cp312-cp312-manylinux_2_17_x86_64.manylinux2014_x86_64.whl",
+      "/home/tux/nsealr/.restart-tools/goal/r00/tools/baseline/.work/first/.tools/wheels/cffi-2.1.1-cp312-cp312-manylinux2014_x86_64.manylinux_2_17_x86_64.whl",
+      "/home/tux/nsealr/.restart-tools/goal/r00/tools/baseline/.work/first/.tools/wheels/pycparser-3.11-py3-none-any.whl"
+    ],
+    "cwd": "/home/tux/nsealr/.restart-tools/goal/r00/tools/baseline/.work/first",
+    "started": "2026-10-18T15:12:11.845439+00:00",
+    "log": "00-python-packages.log",
+    "ended": "2026-10-18T15:12:13.368204+00:00",
+    "exit_code": 0,
+    "sha256": "1c39b7ac3feda4bf967f0451d55cd8179b7da30be09f0de6f73a0cca6c43e2c7"
+  },
+  {
+    "label": "python-dependency-check",
+    "argv": [
+      "python3",
+      "-m",
+      "pip",
+      "check"
+    ],
+    "cwd": "/home/tux/nsealr/.restart-tools/goal/r00/tools/baseline/.work/first",
+    "started": "2026-10-18T15:12:13.368479+00:00",
+    "log": "01-python-dependency-check.log",
+    "ended": "2026-10-18T15:12:13.470458+00:00",
+    "exit_code": 0,
+    "sha256": "d0d563c588fd6b03ddaacf55c7d5d12c44be58b5f16300f2e690a35267de7991"
+  },
+  {
+    "label": "rustup-install",
+    "argv": [
+      "/home/tux/nsealr/.restart-tools/goal/r00/tools/baseline/.work/first/.tools/downloads/rustup-init",
+      "-y",
+      "--no-modify-path",
+      "--profile",
+      "minimal",
+      "--default-toolchain",
+      "none"
+    ],
+    "cwd": "/home/tux/nsealr/.restart-tools/goal/r00/tools/baseline/.work/first",
+    "started": "2026-10-18T15:12:13.470687+00:00",
+    "log": "02-rustup-install.log",
+    "ended": "2026-10-18T15:12:13.503962+00:00",
+    "exit_code": 0,
+    "sha256": "341a1f7c908cff56e5572821635b72650c110cc8e2b2853738fcda9802099b6a"
+  },
+  {
+    "label": "rust-toolchain",
+    "argv": [
+      "rustup",
+      "toolchain",
+      "install",
+      "1.95.0",
+      "--profile",
+      "minimal",
+      "--component",
+      "rustfmt,clippy,llvm-tools-preview",
+      "--target",
+      "riscv32imafc-unknown-none-elf"
+    ],
+    "cwd": "/home/tux/nsealr/.restart-tools/goal/r00/tools/baseline/.work/first",
+    "started": "2026-10-18T15:12:13.504108+00:00",
+    "log": "03-rust-toolchain.log",
+    "ended": "2026-10-18T15:12:20.567703+00:00",
+    "exit_code": 0,
+    "sha256": "14471b0968defc3c8f19eaaff8ca49fb089b2957db358bb060e7d0e4e8bad750"
+  },
+  {
+    "label": "rust-default",
+    "argv": [
+      "rustup",
+      "default",
+      "1.95.0"
+    ],
+    "cwd": "/home/tux/nsealr/.restart-tools/goal/r00/tools/baseline/.work/first",
+    "started": "2026-10-18T15:12:20.567985+00:00",
+    "log": "04-rust-default.log",
+    "ended": "2026-10-18T15:12:20.583554+00:00",
+    "exit_code": 0,
+    "sha256": "a60fa11be00ddd3cb71f423f476128829ed344b550c44aef9e5926c81c0110c5"
+  },
+  {
+    "label": "companion-frozen-install",
+    "argv": [
+      "pnpm",
+      "install",
+      "--frozen-lockfile"
+    ],
+    "cwd": "/home/tux/nsealr/.restart-tools/goal/r00/tools/baseline/.work/first/companion",
+    "started": "2026-10-18T15:12:20.583712+00:00",
+    "log": "05-companion-frozen-install.log",
+    "ended": "2026-10-18T15:12:21.848409+00:00",
+    "exit_code": 0,
+    "sha256": "ed58a15bcc036cc31b79fff94aa03218e604586192a8f6dbe09e5e79db45c583"
+  },
+  {
+    "label": "website-frozen-install",
+    "argv": [
+      "pnpm",
+      "install",
+      "--frozen-lockfile"
+    ],
+    "cwd": "/home/tux/nsealr/.restart-tools/goal/r00/tools/baseline/.work/first/website",
+    "started": "2026-10-18T15:12:21.848745+00:00",
+    "log": "06-website-frozen-install.log",
+    "ended": "2026-10-18T15:12:23.851379+00:00",
+    "exit_code": 0,
+    "sha256": "8e3f9a05bc211b54e3d9e5b20119febb96aac4ff332a5c9972ccf10b9ad2dee2"
+  },
+  {
+    "label": "lab-setup",
+    "argv": [
+      "make",
+      "setup"
+    ],
+    "cwd": "/home/tux/nsealr/.restart-tools/goal/r00/tools/baseline/.work/first/lab",
+    "started": "2026-10-18T15:12:23.851667+00:00",
+    "log": "07-lab-setup.log",
+    "ended": "2026-10-18T15:12:25.083148+00:00",
+    "exit_code": 0,
+    "sha256": "00dd15ae709aa0b1883c83480cfce6f587ed3c2624d18c1e686add55f0cad52b"
+  },
+  {
+    "label": "raspberry-setup",
+    "argv": [
+      "make",
+      "setup"
+    ],
+    "cwd": "/home/tux/nsealr/.restart-tools/goal/r00/tools/baseline/.work/first/raspberry",
+    "started": "2026-10-18T15:12:25.083430+00:00",
+    "log": "08-raspberry-setup.log",
+    "ended": "2026-10-18T15:12:27.491374+00:00",
+    "exit_code": 0,
+    "sha256": "2d96206cdd36f09c5075a326356114de3a3718eec19bf5d35748a21c1b03cb60"
+  },
+  {
+    "label": "smartcard-setup",
+    "argv": [
+      "make",
+      "setup"
+    ],
+    "cwd": "/home/tux/nsealr/.restart-tools/goal/r00/tools/baseline/.work/first/smartcard",
+    "started": "2026-10-18T15:12:27.491702+00:00",
+    "log": "09-smartcard-setup.log",
+    "ended": "2026-10-18T15:12:29.851303+00:00",
+    "exit_code": 0,
+    "sha256": "ac0156ad201561f9b08458535c15cceb4dc26ea09f7b210ce37498d496f17902"
+  }
+]
