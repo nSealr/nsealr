@@ -8,7 +8,7 @@ import json
 from pathlib import Path
 import re
 
-from rehearse import Source, canonical, decode_json, digest, git, select
+from rehearse import Source, canonical, decode_json, digest, git, write_private
 
 
 def treatment(source, path, name, action):
@@ -91,7 +91,7 @@ def emit(manifest_path: Path, inventory_path: Path, cases_root: Path, source_roo
         artifact["current_unchanged_path"] = artifact["path"]
         artifact["source_url"] = "https://github.com/nSealr/nsealr/blob/" + entries["nsealr"]["commit"] + "/" + artifact["path"]
     (output / "closed-evidence.json").write_bytes(canonical(closure))
-    cases, omitted, opaque_exclusions = [], Counter(), []
+    cases, omitted, opaque_exclusions, private_exclusions = [], Counter(), [], []
     collection_records = {r["source"]: r for r in decode_json((cases_root / "summary.json").read_bytes())["sources"]}
     for name in ("companion", "specs", "raspberry", "lab"):
         record = decode_json((cases_root / (name + "-cases.json")).read_bytes())
@@ -109,6 +109,8 @@ def emit(manifest_path: Path, inventory_path: Path, cases_root: Path, source_roo
                 opaque_exclusions.append({"source": name, "case_identity_sha256": digest(canonical({"path": path, "case_id": case_name})),
                                           "treatment": "exclude-private-repository-maintenance",
                                           "reason": "Private taxonomy, repository Makefile/drift or sibling-orchestration maintenance; not a selected product consumer. Original case/source preserved in protected collection and Git recovery."})
+                private_exclusions.append({**opaque_exclusions[-1], "source_commit": record["source_commit"],
+                                           "path": path, "case_id": case_name, "effective_source_sha256": bindings[path]})
                 continue
             decision, obligation = treatment(name, path, case_name, row["action"])
             cases.append({"source": name, "commit": record["source_commit"], "path": path,
@@ -181,10 +183,13 @@ def emit(manifest_path: Path, inventory_path: Path, cases_root: Path, source_roo
             "boundary": "Same pinned user-space versions/locks and declared local host. No OS hermeticity or physical/live-client qualification claim."}))
     finally:
         core.close()
+    private_record = canonical(private_exclusions)
+    write_private(output.parent / (output.name + "-private-cases.json"), private_record)
     (output / "case-dispositions.json").write_bytes(canonical({"cases": sorted(cases, key=lambda r:(r["source"], r.get("path",r.get("group","")), r["case_id"])),
         "counts": dict(Counter(r["treatment"] for r in cases)), "private_excluded_case_counts": dict(omitted),
         "private_excluded_cases": opaque_exclusions,
         "private_full_collection_sha256": digest((cases_root / "lab-cases.json").read_bytes()),
+        "private_disposition_record_sha256": digest(private_record),
         "selection_reconciliation": "Collection manifest preceded two checker selections/privacy metadata. Same exact source commits/trees and overlay postimages; selection changes are reflected here without repeating unchanged collection.",
         "after_migration_acceptance": "All retained/replacement/external cases require actual execution. No implementation or conformance claim is made by this ledger."}))
     return {"public_file_records": len(public_files), "private_excluded_paths": sum(private_omitted.values()),
