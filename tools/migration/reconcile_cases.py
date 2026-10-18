@@ -74,8 +74,8 @@ def reconcile(author,target,runtime,out,cold):
    else:
     match=re.search(r'^'+replacement+r' \(([^)]+)\) \.\.\. ok$',migration_log,re.M)
     if not match:raise ValueError('replacement control was not executed: '+replacement)
-    after=[dict(case_id=match[1]+'.'+replacement,status='passed',execution_log_sha256=digest((named/'00-all-migration-control-negatives.log').read_bytes()))]
-   row.update(disposition='retire obsolete active multi-repository overlay mechanism; preserve frozen source and historical execution',reason=reason,after=after,historical_actual_application='execution/overlay-execution-01 and ordered patch 02 preserve the original applied outputs')
+    after=[dict(case_id=match[1],status='passed',execution_log_sha256=digest((named/'00-all-migration-control-negatives.log').read_bytes()))]
+   row.update(disposition='retire obsolete active multi-repository overlay mechanism; preserve frozen source and historical execution',reason=reason,after=after,historical_actual_application='execution/overlay-execution-01 and ordered patch 03 preserve the original applied outputs')
   rows.append(row)
  # Bind every opaque private product obligation to actual positive/negative
  # execution without publishing the protected original case names or paths.
