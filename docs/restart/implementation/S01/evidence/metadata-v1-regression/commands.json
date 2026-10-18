@@ -1,0 +1,109 @@
+[
+  {
+    "label": "v1-overlay-reverse-check",
+    "argv": [
+      "git",
+      "apply",
+      "--reverse",
+      "--check",
+      "/home/tux/nsealr/.restart-tools/goal/s01-integration/docs/restart/implementation/S01/lab-metadata-v1.patch"
+    ],
+    "cwd": "/home/tux/nsealr/.restart-tools/goal/s01-integration/docs/restart/implementation/S01/.work/runtime/lab",
+    "started": "2026-10-18T16:22:00.574415+00:00",
+    "log": "00-v1-overlay-reverse-check.log",
+    "ended": "2026-10-18T16:22:00.575587+00:00",
+    "exit_code": 0,
+    "sha256": "887da85465948319659cf1002aec174d586f85da7760a774650778d94995c0d8"
+  },
+  {
+    "label": "v1-overlay-reverse",
+    "argv": [
+      "git",
+      "apply",
+      "--reverse",
+      "/home/tux/nsealr/.restart-tools/goal/s01-integration/docs/restart/implementation/S01/lab-metadata-v1.patch"
+    ],
+    "cwd": "/home/tux/nsealr/.restart-tools/goal/s01-integration/docs/restart/implementation/S01/.work/runtime/lab",
+    "started": "2026-10-18T16:22:00.575739+00:00",
+    "log": "01-v1-overlay-reverse.log",
+    "ended": "2026-10-18T16:22:00.576786+00:00",
+    "exit_code": 0,
+    "sha256": "0489ca05d8629381cc4737ec8b8d2149b60d5c42800bdbfd7b61337bc8279d5a"
+  },
+  {
+    "label": "v1-overlay-check",
+    "argv": [
+      "git",
+      "apply",
+      "--check",
+      "/home/tux/nsealr/.restart-tools/goal/s01-integration/docs/restart/implementation/S01/lab-metadata-v1.patch"
+    ],
+    "cwd": "/home/tux/nsealr/.restart-tools/goal/s01-integration/docs/restart/implementation/S01/.work/runtime/lab",
+    "started": "2026-10-18T16:22:00.576974+00:00",
+    "log": "02-v1-overlay-check.log",
+    "ended": "2026-10-18T16:22:00.577909+00:00",
+    "exit_code": 0,
+    "sha256": "bbdbf6d637f4381670db0de7df78ae788a53f894cea7c1616dacc8b90653a7d7"
+  },
+  {
+    "label": "v1-overlay-apply",
+    "argv": [
+      "git",
+      "apply",
+      "/home/tux/nsealr/.restart-tools/goal/s01-integration/docs/restart/implementation/S01/lab-metadata-v1.patch"
+    ],
+    "cwd": "/home/tux/nsealr/.restart-tools/goal/s01-integration/docs/restart/implementation/S01/.work/runtime/lab",
+    "started": "2026-10-18T16:22:00.578730+00:00",
+    "log": "03-v1-overlay-apply.log",
+    "ended": "2026-10-18T16:22:00.579924+00:00",
+    "exit_code": 0,
+    "sha256": "dcb045615f5273c1a4a40bfb125da5b8433d578cd1dd7ef156ef9ce85e11eadb"
+  },
+  {
+    "label": "metadata-v1-discovery-green",
+    "argv": [
+      "python3",
+      "/home/tux/nsealr/.restart-tools/goal/s01-integration/docs/restart/implementation/S01/check-auth-negative-inventory.py",
+      "/home/tux/nsealr/.restart-tools/goal/s01-integration/docs/restart/implementation/S01/.work/runtime/lab",
+      "/home/tux/nsealr/.restart-tools/goal/s01-integration/docs/restart/implementation/S01/.work/runtime/specs"
+    ],
+    "cwd": "/home/tux/nsealr/.restart-tools/goal/s01-integration",
+    "started": "2026-10-18T16:22:00.580101+00:00",
+    "log": "04-metadata-v1-discovery-green.log",
+    "ended": "2026-10-18T16:22:00.613502+00:00",
+    "exit_code": 0,
+    "sha256": "f65344db897102e6009f08e9419abca3e5c48050451254964dc792379a72fa3c"
+  },
+  {
+    "label": "metadata-v1-inventory-negatives",
+    "argv": [
+      "python3",
+      "-m",
+      "unittest",
+      "-v",
+      "tests.test_integration_companion_nip46_cli"
+    ],
+    "cwd": "/home/tux/nsealr/.restart-tools/goal/s01-integration/docs/restart/implementation/S01/.work/runtime/lab",
+    "started": "2026-10-18T16:22:00.613677+00:00",
+    "log": "05-metadata-v1-inventory-negatives.log",
+    "ended": "2026-10-18T16:22:00.655066+00:00",
+    "exit_code": 0,
+    "sha256": "abb5389e26c33310889298eebfa4231cdcf06af5f75f1720eaa64b7756cd1cc7"
+  },
+  {
+    "label": "provenance-negatives",
+    "argv": [
+      "python3",
+      "-m",
+      "unittest",
+      "-v",
+      "tests.test_fixture_snapshots"
+    ],
+    "cwd": "/home/tux/nsealr/.restart-tools/goal/s01-integration/docs/restart/implementation/S01/.work/runtime/lab",
+    "started": "2026-10-18T16:22:00.655186+00:00",
+    "log": "06-provenance-negatives.log",
+    "ended": "2026-10-18T16:22:00.706583+00:00",
+    "exit_code": 0,
+    "sha256": "600e5663b563ebf78709da5f0cb6b1fd848972831f2673ae19cd52c18577f744"
+  }
+]
