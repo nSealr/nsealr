@@ -2842,7 +2842,7 @@ class VaultCoreTests(unittest.TestCase):
             [
                 (ROOT / "README.md").read_text(encoding="utf-8"),
                 (ROOT / "docs/architecture.md").read_text(encoding="utf-8"),
-                (ROOT / "docs/roadmap.md").read_text(encoding="utf-8"),
+                (ROOT.parents[1] / "plan/work-items.json").read_text(encoding="utf-8"),
                 (ROOT / "docs/testing.md").read_text(encoding="utf-8"),
             ]
         )
