@@ -49,16 +49,10 @@ describe("identity, recovery, and policy contracts", () => {
     const esp32QrAccount = parseAccountDescriptor(
       loadJson(resolve(specsRoot, "vectors/accounts/esp32-qr-nip06-account-0.json"))
     );
-    const smartcardAccount = parseAccountDescriptor(
-      loadJson(resolve(specsRoot, "vectors/accounts/smartcard-slot-0.json"))
-    );
     const customHardwareWalletAccount = parseAccountDescriptor(
       loadJson(resolve(specsRoot, "vectors/accounts/custom-hardware-wallet-slot-0.json"))
     );
     const policy = parsePolicyProfile(loadJson(resolve(specsRoot, "vectors/policies/manual-only-qr-vault.json")));
-    const smartcardPolicy = parsePolicyProfile(
-      loadJson(resolve(specsRoot, "vectors/policies/manual-only-displayless-smartcard.json"))
-    );
     const persistentManualPolicy = parsePolicyProfile(
       loadJson(resolve(specsRoot, "vectors/policies/manual-only-persistent-device.json"))
     );
@@ -70,15 +64,10 @@ describe("identity, recovery, and policy contracts", () => {
     expect(esp32QrAccount.signer_route.type).toBe("esp32_qr_vault");
     expect(esp32QrAccount.capabilities.persistent_grants).toBe(false);
     expect(esp32QrAccount.recovery.source_fingerprint).toBe("cd64b58daca009b9");
-    expect(smartcardAccount.recovery.type).toBe("card_slot");
-    expect(smartcardAccount.signer_route.trusted_review).toBe("display_less");
-    expect(smartcardAccount.capabilities.persistent_grants).toBe(false);
     expect(customHardwareWalletAccount.recovery.type).toBe("hardware_wallet_slot");
     expect(customHardwareWalletAccount.capabilities.persistent_grants).toBe(true);
     expect(policy.mode).toBe("manual_only");
     expect(policy.grants_allowed).toBe(false);
-    expect(smartcardPolicy.mode).toBe("manual_only");
-    expect(smartcardPolicy.grants_allowed).toBe(false);
     expect(persistentManualPolicy.mode).toBe("manual_only");
     expect(persistentManualPolicy.route_types).toEqual(["esp32_usb_nip46", "custom_hardware_wallet"]);
     expect(customHardwareWalletAccount.policy_profile_id).toBe("policy-manual-only-persistent-device");
@@ -246,26 +235,17 @@ describe("identity, recovery, and policy contracts", () => {
     expect(() => parsePolicyProfile(policy)).toThrow(/QR vault routes must remain manual_only/u);
   });
 
-  it("rejects display-less smartcard policy automation and trusted-review claims", () => {
-    const policy = loadJson(resolve(specsRoot, "vectors/policies/manual-only-displayless-smartcard.json")) as Record<
-      string,
-      unknown
-    >;
+  it("rejects retired card policies and account routes before trusting capability claims", () => {
+    const policy = loadJson(resolve(specsRoot, "vectors/policies/manual-only-qr-vault.json")) as Record<string, unknown>;
+    expect(() => parsePolicyProfile(policy)).not.toThrow();
+    policy.route_types = ["smartcard"];
     policy.mode = "scoped_automation";
     policy.grants_allowed = true;
-
-    expect(() => parsePolicyProfile(policy)).toThrow(/display-less smartcard routes must remain manual_only/u);
-
-    const account = loadJson(resolve(specsRoot, "vectors/accounts/smartcard-slot-0.json")) as {
-      signer_route: Record<string, unknown>;
-      capabilities: Record<string, unknown>;
-    };
-    account.signer_route.trusted_review = "device_display";
-    account.signer_route.policy_support = "scoped_automation";
-    account.capabilities.physical_review = true;
-    account.capabilities.persistent_grants = true;
-
-    expect(() => parseAccountDescriptor(account)).toThrow(/smartcard routes must remain display_less/u);
+    expect(() => parsePolicyProfile(policy)).toThrow(/route_type/u);
+    const account = loadJson(resolve(specsRoot, "vectors/accounts/esp32-usb-device-slot-0.json")) as { signer_route: Record<string, unknown> };
+    expect(() => parseAccountDescriptor(account)).not.toThrow();
+    account.signer_route.type = "smartcard";
+    expect(() => parseAccountDescriptor(account)).toThrow(/route type/u);
   });
 
   it("rejects external NIP-46 policy automation", () => {
@@ -309,7 +289,7 @@ describe("identity, recovery, and policy contracts", () => {
       ...grant,
       route_type: "smartcard",
       permission: { method: "sign_event", parameter: "1", event_kind: 1 }
-    })).toThrow(/nSealr persistent policy route/u);
+    })).toThrow(/route_type/u);
     expect(() => parseGrantDescriptor({
       ...grant,
       route_type: "external_nip46",

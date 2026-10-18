@@ -7,7 +7,6 @@ import {
   type RouteSelectionRequest
 } from "@nsealr/policy";
 import { compactJsonUtf8ByteLength, NSEALR_V0_LIMITS, validateRequest, validateResponse } from "@nsealr/protocol";
-import { approvalDigestForRequest } from "@nsealr/review";
 import {
   parseLocalClientIdentity,
   type LocalClientIdentity,
@@ -893,29 +892,7 @@ function prepareSignerDispatch(
   }
 
   const acknowledgement = request.params.external_review_acknowledgement;
-  const displayLessSignEvent = routeSelection.trusted_review === "display_less" && routeRequest.method === "sign_event";
-  if (displayLessSignEvent) {
-    if (acknowledgement === undefined) {
-      return {
-        ok: false,
-        response: errorResponse(
-          request,
-          "external_review_acknowledgement_required",
-          "display-less signer dispatch requires external review acknowledgement"
-        )
-      };
-    }
-    if (acknowledgement.approval_digest !== approvalDigestForRequest(request.params.request)) {
-      return {
-        ok: false,
-        response: errorResponse(
-          request,
-          "external_review_acknowledgement_mismatch",
-          "external review approval_digest does not match signer request"
-        )
-      };
-    }
-  } else if (acknowledgement !== undefined) {
+  if (acknowledgement !== undefined) {
     return {
       ok: false,
       response: errorResponse(
@@ -939,8 +916,7 @@ function prepareSignerDispatch(
     dispatchRequest: {
       client: request.params.client,
       route_selection: routeSelection,
-      request: request.params.request,
-      ...(acknowledgement !== undefined ? { external_review_acknowledgement: acknowledgement } : {})
+      request: request.params.request
     }
   };
 }

@@ -247,11 +247,9 @@ describe("fixture loading", () => {
       "acct-esp32-qr-nip06-account-0",
       "acct-esp32-usb-slot-0",
       "acct-external-nip46-bunker",
-      "acct-raspberry-qr-nip06-account-0",
-      "acct-smartcard-slot-0"
+      "acct-raspberry-qr-nip06-account-0"
     ]));
     expect(fixtures.policyProfiles.map((policy) => policy.policy_id)).toEqual(expect.arrayContaining([
-      "policy-manual-only-displayless-smartcard",
       "policy-manual-only-persistent-device",
       "policy-manual-only-qr-vault",
       "policy-scoped-automation-daily-use"
@@ -300,8 +298,7 @@ describe("fixture loading", () => {
       "esp32-qr-sign-event-account-0",
       "esp32-usb-sign-event-slot-0",
       "external-nip46-sign-event-bunker",
-      "raspberry-qr-sign-event-account-0",
-      "smartcard-sign-event-slot-0"
+      "raspberry-qr-sign-event-account-0"
     ]);
     expect(fixtures.routeSelections[0].format).toBe("nsealr-route-selection-vector-v0");
     expect(fixtures.routeSelections[0].selection.contains_secret_material).toBe(false);
@@ -352,8 +349,7 @@ describe("fixture loading", () => {
     expect(contract.cases.map((routeCase) => routeCase.route_selection_vector).sort()).toEqual(
       fixtures.routeSelections.map((selection) => selection.name).sort()
     );
-    expect(contract.cases.find((routeCase) => routeCase.route_type === "smartcard")?.external_review_acknowledgement.mode)
-      .toBe("required");
+    expect(contract.cases.find((routeCase) => String(routeCase.route_type) === "smartcard")).toBeUndefined();
     expect(contract.cases.find((routeCase) => routeCase.route_type === "esp32_usb_nip46")?.external_review_acknowledgement.mode)
       .toBe("unsupported");
     expect(() => validateRouteRefusalContractFixture(contract.name, contract)).not.toThrow();
@@ -368,8 +364,7 @@ describe("fixture loading", () => {
       "custom_hardware_wallet",
       "esp32_qr_vault",
       "esp32_usb_nip46",
-      "raspberry_qr_vault",
-      "smartcard"
+      "raspberry_qr_vault"
     ]);
     expect(matrix?.solutions.raspberry_qr_vault.features.qr_response.target).toBe(
       matrix?.solutions.esp32_qr_vault.features.qr_response.target
@@ -399,7 +394,7 @@ describe("fixture loading", () => {
 
     expect(fixtures.custodyContracts.map((contract) => contract.name)).toEqual(expectedNames);
     expect(fixtures.custodyContracts[0].contract_id).toBe("persistent-secret-custody-v0");
-    expect(fixtures.custodyContracts[0].repository).toBe("hardware");
+    expect(fixtures.custodyContracts[0].repository).toBe("nsealr");
     expect(fixtures.custodyContracts[0].requirements.secret_at_rest.plaintext_allowed).toBe(false);
     expect(fixtures.custodyContracts[0].non_claims.join("\n")).toContain("stateless QR vault");
     expect(() =>
