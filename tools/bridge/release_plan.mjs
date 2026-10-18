@@ -45,8 +45,8 @@ export function buildCompanionPackageReleasePlan() {
     packages,
     required_local_gates: Object.freeze([
       "make ci",
-      "make integration in ../lab",
-      "make release-artifacts"
+      "make integration",
+      "pnpm release-artifacts"
     ]),
     requires_trusted_publishing: true,
     requires_npm_provenance: true,

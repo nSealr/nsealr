@@ -78,4 +78,5 @@ for (const packageDir of packageOrder) {
   runTsc(packageDir);
 }
 
+await import("./bundle_sdk.mjs");
 console.log("nSealr package build artifacts generated");
