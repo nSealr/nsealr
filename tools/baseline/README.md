@@ -12,7 +12,7 @@ exist. It fetches the current committed core candidate and the exact companion,
 Raspberry, specs, lab, hardware, smartcard and website commits in `inputs.json`.
 Some legacy migration sources require authorized GitHub access. Supply
 `--mirrors /path/to/authorized/sibling/repos` to use existing Git repositories
-**only as source transport**; each is freshly fetched with its commit verified.
+**only as source transport** (relative paths resolve against the invocation directory); each is freshly fetched with its commit verified.
 No existing dependency cache, working tree content or tool installation is
 copied. No private source history is imported into the public core repository.
 
