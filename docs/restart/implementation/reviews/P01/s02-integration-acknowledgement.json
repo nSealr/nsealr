@@ -1,0 +1,100 @@
+{
+  "utc": "2026-10-18T16:07:34.323261+00:00",
+  "reviewer": "/root/independent_security_review",
+  "scope": "Requested acknowledgement of S02 review applicability after metadata-only rebase/integration; preserved alongside this independent P01 review.",
+  "reviewed_candidate": "61641047d13b5bb265246b181edc38f4dc2073e7",
+  "rebased_candidate": "8ad3090ed2e45558b5e3817ba67ad2ddce7e88a6",
+  "integration_commit": "e214fc57e7f853aa8d296f20e64bc167d47114b3",
+  "source_files_checked_per_commit": 670,
+  "mismatches": [],
+  "s02_brief_and_evidence_files_compared": 69,
+  "s02_document_mismatches": [],
+  "non_document_changes_since_review": [],
+  "independent_review_sha256": "87baf58cce8f92b51596a90b8c0f407ee2bcc1a600f82d41aa2d16a83949875b",
+  "independent_review_matches": true,
+  "review_applicable": true,
+  "decision": "S02 substantive review applies to the identical source at the exact rebase and integration commits; closure still requires the canonical acceptance/evidence record and completed affected post-integration gates. No physical, entropy or real-key admission.",
+  "coordinator_reconciliation_note": "The coordinator record names intermediate 647fae2c896c5195478a2ec2f71c7c08f13d649d; this reviewer comparison explicitly extends the source/evidence check through final 8ad3090 and merged e214fc57.",
+  "commands": [
+    {
+      "argv": [
+        "gh",
+        "run",
+        "list",
+        "--commit",
+        "e214fc57e7f853aa8d296f20e64bc167d47114b3",
+        "--json",
+        "databaseId,workflowName,status,conclusion,headSha,event,url"
+      ],
+      "exit_code": 0,
+      "output": [
+        {
+          "conclusion": "success",
+          "databaseId": 39142941519,
+          "event": "push",
+          "headSha": "e214fc57e7f853aa8d296f20e64bc167d47114b3",
+          "status": "completed",
+          "url": "https://github.com/nSealr/nsealr/actions/runs/39142941519",
+          "workflowName": "CI"
+        }
+      ]
+    },
+    {
+      "argv": [
+        "gh",
+        "pr",
+        "view",
+        "10",
+        "--json",
+        "headRefOid,mergeCommit,state,statusCheckRollup,url"
+      ],
+      "exit_code": 0,
+      "output": {
+        "headRefOid": "8ad3090ed2e45558b5e3817ba67ad2ddce7e88a6",
+        "mergeCommit": {
+          "oid": "e214fc57e7f853aa8d296f20e64bc167d47114b3"
+        },
+        "state": "MERGED",
+        "statusCheckRollup": [
+          {
+            "__typename": "CheckRun",
+            "completedAt": "2026-10-18T15:58:36Z",
+            "conclusion": "SUCCESS",
+            "detailsUrl": "https://github.com/nSealr/nsealr/actions/runs/39142590911/job/117719874649",
+            "name": "verify",
+            "startedAt": "2026-10-18T15:54:33Z",
+            "status": "COMPLETED",
+            "workflowName": "CI"
+          },
+          {
+            "__typename": "CheckRun",
+            "completedAt": "2026-10-18T15:57:32Z",
+            "conclusion": "SUCCESS",
+            "detailsUrl": "https://github.com/nSealr/nsealr/actions/runs/39142588251/job/117719866618",
+            "name": "verify",
+            "startedAt": "2026-10-18T15:54:30Z",
+            "status": "COMPLETED",
+            "workflowName": "CI"
+          }
+        ],
+        "url": "https://github.com/nSealr/nsealr/pull/10"
+      }
+    }
+  ],
+  "comparison_method": {
+    "manifest": "61641047d13b5bb265246b181edc38f4dc2073e7:docs/restart/implementation/S02/evidence/tested-source-hashes.json",
+    "source_algorithm": "For each of 670 files and each exact rebase/integration commit, git show COMMIT:PATH, SHA256 the returned bytes and compare with manifest.files[PATH].",
+    "evidence_algorithm": "git ls-tree -r --name-only 61641047 -- docs/restart/implementation/S02; compare git show bytes at original versus integration for all 69 files.",
+    "review_algorithm": "SHA256 of git show e214fc57:docs/restart/implementation/reviews/S02/review.json equals the original independently recorded digest.",
+    "non_document_diff_command": [
+      "git",
+      "diff",
+      "--name-only",
+      "61641047d13b5bb265246b181edc38f4dc2073e7",
+      "e214fc57e7f853aa8d296f20e64bc167d47114b3",
+      "--",
+      ".",
+      ":(exclude)docs/**"
+    ]
+  }
+}
