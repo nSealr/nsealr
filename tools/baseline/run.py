@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import argparse
+import hashlib
 import json
 import subprocess
 from pathlib import Path
@@ -30,8 +31,12 @@ def main() -> int:
     directory = root/'evidence'/('smoke' if args.smoke else 'suites')
     recorder = Recorder(directory, env)
     before = statuses(root, inputs)
-    if any(before.values()):
-        raise ValueError(f'source checkouts must be clean before baseline: {before}')
+    expected = json.loads((root/'source-state.json').read_text())
+    for name in inputs:
+        source = root/('firmware' if name == 'nsealr' else name)
+        diff = hashlib.sha256(subprocess.check_output(['git','diff','--binary'],cwd=source)).hexdigest()
+        if before[name] != expected[name]['status'] or diff != expected[name]['diff_sha256']:
+            raise ValueError(f'{name}: undeclared source delta before baseline')
     write_json(directory/'source-before.json', before)
     if args.smoke:
         recorder.run('core-smoke', ['make', 'test', 'cargo-test'], root/'firmware', required=False)

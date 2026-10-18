@@ -61,7 +61,7 @@ def environment(destination: Path) -> dict[str, str]:
     env = {k: os.environ[k] for k in ('HOME', 'USER', 'LOGNAME', 'LANG', 'LC_ALL', 'SSL_CERT_FILE', 'SSL_CERT_DIR') if k in os.environ}
     env.update({
         'PATH': os.pathsep.join(str(p) for p in (t/'bin', t/'python/bin', t/'node/bin', t/'cargo/bin')) + ':/usr/bin:/bin',
-        'CI': 'true', 'TZ': 'UTC', 'CARGO_HOME': str(t/'cargo'), 'RUSTUP_HOME': str(t/'rustup'),
+        'CI': 'true', 'TZ': 'UTC', 'PYTHONDONTWRITEBYTECODE': '1', 'CARGO_HOME': str(t/'cargo'), 'RUSTUP_HOME': str(t/'rustup'),
         'XDG_CACHE_HOME': str(t/'cache'), 'XDG_CONFIG_HOME': str(t/'config'), 'XDG_DATA_HOME': str(t/'data'),
         'npm_config_cache': str(t/'cache/npm'), 'npm_config_store_dir': str(t/'cache/pnpm'),
         'npm_config_userconfig': str(t/'npmrc'), 'npm_config_globalconfig': str(t/'global-npmrc'),
@@ -139,6 +139,20 @@ def main() -> int:
             fetch(clones, name, origin, entry['commit'], root)
             inputs[name] = entry['commit']
     write_json(root/'source-commits.json', inputs)
+    if 'lab' in inputs:
+        overlay = json.loads((HERE/'overlays/lab-provenance.json').read_text())
+        patch = HERE/'overlays/lab-provenance.patch'
+        if sha256(patch) != overlay['patch_sha256'] or inputs['lab'] != overlay['commit']:
+            raise ValueError('overlay source/patch pin mismatch')
+        for name, hashes in overlay['files'].items():
+            if sha256(root/'lab'/name) != hashes['before_sha256']:
+                raise ValueError(f'overlay preimage mismatch: {name}')
+        clones.run('lab-overlay-check', ['git', 'apply', '--check', str(patch)], root/'lab')
+        clones.run('lab-overlay-apply', ['git', 'apply', str(patch)], root/'lab')
+        for name, hashes in overlay['files'].items():
+            if sha256(root/'lab'/name) != hashes['after_sha256']:
+                raise ValueError(f'overlay output mismatch: {name}')
+        write_json(root/'evidence/overlay.json', overlay)
     recorder = Recorder(root/'evidence/bootstrap', env)
     for name, entry in lock['tools'].items():
         asset = t/'downloads'/entry['filename']
@@ -170,6 +184,7 @@ def main() -> int:
     recorder.run('python-packages', ['python3', '-m', 'pip', 'install', '--no-deps', *wheels], root)
     recorder.run('python-dependency-check', ['python3', '-m', 'pip', 'check'], root)
     recorder.run('rustup-install', [str(t/'downloads'/lock['tools']['rustup']['filename']), '-y', '--no-modify-path', '--profile', 'minimal', '--default-toolchain', 'none'], root)
+    recorder.run('rustup-disable-self-update', ['rustup', 'set', 'auto-self-update', 'disable'], root)
     recorder.run('rust-toolchain', ['rustup', 'toolchain', 'install', lock['rust_version'], '--profile', 'minimal', '--component', 'rustfmt,clippy,llvm-tools-preview', '--target', 'riscv32imafc-unknown-none-elf'], root)
     recorder.run('rust-default', ['rustup', 'default', lock['rust_version']], root)
     for name in ('companion', 'website'):
@@ -181,6 +196,15 @@ def main() -> int:
     versions = {}
     for name, command in {'python':['python3','--version'], 'pip':['python3','-m','pip','--version'], 'node':['node','--version'], 'npm':['npm','--version'], 'pnpm':['pnpm','--version'], 'rust':['rustc','--version'], 'cargo':['cargo','--version'], 'rustup':['rustup','--version'], 'cargo-deny':['cargo','deny','--version'], 'cargo-llvm-cov':['cargo','llvm-cov','--version'], 'cc':['cc','--version'], 'make':['make','--version'], 'git':['git','--version'], 'libc':['ldd','--version']}.items():
         versions[name] = subprocess.check_output(command, cwd=root, env=env, text=True, stderr=subprocess.STDOUT).splitlines()[0]
+    expected_versions = {'python':'Python '+lock['tools']['python']['version'], 'node':'v'+lock['tools']['node']['version'], 'pnpm':lock['tools']['pnpm']['version'], 'rust':'rustc '+lock['rust_version']+' ', 'cargo-deny':'cargo-deny '+lock['tools']['cargo-deny']['version'], 'cargo-llvm-cov':'cargo-llvm-cov '+lock['tools']['cargo-llvm-cov']['version']}
+    for name, expected in expected_versions.items():
+        if not versions[name].startswith(expected):
+            raise ValueError(f'{name}: expected {expected}, got {versions[name]}')
+    source_state = {}
+    for name in inputs:
+        source = root/('firmware' if name == 'nsealr' else name)
+        source_state[name] = {'status':subprocess.check_output(['git','status','--porcelain'],cwd=source,text=True), 'diff_sha256':hashlib.sha256(subprocess.check_output(['git','diff','--binary'],cwd=source)).hexdigest()}
+    write_json(root/'source-state.json', source_state)
     write_json(root/'evidence/environment-manifest.json', dict(candidate=candidate, created=utc(), versions=versions, kernel=platform.platform(), os_release=Path('/etc/os-release').read_text(), bootstrap_sha256=sha256(HERE/'bootstrap.py'), inputs_sha256=sha256(HERE/'inputs.json'), cold_destination=True, core_only=args.core_only))
     print(f'Bootstrap complete. Run: python3 {root}/firmware/tools/baseline/run.py {root}', flush=True)
     return 0
