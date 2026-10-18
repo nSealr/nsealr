@@ -1,0 +1,79 @@
+{
+  "schema_version": 1,
+  "task": "S02",
+  "input_commits": {
+    "nSealr/nsealr": "768e8a35ae541f53f5da9c7bea7bf5c577fb474d"
+  },
+  "candidate_commits": {
+    "nSealr/nsealr": "61641047d13b5bb265246b181edc38f4dc2073e7"
+  },
+  "acceptance": [
+    "Remove secret-bearing Debug and unnecessary Clone/public secret access; test exposed formatting behavior using public fixture material.",
+    "Define lifetimes, copies, zeroization boundaries and internal-memory allocation; do not claim compiler-proof physical erasure from ownership alone.",
+    "Select maintained crypto/zeroization candidates using independent vectors, pinned features and no_std compile plus final-link probes for the first target; qualify every actual device in its own implementation/release task, not as a universal prerequisite.",
+    "Test raw BIP-340 event-digest signing and NIP-44 unhashed shared-x derivation explicitly; high-level prehash and generic ECDH helpers are not interchangeable. Preserve C/Rust ABI link failures and exact corrected flags when evaluating a C backend.",
+    "Specify the entropy-provider boundary and failure contract, including FFI/weak-symbol/runtime fallback risks; define how source-to-final-binary provenance and actual provider invocation will be checked in each device gate."
+  ],
+  "review": {
+    "assignee": "/root/secret_execution",
+    "reviewer": "/root/independent_security_review",
+    "verdict": "pass"
+  },
+  "acceptance_results": [
+    {
+      "index": 0,
+      "outcome": "pass",
+      "proof_kind": "executed_test",
+      "evidence_paths": [
+        "docs/restart/implementation/S02/secret-flow.md",
+        "docs/restart/implementation/reviews/S02/review.json",
+        "docs/restart/implementation/reviews/S02/independent-results/public-contract-doctests.log"
+      ]
+    },
+    {
+      "index": 1,
+      "outcome": "pass",
+      "proof_kind": "executed_test",
+      "evidence_paths": [
+        "docs/restart/implementation/S02/secret-flow.md",
+        "docs/restart/implementation/S02/handoff.md",
+        "docs/restart/implementation/reviews/S02/independent-results/adversarial.log"
+      ]
+    },
+    {
+      "index": 2,
+      "outcome": "pass",
+      "proof_kind": "executed_test",
+      "evidence_paths": [
+        "docs/restart/implementation/S02/crypto-selection.md",
+        "docs/restart/implementation/S02/evidence/dependencies.json",
+        "docs/restart/implementation/reviews/S02/independent-results/core-final-link.log"
+      ]
+    },
+    {
+      "index": 3,
+      "outcome": "pass",
+      "proof_kind": "executed_test",
+      "evidence_paths": [
+        "docs/restart/implementation/S02/evidence/crypto/vectors.log",
+        "docs/restart/implementation/reviews/S02/independent-results/official-crypto-vectors.log"
+      ]
+    },
+    {
+      "index": 4,
+      "outcome": "pass",
+      "proof_kind": "executed_test",
+      "evidence_paths": [
+        "docs/restart/implementation/S02/entropy-contract.md",
+        "docs/restart/implementation/S02/integration.json",
+        "docs/restart/implementation/reviews/P01/s02-integration-acknowledgement.json"
+      ]
+    }
+  ],
+  "recorded_utc": "2026-10-18T16:18:49.079220+00:00",
+  "limits_and_correspondence": [
+    "Exact original reviewed source61641047 remains the acceptance candidate; independent670-file/69-evidence reconciliation confirms metadata-only8ad rebase and integratede214 tree equivalence.",
+    "Postintegration main CI passed; root integration.json and independent acknowledgement preserve exact inputs.",
+    "S03 authority, K01 backend scratch, actual entropy/target timing/memory and physical erasure remain separate hard gates."
+  ]
+}

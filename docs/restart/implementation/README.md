@@ -14,12 +14,13 @@ Read the graph for current task lifecycle, candidates and reviewers. This table 
 | --- | --- | --- | --- |
 | R00 | `/root/baseline_execution` | `nsealr:restart/r00-bootstrap` | Bootstrap/integration tooling; `docs/restart/implementation/R00/brief.md` in that branch |
 | S01 | `/root/bridge_execution` | `companion:restart/s01-bridge` | NIP-46 and transport; `docs/restart/S01/brief.md` in companion's branch |
+| S01 integration | `/root/baseline_execution` | `nsealr:restart/s01-integration` | Complete core fixture snapshot/provenance and owned S01 integration evidence; accepted brief in that branch |
 | S02 | `/root/secret_execution` | `nsealr:restart/s02-secrets` | Secret types/consumers/crypto; `docs/restart/implementation/S02/brief.md` in that branch |
 | P01, O01 | `/root` | `nsealr:restart/goal-progress` | Product and coordination; `P01/brief.md` and `O01/brief.md` beside this file |
 | A01 | `/root` | `nsealr:restart/a01-inventory` | Source/consumer inventory; `docs/restart/implementation/A01/brief.md` in PR #11 |
 | E01 | `/root/cad_execution` | `nsealr:restart/e01-cad` | `tools/cad/` and `docs/restart/implementation/E01/`; exclusive disposable CAD projects/display `:96` |
 
-Current independent review work is assigned to `/root/independent_security_review` (S02, branch `nsealr:restart/security-review-s02`, plus the fresh-session O01 exercise), `/root/independent_bridge_review` (S01, branch `companion:review/s01`) and `/root` (R00). Review artifacts bind actual candidates; a reviewer name is not a passing verdict. Candidate branches remain frozen except for fixes explicitly invalidating affected review.
+Current independent review work is assigned to `/root/independent_security_review` (S02, branch `nsealr:restart/security-review-s02`, plus the fresh-session O01 exercise), `/root/independent_bridge_review` (S01, branch `companion:review/s01`) `/root/independent_cad_review` (E01, branch `nsealr:review/e01`) and `/root` (R00/integration). Review artifacts bind actual candidates; a reviewer name is not a passing verdict. Candidate branches remain frozen except for fixes explicitly invalidating affected review.
 
 The three specialists were started successfully using `gpt-6-astra` with `xhigh` reasoning in this session. This records accepted runtime assignments, not a promise about future model availability. Each author has a distinct worktree. No agent writes another author's files or the coordinator's task graph. A separate reviewer must assess the precise final candidate before integration. The CAD author is the only writer of its disposable projects; additional operations remain disabled until demonstrated.
 
