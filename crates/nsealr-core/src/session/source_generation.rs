@@ -1,4 +1,8 @@
-//! RAM-only session source generation from caller-supplied entropy.
+//! Deterministic local import/conversion of caller-supplied secret material.
+//!
+//! These helpers do not obtain or qualify entropy. A device generation path must
+//! use its qualified fallible provider, reject failure without output, then import
+//! the result here. Caller-owned input buffers remain the caller's responsibility.
 //!
 //! Ported from the C++ reference `host_core` sources
 //! `src/session_source_generation.cpp` +
@@ -49,20 +53,19 @@ pub fn generate_bip39_session_source(
         seedqr::decode_compact_indexes(entropy).map_err(SessionSourceGenerationError::SeedQr)?;
     let mut keyring = StatelessSessionKeyring::new();
     keyring
-        .add_bip39_seed(label, indexes.as_slice())
+        .add_bip39_seed(label, indexes)
         .map_err(SessionSourceGenerationError::Keyring)?;
-    source_from_single_entry_keyring(&keyring)
+    source_from_single_entry_keyring(&mut keyring)
 }
 
-/// Clones the single source out of the temporary boundary keyring (the C++
+/// Moves the single source out of the temporary boundary keyring (the C++
 /// `source_from_single_entry_keyring`; the keyring wipes itself on drop).
 fn source_from_single_entry_keyring(
-    keyring: &StatelessSessionKeyring,
+    keyring: &mut StatelessSessionKeyring,
 ) -> Result<SessionKeySource, SessionSourceGenerationError> {
-    Ok(keyring
-        .source_at(0)
-        .map_err(SessionSourceGenerationError::Keyring)?
-        .clone())
+    keyring
+        .take_last()
+        .map_err(SessionSourceGenerationError::Keyring)
 }
 
 /// Generates an nsec session source from a caller-supplied 32-byte scalar.
@@ -74,16 +77,16 @@ fn source_from_single_entry_keyring(
 /// [`SessionSourceGenerationError::Keyring`].
 pub fn generate_nsec_session_source(
     label: &str,
-    entropy: &SecretKey,
+    entropy: SecretKey,
 ) -> Result<SessionKeySource, SessionSourceGenerationError> {
-    if !nip19::is_valid_secret_key(entropy) {
+    if !nip19::is_valid_secret_key(entropy.as_bytes()) {
         return Err(SessionSourceGenerationError::InvalidNsecScalar);
     }
     let mut keyring = StatelessSessionKeyring::new();
     keyring
         .add_nsec(label, entropy)
         .map_err(SessionSourceGenerationError::Keyring)?;
-    source_from_single_entry_keyring(&keyring)
+    source_from_single_entry_keyring(&mut keyring)
 }
 
 #[cfg(test)]
@@ -100,8 +103,11 @@ mod tests {
         let seed_source = generate_bip39_session_source("Generated seed", &[0u8; 16]).unwrap();
         let mut generated_secret = [0u8; 32];
         generated_secret[31] = 1;
-        let nsec_source =
-            generate_nsec_session_source("Generated nsec", &generated_secret).unwrap();
+        let nsec_source = generate_nsec_session_source(
+            "Generated nsec",
+            SecretKey::take_from(&mut generated_secret).unwrap(),
+        )
+        .unwrap();
 
         assert_eq!(seed_source.kind, SessionKeySourceKind::Bip39WordIndexes);
         assert_eq!(seed_source.label, "Generated seed");
@@ -115,11 +121,16 @@ mod tests {
             .unwrap(),
             "abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon about",
         );
-        assert!(seed_source.nsec_secret_key.iter().all(|&byte| byte == 0));
+        assert!(seed_source
+            .nsec_secret_key
+            .as_bytes()
+            .iter()
+            .all(|&byte| byte == 0));
 
         assert_eq!(nsec_source.kind, SessionKeySourceKind::NsecSecretKey);
         assert_eq!(nsec_source.label, "Generated nsec");
-        assert_eq!(nsec_source.nsec_secret_key, generated_secret);
+        assert_eq!(nsec_source.nsec_secret_key.as_bytes()[31], 1);
+        assert_eq!(generated_secret, [0; 32]);
         assert_eq!(nsec_source.bip39_word_indexes.count, 0);
 
         let seed_review = build_session_import_review(&seed_source);
@@ -141,13 +152,13 @@ mod tests {
             Err(SessionSourceGenerationError::InvalidEntropyLength),
         );
         assert_eq!(
-            generate_nsec_session_source("Generated nsec", &[0u8; 32]),
+            generate_nsec_session_source("Generated nsec", SecretKey::empty()),
             Err(SessionSourceGenerationError::InvalidNsecScalar),
         );
         let mut generated_secret = [0u8; 32];
         generated_secret[31] = 1;
         assert_eq!(
-            generate_nsec_session_source("", &generated_secret),
+            generate_nsec_session_source("", SecretKey::take_from(&mut generated_secret).unwrap()),
             Err(SessionSourceGenerationError::Keyring(
                 crate::session::keyring::SessionKeyringError::EmptyLabel,
             )),

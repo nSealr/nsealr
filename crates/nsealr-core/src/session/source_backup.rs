@@ -57,19 +57,70 @@ pub enum SessionSourceBackupError {
 /// The secret-revealing backup payload. Mirrors the C++
 /// `SessionSourceBackupPayload` field for field; fields not applicable to the
 /// source kind are empty, exactly as in the C++.
-#[derive(Debug, Clone, PartialEq, Eq)]
+///
+/// ```compile_fail
+/// use nsealr_core::session::source_backup::SessionSourceBackupPayload;
+/// fn require_clone<T: Clone>() {}
+/// require_clone::<SessionSourceBackupPayload>();
+/// ```
+/// ```compile_fail
+/// use nsealr_core::session::source_backup::SessionSourceBackupPayload;
+/// fn raw(payload: &SessionSourceBackupPayload) { let _ = &payload.nsec; }
+/// ```
+/// ```compile_fail
+/// use nsealr_core::session::source_backup::session_source_backup_payload;
+/// ```
+#[derive(PartialEq, Eq)]
 pub struct SessionSourceBackupPayload {
     /// Backup format id (C++ `backup_format`): `"bip39_words_seedqr"` or
     /// `"nip19_nsec"`.
     pub backup_format: &'static str,
     /// The space-separated English mnemonic (C++ `mnemonic`).
-    pub mnemonic: FixedStr<MAX_BACKUP_MNEMONIC_CHARS>,
+    mnemonic: FixedStr<MAX_BACKUP_MNEMONIC_CHARS>,
     /// The Standard SeedQR digit stream (C++ `standard_seedqr_digits`).
-    pub standard_seedqr_digits: FixedStr<MAX_BACKUP_SEEDQR_DIGIT_CHARS>,
+    standard_seedqr_digits: FixedStr<MAX_BACKUP_SEEDQR_DIGIT_CHARS>,
     /// The CompactSeedQR entropy as lowercase hex (C++ `compact_seedqr_hex`).
-    pub compact_seedqr_hex: FixedStr<MAX_BACKUP_COMPACT_HEX_CHARS>,
+    compact_seedqr_hex: FixedStr<MAX_BACKUP_COMPACT_HEX_CHARS>,
     /// The NIP-19 `nsec` encoding of the secret key (C++ `nsec`).
-    pub nsec: FixedStr<MAX_BACKUP_NSEC_CHARS>,
+    nsec: FixedStr<MAX_BACKUP_NSEC_CHARS>,
+}
+
+impl core::fmt::Debug for SessionSourceBackupPayload {
+    fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
+        f.write_str("SessionSourceBackupPayload([REDACTED])")
+    }
+}
+
+impl SessionSourceBackupPayload {
+    /// Deliberately reveals the mnemonic to a local backup output adapter.
+    pub fn reveal_mnemonic(&self) -> &str {
+        self.mnemonic.as_str()
+    }
+    /// Deliberately reveals the digit encoding to a local backup output adapter.
+    pub fn reveal_standard_seedqr_digits(&self) -> &str {
+        self.standard_seedqr_digits.as_str()
+    }
+    /// Deliberately reveals the entropy encoding to a local backup output adapter.
+    pub fn reveal_compact_seedqr_hex(&self) -> &str {
+        self.compact_seedqr_hex.as_str()
+    }
+    /// Deliberately reveals nsec to a local backup output adapter.
+    pub fn reveal_nsec(&self) -> &str {
+        self.nsec.as_str()
+    }
+
+    fn wipe(&mut self) {
+        self.mnemonic.wipe();
+        self.standard_seedqr_digits.wipe();
+        self.compact_seedqr_hex.wipe();
+        self.nsec.wipe();
+    }
+}
+
+impl Drop for SessionSourceBackupPayload {
+    fn drop(&mut self) {
+        self.wipe();
+    }
 }
 
 /// The secret-hiding backup review. Mirrors the C++ `SessionSourceBackupReview`
@@ -93,77 +144,44 @@ pub struct SessionSourceBackupReview {
 ///
 /// [`SessionSourceBackupError::InvalidBackupWordCount`],
 /// [`SessionSourceBackupError::Bip39`] or [`SessionSourceBackupError::Nsec`].
-pub fn session_source_backup_payload(
+pub(crate) fn session_source_backup_payload(
     source: &SessionKeySource,
 ) -> Result<SessionSourceBackupPayload, SessionSourceBackupError> {
+    let mut payload = SessionSourceBackupPayload {
+        backup_format: "nip19_nsec",
+        mnemonic: FixedStr::new(),
+        standard_seedqr_digits: FixedStr::new(),
+        compact_seedqr_hex: FixedStr::new(),
+        nsec: FixedStr::new(),
+    };
     match source.kind {
         SessionKeySourceKind::Bip39WordIndexes => {
+            payload.backup_format = "bip39_words_seedqr";
             let indexes = source.bip39_word_indexes.as_slice();
-
-            // Mnemonic first (C++ order): 24 words of <= 8 bytes + separators.
-            let mut mnemonic_buf = [0u8; MAX_BACKUP_MNEMONIC_CHARS];
-            let mnemonic_str = bip39::mnemonic_from_indexes(indexes, &mut mnemonic_buf)
+            let mut mnemonic_buf = zeroize::Zeroizing::new([0u8; MAX_BACKUP_MNEMONIC_CHARS]);
+            let mnemonic_str = bip39::mnemonic_from_indexes(indexes, &mut *mnemonic_buf)
                 .map_err(SessionSourceBackupError::Bip39)?;
-            // 24 words x <= 8 bytes + 23 separators = 215 <= 216: never truncates.
-            let mut mnemonic =
+            payload.mnemonic =
                 FixedStr::from_str(mnemonic_str).expect("within documented capacity");
-            // The scratch buffer has served its purpose (the secret now lives in
-            // `mnemonic`); volatile-wipe it here — before any later early-return
-            // path — so the `InvalidBackupWordCount` and the (checksum-guarded,
-            // unreachable) `entropy_from_indexes` error paths cannot leak it.
-            // Closes an M-T3.4a hygiene gap recorded in the LEDGER.
-            wipe_bytes(&mut mnemonic_buf);
-
-            // Standard SeedQR digits (C++ `standard_seedqr_from_indexes`).
             if indexes.len() != 12 && indexes.len() != 24 {
-                // The rendered mnemonic copy is a secret that will not become part
-                // of the payload; wipe it before it drops (M-T3.4a hygiene gap).
-                mnemonic.wipe();
                 return Err(SessionSourceBackupError::InvalidBackupWordCount);
             }
-            let mut digits = FixedStr::<MAX_BACKUP_SEEDQR_DIGIT_CHARS>::new();
             for &index in indexes {
-                push_four_digits(&mut digits, index);
+                push_four_digits(&mut payload.standard_seedqr_digits, index);
             }
-
-            // CompactSeedQR entropy as lowercase hex (C++ `hex_from_bytes`). The
-            // checksum was already validated by `mnemonic_from_indexes` above and
-            // the 32-byte buffer holds the 16/24-word entropy, so this cannot
-            // fail here; the `?` keeps parity with the C++ throw regardless.
-            let mut entropy_buf = [0u8; 32];
-            let entropy = bip39::entropy_from_indexes(indexes, &mut entropy_buf)
+            let mut entropy_buf = zeroize::Zeroizing::new([0u8; 32]);
+            let entropy = bip39::entropy_from_indexes(indexes, &mut *entropy_buf)
                 .map_err(SessionSourceBackupError::Bip39)?;
-            let mut compact_hex = FixedStr::<MAX_BACKUP_COMPACT_HEX_CHARS>::new();
-            push_hex(&mut compact_hex, entropy);
-
-            // The entropy scratch buffer carried secret material; volatile-wipe it
-            // (hygiene beyond the C++, which left its locals as-is).
-            wipe_bytes(&mut entropy_buf);
-
-            Ok(SessionSourceBackupPayload {
-                backup_format: "bip39_words_seedqr",
-                mnemonic,
-                standard_seedqr_digits: digits,
-                compact_seedqr_hex: compact_hex,
-                nsec: FixedStr::new(),
-            })
+            push_hex(&mut payload.compact_seedqr_hex, entropy);
         }
         SessionKeySourceKind::NsecSecretKey => {
-            let mut nsec_buf = [0u8; MAX_BACKUP_NSEC_CHARS];
-            let nsec_str = nip19::encode_nsec(&source.nsec_secret_key, &mut nsec_buf)
+            let mut nsec_buf = zeroize::Zeroizing::new([0u8; MAX_BACKUP_NSEC_CHARS]);
+            let nsec_str = nip19::encode_nsec(&source.nsec_secret_key, &mut *nsec_buf)
                 .map_err(SessionSourceBackupError::Nsec)?;
-            // An encoded nsec is exactly 63 chars <= 64: never truncates.
-            let nsec = FixedStr::from_str(nsec_str).expect("within documented capacity");
-            wipe_bytes(&mut nsec_buf);
-            Ok(SessionSourceBackupPayload {
-                backup_format: "nip19_nsec",
-                mnemonic: FixedStr::new(),
-                standard_seedqr_digits: FixedStr::new(),
-                compact_seedqr_hex: FixedStr::new(),
-                nsec,
-            })
+            payload.nsec = FixedStr::from_str(nsec_str).expect("within documented capacity");
         }
     }
+    Ok(payload)
 }
 
 /// Appends `index` as exactly four decimal digits (zero-padded), mirroring the
@@ -188,14 +206,6 @@ fn push_hex(out: &mut FixedStr<MAX_BACKUP_COMPACT_HEX_CHARS>, bytes: &[u8]) {
         let pair = [HEX[usize::from(byte >> 4)], HEX[usize::from(byte & 0x0f)]];
         out.try_push_str(core::str::from_utf8(&pair).unwrap_or(""))
             .expect("within documented capacity");
-    }
-}
-
-/// Volatile-zeroes a scratch buffer that held secret material.
-fn wipe_bytes(bytes: &mut [u8]) {
-    for byte in bytes {
-        // SAFETY: `byte` is a valid, exclusively-borrowed `u8` location.
-        unsafe { core::ptr::write_volatile(byte, 0) };
     }
 }
 
@@ -455,7 +465,7 @@ impl Default for SessionSourceBackupTranscript {
 }
 
 /// The result of a backup flow. Mirrors the C++ `SessionSourceBackupFlowResult`.
-#[derive(Debug, Clone, PartialEq, Eq)]
+#[derive(PartialEq, Eq)]
 pub struct SessionSourceBackupFlowResult {
     /// The secret-hiding backup review that was displayed (C++ `review`).
     pub review: SessionSourceBackupReview,
@@ -470,6 +480,12 @@ pub struct SessionSourceBackupFlowResult {
     pub transcript: SessionSourceBackupTranscript,
 }
 
+impl core::fmt::Debug for SessionSourceBackupFlowResult {
+    fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
+        f.write_str("SessionSourceBackupFlowResult([REDACTED])")
+    }
+}
+
 /// The interactive backup IO driver. Mirrors the C++ `SessionSourceBackupIo`
 /// virtual interface.
 pub trait SessionSourceBackupIo {
@@ -477,7 +493,10 @@ pub trait SessionSourceBackupIo {
     fn show_backup_review_frame(&mut self, frame: &ReviewDisplayFrame);
     /// Reads the next physical button press.
     fn read_backup_review_button(&mut self) -> ReviewButton;
-    /// Emits the revealed backup payload (only after a displayed approval).
+    /// Borrows the payload for local display/QR output after displayed approval.
+    /// The adapter owns any deliberate copy and must wipe it. No logging,
+    /// transport/Bridge export or retaining references beyond this call.
+    /// The flow drops its payload after this call; its result carries none.
     fn emit_backup_payload(&mut self, payload: &SessionSourceBackupPayload);
 }
 
@@ -600,7 +619,8 @@ pub fn run_session_source_backup_io_flow(
                 let payload = session_source_backup_payload(source)
                     .map_err(SessionSourceBackupFlowError::Payload)?;
                 io.emit_backup_payload(&payload);
-                Some(payload)
+                // The IO adapter borrowed the only payload; drop it here.
+                None
             } else {
                 None
             };
@@ -634,12 +654,15 @@ mod tests {
     fn fixture_keyring() -> StatelessSessionKeyring {
         let mut keyring = StatelessSessionKeyring::new();
         keyring
-            .add_bip39_seed("SeedQR vector 1", &SEEDQR_VECTOR_1_INDEXES)
+            .add_bip39_seed(
+                "SeedQR vector 1",
+                crate::bip39::WordIndexes::from_slice(&SEEDQR_VECTOR_1_INDEXES).unwrap(),
+            )
             .unwrap();
         keyring
             .add_nsec(
                 "nsec test vector",
-                &nip19::decode_nsec(NSEC_TEST_KEY_1).unwrap(),
+                nip19::decode_nsec(NSEC_TEST_KEY_1).unwrap(),
             )
             .unwrap();
         keyring
@@ -785,18 +808,23 @@ mod tests {
         let mut fifteen = [0u16; 15];
         fifteen[14] = u16::from(digest[0] >> 3);
         let mut keyring = StatelessSessionKeyring::new();
-        keyring.add_bip39_seed("fifteen words", &fifteen).unwrap();
+        keyring
+            .add_bip39_seed(
+                "fifteen words",
+                crate::bip39::WordIndexes::from_slice(&fifteen).unwrap(),
+            )
+            .unwrap();
         assert_eq!(
             session_source_backup_payload(keyring.source_at(0).unwrap()),
             Err(SessionSourceBackupError::InvalidBackupWordCount),
         );
 
-        // The keyring deliberately does not checksum-validate (C++ parity), so
-        // a checksum-invalid seed fails at mnemonic rendering.
-        let mut keyring = StatelessSessionKeyring::new();
-        keyring.add_bip39_seed("bad checksum", &[0u16; 12]).unwrap();
+        // Corrupt an internal test fixture; public insertion rejects this seed.
+        let mut source = SessionKeySource::new();
+        source.kind = SessionKeySourceKind::Bip39WordIndexes;
+        source.bip39_word_indexes.count = 12;
         assert_eq!(
-            session_source_backup_payload(keyring.source_at(0).unwrap()),
+            session_source_backup_payload(&source),
             Err(SessionSourceBackupError::Bip39(Bip39Error::InvalidChecksum)),
         );
     }
@@ -812,7 +840,7 @@ mod tests {
         keyring
             .add_nsec(
                 "nsec test vector",
-                &nip19::decode_nsec(NSEC_TEST_KEY_1).unwrap(),
+                nip19::decode_nsec(NSEC_TEST_KEY_1).unwrap(),
             )
             .unwrap();
         keyring
@@ -825,7 +853,7 @@ mod tests {
         buttons: Vec<ReviewButton>,
         next_button: usize,
         frames: Vec<ReviewDisplayFrame>,
-        payloads: Vec<SessionSourceBackupPayload>,
+        payloads: Vec<String>,
         events: Vec<String>,
     }
 
@@ -856,7 +884,8 @@ mod tests {
 
         fn emit_backup_payload(&mut self, payload: &SessionSourceBackupPayload) {
             self.events.push(String::from("payload"));
-            self.payloads.push(payload.clone());
+            // Test adapter deliberately records only published fixture output.
+            self.payloads.push(String::from(payload.reveal_nsec()));
         }
     }
 
@@ -929,12 +958,9 @@ mod tests {
 
         assert!(result.approved);
         assert!(result.revealed);
-        assert_eq!(
-            result.backup_payload.as_ref().unwrap().nsec,
-            NSEC_TEST_KEY_1
-        );
+        assert!(result.backup_payload.is_none());
         assert_eq!(io.payloads.len(), 1);
-        assert_eq!(io.payloads[0].nsec, NSEC_TEST_KEY_1);
+        assert_eq!(io.payloads[0], NSEC_TEST_KEY_1);
         assert_eq!(io.frames.len(), 2);
         assert_eq!(io.frames[0].title, "Backup source");
         assert_eq!(io.frames[0].page_indicator, "Page 1/2");

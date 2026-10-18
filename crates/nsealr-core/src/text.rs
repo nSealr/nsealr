@@ -100,12 +100,9 @@ impl<const N: usize> FixedStr<N> {
     /// text. Mirrors the C++ `SessionKeySource::wipe()` label wipe (`std::fill`
     /// + `clear()`), strengthened to volatile writes like the C++ `wipe_array`.
     pub fn wipe(&mut self) {
-        for byte in &mut self.buf {
-            // SAFETY: `byte` is a valid, exclusively-borrowed `u8` location.
-            unsafe { core::ptr::write_volatile(byte, 0) };
-        }
-        // SAFETY: `self.len` is a valid, exclusively-borrowed `usize` location.
-        unsafe { core::ptr::write_volatile(&mut self.len, 0) };
+        use zeroize::Zeroize;
+        self.buf.zeroize();
+        self.len.zeroize();
     }
 }
 

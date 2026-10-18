@@ -7,6 +7,16 @@ Specification candidate, 2026-10-18. Parent: S02, all five acceptance clauses in
 specification/final reviewer is assigned by the coordinator. No implementation
 starts before specification acceptance. The parent graph is the sole status ledger.
 
+Root independently accepted specification commit
+`d9f8c2d4ecdf2efe8c5cd4e87fa4f6f31ca4f3b2` before implementation. Two source-derived
+clarifications were accepted during implementation: migrate the constructor in
+`apps/desktop-simulator/src/replay.rs` and the test fixture setup in
+`crates/nsealr-core/src/review/qr_flow.rs`; reject invalid BIP39 checksums at both
+owned insertion paths with `InvalidSeedChecksum`. Deliberately malformed backup
+fixtures use crate-private test construction. The existing button/approval model
+is preserved for S03 revalidation; local backup functions are not a physical
+authorization guarantee. The coordinator owns the independent review record.
+
 ## Purpose and limits
 
 Prevent ordinary formatting, implicit copies and direct public field access from
