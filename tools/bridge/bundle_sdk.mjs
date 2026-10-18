@@ -40,7 +40,7 @@ function declarations(directory) {
 }
 for (const path of declarations(out)) {
   const source = readFileSync(path, "utf8");
-  const relocated = source.replace(/(["'])@nsealr\/([a-z-]+)([^"']*)\1/gu, (_match, quote, name, subpath) => {
+  const relocated = source.replace(/(["'])@nsealr\/([a-z0-9-]+)([^"']*)\1/gu, (_match, quote, name, subpath) => {
     assert(owned.includes(name), `forbidden declaration dependency ${name}`);
     const manifest = sourceManifest(`@nsealr/${name}`);
     const entry = manifest.exports[subpath ? `.${subpath}` : "."];
