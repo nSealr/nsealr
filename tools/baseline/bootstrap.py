@@ -100,6 +100,34 @@ def fetch(recorder: Recorder, name: str, origin: str, commit: str, root: Path) -
         raise ValueError(f'{name}: expected clean checkout of {commit}, got {actual} {dirty}')
 
 
+def apply_lab_overlay(recorder: Recorder, root: Path, commit: str, manifest: Path, record: str) -> None:
+    """Apply one selected patch only to its verified source and preimage."""
+    overlay = json.loads(manifest.read_text())
+    patch = manifest.with_suffix('.patch')
+    actual = subprocess.check_output(['git', 'rev-parse', 'HEAD'], cwd=root/'lab', text=True).strip()
+    if sha256(patch) != overlay['patch_sha256'] or commit != overlay['commit'] or actual != commit:
+        raise ValueError('overlay source/patch pin mismatch')
+    for name, hashes in overlay['files'].items():
+        if sha256(root/'lab'/name) != hashes['before_sha256']:
+            raise ValueError(f'overlay preimage mismatch: {name}')
+    recorder.run(record+'-check', ['git', 'apply', '--check', str(patch)], root/'lab')
+    recorder.run(record+'-apply', ['git', 'apply', str(patch)], root/'lab')
+    for name, hashes in overlay['files'].items():
+        if sha256(root/'lab'/name) != hashes['after_sha256']:
+            raise ValueError(f'overlay output mismatch: {name}')
+    write_json(root/'evidence'/f'{record}.json', overlay)
+
+
+def apply_lab_overlays(recorder: Recorder, root: Path, commit: str) -> None:
+    # Explicit current tuple; historical R00 refs retain their own inputs/runner.
+    for manifest, record in (
+        (HERE/'overlays/lab-provenance.json', 'overlay'),
+        (SOURCE/'docs/restart/implementation/S01/lab-metadata-v1.json', 'metadata-v1-overlay'),
+        (HERE/'overlays/lab-provenance-followup.json', 'provenance-followup-overlay'),
+    ):
+        apply_lab_overlay(recorder, root, commit, manifest, record)
+
+
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('destination', type=Path, help='must not already exist')
@@ -141,19 +169,7 @@ def main() -> int:
             inputs[name] = entry['commit']
     write_json(root/'source-commits.json', inputs)
     if 'lab' in inputs:
-        overlay = json.loads((HERE/'overlays/lab-provenance.json').read_text())
-        patch = HERE/'overlays/lab-provenance.patch'
-        if sha256(patch) != overlay['patch_sha256'] or inputs['lab'] != overlay['commit']:
-            raise ValueError('overlay source/patch pin mismatch')
-        for name, hashes in overlay['files'].items():
-            if sha256(root/'lab'/name) != hashes['before_sha256']:
-                raise ValueError(f'overlay preimage mismatch: {name}')
-        clones.run('lab-overlay-check', ['git', 'apply', '--check', str(patch)], root/'lab')
-        clones.run('lab-overlay-apply', ['git', 'apply', str(patch)], root/'lab')
-        for name, hashes in overlay['files'].items():
-            if sha256(root/'lab'/name) != hashes['after_sha256']:
-                raise ValueError(f'overlay output mismatch: {name}')
-        write_json(root/'evidence/overlay.json', overlay)
+        apply_lab_overlays(clones, root, inputs['lab'])
     recorder = Recorder(root/'evidence/bootstrap', env)
     for name, entry in lock['tools'].items():
         asset = t/'downloads'/entry['filename']
