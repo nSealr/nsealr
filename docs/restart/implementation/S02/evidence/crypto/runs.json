@@ -1,0 +1,231 @@
+{
+  "utc": "2026-10-18T15:17:39.006613+00:00",
+  "project_dir": "/home/tux/nsealr/.restart-tools/goal/s02/research/2026-10-13/crypto",
+  "runs": [
+    {
+      "name": "fixtures",
+      "command": [
+        "python3",
+        "fetch_vectors.py"
+      ],
+      "cwd": "/home/tux/nsealr/.restart-tools/goal/s02/research/2026-10-13/crypto",
+      "env": {},
+      "exit_code": 0,
+      "log": "fixtures.log",
+      "sha256": "728b5b105915246d7ac624f1438e81918ce3b63e5e2fe59a5374766bfcd572ae"
+    },
+    {
+      "name": "rustc",
+      "command": [
+        "rustc",
+        "+1.95.0",
+        "-vV"
+      ],
+      "cwd": "/home/tux/nsealr/.restart-tools/goal/s02/research/2026-10-13/crypto",
+      "env": {},
+      "exit_code": 0,
+      "log": "rustc.log",
+      "sha256": "4fdff2578428e9c5c08ddd7a0d3079c1a106b1cdaa46e73e46f7cd32b0fb9cad"
+    },
+    {
+      "name": "targets",
+      "command": [
+        "rustup",
+        "target",
+        "list",
+        "--installed",
+        "--toolchain",
+        "1.95.0"
+      ],
+      "cwd": "/home/tux/nsealr/.restart-tools/goal/s02/research/2026-10-13/crypto",
+      "env": {},
+      "exit_code": 0,
+      "log": "targets.log",
+      "sha256": "3597d0b71c54e6669ef8be390b222a6db5958997a25b34b0e884932018ca928c"
+    },
+    {
+      "name": "clang",
+      "command": [
+        "clang",
+        "--version"
+      ],
+      "cwd": "/home/tux/nsealr/.restart-tools/goal/s02/research/2026-10-13/crypto",
+      "env": {},
+      "exit_code": 0,
+      "log": "clang.log",
+      "sha256": "d55fcb3e9abb393ac95ffffa5fe52c13c79abead018abb911a0f46a324b0f91d"
+    },
+    {
+      "name": "vectors",
+      "command": [
+        "cargo",
+        "+1.95.0",
+        "test",
+        "--manifest-path",
+        "/home/tux/nsealr/.restart-tools/goal/s02/research/2026-10-13/crypto/Cargo.toml",
+        "--locked",
+        "--test",
+        "vectors",
+        "--",
+        "--nocapture"
+      ],
+      "cwd": "/tmp/nsealr-crypto-cargo-7xfxc7gu",
+      "env": {
+        "CARGO_TARGET_DIR": "/home/tux/nsealr/.restart-tools/goal/s02/research/2026-10-13/crypto/target"
+      },
+      "exit_code": 0,
+      "log": "vectors.log",
+      "sha256": "1512711b850c7cc00c219ebb9ad94926ef0e7a0428fc468c36c35fa0c56befe2"
+    },
+    {
+      "name": "features-rustcrypto",
+      "command": [
+        "cargo",
+        "+1.95.0",
+        "tree",
+        "--manifest-path",
+        "/home/tux/nsealr/.restart-tools/goal/s02/research/2026-10-13/crypto/Cargo.toml",
+        "--locked",
+        "--no-default-features",
+        "--features",
+        "rustcrypto",
+        "-e",
+        "features"
+      ],
+      "cwd": "/tmp/nsealr-crypto-cargo-7xfxc7gu",
+      "env": {
+        "CARGO_TARGET_DIR": "/home/tux/nsealr/.restart-tools/goal/s02/research/2026-10-13/crypto/target"
+      },
+      "exit_code": 0,
+      "log": "features-rustcrypto.log",
+      "sha256": "a0fbb79d85bce68d4967aa80f3ad9efe054c80e95bd6c007e9fa31ea32596524"
+    },
+    {
+      "name": "rustcrypto-thumbv8m.main-none-eabihf",
+      "command": [
+        "cargo",
+        "+1.95.0",
+        "build",
+        "--manifest-path",
+        "/home/tux/nsealr/.restart-tools/goal/s02/research/2026-10-13/crypto/Cargo.toml",
+        "--locked",
+        "--release",
+        "--lib",
+        "--no-default-features",
+        "--features",
+        "rustcrypto",
+        "--target",
+        "thumbv8m.main-none-eabihf"
+      ],
+      "cwd": "/tmp/nsealr-crypto-cargo-7xfxc7gu",
+      "env": {
+        "CC_thumbv8m_main_none_eabihf": "clang",
+        "CARGO_TARGET_DIR": "/home/tux/nsealr/.restart-tools/goal/s02/research/2026-10-13/crypto/target"
+      },
+      "exit_code": 0,
+      "log": "rustcrypto-thumbv8m.main-none-eabihf.log",
+      "sha256": "27d520ccd85381f4a8d3a945c82c728cd2b2afc0f03c2b11ec31e0b2aef7ffbb"
+    },
+    {
+      "name": "rustcrypto-riscv32imafc-unknown-none-elf",
+      "command": [
+        "cargo",
+        "+1.95.0",
+        "build",
+        "--manifest-path",
+        "/home/tux/nsealr/.restart-tools/goal/s02/research/2026-10-13/crypto/Cargo.toml",
+        "--locked",
+        "--release",
+        "--lib",
+        "--no-default-features",
+        "--features",
+        "rustcrypto",
+        "--target",
+        "riscv32imafc-unknown-none-elf"
+      ],
+      "cwd": "/tmp/nsealr-crypto-cargo-7xfxc7gu",
+      "env": {
+        "CC_riscv32imafc_unknown_none_elf": "clang",
+        "CARGO_TARGET_DIR": "/home/tux/nsealr/.restart-tools/goal/s02/research/2026-10-13/crypto/target"
+      },
+      "exit_code": 0,
+      "log": "rustcrypto-riscv32imafc-unknown-none-elf.log",
+      "sha256": "51608c782e499ea069f34efd0d90ac499e69f731e44aeb7d8b56dbe073e52a1d"
+    },
+    {
+      "name": "features-libsecp",
+      "command": [
+        "cargo",
+        "+1.95.0",
+        "tree",
+        "--manifest-path",
+        "/home/tux/nsealr/.restart-tools/goal/s02/research/2026-10-13/crypto/Cargo.toml",
+        "--locked",
+        "--no-default-features",
+        "--features",
+        "libsecp",
+        "-e",
+        "features"
+      ],
+      "cwd": "/tmp/nsealr-crypto-cargo-7xfxc7gu",
+      "env": {
+        "CARGO_TARGET_DIR": "/home/tux/nsealr/.restart-tools/goal/s02/research/2026-10-13/crypto/target"
+      },
+      "exit_code": 0,
+      "log": "features-libsecp.log",
+      "sha256": "75a3eb93f0ef963dddbd36aab1e256395741a7a81c60999e02b27bcf57ed7865"
+    },
+    {
+      "name": "libsecp-thumbv8m.main-none-eabihf",
+      "command": [
+        "cargo",
+        "+1.95.0",
+        "build",
+        "--manifest-path",
+        "/home/tux/nsealr/.restart-tools/goal/s02/research/2026-10-13/crypto/Cargo.toml",
+        "--locked",
+        "--release",
+        "--lib",
+        "--no-default-features",
+        "--features",
+        "libsecp",
+        "--target",
+        "thumbv8m.main-none-eabihf"
+      ],
+      "cwd": "/tmp/nsealr-crypto-cargo-7xfxc7gu",
+      "env": {
+        "CC_thumbv8m_main_none_eabihf": "clang",
+        "CARGO_TARGET_DIR": "/home/tux/nsealr/.restart-tools/goal/s02/research/2026-10-13/crypto/target"
+      },
+      "exit_code": 0,
+      "log": "libsecp-thumbv8m.main-none-eabihf.log",
+      "sha256": "616d2a84d8c5ae02b560820d60bd9fd6c3a615d937a4389cd80092e79a74fb7f"
+    },
+    {
+      "name": "libsecp-riscv32imafc-unknown-none-elf",
+      "command": [
+        "cargo",
+        "+1.95.0",
+        "build",
+        "--manifest-path",
+        "/home/tux/nsealr/.restart-tools/goal/s02/research/2026-10-13/crypto/Cargo.toml",
+        "--locked",
+        "--release",
+        "--lib",
+        "--no-default-features",
+        "--features",
+        "libsecp",
+        "--target",
+        "riscv32imafc-unknown-none-elf"
+      ],
+      "cwd": "/tmp/nsealr-crypto-cargo-7xfxc7gu",
+      "env": {
+        "CC_riscv32imafc_unknown_none_elf": "clang",
+        "CARGO_TARGET_DIR": "/home/tux/nsealr/.restart-tools/goal/s02/research/2026-10-13/crypto/target"
+      },
+      "exit_code": 0,
+      "log": "libsecp-riscv32imafc-unknown-none-elf.log",
+      "sha256": "a62e14349a474a880e1fadf3a84514569e7965f3917b55b111e7e065e2a5331e"
+    }
+  ]
+}
