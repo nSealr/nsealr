@@ -1,0 +1,1050 @@
+{
+  "schema_version": 1,
+  "task": "S04",
+  "author": "/root/s04_custody_author",
+  "prepared_utc": "2026-10-18T19:38:20.667452+00:00",
+  "status": "documentary research; no part or protocol acceptance",
+  "preparation_candidate": "d4713e134e24b4f5b6a33cbe83a67b91c19449c3",
+  "preparation_review": "905f30ea16b196ff864539df4d4177c82d563a73",
+  "coordinator_acceptance": "993f3be8ae590e5e613471318809a80017362a94",
+  "current_source_authority": "source-audit.json; f2ef70f522af4977e15f81554a8c6eadcdbe8097",
+  "sources": [
+    {
+      "id": "IFX-RM",
+      "title_revision": "Solution Reference Manual Rev3.70, 2024-10-09",
+      "url": "https://raw.githubusercontent.com/Infineon/optiga-trust-m-overview/a45b86bda014efeebfb85f084f779cedb07b32dc/docs/pdf/OPTIGA_Trust_M_Solution_Reference_Manual_v3.70.pdf",
+      "retrieved_utc": "2026-10-18T19:24:33.977154+00:00",
+      "sha256": "41315a418c287f9cfff54b51a3538eec8026de2a601d83a6196b69aeee9adc4d",
+      "bytes": 4222596,
+      "read_scope": [
+        "pp35\u201336 authorization APIs",
+        "pp54\u201360 object/counter/random/HMAC commands",
+        "pp74\u201397 monitor, endurance, access expressions, object types and lifecycle",
+        "pp106\u2013117 security guidance, shielded connection, protected update and AUTO"
+      ],
+      "assessment": "Read these sections, not a whole-manual approval. They support a conditional HMAC/AUTO/counter experiment, not physically qualified enforcement.",
+      "original_copy": "private; not committed",
+      "git": {
+        "repository": "https://github.com/Infineon/optiga-trust-m-overview.git",
+        "commit": "a45b86bda014efeebfb85f084f779cedb07b32dc",
+        "path": "docs/pdf/OPTIGA_Trust_M_Solution_Reference_Manual_v3.70.pdf",
+        "blob": "7ebdadbca47600fed1190076d791e8b002294a29",
+        "mode": "100644",
+        "mode_basis": "GitHub exact recursive tree response",
+        "tree": "a45b86bda014efeebfb85f084f779cedb07b32dc"
+      }
+    },
+    {
+      "id": "IFX-RN",
+      "title_revision": "Solution Release Notes Rev3.02, 2025-02-03",
+      "url": "https://raw.githubusercontent.com/Infineon/optiga-trust-m-overview/a45b86bda014efeebfb85f084f779cedb07b32dc/docs/pdf/OPTIGA_Trust_M_Release_Notes_v3.02.pdf",
+      "retrieved_utc": "2026-10-18T19:24:34.902471+00:00",
+      "sha256": "487600f59f0a8e2e9a9054481547b8bf875a14e58606cb0be85cc8e97789b3c7",
+      "bytes": 237775,
+      "read_scope": [
+        "version table: V3 3.02.2564 / crypto 2.09.002",
+        "algorithm table",
+        "known issues and host concurrency/timeouts"
+      ],
+      "assessment": "Build identity must be read from the actual part. Improved asymmetric SCA protection is not an independently established remedy for every attack.",
+      "original_copy": "private; not committed",
+      "git": {
+        "repository": "https://github.com/Infineon/optiga-trust-m-overview.git",
+        "commit": "a45b86bda014efeebfb85f084f779cedb07b32dc",
+        "path": "docs/pdf/OPTIGA_Trust_M_Release_Notes_v3.02.pdf",
+        "blob": "3652003d56a50e0c224c820ac1da276738e4b52d",
+        "mode": "100644",
+        "mode_basis": "GitHub exact recursive tree response",
+        "tree": "a45b86bda014efeebfb85f084f779cedb07b32dc"
+      }
+    },
+    {
+      "id": "IFX-I2C",
+      "title_revision": "I2C Protocol Rev2.03",
+      "url": "https://raw.githubusercontent.com/Infineon/optiga-trust-m-overview/a45b86bda014efeebfb85f084f779cedb07b32dc/docs/pdf/Infineon_I2C_Protocol_v2.03.pdf",
+      "retrieved_utc": "2026-10-18T19:24:35.225552+00:00",
+      "sha256": "04288206e14412cd6dc6bbbdbc45fc469a28a1cc260b2e42e022d8f33397774d",
+      "bytes": 1287505,
+      "read_scope": [
+        "shielded presentation/session framing context only"
+      ],
+      "assessment": "Retrieved; exact reset retention, replay, resynchronization and full command/response protection still require targeted protocol review and H02S traces.",
+      "original_copy": "private; not committed",
+      "git": {
+        "repository": "https://github.com/Infineon/optiga-trust-m-overview.git",
+        "commit": "a45b86bda014efeebfb85f084f779cedb07b32dc",
+        "path": "docs/pdf/Infineon_I2C_Protocol_v2.03.pdf",
+        "blob": "bd449af915bde251fe76232046fbb37dcc99a6c7",
+        "mode": "100644",
+        "mode_basis": "GitHub exact recursive tree response",
+        "tree": "a45b86bda014efeebfb85f084f779cedb07b32dc"
+      }
+    },
+    {
+      "id": "IFX-API",
+      "title_revision": "optiga_crypt.h at 03a3ebe8e87216cb60b8572eafa1e46c13fb87fb",
+      "url": "https://raw.githubusercontent.com/Infineon/optiga-trust-m/03a3ebe8e87216cb60b8572eafa1e46c13fb87fb/include/optiga_crypt.h",
+      "retrieved_utc": "2026-10-18T19:27:56.502783+00:00",
+      "sha256": "69c8c69ced4ba19a856867a06a019ad0a5323fbaf6793bea6e7c74adc2f90442",
+      "bytes": 158558,
+      "read_scope": [
+        "optiga_crypt_hmac and chaining family",
+        "generate_auth_code/hmac_verify/clear_auto_state"
+      ],
+      "assessment": "HMAC output is returned to MCU; default HMAC communication protection is command-only. Full response protection must be explicitly requested.",
+      "original_copy": "private; not committed",
+      "git": {
+        "repository": "https://github.com/Infineon/optiga-trust-m.git",
+        "commit": "03a3ebe8e87216cb60b8572eafa1e46c13fb87fb",
+        "path": "include/optiga_crypt.h",
+        "blob": "4016eec6464c49c08b266430ef51539e296e8d86",
+        "mode": "100644",
+        "mode_basis": "GitHub exact recursive tree response",
+        "tree": "03a3ebe8e87216cb60b8572eafa1e46c13fb87fb"
+      }
+    },
+    {
+      "id": "IFX-UTIL",
+      "title_revision": "optiga_util.h at same source",
+      "url": "https://raw.githubusercontent.com/Infineon/optiga-trust-m/03a3ebe8e87216cb60b8572eafa1e46c13fb87fb/include/optiga_util.h",
+      "retrieved_utc": "2026-10-18T19:27:56.804391+00:00",
+      "sha256": "65a81695b700e8bee14894f37d3f903a800257df4d884ad7af7f82de3dd3ce45",
+      "bytes": 30352,
+      "read_scope": [
+        "write_data/write_metadata/update_count/protected_update declarations"
+      ],
+      "assessment": "Headers are API evidence, not a substitute for device command semantics.",
+      "original_copy": "private; not committed",
+      "git": {
+        "repository": "https://github.com/Infineon/optiga-trust-m.git",
+        "commit": "03a3ebe8e87216cb60b8572eafa1e46c13fb87fb",
+        "path": "include/optiga_util.h",
+        "blob": "16cbd1c959c964067657020414098d738f6098ba",
+        "mode": "100644",
+        "mode_basis": "GitHub exact recursive tree response",
+        "tree": "03a3ebe8e87216cb60b8572eafa1e46c13fb87fb"
+      }
+    },
+    {
+      "id": "IFX-AUTH-EX",
+      "title_revision": "authorization-reference example at same source",
+      "url": "https://raw.githubusercontent.com/Infineon/optiga-trust-m/03a3ebe8e87216cb60b8572eafa1e46c13fb87fb/examples/optiga/usecases/example_optiga_hmac_verify_with_authorization_reference.c",
+      "retrieved_utc": "2026-10-18T19:27:57.234142+00:00",
+      "sha256": "d965c10922eff4f5cdbf576ae24a2523767a58d8bd8b13b8a269c714ab65c6a4",
+      "bytes": 14508,
+      "read_scope": [
+        "host optional_data || random || arbitrary_data HMAC",
+        "authorization setup and read",
+        "clear_auto_state cleanup"
+      ],
+      "assessment": "Example setup permissions are not production policies; no code was imported.",
+      "original_copy": "private; not committed",
+      "git": {
+        "repository": "https://github.com/Infineon/optiga-trust-m.git",
+        "commit": "03a3ebe8e87216cb60b8572eafa1e46c13fb87fb",
+        "path": "examples/optiga/usecases/example_optiga_hmac_verify_with_authorization_reference.c",
+        "blob": "d6241c75d6963ebfaf2cdec3c8cd62d233f1b0a1",
+        "mode": "100644",
+        "mode_basis": "GitHub exact recursive tree response",
+        "tree": "03a3ebe8e87216cb60b8572eafa1e46c13fb87fb"
+      }
+    },
+    {
+      "id": "IFX-PU-EX",
+      "title_revision": "protected-update example at same source",
+      "url": "https://raw.githubusercontent.com/Infineon/optiga-trust-m/03a3ebe8e87216cb60b8572eafa1e46c13fb87fb/examples/optiga/example_optiga_util_protected_update.c",
+      "retrieved_utc": "2026-10-18T19:27:57.460309+00:00",
+      "sha256": "b78f7f6dbf881cc99551212a847fbec0f159d247fb653b5fafa1a263847914f7",
+      "bytes": 18280,
+      "read_scope": [
+        "trust-anchor/update-secret provisioning and metadata update call sites"
+      ],
+      "assessment": "Object protected update is not demonstrated field firmware update.",
+      "original_copy": "private; not committed",
+      "git": {
+        "repository": "https://github.com/Infineon/optiga-trust-m.git",
+        "commit": "03a3ebe8e87216cb60b8572eafa1e46c13fb87fb",
+        "path": "examples/optiga/example_optiga_util_protected_update.c",
+        "blob": "7d65e256753c311b43c4e8f921996be7b863f16f",
+        "mode": "100644",
+        "mode_basis": "GitHub exact recursive tree response",
+        "tree": "03a3ebe8e87216cb60b8572eafa1e46c13fb87fb"
+      }
+    },
+    {
+      "id": "IFX-LICENSE",
+      "title_revision": "top-level LICENSE at same source",
+      "url": "https://raw.githubusercontent.com/Infineon/optiga-trust-m/03a3ebe8e87216cb60b8572eafa1e46c13fb87fb/LICENSE",
+      "retrieved_utc": "2026-10-18T19:27:57.027037+00:00",
+      "sha256": "60fba5b5f6d11147b2b51cfd7f4b0d949e2d17b295676ffeaba04b9a6795885e",
+      "bytes": 1106,
+      "read_scope": [
+        "MIT grant and conditions"
+      ],
+      "assessment": "Only the inspected top-level license is classified; dependencies and individual files need their own import audit. No software imported.",
+      "original_copy": "private; not committed",
+      "git": {
+        "repository": "https://github.com/Infineon/optiga-trust-m.git",
+        "commit": "03a3ebe8e87216cb60b8572eafa1e46c13fb87fb",
+        "path": "LICENSE",
+        "blob": "d7289dd8a4a3d629ba2bbe8aa841bd19d4cf5834",
+        "mode": "100644",
+        "mode_basis": "GitHub exact recursive tree response",
+        "tree": "03a3ebe8e87216cb60b8572eafa1e46c13fb87fb"
+      }
+    },
+    {
+      "id": "IFX-OVERVIEW",
+      "title_revision": "overview README a45b86bda014efeebfb85f084f779cedb07b32dc",
+      "url": "https://raw.githubusercontent.com/Infineon/optiga-trust-m-overview/a45b86bda014efeebfb85f084f779cedb07b32dc/README.md",
+      "retrieved_utc": "2026-10-18T19:27:59.188849+00:00",
+      "sha256": "c21f196cbb6aa0ce362c81dea2c52442fe176f64db81e3fe32b577a29837ec75",
+      "bytes": 32135,
+      "read_scope": [
+        "standard V3 versus Express/MTR configuration differences"
+      ],
+      "assessment": "No wallet customization or service entitlement is inferred for standard V3.",
+      "original_copy": "private; not committed",
+      "git": {
+        "repository": "https://github.com/Infineon/optiga-trust-m-overview.git",
+        "commit": "a45b86bda014efeebfb85f084f779cedb07b32dc",
+        "path": "README.md",
+        "blob": "b726fe419c9739b0ac26aa86efc164a3ca9e6f68",
+        "mode": "100644",
+        "mode_basis": "GitHub exact recursive tree response",
+        "tree": "a45b86bda014efeebfb85f084f779cedb07b32dc"
+      }
+    },
+    {
+      "id": "TS-SA",
+      "title_revision": "ODR_TR01_SA_2026012900 v1.0, 2026-06-03",
+      "url": "https://raw.githubusercontent.com/tropicsquare/tropic01/90747cac7c0261408c0ca767d272894f481f2cf2/doc/security_advisories/ODR_TR01_SA_2026012900_1v0.pdf",
+      "retrieved_utc": "2026-10-18T19:24:35.636198+00:00",
+      "sha256": "299fa8f07ad0611cdc2a56b24d46ead257fe42dca9c3d96cd38b3384c598f1ad",
+      "bytes": 109967,
+      "read_scope": [
+        "pp1\u20135 scope, affected configurations/assets, attack and mitigation"
+      ],
+      "assessment": "All listed production configurations include the T310 tuple. Maintenance restriction reduces exposure, not a demonstrated repair.",
+      "original_copy": "private; not committed",
+      "git": {
+        "repository": "https://github.com/tropicsquare/tropic01.git",
+        "commit": "90747cac7c0261408c0ca767d272894f481f2cf2",
+        "path": "doc/security_advisories/ODR_TR01_SA_2026012900_1v0.pdf",
+        "blob": "ebbea25e2d8f3886f3581263500374a09a743a9d",
+        "mode": "100644",
+        "mode_basis": "GitHub exact recursive tree response",
+        "tree": "90747cac7c0261408c0ca767d272894f481f2cf2"
+      }
+    },
+    {
+      "id": "TS-PIN",
+      "title_revision": "ODN_TR01_app_002 v1.2, 2026-02-04",
+      "url": "https://raw.githubusercontent.com/tropicsquare/tropic01/90747cac7c0261408c0ca767d272894f481f2cf2/doc/application_notes/ODN_TR01_app_002_pin_verif_1v2.pdf",
+      "retrieved_utc": "2026-10-18T19:24:35.911366+00:00",
+      "sha256": "014fd5457d8df41987f464b92802a3ed4af9711b2393d46d5ee637540cfdd0bc",
+      "bytes": 421179,
+      "read_scope": [
+        "sections3.1\u20133.5 setup/attempt/reset",
+        "AppendixA MAC-and-Destroy construction",
+        "AppendixB beginning, not complete proof audit"
+      ],
+      "assessment": "Vendor scheme depends on MAC-and-Destroy internal-key confidentiality. Do not transpose the proof after the advisory invalidates its physical assumption.",
+      "original_copy": "private; not committed",
+      "git": {
+        "repository": "https://github.com/tropicsquare/tropic01.git",
+        "commit": "90747cac7c0261408c0ca767d272894f481f2cf2",
+        "path": "doc/application_notes/ODN_TR01_app_002_pin_verif_1v2.pdf",
+        "blob": "144e62438c539b207ce9da61e38c5c7ecc96ea77",
+        "mode": "100644",
+        "mode_basis": "GitHub exact recursive tree response",
+        "tree": "90747cac7c0261408c0ca767d272894f481f2cf2"
+      }
+    },
+    {
+      "id": "TS-API",
+      "title_revision": "ODU_TR01 API1.4.0, embedded commit ed7a424",
+      "url": "https://raw.githubusercontent.com/tropicsquare/tropic01/90747cac7c0261408c0ca767d272894f481f2cf2/doc/api/ODU_TR01_user_api_v1_4_0.pdf",
+      "retrieved_utc": "2026-10-18T19:24:36.315949+00:00",
+      "sha256": "377fdef6a88ae49521f669aa50bf8e4154ac67b6eb57d35c6d0abc92afd8b5b7",
+      "bytes": 222578,
+      "read_scope": [
+        "command inventory and ECC types",
+        "pp43\u201346 counters/MAC_And_Destroy",
+        "configuration register entries"
+      ],
+      "assessment": "MAC_And_Destroy 0x90 uses slot0..127, input32/output32. ECDSA/EdDSA are not native BIP340; handshake X25519 is not raw secp256k1 ECDH.",
+      "original_copy": "private; not committed",
+      "git": {
+        "repository": "https://github.com/tropicsquare/tropic01.git",
+        "commit": "90747cac7c0261408c0ca767d272894f481f2cf2",
+        "path": "doc/api/ODU_TR01_user_api_v1_4_0.pdf",
+        "blob": "8930027a39269abcd46f14957975fdd81ac28bc1",
+        "mode": "100644",
+        "mode_basis": "GitHub exact recursive tree response",
+        "tree": "90747cac7c0261408c0ca767d272894f481f2cf2"
+      }
+    },
+    {
+      "id": "TS-UPDATE",
+      "title_revision": "ODN_TR01_app_007 v1.5",
+      "url": "https://raw.githubusercontent.com/tropicsquare/tropic01/90747cac7c0261408c0ca767d272894f481f2cf2/doc/application_notes/ODN_TR01_app_007_fw_update_1v5.pdf",
+      "retrieved_utc": "2026-10-18T19:27:58.328937+00:00",
+      "sha256": "5f96cc4507e1c61a2c12a79a32f73e4f35e35f564c06bde404219b2115e5e4b8",
+      "bytes": 358422,
+      "read_scope": [
+        "sections1\u20132 boot authority/banks/rollback",
+        "section3 maintenance requirements and interruption warning",
+        "section4 custom factory vendor key"
+      ],
+      "assessment": "Immutable Tropic boot root differs from vendor update public key. Custom vendor key requires a specially provisioned part and does not remove the ROM root.",
+      "original_copy": "private; not committed",
+      "git": {
+        "repository": "https://github.com/tropicsquare/tropic01.git",
+        "commit": "90747cac7c0261408c0ca767d272894f481f2cf2",
+        "path": "doc/application_notes/ODN_TR01_app_007_fw_update_1v5.pdf",
+        "blob": "28ccaeca9b881b9c274c1b2ea8d72fbfeb37cd51",
+        "mode": "100644",
+        "mode_basis": "GitHub exact recursive tree response",
+        "tree": "90747cac7c0261408c0ca767d272894f481f2cf2"
+      }
+    },
+    {
+      "id": "TS-PAIR",
+      "title_revision": "ODN_TR01_app_005 v1.3",
+      "url": "https://raw.githubusercontent.com/tropicsquare/tropic01/90747cac7c0261408c0ca767d272894f481f2cf2/doc/application_notes/ODN_TR01_app_005_first_pairing_key_1v3.pdf",
+      "retrieved_utc": "2026-10-18T19:27:58.675721+00:00",
+      "sha256": "f41942a27c17d455ebb73f0a74d95e1899e6f565dad131867ae91bc995b9960c",
+      "bytes": 181612,
+      "read_scope": [
+        "sections1\u20133 pairing slots/default key/custom key"
+      ],
+      "assessment": "Four write-once public X25519 pairing slots; invalidation is permanent. Default private key public; normal first use requires fresh private slot and default invalidation.",
+      "original_copy": "private; not committed",
+      "git": {
+        "repository": "https://github.com/tropicsquare/tropic01.git",
+        "commit": "90747cac7c0261408c0ca767d272894f481f2cf2",
+        "path": "doc/application_notes/ODN_TR01_app_005_first_pairing_key_1v3.pdf",
+        "blob": "f304ef91a91975359ad93428f45c5be851717fb9",
+        "mode": "100644",
+        "mode_basis": "GitHub exact recursive tree response",
+        "tree": "90747cac7c0261408c0ca767d272894f481f2cf2"
+      }
+    },
+    {
+      "id": "TS-CONFIG",
+      "title_revision": "ODN_TR01_app_006 v1.3",
+      "url": "https://raw.githubusercontent.com/tropicsquare/tropic01/90747cac7c0261408c0ca767d272894f481f2cf2/doc/application_notes/ODN_TR01_app_006_config_obj_1v3.pdf",
+      "retrieved_utc": "2026-10-18T19:35:00.078974+00:00",
+      "sha256": "09bcdcfe98d4615daa3239e0d3a48c68e2728e5997196384a6fc4d81bcc8ef31",
+      "bytes": 277901,
+      "read_scope": [
+        "sections1\u20133 I/R configuration and UAP semantics"
+      ],
+      "assessment": "Effective config is bitwise I AND R; I bits only clear; R changes are reversible subject to policy; restart applies changes. UAP revocation is not revocation of vendor firmware authority.",
+      "original_copy": "private; not committed",
+      "git": {
+        "repository": "https://github.com/tropicsquare/tropic01.git",
+        "commit": "90747cac7c0261408c0ca767d272894f481f2cf2",
+        "path": "doc/application_notes/ODN_TR01_app_006_config_obj_1v3.pdf",
+        "blob": "6bc52e84043c375f94baa12894c5aedba223a77e",
+        "mode": "100644",
+        "mode_basis": "GitHub exact recursive tree response",
+        "tree": "90747cac7c0261408c0ca767d272894f481f2cf2"
+      }
+    },
+    {
+      "id": "TS-PARTS",
+      "title_revision": "part-numbers index at90747cac7c0261408c0ca767d272894f481f2cf2",
+      "url": "https://raw.githubusercontent.com/tropicsquare/tropic01/90747cac7c0261408c0ca767d272894f481f2cf2/doc/pages/part-numbers.md",
+      "retrieved_utc": "2026-10-18T19:27:57.699634+00:00",
+      "sha256": "a49777615d81fa1e5d49385a0a12555675b11e188e047dd8aa9f8ccb6daec1eb",
+      "bytes": 4708,
+      "read_scope": [
+        "available versions/part links"
+      ],
+      "assessment": "Index and advisory/catalog naming differ; a guessed T310 part-page URL returned404. No equivalence of T301 and T310 is asserted.",
+      "original_copy": "private; not committed",
+      "git": {
+        "repository": "https://github.com/tropicsquare/tropic01.git",
+        "commit": "90747cac7c0261408c0ca767d272894f481f2cf2",
+        "path": "doc/pages/part-numbers.md",
+        "blob": "ea84d0fe0bf7e35002b494dac08c089a4374316a",
+        "mode": "100644",
+        "mode_basis": "GitHub exact recursive tree response",
+        "tree": "90747cac7c0261408c0ca767d272894f481f2cf2"
+      }
+    },
+    {
+      "id": "TS-T005",
+      "title_revision": "TR01-C2P-T005 part page at same source",
+      "url": "https://raw.githubusercontent.com/tropicsquare/tropic01/90747cac7c0261408c0ca767d272894f481f2cf2/doc/pages/parts/TR01-B2S-T005.md",
+      "retrieved_utc": "2026-10-18T19:27:58.108358+00:00",
+      "sha256": "dd4d3fa93532f9af4fffe15f378e2f1a7a273462455841ab50350e99f3e8efe7",
+      "bytes": 4499,
+      "read_scope": [
+        "factory configuration and September10 RNGTEST_DIS erratum link"
+      ],
+      "assessment": "Engineering-sample row is not transferable to production T310. Linked erratum body not readable from the retrieved web shell.",
+      "original_copy": "private; not committed",
+      "git": {
+        "repository": "https://github.com/tropicsquare/tropic01.git",
+        "commit": "90747cac7c0261408c0ca767d272894f481f2cf2",
+        "path": "doc/pages/parts/TR01-B2S-T005.md",
+        "blob": "7e5aca601fc46e4b558be56cbc46beaf09b14132",
+        "mode": "100644",
+        "mode_basis": "GitHub exact recursive tree response",
+        "tree": "90747cac7c0261408c0ca767d272894f481f2cf2"
+      }
+    },
+    {
+      "id": "TS-SA-FOLLOWUP",
+      "title_revision": "official LFI advisory blog retrieved2026-10-18",
+      "url": "https://www.tropicsquare.com/blogs/potential-bypass-of-firmware-verification-by-laser-fault-injection",
+      "retrieved_utc": "2026-10-18T19:34:43.004559+00:00",
+      "sha256": "23a597e7264ba01ec2a90ba0b9c7f2bee9ca0b2bd4d98ecebe98c2f0fa67f329",
+      "bytes": 90443,
+      "read_scope": [
+        "maintenance limits and future-silicon statement"
+      ],
+      "assessment": "Vendor forecast is not received/qualified remediation.",
+      "original_copy": "private; not committed"
+    },
+    {
+      "id": "TS-HOST-API",
+      "title_revision": "libtropic.h at9085ea5387a8a1d5a946c7e4f633c7134e4909a7",
+      "url": "https://raw.githubusercontent.com/tropicsquare/libtropic/9085ea5387a8a1d5a946c7e4f633c7134e4909a7/include/libtropic.h",
+      "retrieved_utc": "2026-10-18T19:34:43.395203+00:00",
+      "sha256": "8222345edde8a58605d85f1a4f5f4327e17b6186e337f226a145f8e2a144e4fe",
+      "bytes": 38314,
+      "read_scope": [
+        "command declarations only"
+      ],
+      "assessment": "Not a full driver/security audit. No code imported or executed.",
+      "original_copy": "private; not committed",
+      "git": {
+        "repository": "https://github.com/tropicsquare/libtropic.git",
+        "commit": "9085ea5387a8a1d5a946c7e4f633c7134e4909a7",
+        "path": "include/libtropic.h",
+        "blob": "e631b1dbbcb9b80690a24f3f57fead332168fb0c",
+        "mode": "100644",
+        "mode_basis": "GitHub exact recursive tree response",
+        "tree": "9085ea5387a8a1d5a946c7e4f633c7134e4909a7"
+      }
+    },
+    {
+      "id": "TS-LICENSE",
+      "title_revision": "LICENSE.md at same source",
+      "url": "https://raw.githubusercontent.com/tropicsquare/libtropic/9085ea5387a8a1d5a946c7e4f633c7134e4909a7/LICENSE.md",
+      "retrieved_utc": "2026-10-18T19:36:58.672107+00:00",
+      "sha256": "199ead7fe72e0951ccad357756093cd4ad173c3636fdb9b2d5106016556018bc",
+      "bytes": 1649,
+      "read_scope": [
+        "Clear BSD terms"
+      ],
+      "assessment": "Source/binary use subject to retained notices/disclaimer; no patent grant. No custom manufacturing/license/service agreement established.",
+      "original_copy": "private; not committed",
+      "git": {
+        "repository": "https://github.com/tropicsquare/libtropic.git",
+        "commit": "9085ea5387a8a1d5a946c7e4f633c7134e4909a7",
+        "path": "LICENSE.md",
+        "blob": "3ea2a4d13a0b0f02d2f4cb7514c565b0363c9d0d",
+        "mode": "100644",
+        "mode_basis": "GitHub exact recursive tree response",
+        "tree": "9085ea5387a8a1d5a946c7e4f633c7134e4909a7"
+      }
+    },
+    {
+      "id": "NXP-CONFIG",
+      "title_revision": "AN12973 Rev2.0, 2024-07-08",
+      "url": "https://www.nxp.com/docs/en/application-note/AN12973.pdf",
+      "retrieved_utc": "2026-10-18T19:24:38.436467+00:00",
+      "sha256": "69a3999ad5af9bc2108bdc6c042271456fe0158816a46559f51a947c2657f30a",
+      "bytes": 302338,
+      "read_scope": [
+        "configuration/OEF/applet identification tables; SCP/SEMS object families"
+      ],
+      "assessment": "Public configuration guide does not replace the restricted command API/errata. Exact procured tuple and credential ownership remain unknown.",
+      "original_copy": "private; not committed"
+    },
+    {
+      "id": "NXP-UPDATE",
+      "title_revision": "AN12907 Rev1.2, 2023-11-23",
+      "url": "https://www.nxp.com/docs/en/application-note/AN12907.pdf",
+      "retrieved_utc": "2026-10-18T19:24:38.707124+00:00",
+      "sha256": "d582655f13ecdd83cc51744c5d7aae427c26ee2650b625e3d83d9936495f0381",
+      "bytes": 16038741,
+      "read_scope": [
+        "sections1\u20134.3 applet/SEMS authority, downgrade, account and script distribution"
+      ],
+      "assessment": "A/C IoT applet updates are NXP managed; P custom development differs. Updates preserve secure objects and SCP keys. SEMS key rotation is separately needed for full older-script rejection.",
+      "original_copy": "private; not committed"
+    },
+    {
+      "id": "NXP-INDEX",
+      "title_revision": "official SE051 page retrieved2026-10-18",
+      "url": "https://www.nxp.com/products/SE051",
+      "retrieved_utc": "2026-10-18T19:24:38.980517+00:00",
+      "sha256": "850fb086c0a38aba86d7b675f33d296b8e9fc685cae61a3df81c45a62383c330",
+      "bytes": 606603,
+      "read_scope": [
+        "AN12543Rev4.5/errata and middleware access listings"
+      ],
+      "assessment": "Required access remains gated. Public raw URLs returning404 are failed retrievals, not proof that the documents do not exist.",
+      "original_copy": "private; not committed"
+    },
+    {
+      "id": "NIP06",
+      "title_revision": "37db639582d857e12468dcccd99b2c7f1d657da9/06.md",
+      "url": "https://raw.githubusercontent.com/nostr-protocol/nips/37db639582d857e12468dcccd99b2c7f1d657da9/06.md",
+      "retrieved_utc": "2026-10-18T19:27:59.421230+00:00",
+      "sha256": "a7d86f43c3723b7a67765e81910a2478007d4655024e2899a163a09e2c834b3a",
+      "bytes": 1726,
+      "read_scope": [
+        "status warning, path, published fixtures"
+      ],
+      "assessment": "Optional migration is not native default. No BIP39 seed storage or migration route is enabled by this candidate.",
+      "original_copy": "private; not committed",
+      "git": {
+        "repository": "https://github.com/nostr-protocol/nips.git",
+        "commit": "37db639582d857e12468dcccd99b2c7f1d657da9",
+        "path": "06.md",
+        "blob": "f3fc90eab395128bca7fdcf6ec4f5ebf4269e6fd",
+        "mode": null,
+        "mode_basis": "not independently queried in this research record; inherited NIP modes are pinned in source-audit.json"
+      }
+    },
+    {
+      "id": "NIP19",
+      "title_revision": "same commit/19.md",
+      "url": "https://raw.githubusercontent.com/nostr-protocol/nips/37db639582d857e12468dcccd99b2c7f1d657da9/19.md",
+      "retrieved_utc": "2026-10-18T19:27:59.735768+00:00",
+      "sha256": "5b53c98637ae0cb8e6d99e1570e32da2c5842154ba898393439f334f1fd90aad",
+      "bytes": 3952,
+      "read_scope": [
+        "nsec/npub encoding and secret32 definition"
+      ],
+      "assessment": "Original scalar is the backup payload; x-only public equality alone cannot prove byte preservation.",
+      "original_copy": "private; not committed",
+      "git": {
+        "repository": "https://github.com/nostr-protocol/nips.git",
+        "commit": "37db639582d857e12468dcccd99b2c7f1d657da9",
+        "path": "19.md",
+        "blob": "eb350a536c80cde05dd6bd373524ae6fc21d4430",
+        "mode": null,
+        "mode_basis": "not independently queried in this research record; inherited NIP modes are pinned in source-audit.json"
+      }
+    },
+    {
+      "id": "RFC5869",
+      "title_revision": "RFC5869",
+      "url": "https://www.rfc-editor.org/rfc/rfc5869.txt",
+      "retrieved_utc": "2026-10-18T19:27:59.960298+00:00",
+      "sha256": "7a40eb3835b35fc947eb12a2ed614db079d43b26e50dbc537c31fba16397089c",
+      "bytes": 25854,
+      "read_scope": [
+        "sections2.2\u20132.3 extract/expand",
+        "sections3.1\u20133.2 salt/info",
+        "appendixA vectors"
+      ],
+      "assessment": "HKDF-SHA256 domains below are nSealr proposed protocol parameters, not an RFC-recommended custody protocol.",
+      "original_copy": "private; not committed"
+    },
+    {
+      "id": "RFC8439",
+      "title_revision": "RFC8439",
+      "url": "https://www.rfc-editor.org/rfc/rfc8439.txt",
+      "retrieved_utc": "2026-10-18T19:28:00.218649+00:00",
+      "sha256": "25bef70fbf7a07ff45c2fe4cb7c6ce954eac687413d8610603268b4e4415324c",
+      "bytes": 88847,
+      "read_scope": [
+        "section2.8 AEAD inputs",
+        "section2.8.1 construction",
+        "section2.8.2 vector and nonce uniqueness requirement"
+      ],
+      "assessment": "ChaCha20-Poly1305 proposal uses fixed32-byte key,12-byte nonce,16-byte tag; no target implementation yet.",
+      "original_copy": "private; not committed"
+    },
+    {
+      "id": "RFC8018",
+      "title_revision": "RFC8018",
+      "url": "https://www.rfc-editor.org/rfc/rfc8018.txt",
+      "retrieved_utc": "2026-10-18T19:28:00.459231+00:00",
+      "sha256": "cf96b02e68216f618ea33b20b49d476edba9d70f2333597ec516629d22971cda",
+      "bytes": 80887,
+      "read_scope": [],
+      "assessment": "Retrieved for a rejected slow-password-only alternative; no PBKDF2 parameter is adopted.",
+      "original_copy": "private; not committed"
+    }
+  ],
+  "retrieval_attempts": [
+    {
+      "id": "optiga-manual.pdf",
+      "url": "https://raw.githubusercontent.com/Infineon/optiga-trust-m-overview/a45b86bda014efeebfb85f084f779cedb07b32dc/docs/pdf/OPTIGA_Trust_M_Solution_Reference_Manual_v3.70.pdf",
+      "retrieved_utc": "2026-10-18T19:24:33.977154+00:00",
+      "http_status": 200,
+      "content_type": "application/octet-stream",
+      "final_url": "https://raw.githubusercontent.com/Infineon/optiga-trust-m-overview/a45b86bda014efeebfb85f084f779cedb07b32dc/docs/pdf/OPTIGA_Trust_M_Solution_Reference_Manual_v3.70.pdf",
+      "bytes": 4222596,
+      "sha256": "41315a418c287f9cfff54b51a3538eec8026de2a601d83a6196b69aeee9adc4d",
+      "is_pdf": true,
+      "file": "optiga-manual.pdf",
+      "retrieval_batch": "retrievals-01.json"
+    },
+    {
+      "id": "optiga-releases.pdf",
+      "url": "https://raw.githubusercontent.com/Infineon/optiga-trust-m-overview/a45b86bda014efeebfb85f084f779cedb07b32dc/docs/pdf/OPTIGA_Trust_M_Release_Notes_v3.02.pdf",
+      "retrieved_utc": "2026-10-18T19:24:34.902471+00:00",
+      "http_status": 200,
+      "content_type": "application/octet-stream",
+      "final_url": "https://raw.githubusercontent.com/Infineon/optiga-trust-m-overview/a45b86bda014efeebfb85f084f779cedb07b32dc/docs/pdf/OPTIGA_Trust_M_Release_Notes_v3.02.pdf",
+      "bytes": 237775,
+      "sha256": "487600f59f0a8e2e9a9054481547b8bf875a14e58606cb0be85cc8e97789b3c7",
+      "is_pdf": true,
+      "file": "optiga-releases.pdf",
+      "retrieval_batch": "retrievals-01.json"
+    },
+    {
+      "id": "optiga-i2c.pdf",
+      "url": "https://raw.githubusercontent.com/Infineon/optiga-trust-m-overview/a45b86bda014efeebfb85f084f779cedb07b32dc/docs/pdf/Infineon_I2C_Protocol_v2.03.pdf",
+      "retrieved_utc": "2026-10-18T19:24:35.225552+00:00",
+      "http_status": 200,
+      "content_type": "application/octet-stream",
+      "final_url": "https://raw.githubusercontent.com/Infineon/optiga-trust-m-overview/a45b86bda014efeebfb85f084f779cedb07b32dc/docs/pdf/Infineon_I2C_Protocol_v2.03.pdf",
+      "bytes": 1287505,
+      "sha256": "04288206e14412cd6dc6bbbdbc45fc469a28a1cc260b2e42e022d8f33397774d",
+      "is_pdf": true,
+      "file": "optiga-i2c.pdf",
+      "retrieval_batch": "retrievals-01.json"
+    },
+    {
+      "id": "tropic-advisory.pdf",
+      "url": "https://raw.githubusercontent.com/tropicsquare/tropic01/90747cac7c0261408c0ca767d272894f481f2cf2/doc/security_advisories/ODR_TR01_SA_2026012900_1v0.pdf",
+      "retrieved_utc": "2026-10-18T19:24:35.636198+00:00",
+      "http_status": 200,
+      "content_type": "application/octet-stream",
+      "final_url": "https://raw.githubusercontent.com/tropicsquare/tropic01/90747cac7c0261408c0ca767d272894f481f2cf2/doc/security_advisories/ODR_TR01_SA_2026012900_1v0.pdf",
+      "bytes": 109967,
+      "sha256": "299fa8f07ad0611cdc2a56b24d46ead257fe42dca9c3d96cd38b3384c598f1ad",
+      "is_pdf": true,
+      "file": "tropic-advisory.pdf",
+      "retrieval_batch": "retrievals-01.json"
+    },
+    {
+      "id": "tropic-pin.pdf",
+      "url": "https://raw.githubusercontent.com/tropicsquare/tropic01/90747cac7c0261408c0ca767d272894f481f2cf2/doc/application_notes/ODN_TR01_app_002_pin_verif_1v2.pdf",
+      "retrieved_utc": "2026-10-18T19:24:35.911366+00:00",
+      "http_status": 200,
+      "content_type": "application/octet-stream",
+      "final_url": "https://raw.githubusercontent.com/tropicsquare/tropic01/90747cac7c0261408c0ca767d272894f481f2cf2/doc/application_notes/ODN_TR01_app_002_pin_verif_1v2.pdf",
+      "bytes": 421179,
+      "sha256": "014fd5457d8df41987f464b92802a3ed4af9711b2393d46d5ee637540cfdd0bc",
+      "is_pdf": true,
+      "file": "tropic-pin.pdf",
+      "retrieval_batch": "retrievals-01.json"
+    },
+    {
+      "id": "tropic-api.pdf",
+      "url": "https://raw.githubusercontent.com/tropicsquare/tropic01/90747cac7c0261408c0ca767d272894f481f2cf2/doc/api/ODU_TR01_user_api_v1_4_0.pdf",
+      "retrieved_utc": "2026-10-18T19:24:36.315949+00:00",
+      "http_status": 200,
+      "content_type": "application/octet-stream",
+      "final_url": "https://raw.githubusercontent.com/tropicsquare/tropic01/90747cac7c0261408c0ca767d272894f481f2cf2/doc/api/ODU_TR01_user_api_v1_4_0.pdf",
+      "bytes": 222578,
+      "sha256": "377fdef6a88ae49521f669aa50bf8e4154ac67b6eb57d35c6d0abc92afd8b5b7",
+      "is_pdf": true,
+      "file": "tropic-api.pdf",
+      "retrieval_batch": "retrievals-01.json"
+    },
+    {
+      "id": "nxp-api.pdf",
+      "url": "https://www.nxp.com/docs/en/application-note/AN12543.pdf",
+      "retrieved_utc": "2026-10-18T19:24:36.664156+00:00",
+      "error": "HTTPError: HTTP Error 404: Not Found",
+      "http_status": 404,
+      "file": "nxp-api.pdf",
+      "retrieval_batch": "retrievals-01.json"
+    },
+    {
+      "id": "nxp-errata.pdf",
+      "url": "https://www.nxp.com/docs/en/errata/SE051-ERRATASHEET.pdf",
+      "retrieved_utc": "2026-10-18T19:24:37.982523+00:00",
+      "error": "HTTPError: HTTP Error 404: Not Found",
+      "http_status": 404,
+      "file": "nxp-errata.pdf",
+      "retrieval_batch": "retrievals-01.json"
+    },
+    {
+      "id": "nxp-config.pdf",
+      "url": "https://www.nxp.com/docs/en/application-note/AN12973.pdf",
+      "retrieved_utc": "2026-10-18T19:24:38.436467+00:00",
+      "http_status": 200,
+      "content_type": "application/pdf",
+      "final_url": "https://www.nxp.com/docs/en/application-note/AN12973.pdf",
+      "bytes": 302338,
+      "sha256": "69a3999ad5af9bc2108bdc6c042271456fe0158816a46559f51a947c2657f30a",
+      "is_pdf": true,
+      "file": "nxp-config.pdf",
+      "retrieval_batch": "retrievals-01.json"
+    },
+    {
+      "id": "nxp-update.pdf",
+      "url": "https://www.nxp.com/docs/en/application-note/AN12907.pdf",
+      "retrieved_utc": "2026-10-18T19:24:38.707124+00:00",
+      "http_status": 200,
+      "content_type": "application/pdf",
+      "final_url": "https://www.nxp.com/docs/en/application-note/AN12907.pdf",
+      "bytes": 16038741,
+      "sha256": "d582655f13ecdd83cc51744c5d7aae427c26ee2650b625e3d83d9936495f0381",
+      "is_pdf": true,
+      "file": "nxp-update.pdf",
+      "retrieval_batch": "retrievals-01.json"
+    },
+    {
+      "id": "nxp-index.html",
+      "url": "https://www.nxp.com/products/SE051",
+      "retrieved_utc": "2026-10-18T19:24:38.980517+00:00",
+      "http_status": 200,
+      "content_type": "text/html; charset=utf-8",
+      "final_url": "https://www.nxp.com/products/SE051",
+      "bytes": 606603,
+      "sha256": "850fb086c0a38aba86d7b675f33d296b8e9fc685cae61a3df81c45a62383c330",
+      "is_pdf": false,
+      "file": "nxp-index.html",
+      "retrieval_batch": "retrievals-01.json"
+    },
+    {
+      "id": "optiga-api.h",
+      "url": "https://raw.githubusercontent.com/Infineon/optiga-trust-m/03a3ebe8e87216cb60b8572eafa1e46c13fb87fb/include/optiga_crypt.h",
+      "retrieved_utc": "2026-10-18T19:27:56.502783+00:00",
+      "http_status": 200,
+      "final_url": "https://raw.githubusercontent.com/Infineon/optiga-trust-m/03a3ebe8e87216cb60b8572eafa1e46c13fb87fb/include/optiga_crypt.h",
+      "bytes": 158558,
+      "sha256": "69c8c69ced4ba19a856867a06a019ad0a5323fbaf6793bea6e7c74adc2f90442",
+      "file": "optiga-api.h",
+      "retrieval_batch": "retrievals-02.json"
+    },
+    {
+      "id": "optiga-util.h",
+      "url": "https://raw.githubusercontent.com/Infineon/optiga-trust-m/03a3ebe8e87216cb60b8572eafa1e46c13fb87fb/include/optiga_util.h",
+      "retrieved_utc": "2026-10-18T19:27:56.804391+00:00",
+      "http_status": 200,
+      "final_url": "https://raw.githubusercontent.com/Infineon/optiga-trust-m/03a3ebe8e87216cb60b8572eafa1e46c13fb87fb/include/optiga_util.h",
+      "bytes": 30352,
+      "sha256": "65a81695b700e8bee14894f37d3f903a800257df4d884ad7af7f82de3dd3ce45",
+      "file": "optiga-util.h",
+      "retrieval_batch": "retrievals-02.json"
+    },
+    {
+      "id": "optiga-license.txt",
+      "url": "https://raw.githubusercontent.com/Infineon/optiga-trust-m/03a3ebe8e87216cb60b8572eafa1e46c13fb87fb/LICENSE",
+      "retrieved_utc": "2026-10-18T19:27:57.027037+00:00",
+      "http_status": 200,
+      "final_url": "https://raw.githubusercontent.com/Infineon/optiga-trust-m/03a3ebe8e87216cb60b8572eafa1e46c13fb87fb/LICENSE",
+      "bytes": 1106,
+      "sha256": "60fba5b5f6d11147b2b51cfd7f4b0d949e2d17b295676ffeaba04b9a6795885e",
+      "file": "optiga-license.txt",
+      "retrieval_batch": "retrievals-02.json"
+    },
+    {
+      "id": "optiga-auth-example.c",
+      "url": "https://raw.githubusercontent.com/Infineon/optiga-trust-m/03a3ebe8e87216cb60b8572eafa1e46c13fb87fb/examples/optiga/usecases/example_optiga_hmac_verify_with_authorization_reference.c",
+      "retrieved_utc": "2026-10-18T19:27:57.234142+00:00",
+      "http_status": 200,
+      "final_url": "https://raw.githubusercontent.com/Infineon/optiga-trust-m/03a3ebe8e87216cb60b8572eafa1e46c13fb87fb/examples/optiga/usecases/example_optiga_hmac_verify_with_authorization_reference.c",
+      "bytes": 14508,
+      "sha256": "d965c10922eff4f5cdbf576ae24a2523767a58d8bd8b13b8a269c714ab65c6a4",
+      "file": "optiga-auth-example.c",
+      "retrieval_batch": "retrievals-02.json"
+    },
+    {
+      "id": "optiga-protected-example.c",
+      "url": "https://raw.githubusercontent.com/Infineon/optiga-trust-m/03a3ebe8e87216cb60b8572eafa1e46c13fb87fb/examples/optiga/example_optiga_util_protected_update.c",
+      "retrieved_utc": "2026-10-18T19:27:57.460309+00:00",
+      "http_status": 200,
+      "final_url": "https://raw.githubusercontent.com/Infineon/optiga-trust-m/03a3ebe8e87216cb60b8572eafa1e46c13fb87fb/examples/optiga/example_optiga_util_protected_update.c",
+      "bytes": 18280,
+      "sha256": "b78f7f6dbf881cc99551212a847fbec0f159d247fb653b5fafa1a263847914f7",
+      "file": "optiga-protected-example.c",
+      "retrieval_batch": "retrievals-02.json"
+    },
+    {
+      "id": "tropic-parts.md",
+      "url": "https://raw.githubusercontent.com/tropicsquare/tropic01/90747cac7c0261408c0ca767d272894f481f2cf2/doc/pages/part-numbers.md",
+      "retrieved_utc": "2026-10-18T19:27:57.699634+00:00",
+      "http_status": 200,
+      "final_url": "https://raw.githubusercontent.com/tropicsquare/tropic01/90747cac7c0261408c0ca767d272894f481f2cf2/doc/pages/part-numbers.md",
+      "bytes": 4708,
+      "sha256": "a49777615d81fa1e5d49385a0a12555675b11e188e047dd8aa9f8ccb6daec1eb",
+      "file": "tropic-parts.md",
+      "retrieval_batch": "retrievals-02.json"
+    },
+    {
+      "id": "tropic-t310.md",
+      "url": "https://raw.githubusercontent.com/tropicsquare/tropic01/90747cac7c0261408c0ca767d272894f481f2cf2/doc/pages/parts/TR01-C2P-T310.md",
+      "retrieved_utc": "2026-10-18T19:27:57.923701+00:00",
+      "error": "HTTPError: HTTP Error 404: Not Found",
+      "http_status": 404,
+      "file": "tropic-t310.md",
+      "retrieval_batch": "retrievals-02.json"
+    },
+    {
+      "id": "tropic-t005.md",
+      "url": "https://raw.githubusercontent.com/tropicsquare/tropic01/90747cac7c0261408c0ca767d272894f481f2cf2/doc/pages/parts/TR01-B2S-T005.md",
+      "retrieved_utc": "2026-10-18T19:27:58.108358+00:00",
+      "http_status": 200,
+      "final_url": "https://raw.githubusercontent.com/tropicsquare/tropic01/90747cac7c0261408c0ca767d272894f481f2cf2/doc/pages/parts/TR01-B2S-T005.md",
+      "bytes": 4499,
+      "sha256": "dd4d3fa93532f9af4fffe15f378e2f1a7a273462455841ab50350e99f3e8efe7",
+      "file": "tropic-t005.md",
+      "retrieval_batch": "retrievals-02.json"
+    },
+    {
+      "id": "tropic-update.pdf",
+      "url": "https://raw.githubusercontent.com/tropicsquare/tropic01/90747cac7c0261408c0ca767d272894f481f2cf2/doc/application_notes/ODN_TR01_app_007_fw_update_1v5.pdf",
+      "retrieved_utc": "2026-10-18T19:27:58.328937+00:00",
+      "http_status": 200,
+      "final_url": "https://raw.githubusercontent.com/tropicsquare/tropic01/90747cac7c0261408c0ca767d272894f481f2cf2/doc/application_notes/ODN_TR01_app_007_fw_update_1v5.pdf",
+      "bytes": 358422,
+      "sha256": "5f96cc4507e1c61a2c12a79a32f73e4f35e35f564c06bde404219b2115e5e4b8",
+      "file": "tropic-update.pdf",
+      "retrieval_batch": "retrievals-02.json"
+    },
+    {
+      "id": "tropic-pairing.pdf",
+      "url": "https://raw.githubusercontent.com/tropicsquare/tropic01/90747cac7c0261408c0ca767d272894f481f2cf2/doc/application_notes/ODN_TR01_app_005_first_pairing_key_1v3.pdf",
+      "retrieved_utc": "2026-10-18T19:27:58.675721+00:00",
+      "http_status": 200,
+      "final_url": "https://raw.githubusercontent.com/tropicsquare/tropic01/90747cac7c0261408c0ca767d272894f481f2cf2/doc/application_notes/ODN_TR01_app_005_first_pairing_key_1v3.pdf",
+      "bytes": 181612,
+      "sha256": "f41942a27c17d455ebb73f0a74d95e1899e6f565dad131867ae91bc995b9960c",
+      "file": "tropic-pairing.pdf",
+      "retrieval_batch": "retrievals-02.json"
+    },
+    {
+      "id": "tropic-config.pdf",
+      "url": "https://raw.githubusercontent.com/tropicsquare/tropic01/90747cac7c0261408c0ca767d272894f481f2cf2/doc/application_notes/ODN_TR01_app_006_cfg_objects_1v3.pdf",
+      "retrieved_utc": "2026-10-18T19:27:58.976706+00:00",
+      "error": "HTTPError: HTTP Error 404: Not Found",
+      "http_status": 404,
+      "file": "tropic-config.pdf",
+      "retrieval_batch": "retrievals-02.json"
+    },
+    {
+      "id": "optiga-overview.md",
+      "url": "https://raw.githubusercontent.com/Infineon/optiga-trust-m-overview/a45b86bda014efeebfb85f084f779cedb07b32dc/README.md",
+      "retrieved_utc": "2026-10-18T19:27:59.188849+00:00",
+      "http_status": 200,
+      "final_url": "https://raw.githubusercontent.com/Infineon/optiga-trust-m-overview/a45b86bda014efeebfb85f084f779cedb07b32dc/README.md",
+      "bytes": 32135,
+      "sha256": "c21f196cbb6aa0ce362c81dea2c52442fe176f64db81e3fe32b577a29837ec75",
+      "file": "optiga-overview.md",
+      "retrieval_batch": "retrievals-02.json"
+    },
+    {
+      "id": "nip06.md",
+      "url": "https://raw.githubusercontent.com/nostr-protocol/nips/37db639582d857e12468dcccd99b2c7f1d657da9/06.md",
+      "retrieved_utc": "2026-10-18T19:27:59.421230+00:00",
+      "http_status": 200,
+      "final_url": "https://raw.githubusercontent.com/nostr-protocol/nips/37db639582d857e12468dcccd99b2c7f1d657da9/06.md",
+      "bytes": 1726,
+      "sha256": "a7d86f43c3723b7a67765e81910a2478007d4655024e2899a163a09e2c834b3a",
+      "file": "nip06.md",
+      "retrieval_batch": "retrievals-02.json"
+    },
+    {
+      "id": "nip19.md",
+      "url": "https://raw.githubusercontent.com/nostr-protocol/nips/37db639582d857e12468dcccd99b2c7f1d657da9/19.md",
+      "retrieved_utc": "2026-10-18T19:27:59.735768+00:00",
+      "http_status": 200,
+      "final_url": "https://raw.githubusercontent.com/nostr-protocol/nips/37db639582d857e12468dcccd99b2c7f1d657da9/19.md",
+      "bytes": 3952,
+      "sha256": "5b53c98637ae0cb8e6d99e1570e32da2c5842154ba898393439f334f1fd90aad",
+      "file": "nip19.md",
+      "retrieval_batch": "retrievals-02.json"
+    },
+    {
+      "id": "rfc5869.txt",
+      "url": "https://www.rfc-editor.org/rfc/rfc5869.txt",
+      "retrieved_utc": "2026-10-18T19:27:59.960298+00:00",
+      "http_status": 200,
+      "final_url": "https://www.rfc-editor.org/rfc/rfc5869.txt",
+      "bytes": 25854,
+      "sha256": "7a40eb3835b35fc947eb12a2ed614db079d43b26e50dbc537c31fba16397089c",
+      "file": "rfc5869.txt",
+      "retrieval_batch": "retrievals-02.json"
+    },
+    {
+      "id": "rfc8439.txt",
+      "url": "https://www.rfc-editor.org/rfc/rfc8439.txt",
+      "retrieved_utc": "2026-10-18T19:28:00.218649+00:00",
+      "http_status": 200,
+      "final_url": "https://www.rfc-editor.org/rfc/rfc8439.txt",
+      "bytes": 88847,
+      "sha256": "25bef70fbf7a07ff45c2fe4cb7c6ce954eac687413d8610603268b4e4415324c",
+      "file": "rfc8439.txt",
+      "retrieval_batch": "retrievals-02.json"
+    },
+    {
+      "id": "rfc8018.txt",
+      "url": "https://www.rfc-editor.org/rfc/rfc8018.txt",
+      "retrieved_utc": "2026-10-18T19:28:00.459231+00:00",
+      "http_status": 200,
+      "final_url": "https://www.rfc-editor.org/rfc/rfc8018.txt",
+      "bytes": 80887,
+      "sha256": "cf96b02e68216f618ea33b20b49d476edba9d70f2333597ec516629d22971cda",
+      "file": "rfc8018.txt",
+      "retrieval_batch": "retrievals-02.json"
+    },
+    {
+      "file": "tropic-config.pdf",
+      "url": "https://raw.githubusercontent.com/tropicsquare/tropic01/90747cac7c0261408c0ca767d272894f481f2cf2/doc/ODN_TR01_app_006_config_obj_1v3.pdf",
+      "retrieved_utc": "2026-10-18T19:34:41.992247+00:00",
+      "http_status": 404,
+      "final_url": "https://raw.githubusercontent.com/tropicsquare/tropic01/90747cac7c0261408c0ca767d272894f481f2cf2/doc/ODN_TR01_app_006_config_obj_1v3.pdf",
+      "content_type": "text/plain; charset=utf-8",
+      "bytes": 14,
+      "sha256": "d5558cd419c8d46bdc958064cb97f963d1ea793866414c025906ec15033512ed",
+      "retrieval_batch": "retrievals-03.json"
+    },
+    {
+      "file": "tropic-rng-errata.html",
+      "url": "https://tropic-ops.atlassian.net/wiki/external/OWMwYTIyNjBjYzI2NDY2M2I0NzU4NmZmYjhiNDkzODg",
+      "retrieved_utc": "2026-10-18T19:34:42.186696+00:00",
+      "http_status": 200,
+      "final_url": "https://tropic-ops.atlassian.net/wiki/external/OWMwYTIyNjBjYzI2NDY2M2I0NzU4NmZmYjhiNDkzODg",
+      "content_type": "text/html;charset=UTF-8",
+      "bytes": 28532,
+      "sha256": "11a3982a7708c8ae61d1325a054c4557364a46ccf24a0580923de55689e3aae7",
+      "retrieval_batch": "retrievals-03.json"
+    },
+    {
+      "file": "eucleak.pdf",
+      "url": "https://ninjalab.io/wp-content/uploads/2024/10/20241022_eucleak.pdf",
+      "retrieved_utc": "2026-10-18T19:34:42.556365+00:00",
+      "error": "HTTPSConnectionPool(host='ninjalab.io', port=443): Max retries exceeded with url: /wp-content/uploads/2024/10/20241022_eucleak.pdf (Caused by NameResolutionError(\"<urllib3.connection.HTTPSConnection object at 0x7fcc086c3ed0>: Failed to resolve 'ninjalab.io' ([Errno -3] Temporary failure in name resolution)\"))",
+      "retrieval_batch": "retrievals-03.json"
+    },
+    {
+      "file": "optiga-opn.html",
+      "url": "https://community.infineon.com/t5/Knowledge-Base-Articles/OPTIGA-Trust-M-Latest-OPN-status-and-active-variants/ta-p/1195051",
+      "retrieved_utc": "2026-10-18T19:34:42.643224+00:00",
+      "http_status": 403,
+      "final_url": "https://community.infineon.com/t5/Knowledge-Base-Articles/OPTIGA-Trust-M-Latest-OPN-status-and-active-variants/ta-p/1195051",
+      "content_type": "text/html; charset=UTF-8",
+      "bytes": 5827,
+      "sha256": "beddda2a2883811d9e16b2732b5bc19a4358670299c889ebc92c5f7bc6f8917d",
+      "retrieval_batch": "retrievals-03.json"
+    },
+    {
+      "file": "tropic-blog.html",
+      "url": "https://www.tropicsquare.com/blogs/potential-bypass-of-firmware-verification-by-laser-fault-injection",
+      "retrieved_utc": "2026-10-18T19:34:43.004559+00:00",
+      "http_status": 200,
+      "final_url": "https://www.tropicsquare.com/blogs/potential-bypass-of-firmware-verification-by-laser-fault-injection",
+      "content_type": "text/html; charset=utf-8",
+      "bytes": 90443,
+      "sha256": "23a597e7264ba01ec2a90ba0b9c7f2bee9ca0b2bd4d98ecebe98c2f0fa67f329",
+      "retrieval_batch": "retrievals-03.json"
+    },
+    {
+      "file": "libtropic-license.txt",
+      "url": "https://raw.githubusercontent.com/tropicsquare/libtropic/9085ea5387a8a1d5a946c7e4f633c7134e4909a7/LICENSE",
+      "retrieved_utc": "2026-10-18T19:34:43.191582+00:00",
+      "http_status": 404,
+      "final_url": "https://raw.githubusercontent.com/tropicsquare/libtropic/9085ea5387a8a1d5a946c7e4f633c7134e4909a7/LICENSE",
+      "content_type": "text/plain; charset=utf-8",
+      "bytes": 14,
+      "sha256": "d5558cd419c8d46bdc958064cb97f963d1ea793866414c025906ec15033512ed",
+      "retrieval_batch": "retrievals-03.json"
+    },
+    {
+      "file": "libtropic-api.h",
+      "url": "https://raw.githubusercontent.com/tropicsquare/libtropic/9085ea5387a8a1d5a946c7e4f633c7134e4909a7/include/libtropic.h",
+      "retrieved_utc": "2026-10-18T19:34:43.395203+00:00",
+      "http_status": 200,
+      "final_url": "https://raw.githubusercontent.com/tropicsquare/libtropic/9085ea5387a8a1d5a946c7e4f633c7134e4909a7/include/libtropic.h",
+      "content_type": "text/plain; charset=utf-8",
+      "bytes": 38314,
+      "sha256": "8222345edde8a58605d85f1a4f5f4327e17b6186e337f226a145f8e2a144e4fe",
+      "retrieval_batch": "retrievals-03.json"
+    },
+    {
+      "file": "tropic-config.pdf",
+      "url": "https://raw.githubusercontent.com/tropicsquare/tropic01/90747cac7c0261408c0ca767d272894f481f2cf2/doc/application_notes/ODN_TR01_app_006_config_obj_1v3.pdf",
+      "retrieved_utc": "2026-10-18T19:35:00.078974+00:00",
+      "http_status": 200,
+      "final_url": "https://raw.githubusercontent.com/tropicsquare/tropic01/90747cac7c0261408c0ca767d272894f481f2cf2/doc/application_notes/ODN_TR01_app_006_config_obj_1v3.pdf",
+      "content_type": "application/octet-stream",
+      "bytes": 277901,
+      "sha256": "09bcdcfe98d4615daa3239e0d3a48c68e2728e5997196384a6fc4d81bcc8ef31",
+      "retrieval_batch": "retrievals-04.json"
+    },
+    {
+      "file": "eucleak-iacr.pdf",
+      "url": "https://eprint.iacr.org/2024/1380.pdf",
+      "retrieved_utc": "2026-10-18T19:35:00.388932+00:00",
+      "http_status": 403,
+      "final_url": "https://eprint.iacr.org/2024/1380.pdf",
+      "content_type": "text/html; charset=UTF-8",
+      "bytes": 5455,
+      "sha256": "13c50b36929b2edb75fdeacb81fc7785186751a202f31e121968fc71c0e82d06",
+      "retrieval_batch": "retrievals-04.json"
+    },
+    {
+      "file": "libtropic-tree.json",
+      "url": "https://api.github.com/repos/tropicsquare/libtropic/git/trees/9085ea5387a8a1d5a946c7e4f633c7134e4909a7?recursive=1",
+      "retrieved_utc": "2026-10-18T19:35:00.496547+00:00",
+      "http_status": 200,
+      "final_url": "https://api.github.com/repos/tropicsquare/libtropic/git/trees/9085ea5387a8a1d5a946c7e4f633c7134e4909a7?recursive=1",
+      "content_type": "application/json; charset=utf-8",
+      "bytes": 606697,
+      "sha256": "fb943b016a04003d9d1f03983537d51c7d3583981fa948a0e003900b63ecbc90",
+      "retrieval_batch": "retrievals-04.json"
+    },
+    {
+      "file": "libtropic-license.txt",
+      "url": "https://raw.githubusercontent.com/tropicsquare/libtropic/9085ea5387a8a1d5a946c7e4f633c7134e4909a7/LICENSE.md",
+      "retrieved_utc": "2026-10-18T19:36:58.672107+00:00",
+      "http_status": 200,
+      "final_url": "https://raw.githubusercontent.com/tropicsquare/libtropic/9085ea5387a8a1d5a946c7e4f633c7134e4909a7/LICENSE.md",
+      "content_type": "text/plain; charset=utf-8",
+      "bytes": 1649,
+      "sha256": "199ead7fe72e0951ccad357756093cd4ad173c3636fdb9b2d5106016556018bc",
+      "retrieval_batch": "retrievals-05.json"
+    },
+    {
+      "file": "optiga-overview-tree.json",
+      "url": "https://api.github.com/repos/Infineon/optiga-trust-m-overview/git/trees/a45b86bda014efeebfb85f084f779cedb07b32dc?recursive=1",
+      "http_status": 200,
+      "retrieved_utc": "2026-10-18T19:38:20.604935+00:00",
+      "sha256": "4799fb0138c5b5cdc7d14de0dd9b1524afb2d7efe436635c0437f820cd24c5be",
+      "bytes": 9570,
+      "retrieval_batch": "retrievals-06.json"
+    }
+  ],
+  "web_only_readings": [
+    {
+      "id": "EUCLEAK",
+      "url": "https://ninjalab.io/wp-content/uploads/2024/10/20241022_eucleak.pdf",
+      "version": "2024-10-22",
+      "retrieved_utc": "2026-10-18",
+      "method": "web PDF extraction",
+      "read_scope": [
+        "chapter6.2 pp66\u201373 and conclusions scope"
+      ],
+      "raw_sha256": null,
+      "limitation": "Direct original DNS failure and IACR403 preserved; tool-readable extract is not a hash-bound full original. Physical adversarial evidence must obtain/pin the original before final admission.",
+      "finding": "Research observed Trust M ECDSA inversion leakage and inferred vulnerability from unchanged implementation/vendor response; it did not complete key extraction on that Trust M target. No HMAC extraction result is established by this paper."
+    },
+    {
+      "id": "IFX-OPN-WEB",
+      "url": "https://community.infineon.com/t5/Knowledge-Base-Articles/OPTIGA-Trust-M-Latest-OPN-status-and-active-variants/ta-p/1195051",
+      "version": "2026-03-16",
+      "method": "web HTML extraction",
+      "raw_sha256": null,
+      "finding": "A2 standard/extended-temperature OPNs listed NRND; current product page lists MK...TMB2 and ML...TMC1. Actual firmware/configuration equivalence to the reviewed release remains unproved. Direct fetch403 is preserved."
+    }
+  ],
+  "copyright_access": "Original PDFs and fetched source remain private. Public records contain identifiers, hashes and original analysis, not redistributed manuals. No credentials obtained, terms accepted, access controls bypassed, manufacturer contacted or purchases made."
+}
