@@ -4,21 +4,28 @@
   "scope": "pre-implementation specification",
   "author": "/root/t01_author",
   "reviewer": "/root",
-  "candidate_commit": "5043589737e8f60cfaf59a9fd405c92504146b4a",
-  "observed_utc": "2026-10-18T17:54:00Z",
-  "verdict": "changes_requested",
+  "candidate_commit": "03c2616518d6d9a32fe5cc9a945624a72cd32ac0",
+  "observed_utc": "2026-10-18T18:00:00Z",
+  "verdict": "pass",
+  "initial_review": {
+    "candidate": "5043589737e8f60cfaf59a9fd405c92504146b4a",
+    "review_commit": "3a7146225cb18a15af35bfb57dca0f9f06360f01",
+    "path": "docs/restart/implementation/reviews/T01-spec.json",
+    "sha256": "fd320fb4e34c0c8e38f3e240bd3c8f55bd536258af154e20b607127c81a968ea",
+    "verdict": "changes_requested"
+  },
   "bindings": [
     {
       "path": "docs/restart/implementation/T01/brief.md",
-      "sha256": "9c87c78a3008461b8104b7bcb0b4eb312ce841ee0c336c0bec1c8f2e43a18f39"
+      "sha256": "3b7d66fdda69172ea2797b60f49f44a92d6577a056fbd355bbcb6d84390d9634"
     },
     {
       "path": "docs/restart/implementation/T01/source-audit.json",
-      "sha256": "21f3b5e79344de48783e56dcef61ae5e3f806cfae75731a823668da3d4d869f1"
+      "sha256": "ead32c9c05218aafddfe4404b58187633d3b05736d794a3bbe615c08f1c7d765"
     },
     {
       "path": "docs/restart/implementation/T01/acceptance-plan.json",
-      "sha256": "dff2f39078baa4e410fbfff8cf452215955af71ee6e5ed1b1fe5f6e8f3ae610b"
+      "sha256": "c3dd85d0f7f684e349dc3c167bbf7d846742f392989904e0f1c56f12d399f13d"
     }
   ],
   "verified_inputs": {
@@ -38,20 +45,27 @@
     "Compact discovery cannot increase serial capacity or substitute a peer-selected manifest for a locally trusted artifact; strict raw JSON checks supplement schema checks.",
     "Exact A02 layout/source and S03 frozen parser/authorization API must be reconciled before code. Proposed acceptance commands are explicitly not yet implemented or executed."
   ],
-  "findings": [
+  "resolved_before_approval": [
     {
       "id": "T01-SPEC-01",
-      "required": "Preserve the canonical unknown hardware/operator inventory. Replace claims that physical resources are known unavailable with unknown/not identified for this task. No physical measurements are established; silence on the inventory question is not evidence of absence."
+      "resolution": "Brief, source audit and acceptance resource inventory now explicitly retain unknown/not identified hardware and operator resources. No physical measurement or resource absence is inferred."
     },
     {
       "id": "T01-SPEC-02",
-      "required": "Use nsealr.signing.v2 for the new envelope version 2, removing the inherited off-by-one document/wire naming. Preserve the retired v0/numeric-1 mapping only in pinned history. Independently versioned capability/account families and the contract inventory can retain their own v1."
+      "resolution": "New active device contract is nsealr.signing.v2 with numeric envelope 2. Retired v0/numeric-1 is historical only; separate inventory/capability/account revisions remain explicit."
     },
     {
       "id": "T01-SPEC-03",
-      "required": "Clarify and test full/reference semantic equality for representable states. If a changed runtime state cannot be expressed by the bounded compact form, make discovery/operation unavailable on that constrained transport; do not inherit an available static default."
+      "resolution": "Full/reference equality is required for representable runtime states; incomplete, unrepresentable or oversized deltas invalidate the prior route and refuse constrained discovery/operation. New independent case S-07 covers this failure without widening the transport cap. Observable route invalidation supplements the device's mandatory fresh observation at execution; an unreported device change is never trusted host consent."
     }
   ],
-  "implementation_authorization": "None at this candidate. Return a narrow revision of the three preparation files for exact-candidate review; keep product code unchanged. Even specification approval will retain the separate exact A02/S03 tuple and writable-scope reconciliation precondition.",
+  "revision_checks": {
+    "changed_paths": "Exactly the same three preparation files; no product code.",
+    "criteria": "All five acceptance mappings unchanged.",
+    "cases": "All 41 prior case IDs retained; only S-01 wording clarified and S-07 added, giving 42 cases. Other original cases are byte-equivalent JSON values.",
+    "source_inputs": "The complete 44-file source audit binding array is unchanged from independently checked initial candidate.",
+    "candidate_bindings": "All three revised file SHA-256 hashes independently recomputed from immutable Git objects."
+  },
+  "implementation_authorization": "The exact revised specification is approved. Product edits remain on hold until root records the reconciled actual A02 source/layout/contract artifact, frozen S03 parser/authorization API, exact input tuple and owned writable scope. No second contract copy, moving-source edit, widened memory limit or unreviewed compatibility shim is authorized.",
   "limits": "Preparation review only. No T01 runtime acceptance, product signing, physical property, release admission or external certification."
 }
