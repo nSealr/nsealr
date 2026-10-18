@@ -1,0 +1,124 @@
+{
+  "schema_version": 1,
+  "verdict": "changes_requested",
+  "candidate": "ae01a32e8e0aab335115bbd17caad27f29122709",
+  "recorded_at": "2026-10-18T16:44:25.086967+00:00",
+  "author": "/root/baseline_execution",
+  "reviewer": "/root/independent_bridge_review",
+  "brief_sha256": "009902d3534adfe3287eea01f5dab17af65ad9f9be143a9ef90302905e4e233f",
+  "findings": [
+    {
+      "id": "I01",
+      "acceptance_blocker": true,
+      "title": "Missing core SOURCE silently disables provenance and complete inventory checks",
+      "failed_cases": [
+        "missing_SOURCE_json",
+        "missing_SOURCE_and_real_v1_vector"
+      ]
+    },
+    {
+      "id": "I02",
+      "acceptance_blocker": true,
+      "title": "Dotfile bytes can differ from upstream after local manifest hash update",
+      "failed_cases": [
+        "gitkeep_tamper_recomputed_manifest"
+      ],
+      "impact_limit": "Current affected dotfile is a placeholder, not a demonstrated runtime protocol vulnerability"
+    }
+  ],
+  "independent_probe": {
+    "cases": 20,
+    "expected_controls_passed": 17,
+    "unexpected_acceptances": 3
+  },
+  "commands": [
+    {
+      "argv": [
+        "/home/tux/nsealr/.restart-tools/goal/r00/tools/baseline/.work/final/.tools/python/bin/python3",
+        "docs/restart/implementation/reviews/S01-integration/probe.py"
+      ],
+      "cwd": "/home/tux/nsealr/.restart-tools/goal/s01-integration-review",
+      "environment_additions": {
+        "PYTHONDONTWRITEBYTECODE": "1"
+      },
+      "exit_code": 1,
+      "log": "probe.log"
+    },
+    {
+      "argv": [
+        "/home/tux/nsealr/.restart-tools/goal/r00/tools/baseline/.work/final/.tools/python/bin/python3",
+        "docs/restart/implementation/reviews/S01-integration/audit.py"
+      ],
+      "cwd": "/home/tux/nsealr/.restart-tools/goal/s01-integration-review",
+      "environment_additions": {
+        "PYTHONDONTWRITEBYTECODE": "1"
+      },
+      "exit_code": 0,
+      "log": "audit.log"
+    },
+    {
+      "argv": [
+        "gh",
+        "pr",
+        "view",
+        "15",
+        "--repo",
+        "nSealr/nsealr",
+        "--json",
+        "headRefOid,isDraft,mergeStateStatus,statusCheckRollup"
+      ],
+      "exit_code": 0,
+      "output": "github-pr.json"
+    }
+  ],
+  "timestamp_note": "recorded_at is report creation, not an invented command start timestamp; both Python tool calls completed in under one second. Exact argv, outputs and exit codes are preserved.",
+  "runtime": {
+    "python_path": "/home/tux/nsealr/.restart-tools/goal/r00/tools/baseline/.work/final/.tools/python/bin/python3",
+    "python_version": "Python 3.12.15",
+    "python_binary_sha256": "eaaa308032c4aa063df5880c4c293cd458b4629d503fbc2c03ec163d71f7f790",
+    "reuse": "read-only pinned executable; no third-party modules or dependency caches"
+  },
+  "limits": [
+    "Author full suites hash-assessed, not independently rerun.",
+    "No physical, external-client or installed-browser approval.",
+    "Later rebase onto newer main is not covered."
+  ],
+  "artifacts": [
+    {
+      "path": ".gitignore",
+      "sha256": "3cba886152bff7a7f8618aaa079dbb9aeee4b0214d890efa7154838f2cf42ebb"
+    },
+    {
+      "path": "audit-result.json",
+      "sha256": "8e5ff7ef5d2a854c7b58eb4b4217d7d8642f751d8605dfd41b34e458f66aa513"
+    },
+    {
+      "path": "audit.log",
+      "sha256": "8e5ff7ef5d2a854c7b58eb4b4217d7d8642f751d8605dfd41b34e458f66aa513"
+    },
+    {
+      "path": "audit.py",
+      "sha256": "d3201aca38c4adaafae06bb016389d2d9a5237091cc6c715f0894b08e8214bcc"
+    },
+    {
+      "path": "github-pr.json",
+      "sha256": "a8e344156fe6e375f7a070fb8936fa73a6285cc08f373bdf9dbe6c5b215b076a"
+    },
+    {
+      "path": "probe-result.json",
+      "sha256": "5ab9527757ee87a53980cae5bd7d04cff3b65ad10cb8593b13ba8e437dacb360"
+    },
+    {
+      "path": "probe.log",
+      "sha256": "af20de3800dace7ca034ed5202954ae85364610cc5597cdf62a5aa1902889116"
+    },
+    {
+      "path": "probe.py",
+      "sha256": "39bce90e92a473930768d7b92aa76b70c8163ad495ea8fbdd1e9976e65ab4caf"
+    },
+    {
+      "path": "review.md",
+      "sha256": "9149657f3c07125d9a9f0555ff62fa7aede3899597712edc5aaeab30c419e504"
+    }
+  ]
+}
