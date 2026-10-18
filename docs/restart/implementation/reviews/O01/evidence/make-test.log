@@ -1,0 +1,19 @@
+python3 scripts/verify_repo.py
+nSealr nsealr baseline verification passed
+python3 scripts/validate_restart_plan.py
+Restart plan valid: 47 tasks; ready: A02
+Structural check only; hardware, review quality and security remain evidence gates.
+python3 -m unittest discover -s scripts -p 'test_validate_restart_plan.py'
+..................
+----------------------------------------------------------------------
+Ran 18 tests in 0.004s
+
+OK
+python3 -m unittest discover -s tools/baseline -p 'test_*.py'
+negative: ['/usr/bin/python3', '-c', 'import sys; print("out"); print("diagnostic", file=sys.stderr); sys.exit(7)']
+.download file:///tmp/tmp5xo9ikp5/source
+...
+----------------------------------------------------------------------
+Ran 4 tests in 0.046s
+
+OK
