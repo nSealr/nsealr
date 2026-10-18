@@ -1,0 +1,703 @@
+{
+  "schema_version": 1,
+  "task": "S04",
+  "protocol": "TM-HMAC-1 revision1",
+  "status": "DOCUMENTARY_EXPERIMENT_NOT_IMPLEMENTATION_ACCEPTED",
+  "product_disposition": "Fails practical reusable-Board acceptance until G02/G05 resolved; not an alternate selected profile",
+  "author": "/root/s04_custody_author",
+  "source_base": "f2ef70f522af4977e15f81554a8c6eadcdbe8097",
+  "source_context": "source-audit.json",
+  "resource_availability": "UNKNOWN",
+  "dimensions": {
+    "mcu_persistent": [
+      "two untrusted272-byte slots in independently erasable regions",
+      "PBS64 in H02-protected store",
+      "owner root manifest and antirollback/debug data: exact H02 format unavailable"
+    ],
+    "se_persistent": [
+      "Kp32 immutable PRESSEC F1D0",
+      "Q128 BSTR F1D1",
+      "A32 AUTOREF F1D2",
+      "F1D3 public host-freshness nonce32; full-protected write/read after every new channel",
+      "C/threshold8 E120",
+      "L/threshold8 E121",
+      "PBS64 E140",
+      "fixed operational metadata with D8=NEV",
+      "retained manufacturer objects and firmware authority"
+    ],
+    "volatile": [
+      "local PIN <=12",
+      "one A/challenge/AUTO state",
+      "one Q/R/PRK/Kv/M/D working flow",
+      "original scalar active session",
+      "operation grants and display buffers",
+      "one driver channel/session; no hibernate serialization"
+    ],
+    "off_device": [
+      "native nsec original scalar",
+      "independently retained full32-byte expected P",
+      "MCU owner signing/recovery credentials, not derived from identity",
+      "vendor-held SE firmware authority, not an MCU owner credential"
+    ]
+  },
+  "bounds": {
+    "identities": 1,
+    "vault_slots": 2,
+    "slot_bytes": 272,
+    "header_bytes": 160,
+    "plaintext_bytes": 96,
+    "tag_bytes": 16,
+    "release_record_bytes": 128,
+    "pin_min_digits": 8,
+    "pin_max_digits": 12,
+    "attempt_counter_initial": 0,
+    "attempt_threshold": 11,
+    "max_credential_queries_before_success": 10,
+    "lifetime_initial": 0,
+    "lifetime_threshold": 2049,
+    "max_combined_kp_and_auto_uses": 2048,
+    "normal_unlock_uses": 2,
+    "generation_initial": 1,
+    "generation_max": 18446744073709551615,
+    "owned_small_data_objects": 4,
+    "small_data_objects_available": 12,
+    "small_object_capacity": 140,
+    "owned_counters": 2,
+    "counters_available": 4,
+    "same_chip_post_retirement_reenrollments": 0,
+    "single_command_timeout_ms": 10000,
+    "unlock_timeout_ms_excluding_input": 60000,
+    "automatic_retries_after_unknown_dispatch": 0,
+    "custody_working_set_budget_unmeasured": 4096,
+    "counter_count_field_bits": 32,
+    "counter_threshold_field_bits": 32,
+    "threshold_field_representable_max": 4294967295,
+    "manual_counter_update_endurance_rating": 600000,
+    "manual_aggregate_object_update_endurance_rating": 2000000,
+    "unlock_or_retirement_preflight_remaining_uses": 2,
+    "pin_change_preflight_remaining_uses": 6,
+    "pending_repair_preflight_remaining_uses": 5,
+    "lifetime_policy_basis": "Chosen conservative experiment threshold following RM6.5.6 per-secret2048-use recommendation; not immutable hardware limit or endurance rating"
+  },
+  "assumptions_requiring_proof": [
+    "All Kp/A uses enforce linked counters before useful output; C cannot be reset without live AUTO",
+    "No counter decrement/clone/rollback or alternate command extraction under claimed attacker",
+    "Full Q/A writes after power cut produce old,new or invalid, never unauthorized valid content; no cross-object atomicity assumed",
+    "AUTO is reset before locked state and external interfaces; MCU-only reset not sufficient by assumption",
+    "Trusted firmware erases every owned original/copy; no hostile app isolation",
+    "Fresh qualified entropy for Kp/PBS/E/R/N/D and source reconciliation before implementation",
+    "Exact H02 root/storage map and H02S part tuple available before consumer",
+    "Driver exposes every channel re-establishment, full-protection setting reapplied every call, fresh F1D3 nonce verified, no application hibernate restore or transparent APDU re-execution"
+  ],
+  "invariants": [
+    "I01: No ordinary identity activation until actual P from original D matches authenticated H/M and current Q selection",
+    "I02: Host snapshot never restores C/L/Q or chooses a vault independently of current Q",
+    "I03: Failed/uncertain credential operations never refund counters or produce operation authority",
+    "I04: Locked state implies no live AUTO/credential/scalar under the proved reset contract",
+    "I05: Pending PIN change old-PIN authentication can only finish transition, not open ordinary session/export",
+    "I06: Every newly encrypted vault uses fresh R/N; generation never wraps; identical prepared-byte replay is not re-encryption",
+    "I07: C reset writes exactly count0,threshold11 under AUTO; L never resets",
+    "I08: D recovery bytes survive signing normalization and backup is always local",
+    "I09: Retired/exhausted chip never silently becomes reusable or physically erased",
+    "I10: MCU owner root differs from vendor SE firmware authority; no root replacement silently inherits custody",
+    "I11: All unknown/corrupt critical persistent state disables custody and directs independent local recovery",
+    "I12: Simulator/documentary state labels never constitute owner-secured/product-qualified physical evidence",
+    "I13: Fresh host nonce32 is verified through protected F1D3 write/read after every new/re-established shielded V1 channel before custody; saved application context never restored"
+  ],
+  "transitions": [
+    {
+      "id": "T01",
+      "from": [
+        "DEVELOPER_EMPTY"
+      ],
+      "event": "begin enrollment",
+      "guard": "Exact part, source tuple, entropy and future hardware authorization gates passed; no production identity yet",
+      "ordered_effects": [
+        "Create E/Kp/PBS/D/R and PIN in owned transient buffers",
+        "Derive actual P; stage vault, A and Q under factory policy",
+        "Configure C=0,threshold11; L=0,threshold2049; then harden every owned object",
+        "Read complete policies; clear/reset both chips; independently verify local nsec recovery"
+      ],
+      "success": "LOCKED_EXPERIMENT",
+      "uncertain_outcome": "QUARANTINED_ENROLLMENT; no permissive resume or success label"
+    },
+    {
+      "id": "T02",
+      "from": [
+        "LOCKED_EXPERIMENT"
+      ],
+      "event": "enter local PIN",
+      "guard": "trusted boot; jointly reset/cleared AUTO; exact consistent headers; sufficient observed L; local PIN grammar",
+      "ordered_effects": [
+        "OpenApplication0x00 clean context; shielded V1 new channel; fresh host nonce32 full-protected write/read F1D3 before Kp, no hidden re-handshake",
+        "Kp HMAC: advance C then L subject to real permission semantics; return A only if allowed",
+        "Fresh challenge; AUTO proof consumes L",
+        "If proof succeeds read Q; select exact hash; verify AEAD and D/P identity",
+        "Reset C only after full checks",
+        "Clear AUTO and transient A/R/Q/Kv/PIN/channel session before activate D"
+      ],
+      "success": "UNLOCKED",
+      "uncertain_outcome": "RESET_REQUIRED; no host rollback of C/L or automatic command replay"
+    },
+    {
+      "id": "T03",
+      "from": [
+        "LOCKED_EXPERIMENT"
+      ],
+      "event": "wrong PIN",
+      "guard": "same initial guards",
+      "ordered_effects": [
+        "Consume Kp query cost",
+        "AUTO proof fails and clears AUTO; its L cost remains",
+        "Clear temporary A/PIN/challenge; return only local failure"
+      ],
+      "success": "LOCKED_EXPERIMENT",
+      "uncertain_outcome": "RESET_REQUIRED; count may have advanced; do not refund"
+    },
+    {
+      "id": "T04",
+      "from": [
+        "LOCKED_EXPERIMENT"
+      ],
+      "event": "query after ten failed credential queries",
+      "guard": "C=10 and no live A/Auto",
+      "ordered_effects": [
+        "Attempt to advance C to11 must deny credential output; exact off-by-one gate",
+        "No workaround by rereading host journal or correct-PIN exception"
+      ],
+      "success": "ATTEMPT_EXHAUSTED",
+      "uncertain_outcome": "RECOVERY_REQUIRED if count/permission result cannot be established"
+    },
+    {
+      "id": "T05",
+      "from": [
+        "LOCKED_EXPERIMENT",
+        "UNLOCKED"
+      ],
+      "event": "lifetime budget unavailable",
+      "guard": "L cannot support the required full sequence",
+      "ordered_effects": [
+        "No new credential/maintenance bypass",
+        "Clear session and display local retirement/recovery condition"
+      ],
+      "success": "LIFETIME_EXHAUSTED",
+      "uncertain_outcome": "RECOVERY_REQUIRED"
+    },
+    {
+      "id": "T06",
+      "from": [
+        "UNLOCKED"
+      ],
+      "event": "sign/decrypt request",
+      "guard": "S03/K01 exact per-operation review and physical authority; correct active D",
+      "ordered_effects": [
+        "Use original D only through reviewed crypto adapter",
+        "Consume one operation authorization; preserve original recovery D independently",
+        "Clear backend temporary copies on completion/error"
+      ],
+      "success": "UNLOCKED",
+      "uncertain_outcome": "LOCKED_EXPERIMENT after proved cleanup, otherwise RESET_REQUIRED"
+    },
+    {
+      "id": "T07",
+      "from": [
+        "UNLOCKED"
+      ],
+      "event": "local native backup export",
+      "guard": "Separate conspicuous local recovery flow and local consent; target display qualified",
+      "ordered_effects": [
+        "Encode original D as canonical nsec",
+        "Show only locally; no Bridge/USB copy",
+        "Clear text/framebuffers/controller copies under target contract"
+      ],
+      "success": "UNLOCKED",
+      "uncertain_outcome": "RESET_REQUIRED; never log or fall back to host export"
+    },
+    {
+      "id": "T08",
+      "from": [
+        "UNLOCKED"
+      ],
+      "event": "lock/cancel/timeout/account change",
+      "guard": "none",
+      "ordered_effects": [
+        "Invalidate operation grants and cached secret-bearing state",
+        "Clear original D and all owned crypto/input/display copies",
+        "Clear AUTO and verify SE reset; no hibernate restoration"
+      ],
+      "success": "LOCKED_EXPERIMENT",
+      "uncertain_outcome": "RESET_REQUIRED; must not announce locked while clear/reset uncertain"
+    },
+    {
+      "id": "T09",
+      "from": [
+        "LOCKED_EXPERIMENT"
+      ],
+      "event": "MCU-only reset",
+      "guard": "none",
+      "ordered_effects": [
+        "Treat SE authorization as possibly retained",
+        "Block external interfaces and custody release",
+        "Perform proved joint SE reset/authorization-clear before normal boot"
+      ],
+      "success": "LOCKED_EXPERIMENT",
+      "uncertain_outcome": "RESET_REQUIRED"
+    },
+    {
+      "id": "T10",
+      "from": [
+        "UNLOCKED"
+      ],
+      "event": "begin PIN change",
+      "guard": "separate local flow; fresh old-PIN proof; new PIN entered twice; new differs; G not max; enough L",
+      "ordered_effects": [
+        "Reset C under old AUTO; derive A_new with Kp spending C/L",
+        "Fresh R/N; build G+1 header and encrypted slot",
+        "Durably write inactive slot; readback and AEAD-check it"
+      ],
+      "success": "CHANGE_PREPARED",
+      "uncertain_outcome": "Old Q/A remain authoritative if intact; otherwise recovery; incomplete new slot not active"
+    },
+    {
+      "id": "T11",
+      "from": [
+        "CHANGE_PREPARED"
+      ],
+      "event": "commit vault generation",
+      "guard": "old AUTO; new slot valid and durable",
+      "ordered_effects": [
+        "Full Q_new write containing new H hash/R/A_target",
+        "Readback Q; old or new exact content distinguished, invalid rejected"
+      ],
+      "success": "CHANGE_Q_COMMITTED",
+      "uncertain_outcome": "Old Q selects old slot; new Q selects only new slot; invalid Q => RECOVERY_REQUIRED"
+    },
+    {
+      "id": "T12",
+      "from": [
+        "CHANGE_Q_COMMITTED"
+      ],
+      "event": "commit PIN credential",
+      "guard": "Q_new and matching new slot validated",
+      "ordered_effects": [
+        "Full A_target replacement",
+        "Clear AUTO",
+        "Fresh challenge proof using A_target",
+        "Reset C to0,threshold11; clear/reset again"
+      ],
+      "success": "CHANGE_A_COMMITTED",
+      "uncertain_outcome": "A may be old/new/invalid; no ordinary session until reconciled"
+    },
+    {
+      "id": "T13",
+      "from": [
+        "CHANGE_A_COMMITTED"
+      ],
+      "event": "finish PIN change",
+      "guard": "fresh new-PIN unlock verifies Q/new slot/P and cleanup",
+      "ordered_effects": [
+        "Report new PIN active",
+        "Only now erase old MCU slot",
+        "Clear transaction copies"
+      ],
+      "success": "LOCKED_EXPERIMENT",
+      "uncertain_outcome": "New Q/A remain authoritative; missing/corrupt current slot => recovery"
+    },
+    {
+      "id": "T14",
+      "from": [
+        "LOCKED_EXPERIMENT"
+      ],
+      "event": "resume pending change with old PIN",
+      "guard": "old A proof succeeds; Q.A_target differs from input A; matching new slot valid",
+      "ordered_effects": [
+        "Use Q.A_target and R to validate new vault without ordinary session/export",
+        "Finish A replacement and fresh proof; clear/reset",
+        "Require new-PIN unlock before completion"
+      ],
+      "success": "CHANGE_A_COMMITTED",
+      "uncertain_outcome": "No available matching slot or invalid A/Q => RECOVERY_REQUIRED"
+    },
+    {
+      "id": "T15",
+      "from": [
+        "LOCKED_EXPERIMENT"
+      ],
+      "event": "boot snapshot rollback",
+      "guard": "any old/new/mixed host slots",
+      "ordered_effects": [
+        "Do not trust host commit marker",
+        "After permitted authentication require current Q header hash",
+        "Old-only or inconsistent slots never cause old Q/A/counter restoration"
+      ],
+      "success": "LOCKED_EXPERIMENT if current selected slot verifies; else RECOVERY_REQUIRED",
+      "uncertain_outcome": "No fallback or inferred latest generation from host metadata"
+    },
+    {
+      "id": "T16",
+      "from": [
+        "UNLOCKED"
+      ],
+      "event": "authenticated destructive retirement",
+      "guard": "independent recovery exists; separate local destructive consent; fresh PIN proof",
+      "ordered_effects": [
+        "Write tombstone Q and readback before terminating access",
+        "Clear AUTO/session/plaintext; erase both MCU slots",
+        "Set C0=0x0f in order Q(F1D1),A(F1D2),Kp(F1D0),C(E120),L(E121),freshness(F1D3),PBS(E140); check each acknowledgement/available metadata readback",
+        "After final chip step remove MCU PBS; channel loss is not an authenticated acknowledgement; any uncertain step stops"
+      ],
+      "success": "RETIRED_TERMINAL",
+      "uncertain_outcome": "RETIREMENT_UNCERTAIN; do not claim complete erasure or reuse"
+    },
+    {
+      "id": "T17",
+      "from": [
+        "ATTEMPT_EXHAUSTED",
+        "LIFETIME_EXHAUSTED",
+        "RECOVERY_REQUIRED"
+      ],
+      "event": "lost-PIN reset request",
+      "guard": "no valid AUTO",
+      "ordered_effects": [
+        "No route replenishes counts or replaces A while old Q/Kp survive",
+        "refuse claimed factory reset"
+      ],
+      "success": "RETIRED_UNVERIFIED_REMANENCE",
+      "uncertain_outcome": "MCU erase/termination can retire use but cannot establish authenticated Q overwrite/physical erasure"
+    },
+    {
+      "id": "T18",
+      "from": [
+        "RECOVERY_REQUIRED",
+        "RETIRED_TERMINAL",
+        "RETIRED_UNVERIFIED_REMANENCE",
+        "ATTEMPT_EXHAUSTED",
+        "LIFETIME_EXHAUSTED"
+      ],
+      "event": "local native restore on fresh target",
+      "guard": "independent nsec and full expected P; new target separately admitted",
+      "ordered_effects": [
+        "Validate scalar, preserve original bytes and derive actual full P",
+        "Compare independent expected P locally",
+        "New E/PIN/R/PBS/SE generation; preserve identity D only",
+        "Cancel old transport identity/account bindings"
+      ],
+      "success": "DEVELOPER_EMPTY -> T01 for new target",
+      "uncertain_outcome": "Mismatch rejects; no host plaintext input fallback"
+    },
+    {
+      "id": "T19",
+      "from": [
+        "LOCKED_EXPERIMENT"
+      ],
+      "event": "same-owner MCU firmware update",
+      "guard": "H02 actual verified boot/root/rollback/recovery mechanism; compatible custody schema",
+      "ordered_effects": [
+        "Cancel/clear all authority",
+        "Verify complete signed image and allowed version before activation",
+        "Interrupted update boots allowed complete image or no-custody recovery",
+        "Recheck same SE policies and slots before PIN path"
+      ],
+      "success": "LOCKED_EXPERIMENT",
+      "uncertain_outcome": "FIRMWARE_RECOVERY_NO_CUSTODY"
+    },
+    {
+      "id": "T20",
+      "from": [
+        "LOCKED_EXPERIMENT",
+        "UNLOCKED"
+      ],
+      "event": "MCU owner-root replacement",
+      "guard": "separate owner-authorized transition plus H02 proof; this protocol cannot retain custody",
+      "ordered_effects": [
+        "Retire old custody/object set via T16 if possible",
+        "No privileged PBS/vault inheritance",
+        "Fresh supported enrollment under new roots only"
+      ],
+      "success": "RETIRED_TERMINAL",
+      "uncertain_outcome": "If old retirement unprovable, no claim of erase/reusable owner transfer"
+    },
+    {
+      "id": "T21",
+      "from": [
+        "LOCKED_EXPERIMENT"
+      ],
+      "event": "SE replacement/PBS loss/UID mismatch",
+      "guard": "none",
+      "ordered_effects": [
+        "Fail binding and disable custody",
+        "No vendor/default PBS fallback",
+        "Use independent local recovery on new admitted target"
+      ],
+      "success": "RECOVERY_REQUIRED",
+      "uncertain_outcome": "No migration success"
+    },
+    {
+      "id": "T22",
+      "from": [
+        "LOCKED_EXPERIMENT",
+        "UNLOCKED"
+      ],
+      "event": "SE firmware/applet update",
+      "guard": "Not authorized/specified for TM-HMAC-1 exact standard OPN",
+      "ordered_effects": [
+        "Lock/cancel",
+        "Do not confuse object ProtectedUpdate with firmware update",
+        "Require separate vendor authority/access/retention/rollback specification"
+      ],
+      "success": "BLOCKED_SE_MAINTENANCE",
+      "uncertain_outcome": "No update or retained-custody claim"
+    },
+    {
+      "id": "T23",
+      "from": [
+        "DEVELOPER_EMPTY"
+      ],
+      "event": "enable owner-secured lifecycle label",
+      "guard": "H02 MCU and H02S SE proofs plus exact reviewed construction not currently present",
+      "ordered_effects": [
+        "Erase developer secret material and revoke debug/recovery as actually proved",
+        "Bind owner root/config and complete enrollment readback"
+      ],
+      "success": "OWNER_SECURED only in future evidence-backed profile",
+      "uncertain_outcome": "Blocked today; a state label is not evidence"
+    },
+    {
+      "id": "T24",
+      "from": [
+        "OWNER_SECURED"
+      ],
+      "event": "enable product-qualified label",
+      "guard": "V02 host and V03 actual custom assemblies; UX/recovery/entropy/negative tests passed",
+      "ordered_effects": [
+        "Bind hardware revisions, builds, operator and exact reports",
+        "Independent review and coordinator integration"
+      ],
+      "success": "PRODUCT_QUALIFIED only in future admitted architecture",
+      "uncertain_outcome": "Blocked for TM-HMAC-1 reusable Board because G02 unresolved"
+    }
+  ],
+  "fault_cuts": [
+    {
+      "id": "F01",
+      "cut": "MCU inactive-slot erase/write",
+      "possible_persistent_state": "old Q/A",
+      "required_outcome": "old slot works if intact; staged partial/new never active"
+    },
+    {
+      "id": "F02",
+      "cut": "new-slot readback before Q dispatch",
+      "possible_persistent_state": "old Q/A",
+      "required_outcome": "old PIN works; discard incomplete preparation"
+    },
+    {
+      "id": "F03",
+      "cut": "Q write not accepted",
+      "possible_persistent_state": "old Q/A",
+      "required_outcome": "old slot/old PIN; new slot not selected"
+    },
+    {
+      "id": "F04",
+      "cut": "Q write power loss or lost response",
+      "possible_persistent_state": "Q in {old,new,invalid}; A old",
+      "required_outcome": "old=>old; new=>pending old-PIN repair selects new; invalid=>recovery"
+    },
+    {
+      "id": "F05",
+      "cut": "A replacement not accepted after new Q",
+      "possible_persistent_state": "Q new; A old",
+      "required_outcome": "pending repair only; old PIN grants no ordinary session"
+    },
+    {
+      "id": "F06",
+      "cut": "A replacement power loss/lost response",
+      "possible_persistent_state": "Q new; A in {old,new,invalid}",
+      "required_outcome": "old=>pending repair; new=>newPIN; invalid=>recovery"
+    },
+    {
+      "id": "F07",
+      "cut": "C reset power loss",
+      "possible_persistent_state": "C in {old,new,invalid}; L never refunded",
+      "required_outcome": "old may deny next attempt; new allowed only if threshold11; invalid=>recovery"
+    },
+    {
+      "id": "F08",
+      "cut": "Kp command result lost",
+      "possible_persistent_state": "C/L may advance; A not available",
+      "required_outcome": "no automatic retry/refund; full reset; next local action costs another query"
+    },
+    {
+      "id": "F09",
+      "cut": "AUTO proof/read-Q result lost",
+      "possible_persistent_state": "AUTO possibly retained; counters spent",
+      "required_outcome": "force joint reset before lock/interface; no ordinary session"
+    },
+    {
+      "id": "F10",
+      "cut": "AUTO clear result lost",
+      "possible_persistent_state": "AUTO unknown",
+      "required_outcome": "RESET_REQUIRED; hardware reset proof mandatory"
+    },
+    {
+      "id": "F11",
+      "cut": "tombstone write power loss",
+      "possible_persistent_state": "Q in {old,tombstone,invalid}",
+      "required_outcome": "old=>not erased; tombstone=>old vault factor unavailable via normal interface; invalid=>uncertain; no success"
+    },
+    {
+      "id": "F12",
+      "cut": "SE termination or PBS deletion interruption",
+      "possible_persistent_state": "mixed terminated/live objects, PBS may be lost",
+      "required_outcome": "RETIREMENT_UNCERTAIN; no same-chip reuse or physical-erasure claim"
+    },
+    {
+      "id": "F13",
+      "cut": "MCU firmware update/owner reset power loss",
+      "possible_persistent_state": "H02-specific state unknown",
+      "required_outcome": "verified allowed old/new image or no-custody recovery; no invented MCU atomicity"
+    },
+    {
+      "id": "F14",
+      "cut": "any flash or SE valid state restored by physical fault",
+      "possible_persistent_state": "possible violation of model",
+      "required_outcome": "fail H02S/V02; no software reinterpretation as safe"
+    }
+  ],
+  "adversarial_traces": [
+    {
+      "id": "A01",
+      "attempt": "public PIN HMAC challenge plus guessed PIN key",
+      "risk": "offline oracle",
+      "required_disposition": "Rejected alternative; random SE Kp derives A instead"
+    },
+    {
+      "id": "A02",
+      "attempt": "read Q after MCU-only reset retains AUTO",
+      "risk": "release bypass",
+      "required_disposition": "Joint reset/clear gate; fail candidate if not enforceable"
+    },
+    {
+      "id": "A03",
+      "attempt": "SDK HMAC default command-only protection",
+      "risk": "bus leaks A",
+      "required_disposition": "Explicit full protection and negative downgrade trace"
+    },
+    {
+      "id": "A04",
+      "attempt": "SetDataObject resets C without AUTO",
+      "risk": "unlimited PIN guesses",
+      "required_disposition": "Permission must deny; direct counter threshold change under active AUTO is an acknowledged hostile-unlocked-MCU limit"
+    },
+    {
+      "id": "A05",
+      "attempt": "protected metadata update resets C/A while Q survives",
+      "risk": "reset backdoor",
+      "required_disposition": "No D8 path in experiment; reusable alternative remains blocked"
+    },
+    {
+      "id": "A06",
+      "attempt": "raw/chained HMAC, derive-key, other hash modes or reused final",
+      "risk": "multiple credentials per counted query",
+      "required_disposition": "Enumerate all accessible command paths and reject if alternate path bypasses counter/output restrictions"
+    },
+    {
+      "id": "A07",
+      "attempt": "old MCU ciphertext after PIN change",
+      "risk": "old PIN resurrects identity",
+      "required_disposition": "Current Q hash/factor required; no old slot fallback"
+    },
+    {
+      "id": "A08",
+      "attempt": "replayed AUTO proof/session message",
+      "risk": "retained authority",
+      "required_disposition": "One-use challenge, bound E/domain, verified channel and reset; exact driver gate"
+    },
+    {
+      "id": "A09",
+      "attempt": "replace Q/header public P with attacker identity",
+      "risk": "identity substitution",
+      "required_disposition": "AEAD, Q-selected H and actual D-derived P plus independent recovery P"
+    },
+    {
+      "id": "A10",
+      "attempt": "original D replaced by n-D",
+      "risk": "same x-only P hides recovery-byte loss",
+      "required_disposition": "Check original nsec bytes independently; preserve before signing normalization"
+    },
+    {
+      "id": "A11",
+      "attempt": "earlier owner observes old PBS-protected rekey",
+      "risk": "owner revocation fails",
+      "required_disposition": "No owner transfer or PBS rotation claim in experiment"
+    },
+    {
+      "id": "A12",
+      "attempt": "R/A material captured during earlier unlock",
+      "risk": "old copies survive reset",
+      "required_disposition": "No revocation/nonexportability claim; attacker already had released material"
+    },
+    {
+      "id": "A13",
+      "attempt": "chip known physical advisory bypass",
+      "risk": "SE keys/counters fail",
+      "required_disposition": "No qualified physical claim; exact H02S applicability/remedy gate"
+    },
+    {
+      "id": "A14",
+      "attempt": "repeated denied operations/security monitor writes",
+      "risk": "wear/availability attack",
+      "required_disposition": "No availability or NVM endurance guarantee against hostile command flooding"
+    },
+    {
+      "id": "A15",
+      "attempt": "host sets fake owner-root digest",
+      "risk": "misleading binding",
+      "required_disposition": "Digest is not SE-attested firmware identity; H02 verified boot independently required"
+    },
+    {
+      "id": "A16",
+      "attempt": "power loss during partially hardened enrollment",
+      "risk": "permissive object survives",
+      "required_disposition": "Quarantine; no success flag or permissive resume"
+    },
+    {
+      "id": "A17",
+      "attempt": "lifetime count reaches ceiling during PIN repair",
+      "risk": "maintenance cannot finish",
+      "required_disposition": "Recovery-required; never replenish L to improve UX"
+    },
+    {
+      "id": "A18",
+      "attempt": "factory/default/recovery credentials survive transfer",
+      "risk": "former vendor/owner can reopen channel/policy",
+      "required_disposition": "Actual inventory/revocation gates; no reusable-transfer acceptance"
+    },
+    {
+      "id": "A19",
+      "attempt": "Replay complete old shielded-V1 transcript with an old flash snapshot",
+      "risk": "V1 lacks host challenge; stale Q/R/credential responses could defeat rollback argument",
+      "required_disposition": "Fresh random host nonce write/read F1D3 after every channel establishment; reject replay and any invisible re-handshake"
+    },
+    {
+      "id": "A20",
+      "attempt": "Restore application hibernate context after power loss",
+      "risk": "Achieved AUTO/security state can survive power loss by explicit context save",
+      "required_disposition": "Never save/restore; clean OpenApplication0x00 invalidates saved context; independently verify absence of release after resets"
+    }
+  ],
+  "acceptance_ownership": {
+    "documentary_crypto_and_state": "distinct S04 reviewer; exact candidate not reviewed yet",
+    "mcu_physical_lifecycle": "H02",
+    "se_physical_services_and_faults": "H02S",
+    "integrated_host": "V02",
+    "actual_custom_assembly_repeat": "V03",
+    "generic_board_reuse_decision": "product coordinator plus S04/H02/H02S, still unmet",
+    "source_reconciliation_and_tracker": "root after A02/S03; docs/restart/work-items.json only"
+  },
+  "review_warning": "This is a finite explicit state/fault specification, not a model checker, executed hardware trace, accepted cryptographic proof or statement that all seven S04 criteria are satisfied.",
+  "comparison_input": {
+    "document": "safe7-reference.md",
+    "commit": "5fdc180b99bd763c3d18411bba686909875eb337",
+    "disposition": "Reference-only cyclic destructive reset; not a transition or policy in TM-HMAC-1. No Trust M impossibility claim. Requires a separately reviewed construction before changes to this model."
+  }
+}

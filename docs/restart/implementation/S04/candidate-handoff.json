@@ -1,0 +1,278 @@
+{
+  "schema_version": 1,
+  "task": "S04",
+  "author": "/root/s04_custody_author",
+  "status": "PARTIAL_DOCUMENTARY_CHECKPOINT_FOR_DISTINCT_REVIEW_NO_IMPLEMENTATION_HANDOFF",
+  "base_commit": "f2ef70f522af4977e15f81554a8c6eadcdbe8097",
+  "preparation_commit": "d4713e134e24b4f5b6a33cbe83a67b91c19449c3",
+  "research_checkpoint": "4c5d3690091451c31198e35df9be9fab94036b2f",
+  "branch": "restart/s04-custody",
+  "issue": "https://github.com/nSealr/nsealr/issues/25",
+  "scope": "S04 documentary sources/protocol/state/evidence only; no production firmware, driver, part selection, hardware, provisioning, account enrollment, purchase or outreach",
+  "decision": "No admitted architecture. TM-HMAC-1 is a finite-lifetime documentary experiment that fails practical reusable-Board acceptance. Threshold2048 is chosen policy guided by the manual, not intrinsic silicon lifetime. Safe7 supplies a concrete cyclic destructive-reset alternative; its full safety and independent-owner lifecycle remain unproved, so no all-Trust-M impossibility claim.",
+  "independent_review_required": true,
+  "implementation_authorized": false,
+  "all_parent_criteria_complete": false,
+  "resource_availability": "UNKNOWN",
+  "criterion_status": [
+    {
+      "criterion_index": 1,
+      "exact_parent_acceptance": "Compare candidate SE architectures against exact APIs and advisory applicability; prove the security contribution of each chip.",
+      "documentary_evidence": [
+        "se-decision.md",
+        "research-source-register.json",
+        "custody-protocol.md",
+        "safe7-reference.md"
+      ],
+      "status": "PARTIAL_NOT_COMPLETE",
+      "remaining": "No chip contribution is physically proved. NXP API/errata access and TROPIC remedy/mapping remain missing; Trust M exact tuple, command coverage and protected-reset alternatives remain gated."
+    },
+    {
+      "criterion_index": 2,
+      "exact_parent_acceptance": "Specify every stored object, authenticated ciphertext, host-binding secret, KDF context, pairing key and firmware-signing root.",
+      "documentary_evidence": [
+        "custody-protocol.md",
+        "specification-checks.json"
+      ],
+      "status": "PARTIAL_NOT_COMPLETE",
+      "remaining": "Concrete experimental encodings and owned SE objects specified; exact H02 owner-root/physical storage and actual factory-object inventory unavailable. No implementation handoff."
+    },
+    {
+      "criterion_index": 3,
+      "exact_parent_acceptance": "Cover PIN creation/change/exhaustion, brownout, rollback, recovery, destructive reset and update ownership; model persistent-state transitions.",
+      "documentary_evidence": [
+        "custody-protocol.md",
+        "state-machine.json",
+        "safe7-reference.md"
+      ],
+      "status": "PARTIAL_NOT_COMPLETE",
+      "remaining": "24 transitions,14 cutpoints and20 attack traces specified; author27-case symbolic matrix is not independent review or real fault evidence. Safe same-chip reset/reuse not established."
+    },
+    {
+      "criterion_index": 4,
+      "exact_parent_acceptance": "Preserve NIP-06 compatibility without treating currently unrecommended derivation as the default; prove expected-public-key recovery.",
+      "documentary_evidence": [
+        "custody-protocol.md",
+        "specification-checks.json"
+      ],
+      "status": "PARTIAL_NOT_COMPLETE",
+      "remaining": "Native source bytes/nsec and actual P oracle specified; public D=3/n-3 control and encoding fixture checked. Actual local expected-P recovery drill unexecuted; optional NIP06 migration deferred under P01."
+    },
+    {
+      "criterion_index": 5,
+      "exact_parent_acceptance": "Independent cryptographic review rejects unsupported non-exportability or dual-SE independence claims.",
+      "documentary_evidence": [
+        "custody-protocol.md",
+        "state-machine.json",
+        "specification-checks.json"
+      ],
+      "status": "PARTIAL_NOT_COMPLETE",
+      "remaining": "Independent exact protocol review has not occurred. Preparation acceptance is not protocol approval; author rejects unsupported nonexportability/dual-chip independence claims."
+    },
+    {
+      "criterion_index": 6,
+      "exact_parent_acceptance": "Specify developer, owner-secured and product-qualified transitions, MCU/SE erasure/re-enrollment and irreversible-state limits. The specification is not evidence that these transitions already work on hardware.",
+      "documentary_evidence": [
+        "custody-protocol.md",
+        "state-machine.json",
+        "se-decision.md",
+        "safe7-reference.md"
+      ],
+      "status": "PARTIAL_NOT_COMPLETE",
+      "remaining": "Lifecycle distinctions and terminal experimental limits explicit. TM-HMAC-1 fails practical reusable-Board acceptance until a safe revised construction or explicit product decision is reviewed."
+    },
+    {
+      "criterion_index": 7,
+      "exact_parent_acceptance": "Separate MCU owner firmware roots from vendor-controlled SE applet/update authority; document offline operation, maintenance service, licensing/API access and update/rollback consequences. Specify physical erasure/re-enrollment tests here: MCU feasibility in H02, SE reset/re-enrollment feasibility in H02S, and complete lifecycle in V02/V03.",
+      "documentary_evidence": [
+        "se-decision.md",
+        "custody-protocol.md",
+        "state-machine.json",
+        "safe7-reference.md"
+      ],
+      "status": "PARTIAL_NOT_COMPLETE",
+      "remaining": "Authorities/access/updates and physical-test ownership distinguished; exact MCU feasibility, SE reusable lifecycle and vendor update/service rights still unresolved."
+    }
+  ],
+  "remaining_gate_ids": [
+    "G01",
+    "G02",
+    "G03",
+    "G04",
+    "G05",
+    "G06",
+    "G07",
+    "G08",
+    "G09",
+    "G10",
+    "G11",
+    "G12"
+  ],
+  "next_owned_actions": [
+    "Distinct reviewer reproduces source/format bindings and produces independent crypto/recovery/fault oracles for this exact candidate.",
+    "Coordinator reviews the unmet reusable-Board result and the bounded same-three-lead follow-up: evaluate Safe7 cyclic destructive reset plus host-held one-way factor and exact protected-update routes. No silent replacement compromise, dual-SE adoption or 2048 policy waiver.",
+    "S04 must reconcile A02/S03 before any consumer; main/task state remain coordinator-owned.",
+    "H02 owns physical MCU root/erase/update feasibility; H02S exact SE policies/advisories/reset/faults; V02 integrated host; V03 repeat actual custom assemblies."
+  ],
+  "evidence_limit": "Published primitive vectors and author abstract traces support documentary consistency only. They do not test a chip, prove freshness/reset enforcement, close physical gates or substitute for distinct review.",
+  "artifacts": [
+    {
+      "path": "acceptance-plan.json",
+      "bytes": 28844,
+      "sha256": "2068876b3997748f59f0a9cd67acc8c50fd9bf594475da29625e8484e717abef",
+      "git_blob": "550c979cdff7ee58b3aeb5446f68404d01455e7c",
+      "intended_git_mode": "100644"
+    },
+    {
+      "path": "brief.md",
+      "bytes": 23558,
+      "sha256": "86a15bd3ab06189fb7cad3065a18b883d58bc0387cc02c8896b334f7128d198b",
+      "git_blob": "10ef73149c8cbf68fbcb9dcbdf2506f170301729",
+      "intended_git_mode": "100644"
+    },
+    {
+      "path": "custody-protocol.md",
+      "bytes": 32560,
+      "sha256": "4430084c4dfe84fb972adf8700268c3f086bb8752e3759c8d69d7ff2712d7847",
+      "git_blob": "b09cd256beddba9924b294e718391f5c06f3a6a0",
+      "intended_git_mode": "100644"
+    },
+    {
+      "path": "evidence/check_specification.py",
+      "bytes": 12598,
+      "sha256": "a29ea706e6db27a159c6ccd776c13b63b1c09e39e9b68721d707d8e02cdffa7c",
+      "git_blob": "c39d478b5bb73e79b490643cc06b6b4866b0a1c0",
+      "intended_git_mode": "100644"
+    },
+    {
+      "path": "preparation-review/PROVENANCE.json",
+      "bytes": 4363,
+      "sha256": "f6f019d1a39bc94ae0c17068863244c28ae49ef872b85129be95d7f2f27e1309",
+      "git_blob": "d79528b959882f7fce4462c3082ceeb9caa52234",
+      "intended_git_mode": "100644"
+    },
+    {
+      "path": "preparation-review/S04-spec-coordinator.json",
+      "bytes": 3312,
+      "sha256": "ed3c8e4e70f5bd9801beb16cea3597613fa4b4a19eab42ec6d1a2c2fe94fbde2",
+      "git_blob": "6cb1c5648df0810c9b3bc5cd8991a4a6b3bc3817",
+      "intended_git_mode": "100644"
+    },
+    {
+      "path": "preparation-review/artifact-manifest.json",
+      "bytes": 1730,
+      "sha256": "2caaa6b084303464636ae7be0029a54b4662468d0042bfbc19d5575f50b30028",
+      "git_blob": "e5a8fa05c7fd3c1c54091f9db19333f415b1dcc8",
+      "intended_git_mode": "100644"
+    },
+    {
+      "path": "preparation-review/bindings.json",
+      "bytes": 15004,
+      "sha256": "026e6695f4f84309d61961473caa873fc8087d40c02f4be3a21166f4e975360a",
+      "git_blob": "35c1d95f65629b4b58b8ff170d55228b5387cca0",
+      "intended_git_mode": "100644"
+    },
+    {
+      "path": "preparation-review/bindings.log",
+      "bytes": 220,
+      "sha256": "b56161e76242525a8df516a3160ae6311137642d1b56bd30416ce446821e8c09",
+      "git_blob": "a6a6c1def730d1386360d4b1b4028f74268889e5",
+      "intended_git_mode": "100644"
+    },
+    {
+      "path": "preparation-review/candidate-diff-check.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "intended_git_mode": "100644"
+    },
+    {
+      "path": "preparation-review/check_bindings.py",
+      "bytes": 5010,
+      "sha256": "1c6f3ae8b5fdb7eb3f642895cdddad50c3e66a1b1b710591ac10ce9f49d68dcd",
+      "git_blob": "9e6af5a2b007ee1465fdbd11d55bcdeec13232b7",
+      "intended_git_mode": "100644"
+    },
+    {
+      "path": "preparation-review/command.json",
+      "bytes": 469,
+      "sha256": "bde33a0c01832477295a6b242d81d7c92df23377ba4aa26607b21612ebcb38a6",
+      "git_blob": "de03eba34c32ba39417e6d0c9ca8bccc3d6b9d2a",
+      "intended_git_mode": "100644"
+    },
+    {
+      "path": "preparation-review/inherited-register.json",
+      "bytes": 771,
+      "sha256": "5dfbb6535c3aa16933a626d54243816afffbc2ce8460708ff79aadd0f548642a",
+      "git_blob": "52dceede4efdbd1615d2a825d2f8dbe32d5ce319",
+      "intended_git_mode": "100644"
+    },
+    {
+      "path": "preparation-review/plan-validation.log",
+      "bytes": 135,
+      "sha256": "5c1b1df247ceb56c7ab6d1255a21abe5c31d231e488b2c5113d21e77be8bf8e6",
+      "git_blob": "e7e484d88f6cc89ff02a9ac3f90561a3e176efb7",
+      "intended_git_mode": "100644"
+    },
+    {
+      "path": "preparation-review/report.json",
+      "bytes": 20338,
+      "sha256": "3975b05f9594f4516508a95a03cd50ac72657bb703ace5acd93c3e5ccf0929c5",
+      "git_blob": "5064815a8bc03af9487abc4cdfc213aeb486fa48",
+      "intended_git_mode": "100644"
+    },
+    {
+      "path": "research-source-register.json",
+      "bytes": 121544,
+      "sha256": "733849b0fbd18dc268314242b0f74119bd8099485d7724e13a9bfd177762df75",
+      "git_blob": "6bbff8e468601ea1cb78351850f55b3628e2a1b6",
+      "intended_git_mode": "100644"
+    },
+    {
+      "path": "safe7-reference.md",
+      "bytes": 18911,
+      "sha256": "38a5e0808958371b9818cfaa513883fed28114e60a6ee1e1f3bd2c16f959d4f1",
+      "git_blob": "0bdafbb99475b4c47d929952aa743bf1608480e2",
+      "intended_git_mode": "100644"
+    },
+    {
+      "path": "se-decision.md",
+      "bytes": 21526,
+      "sha256": "1ccdb1162e975c8ec479bfc790d1b4de76e74644efd5359736e7de143d0b4e82",
+      "git_blob": "4a33a06def56d87379d3593828b56e20ebdaadfe",
+      "intended_git_mode": "100644"
+    },
+    {
+      "path": "source-audit.json",
+      "bytes": 41194,
+      "sha256": "d3112561d36e1a19f2070d2b7023da89dea60b3ec9f27fe23675e00e3df3762c",
+      "git_blob": "7671158bf644e23f6a3d7db15bf33ae4d42c6368",
+      "intended_git_mode": "100644"
+    },
+    {
+      "path": "specification-checks.json",
+      "bytes": 9369,
+      "sha256": "73cfe3a3134a1a562ac3f98c51ed950c4bf00404b610293db412bfb9c6bae1a0",
+      "git_blob": "bdf73b302251848954b59ce36189a9fad03d2ae5",
+      "intended_git_mode": "100644"
+    },
+    {
+      "path": "state-machine.json",
+      "bytes": 29008,
+      "sha256": "73d86871a4558838a7e60284a79bba891694222fef8108f1295b4f04e97fafe9",
+      "git_blob": "450cc51d6315e536fa359decc2fa5b8ff833b199",
+      "intended_git_mode": "100644"
+    },
+    {
+      "path": "verification.json",
+      "bytes": 2079,
+      "sha256": "93be79facb4b215bc7c7bcac4b635e24a195fd9bb3e73c68eb4a8fe418e7f3f2",
+      "git_blob": "52d5484245cdb8653fdc3b90ec70bf61a049b8c0",
+      "intended_git_mode": "100644"
+    }
+  ],
+  "safe7_source_checkpoint": "6a79de209035c94fd2501be5e9572506d502def8",
+  "verification_record": "verification.json",
+  "source_binding_correction": "research-source-register.json binding_correction records19 prior root-tree labels corrected using exact git/commits and actual root-tree responses; file blob/mode/SHA256 unchanged.",
+  "continuation": "Coordinator explicitly authorized a separately named minimal cyclic destructive-reset proposal within the same three leads. TM-HMAC-1 remains frozen counterexample/partial evidence; no S04 closure."
+}

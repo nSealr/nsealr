@@ -1,0 +1,48 @@
+{
+  "schema_version": 1,
+  "task": "S04",
+  "author": "/root/s04_custody_author",
+  "date_utc": "2026-10-18T20:07:08.303888+00:00",
+  "environment": {
+    "python": "3.13.5",
+    "platform": "Linux-6.12.101+deb13-amd64-x86_64-with-glibc2.41",
+    "openssl": "OpenSSL 3.5.7 9 Jun 2026 (Library: OpenSSL 3.5.7 9 Jun 2026)"
+  },
+  "records": [
+    {
+      "command": "python3 docs/restart/implementation/S04/evidence/check_specification.py",
+      "exit_code": 0,
+      "stdout": "PASS: published primitive controls, 11 AEAD negatives, metadata sizes, 27 fault cases, scalar preservation and counter boundary; author-only.",
+      "result": "specification-checks.json",
+      "result_sha256": "73cfe3a3134a1a562ac3f98c51ed950c4bf00404b610293db412bfb9c6bae1a0"
+    },
+    {
+      "command": "python3 scripts/validate_restart_plan.py",
+      "exit_code": 0,
+      "stdout": "Restart plan valid: 47 tasks; ready: P02, S04, B01\nStructural check only; hardware, review quality and security remain evidence gates.",
+      "input_sha256": "c2e9520d16731f3769c7ff3ccbdb2df0ef1c053eae3c40d8afb7baae47cf3428",
+      "script_sha256": "aebf3568afd1e868e4dc2bb8754e14a67f3a34053da907f9be24f6297900010c"
+    },
+    {
+      "command": "git diff --check",
+      "exit_code": 0,
+      "stdout": ""
+    },
+    {
+      "command": "author binding audit (Git show/raw-byte comparison, JSON parse, Markdown local links, unchanged criteria)",
+      "exit_code": 0,
+      "assertions": [
+        "All7 exact parent acceptance strings unchanged",
+        "All10 copied preparation/coordinator files equal original Git bytes and recorded SHA256",
+        "All3 preparation files equal accepted d4713e bytes",
+        "All JSON parses; local Markdown links resolve",
+        "All6 specification-check source hashes match current artifact bytes"
+      ]
+    }
+  ],
+  "limitations": [
+    "Author checks are not distinct review.",
+    "No production build, driver execution, hardware command or physical measurement performed.",
+    "No claim that all7 S04 criteria pass; resource availability UNKNOWN."
+  ]
+}
