@@ -1,32 +1,22 @@
-> Historical implementation baseline. The [restart plan](restart/README.md) governs new architecture, product scope and migration decisions.
+# Software and release evidence
 
-# Audit Checklist
+Use the [task graph](../plan/work-items.json) for accepted results and the
+[product requirements](product/README.md) for release criteria. This checklist
+is a review aid; it makes no completion or device-qualification claim.
 
-## Workspace (current)
+- Bind the exact source, licenses, public ancestry, dependency locks and tool
+  versions. Keep excluded private histories and credentials outside public Git.
+- Run the complete [product gates](testing.md), preserving failures and skips.
+  Verify independent contract consumers and actual packed SDK consumers.
+- Keep the two Rust workspaces separate, preserve coverage floors and reproduce
+  device and host artifacts from independent clean builds.
+- Preserve immutable historical evidence and the sole task graph. Declare
+  substantive current-contract changes and obtain their own review.
+- Verify production source boundaries, request-bound response checks, rejected
+  host approval shortcuts and disabled unqualified signing paths.
+- Qualify actual browser/relay/device behavior separately. Bind physical review,
+  one-use authorization, key custody, provisioning, entropy, update/debug policy
+  and recovery to concrete measurements before a profile can claim support.
 
-- [x] One toolchain: `make ci` is Rust-only plus the generic `verify_repo.py` /
-      `validate_firmware.py` validators (C++/ESP-IDF gates retired in Phase 03
-      Task 05).
-- [x] `nsealr-core` builds bare-metal for `riscv32imafc-unknown-none-elf` and
-      the `std` facade is proven non-inert.
-- [x] Protocol/review/session/policy logic matches `nSealr/specs` — enforced by
-      the `desktop-simulator` vector-parity oracle with a category completeness
-      rule.
-- [x] `boards/*.json` profiles validate.
-- [x] Coverage ratchet holds against `ci/ratchet.json`.
-
-## Per device app (each future phase must satisfy before real signing)
-
-- [ ] App builds and flashes for its declared target.
-- [ ] App passes the `desktop-simulator` vector oracle and records a coverage
-      floor in `ci/ratchet.json`.
-- [ ] Trusted review renders on the physical display; separate physical
-      approve/reject controls, no touch approval.
-- [ ] Device rejects unapproved signing; request + `approval_digest` binding
-      verified on hardware.
-- [ ] Key provisioning/storage and recovery policy designed and tested.
-- [ ] Source public-key proof for each selected account/source.
-- [ ] Secure boot, flash encryption (or equivalent persistent-secret policy),
-      and locked debug access provisioned per target.
-- [ ] Companion verifies signed output.
-- [ ] Deterministic refusal for unsafe or unapproved requests.
+The host OS and hosted runner are not immutable or OS-hermetic. Dependency audit
+warnings and unavailable index coverage must remain visible in execution evidence.

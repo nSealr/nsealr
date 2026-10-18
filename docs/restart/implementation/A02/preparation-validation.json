@@ -1,0 +1,75 @@
+{
+  "checked_utc": "2026-10-18T16:59:14.062955+00:00",
+  "scope": "Corrected preparation only: syntax, source-object hashes, canonical task references, structural validator and document whitespace. No product/rehearsal acceptance run.",
+  "previous_preparation_commit": "1f5cb60732399c257d38c6127a9f185a3964da28",
+  "commands": [
+    {
+      "label": "restart-plan",
+      "command": [
+        "python3",
+        "scripts/validate_restart_plan.py"
+      ],
+      "cwd": "/home/tux/nsealr/.restart-tools/goal/a02",
+      "exit_code": 0,
+      "stdout": "Restart plan valid: 47 tasks; ready: E01\nStructural check only; hardware, review quality and security remain evidence gates.\n",
+      "stderr": ""
+    },
+    {
+      "label": "working-diff-whitespace",
+      "command": [
+        "git",
+        "diff",
+        "--check"
+      ],
+      "cwd": "/home/tux/nsealr/.restart-tools/goal/a02",
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ""
+    }
+  ],
+  "initial_check_note": {
+    "command": "git diff --no-index --check /dev/null docs/restart/implementation/A02/brief.md",
+    "exit_code": 1,
+    "stdout": "",
+    "stderr": "",
+    "classification": "No-index reported file differences without whitespace diagnostics. Replaced validation invocation with staged git diff --check; passing result recorded above."
+  },
+  "json_files_valid": [
+    "input-notes.json",
+    "source-observations.json"
+  ],
+  "rechecked_source_paths": 51,
+  "canonical_task_reference_check": {
+    "graph": "docs/restart/work-items.json",
+    "brief": "docs/restart/implementation/A02/brief.md",
+    "pattern": "word boundary + 1-2 uppercase letters + 2 digits + word boundary",
+    "note": "An initial broader three-letter scan also matched the platform name ESP32. The task-ID scan uses the canonical graph ID shape.",
+    "references": [
+      "A01",
+      "A02",
+      "B02",
+      "B03",
+      "E01",
+      "K01",
+      "O01",
+      "P01",
+      "Q02",
+      "QP01",
+      "R00",
+      "S01",
+      "S02",
+      "S03"
+    ],
+    "unknown_ids": []
+  },
+  "artifact_sha256": {
+    "brief.md": "05b8eddee2da7c53ecab68f048c2035387464c9a9659d1936913bc60174c59bd",
+    "input-notes.json": "fbfe870839612d2ece1925c25ad7ae24d4c426905a717215c28e95057fa97cb6",
+    "source-observations.json": "7417311fd95f81827e192b2f750f885b17ba790bb6811962191296a87d7050c2"
+  },
+  "limits": [
+    "The base graph predates dependency/metadata reconciliation. A structural pass does not authorize implementation or close A02.",
+    "Distinct specification approval and final repaired S01 provenance/bootstrap tuple, renewed review and successful affected integration remain required before import.",
+    "The reviewer-reported provenance defect is an explicit import prerequisite; this preparatory correction did not execute or claim its repair."
+  ]
+}
