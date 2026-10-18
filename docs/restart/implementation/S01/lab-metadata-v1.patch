@@ -1,0 +1,151 @@
+diff --git a/scripts/integration_companion_nip46_cli.py b/scripts/integration_companion_nip46_cli.py
+index 3e8722c..93df128 100644
+--- a/scripts/integration_companion_nip46_cli.py
++++ b/scripts/integration_companion_nip46_cli.py
+@@ -386,7 +386,7 @@ def invalid_auth_challenge_relay_step_vectors(specs: Path) -> list[dict[str, Any
+         if (
+             vector.get("category") == "nip46-relay-step"
+             and isinstance(relay_step, dict)
+-            and relay_step.get("format") == "nsealr-nip46-relay-response-step-v0"
++            and relay_step.get("format") == "nsealr-nip46-relay-response-step-v1"
+             and isinstance(decrypted_message, dict)
+             and decrypted_message.get("result") == "auth_url"
+         ):
+@@ -394,6 +394,25 @@ def invalid_auth_challenge_relay_step_vectors(specs: Path) -> list[dict[str, Any
+     return vectors
+ 
+ 
++AUTH_CHALLENGE_NEGATIVE_PATHS = (
++    "relay-step-response-auth-url-with-credentials.json",
++    "relay-step-response-auth-url-with-fragment.json",
++    "relay-step-response-auth-url-wrong-scheme.json",
++)
++
++
++def assert_auth_challenge_vector_inventory(specs: Path, vectors: list[dict[str, Any]]) -> None:
++    """Require every pinned v1 auth-negative case, not merely a nonempty loop."""
++    required = [specs / "vectors/invalid" / name for name in AUTH_CHALLENGE_NEGATIVE_PATHS]
++    missing = [path.name for path in required if not path.is_file()]
++    if missing:
++        raise AssertionError(f"missing required NIP-46 auth-negative paths: {missing}")
++    expected = [load_json(path) for path in required]
++    key = lambda item: json.dumps(item, sort_keys=True, separators=(",", ":"))
++    if sorted(map(key, vectors)) != sorted(map(key, expected)):
++        raise AssertionError("NIP-46 auth-negative discovery does not match the complete required path inventory")
++
++
+ def invalid_policy_file_vectors(specs: Path) -> list[dict[str, Any]]:
+     vectors = []
+     for vector_path in sorted((specs / "vectors/invalid").glob("*.json")):
+@@ -664,8 +683,7 @@ def main() -> int:
+         assert_approval_matches(auth_challenge_approval_path, auth_challenge["approval"])
+ 
+         invalid_auth_challenge_vectors = invalid_auth_challenge_relay_step_vectors(SPECS)
+-        if not invalid_auth_challenge_vectors:
+-            raise AssertionError("missing shared invalid NIP-46 auth challenge relay-step vectors")
++        assert_auth_challenge_vector_inventory(SPECS, invalid_auth_challenge_vectors)
+         for vector in invalid_auth_challenge_vectors:
+             invalid_auth_step_path = temp / f"{vector['name']}-step.json"
+             invalid_auth_review_path = temp / f"{vector['name']}-review.json"
+@@ -676,6 +694,7 @@ def main() -> int:
+                 out_path=invalid_auth_review_path,
+             )
+             assert_auth_challenge_review_rejected(command, invalid_auth_review_path, vector["expected_error"])
++            print(f"NIP-46 v1 auth-negative executed: {vector['name']}")
+ 
+         session_path = temp / "connect-session-checkpoint.json"
+         command = build_nip46_session_checkpoint_command(
+diff --git a/tests/test_integration_companion_nip46_cli.py b/tests/test_integration_companion_nip46_cli.py
+index 4eb41f1..fccc669 100644
+--- a/tests/test_integration_companion_nip46_cli.py
++++ b/tests/test_integration_companion_nip46_cli.py
+@@ -1,5 +1,6 @@
+ from __future__ import annotations
+ 
++import json
+ import tempfile
+ import unittest
+ from pathlib import Path
+@@ -14,6 +15,7 @@ from scripts.integration_companion_nip46_cli import (
+     build_nip46_decide_command,
+     build_nip46_policy_file_command,
+     build_nip46_session_checkpoint_command,
++    assert_auth_challenge_vector_inventory,
+     invalid_auth_challenge_relay_step_vectors,
+     invalid_connection_token_response_vectors,
+     invalid_connection_uri_vectors,
+@@ -273,7 +275,7 @@ class IntegrationCompanionNip46CliTests(unittest.TestCase):
+   "name": "auth-challenge",
+   "category": "nip46-relay-step",
+   "relay_step": {
+-    "format": "nsealr-nip46-relay-response-step-v0",
++    "format": "nsealr-nip46-relay-response-step-v1",
+     "decrypted_message": {
+       "result": "auth_url"
+     }
+@@ -288,7 +290,7 @@ class IntegrationCompanionNip46CliTests(unittest.TestCase):
+   "name": "public-key",
+   "category": "nip46-relay-step",
+   "relay_step": {
+-    "format": "nsealr-nip46-relay-response-step-v0",
++    "format": "nsealr-nip46-relay-response-step-v1",
+     "decrypted_message": {
+       "result": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+     }
+@@ -302,6 +304,56 @@ class IntegrationCompanionNip46CliTests(unittest.TestCase):
+ 
+         self.assertEqual([vector["name"] for vector in vectors], ["auth-challenge"])
+ 
++    def test_auth_negative_inventory_requires_each_case_and_rejects_extras(self) -> None:
++        names = (
++            "relay-step-response-auth-url-with-credentials.json",
++            "relay-step-response-auth-url-with-fragment.json",
++            "relay-step-response-auth-url-wrong-scheme.json",
++        )
++        with tempfile.TemporaryDirectory(prefix="nsealr-auth-inventory-") as directory:
++            specs = Path(directory)
++            invalid = specs / "vectors/invalid"
++            invalid.mkdir(parents=True)
++            originals = {}
++            for name in names:
++                vector = {"name": name.removesuffix(".json"), "category": "nip46-relay-step",
++                          "relay_step": {"format": "nsealr-nip46-relay-response-step-v1",
++                                         "decrypted_message": {"result": "auth_url"}}}
++                originals[name] = json.dumps(vector)
++                (invalid / name).write_text(originals[name])
++            # Malformed and unrelated vectors must not be selected as auth negatives.
++            (invalid / "malformed.json").write_text(json.dumps({"category": "nip46-relay-step", "relay_step": None}))
++            unrelated = json.loads(originals[names[0]])
++            unrelated["category"] = "other"
++            (invalid / "wrong-category.json").write_text(json.dumps(unrelated))
++            vectors = invalid_auth_challenge_relay_step_vectors(specs)
++            self.assertEqual(len(vectors), 3)
++            assert_auth_challenge_vector_inventory(specs, vectors)
++            for name in names:
++                with self.subTest(missing=name):
++                    (invalid / name).unlink()
++                    with self.assertRaises(AssertionError):
++                        assert_auth_challenge_vector_inventory(specs, invalid_auth_challenge_relay_step_vectors(specs))
++                    (invalid / name).write_text(originals[name])
++                with self.subTest(stale_version=name):
++                    stale = json.loads(originals[name])
++                    stale["relay_step"]["format"] = "nsealr-nip46-relay-response-step-v0"
++                    (invalid / name).write_text(json.dumps(stale))
++                    with self.assertRaises(AssertionError):
++                        assert_auth_challenge_vector_inventory(specs, invalid_auth_challenge_relay_step_vectors(specs))
++                    (invalid / name).write_text(originals[name])
++            extra = json.loads(originals[names[0]])
++            extra["name"] = "unexpected-extra"
++            (invalid / "extra.json").write_text(json.dumps(extra))
++            with self.assertRaises(AssertionError):
++                assert_auth_challenge_vector_inventory(specs, invalid_auth_challenge_relay_step_vectors(specs))
++            (invalid / "extra.json").unlink()
++            vectors = invalid_auth_challenge_relay_step_vectors(specs)
++            for omitted in range(3):
++                with self.subTest(selected_case_omitted=omitted), self.assertRaises(AssertionError):
++                    assert_auth_challenge_vector_inventory(specs, vectors[:omitted] + vectors[omitted + 1:])
++            assert_auth_challenge_vector_inventory(specs, vectors)
++
+     def test_invalid_policy_file_vectors_are_discovered_by_category(self) -> None:
+         with tempfile.TemporaryDirectory(prefix="nsealr-nip46-invalid-policy-") as temp_dir:
+             specs = Path(temp_dir)
