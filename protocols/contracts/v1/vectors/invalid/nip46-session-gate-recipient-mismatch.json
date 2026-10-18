@@ -1,0 +1,71 @@
+{
+  "name": "nip46-session-gate-recipient-mismatch",
+  "format": "pre-signing-invalid-vector-v0",
+  "category": "nip46-session-gate",
+  "expected_error": "NIP-46 session request recipient does not match session remote_signer_pubkey",
+  "session_gate": {
+    "format": "nsealr-nip46-session-request-gate-v0",
+    "session": {
+      "name": "nostrconnect-approved-kind-1-checkpoint",
+      "format": "nsealr-nip46-session-lifecycle-v0",
+      "phase": "approved_pending_ack",
+      "client_pubkey": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+      "remote_signer_pubkey": "4f355bdcb7cc0af728ef3cceb9615d90684bb5b2ca5f859ab0f0b704075871aa",
+      "relays": [
+        "wss://relay1.example.com/",
+        "wss://relay2.example.com/path"
+      ],
+      "connect_digest": "4591a3b711e32fdbadbfce542b15127490f8215351e621b0a0e0ed1e4f093225",
+      "approved_at": 1900000001,
+      "expires_at": 1900003601,
+      "requested_permissions": [
+        {
+          "method": "sign_event",
+          "parameter": "1",
+          "event_kind": 1
+        },
+        {
+          "method": "nip44_encrypt"
+        }
+      ],
+      "approved_permissions": [
+        {
+          "method": "sign_event",
+          "parameter": "1",
+          "event_kind": 1
+        }
+      ],
+      "secret_present": true,
+      "secret_value_stored": false,
+      "contains_secret_material": false,
+      "derives_nip44_key": false,
+      "acknowledges_connect": false,
+      "opens_relay": false,
+      "creates_grants": false,
+      "dispatches_signer": false,
+      "stores_production_secrets": false,
+      "persists_session_state": false,
+      "scope": "NIP-46 session lifecycle checkpoint only. It records a reviewed connect digest and approved permission subset, but does not acknowledge connect, derive NIP-44 keys, open relays, create grants, dispatch a signer, store production secrets, persist session state, or include secret material."
+    },
+    "evaluated_at": 1900000100,
+    "direction": "client_to_remote_signer",
+    "event": {
+      "kind": 24133,
+      "pubkey": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+      "content": "nip44-v2-ciphertext-placeholder",
+      "tags": [
+        [
+          "p",
+          "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd"
+        ]
+      ]
+    },
+    "decrypted_message": {
+      "id": "nip46-req-1",
+      "method": "sign_event",
+      "params": [
+        "{\"created_at\":1710000000,\"kind\":1,\"tags\":[],\"content\":\"nSealr fixture: basic kind 1 event.\"}"
+      ]
+    }
+  }
+}

@@ -1,0 +1,228 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://nsealr.dev/schemas/signing-response-v0.schema.json",
+  "title": "nSealr Signing Response v0",
+  "type": "object",
+  "oneOf": [
+    {
+      "required": ["version", "request_id", "ok", "result"],
+      "properties": {
+        "version": { "const": 1 },
+        "request_id": { "$ref": "#/$defs/request_id" },
+        "ok": { "const": true },
+        "result": {
+          "type": "object",
+          "required": ["capabilities"],
+          "properties": {
+            "capabilities": { "$ref": "#/$defs/capabilities" }
+          },
+          "additionalProperties": false
+        }
+      },
+      "additionalProperties": false
+    },
+    {
+      "required": ["version", "request_id", "ok", "result"],
+      "properties": {
+        "version": { "const": 1 },
+        "request_id": { "$ref": "#/$defs/request_id" },
+        "ok": { "const": true },
+        "result": {
+          "type": "object",
+          "required": ["signing_status"],
+          "properties": {
+            "signing_status": { "$ref": "#/$defs/signing_status" }
+          },
+          "additionalProperties": false
+        }
+      },
+      "additionalProperties": false
+    },
+    {
+      "required": ["version", "request_id", "ok", "result"],
+      "properties": {
+        "version": { "const": 1 },
+        "request_id": { "$ref": "#/$defs/request_id" },
+        "ok": { "const": true },
+        "result": {
+          "type": "object",
+          "required": ["public_key"],
+          "properties": {
+            "public_key": { "$ref": "#/$defs/hex32" }
+          },
+          "additionalProperties": false
+        }
+      },
+      "additionalProperties": false
+    },
+    {
+      "required": ["version", "request_id", "ok", "result"],
+      "properties": {
+        "version": { "const": 1 },
+        "request_id": { "$ref": "#/$defs/request_id" },
+        "ok": { "const": true },
+        "result": {
+          "type": "object",
+          "required": ["event"],
+          "properties": {
+            "event": { "$ref": "#/$defs/signed_event" }
+          },
+          "additionalProperties": false
+        }
+      },
+      "additionalProperties": false
+    },
+    {
+      "$ref": "error-v0.schema.json"
+    }
+  ],
+  "$defs": {
+    "request_id": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 128,
+      "pattern": "^[A-Za-z0-9._:-]+$"
+    },
+    "hex32": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "hex64": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{128}$"
+    },
+    "capabilities": {
+      "type": "object",
+      "required": ["device", "protocols", "methods", "transports", "signing_enabled", "requires_physical_approval"],
+      "properties": {
+        "device": {
+          "type": "object",
+          "required": ["name", "firmware", "hardware"],
+          "properties": {
+            "name": { "type": "string", "minLength": 1 },
+            "firmware": { "type": "string", "minLength": 1 },
+            "hardware": { "type": "string", "minLength": 1 }
+          },
+          "additionalProperties": false
+        },
+        "protocols": {
+          "type": "array",
+          "items": { "type": "string", "minLength": 1 },
+          "minItems": 1,
+          "uniqueItems": true
+        },
+        "methods": {
+          "type": "array",
+          "items": { "enum": ["get_capabilities", "get_signing_status", "get_public_key", "sign_event"] },
+          "minItems": 1,
+          "uniqueItems": true
+        },
+        "transports": {
+          "type": "array",
+          "items": { "type": "string", "minLength": 1 },
+          "minItems": 1,
+          "uniqueItems": true
+        },
+        "signing_enabled": { "type": "boolean" },
+        "requires_physical_approval": { "type": "boolean" }
+      },
+      "additionalProperties": false
+    },
+    "signing_status": {
+      "type": "object",
+      "required": ["signing_enabled", "missing_gates", "development_accepted_gates"],
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "signing_enabled": { "const": true }
+            },
+            "required": ["signing_enabled"]
+          },
+          "then": {
+            "properties": {
+              "missing_gates": { "maxItems": 0 }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "signing_enabled": { "const": false }
+            },
+            "required": ["signing_enabled"]
+          },
+          "then": {
+            "properties": {
+              "missing_gates": { "minItems": 1 }
+            }
+          }
+        }
+      ],
+      "properties": {
+        "signing_enabled": { "type": "boolean" },
+        "missing_gates": {
+          "type": "array",
+          "items": {
+            "enum": [
+              "runtime_signing_feature",
+              "parser_limits",
+              "trusted_review_display",
+              "physical_approval_controls",
+              "approval_digest_binding",
+              "unicode_review_rendering",
+              "key_provisioning",
+              "source_public_key_proof",
+              "secure_boot",
+              "flash_encryption",
+              "debug_lock",
+              "companion_signed_output_verification"
+            ]
+          },
+          "uniqueItems": true
+        },
+        "development_accepted_gates": {
+          "type": "array",
+          "items": {
+            "enum": [
+              "runtime_signing_feature",
+              "parser_limits",
+              "trusted_review_display",
+              "physical_approval_controls",
+              "approval_digest_binding",
+              "unicode_review_rendering",
+              "key_provisioning",
+              "source_public_key_proof",
+              "secure_boot",
+              "flash_encryption",
+              "debug_lock",
+              "companion_signed_output_verification"
+            ]
+          },
+          "uniqueItems": true
+        }
+      },
+      "additionalProperties": false
+    },
+    "signed_event": {
+      "type": "object",
+      "required": ["id", "pubkey", "created_at", "kind", "tags", "content", "sig"],
+      "properties": {
+        "id": { "$ref": "#/$defs/hex32" },
+        "pubkey": { "$ref": "#/$defs/hex32" },
+        "created_at": { "type": "integer", "minimum": 0 },
+        "kind": { "type": "integer", "minimum": 0 },
+        "tags": {
+          "type": "array",
+          "items": {
+            "type": "array",
+            "items": { "type": "string" }
+          }
+        },
+        "content": { "type": "string" },
+        "sig": { "$ref": "#/$defs/hex64" }
+      },
+      "additionalProperties": false
+    }
+  }
+}

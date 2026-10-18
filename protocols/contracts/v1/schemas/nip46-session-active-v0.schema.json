@@ -1,0 +1,30 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "nsealr-nip46-session-active-v0",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["name", "format", "phase", "client_pubkey", "remote_signer_pubkey", "relays", "connect_digest", "approved_permissions", "nip44", "acknowledges_connect", "derives_nip44_key", "opens_relay", "dispatches_signer", "creates_grants", "persists_session_state", "persisted_state", "secret_present", "secret_value_stored", "contains_secret_material", "stores_production_secrets", "scope"],
+  "properties": {
+    "name": {"type": "string"},
+    "format": {"const": "nsealr-nip46-session-active-v0"},
+    "phase": {"enum": ["connect_ack", "session_active", "session_closed"]},
+    "client_pubkey": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "remote_signer_pubkey": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "relays": {"type": "array", "minItems": 1, "items": {"type": "string", "pattern": "^wss://"}},
+    "connect_digest": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "approved_permissions": {"type": "array", "minItems": 1},
+    "nip44": {"type": "object", "additionalProperties": false, "required": ["event_kind", "payload_encrypted", "version"], "properties": {"event_kind": {"const": 24133}, "payload_encrypted": {"const": true}, "version": {"const": 2}}},
+    "acknowledges_connect": {"const": true},
+    "derives_nip44_key": {"type": "boolean"},
+    "opens_relay": {"type": "boolean"},
+    "dispatches_signer": {"type": "boolean"},
+    "creates_grants": {"type": "boolean"},
+    "persists_session_state": {"const": true},
+    "persisted_state": {"type": "object", "additionalProperties": false, "required": ["fields", "contains_secret_material"], "properties": {"fields": {"type": "array", "minItems": 1, "items": {"type": "string"}}, "contains_secret_material": {"const": false}}},
+    "secret_present": {"type": "boolean"},
+    "secret_value_stored": {"const": false},
+    "contains_secret_material": {"const": false},
+    "stores_production_secrets": {"const": false},
+    "scope": {"type": "string", "minLength": 1}
+  }
+}

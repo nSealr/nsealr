@@ -1,0 +1,68 @@
+{
+  "name": "custom-hardware-wallet-enable-kind-1-automation",
+  "format": "nsealr-policy-change-review-v0",
+  "proposal": {
+    "format": "nsealr-policy-change-proposal-v0",
+    "proposal_id": "proposal-custom-hardware-wallet-enable-kind-1-automation",
+    "account_id": "acct-custom-hardware-wallet-slot-0",
+    "route_type": "custom_hardware_wallet",
+    "action": "set_policy",
+    "current_policy_id": "policy-manual-only-persistent-device",
+    "proposed_policy_id": "policy-scoped-automation-daily-use",
+    "proposed_grant_ids": ["grant-custom-hardware-wallet-kind-1-session"],
+    "requested_by": {
+      "surface": "desktop_app",
+      "client_pubkey": "4f355bdcb7cc0af728ef3cceb9615d90684bb5b2ca5f859ab0f0b704075871aa",
+      "label": "local companion test client"
+    },
+    "created_at": 1710000300,
+    "device_review_required": true,
+    "physical_approval_required": true,
+    "companion_authoritative": false,
+    "contains_secret_material": false
+  },
+  "review": {
+    "format": "nsealr-policy-change-review-pages-v0",
+    "proposal_id": "proposal-custom-hardware-wallet-enable-kind-1-automation",
+    "approval_digest": "cc06e69fa24fdf2fb5509dc6af208baad7d99bcc1e2798e868eca152e3908bb9",
+    "pages": [
+      {
+        "title": "Policy change",
+        "lines": [
+          "Action: set_policy",
+          "Account: acct-custom-hardware-wallet-slot-0",
+          "Route: custom_hardware_wallet"
+        ],
+        "action": "next"
+      },
+      {
+        "title": "Requester",
+        "lines": [
+          "Surface: desktop_app",
+          "Client: 4f355bdcb7cc0af728ef3cceb9615d90684bb5b2ca5f859ab0f0b704075871aa",
+          "Label: local companion test client"
+        ],
+        "action": "next"
+      },
+      {
+        "title": "Policy",
+        "lines": [
+          "From: policy-manual-only-persistent-device",
+          "To: policy-scoped-automation-daily-use",
+          "Grants: 1",
+          "Grant: grant-custom-hardware-wallet-kind-1-session"
+        ],
+        "action": "next"
+      },
+      {
+        "title": "Decision",
+        "lines": [
+          "Review on device",
+          "Physical approval required",
+          "Companion cannot approve alone"
+        ],
+        "action": "approve_or_reject"
+      }
+    ]
+  }
+}

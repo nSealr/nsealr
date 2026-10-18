@@ -1,0 +1,59 @@
+{
+  "name": "connect-ack-response-step",
+  "format": "nsealr-nip46-relay-response-step-v1",
+  "direction": "remote_signer_to_client",
+  "event": {
+    "id": "5b49f326b62609219e3106d02990684c9ff855a5a0f2051afcf7d907c40d66ea",
+    "kind": 24133,
+    "pubkey": "4f355bdcb7cc0af728ef3cceb9615d90684bb5b2ca5f859ab0f0b704075871aa",
+    "created_at": 1710000006,
+    "content": "nip44-v2-connect-ack-response-ciphertext-placeholder",
+    "tags": [
+      [
+        "p",
+        "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+      ]
+    ],
+    "sig": "11fe4644fc3f8a09b2d2b61aff883128654b7ea54951052dbf3afbacbf7f014fbd14653f350fc996a010835ec6c3f84cad5ce9f1a5b9b33d7eb06025b233ff2a"
+  },
+  "decrypted_message": {
+    "id": "nip46-connect-1",
+    "result": "ack"
+  },
+  "expected_step": {
+    "format": "nsealr-nip46-relay-response-step-v1",
+    "envelope": {
+      "format": "nsealr-nip46-relay-event-envelope-v0",
+      "direction": "remote_signer_to_client",
+      "sender_pubkey": "4f355bdcb7cc0af728ef3cceb9615d90684bb5b2ca5f859ab0f0b704075871aa",
+      "recipient_pubkey": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+      "encrypted_content": "nip44-v2-connect-ack-response-ciphertext-placeholder",
+      "has_signed_event_fields": true,
+      "event_id_verified": true,
+      "event_signature_verified": true,
+      "decrypts_content": false,
+      "opens_relay": false,
+      "creates_grants": false,
+      "stores_production_secrets": false
+    },
+    "message_id": "nip46-connect-1",
+    "response_message": {
+      "id": "nip46-connect-1",
+      "result": "ack"
+    },
+    "result_type": "connect_ack_result",
+    "signed_event_shape_checked": false,
+    "signed_event_id_verified": false,
+    "signed_event_signature_verified": false,
+    "result_pubkey_bound_to_expected_user": false,
+    "decrypts_content": false,
+    "opens_relay": false,
+    "creates_grants": false,
+    "acknowledges_connect": false,
+    "dispatches_signer": false,
+    "relay_event_signature_verified": true,
+    "stores_production_secrets": false,
+    "persists_session_state": false
+  },
+  "scope": "NIP-46 relay response step evaluation for an already decrypted connect acknowledgement result. It validates the plaintext response shape and verifies the relay event signature only; it does not open relays, decrypt NIP-44 content, acknowledge connect, activate a session, create grants, dispatch a signer, or persist session state."
+}

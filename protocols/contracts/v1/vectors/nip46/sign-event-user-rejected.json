@@ -1,0 +1,124 @@
+{
+  "name": "sign-event-user-rejected",
+  "format": "nip46-decrypted-payload-v0",
+  "request_message": {
+    "id": "nip46-reject-1",
+    "method": "sign_event",
+    "params": [
+      "{\"created_at\":1710000000,\"kind\":1,\"tags\":[],\"content\":\"nSealr fixture: basic kind 1 event.\"}"
+    ]
+  },
+  "nsealr_request": {
+    "version": 1,
+    "request_id": "nip46-reject-1",
+    "method": "sign_event",
+    "params": {
+      "event_template": {
+        "created_at": 1710000000,
+        "kind": 1,
+        "tags": [],
+        "content": "nSealr fixture: basic kind 1 event."
+      }
+    }
+  },
+  "permission_requirement": {
+    "method": "sign_event",
+    "parameter": "1",
+    "event_kind": 1
+  },
+  "permission_checks": [
+    {
+      "granted_permissions": [
+        {
+          "method": "sign_event",
+          "parameter": "1",
+          "event_kind": 1
+        }
+      ],
+      "permitted": true
+    },
+    {
+      "granted_permissions": [
+        {
+          "method": "sign_event",
+          "parameter": "4",
+          "event_kind": 4
+        }
+      ],
+      "permitted": false
+    },
+    {
+      "granted_permissions": [
+        {
+          "method": "get_public_key"
+        }
+      ],
+      "permitted": false
+    }
+  ],
+  "bridge_decisions": [
+    {
+      "granted_permissions": [
+        {
+          "method": "sign_event",
+          "parameter": "1",
+          "event_kind": 1
+        }
+      ],
+      "decision": {
+        "type": "signer_request",
+        "permission_requirement": {
+          "method": "sign_event",
+          "parameter": "1",
+          "event_kind": 1
+        },
+        "nsealr_request": {
+          "version": 1,
+          "request_id": "nip46-reject-1",
+          "method": "sign_event",
+          "params": {
+            "event_template": {
+              "created_at": 1710000000,
+              "kind": 1,
+              "tags": [],
+              "content": "nSealr fixture: basic kind 1 event."
+            }
+          }
+        }
+      }
+    },
+    {
+      "granted_permissions": [
+        {
+          "method": "get_public_key"
+        }
+      ],
+      "decision": {
+        "type": "permission_denied",
+        "permission_requirement": {
+          "method": "sign_event",
+          "parameter": "1",
+          "event_kind": 1
+        },
+        "response_message": {
+          "id": "nip46-reject-1",
+          "error": "permission_denied: request requires approved permission sign_event:1"
+        }
+      }
+    }
+  ],
+  "nsealr_response": {
+    "version": 1,
+    "request_id": "nip46-reject-1",
+    "ok": false,
+    "error": {
+      "code": "user_rejected",
+      "message": "User rejected the signing request.",
+      "retryable": true
+    }
+  },
+  "response_message": {
+    "id": "nip46-reject-1",
+    "error": "user_rejected: User rejected the signing request."
+  }
+}

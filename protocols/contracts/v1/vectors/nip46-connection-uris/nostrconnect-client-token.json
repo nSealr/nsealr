@@ -1,0 +1,36 @@
+{
+  "name": "nostrconnect-client-token",
+  "format": "nsealr-nip46-connection-uri-v0",
+  "uri": "nostrconnect://bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb?relay=wss%3A%2F%2Frelay1.example.com&relay=wss%3A%2F%2Frelay2.example.com%2Fpath&secret=client-secret&perms=nip44_encrypt%2Csign_event%3A30023&name=Example+Client&url=https%3A%2F%2Fclient.example.com&image=https%3A%2F%2Fclient.example.com%2Ficon.png",
+  "secret_probe": "client-secret",
+  "expected_descriptor": {
+    "format": "nsealr-nip46-connection-uri-v0",
+    "kind": "nostrconnect",
+    "client_pubkey": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+    "relays": [
+      "wss://relay1.example.com/",
+      "wss://relay2.example.com/path"
+    ],
+    "secret_present": true,
+    "requested_permissions": [
+      {
+        "method": "nip44_encrypt"
+      },
+      {
+        "method": "sign_event",
+        "parameter": "30023",
+        "event_kind": 30023
+      }
+    ],
+    "client_metadata": {
+      "name": "Example Client",
+      "url": "https://client.example.com/",
+      "image": "https://client.example.com/icon.png"
+    },
+    "starts_relay_session": false,
+    "creates_grants": false,
+    "stores_production_secrets": false,
+    "exposes_secret": false
+  },
+  "scope": "Descriptor-only parse of a NIP-46 client token. It must not acknowledge connect, open relays, create grants, store production secrets, or echo the required shared secret value."
+}

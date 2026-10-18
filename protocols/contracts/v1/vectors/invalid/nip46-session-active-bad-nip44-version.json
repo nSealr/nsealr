@@ -1,0 +1,29 @@
+{
+  "name": "nip46-session-active-bad-nip44-version",
+  "format": "pre-signing-invalid-vector-v0",
+  "category": "nip46-session-active",
+  "expected_error": "nip44.version must be 2",
+  "session": {
+    "name": "nip46-session-active-bad-nip44-version",
+    "format": "nsealr-nip46-session-active-v0",
+    "phase": "connect_ack",
+    "client_pubkey": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+    "remote_signer_pubkey": "4f355bdcb7cc0af728ef3cceb9615d90684bb5b2ca5f859ab0f0b704075871aa",
+    "relays": ["wss://relay1.example.com/"],
+    "connect_digest": "4591a3b711e32fdbadbfce542b15127490f8215351e621b0a0e0ed1e4f093225",
+    "approved_permissions": [{"method": "sign_event", "parameter": "1", "event_kind": 1}],
+    "nip44": {"event_kind": 24133, "payload_encrypted": true, "version": 1},
+    "acknowledges_connect": true,
+    "derives_nip44_key": true,
+    "opens_relay": true,
+    "dispatches_signer": false,
+    "creates_grants": false,
+    "persists_session_state": true,
+    "persisted_state": {"fields": ["client_pubkey", "remote_signer_pubkey"], "contains_secret_material": false},
+    "secret_present": true,
+    "secret_value_stored": false,
+    "contains_secret_material": false,
+    "stores_production_secrets": false,
+    "scope": "NIP-44 relay persist secret material"
+  }
+}

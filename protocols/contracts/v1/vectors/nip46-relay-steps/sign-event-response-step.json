@@ -1,0 +1,61 @@
+{
+  "name": "sign-event-response-step",
+  "format": "nsealr-nip46-relay-response-step-v1",
+  "direction": "remote_signer_to_client",
+  "event": {
+    "id": "9616592e612272300d09cc2b27b78075c169ca0f3441238d59d538c31856c74f",
+    "kind": 24133,
+    "pubkey": "4f355bdcb7cc0af728ef3cceb9615d90684bb5b2ca5f859ab0f0b704075871aa",
+    "created_at": 1710000001,
+    "content": "nip44-v2-response-ciphertext-placeholder",
+    "tags": [
+      [
+        "p",
+        "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+      ]
+    ],
+    "sig": "f161d7ac0e27cfcdc5781810c95fad2e368abd215bb9806c4e6df24bb9c8b14f7879b31771bf18138c333dd93f0eeb610bbd42e39dc02aad7e82225ade65a52e"
+  },
+  "decrypted_message": {
+    "id": "nip46-req-1",
+    "result": "{\"id\":\"2977f107ad2668dbd9f09b8594eff3b5276e21bfe098e60ae3e905e3c861e4d3\",\"pubkey\":\"4f355bdcb7cc0af728ef3cceb9615d90684bb5b2ca5f859ab0f0b704075871aa\",\"created_at\":1710000000,\"kind\":1,\"tags\":[],\"content\":\"nSealr fixture: basic kind 1 event.\",\"sig\":\"2eec0351eb1d651140922d4b1f1bd8135f4474aabf42ec5bda7011087c1a072d71be863646dc162e4d96eacf14afeed2618a4acb0e1134a273a2b8e73039e654\"}"
+  },
+  "expected_step": {
+    "format": "nsealr-nip46-relay-response-step-v1",
+    "envelope": {
+      "format": "nsealr-nip46-relay-event-envelope-v0",
+      "direction": "remote_signer_to_client",
+      "sender_pubkey": "4f355bdcb7cc0af728ef3cceb9615d90684bb5b2ca5f859ab0f0b704075871aa",
+      "recipient_pubkey": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+      "encrypted_content": "nip44-v2-response-ciphertext-placeholder",
+      "has_signed_event_fields": true,
+      "event_id_verified": true,
+      "event_signature_verified": true,
+      "decrypts_content": false,
+      "opens_relay": false,
+      "creates_grants": false,
+      "stores_production_secrets": false
+    },
+    "message_id": "nip46-req-1",
+    "response_message": {
+      "id": "nip46-req-1",
+      "result": "{\"id\":\"2977f107ad2668dbd9f09b8594eff3b5276e21bfe098e60ae3e905e3c861e4d3\",\"pubkey\":\"4f355bdcb7cc0af728ef3cceb9615d90684bb5b2ca5f859ab0f0b704075871aa\",\"created_at\":1710000000,\"kind\":1,\"tags\":[],\"content\":\"nSealr fixture: basic kind 1 event.\",\"sig\":\"2eec0351eb1d651140922d4b1f1bd8135f4474aabf42ec5bda7011087c1a072d71be863646dc162e4d96eacf14afeed2618a4acb0e1134a273a2b8e73039e654\"}"
+    },
+    "result_type": "signed_event_result",
+    "signed_event_shape_checked": true,
+    "signed_event_id_verified": true,
+    "signed_event_signature_verified": true,
+    "result_pubkey": "4f355bdcb7cc0af728ef3cceb9615d90684bb5b2ca5f859ab0f0b704075871aa",
+    "result_pubkey_bound_to_expected_user": true,
+    "decrypts_content": false,
+    "opens_relay": false,
+    "creates_grants": false,
+    "acknowledges_connect": false,
+    "dispatches_signer": false,
+    "relay_event_signature_verified": true,
+    "stores_production_secrets": false,
+    "persists_session_state": false
+  },
+  "scope": "NIP-46 relay response step evaluation after external NIP-44 decryption. It validates the plaintext response shape, verifies the relay event signature, verifies the signed-event result id/signature, and binds the signed-event pubkey to the explicitly expected user identity without opening relays, decrypting NIP-44 content, acknowledging connect, creating grants, dispatching a signer, or persisting session state.",
+  "expected_user_pubkey": "4f355bdcb7cc0af728ef3cceb9615d90684bb5b2ca5f859ab0f0b704075871aa"
+}

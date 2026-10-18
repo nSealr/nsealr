@@ -1,0 +1,55 @@
+{
+  "name": "@nsealr/sdk",
+  "version": "0.1.0",
+  "description": "Platform-neutral SDK facade for nSealr browser, companion, and signer integrations.",
+  "keywords": [
+    "nostr",
+    "nsealr",
+    "signer",
+    "sdk",
+    "browser-extension"
+  ],
+  "type": "module",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/nSealr/companion.git",
+    "directory": "packages/sdk"
+  },
+  "bugs": {
+    "url": "https://github.com/nSealr/companion/issues"
+  },
+  "homepage": "https://github.com/nSealr/companion#readme",
+  "sideEffects": false,
+  "files": [
+    "dist",
+    "README.md"
+  ],
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    },
+    "./browser": {
+      "types": "./dist/browser.d.ts",
+      "import": "./dist/browser.js"
+    }
+  },
+  "types": "./dist/index.d.ts",
+  "dependencies": {
+    "@nsealr/browser-provider": "workspace:*",
+    "@nsealr/client": "workspace:*",
+    "@nsealr/core": "workspace:*",
+    "@nsealr/framing": "workspace:*",
+    "@nsealr/nip46": "workspace:*",
+    "@nsealr/policy": "workspace:*",
+    "@nsealr/protocol": "workspace:*",
+    "@nsealr/qr": "workspace:*",
+    "@nsealr/review": "workspace:*",
+    "@nsealr/smartcard": "workspace:*"
+  },
+  "publishConfig": {
+    "access": "public",
+    "provenance": true
+  }
+}

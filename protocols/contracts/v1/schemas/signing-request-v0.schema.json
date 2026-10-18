@@ -1,0 +1,77 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://nsealr.dev/schemas/signing-request-v0.schema.json",
+  "title": "nSealr Signing Request v0",
+  "type": "object",
+  "oneOf": [
+    {
+      "required": ["version", "request_id", "method"],
+      "properties": {
+        "version": { "const": 1 },
+        "request_id": { "$ref": "#/$defs/request_id" },
+        "method": { "const": "get_capabilities" }
+      },
+      "additionalProperties": false
+    },
+    {
+      "required": ["version", "request_id", "method"],
+      "properties": {
+        "version": { "const": 1 },
+        "request_id": { "$ref": "#/$defs/request_id" },
+        "method": { "const": "get_signing_status" }
+      },
+      "additionalProperties": false
+    },
+    {
+      "required": ["version", "request_id", "method"],
+      "properties": {
+        "version": { "const": 1 },
+        "request_id": { "$ref": "#/$defs/request_id" },
+        "method": { "const": "get_public_key" }
+      },
+      "additionalProperties": false
+    },
+    {
+      "required": ["version", "request_id", "method", "params"],
+      "properties": {
+        "version": { "const": 1 },
+        "request_id": { "$ref": "#/$defs/request_id" },
+        "method": { "const": "sign_event" },
+        "params": {
+          "type": "object",
+          "required": ["event_template"],
+          "properties": {
+            "event_template": { "$ref": "#/$defs/event_template" }
+          },
+          "additionalProperties": false
+        }
+      },
+      "additionalProperties": false
+    }
+  ],
+  "$defs": {
+    "request_id": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 128,
+      "pattern": "^[A-Za-z0-9._:-]+$"
+    },
+    "event_template": {
+      "type": "object",
+      "required": ["created_at", "kind", "tags", "content"],
+      "properties": {
+        "created_at": { "type": "integer", "minimum": 0 },
+        "kind": { "type": "integer", "minimum": 0 },
+        "tags": {
+          "type": "array",
+          "items": {
+            "type": "array",
+            "items": { "type": "string" }
+          }
+        },
+        "content": { "type": "string" }
+      },
+      "additionalProperties": false
+    }
+  }
+}
