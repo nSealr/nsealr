@@ -103,7 +103,18 @@ function assertPackageManifest(path) {
     ...(manifest.dependencies ?? {}),
     ...(manifest.devDependencies ?? {})
   };
+  // The single packed SDK now owns previously indirect verification/NIP-44
+  // dependencies. Its facade source still cannot import signing primitives;
+  // bundle_sdk checks every emitted dependency and excludes test signing code.
+  const bundledSdkDependencies = {
+    "@noble/ciphers": "2.1.1", "@noble/curves": "2.2.0",
+    "@noble/hashes": "2.2.0", "nostr-tools": "2.23.3"
+  };
+  const isSdk = relativePath(path) === "packages/sdk/package.json";
+  if (isSdk) assert.deepEqual(manifest.dependencies, bundledSdkDependencies,
+    "SDK bundled-runtime dependency graph must match its reviewed exact versions");
   for (const dependency of Object.keys(dependencies)) {
+    if (isSdk && bundledSdkDependencies[dependency] === dependencies[dependency]) continue;
     for (const bannedPrefix of bannedPackagePrefixes) {
       assert(
         !dependency.startsWith(bannedPrefix),
