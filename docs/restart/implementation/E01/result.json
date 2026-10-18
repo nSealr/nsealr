@@ -1,0 +1,78 @@
+{
+  "schema_version": 1,
+  "task": "E01",
+  "input_commits": {
+    "nSealr/nsealr": "c06a9e242f2387e1ecc1467116ebef2dff805a9c"
+  },
+  "candidate_commits": {
+    "nSealr/nsealr": "89943be5a52ce43058d446da640b5fb550a124d3"
+  },
+  "acceptance": [
+    "Pin KiCad 10.0.7 and adapter revision after checking current support; begin with read-only operations.",
+    "On disposable projects qualify each actually required operation and its rollback/save/reopen semantics; coordinate/layer/flip/crash tests apply to operations being enabled. Unused adapter capabilities are not prerequisites for schematic capture.",
+    "Use native-project CLI ERC/DRC and hash-linked exports; distinguish stable PCB IPC from development-only schematic/headless features.",
+    "Promote only demonstrated operations; retain one writer per CAD project and independently reviewed source-generation fallback.",
+    "Require a clean pinned dependency installation or a fully reviewed maintained correction; a new binding combination does not inherit old runtime evidence. Native CLI and independently reviewed source generation can unblock required CAD work while extra MCP operations remain disabled."
+  ],
+  "review": {
+    "assignee": "/root/cad_execution",
+    "reviewer": "/root/independent_cad_review",
+    "verdict": "pass"
+  },
+  "acceptance_results": [
+    {
+      "index": 0,
+      "outcome": "pass",
+      "proof_kind": "executed_test",
+      "evidence_paths": [
+        "docs/restart/implementation/E01/inputs.json",
+        "docs/restart/implementation/E01/results.md",
+        "docs/restart/implementation/reviews/E01/provenance-results.json"
+      ]
+    },
+    {
+      "index": 1,
+      "outcome": "pass",
+      "proof_kind": "executed_test",
+      "evidence_paths": [
+        "docs/restart/implementation/E01/capabilities.json",
+        "docs/restart/implementation/E01/results.md",
+        "docs/restart/implementation/reviews/E01/review.json"
+      ]
+    },
+    {
+      "index": 2,
+      "outcome": "pass",
+      "proof_kind": "executed_test",
+      "evidence_paths": [
+        "docs/restart/implementation/E01/results.md",
+        "docs/restart/implementation/reviews/E01/evidence-01/results.json"
+      ]
+    },
+    {
+      "index": 3,
+      "outcome": "pass",
+      "proof_kind": "executed_test",
+      "evidence_paths": [
+        "docs/restart/implementation/E01/capabilities.json",
+        "docs/restart/implementation/reviews/E01/review.json",
+        "docs/restart/implementation/E01/integration.json"
+      ]
+    },
+    {
+      "index": 4,
+      "outcome": "pass",
+      "proof_kind": "executed_test",
+      "evidence_paths": [
+        "docs/restart/implementation/E01/inputs.json",
+        "docs/restart/implementation/E01/results.md",
+        "docs/restart/implementation/reviews/E01/provenance-results.json"
+      ]
+    }
+  ],
+  "limits": [
+    "Bounded exact-tuple three-component native/GUI/read-only-MCP campaign, not production PCB or all-adapter support.",
+    "Original raw-output whitespace failure and broken optional binding imports remain preserved, not disguised.",
+    "All original586 authored files unchanged at rebased delivery; approved and integrated whole trees match and postintegration CI succeeds."
+  ]
+}
