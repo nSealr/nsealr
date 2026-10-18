@@ -88,12 +88,12 @@ def intake(source: Path, commit: str, target: Path, recorder: Recorder) -> tuple
         raise PreflightError('target destination must be absent')
     base_objects, base_commits = reachable(source, commit), commits(source, commit)
     env = git_environment()
-    recorder.run('empty-target-init', ['git', '-c', 'init.templateDir=', 'init', '--initial-branch=rehearsal', str(target)], recorder.root, env=env)
+    recorder.run('empty-target-init', ['git', '-c', 'init.templateDir=', 'init', '--initial-branch=intake', str(target)], recorder.root, env=env)
     # Git transport fetch sends selected ancestry; local clone/hardlink optimizations are never used.
     recorder.run('exact-public-ancestry-fetch', ['git', '-C', str(target), 'fetch', '--no-tags', '--no-write-fetch-head',
                  str(source), commit + ':refs/heads/rehearsal'], recorder.root, env=env)
-    audit(target, base_objects, base_commits, [], commit)
     recorder.run('checkout-public-source', ['git', '-C', str(target), 'checkout', '--force', 'rehearsal'], recorder.root, env=env)
+    audit(target, base_objects, base_commits, [], commit)
     return base_objects, base_commits
 
 
