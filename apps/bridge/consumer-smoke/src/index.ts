@@ -15,7 +15,7 @@ function readPackageManifest(path: string): PackageManifest {
 }
 
 function workspaceRoot(): string {
-  return join(dirname(fileURLToPath(import.meta.url)), "..", "..", "..");
+  return join(dirname(fileURLToPath(import.meta.url)), "..", "..", "..", "..");
 }
 
 function collectPublicPackages(): string[] {

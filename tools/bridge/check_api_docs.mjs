@@ -3,10 +3,10 @@ import { dirname, join, resolve } from "node:path";
 import * as ts from "typescript";
 import { packageDirName, publicPackages, root, sourceManifest } from "./package_set.mjs";
 
-const docPath = join(root, "docs", "api.md");
+const docPath = join(root, "docs", "bridge", "api.md");
 
 function usage() {
-  return "usage: node scripts/check_api_docs.mjs [--write]";
+  return "usage: node tools/bridge/check_api_docs.mjs [--write]";
 }
 
 function readSource(path) {

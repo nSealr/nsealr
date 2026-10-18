@@ -6,10 +6,10 @@ import * as ts from "typescript";
 import { packageDirName, root, sourceManifest } from "./package_set.mjs";
 
 const browserRuntimeEntrypoints = [
-  "apps/browser-extension/src/nsealr-background-entrypoint.ts",
-  "apps/browser-extension/src/nsealr-content-script-entrypoint.ts",
-  "apps/browser-extension/src/nsealr-popup-entrypoint.ts",
-  "apps/browser-extension/src/nsealr-page-script-entrypoint.ts",
+  "apps/bridge/browser-extension/src/nsealr-background-entrypoint.ts",
+  "apps/bridge/browser-extension/src/nsealr-content-script-entrypoint.ts",
+  "apps/bridge/browser-extension/src/nsealr-popup-entrypoint.ts",
+  "apps/bridge/browser-extension/src/nsealr-page-script-entrypoint.ts",
   "packages/browser-provider/src/index.ts",
   "packages/framing/src/index.ts",
   "packages/sdk/src/browser.ts"

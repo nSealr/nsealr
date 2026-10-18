@@ -1,7 +1,36 @@
 {
-  "name": "@nsealr/client",
-  "version": "0.1.0",
+  "bugs": {
+    "url": "https://github.com/nSealr/nsealr/issues"
+  },
+  "dependencies": {
+    "@nsealr/core": "workspace:*",
+    "@nsealr/policy": "workspace:*",
+    "@nsealr/protocol": "workspace:*",
+    "@nsealr/review": "workspace:*"
+  },
   "description": "Secretless local companion service and native-messaging client boundary for nSealr integrations.",
+  "devDependencies": {
+    "@nsealr/fixtures": "workspace:*"
+  },
+  "exports": {
+    ".": {
+      "import": "./dist/index.js",
+      "types": "./dist/index.d.ts"
+    },
+    "./browser": {
+      "import": "./dist/browser.js",
+      "types": "./dist/browser.d.ts"
+    },
+    "./client-identity": {
+      "import": "./dist/client-identity.js",
+      "types": "./dist/client-identity.d.ts"
+    }
+  },
+  "files": [
+    "dist",
+    "README.md"
+  ],
+  "homepage": "https://github.com/nSealr/nsealr#readme",
   "keywords": [
     "nostr",
     "nsealr",
@@ -9,48 +38,16 @@
     "native-messaging",
     "sdk"
   ],
-  "type": "module",
   "license": "MIT",
+  "name": "@nsealr/client",
+  "private": true,
   "repository": {
+    "directory": "packages/client",
     "type": "git",
-    "url": "git+https://github.com/nSealr/companion.git",
-    "directory": "packages/client"
+    "url": "git+https://github.com/nSealr/nsealr.git"
   },
-  "bugs": {
-    "url": "https://github.com/nSealr/companion/issues"
-  },
-  "homepage": "https://github.com/nSealr/companion#readme",
   "sideEffects": false,
-  "files": [
-    "dist",
-    "README.md"
-  ],
-  "exports": {
-    ".": {
-      "types": "./dist/index.d.ts",
-      "import": "./dist/index.js"
-    },
-    "./browser": {
-      "types": "./dist/browser.d.ts",
-      "import": "./dist/browser.js"
-    },
-    "./client-identity": {
-      "types": "./dist/client-identity.d.ts",
-      "import": "./dist/client-identity.js"
-    }
-  },
+  "type": "module",
   "types": "./dist/index.d.ts",
-  "dependencies": {
-    "@nsealr/core": "workspace:*",
-    "@nsealr/policy": "workspace:*",
-    "@nsealr/protocol": "workspace:*",
-    "@nsealr/review": "workspace:*"
-  },
-  "devDependencies": {
-    "@nsealr/fixtures": "workspace:*"
-  },
-  "publishConfig": {
-    "access": "public",
-    "provenance": true
-  }
+  "version": "0.1.0"
 }

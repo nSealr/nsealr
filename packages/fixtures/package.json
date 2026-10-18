@@ -1,7 +1,27 @@
 {
-  "name": "@nsealr/fixtures",
-  "version": "0.1.0",
+  "bugs": {
+    "url": "https://github.com/nSealr/nsealr/issues"
+  },
+  "dependencies": {
+    "@nsealr/policy": "workspace:*",
+    "@nsealr/review": "workspace:*"
+  },
   "description": "Shared nSealr specs fixture loading and fixture validation helpers.",
+  "exports": {
+    ".": {
+      "import": "./dist/index.js",
+      "types": "./dist/index.d.ts"
+    },
+    "./specs-root": {
+      "import": "./dist/specs-root.js",
+      "types": "./dist/specs-root.d.ts"
+    }
+  },
+  "files": [
+    "dist",
+    "README.md"
+  ],
+  "homepage": "https://github.com/nSealr/nsealr#readme",
   "keywords": [
     "nostr",
     "nsealr",
@@ -9,39 +29,16 @@
     "fixtures",
     "conformance"
   ],
-  "type": "module",
   "license": "MIT",
+  "name": "@nsealr/fixtures",
+  "private": true,
   "repository": {
+    "directory": "packages/fixtures",
     "type": "git",
-    "url": "git+https://github.com/nSealr/companion.git",
-    "directory": "packages/fixtures"
+    "url": "git+https://github.com/nSealr/nsealr.git"
   },
-  "bugs": {
-    "url": "https://github.com/nSealr/companion/issues"
-  },
-  "homepage": "https://github.com/nSealr/companion#readme",
   "sideEffects": false,
-  "files": [
-    "dist",
-    "README.md"
-  ],
-  "exports": {
-    ".": {
-      "types": "./dist/index.d.ts",
-      "import": "./dist/index.js"
-    },
-    "./specs-root": {
-      "types": "./dist/specs-root.d.ts",
-      "import": "./dist/specs-root.js"
-    }
-  },
+  "type": "module",
   "types": "./dist/index.d.ts",
-  "dependencies": {
-    "@nsealr/policy": "workspace:*",
-    "@nsealr/review": "workspace:*"
-  },
-  "publishConfig": {
-    "access": "public",
-    "provenance": true
-  }
+  "version": "0.1.0"
 }

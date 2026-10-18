@@ -416,7 +416,7 @@ export type SpecsFixtureSet = {
     format: "nsealr-persistent-secret-custody-contract-v0";
     contract_id: "persistent-secret-custody-v0";
     solution: "custom_hardware_wallet";
-    repository: "hardware";
+    repository: "nsealr";
     current_status: "research";
     scope: string;
     requirements: {
@@ -589,7 +589,7 @@ export function validatePersistentSecretCustodyFixture(name: string, fixture: un
   if (fixture.contract_id !== "persistent-secret-custody-v0") {
     throw new Error(`invalid persistent-secret custody contract ${name}: contract_id drift`);
   }
-  if (fixture.solution !== "custom_hardware_wallet" || fixture.repository !== "hardware") {
+  if (fixture.solution !== "custom_hardware_wallet" || fixture.repository !== "nsealr") {
     throw new Error(`invalid persistent-secret custody contract ${name}: solution boundary drift`);
   }
   if (fixture.current_status !== "research") {

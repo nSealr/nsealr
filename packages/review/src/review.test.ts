@@ -1,4 +1,5 @@
-import { existsSync, readFileSync, readdirSync } from "node:fs";
+import { resolveSpecsRoot } from "@nsealr/fixtures/specs-root";
+import { readFileSync, readdirSync } from "node:fs";
 import { resolve } from "node:path";
 import { describe, expect, it } from "vitest";
 import {
@@ -15,16 +16,6 @@ import {
 
 const specsRoot = resolveSpecsRoot();
 
-function resolveSpecsRoot(preferredRoot = resolve("../specs")): string {
-  if (existsSync(resolve(preferredRoot, "vectors")) && existsSync(resolve(preferredRoot, "examples"))) {
-    return preferredRoot;
-  }
-  const fallbackRoot = resolve(process.cwd(), "tests/fixtures/specs");
-  if (existsSync(resolve(fallbackRoot, "vectors")) && existsSync(resolve(fallbackRoot, "examples"))) {
-    return fallbackRoot;
-  }
-  return preferredRoot;
-}
 
 function loadJson(path: string): unknown {
   return JSON.parse(readFileSync(path, "utf8"));

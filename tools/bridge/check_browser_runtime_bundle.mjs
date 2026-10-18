@@ -5,10 +5,10 @@ import { build } from "esbuild";
 import { root } from "./package_set.mjs";
 
 const entryPoints = [
-  "apps/browser-extension/src/nsealr-background-entrypoint.ts",
-  "apps/browser-extension/src/nsealr-content-script-entrypoint.ts",
-  "apps/browser-extension/src/nsealr-popup-entrypoint.ts",
-  "apps/browser-extension/src/nsealr-page-script-entrypoint.ts"
+  "apps/bridge/browser-extension/src/nsealr-background-entrypoint.ts",
+  "apps/bridge/browser-extension/src/nsealr-content-script-entrypoint.ts",
+  "apps/bridge/browser-extension/src/nsealr-popup-entrypoint.ts",
+  "apps/bridge/browser-extension/src/nsealr-page-script-entrypoint.ts"
 ].map((path) => join(root, path));
 
 const result = await build({

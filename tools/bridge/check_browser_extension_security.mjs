@@ -6,7 +6,7 @@ import * as ts from "typescript";
 import { root } from "./package_set.mjs";
 
 const auditedRoots = [
-  "apps/browser-extension/src",
+  "apps/bridge/browser-extension/src",
   "packages/browser-provider/src",
   "packages/sdk/src"
 ].map((path) => join(root, path));
@@ -114,7 +114,7 @@ function assertPackageManifest(path) {
 }
 
 for (const manifest of [
-  "apps/browser-extension/package.json",
+  "apps/bridge/browser-extension/package.json",
   "packages/browser-provider/package.json",
   "packages/sdk/package.json"
 ].map((path) => join(root, path))) {
