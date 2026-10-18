@@ -8,7 +8,7 @@ import unittest
 from pathlib import Path
 from unittest.mock import patch
 
-from scripts import browser_extension_chromium_smoke as smoke
+from tests.integration.optional import browser_extension_chromium_smoke as smoke
 
 
 class BrowserExtensionChromiumSmokeTests(unittest.TestCase):

@@ -19,9 +19,9 @@ from pathlib import Path
 from typing import Any, Optional
 
 try:
-    from tests.integration.integration_support import PINNED_PNPM_COMMAND, run_command
+    from tests.integration.integration_support import PINNED_PNPM_COMMAND, pinned_command, run_command
 except ModuleNotFoundError:  # pragma: no cover - direct script execution
-    from integration_support import PINNED_PNPM_COMMAND, run_command
+    from integration_support import PINNED_PNPM_COMMAND, pinned_command, run_command
 
 
 ROOT = Path(__file__).resolve().parents[3]
@@ -37,7 +37,7 @@ class CommandPlan:
 
 
 def pnpm_command() -> list[str]:
-    return [*PINNED_PNPM_COMMAND]
+    return pinned_command(["pnpm"])
 
 
 def build_request_command(
@@ -215,7 +215,7 @@ def run_smoke(
         raise FileNotFoundError(f"missing product component: {SPECS}")
 
     pnpm = pnpm_command()
-    subprocess.run([*pnpm, "install"], cwd=COMPANION, check=True)
+    subprocess.run([*pnpm, "install", "--frozen-lockfile"], cwd=COMPANION, check=True)
     with tempfile.TemporaryDirectory(prefix="nsealr-companion-hw-serial-") as tmp:
         temp_root = Path(tmp)
         request_path = temp_root / "request.json"
