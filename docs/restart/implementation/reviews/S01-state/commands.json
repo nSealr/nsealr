@@ -1,0 +1,54 @@
+{
+  "python": "3.13.5 (main, Aug 10 2026, 12:06:59) [GCC 14.2.0]",
+  "host": "Linux-6.12.101+deb13-amd64-x86_64-with-glibc2.41",
+  "commands": [
+    {
+      "label": "plan-validation",
+      "argv": [
+        "python3",
+        "scripts/validate_restart_plan.py"
+      ],
+      "cwd": "/home/tux/nsealr/.restart-tools/goal/s01-state-review",
+      "started": "2026-10-18T17:53:23.789484+00:00",
+      "ended": "2026-10-18T17:53:23.935812+00:00",
+      "exit_code": 0,
+      "log": "plan-validation.log",
+      "sha256": "5c1b1df247ceb56c7ab6d1255a21abe5c31d231e488b2c5113d21e77be8bf8e6"
+    },
+    {
+      "label": "plan-controls",
+      "argv": [
+        "python3",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "scripts",
+        "-p",
+        "test_validate_restart_plan.py"
+      ],
+      "cwd": "/home/tux/nsealr/.restart-tools/goal/s01-state-review",
+      "started": "2026-10-18T17:53:23.935844+00:00",
+      "ended": "2026-10-18T17:53:23.968908+00:00",
+      "exit_code": 0,
+      "log": "plan-controls.log",
+      "sha256": "7bc83929f79c8678737a5724da0d7fb69194a01ca52394499c61abcb93823e0b"
+    },
+    {
+      "label": "whitespace",
+      "argv": [
+        "git",
+        "diff",
+        "--check",
+        "HEAD^",
+        "HEAD"
+      ],
+      "cwd": "/home/tux/nsealr/.restart-tools/goal/s01-state-review",
+      "started": "2026-10-18T17:53:23.968924+00:00",
+      "ended": "2026-10-18T17:53:23.973471+00:00",
+      "exit_code": 0,
+      "log": "whitespace.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ]
+}
