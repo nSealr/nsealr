@@ -294,16 +294,16 @@ mod tests {
     // NIP-06 fixture copied from the READ-ONLY
     // specs/vectors/keys/nip06-account-0-leader.json (`mnemonic`, `public_key`).
     const NIP06_ACCOUNT_0_MNEMONIC: &str =
-        "leader monkey parrot ring guide accident before fence cannon height naive bean";
+        include_str!(concat!(env!("OUT_DIR"), "/field-674779247edd20ec33c77f12.txt"));
     const NIP06_ACCOUNT_0_PUBLIC_KEY: &str =
-        "17162c921dc4d2518f9a101db33695df1afb56ab82f5ff3e5da6eec3ca5cd917";
+        include_str!(concat!(env!("OUT_DIR"), "/field-017a5b0dc1323f5d5b24c239.txt"));
     // NIP-19 fixture copied from the READ-ONLY
     // specs/vectors/nip19/nsec-test-key-1.json (`public_key`).
     const NSEC_TEST_KEY_1_PUBLIC_KEY: &str =
-        "4f355bdcb7cc0af728ef3cceb9615d90684bb5b2ca5f859ab0f0b704075871aa";
+        include_str!(concat!(env!("OUT_DIR"), "/field-17dba53b6e43a56b50d99b65.txt"));
     // Fingerprint copied from the READ-ONLY
     // specs/vectors/session-import-reviews/nsec-test-key-1.json (`fingerprint`).
-    const NSEC_TEST_KEY_1_FINGERPRINT: &str = "dbd1f8666039f02a";
+    const NSEC_TEST_KEY_1_FINGERPRINT: &str = include_str!(concat!(env!("OUT_DIR"), "/field-29f4e64e397d69751482cd54.txt"));
 
     /// The C++ generated `esp32_qr_nip06_account_0_descriptor()`; fields copied
     /// from the READ-ONLY specs/vectors/accounts/esp32-qr-nip06-account-0.json
@@ -311,13 +311,13 @@ mod tests {
     /// `recovery.{source_fingerprint,type,path,account}`).
     fn esp32_qr_nip06_account_0_descriptor() -> SessionAccountDescriptor<'static> {
         SessionAccountDescriptor {
-            account_id: "acct-esp32-qr-nip06-account-0",
+            account_id: include_str!(concat!(env!("OUT_DIR"), "/field-7f69eeeda752dba7d0b40d52.txt")),
             route_type: "esp32_qr_vault",
             public_key: NIP06_ACCOUNT_0_PUBLIC_KEY,
             source_index: 0,
-            source_fingerprint: "cd64b58daca009b9",
+            source_fingerprint: include_str!(concat!(env!("OUT_DIR"), "/field-8e86cbbca24ca3c385e2aa97.txt")),
             recovery_kind: SessionAccountRecoveryKind::Nip06,
-            derivation_path: "m/44'/1237'/0'/0/0",
+            derivation_path: include_str!(concat!(env!("OUT_DIR"), "/field-68f5ca55923a448625caf1ff.txt")),
             account_index: 0,
         }
     }
@@ -326,7 +326,7 @@ mod tests {
         let mut keyring = StatelessSessionKeyring::new();
         keyring
             .add_bip39_seed(
-                "NIP-06 account 0",
+                include_str!(concat!(env!("OUT_DIR"), "/field-a075e44ca789a3eaed354231.txt")),
                 crate::bip39::WordIndexes::from_slice(
                     bip39::parse_mnemonic_indexes(NIP06_ACCOUNT_0_MNEMONIC)
                         .unwrap()
@@ -370,7 +370,7 @@ mod tests {
         assert_eq!(selected.source_index, 0);
         assert_eq!(selected.source_fingerprint, descriptor.source_fingerprint);
         assert_eq!(selected.source_kind, SessionKeySourceKind::Bip39WordIndexes);
-        assert_eq!(selected.source_label, "NIP-06 account 0");
+        assert_eq!(selected.source_label, include_str!(concat!(env!("OUT_DIR"), "/field-a075e44ca789a3eaed354231.txt")));
         assert!(!selected.source_public_key_proof_verified);
         assert_eq!(
             selected.signer_identity.public_key,
@@ -442,7 +442,7 @@ mod tests {
         assert_eq!(status.missing_gates.len(), 1);
         assert_eq!(
             status.missing_gates.as_slice()[0],
-            "source_public_key_proof"
+            include_str!(concat!(env!("OUT_DIR"), "/field-b0db970c9c0a12565d003468.txt"))
         );
     }
 
@@ -533,7 +533,7 @@ mod tests {
         );
         // must not carry a derivation path
         let mut invalid = standalone;
-        invalid.derivation_path = "m/44'/1237'/0'/0/0";
+        invalid.derivation_path = include_str!(concat!(env!("OUT_DIR"), "/field-68f5ca55923a448625caf1ff.txt"));
         assert_eq!(
             select_session_account(&keyring, &invalid),
             Err(SessionAccountError::UnexpectedDerivationPath),
@@ -550,7 +550,7 @@ mod tests {
         // Extra branch coverage beyond the C++ case (recorded deviation): a
         // standalone-nsec descriptor over a BIP-39 source.
         let mut invalid = standalone_descriptor();
-        invalid.source_fingerprint = "cd64b58daca009b9";
+        invalid.source_fingerprint = include_str!(concat!(env!("OUT_DIR"), "/field-8e86cbbca24ca3c385e2aa97.txt"));
         assert_eq!(
             select_session_account(&mnemonic_keyring, &invalid),
             Err(SessionAccountError::RequiresNsecSource),
@@ -577,12 +577,12 @@ mod tests {
         let nip06_proof = ProofVector {
             proof_type: "nip06",
             source_type: "bip39_seed",
-            source_fingerprint: "cd64b58daca009b9",
+            source_fingerprint: include_str!(concat!(env!("OUT_DIR"), "/field-8e86cbbca24ca3c385e2aa97.txt")),
             account: Some(0),
-            path: "m/44'/1237'/0'/0/0",
+            path: include_str!(concat!(env!("OUT_DIR"), "/field-68f5ca55923a448625caf1ff.txt")),
             passphrase: "",
             expected_public_key: NIP06_ACCOUNT_0_PUBLIC_KEY,
-            security_scope: "Proof contract for deriving the reviewed NIP-06 account public key from a RAM-only BIP-39 session source before signing. It does not persist material, approve signing, or let descriptors/fingerprints substitute for derivation.",
+            security_scope: include_str!(concat!(env!("OUT_DIR"), "/field-40c355f0fe3f24d85d303868.txt")),
         };
         let nsec_proof = ProofVector {
             proof_type: "nip19_nsec",
@@ -592,13 +592,13 @@ mod tests {
             path: "",
             passphrase: "",
             expected_public_key: NSEC_TEST_KEY_1_PUBLIC_KEY,
-            security_scope: "Proof contract for deriving the reviewed public key from a RAM-only NIP-19 nsec session source before signing. It does not persist material, approve signing, or let descriptors/fingerprints substitute for derivation.",
+            security_scope: include_str!(concat!(env!("OUT_DIR"), "/field-75dff0fb7be12747c9663baa.txt")),
         };
 
         assert_eq!(nip06_proof.proof_type, "nip06");
         assert_eq!(nip06_proof.source_type, "bip39_seed");
         assert_eq!(nip06_proof.account, Some(0));
-        assert_eq!(nip06_proof.path, "m/44'/1237'/0'/0/0");
+        assert_eq!(nip06_proof.path, include_str!(concat!(env!("OUT_DIR"), "/field-68f5ca55923a448625caf1ff.txt")));
         assert!(nip06_proof.passphrase.is_empty());
         assert!(nip06_proof.security_scope.contains("before signing"));
 
@@ -630,7 +630,7 @@ mod tests {
         let mut nsec_keyring = StatelessSessionKeyring::new();
         nsec_keyring
             .add_nsec(
-                "nsec test vector",
+                include_str!(concat!(env!("OUT_DIR"), "/field-43257d08c218769553577c83.txt")),
                 nip19::decode_nsec(NSEC_TEST_KEY_1).unwrap(),
             )
             .unwrap();

@@ -688,24 +688,24 @@ mod tests {
     /// Request/response JSON copied from the READ-ONLY
     /// specs/vectors/devices/esp32-s3-capabilities-scaffold.json (the C++
     /// consumed them as kCapabilityRequestFrame/kCapabilityResponseFrame).
-    const CAPABILITY_REQUEST_JSON: &str = r#"{"version":1,"request_id":"req-capabilities-esp32-s3-scaffold","method":"get_capabilities"}"#;
-    const CAPABILITY_RESPONSE_JSON: &str = r#"{"version":1,"request_id":"req-capabilities-esp32-s3-scaffold","ok":true,"result":{"capabilities":{"device":{"name":"nSealr ESP32-S3 USB Signer Scaffold","firmware":"nsealr-esp32-s3-usb-signer","hardware":"esp32-s3-devkitc-1"},"protocols":["nsealr.signing.v0","nsealr.serial-frame.v0"],"methods":["get_capabilities","get_signing_status","get_public_key","sign_event"],"transports":["usb-serial-jtag"],"signing_enabled":false,"requires_physical_approval":true}}}"#;
+    const CAPABILITY_REQUEST_JSON: &str = include_str!(concat!(env!("OUT_DIR"), "/field-f2bcc223a89cff161836df95.txt"));
+    const CAPABILITY_RESPONSE_JSON: &str = include_str!(concat!(env!("OUT_DIR"), "/field-96b606e48d5a2e92c7cd10ee.txt"));
 
     /// Request/response JSON copied from the READ-ONLY
     /// specs/vectors/devices/esp32-s3-sign-event-disabled.json.
-    const SIGN_EVENT_REQUEST_JSON: &str = r#"{"version":1,"request_id":"req-kind-1-basic","method":"sign_event","params":{"event_template":{"created_at":1710000000,"kind":1,"tags":[],"content":"nSealr fixture: basic kind 1 event."}}}"#;
-    const SIGN_EVENT_DISABLED_RESPONSE_JSON: &str = r#"{"version":1,"request_id":"req-kind-1-basic","ok":false,"error":{"code":"signing_disabled","message":"Signing is disabled until trusted review and physical approval are implemented.","retryable":false}}"#;
+    const SIGN_EVENT_REQUEST_JSON: &str = include_str!(concat!(env!("OUT_DIR"), "/field-c76b5ce6a9db422700c91fcc.txt"));
+    const SIGN_EVENT_DISABLED_RESPONSE_JSON: &str = include_str!(concat!(env!("OUT_DIR"), "/field-e966d0a12551130182433344.txt"));
 
     /// Request/response JSON copied from the READ-ONLY
     /// specs/vectors/devices/esp32-s3-signing-status-disabled.json.
-    const SIGNING_STATUS_REQUEST_JSON: &str = r#"{"version":1,"request_id":"req-signing-status-esp32-s3-scaffold","method":"get_signing_status"}"#;
-    const SIGNING_STATUS_RESPONSE_JSON: &str = r#"{"version":1,"request_id":"req-signing-status-esp32-s3-scaffold","ok":true,"result":{"signing_status":{"signing_enabled":false,"missing_gates":["runtime_signing_feature","trusted_review_display","physical_approval_controls","unicode_review_rendering","key_provisioning","source_public_key_proof","secure_boot","flash_encryption","debug_lock","companion_signed_output_verification"],"development_accepted_gates":["parser_limits","trusted_review_display","physical_approval_controls","approval_digest_binding"]}}}"#;
+    const SIGNING_STATUS_REQUEST_JSON: &str = include_str!(concat!(env!("OUT_DIR"), "/field-04ab3357b128c04ccdf7def2.txt"));
+    const SIGNING_STATUS_RESPONSE_JSON: &str = include_str!(concat!(env!("OUT_DIR"), "/field-bdf442c8c61fc8e38c735491.txt"));
 
     /// Request/response JSON copied from the READ-ONLY
     /// specs/vectors/devices/esp32-s3-get-public-key-dev.json.
     const PUBLIC_KEY_REQUEST_JSON: &str =
-        r#"{"version":1,"request_id":"req-pubkey-1","method":"get_public_key"}"#;
-    const PUBLIC_KEY_RESPONSE_JSON: &str = r#"{"version":1,"request_id":"req-pubkey-1","ok":true,"result":{"public_key":"4f355bdcb7cc0af728ef3cceb9615d90684bb5b2ca5f859ab0f0b704075871aa"}}"#;
+        include_str!(concat!(env!("OUT_DIR"), "/field-19056d098b7abb687f36ea88.txt"));
+    const PUBLIC_KEY_RESPONSE_JSON: &str = include_str!(concat!(env!("OUT_DIR"), "/field-401e9037d4751ec63c8c6c94.txt"));
 
     const UNSUPPORTED_RESPONSE_JSON: &str = r#"{"error":"unsupported_request"}"#;
 
@@ -823,7 +823,7 @@ mod tests {
     // Port of the C++ `test_device_protocol_binds_configured_signer_identity`.
     #[test]
     fn binds_configured_signer_identity() {
-        let alternate_pubkey = "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc";
+        let alternate_pubkey = include_str!(concat!(env!("OUT_DIR"), "/field-239d59b65f08623efcc71a22.txt"));
         let context = DeviceProtocolContext {
             signer_identity: SignerIdentity {
                 public_key: alternate_pubkey,
@@ -990,8 +990,8 @@ mod tests {
         // Byte-for-byte frames copied from the READ-ONLY
         // specs/vectors/invalid/serial-frame-request-invalid-version.json and
         // serial-frame-request-invalid-request-id.json (`frame`).
-        const INVALID_VERSION_FRAME: &[u8] = b"nsealr1f:request:eyJ2ZXJzaW9uIjoxMCwicmVxdWVzdF9pZCI6ImR5bmFtaWMtc21va2UtaW52YWxpZC12ZXJzaW9uIiwibWV0aG9kIjoiZ2V0X3B1YmxpY19rZXkifQ:54c2eaa943b7931f\n";
-        const INVALID_REQUEST_ID_FRAME: &[u8] = b"nsealr1f:request:eyJ2ZXJzaW9uIjoxLCJyZXF1ZXN0X2lkIjoiZHluYW1pYy1zbW9rZS1pbnZhbGlkIGlkIiwibWV0aG9kIjoiZ2V0X3B1YmxpY19rZXkifQ:a4b7a1f708101a5f\n";
+        const INVALID_VERSION_FRAME: &[u8] = include_bytes!(concat!(env!("OUT_DIR"), "/field-152ca5b9fb9f6603dc2dc124.txt"));
+        const INVALID_REQUEST_ID_FRAME: &[u8] = include_bytes!(concat!(env!("OUT_DIR"), "/field-f687398dd9028828e538da0c.txt"));
         for frame in [INVALID_VERSION_FRAME, INVALID_REQUEST_ID_FRAME] {
             assert_eq!(
                 handle_serial_frame(frame, &dev()).unwrap().as_bytes(),
@@ -1006,7 +1006,7 @@ mod tests {
         assert_eq!(
             handle_serial_frame(
                 &request_frame_for_test(
-                    r#"{"version":1,"request_id":"invalid-top-level","method":"get_public_key","unexpected":true}"#,
+                    include_str!(concat!(env!("OUT_DIR"), "/field-bfe77a9543df538a8b0265f4.txt")),
                 ),
                 &dev(),
             )
@@ -1020,8 +1020,8 @@ mod tests {
     #[test]
     fn rejects_params_for_parameterless_methods() {
         for request_json in [
-            r#"{"version":1,"request_id":"invalid-capabilities-params","method":"get_capabilities","params":{}}"#,
-            r#"{"version":1,"request_id":"invalid-public-key-params","method":"get_public_key","params":{}}"#,
+            include_str!(concat!(env!("OUT_DIR"), "/field-f1b6d702634ac412d6ac89ce.txt")),
+            include_str!(concat!(env!("OUT_DIR"), "/field-bfb321d6d7c2a5aa3703dd9c.txt")),
             r#"{"version":1,"request_id":"invalid-signing-status-params","method":"get_signing_status","params":{}}"#,
         ] {
             assert_eq!(
@@ -1039,7 +1039,7 @@ mod tests {
         assert_eq!(
             handle_serial_frame(
                 &request_frame_for_test(
-                    r#"{"version":1,"request_id":"invalid-template-pubkey","method":"sign_event","params":{"event_template":{"pubkey":"0000000000000000000000000000000000000000000000000000000000000000","created_at":1710000000,"kind":1,"tags":[],"content":"unsafe template"}}}"#,
+                    include_str!(concat!(env!("OUT_DIR"), "/field-245bbf0348274249096379c6.txt")),
                 ),
                 &dev(),
             )

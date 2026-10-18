@@ -900,155 +900,16 @@ mod tests {
         pages: [(&'static str, &'static [&'static str], ReviewPageAction); 4],
     }
 
-    fn proposal_from_literals(
-        proposal_id: &str,
-        account_id: &str,
-        route_type: &str,
-        surface: &str,
-        label: Option<&str>,
-        grant_ids: &[&str],
-        created_at: u64,
-    ) -> PolicyChangeProposal {
-        let mut proposed_grant_ids = PolicyChangeGrantIds::new();
-        for grant_id in grant_ids {
-            proposed_grant_ids.try_push(grant_id).unwrap();
-        }
-        PolicyChangeProposal {
-            proposal_id: proposal_id.parse().unwrap(),
-            account_id: account_id.parse().unwrap(),
-            route_type: route_type.parse().unwrap(),
-            action: "set_policy".parse().unwrap(),
-            current_policy_id: "policy-manual-only-persistent-device".parse().unwrap(),
-            proposed_policy_id: "policy-scoped-automation-daily-use".parse().unwrap(),
-            proposed_grant_ids,
-            requested_by: PolicyChangeRequester {
-                surface: surface.parse().unwrap(),
-                client_pubkey: "4f355bdcb7cc0af728ef3cceb9615d90684bb5b2ca5f859ab0f0b704075871aa"
-                    .parse()
-                    .unwrap(),
-                label: label.map(|text| text.parse().unwrap()),
-            },
-            created_at,
-            device_review_required: true,
-            physical_approval_required: true,
-            companion_authoritative: false,
-            contains_secret_material: false,
-        }
-    }
+    include!(concat!(env!("OUT_DIR"), "/policy-fixtures.rs"));
+
 
     // Proposal + expected review copied from the READ-ONLY
     // specs/vectors/policy-changes/esp32-usb-enable-kind-1-automation.json.
-    fn esp32_usb_fixture() -> PolicyChangeFixture {
-        PolicyChangeFixture {
-            proposal: proposal_from_literals(
-                "proposal-esp32-usb-enable-kind-1-automation",
-                "acct-esp32-usb-slot-0",
-                "esp32_usb_nip46",
-                "browser_extension",
-                Some("local companion test client"),
-                &["grant-esp32-usb-kind-1-session"],
-                1_710_000_200,
-            ),
-            proposal_id: "proposal-esp32-usb-enable-kind-1-automation",
-            approval_digest: "74859ddf5324181cce3602869f9d91c5d4565d9088c5c672526b1d7b04137aa6",
-            pages: [
-                (
-                    "Policy change",
-                    &[
-                        "Action: set_policy",
-                        "Account: acct-esp32-usb-slot-0",
-                        "Route: esp32_usb_nip46",
-                    ],
-                    ReviewPageAction::Next,
-                ),
-                (
-                    "Requester",
-                    &[
-                        "Surface: browser_extension",
-                        "Client: 4f355bdcb7cc0af728ef3cceb9615d90684bb5b2ca5f859ab0f0b704075871aa",
-                        "Label: local companion test client",
-                    ],
-                    ReviewPageAction::Next,
-                ),
-                (
-                    "Policy",
-                    &[
-                        "From: policy-manual-only-persistent-device",
-                        "To: policy-scoped-automation-daily-use",
-                        "Grants: 1",
-                        "Grant: grant-esp32-usb-kind-1-session",
-                    ],
-                    ReviewPageAction::Next,
-                ),
-                (
-                    "Decision",
-                    &[
-                        "Review on device",
-                        "Physical approval required",
-                        "Companion cannot approve alone",
-                    ],
-                    ReviewPageAction::ApproveOrReject,
-                ),
-            ],
-        }
-    }
+
 
     // Proposal + expected review copied from the READ-ONLY specs/vectors/
     // policy-changes/custom-hardware-wallet-enable-kind-1-automation.json.
-    fn custom_hardware_wallet_fixture() -> PolicyChangeFixture {
-        PolicyChangeFixture {
-            proposal: proposal_from_literals(
-                "proposal-custom-hardware-wallet-enable-kind-1-automation",
-                "acct-custom-hardware-wallet-slot-0",
-                "custom_hardware_wallet",
-                "desktop_app",
-                Some("local companion test client"),
-                &["grant-custom-hardware-wallet-kind-1-session"],
-                1_710_000_300,
-            ),
-            proposal_id: "proposal-custom-hardware-wallet-enable-kind-1-automation",
-            approval_digest: "cc06e69fa24fdf2fb5509dc6af208baad7d99bcc1e2798e868eca152e3908bb9",
-            pages: [
-                (
-                    "Policy change",
-                    &[
-                        "Action: set_policy",
-                        "Account: acct-custom-hardware-wallet-slot-0",
-                        "Route: custom_hardware_wallet",
-                    ],
-                    ReviewPageAction::Next,
-                ),
-                (
-                    "Requester",
-                    &[
-                        "Surface: desktop_app",
-                        "Client: 4f355bdcb7cc0af728ef3cceb9615d90684bb5b2ca5f859ab0f0b704075871aa",
-                        "Label: local companion test client",
-                    ],
-                    ReviewPageAction::Next,
-                ),
-                (
-                    "Policy",
-                    &[
-                        "From: policy-manual-only-persistent-device",
-                        "To: policy-scoped-automation-daily-use",
-                        "Grants: 1",
-                        "Grant: grant-custom-hardware-wallet-kind-1-session",
-                    ],
-                    ReviewPageAction::Next,
-                ),
-                (
-                    "Decision",
-                    &[
-                        "Review on device",
-                        "Physical approval required",
-                        "Companion cannot approve alone",
-                    ],
-                    ReviewPageAction::ApproveOrReject,
-                ),
-            ],
-        }
-    }
+
 
     /// The Rust analogue of the C++ `assert_trusted_review_pages` (title, lines,
     /// action; the policy-change builder leaves indicator/styles/logical id
@@ -1101,15 +962,15 @@ mod tests {
         let review = build_policy_change_review(&fixture.proposal).unwrap();
         assert!(pages_contain_text(
             review.pages.as_slice(),
-            "Review on device"
+            include_str!(concat!(env!("OUT_DIR"), "/field-dfdf25ff15dd94cd69f2d9db.txt"))
         ));
         assert!(pages_contain_text(
             review.pages.as_slice(),
-            "Physical approval required",
+            include_str!(concat!(env!("OUT_DIR"), "/field-c7922db5f8394d251c8774e5.txt")),
         ));
         assert!(pages_contain_text(
             review.pages.as_slice(),
-            "Companion cannot approve alone",
+            include_str!(concat!(env!("OUT_DIR"), "/field-26fcd1fa0e66fcf7b2e4ac8b.txt")),
         ));
     }
 
@@ -1371,8 +1232,8 @@ mod tests {
         assert_eq!(
             requester_lines,
             [
-                "Surface: browser_extension",
-                "Client: 4f355bdcb7cc0af728ef3cceb9615d90684bb5b2ca5f859ab0f0b704075871aa",
+                include_str!(concat!(env!("OUT_DIR"), "/field-b1571212e7117a363e3c164f.txt")),
+                include_str!(concat!(env!("OUT_DIR"), "/field-026314cb947f57cec32c723b.txt")),
             ],
         );
         assert_ne!(review.approval_digest, esp32_usb_fixture().approval_digest,);
@@ -1581,8 +1442,8 @@ mod tests {
         assert_eq!(
             policy_lines,
             [
-                "From: policy-manual-only-persistent-device",
-                "To: policy-scoped-automation-daily-use",
+                include_str!(concat!(env!("OUT_DIR"), "/field-08a0fee686fad4cf25223d77.txt")),
+                include_str!(concat!(env!("OUT_DIR"), "/field-2c85fc0acfaa83e3d184462d.txt")),
                 "Grants: 4",
                 "Grant: grant-0",
                 "Grant: grant-1",

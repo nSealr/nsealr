@@ -405,7 +405,7 @@ pub(crate) mod tests {
     // NIP-19 fixture copied from the READ-ONLY
     // specs/vectors/nip19/nsec-test-key-1.json (`nsec`).
     pub(crate) const NSEC_TEST_KEY_1: &str =
-        "nsec1zyg3zyg3zyg3zyg3zyg3zyg3zyg3zyg3zyg3zyg3zyg3zyg3zygs4rm7hz";
+        include_str!(concat!(env!("OUT_DIR"), "/field-0ba18333d64bc1b3cabb124c.txt"));
 
     // SeedQR fixture copied from the READ-ONLY
     // specs/vectors/seedqr/seedsigner-vector-1.json (`standard_word_indexes`).
@@ -437,7 +437,7 @@ pub(crate) mod tests {
         );
         keyring
             .add_nsec(
-                "nsec test vector",
+                include_str!(concat!(env!("OUT_DIR"), "/field-43257d08c218769553577c83.txt")),
                 nip19::decode_nsec(NSEC_TEST_KEY_1).unwrap(),
             )
             .unwrap();
@@ -451,7 +451,7 @@ pub(crate) mod tests {
         assert_eq!(keyring.len(), 2);
         let nsec_source = keyring.source_at(0).unwrap();
         assert_eq!(nsec_source.kind, SessionKeySourceKind::NsecSecretKey);
-        assert_eq!(nsec_source.label, "nsec test vector");
+        assert_eq!(nsec_source.label, include_str!(concat!(env!("OUT_DIR"), "/field-43257d08c218769553577c83.txt")));
         assert_eq!(nsec_source.nsec_secret_key, secret);
         assert_eq!(nsec_source.bip39_word_indexes.count, 0);
         let seed_source = keyring.source_at(1).unwrap();
@@ -480,7 +480,7 @@ pub(crate) mod tests {
 
         keyring
             .add_nsec(
-                "nsec test vector",
+                include_str!(concat!(env!("OUT_DIR"), "/field-43257d08c218769553577c83.txt")),
                 nip19::decode_nsec(NSEC_TEST_KEY_1).unwrap(),
             )
             .unwrap();
@@ -617,7 +617,7 @@ pub(crate) mod tests {
         let secret = nip19::decode_nsec(NSEC_TEST_KEY_1).unwrap();
         keyring
             .add_nsec(
-                "nsec test vector",
+                include_str!(concat!(env!("OUT_DIR"), "/field-43257d08c218769553577c83.txt")),
                 nip19::decode_nsec(NSEC_TEST_KEY_1).unwrap(),
             )
             .unwrap();

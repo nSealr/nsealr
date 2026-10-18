@@ -101,7 +101,7 @@ mod tests {
         assert!(is_valid_nostr_public_key(DEVELOPMENT_FIXTURE_PUBLIC_KEY));
         // 64 lowercase hex.
         assert!(is_valid_nostr_public_key(
-            "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+            include_str!(concat!(env!("OUT_DIR"), "/field-ee1c3ae16e811a2b5ee33b50.txt"))
         ));
         // Wrong length (63 / 65).
         assert!(!is_valid_nostr_public_key(

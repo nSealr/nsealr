@@ -140,41 +140,41 @@ mod tests {
     // the C++ test consumed them as `kBasicReviewScreenApprovalDigest` /
     // `kTaggedReviewScreenApprovalDigest` from the generated vector header.
     const BASIC_REVIEW_SCREEN_APPROVAL_DIGEST: &str =
-        "a09ddd564e439fdd4756da6863156eddcfc50c295af453af1c78c35986c303a5";
+        include_str!(concat!(env!("OUT_DIR"), "/field-a9dbf5d6f075ebea8a12c272.txt"));
     const TAGGED_REVIEW_SCREEN_APPROVAL_DIGEST: &str =
-        "b45328f9ef96122900562d161cca5f09e24bfdb66676c46ebbcfe08dd661eb30";
+        include_str!(concat!(env!("OUT_DIR"), "/field-7c553abbee46c2de6c223a2b.txt"));
 
     // Port of the C++ `test_approval_gate_requires_matching_approval`.
     #[test]
     fn requires_matching_approval() {
         let mut gate = ApprovalGate::new();
-        gate.begin_review("req-kind-1-basic", BASIC_REVIEW_SCREEN_APPROVAL_DIGEST);
+        gate.begin_review(include_str!(concat!(env!("OUT_DIR"), "/field-ef8f1cdc03d2b7514fa6d71d.txt")), BASIC_REVIEW_SCREEN_APPROVAL_DIGEST);
 
         // begin_review binds the active pair and resets to Pending.
         assert_eq!(gate.decision(), ApprovalDecision::Pending);
-        assert_eq!(gate.active_request_id(), "req-kind-1-basic");
+        assert_eq!(gate.active_request_id(), include_str!(concat!(env!("OUT_DIR"), "/field-ef8f1cdc03d2b7514fa6d71d.txt")));
         assert_eq!(
             gate.active_approval_digest(),
             BASIC_REVIEW_SCREEN_APPROVAL_DIGEST,
         );
 
         // Pending never permits signing, even for the exact bound pair.
-        assert!(!gate.can_sign("req-kind-1-basic", BASIC_REVIEW_SCREEN_APPROVAL_DIGEST));
+        assert!(!gate.can_sign(include_str!(concat!(env!("OUT_DIR"), "/field-ef8f1cdc03d2b7514fa6d71d.txt")), BASIC_REVIEW_SCREEN_APPROVAL_DIGEST));
         assert!(!gate.can_sign("different", BASIC_REVIEW_SCREEN_APPROVAL_DIGEST));
 
         // Approving a mismatched digest does not record an approval.
-        gate.approve("req-kind-1-basic", "00");
-        assert!(!gate.can_sign("req-kind-1-basic", BASIC_REVIEW_SCREEN_APPROVAL_DIGEST));
+        gate.approve(include_str!(concat!(env!("OUT_DIR"), "/field-ef8f1cdc03d2b7514fa6d71d.txt")), "00");
+        assert!(!gate.can_sign(include_str!(concat!(env!("OUT_DIR"), "/field-ef8f1cdc03d2b7514fa6d71d.txt")), BASIC_REVIEW_SCREEN_APPROVAL_DIGEST));
 
         // Approving a mismatched request id does not record an approval.
         gate.approve("different", BASIC_REVIEW_SCREEN_APPROVAL_DIGEST);
-        assert!(!gate.can_sign("req-kind-1-basic", BASIC_REVIEW_SCREEN_APPROVAL_DIGEST));
+        assert!(!gate.can_sign(include_str!(concat!(env!("OUT_DIR"), "/field-ef8f1cdc03d2b7514fa6d71d.txt")), BASIC_REVIEW_SCREEN_APPROVAL_DIGEST));
 
         // Approving the exact bound pair permits signing that pair only.
-        gate.approve("req-kind-1-basic", BASIC_REVIEW_SCREEN_APPROVAL_DIGEST);
+        gate.approve(include_str!(concat!(env!("OUT_DIR"), "/field-ef8f1cdc03d2b7514fa6d71d.txt")), BASIC_REVIEW_SCREEN_APPROVAL_DIGEST);
         assert_eq!(gate.decision(), ApprovalDecision::Approved);
-        assert!(gate.can_sign("req-kind-1-basic", BASIC_REVIEW_SCREEN_APPROVAL_DIGEST));
-        assert!(!gate.can_sign("req-kind-1-basic", TAGGED_REVIEW_SCREEN_APPROVAL_DIGEST));
+        assert!(gate.can_sign(include_str!(concat!(env!("OUT_DIR"), "/field-ef8f1cdc03d2b7514fa6d71d.txt")), BASIC_REVIEW_SCREEN_APPROVAL_DIGEST));
+        assert!(!gate.can_sign(include_str!(concat!(env!("OUT_DIR"), "/field-ef8f1cdc03d2b7514fa6d71d.txt")), TAGGED_REVIEW_SCREEN_APPROVAL_DIGEST));
 
         // Rejecting the new review is terminal and blocks signing.
         gate.begin_review("req-kind-1-tags", TAGGED_REVIEW_SCREEN_APPROVAL_DIGEST);
