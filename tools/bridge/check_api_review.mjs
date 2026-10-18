@@ -34,10 +34,12 @@ assert(
   "docs/api.md must not expose the test-only smartcard simulator through a public package"
 );
 assert(
-  normalizedReview.includes("Test-only APDU simulation lives in the private") &&
-    normalizedReview.includes("does not expose software signing helpers"),
-  "docs/api-review.md must record that smartcard simulation is private test-only code"
+  normalizedReview.includes("Smartcard APIs are retired") &&
+    normalizedReview.includes("does not expose software signing helpers") &&
+    review.includes("@nsealr/sdk/browser") && review.includes("@nsealr/sdk/node"),
+  "API review must state the SDK entrypoints and retirement of card signing"
 );
+
 assert(
   normalizedReview.includes("parses relay event envelopes") &&
     normalizedReview.includes("evaluates relay request and response steps") &&
