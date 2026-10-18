@@ -1,0 +1,228 @@
+{
+  "utc": "2026-10-18T15:33:40.971797+00:00",
+  "candidate": "61641047d13b5bb265246b181edc38f4dc2073e7",
+  "runs": [
+    {
+      "name": "environment",
+      "started_utc": "2026-10-18T15:33:40.981348+00:00",
+      "command": [
+        "rustc",
+        "+1.95.0",
+        "-vV"
+      ],
+      "cwd": "/home/tux/nsealr/.restart-tools/goal/s02",
+      "env_overrides": {
+        "CARGO_TARGET_DIR": "/home/tux/nsealr/.restart-tools/goal/security-review/target/security-review-s02/build"
+      },
+      "exit_code": 0,
+      "log": "docs/restart/implementation/reviews/S02/independent-results/environment.log",
+      "sha256": "4fdff2578428e9c5c08ddd7a0d3079c1a106b1cdaa46e73e46f7cd32b0fb9cad"
+    },
+    {
+      "name": "adversarial",
+      "started_utc": "2026-10-18T15:33:40.992353+00:00",
+      "command": [
+        "cargo",
+        "+1.95.0",
+        "run",
+        "--manifest-path",
+        "/home/tux/nsealr/.restart-tools/goal/security-review/target/security-review-s02/Cargo.toml",
+        "--offline",
+        "--release",
+        "--",
+        "/home/tux/nsealr/.restart-tools/goal/security-review/target/security-review-s02/checksum-oracle.csv"
+      ],
+      "cwd": "/home/tux/nsealr/.restart-tools/goal/s02",
+      "env_overrides": {
+        "CARGO_TARGET_DIR": "/home/tux/nsealr/.restart-tools/goal/security-review/target/security-review-s02/build"
+      },
+      "exit_code": 0,
+      "log": "docs/restart/implementation/reviews/S02/independent-results/adversarial.log",
+      "sha256": "a12225c6a3027a63b11cfe8bf0411eda78a1b633b6bd5abe609cf1e344395f92"
+    },
+    {
+      "name": "public-contract-doctests",
+      "started_utc": "2026-10-18T15:33:42.903604+00:00",
+      "command": [
+        "cargo",
+        "+1.95.0",
+        "test",
+        "-p",
+        "nsealr-core",
+        "--locked",
+        "--offline",
+        "--doc"
+      ],
+      "cwd": "/home/tux/nsealr/.restart-tools/goal/s02",
+      "env_overrides": {
+        "CARGO_TARGET_DIR": "/home/tux/nsealr/.restart-tools/goal/security-review/target/security-review-s02/build"
+      },
+      "exit_code": 0,
+      "log": "docs/restart/implementation/reviews/S02/independent-results/public-contract-doctests.log",
+      "sha256": "7aea8d296e7049e667b9a26f16ba475818db9bf18a3310e8d270232fe1725ad2"
+    },
+    {
+      "name": "target-features",
+      "started_utc": "2026-10-18T15:33:44.463669+00:00",
+      "command": [
+        "cargo",
+        "+1.95.0",
+        "tree",
+        "--locked",
+        "--offline",
+        "-p",
+        "nsealr-core",
+        "-e",
+        "features",
+        "--target",
+        "riscv32imafc-unknown-none-elf"
+      ],
+      "cwd": "/home/tux/nsealr/.restart-tools/goal/s02",
+      "env_overrides": {
+        "CARGO_TARGET_DIR": "/home/tux/nsealr/.restart-tools/goal/security-review/target/security-review-s02/build"
+      },
+      "exit_code": 0,
+      "log": "docs/restart/implementation/reviews/S02/independent-results/target-features.log",
+      "sha256": "37025e8f2142c8965a600d6dc3d2f63bf85c458bd9ddc6fb0350258d9469fe39"
+    },
+    {
+      "name": "core-final-link",
+      "started_utc": "2026-10-18T15:33:44.489923+00:00",
+      "command": [
+        "cargo",
+        "+1.95.0",
+        "rustc",
+        "--manifest-path",
+        "docs/restart/implementation/S02/probes/core-link/Cargo.toml",
+        "--locked",
+        "--offline",
+        "--release",
+        "--target",
+        "riscv32imafc-unknown-none-elf",
+        "--",
+        "-C",
+        "link-arg=--entry=_start"
+      ],
+      "cwd": "/home/tux/nsealr/.restart-tools/goal/s02",
+      "env_overrides": {
+        "CARGO_TARGET_DIR": "/home/tux/nsealr/.restart-tools/goal/security-review/target/security-review-s02/build"
+      },
+      "exit_code": 0,
+      "log": "docs/restart/implementation/reviews/S02/independent-results/core-final-link.log",
+      "sha256": "3f3d320392aa8723ac3d9ba5a9cac7656b63361eda7c8b27c71b4a326e590729"
+    },
+    {
+      "name": "core-undefined",
+      "started_utc": "2026-10-18T15:33:46.394294+00:00",
+      "command": [
+        "nm",
+        "-u",
+        "/home/tux/nsealr/.restart-tools/goal/security-review/target/security-review-s02/build/riscv32imafc-unknown-none-elf/release/s02-core-link"
+      ],
+      "cwd": "/home/tux/nsealr/.restart-tools/goal/s02",
+      "env_overrides": {
+        "CARGO_TARGET_DIR": "/home/tux/nsealr/.restart-tools/goal/security-review/target/security-review-s02/build"
+      },
+      "exit_code": 0,
+      "log": "docs/restart/implementation/reviews/S02/independent-results/core-undefined.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "core-sections",
+      "started_utc": "2026-10-18T15:33:46.405681+00:00",
+      "command": [
+        "readelf",
+        "-hSW",
+        "/home/tux/nsealr/.restart-tools/goal/security-review/target/security-review-s02/build/riscv32imafc-unknown-none-elf/release/s02-core-link"
+      ],
+      "cwd": "/home/tux/nsealr/.restart-tools/goal/s02",
+      "env_overrides": {
+        "CARGO_TARGET_DIR": "/home/tux/nsealr/.restart-tools/goal/security-review/target/security-review-s02/build"
+      },
+      "exit_code": 0,
+      "log": "docs/restart/implementation/reviews/S02/independent-results/core-sections.log",
+      "sha256": "e871b1aadbe7d7cb0b7d56a1147954f56a989b4bc9ed26af3c7c560810b5c1af"
+    },
+    {
+      "name": "official-crypto-vectors",
+      "started_utc": "2026-10-18T15:36:44.144897+00:00",
+      "command": [
+        "cargo",
+        "+1.95.0",
+        "test",
+        "--manifest-path",
+        "/home/tux/nsealr/.restart-tools/goal/s02/research/2026-10-13/crypto/Cargo.toml",
+        "--locked",
+        "--offline",
+        "--test",
+        "vectors",
+        "--",
+        "--nocapture"
+      ],
+      "cwd": "/home/tux",
+      "env_overrides": {
+        "CARGO_TARGET_DIR": "/home/tux/nsealr/.restart-tools/goal/security-review/target/security-review-s02/crypto-build"
+      },
+      "exit_code": 0,
+      "log": "docs/restart/implementation/reviews/S02/independent-results/official-crypto-vectors.log",
+      "sha256": "679d483ef7fa949661c3f91a21f8d52df0b359e0a26c140c4ae2f8a502c3c647"
+    },
+    {
+      "name": "adversarial-exact-errors",
+      "started_utc": "2026-10-18T15:37:20.511459+00:00",
+      "command": [
+        "cargo",
+        "+1.95.0",
+        "run",
+        "--manifest-path",
+        "/home/tux/nsealr/.restart-tools/goal/security-review/target/security-review-s02/Cargo.toml",
+        "--offline",
+        "--release",
+        "--",
+        "/home/tux/nsealr/.restart-tools/goal/security-review/target/security-review-s02/checksum-oracle.csv"
+      ],
+      "cwd": "/home/tux/nsealr/.restart-tools/goal/s02",
+      "env_overrides": {
+        "CARGO_TARGET_DIR": "/home/tux/nsealr/.restart-tools/goal/security-review/target/security-review-s02/build"
+      },
+      "exit_code": 0,
+      "log": "docs/restart/implementation/reviews/S02/independent-results/adversarial-exact-errors.log",
+      "sha256": "3cc681663cf47a18df0fa50614525c5664194307db1d4860fd7459fdef19fc3a",
+      "source_sha256": "45b6d1c12923de0c39c9448c35f91ae40001e1d5615cc52ca21547c9c8884f2a",
+      "reason": "Strengthen two error assertions to exact KeyringFull and transcript Capacity variants, then rerun only the changed independent experiment."
+    },
+    {
+      "name": "evidence-verification",
+      "started_utc": "2026-10-18T15:38:36.700107+00:00",
+      "command": [
+        "python3",
+        "docs/restart/implementation/reviews/S02/verify-evidence.py",
+        "/home/tux/nsealr/.restart-tools/goal/s02"
+      ],
+      "cwd": "/home/tux/nsealr/.restart-tools/goal/security-review",
+      "env_overrides": {},
+      "exit_code": 0,
+      "log": "docs/restart/implementation/reviews/S02/independent-results/evidence-verification.log",
+      "sha256": "ce9fad79897643f1dbd27731f86c9e84478d99ec8de5afb1151dce18c62b471c"
+    }
+  ],
+  "oracle": {
+    "algorithm": "All 2048 final words for each BIP39 size; preceding words zero. ENT||CS split by integer shift; CPython hashlib SHA256 oracle.",
+    "rows": 10240,
+    "sha256": "a7f7271945a2ee003c1e3d73ff7004bbed23c48291a9162d0388f6148c3d2c0e"
+  },
+  "reviewer_core_elf_sha256": "d89d19f8b05cde63b635da4ca74a486f9ef107a9764c36f9d3d84094aa920d28",
+  "candidate_dirty_after": "",
+  "passed": true,
+  "setup_notes": [
+    {
+      "command": [
+        "python3",
+        "docs/restart/implementation/reviews/S02/verify-evidence.py",
+        "/home/tux/nsealr/.restart-tools/goal/s02"
+      ],
+      "exit_code": 1,
+      "observation": "Initial reviewer verifier attempted to compare archive .gitignore metadata absent from cargo-vendored cfg-if; FileNotFoundError. Corrected verifier records absent archive metadata separately while still requiring every checksummed vendor file and license notice. Final omissions are cfg-if/.gitignore, hybrid-array/.gitignore, typenum/.gitattributes and typenum/.gitignore. This was a reviewer tooling assumption, not a product test failure."
+    }
+  ]
+}
