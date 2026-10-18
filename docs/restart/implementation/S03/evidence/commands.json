@@ -1,0 +1,79 @@
+[
+  {
+    "id": "targeted",
+    "argv": [
+      "cargo",
+      "test",
+      "--locked",
+      "-p",
+      "nsealr-core",
+      "s03_",
+      "--",
+      "--nocapture"
+    ],
+    "cwd": "/home/tux/nsealr/.restart-tools/goal/s03",
+    "source_commit": "e6747615f13734f8fce3724bc03c7c5b98c90f07",
+    "environment_override": {
+      "S03_OBSERVED": "/home/tux/nsealr/.restart-tools/goal/s03/docs/restart/implementation/S03/evidence/observed-events.json"
+    },
+    "started_utc": "2026-10-18T18:01:40.934017+00:00",
+    "finished_utc": "2026-10-18T18:01:41.057611+00:00",
+    "exit_code": 0,
+    "log": "docs/restart/implementation/S03/evidence/targeted.log",
+    "log_sha256": "5036547adf20a5326ec21b20a7eaa253e103fcc4687646e61e15ffb6f357521a",
+    "log_bytes": 2146
+  },
+  {
+    "id": "public-contract",
+    "argv": [
+      "cargo",
+      "test",
+      "--locked",
+      "-p",
+      "nsealr-core",
+      "--doc"
+    ],
+    "cwd": "/home/tux/nsealr/.restart-tools/goal/s03",
+    "source_commit": "e6747615f13734f8fce3724bc03c7c5b98c90f07",
+    "environment_override": {},
+    "started_utc": "2026-10-18T18:01:41.057877+00:00",
+    "finished_utc": "2026-10-18T18:01:41.188597+00:00",
+    "exit_code": 0,
+    "log": "docs/restart/implementation/S03/evidence/public-contract.log",
+    "log_sha256": "a13fa29c615dda9af4ee090ba8725814130ec4e462ac14120b1a9961fea3839a",
+    "log_bytes": 1941
+  },
+  {
+    "id": "make-ci-before-doc-correction",
+    "argv": [
+      "make",
+      "ci"
+    ],
+    "cwd": "/home/tux/nsealr/.restart-tools/goal/s03",
+    "source_commit": "e6747615f13734f8fce3724bc03c7c5b98c90f07",
+    "environment_override": {},
+    "started_utc": "2026-10-18T18:01:41.188955+00:00",
+    "finished_utc": "2026-10-18T18:02:11.287382+00:00",
+    "exit_code": 0,
+    "log": "docs/restart/implementation/S03/evidence/make-ci-e674761.log",
+    "log_sha256": "715d9f5371c1383dc9574ac6894d65c0fe537c2f07c5673a69d10bc96b037479",
+    "log_bytes": 75772
+  },
+  {
+    "id": "make-ci",
+    "argv": [
+      "make",
+      "ci"
+    ],
+    "cwd": "/home/tux/nsealr/.restart-tools/goal/s03",
+    "source_commit": "271bb88cf8a3efef71a01f2130897ab098e537a5",
+    "environment_override": {},
+    "started_utc": "2026-10-18T18:06:02.012495+00:00",
+    "finished_utc": "2026-10-18T18:06:29.565024+00:00",
+    "exit_code": 0,
+    "log": "docs/restart/implementation/S03/evidence/make-ci.log",
+    "log_sha256": "85c9b71b3976b77135eaab4346d2f0c2cae9cbee18c6f203c8f4c907df113ce0",
+    "log_bytes": 75772,
+    "reason_for_repeat": "Final source inspection found contradictory legacy documentation claiming preview decisions permit signing. Only comments in approval_gate.rs changed; full CI repeated against final source commit."
+  }
+]
