@@ -57,7 +57,7 @@ describe("browser extension selected-route config", () => {
       format: BROWSER_EXTENSION_ROUTE_CONFIG_FORMAT,
       account_id: "selected-account",
       route_type: "smartcard"
-    })).toThrow(/not browser-dispatchable/u);
+    })).toThrow(/route_type is unknown/u);
     expect(() => parseBrowserExtensionRouteConfig({
       format: BROWSER_EXTENSION_ROUTE_CONFIG_FORMAT,
       account_id: "selected-account",

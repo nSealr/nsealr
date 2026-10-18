@@ -529,7 +529,7 @@ describe("local service boundary", () => {
           ...(acknowledgement === undefined ? {} : { external_review_acknowledgement: acknowledgement }) }
       }, { accounts: fixtures.accounts, grants: [grant], now: 1_900_000_000,
         signerDispatcher: () => { called = true; return response; } });
-      expect(result).toMatchObject({ ok: false, error: { code: "invalid_service_request" } });
+      expect(result).toMatchObject({ ok: false, error: { code: "route_selection_failed", message: "route selection route_type is unknown" } });
       expect(called).toBe(false);
     }
   });
