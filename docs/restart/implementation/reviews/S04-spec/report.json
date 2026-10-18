@@ -1,0 +1,245 @@
+{
+  "schema_version": 1,
+  "task": "S04",
+  "review_kind": "distinct preimplementation preparation specification review",
+  "author": "/root/s04_custody_author",
+  "reviewer": "/root/s03_security_review",
+  "review_branch": "review/s04-spec",
+  "candidate_commit": "d4713e134e24b4f5b6a33cbe83a67b91c19449c3",
+  "candidate_tree": "f156ad286c17249d166f14cc7bfd2b31c3f83be7",
+  "base_commit": "f2ef70f522af4977e15f81554a8c6eadcdbe8097",
+  "reviewed_utc": "2026-10-18T19:19:59.898371+00:00",
+  "verdict": "PASS_preparation_only",
+  "blocking_findings": [],
+  "findings": [],
+  "decision": "The exact three-file preparation is adequate for the bounded documentary and custody-specification research it describes. It identifies concrete later outputs, decisions, independent review and physical owners while preserving all seven parent acceptance criteria. No preparation change is required before proceeding within that scope. This does not accept a custody construction, select an SE/MCU, authorize physical/provisioning operations, enable implementation or complete S04.",
+  "preparation_bindings": [
+    {
+      "path": "docs/restart/implementation/S04/brief.md",
+      "sha256": "86a15bd3ab06189fb7cad3065a18b883d58bc0387cc02c8896b334f7128d198b"
+    },
+    {
+      "path": "docs/restart/implementation/S04/source-audit.json",
+      "sha256": "d3112561d36e1a19f2070d2b7023da89dea60b3ec9f27fe23675e00e3df3762c"
+    },
+    {
+      "path": "docs/restart/implementation/S04/acceptance-plan.json",
+      "sha256": "2068876b3997748f59f0a9cd67acc8c50fd9bf594475da29625e8484e717abef"
+    }
+  ],
+  "criterion_assessment": [
+    {
+      "criterion_index": 1,
+      "unchanged_acceptance": "Compare candidate SE architectures against exact APIs and advisory applicability; prove the security contribution of each chip.",
+      "review_area": "Exact SE contribution",
+      "anchors": [
+        "brief.md:82",
+        "brief.md:101",
+        "brief.md:107",
+        "acceptance-plan.json:DOC-01"
+      ],
+      "assessment": "The comparison is limited to three retained leads plus an MCU-only control; an exact OPN/configuration/applet/firmware/host tuple and command parameters, policies, privilege, returned material and persistent effects are prerequisites for any contribution claim. Current advisory review is explicitly future work. Missing API/errata access or an unqualified remedy cannot pass by assumption. H01 context is inherited and does not admit a part.",
+      "verdict": "adequate preparation; concrete protocol evidence remains required"
+    },
+    {
+      "criterion_index": 2,
+      "unchanged_acceptance": "Specify every stored object, authenticated ciphertext, host-binding secret, KDF context, pairing key and firmware-signing root.",
+      "review_area": "Complete object and authority contract",
+      "anchors": [
+        "brief.md:127",
+        "brief.md:133",
+        "acceptance-plan.json:OBJ-01"
+      ],
+      "assessment": "The inventory requires original scalar and every input/backend/display/backup copy, authenticated records, wrapping/release factors, PIN verifiers/authorizers, KDF contexts, pairing/channel and transport state, journals and both firmware-authority families. Encoding, owner, entropy, read/write/use/delete permissions, lifecycle, bounds and reset/rollback consequences must be instantiated. AAD and ciphertext authenticity are correctly separated from anti-replay state. No generic invented SE API or unspecified supported-route primitive can survive final protocol acceptance.",
+      "verdict": "adequate preparation; concrete protocol evidence remains required"
+    },
+    {
+      "criterion_index": 3,
+      "unchanged_acceptance": "Cover PIN creation/change/exhaustion, brownout, rollback, recovery, destructive reset and update ownership; model persistent-state transitions.",
+      "review_area": "Persistent PIN and fault semantics",
+      "anchors": [
+        "brief.md:154",
+        "brief.md:164",
+        "brief.md:174",
+        "acceptance-plan.json:STATE-01",
+        "acceptance-plan.json:fault_campaign_contract"
+      ],
+      "assessment": "The model separates MCU persistent, per-SE persistent, volatile/session and off-device state. It covers creation, successful/failed/uncertain unlock, change, exhaustion, lock, power loss, partial reset, rollback, restore, root rotation, owner transfer and all update domains. Durable attempt enforcement precedes release; unknown outcomes cannot reopen attempts. Explicit linearization/uncertainty windows, lost acknowledgement and conservative availability loss prevent assuming cross-chip atomicity. Finite counters, endurance, storage, timing and retry bounds must be resolved before coding.",
+      "verdict": "adequate preparation; concrete protocol evidence remains required"
+    },
+    {
+      "criterion_index": 4,
+      "unchanged_acceptance": "Preserve NIP-06 compatibility without treating currently unrecommended derivation as the default; prove expected-public-key recovery.",
+      "review_area": "Native recovery and optional migration",
+      "anchors": [
+        "brief.md:169",
+        "brief.md:188",
+        "brief.md:199",
+        "acceptance-plan.json:REC-01"
+      ],
+      "assessment": "Native recovery remains local scalar/nsec with an independently retained full expected x-only public key and actual derivation. d versus n-d is explicitly a separate source-byte/encoding preservation obligation, because public-key equality alone is insufficient to prove original-scalar recovery. Host descriptors, fingerprints and self-reported restored keys cannot be the oracle. Optional NIP06 migration keeps complete path/account/passphrase/normalization and independent derivation fixtures; it cannot silently become the default or leave retained/exported source unspecified. The final protocol must explicitly disposition that optional route while preserving criterion4 and P01 semantics.",
+      "verdict": "adequate preparation; concrete protocol evidence remains required"
+    },
+    {
+      "criterion_index": 5,
+      "unchanged_acceptance": "Independent cryptographic review rejects unsupported non-exportability or dual-SE independence claims.",
+      "review_area": "Independent cryptographic review and honest claims",
+      "anchors": [
+        "brief.md:82",
+        "brief.md:96",
+        "brief.md:107",
+        "brief.md:116",
+        "acceptance-plan.json:CRYPTO-01"
+      ],
+      "assessment": "The plan distinguishes a protected wrapping object from an identity that leaves the chip for software signing or local backup. It addresses a privileged MCU observing PIN/pairing keys and invoking commands before/after unlock. A second chip receives no credit without a concrete composition argument against either-chip/MCU compromise; common MCU outputs do not establish independence. Review is distinct, exact-candidate-bound and precedes implementation, with independent attacker/fault traces rather than shared-output tests. This does not claim external certification.",
+      "verdict": "adequate preparation; concrete protocol evidence remains required"
+    },
+    {
+      "criterion_index": 6,
+      "unchanged_acceptance": "Specify developer, owner-secured and product-qualified transitions, MCU/SE erasure/re-enrollment and irreversible-state limits. The specification is not evidence that these transitions already work on hardware.",
+      "review_area": "Owner lifecycle and irreversibility",
+      "anchors": [
+        "brief.md:170",
+        "brief.md:171",
+        "brief.md:207",
+        "brief.md:231",
+        "acceptance-plan.json:LIFE-01"
+      ],
+      "assessment": "Developer, owner-secured and product-qualified are separate conditions; qualification is bound to evidence, not a command or Boolean. Same-owner root rotation differs from transfer to another owner. The model must inventory surviving MCU/SE/vendor objects, revoked/default credentials, root/counter/key-slot exhaustion and last safe abort. Unsafe re-enrollment becomes unsupported rather than a universal reset promise. Firmware replacement cannot silently inherit privilege, and backup copies are explicitly not revoked by device reset or PIN change.",
+      "verdict": "adequate preparation; concrete protocol evidence remains required"
+    },
+    {
+      "criterion_index": 7,
+      "unchanged_acceptance": "Separate MCU owner firmware roots from vendor-controlled SE applet/update authority; document offline operation, maintenance service, licensing/API access and update/rollback consequences. Specify physical erasure/re-enrollment tests here: MCU feasibility in H02, SE reset/re-enrollment feasibility in H02S, and complete lifecycle in V02/V03.",
+      "review_area": "Distinct MCU/vendor authority and physical gates",
+      "anchors": [
+        "brief.md:143",
+        "brief.md:144",
+        "brief.md:223",
+        "brief.md:250",
+        "acceptance-plan.json:PHY-H02",
+        "acceptance-plan.json:PHY-H02S",
+        "acceptance-plan.json:PHY-V02-V03"
+      ],
+      "assessment": "MCU owner boot/update/debug/recovery roots remain separate from vendor SE applet/firmware/maintenance credentials and immutable state. The research must establish service/account/network dependencies and redistribution/API/tool terms for a new developer, distinguishing offline operation, package acquisition and application. H02 owns MCU feasibility, H02S exact SE permissions/PIN/reset traces, V02 complete selected-host lifecycle and V03 custom-assembly repetition. Unknown resources do not become available by this preparation or its review.",
+      "verdict": "adequate preparation; concrete protocol evidence remains required"
+    }
+  ],
+  "independent_challenges": [
+    {
+      "scenario": "Rollback after a failed guess",
+      "attacker_or_fault": "Restore an older MCU vault/journal while the SE has committed the failed attempt.",
+      "required_future_oracle": "No new guess budget or release; independently record the permitted recovery-required or reconciled state.",
+      "covered_by": "STATE-01, OBJ-01",
+      "status": "Required by the plan; no protocol or hardware trace exists or was executed in this review."
+    },
+    {
+      "scenario": "PIN-change uncertainty",
+      "attacker_or_fault": "Power fails after one persistent factor changes but before its peer write or acknowledgement.",
+      "required_future_oracle": "No undocumented old/new dual credential or retry reset; the exact permitted old/new/recovery-required outcome must be specified without assuming atomicity.",
+      "covered_by": "STATE-01",
+      "status": "Required by the plan; no protocol or hardware trace exists or was executed in this review."
+    },
+    {
+      "scenario": "Partial new-owner reset",
+      "attacker_or_fault": "Erase MCU state, retain SE objects/channel roots, then enroll a different owner.",
+      "required_future_oracle": "No inherited identity/release/default-pairing authority; any unerasable state must be declared and reuse rejected where necessary.",
+      "covered_by": "LIFE-01, PHY-H02S",
+      "status": "Required by the plan; no protocol or hardware trace exists or was executed in this review."
+    },
+    {
+      "scenario": "Same-public-key recovery substitution",
+      "attacker_or_fault": "Recover n-d instead of imported d, so the x-only public key still matches.",
+      "required_future_oracle": "Expected-key verification and original canonical nsec/scalar preservation are separate checks, with original source custody retained before backend conversion.",
+      "covered_by": "REC-01",
+      "status": "Required by the plan; no protocol or hardware trace exists or was executed in this review."
+    },
+    {
+      "scenario": "Hostile MCU during legitimate unlock",
+      "attacker_or_fault": "Compromised firmware captures PIN and pairing credentials and asks the chip for release.",
+      "required_future_oracle": "Any claimed protection must survive the actual service policy; otherwise explicitly limit the claim. No bus-authentication or UI-honesty inference.",
+      "covered_by": "DOC-01, OBJ-01, CRYPTO-01",
+      "status": "Required by the plan; no protocol or hardware trace exists or was executed in this review."
+    },
+    {
+      "scenario": "Two-chip common-output compromise",
+      "attacker_or_fault": "Both SEs release factors to the same privileged MCU.",
+      "required_future_oracle": "No independent-protection claim merely from using two chips; attacker knowledge and actual command restrictions must support the composition.",
+      "covered_by": "DOC-01, CRYPTO-01",
+      "status": "Required by the plan; no protocol or hardware trace exists or was executed in this review."
+    },
+    {
+      "scenario": "Vendor maintenance divergence",
+      "attacker_or_fault": "MCU owner root changes, but a vendor-authorized applet/update retains or changes SE policies and credentials.",
+      "required_future_oracle": "Separate authority, compatibility/rollback and surviving-object analysis; MCU ownership alone must not imply update rights or whole-chip erasure.",
+      "covered_by": "LIFE-01",
+      "status": "Required by the plan; no protocol or hardware trace exists or was executed in this review."
+    },
+    {
+      "scenario": "Resource/service exhaustion",
+      "attacker_or_fault": "Counter/slot saturation, lost final acknowledgement, or loss of a required maintenance service occurs during recovery or rotation.",
+      "required_future_oracle": "Bounded explicit failure and recoverability/availability consequences; no fallback that resurrects old authority, fabricates attempts or silently changes identity.",
+      "covered_by": "STATE-01, LIFE-01",
+      "status": "Required by the plan; no protocol or hardware trace exists or was executed in this review."
+    }
+  ],
+  "source_observations_checked": [
+    {
+      "source": "f2:nip19.rs:47/54/68/84; session/keyring.rs:197/293/327/338",
+      "conclusion": "SecretKey intake consumes/clears caller bytes, internal raw access is crate-private, Debug redacts and Drop wipes current fields. Keyring owns bounded in-memory sources; it is not persistent custody or hostile-image isolation."
+    },
+    {
+      "source": "f2:session/source_generation.rs:45/78",
+      "conclusion": "Generation-named helpers convert caller-supplied entropy/scalars; no entropy acquisition is present. S02 fallible provider and actual invocation proof remain authoritative."
+    },
+    {
+      "source": "f2:session/account.rs:173/199; apps/desktop-simulator/src/replay/sources.rs:35/239",
+      "conclusion": "Account identity is copied from a shape/fingerprint-checked descriptor, proof remains false, and simulator expected public keys are format-checked. The preparation correctly requires independent actual derivation for recovery."
+    },
+    {
+      "source": "f2:session/import_flow.rs:147; session/source_backup.rs:510/572",
+      "conclusion": "Software import/reveal decisions are based on trusted caller/button interfaces; backup intentionally produces local secret payloads and the IO path borrows then drops its payload. These APIs do not establish physical input origin or clean caller/display copies."
+    },
+    {
+      "source": "f2:apps/desktop-simulator/src/lib.rs:79; tests/fixtures/specs/vectors/custody/persistent-secret-custody-v0.json",
+      "conclusion": "Persistent custody fixture is excluded from replay and contains historical TROPIC/S3 declarations. It cannot be inherited as current architecture or evidence."
+    },
+    {
+      "source": "board-sdk043e64ce complete tracked tree",
+      "conclusion": "Only .gitignore, AGENTS.md, LICENSE and README.md exist. No implemented generic SE/custody service is available to assume."
+    },
+    {
+      "source": "S03 context2d7d465 authorization.rs:233 and its3/n-3 test, source_backup.rs rename",
+      "conclusion": "The source observation is narrowly correct: normalized signing custody cannot recover original scalar bytes; no new recovery export is supplied. This reviewer previously reviewed that exact S03 candidate, but S04 does not silently integrate it or borrow persistence/hardware guarantees. No NIP44 failure is inferred from scalar negation."
+    },
+    {
+      "source": "H01 frozen6f95cc and distinct follow-up2f9ea3",
+      "conclusion": "The inherited review is explicitly bounded and H01 remains incomplete with no component admission. All18 copied register records match that historical source exactly; no original manual or current advisory was newly verified by this preparation review."
+    }
+  ],
+  "process_and_scope_assessment": {
+    "adequacy": "The brief avoids selecting algorithms/parameters before exact services are known, while requiring those safety-critical choices to be concrete before final protocol acceptance. It bounds comparison to three leads, allows an honest no-candidate result, and prevents indefinite architecture or driver work under a documentation task.",
+    "required_next_work": "Within the authorized subsequent research, read lawful exact primary sources, refresh advisories, populate command/claim and complete object/byte-format tables, instantiate finite state/fault expectations, and obtain distinct review of the resulting exact protocol before implementation. Those later deliverables must resolve the listed decisions rather than merely repeat these preparation requirements.",
+    "optional_migration": "NIP06 is optional migration under P01, never the native default. Final S04 must explicitly state supported/unsupported scope and retained/exported-source behavior; independent derivation/path/passphrase evidence is mandatory for any admitted route.",
+    "ownership": "Generic services remain B01/B02; Nostr account/operation semantics remain engine/S03/K01; physical MCU/SE/combined/assembly evidence remains H02/H02S/V02/V03; H04 selects the complete architecture. One trusted firmware image supplies no interapplication isolation.",
+    "moving_inputs": "The initial source is frozen f2. A02/S03 and later H01 integrations must be reconciled and affected consumers/reviews rebound before implementation. RM0456 Rev7 retrieval is reported context only, not a completed lifecycle reading.",
+    "resources": "Operators, benches, instruments, sacrificial units and assemblies remain UNKNOWN. No purchase, outreach, production secret, fuse, provisioning operation or physical probe is authorized by this review."
+  },
+  "independent_checks": {
+    "candidate": "Exact commit and tree, exactly three authorized changed paths, and all three supplied SHA256 values verified.",
+    "inputs": "Six repository trees and40 file mode/blob/path/length/SHA256 bindings independently recomputed; all observation references resolve to those bound sources.",
+    "requirements": "All seven original S04 acceptance strings and sole dependency P01 compared byte-for-byte with the frozen canonical task graph.",
+    "historical_context": "All18 inherited vendor-register entries compared field-for-field with frozen H01; this is provenance verification, not manufacturer research.",
+    "commands": "command.json; check_bindings.py; bindings.log; bindings.json; inherited-register.json",
+    "structural_validation": "python3 scripts/validate_restart_plan.py passed; structural correspondence only.",
+    "diff_validation": "git diff --check f2ef70f..d4713e passed.",
+    "intentionally_not_run": "No unaffected product suite, new prose-presence test, custody behavioral/model runner, device command or primary-manual research was run for this preparation-only change."
+  },
+  "acceptance_limits": [
+    "Preparation approval does not satisfy any physical release gate or establish a secure custody protocol.",
+    "Final S04 requires concrete custody/state/SE-decision outputs and distinct exact-candidate cryptographic/specification review satisfying all seven criteria.",
+    "No generic non-exportability, dual-SE independence, native BIP340/NIP44, erasure, antirollback, entropy or availability property is accepted without its exact supporting contract and later applicable evidence.",
+    "No merge, graph mutation, task completion, part admission or external security certification follows from this report."
+  ],
+  "reviewer_write_scope": "Only docs/restart/implementation/reviews/S04-spec/; author preparation, main, graph and product source are unchanged."
+}
