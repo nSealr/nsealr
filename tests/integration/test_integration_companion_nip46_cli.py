@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import json
 import tempfile
 import unittest
 from pathlib import Path
@@ -14,6 +15,7 @@ from scripts.integration_companion_nip46_cli import (
     build_nip46_decide_command,
     build_nip46_policy_file_command,
     build_nip46_session_checkpoint_command,
+    assert_auth_challenge_vector_inventory,
     invalid_auth_challenge_relay_step_vectors,
     invalid_connection_token_response_vectors,
     invalid_connection_uri_vectors,
@@ -273,7 +275,7 @@ class IntegrationCompanionNip46CliTests(unittest.TestCase):
   "name": "auth-challenge",
   "category": "nip46-relay-step",
   "relay_step": {
-    "format": "nsealr-nip46-relay-response-step-v0",
+    "format": "nsealr-nip46-relay-response-step-v1",
     "decrypted_message": {
       "result": "auth_url"
     }
@@ -288,7 +290,7 @@ class IntegrationCompanionNip46CliTests(unittest.TestCase):
   "name": "public-key",
   "category": "nip46-relay-step",
   "relay_step": {
-    "format": "nsealr-nip46-relay-response-step-v0",
+    "format": "nsealr-nip46-relay-response-step-v1",
     "decrypted_message": {
       "result": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
     }
@@ -301,6 +303,56 @@ class IntegrationCompanionNip46CliTests(unittest.TestCase):
             vectors = invalid_auth_challenge_relay_step_vectors(specs)
 
         self.assertEqual([vector["name"] for vector in vectors], ["auth-challenge"])
+
+    def test_auth_negative_inventory_requires_each_case_and_rejects_extras(self) -> None:
+        names = (
+            "relay-step-response-auth-url-with-credentials.json",
+            "relay-step-response-auth-url-with-fragment.json",
+            "relay-step-response-auth-url-wrong-scheme.json",
+        )
+        with tempfile.TemporaryDirectory(prefix="nsealr-auth-inventory-") as directory:
+            specs = Path(directory)
+            invalid = specs / "vectors/invalid"
+            invalid.mkdir(parents=True)
+            originals = {}
+            for name in names:
+                vector = {"name": name.removesuffix(".json"), "category": "nip46-relay-step",
+                          "relay_step": {"format": "nsealr-nip46-relay-response-step-v1",
+                                         "decrypted_message": {"result": "auth_url"}}}
+                originals[name] = json.dumps(vector)
+                (invalid / name).write_text(originals[name])
+            # Malformed and unrelated vectors must not be selected as auth negatives.
+            (invalid / "malformed.json").write_text(json.dumps({"category": "nip46-relay-step", "relay_step": None}))
+            unrelated = json.loads(originals[names[0]])
+            unrelated["category"] = "other"
+            (invalid / "wrong-category.json").write_text(json.dumps(unrelated))
+            vectors = invalid_auth_challenge_relay_step_vectors(specs)
+            self.assertEqual(len(vectors), 3)
+            assert_auth_challenge_vector_inventory(specs, vectors)
+            for name in names:
+                with self.subTest(missing=name):
+                    (invalid / name).unlink()
+                    with self.assertRaises(AssertionError):
+                        assert_auth_challenge_vector_inventory(specs, invalid_auth_challenge_relay_step_vectors(specs))
+                    (invalid / name).write_text(originals[name])
+                with self.subTest(stale_version=name):
+                    stale = json.loads(originals[name])
+                    stale["relay_step"]["format"] = "nsealr-nip46-relay-response-step-v0"
+                    (invalid / name).write_text(json.dumps(stale))
+                    with self.assertRaises(AssertionError):
+                        assert_auth_challenge_vector_inventory(specs, invalid_auth_challenge_relay_step_vectors(specs))
+                    (invalid / name).write_text(originals[name])
+            extra = json.loads(originals[names[0]])
+            extra["name"] = "unexpected-extra"
+            (invalid / "extra.json").write_text(json.dumps(extra))
+            with self.assertRaises(AssertionError):
+                assert_auth_challenge_vector_inventory(specs, invalid_auth_challenge_relay_step_vectors(specs))
+            (invalid / "extra.json").unlink()
+            vectors = invalid_auth_challenge_relay_step_vectors(specs)
+            for omitted in range(3):
+                with self.subTest(selected_case_omitted=omitted), self.assertRaises(AssertionError):
+                    assert_auth_challenge_vector_inventory(specs, vectors[:omitted] + vectors[omitted + 1:])
+            assert_auth_challenge_vector_inventory(specs, vectors)
 
     def test_invalid_policy_file_vectors_are_discovered_by_category(self) -> None:
         with tempfile.TemporaryDirectory(prefix="nsealr-nip46-invalid-policy-") as temp_dir:

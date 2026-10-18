@@ -386,12 +386,31 @@ def invalid_auth_challenge_relay_step_vectors(specs: Path) -> list[dict[str, Any
         if (
             vector.get("category") == "nip46-relay-step"
             and isinstance(relay_step, dict)
-            and relay_step.get("format") == "nsealr-nip46-relay-response-step-v0"
+            and relay_step.get("format") == "nsealr-nip46-relay-response-step-v1"
             and isinstance(decrypted_message, dict)
             and decrypted_message.get("result") == "auth_url"
         ):
             vectors.append(vector)
     return vectors
+
+
+AUTH_CHALLENGE_NEGATIVE_PATHS = (
+    "relay-step-response-auth-url-with-credentials.json",
+    "relay-step-response-auth-url-with-fragment.json",
+    "relay-step-response-auth-url-wrong-scheme.json",
+)
+
+
+def assert_auth_challenge_vector_inventory(specs: Path, vectors: list[dict[str, Any]]) -> None:
+    """Require every pinned v1 auth-negative case, not merely a nonempty loop."""
+    required = [specs / "vectors/invalid" / name for name in AUTH_CHALLENGE_NEGATIVE_PATHS]
+    missing = [path.name for path in required if not path.is_file()]
+    if missing:
+        raise AssertionError(f"missing required NIP-46 auth-negative paths: {missing}")
+    expected = [load_json(path) for path in required]
+    key = lambda item: json.dumps(item, sort_keys=True, separators=(",", ":"))
+    if sorted(map(key, vectors)) != sorted(map(key, expected)):
+        raise AssertionError("NIP-46 auth-negative discovery does not match the complete required path inventory")
 
 
 def invalid_policy_file_vectors(specs: Path) -> list[dict[str, Any]]:
@@ -664,8 +683,7 @@ def main() -> int:
         assert_approval_matches(auth_challenge_approval_path, auth_challenge["approval"])
 
         invalid_auth_challenge_vectors = invalid_auth_challenge_relay_step_vectors(SPECS)
-        if not invalid_auth_challenge_vectors:
-            raise AssertionError("missing shared invalid NIP-46 auth challenge relay-step vectors")
+        assert_auth_challenge_vector_inventory(SPECS, invalid_auth_challenge_vectors)
         for vector in invalid_auth_challenge_vectors:
             invalid_auth_step_path = temp / f"{vector['name']}-step.json"
             invalid_auth_review_path = temp / f"{vector['name']}-review.json"
@@ -676,6 +694,7 @@ def main() -> int:
                 out_path=invalid_auth_review_path,
             )
             assert_auth_challenge_review_rejected(command, invalid_auth_review_path, vector["expected_error"])
+            print(f"NIP-46 v1 auth-negative executed: {vector['name']}")
 
         session_path = temp / "connect-session-checkpoint.json"
         command = build_nip46_session_checkpoint_command(
