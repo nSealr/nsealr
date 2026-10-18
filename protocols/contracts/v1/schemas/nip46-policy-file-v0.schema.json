@@ -1,0 +1,54 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://nsealr.dev/schemas/nip46-policy-file-v0.schema.json",
+  "title": "nSealr NIP-46 Policy File v0",
+  "type": "object",
+  "required": ["format", "approved_permissions"],
+  "properties": {
+    "format": { "const": "nsealr-nip46-policy-v0" },
+    "approved_permissions": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/permission" },
+      "uniqueItems": true
+    }
+  },
+  "additionalProperties": false,
+  "$defs": {
+    "permission": {
+      "oneOf": [
+        {
+          "required": ["method", "parameter", "event_kind"],
+          "properties": {
+            "method": { "const": "sign_event" },
+            "parameter": {
+              "type": "string",
+              "pattern": "^[0-9]+$"
+            },
+            "event_kind": {
+              "type": "integer",
+              "minimum": 0
+            }
+          },
+          "additionalProperties": false
+        },
+        {
+          "required": ["method"],
+          "properties": {
+            "method": {
+              "enum": [
+                "get_public_key",
+                "ping",
+                "nip04_encrypt",
+                "nip04_decrypt",
+                "nip44_encrypt",
+                "nip44_decrypt",
+                "switch_relays"
+              ]
+            }
+          },
+          "additionalProperties": false
+        }
+      ]
+    }
+  }
+}

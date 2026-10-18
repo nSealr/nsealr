@@ -1,0 +1,71 @@
+{
+  "name": "switch-relays-no-change",
+  "format": "nip46-decrypted-payload-v0",
+  "request_message": {
+    "id": "nip46-switch-relays-1",
+    "method": "switch_relays",
+    "params": []
+  },
+  "permission_requirement": {
+    "method": "switch_relays"
+  },
+  "permission_checks": [
+    {
+      "granted_permissions": [
+        {
+          "method": "switch_relays"
+        }
+      ],
+      "permitted": true
+    },
+    {
+      "granted_permissions": [],
+      "permitted": false
+    },
+    {
+      "granted_permissions": [
+        {
+          "method": "ping"
+        }
+      ],
+      "permitted": false
+    }
+  ],
+  "bridge_decisions": [
+    {
+      "granted_permissions": [
+        {
+          "method": "switch_relays"
+        }
+      ],
+      "decision": {
+        "type": "local_response",
+        "permission_requirement": {
+          "method": "switch_relays"
+        },
+        "response_message": {
+          "id": "nip46-switch-relays-1",
+          "result": "null"
+        }
+      }
+    },
+    {
+      "granted_permissions": [],
+      "decision": {
+        "type": "permission_denied",
+        "permission_requirement": {
+          "method": "switch_relays"
+        },
+        "response_message": {
+          "id": "nip46-switch-relays-1",
+          "error": "permission_denied: request requires approved permission switch_relays"
+        }
+      }
+    }
+  ],
+  "local_response_message": {
+    "id": "nip46-switch-relays-1",
+    "result": "null"
+  },
+  "scope": "NIP-46 switch_relays local-response handling for an already decrypted request. It returns null no-change metadata only; it does not open relays, switch transports, acknowledge connect, create grants, dispatch signers, store production secrets, or persist session state."
+}

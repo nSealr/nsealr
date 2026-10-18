@@ -1,0 +1,88 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://nsealr.dev/schemas/policy-change-review-v0.schema.json",
+  "title": "nSealr Policy Change Review v0",
+  "type": "object",
+  "required": ["name", "format", "proposal", "review"],
+  "properties": {
+    "name": { "type": "string", "minLength": 1 },
+    "format": { "const": "nsealr-policy-change-review-v0" },
+    "proposal": {
+      "type": "object",
+      "required": [
+        "format",
+        "proposal_id",
+        "account_id",
+        "route_type",
+        "action",
+        "current_policy_id",
+        "proposed_policy_id",
+        "proposed_grant_ids",
+        "requested_by",
+        "created_at",
+        "device_review_required",
+        "physical_approval_required",
+        "companion_authoritative",
+        "contains_secret_material"
+      ],
+      "properties": {
+        "format": { "const": "nsealr-policy-change-proposal-v0" },
+        "proposal_id": { "type": "string", "pattern": "^proposal-[A-Za-z0-9._:-]{1,119}$" },
+        "account_id": { "type": "string", "pattern": "^[A-Za-z0-9._:-]{1,128}$" },
+        "route_type": { "enum": ["esp32_usb_nip46", "custom_hardware_wallet"] },
+        "action": { "const": "set_policy" },
+        "current_policy_id": { "type": "string", "pattern": "^policy-[A-Za-z0-9._:-]{1,121}$" },
+        "proposed_policy_id": { "type": "string", "pattern": "^policy-[A-Za-z0-9._:-]{1,121}$" },
+        "proposed_grant_ids": {
+          "type": "array",
+          "items": { "type": "string", "pattern": "^grant-[A-Za-z0-9._:-]{1,122}$" },
+          "uniqueItems": true
+        },
+        "requested_by": {
+          "type": "object",
+          "required": ["surface", "client_pubkey"],
+          "properties": {
+            "surface": { "enum": ["browser_extension", "desktop_app", "cli", "sdk", "native_host_test"] },
+            "client_pubkey": { "type": "string", "pattern": "^[0-9a-f]{64}$" },
+            "label": { "type": "string", "minLength": 1 }
+          },
+          "additionalProperties": false
+        },
+        "created_at": { "type": "integer", "minimum": 1 },
+        "device_review_required": { "const": true },
+        "physical_approval_required": { "const": true },
+        "companion_authoritative": { "const": false },
+        "contains_secret_material": { "const": false }
+      },
+      "additionalProperties": false
+    },
+    "review": {
+      "type": "object",
+      "required": ["format", "proposal_id", "approval_digest", "pages"],
+      "properties": {
+        "format": { "const": "nsealr-policy-change-review-pages-v0" },
+        "proposal_id": { "type": "string", "pattern": "^proposal-[A-Za-z0-9._:-]{1,119}$" },
+        "approval_digest": { "type": "string", "pattern": "^[0-9a-f]{64}$" },
+        "pages": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "object",
+            "required": ["title", "lines", "action"],
+            "properties": {
+              "title": { "type": "string", "minLength": 1 },
+              "lines": {
+                "type": "array",
+                "items": { "type": "string" }
+              },
+              "action": { "enum": ["next", "approve_or_reject"] }
+            },
+            "additionalProperties": false
+          }
+        }
+      },
+      "additionalProperties": false
+    }
+  },
+  "additionalProperties": false
+}

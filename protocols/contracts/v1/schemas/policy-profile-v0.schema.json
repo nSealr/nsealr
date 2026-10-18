@@ -1,0 +1,142 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://nsealr.dev/schemas/policy-profile-v0.schema.json",
+  "title": "nSealr Policy Profile v0",
+  "type": "object",
+  "required": [
+    "format",
+    "policy_id",
+    "label",
+    "route_types",
+    "mode",
+    "grants_allowed",
+    "manual_review_required",
+    "forbidden_permissions",
+    "risk_tiers"
+  ],
+  "properties": {
+    "format": { "const": "nsealr-policy-profile-v0" },
+    "policy_id": { "type": "string", "pattern": "^policy-[A-Za-z0-9._:-]{1,121}$" },
+    "label": { "type": "string", "minLength": 1 },
+    "route_types": {
+      "type": "array",
+      "items": {
+        "enum": [
+          "raspberry_qr_vault",
+          "esp32_qr_vault",
+          "esp32_usb_nip46",
+          "smartcard",
+          "custom_hardware_wallet",
+          "external_nip46"
+        ]
+      },
+      "minItems": 1,
+      "uniqueItems": true
+    },
+    "mode": { "enum": ["manual_only", "scoped_automation"] },
+    "grants_allowed": { "type": "boolean" },
+    "manual_review_required": {
+      "type": "array",
+      "items": {
+        "enum": [
+          "connect",
+          "delete_event",
+          "nip04_decrypt",
+          "nip44_decrypt",
+          "policy_change",
+          "sign_event",
+          "switch_relays",
+          "unknown_method"
+        ]
+      },
+      "uniqueItems": true
+    },
+    "forbidden_permissions": {
+      "type": "array",
+      "items": {
+        "enum": [
+          "companion_authoritative_policy_change",
+          "decrypt_without_review",
+          "export_secret",
+          "local_private_key_storage",
+          "trusted_review_claim",
+          "wildcard"
+        ]
+      },
+      "uniqueItems": true
+    },
+    "grant_constraints": {
+      "type": "object",
+      "properties": {
+        "expiry_required": { "type": "boolean" },
+        "rate_limit_required": { "type": "boolean" },
+        "revocation_required": { "type": "boolean" },
+        "audit_log_required": { "type": "boolean" },
+        "device_confirmation_required": { "type": "boolean" }
+      },
+      "additionalProperties": false
+    },
+    "risk_tiers": {
+      "type": "object",
+      "propertyNames": {
+        "enum": ["decrypt", "delete", "kind:1", "policy_change", "profile", "sign_event", "unknown"]
+      },
+      "additionalProperties": {
+        "enum": ["device_review", "external_policy", "external_review", "low_scoped", "manual"]
+      }
+    }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "route_types": {
+            "contains": {
+              "enum": ["raspberry_qr_vault", "esp32_qr_vault"]
+            }
+          }
+        },
+        "required": ["route_types"]
+      },
+      "then": {
+        "properties": {
+          "mode": { "const": "manual_only" },
+          "grants_allowed": { "const": false }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "route_types": {
+            "contains": { "const": "smartcard" }
+          }
+        },
+        "required": ["route_types"]
+      },
+      "then": {
+        "properties": {
+          "mode": { "const": "manual_only" },
+          "grants_allowed": { "const": false }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "route_types": {
+            "contains": { "const": "external_nip46" }
+          }
+        },
+        "required": ["route_types"]
+      },
+      "then": {
+        "properties": {
+          "mode": { "const": "manual_only" },
+          "grants_allowed": { "const": false }
+        }
+      }
+    }
+  ],
+  "additionalProperties": false
+}

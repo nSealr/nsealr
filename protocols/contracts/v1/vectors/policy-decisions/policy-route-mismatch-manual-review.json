@@ -1,0 +1,38 @@
+{
+  "name": "policy-route-mismatch-manual-review",
+  "format": "nsealr-policy-decision-vector-v0",
+  "policy_profile_id": "policy-manual-only-displayless-smartcard",
+  "request": {
+    "account_id": "acct-esp32-usb-slot-0",
+    "route_type": "esp32_usb_nip46",
+    "client_pubkey": "4f355bdcb7cc0af728ef3cceb9615d90684bb5b2ca5f859ab0f0b704075871aa",
+    "permission": {
+      "method": "sign_event",
+      "parameter": "1",
+      "event_kind": 1
+    },
+    "now": 1710000300,
+    "grant_ids": ["grant-esp32-usb-kind-1-session"],
+    "grant_usage": {},
+    "revoked_grant_ids": []
+  },
+  "decision": {
+    "format": "nsealr-policy-decision-v0",
+    "decision": "manual_review",
+    "reason": "policy_route_mismatch",
+    "audit_event": {
+      "format": "nsealr-grant-audit-event-v0",
+      "occurred_at": 1710000300,
+      "account_id": "acct-esp32-usb-slot-0",
+      "route_type": "esp32_usb_nip46",
+      "client_pubkey": "4f355bdcb7cc0af728ef3cceb9615d90684bb5b2ca5f859ab0f0b704075871aa",
+      "permission": {
+        "method": "sign_event",
+        "parameter": "1",
+        "event_kind": 1
+      },
+      "decision": "manual_review",
+      "reason": "policy_route_mismatch"
+    }
+  }
+}

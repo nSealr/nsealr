@@ -1,0 +1,60 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://nsealr.dev/schemas/grant-descriptor-v0.schema.json",
+  "title": "nSealr Grant Descriptor v0",
+  "type": "object",
+  "required": [
+    "format",
+    "grant_id",
+    "account_id",
+    "route_type",
+    "client",
+    "permission",
+    "expires_at",
+    "rate_limit",
+    "requires_device_policy_confirmation",
+    "revocable",
+    "audit_event_format"
+  ],
+  "properties": {
+    "format": { "const": "nsealr-grant-descriptor-v0" },
+    "grant_id": { "type": "string", "pattern": "^grant-[A-Za-z0-9._:-]{1,122}$" },
+    "account_id": { "type": "string", "pattern": "^[A-Za-z0-9._:-]{1,128}$" },
+    "route_type": {
+      "enum": ["esp32_usb_nip46", "custom_hardware_wallet"]
+    },
+    "client": {
+      "type": "object",
+      "required": ["pubkey"],
+      "properties": {
+        "pubkey": { "type": "string", "pattern": "^[0-9a-f]{64}$" },
+        "label": { "type": "string" }
+      },
+      "additionalProperties": false
+    },
+    "permission": {
+      "type": "object",
+      "required": ["method", "parameter", "event_kind"],
+      "properties": {
+        "method": { "const": "sign_event" },
+        "parameter": { "const": "1" },
+        "event_kind": { "const": 1 }
+      },
+      "additionalProperties": false
+    },
+    "expires_at": { "type": "integer", "minimum": 1 },
+    "rate_limit": {
+      "type": "object",
+      "required": ["max_uses", "window_seconds"],
+      "properties": {
+        "max_uses": { "type": "integer", "minimum": 1 },
+        "window_seconds": { "type": "integer", "minimum": 1 }
+      },
+      "additionalProperties": false
+    },
+    "requires_device_policy_confirmation": { "const": true },
+    "revocable": { "const": true },
+    "audit_event_format": { "const": "nsealr-grant-audit-event-v0" }
+  },
+  "additionalProperties": false
+}

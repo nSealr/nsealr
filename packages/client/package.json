@@ -1,0 +1,56 @@
+{
+  "name": "@nsealr/client",
+  "version": "0.1.0",
+  "description": "Secretless local companion service and native-messaging client boundary for nSealr integrations.",
+  "keywords": [
+    "nostr",
+    "nsealr",
+    "signer",
+    "native-messaging",
+    "sdk"
+  ],
+  "type": "module",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/nSealr/companion.git",
+    "directory": "packages/client"
+  },
+  "bugs": {
+    "url": "https://github.com/nSealr/companion/issues"
+  },
+  "homepage": "https://github.com/nSealr/companion#readme",
+  "sideEffects": false,
+  "files": [
+    "dist",
+    "README.md"
+  ],
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    },
+    "./browser": {
+      "types": "./dist/browser.d.ts",
+      "import": "./dist/browser.js"
+    },
+    "./client-identity": {
+      "types": "./dist/client-identity.d.ts",
+      "import": "./dist/client-identity.js"
+    }
+  },
+  "types": "./dist/index.d.ts",
+  "dependencies": {
+    "@nsealr/core": "workspace:*",
+    "@nsealr/policy": "workspace:*",
+    "@nsealr/protocol": "workspace:*",
+    "@nsealr/review": "workspace:*"
+  },
+  "devDependencies": {
+    "@nsealr/fixtures": "workspace:*"
+  },
+  "publishConfig": {
+    "access": "public",
+    "provenance": true
+  }
+}
