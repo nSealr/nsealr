@@ -107,6 +107,7 @@ def main() -> int:
     parser.add_argument('--core-only', action='store_true', help='public core only; no private integration sources')
     args = parser.parse_args()
     root = args.destination.absolute()
+    mirrors = args.mirrors.resolve() if args.mirrors else None
     if root.exists() or root.is_symlink():
         parser.error(f'destination already exists: {root}')
     if platform.system() != 'Linux' or platform.machine() != 'x86_64' or platform.libc_ver()[0] != 'glibc':
@@ -135,7 +136,7 @@ def main() -> int:
     inputs = {'nsealr': candidate}
     if not args.core_only:
         for name, entry in lock['repositories'].items():
-            origin = str(args.mirrors/name) if args.mirrors else entry['url']
+            origin = str(mirrors/name) if mirrors else entry['url']
             fetch(clones, name, origin, entry['commit'], root)
             inputs[name] = entry['commit']
     write_json(root/'source-commits.json', inputs)
