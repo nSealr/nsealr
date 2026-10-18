@@ -58,14 +58,19 @@ def validate(root=ROOT,expected_source=SOURCE):
     if index['relocations']!=RELOCATIONS:raise ValueError('unreviewed relocation aliases')
     original=objects(root,expected_source);current=objects(root,'HEAD')
     if git(root,'rev-parse',expected_source+'^{tree}').decode().strip()!=index['source_identity']['tree']:raise ValueError('historical tree mismatch')
+    original_plan=json.loads(git(root,'show',expected_source+':docs/restart/work-items.json'))
+    historical_bound={row['path']:row['sha256'] for task in original_plan['tasks'] if task.get('status') in {'verified','integrated'} for row in task['result_artifacts']}
     bound={}
     for task in plan['tasks']:
         if task.get('status') in {'verified','integrated'}:
             for row in task['result_artifacts']:
                 if row['path'] in bound and bound[row['path']]!=row['sha256']:raise ValueError('contradictory graph evidence')
                 bound[row['path']]=row['sha256']
+    if any(bound.get(path)!=value for path,value in historical_bound.items()):raise ValueError('historical graph evidence changed')
     artifacts=index['artifacts'];names=[r['path'] for r in artifacts]
-    if len(names)!=len(set(names)) or set(names)!=set(bound):raise ValueError('missing/duplicate closed evidence closure entry')
+    if len(names)!=len(set(names)) or set(names)!=set(historical_bound):raise ValueError('missing/duplicate closed evidence closure entry')
+    # Later closed tasks remain governed by the full canonical validator. This
+    # migration index preserves its original closure; it is not a second ledger.
     batch=subprocess.Popen(['git','-C',str(root),'cat-file','--batch'],stdin=subprocess.PIPE,stdout=subprocess.PIPE)
     cache={}
     def blob(oid):
