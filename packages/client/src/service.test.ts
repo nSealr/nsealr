@@ -572,7 +572,7 @@ describe("local service boundary", () => {
       ok: false,
       error: {
         code: "external_review_acknowledgement_unsupported",
-        message: "external review acknowledgement is only supported for display-less sign_event dispatch"
+        message: "host review acknowledgements are unsupported for signer dispatch"
       }
     });
     expect(called).toBe(false);
