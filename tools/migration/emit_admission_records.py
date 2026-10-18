@@ -47,7 +47,27 @@ def treatment(source, path, name, action):
     return "retain", "Preserve case assertions and independent expected results; only declared fixture-root/layout adaptations."
 
 
-def emit(manifest_path: Path, inventory_path: Path, cases_root: Path, source_root: Path, output: Path):
+def private_obligations(path: Path, source_commit: str) -> dict:
+    record = decode_json(path.read_bytes())
+    if record["source"] != "lab" or record["source_commit"] != source_commit:
+        raise ValueError("private case obligation source drift")
+    rows = record["cases"]
+    result = {row["case_identity_sha256"]: row for row in rows}
+    if len(result) != len(rows) or len(rows) != record["source_case_count"]:
+        raise ValueError("duplicate or incomplete private case obligations")
+    for identity, row in result.items():
+        if not re.fullmatch(r"[0-9a-f]{64}", identity) or not row.get("reason"):
+            raise ValueError("unbound private case obligation")
+        if row["treatment"] == "replace-product-guardrail":
+            if not all(row.get(key) for key in ("negative_control", "positive_control", "target_gate", "after_execution")):
+                raise ValueError("replacement lacks positive/negative execution obligation")
+        elif row["treatment"] not in {"retire-private-editorial", "retire-private-taxonomy"}:
+            raise ValueError("unreviewed private case treatment")
+    return result
+
+
+def emit(manifest_path: Path, inventory_path: Path, cases_root: Path, source_root: Path, output: Path,
+         obligations_path: Path):
     manifest = decode_json(manifest_path.read_bytes())
     inventory = decode_json(inventory_path.read_bytes())
     if decode_json((inventory_path.parent / "runtime.json").read_bytes())["inventory_sha256"] != digest(inventory_path.read_bytes()):
@@ -56,6 +76,7 @@ def emit(manifest_path: Path, inventory_path: Path, cases_root: Path, source_roo
         raise ValueError("inventory does not bind current admission manifest")
     output.mkdir(exist_ok=False)
     entries = {s["name"]: s for s in manifest["sources"]}
+    obligations = private_obligations(obligations_path, entries["lab"]["commit"])
     file_map = {(r["source"], r["path"]): r for r in inventory["files"]}
     public_files, private_omitted = [], Counter()
     for row in inventory["files"]:
@@ -106,9 +127,10 @@ def emit(manifest_path: Path, inventory_path: Path, cases_root: Path, source_roo
             row = file_map[(name, path)]
             if entries[name]["visibility"] == "private" and row["action"] == "exclude":
                 omitted[name] += 1
-                opaque_exclusions.append({"source": name, "case_identity_sha256": digest(canonical({"path": path, "case_id": case_name})),
-                                          "treatment": "exclude-private-repository-maintenance",
-                                          "reason": "Private taxonomy, repository Makefile/drift or sibling-orchestration maintenance; not a selected product consumer. Original case/source preserved in protected collection and Git recovery."})
+                identity = digest(canonical({"path": path, "case_id": case_name}))
+                if identity not in obligations:
+                    raise ValueError("private case has no reviewed individual disposition")
+                opaque_exclusions.append({"source": name, **obligations[identity]})
                 private_exclusions.append({**opaque_exclusions[-1], "source_commit": record["source_commit"],
                                            "path": path, "case_id": case_name, "effective_source_sha256": bindings[path]})
                 continue
@@ -117,6 +139,8 @@ def emit(manifest_path: Path, inventory_path: Path, cases_root: Path, source_roo
                           "effective_source_sha256": bindings[path], "case_id": case_name,
                           "target_file": row["destination"], "treatment": decision, "obligation": obligation,
                           "after_execution": "required; not executed before import"})
+    if {row["case_identity_sha256"] for row in opaque_exclusions} != set(obligations):
+        raise ValueError("private case disposition inventory drift")
     core = Source(source_root, entries["nsealr"])
     try:
         rust_path = "docs/restart/implementation/S01/followup-evidence/fresh/evidence/affected/00-core-ci.log"
@@ -190,6 +214,8 @@ def emit(manifest_path: Path, inventory_path: Path, cases_root: Path, source_roo
         "private_excluded_cases": opaque_exclusions,
         "private_full_collection_sha256": digest((cases_root / "lab-cases.json").read_bytes()),
         "private_disposition_record_sha256": digest(private_record),
+        "private_case_obligations_sha256": digest(obligations_path.read_bytes()),
+        "private_case_treatment_counts": dict(Counter(row["treatment"] for row in opaque_exclusions)),
         "selection_reconciliation": "Collection manifest preceded two checker selections/privacy metadata. Same exact source commits/trees and overlay postimages; selection changes are reflected here without repeating unchanged collection.",
         "after_migration_acceptance": "All retained/replacement/external cases require actual execution. No implementation or conformance claim is made by this ledger."}))
     return {"public_file_records": len(public_files), "private_excluded_paths": sum(private_omitted.values()),
@@ -199,7 +225,8 @@ def emit(manifest_path: Path, inventory_path: Path, cases_root: Path, source_roo
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description=__doc__)
-    for argument in ("manifest", "inventory", "cases", "source-root", "output"):
+    for argument in ("manifest", "inventory", "cases", "source-root", "output", "private-case-obligations"):
         parser.add_argument("--" + argument, type=Path, required=True)
     args = parser.parse_args()
-    print(json.dumps(emit(args.manifest, args.inventory, args.cases, args.source_root, args.output), indent=2))
+    print(json.dumps(emit(args.manifest, args.inventory, args.cases, args.source_root, args.output,
+                         args.private_case_obligations), indent=2))
