@@ -51,13 +51,13 @@ build_release() {
 	local src="$1" td="$2" flags
 	flags="--remap-path-prefix=${src}=/nsealr"
 	RUSTFLAGS="$flags" cargo build --release --offline --locked \
-		-p desktop-simulator --target-dir "$td" >/dev/null
+		--manifest-path apps/desktop-simulator/Cargo.toml --target-dir "$td/host" >/dev/null
 	RUSTFLAGS="$flags" cargo build --release --offline --locked \
-		-p nsealr-core --target "$TRIPLE" --target-dir "$td" >/dev/null
+		-p nsealr-core --target "$TRIPLE" --target-dir "$td/core" >/dev/null
 }
 
-DS_REL="release/desktop-simulator"
-RLIB_REL="${TRIPLE}/release/libnsealr_core.rlib"
+DS_REL="host/release/desktop-simulator"
+RLIB_REL="core/${TRIPLE}/release/libnsealr_core.rlib"
 
 echo "repro-build: same-tree clean build A"
 rm -rf "$ROOT/target/repro-a" "$ROOT/target/repro-b"
@@ -76,7 +76,7 @@ SCRATCH="$(mktemp -d "${TMPDIR:-/tmp}/nsealr-repro.XXXXXX")"
 # Physical path: rustc sees the resolved path, so the remap prefix must too.
 SCRATCH="$(cd "$SCRATCH" && pwd -P)"
 trap 'rm -rf "$SCRATCH"' EXIT
-rsync -a --exclude='/target' --exclude='/.git' "$ROOT/" "$SCRATCH/"
+rsync -a --exclude='target/' --exclude='node_modules/' --exclude='.venv/' --exclude='build/' --exclude='dist/' --exclude='/.git' "$ROOT/" "$SCRATCH/"
 (cd "$SCRATCH" && build_release "$SCRATCH" "$SCRATCH/target/repro-x")
 X_RLIB="$(sha "$SCRATCH/target/repro-x/$RLIB_REL")"
 
