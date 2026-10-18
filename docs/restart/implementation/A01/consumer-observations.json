@@ -335,5 +335,99 @@
       "url": "https://github.com/nSealr/companion/blob/13414320537d0208fc3ef8e43bd0723c98c1d5e0/pnpm-lock.yaml"
     }
   ],
-  "limits": "Point-in-time registry observations and bounded authenticated GitHub search. No conclusion that unpublished/external consumers do not exist. Name availability is not ownership clearance."
+  "limits": "Point-in-time registry observations and bounded authenticated GitHub search. No conclusion that unpublished/external consumers do not exist. Name availability is not ownership clearance.",
+  "github_sdk_search_metadata": {
+    "observed_command": [
+      "gh",
+      "search",
+      "code",
+      "@nsealr/sdk",
+      "--limit",
+      "100",
+      "--json",
+      "repository,path,url"
+    ],
+    "query": "@nsealr/sdk",
+    "scope": "authenticated code search over accessible indexed repositories; no organization filter",
+    "maximum_returned": 100,
+    "returned_count": 21,
+    "pagination": "gh bounded search, at most100; original CLI response did not expose server total_count/incomplete_results",
+    "server_total_count": null,
+    "incomplete_results": null
+  },
+  "github_sdk_search_api_crosscheck": {
+    "observed_utc": "2026-10-18T15:35:45.271174+00:00",
+    "command": [
+      "gh",
+      "api",
+      "--method",
+      "GET",
+      "search/code",
+      "-f",
+      "q=@nsealr/sdk",
+      "-f",
+      "per_page=100"
+    ],
+    "query": "@nsealr/sdk",
+    "total_count": 21,
+    "incomplete_results": false,
+    "returned_count": 21,
+    "per_page": 100,
+    "page": 1,
+    "repositories": [
+      "nSealr/companion",
+      "nSealr/website"
+    ]
+  },
+  "registry_scope": "npm observations cover only20 declared companion workspace/app/package names in the public npm registry; no inference of ownership or alternate distribution.",
+  "additional_registry_observations": {
+    "observed_utc": "2026-10-18T15:35:46.266649+00:00",
+    "items": [
+      {
+        "ecosystem": "pypi",
+        "name": "nsealr-vault",
+        "status": 404,
+        "url": "https://pypi.org/pypi/nsealr-vault/json"
+      },
+      {
+        "ecosystem": "pypi",
+        "name": "nsealr-smartcard",
+        "status": 404,
+        "url": "https://pypi.org/pypi/nsealr-smartcard/json"
+      },
+      {
+        "ecosystem": "crates.io",
+        "name": "nsealr-core",
+        "status": 404,
+        "url": "https://crates.io/api/v1/crates/nsealr-core"
+      },
+      {
+        "ecosystem": "crates.io",
+        "name": "desktop-simulator",
+        "status": 404,
+        "url": "https://crates.io/api/v1/crates/desktop-simulator"
+      }
+    ],
+    "limits": "Declared Python products and product Cargo workspace names only. Research-only crates, Git/tarballs and alternate registries are not release ownership proof."
+  },
+  "rust_publication_manifests": [
+    {
+      "path": "crates/nsealr-core/Cargo.toml",
+      "name": "nsealr-core",
+      "publish": false,
+      "input_commit": "768e8a35ae541f53f5da9c7bea7bf5c577fb474d"
+    },
+    {
+      "path": "apps/desktop-simulator/Cargo.toml",
+      "name": "desktop-simulator",
+      "publish": false,
+      "input_commit": "768e8a35ae541f53f5da9c7bea7bf5c577fb474d"
+    },
+    {
+      "path": "research/2026-10-13/crypto/Cargo.toml",
+      "name": "nsealr-crypto-feasibility-spike",
+      "publish": false,
+      "input_commit": "768e8a35ae541f53f5da9c7bea7bf5c577fb474d"
+    }
+  ]
 }
