@@ -3,9 +3,11 @@ import assert from "node:assert/strict";
 import { existsSync, readdirSync, readFileSync, statSync } from "node:fs";
 import { dirname, isAbsolute, join, relative, resolve } from "node:path";
 import * as ts from "typescript";
-import { packageDirName, packageExportSubpaths, publicPackages, root } from "./package_set.mjs";
+import { packageDirName, packageExportSubpaths, publicPackages, workspacePackages, root } from "./package_set.mjs";
 
-const publicPackageSet = new Set(publicPackages);
+const runtimePackages = workspacePackages.map(({ manifest }) => manifest.name)
+  .filter((name) => !["@nsealr/dev-signer", "@nsealr/fixtures"].includes(name));
+const publicPackageSet = new Set(runtimePackages);
 
 function collectSourceFiles(directory) {
   const entries = readdirSync(directory, { withFileTypes: true });
@@ -24,7 +26,7 @@ function collectSourceFiles(directory) {
 }
 
 const exportedSubpathsByPackage = new Map(
-  publicPackages.map((packageName) => [packageName, new Set(packageExportSubpaths(packageName))])
+  runtimePackages.map((packageName) => [packageName, new Set(packageExportSubpaths(packageName))])
 );
 
 function nsealrPackageName(specifier) {
@@ -127,7 +129,7 @@ function checkSourceFile(ownerPackage, packageSourceRoot, sourcePath) {
   visit(source);
 }
 
-for (const packageName of publicPackages) {
+for (const packageName of runtimePackages) {
   const packageSourceRoot = join(root, "packages", packageDirName(packageName), "src");
   for (const sourcePath of collectSourceFiles(packageSourceRoot)) {
     checkSourceFile(packageName, packageSourceRoot, sourcePath);

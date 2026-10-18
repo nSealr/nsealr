@@ -26,8 +26,8 @@ assert.equal(releasePlan.stores_production_secrets, false);
 assert.equal(releasePlan.contains_secret_material, false);
 assert.deepEqual(releasePlan.required_local_gates, [
   "make ci",
-  "make integration in ../lab",
-  "make release-artifacts"
+  "make integration",
+  "pnpm release-artifacts"
 ]);
 
 const plannedPackageNames = releasePlan.packages.map((entry) => entry.name);
@@ -39,7 +39,7 @@ for (const entry of releasePlan.packages) {
   assert.equal(entry.version, releasePlan.version, `${entry.name} must use the synchronized release version`);
   assert.match(entry.directory, /^packages\/[a-z0-9-]+$/u, `${entry.name} directory must stay package-local`);
   assert.match(entry.tarball, /^nsealr-[a-z0-9-]+-\d+\.\d+\.\d+\.tgz$/u, `${entry.name} tarball name drifted`);
-  assert.deepEqual(entry.files, ["dist", "README.md"], `${entry.name} must publish only dist and README`);
+  assert.deepEqual(entry.files, ["dist", "README.md", "LICENSE"], `${entry.name} must publish dist, README and the MIT notice`);
   assert.deepEqual(entry.publish_config, { access: "public", provenance: true });
   assert.equal(entry.license, "MIT");
   assert.equal(entry.private, false);
@@ -63,7 +63,7 @@ assert.equal(review.stores_production_secrets, false);
 assert.equal(review.contains_secret_material, false);
 assert.deepEqual(JSON.parse(companionPackageReleasePlanReviewJson()), review);
 
-const cliReview = spawnSync(process.execPath, ["scripts/release_plan.mjs", "--", "--review"], {
+const cliReview = spawnSync(process.execPath, ["tools/bridge/release_plan.mjs", "--", "--review"], {
   encoding: "utf-8"
 });
 assert.equal(cliReview.status, 0, cliReview.stderr);

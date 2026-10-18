@@ -163,6 +163,7 @@ export function assertCompanionPackageRegistry() {
   const packageNames = new Set(workspacePackages.map(({ manifest }) => manifest.name));
   const publicPackageSet = new Set(publicPackages);
 
+  assert.deepEqual(publicPackages, ["@nsealr/sdk"], "SDK is the sole public package");
   assert(!publicPackageSet.has("@nsealr/dev-signer"), "@nsealr/dev-signer must stay private");
   assert(privatePackages.includes("@nsealr/dev-signer"), "@nsealr/dev-signer must be registered as private");
 
