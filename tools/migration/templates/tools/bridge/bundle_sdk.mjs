@@ -21,6 +21,11 @@ for (const [entry, platform] of [["index", "browser"], ["browser", "browser"], [
     assert(!file.endsWith(".test.ts"), `test in SDK: ${file}`);
   }
   for (const artifact of Object.values(result.metafile.outputs)) {
+    for (const item of artifact.imports.filter((value) => value.external)) {
+      if (item.path.startsWith("node:")) { assert.equal(platform, "node", "browser SDK cannot import Node builtins"); continue; }
+      const name = item.path.startsWith("@") ? item.path.split("/").slice(0,2).join("/") : item.path.split("/")[0];
+      assert(sourceManifest("@nsealr/sdk").dependencies[name], `undeclared packed runtime dependency: ${item.path}`);
+    }
     assert(!artifact.imports.some((entry) => entry.path.startsWith("@nsealr/")), "packed SDK must contain its owned runtime");
   }
   reports.push({ entry, platform, ...result.metafile });
