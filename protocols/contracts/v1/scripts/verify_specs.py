@@ -2207,46 +2207,22 @@ def check_route_refusal_contract_vector(rel: str, errors: list[str]) -> None:
             errors.append(f"{case_path}: external_review_acknowledgement must be an object")
             continue
         mode = acknowledgement.get("mode")
-        if selection.get("trusted_review") == "display_less":
-            if mode != "required":
-                errors.append(f"{case_path}: display-less routes must require external review acknowledgement")
-            if "without_dispatcher" in case:
-                errors.append(f"{case_path}: display-less route must not bypass acknowledgement before dispatcher")
-            check_route_refusal_error(
-                f"{case_path}.without_dispatcher_after_ack",
-                case.get("without_dispatcher_after_ack"),
-                "signer_route_unavailable",
-                errors,
-            )
-            check_route_refusal_error(
-                f"{case_path}.external_review_acknowledgement.missing_error",
-                acknowledgement.get("missing_error"),
-                "external_review_acknowledgement_required",
-                errors,
-            )
-            check_route_refusal_error(
-                f"{case_path}.external_review_acknowledgement.mismatch_error",
-                acknowledgement.get("mismatch_error"),
-                "external_review_acknowledgement_mismatch",
-                errors,
-            )
-        else:
-            if mode != "unsupported":
-                errors.append(f"{case_path}: trusted-review routes must reject external review acknowledgement")
-            if "without_dispatcher_after_ack" in case:
-                errors.append(f"{case_path}: trusted-review route must use without_dispatcher")
-            check_route_refusal_error(
-                f"{case_path}.without_dispatcher",
-                case.get("without_dispatcher"),
-                "signer_route_unavailable",
-                errors,
-            )
-            check_route_refusal_error(
-                f"{case_path}.external_review_acknowledgement.unsupported_error",
-                acknowledgement.get("unsupported_error"),
-                "external_review_acknowledgement_unsupported",
-                errors,
-            )
+        if mode != "unsupported":
+            errors.append(f"{case_path}: trusted-review routes must reject external review acknowledgement")
+        if "without_dispatcher_after_ack" in case:
+            errors.append(f"{case_path}: trusted-review route must use without_dispatcher")
+        check_route_refusal_error(
+            f"{case_path}.without_dispatcher",
+            case.get("without_dispatcher"),
+            "signer_route_unavailable",
+            errors,
+        )
+        check_route_refusal_error(
+            f"{case_path}.external_review_acknowledgement.unsupported_error",
+            acknowledgement.get("unsupported_error"),
+            "external_review_acknowledgement_unsupported",
+            errors,
+        )
 
     if seen_route_vectors != set(route_vectors):
         errors.append(f"{vector_path}: cases must cover every route selection vector")

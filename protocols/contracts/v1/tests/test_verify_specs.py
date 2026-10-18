@@ -540,9 +540,9 @@ class VerifySpecsTests(unittest.TestCase):
     def test_route_refusal_contract_vectors_reject_acknowledgement_drift(self) -> None:
         vector = deepcopy(load_json("vectors/route-refusals/signer-route-refusals-v0.json"))
         vector["cases"][0]["external_review_acknowledgement"]["mode"] = "required"
-        vector["cases"][-1]["without_dispatcher"] = {
+        vector["cases"][-1]["without_dispatcher_after_ack"] = {
             "error_code": "signer_route_unavailable",
-            "message": "bad display-less shortcut",
+            "message": "unexpected host acknowledgement shortcut",
             "retryable": False,
         }
         vector["safety"]["dispatches_without_signer"] = True
@@ -559,7 +559,7 @@ class VerifySpecsTests(unittest.TestCase):
 
         joined = "\n".join(errors)
         self.assertIn("trusted-review routes must reject external review acknowledgement", joined)
-        self.assertIn("display-less route must not bypass acknowledgement before dispatcher", joined)
+        self.assertIn("trusted-review route must use without_dispatcher", joined)
         self.assertIn("safety boundary mismatch", joined)
 
     def test_grant_descriptors_reject_stale_decision_field(self) -> None:
@@ -936,7 +936,9 @@ class VerifySpecsTests(unittest.TestCase):
                 errors,
             )
 
-            self.assertIn("grant route_type must be a nSealr persistent policy route", "\n".join(errors))
+            expected = ("route_type is unknown" if route_type == "smartcard"
+                        else "grant route_type must be a nSealr persistent policy route")
+            self.assertIn(expected, "\n".join(errors))
 
         grant = deepcopy(load_json("vectors/grants/esp32-usb-kind-1-session.json"))
         grant["permission"] = {"method": "nip44_decrypt"}
