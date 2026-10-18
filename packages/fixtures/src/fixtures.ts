@@ -1,3 +1,4 @@
+import { isDeepStrictEqual } from "node:util";
 import { readFileSync, readdirSync } from "node:fs";
 import { resolve } from "node:path";
 import {
@@ -964,7 +965,7 @@ export function validateRouteRefusalContractFixture(name: string, fixture: unkno
       throw new Error(`invalid route-refusal contract ${name}: case ${index} acknowledgement mode is unsupported`);
     }
   }
-  if (JSON.stringify(fixture.safety) !== JSON.stringify(ROUTE_REFUSAL_SAFETY)) {
+  if (!isDeepStrictEqual(fixture.safety, ROUTE_REFUSAL_SAFETY)) {
     throw new Error(`invalid route-refusal contract ${name}: safety boundary drift`);
   }
   if (

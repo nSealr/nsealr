@@ -94,7 +94,7 @@ export type BrowserExtensionPackageVerifyOptions = {
 };
 
 const PACKAGE_OUTPUT_DIR = "browser-extension-package";
-const COMPANION_ROOT = fileURLToPath(new URL("../../..", import.meta.url));
+const COMPANION_ROOT = fileURLToPath(new URL("../../../..", import.meta.url));
 const REVIEWED_REPO_OUTPUT_ROOT = resolve(COMPANION_ROOT, "release-artifacts/browser-extension");
 const PACKAGE_DIGEST_INPUT_FORMAT = "nsealr-browser-extension-package-digest-v0";
 const nodeBufferReference = /(?:\bBuffer\s*(?:\.|\[)|new\s+Buffer\b|typeof\s+Buffer|globalThis\.Buffer)/u;
@@ -496,9 +496,9 @@ function virtualEntrypointPlugin(
         resolveDir: COMPANION_ROOT,
         contents: usesExtensionOriginPermissionStorage
           ? `
-            import { installNsealrBackgroundEntrypoint } from "./apps/browser-extension/src/nsealr-background-entrypoint.ts";
-            import { requireBrowserExtensionOriginPermissionStorageGlobal } from "./apps/browser-extension/src/browser-globals.ts";
-            import { readBrowserExtensionOriginPermissionStoreFromStorage } from "./apps/browser-extension/src/origin-permission-storage.ts";
+            import { installNsealrBackgroundEntrypoint } from "./apps/bridge/browser-extension/src/nsealr-background-entrypoint.ts";
+            import { requireBrowserExtensionOriginPermissionStorageGlobal } from "./apps/bridge/browser-extension/src/browser-globals.ts";
+            import { readBrowserExtensionOriginPermissionStoreFromStorage } from "./apps/bridge/browser-extension/src/origin-permission-storage.ts";
             const originPermissionStorage = requireBrowserExtensionOriginPermissionStorageGlobal(globalThis);
             installNsealrBackgroundEntrypoint({
               globalScope: globalThis,
@@ -511,7 +511,7 @@ function virtualEntrypointPlugin(
             });
           `
           : `
-            import { installNsealrBackgroundEntrypoint } from "./apps/browser-extension/src/nsealr-background-entrypoint.ts";
+            import { installNsealrBackgroundEntrypoint } from "./apps/bridge/browser-extension/src/nsealr-background-entrypoint.ts";
             installNsealrBackgroundEntrypoint({
               globalScope: globalThis,
               ...${backgroundOptionsJson}
@@ -522,7 +522,7 @@ function virtualEntrypointPlugin(
         loader: "ts",
         resolveDir: COMPANION_ROOT,
         contents: `
-          import { installNsealrContentScriptEntrypoint } from "./apps/browser-extension/src/nsealr-content-script-entrypoint.ts";
+          import { installNsealrContentScriptEntrypoint } from "./apps/bridge/browser-extension/src/nsealr-content-script-entrypoint.ts";
           installNsealrContentScriptEntrypoint({
             globalScope: globalThis
           });
@@ -532,7 +532,7 @@ function virtualEntrypointPlugin(
         loader: "ts",
         resolveDir: COMPANION_ROOT,
         contents: `
-          import { installNsealrPageScriptEntrypoint } from "./apps/browser-extension/src/nsealr-page-script-entrypoint.ts";
+          import { installNsealrPageScriptEntrypoint } from "./apps/bridge/browser-extension/src/nsealr-page-script-entrypoint.ts";
           installNsealrPageScriptEntrypoint({
             globalScope: globalThis
           });
@@ -543,13 +543,13 @@ function virtualEntrypointPlugin(
         resolveDir: COMPANION_ROOT,
         contents: usesExtensionOriginPermissionStorage
           ? `
-            import { installNsealrPopupOriginPermissionEntrypoint } from "./apps/browser-extension/src/nsealr-popup-entrypoint.ts";
+            import { installNsealrPopupOriginPermissionEntrypoint } from "./apps/bridge/browser-extension/src/nsealr-popup-entrypoint.ts";
             installNsealrPopupOriginPermissionEntrypoint({
               globalScope: globalThis
             });
           `
           : `
-            import { installNsealrPopupEntrypoint } from "./apps/browser-extension/src/nsealr-popup-entrypoint.ts";
+            import { installNsealrPopupEntrypoint } from "./apps/bridge/browser-extension/src/nsealr-popup-entrypoint.ts";
             installNsealrPopupEntrypoint({
               globalScope: globalThis
             });
