@@ -1544,7 +1544,7 @@
       "id": "S01",
       "title": "Close Bridge identity and bounded-input security gaps",
       "stage": "R0",
-      "status": "verified",
+      "status": "integrated",
       "owner_role": "host_security",
       "depends_on": [],
       "scope": [
@@ -3127,6 +3127,42 @@
         {
           "path": "docs/restart/implementation/reviews/S01-provenance/review.md",
           "sha256": "b089fe85ed5b96bf5d4c60113f823da225895167bf3085203a73d5cd6190f175"
+        },
+        {
+          "path": "docs/restart/implementation/reviews/S01-adoption/audit-result.json",
+          "sha256": "a663b141fe80a37f71555bb13286e2f3f7f331da6985a8486732079d346881b0"
+        },
+        {
+          "path": "docs/restart/implementation/reviews/S01-adoption/audit.log",
+          "sha256": "a663b141fe80a37f71555bb13286e2f3f7f331da6985a8486732079d346881b0"
+        },
+        {
+          "path": "docs/restart/implementation/reviews/S01-adoption/audit.py",
+          "sha256": "d2a87564e86853d7d8cacc10bd212ade68ca885808fd33db03e8f15eea5208e8"
+        },
+        {
+          "path": "docs/restart/implementation/reviews/S01-adoption/commands.json",
+          "sha256": "d91cd6ecaea8f46ae3e3f6effd36b3738ef2edd0ac37954f2eed9eaf7f954e76"
+        },
+        {
+          "path": "docs/restart/implementation/reviews/S01-adoption/make-test.log",
+          "sha256": "6c69cf14d5645b9a383dcc38c82d63a9b3a4e70b77677a04a227131a2782ed32"
+        },
+        {
+          "path": "docs/restart/implementation/reviews/S01-adoption/navigation-observations.json",
+          "sha256": "31e7c363e5c961321a48f92e3fabeabc489b5f0de0983dc1b1d73f984fd40fc8"
+        },
+        {
+          "path": "docs/restart/implementation/reviews/S01-adoption/review.json",
+          "sha256": "1ec2386f63688ab877515c70fd941b8eecf3313ffe8ceea096d316b76dddf136"
+        },
+        {
+          "path": "docs/restart/implementation/reviews/S01-adoption/review.md",
+          "sha256": "e37e91b486895b495d7b0e9ffaedd1e8166d0f72a56988ed5ce844ae3e5160b4"
+        },
+        {
+          "path": "docs/restart/implementation/coordination/S01-integration-20261018.json",
+          "sha256": "fc77a4b89d9b4a91d5cd8ce58bf04b75b40d73f608f7d3782457186507fb525a"
         }
       ],
       "requires_physical_evidence": false,
@@ -3150,7 +3186,11 @@
         "nSealr/companion": "678796900e462f5504e47fe934e2e5f23d85824f",
         "nSealr/specs": "45f8b6ff1123f3f55be4ce457fd1008e91043cc2"
       },
-      "result_manifest": "docs/restart/implementation/S01/result.json"
+      "result_manifest": "docs/restart/implementation/S01/result.json",
+      "integration_commits": {
+        "nSealr/nsealr": "1450e89c53097584de5f2f4eab260eef960690d6"
+      },
+      "integration_record": "docs/restart/implementation/coordination/S01-integration-20261018.json"
     },
     {
       "id": "S02",
@@ -6536,14 +6576,15 @@
       "result_artifacts": [],
       "requires_physical_evidence": false,
       "input_commits": {
-        "nSealr/nsealr": "1df3eb421e7a0aa3c64964601d80c6c1a4577a99",
+        "nSealr/nsealr": "1450e89c53097584de5f2f4eab260eef960690d6",
         "nSealr/companion": "678796900e462f5504e47fe934e2e5f23d85824f",
         "nSealr/specs": "45f8b6ff1123f3f55be4ce457fd1008e91043cc2",
         "nSealr/raspberry": "d1534d9dcfba8fe4a35cea2ed3529e32a5003dc6",
         "nSealr/lab": "3303ab17a28ed32419576627d5abb93db3999635"
       },
       "assignment_record": "https://github.com/nSealr/nsealr/issues/16",
-      "github_issue": "https://github.com/nSealr/nsealr/issues/16"
+      "github_issue": "https://github.com/nSealr/nsealr/issues/16",
+      "input_reconciliation": "Next inventory starts from actual reviewed/adopted S01 main1450; initial1df brief and provisional7b555 preflight evidence remain unchanged historical inputs. Before import reconcile then-current closed-evidence graph and any later source/adoption changes."
     },
     {
       "id": "O01",
@@ -7356,7 +7397,7 @@
       "id": "T01",
       "title": "Define per-profile capabilities and real readiness evidence",
       "stage": "portfolio_v2",
-      "status": "ready",
+      "status": "running",
       "owner_role": "protocol_security",
       "depends_on": [
         "P01"
@@ -7379,13 +7420,19 @@
         "independent review"
       ],
       "required_resources": [],
-      "assignee": null,
+      "assignee": "/root/t01_author",
       "candidate_commits": {},
       "reviewer": null,
       "review_verdict": null,
       "result_artifacts": [],
       "requires_physical_evidence": false,
-      "github_issue": "https://github.com/nSealr/nsealr/issues/19"
+      "github_issue": "https://github.com/nSealr/nsealr/issues/19",
+      "input_commits": {
+        "nSealr/nsealr": "7b5553685dac56029a4379be12054154b6b5e0b5",
+        "nSealr/companion": "678796900e462f5504e47fe934e2e5f23d85824f",
+        "nSealr/specs": "45f8b6ff1123f3f55be4ce457fd1008e91043cc2"
+      },
+      "assignment_record": "https://github.com/nSealr/nsealr/issues/19"
     },
     {
       "id": "K01",
@@ -8025,7 +8072,7 @@
       "requires_physical_evidence": true
     }
   ],
-  "revision": 12,
+  "revision": 13,
   "scope_document": "repositories.md",
   "active_profiles": [
     "esp32_no_se",
