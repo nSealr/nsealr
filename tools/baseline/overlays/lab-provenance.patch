@@ -1,0 +1,91 @@
+--- a/scripts/check_fixture_snapshots.py
++++ b/scripts/check_fixture_snapshots.py
+@@ -2,6 +2,10 @@
+ """Check sibling repository specs fixture snapshots against live specs."""
+ 
+ from __future__ import annotations
++
++import hashlib
++import json
++import subprocess
+ 
+ from collections.abc import Mapping, Sequence
+ from pathlib import Path
+@@ -117,6 +121,23 @@
+     return sorted(path for path in root.rglob("*") if path.is_file() and not path.name.startswith("."))
+ 
+ 
++def validate_provenance(snapshot_root: Path, specs: Path) -> None:
++    """Validate local import metadata; it is not a copied upstream fixture."""
++    metadata = json.loads((snapshot_root / "SOURCE.json").read_text())
++    commit = subprocess.check_output(["git", "rev-parse", "HEAD"], cwd=specs, text=True).strip()
++    if metadata.get("repository") != "https://github.com/nSealr/specs" or metadata.get("commit") != commit:
++        raise FixtureSnapshotError("SOURCE.json upstream repository/commit mismatch")
++    source_paths = {p.relative_to(specs).as_posix() for p in (specs / "vectors").rglob("*") if p.is_file()}
++    snapshot_paths = {p.relative_to(snapshot_root).as_posix() for p in (snapshot_root / "vectors").rglob("*") if p.is_file()}
++    recorded = metadata.get("files")
++    if not isinstance(recorded, dict) or not source_paths or set(recorded) != source_paths or set(recorded) != snapshot_paths:
++        raise FixtureSnapshotError("SOURCE.json vector inventory mismatch")
++    for relative, expected in recorded.items():
++        actual = hashlib.sha256((snapshot_root / relative).read_bytes()).hexdigest()
++        if actual != expected:
++            raise FixtureSnapshotError(f"SOURCE.json hash mismatch: {relative}")
++
++
+ def compare_fixture_snapshots(
+     *,
+     org: Path = ORG,
+@@ -143,6 +164,9 @@
+ 
+         for snapshot in iter_snapshot_files(snapshot_root):
+             relative = snapshot.relative_to(snapshot_root)
++            if relative == Path("SOURCE.json"):
++                validate_provenance(snapshot_root, specs)
++                continue
+             source = specs / relative
+             if not source.exists():
+                 failures.append(f"{repository}: {relative} is missing from specs")
+--- a/tests/test_fixture_snapshots.py
++++ b/tests/test_fixture_snapshots.py
+@@ -216,3 +216,41 @@
+ 
+ if __name__ == "__main__":
+     unittest.main()
++
++
++class ProvenanceSnapshotTests(unittest.TestCase):
++    def test_provenance_and_fixture_failures(self):
++        import hashlib
++        import json
++        from unittest.mock import patch
++
++        with TemporaryDirectory() as temp:
++            org = Path(temp)
++            specs = org / "specs"
++            snapshot = org / "firmware/tests/fixtures/specs"
++            for root in (specs, snapshot):
++                (root / "vectors").mkdir(parents=True)
++                (root / "vectors/example.json").write_text('{"valid":true}\n')
++            digest = hashlib.sha256((specs / "vectors/example.json").read_bytes()).hexdigest()
++            valid = {"repository":"https://github.com/nSealr/specs", "commit":"a"*40,
++                     "files":{"vectors/example.json":digest}}
++            metadata = snapshot / "SOURCE.json"
++
++            def check(value):
++                metadata.write_text(json.dumps(value))
++                return compare_fixture_snapshots(org=org, repositories=("firmware",), required_snapshot_globs={})
++
++            with patch("subprocess.check_output", return_value="a"*40):
++                self.assertEqual(check(valid), 1)
++                for field, value in (("commit","b"*40), ("repository","https://invalid.example/specs"),
++                                     ("files",{}), ("files",{"vectors/example.json":"0"*64}),
++                                     ("files",{**valid["files"],"vectors/extra.json":"0"*64})):
++                    with self.subTest(field=field, value=value), self.assertRaises(FixtureSnapshotError):
++                        check({**valid, field:value})
++                (snapshot / "vectors/example.json").write_text('{"valid":false}\n')
++                changed = hashlib.sha256((snapshot / "vectors/example.json").read_bytes()).hexdigest()
++                with self.assertRaises(FixtureSnapshotError):
++                    check({**valid, "files":{"vectors/example.json":changed}})
++                (snapshot / "vectors/example.json").unlink()
++                with self.assertRaises(FixtureSnapshotError):
++                    check(valid)
