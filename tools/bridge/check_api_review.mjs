@@ -5,8 +5,8 @@ import { readFileSync } from "node:fs";
 import { join } from "node:path";
 import { publicPackages, root } from "./package_set.mjs";
 
-const apiDocsPath = join(root, "docs", "api.md");
-const reviewPath = join(root, "docs", "api-review.md");
+const apiDocsPath = join(root, "docs", "bridge", "api.md");
+const reviewPath = join(root, "docs", "bridge", "api-review.md");
 
 const apiDocs = readFileSync(apiDocsPath, "utf-8");
 const review = readFileSync(reviewPath, "utf-8");

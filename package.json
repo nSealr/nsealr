@@ -1,45 +1,10 @@
 {
-  "name": "@nsealr/companion-workspace",
-  "version": "0.1.0",
-  "private": true,
-  "description": "Secretless host-side companion packages for nSealr signer integrations.",
-  "license": "MIT",
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/nSealr/companion.git"
-  },
   "bugs": {
-    "url": "https://github.com/nSealr/companion/issues"
+    "url": "https://github.com/nSealr/nsealr/issues"
   },
-  "homepage": "https://github.com/nSealr/companion#readme",
-  "packageManager": "pnpm@10.33.4",
-  "type": "module",
-  "scripts": {
-    "nsealr": "pnpm --filter @nsealr/cli nsealr",
-    "nsealr-service": "pnpm --filter @nsealr/service service",
-    "build": "node scripts/build_packages.mjs",
-    "test": "vitest run --maxWorkers=4",
-    "typecheck": "tsc --noEmit",
-    "lint": "tsc --noEmit",
-    "consumer-smoke": "pnpm --filter @nsealr/consumer-smoke smoke",
-    "examples-smoke": "pnpm --filter @nsealr/sdk-examples verify",
-    "readme-examples:check": "node scripts/check_readme_examples.mjs",
-    "api-docs:check": "node scripts/check_api_docs.mjs",
-    "api-docs:update": "node scripts/check_api_docs.mjs --write",
-    "api-review:check": "node scripts/check_api_review.mjs",
-    "package-registry:check": "node scripts/check_package_registry.mjs",
-    "browser-runtime-imports:check": "node scripts/check_browser_runtime_imports.mjs",
-    "browser-runtime-bundle:check": "node scripts/check_browser_runtime_bundle.mjs",
-    "browser-extension-security:check": "node scripts/check_browser_extension_security.mjs",
-    "public-imports:check": "node scripts/check_public_imports.mjs",
-    "release-plan": "node scripts/release_plan.mjs",
-    "release-plan:check": "node scripts/check_release_plan.mjs",
-    "pack-smoke": "node scripts/pack_smoke.mjs",
-    "release-artifacts:safety": "node scripts/check_release_artifacts_safety.mjs",
-    "release-artifacts": "node scripts/prepare_release_artifacts.mjs --out release-artifacts/packages",
-    "ci": "pnpm build && pnpm typecheck && pnpm test && pnpm consumer-smoke && pnpm examples-smoke && pnpm readme-examples:check && pnpm api-docs:check && pnpm api-review:check && pnpm package-registry:check && pnpm browser-runtime-imports:check && pnpm browser-runtime-bundle:check && pnpm browser-extension-security:check && pnpm public-imports:check && pnpm release-plan:check && pnpm release-artifacts:safety && pnpm pack-smoke"
-  },
+  "description": "Secretless host-side companion packages for nSealr signer integrations.",
   "devDependencies": {
+    "@nsealr/fixtures": "workspace:*",
     "@types/node": "24.10.1",
     "esbuild": "0.27.7",
     "nostr-tools": "^2.23.3",
@@ -47,10 +12,46 @@
     "typescript": "6.0.3",
     "vitest": "4.1.5"
   },
+  "homepage": "https://github.com/nSealr/nsealr#readme",
+  "license": "MIT",
+  "name": "@nsealr/bridge-workspace",
+  "packageManager": "pnpm@10.33.4",
   "pnpm": {
     "onlyBuiltDependencies": [
       "@serialport/bindings-cpp",
       "esbuild"
     ]
-  }
+  },
+  "private": true,
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/nSealr/nsealr.git"
+  },
+  "scripts": {
+    "api-docs:check": "node tools/bridge/check_api_docs.mjs",
+    "api-docs:update": "node tools/bridge/check_api_docs.mjs --write",
+    "api-review:check": "node tools/bridge/check_api_review.mjs",
+    "browser-extension-security:check": "node tools/bridge/check_browser_extension_security.mjs",
+    "browser-runtime-bundle:check": "node tools/bridge/check_browser_runtime_bundle.mjs",
+    "browser-runtime-imports:check": "node tools/bridge/check_browser_runtime_imports.mjs",
+    "build": "node tools/bridge/build_packages.mjs",
+    "ci": "pnpm build && pnpm typecheck && pnpm test && pnpm consumer-smoke && pnpm examples-smoke && pnpm readme-examples:check && pnpm api-docs:check && pnpm api-review:check && pnpm package-registry:check && pnpm browser-runtime-imports:check && pnpm browser-runtime-bundle:check && pnpm browser-extension-security:check && pnpm public-imports:check && pnpm release-plan:check && pnpm release-artifacts:safety && pnpm pack-smoke",
+    "consumer-smoke": "pnpm --filter @nsealr/consumer-smoke smoke",
+    "examples-smoke": "pnpm --filter @nsealr/sdk-examples verify",
+    "lint": "tsc --noEmit",
+    "nsealr": "pnpm --filter @nsealr/cli nsealr",
+    "nsealr-service": "pnpm --filter @nsealr/service service",
+    "pack-smoke": "node tools/bridge/pack_smoke.mjs",
+    "package-registry:check": "node tools/bridge/check_package_registry.mjs",
+    "public-imports:check": "node tools/bridge/check_public_imports.mjs",
+    "readme-examples:check": "node tools/bridge/check_readme_examples.mjs",
+    "release-artifacts": "node tools/bridge/prepare_release_artifacts.mjs --out release-artifacts/packages",
+    "release-artifacts:safety": "node tools/bridge/check_release_artifacts_safety.mjs",
+    "release-plan": "node tools/bridge/release_plan.mjs",
+    "release-plan:check": "node tools/bridge/check_release_plan.mjs",
+    "test": "vitest run --maxWorkers=4",
+    "typecheck": "tsc --noEmit"
+  },
+  "type": "module",
+  "version": "0.1.0"
 }

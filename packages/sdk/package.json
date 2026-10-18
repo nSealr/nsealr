@@ -1,41 +1,7 @@
 {
-  "name": "@nsealr/sdk",
-  "version": "0.1.0",
-  "description": "Platform-neutral SDK facade for nSealr browser, companion, and signer integrations.",
-  "keywords": [
-    "nostr",
-    "nsealr",
-    "signer",
-    "sdk",
-    "browser-extension"
-  ],
-  "type": "module",
-  "license": "MIT",
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/nSealr/companion.git",
-    "directory": "packages/sdk"
-  },
   "bugs": {
-    "url": "https://github.com/nSealr/companion/issues"
+    "url": "https://github.com/nSealr/nsealr/issues"
   },
-  "homepage": "https://github.com/nSealr/companion#readme",
-  "sideEffects": false,
-  "files": [
-    "dist",
-    "README.md"
-  ],
-  "exports": {
-    ".": {
-      "types": "./dist/index.d.ts",
-      "import": "./dist/index.js"
-    },
-    "./browser": {
-      "types": "./dist/browser.d.ts",
-      "import": "./dist/browser.js"
-    }
-  },
-  "types": "./dist/index.d.ts",
   "dependencies": {
     "@nsealr/browser-provider": "workspace:*",
     "@nsealr/client": "workspace:*",
@@ -45,11 +11,48 @@
     "@nsealr/policy": "workspace:*",
     "@nsealr/protocol": "workspace:*",
     "@nsealr/qr": "workspace:*",
-    "@nsealr/review": "workspace:*",
-    "@nsealr/smartcard": "workspace:*"
+    "@nsealr/review": "workspace:*"
   },
+  "description": "Platform-neutral SDK facade for nSealr browser, companion, and signer integrations.",
+  "exports": {
+    ".": {
+      "import": "./dist/index.js",
+      "types": "./dist/index.d.ts"
+    },
+    "./browser": {
+      "import": "./dist/browser.js",
+      "types": "./dist/browser.d.ts"
+    },
+    "./node": {
+      "import": "./dist/node.js",
+      "types": "./dist/node.d.ts"
+    }
+  },
+  "files": [
+    "dist",
+    "README.md"
+  ],
+  "homepage": "https://github.com/nSealr/nsealr#readme",
+  "keywords": [
+    "nostr",
+    "nsealr",
+    "signer",
+    "sdk",
+    "browser-extension"
+  ],
+  "license": "MIT",
+  "name": "@nsealr/sdk",
   "publishConfig": {
     "access": "public",
     "provenance": true
-  }
+  },
+  "repository": {
+    "directory": "packages/sdk",
+    "type": "git",
+    "url": "git+https://github.com/nSealr/nsealr.git"
+  },
+  "sideEffects": false,
+  "type": "module",
+  "types": "./dist/index.d.ts",
+  "version": "0.1.0"
 }

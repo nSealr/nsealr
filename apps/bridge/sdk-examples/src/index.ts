@@ -45,13 +45,6 @@ import {
   renderReviewDetailPages,
   reviewEventTemplate
 } from "@nsealr/review";
-import {
-  CommandApdu,
-  GET_PUBLIC_KEY_INS,
-  NSEALR_CLA,
-  ResponseApdu,
-  SW_NO_ERROR
-} from "@nsealr/smartcard";
 import * as sdk from "@nsealr/sdk";
 import * as sdkBrowser from "@nsealr/sdk/browser";
 import { exchangeSerialLineRequest, type SerialLinePort } from "@nsealr/transport";
@@ -87,8 +80,6 @@ const response: SignEventResponse = {
   }
 };
 const publicKey = response.result.event.pubkey;
-const companionRoot = fileURLToPath(new URL("../../..", import.meta.url));
-const siblingSpecsRoot = join(dirname(companionRoot), "specs");
 
 const sdkClient: LocalClientIdentity = {
   surface: "sdk",
@@ -316,13 +307,7 @@ async function nip46BridgeExample(): Promise<void> {
   assert.equal(denied.type, "permission_denied");
 }
 
-async function smartcardAndTransportExample(): Promise<void> {
-  const command = new CommandApdu(NSEALR_CLA, GET_PUBLIC_KEY_INS);
-  assert.equal(CommandApdu.fromHex(command.toHex()).toHex(), command.toHex());
-
-  const apduResponse = new ResponseApdu(Uint8Array.of(1, 2, 3), SW_NO_ERROR);
-  assert.equal(ResponseApdu.fromHex(apduResponse.toHex()).statusWord, SW_NO_ERROR);
-
+async function transportExample(): Promise<void> {
   let writtenLine: string | undefined;
   let closed = false;
   const port: SerialLinePort = {
@@ -383,7 +368,6 @@ function sdkFacadeExample(): void {
     content: "sdk facade"
   }).length, 64);
   assert.equal(typeof sdk.browserProvider.createNip07Provider, "function");
-  assert.equal(typeof sdk.smartcard.CommandApdu, "function");
   assert.equal(sdkBrowser.client.NATIVE_HOST_NAME, NATIVE_HOST_NAME);
   assert.equal(typeof sdkBrowser.browserProvider.createNip07Provider, "function");
   assert.equal(sdkBrowser.protocol.validateRequest({
@@ -413,19 +397,14 @@ function sequence(prefix: string): () => string {
   };
 }
 
-function specsRootForExamples(): string {
-  if (existsSync(join(siblingSpecsRoot, "vectors")) && existsSync(join(siblingSpecsRoot, "examples"))) {
-    return resolveSpecsRoot(siblingSpecsRoot);
-  }
-  return resolveSpecsRoot(join(companionRoot, "tests", "fixtures", "specs"));
-}
+function specsRootForExamples(): string { return resolveSpecsRoot(); }
 
 await requestAndQrExample();
 await fixturesPolicyReviewAndFramingExample();
 await localServiceExample();
 await browserProviderExample();
 await nip46BridgeExample();
-await smartcardAndTransportExample();
+await transportExample();
 sdkFacadeExample();
 
 console.log("nSealr SDK examples passed");

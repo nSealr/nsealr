@@ -30,7 +30,7 @@ import {
   type NativeHostBrowser
 } from "@nsealr/client";
 import { verifySignedEventResponse, type SignEventRequest } from "@nsealr/core";
-import { devSignRequest, SmartcardSimulator } from "@nsealr/dev-signer";
+import { devSignRequest } from "@nsealr/dev-signer";
 import {
   loadSpecsFixtures,
   validateAccessSurfaceFixture,
@@ -85,7 +85,6 @@ import {
   screenReviewForRequest,
   type ReviewDetailPageLimits
 } from "@nsealr/review";
-import { SmartcardSigner } from "@nsealr/smartcard";
 import {
   SerialLineStreamPort,
   exchangeSerialLineRequest,
@@ -1349,51 +1348,6 @@ export function buildCli(options: BuildCliOptions = {}): Command {
       }, { revokedAt });
       writeNewText(options.out, serializeLocalGrantStore(nextStore));
     });
-
-  program
-    .command("smartcard-sim-sign")
-    .requiredOption("--secret-key <hex>")
-    .requiredOption("--request <path>")
-    .option("--request-format <format>", "Request format: json, qr, or qr-animated", "json")
-    .option("--review-acknowledged", "Confirm external review before sending an event id to a display-less smartcard")
-    .option("--approval-digest <hex>", "Required with --review-acknowledged; binds acknowledgement to a reviewed request digest")
-    .requiredOption("--out <path>")
-    .option("--output-format <format>", "Output format: json, qr, or qr-animated", "json")
-    .description("Sign a request through the test-only smartcard APDU simulator")
-    .action(
-      async (options: {
-        secretKey: string;
-        request: string;
-        requestFormat: string;
-        reviewAcknowledged?: boolean;
-        approvalDigest?: string;
-        out: string;
-        outputFormat: string;
-      }) => {
-        assertFormat(options.requestFormat);
-        assertFormat(options.outputFormat);
-        const request = readValue(options.request, options.requestFormat);
-        const validation = validateRequest(request);
-        if (!validation.ok) throw new Error(validation.error);
-        if ((request as { method?: string }).method !== "sign_event") {
-          throw new Error("smartcard-sim-sign supports sign_event requests only");
-        }
-        if (options.approvalDigest !== undefined && options.reviewAcknowledged !== true) {
-          throw new Error("approval digest requires --review-acknowledged");
-        }
-        let acknowledgement: Parameters<SmartcardSigner["signEventRequest"]>[1];
-        if (options.reviewAcknowledged === true) {
-          const approvalDigest = options.approvalDigest;
-          if (approvalDigest === undefined) {
-            throw new Error("approval_digest is required for display-less smartcard signing");
-          }
-          acknowledgement = { acknowledged: true, source: "external-review", approvalDigest };
-        }
-        const signer = new SmartcardSigner(new SmartcardSimulator(options.secretKey));
-        const response = await signer.signEventRequest(request as SignEventRequest, acknowledgement);
-        writeValue(options.out, response, options.outputFormat);
-      }
-    );
 
   const serialFrame = program.command("serial-frame").description("Encode and decode newline serial frames");
 

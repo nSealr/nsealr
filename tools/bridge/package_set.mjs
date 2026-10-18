@@ -5,7 +5,7 @@ import { readdirSync, readFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 
-export const root = dirname(fileURLToPath(new URL("../package.json", import.meta.url)));
+export const root = dirname(fileURLToPath(new URL("../../package.json", import.meta.url)));
 
 const packagesRoot = join(root, "packages");
 
@@ -66,12 +66,10 @@ export function packageManagerCommand() {
   const packageManager = readJson(join(root, "package.json")).packageManager;
   assert.match(packageManager, /^pnpm@\d+\.\d+\.\d+$/u, "root packageManager must pin pnpm");
   const env = { ...process.env };
-  for (const key of Object.keys(env)) {
-    if (key.startsWith("npm_config_")) {
-      delete env[key];
-    }
-  }
-  return { command: "npm", prefixArgs: ["exec", "--yes", `--package=${packageManager}`, "--", "pnpm"], env };
+  const version = spawnSync("pnpm", ["--version"], { env, encoding: "utf8" });
+  assert.equal(version.status, 0, "pinned pnpm must be available in the bootstrap PATH");
+  assert.equal(version.stdout.trim(), packageManager.slice("pnpm@".length), "pnpm version must match packageManager exactly");
+  return { command: "pnpm", prefixArgs: [], env };
 }
 
 export function run(command, args, options = {}) {

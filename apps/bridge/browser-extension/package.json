@@ -1,21 +1,4 @@
 {
-  "name": "@nsealr/browser-extension",
-  "version": "0.1.0",
-  "private": true,
-  "description": "Private browser-extension boundary scaffold for nSealr NIP-07 integration.",
-  "license": "MIT",
-  "type": "module",
-  "scripts": {
-    "package-build": "node --no-warnings --import tsx/esm src/package-build-cli.ts",
-    "package-plan": "node --no-warnings --import tsx/esm src/package-plan-cli.ts",
-    "package-verify": "node --no-warnings --import tsx/esm src/package-verify-cli.ts",
-    "origin-permission-approve": "node --no-warnings --import tsx/esm src/origin-permission-cli.ts approve",
-    "origin-permission-store-create": "node --no-warnings --import tsx/esm src/origin-permission-cli.ts store-create",
-    "origin-permission-store-revoke": "node --no-warnings --import tsx/esm src/origin-permission-cli.ts store-revoke",
-    "origin-permission-store-upsert": "node --no-warnings --import tsx/esm src/origin-permission-cli.ts store-upsert",
-    "route-config-approve": "node --no-warnings --import tsx/esm src/route-config-cli.ts approve",
-    "route-config-review": "node --no-warnings --import tsx/esm src/route-config-cli.ts review"
-  },
   "dependencies": {
     "@nsealr/browser-provider": "workspace:*",
     "@nsealr/client": "workspace:*",
@@ -23,8 +6,25 @@
     "@nsealr/policy": "workspace:*",
     "@nsealr/protocol": "workspace:*"
   },
+  "description": "Private browser-extension boundary scaffold for nSealr NIP-07 integration.",
   "devDependencies": {
     "esbuild": "0.27.7",
     "tsx": "4.21.0"
-  }
+  },
+  "license": "MIT",
+  "name": "@nsealr/browser-extension",
+  "private": true,
+  "scripts": {
+    "origin-permission-approve": "node --no-warnings --import tsx/esm src/origin-permission-cli.ts approve",
+    "origin-permission-store-create": "node --no-warnings --import tsx/esm src/origin-permission-cli.ts store-create",
+    "origin-permission-store-revoke": "node --no-warnings --import tsx/esm src/origin-permission-cli.ts store-revoke",
+    "origin-permission-store-upsert": "node --no-warnings --import tsx/esm src/origin-permission-cli.ts store-upsert",
+    "package-build": "node --no-warnings --import tsx/esm src/package-build-cli.ts",
+    "package-plan": "node --no-warnings --import tsx/esm src/package-plan-cli.ts",
+    "package-verify": "node --no-warnings --import tsx/esm src/package-verify-cli.ts",
+    "route-config-approve": "node --no-warnings --import tsx/esm src/route-config-cli.ts approve",
+    "route-config-review": "node --no-warnings --import tsx/esm src/route-config-cli.ts review"
+  },
+  "type": "module",
+  "version": "0.1.0"
 }

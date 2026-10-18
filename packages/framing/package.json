@@ -1,7 +1,26 @@
 {
-  "name": "@nsealr/framing",
-  "version": "0.1.0",
+  "bugs": {
+    "url": "https://github.com/nSealr/nsealr/issues"
+  },
+  "dependencies": {
+    "@noble/hashes": "2.2.0",
+    "@nsealr/protocol": "workspace:*"
+  },
   "description": "nSealr serial-frame encoding and decoding for USB CDC and UART experiments.",
+  "devDependencies": {
+    "@nsealr/fixtures": "workspace:*"
+  },
+  "exports": {
+    ".": {
+      "import": "./dist/index.js",
+      "types": "./dist/index.d.ts"
+    }
+  },
+  "files": [
+    "dist",
+    "README.md"
+  ],
+  "homepage": "https://github.com/nSealr/nsealr#readme",
   "keywords": [
     "nostr",
     "nsealr",
@@ -9,38 +28,16 @@
     "serial",
     "framing"
   ],
-  "type": "module",
   "license": "MIT",
+  "name": "@nsealr/framing",
+  "private": true,
   "repository": {
+    "directory": "packages/framing",
     "type": "git",
-    "url": "git+https://github.com/nSealr/companion.git",
-    "directory": "packages/framing"
+    "url": "git+https://github.com/nSealr/nsealr.git"
   },
-  "bugs": {
-    "url": "https://github.com/nSealr/companion/issues"
-  },
-  "homepage": "https://github.com/nSealr/companion#readme",
   "sideEffects": false,
-  "files": [
-    "dist",
-    "README.md"
-  ],
-  "exports": {
-    ".": {
-      "types": "./dist/index.d.ts",
-      "import": "./dist/index.js"
-    }
-  },
+  "type": "module",
   "types": "./dist/index.d.ts",
-  "dependencies": {
-    "@noble/hashes": "2.2.0",
-    "@nsealr/protocol": "workspace:*"
-  },
-  "devDependencies": {
-    "@nsealr/fixtures": "workspace:*"
-  },
-  "publishConfig": {
-    "access": "public",
-    "provenance": true
-  }
+  "version": "0.1.0"
 }

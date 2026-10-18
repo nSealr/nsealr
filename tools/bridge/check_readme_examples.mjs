@@ -5,7 +5,7 @@ import { join } from "node:path";
 import { packageDirName, publicPackages, root, run } from "./package_set.mjs";
 
 const marker = "nsealr-readme-example";
-const tempParent = join(root, "apps", "sdk-examples", ".tmp");
+const tempParent = join(root, "apps", "bridge", "sdk-examples", ".tmp");
 const tempRoot = join(tempParent, "readme-examples");
 
 function readmePath(packageName) {
