@@ -1,6 +1,8 @@
 from __future__ import annotations
 
 import unittest
+import subprocess
+from unittest.mock import patch
 from pathlib import Path
 
 from tests.integration.optional.hardware_companion_serial_smoke import (
@@ -86,7 +88,12 @@ class HardwareCompanionSerialSmokeTests(unittest.TestCase):
         self.assertIsNone(extract_first_protocol_frame("nsealr1f:response:partial"))
 
     def test_pnpm_command_always_uses_pinned_runner(self) -> None:
-        self.assertEqual(pnpm_command(), ["npm", "exec", "--yes", "--package=pnpm@10.33.4", "--", "pnpm"])
+        with patch("tests.integration.integration_support.subprocess.run") as run:
+            run.return_value = subprocess.CompletedProcess(["pnpm"], 0, stdout="10.33.4\n")
+            self.assertEqual(pnpm_command(), ["pnpm"])
+            run.return_value = subprocess.CompletedProcess(["pnpm"], 0, stdout="0.0.0\n")
+            with self.assertRaisesRegex(RuntimeError, "pinned product toolchain"):
+                pnpm_command()
 
     def test_expected_response_accepts_disabled_sign_event_only(self) -> None:
         assert_expected_response(
