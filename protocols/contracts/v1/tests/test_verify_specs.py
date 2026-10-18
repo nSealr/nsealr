@@ -1015,7 +1015,7 @@ class VerifySpecsTests(unittest.TestCase):
         self.assertFalse(account_schema["properties"]["capabilities"]["additionalProperties"])
         self.assertEqual(account_schema["properties"]["policy_profile_id"]["pattern"], "^policy-[A-Za-z0-9._:-]{1,121}$")
         account_route_semantics = account_schema["allOf"]
-        self.assertEqual(len(account_route_semantics), 6)
+        self.assertEqual(len(account_route_semantics), 5)
         self.assertIn({
             "if": {
                 "properties": {
@@ -1031,7 +1031,7 @@ class VerifySpecsTests(unittest.TestCase):
                     "signer_route": {
                         "required": ["repository"],
                         "properties": {
-                            "repository": {"const": "firmware"},
+                            "repository": {"const": "nsealr"},
                             "transport": {"const": "usb"},
                             "custody": {"const": "device_persistent"},
                             "trusted_review": {"const": "device_display"},
@@ -1084,7 +1084,7 @@ class VerifySpecsTests(unittest.TestCase):
         self.assertFalse(policy_schema["additionalProperties"])
         self.assertFalse(policy_schema["properties"]["grant_constraints"]["additionalProperties"])
         self.assertEqual(policy_schema["properties"]["policy_id"]["pattern"], "^policy-[A-Za-z0-9._:-]{1,121}$")
-        self.assertEqual(len(policy_schema["allOf"]), 3)
+        self.assertEqual(len(policy_schema["allOf"]), 2)
         self.assertIn({
             "if": {
                 "properties": {
@@ -1136,7 +1136,7 @@ class VerifySpecsTests(unittest.TestCase):
             "^policy-[A-Za-z0-9._:-]{1,121}$",
         )
         route_selection_semantics = route_selection_schema["properties"]["selection"]["allOf"]
-        self.assertEqual(len(route_selection_semantics), 6)
+        self.assertEqual(len(route_selection_semantics), 5)
         self.assertIn({
             "if": {
                 "properties": {"route_type": {"const": "esp32_usb_nip46"}},
@@ -1145,7 +1145,7 @@ class VerifySpecsTests(unittest.TestCase):
             "then": {
                 "required": ["repository"],
                 "properties": {
-                    "repository": {"const": "firmware"},
+                    "repository": {"const": "nsealr"},
                     "transport": {"const": "usb"},
                     "custody": {"const": "device_persistent"},
                     "trusted_review": {"const": "device_display"},
