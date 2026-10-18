@@ -75,9 +75,12 @@ PYTHON/VENV overrides (which would leak through recursive make into Raspberry
 setup). npm launcher logging is set to `error`; application stderr is neither
 filtered nor discarded. All existing quiet-input/error assertions remain active.
 
-The inherited companion generated API document may fail freshness. Preserve
-that failure and inspect a disposable regeneration; do not change the generated
-API-review acceptance merely to turn CI green. Live relay tests are disabled;
+The current default tuple pins specs `45f8b6ff1123f3f55be4ce457fd1008e91043cc2`
+and companion `678796900e462f5504e47fe934e2e5f23d85824f` for the metadata-v1 core
+snapshot. All remaining source/runtime pins are unchanged from R00. No input
+silently follows a moving branch. The historical companion generated API failure
+remains in R00 evidence; current API freshness and review assertions stay active.
+Live relay tests are disabled;
 real browser sessions and physical devices require separate acceptance. Safe
 hardware-probe and simulator tests do not establish real hardware operation.
 The runner writes these explicit skips even if all executed software gates pass.
@@ -91,12 +94,29 @@ review of the exact candidate before closing R00. No previous CI run counts.
 
 Tool boundary checks: `python3 -m unittest discover -s tools/baseline -p 'test_*.py'`.
 
-The isolated lab checkout receives the declared `overlays/lab-provenance.patch`
-against exact preimage hashes. Its original checker mistakes core `SOURCE.json`
-for an upstream vector. The overlay validates that one metadata file's pinned
-upstream commit, complete source/snapshot vector inventory and hashes before
-excluding it from byte comparison. All real fixture assertions remain active;
-new regression cases reject bad provenance, missing/extra inventory, changed
-hashes and changed real vectors. Bootstrap records the patch and output hashes;
-the runner rejects any undeclared source delta. Original failed baseline logs
-remain evidence, and successful integration applies only to this overlay tuple.
+The isolated lab checkout receives three selected CC0 overlays in order:
+
+1. Original `overlays/lab-provenance.patch`, preserved unchanged.
+2. `docs/restart/implementation/S01/lab-metadata-v1.patch`, selecting and requiring
+   all three v1 auth-negative integration cases.
+3. `overlays/lab-provenance-followup.patch`, requiring core metadata independently
+   of file discovery and comparing the complete tracked vector inventory and
+   source/snapshot bytes against the claimed Git commit, including dotfiles.
+
+The first patch alone has known manifest-absence and forged-dotfile bypasses;
+current defaults always apply the follow-up. Partial consumers retain their
+existing required-glob checks. Bootstrap verifies source, patch, preimage and
+output hashes and writes three distinct overlay records. The runner rejects
+undeclared source changes. A02 must review/import the corrected selected tooling
+before replacing this transitional sibling layout. Original failed logs remain
+evidence; successful integration applies only to its recorded source/overlay tuple.
+
+For historical R00 reproduction, use the stable remote refs
+`evidence/r00-full-20261018` (`f853757a5080003036aacb797999410398816f16`) or
+`evidence/r00-reviewed-20261018` (`303b4c9d9386147220abaf2cf754c5c47e458dff`). Their
+original inputs SHA-256 is `546067e92916c93d58ac7e063f79ba7b279eca7f73be9d7f86baec97e6642e59`.
+Those refs preserve old specs `8bb8cca71355bcf8d81a093bcee9f3fe6915b121`, tooling,
+failures and provenance limitations. Do not apply the v1 consumer to that old
+snapshot. The new follow-up is separately tested after original R00 provenance
+alone against the historical core/specs pair; this does not rewrite historical
+acceptance or claim that its original checker rejected the newly exposed bypasses.
