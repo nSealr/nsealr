@@ -1,0 +1,98 @@
+{
+  "schema_version": 1,
+  "task": "E01",
+  "candidate": "89943be5a52ce43058d446da640b5fb550a124d3",
+  "implementation_commit": "1524af02c70ab5e74bd7089d9055b2568e7a2250",
+  "source_tree": "2b0cbab560e56c2494bd11bf43817370e31d0e3d",
+  "author": "/root/cad_execution",
+  "reviewer": "/root/independent_cad_review",
+  "runtime_configuration": {
+    "model": "gpt-6-astra",
+    "reasoning_effort": "xhigh",
+    "fork_turns": "none",
+    "basis": "Parent confirmed explicit accepted spawn; hosted model identity not independently introspected"
+  },
+  "observed_utc": "2026-10-18T16:17:29.136183+00:00",
+  "verdict": "pass",
+  "scope": "Only the exact-candidate bounded native/GUI/read-only PCB preparation path in E01 brief and capability allowlist; no task closure or physical release claim",
+  "blocking_findings": [],
+  "reviewed_files": {
+    "docs/restart/implementation/E01/brief.md": "d6ca1977e883c39aeb7f386b2d659149273ce5c36d4161fb45ab3997f44a0136",
+    "docs/restart/implementation/E01/capabilities.json": "6ddd4a367a43d6b0383e55ad82a8f33cf59679d5544078f48cb61b258d970c0c",
+    "docs/restart/implementation/E01/failures.json": "c1de1566b728887f3cd010e3eb9861ba60240bfd19d41d09073306d493d1ab3b",
+    "docs/restart/implementation/E01/inputs.json": "caa01ced9553c31def8f92fc4fe8778797252cefb10913d4a439d1935996caac",
+    "docs/restart/implementation/E01/results.md": "0a4d9b6d8ef54221c07f37d2e514221356b0865ad65e5f89ac97cd943288058f",
+    "docs/restart/implementation/E01/validation.json": "7be559021cf5e2f7ae59591ff1153d5d7f22b85282643f3237abfcfb630cc25d",
+    "docs/restart/implementation/E01/visual-inspection.json": "326935020e62ede8a089422c3b46e1c5b32db7383ff55e14f3b9d35faf2e5cc4",
+    "docs/restart/implementation/reviews/E01-spec.json": "375c0fa32a83da2797194931aa5d88da89611b13aa18734a75c3405328f3011d",
+    "docs/restart/work-items.json": "bae28c2bae724e9dcf427de68e636db1f60493ce1e8bf2a36d0afc7f7d2df5c2",
+    "tools/cad/README.md": "dd0612036efe6b132daded84ae392c9852988a62230b33a666533b4f213475ce",
+    "tools/cad/campaign.py": "e2b86813aa5de4101ca5f282bba73e9a635f59ebdbf59a3245ff79fe72ba0a2b",
+    "tools/cad/checks.py": "1e43794ffea1c4fe04d777c96965c04d705d2e69cbbbf5a97092b5672d72310d",
+    "tools/cad/common.py": "74738f1b6529672ef0d4256ff5fd7af062b333a0f0ecb0cb2da990c8c3aba79e",
+    "tools/cad/expected.json": "840584f1d46595c1cfde5e100d6b8be15f2d1ba087f8e146be25b000bad8f9e3",
+    "tools/cad/generate.py": "9de3e872864735dd04fed39f4a84a7e41902518ac986c9bf1e2647c4a1bb29ca",
+    "tools/cad/licenses/KICAD-LIBRARY-LICENSE.md": "285b027a721577d0bc0198f36e948c6c282ddaa4b58fef8ed826749576eb0aef",
+    "tools/cad/licenses/KICAD-LIBRARY-NOTICE.md": "b3459c1cd9566396edce10e7feba38452d0442659b3811f41b8326723bf9c183",
+    "tools/cad/mcp_read.py": "27062e37c08cfdb3defe1d97aefb6639931dc86a3f58ea320c5df556a052e4a0",
+    "tools/cad/probe_binding.py": "3e3f30e055b75cc06f5c7484fc3b6b66a83907b5f98b5efdb15522261ed0ec1a",
+    "tools/cad/provenance.json": "f5055b606d67db9f2a687273aabfdd3ef786b7e49f6459116586f44ad2d49b42",
+    "tools/cad/qualify.py": "da76fc5d928de0c2b08e93422230e9cd36555757e21b8d45ba029bb41dd9988d",
+    "tools/cad/requirements.txt": "0a08b2d716293efa324d8277470bb42f56d51e54da0990f5cc36d6de2fc92373"
+  },
+  "evidence": {
+    "review": "review.md",
+    "independent_native_results": "evidence-01/results.json",
+    "independent_native_commands": "evidence-01/commands.json",
+    "native_manifest": "evidence-01/manifest.json",
+    "provenance": "provenance-results.json",
+    "validation": "validation.json",
+    "review_manifest": "manifest.json"
+  },
+  "invocations": [
+    [
+      "/home/tux/nsealr/.restart-tools/goal/e01-runtime-02/venv/bin/python",
+      "-B",
+      "docs/restart/implementation/reviews/E01/replay.py",
+      "--repo",
+      "/home/tux/nsealr/.restart-tools/goal/cad-review",
+      "--runtime",
+      "/home/tux/nsealr/.restart-tools/goal/e01-review-runtime-01",
+      "--output",
+      "/home/tux/nsealr/.restart-tools/goal/cad-review/docs/restart/implementation/reviews/E01/evidence-01",
+      "--image",
+      "/home/tux/nsealr/.restart-tools/cad/kicad-10.0.7-x86_64-lite.AppImage"
+    ],
+    [
+      "/home/tux/nsealr/.restart-tools/goal/e01-runtime-02/venv/bin/python",
+      "-B",
+      "docs/restart/implementation/reviews/E01/provenance.py",
+      "--repo",
+      "/home/tux/nsealr/.restart-tools/goal/cad-review",
+      "--runtime",
+      "/home/tux/nsealr/.restart-tools/goal/e01-runtime-02",
+      "--adapter-git",
+      "/home/tux/nsealr/.restart-tools/cad/kipilot-mcp",
+      "--output",
+      "docs/restart/implementation/reviews/E01/provenance-results.json"
+    ]
+  ],
+  "visuals_inspected": {
+    "docs/restart/implementation/E01/evidence/attempt-02/visuals/pcbnew-after-crash.png": "712511ec0fc6e4fdde5b5a8bbf2b5c9a69dd7917599e091af900d098c8044b82",
+    "docs/restart/implementation/E01/evidence/attempt-02/visuals/eeschema-after-crash.png": "f78eb2a3685bff86109e27ff60f9469e0923f6e0ef2535ff31d0a24ebc056fbc",
+    "docs/restart/implementation/E01/evidence/attempt-02/visuals/schematic.png": "7b586d584ec610d8f3cda9683ff0c180747d71c3cf4cccb0a39a6c524dd94f2a",
+    "docs/restart/implementation/E01/evidence/attempt-02/visuals/board.png": "78671af870c29db53f66c2a597233b5d92ac7410844bd115a12e9e95cfc6d6e5"
+  },
+  "upstream_sources_checked": [
+    "https://www.kicad.org/download/linux/",
+    "https://dev-docs.kicad.org/en/apis-and-binding/ipc-api/for-addon-developers/",
+    "https://docs.kicad.org/10.0/en/cli/cli.html"
+  ],
+  "limits": [
+    "No second fresh dependency installation or GUI/MCP campaign claimed; independently verified original clean install/source provenance and read archived live evidence.",
+    "Reviewer native reruns use fresh extracted image and disposable project copies; parent-author evidence and runtime not mutated.",
+    "Expected four unsupported binding imports and FutureVersionError remain explicit.",
+    "Full historical diff whitespace gate fails native raw artifact whitespace; separately scoped authored check passes.",
+    "All operations outside declared allowlist, design-specific hardware and manufacturing gates remain unqualified."
+  ]
+}

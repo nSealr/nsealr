@@ -1,0 +1,197 @@
+[
+  {
+    "name": "candidate",
+    "argv": [
+      "git",
+      "rev-parse",
+      "HEAD"
+    ],
+    "cwd": "/home/tux/nsealr/.restart-tools/goal/cad-review",
+    "started_utc": "2026-10-18T16:13:44.900315+00:00",
+    "finished_utc": "2026-10-18T16:13:44.901527+00:00",
+    "returncode": 0,
+    "expected": 0
+  },
+  {
+    "name": "source-tree",
+    "argv": [
+      "git",
+      "rev-parse",
+      "HEAD:tools/cad"
+    ],
+    "cwd": "/home/tux/nsealr/.restart-tools/goal/cad-review",
+    "started_utc": "2026-10-18T16:13:44.901606+00:00",
+    "finished_utc": "2026-10-18T16:13:44.902968+00:00",
+    "returncode": 0,
+    "expected": 0
+  },
+  {
+    "name": "source-diff",
+    "argv": [
+      "git",
+      "diff",
+      "1524af02c70ab5e74bd7089d9055b2568e7a2250",
+      "89943be5a52ce43058d446da640b5fb550a124d3",
+      "--",
+      "tools/cad"
+    ],
+    "cwd": "/home/tux/nsealr/.restart-tools/goal/cad-review",
+    "started_utc": "2026-10-18T16:13:44.903116+00:00",
+    "finished_utc": "2026-10-18T16:13:44.904496+00:00",
+    "returncode": 0,
+    "expected": 0
+  },
+  {
+    "name": "extract-native-image",
+    "argv": [
+      "/home/tux/nsealr/.restart-tools/cad/kicad-10.0.7-x86_64-lite.AppImage",
+      "--appimage-extract"
+    ],
+    "cwd": "/home/tux/nsealr/.restart-tools/goal/e01-review-runtime-01",
+    "started_utc": "2026-10-18T16:13:45.420909+00:00",
+    "finished_utc": "2026-10-18T16:13:47.362507+00:00",
+    "returncode": 0,
+    "expected": 0
+  },
+  {
+    "name": "native-version",
+    "argv": [
+      "/home/tux/nsealr/.restart-tools/goal/e01-review-runtime-01/squashfs-root/AppRun",
+      "kicad-cli",
+      "version"
+    ],
+    "cwd": "/home/tux/nsealr/.restart-tools/goal/cad-review",
+    "started_utc": "2026-10-18T16:13:47.362658+00:00",
+    "finished_utc": "2026-10-18T16:13:47.468146+00:00",
+    "returncode": 0,
+    "expected": 0
+  },
+  {
+    "name": "fixed-erc",
+    "argv": [
+      "/home/tux/nsealr/.restart-tools/goal/e01-review-runtime-01/squashfs-root/AppRun",
+      "kicad-cli",
+      "sch",
+      "erc",
+      "--format",
+      "json",
+      "--severity-all",
+      "--exit-code-violations",
+      "-o",
+      "/home/tux/nsealr/.restart-tools/goal/cad-review/docs/restart/implementation/reviews/E01/evidence-01/exports/fixed/erc.json",
+      "/home/tux/nsealr/.restart-tools/goal/cad-review/docs/restart/implementation/reviews/E01/evidence-01/fixtures/fixed/canary.kicad_sch"
+    ],
+    "cwd": "/home/tux/nsealr/.restart-tools/goal/cad-review",
+    "started_utc": "2026-10-18T16:13:47.469055+00:00",
+    "finished_utc": "2026-10-18T16:13:48.100116+00:00",
+    "returncode": 0,
+    "expected": 0
+  },
+  {
+    "name": "fixed-drc",
+    "argv": [
+      "/home/tux/nsealr/.restart-tools/goal/e01-review-runtime-01/squashfs-root/AppRun",
+      "kicad-cli",
+      "pcb",
+      "drc",
+      "--format",
+      "json",
+      "--severity-all",
+      "--all-track-errors",
+      "--schematic-parity",
+      "--exit-code-violations",
+      "-o",
+      "/home/tux/nsealr/.restart-tools/goal/cad-review/docs/restart/implementation/reviews/E01/evidence-01/exports/fixed/drc.json",
+      "/home/tux/nsealr/.restart-tools/goal/cad-review/docs/restart/implementation/reviews/E01/evidence-01/fixtures/fixed/canary.kicad_pcb"
+    ],
+    "cwd": "/home/tux/nsealr/.restart-tools/goal/cad-review",
+    "started_utc": "2026-10-18T16:13:48.100298+00:00",
+    "finished_utc": "2026-10-18T16:13:48.709346+00:00",
+    "returncode": 0,
+    "expected": 0
+  },
+  {
+    "name": "fixed-netlist",
+    "argv": [
+      "/home/tux/nsealr/.restart-tools/goal/e01-review-runtime-01/squashfs-root/AppRun",
+      "kicad-cli",
+      "sch",
+      "export",
+      "netlist",
+      "--format",
+      "kicadxml",
+      "-o",
+      "/home/tux/nsealr/.restart-tools/goal/cad-review/docs/restart/implementation/reviews/E01/evidence-01/exports/fixed/netlist.xml",
+      "/home/tux/nsealr/.restart-tools/goal/cad-review/docs/restart/implementation/reviews/E01/evidence-01/fixtures/fixed/canary.kicad_sch"
+    ],
+    "cwd": "/home/tux/nsealr/.restart-tools/goal/cad-review",
+    "started_utc": "2026-10-18T16:13:48.709513+00:00",
+    "finished_utc": "2026-10-18T16:13:48.934444+00:00",
+    "returncode": 0,
+    "expected": 0
+  },
+  {
+    "name": "drift-erc",
+    "argv": [
+      "/home/tux/nsealr/.restart-tools/goal/e01-review-runtime-01/squashfs-root/AppRun",
+      "kicad-cli",
+      "sch",
+      "erc",
+      "--format",
+      "json",
+      "--severity-all",
+      "--exit-code-violations",
+      "-o",
+      "/home/tux/nsealr/.restart-tools/goal/cad-review/docs/restart/implementation/reviews/E01/evidence-01/exports/drift/erc.json",
+      "/home/tux/nsealr/.restart-tools/goal/cad-review/docs/restart/implementation/reviews/E01/evidence-01/fixtures/drift/canary.kicad_sch"
+    ],
+    "cwd": "/home/tux/nsealr/.restart-tools/goal/cad-review",
+    "started_utc": "2026-10-18T16:13:48.935483+00:00",
+    "finished_utc": "2026-10-18T16:13:49.163736+00:00",
+    "returncode": 0,
+    "expected": 0
+  },
+  {
+    "name": "drift-drc",
+    "argv": [
+      "/home/tux/nsealr/.restart-tools/goal/e01-review-runtime-01/squashfs-root/AppRun",
+      "kicad-cli",
+      "pcb",
+      "drc",
+      "--format",
+      "json",
+      "--severity-all",
+      "--all-track-errors",
+      "--schematic-parity",
+      "--exit-code-violations",
+      "-o",
+      "/home/tux/nsealr/.restart-tools/goal/cad-review/docs/restart/implementation/reviews/E01/evidence-01/exports/drift/drc.json",
+      "/home/tux/nsealr/.restart-tools/goal/cad-review/docs/restart/implementation/reviews/E01/evidence-01/fixtures/drift/canary.kicad_pcb"
+    ],
+    "cwd": "/home/tux/nsealr/.restart-tools/goal/cad-review",
+    "started_utc": "2026-10-18T16:13:49.163920+00:00",
+    "finished_utc": "2026-10-18T16:13:49.743709+00:00",
+    "returncode": 0,
+    "expected": 0
+  },
+  {
+    "name": "drift-netlist",
+    "argv": [
+      "/home/tux/nsealr/.restart-tools/goal/e01-review-runtime-01/squashfs-root/AppRun",
+      "kicad-cli",
+      "sch",
+      "export",
+      "netlist",
+      "--format",
+      "kicadxml",
+      "-o",
+      "/home/tux/nsealr/.restart-tools/goal/cad-review/docs/restart/implementation/reviews/E01/evidence-01/exports/drift/netlist.xml",
+      "/home/tux/nsealr/.restart-tools/goal/cad-review/docs/restart/implementation/reviews/E01/evidence-01/fixtures/drift/canary.kicad_sch"
+    ],
+    "cwd": "/home/tux/nsealr/.restart-tools/goal/cad-review",
+    "started_utc": "2026-10-18T16:13:49.743899+00:00",
+    "finished_utc": "2026-10-18T16:13:49.963869+00:00",
+    "returncode": 0,
+    "expected": 0
+  }
+]
