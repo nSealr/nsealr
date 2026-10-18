@@ -46,7 +46,7 @@ function tempOutDir(): { root: string; outDir: string; cleanup(): void } {
   };
 }
 
-const companionRoot = fileURLToPath(new URL("../../..", import.meta.url));
+const companionRoot = fileURLToPath(new URL("../../../..", import.meta.url));
 
 const routeConfig = {
   format: BROWSER_EXTENSION_ROUTE_CONFIG_FORMAT,

@@ -206,7 +206,7 @@ describe("browser extension package plan", () => {
         plan.entrypoints[1],
         {
           ...plan.entrypoints[2],
-          source: "apps/browser-extension/src/page-script.ts"
+          source: "apps/bridge/browser-extension/src/page-script.ts"
         },
         plan.entrypoints[3]
       ]

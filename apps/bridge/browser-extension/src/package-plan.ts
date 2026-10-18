@@ -20,13 +20,13 @@ export const BROWSER_EXTENSION_PACKAGE_PLAN_DIGEST_INPUT_FORMAT =
 export const BROWSER_EXTENSION_PACKAGE_PLAN_REVIEW_FORMAT =
   "nsealr-browser-extension-package-plan-review-v0";
 export const BROWSER_EXTENSION_BACKGROUND_ENTRYPOINT_SOURCE =
-  "apps/browser-extension/src/nsealr-background-entrypoint.ts";
+  "apps/bridge/browser-extension/src/nsealr-background-entrypoint.ts";
 export const BROWSER_EXTENSION_CONTENT_SCRIPT_ENTRYPOINT_SOURCE =
-  "apps/browser-extension/src/nsealr-content-script-entrypoint.ts";
+  "apps/bridge/browser-extension/src/nsealr-content-script-entrypoint.ts";
 export const BROWSER_EXTENSION_PAGE_SCRIPT_ENTRYPOINT_SOURCE =
-  "apps/browser-extension/src/nsealr-page-script-entrypoint.ts";
+  "apps/bridge/browser-extension/src/nsealr-page-script-entrypoint.ts";
 export const BROWSER_EXTENSION_POPUP_ENTRYPOINT_SOURCE =
-  "apps/browser-extension/src/nsealr-popup-entrypoint.ts";
+  "apps/bridge/browser-extension/src/nsealr-popup-entrypoint.ts";
 
 export type BrowserExtensionPackageEntrypointRole =
   "background_service_worker" |

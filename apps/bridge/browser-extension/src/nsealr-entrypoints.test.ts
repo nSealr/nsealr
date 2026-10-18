@@ -111,7 +111,7 @@ function routeSelectionResponse(request: LocalServiceRequest): unknown {
         account_id: routeRequest.account_id,
         public_key: publicKey,
         route_type: routeRequest.route_type,
-        repository: "firmware",
+        repository: "nsealr",
         transport: "usb",
         custody: "device_persistent",
         trusted_review: "device_display",
