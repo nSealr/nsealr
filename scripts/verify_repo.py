@@ -1,84 +1,30 @@
 #!/usr/bin/env python3
-"""Verify baseline repository structure for nSealr repos."""
-
-from __future__ import annotations
-
+"""Check this product repository, independent of the checkout directory name."""
 from pathlib import Path
-import sys
 
+ROOT=Path(__file__).resolve().parents[1]
+REQUIRED_FILES=('README.md','LICENSE','Makefile','.pre-commit-config.yaml',
+ 'docs/architecture.md','docs/testing.md','docs/roadmap.md','docs/audit-checklist.md',
+ '.github/workflows/ci.yml','plan/work-items.json','plan/evidence-index.json',
+ 'protocols/contracts/v1/manifest.json','apps/desktop-simulator/Cargo.lock',
+ 'apps/desktop-simulator/rust-toolchain.toml','pnpm-lock.yaml','packages/sdk/package.json')
+REQUIRED_DIRS=('crates','apps/bridge','apps/pi','ci','boards','docs','scripts','tests/integration','tools/bridge')
 
-ROOT = Path(__file__).resolve().parents[1]
-REPO = "nsealr"
+def validate(root=ROOT):
+ errors=[]
+ for name in REQUIRED_FILES:
+  path=root/name
+  if not path.is_file() or path.is_symlink():errors.append('missing/nonregular required file: '+name)
+  elif not path.read_text().strip():errors.append('empty required file: '+name)
+ for name in REQUIRED_DIRS:
+  path=root/name
+  if not path.is_dir() or path.is_symlink():errors.append('missing/nonregular required directory: '+name)
+ if (root/'LICENSE').is_file() and 'MIT License' not in (root/'LICENSE').read_text():errors.append('product license must retain MIT notice')
+ if (root/'README.md').is_file() and '## License' not in (root/'README.md').read_text():errors.append('README.md must include a License section')
+ return errors
 
-COMMON_FILES = [
-    "README.md",
-    "LICENSE",
-    "Makefile",
-    ".pre-commit-config.yaml",
-    "docs/architecture.md",
-    "docs/testing.md",
-    "docs/roadmap.md",
-    "docs/audit-checklist.md",
-    ".github/workflows/ci.yml",
-]
-
-REQUIRED_DIRS = {
-    "specs": ["protocols", "schemas", "vectors", "examples", "docs", "scripts"],
-    "companion": ["apps", "packages", "docs", "scripts"],
-    "raspberry": ["app", "os", "docs", "scripts"],
-    "nsealr": ["crates", "apps", "ci", "boards", "docs", "scripts"],
-    "smartcard": ["applet", "tools", "docs", "scripts"],
-    "hardware": ["pcb", "bom", "enclosures", "docs", "scripts"],
-    "website": ["content", "public", "design", "docs", "scripts"],
-    "lab": ["wiki", "sources", "scripts", "docs"],
-}
-
-LICENSE_MARKERS = {
-    "specs": "Creative Commons CC0",
-    "lab": "Creative Commons CC0",
-    "hardware": "CERN Open Hardware Licence",
-}
-
-
-def expected_license_marker() -> str:
-    return LICENSE_MARKERS.get(REPO, "MIT License")
-
-
-def main() -> int:
-    errors: list[str] = []
-
-    for rel in COMMON_FILES:
-        path = ROOT / rel
-        if not path.exists():
-            errors.append(f"missing required file: {rel}")
-        elif path.is_file() and not path.read_text(encoding="utf-8").strip():
-            errors.append(f"empty required file: {rel}")
-
-    for rel in REQUIRED_DIRS.get(REPO, []):
-        if not (ROOT / rel).is_dir():
-            errors.append(f"missing required directory: {rel}")
-
-    license_path = ROOT / "LICENSE"
-    if license_path.exists():
-        license_text = license_path.read_text(encoding="utf-8", errors="replace")
-        marker = expected_license_marker()
-        if marker not in license_text:
-            errors.append(f"LICENSE does not contain expected marker: {marker}")
-
-    readme = ROOT / "README.md"
-    if readme.exists():
-        readme_text = readme.read_text(encoding="utf-8")
-        if "## License" not in readme_text:
-            errors.append("README.md must include a License section")
-
-    if errors:
-        for error in errors:
-            print(f"ERROR: {error}")
-        return 1
-
-    print(f"nSealr {REPO} baseline verification passed")
-    return 0
-
-
-if __name__ == "__main__":
-    raise SystemExit(main())
+if __name__=='__main__':
+ errors=validate()
+ for error in errors:print('ERROR:',error)
+ if not errors:print('nSealr consolidated product structure passed')
+ raise SystemExit(bool(errors))

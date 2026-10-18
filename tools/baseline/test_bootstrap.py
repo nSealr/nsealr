@@ -77,5 +77,27 @@ class ProductSourceTests(unittest.TestCase):
             self.assertEqual(recorder.results[-1]['label'],'nsealr-fetch')
 
 
+class SuiteSourceCorrespondenceTests(unittest.TestCase):
+    def exercise(self,mutate):
+        with tempfile.TemporaryDirectory() as tmp:
+            root=Path(tmp);source=root/'nsealr';source.mkdir()
+            (source/'tracked.txt').write_text('original')
+            recipe='test:\n\t'+('echo changed >> tracked.txt' if mutate else 'true')+'\ncargo-test:\n\ttrue\n'
+            (source/'Makefile').write_text(recipe)
+            subprocess.run(['git','init','-q',str(source)],check=True)
+            subprocess.run(['git','-C',str(source),'add','.'],check=True)
+            subprocess.run(['git','-C',str(source),'-c','user.name=Test','-c','user.email=test@invalid.example','commit','-qm','fixture'],check=True)
+            commit=subprocess.check_output(['git','-C',str(source),'rev-parse','HEAD'],text=True).strip()
+            for name,data in [('environment.json',dict(os.environ)),('source-commits.json',{'nsealr':commit}),('source-state.json',{'nsealr':{'status':'','diff_sha256':__import__('hashlib').sha256(b'').hexdigest()}})]:
+                (root/name).write_text(json.dumps(data))
+            result=subprocess.run([sys.executable,str(Path(__file__).with_name('run.py')),str(root),'--smoke'],capture_output=True,text=True)
+            record=json.loads((root/'evidence/smoke/result.json').read_text())
+            self.assertEqual(result.returncode,1 if mutate else 0)
+            self.assertEqual(record['all_passed'],not mutate)
+            self.assertEqual(record['source_changed_after'],['nsealr'] if mutate else [])
+    def test_successful_command_that_changes_source_fails_acceptance(self):self.exercise(True)
+    def test_successful_command_preserving_source_passes(self):self.exercise(False)
+
+
 if __name__ == '__main__':
     unittest.main()
