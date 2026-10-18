@@ -1416,10 +1416,7 @@ mod tests {
         assert!(joined_lines_for_title(pages.as_slice(), "Tags").contains("U+00E8"));
         assert!(joined_lines_for_title(pages.as_slice(), "Tags").contains("U+1F600"));
     }
-    /// The four READ-ONLY specs/vectors/review-detail-pages fixtures as Rust
-    /// literals (request JSON from the source specs/vectors/review vector,
-    /// digest/limits/pages copied verbatim from the fixture file).
-
+    // Extract every authoritative detail-page fixture without computing expectations.
     include!(concat!(env!("OUT_DIR"), "/detail-fixtures.rs"));
 
     // Beyond the named C++ cases: error messages/Display, the limits

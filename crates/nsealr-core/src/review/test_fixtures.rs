@@ -74,22 +74,8 @@ pub fn trusted_review_request(
     }
 }
 
-/// The basic trusted-review request; request id, digest and all four pages
-/// copied from the READ-ONLY specs/vectors/review-screens/kind-1-basic.json
-/// (`screen_review`). The C++ consumed it as
-/// `test_vectors::basic_trusted_review_request()`.
-
+// Basic/tagged pages, digests and limits are extracted from the single artifact.
 include!(concat!(env!("OUT_DIR"), "/review-fixtures.rs"));
-
-/// The tagged trusted-review request; request id, digest and all four pages
-/// copied from the READ-ONLY specs/vectors/review-screens/kind-1-tags.json
-/// (`screen_review`). The C++ consumed it as
-/// `test_vectors::tagged_trusted_review_request()`.
-
-/// The shared t-display-s3 review display limits. Mirrors the C++
-/// `nsealr_esp32::t_display_s3_review_limits()`
-/// (`esp32_s3_usb_signer/main/t_display_s3_raster.cpp`), which matches the
-/// `limits` field of every READ-ONLY specs/vectors/review-detail-pages fixture.
 
 /// True if any frame body line contains `needle` (the C++ `lines_contain`).
 pub fn frame_lines_contain(frame: &ReviewDisplayFrame, needle: &str) -> bool {
