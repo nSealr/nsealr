@@ -56,6 +56,7 @@ def owner_values(value):
 
 def apply(target:Path,author:Path,output:Path):
     c=Changes(target); artifact=target/'protocols/contracts/v1'; records=[];leaf_changes=[]
+    c.put('.gitignore',(target/'.gitignore').read_bytes()+b'\n# Consolidated component build outputs\n.venv/\nnode_modules/\ndist/\n*.egg-info/\n*.tgz\n/apps/desktop-simulator/target/\n')
     for directory in ['protocols','schemas','vectors','examples']:
         for path in sorted((artifact/directory).rglob('*')):
             if not path.is_file():continue

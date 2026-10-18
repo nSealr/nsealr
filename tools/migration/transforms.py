@@ -53,6 +53,13 @@ class Changes:
             data, mode = self.updates[row['path']]
             if data is None:
                 path.unlink()
+                parent = path.parent
+                while parent != self.target:
+                    try:
+                        parent.rmdir()
+                    except OSError:
+                        break
+                    parent = parent.parent
             else:
                 path.parent.mkdir(parents=True, exist_ok=True)
                 path.write_bytes(data); path.chmod(0o755 if mode=='100755' else 0o644)
