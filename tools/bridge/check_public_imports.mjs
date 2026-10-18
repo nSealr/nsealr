@@ -111,9 +111,13 @@ function moduleSpecifierText(node) {
 }
 
 function checkSourceFile(ownerPackage, packageSourceRoot, sourcePath) {
+  return checkSourceText(ownerPackage, packageSourceRoot, sourcePath, readFileSync(sourcePath, "utf-8"));
+}
+
+export function checkSourceText(ownerPackage, packageSourceRoot, sourcePath, sourceText) {
   const source = ts.createSourceFile(
     sourcePath,
-    readFileSync(sourcePath, "utf-8"),
+    sourceText,
     ts.ScriptTarget.Latest,
     true
   );
