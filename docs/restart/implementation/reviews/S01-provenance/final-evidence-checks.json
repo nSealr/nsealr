@@ -1,0 +1,52 @@
+{
+  "at": "2026-10-18T17:15:04.704991+00:00",
+  "candidate": "f4c35c1c455528501c91747eb503dc78b4050f9d",
+  "runtime_archive_and_wheel_hashes_verified": 15,
+  "overlay_records_equal_reviewed_manifests": 3,
+  "actual_lab_four_changed_files": {
+    "scripts/check_fixture_snapshots.py": "cb8286e0b91410400dd6f039a4c6dbfce961c8a2b9160250927ef7d0b5d953df",
+    "tests/test_fixture_snapshots.py": "db8186c61ad27267e93bc0e2d69be9cad36a2029850f921bad5c544e3c827e7b",
+    "scripts/integration_companion_nip46_cli.py": "0f304dc3cb8513e11eab4e58922ceebe4329455edb40d080278aff3e44218fb0",
+    "tests/test_integration_companion_nip46_cli.py": "39f9baa22f7ce205bd20646f2e608c6e1a57782a63287408e4d876a5ccae25e5"
+  },
+  "checks": [
+    {
+      "name": "restart-validator",
+      "argv": [
+        "python3",
+        "scripts/validate_restart_plan.py"
+      ],
+      "exit_code": 0,
+      "output": "Restart plan valid: 47 tasks; ready: E01\nStructural check only; hardware, review quality and security remain evidence gates.\n"
+    },
+    {
+      "name": "final-non-log-whitespace",
+      "argv": [
+        "git",
+        "diff",
+        "--check",
+        "7a32eed",
+        "f4c35c1c455528501c91747eb503dc78b4050f9d",
+        "--",
+        ".",
+        ":!*.log"
+      ],
+      "exit_code": 0,
+      "output": ""
+    },
+    {
+      "name": "final-raw-log-whitespace",
+      "argv": [
+        "git",
+        "diff",
+        "--check",
+        "7a32eed",
+        "f4c35c1c455528501c91747eb503dc78b4050f9d"
+      ],
+      "exit_code": 2,
+      "output": "docs/restart/implementation/S01/followup-evidence/fresh/evidence/bootstrap/02-rustup-install.log:9: trailing whitespace.\n+To get started you need Cargo's bin directory \ndocs/restart/implementation/S01/followup-evidence/fresh/evidence/bootstrap/02-rustup-install.log:15: trailing whitespace.\n+the corresponding env file under \ndocs/restart/implementation/S01/followup-evidence/fresh/evidence/bootstrap/02-rustup-install.log:19: trailing whitespace.\n+. \n"
+    }
+  ],
+  "raw_log_whitespace": "Three original rustup output trailing spaces retained as immutable raw evidence; non-log diff clean.",
+  "passed": true
+}

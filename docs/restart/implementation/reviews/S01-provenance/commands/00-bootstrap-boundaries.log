@@ -1,0 +1,31 @@
+{"label": "bootstrap-boundaries", "argv": ["/home/tux/nsealr/.restart-tools/goal/r00/tools/baseline/.work/final/.tools/python/bin/python3", "-m", "unittest", "-v", "test_bootstrap.py"], "cwd": "/home/tux/nsealr/.restart-tools/goal/s01-provenance-review/tools/baseline", "started": "2026-10-18T17:11:39.006940+00:00", "log": "00-bootstrap-boundaries.log"}
+test_failure_exit_and_both_output_streams_survive (test_bootstrap.BootstrapTests.test_failure_exit_and_both_output_streams_survive) ... negative: ['/home/tux/nsealr/.restart-tools/goal/r00/tools/baseline/.work/final/.tools/python/bin/python3', '-c', 'import sys; print("out"); print("diagnostic", file=sys.stderr); sys.exit(7)']
+ok
+test_hash_mismatch_is_rejected (test_bootstrap.BootstrapTests.test_hash_mismatch_is_rejected) ... download file:///tmp/tmpc9_saz8d/source
+ok
+test_inherited_override_and_tool_paths_are_removed (test_bootstrap.BootstrapTests.test_inherited_override_and_tool_paths_are_removed) ... ok
+test_occupied_destination_is_rejected_without_mutation (test_bootstrap.BootstrapTests.test_occupied_destination_is_rejected_without_mutation) ... ok
+test_default_applies_all_three_in_order_and_records_each (test_bootstrap.OverlayBoundaryTests.test_default_applies_all_three_in_order_and_records_each) ... overlay-check: ['git', 'apply', '--check', '/tmp/tmpw6axnfk1/tools/baseline/overlays/lab-provenance.patch']
+overlay-apply: ['git', 'apply', '/tmp/tmpw6axnfk1/tools/baseline/overlays/lab-provenance.patch']
+metadata-v1-overlay-check: ['git', 'apply', '--check', '/tmp/tmpw6axnfk1/docs/restart/implementation/S01/lab-metadata-v1.patch']
+metadata-v1-overlay-apply: ['git', 'apply', '/tmp/tmpw6axnfk1/docs/restart/implementation/S01/lab-metadata-v1.patch']
+provenance-followup-overlay-check: ['git', 'apply', '--check', '/tmp/tmpw6axnfk1/tools/baseline/overlays/lab-provenance-followup.patch']
+provenance-followup-overlay-apply: ['git', 'apply', '/tmp/tmpw6axnfk1/tools/baseline/overlays/lab-provenance-followup.patch']
+ok
+test_missing_followup_is_not_silently_skipped (test_bootstrap.OverlayBoundaryTests.test_missing_followup_is_not_silently_skipped) ... overlay-check: ['git', 'apply', '--check', '/tmp/tmplmlc1m4_/tools/baseline/overlays/lab-provenance.patch']
+overlay-apply: ['git', 'apply', '/tmp/tmplmlc1m4_/tools/baseline/overlays/lab-provenance.patch']
+metadata-v1-overlay-check: ['git', 'apply', '--check', '/tmp/tmplmlc1m4_/docs/restart/implementation/S01/lab-metadata-v1.patch']
+metadata-v1-overlay-apply: ['git', 'apply', '/tmp/tmplmlc1m4_/docs/restart/implementation/S01/lab-metadata-v1.patch']
+ok
+test_modified_patch_is_rejected_before_mutation (test_bootstrap.OverlayBoundaryTests.test_modified_patch_is_rejected_before_mutation) ... ok
+test_modified_preimage_is_rejected_before_patch (test_bootstrap.OverlayBoundaryTests.test_modified_preimage_is_rejected_before_patch) ... ok
+test_wrong_actual_commit_is_rejected_before_mutation (test_bootstrap.OverlayBoundaryTests.test_wrong_actual_commit_is_rejected_before_mutation) ... ok
+test_wrong_declared_commit_is_rejected_before_mutation (test_bootstrap.OverlayBoundaryTests.test_wrong_declared_commit_is_rejected_before_mutation) ... ok
+test_wrong_output_hash_is_rejected_and_not_recorded_as_pass (test_bootstrap.OverlayBoundaryTests.test_wrong_output_hash_is_rejected_and_not_recorded_as_pass) ... overlay-check: ['git', 'apply', '--check', '/tmp/tmprxer1yff/tools/baseline/overlays/lab-provenance.patch']
+overlay-apply: ['git', 'apply', '/tmp/tmprxer1yff/tools/baseline/overlays/lab-provenance.patch']
+ok
+
+----------------------------------------------------------------------
+Ran 11 tests in 0.152s
+
+OK
