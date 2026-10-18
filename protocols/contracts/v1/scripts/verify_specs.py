@@ -5495,8 +5495,8 @@ def check_persistent_secret_custody_vector(rel: str, errors: list[str]) -> None:
         errors.append(f"{vector_path}: contract_id mismatch")
     if vector.get("solution") != "custom_hardware_wallet":
         errors.append(f"{vector_path}: solution must be custom_hardware_wallet")
-    if vector.get("repository") != "hardware":
-        errors.append(f"{vector_path}: repository must be hardware")
+    if vector.get("repository") != "nsealr":
+        errors.append(f"{vector_path}: repository must be nsealr")
     if vector.get("current_status") != "research":
         errors.append(f"{vector_path}: current_status must be research")
     scope = vector.get("scope")
@@ -5598,8 +5598,8 @@ def check_device_security_profile_vector(rel: str, errors: list[str]) -> None:
         errors.append(f"{vector_path}: contract_id mismatch")
     if vector.get("solution") != "esp32_usb_nip46":
         errors.append(f"{vector_path}: solution must be esp32_usb_nip46")
-    if vector.get("repository") != "firmware":
-        errors.append(f"{vector_path}: repository must be firmware")
+    if vector.get("repository") != "nsealr":
+        errors.append(f"{vector_path}: repository must be nsealr")
     if vector.get("target") != "esp32_s3_usb_signer":
         errors.append(f"{vector_path}: target must be esp32_s3_usb_signer")
     if vector.get("profile") != "development_scaffold":

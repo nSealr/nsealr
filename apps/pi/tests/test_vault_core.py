@@ -2815,7 +2815,7 @@ class VaultCoreTests(unittest.TestCase):
         route = RASPBERRY_ACCOUNT_DESCRIPTOR["signer_route"]
         selection = RASPBERRY_ROUTE_SELECTION["selection"]
         self.assertEqual(route["type"], "raspberry_qr_vault")
-        self.assertEqual(route["repository"], "raspberry")
+        self.assertEqual(route["repository"], "nsealr")
         self.assertEqual(route["transport"], "qr")
         self.assertEqual(route["custody"], "stateless_session")
         self.assertEqual(route["trusted_review"], "device_display")
