@@ -90,3 +90,13 @@ substitute for the first complete suite run. Inspect `commands.json` and
 review of the exact candidate before closing R00. No previous CI run counts.
 
 Tool boundary checks: `python3 -m unittest discover -s tools/baseline -p 'test_*.py'`.
+
+The isolated lab checkout receives the declared `overlays/lab-provenance.patch`
+against exact preimage hashes. Its original checker mistakes core `SOURCE.json`
+for an upstream vector. The overlay validates that one metadata file's pinned
+upstream commit, complete source/snapshot vector inventory and hashes before
+excluding it from byte comparison. All real fixture assertions remain active;
+new regression cases reject bad provenance, missing/extra inventory, changed
+hashes and changed real vectors. Bootstrap records the patch and output hashes;
+the runner rejects any undeclared source delta. Original failed baseline logs
+remain evidence, and successful integration applies only to this overlay tuple.
