@@ -47,7 +47,7 @@ board-sdk/
   docs/               interfaces, lifecycle and measured support
 ```
 
-Do not create empty crates or application folders just to imitate the target tree. `docs/restart/work-items.json` is the foundation graph until A02 moves it atomically to `plan/`; there must be one canonical task state, not copied status tables.
+Do not create empty crates or application folders just to imitate the target tree. `plan/work-items.json` is the canonical foundation graph; there must be one canonical task state, not copied status tables.
 
 ## Migration gates
 

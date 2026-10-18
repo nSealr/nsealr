@@ -1,6 +1,6 @@
 # Working on nSealr
 
-Read `docs/restart/README.md`, then the relevant task in `docs/restart/work-items.json`. These restart decisions supersede historical five-family, model-specific and mandatory-all-Rust phase instructions. They do not waive security or evidence requirements.
+Read `docs/restart/README.md`, then the relevant task in `plan/work-items.json`. These restart decisions supersede historical five-family, model-specific and mandatory-all-Rust phase instructions. They do not waive security or evidence requirements.
 
 - Verify the actual source and current checkout before relying on documentation. Code establishes current behavior; accepted requirements and protocol specifications establish correct behavior. A bug does not become the specification.
 - Keep the portable Nostr engine in this repository. Board SDK has no Nostr semantics. Bridge has no custody of user identity/signing keys or authority to approve device actions. NIP-46 client/transport keys have a separate, bounded host-owned lifecycle.

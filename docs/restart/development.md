@@ -1,6 +1,6 @@
 # Development from requirements to evidence
 
-This is the operating contract for the restart, read with [execution](execution.md). The 47 parent tasks in `work-items.json` are the roadmap, not 47 implementation-ready specifications. Their state remains authoritative there. The initial work packages below make the next steps concrete; later packages must be detailed against the source and measured interfaces that exist when their dependencies finish.
+This is the operating contract for the restart, read with [execution](execution.md). The 47 parent tasks in `plan/work-items.json` are the roadmap, not 47 implementation-ready specifications. Their state remains authoritative there. The initial work packages below make the next steps concrete; later packages must be detailed against the source and measured interfaces that exist when their dependencies finish.
 
 ## What must exist before implementation
 
@@ -12,7 +12,7 @@ For each bounded change, record one brief containing:
 4. **Evidence plan:** exact command or physical procedure, independent expected result, negative cases, required resources and conditions that make the experiment inconclusive. An expected value computed through the implementation under test is not an independent oracle.
 5. **Decision and delivery:** alternatives rejected with reasons, dependencies, unresolved questions, independent reviewer and integration gates. A missing security decision blocks the affected implementation; a separate experiment may resolve it.
 
-Do not write a second universal planner or copy task state into multiple trackers. Keep the brief, implementation and evidence in Git. A GitHub issue can point to the authoritative task/brief. If subtasks need independent assignment, dependencies or completion states, promote them into `work-items.json` and update its graph checks atomically; otherwise they are ordered steps inside their parent, without a second status ledger.
+Do not write a second universal planner or copy task state into multiple trackers. Keep the brief, implementation and evidence in Git. A GitHub issue can point to the authoritative task/brief. If subtasks need independent assignment, dependencies or completion states, promote them into `plan/work-items.json` and update its graph checks atomically; otherwise they are ordered steps inside their parent, without a second status ledger.
 
 An accepted specification is reviewed before code is implemented against it. The existing authorization permits routine reversible design decisions; repeated maintainer approval is unnecessary. Ask for missing product intent only where source inspection, an experiment or the stated objective cannot resolve it. A review by another AI agent is useful engineering review, not an external security certification.
 

@@ -1,6 +1,6 @@
 # PCB development and present capability
 
-Reviewed 2026-10-18. There is no frozen nSealr production schematic, routed PCB, verified component inventory or physically qualified assembly recorded in this restart. There is a candidate architecture, a source-based component shortlist and executable CAD tooling evidence. [Validation](validation.md) records earlier electrical/pin/resource studies and unresolved manual access. Exact hardware availability remains unknown in `work-items.json`.
+Reviewed 2026-10-18. There is no frozen nSealr production schematic, routed PCB, verified component inventory or physically qualified assembly recorded in this restart. There is a candidate architecture, a source-based component shortlist and executable CAD tooling evidence. [Validation](validation.md) records earlier electrical/pin/resource studies and unresolved manual access. Exact hardware availability remains unknown in `plan/work-items.json`.
 
 ## From user requirement to a manufactured device
 
