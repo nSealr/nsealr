@@ -198,7 +198,7 @@ def validate(plan: dict, root: Path) -> list[str]:
 
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--plan", type=Path, default=ROOT / "docs/restart/work-items.json")
+    parser.add_argument("--plan", type=Path, default=ROOT / "plan/work-items.json")
     args = parser.parse_args()
     try:
         plan = json.loads(args.plan.read_text())

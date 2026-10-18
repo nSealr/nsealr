@@ -6,7 +6,7 @@ The [development contract](development.md) defines specification readiness, firs
 
 Task lifecycle: planned → ready → running → review → verified → integrated. A blocked task identifies the missing resource, owner and next action. Dependencies must be integrated before dependent acceptance is closed. A code author cannot approve its own final candidate.
 
-`work-items.json` is the only task-state authority. `required_resources` refers to its resource registry; an unknown resource cannot support a ready/running claim. Preparatory research on a planned task is allowed without closing its dependent acceptance. Assign a concrete person for physical procedures and confirm the sample/instrument/access record before starting them. An AI role name is not a physical operator.
+`plan/work-items.json` is the only task-state authority. `required_resources` refers to its resource registry; an unknown resource cannot support a ready/running claim. Preparatory research on a planned task is allowed without closing its dependent acceptance. Assign a concrete person for physical procedures and confirm the sample/instrument/access record before starting them. An AI role name is not a physical operator.
 
 Each assignment records objective, input commits, writable paths, constraints, required sources, acceptance commands and stop conditions. Each result records exact candidate and dirty state, command/procedure, timestamp, environment, exit code, artifact hashes and independent review. Physical records add board/assembly/silicon IDs, lifecycle state, instrument setup and conditions. Changed input invalidates affected evidence.
 
