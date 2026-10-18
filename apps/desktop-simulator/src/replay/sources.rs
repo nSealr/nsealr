@@ -51,19 +51,25 @@ pub(super) fn replay_seedqr(value: &Value) -> ReplayResult {
 
     let std_idx =
         decode_standard_indexes(digits).map_err(|e| format!("decode_standard_indexes: {e:?}"))?;
-    if std_idx.as_slice() != expected.as_slice() {
+    if std_idx
+        != WordIndexes::from_slice(&expected).map_err(|e| format!("fixture indexes: {e:?}"))?
+    {
         return Err("standard SeedQR indexes != standard_word_indexes".into());
     }
     let compact = hex_to_bytes(compact_hex)?;
     let cmp_idx =
         decode_compact_indexes(&compact).map_err(|e| format!("decode_compact_indexes: {e:?}"))?;
-    if cmp_idx.as_slice() != expected.as_slice() {
+    if cmp_idx
+        != WordIndexes::from_slice(&expected).map_err(|e| format!("fixture indexes: {e:?}"))?
+    {
         return Err("compact SeedQR indexes != standard_word_indexes".into());
     }
     // The mnemonic string round-trips to the same indexes, and back to the string.
     let parsed =
         parse_mnemonic_indexes(mnemonic).map_err(|e| format!("parse_mnemonic_indexes: {e:?}"))?;
-    if parsed.as_slice() != expected.as_slice() {
+    if parsed
+        != WordIndexes::from_slice(&expected).map_err(|e| format!("fixture indexes: {e:?}"))?
+    {
         return Err("parse_mnemonic_indexes != standard_word_indexes".into());
     }
     let mut buf = [0u8; 256];
@@ -88,17 +94,12 @@ pub(super) fn replay_nip19(value: &Value) -> ReplayResult {
     let public_hex = str_field(value, "public_key")?;
 
     let secret = decode_nsec(nsec).map_err(|e| format!("decode_nsec: {e:?}"))?;
-    let expected_secret = hex_to_bytes(secret_hex)?;
-    if secret.as_slice() != expected_secret.as_slice() {
-        return Err("decode_nsec != vector.secret_key".into());
-    }
-    let hex = decode_nsec_hex(nsec).map_err(|e| format!("decode_nsec_hex: {e:?}"))?;
+    let mut hex_out = [0; 64];
+    let hex = decode_nsec_hex(nsec, &mut hex_out).map_err(|e| format!("decode_nsec_hex: {e:?}"))?;
     if hex.as_slice() != secret_hex.as_bytes() {
         return Err("decode_nsec_hex != vector.secret_key".into());
     }
-    if !is_valid_secret_key(&secret) {
-        return Err("decode_nsec produced an invalid secp256k1 scalar".into());
-    }
+    assert_secret_key(secret_hex)?;
     let mut buf = [0u8; 63];
     let re_nsec = encode_nsec(&secret, &mut buf).map_err(|e| format!("encode_nsec: {e:?}"))?;
     if re_nsec != nsec {
@@ -113,13 +114,14 @@ pub(super) fn replay_keys(value: &Value) -> ReplayResult {
         let expected = u16_array(value, "standard_word_indexes")?;
         let parsed = parse_mnemonic_indexes(mnemonic)
             .map_err(|e| format!("parse_mnemonic_indexes: {e:?}"))?;
-        if parsed.as_slice() != expected.as_slice() {
+        if parsed
+            != WordIndexes::from_slice(&expected).map_err(|e| format!("fixture indexes: {e:?}"))?
+        {
             return Err("parse_mnemonic_indexes != standard_word_indexes".into());
         }
-        let indexes =
+        let _indexes =
             WordIndexes::from_slice(&expected).map_err(|e| format!("WordIndexes: {e:?}"))?;
-        require_valid_checksum(indexes.as_slice())
-            .map_err(|e| format!("require_valid_checksum: {e:?}"))?;
+        require_valid_checksum(&expected).map_err(|e| format!("require_valid_checksum: {e:?}"))?;
     }
     // Both shapes carry a secret/public pair (derived key material for the NIP-06
     // shape); the core can only validate scalar range + pubkey format.

@@ -330,13 +330,17 @@ pub(crate) fn build_single_source_keyring(
             let nsec = str_field(&source_value, "nsec")?;
             let secret = decode_nsec(nsec).map_err(|e| format!("decode_nsec: {e:?}"))?;
             keyring
-                .add_nsec(label, &secret)
+                .add_nsec(label, secret)
                 .map_err(|e| format!("add_nsec: {e:?}"))?;
         }
         "bip39_seed" => {
             let indexes = u16_array(&source_value, "standard_word_indexes")?;
             keyring
-                .add_bip39_seed(label, &indexes)
+                .add_bip39_seed(
+                    label,
+                    nsealr_core::bip39::WordIndexes::from_slice(&indexes)
+                        .map_err(|e| format!("indexes: {e:?}"))?,
+                )
                 .map_err(|e| format!("add_bip39_seed: {e:?}"))?;
         }
         other => return Err(format!("unknown source_type '{other}'")),
@@ -351,11 +355,8 @@ pub(crate) fn build_session_key_source(
     source_vector: &str,
     label: &str,
 ) -> Result<nsealr_core::session::keyring::SessionKeySource, String> {
-    let keyring = build_single_source_keyring(source_type, source_vector, label)?;
-    Ok(keyring
-        .source_at(0)
-        .map_err(|e| format!("source_at(0): {e:?}"))?
-        .clone())
+    let mut keyring = build_single_source_keyring(source_type, source_vector, label)?;
+    keyring.take_last().map_err(|e| format!("take_last: {e:?}"))
 }
 
 mod devices;

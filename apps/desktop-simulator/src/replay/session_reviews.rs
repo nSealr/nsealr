@@ -9,7 +9,7 @@ use nsealr_core::session::import_review::{
     build_session_import_review, session_key_source_fingerprint,
 };
 use nsealr_core::session::source_backup::{
-    build_session_source_backup_review, session_source_backup_payload,
+    build_session_source_backup_review, run_session_source_backup_flow,
 };
 use serde_json::Value;
 
@@ -65,8 +65,18 @@ pub(super) fn replay_backup(value: &Value) -> ReplayResult {
     assert_review_pages("session-source-backup-review", &review.pages, pages)?;
 
     // The revealed backup payload matches the vector's declared secret material.
-    let payload = session_source_backup_payload(&source)
-        .map_err(|e| format!("session_source_backup_payload: {e:?}"))?;
+    let result = run_session_source_backup_flow(
+        &source,
+        &[
+            nsealr_core::review::controls::ReviewButton::Next,
+            nsealr_core::review::controls::ReviewButton::Approve,
+        ],
+        2,
+    )
+    .map_err(|e| format!("backup fixture flow: {e:?}"))?;
+    let payload = result
+        .backup_payload
+        .ok_or("approved fixture backup missing")?;
     if payload.backup_format != str_field(value, "backup_format")? {
         return Err(format!(
             "backup_format '{}' != vector '{}'",
@@ -78,18 +88,18 @@ pub(super) fn replay_backup(value: &Value) -> ReplayResult {
         .get("backup_payload")
         .ok_or("missing 'backup_payload'")?;
     match payload.backup_format {
-        "nip19_nsec" => check(want, "nsec", payload.nsec.as_str()),
+        "nip19_nsec" => check(want, "nsec", payload.reveal_nsec()),
         "bip39_words_seedqr" => {
-            check(want, "mnemonic", payload.mnemonic.as_str())?;
+            check(want, "mnemonic", payload.reveal_mnemonic())?;
             check(
                 want,
                 "standard_seedqr_digits",
-                payload.standard_seedqr_digits.as_str(),
+                payload.reveal_standard_seedqr_digits(),
             )?;
             check(
                 want,
                 "compact_seedqr_hex",
-                payload.compact_seedqr_hex.as_str(),
+                payload.reveal_compact_seedqr_hex(),
             )
         }
         other => Err(format!("unexpected backup_format '{other}'")),
@@ -101,6 +111,16 @@ fn check(want: &Value, key: &str, got: &str) -> ReplayResult {
     if got == expected {
         Ok(())
     } else {
-        Err(format!("backup_payload.{key} '{got}' != '{expected}'"))
+        Err(format!("backup_payload.{key} differs from fixture"))
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    #[test]
+    fn backup_mismatch_does_not_echo_secret_output() {
+        let fixture = serde_json::json!({"nsec": "public fixture expected"});
+        let error = super::check(&fixture, "nsec", "public fixture actual").unwrap_err();
+        assert_eq!(error, "backup_payload.nsec differs from fixture");
     }
 }

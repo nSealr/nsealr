@@ -61,7 +61,18 @@ pub enum Bip39Error {
 /// the C++ `Bip39WordIndexes` (`std::vector<std::uint16_t>`). Holds at most
 /// [`MAX_MNEMONIC_WORDS`] entries; unused slots are kept zeroed so equality
 /// compares only the active prefix.
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+///
+/// ```compile_fail
+/// use nsealr_core::bip39::WordIndexes;
+/// fn require_clone<T: Clone>() {}
+/// require_clone::<WordIndexes>();
+/// ```
+/// ```compile_fail
+/// use nsealr_core::bip39::WordIndexes;
+/// let indexes = WordIndexes::new();
+/// let _ = indexes.as_slice();
+/// ```
+#[derive(PartialEq, Eq)]
 pub struct WordIndexes {
     words: [u16; MAX_MNEMONIC_WORDS],
     len: usize,
@@ -79,7 +90,7 @@ impl WordIndexes {
 
     /// Returns the active word indexes as a slice.
     #[must_use]
-    pub fn as_slice(&self) -> &[u16] {
+    pub(crate) fn as_slice(&self) -> &[u16] {
         &self.words[..self.len]
     }
 
@@ -118,6 +129,20 @@ impl WordIndexes {
     pub(crate) fn push(&mut self, index: u16) {
         self.words[self.len] = index;
         self.len += 1;
+    }
+}
+
+impl core::fmt::Debug for WordIndexes {
+    fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
+        f.write_str("WordIndexes([REDACTED])")
+    }
+}
+
+impl Drop for WordIndexes {
+    fn drop(&mut self) {
+        use zeroize::Zeroize;
+        self.words.zeroize();
+        self.len.zeroize();
     }
 }
 
@@ -161,7 +186,7 @@ fn word_index(token: &[u8]) -> Option<u16> {
     if token.len() > MAX_WORD_LEN {
         return None;
     }
-    let mut lowered = [0u8; MAX_WORD_LEN];
+    let mut lowered = zeroize::Zeroizing::new([0u8; MAX_WORD_LEN]);
     for (slot, &byte) in lowered.iter_mut().zip(token) {
         *slot = byte.to_ascii_lowercase();
     }
@@ -286,9 +311,9 @@ pub fn require_valid_checksum(indexes: &[u16]) -> Result<(), Bip39Error> {
     require_valid_indexes(indexes)?;
     let checksum_bits = indexes.len() / 3;
     let entropy_bits = (indexes.len() * 11) - checksum_bits;
-    let mut entropy = [0u8; 32];
-    let entropy_len = write_entropy(indexes, &mut entropy);
-    let digest = sha256(&entropy[..entropy_len]);
+    let mut entropy = zeroize::Zeroizing::new([0u8; 32]);
+    let entropy_len = write_entropy(indexes, &mut *entropy);
+    let digest = zeroize::Zeroizing::new(sha256(&entropy[..entropy_len]));
     for bit in 0..checksum_bits {
         let actual = index_bit(indexes, entropy_bits + bit);
         let expected = digest_bit(&digest, bit);

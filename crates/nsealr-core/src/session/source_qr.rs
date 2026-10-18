@@ -65,15 +65,15 @@ pub fn parse_session_source_qr_text(
 
     if text.starts_with("nsec1") {
         let secret = nip19::decode_nsec(text).map_err(SessionSourceQrError::Nsec)?;
-        return source_from_nsec(label, &secret);
+        return source_from_nsec(label, secret);
     }
     if is_standard_seedqr_digit_stream(text) {
         let indexes =
             seedqr::decode_standard_indexes(text).map_err(SessionSourceQrError::SeedQr)?;
-        return source_from_bip39_indexes(label, indexes.as_slice());
+        return source_from_bip39_indexes(label, indexes);
     }
     let indexes = bip39::parse_mnemonic_indexes(text).map_err(SessionSourceQrError::Bip39)?;
-    source_from_bip39_indexes(label, indexes.as_slice())
+    source_from_bip39_indexes(label, indexes)
 }
 
 /// ASCII whitespace as recognised by the C++ `is_ascii_whitespace`: space,
@@ -101,36 +101,33 @@ fn is_standard_seedqr_digit_stream(text: &str) -> bool {
 /// Mirrors the C++ `source_from_nsec` (temporary boundary keyring).
 fn source_from_nsec(
     label: &str,
-    secret: &crate::nip19::SecretKey,
+    secret: crate::nip19::SecretKey,
 ) -> Result<SessionKeySource, SessionSourceQrError> {
     let mut keyring = crate::session::keyring::StatelessSessionKeyring::new();
     keyring
         .add_nsec(label, secret)
         .map_err(SessionSourceQrError::Keyring)?;
-    source_from_single_entry_keyring(&keyring)
+    source_from_single_entry_keyring(&mut keyring)
 }
 
 /// Mirrors the C++ `source_from_bip39_indexes` (temporary boundary keyring).
 fn source_from_bip39_indexes(
     label: &str,
-    indexes: &[u16],
+    indexes: crate::bip39::WordIndexes,
 ) -> Result<SessionKeySource, SessionSourceQrError> {
     let mut keyring = crate::session::keyring::StatelessSessionKeyring::new();
     keyring
         .add_bip39_seed(label, indexes)
         .map_err(SessionSourceQrError::Keyring)?;
-    source_from_single_entry_keyring(&keyring)
+    source_from_single_entry_keyring(&mut keyring)
 }
 
-/// Clones the single source out of the temporary boundary keyring (the C++
+/// Moves the single source out of the temporary boundary keyring (the C++
 /// `source_from_single_entry_keyring`; the keyring wipes itself on drop).
 fn source_from_single_entry_keyring(
-    keyring: &crate::session::keyring::StatelessSessionKeyring,
+    keyring: &mut crate::session::keyring::StatelessSessionKeyring,
 ) -> Result<SessionKeySource, SessionSourceQrError> {
-    Ok(keyring
-        .source_at(0)
-        .map_err(SessionSourceQrError::Keyring)?
-        .clone())
+    keyring.take_last().map_err(SessionSourceQrError::Keyring)
 }
 
 /// Parses CompactSeedQR entropy bytes into a RAM-only session source. Mirrors
@@ -144,7 +141,7 @@ pub fn parse_compact_seedqr_session_source(
     entropy: &[u8],
 ) -> Result<SessionKeySource, SessionSourceQrError> {
     let indexes = seedqr::decode_compact_indexes(entropy).map_err(SessionSourceQrError::SeedQr)?;
-    source_from_bip39_indexes(label, indexes.as_slice())
+    source_from_bip39_indexes(label, indexes)
 }
 
 /// Errors reported by the QR-driven import flows. The C++ let the parse
@@ -176,7 +173,7 @@ pub fn run_session_source_qr_text_import_flow(
 ) -> Result<SessionImportFlowResult, SessionSourceQrImportFlowError> {
     let source = parse_session_source_qr_text(label, decoded_text)
         .map_err(SessionSourceQrImportFlowError::Parse)?;
-    run_session_import_flow(keyring, &source, buttons, max_button_steps)
+    run_session_import_flow(keyring, source, buttons, max_button_steps)
         .map_err(SessionSourceQrImportFlowError::Flow)
 }
 
@@ -197,7 +194,7 @@ pub fn run_compact_seedqr_session_import_flow(
 ) -> Result<SessionImportFlowResult, SessionSourceQrImportFlowError> {
     let source = parse_compact_seedqr_session_source(label, entropy)
         .map_err(SessionSourceQrImportFlowError::Parse)?;
-    run_session_import_flow(keyring, &source, buttons, max_button_steps)
+    run_session_import_flow(keyring, source, buttons, max_button_steps)
         .map_err(SessionSourceQrImportFlowError::Flow)
 }
 

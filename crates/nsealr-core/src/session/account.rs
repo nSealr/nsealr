@@ -327,9 +327,12 @@ mod tests {
         keyring
             .add_bip39_seed(
                 "NIP-06 account 0",
-                bip39::parse_mnemonic_indexes(NIP06_ACCOUNT_0_MNEMONIC)
-                    .unwrap()
-                    .as_slice(),
+                crate::bip39::WordIndexes::from_slice(
+                    bip39::parse_mnemonic_indexes(NIP06_ACCOUNT_0_MNEMONIC)
+                        .unwrap()
+                        .as_slice(),
+                )
+                .unwrap(),
             )
             .unwrap();
         keyring
@@ -468,7 +471,7 @@ mod tests {
         keyring
             .add_nsec(
                 "standalone nsec",
-                &nip19::decode_nsec(NSEC_TEST_KEY_1).unwrap(),
+                nip19::decode_nsec(NSEC_TEST_KEY_1).unwrap(),
             )
             .unwrap();
 
@@ -628,7 +631,7 @@ mod tests {
         nsec_keyring
             .add_nsec(
                 "nsec test vector",
-                &nip19::decode_nsec(NSEC_TEST_KEY_1).unwrap(),
+                nip19::decode_nsec(NSEC_TEST_KEY_1).unwrap(),
             )
             .unwrap();
         let nsec_descriptor = SessionAccountDescriptor {
