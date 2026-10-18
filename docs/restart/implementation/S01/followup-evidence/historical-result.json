@@ -1,0 +1,51 @@
+{
+  "lab": "3303ab17a28ed32419576627d5abb93db3999635",
+  "specs": "8bb8cca71355bcf8d81a093bcee9f3fe6915b121",
+  "core": "9194e292aa8a3176874cc9bf5814cefc26b6fe1a",
+  "v1_overlay_not_applied": true,
+  "cases": [
+    {
+      "case": "historical_complete_snapshot",
+      "expected_reject": false,
+      "observed_reject": false,
+      "pass": true,
+      "detail": 222
+    },
+    {
+      "case": "historical_missing_manifest",
+      "expected_reject": true,
+      "observed_reject": true,
+      "pass": true,
+      "detail": "missing or nonregular SOURCE.json: /home/tux/nsealr/.restart-tools/goal/s01-integration/docs/restart/implementation/S01/.work/historical-control/firmware/tests/fixtures/specs"
+    },
+    {
+      "case": "historical_missing_manifest_and_vector",
+      "expected_reject": true,
+      "observed_reject": true,
+      "pass": true,
+      "detail": "missing or nonregular SOURCE.json: /home/tux/nsealr/.restart-tools/goal/s01-integration/docs/restart/implementation/S01/.work/historical-control/firmware/tests/fixtures/specs"
+    },
+    {
+      "case": "historical_forged_dotfile_digest",
+      "expected_reject": true,
+      "observed_reject": true,
+      "pass": true,
+      "detail": "snapshot vector differs from specs: vectors/.gitkeep"
+    },
+    {
+      "case": "historical_restored",
+      "expected_reject": false,
+      "observed_reject": false,
+      "pass": true,
+      "detail": 222
+    },
+    {
+      "case": "current_manifest_with_old_specs_rejects",
+      "expected_reject": true,
+      "observed_reject": true,
+      "pass": true,
+      "detail": "SOURCE.json upstream repository/commit mismatch"
+    }
+  ],
+  "pass": true
+}
