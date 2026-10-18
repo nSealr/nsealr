@@ -1,0 +1,31 @@
+python3 scripts/verify_repo.py
+nSealr nsealr baseline verification passed
+python3 scripts/validate_restart_plan.py
+Restart plan valid: 47 tasks; ready: P02, S04, T01, B01
+Structural check only; hardware, review quality and security remain evidence gates.
+python3 -m unittest discover -s scripts -p 'test_validate_restart_plan.py'
+..................
+----------------------------------------------------------------------
+Ran 18 tests in 0.004s
+
+OK
+python3 -m unittest discover -s tools/baseline -p 'test_*.py'
+negative: ['/usr/bin/python3', '-c', 'import sys; print("out"); print("diagnostic", file=sys.stderr); sys.exit(7)']
+.download file:///tmp/tmpsp8328v4/source
+...overlay-check: ['git', 'apply', '--check', '/tmp/tmp94jh9_aq/tools/baseline/overlays/lab-provenance.patch']
+overlay-apply: ['git', 'apply', '/tmp/tmp94jh9_aq/tools/baseline/overlays/lab-provenance.patch']
+metadata-v1-overlay-check: ['git', 'apply', '--check', '/tmp/tmp94jh9_aq/docs/restart/implementation/S01/lab-metadata-v1.patch']
+metadata-v1-overlay-apply: ['git', 'apply', '/tmp/tmp94jh9_aq/docs/restart/implementation/S01/lab-metadata-v1.patch']
+provenance-followup-overlay-check: ['git', 'apply', '--check', '/tmp/tmp94jh9_aq/tools/baseline/overlays/lab-provenance-followup.patch']
+provenance-followup-overlay-apply: ['git', 'apply', '/tmp/tmp94jh9_aq/tools/baseline/overlays/lab-provenance-followup.patch']
+.overlay-check: ['git', 'apply', '--check', '/tmp/tmpvuw1kyqf/tools/baseline/overlays/lab-provenance.patch']
+overlay-apply: ['git', 'apply', '/tmp/tmpvuw1kyqf/tools/baseline/overlays/lab-provenance.patch']
+metadata-v1-overlay-check: ['git', 'apply', '--check', '/tmp/tmpvuw1kyqf/docs/restart/implementation/S01/lab-metadata-v1.patch']
+metadata-v1-overlay-apply: ['git', 'apply', '/tmp/tmpvuw1kyqf/docs/restart/implementation/S01/lab-metadata-v1.patch']
+.....overlay-check: ['git', 'apply', '--check', '/tmp/tmprmc4mhjh/tools/baseline/overlays/lab-provenance.patch']
+overlay-apply: ['git', 'apply', '/tmp/tmprmc4mhjh/tools/baseline/overlays/lab-provenance.patch']
+.
+----------------------------------------------------------------------
+Ran 11 tests in 0.112s
+
+OK
