@@ -1,0 +1,772 @@
+{
+  "schema_version": 1,
+  "task": "S04",
+  "record_kind": "Preparation source audit; no implementation, new custody protocol or acceptance verdict",
+  "author": "/root/s04_custody_author",
+  "as_of": "2026-10-18",
+  "assignment": "https://github.com/nSealr/nsealr/issues/25",
+  "authority_rule": "Accepted P01 and unchanged S04 criteria determine correctness; source establishes behavior, not correctness. work-items.json is the only task ledger.",
+  "binding_method": {
+    "source": "git ls-tree <commit> -- <path>; git cat-file blob <git_blob>; SHA256 of exact blob bytes",
+    "tree": "git rev-parse <commit>^{tree}",
+    "mode": "Stored from the Git tree, not inferred from working-tree filesystem",
+    "reading_limits": "Relevant declarations, implementations and caller paths inspected as named below. No production execution, device operation or new vendor research. Original manufacturer bytes are not republished or represented as freshly read.",
+    "scope_searches": [
+      "rg --files crates apps boards",
+      "rg -n -g *.rs Pin|PIN|wrapp|custody|attempt|pairing|provision|derive_nostr|derive.*key|Nip06|SecureElement crates apps",
+      "git ls-tree -r 043e64ceb745a323f9a332cc02fae2993388fabe"
+    ]
+  },
+  "repository_inputs": [
+    {
+      "id": "core",
+      "repository": "https://github.com/nSealr/nsealr",
+      "commit": "f2ef70f522af4977e15f81554a8c6eadcdbe8097",
+      "tree": "f2a0e1aa941f68f9da706c3fa9987942bd292ff2",
+      "purpose": "Authoritative initial source; accepted requirements distinguish correctness from existing behavior.",
+      "files": [
+        {
+          "path": "AGENTS.md",
+          "mode": "100644",
+          "git_blob": "69f95f67ad5d837caaae2d88ebe822ad8e5f1cda",
+          "sha256": "bb2487e1ddf719f2c49621bc6018b6505beb1d9145805e3a157d9bab37c45020",
+          "bytes": 2703
+        },
+        {
+          "path": "Cargo.toml",
+          "mode": "100644",
+          "git_blob": "323049e8b1b17d6fa8387ab6f61f20147b44fe91",
+          "sha256": "056d5245eb259bb54f567622b610f959073848c3e01720b96ec4743f5d962747",
+          "bytes": 1252
+        },
+        {
+          "path": "Cargo.lock",
+          "mode": "100644",
+          "git_blob": "965e36918d4aa6c76a59be6c9d7cb7e545e1753a",
+          "sha256": "92be519cdf623cc5e96fba7420cad3e4cf5ff0f08574f8e5969a65c48df54b1b",
+          "bytes": 5592
+        },
+        {
+          "path": "crates/nsealr-core/Cargo.toml",
+          "mode": "100644",
+          "git_blob": "d1e390044d1ee304b7772fad3589a728bc697adb",
+          "sha256": "628a4f6591a0b6b5d8406bad3dc849e304f01d4a54394c530809967ebe0728e4",
+          "bytes": 652
+        },
+        {
+          "path": "docs/restart/README.md",
+          "mode": "100644",
+          "git_blob": "2607be0b530198d2c768e509dcf5d36b7095fe69",
+          "sha256": "84ff28271341348f7f82da12ccac2920dfb534a1dac222cd665b16201bc025ea",
+          "bytes": 4403
+        },
+        {
+          "path": "docs/restart/work-items.json",
+          "mode": "100644",
+          "git_blob": "d7abbae2dd7d779bd58d553097a5d0c75d4e3279",
+          "sha256": "c2e9520d16731f3769c7ff3ccbdb2df0ef1c053eae3c40d8afb7baae47cf3428",
+          "bytes": 417186
+        },
+        {
+          "path": "docs/restart/development.md",
+          "mode": "100644",
+          "git_blob": "d5d44a79d2a499c571458763288b2b689e4a3566",
+          "sha256": "e47d96d5350ff9a60c7b53efb5005e09e9e4e99dddb81f20371bbfd8fe88dee9",
+          "bytes": 14256
+        },
+        {
+          "path": "docs/restart/architecture.md",
+          "mode": "100644",
+          "git_blob": "b0eaee08365a39f1c0731cda6e2d3282b4a23607",
+          "sha256": "855730fb0a801f411616869ffc01640eb46522d7bb27bf63747fa2fa7f290b2e",
+          "bytes": 4852
+        },
+        {
+          "path": "docs/restart/product-contract.md",
+          "mode": "100644",
+          "git_blob": "a27f1d510f949676c83b42b67a02aaa5be908268",
+          "sha256": "c6ff778a21e1983e5c447d235b58c22cdc94685671ebef8b4cee618cb93467ae",
+          "bytes": 1666
+        },
+        {
+          "path": "docs/restart/implementation/P01/requirements.md",
+          "mode": "100644",
+          "git_blob": "e35aa354a546f38422c1f17f1a32e4fc0c2b7fec",
+          "sha256": "f8635e2941895b7d4043e769c9b73e2064036b1358e5f4266854b074a9b81326",
+          "bytes": 17199
+        },
+        {
+          "path": "docs/restart/implementation/P01/threat-models.md",
+          "mode": "100644",
+          "git_blob": "3c8f03982ca59fd43eec83bc4cd347e0b6f243b7",
+          "sha256": "ebf8d5a821eb4843d7b961840a4b21cc74a2997dfa5b9e15f0cc6907586ffee0",
+          "bytes": 8532
+        },
+        {
+          "path": "docs/restart/implementation/P01/event-review-contract.md",
+          "mode": "100644",
+          "git_blob": "455909d1941fd183d970bcb749f5e89f537f017b",
+          "sha256": "acaec734d7f5317097dde97eb071c59132ee3a1ed6af1fdb3f6289d1a0950043",
+          "bytes": 9733
+        },
+        {
+          "path": "docs/restart/implementation/S02/secret-flow.md",
+          "mode": "100644",
+          "git_blob": "7ce165eb287d11609421f734d8793f1ce3d51d99",
+          "sha256": "067030391a583560d95d78f9f768afa093fee3f6a65ae489b18be774e7324cba",
+          "bytes": 4334
+        },
+        {
+          "path": "docs/restart/implementation/S02/entropy-contract.md",
+          "mode": "100644",
+          "git_blob": "8e4383bb3c9dff8f9d81776e7b761260fe6dd3c4",
+          "sha256": "a0883cbd920b85ab1db71e619b2c503d7a84137761ab60d8913e5353c9ce0916",
+          "bytes": 4710
+        },
+        {
+          "path": "docs/restart/implementation/S02/crypto-selection.md",
+          "mode": "100644",
+          "git_blob": "8c34b7d0b303782a6b5ba229e24abaf6fa26a190",
+          "sha256": "6f02f64a24e5747f63d25b81a472dc5e257055f4fbb853587113b1c355bd7f56",
+          "bytes": 7734
+        },
+        {
+          "path": "crates/nsealr-core/src/nip19.rs",
+          "mode": "100644",
+          "git_blob": "862ec3e4f50d2be17c10a713da16f4cc9f64aa68",
+          "sha256": "738499a70213b0c8aeb2299b47ac7c8a7839cd7f6b5f4316a37448c9878484f0",
+          "bytes": 18769
+        },
+        {
+          "path": "crates/nsealr-core/src/session/mod.rs",
+          "mode": "100644",
+          "git_blob": "8e2d4c9fbe9c9ea17bfd2e0dc03fa232f75a1849",
+          "sha256": "631fc4ad7bedf730db4d97e96890d6b427566b9d6890f6e522c6b2960bdd0054",
+          "bytes": 1218
+        },
+        {
+          "path": "crates/nsealr-core/src/session/keyring.rs",
+          "mode": "100644",
+          "git_blob": "57a148a360e3e9b024256d8ab3817da0ed340dd8",
+          "sha256": "8cb2541f8092a102c81eb3c5dcf971a527fcf8d2247b911c33843bdfa8430003",
+          "bytes": 23857
+        },
+        {
+          "path": "crates/nsealr-core/src/session/source_generation.rs",
+          "mode": "100644",
+          "git_blob": "f5d5f639dc8e91c744678b2bf267603e3354b9bb",
+          "sha256": "2956331b751626b74288225e9e402f6210068791c8b167e5a9cef5b76426dd12",
+          "bytes": 6998
+        },
+        {
+          "path": "crates/nsealr-core/src/session/source_qr.rs",
+          "mode": "100644",
+          "git_blob": "20223f8e09e2d03a8880182f5e65443be642da81",
+          "sha256": "e00b96d151b542877de2ee53d41202945fde7d5a7ef963bedd5cb67a500ea1d6",
+          "bytes": 18445
+        },
+        {
+          "path": "crates/nsealr-core/src/session/import_flow.rs",
+          "mode": "100644",
+          "git_blob": "d3bd59d69ecae4828baa6689d98ab01c9b1acfe0",
+          "sha256": "498558d81732f8343257ca7666ce59c1b00fa7bf109e426c3fd0a1d5306bb180",
+          "bytes": 14827
+        },
+        {
+          "path": "crates/nsealr-core/src/session/import_review.rs",
+          "mode": "100644",
+          "git_blob": "f1810bf621b909179cb2627973225b2d0d881bb6",
+          "sha256": "8cdb63ea696e5610585671053483e8d7679befcbf5c92522b874b2869382f267",
+          "bytes": 18292
+        },
+        {
+          "path": "crates/nsealr-core/src/session/source_backup.rs",
+          "mode": "100644",
+          "git_blob": "7a3e55725b0519dd4baf2b6ecc1cd5220241d772",
+          "sha256": "05164dc0f75436635facefff898f637ebef77bf90c1b3f6f7c67d1a3bead209d",
+          "bytes": 43676
+        },
+        {
+          "path": "crates/nsealr-core/src/session/account.rs",
+          "mode": "100644",
+          "git_blob": "7081d6212ba4428b3d5f8adb1070d2ef883b2639",
+          "sha256": "1966870403484b6552335d3843e86054b38a5a8747e2fd7675d4f1366f213e3e",
+          "bytes": 28558
+        },
+        {
+          "path": "crates/nsealr-core/src/policy/signing_policy.rs",
+          "mode": "100644",
+          "git_blob": "1db485abbadc4409fec02b4970d309c83478711f",
+          "sha256": "dbd273c220757ebeee6ab1092a7274af72425aa6c6ca482d4a2058161b1fb253",
+          "bytes": 12020
+        },
+        {
+          "path": "apps/desktop-simulator/src/lib.rs",
+          "mode": "100644",
+          "git_blob": "5995d2a326265cfe94bd8a4d0008b2d204baa19d",
+          "sha256": "570e46a728b43561d6843e381b94f17d892eebd2809e0ab067055d6e4edae5bf",
+          "bytes": 10931
+        },
+        {
+          "path": "apps/desktop-simulator/src/replay/sources.rs",
+          "mode": "100644",
+          "git_blob": "39fcde0d7a1a8365691ddca5489957135178c808",
+          "sha256": "3fedd66e5c5911c0b30e019b9e105b013c6dd962f75a8da2bb9e2b40efc37425",
+          "bytes": 12033
+        },
+        {
+          "path": "tests/fixtures/specs/SOURCE.json",
+          "mode": "100644",
+          "git_blob": "9487ae429b51df9ccf298cbeef832a2b6568fd93",
+          "sha256": "ede07769fdaa3c007120dc217c9b764a901c5d2167a87053c32f569e8a328015",
+          "bytes": 28989
+        },
+        {
+          "path": "tests/fixtures/specs/vectors/custody/persistent-secret-custody-v0.json",
+          "mode": "100644",
+          "git_blob": "98fed95e20c8c192368485cdda9d404b18d25550",
+          "sha256": "75aa9cda35e7395832a7b3a1495514c59d2128fa53cf973048ea1589060a23cd",
+          "bytes": 1914
+        },
+        {
+          "path": "boards/custom_wallet_min_display_panels.json",
+          "mode": "100644",
+          "git_blob": "c8435beec81a2b614495e127488c2e8b062f0711",
+          "sha256": "cb6f92385410139092d4218983608269e940c97323cd86517703e1a59a012255",
+          "bytes": 2185
+        }
+      ]
+    },
+    {
+      "id": "h01",
+      "repository": "https://github.com/nSealr/hardware",
+      "commit": "6f95cc298c5a8108d5c0bdaedfd53e7b81b130ed",
+      "tree": "c85f7bcefb20f0701bc0354f8ad648cbaf547f80",
+      "purpose": "Frozen contextual research; incomplete, no component admission. Substantive source 6b45f6f79e1888bdf2ec6680d14dd951b7019327.",
+      "files": [
+        {
+          "path": "docs/restart/H01/manual-register.json",
+          "mode": "100644",
+          "git_blob": "4af4f599de29637bcfb904f79560dfc213ac2640",
+          "sha256": "607f4a16d2c6e59c329fcb8fb2cd9f81c3884aa87d1a5729397456f1423bbdeb",
+          "bytes": 120775
+        },
+        {
+          "path": "docs/restart/H01/claims.json",
+          "mode": "100644",
+          "git_blob": "76403399397601ce8928f5234cc570ff3b151cdb",
+          "sha256": "1e0459588b7cb40e27163598c69bf14b5920881207ddcf62587e9c344dc65858",
+          "bytes": 29605
+        },
+        {
+          "path": "docs/restart/H01/option-comparison.md",
+          "mode": "100644",
+          "git_blob": "e19a2f1e2fbabbcdd599b73b8fa073665a0a7f58",
+          "sha256": "d04c20cdef516539f5d05d2bb8f5f2b14a7ba71854af921e8cd7d5c6c5a9a3f7",
+          "bytes": 15758
+        }
+      ]
+    },
+    {
+      "id": "h01_review",
+      "repository": "https://github.com/nSealr/hardware",
+      "commit": "2f9ea3a18d8fb18e3fbaa8f58b6272102f83b9c2",
+      "tree": "babbddcd8a54889487219613a46589c42e70d26e",
+      "purpose": "Distinct bounded follow-up review; does not pass H01 as a whole.",
+      "files": [
+        {
+          "path": "docs/restart/H01/independent-review-followup/report.md",
+          "mode": "100644",
+          "git_blob": "c3da118b24ed9d11df8b55fab0c023abc6edea8d",
+          "sha256": "6b20a32f262feb4011a9b386832dcab803bedacef52acaa9a07660ada581dc18",
+          "bytes": 11893
+        }
+      ]
+    },
+    {
+      "id": "sdk",
+      "repository": "https://github.com/nSealr/board-sdk",
+      "commit": "043e64ceb745a323f9a332cc02fae2993388fabe",
+      "tree": "818ada7d6edd6a71aa94ab73e195d5be0e924a26",
+      "purpose": "Generic SDK boundary and absence of implemented services.",
+      "files": [
+        {
+          "path": "AGENTS.md",
+          "mode": "100644",
+          "git_blob": "fefca847191bdbbd92cc2cca1edf1f72e37a46cb",
+          "sha256": "08dba923fd00648b93caa970f5f793af0533bd356ab99aaec3b26227f6a752a5",
+          "bytes": 485
+        },
+        {
+          "path": "README.md",
+          "mode": "100644",
+          "git_blob": "f11f996ca41a395456517d7743a8bf37e499e7ac",
+          "sha256": "9febbb251ca26b32eaf49e263108341aa0a0533b565689a005af1b1cba58988c",
+          "bytes": 2397
+        }
+      ]
+    },
+    {
+      "id": "hardware_main",
+      "repository": "https://github.com/nSealr/hardware",
+      "commit": "340697d6713a671e9e01b0dc874ec999ab071601",
+      "tree": "f59e790ff66cf035d44980a5225b3343337a0529",
+      "purpose": "Frozen hardware input; legacy README is not current requirement authority.",
+      "files": [
+        {
+          "path": "README.md",
+          "mode": "100644",
+          "git_blob": "a50128147f8fb78e4940998f3542efb825e6e7fa",
+          "sha256": "aee6ee7bead9617902361bf6c9cbf8065cd5010fe0259d6c2698d03bfa1490ce",
+          "bytes": 2025
+        }
+      ]
+    },
+    {
+      "id": "s03_context",
+      "repository": "https://github.com/nSealr/nsealr",
+      "commit": "2d7d465a291c4d4a1324d90595fc45a2fdbefca5",
+      "tree": "266a69ab1d82e03e4c56dfd51cd6e09294f9f6ad",
+      "purpose": "Unintegrated context only; selected caller and regression reading, no runtime replay or whole-candidate review here.",
+      "files": [
+        {
+          "path": "crates/nsealr-core/src/authorization.rs",
+          "mode": "100644",
+          "git_blob": "92dc668eeddc7b25df6758464aab2f3e898d8e0b",
+          "sha256": "d17e1e893fd403da3eba9c0de69decf014e123d0f1524c310d526b37b05f1ab1",
+          "bytes": 21067
+        },
+        {
+          "path": "crates/nsealr-core/src/authorization/tests.rs",
+          "mode": "100644",
+          "git_blob": "01480c3ec7214288f75a8ddf49bdc9ded399102f",
+          "sha256": "09a3bbe29f6610b50950a4d68dcdcac1c6c3c50e87fcfe4d4f9f08311a9f726b",
+          "bytes": 46283
+        },
+        {
+          "path": "crates/nsealr-core/src/session/source_backup.rs",
+          "mode": "100644",
+          "git_blob": "f894c52e88c69fe7b88ae529b182a6cca52f18b9",
+          "sha256": "697391075a49e66585eaec20c79cf047b51b68928bbceb68f7066d3bea2ed34e",
+          "bytes": 43679
+        }
+      ]
+    }
+  ],
+  "observations": [
+    {
+      "id": "SRC-01",
+      "sources": [
+        "core:docs/restart/implementation/P01/requirements.md",
+        "core:docs/restart/implementation/P01/threat-models.md",
+        "core:docs/restart/implementation/P01/event-review-contract.md"
+      ],
+      "symbols_or_scope": "PROD-01/02/03/04/09/11/12; custom Board and generic SDK threat boundaries",
+      "current_behavior_or_authority": "Native scalar/nsec recovery, one active identity, local operation authority and lifecycle qualification are accepted requirements. Optional NIP06 migration and one trusted firmware image do not imply arbitrary-app isolation.",
+      "consequence": "Use these requirements over inherited part names, fixtures and source behavior."
+    },
+    {
+      "id": "SRC-02",
+      "sources": [
+        "core:Cargo.toml",
+        "core:crates/nsealr-core/Cargo.toml",
+        "core:crates/nsealr-core/src/session/mod.rs"
+      ],
+      "symbols_or_scope": "workspace members; product dependency and session module declarations",
+      "current_behavior_or_authority": "Product workspace consists of core and desktop-simulator. Core dependency declarations are sha2/zeroize; inspected session source is RAM-only. No persistent PIN/SE/owner-root implementation is present in these product source trees.",
+      "consequence": "There is no existing persistent protocol to bless or repair by merely replacing a boolean. Absence claim excludes research/vendor and unrelated repositories."
+    },
+    {
+      "id": "SRC-03",
+      "sources": [
+        "core:crates/nsealr-core/src/nip19.rs",
+        "core:crates/nsealr-core/src/session/keyring.rs"
+      ],
+      "symbols_or_scope": "SecretKey::take_from, as_bytes, Drop; StatelessSessionKeyring::add_source/take_last/clear",
+      "current_behavior_or_authority": "Scalar input validates range and clears mutable input; raw borrow is crate-private; secret types are not Clone/Copy and Debug redacts. Keyring stores up to eight sources inline and clears current owned fields.",
+      "consequence": "Eight slots do not establish a multi-account product. Software privacy and Drop do not protect against arbitrary privileged firmware, moves, DMA or backend temporary exposure."
+    },
+    {
+      "id": "SRC-04",
+      "sources": [
+        "core:crates/nsealr-core/src/session/source_generation.rs",
+        "core:docs/restart/implementation/S02/entropy-contract.md"
+      ],
+      "symbols_or_scope": "generate_nsec_session_source; generate_bip39_session_source",
+      "current_behavior_or_authority": "Generation-named functions convert caller-provided scalar/entropy. They invoke no entropy provider.",
+      "consequence": "New custody must use qualified fallible entropy and preserve source-to-device evidence; no entropy qualification inferred from valid scalar syntax."
+    },
+    {
+      "id": "SRC-05",
+      "sources": [
+        "core:crates/nsealr-core/src/session/account.rs",
+        "core:crates/nsealr-core/src/session/import_review.rs",
+        "core:apps/desktop-simulator/src/replay/sources.rs"
+      ],
+      "symbols_or_scope": "select_session_account; expected_nip06_path; replay_keys/replay_accounts/replay_proof",
+      "current_behavior_or_authority": "Account selection validates supplied fields, source fingerprint and route/path, without deriving the public key; source_public_key_proof_verified remains false. Replay verifies public-key shape, not derivation. Source fingerprint is truncated domain-separated hash metadata.",
+      "consequence": "An expected-key recovery drill requires actual derivation and independent expected identity; fingerprint/shape/equal copied descriptor is not its oracle."
+    },
+    {
+      "id": "SRC-06",
+      "sources": [
+        "core:crates/nsealr-core/src/session/source_qr.rs",
+        "core:crates/nsealr-core/src/session/import_flow.rs",
+        "core:crates/nsealr-core/src/session/source_backup.rs"
+      ],
+      "symbols_or_scope": "run_session_import_flow; run_session_source_backup_flow; run_session_source_backup_io_flow; SessionSourceBackupIo",
+      "current_behavior_or_authority": "Import consumes source and simulated button input, loading only after the flow approves. Backup flow constructs an explicit secret payload after its software review; IO borrows it then drops it. Caller/output adapter still owns copies.",
+      "consequence": "Physical input provenance and secret display/camera/framebuffer cleanup are target obligations. Backup API restrictions do not isolate hostile code in the trusted image."
+    },
+    {
+      "id": "SRC-07",
+      "sources": [
+        "core:tests/fixtures/specs/vectors/custody/persistent-secret-custody-v0.json",
+        "core:apps/desktop-simulator/src/lib.rs",
+        "core:tests/fixtures/specs/SOURCE.json"
+      ],
+      "symbols_or_scope": "legacy custody fixture requirements; EXCLUDED_CATEGORIES custody",
+      "current_behavior_or_authority": "Historical fixture permits TROPIC-wrapped/S3 encrypted blobs and declares PIN-assist/wipe intentions; custody category is explicitly excluded from simulator replay. Snapshot originates from specs 45f8b6ff1123f3f55be4ce457fd1008e91043cc2.",
+      "consequence": "Retain as source provenance only; it does not select hardware, specify ciphertext or prove any persistent transition."
+    },
+    {
+      "id": "SRC-08",
+      "sources": [
+        "core:crates/nsealr-core/src/policy/signing_policy.rs",
+        "core:boards/custom_wallet_min_display_panels.json"
+      ],
+      "symbols_or_scope": "SigningReadiness; custom-wallet panel metadata",
+      "current_behavior_or_authority": "Readiness is supplied booleans; panel JSON contains historical board/MCU/FPC assertions and a physical-confirm label.",
+      "consequence": "Neither is physical evidence; exact custody/UI/bus/boot boundaries must be separately established against P01 and H01/H02/H04."
+    },
+    {
+      "id": "SRC-09",
+      "sources": [
+        "sdk:README.md",
+        "sdk:AGENTS.md"
+      ],
+      "symbols_or_scope": "all four tracked SDK files at pinned tree",
+      "current_behavior_or_authority": "SDK is a development foundation with no implemented board support. Tracked files are .gitignore, AGENTS.md, LICENSE and README.md.",
+      "consequence": "Do not invent existing SE driver or ownership API consumers. Later generic services belong to B01/B02, not Nostr semantics."
+    },
+    {
+      "id": "SRC-10",
+      "sources": [
+        "h01:docs/restart/H01/manual-register.json",
+        "h01:docs/restart/H01/claims.json",
+        "h01:docs/restart/H01/option-comparison.md",
+        "h01_review:docs/restart/H01/independent-review-followup/report.md"
+      ],
+      "symbols_or_scope": "H01-C12/13/14/16/17/18/19/20 and bounded review verdict",
+      "current_behavior_or_authority": "H01 has no admitted component; exact SE API/access/advisory/lifecycle questions remain. Follow-up passes material corrections and bounded statements only, keeping H01 incomplete.",
+      "consequence": "Inherited manual readings are explicitly attributed; no fresh primary-manual review or qualified remedy is claimed by this preparation."
+    },
+    {
+      "id": "SRC-11",
+      "sources": [
+        "s03_context:crates/nsealr-core/src/authorization.rs",
+        "s03_context:crates/nsealr-core/src/authorization/tests.rs",
+        "s03_context:crates/nsealr-core/src/session/source_backup.rs"
+      ],
+      "symbols_or_scope": "AuthorizationSession::select_key; s03_identity_is_derived_from_consumed_custody",
+      "current_behavior_or_authority": "Unintegrated S03 source says SigningKey::from_slice may normalize odd-Y scalar to n-d, then drops imported SecretKey. Public test source includes 3/n-3 identity/signature control. No recovery export is supplied by this session owner.",
+      "consequence": "Preserve the original recovery source before conversion if promising original nsec. This is narrow source reading, not rerun crypto evidence or integrated behavior. No ECDH/NIP44 failure follows."
+    }
+  ],
+  "inherited_vendor_register": {
+    "source": "h01:docs/restart/H01/manual-register.json",
+    "original_hash_semantics": "Copied original-file identities from the pinned H01 register; not a fresh original retrieval/hash or manual sign-off by S04. Null remains unknown. These are read-next inputs after distinct preparation review.",
+    "documents": [
+      {
+        "id": "nxp-se051-ds",
+        "manufacturer": "NXP",
+        "document_id": "Rev 2.0, 8 July 2024; 32 pages",
+        "revision": "Rev 2.0, 8 July 2024; 32 pages",
+        "document_date": "2024-07-08",
+        "url": "https://www.nxp.com/docs/en/data-sheet/SE051.pdf",
+        "original_sha256": "5aaf11205161d88ad5445576c655e74cc672c313fe924083516548c0c65d0aaa",
+        "access": "Preserved public original rehashed 2026-10-18",
+        "reading": "pp. 3–4 features; p. 8 interface selection; pp. 11–15 ordering, pins and supply.",
+        "remaining": "Full electrical/timing/power/application and exact OPN audit; errata and closed lifecycle documentation access."
+      },
+      {
+        "id": "nxp-se051-config",
+        "manufacturer": "NXP",
+        "document_id": "AN12973 Rev 2.0, 8 July 2024; 27 pages",
+        "revision": "AN12973 Rev 2.0, 8 July 2024; 27 pages",
+        "document_date": "2024-07-08",
+        "url": "https://www.nxp.com/docs/en/application-note/AN12973.pdf",
+        "original_sha256": "69a3999ad5af9bc2108bdc6c042271456fe0158816a46559f51a947c2657f30a",
+        "access": "Preserved public original rehashed 2026-10-18",
+        "reading": "pp. 2–5: A/C/P distinctions, C2 features/OEF/app revisions, default/recovery SCP ownership.",
+        "remaining": "Full object map, retained vendor objects, update/recovery authorization and received-device configuration verification."
+      },
+      {
+        "id": "nxp-se05x-api",
+        "manufacturer": "NXP",
+        "document_id": "AN12543 Rev 4.5, 27 March 2024 listed by vendor; content not accessed",
+        "revision": "AN12543 Rev 4.5, 27 March 2024 listed by vendor; content not accessed",
+        "document_date": "2024-03-27",
+        "url": "https://www.nxp.com/docs/en/application-note/AN12543.pdf",
+        "original_sha256": null,
+        "access": "Manufacturer catalogue only; mandatory content inaccessible",
+        "reading": "Vendor index/access requirement only; public raw URL returned 404. Public header reviewed separately.",
+        "remaining": "Authorized API manual access, policy/session/lifecycle semantics and delivery-version mapping before selection."
+      },
+      {
+        "id": "nxp-se051-errata",
+        "manufacturer": "NXP",
+        "document_id": "SE051 errata Rev 1.1, 30 November 2023 listed by vendor; content not accessed",
+        "revision": "SE051 errata Rev 1.1, 30 November 2023 listed by vendor; content not accessed",
+        "document_date": "2023-11-30",
+        "url": "https://www.nxp.com/docs/en/errata/SE051-ERRATASHEET.pdf",
+        "original_sha256": null,
+        "access": "Manufacturer catalogue only; mandatory content inaccessible",
+        "reading": "Vendor index identifies account requirement; public raw URL returned 404.",
+        "remaining": "Authorized access and applicability review mandatory before SE051 selection. 404 does not mean no errata."
+      },
+      {
+        "id": "nxp-sems-update",
+        "manufacturer": "NXP",
+        "document_id": "AN12907 Rev 1.2, 23 November 2023; 43 pages",
+        "revision": "AN12907 Rev 1.2, 23 November 2023; 43 pages",
+        "document_date": "2023-11-23",
+        "url": "https://www.nxp.com/docs/en/application-note/AN12907.pdf",
+        "original_sha256": "d582655f13ecdd83cc51744c5d7aae427c26ee2650b625e3d83d9936495f0381",
+        "access": "Preserved public original rehashed 2026-10-18",
+        "reading": "pp.2–6 / sections1–3: applet roles, SEMS architecture, NXP patch distribution, object/SCP preservation, key rotation.",
+        "remaining": "Sections4–6 operational/account/API procedure and current service/script terms; actual version/rotation/power-cut qualification."
+      },
+      {
+        "id": "nxp-se051-current-index",
+        "manufacturer": "NXP",
+        "document_id": "SE051 documentation catalogue",
+        "revision": "AN12543 Rev4.5; errata1.1; AN13030 Rev2.7; AN13015 Rev1.4",
+        "document_date": null,
+        "url": "https://www.nxp.com/products/SE051",
+        "original_sha256": null,
+        "access": "Primary web/index only; original unavailable or not retrieved",
+        "reading": "Current index and direct access failures; API/middleware/personalization account requirements.",
+        "remaining": "Mandatory API/errata/update and developer distribution terms remain H02S/H04 gates."
+      },
+      {
+        "id": "optiga-m-ds",
+        "manufacturer": "Infineon",
+        "document_id": "Rev 3.70, 9 October 2024; 45 pages",
+        "revision": "Rev 3.70, 9 October 2024; 45 pages",
+        "document_date": "2024-10-09",
+        "url": "https://www.infineon.com/assets/row/public/documents/30/49/infineon-optiga-trust-m-sls32aia-datasheet-en.pdf",
+        "original_sha256": "f9495234e67a7626dc64e1c19fbc9d1b72681f66ad6d9d17bec4b43c16c242b2",
+        "access": "Preserved public original rehashed 2026-10-18",
+        "reading": "Tables 1–4, pp. 8–9 variant/algorithm support; pp. 17–20 pin/supply inspection.",
+        "remaining": "Exact OPN/configuration and full timing/electrical/application/power-down audit."
+      },
+      {
+        "id": "optiga-m-manual",
+        "manufacturer": "Infineon",
+        "document_id": "Rev 3.70, 9 October 2024; 127 pages",
+        "revision": "Rev 3.70, 9 October 2024; 127 pages",
+        "document_date": "2024-10-09",
+        "url": "https://raw.githubusercontent.com/Infineon/optiga-trust-m-overview/a45b86bda014efeebfb85f084f779cedb07b32dc/docs/pdf/OPTIGA_Trust_M_Solution_Reference_Manual_v3.70.pdf",
+        "original_sha256": "41315a418c287f9cfff54b51a3538eec8026de2a601d83a6196b69aeee9adc4d",
+        "access": "Preserved public original rehashed 2026-10-18",
+        "reading": "pp. 23–24 and 34–36 HMAC, authorization-state and derivation behavior.",
+        "remaining": "Full metadata/object/channel/authorization/counter/reset state machine; power-cut atomicity and owner provisioning review."
+      },
+      {
+        "id": "optiga-m-releases",
+        "manufacturer": "Infineon",
+        "document_id": "Rev 3.02, 3 February 2025; 19 pages",
+        "revision": "Rev 3.02, 3 February 2025; 19 pages",
+        "document_date": "2025-02-03",
+        "url": "https://raw.githubusercontent.com/Infineon/optiga-trust-m-overview/a45b86bda014efeebfb85f084f779cedb07b32dc/docs/pdf/OPTIGA_Trust_M_Release_Notes_v3.02.pdf",
+        "original_sha256": "487600f59f0a8e2e9a9054481547b8bf875a14e58606cb0be85cc8e97789b3c7",
+        "access": "Preserved public original rehashed 2026-10-18",
+        "reading": "p. 7 current maintenance v3.02.2564 caveats, SCA library update and host recovery/concurrency restrictions; historical entries distinguished.",
+        "remaining": "Map current silicon/firmware/host-library tuple; prove caveats handled, including interrupted host/SE transactions."
+      },
+      {
+        "id": "optiga-m-i2c",
+        "manufacturer": "Infineon",
+        "document_id": "Rev 2.03, 22 September 2020; 44 pages",
+        "revision": "Rev 2.03, 22 September 2020; 44 pages",
+        "document_date": "2020-09-22",
+        "url": "https://raw.githubusercontent.com/Infineon/optiga-trust-m-overview/a45b86bda014efeebfb85f084f779cedb07b32dc/docs/pdf/Infineon_I2C_Protocol_v2.03.pdf",
+        "original_sha256": "04288206e14412cd6dc6bbbdbc45fc469a28a1cc260b2e42e022d8f33397774d",
+        "access": "Preserved public original rehashed 2026-10-18",
+        "reading": "Downloaded and cover/version identified; transport content not reviewed.",
+        "remaining": "Full transport/shielded-connection/timeout/recovery review for selected host integration."
+      },
+      {
+        "id": "tropic-ds",
+        "manufacturer": "Tropic Square",
+        "document_id": "A.11, 11 November 2025; 75 pages",
+        "revision": "A.11, 11 November 2025; 75 pages",
+        "document_date": "2025-11-11",
+        "url": "https://raw.githubusercontent.com/tropicsquare/tropic01/90747cac7c0261408c0ca767d272894f481f2cf2/doc/datasheet/ODD_TR01_datasheet_vA_11.pdf",
+        "original_sha256": "ae647fa59ace0f386d3e964ab6dc476fcc6b6ac584932f5a8bab360478a7978a",
+        "access": "Preserved public original rehashed 2026-10-18",
+        "reading": "Reused earlier selected review: alarm/power-cycle p. 18, supply/ramp p. 57, decoupling/unused pins/package pp. 63–65.",
+        "remaining": "Complete exact released part/package/rail/alarm audit; no substitute for security advisory closure."
+      },
+      {
+        "id": "tropic-api",
+        "manufacturer": "Tropic Square",
+        "document_id": "1.4.0, 11 November 2025; 67 pages",
+        "revision": "1.4.0, 11 November 2025; 67 pages",
+        "document_date": "2025-11-11",
+        "url": "https://raw.githubusercontent.com/tropicsquare/tropic01/90747cac7c0261408c0ca767d272894f481f2cf2/doc/api/ODU_TR01_user_api_v1_4_0.pdf",
+        "original_sha256": "377fdef6a88ae49521f669aa50bf8e4154ac67b6eb57d35c6d0abc92afd8b5b7",
+        "access": "Preserved public original rehashed 2026-10-18",
+        "reading": "Key-curve enum and signing commands, pp. 36–41; command inventory has no application ECDH/BIP340 operation.",
+        "remaining": "Exact firmware/API tuple, slot/access rules and error/power-cut state behavior if admitted."
+      },
+      {
+        "id": "tropic-pin",
+        "manufacturer": "Tropic Square",
+        "document_id": "v1.2, 4 February 2026; 29 pages",
+        "revision": "v1.2, 4 February 2026; 29 pages",
+        "document_date": "2026-02-04",
+        "url": "https://raw.githubusercontent.com/tropicsquare/tropic01/90747cac7c0261408c0ca767d272894f481f2cf2/doc/application_notes/ODN_TR01_app_002_pin_verif_1v2.pdf",
+        "original_sha256": "014fd5457d8df41987f464b92802a3ed4af9711b2393d46d5ee637540cfdd0bc",
+        "access": "Preserved public original rehashed 2026-10-18",
+        "reading": "MAC-and-Destroy retry construction, host KDF and persistent-state responsibilities, pp. 5–10.",
+        "remaining": "Full enrollment/change/recovery/rollback/power-cut implementation review; no assumed automatic timed delay."
+      },
+      {
+        "id": "tropic-pairing",
+        "manufacturer": "Tropic Square",
+        "document_id": "v1.3, 5 May 2026; 11 pages",
+        "revision": "v1.3, 5 May 2026; 11 pages",
+        "document_date": "2026-05-05",
+        "url": "https://raw.githubusercontent.com/tropicsquare/tropic01/90747cac7c0261408c0ca767d272894f481f2cf2/doc/application_notes/ODN_TR01_app_005_first_pairing_key_1v3.pdf",
+        "original_sha256": "f41942a27c17d455ebb73f0a74d95e1899e6f565dad131867ae91bc995b9960c",
+        "access": "Preserved public original rehashed 2026-10-18",
+        "reading": "p. 5 default SDK pairing credential replacement/invalidation.",
+        "remaining": "Full owner pairing, rotation, backup/reset and damaged-host recovery implementation if admitted."
+      },
+      {
+        "id": "tropic-advisory",
+        "manufacturer": "Tropic Square",
+        "document_id": "ODR_TR01_SA_2026012900 v1.0, 3 June 2026; 13 pages",
+        "revision": "ODR_TR01_SA_2026012900 v1.0, 3 June 2026; 13 pages",
+        "document_date": "2026-06-03",
+        "url": "https://raw.githubusercontent.com/tropicsquare/tropic01/90747cac7c0261408c0ca767d272894f481f2cf2/doc/security_advisories/ODR_TR01_SA_2026012900_1v0.pdf",
+        "original_sha256": "299fa8f07ad0611cdc2a56b24d46ead257fe42dca9c3d96cd38b3384c598f1ad",
+        "access": "Preserved public original rehashed 2026-10-18",
+        "reading": "Affected T310 tuple p. 3, mitigation pp. 5–6, disclosure/remediation timeline including p. 10.",
+        "remaining": "No fixed orderable qualified silicon established. Mitigation adequacy must meet accepted physical threat; forecast dates are not delivery evidence."
+      },
+      {
+        "id": "tropic-catalog",
+        "manufacturer": "Tropic Square",
+        "document_id": "Part-number catalogue v2.0, 25 November 2025; 16 pages",
+        "revision": "Part-number catalogue v2.0, 25 November 2025; 16 pages",
+        "document_date": "2025-11-25",
+        "url": "https://raw.githubusercontent.com/tropicsquare/tropic01/90747cac7c0261408c0ca767d272894f481f2cf2/doc/catalog_list/OD_TR01_catalog_list_2v0.pdf",
+        "original_sha256": "0c5dec4c4c4f7d5b7ae075f9451d809826465737f4d5e92bd6f48d0aa4df83d0",
+        "access": "Preserved public original rehashed 2026-10-18",
+        "reading": "pp. 2–4: T310/released order-code distinctions; reconciled with incomplete online index.",
+        "remaining": "Supplier delivery/lot/firmware identity and new-silicon evidence; no stock assertion."
+      },
+      {
+        "id": "s3-ar2026-005",
+        "manufacturer": "Espressif",
+        "document_id": "s3-ar2026-005",
+        "revision": "V1.0",
+        "document_date": "2026-06-10",
+        "url": "https://documentation.espressif.com/AR2026-005_Security_Advisory_Concerning_AES_Key_Recovery_Using_Voltage_Fault_Injection_on%20ESP32-S3_EN.html",
+        "original_sha256": "bb478a50d17fa6e0d6309b7b8d7a43776b415bc08e988a08fa96c4513ac28e36",
+        "access": "public, original HTML downloaded",
+        "reading": "Entire four-page technical body read via manufacturer HTML; AES/XTS scope, conditions, affected products and absence of complete fix.",
+        "remaining": "Exact H02 SDK commit/configuration and implementation-to-manual checks remain."
+      },
+      {
+        "id": "st-sa0055",
+        "manufacturer": "ST",
+        "document_id": "SA0055",
+        "revision": "2",
+        "document_date": "2026-03-23",
+        "url": "https://www.st.com/resource/en/security_advisory/sa0055-sfi-security-enhancement-for-stm32h523533-microcontrollers-stm32u5-series-and-stm32l5-series-stmicroelectronics.pdf",
+        "original_sha256": null,
+        "access": "Primary web PDF extraction read; native original retrieval timed out; no original-byte hash.",
+        "reading": "Entire five-page advisory via primary web PDF extraction; U5 external-flash SFI confidentiality only, affected RSSe <=5.0.0 and remedy v6.0.0 + matched personalization in X-CUBE-RSSe >=1.2.0. Does not list H573.",
+        "remaining": "Original-byte acquisition outstanding; applicability conditions recorded, no physical qualification."
+      }
+    ]
+  },
+  "protocol_inputs": {
+    "reading_status": "Inherited pins from accepted P01/S02; fresh exact NIP06 and selected custody primitive review is later work, not claimed here.",
+    "nostr_commit": "37db639582d857e12468dcccd99b2c7f1d657da9",
+    "required_documents": [
+      "06.md",
+      "19.md",
+      "44.md"
+    ],
+    "bip340_commit": "927b6de9915c9262615a6399de51b200f81e5aa4",
+    "bip340_path": "bip-0340.mediawiki"
+  },
+  "coordination_context": {
+    "s03_review_commit_reported_by_coordinator": "b03475ccf4a057c7771065126002f2e4e056d28d",
+    "s03_review_limit": "Reported bounded portable-authorization pass; not independently rereviewed here, not integrated and not recovery/persistence evidence.",
+    "s03_source_reconciliation": {
+      "compared_to_initial_core": [
+        "crates/nsealr-core/src/session",
+        "crates/nsealr-core/src/nip19.rs"
+      ],
+      "changed_path": "crates/nsealr-core/src/session/source_backup.rs",
+      "observed_diff": "render_review_page was renamed to render_preview_page in import, call and comment; other paths in this comparison were unchanged. This does not establish equivalence of the whole S03 source or authorization behavior."
+    },
+    "rm0456_rev7": {
+      "sha256_reported_by_coordinator": "6edaaaae0c5d57c58ffc3a576d44e7b62e8d9cd0e495e8f61bab688226fc327c",
+      "verification": "Original not read or rehashed here. Retrieval is newer context, not required MCU subset sign-off.",
+      "owner": "H01/H02"
+    }
+  },
+  "resource_observation": {
+    "physical_operator": "UNKNOWN",
+    "host_bench": "UNKNOWN",
+    "se_bench": "UNKNOWN",
+    "sacrificial_units": "UNKNOWN",
+    "bench_instruments": "UNKNOWN",
+    "production_secret_use": false,
+    "irreversible_operations": false
+  },
+  "reconciliation_required": "A02/S03 or later H01 integration may move paths/behavior. Rebind and independently review affected inputs and callers before later implementation; do not update initial hashes silently.",
+  "preparation_verification": {
+    "environment": {
+      "python": "3.13.5",
+      "git": "2.47.3",
+      "platform": "Linux",
+      "working_directory": "isolated restart/s04-custody worktree at initial commit"
+    },
+    "input_correspondence": {
+      "execution": "Read-only inline Python 3 subprocess calls and assertions; no product or hardware behavior executed.",
+      "commands": [
+        "git -C <input_repository> rev-parse <commit>^{tree}",
+        "git -C <input_repository> ls-tree <commit> -- <path>",
+        "git -C <input_repository> cat-file blob <git_blob>",
+        "git show f2ef70f522af4977e15f81554a8c6eadcdbe8097:docs/restart/work-items.json"
+      ],
+      "checks": [
+        "Exact Git tree equality for six input records",
+        "Exact mode/blob/path/byte count and hashlib.sha256 for all 40 files",
+        "All source references resolve to bound inputs",
+        "All seven original S04 acceptance strings and P01 dependency equal acceptance-plan.json",
+        "Procedure references resolve and exactly three preparation files exist",
+        "Local brief links resolve"
+      ],
+      "exit_code": 0,
+      "stdout": "PASS: 40 exact blobs/modes/SHA256s; 6 trees; all observation references; seven unchanged criteria; procedure mappings; three-file scope; local links"
+    },
+    "plan_validation": {
+      "command": [
+        "python3",
+        "scripts/validate_restart_plan.py"
+      ],
+      "exit_code": 0,
+      "stdout": "Restart plan valid: 47 tasks; ready: P02, S04, B01\nStructural check only; hardware, review quality and security remain evidence gates."
+    },
+    "limitation": "Verification covers input correspondence and document scope, not a custody protocol, model implementation, cryptographic certification or physical acceptance. Distinct exact-candidate review remains required."
+  }
+}

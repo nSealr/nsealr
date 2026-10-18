@@ -1,0 +1,556 @@
+{
+  "schema_version": 1,
+  "task": "S04",
+  "record_kind": "Acceptance and fault-model plan; procedures not represented as executed",
+  "author": "/root/s04_custody_author",
+  "initial_commit": "f2ef70f522af4977e15f81554a8c6eadcdbe8097",
+  "parent_graph": "docs/restart/work-items.json",
+  "parent_dependency_ids": [
+    "P01"
+  ],
+  "requirement_ids": [
+    "PROD-01",
+    "PROD-02",
+    "PROD-03",
+    "PROD-04",
+    "PROD-09",
+    "PROD-11",
+    "PROD-12"
+  ],
+  "scope_now": [
+    "docs/restart/implementation/S04/brief.md",
+    "docs/restart/implementation/S04/source-audit.json",
+    "docs/restart/implementation/S04/acceptance-plan.json"
+  ],
+  "criterion_mapping": [
+    {
+      "criterion_index": 1,
+      "exact_parent_acceptance": "Compare candidate SE architectures against exact APIs and advisory applicability; prove the security contribution of each chip.",
+      "procedures": [
+        "DOC-01",
+        "CRYPTO-01",
+        "PHY-H02S"
+      ]
+    },
+    {
+      "criterion_index": 2,
+      "exact_parent_acceptance": "Specify every stored object, authenticated ciphertext, host-binding secret, KDF context, pairing key and firmware-signing root.",
+      "procedures": [
+        "OBJ-01",
+        "LIFE-01",
+        "CRYPTO-01"
+      ]
+    },
+    {
+      "criterion_index": 3,
+      "exact_parent_acceptance": "Cover PIN creation/change/exhaustion, brownout, rollback, recovery, destructive reset and update ownership; model persistent-state transitions.",
+      "procedures": [
+        "STATE-01",
+        "LIFE-01",
+        "PHY-H02",
+        "PHY-H02S",
+        "PHY-V02-V03"
+      ]
+    },
+    {
+      "criterion_index": 4,
+      "exact_parent_acceptance": "Preserve NIP-06 compatibility without treating currently unrecommended derivation as the default; prove expected-public-key recovery.",
+      "procedures": [
+        "REC-01",
+        "PHY-V02-V03"
+      ]
+    },
+    {
+      "criterion_index": 5,
+      "exact_parent_acceptance": "Independent cryptographic review rejects unsupported non-exportability or dual-SE independence claims.",
+      "procedures": [
+        "DOC-01",
+        "OBJ-01",
+        "CRYPTO-01"
+      ]
+    },
+    {
+      "criterion_index": 6,
+      "exact_parent_acceptance": "Specify developer, owner-secured and product-qualified transitions, MCU/SE erasure/re-enrollment and irreversible-state limits. The specification is not evidence that these transitions already work on hardware.",
+      "procedures": [
+        "LIFE-01",
+        "STATE-01",
+        "PHY-H02",
+        "PHY-H02S",
+        "PHY-V02-V03"
+      ]
+    },
+    {
+      "criterion_index": 7,
+      "exact_parent_acceptance": "Separate MCU owner firmware roots from vendor-controlled SE applet/update authority; document offline operation, maintenance service, licensing/API access and update/rollback consequences. Specify physical erasure/re-enrollment tests here: MCU feasibility in H02, SE reset/re-enrollment feasibility in H02S, and complete lifecycle in V02/V03.",
+      "procedures": [
+        "DOC-01",
+        "OBJ-01",
+        "LIFE-01",
+        "PHY-H02",
+        "PHY-H02S",
+        "PHY-V02-V03"
+      ]
+    }
+  ],
+  "procedures": [
+    {
+      "id": "PREP-01",
+      "title": "Verify exact source, unchanged parent acceptance and three-file scope",
+      "stage": "this preparation",
+      "owners": [
+        "S04 author",
+        "distinct preparation reviewer"
+      ],
+      "inputs": [
+        "source-audit.json",
+        "acceptance-plan.json",
+        "initial core and contextual repository objects"
+      ],
+      "procedure": [
+        "For each repository input, compare its recorded commit tree exactly; for each file compare git ls-tree mode/type/blob and SHA256 of git cat-file blob output.",
+        "Read S04 from git show f2ef70f522af4977e15f81554a8c6eadcdbe8097:docs/restart/work-items.json; compare all seven acceptance strings and dependency P01 without rewriting.",
+        "Run git diff --check and python3 scripts/validate_restart_plan.py at the preparation candidate. Inspect git diff --name-only initial..candidate; exactly the three authorized S04 files must appear.",
+        "The separate reviewer reads source declarations/callers named by the audit and challenges the adequacy of the brief and fault plan; structural success alone is not specification approval."
+      ],
+      "independent_expected_result": [
+        "Git object data independent of generated JSON matches every binding.",
+        "Original graph strings are the criterion oracle.",
+        "Exact-candidate review records concrete findings and approves only preparation scope."
+      ],
+      "negative_cases": [
+        "Wrong commit/tree/mode/blob or substituted contents",
+        "New product/graph/settings/CAD files",
+        "Historical declarations treated as normative or physical evidence"
+      ],
+      "later_evidence": [
+        "Author candidate, commands/exit codes and reviewer-owned findings/commit"
+      ],
+      "inconclusive_or_reject_if": [
+        "Bound input unavailable or mismatched.",
+        "Changed source/candidate requires affected re-review."
+      ]
+    },
+    {
+      "id": "DOC-01",
+      "title": "Compare exact SE services, advisories and trust contribution",
+      "stage": "after distinct preparation approval",
+      "owners": [
+        "S04",
+        "H01 source owner",
+        "distinct security reviewer"
+      ],
+      "inputs": [
+        "Pinned H01 register and H01-C12/13/14/16/17/18/19/20",
+        "Exact lawful manufacturer API/errata/update/part/configuration documents"
+      ],
+      "procedure": [
+        "Bound comparison to SE051C2, standard Trust M V3 and TROPIC01. Resolve exact order/package/silicon/ROM/app/maintenance/configuration and host-driver tuple for each service.",
+        "Retrieve lawful originals privately; record publisher URL/document revision/date/hash/access/license and exact reviewed sections. Recheck current advisories at decision time; preserve superseded pins and applicability reasoning.",
+        "For each service record command/opcode/parameters, curve/algorithm, object read/export/use/delete policy, session prerequisites, returned key/plaintext, persistent effects, status and rollback/reset semantics.",
+        "For each chip contribution compare MCU-only control and attacker access before/after unlock, compromise of each chip/MCU, pairing-key exposure, flash snapshots and vendor update authority.",
+        "Require a reviewed composition argument before crediting two SEs. Missing mandatory documents or protection rejects selection or leaves the route unsupported; headers cannot supply missing semantics."
+      ],
+      "independent_expected_result": [
+        "Exact manufacturer normative semantics/advisories independently read in relevant scope.",
+        "BIP340 raw-message and NIP44 raw shared-x contracts are separate external oracles.",
+        "Written attack trace tests each claimed contribution against declared attacker."
+      ],
+      "negative_cases": [
+        "ECDSA inferred as BIP340",
+        "Generic/hashed ECDH substituted for raw shared-x",
+        "Unrestricted wrapping oracle with MCU compromise",
+        "Common MCU outputs called independent protection",
+        "New label or forecast accepted as remedy",
+        "Missing errata treated as no errata"
+      ],
+      "later_evidence": [
+        "se-decision.md exact matrix; source register; claim/source/attack rows; distinct findings"
+      ],
+      "inconclusive_or_reject_if": [
+        "Required semantics/access terms unavailable.",
+        "Remedy does not protect intended asset or match delivered tuple.",
+        "Only marketing, policy label or generic algorithm name supports claim."
+      ]
+    },
+    {
+      "id": "OBJ-01",
+      "title": "Complete object, ciphertext, KDF and authority review",
+      "stage": "after preparation approval and exact service comparison",
+      "owners": [
+        "S04",
+        "distinct cryptographic reviewer"
+      ],
+      "inputs": [
+        "P01 PROD-01/02/03/11/12",
+        "S02 secret-flow/entropy contracts",
+        "DOC-01 exact commands"
+      ],
+      "procedure": [
+        "Enumerate every persistent/transient object family in the brief, including vendor/immutable objects, host binding, pairing, journals and off-device firmware roots; explicitly record absent categories and copies.",
+        "Bind each object encoding/size/location, creator/entropy, read/write/use/delete authority, lifetime, recovery/reset/rollback outcome and confidentiality/integrity requirement.",
+        "Specify every ciphertext field, AEAD/key/nonce/tag/version/AAD byte encoding and crash-safe nonce rule; each KDF gets exact input/output/context/domain/parameter bounds and standard reference.",
+        "Reviewer independently reconstructs decrypt/release capability from attacker knowledge and checks offline PIN oracles, key separation, chosen ciphertext and reset/reconfiguration bypass.",
+        "Reject identity non-exportability or MCU-compromise secrecy contradicted by release, software signing, local backup or retained pairing keys."
+      ],
+      "independent_expected_result": [
+        "Independent crypto/specification review against chosen published primitives and exact APIs.",
+        "Independently enumerated attacker knowledge supports each claim; ciphertext opacity is insufficient."
+      ],
+      "negative_cases": [
+        "Swap owner/device/object/generation/version/public key/purpose",
+        "Ambiguous concatenation/truncation/extension",
+        "Replay old valid ciphertext/nonce",
+        "Cross-purpose KDF collision",
+        "Alternate read/export or vendor reset bypass"
+      ],
+      "later_evidence": [
+        "custody-protocol.md object/authority/byte-format tables; reviewer attack traces"
+      ],
+      "inconclusive_or_reject_if": [
+        "Supported route leaves primitive, authority, encoding or reset effect undefined.",
+        "Oracle repeats implementation output."
+      ]
+    },
+    {
+      "id": "STATE-01",
+      "title": "Review persistent model and finite fault expectations",
+      "stage": "after object/command design, before custody implementation",
+      "owners": [
+        "S04",
+        "distinct state/security reviewer"
+      ],
+      "inputs": [
+        "Future exact custody-protocol.md",
+        "P01 hostile scenario families 6/7",
+        "DOC-01 command persistence semantics"
+      ],
+      "procedure": [
+        "Model MCU storage, each SE persistent state, volatile authority/channel state and off-device credentials separately. Enumerate preconditions, reads/writes/erasures/commands, outputs and errors for each transition.",
+        "Name each linearization point or uncertainty interval; specify allowed states before/during/after, lost response after commit and absence of cross-chip atomicity.",
+        "Freeze finite transition/fault corpus and independent expected outcomes before a runner is built. Reviewer adds adversarial traces from the written model, not implementation instrumentation alone.",
+        "Include saturation/endurance/work/retry bounds. Report explicit availability loss; never call fail-closed data loss successful recovery."
+      ],
+      "independent_expected_result": [
+        "Reviewer-authored expected transitions from accepted requirements and normative device semantics.",
+        "No unauthorized secret/operation release, restored guess budget, stale grant or old-owner resurrection; restore preserves independent expected identity."
+      ],
+      "negative_cases": [
+        "Power/brownout before/during/after every write/command",
+        "MCU-only, SE-only and simultaneous reset",
+        "Lost/late/duplicate command or acknowledgement",
+        "Old host slot/journal/ciphertext restore",
+        "Reset/reconfigure one SE, retain others",
+        "Interrupt enrollment/PIN change/exhaustion/reset/rotation/update",
+        "Counter saturation; storage full/worn/corrupt"
+      ],
+      "later_evidence": [
+        "state-machine.json; frozen expected-fault corpus; distinct reviewer traces"
+      ],
+      "inconclusive_or_reject_if": [
+        "Atomicity assumed across chips.",
+        "Expected result calculated through tested implementation.",
+        "Unspecified fallback restores guesses/credentials/authority."
+      ]
+    },
+    {
+      "id": "REC-01",
+      "title": "Define independent native and optional migration recovery oracle",
+      "stage": "specification after approval; downstream executable device checks",
+      "owners": [
+        "S04 specification",
+        "K01 crypto integration",
+        "V02/V03 execution"
+      ],
+      "inputs": [
+        "P01 PROD-01/02/03",
+        "Pinned NIP19/NIP06 and published BIP340/derivation fixtures",
+        "S02 crypto/entropy contracts",
+        "Unintegrated S03 context"
+      ],
+      "procedure": [
+        "Fix public fixture scalars, independently derived x-only public keys and canonical nsec encodings using published values and a separate reviewed implementation.",
+        "Later drill: create/import locally, independently retain full expected public key before reset, export only through local recovery, reset/re-enroll, import locally and compare derived identity before reporting success.",
+        "Include d and n-d controls: identical x-only identity is distinct from exact source-byte preservation. Preserve original recovery source before conversion if promising original nsec; compare canonical encoding too.",
+        "Specify wrong expected-key, malformed checksum/scalar, cancel and entropy-failure outcomes. Neither host nor restored device silently overwrites the expectation.",
+        "If NIP06 migration is admitted, pin normalization/passphrase/path/account and independent full derivation vectors; test nonempty/wrong passphrase and wrong path/account; decide retained/exported source. Native generation remains scalar/nsec."
+      ],
+      "independent_expected_result": [
+        "Pinned external vectors and independently derived expected identity/encoding; signature verification is supplemental.",
+        "Scalar normalization does not justify NIP44 failure claims; raw shared-x has a separate oracle."
+      ],
+      "negative_cases": [
+        "Different valid scalar/key",
+        "Same x-only identity with changed original source bytes",
+        "Wrong/absent passphrase/path",
+        "Checksum-valid wrong identity",
+        "Host overwrites expectation",
+        "Secrets reach USB/Bridge/logs"
+      ],
+      "later_evidence": [
+        "custody-protocol.md recovery/backup procedure; later V02/V03 public-fixture traces/UI evidence"
+      ],
+      "inconclusive_or_reject_if": [
+        "Only fingerprint/descriptor equality/syntax checked.",
+        "Expected key comes solely from just-restored implementation.",
+        "No qualified local UI/device drill for physical acceptance."
+      ]
+    },
+    {
+      "id": "LIFE-01",
+      "title": "Define owner, developer and product lifecycle with distinct authorities",
+      "stage": "after preparation approval",
+      "owners": [
+        "S04",
+        "H01",
+        "B01 interface owner",
+        "distinct security reviewer"
+      ],
+      "inputs": [
+        "P01 PROD-11/12",
+        "Exact MCU lifecycle manuals/errata",
+        "DOC-01 SE service/terms evidence"
+      ],
+      "procedure": [
+        "Define transition authority/erasure/re-enrollment for developer, owner-secured, product-qualified, same-owner root rotation, ownership transfer and return to development.",
+        "Separate MCU boot/update/debug/recovery roots from vendor SE maintenance/applet roots, default/recovery credentials and immutable objects; record secret holder and replace/revoke authority.",
+        "Specify object outcomes for partial/full reset, firmware replacement/downgrade, interrupted update and lost owner/channel credentials; declare unsupported/irreversible states and finite fuse/counter/slot limits.",
+        "For manufacture/enrollment/operation/recovery/maintenance record network/service/account needs, offline package acquisition versus offline application, licensing and reproducible developer API/tool access.",
+        "Qualification binds exact tuple/evidence. Owner firmware replacement invalidates affected qualification and cannot unexpectedly inherit privileged state."
+      ],
+      "independent_expected_result": [
+        "Normative lifecycle/reset/update documentation and independent credential/authority trace.",
+        "Surviving-object table agrees with complete inventory and physical negative procedures."
+      ],
+      "negative_cases": [
+        "New owner inherits identity/channel authority",
+        "MCU erase called whole-board erasure",
+        "Old signed image resets PIN policy",
+        "Lost service defeats promised offline recovery",
+        "Unlimited finite root/counter rotation",
+        "MCU key assumed to authorize SE applet update"
+      ],
+      "later_evidence": [
+        "custody-protocol.md lifecycle/authority/irreversibility tables; se-decision.md access/service/license facts"
+      ],
+      "inconclusive_or_reject_if": [
+        "Required transition undocumented or service rights missing.",
+        "Reuse promised despite absent safe revocation/re-enrollment."
+      ]
+    },
+    {
+      "id": "CRYPTO-01",
+      "title": "Independent cryptographic and specification review",
+      "stage": "before accepted custody protocol implementation",
+      "owners": [
+        "distinct reviewer; not author"
+      ],
+      "inputs": [
+        "Exact candidate source/blob/primitive/command tuple",
+        "OBJ-01/STATE-01/REC-01/LIFE-01 outputs"
+      ],
+      "procedure": [
+        "Freeze candidate and evidence; reviewer reads primary sources, challenges algorithm/state composition and creates independent attacker/counterexample analysis.",
+        "Check every S04 criterion and required P01 guarantee against actual protocol statements. Audit non-exportability, dual-SE independence, MCU compromise and vendor trust claims.",
+        "Close findings on newly bound candidate; repeat affected review. Record identity/scope/sources/limits/verdict without claiming external certification."
+      ],
+      "independent_expected_result": [
+        "Distinct reviewer findings and independent attack/fault traces."
+      ],
+      "negative_cases": [
+        "Expected output shares implementation",
+        "Unclosed applicable advisory",
+        "Native backup versus lifetime non-exportability contradiction",
+        "State rollback protection inferred from AEAD"
+      ],
+      "later_evidence": [
+        "Reviewer-owned report bound to final protocol candidate and inputs"
+      ],
+      "inconclusive_or_reject_if": [
+        "No distinct reviewer or candidate changed after review.",
+        "Material supported-route safety decision unresolved."
+      ]
+    },
+    {
+      "id": "PHY-H02",
+      "title": "MCU owner-root, erasure and update feasibility",
+      "stage": "physical H02; not executed here",
+      "owners": [
+        "H02",
+        "physical operator"
+      ],
+      "inputs": [
+        "Identified sacrificial MCU/ROM/silicon",
+        "Exact manuals/errata, binary/map/configuration and approved safe procedure"
+      ],
+      "procedure": [
+        "Record unit IDs, existing debug/lifecycle/fuse state, operator/equipment and binary hashes.",
+        "With public fixtures and concretely authorized changes exercise owner enrollment/rotation, signed-update checks, recovery, MCU erase/regression and retained storage/counters.",
+        "Interrupt allowed updates/writes/reset; test unsigned/wrong-root/rollback images, debug and post-provisioning recovery; record surviving state against S04.",
+        "No irreversible fuse or destructive electrical operation merely from research-plan authority; preserve failed observations."
+      ],
+      "independent_expected_result": [
+        "S04 lifecycle matrix/manufacturer semantics checked by independent traces/readback and image verification."
+      ],
+      "negative_cases": [
+        "Wrong-root/old image",
+        "Power loss during application/bootloader/data update",
+        "MCU erase retains reusable privileged state",
+        "Debug/recovery bypass"
+      ],
+      "later_evidence": [
+        "H02 feasibility; later B02/V02 exact integration"
+      ],
+      "inconclusive_or_reject_if": [
+        "Operator/units/equipment unidentified.",
+        "Simulation/flags substitute for measurement.",
+        "Irreversible action lacks concrete authorization."
+      ]
+    },
+    {
+      "id": "PHY-H02S",
+      "title": "SE permission, PIN, channel, reset and re-enrollment feasibility",
+      "stage": "physical H02S; requires S04/H01 documentary gates",
+      "owners": [
+        "H02S",
+        "physical operator"
+      ],
+      "inputs": [
+        "Lawful exact API/errata/update terms",
+        "Identified SE/host/sacrificial fixtures/configuration",
+        "Accepted command/object/state model"
+      ],
+      "procedure": [
+        "Verify received OPN/silicon/firmware/configuration/default state/driver; use public secrets only and capture byte/status/timing traces.",
+        "Run required commands with wrong algorithm/curve/policy controls and direct forbidden read/export/reconfiguration attempts on every admitted interface.",
+        "Exercise enrollment/default pairing invalidation, channel replay/reconnect/rotation, PIN create/change/exhaustion and wrapped release/relock across host/SE reset and rollback.",
+        "Test partial/full SE reset/re-enrollment, lost host credential and replacement; compare surviving secrets/counters/authorization/vendor state to model.",
+        "Apply controlled power/reset faults per persistent effect; preserve failures. Missing service or failed protection rejects/revises candidate before H04."
+      ],
+      "independent_expected_result": [
+        "Accepted S04 semantics plus external trace/readback and independent algorithm/key vectors."
+      ],
+      "negative_cases": [
+        "Alternate export path",
+        "Reset restores attempts",
+        "Snapshot restores revoked/destroyed factor",
+        "Default pairing survives",
+        "One-SE reset in composition",
+        "New version assumed to cure advisory"
+      ],
+      "later_evidence": [
+        "H02S command/provisioning/reset/negative traces and independent selection review"
+      ],
+      "inconclusive_or_reject_if": [
+        "Required document/service rights missing.",
+        "Received tuple differs from applicability.",
+        "No actual sample/operator or only permission label evidence."
+      ]
+    },
+    {
+      "id": "PHY-V02-V03",
+      "title": "Complete lifecycle on selected host then custom PCB",
+      "stage": "physical V02 and V03; separate from specification acceptance",
+      "owners": [
+        "V02 selected-host integration",
+        "V03 actual assemblies",
+        "independent reviewer"
+      ],
+      "inputs": [
+        "Accepted reviewed custody specification",
+        "H02/H02S feasibility",
+        "Exact SDK/bootloader/application/components/assembly",
+        "Physical UI/input/bus ownership"
+      ],
+      "procedure": [
+        "Execute native create/import/PIN/unlock/local backup/lock/recover/update/owner transfer or documented unsupported outcomes with independently retained expected public key.",
+        "Cut power at every persistent transition/fault window; repeat rollback/partial reset/exhaustion/re-enrollment/update cases with complete-system ordering/authority invalidation.",
+        "Inspect actual secret placement/backend/input/display/DMA copies and wipe limits; test entropy invocation/failure, timing, RAM/stack and bounds on exact binary.",
+        "Repeat on custom PCB revisions, including private/maker buses, display/physical consent, power behavior and changed configurations.",
+        "Record operator/equipment/conditions/raw traces/failures/hashes; independently review residual exposure. SDK or evaluation-board results cannot close custom Signer admission."
+      ],
+      "independent_expected_result": [
+        "Independent expected identity/encoding and algorithm vectors, reviewer-frozen state/fault outcomes and direct physical measurements."
+      ],
+      "negative_cases": [
+        "Unauthorized release/sign during restore/update",
+        "Stale grant after lock/reset/owner change",
+        "Partial power-domain reset",
+        "Wrong assembly/configuration",
+        "Plaintext outside declared memory/local export",
+        "Retry rollback"
+      ],
+      "later_evidence": [
+        "V02 complete lifecycle/power-cut/security record; V03 assembly-specific repetition"
+      ],
+      "inconclusive_or_reject_if": [
+        "No physical evidence or uncontrolled fault timing.",
+        "Model/host/other-profile evidence only.",
+        "Changed binary/bootloader/component/board lacks affected requalification."
+      ]
+    }
+  ],
+  "fault_campaign_contract": {
+    "write_points": "Enumerate every MCU durable mutation and SE state-changing command in eventual selected protocol. Include commit, acknowledgement and cleanup separately.",
+    "fault_windows": [
+      "before each durable action",
+      "during each documented non-atomic interval",
+      "after action before acknowledgement",
+      "after acknowledgement before next action",
+      "during reboot reconciliation"
+    ],
+    "fault_classes": [
+      "MCU reset",
+      "SE-only reset per chip",
+      "simultaneous power loss",
+      "brownout within safe controlled fixture envelope",
+      "timeout/lost response/duplicate response",
+      "old valid MCU snapshot replay",
+      "partial/full allowed SE reset/reconfiguration",
+      "corrupt/truncated/mixed-generation storage",
+      "storage/counter/version exhaustion"
+    ],
+    "minimum_transition_families": [
+      "enrollment/create/import",
+      "PIN creation",
+      "successful/failed/uncertain unlock",
+      "PIN change",
+      "attempt exhaustion",
+      "lock/timeout/session invalidation",
+      "backup/recovery",
+      "destructive reset/re-enrollment",
+      "same-owner root rotation",
+      "ownership transfer",
+      "application/bootloader/data/SE update and rollback",
+      "component replacement/credential loss"
+    ],
+    "oracle_ownership": "Reviewer freezes allowed states/prohibitions independently before downstream runner implementation. No production secrets or undocumented atomicity.",
+    "coverage_record": "Each transition/action/fault tuple records observation and pass/fail/inconclusive reasoning. Missing tuples stay unqualified; resources cannot silently reduce acceptance.",
+    "availability_rule": "Explicit fail-closed recovery-required/unrecoverable states may be modeled, but access loss must be reported and meet the product contract; it is never called successful recovery."
+  },
+  "design_decisions_required_before_protocol_acceptance": [
+    "Exact supported SE services/part/configuration/access/advisory disposition",
+    "Complete object/copy inventory including original recovery scalar and firmware/vendor authorities",
+    "Concrete standard primitives, KDF/AEAD encodings/parameters and entropy/nonce rules",
+    "PIN syntax/attempt/delay policy and non-rollbackable enforcement with crash semantics",
+    "Every reset/update/root/re-enrollment transition, surviving object and irreversible limit",
+    "Finite resource/latency/storage/counter/endurance bounds and target conditions",
+    "Recovery expected-key source and optional NIP06 migration retention/export",
+    "Declared attacker/physical scope and residual MCU/SE/vendor exposures"
+  ],
+  "resource_boundary": {
+    "specification_resources": "Lawful exact documentation, pinned source and distinct security review; no bench needed to review preparation.",
+    "physical_resources": "host_bench, se_bench, bench_instruments, physical_operator, sacrificial_units and V03 assemblies are UNKNOWN here.",
+    "prohibited_in_this_delivery": [
+      "product implementation",
+      "new custody protocol before distinct preparation review",
+      "part admission",
+      "main integration or tracker change",
+      "external outreach",
+      "purchases/fabrication",
+      "production keys",
+      "irreversible hardware operations"
+    ]
+  },
+  "completion_rule": "Preparation may be approved for research with explicit unknowns. Final S04 acceptance needs all seven criteria and distinct exact-candidate cryptographic/specification review, with no undefined safety-critical contract for a claimed supported route. Physical promises remain H02/H02S/V02/V03 gates; research/model/AI review/permission labels cannot close them. Rejecting a candidate is evidence, not automatic S04 completion. Task state changes belong only to coordinator in canonical graph."
+}
