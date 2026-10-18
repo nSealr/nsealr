@@ -13,18 +13,24 @@ use crate::review::types::{
 
 /// Approval digest copied from the READ-ONLY
 /// specs/vectors/review-screens/kind-1-basic.json (`screen_review.approval_digest`).
-pub const BASIC_REVIEW_SCREEN_APPROVAL_DIGEST: &str =
-    include_str!(concat!(env!("OUT_DIR"), "/field-a9dbf5d6f075ebea8a12c272.txt"));
+pub const BASIC_REVIEW_SCREEN_APPROVAL_DIGEST: &str = include_str!(concat!(
+    env!("OUT_DIR"),
+    "/field-a9dbf5d6f075ebea8a12c272.txt"
+));
 
 /// Approval digest copied from the READ-ONLY
 /// specs/vectors/review-screens/kind-1-tags.json (`screen_review.approval_digest`).
-pub const TAGGED_REVIEW_SCREEN_APPROVAL_DIGEST: &str =
-    include_str!(concat!(env!("OUT_DIR"), "/field-7c553abbee46c2de6c223a2b.txt"));
+pub const TAGGED_REVIEW_SCREEN_APPROVAL_DIGEST: &str = include_str!(concat!(
+    env!("OUT_DIR"),
+    "/field-7c553abbee46c2de6c223a2b.txt"
+));
 
 /// Static QR envelope copied from the READ-ONLY
 /// specs/vectors/transports/qr-envelope-kind-1-basic.json (`envelope`).
-pub const QR_ENVELOPE_KIND_1_BASIC: &str =
-    include_str!(concat!(env!("OUT_DIR"), "/field-b69c96b873204e5c324385c0.txt"));
+pub const QR_ENVELOPE_KIND_1_BASIC: &str = include_str!(concat!(
+    env!("OUT_DIR"),
+    "/field-b69c96b873204e5c324385c0.txt"
+));
 
 /// Builds one review page from plain literals.
 pub fn review_page(
@@ -73,20 +79,17 @@ pub fn trusted_review_request(
 /// (`screen_review`). The C++ consumed it as
 /// `test_vectors::basic_trusted_review_request()`.
 
-    include!(concat!(env!("OUT_DIR"), "/review-fixtures.rs"));
-
+include!(concat!(env!("OUT_DIR"), "/review-fixtures.rs"));
 
 /// The tagged trusted-review request; request id, digest and all four pages
 /// copied from the READ-ONLY specs/vectors/review-screens/kind-1-tags.json
 /// (`screen_review`). The C++ consumed it as
 /// `test_vectors::tagged_trusted_review_request()`.
 
-
 /// The shared t-display-s3 review display limits. Mirrors the C++
 /// `nsealr_esp32::t_display_s3_review_limits()`
 /// (`esp32_s3_usb_signer/main/t_display_s3_raster.cpp`), which matches the
 /// `limits` field of every READ-ONLY specs/vectors/review-detail-pages fixture.
-
 
 /// True if any frame body line contains `needle` (the C++ `lines_contain`).
 pub fn frame_lines_contain(frame: &ReviewDisplayFrame, needle: &str) -> bool {

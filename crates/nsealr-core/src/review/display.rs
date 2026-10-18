@@ -436,7 +436,14 @@ mod tests {
     // Port of the C++ `test_review_display_renders_navigation_frame`.
     #[test]
     fn renders_navigation_frame() {
-        let lines = lines_of(&["Kind 1", include_str!(concat!(env!("OUT_DIR"), "/field-364fd76c641480c443677c25.txt")), "Author"]);
+        let lines = lines_of(&[
+            "Kind 1",
+            include_str!(concat!(
+                env!("OUT_DIR"),
+                "/field-364fd76c641480c443677c25.txt"
+            )),
+            "Author",
+        ]);
         let frame = render_review_page(
             &page("Event", &lines, ReviewPageAction::Next),
             0,
@@ -449,7 +456,14 @@ mod tests {
         assert_eq!(frame.page_indicator, "Page 1/4");
         assert_eq!(
             body_strs(&frame),
-            ["Kind 1", include_str!(concat!(env!("OUT_DIR"), "/field-364fd76c641480c443677c25.txt")), "Author"]
+            [
+                "Kind 1",
+                include_str!(concat!(
+                    env!("OUT_DIR"),
+                    "/field-364fd76c641480c443677c25.txt"
+                )),
+                "Author"
+            ]
         );
         assert_eq!(frame.action_hint, "Next");
     }
@@ -490,7 +504,10 @@ mod tests {
     // Port of the C++ `test_review_display_renders_decision_frame`.
     #[test]
     fn renders_decision_frame() {
-        let lines = lines_of(&[include_str!(concat!(env!("OUT_DIR"), "/field-2e727214870520e091c3f4b4.txt"))]);
+        let lines = lines_of(&[include_str!(concat!(
+            env!("OUT_DIR"),
+            "/field-2e727214870520e091c3f4b4.txt"
+        ))]);
         let frame = render_review_page(
             &page("Decision", &lines, ReviewPageAction::ApproveOrReject),
             3,
@@ -503,9 +520,18 @@ mod tests {
         assert_eq!(frame.page_indicator, "Page 4/4");
         assert_eq!(
             body_strs(&frame),
-            [include_str!(concat!(env!("OUT_DIR"), "/field-2e727214870520e091c3f4b4.txt"))]
+            [include_str!(concat!(
+                env!("OUT_DIR"),
+                "/field-2e727214870520e091c3f4b4.txt"
+            ))]
         );
-        assert_eq!(frame.action_hint, include_str!(concat!(env!("OUT_DIR"), "/field-26b3d3b407ad92a687368648.txt")));
+        assert_eq!(
+            frame.action_hint,
+            include_str!(concat!(
+                env!("OUT_DIR"),
+                "/field-26b3d3b407ad92a687368648.txt"
+            ))
+        );
     }
 
     // Port of the C++ `test_review_display_wraps_and_truncates_long_body_lines`.
@@ -593,9 +619,18 @@ mod tests {
         assert_eq!(
             body_strs(&frame),
             [
-                include_str!(concat!(env!("OUT_DIR"), "/field-972fe49049a21f8fdbc81c7f.txt")),
-                include_str!(concat!(env!("OUT_DIR"), "/field-972fe49049a21f8fdbc81c7f.txt")),
-                include_str!(concat!(env!("OUT_DIR"), "/field-795abe77c992dc49fe9bf699.txt")),
+                include_str!(concat!(
+                    env!("OUT_DIR"),
+                    "/field-972fe49049a21f8fdbc81c7f.txt"
+                )),
+                include_str!(concat!(
+                    env!("OUT_DIR"),
+                    "/field-972fe49049a21f8fdbc81c7f.txt"
+                )),
+                include_str!(concat!(
+                    env!("OUT_DIR"),
+                    "/field-795abe77c992dc49fe9bf699.txt"
+                )),
             ],
         );
         assert_eq!(frame.action_hint, "Next");

@@ -263,7 +263,10 @@ mod tests {
     // (`payload_base64url`). Proves canonical, unpadded encode/decode parity.
     #[test]
     fn specs_vector_basic_envelope_canonical_round_trip() {
-        const PAYLOAD: &[u8] = include_bytes!(concat!(env!("OUT_DIR"), "/field-7bc474eb9fd65cd1f1cdfd09.txt"));
+        const PAYLOAD: &[u8] = include_bytes!(concat!(
+            env!("OUT_DIR"),
+            "/field-7bc474eb9fd65cd1f1cdfd09.txt"
+        ));
         let mut raw = [0u8; 256];
         let decoded = decode_base64url(PAYLOAD, &mut raw).expect("decode fits");
         assert!(decoded.starts_with(br#"{"version":1,"#));

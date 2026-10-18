@@ -290,11 +290,17 @@ mod tests {
 
     /// The basic sign-event request JSON (matches the READ-ONLY
     /// specs/vectors/review-screens/kind-1-basic.json request).
-    const BASIC_REQUEST_JSON: &str = include_str!(concat!(env!("OUT_DIR"), "/field-c76b5ce6a9db422700c91fcc.txt"));
+    const BASIC_REQUEST_JSON: &str = include_str!(concat!(
+        env!("OUT_DIR"),
+        "/field-c76b5ce6a9db422700c91fcc.txt"
+    ));
 
     /// The tagged sign-event request JSON (matches the READ-ONLY
     /// specs/vectors/review-screens/kind-1-tags.json request).
-    const TAGGED_REQUEST_JSON: &str = include_str!(concat!(env!("OUT_DIR"), "/field-27fffd6dbc839c2f04dc554a.txt"));
+    const TAGGED_REQUEST_JSON: &str = include_str!(concat!(
+        env!("OUT_DIR"),
+        "/field-27fffd6dbc839c2f04dc554a.txt"
+    ));
 
     fn dev() -> SignerIdentity<'static> {
         SignerIdentity::development_fixture()
@@ -353,7 +359,10 @@ mod tests {
     // Port of the C++ `test_serial_review_session_uses_full_scroll_display_pages`.
     #[test]
     fn review_session_uses_full_scroll_display_pages() {
-        let pubkey = include_str!(concat!(env!("OUT_DIR"), "/field-17dba53b6e43a56b50d99b65.txt"));
+        let pubkey = include_str!(concat!(
+            env!("OUT_DIR"),
+            "/field-17dba53b6e43a56b50d99b65.txt"
+        ));
         let mut session = begin_serial_sign_event_trusted_review(
             TAGGED_REQUEST_JSON,
             dev(),
@@ -396,7 +405,10 @@ mod tests {
     // Port of the C++ `test_serial_review_binds_configured_signer_identity`.
     #[test]
     fn review_binds_configured_signer_identity() {
-        let alternate_pubkey = include_str!(concat!(env!("OUT_DIR"), "/field-8a01192bfbc17b46a367e81b.txt"));
+        let alternate_pubkey = include_str!(concat!(
+            env!("OUT_DIR"),
+            "/field-8a01192bfbc17b46a367e81b.txt"
+        ));
         let alternate_identity = SignerIdentity {
             public_key: alternate_pubkey,
         };
@@ -533,7 +545,13 @@ mod tests {
         let result =
             run_serial_review_io_flow(&mut io, dev(), ReviewDisplayLimits::default(), 32).unwrap();
 
-        assert_eq!(result.request_id, include_str!(concat!(env!("OUT_DIR"), "/field-ef8f1cdc03d2b7514fa6d71d.txt")));
+        assert_eq!(
+            result.request_id,
+            include_str!(concat!(
+                env!("OUT_DIR"),
+                "/field-ef8f1cdc03d2b7514fa6d71d.txt"
+            ))
+        );
         assert_eq!(result.approval_digest, BASIC_REVIEW_SCREEN_APPROVAL_DIGEST);
         assert_eq!(result.decision, Some(true));
         assert!(result.approved_for_signing);
@@ -546,7 +564,13 @@ mod tests {
         assert_eq!(result.transcript.step(3).decision, Some(true));
         assert_eq!(io.frames.len(), 4);
         assert_eq!(io.frames[0].title, "Event");
-        assert_eq!(io.frames[3].action_hint, include_str!(concat!(env!("OUT_DIR"), "/field-26b3d3b407ad92a687368648.txt")));
+        assert_eq!(
+            io.frames[3].action_hint,
+            include_str!(concat!(
+                env!("OUT_DIR"),
+                "/field-26b3d3b407ad92a687368648.txt"
+            ))
+        );
     }
 
     // Beyond the named C++ cases: the zero-step and non-terminal IO branches
@@ -625,7 +649,13 @@ mod tests {
         let mut flow =
             SerialReviewFlow::new(BASIC_REQUEST_JSON, dev(), ReviewDisplayLimits::default())
                 .unwrap();
-        assert_eq!(flow.request_id(), include_str!(concat!(env!("OUT_DIR"), "/field-ef8f1cdc03d2b7514fa6d71d.txt")));
+        assert_eq!(
+            flow.request_id(),
+            include_str!(concat!(
+                env!("OUT_DIR"),
+                "/field-ef8f1cdc03d2b7514fa6d71d.txt"
+            ))
+        );
         assert_eq!(flow.approval_digest(), BASIC_REVIEW_SCREEN_APPROVAL_DIGEST);
         assert_eq!(flow.decision(), ApprovalDecision::Pending);
         assert!(!flow.approved_for_signing());

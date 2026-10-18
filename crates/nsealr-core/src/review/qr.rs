@@ -915,7 +915,10 @@ mod tests {
 
     /// The tagged request JSON the C++ tests embed inline (matching the
     /// READ-ONLY specs/vectors/review-screens/kind-1-tags.json request).
-    const TAGGED_REQUEST_JSON: &str = include_str!(concat!(env!("OUT_DIR"), "/field-27fffd6dbc839c2f04dc554a.txt"));
+    const TAGGED_REQUEST_JSON: &str = include_str!(concat!(
+        env!("OUT_DIR"),
+        "/field-27fffd6dbc839c2f04dc554a.txt"
+    ));
 
     // Port of the C++ `test_qr_review_pages_match_shared_tagged_vector`.
     #[test]
@@ -940,7 +943,10 @@ mod tests {
     // Port of the C++ `test_qr_review_binds_configured_signer_identity`.
     #[test]
     fn review_binds_configured_signer_identity() {
-        let alternate_pubkey = include_str!(concat!(env!("OUT_DIR"), "/field-ee1c3ae16e811a2b5ee33b50.txt"));
+        let alternate_pubkey = include_str!(concat!(
+            env!("OUT_DIR"),
+            "/field-ee1c3ae16e811a2b5ee33b50.txt"
+        ));
         let alternate_identity = SignerIdentity {
             public_key: alternate_pubkey,
         };
@@ -996,7 +1002,10 @@ mod tests {
     // Port of the C++ `test_qr_display_review_pages_show_full_tag_values_without_ellipsis`.
     #[test]
     fn display_pages_show_full_tag_values_without_ellipsis() {
-        let pubkey = include_str!(concat!(env!("OUT_DIR"), "/field-17dba53b6e43a56b50d99b65.txt"));
+        let pubkey = include_str!(concat!(
+            env!("OUT_DIR"),
+            "/field-17dba53b6e43a56b50d99b65.txt"
+        ));
         let request = parse(TAGGED_REQUEST_JSON);
 
         let pages =
@@ -1025,7 +1034,10 @@ mod tests {
     // Port of the C++ `test_qr_display_review_pages_group_logical_sections_with_compact_styles`.
     #[test]
     fn display_pages_group_logical_sections_with_compact_styles() {
-        let pubkey = include_str!(concat!(env!("OUT_DIR"), "/field-17dba53b6e43a56b50d99b65.txt"));
+        let pubkey = include_str!(concat!(
+            env!("OUT_DIR"),
+            "/field-17dba53b6e43a56b50d99b65.txt"
+        ));
         let request = parse(TAGGED_REQUEST_JSON);
 
         let pages =
@@ -1045,10 +1057,19 @@ mod tests {
             event_lines,
             [
                 "Kind 1",
-                include_str!(concat!(env!("OUT_DIR"), "/field-de5dc97fe8e83c61da1d9b16.txt")),
+                include_str!(concat!(
+                    env!("OUT_DIR"),
+                    "/field-de5dc97fe8e83c61da1d9b16.txt"
+                )),
                 "Author",
-                include_str!(concat!(env!("OUT_DIR"), "/field-6bf991dc8fdc21ec4310ae7c.txt")),
-                include_str!(concat!(env!("OUT_DIR"), "/field-21ed81ed30ea4c9d8722ade8.txt")),
+                include_str!(concat!(
+                    env!("OUT_DIR"),
+                    "/field-6bf991dc8fdc21ec4310ae7c.txt"
+                )),
+                include_str!(concat!(
+                    env!("OUT_DIR"),
+                    "/field-21ed81ed30ea4c9d8722ade8.txt"
+                )),
             ],
         );
         assert_eq!(pages[0].body_line_styles.len(), pages[0].lines.len());
@@ -1084,8 +1105,14 @@ mod tests {
             [
                 "Tag 1/2",
                 "p",
-                include_str!(concat!(env!("OUT_DIR"), "/field-6bf991dc8fdc21ec4310ae7c.txt")),
-                include_str!(concat!(env!("OUT_DIR"), "/field-21ed81ed30ea4c9d8722ade8.txt")),
+                include_str!(concat!(
+                    env!("OUT_DIR"),
+                    "/field-6bf991dc8fdc21ec4310ae7c.txt"
+                )),
+                include_str!(concat!(
+                    env!("OUT_DIR"),
+                    "/field-21ed81ed30ea4c9d8722ade8.txt"
+                )),
                 "mention",
                 "Tag 2/2",
                 "t",
@@ -1210,7 +1237,10 @@ mod tests {
         assert!(content_text.contains("\\f"));
         assert!(tag_text.contains("line\\nbreak"));
         assert!(tag_text.contains("tab\\tvalue"));
-        assert!(tag_text.contains(include_str!(concat!(env!("OUT_DIR"), "/field-4fc8c35325b29d3a13a5d82e.txt"))));
+        assert!(tag_text.contains(include_str!(concat!(
+            env!("OUT_DIR"),
+            "/field-4fc8c35325b29d3a13a5d82e.txt"
+        ))));
         assert!(!content_text.contains("U+000A"));
         assert!(!tag_text.contains("U+0009"));
     }
@@ -1391,7 +1421,6 @@ mod tests {
     /// digest/limits/pages copied verbatim from the fixture file).
 
     include!(concat!(env!("OUT_DIR"), "/detail-fixtures.rs"));
-
 
     // Beyond the named C++ cases: error messages/Display, the limits
     // validation and capacity guards, empty-tag and empty-content rendering,

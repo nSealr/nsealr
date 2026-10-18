@@ -456,7 +456,10 @@ mod tests {
     /// Static QR envelope copied from the READ-ONLY
     /// specs/vectors/transports/qr-envelope-kind-1-long-events-many-tags.json
     /// (`envelope`).
-    const QR_ENVELOPE_KIND_1_LONG_EVENTS_MANY_TAGS: &str = include_str!(concat!(env!("OUT_DIR"), "/field-fd77c72125a90d057af49e71.txt"));
+    const QR_ENVELOPE_KIND_1_LONG_EVENTS_MANY_TAGS: &str = include_str!(concat!(
+        env!("OUT_DIR"),
+        "/field-fd77c72125a90d057af49e71.txt"
+    ));
 
     fn dev() -> SignerIdentity<'static> {
         SignerIdentity::development_fixture()
@@ -578,14 +581,26 @@ mod tests {
 
         let flow =
             QrReviewFlow::new(&animated_request, dev(), ReviewDisplayLimits::default()).unwrap();
-        assert_eq!(flow.request_id(), include_str!(concat!(env!("OUT_DIR"), "/field-ef8f1cdc03d2b7514fa6d71d.txt")));
+        assert_eq!(
+            flow.request_id(),
+            include_str!(concat!(
+                env!("OUT_DIR"),
+                "/field-ef8f1cdc03d2b7514fa6d71d.txt"
+            ))
+        );
         assert_eq!(flow.approval_digest(), BASIC_REVIEW_SCREEN_APPROVAL_DIGEST);
         assert_eq!(flow.current_frame().unwrap().title, "Event");
 
         let mut io = RecordingQrReviewIo::new(&APPROVE_BUTTONS, &animated_request);
         let result =
             run_qr_review_io_flow(&mut io, dev(), ReviewDisplayLimits::default(), 32).unwrap();
-        assert_eq!(result.request_id, include_str!(concat!(env!("OUT_DIR"), "/field-ef8f1cdc03d2b7514fa6d71d.txt")));
+        assert_eq!(
+            result.request_id,
+            include_str!(concat!(
+                env!("OUT_DIR"),
+                "/field-ef8f1cdc03d2b7514fa6d71d.txt"
+            ))
+        );
         assert!(result.approved_for_signing);
         assert_eq!(io.frames.len(), 4);
     }
@@ -611,13 +626,21 @@ mod tests {
     fn flow_binds_selected_session_account_identity() {
         // NIP-06 fixture copied from the READ-ONLY
         // specs/vectors/keys/nip06-account-0-leader.json.
-        let mnemonic =
-            include_str!(concat!(env!("OUT_DIR"), "/field-674779247edd20ec33c77f12.txt"));
-        let nip06_public_key = include_str!(concat!(env!("OUT_DIR"), "/field-017a5b0dc1323f5d5b24c239.txt"));
+        let mnemonic = include_str!(concat!(
+            env!("OUT_DIR"),
+            "/field-674779247edd20ec33c77f12.txt"
+        ));
+        let nip06_public_key = include_str!(concat!(
+            env!("OUT_DIR"),
+            "/field-017a5b0dc1323f5d5b24c239.txt"
+        ));
         let mut keyring = StatelessSessionKeyring::new();
         keyring
             .add_bip39_seed(
-                include_str!(concat!(env!("OUT_DIR"), "/field-a075e44ca789a3eaed354231.txt")),
+                include_str!(concat!(
+                    env!("OUT_DIR"),
+                    "/field-a075e44ca789a3eaed354231.txt"
+                )),
                 crate::bip39::WordIndexes::from_slice(
                     bip39::parse_mnemonic_indexes(mnemonic).unwrap().as_slice(),
                 )
@@ -627,13 +650,22 @@ mod tests {
         // Descriptor copied from the READ-ONLY
         // specs/vectors/accounts/esp32-qr-nip06-account-0.json.
         let descriptor = SessionAccountDescriptor {
-            account_id: include_str!(concat!(env!("OUT_DIR"), "/field-7f69eeeda752dba7d0b40d52.txt")),
+            account_id: include_str!(concat!(
+                env!("OUT_DIR"),
+                "/field-7f69eeeda752dba7d0b40d52.txt"
+            )),
             route_type: "esp32_qr_vault",
             public_key: nip06_public_key,
             source_index: 0,
-            source_fingerprint: include_str!(concat!(env!("OUT_DIR"), "/field-8e86cbbca24ca3c385e2aa97.txt")),
+            source_fingerprint: include_str!(concat!(
+                env!("OUT_DIR"),
+                "/field-8e86cbbca24ca3c385e2aa97.txt"
+            )),
             recovery_kind: SessionAccountRecoveryKind::Nip06,
-            derivation_path: include_str!(concat!(env!("OUT_DIR"), "/field-68f5ca55923a448625caf1ff.txt")),
+            derivation_path: include_str!(concat!(
+                env!("OUT_DIR"),
+                "/field-68f5ca55923a448625caf1ff.txt"
+            )),
             account_index: 0,
         };
         let selected = select_session_account(&keyring, &descriptor).unwrap();
@@ -776,10 +808,19 @@ mod tests {
             event_body,
             [
                 "Kind 1",
-                include_str!(concat!(env!("OUT_DIR"), "/field-364fd76c641480c443677c25.txt")),
+                include_str!(concat!(
+                    env!("OUT_DIR"),
+                    "/field-364fd76c641480c443677c25.txt"
+                )),
                 "Author",
-                include_str!(concat!(env!("OUT_DIR"), "/field-6bf991dc8fdc21ec4310ae7c.txt")),
-                include_str!(concat!(env!("OUT_DIR"), "/field-21ed81ed30ea4c9d8722ade8.txt")),
+                include_str!(concat!(
+                    env!("OUT_DIR"),
+                    "/field-6bf991dc8fdc21ec4310ae7c.txt"
+                )),
+                include_str!(concat!(
+                    env!("OUT_DIR"),
+                    "/field-21ed81ed30ea4c9d8722ade8.txt"
+                )),
             ],
         );
         assert_eq!(transcript.step(1).frame.title, "Content");
@@ -804,7 +845,13 @@ mod tests {
             .collect();
         assert_eq!(tags_body, ["No tags"]);
         assert_eq!(transcript.step(3).frame.title, "Decision");
-        assert_eq!(transcript.step(3).frame.action_hint, include_str!(concat!(env!("OUT_DIR"), "/field-26b3d3b407ad92a687368648.txt")));
+        assert_eq!(
+            transcript.step(3).frame.action_hint,
+            include_str!(concat!(
+                env!("OUT_DIR"),
+                "/field-26b3d3b407ad92a687368648.txt"
+            ))
+        );
         assert_eq!(transcript.step(3).decision, Some(true));
         assert!(transcript.step(3).approved_for_signing);
     }
@@ -858,7 +905,13 @@ mod tests {
         let result =
             run_qr_review_io_flow(&mut io, dev(), ReviewDisplayLimits::default(), 32).unwrap();
 
-        assert_eq!(result.request_id, include_str!(concat!(env!("OUT_DIR"), "/field-ef8f1cdc03d2b7514fa6d71d.txt")));
+        assert_eq!(
+            result.request_id,
+            include_str!(concat!(
+                env!("OUT_DIR"),
+                "/field-ef8f1cdc03d2b7514fa6d71d.txt"
+            ))
+        );
         assert_eq!(result.approval_digest, BASIC_REVIEW_SCREEN_APPROVAL_DIGEST);
         assert_eq!(result.decision, Some(true));
         assert!(result.approved_for_signing);
@@ -879,7 +932,13 @@ mod tests {
         assert_eq!(io.frames[0].title, "Event");
         assert_eq!(io.frames[0].page_indicator, "Page 1/4");
         assert_eq!(io.frames[3].title, "Decision");
-        assert_eq!(io.frames[3].action_hint, include_str!(concat!(env!("OUT_DIR"), "/field-26b3d3b407ad92a687368648.txt")));
+        assert_eq!(
+            io.frames[3].action_hint,
+            include_str!(concat!(
+                env!("OUT_DIR"),
+                "/field-26b3d3b407ad92a687368648.txt"
+            ))
+        );
     }
 
     // Port of the C++ `test_qr_review_io_flow_rejects_non_terminal_button_stream`.
@@ -941,7 +1000,13 @@ mod tests {
         padded.push_str(QR_ENVELOPE_KIND_1_BASIC);
         padded.push_str("\t\n");
         let flow = QrReviewFlow::new(&padded, dev(), ReviewDisplayLimits::default()).unwrap();
-        assert_eq!(flow.request_id(), include_str!(concat!(env!("OUT_DIR"), "/field-ef8f1cdc03d2b7514fa6d71d.txt")));
+        assert_eq!(
+            flow.request_id(),
+            include_str!(concat!(
+                env!("OUT_DIR"),
+                "/field-ef8f1cdc03d2b7514fa6d71d.txt"
+            ))
+        );
         // Transcript container plumbing.
         let empty = QrReviewTranscript::new();
         assert!(empty.is_empty());
@@ -961,9 +1026,15 @@ mod tests {
                 page_indicator: "Page 1/4",
                 body_lines: vec![
                     "Kind 1",
-                    include_str!(concat!(env!("OUT_DIR"), "/field-364fd76c641480c443677c25.txt")),
+                    include_str!(concat!(
+                        env!("OUT_DIR"),
+                        "/field-364fd76c641480c443677c25.txt"
+                    )),
                     "Author",
-                    include_str!(concat!(env!("OUT_DIR"), "/field-17dba53b6e43a56b50d99b65.txt")),
+                    include_str!(concat!(
+                        env!("OUT_DIR"),
+                        "/field-17dba53b6e43a56b50d99b65.txt"
+                    )),
                 ],
                 action_hint: "Next",
                 body_line_styles: vec![],
@@ -974,7 +1045,10 @@ mod tests {
             TranscriptStepFixture {
                 title: "Content",
                 page_indicator: "Page 2/4",
-                body_lines: vec![include_str!(concat!(env!("OUT_DIR"), "/field-1b208157932014fa782660ac.txt"))],
+                body_lines: vec![include_str!(concat!(
+                    env!("OUT_DIR"),
+                    "/field-1b208157932014fa782660ac.txt"
+                ))],
                 action_hint: "Next",
                 body_line_styles: vec![],
                 button: ReviewButton::Next,
@@ -994,8 +1068,14 @@ mod tests {
             TranscriptStepFixture {
                 title: "Decision",
                 page_indicator: "Page 4/4",
-                body_lines: vec![include_str!(concat!(env!("OUT_DIR"), "/field-2e727214870520e091c3f4b4.txt"))],
-                action_hint: include_str!(concat!(env!("OUT_DIR"), "/field-26b3d3b407ad92a687368648.txt")),
+                body_lines: vec![include_str!(concat!(
+                    env!("OUT_DIR"),
+                    "/field-2e727214870520e091c3f4b4.txt"
+                ))],
+                action_hint: include_str!(concat!(
+                    env!("OUT_DIR"),
+                    "/field-26b3d3b407ad92a687368648.txt"
+                )),
                 body_line_styles: vec![],
                 button: ReviewButton::Approve,
                 decision: Some(true),
@@ -1013,10 +1093,19 @@ mod tests {
                 page_indicator: "Page 1/4",
                 body_lines: vec![
                     "Kind 1",
-                    include_str!(concat!(env!("OUT_DIR"), "/field-1c9ed875d7ac69f5700cd6d3.txt")),
+                    include_str!(concat!(
+                        env!("OUT_DIR"),
+                        "/field-1c9ed875d7ac69f5700cd6d3.txt"
+                    )),
                     "Author",
-                    include_str!(concat!(env!("OUT_DIR"), "/field-6bf991dc8fdc21ec4310ae7c.txt")),
-                    include_str!(concat!(env!("OUT_DIR"), "/field-21ed81ed30ea4c9d8722ade8.txt")),
+                    include_str!(concat!(
+                        env!("OUT_DIR"),
+                        "/field-6bf991dc8fdc21ec4310ae7c.txt"
+                    )),
+                    include_str!(concat!(
+                        env!("OUT_DIR"),
+                        "/field-21ed81ed30ea4c9d8722ade8.txt"
+                    )),
                 ],
                 action_hint: "Next",
                 body_line_styles: vec![
@@ -1035,12 +1124,30 @@ mod tests {
                 page_indicator: "Page 2/4",
                 body_lines: vec![
                     "bytes: 281",
-                    include_str!(concat!(env!("OUT_DIR"), "/field-878ac9c29a4a2c94ab5a972f.txt")),
-                    include_str!(concat!(env!("OUT_DIR"), "/field-878ac9c29a4a2c94ab5a972f.txt")),
-                    include_str!(concat!(env!("OUT_DIR"), "/field-878ac9c29a4a2c94ab5a972f.txt")),
-                    include_str!(concat!(env!("OUT_DIR"), "/field-878ac9c29a4a2c94ab5a972f.txt")),
-                    include_str!(concat!(env!("OUT_DIR"), "/field-878ac9c29a4a2c94ab5a972f.txt")),
-                    include_str!(concat!(env!("OUT_DIR"), "/field-e01c532c1b89cefdfe6bab69.txt")),
+                    include_str!(concat!(
+                        env!("OUT_DIR"),
+                        "/field-878ac9c29a4a2c94ab5a972f.txt"
+                    )),
+                    include_str!(concat!(
+                        env!("OUT_DIR"),
+                        "/field-878ac9c29a4a2c94ab5a972f.txt"
+                    )),
+                    include_str!(concat!(
+                        env!("OUT_DIR"),
+                        "/field-878ac9c29a4a2c94ab5a972f.txt"
+                    )),
+                    include_str!(concat!(
+                        env!("OUT_DIR"),
+                        "/field-878ac9c29a4a2c94ab5a972f.txt"
+                    )),
+                    include_str!(concat!(
+                        env!("OUT_DIR"),
+                        "/field-878ac9c29a4a2c94ab5a972f.txt"
+                    )),
+                    include_str!(concat!(
+                        env!("OUT_DIR"),
+                        "/field-e01c532c1b89cefdfe6bab69.txt"
+                    )),
                 ],
                 action_hint: "Next",
                 body_line_styles: vec![
@@ -1058,12 +1165,21 @@ mod tests {
             },
             TranscriptStepFixture {
                 title: "Tags",
-                page_indicator: include_str!(concat!(env!("OUT_DIR"), "/field-f4ddb21ad4cd79ff8aba70c4.txt")),
+                page_indicator: include_str!(concat!(
+                    env!("OUT_DIR"),
+                    "/field-f4ddb21ad4cd79ff8aba70c4.txt"
+                )),
                 body_lines: vec![
                     "Tag 1/9",
                     "e",
-                    include_str!(concat!(env!("OUT_DIR"), "/field-9c4d4b8e116ef327d4008e37.txt")),
-                    include_str!(concat!(env!("OUT_DIR"), "/field-2d8a93e8e201ac00e095b211.txt")),
+                    include_str!(concat!(
+                        env!("OUT_DIR"),
+                        "/field-9c4d4b8e116ef327d4008e37.txt"
+                    )),
+                    include_str!(concat!(
+                        env!("OUT_DIR"),
+                        "/field-2d8a93e8e201ac00e095b211.txt"
+                    )),
                     "root",
                     "Tag 2/9",
                     "t",
@@ -1088,7 +1204,10 @@ mod tests {
             },
             TranscriptStepFixture {
                 title: "Tags",
-                page_indicator: include_str!(concat!(env!("OUT_DIR"), "/field-f699569adfd6d095b798a536.txt")),
+                page_indicator: include_str!(concat!(
+                    env!("OUT_DIR"),
+                    "/field-f699569adfd6d095b798a536.txt"
+                )),
                 body_lines: vec![
                     "t", "hardware", "Tag 4/9", "t", "review", "Tag 5/9", "t", "security",
                     "Tag 6/9",
@@ -1111,7 +1230,10 @@ mod tests {
             },
             TranscriptStepFixture {
                 title: "Tags",
-                page_indicator: include_str!(concat!(env!("OUT_DIR"), "/field-a709f37fc164c9c89166500c.txt")),
+                page_indicator: include_str!(concat!(
+                    env!("OUT_DIR"),
+                    "/field-a709f37fc164c9c89166500c.txt"
+                )),
                 body_lines: vec![
                     "t",
                     "qr",
@@ -1141,7 +1263,10 @@ mod tests {
             },
             TranscriptStepFixture {
                 title: "Tags",
-                page_indicator: include_str!(concat!(env!("OUT_DIR"), "/field-f7eba6c04176df68c41498c4.txt")),
+                page_indicator: include_str!(concat!(
+                    env!("OUT_DIR"),
+                    "/field-f7eba6c04176df68c41498c4.txt"
+                )),
                 body_lines: vec!["t", "test"],
                 action_hint: "Next/Scroll",
                 body_line_styles: vec![ReviewBodyLineStyle::Value, ReviewBodyLineStyle::Value],
@@ -1152,8 +1277,17 @@ mod tests {
             TranscriptStepFixture {
                 title: "Decision",
                 page_indicator: "Page 4/4",
-                body_lines: vec![include_str!(concat!(env!("OUT_DIR"), "/field-6f7c4389fe02d59d34530bc8.txt")), "l pages match."],
-                action_hint: include_str!(concat!(env!("OUT_DIR"), "/field-26b3d3b407ad92a687368648.txt")),
+                body_lines: vec![
+                    include_str!(concat!(
+                        env!("OUT_DIR"),
+                        "/field-6f7c4389fe02d59d34530bc8.txt"
+                    )),
+                    "l pages match.",
+                ],
+                action_hint: include_str!(concat!(
+                    env!("OUT_DIR"),
+                    "/field-26b3d3b407ad92a687368648.txt"
+                )),
                 body_line_styles: vec![ReviewBodyLineStyle::Normal, ReviewBodyLineStyle::Normal],
                 button: ReviewButton::Approve,
                 decision: Some(true),

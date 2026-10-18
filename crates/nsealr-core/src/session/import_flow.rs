@@ -202,8 +202,14 @@ mod tests {
     use crate::nip19;
     use crate::session::keyring::tests::{NSEC_TEST_KEY_1, SEEDQR_VECTOR_1_INDEXES};
     fn fixture_source() -> SessionKeySource {
-        crate::session::source_qr::parse_session_source_qr_text(include_str!(concat!(env!("OUT_DIR"), "/field-43257d08c218769553577c83.txt")), NSEC_TEST_KEY_1)
-            .unwrap()
+        crate::session::source_qr::parse_session_source_qr_text(
+            include_str!(concat!(
+                env!("OUT_DIR"),
+                "/field-43257d08c218769553577c83.txt"
+            )),
+            NSEC_TEST_KEY_1,
+        )
+        .unwrap()
     }
 
     // Port of the C++ `test_session_import_flow_requires_local_approval_before_loading_keyring`.
@@ -215,7 +221,10 @@ mod tests {
         let mut session_keyring = StatelessSessionKeyring::new();
         pending_sources
             .add_nsec(
-                include_str!(concat!(env!("OUT_DIR"), "/field-43257d08c218769553577c83.txt")),
+                include_str!(concat!(
+                    env!("OUT_DIR"),
+                    "/field-43257d08c218769553577c83.txt"
+                )),
                 nip19::decode_nsec(NSEC_TEST_KEY_1).unwrap(),
             )
             .unwrap();
@@ -230,7 +239,13 @@ mod tests {
 
         assert!(result.approved);
         assert!(result.loaded);
-        assert_eq!(result.review.review_id, include_str!(concat!(env!("OUT_DIR"), "/field-2d4d3d3dc78fd3f8fd1e0b12.txt")));
+        assert_eq!(
+            result.review.review_id,
+            include_str!(concat!(
+                env!("OUT_DIR"),
+                "/field-2d4d3d3dc78fd3f8fd1e0b12.txt"
+            ))
+        );
         assert_eq!(result.transcript.len(), 2);
         assert_eq!(result.transcript.step(0).page_index, 0);
         assert_eq!(result.transcript.step(0).button, ReviewButton::Next);
@@ -243,7 +258,10 @@ mod tests {
         assert_eq!(session_keyring.len(), 1);
         assert_eq!(
             session_keyring.source_at(0).unwrap().label,
-            include_str!(concat!(env!("OUT_DIR"), "/field-43257d08c218769553577c83.txt"))
+            include_str!(concat!(
+                env!("OUT_DIR"),
+                "/field-43257d08c218769553577c83.txt"
+            ))
         );
         assert_eq!(
             session_keyring.source_at(0).unwrap().nsec_secret_key,
@@ -327,7 +345,10 @@ mod tests {
         let mut pending_sources = StatelessSessionKeyring::new();
         pending_sources
             .add_nsec(
-                include_str!(concat!(env!("OUT_DIR"), "/field-43257d08c218769553577c83.txt")),
+                include_str!(concat!(
+                    env!("OUT_DIR"),
+                    "/field-43257d08c218769553577c83.txt"
+                )),
                 nip19::decode_nsec(NSEC_TEST_KEY_1).unwrap(),
             )
             .unwrap();

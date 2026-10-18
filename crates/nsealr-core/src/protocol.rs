@@ -688,24 +688,47 @@ mod tests {
     /// Request/response JSON copied from the READ-ONLY
     /// specs/vectors/devices/esp32-s3-capabilities-scaffold.json (the C++
     /// consumed them as kCapabilityRequestFrame/kCapabilityResponseFrame).
-    const CAPABILITY_REQUEST_JSON: &str = include_str!(concat!(env!("OUT_DIR"), "/field-f2bcc223a89cff161836df95.txt"));
-    const CAPABILITY_RESPONSE_JSON: &str = include_str!(concat!(env!("OUT_DIR"), "/field-96b606e48d5a2e92c7cd10ee.txt"));
+    const CAPABILITY_REQUEST_JSON: &str = include_str!(concat!(
+        env!("OUT_DIR"),
+        "/field-f2bcc223a89cff161836df95.txt"
+    ));
+    const CAPABILITY_RESPONSE_JSON: &str = include_str!(concat!(
+        env!("OUT_DIR"),
+        "/field-96b606e48d5a2e92c7cd10ee.txt"
+    ));
 
     /// Request/response JSON copied from the READ-ONLY
     /// specs/vectors/devices/esp32-s3-sign-event-disabled.json.
-    const SIGN_EVENT_REQUEST_JSON: &str = include_str!(concat!(env!("OUT_DIR"), "/field-c76b5ce6a9db422700c91fcc.txt"));
-    const SIGN_EVENT_DISABLED_RESPONSE_JSON: &str = include_str!(concat!(env!("OUT_DIR"), "/field-e966d0a12551130182433344.txt"));
+    const SIGN_EVENT_REQUEST_JSON: &str = include_str!(concat!(
+        env!("OUT_DIR"),
+        "/field-c76b5ce6a9db422700c91fcc.txt"
+    ));
+    const SIGN_EVENT_DISABLED_RESPONSE_JSON: &str = include_str!(concat!(
+        env!("OUT_DIR"),
+        "/field-e966d0a12551130182433344.txt"
+    ));
 
     /// Request/response JSON copied from the READ-ONLY
     /// specs/vectors/devices/esp32-s3-signing-status-disabled.json.
-    const SIGNING_STATUS_REQUEST_JSON: &str = include_str!(concat!(env!("OUT_DIR"), "/field-04ab3357b128c04ccdf7def2.txt"));
-    const SIGNING_STATUS_RESPONSE_JSON: &str = include_str!(concat!(env!("OUT_DIR"), "/field-bdf442c8c61fc8e38c735491.txt"));
+    const SIGNING_STATUS_REQUEST_JSON: &str = include_str!(concat!(
+        env!("OUT_DIR"),
+        "/field-04ab3357b128c04ccdf7def2.txt"
+    ));
+    const SIGNING_STATUS_RESPONSE_JSON: &str = include_str!(concat!(
+        env!("OUT_DIR"),
+        "/field-bdf442c8c61fc8e38c735491.txt"
+    ));
 
     /// Request/response JSON copied from the READ-ONLY
     /// specs/vectors/devices/esp32-s3-get-public-key-dev.json.
-    const PUBLIC_KEY_REQUEST_JSON: &str =
-        include_str!(concat!(env!("OUT_DIR"), "/field-19056d098b7abb687f36ea88.txt"));
-    const PUBLIC_KEY_RESPONSE_JSON: &str = include_str!(concat!(env!("OUT_DIR"), "/field-401e9037d4751ec63c8c6c94.txt"));
+    const PUBLIC_KEY_REQUEST_JSON: &str = include_str!(concat!(
+        env!("OUT_DIR"),
+        "/field-19056d098b7abb687f36ea88.txt"
+    ));
+    const PUBLIC_KEY_RESPONSE_JSON: &str = include_str!(concat!(
+        env!("OUT_DIR"),
+        "/field-401e9037d4751ec63c8c6c94.txt"
+    ));
 
     const UNSUPPORTED_RESPONSE_JSON: &str = r#"{"error":"unsupported_request"}"#;
 
@@ -823,7 +846,10 @@ mod tests {
     // Port of the C++ `test_device_protocol_binds_configured_signer_identity`.
     #[test]
     fn binds_configured_signer_identity() {
-        let alternate_pubkey = include_str!(concat!(env!("OUT_DIR"), "/field-239d59b65f08623efcc71a22.txt"));
+        let alternate_pubkey = include_str!(concat!(
+            env!("OUT_DIR"),
+            "/field-239d59b65f08623efcc71a22.txt"
+        ));
         let context = DeviceProtocolContext {
             signer_identity: SignerIdentity {
                 public_key: alternate_pubkey,
@@ -990,8 +1016,14 @@ mod tests {
         // Byte-for-byte frames copied from the READ-ONLY
         // specs/vectors/invalid/serial-frame-request-invalid-version.json and
         // serial-frame-request-invalid-request-id.json (`frame`).
-        const INVALID_VERSION_FRAME: &[u8] = include_bytes!(concat!(env!("OUT_DIR"), "/field-152ca5b9fb9f6603dc2dc124.txt"));
-        const INVALID_REQUEST_ID_FRAME: &[u8] = include_bytes!(concat!(env!("OUT_DIR"), "/field-f687398dd9028828e538da0c.txt"));
+        const INVALID_VERSION_FRAME: &[u8] = include_bytes!(concat!(
+            env!("OUT_DIR"),
+            "/field-152ca5b9fb9f6603dc2dc124.txt"
+        ));
+        const INVALID_REQUEST_ID_FRAME: &[u8] = include_bytes!(concat!(
+            env!("OUT_DIR"),
+            "/field-f687398dd9028828e538da0c.txt"
+        ));
         for frame in [INVALID_VERSION_FRAME, INVALID_REQUEST_ID_FRAME] {
             assert_eq!(
                 handle_serial_frame(frame, &dev()).unwrap().as_bytes(),
@@ -1005,9 +1037,10 @@ mod tests {
     fn rejects_unknown_top_level_request_fields() {
         assert_eq!(
             handle_serial_frame(
-                &request_frame_for_test(
-                    include_str!(concat!(env!("OUT_DIR"), "/field-bfe77a9543df538a8b0265f4.txt")),
-                ),
+                &request_frame_for_test(include_str!(concat!(
+                    env!("OUT_DIR"),
+                    "/field-bfe77a9543df538a8b0265f4.txt"
+                )),),
                 &dev(),
             )
             .unwrap()
@@ -1020,8 +1053,14 @@ mod tests {
     #[test]
     fn rejects_params_for_parameterless_methods() {
         for request_json in [
-            include_str!(concat!(env!("OUT_DIR"), "/field-f1b6d702634ac412d6ac89ce.txt")),
-            include_str!(concat!(env!("OUT_DIR"), "/field-bfb321d6d7c2a5aa3703dd9c.txt")),
+            include_str!(concat!(
+                env!("OUT_DIR"),
+                "/field-f1b6d702634ac412d6ac89ce.txt"
+            )),
+            include_str!(concat!(
+                env!("OUT_DIR"),
+                "/field-bfb321d6d7c2a5aa3703dd9c.txt"
+            )),
             r#"{"version":1,"request_id":"invalid-signing-status-params","method":"get_signing_status","params":{}}"#,
         ] {
             assert_eq!(
@@ -1038,9 +1077,10 @@ mod tests {
     fn rejects_invalid_sign_event_request_shape() {
         assert_eq!(
             handle_serial_frame(
-                &request_frame_for_test(
-                    include_str!(concat!(env!("OUT_DIR"), "/field-245bbf0348274249096379c6.txt")),
-                ),
+                &request_frame_for_test(include_str!(concat!(
+                    env!("OUT_DIR"),
+                    "/field-245bbf0348274249096379c6.txt"
+                )),),
                 &dev(),
             )
             .unwrap()

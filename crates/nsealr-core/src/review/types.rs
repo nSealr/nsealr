@@ -374,12 +374,34 @@ mod tests {
         assert_eq!(lines.len(), 0);
         assert_eq!(lines, ReviewPageLines::default());
 
-        lines.try_push(include_str!(concat!(env!("OUT_DIR"), "/field-16d631e27f0baf3d3424d042.txt"))).unwrap();
-        lines.try_push(include_str!(concat!(env!("OUT_DIR"), "/field-de4a1599a44e5f90a8fe577d.txt"))).unwrap();
+        lines
+            .try_push(include_str!(concat!(
+                env!("OUT_DIR"),
+                "/field-16d631e27f0baf3d3424d042.txt"
+            )))
+            .unwrap();
+        lines
+            .try_push(include_str!(concat!(
+                env!("OUT_DIR"),
+                "/field-de4a1599a44e5f90a8fe577d.txt"
+            )))
+            .unwrap();
         assert_eq!(lines.len(), 2);
         assert!(!lines.is_empty());
-        assert_eq!(lines.as_slice()[0], include_str!(concat!(env!("OUT_DIR"), "/field-16d631e27f0baf3d3424d042.txt")));
-        assert_eq!(lines.as_slice()[1], include_str!(concat!(env!("OUT_DIR"), "/field-de4a1599a44e5f90a8fe577d.txt")));
+        assert_eq!(
+            lines.as_slice()[0],
+            include_str!(concat!(
+                env!("OUT_DIR"),
+                "/field-16d631e27f0baf3d3424d042.txt"
+            ))
+        );
+        assert_eq!(
+            lines.as_slice()[1],
+            include_str!(concat!(
+                env!("OUT_DIR"),
+                "/field-de4a1599a44e5f90a8fe577d.txt"
+            ))
+        );
         assert_eq!(lines.clone(), lines);
 
         let long_line = core::str::from_utf8(&[b'x'; MAX_REVIEW_PAGE_LINE_CHARS + 1]).unwrap();

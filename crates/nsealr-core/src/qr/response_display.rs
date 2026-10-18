@@ -775,9 +775,36 @@ mod tests {
     #[test]
     fn rejects_shared_top_level_invalid_response_vectors() {
         let vectors: &[(&str, &[u8])] = &[
-            (include_str!(concat!(env!("OUT_DIR"), "/field-8893afc4ccc24b73dbc3eacd.txt")), include_bytes!(concat!(env!("OUT_DIR"), "/field-17b064543efbf513eb311440.txt"))),
-            (include_str!(concat!(env!("OUT_DIR"), "/field-3fb630cd6e6cc56e76380bac.txt")), include_bytes!(concat!(env!("OUT_DIR"), "/field-987661365b5911b05489d629.txt"))),
-            (include_str!(concat!(env!("OUT_DIR"), "/field-f541c3e32b61e25a40070959.txt")), include_bytes!(concat!(env!("OUT_DIR"), "/field-0fe013b9ad698c450cfb85a6.txt"))),
+            (
+                include_str!(concat!(
+                    env!("OUT_DIR"),
+                    "/field-8893afc4ccc24b73dbc3eacd.txt"
+                )),
+                include_bytes!(concat!(
+                    env!("OUT_DIR"),
+                    "/field-17b064543efbf513eb311440.txt"
+                )),
+            ),
+            (
+                include_str!(concat!(
+                    env!("OUT_DIR"),
+                    "/field-3fb630cd6e6cc56e76380bac.txt"
+                )),
+                include_bytes!(concat!(
+                    env!("OUT_DIR"),
+                    "/field-987661365b5911b05489d629.txt"
+                )),
+            ),
+            (
+                include_str!(concat!(
+                    env!("OUT_DIR"),
+                    "/field-f541c3e32b61e25a40070959.txt"
+                )),
+                include_bytes!(concat!(
+                    env!("OUT_DIR"),
+                    "/field-0fe013b9ad698c450cfb85a6.txt"
+                )),
+            ),
         ];
         for (name, response_json) in vectors {
             assert!(
