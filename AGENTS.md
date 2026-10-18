@@ -1,3 +1,5 @@
+> **Explicit project pause, 2026-10-18:** development is suspended until the maintainer explicitly resumes. Read `docs/restart/implementation/PAUSE-HANDOFF.md`. This branch is a checkpoint; preserve the A02 source freeze and do not infer execution authority from task eligibility.
+
 # Working on nSealr
 
 Read `docs/restart/README.md`, then the relevant task in `docs/restart/work-items.json`. These restart decisions supersede historical five-family, model-specific and mandatory-all-Rust phase instructions. They do not waive security or evidence requirements.

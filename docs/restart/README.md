@@ -1,3 +1,5 @@
+> **Explicit pause — 2026-10-18.** Development is stopped. Read [the durable pause handoff](implementation/PAUSE-HANDOFF.md) before any work; only a new explicit maintainer request can resume it. This checkpoint does not close implementation or release gates.
+
 # nSealr restart and execution
 
 This is the engineering direction adopted for the restart. It does not mark future implementation or hardware tasks complete. Product software is pre-production.

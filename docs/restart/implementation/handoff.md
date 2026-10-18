@@ -1,3 +1,5 @@
+> **Later explicit pause checkpoint, 2026-10-18:** [read PAUSE-HANDOFF.md](PAUSE-HANDOFF.md). Do not resume development without a new explicit maintainer request. The earlier handoff below remains historical.
+
 # Execution handoff — first implementation tranche
 
 Date: 2026-10-18. This handoff gives navigation and recovery procedures, not a second task-status ledger. Read the current graph before choosing work.
