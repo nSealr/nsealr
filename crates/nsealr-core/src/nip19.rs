@@ -28,8 +28,64 @@ const SECP256K1_ORDER: [u8; 32] = [
 /// as malformed; it also bounds the fixed word/byte scratch buffers.
 const MAX_BECH32_LEN: usize = 90;
 
-/// A 32-byte secp256k1 secret key. Mirrors the C++ `NsecSecretKey`.
-pub type SecretKey = [u8; 32];
+/// Owned scalar for local import. No public raw borrow, cloning or formatting.
+///
+/// Encoding is an explicit secret export to caller-owned storage. Moves can
+/// leave old copies; dropping this value wipes only its current backing array.
+///
+/// ```compile_fail
+/// use nsealr_core::nip19::SecretKey;
+/// fn require_clone<T: Clone>() {}
+/// require_clone::<SecretKey>();
+/// ```
+/// ```compile_fail
+/// use nsealr_core::nip19::SecretKey;
+/// let secret = SecretKey::take_from(&mut [1; 32]).unwrap();
+/// let _ = secret.as_bytes();
+/// ```
+#[derive(PartialEq, Eq)]
+pub struct SecretKey([u8; 32]);
+
+impl SecretKey {
+    /// Takes and clears a local scalar buffer, including on validation failure.
+    ///
+    /// # Errors
+    /// Returns [`NsecError::InvalidScalar`] for zero or out-of-range input.
+    pub fn take_from(bytes: &mut [u8; 32]) -> Result<Self, NsecError> {
+        use zeroize::Zeroize;
+        let secret = Self(core::mem::take(bytes));
+        bytes.zeroize();
+        if !is_valid_secret_key(&secret.0) {
+            return Err(NsecError::InvalidScalar);
+        }
+        Ok(secret)
+    }
+
+    pub(crate) const fn empty() -> Self {
+        Self([0; 32])
+    }
+
+    pub(crate) fn as_bytes(&self) -> &[u8; 32] {
+        &self.0
+    }
+
+    pub(crate) fn wipe(&mut self) {
+        use zeroize::Zeroize;
+        self.0.zeroize();
+    }
+}
+
+impl core::fmt::Debug for SecretKey {
+    fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
+        f.write_str("SecretKey([REDACTED])")
+    }
+}
+
+impl Drop for SecretKey {
+    fn drop(&mut self) {
+        self.wipe();
+    }
+}
 
 /// Errors reported by the `nsec` functions. Each variant corresponds to a distinct
 /// C++ `NsecDecodeError` throw site.
@@ -109,7 +165,7 @@ fn fold_hrp(mut checksum: u32, hrp: &[u8]) -> u32 {
 /// A decoded Bech32 string: its HRP and the data 5-bit words (checksum stripped).
 struct Bech32<'a> {
     hrp: &'a [u8],
-    words: [u8; MAX_BECH32_LEN],
+    words: zeroize::Zeroizing<[u8; MAX_BECH32_LEN]>,
     words_len: usize,
 }
 
@@ -151,7 +207,7 @@ fn decode_lower_bech32(value: &str) -> Result<Bech32<'_>, NsecError> {
     let hrp = &bytes[..separator];
     let payload = &bytes[separator + 1..];
 
-    let mut words = [0u8; MAX_BECH32_LEN];
+    let mut words = zeroize::Zeroizing::new([0u8; MAX_BECH32_LEN]);
     for (slot, &ch) in words.iter_mut().zip(payload) {
         *slot = bech32_value(ch).ok_or(NsecError::UnsupportedCharacter)?;
     }
@@ -200,7 +256,7 @@ fn bytes_to_words(secret: &SecretKey, out: &mut [u8]) -> usize {
     let mut accumulator = 0u32;
     let mut bits = 0i32;
     let mut written = 0usize;
-    for &byte in secret {
+    for &byte in secret.as_bytes() {
         accumulator = (accumulator << 8) | u32::from(byte);
         bits += 8;
         while bits >= 5 {
@@ -220,7 +276,7 @@ fn bytes_to_words(secret: &SecretKey, out: &mut [u8]) -> usize {
 /// Returns `true` if `secret` is a valid secp256k1 scalar (`1 <= key < n`). Mirrors
 /// the C++ `is_valid_nsec_secret_key`.
 #[must_use]
-pub fn is_valid_secret_key(secret: &SecretKey) -> bool {
+pub fn is_valid_secret_key(secret: &[u8; 32]) -> bool {
     let non_zero = secret.iter().any(|&byte| byte != 0);
     non_zero && *secret < SECP256K1_ORDER
 }
@@ -238,30 +294,26 @@ pub fn decode_nsec(nsec: &str) -> Result<SecretKey, NsecError> {
     if decoded.hrp != b"nsec" {
         return Err(NsecError::WrongPrefix);
     }
-    let mut bytes = [0u8; MAX_BECH32_LEN];
-    let written = words_to_bytes(&decoded.words[..decoded.words_len], &mut bytes)?;
+    let mut bytes = zeroize::Zeroizing::new([0u8; MAX_BECH32_LEN]);
+    let written = words_to_bytes(&decoded.words[..decoded.words_len], &mut *bytes)?;
     if written != 32 {
         return Err(NsecError::WrongLength);
     }
-    let mut secret = [0u8; 32];
+    let mut secret = zeroize::Zeroizing::new([0u8; 32]);
     secret.copy_from_slice(&bytes[..32]);
-    if !is_valid_secret_key(&secret) {
-        return Err(NsecError::InvalidScalar);
-    }
-    Ok(secret)
+    SecretKey::take_from(&mut secret)
 }
 
-/// Decodes an `nsec` string and returns the secret key as 64 lowercase ASCII hex
-/// bytes. Mirrors the C++ `decode_nsec_secret_key_hex`.
+/// Deliberately decodes local nsec into caller-owned secret hex storage.
+/// The caller must keep `out` out of logs/transports and wipe it after use.
 ///
 /// # Errors
 ///
 /// Propagates every [`decode_nsec`] error.
-pub fn decode_nsec_hex(nsec: &str) -> Result<[u8; 64], NsecError> {
+pub fn decode_nsec_hex<'a>(nsec: &str, out: &'a mut [u8; 64]) -> Result<&'a [u8; 64], NsecError> {
     const HEX: &[u8; 16] = b"0123456789abcdef";
     let secret = decode_nsec(nsec)?;
-    let mut out = [0u8; 64];
-    for (byte, slot) in secret.iter().zip(out.chunks_exact_mut(2)) {
+    for (byte, slot) in secret.as_bytes().iter().zip(out.chunks_exact_mut(2)) {
         slot[0] = HEX[usize::from(byte >> 4)];
         slot[1] = HEX[usize::from(byte & 0x0f)];
     }
@@ -277,12 +329,12 @@ pub fn decode_nsec_hex(nsec: &str) -> Result<[u8; 64], NsecError> {
 /// [`NsecError::InvalidScalar`] if the key is not a valid secp256k1 scalar, or
 /// [`NsecError::BufferTooSmall`] if `out` is shorter than 63 bytes.
 pub fn encode_nsec<'a>(secret: &SecretKey, out: &'a mut [u8]) -> Result<&'a str, NsecError> {
-    if !is_valid_secret_key(secret) {
+    if !is_valid_secret_key(secret.as_bytes()) {
         return Err(NsecError::InvalidScalar);
     }
     // 32 bytes -> 52 data words; +6 checksum words; "nsec1" prefix => 63 chars.
-    let mut words = [0u8; 58];
-    let data_len = bytes_to_words(secret, &mut words);
+    let mut words = zeroize::Zeroizing::new([0u8; 58]);
+    let data_len = bytes_to_words(secret, &mut *words);
 
     // Checksum: polymod over hrp-expansion ++ data words ++ six zero words, ^ 1.
     let mut checksum = fold_hrp(1, b"nsec");
@@ -335,14 +387,14 @@ mod tests {
     fn encode_rejects_invalid_scalar_and_small_buffer() {
         let mut buf = [0u8; 63];
         assert_eq!(
-            encode_nsec(&[0u8; 32], &mut buf),
+            encode_nsec(&SecretKey::empty(), &mut buf),
             Err(NsecError::InvalidScalar),
         );
         let mut one = [0u8; 32];
         one[31] = 1;
         let mut small = [0u8; 10];
         assert_eq!(
-            encode_nsec(&one, &mut small),
+            encode_nsec(&SecretKey::take_from(&mut one).unwrap(), &mut small),
             Err(NsecError::BufferTooSmall),
         );
     }
@@ -399,48 +451,67 @@ mod tests {
         const PUBLIC_HEX: &str = "4f355bdcb7cc0af728ef3cceb9615d90684bb5b2ca5f859ab0f0b704075871aa";
 
         let secret = decode_nsec(NSEC).unwrap();
-        let hex = decode_nsec_hex(NSEC).unwrap();
-        assert_eq!(core::str::from_utf8(&hex).unwrap(), SECRET_HEX);
-        assert_eq!(secret[0], 0x11);
-        assert_eq!(secret[31], 0x11);
+        let mut hex_out = [0; 64];
+        let hex = decode_nsec_hex(NSEC, &mut hex_out).unwrap();
+        assert_eq!(core::str::from_utf8(hex).unwrap(), SECRET_HEX);
+        assert_eq!(secret.as_bytes()[0], 0x11);
+        assert_eq!(secret.as_bytes()[31], 0x11);
         assert_eq!(PUBLIC_HEX.len(), 64);
 
         // Re-encode reproduces the canonical fixture nsec (bech32 encode parity).
         let mut buf = [0u8; 63];
         assert_eq!(encode_nsec(&secret, &mut buf).unwrap(), NSEC);
-        assert!(is_valid_secret_key(&secret));
+        assert!(is_valid_secret_key(secret.as_bytes()));
 
         // checksum
         assert_eq!(
-            decode_nsec_hex("nsec1zyg3zyg3zyg3zyg3zyg3zyg3zyg3zyg3zyg3zyg3zyg3zyg3zygqqqqqq"),
+            decode_nsec_hex(
+                "nsec1zyg3zyg3zyg3zyg3zyg3zyg3zyg3zyg3zyg3zyg3zyg3zyg3zygqqqqqq",
+                &mut [0; 64]
+            ),
             Err(NsecError::InvalidChecksum),
         );
         // prefix
         assert_eq!(
-            decode_nsec_hex("npub1fu64hh9hes90w2808n8tjc2ajp5yhddjef0ctx4s7zmsgp6cwx4qgy4eg9"),
+            decode_nsec_hex(
+                "npub1fu64hh9hes90w2808n8tjc2ajp5yhddjef0ctx4s7zmsgp6cwx4qgy4eg9",
+                &mut [0; 64]
+            ),
             Err(NsecError::WrongPrefix),
         );
         // lowercase
         assert_eq!(
-            decode_nsec_hex("NSEC1ZYG3ZYG3ZYG3ZYG3ZYG3ZYG3ZYG3ZYG3ZYG3ZYG3ZYG3ZYG3ZYGS4RM7HZ"),
+            decode_nsec_hex(
+                "NSEC1ZYG3ZYG3ZYG3ZYG3ZYG3ZYG3ZYG3ZYG3ZYG3ZYG3ZYG3ZYG3ZYGS4RM7HZ",
+                &mut [0; 64]
+            ),
             Err(NsecError::NotCanonicalLowercase),
         );
         // unsupported characters ('i' is outside the bech32 charset)
         assert_eq!(
-            decode_nsec_hex("nsec1zyg3zyg3zyg3zyg3zyg3zyg3zyg3zyg3zyg3zyg3zyg3zyg3zygi4rm7hz"),
+            decode_nsec_hex(
+                "nsec1zyg3zyg3zyg3zyg3zyg3zyg3zyg3zyg3zyg3zyg3zyg3zyg3zygi4rm7hz",
+                &mut [0; 64]
+            ),
             Err(NsecError::UnsupportedCharacter),
         );
         // invalid padding
         assert_eq!(
-            decode_nsec_hex("nsec1py3nlzd"),
+            decode_nsec_hex("nsec1py3nlzd", &mut [0; 64]),
             Err(NsecError::InvalidPadding),
         );
         // 32-byte secret key
         assert_eq!(
-            decode_nsec_hex("nsec1zyg3zyg3zyg3zyg3zyg3zyg3zyg3zyg3zyg3zyg3zyg3zyg3zypf0r0t"),
+            decode_nsec_hex(
+                "nsec1zyg3zyg3zyg3zyg3zyg3zyg3zyg3zyg3zyg3zyg3zyg3zyg3zypf0r0t",
+                &mut [0; 64]
+            ),
             Err(NsecError::WrongLength),
         );
         // malformed
-        assert_eq!(decode_nsec_hex("nsec1short"), Err(NsecError::Malformed),);
+        assert_eq!(
+            decode_nsec_hex("nsec1short", &mut [0; 64]),
+            Err(NsecError::Malformed),
+        );
     }
 }

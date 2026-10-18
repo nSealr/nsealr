@@ -1,0 +1,16 @@
+[package]
+name = "s02-core-link"
+version = "0.0.0"
+edition = "2021"
+publish = false
+
+[workspace]
+
+[dependencies]
+nsealr-core = { path = "../../../../../../crates/nsealr-core", default-features = false }
+
+[profile.release]
+opt-level = "s"
+lto = true
+codegen-units = 1
+panic = "abort"

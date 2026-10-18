@@ -146,7 +146,7 @@ pub struct SessionImportFlowResult {
 /// See [`SessionImportFlowError`]; on any error the keyring is untouched.
 pub fn run_session_import_flow(
     keyring: &mut StatelessSessionKeyring,
-    source: &SessionKeySource,
+    source: SessionKeySource,
     buttons: &[ReviewButton],
     max_button_steps: usize,
 ) -> Result<SessionImportFlowResult, SessionImportFlowError> {
@@ -154,7 +154,7 @@ pub fn run_session_import_flow(
         return Err(SessionImportFlowError::ZeroMaxButtonSteps);
     }
 
-    let review = build_session_import_review(source);
+    let review = build_session_import_review(&source);
     let mut controls =
         ReviewControlSession::new(review.pages.len()).map_err(SessionImportFlowError::Controls)?;
     let mut transcript = SessionImportTranscript::new();
@@ -170,14 +170,7 @@ pub fn run_session_import_flow(
         let decision = controls
             .handle_button(button)
             .map_err(SessionImportFlowError::Controls)?;
-        let loaded = if decision == Some(true) {
-            keyring
-                .add_source(source)
-                .map_err(SessionImportFlowError::Keyring)?;
-            true
-        } else {
-            false
-        };
+        let loaded = decision == Some(true);
         transcript.try_push(SessionImportTranscriptStep {
             page_index,
             button,
@@ -186,6 +179,11 @@ pub fn run_session_import_flow(
         })?;
 
         if let Some(approved) = decision {
+            if approved {
+                keyring
+                    .add_source(source)
+                    .map_err(SessionImportFlowError::Keyring)?;
+            }
             return Ok(SessionImportFlowResult {
                 review,
                 approved,
@@ -203,7 +201,10 @@ mod tests {
     use super::*;
     use crate::nip19;
     use crate::session::keyring::tests::{NSEC_TEST_KEY_1, SEEDQR_VECTOR_1_INDEXES};
-    use crate::session::keyring::SessionKeySourceKind;
+    fn fixture_source() -> SessionKeySource {
+        crate::session::source_qr::parse_session_source_qr_text("nsec test vector", NSEC_TEST_KEY_1)
+            .unwrap()
+    }
 
     // Port of the C++ `test_session_import_flow_requires_local_approval_before_loading_keyring`.
     // The expected review_id is copied from the READ-ONLY
@@ -212,14 +213,16 @@ mod tests {
     fn requires_local_approval_before_loading_keyring() {
         let mut pending_sources = StatelessSessionKeyring::new();
         let mut session_keyring = StatelessSessionKeyring::new();
-        let secret = nip19::decode_nsec(NSEC_TEST_KEY_1).unwrap();
         pending_sources
-            .add_nsec("nsec test vector", &secret)
+            .add_nsec(
+                "nsec test vector",
+                nip19::decode_nsec(NSEC_TEST_KEY_1).unwrap(),
+            )
             .unwrap();
 
         let result = run_session_import_flow(
             &mut session_keyring,
-            pending_sources.source_at(0).unwrap(),
+            pending_sources.take_last().unwrap(),
             &[ReviewButton::Next, ReviewButton::Approve],
             SESSION_IMPORT_DEFAULT_MAX_BUTTON_STEPS,
         )
@@ -244,7 +247,7 @@ mod tests {
         );
         assert_eq!(
             session_keyring.source_at(0).unwrap().nsec_secret_key,
-            secret
+            nip19::decode_nsec(NSEC_TEST_KEY_1).unwrap()
         );
     }
 
@@ -254,12 +257,15 @@ mod tests {
         let mut pending_sources = StatelessSessionKeyring::new();
         let mut session_keyring = StatelessSessionKeyring::new();
         pending_sources
-            .add_bip39_seed("SeedQR vector 1", &SEEDQR_VECTOR_1_INDEXES)
+            .add_bip39_seed(
+                "SeedQR vector 1",
+                crate::bip39::WordIndexes::from_slice(&SEEDQR_VECTOR_1_INDEXES).unwrap(),
+            )
             .unwrap();
 
         let result = run_session_import_flow(
             &mut session_keyring,
-            pending_sources.source_at(0).unwrap(),
+            pending_sources.take_last().unwrap(),
             &[ReviewButton::Reject],
             SESSION_IMPORT_DEFAULT_MAX_BUTTON_STEPS,
         )
@@ -276,19 +282,11 @@ mod tests {
     // Port of the C++ `test_session_import_flow_blocks_early_or_nonterminal_approval`.
     #[test]
     fn blocks_early_or_nonterminal_approval() {
-        let mut pending_sources = StatelessSessionKeyring::new();
         let mut session_keyring = StatelessSessionKeyring::new();
-        pending_sources
-            .add_nsec(
-                "nsec test vector",
-                &nip19::decode_nsec(NSEC_TEST_KEY_1).unwrap(),
-            )
-            .unwrap();
-
         assert_eq!(
             run_session_import_flow(
                 &mut session_keyring,
-                pending_sources.source_at(0).unwrap(),
+                fixture_source(),
                 &[ReviewButton::Approve],
                 SESSION_IMPORT_DEFAULT_MAX_BUTTON_STEPS,
             ),
@@ -301,7 +299,7 @@ mod tests {
         assert_eq!(
             run_session_import_flow(
                 &mut session_keyring,
-                pending_sources.source_at(0).unwrap(),
+                fixture_source(),
                 &[ReviewButton::Next],
                 SESSION_IMPORT_DEFAULT_MAX_BUTTON_STEPS,
             ),
@@ -312,7 +310,7 @@ mod tests {
         assert_eq!(
             run_session_import_flow(
                 &mut session_keyring,
-                pending_sources.source_at(0).unwrap(),
+                fixture_source(),
                 &[ReviewButton::Next, ReviewButton::Back],
                 1,
             ),
@@ -327,11 +325,13 @@ mod tests {
     #[test]
     fn zero_steps_full_keyring_and_transcript_bounds() {
         let mut pending_sources = StatelessSessionKeyring::new();
-        let secret = nip19::decode_nsec(NSEC_TEST_KEY_1).unwrap();
         pending_sources
-            .add_nsec("nsec test vector", &secret)
+            .add_nsec(
+                "nsec test vector",
+                nip19::decode_nsec(NSEC_TEST_KEY_1).unwrap(),
+            )
             .unwrap();
-        let source = pending_sources.source_at(0).unwrap();
+        let source = pending_sources.take_last().unwrap();
 
         let mut session_keyring = StatelessSessionKeyring::new();
         assert_eq!(
@@ -346,12 +346,14 @@ mod tests {
             let mut label = crate::session::keyring::SessionKeySourceLabel::new();
             label.try_push_str("filler ").unwrap();
             label.try_push_usize(index).unwrap();
-            full_keyring.add_nsec(label.as_str(), &secret).unwrap();
+            full_keyring
+                .add_nsec(label.as_str(), nip19::decode_nsec(NSEC_TEST_KEY_1).unwrap())
+                .unwrap();
         }
         assert_eq!(
             run_session_import_flow(
                 &mut full_keyring,
-                source,
+                fixture_source(),
                 &[ReviewButton::Next, ReviewButton::Approve],
                 SESSION_IMPORT_DEFAULT_MAX_BUTTON_STEPS,
             ),
@@ -359,7 +361,6 @@ mod tests {
                 SessionKeyringError::KeyringFull,
             )),
         );
-        assert_eq!(source.kind, SessionKeySourceKind::NsecSecretKey);
 
         let step = SessionImportTranscriptStep {
             page_index: 0,

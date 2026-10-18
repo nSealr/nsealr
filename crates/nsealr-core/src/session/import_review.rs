@@ -59,33 +59,27 @@ pub fn session_key_source_fingerprint(source: &SessionKeySource) -> SessionKeySo
     //   "nsealr.session-key-source.v0\n" (29) + kind label (11) + "\n" (1)
     //   + either the 32 raw secret bytes, or the decimal word count (<= 2)
     //     + "\n" + big-endian u16 word-index pairs (<= 48)  => at most 92 bytes.
-    let mut material = [0u8; 96];
-    let mut len = push_bytes(&mut material, 0, b"nsealr.session-key-source.v0\n");
+    let mut material = zeroize::Zeroizing::new([0u8; 96]);
+    let mut len = push_bytes(&mut *material, 0, b"nsealr.session-key-source.v0\n");
     len = push_bytes(
-        &mut material,
+        &mut *material,
         len,
         source_kind_label(source.kind).as_bytes(),
     );
-    len = push_bytes(&mut material, len, b"\n");
+    len = push_bytes(&mut *material, len, b"\n");
     match source.kind {
         SessionKeySourceKind::NsecSecretKey => {
-            len = push_bytes(&mut material, len, &source.nsec_secret_key);
+            len = push_bytes(&mut *material, len, source.nsec_secret_key.as_bytes());
         }
         SessionKeySourceKind::Bip39WordIndexes => {
-            len = push_decimal(&mut material, len, source.bip39_word_indexes.count);
-            len = push_bytes(&mut material, len, b"\n");
+            len = push_decimal(&mut *material, len, source.bip39_word_indexes.count);
+            len = push_bytes(&mut *material, len, b"\n");
             for &word_index in source.bip39_word_indexes.as_slice() {
-                len = push_bytes(&mut material, len, &word_index.to_be_bytes());
+                len = push_bytes(&mut *material, len, &word_index.to_be_bytes());
             }
         }
     }
     let digest_hex = sha256_hex(&material[..len]);
-    // The material buffer carried raw secret bytes; volatile-wipe it before it
-    // leaves scope (hygiene beyond the C++, which left its std::string as-is).
-    for byte in &mut material {
-        // SAFETY: `byte` is a valid, exclusively-borrowed `u8` location.
-        unsafe { core::ptr::write_volatile(byte, 0) };
-    }
     // The digest is ASCII hex, so the str view of its first 16 chars is valid.
     let fingerprint =
         core::str::from_utf8(&digest_hex[..SESSION_KEY_SOURCE_FINGERPRINT_CHARS]).unwrap_or("");
@@ -135,17 +129,17 @@ pub fn build_session_import_review(source: &SessionKeySource) -> SessionImportRe
     // Approval-digest material (C++ `import_approval_digest`):
     //   "nsealr.session-import-review.v0\n" (32) + kind label (11) + "\n"
     //   + label (<= 64) + "\n" + fingerprint (16)  => at most 125 bytes.
-    let mut material = [0u8; 128];
-    let mut len = push_bytes(&mut material, 0, b"nsealr.session-import-review.v0\n");
+    let mut material = zeroize::Zeroizing::new([0u8; 128]);
+    let mut len = push_bytes(&mut *material, 0, b"nsealr.session-import-review.v0\n");
     len = push_bytes(
-        &mut material,
+        &mut *material,
         len,
         source_kind_label(source.kind).as_bytes(),
     );
-    len = push_bytes(&mut material, len, b"\n");
-    len = push_bytes(&mut material, len, source.label.as_str().as_bytes());
-    len = push_bytes(&mut material, len, b"\n");
-    len = push_bytes(&mut material, len, fingerprint.as_str().as_bytes());
+    len = push_bytes(&mut *material, len, b"\n");
+    len = push_bytes(&mut *material, len, source.label.as_str().as_bytes());
+    len = push_bytes(&mut *material, len, b"\n");
+    len = push_bytes(&mut *material, len, fingerprint.as_str().as_bytes());
     let digest_hex = sha256_hex(&material[..len]);
     let approval_digest =
         SessionApprovalDigest::from_str(core::str::from_utf8(&digest_hex).unwrap_or(""))
@@ -298,10 +292,17 @@ pub(crate) mod tests {
     #[test]
     fn hides_secret_material() {
         let mut keyring = StatelessSessionKeyring::new();
-        let secret = nip19::decode_nsec(NSEC_TEST_KEY_1).unwrap();
-        keyring.add_nsec("nsec test vector", &secret).unwrap();
         keyring
-            .add_bip39_seed("SeedQR vector 1", &SEEDQR_VECTOR_1_INDEXES)
+            .add_nsec(
+                "nsec test vector",
+                nip19::decode_nsec(NSEC_TEST_KEY_1).unwrap(),
+            )
+            .unwrap();
+        keyring
+            .add_bip39_seed(
+                "SeedQR vector 1",
+                crate::bip39::WordIndexes::from_slice(&SEEDQR_VECTOR_1_INDEXES).unwrap(),
+            )
             .unwrap();
 
         let nsec_review = build_session_import_review(keyring.source_at(0).unwrap());
@@ -411,7 +412,10 @@ pub(crate) mod tests {
         ];
         let mut keyring = StatelessSessionKeyring::new();
         keyring
-            .add_bip39_seed("NIP-06 account 0", &NIP06_INDEXES)
+            .add_bip39_seed(
+                "NIP-06 account 0",
+                crate::bip39::WordIndexes::from_slice(&NIP06_INDEXES).unwrap(),
+            )
             .unwrap();
         let source = keyring.source_at(0).unwrap();
 

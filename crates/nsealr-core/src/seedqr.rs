@@ -97,7 +97,7 @@ pub fn decode_standard_indexes(digits: &str) -> Result<WordIndexes, SeedQrError>
 
     // Pass 2: fold every four digits into a word index.
     let mut indexes = WordIndexes::new();
-    let mut group = [0u16; 4];
+    let mut group = zeroize::Zeroizing::new([0u16; 4]);
     let mut in_group = 0usize;
     for &byte in bytes {
         if is_seedqr_whitespace(byte) {
@@ -135,7 +135,7 @@ pub fn decode_compact_indexes(entropy: &[u8]) -> Result<WordIndexes, SeedQrError
     };
     let entropy_bits = entropy.len() * 8;
     let word_count = (entropy_bits + checksum_bits) / 11;
-    let digest = sha256(entropy);
+    let digest = zeroize::Zeroizing::new(sha256(entropy));
 
     let mut indexes = WordIndexes::new();
     for word in 0..word_count {

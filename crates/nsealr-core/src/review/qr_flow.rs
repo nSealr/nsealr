@@ -618,7 +618,10 @@ mod tests {
         keyring
             .add_bip39_seed(
                 "NIP-06 account 0",
-                bip39::parse_mnemonic_indexes(mnemonic).unwrap().as_slice(),
+                crate::bip39::WordIndexes::from_slice(
+                    bip39::parse_mnemonic_indexes(mnemonic).unwrap().as_slice(),
+                )
+                .unwrap(),
             )
             .unwrap();
         // Descriptor copied from the READ-ONLY
