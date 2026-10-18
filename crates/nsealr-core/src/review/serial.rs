@@ -180,10 +180,10 @@ impl SerialReviewFlow {
     }
 
     /// Whether the review was approved for signing. Mirrors the C++
-    /// `approved_for_signing`.
+    /// `review_approved`.
     #[must_use]
-    pub fn approved_for_signing(&self) -> bool {
-        self.session.can_sign()
+    pub fn review_approved(&self) -> bool {
+        self.session.review_approved()
     }
 
     /// Handles one button press. Mirrors the C++ `handle_button`.
@@ -221,7 +221,7 @@ pub struct SerialReviewIoFlowResult {
     /// The terminal decision.
     pub decision: Option<bool>,
     /// Whether the flow ended approved for signing.
-    pub approved_for_signing: bool,
+    pub review_approved: bool,
     /// The recorded steps.
     pub transcript: SerialReviewTranscript,
 }
@@ -260,7 +260,7 @@ pub fn run_serial_review_io_flow(
                 frame,
                 button,
                 decision,
-                approved_for_signing: flow.approved_for_signing(),
+                review_approved: flow.review_approved(),
             })
             .map_err(|_| SerialReviewError::Capacity)?;
         step += 1;
@@ -272,7 +272,7 @@ pub fn run_serial_review_io_flow(
         request_id: flow.request_id.clone(),
         approval_digest: flow.approval_digest.clone(),
         decision,
-        approved_for_signing: flow.approved_for_signing(),
+        review_approved: flow.review_approved(),
         transcript,
     })
 }
@@ -347,7 +347,7 @@ mod tests {
         )
         .unwrap();
         assert_eq!(session.current_frame().unwrap().title, "Event");
-        assert!(!session.can_sign());
+        assert!(!session.review_approved());
     }
 
     // Port of the C++ `test_serial_review_session_uses_full_scroll_display_pages`.
@@ -436,7 +436,7 @@ mod tests {
         assert_eq!(session.current_frame().unwrap().title, "Event");
         assert!(event_text.contains(&alternate_pubkey[..48]));
         assert!(event_text.contains(&alternate_pubkey[48..]));
-        assert!(!session.can_sign());
+        assert!(!session.review_approved());
     }
 
     // Port of the C++ `test_serial_review_session_uses_two_axis_navigation_for_scroll_windows`.
@@ -500,7 +500,7 @@ mod tests {
         assert_eq!(session.handle_button(ReviewButton::Next), Ok(None));
         assert_eq!(session.current_frame().unwrap().title, "Decision");
         assert_eq!(session.current_frame().unwrap().page_indicator, "Page 4/4");
-        assert!(!session.can_sign());
+        assert!(!session.review_approved());
 
         assert_eq!(session.handle_button(ReviewButton::Next), Ok(None));
         assert_eq!(session.current_frame().unwrap().title, "Event");
@@ -513,7 +513,7 @@ mod tests {
 
         let approval = session.handle_button(ReviewButton::Approve);
         assert_eq!(approval, Ok(Some(true)));
-        assert!(session.can_sign());
+        assert!(session.review_approved());
     }
 
     // Port of the C++ `test_serial_review_io_flow_drives_request_display_and_buttons_without_signing`.
@@ -536,7 +536,7 @@ mod tests {
         assert_eq!(result.request_id, "req-kind-1-basic");
         assert_eq!(result.approval_digest, BASIC_REVIEW_SCREEN_APPROVAL_DIGEST);
         assert_eq!(result.decision, Some(true));
-        assert!(result.approved_for_signing);
+        assert!(result.review_approved);
         // The C++ compared against the basic approve transcript fixture's
         // length (4 steps).
         assert_eq!(result.transcript.len(), 4);
@@ -628,13 +628,13 @@ mod tests {
         assert_eq!(flow.request_id(), "req-kind-1-basic");
         assert_eq!(flow.approval_digest(), BASIC_REVIEW_SCREEN_APPROVAL_DIGEST);
         assert_eq!(flow.decision(), ApprovalDecision::Pending);
-        assert!(!flow.approved_for_signing());
+        assert!(!flow.review_approved());
         assert_eq!(flow.current_frame().unwrap().title, "Event");
         assert_eq!(flow.handle_button(ReviewButton::Next), Ok(None));
         assert_eq!(flow.handle_button(ReviewButton::Next), Ok(None));
         assert_eq!(flow.handle_button(ReviewButton::Next), Ok(None));
         assert_eq!(flow.handle_button(ReviewButton::Approve), Ok(Some(true)));
-        assert!(flow.approved_for_signing());
+        assert!(flow.review_approved());
         assert_eq!(flow.decision(), ApprovalDecision::Approved);
     }
 }

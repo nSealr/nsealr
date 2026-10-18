@@ -4,7 +4,7 @@
 //! `include/nsealr/trusted_review.hpp`, and the [`ReviewPageAction`] /
 //! [`ReviewBodyLineStyle`] enums it embeds from `include/nsealr/review_display.hpp`.
 //! The review *logic* those headers also declare (`TrustedReviewSession`,
-//! `render_review_page`, `ReviewControlSession`) is **not** ported here — it
+//! `render_preview_page`, `ReviewControlSession`) is **not** ported here — it
 //! arrives with milestone M-T3.6. These types land early because the M-T3.4
 //! session/custody modules build review pages as plain data.
 //!

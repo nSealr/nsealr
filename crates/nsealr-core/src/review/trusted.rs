@@ -1,3 +1,6 @@
+//! Legacy diagnostic review preview. Arbitrary pages and copied transcripts here
+//! are never accepted by [`crate::authorization::AuthorizationSession`].
+//!
 //! Trusted review session — binds display, navigation, and approval.
 //!
 //! Ported from the C++ reference `host_core` sources `src/trusted_review.cpp` +
@@ -12,10 +15,10 @@
 //! The C++ threw `std::invalid_argument`/`std::logic_error`; this port returns
 //! [`TrustedReviewError`] values carrying the exact C++ messages.
 
-use crate::policy::approval_gate::{ApprovalDecision, ApprovalGate};
+use crate::policy::approval_gate::{ApprovalDecision, ReviewDecisionState};
 use crate::review::controls::{ReviewButton, ReviewControlSession, ReviewControlsError};
 use crate::review::display::{
-    render_review_page, ReviewDisplayError, ReviewDisplayFrame, ReviewDisplayLimits, ReviewPage,
+    render_preview_page, ReviewDisplayError, ReviewDisplayFrame, ReviewDisplayLimits, ReviewPage,
 };
 use crate::review::types::{
     ReviewPageAction, TrustedReviewPage, TrustedReviewRequest, MAX_TRUSTED_REVIEW_PAGES,
@@ -128,7 +131,7 @@ fn logical_page_ranges_for(pages: &[TrustedReviewPage]) -> LogicalPageRanges {
 pub struct TrustedReviewSession {
     request: TrustedReviewRequest,
     controls: ReviewControlSession,
-    approval_gate: ApprovalGate,
+    approval_gate: ReviewDecisionState,
     limits: ReviewDisplayLimits,
     logical_page_ranges: LogicalPageRanges,
     current_logical_page_index: usize,
@@ -160,7 +163,7 @@ impl TrustedReviewSession {
             return Err(TrustedReviewError::EmptyApprovalDigest);
         }
         let logical_page_ranges = logical_page_ranges_for(request.pages.as_slice());
-        let mut approval_gate = ApprovalGate::new();
+        let mut approval_gate = ReviewDecisionState::new();
         approval_gate.begin_review(
             request.request_id.as_str(),
             request.approval_digest.as_str(),
@@ -185,7 +188,7 @@ impl TrustedReviewSession {
     pub fn current_frame(&self) -> Result<ReviewDisplayFrame, ReviewDisplayError> {
         let page_index = self.active_flat_page_index();
         let page = &self.request.pages.as_slice()[page_index];
-        let mut frame = render_review_page(
+        let mut frame = render_preview_page(
             &ReviewPage {
                 title: page.title.as_str(),
                 lines: page.lines.as_slice(),
@@ -209,10 +212,10 @@ impl TrustedReviewSession {
     }
 
     /// Returns `true` iff the bound pair was approved. Mirrors the C++
-    /// `can_sign`.
+    /// `review_approved`.
     #[must_use]
-    pub fn can_sign(&self) -> bool {
-        self.approval_gate.can_sign(
+    pub fn review_approved(&self) -> bool {
+        self.approval_gate.review_approved(
             self.request.request_id.as_str(),
             self.request.approval_digest.as_str(),
         )
@@ -341,7 +344,7 @@ mod tests {
         assert_eq!(first_frame.title, "Event");
         assert_eq!(first_frame.page_indicator, "Page 1/4");
         assert_eq!(first_frame.action_hint, "Next");
-        assert!(!session.can_sign());
+        assert!(!session.review_approved());
 
         assert_eq!(
             session.handle_button(ReviewButton::Approve),
@@ -358,11 +361,11 @@ mod tests {
         assert_eq!(decision_frame.title, "Decision");
         assert_eq!(decision_frame.page_indicator, "Page 4/4");
         assert_eq!(decision_frame.action_hint, "Approve / Reject");
-        assert!(!session.can_sign());
+        assert!(!session.review_approved());
 
         let approval = session.handle_button(ReviewButton::Approve);
         assert_eq!(approval, Ok(Some(true)));
-        assert!(session.can_sign());
+        assert!(session.review_approved());
     }
 
     // Port of the C++ `test_trusted_review_session_keeps_rejection_terminal`.
@@ -396,7 +399,7 @@ mod tests {
 
         let rejection = session.handle_button(ReviewButton::Reject);
         assert_eq!(rejection, Ok(Some(false)));
-        assert!(!session.can_sign());
+        assert!(!session.review_approved());
         assert_eq!(session.decision(), ApprovalDecision::Rejected);
     }
 
@@ -416,7 +419,7 @@ mod tests {
         assert_eq!(session.current_frame().unwrap().title, "Tags");
         assert_eq!(session.handle_button(ReviewButton::Back), Ok(None));
         assert_eq!(session.current_frame().unwrap().title, "Content");
-        assert!(!session.can_sign());
+        assert!(!session.review_approved());
 
         assert_eq!(session.handle_button(ReviewButton::Next), Ok(None));
         assert_eq!(session.handle_button(ReviewButton::Next), Ok(None));
@@ -424,7 +427,7 @@ mod tests {
 
         let approval = session.handle_button(ReviewButton::Approve);
         assert_eq!(approval, Ok(Some(true)));
-        assert!(session.can_sign());
+        assert!(session.review_approved());
     }
 
     // Beyond the named C++ cases: constructor validation branches and the C++

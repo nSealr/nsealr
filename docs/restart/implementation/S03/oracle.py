@@ -107,9 +107,42 @@ def generate(destination):
 
 def check(fixtures, observed):
     bip = reference()
+    official = json.loads((ROOT/'oracle-source/selected-official-vectors.json').read_text())['rows']
+    for row in official:
+        assert bip.schnorr_verify(bytes.fromhex(row['message']), bytes.fromhex(row['public key']),
+                                  bytes.fromhex(row['signature'])) == (row['verification result'] == 'TRUE')
     rows = json.loads(fixtures.read_text())['vectors']
     actual = {row['id']: row for row in json.loads(observed.read_text())}
     assert set(actual) == {row['id'] for row in rows}
+    keys = json.loads(observed.with_suffix('.keys.json').read_text())
+    assert {row['scalar'] for row in keys} == {'1', '3', 'n-3'}
+    for row in keys:
+        scalar = bip.n-3 if row['scalar'] == 'n-3' else int(row['scalar'])
+        key = scalar.to_bytes(32, 'big')
+        assert bip.pubkey_gen(key).hex() == row['pubkey']
+        normalized = scalar if bip.has_even_y(bip.point_mul(bip.G, scalar)) else bip.n-scalar
+        assert normalized.to_bytes(32, 'big').hex() == row['normalized_backend']
+        if row['scalar'] == 'n-3':
+            message = bytes.fromhex(rows[0]['event_id'])
+            assert bip.schnorr_sign(message, key, bytes(32)).hex() == row['empty_event_signature']
+    # Separate parser oracle: expected rejection follows grammar/type/Unicode
+    # requirements, never a result copied from the Rust parser.
+    good = rows[0]['template']
+    negatives = [good.replace('"kind":1', '"kind":1,"k\\u0069nd":1'),
+                 good.replace('"kind":1', '"kind":65536'),
+                 good.replace('"created_at":0', '"created_at":01'),
+                 good.replace('"created_at":0', '"created_at":-0'),
+                 good.replace('"kind":1', '"kind":true'),
+                 good.replace('"content":""', '"content":"\\ud800"'),
+                 good+',', good+'{}']
+    for raw in [text.encode() for text in negatives] + [good.encode().replace(b'"content":""', b'"content":"\xc0\x80"')]:
+        try:
+            template(raw)
+        except (ValueError, UnicodeError):
+            pass
+        else:
+            raise AssertionError(('accepted invalid input', raw))
+    field_mutations = 0
     for want in rows:
         data = canonical(template(want['template'].encode()), want['pubkey'])
         assert data.hex() == want['canonical_hex']
@@ -120,10 +153,30 @@ def check(fixtures, observed):
         message, public, signature = bytes.fromhex(got['event_id']), bytes.fromhex(got['pubkey']), bytes.fromhex(got['signature'])
         assert bip.schnorr_verify(message, public, signature)
         assert not bip.schnorr_verify(hashlib.sha256(message).digest(), public, signature)
+        assert not bip.schnorr_verify(message, bip.pubkey_gen((1).to_bytes(32, 'big')), signature)
+        for offset in range(32):
+            changed=bytearray(message); changed[offset]^=1
+            assert not bip.schnorr_verify(bytes(changed), public, signature)
         for offset in range(64):
             changed=bytearray(signature); changed[offset]^=1
             assert not bip.schnorr_verify(message, public, bytes(changed))
-    print(json.dumps({'verified_events':len(rows),'signature_byte_mutations_rejected':64*len(rows),'double_hash_mutations_rejected':len(rows)}))
+        for field in ['created_at', 'kind', 'tags', 'content']:
+            changed = template(want['template'].encode())
+            if field == 'content':
+                changed[field] += 'changed'
+            elif field == 'tags':
+                changed[field].append(['t', 'added'])
+            else:
+                changed[field] ^= 1
+            changed_id = hashlib.sha256(canonical(changed, want['pubkey'])).digest()
+            assert changed_id != message
+            assert not bip.schnorr_verify(changed_id, public, signature)
+            field_mutations += 1
+    print(json.dumps({'verified_events':len(rows), 'official_verifier_controls':len(official),
+                      'actual_key_imports_checked':len(keys), 'strict_parser_negative_controls':len(negatives)+1,
+                      'signature_byte_mutations_rejected':64*len(rows), 'event_id_byte_mutations_rejected':32*len(rows),
+                      'canonical_field_mutations_rejected':field_mutations, 'wrong_key_mutations_rejected':len(rows),
+                      'double_hash_mutations_rejected':len(rows)}))
 
 
 if __name__ == '__main__':
