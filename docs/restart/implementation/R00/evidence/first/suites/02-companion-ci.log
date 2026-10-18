@@ -1,0 +1,427 @@
+{"label": "companion-ci", "argv": ["make", "-k", "ci"], "cwd": "/home/tux/nsealr/.restart-tools/goal/r00/tools/baseline/.work/first/companion", "started": "2026-10-18T15:13:00.506926+00:00", "log": "02-companion-ci.log"}
+pnpm install
+python3 scripts/verify_repo.py
+nSealr companion baseline verification passed
+pnpm build
+
+> @nsealr/companion-workspace@0.1.0 build /home/tux/nsealr/.restart-tools/goal/r00/tools/baseline/.work/first/companion
+> node scripts/build_packages.mjs
+
+nSealr package build artifacts generated
+python3 scripts/verify_repo.py
+nSealr companion baseline verification passed
+pnpm test
+
+> @nsealr/companion-workspace@0.1.0 test /home/tux/nsealr/.restart-tools/goal/r00/tools/baseline/.work/first/companion
+> vitest run --maxWorkers=4
+
+
+[1m[30m[46m RUN [49m[39m[22m [36mv4.1.5 [39m[90m/home/tux/nsealr/.restart-tools/goal/r00/tools/baseline/.work/first/companion[39m
+
+ [32m✓[39m packages/client/src/service.test.ts [2m([22m[2m27 tests[22m[2m)[22m[32m 44[2mms[22m[39m
+ [32m✓[39m packages/nip46/src/nip46.test.ts [2m([22m[2m31 tests[22m[2m)[22m[32m 117[2mms[22m[39m
+[90mstdout[2m | apps/cli/src/index.test.ts[2m > [22m[2mnsealr CLI[2m > [22m[2mruns request -> dev-sign -> verify-response for a shared fixture template
+[22m[39mresponse verified
+
+[90mstdout[2m | apps/cli/src/index.test.ts[2m > [22m[2mnsealr CLI[2m > [22m[2mruns request -> dev-sign -> verify-response through QR envelopes
+[22m[39mresponse verified
+
+[90mstdout[2m | apps/cli/src/index.test.ts[2m > [22m[2mnsealr CLI[2m > [22m[2mruns request -> dev-sign -> verify-response through animated QR frame files
+[22m[39mresponse verified
+
+[90mstdout[2m | apps/cli/src/index.test.ts[2m > [22m[2mnsealr CLI[2m > [22m[2mverifies all event fixtures from the specs repository
+[22m[39mverified 2 event fixtures, 6 review fixtures, 2 review-screen fixtures, 2 review display-frame fixtures, 4 review detail-page fixtures, 3 review transcript fixtures, 6 NIP-46 payload fixtures, 1 NIP-46 policy-file fixture, 2 NIP-46 connection URI fixtures, 1 NIP-46 connection token response fixture, 2 NIP-46 relay event fixtures, 10 NIP-46 relay step fixtures, 1 NIP-46 auth challenge fixture, 1 NIP-46 session fixture, 1 NIP-46 session gate fixture, 6 account descriptors, 5 policy profiles, 2 grant descriptors, 2 policy change vectors, 9 policy decision vectors, 6 route selection vectors, 1 route-refusal contract, 1 access-surface vector, 1 feature matrix, 1 persistent-secret custody contract, and 107 invalid hardening fixtures
+
+ [32m✓[39m apps/browser-extension/src/runtime-message.test.ts [2m([22m[2m16 tests[22m[2m)[22m[32m 19[2mms[22m[39m
+ [32m✓[39m apps/browser-extension/src/nsealr-entrypoints.test.ts [2m([22m[2m9 tests[22m[2m)[22m[32m 18[2mms[22m[39m
+ [32m✓[39m packages/policy/src/policy.test.ts [2m([22m[2m18 tests[22m[2m)[22m[32m 15[2mms[22m[39m
+ [32m✓[39m apps/browser-extension/src/pending-control.test.ts [2m([22m[2m9 tests[22m[2m)[22m[32m 9[2mms[22m[39m
+[90mstdout[2m | apps/cli/src/index.test.ts[2m > [22m[2mnsealr CLI[2m > [22m[2mverifies shared get_public_key responses and rejects mismatched request ids
+[22m[39mresponse verified
+
+ [32m✓[39m apps/browser-extension/src/package-build.test.ts [2m([22m[2m14 tests[22m[2m)[22m[33m 373[2mms[22m[39m
+[90mstdout[2m | apps/cli/src/index.test.ts[2m > [22m[2mnsealr CLI[2m > [22m[2mruns request -> smartcard-sim-sign -> verify-response after explicit review acknowledgement
+[22m[39mresponse verified
+
+ [32m✓[39m apps/cli/src/index.test.ts [2m([22m[2m55 tests[22m[2m)[22m[33m 325[2mms[22m[39m
+ [32m✓[39m packages/fixtures/src/fixtures.test.ts [2m([22m[2m28 tests[22m[2m)[22m[32m 84[2mms[22m[39m
+ [32m✓[39m apps/browser-extension/src/background-browser.test.ts [2m([22m[2m9 tests[22m[2m)[22m[32m 17[2mms[22m[39m
+ [32m✓[39m apps/browser-extension/src/package-build-cli.test.ts [2m([22m[2m7 tests[22m[2m)[22m[32m 144[2mms[22m[39m
+ [32m✓[39m packages/transport/src/transport.test.ts [2m([22m[2m29 tests[22m[2m)[22m[32m 141[2mms[22m[39m
+ [32m✓[39m apps/browser-extension/src/content-window.test.ts [2m([22m[2m12 tests[22m[2m)[22m[32m 13[2mms[22m[39m
+ [32m✓[39m apps/service/src/context.test.ts [2m([22m[2m9 tests[22m[2m)[22m[32m 36[2mms[22m[39m
+ [32m✓[39m apps/browser-extension/src/background.test.ts [2m([22m[2m9 tests[22m[2m)[22m[32m 13[2mms[22m[39m
+ [32m✓[39m apps/browser-extension/src/handler.test.ts [2m([22m[2m10 tests[22m[2m)[22m[32m 29[2mms[22m[39m
+ [32m✓[39m packages/client/src/local-service-client.test.ts [2m([22m[2m8 tests[22m[2m)[22m[32m 33[2mms[22m[39m
+ [32m✓[39m apps/browser-extension/src/page-bridge.test.ts [2m([22m[2m9 tests[22m[2m)[22m[32m 29[2mms[22m[39m
+ [32m✓[39m apps/browser-extension/src/popup-control.test.ts [2m([22m[2m6 tests[22m[2m)[22m[32m 5[2mms[22m[39m
+ [32m✓[39m packages/browser-provider/src/provider.test.ts [2m([22m[2m14 tests[22m[2m)[22m[32m 32[2mms[22m[39m
+ [32m✓[39m apps/browser-extension/src/origin-permission-store.test.ts [2m([22m[2m8 tests[22m[2m)[22m[32m 10[2mms[22m[39m
+ [32m✓[39m apps/browser-extension/src/origin-permission-storage.test.ts [2m([22m[2m6 tests[22m[2m)[22m[32m 9[2mms[22m[39m
+ [32m✓[39m apps/browser-extension/src/page-window.test.ts [2m([22m[2m6 tests[22m[2m)[22m[32m 7[2mms[22m[39m
+ [32m✓[39m apps/service/src/manifest.test.ts [2m([22m[2m6 tests[22m[2m)[22m[32m 8[2mms[22m[39m
+ [32m✓[39m apps/browser-extension/src/pairing.test.ts [2m([22m[2m10 tests[22m[2m)[22m[32m 9[2mms[22m[39m
+ [32m✓[39m apps/browser-extension/src/content-script.test.ts [2m([22m[2m8 tests[22m[2m)[22m[32m 6[2mms[22m[39m
+ [32m✓[39m packages/client/src/native-host-manifest.test.ts [2m([22m[2m9 tests[22m[2m)[22m[32m 8[2mms[22m[39m
+ [32m✓[39m apps/service/src/index.test.ts [2m([22m[2m10 tests[22m[2m)[22m[32m 24[2mms[22m[39m
+ [32m✓[39m apps/service/src/drivers.test.ts [2m([22m[2m6 tests[22m[2m)[22m[32m 34[2mms[22m[39m
+ [32m✓[39m apps/browser-extension/src/pending-request.test.ts [2m([22m[2m7 tests[22m[2m)[22m[32m 6[2mms[22m[39m
+ [32m✓[39m apps/browser-extension/src/package-plan.test.ts [2m([22m[2m7 tests[22m[2m)[22m[32m 6[2mms[22m[39m
+ [32m✓[39m apps/browser-extension/src/popup-origin-permission-view.test.ts [2m([22m[2m3 tests[22m[2m)[22m[32m 8[2mms[22m[39m
+ [32m✓[39m apps/browser-extension/src/content-entrypoint.test.ts [2m([22m[2m3 tests[22m[2m)[22m[32m 6[2mms[22m[39m
+ [32m✓[39m apps/browser-extension/src/origin-permission-cli.test.ts [2m([22m[2m3 tests[22m[2m)[22m[32m 7[2mms[22m[39m
+ [32m✓[39m apps/browser-extension/src/origin-permission-view.test.ts [2m([22m[2m5 tests[22m[2m)[22m[32m 7[2mms[22m[39m
+ [32m✓[39m apps/browser-extension/src/popup-origin-permission.test.ts [2m([22m[2m6 tests[22m[2m)[22m[32m 4[2mms[22m[39m
+ [32m✓[39m apps/browser-extension/src/content-bootstrap.test.ts [2m([22m[2m3 tests[22m[2m)[22m[32m 6[2mms[22m[39m
+ [32m✓[39m packages/client/src/grant-store.test.ts [2m([22m[2m7 tests[22m[2m)[22m[32m 11[2mms[22m[39m
+ [32m✓[39m apps/browser-extension/src/content-browser.test.ts [2m([22m[2m2 tests[22m[2m)[22m[32m 5[2mms[22m[39m
+ [32m✓[39m apps/browser-extension/src/page-script.test.ts [2m([22m[2m5 tests[22m[2m)[22m[32m 28[2mms[22m[39m
+ [32m✓[39m apps/browser-extension/src/popup-view.test.ts [2m([22m[2m3 tests[22m[2m)[22m[32m 9[2mms[22m[39m
+ [32m✓[39m apps/browser-extension/src/package-plan-cli.test.ts [2m([22m[2m6 tests[22m[2m)[22m[32m 6[2mms[22m[39m
+ [32m✓[39m packages/smartcard/src/signer.test.ts [2m([22m[2m7 tests[22m[2m)[22m[32m 33[2mms[22m[39m
+ [32m✓[39m packages/client/src/storage-review.test.ts [2m([22m[2m5 tests[22m[2m)[22m[32m 5[2mms[22m[39m
+ [32m✓[39m apps/browser-extension/src/manifest.test.ts [2m([22m[2m6 tests[22m[2m)[22m[32m 5[2mms[22m[39m
+ [32m✓[39m apps/browser-extension/src/page-provider.test.ts [2m([22m[2m6 tests[22m[2m)[22m[32m 27[2mms[22m[39m
+ [32m✓[39m packages/smartcard/src/pcsc.test.ts [2m([22m[2m9 tests[22m[2m)[22m[32m 5[2mms[22m[39m
+ [32m✓[39m apps/browser-extension/src/route-config.test.ts [2m([22m[2m3 tests[22m[2m)[22m[32m 4[2mms[22m[39m
+ [32m✓[39m apps/browser-extension/src/local-service.test.ts [2m([22m[2m3 tests[22m[2m)[22m[32m 5[2mms[22m[39m
+ [32m✓[39m apps/browser-extension/src/page-injection.test.ts [2m([22m[2m4 tests[22m[2m)[22m[32m 3[2mms[22m[39m
+ [32m✓[39m apps/browser-extension/src/page-browser.test.ts [2m([22m[2m2 tests[22m[2m)[22m[32m 4[2mms[22m[39m
+ [32m✓[39m packages/review/src/review.test.ts [2m([22m[2m5 tests[22m[2m)[22m[32m 6[2mms[22m[39m
+ [32m✓[39m apps/browser-extension/src/content-runtime.test.ts [2m([22m[2m5 tests[22m[2m)[22m[32m 4[2mms[22m[39m
+ [2m[90m↓[39m[22m packages/nip46/src/session-live.e2e.test.ts [2m([22m[2m1 test[22m[2m | [22m[33m1 skipped[39m[2m)[22m
+ [32m✓[39m packages/qr/src/qr.test.ts [2m([22m[2m8 tests[22m[2m)[22m[32m 7[2mms[22m[39m
+ [32m✓[39m apps/browser-extension/src/messages.test.ts [2m([22m[2m4 tests[22m[2m)[22m[32m 3[2mms[22m[39m
+ [32m✓[39m packages/smartcard/src/apdu.test.ts [2m([22m[2m6 tests[22m[2m)[22m[32m 4[2mms[22m[39m
+ [32m✓[39m packages/protocol/src/protocol.test.ts [2m([22m[2m9 tests[22m[2m)[22m[32m 17[2mms[22m[39m
+ [32m✓[39m apps/browser-extension/src/route-config-cli.test.ts [2m([22m[2m2 tests[22m[2m)[22m[32m 4[2mms[22m[39m
+ [32m✓[39m packages/framing/src/serial.test.ts [2m([22m[2m7 tests[22m[2m)[22m[32m 5[2mms[22m[39m
+ [32m✓[39m packages/nip46/src/session-manager.test.ts [2m([22m[2m3 tests[22m[2m)[22m[32m 87[2mms[22m[39m
+ [32m✓[39m apps/browser-extension/src/popup-tab.test.ts [2m([22m[2m3 tests[22m[2m)[22m[32m 4[2mms[22m[39m
+ [32m✓[39m apps/browser-extension/src/sender.test.ts [2m([22m[2m4 tests[22m[2m)[22m[32m 3[2mms[22m[39m
+ [32m✓[39m packages/dev-signer/src/smartcard-simulator.test.ts [2m([22m[2m3 tests[22m[2m)[22m[32m 27[2mms[22m[39m
+ [32m✓[39m packages/nip46/src/relay-transport.test.ts [2m([22m[2m6 tests[22m[2m)[22m[32m 3[2mms[22m[39m
+ [32m✓[39m packages/client/src/pairing-review.test.ts [2m([22m[2m4 tests[22m[2m)[22m[32m 5[2mms[22m[39m
+ [32m✓[39m packages/core/src/nip44.test.ts [2m([22m[2m5 tests[22m[2m)[22m[32m 155[2mms[22m[39m
+ [32m✓[39m packages/nip46/src/session-protocol.test.ts [2m([22m[2m7 tests[22m[2m)[22m[32m 45[2mms[22m[39m
+ [32m✓[39m packages/nip46/src/relay-pool-adapter.test.ts [2m([22m[2m3 tests[22m[2m)[22m[32m 4[2mms[22m[39m
+ [32m✓[39m packages/core/src/nostr.test.ts [2m([22m[2m7 tests[22m[2m)[22m[32m 41[2mms[22m[39m
+ [32m✓[39m packages/nip46/src/session-store.test.ts [2m([22m[2m4 tests[22m[2m)[22m[32m 4[2mms[22m[39m
+ [32m✓[39m apps/browser-extension/src/page-origin.test.ts [2m([22m[2m3 tests[22m[2m)[22m[32m 2[2mms[22m[39m
+ [32m✓[39m packages/protocol/src/encoding.test.ts [2m([22m[2m3 tests[22m[2m)[22m[32m 3[2mms[22m[39m
+ [32m✓[39m apps/browser-extension/src/entrypoints.test.ts [2m([22m[2m1 test[22m[2m)[22m[32m 3[2mms[22m[39m
+ [32m✓[39m apps/browser-extension/src/popup-html.test.ts [2m([22m[2m1 test[22m[2m)[22m[32m 2[2mms[22m[39m
+ [32m✓[39m packages/dev-signer/src/dev-signer.test.ts [2m([22m[2m2 tests[22m[2m)[22m[32m 29[2mms[22m[39m
+ [32m✓[39m packages/client/src/native-messaging.test.ts [2m([22m[2m3 tests[22m[2m)[22m[32m 2[2mms[22m[39m
+
+[2m Test Files [22m [1m[32m76 passed[39m[22m[2m | [22m[33m1 skipped[39m[90m (77)[39m
+[2m      Tests [22m [1m[32m611 passed[39m[22m[2m | [22m[33m1 skipped[39m[90m (612)[39m
+[2m   Start at [22m 15:13:13
+[2m   Duration [22m 2.85s[2m (transform 1.01s, setup 0ms, import 3.35s, tests 2.28s, environment 4ms)[22m
+
+python3 scripts/verify_repo.py
+nSealr companion baseline verification passed
+pnpm consumer-smoke
+
+> @nsealr/companion-workspace@0.1.0 consumer-smoke /home/tux/nsealr/.restart-tools/goal/r00/tools/baseline/.work/first/companion
+> pnpm --filter @nsealr/consumer-smoke smoke
+
+
+> @nsealr/consumer-smoke@0.1.0 smoke /home/tux/nsealr/.restart-tools/goal/r00/tools/baseline/.work/first/companion/apps/consumer-smoke
+> node --no-warnings --import tsx/esm src/index.ts
+
+nSealr package consumer smoke passed
+python3 scripts/verify_repo.py
+nSealr companion baseline verification passed
+pnpm examples-smoke
+
+> @nsealr/companion-workspace@0.1.0 examples-smoke /home/tux/nsealr/.restart-tools/goal/r00/tools/baseline/.work/first/companion
+> pnpm --filter @nsealr/sdk-examples verify
+
+
+> @nsealr/sdk-examples@0.1.0 verify /home/tux/nsealr/.restart-tools/goal/r00/tools/baseline/.work/first/companion/apps/sdk-examples
+> node --no-warnings --import tsx/esm src/index.ts
+
+nSealr SDK examples passed
+python3 scripts/verify_repo.py
+nSealr companion baseline verification passed
+pnpm readme-examples:check
+
+> @nsealr/companion-workspace@0.1.0 readme-examples:check /home/tux/nsealr/.restart-tools/goal/r00/tools/baseline/.work/first/companion
+> node scripts/check_readme_examples.mjs
+
+nSealr README examples passed (14 snippets)
+python3 scripts/verify_repo.py
+nSealr companion baseline verification passed
+pnpm api-docs:check
+
+> @nsealr/companion-workspace@0.1.0 api-docs:check /home/tux/nsealr/.restart-tools/goal/r00/tools/baseline/.work/first/companion
+> node scripts/check_api_docs.mjs
+
+docs/api.md is out of date; run make api-docs-update
+ ELIFECYCLE  Command failed with exit code 1.
+make: *** [Makefile:36: api-docs] Error 1
+python3 scripts/verify_repo.py
+nSealr companion baseline verification passed
+pnpm api-review:check
+
+> @nsealr/companion-workspace@0.1.0 api-review:check /home/tux/nsealr/.restart-tools/goal/r00/tools/baseline/.work/first/companion
+> node scripts/check_api_review.mjs
+
+companion API review is up to date
+python3 scripts/verify_repo.py
+nSealr companion baseline verification passed
+pnpm package-registry:check
+
+> @nsealr/companion-workspace@0.1.0 package-registry:check /home/tux/nsealr/.restart-tools/goal/r00/tools/baseline/.work/first/companion
+> node scripts/check_package_registry.mjs
+
+companion package registry passed (13 public, 1 private)
+python3 scripts/verify_repo.py
+nSealr companion baseline verification passed
+pnpm browser-runtime-imports:check
+
+> @nsealr/companion-workspace@0.1.0 browser-runtime-imports:check /home/tux/nsealr/.restart-tools/goal/r00/tools/baseline/.work/first/companion
+> node scripts/check_browser_runtime_imports.mjs
+
+companion browser runtime import hygiene passed (65 source files)
+python3 scripts/verify_repo.py
+nSealr companion baseline verification passed
+pnpm browser-runtime-bundle:check
+
+> @nsealr/companion-workspace@0.1.0 browser-runtime-bundle:check /home/tux/nsealr/.restart-tools/goal/r00/tools/baseline/.work/first/companion
+> node scripts/check_browser_runtime_bundle.mjs
+
+companion browser runtime bundle smoke passed (4 entrypoints)
+python3 scripts/verify_repo.py
+nSealr companion baseline verification passed
+pnpm browser-extension-security:check
+
+> @nsealr/companion-workspace@0.1.0 browser-extension-security:check /home/tux/nsealr/.restart-tools/goal/r00/tools/baseline/.work/first/companion
+> node scripts/check_browser_extension_security.mjs
+
+companion browser extension security audit passed
+python3 scripts/verify_repo.py
+nSealr companion baseline verification passed
+pnpm public-imports:check
+
+> @nsealr/companion-workspace@0.1.0 public-imports:check /home/tux/nsealr/.restart-tools/goal/r00/tools/baseline/.work/first/companion
+> node scripts/check_public_imports.mjs
+
+companion public package import hygiene passed
+python3 scripts/verify_repo.py
+nSealr companion baseline verification passed
+pnpm release-plan:check
+
+> @nsealr/companion-workspace@0.1.0 release-plan:check /home/tux/nsealr/.restart-tools/goal/r00/tools/baseline/.work/first/companion
+> node scripts/check_release_plan.mjs
+
+companion package release plan passed (13 public packages)
+python3 scripts/verify_repo.py
+nSealr companion baseline verification passed
+pnpm release-artifacts:safety
+
+> @nsealr/companion-workspace@0.1.0 release-artifacts:safety /home/tux/nsealr/.restart-tools/goal/r00/tools/baseline/.work/first/companion
+> node scripts/check_release_artifacts_safety.mjs
+
+companion release artifact output safety check passed
+python3 scripts/verify_repo.py
+nSealr companion baseline verification passed
+pnpm pack-smoke
+
+> @nsealr/companion-workspace@0.1.0 pack-smoke /home/tux/nsealr/.restart-tools/goal/r00/tools/baseline/.work/first/companion
+> node scripts/pack_smoke.mjs
+
+📦  @nsealr/browser-provider@0.1.0
+Tarball Contents
+dist/index.d.ts
+dist/index.js
+dist/provider.d.ts
+dist/provider.js
+package.json
+README.md
+Tarball Details
+/home/tux/nsealr/.restart-tools/goal/r00/tools/baseline/.work/first/.tools/tmp/nsealr-pack-NYeqDb/nsealr-browser-provider-0.1.0.tgz
+📦  @nsealr/client@0.1.0
+Tarball Contents
+dist/browser.d.ts
+dist/browser.js
+dist/client-identity.d.ts
+dist/client-identity.js
+dist/grant-store.d.ts
+dist/grant-store.js
+dist/index.d.ts
+dist/index.js
+dist/local-service-client.d.ts
+dist/local-service-client.js
+dist/native-host-manifest.d.ts
+dist/native-host-manifest.js
+dist/native-messaging.d.ts
+dist/native-messaging.js
+dist/pairing-review.d.ts
+dist/pairing-review.js
+dist/service.d.ts
+dist/service.js
+dist/storage-review.d.ts
+dist/storage-review.js
+package.json
+README.md
+Tarball Details
+/home/tux/nsealr/.restart-tools/goal/r00/tools/baseline/.work/first/.tools/tmp/nsealr-pack-NYeqDb/nsealr-client-0.1.0.tgz
+📦  @nsealr/core@0.1.0
+Tarball Contents
+dist/index.d.ts
+dist/index.js
+dist/nip44.d.ts
+dist/nip44.js
+dist/nostr.d.ts
+dist/nostr.js
+package.json
+README.md
+Tarball Details
+/home/tux/nsealr/.restart-tools/goal/r00/tools/baseline/.work/first/.tools/tmp/nsealr-pack-NYeqDb/nsealr-core-0.1.0.tgz
+📦  @nsealr/fixtures@0.1.0
+Tarball Contents
+dist/fixtures.d.ts
+dist/fixtures.js
+dist/index.d.ts
+dist/index.js
+dist/specs-root.d.ts
+dist/specs-root.js
+package.json
+README.md
+Tarball Details
+/home/tux/nsealr/.restart-tools/goal/r00/tools/baseline/.work/first/.tools/tmp/nsealr-pack-NYeqDb/nsealr-fixtures-0.1.0.tgz
+📦  @nsealr/framing@0.1.0
+Tarball Contents
+dist/index.d.ts
+dist/index.js
+dist/serial.d.ts
+dist/serial.js
+package.json
+README.md
+Tarball Details
+/home/tux/nsealr/.restart-tools/goal/r00/tools/baseline/.work/first/.tools/tmp/nsealr-pack-NYeqDb/nsealr-framing-0.1.0.tgz
+📦  @nsealr/nip46@0.1.0
+Tarball Contents
+dist/index.d.ts
+dist/index.js
+dist/nip46.d.ts
+dist/nip46.js
+dist/relay-pool-adapter.d.ts
+dist/relay-pool-adapter.js
+dist/relay-transport.d.ts
+dist/relay-transport.js
+dist/session-manager.d.ts
+dist/session-manager.js
+dist/session-protocol.d.ts
+dist/session-protocol.js
+dist/session-store.d.ts
+dist/session-store.js
+package.json
+README.md
+Tarball Details
+/home/tux/nsealr/.restart-tools/goal/r00/tools/baseline/.work/first/.tools/tmp/nsealr-pack-NYeqDb/nsealr-nip46-0.1.0.tgz
+📦  @nsealr/policy@0.1.0
+Tarball Contents
+dist/index.d.ts
+dist/index.js
+dist/policy.d.ts
+dist/policy.js
+package.json
+README.md
+Tarball Details
+/home/tux/nsealr/.restart-tools/goal/r00/tools/baseline/.work/first/.tools/tmp/nsealr-pack-NYeqDb/nsealr-policy-0.1.0.tgz
+📦  @nsealr/protocol@0.1.0
+Tarball Contents
+dist/encoding.d.ts
+dist/encoding.js
+dist/index.d.ts
+dist/index.js
+dist/limits.d.ts
+dist/limits.js
+dist/protocol.d.ts
+dist/protocol.js
+package.json
+README.md
+Tarball Details
+/home/tux/nsealr/.restart-tools/goal/r00/tools/baseline/.work/first/.tools/tmp/nsealr-pack-NYeqDb/nsealr-protocol-0.1.0.tgz
+📦  @nsealr/qr@0.1.0
+Tarball Contents
+dist/index.d.ts
+dist/index.js
+dist/qr.d.ts
+dist/qr.js
+package.json
+README.md
+Tarball Details
+/home/tux/nsealr/.restart-tools/goal/r00/tools/baseline/.work/first/.tools/tmp/nsealr-pack-NYeqDb/nsealr-qr-0.1.0.tgz
+📦  @nsealr/review@0.1.0
+Tarball Contents
+dist/index.d.ts
+dist/index.js
+dist/review.d.ts
+dist/review.js
+package.json
+README.md
+Tarball Details
+/home/tux/nsealr/.restart-tools/goal/r00/tools/baseline/.work/first/.tools/tmp/nsealr-pack-NYeqDb/nsealr-review-0.1.0.tgz
+📦  @nsealr/sdk@0.1.0
+Tarball Contents
+dist/browser.d.ts
+dist/browser.js
+dist/index.d.ts
+dist/index.js
+package.json
+README.md
+Tarball Details
+/home/tux/nsealr/.restart-tools/goal/r00/tools/baseline/.work/first/.tools/tmp/nsealr-pack-NYeqDb/nsealr-sdk-0.1.0.tgz
+📦  @nsealr/smartcard@0.1.0
+Tarball Contents
+dist/apdu.d.ts
+dist/apdu.js
+dist/index.d.ts
+dist/index.js
+dist/pcsc.d.ts
+dist/pcsc.js
+dist/signer.d.ts
+dist/signer.js
+package.json
+README.md
+Tarball Details
+/home/tux/nsealr/.restart-tools/goal/r00/tools/baseline/.work/first/.tools/tmp/nsealr-pack-NYeqDb/nsealr-smartcard-0.1.0.tgz
+📦  @nsealr/transport@0.1.0
+Tarball Contents
+dist/index.d.ts
+dist/index.js
+dist/transport.d.ts
+dist/transport.js
+package.json
+README.md
+Tarball Details
+/home/tux/nsealr/.restart-tools/goal/r00/tools/baseline/.work/first/.tools/tmp/nsealr-pack-NYeqDb/nsealr-transport-0.1.0.tgz
+
+added 26 packages in 2s
+nSealr packed package smoke passed
+python3 scripts/verify_repo.py
+nSealr companion baseline verification passed
+pnpm lint
+
+> @nsealr/companion-workspace@0.1.0 lint /home/tux/nsealr/.restart-tools/goal/r00/tools/baseline/.work/first/companion
+> tsc --noEmit
+
+python3 scripts/verify_repo.py
+nSealr companion baseline verification passed
+pnpm audit --prod
+No known vulnerabilities found
+python3 scripts/verify_repo.py
+nSealr companion baseline verification passed
+pnpm api-docs:check
+
+> @nsealr/companion-workspace@0.1.0 api-docs:check /home/tux/nsealr/.restart-tools/goal/r00/tools/baseline/.work/first/companion
+> node scripts/check_api_docs.mjs
+
+docs/api.md is out of date; run make api-docs-update
+ ELIFECYCLE  Command failed with exit code 1.
+make: *** [Makefile:95: docs] Error 1
+make: Target 'ci' not remade because of errors.

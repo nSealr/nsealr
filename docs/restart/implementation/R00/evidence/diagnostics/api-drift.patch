@@ -1,0 +1,74 @@
+diff --git a/docs/api.md b/docs/api.md
+index 1c46c3b..6a2fe8b 100644
+--- a/docs/api.md
++++ b/docs/api.md
+@@ -166,6 +166,9 @@ Exports:
+ - `bytesToHex`
+ - `canonicalEventSerialization`
+ - `computeEventId`
++- `decrypt`
++- `encrypt`
++- `getConversationKey`
+ - `hexToBytes`
+ - `sha256Utf8Hex`
+ - `verifySchnorrSignature`
+@@ -211,6 +214,11 @@ Already-decrypted NIP-46 bridge, connect-review approval, connection-token descr
+ Source entrypoint: `packages/nip46/src/index.ts`
+ 
+ Exports:
++- `ActiveSessionRecordInput`
++- `InMemoryRelay`
++- `InMemorySessionStore`
++- `NIP46_SESSION_ACTIVE_PHASE_FLAGS`
++- `NIP46_SESSION_SECRET_FIELDS`
+ - `Nip46AuthChallengeApproval`
+ - `Nip46AuthChallengeApprovalOptions`
+ - `Nip46AuthChallengeReview`
+@@ -230,16 +238,32 @@ Exports:
+ - `Nip46RelayResponseStep`
+ - `Nip46RequestMessage`
+ - `Nip46ResponseMessage`
++- `Nip46SessionActive`
++- `Nip46SessionActivePhase`
+ - `Nip46SessionLifecycle`
+ - `Nip46SessionLifecycleCheckpointOptions`
++- `Nip46SessionManager`
++- `Nip46SessionManagerOptions`
+ - `Nip46SessionRequestGate`
++- `NostrToolsRelay`
++- `RelayEvent`
++- `RelayEventHandler`
++- `RelayFilter`
++- `RelayPool`
++- `RelaySubscription`
++- `RelayTransport`
++- `SessionPhase`
++- `SessionStore`
+ - `approveNip46AuthChallengeReview`
+ - `approveNip46ConnectReview`
++- `buildNip46RequestEvent`
+ - `createNip46SessionLifecycleCheckpoint`
+ - `decideNip46BridgeAction`
++- `decryptNip46Event`
+ - `evaluateNip46RelayRequestStep`
+ - `evaluateNip46RelayResponseStep`
+ - `evaluateNip46SessionRequestGate`
++- `eventMatchesFilter`
+ - `isNip46RequestPermitted`
+ - `nip46PermissionLabel`
+ - `nip46PermissionRequirementFromRequest`
+@@ -255,11 +279,14 @@ Exports:
+ - `parseNip46Permissions`
+ - `parseNip46PolicyFile`
+ - `parseNip46RelayEventEnvelope`
++- `parseNip46SessionActive`
+ - `parseNip46SessionLifecycle`
++- `requireResponseMessage`
+ - `respondToLocalNip46Request`
+ - `reviewNip46AuthChallengeStep`
+ - `reviewNip46ConnectIntent`
+ - `reviewNip46ConnectMessage`
++- `toActiveSessionRecord`
+ - `verifyNip46ConnectionTokenResponse`
+ 
+ ## @nsealr/policy

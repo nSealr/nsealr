@@ -1,0 +1,20 @@
+{"label": "original-checker-rejects-provenance", "argv": ["python3", "-m", "unittest", "discover", "-s", "tests", "-p", "test_fixture_snapshots.py"], "cwd": "/home/tux/nsealr/.restart-tools/goal/r00/tools/baseline/.work/probe-lab", "started": "2026-10-18T15:16:40.841812+00:00", "log": "02-original-checker-rejects-provenance.log"}
+.......................F
+======================================================================
+FAIL: test_provenance_and_fixture_failures (test_fixture_snapshots.ProvenanceSnapshotTests.test_provenance_and_fixture_failures)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/tux/nsealr/.restart-tools/goal/r00/tools/baseline/.work/probe-lab/tests/test_fixture_snapshots.py", line 244, in test_provenance_and_fixture_failures
+    self.assertEqual(check(valid), 1)
+                     ^^^^^^^^^^^^
+  File "/home/tux/nsealr/.restart-tools/goal/r00/tools/baseline/.work/probe-lab/tests/test_fixture_snapshots.py", line 241, in check
+    return compare_fixture_snapshots(org=org, repositories=("firmware",), required_snapshot_globs={})
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/tux/nsealr/.restart-tools/goal/r00/tools/baseline/.work/probe-lab/scripts/check_fixture_snapshots.py", line 155, in compare_fixture_snapshots
+    raise FixtureSnapshotError("\n".join(failures))
+scripts.check_fixture_snapshots.FixtureSnapshotError: firmware: SOURCE.json is missing from specs
+
+----------------------------------------------------------------------
+Ran 24 tests in 0.018s
+
+FAILED (failures=1)
