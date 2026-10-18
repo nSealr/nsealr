@@ -1,0 +1,34 @@
+[
+  {
+    "command": [
+      "/home/tux/nsealr/.restart-tools/goal/r00/tools/baseline/.work/final/.tools/python/bin/python3",
+      "-B",
+      "-c",
+      "\nimport inspect,json,pathlib,unittest\nsuite=unittest.TestLoader().discover('scripts',pattern='test_validate_restart_plan.py')\nrows=[]\ndef walk(node):\n    if isinstance(node,unittest.TestSuite):\n        for child in node: walk(child)\n    else:\n        if type(node).__name__=='_FailedTest': raise RuntimeError('test collection import failure: '+node.id())\n        rows.append({'id':node.id(),'path':str(pathlib.Path(inspect.getfile(type(node))).resolve().relative_to(pathlib.Path.cwd())),\n                     'skip_declared':bool(getattr(type(node),'__unittest_skip__',False) or getattr(getattr(node,node._testMethodName),'__unittest_skip__',False))})\nwalk(suite)\nprint(json.dumps(rows,sort_keys=True))\n"
+    ],
+    "cwd": "/home/tux/nsealr/firmware",
+    "ended_utc": "2026-10-18T18:35:33.908249+00:00",
+    "environment_sha256": "1329698bcbfb60c23fcd6617913d050c6e9d7e2f46108c49c01bb2a19625fae5",
+    "exit_code": 0,
+    "label": "plan-cases",
+    "log": "00-plan-cases.log",
+    "sha256": "2be53280ff7544218be83ec82bcd44e0574dfdf1b3ca00f3117100f8b7b602ec",
+    "started_utc": "2026-10-18T18:35:33.879481+00:00"
+  },
+  {
+    "command": [
+      "/home/tux/nsealr/.restart-tools/goal/r00/tools/baseline/.work/final/.tools/python/bin/python3",
+      "-B",
+      "-c",
+      "\nimport inspect,json,pathlib,unittest\nsuite=unittest.TestLoader().discover('tools/baseline',pattern='test_*.py')\nrows=[]\ndef walk(node):\n    if isinstance(node,unittest.TestSuite):\n        for child in node: walk(child)\n    else:\n        if type(node).__name__=='_FailedTest': raise RuntimeError('test collection import failure: '+node.id())\n        rows.append({'id':node.id(),'path':str(pathlib.Path(inspect.getfile(type(node))).resolve().relative_to(pathlib.Path.cwd())),\n                     'skip_declared':bool(getattr(type(node),'__unittest_skip__',False) or getattr(getattr(node,node._testMethodName),'__unittest_skip__',False))})\nwalk(suite)\nprint(json.dumps(rows,sort_keys=True))\n"
+    ],
+    "cwd": "/home/tux/nsealr/firmware",
+    "ended_utc": "2026-10-18T18:35:33.992043+00:00",
+    "environment_sha256": "1329698bcbfb60c23fcd6617913d050c6e9d7e2f46108c49c01bb2a19625fae5",
+    "exit_code": 0,
+    "label": "bootstrap-cases",
+    "log": "01-bootstrap-cases.log",
+    "sha256": "a0b2c6c1ba117f0fcce3ca53e39e65a5c26fc4aa7a9572cc8a01fc9e4295104f",
+    "started_utc": "2026-10-18T18:35:33.909025+00:00"
+  }
+]

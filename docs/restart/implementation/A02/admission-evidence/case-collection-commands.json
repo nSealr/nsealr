@@ -1,0 +1,75 @@
+[
+  {
+    "command": [
+      "/home/tux/nsealr/.restart-tools/goal/s01-integration/docs/restart/implementation/S01/.work/current-default/.tools/node/bin/node",
+      "node_modules/vitest/vitest.mjs",
+      "list",
+      "--json",
+      "--configLoader",
+      "runner",
+      "--no-cache",
+      "--maxWorkers=4",
+      "--includeTaskLocation"
+    ],
+    "cwd": "/home/tux/nsealr/.restart-tools/goal/s01-integration/docs/restart/implementation/S01/.work/current-default/companion",
+    "ended_utc": "2026-10-18T18:18:52.959850+00:00",
+    "environment_sha256": "1329698bcbfb60c23fcd6617913d050c6e9d7e2f46108c49c01bb2a19625fae5",
+    "exit_code": 0,
+    "explicit_environment_sha256": "6590873e2886900ffbca4488d53f92473b47a2323777416f503e526df6250cab",
+    "label": "companion-cases",
+    "log": "00-companion-cases.log",
+    "sha256": "074067cff09937d353ab41cdc3fe3a692dc507fe2320e2d3bf450bfbea839a8d",
+    "started_utc": "2026-10-18T18:18:50.347466+00:00"
+  },
+  {
+    "command": [
+      "/home/tux/nsealr/.restart-tools/goal/s01-integration/docs/restart/implementation/S01/.work/current-default/.tools/python/bin/python3",
+      "-B",
+      "-c",
+      "\nimport inspect,json,pathlib,unittest\nsuite=unittest.TestLoader().discover('tests')\nrows=[]\ndef walk(node):\n    if isinstance(node,unittest.TestSuite):\n        for child in node: walk(child)\n    else:\n        if type(node).__name__=='_FailedTest': raise RuntimeError('test collection import failure: '+node.id())\n        rows.append({'id':node.id(),'path':str(pathlib.Path(inspect.getfile(type(node))).resolve().relative_to(pathlib.Path.cwd())),\n                     'skip_declared':bool(getattr(type(node),'__unittest_skip__',False) or getattr(getattr(node,node._testMethodName),'__unittest_skip__',False))})\nwalk(suite)\nprint(json.dumps(rows,sort_keys=True))\n"
+    ],
+    "cwd": "/home/tux/nsealr/.restart-tools/goal/s01-integration/docs/restart/implementation/S01/.work/current-default/specs",
+    "ended_utc": "2026-10-18T18:18:53.243364+00:00",
+    "environment_sha256": "1329698bcbfb60c23fcd6617913d050c6e9d7e2f46108c49c01bb2a19625fae5",
+    "exit_code": 0,
+    "explicit_environment_sha256": "6590873e2886900ffbca4488d53f92473b47a2323777416f503e526df6250cab",
+    "label": "specs-cases",
+    "log": "01-specs-cases.log",
+    "sha256": "931f2b03782a62fb26f15e472d067352bab889906fe2db446372210ae9ddaae6",
+    "started_utc": "2026-10-18T18:18:53.002278+00:00"
+  },
+  {
+    "command": [
+      "/home/tux/nsealr/.restart-tools/goal/s01-integration/docs/restart/implementation/S01/.work/current-default/raspberry/.venv/bin/python",
+      "-B",
+      "-c",
+      "\nimport inspect,json,pathlib,unittest\nsuite=unittest.TestLoader().discover('tests')\nrows=[]\ndef walk(node):\n    if isinstance(node,unittest.TestSuite):\n        for child in node: walk(child)\n    else:\n        if type(node).__name__=='_FailedTest': raise RuntimeError('test collection import failure: '+node.id())\n        rows.append({'id':node.id(),'path':str(pathlib.Path(inspect.getfile(type(node))).resolve().relative_to(pathlib.Path.cwd())),\n                     'skip_declared':bool(getattr(type(node),'__unittest_skip__',False) or getattr(getattr(node,node._testMethodName),'__unittest_skip__',False))})\nwalk(suite)\nprint(json.dumps(rows,sort_keys=True))\n"
+    ],
+    "cwd": "/home/tux/nsealr/.restart-tools/goal/s01-integration/docs/restart/implementation/S01/.work/current-default/raspberry",
+    "ended_utc": "2026-10-18T18:18:53.434573+00:00",
+    "environment_sha256": "1329698bcbfb60c23fcd6617913d050c6e9d7e2f46108c49c01bb2a19625fae5",
+    "exit_code": 0,
+    "explicit_environment_sha256": "6590873e2886900ffbca4488d53f92473b47a2323777416f503e526df6250cab",
+    "label": "raspberry-cases",
+    "log": "02-raspberry-cases.log",
+    "sha256": "476802d799b745efef0e1fa054ba38c5cc7439316a514ce556ac16d4508b2b0f",
+    "started_utc": "2026-10-18T18:18:53.264696+00:00"
+  },
+  {
+    "command": [
+      "/home/tux/nsealr/.restart-tools/goal/s01-integration/docs/restart/implementation/S01/.work/current-default/lab/.venv/bin/python",
+      "-B",
+      "-c",
+      "\nimport inspect,json,pathlib,unittest\nsuite=unittest.TestLoader().discover('tests')\nrows=[]\ndef walk(node):\n    if isinstance(node,unittest.TestSuite):\n        for child in node: walk(child)\n    else:\n        if type(node).__name__=='_FailedTest': raise RuntimeError('test collection import failure: '+node.id())\n        rows.append({'id':node.id(),'path':str(pathlib.Path(inspect.getfile(type(node))).resolve().relative_to(pathlib.Path.cwd())),\n                     'skip_declared':bool(getattr(type(node),'__unittest_skip__',False) or getattr(getattr(node,node._testMethodName),'__unittest_skip__',False))})\nwalk(suite)\nprint(json.dumps(rows,sort_keys=True))\n"
+    ],
+    "cwd": "/home/tux/nsealr/.restart-tools/goal/s01-integration/docs/restart/implementation/S01/.work/current-default/lab",
+    "ended_utc": "2026-10-18T18:18:53.729623+00:00",
+    "environment_sha256": "1329698bcbfb60c23fcd6617913d050c6e9d7e2f46108c49c01bb2a19625fae5",
+    "exit_code": 0,
+    "explicit_environment_sha256": "6590873e2886900ffbca4488d53f92473b47a2323777416f503e526df6250cab",
+    "label": "lab-cases",
+    "log": "03-lab-cases.log",
+    "sha256": "26fd889a801620968548f7e3fe5f93acf33e4e02cc0b9564ebbd057fa27c4318",
+    "started_utc": "2026-10-18T18:18:53.457334+00:00"
+  }
+]

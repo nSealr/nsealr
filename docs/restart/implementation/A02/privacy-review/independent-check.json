@@ -1,0 +1,65 @@
+{
+  "reviewer": "/root",
+  "scope": "Two-file pre-import privacy exception only; no migration admission",
+  "source_commit": "3303ab17a28ed32419576627d5abb93db3999635",
+  "tooling_candidate": "325448c126ba1bc9f95a8a4ed593b6105a331986",
+  "files": [
+    {
+      "source_path": "scripts/integration_feature_matrix.py",
+      "before_sha256": "8d84db1897be2d0f0abbbfea67e55899b079bbe4c75cd8e49a88ea5fb1b190d2",
+      "after_sha256": "278152f8a32d279beb92a59527c61b60d70f121be179ccbd75797d8755c9fa98",
+      "literal_spans": 3,
+      "all_nonliteral_bytes_identical": true,
+      "ast_equivalent_under_explicit_renaming": true
+    },
+    {
+      "source_path": "tests/test_integration_feature_matrix.py",
+      "before_sha256": "9e3f5af703869d743821de3089c0909ac11ce080d89e51778f03930b6a9c4982",
+      "after_sha256": "0f6bc059340c1ce4f2df256d92418b1a194a10892f90e56e1e31794c57896be5",
+      "literal_spans": 4,
+      "all_nonliteral_bytes_identical": true,
+      "ast_equivalent_under_explicit_renaming": true
+    }
+  ],
+  "private_patch_sha256": "105c114f92f96fa18b7ca54dd3245658ab5ba94722323af2718f2693fc49734d",
+  "public_tool_omits_excluded_strings": true,
+  "commands": [
+    {
+      "label": "before",
+      "command": [
+        "/home/tux/nsealr/.restart-tools/goal/r00/tools/baseline/.work/final/.tools/python/bin/python3",
+        "-B",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "tests",
+        "-p",
+        "test_integration_feature_matrix.py",
+        "-v"
+      ],
+      "exit_code": 0,
+      "log_sha256": "94a172b9c60b7a755b54693009b71496fdebafcd2812f33b6f414ea5302d9cb3",
+      "five_original_cases_passed": true
+    },
+    {
+      "label": "after",
+      "command": [
+        "/home/tux/nsealr/.restart-tools/goal/r00/tools/baseline/.work/final/.tools/python/bin/python3",
+        "-B",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "tests",
+        "-p",
+        "test_integration_feature_matrix.py",
+        "-v"
+      ],
+      "exit_code": 0,
+      "log_sha256": "94a172b9c60b7a755b54693009b71496fdebafcd2812f33b6f414ea5302d9cb3",
+      "five_original_cases_passed": true
+    }
+  ],
+  "limits": "External document addresses intentionally change. Runtime migration and later functional assertion adaptation remain separately unaccepted. No target repository/history assembled."
+}

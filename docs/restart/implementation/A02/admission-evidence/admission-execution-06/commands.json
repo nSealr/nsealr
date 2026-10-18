@@ -1,0 +1,93 @@
+[
+  {
+    "command": [
+      "/home/tux/nsealr/.restart-tools/goal/r00/tools/baseline/.work/final/.tools/python/bin/python3",
+      "-B",
+      "-m",
+      "unittest",
+      "discover",
+      "-s",
+      "tools/migration",
+      "-p",
+      "test_*.py",
+      "-v"
+    ],
+    "cwd": "/home/tux/nsealr/.restart-tools/goal/a02",
+    "ended_utc": "2026-10-18T18:43:17.585880+00:00",
+    "environment_sha256": "1329698bcbfb60c23fcd6617913d050c6e9d7e2f46108c49c01bb2a19625fae5",
+    "exit_code": 0,
+    "label": "migration-controls",
+    "log": "00-migration-controls.log",
+    "sha256": "b2e83c41d7aa8128811d8c94b0e2784d6b103b131cb28b58bf3932695d1f909f",
+    "started_utc": "2026-10-18T18:43:16.791889+00:00"
+  },
+  {
+    "command": [
+      "/home/tux/nsealr/.restart-tools/goal/r00/tools/baseline/.work/final/.tools/python/bin/python3",
+      "-B",
+      "tools/migration/emit_admission_records.py",
+      "--manifest",
+      "docs/restart/implementation/A02/admission-inputs.json",
+      "--inventory",
+      "tools/migration/.runtime/admission-inventory-04/inventory.json",
+      "--cases",
+      "tools/migration/.runtime/cases-01",
+      "--source-root",
+      "/home/tux/nsealr",
+      "--output",
+      "tools/migration/.runtime/public-records-03",
+      "--private-case-obligations",
+      "docs/restart/implementation/A02/private-case-obligations.json"
+    ],
+    "cwd": "/home/tux/nsealr/.restart-tools/goal/a02",
+    "ended_utc": "2026-10-18T18:43:17.994845+00:00",
+    "environment_sha256": "1329698bcbfb60c23fcd6617913d050c6e9d7e2f46108c49c01bb2a19625fae5",
+    "exit_code": 0,
+    "label": "emit-reviewed-obligations",
+    "log": "01-emit-reviewed-obligations.log",
+    "sha256": "408171c74387d86b403cf01f4736222401827f3a9a393d5bcdf088f6461fcaca",
+    "started_utc": "2026-10-18T18:43:17.586053+00:00"
+  },
+  {
+    "command": [
+      "/home/tux/nsealr/.restart-tools/goal/r00/tools/baseline/.work/final/.tools/python/bin/python3",
+      "-B",
+      "tools/migration/admission.py",
+      "overlay-chain",
+      "--manifest",
+      "docs/restart/implementation/A02/admission-inputs.json",
+      "--source-root",
+      "/home/tux/nsealr",
+      "--destination",
+      "/home/tux/nsealr/.restart-tools/goal/a02/tools/migration/.runtime/overlays-02"
+    ],
+    "cwd": "/home/tux/nsealr/.restart-tools/goal/a02",
+    "ended_utc": "2026-10-18T18:43:18.132341+00:00",
+    "environment_sha256": "1329698bcbfb60c23fcd6617913d050c6e9d7e2f46108c49c01bb2a19625fae5",
+    "exit_code": 0,
+    "label": "final-overlay-chain",
+    "log": "02-final-overlay-chain.log",
+    "sha256": "7e907d73f0ed9ee4526fc7b781e7c49ebfc26dece0ca6dca6f23b294b10d627f",
+    "started_utc": "2026-10-18T18:43:17.994976+00:00"
+  },
+  {
+    "command": [
+      "gh",
+      "run",
+      "view",
+      "39152175828",
+      "--repo",
+      "nSealr/nsealr",
+      "--json",
+      "databaseId,headSha,conclusion,status,url,event,workflowName"
+    ],
+    "cwd": "/home/tux/nsealr/.restart-tools/goal/a02",
+    "ended_utc": "2026-10-18T18:43:18.644398+00:00",
+    "environment_sha256": "1329698bcbfb60c23fcd6617913d050c6e9d7e2f46108c49c01bb2a19625fae5",
+    "exit_code": 0,
+    "label": "actual-main-ci",
+    "log": "03-actual-main-ci.log",
+    "sha256": "c52db67a0738d2dd48bcd27158d574738bcd5be762a5e7579d6dfbe78fbe44ae",
+    "started_utc": "2026-10-18T18:43:18.132541+00:00"
+  }
+]
