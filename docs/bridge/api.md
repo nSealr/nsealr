@@ -1,389 +1,19 @@
 # Public API Surface
 
 This file is generated from the public package entrypoints by
-`scripts/check_api_docs.mjs`. It documents the pre-release package surface
+`tools/bridge/check_api_docs.mjs`. It documents the pre-release package surface
 that consumers may import after the package gates pass.
 
 Regenerate and verify it with:
 
 ```sh
-make api-docs-update
-make api-docs
+pnpm api-docs:update
+pnpm api-docs:check
 ```
 
 The packages are still pre-release. Breaking changes are allowed before the
 first public npm publication, but every exported symbol must remain visible
 here so API drift is reviewed deliberately.
-
-## @nsealr/browser-provider
-
-NIP-07 browser provider adapter for routing Nostr signing requests through nSealr companion.
-
-Source entrypoint: `packages/browser-provider/src/index.ts`
-
-Exports:
-- `BrowserNativeMessageOptions`
-- `BrowserNativeMessageSender`
-- `BrowserNativeMessagingLocalServiceClientOptions`
-- `BrowserProviderBackend`
-- `BrowserProviderOptions`
-- `LocalServiceBrowserProviderBackendOptions`
-- `NATIVE_HOST_NAME`
-- `Nip07Provider`
-- `createBrowserNativeMessagingLocalServiceClient`
-- `createLocalServiceBrowserProviderBackend`
-- `createNip07Provider`
-
-## @nsealr/client
-
-Secretless local companion service and native-messaging client boundary for nSealr integrations.
-
-Source entrypoint: `packages/client/src/index.ts`
-
-Exports:
-- `ChromiumNativeHostManifest`
-- `EXTERNAL_REVIEW_ACKNOWLEDGEMENT_FORMAT`
-- `ExternalReviewAcknowledgement`
-- `FirefoxNativeHostManifest`
-- `LOCAL_CLIENT_SURFACES`
-- `LOCAL_GRANT_STORE_FORMAT`
-- `LOCAL_PAIRING_APPROVAL_FORMAT`
-- `LOCAL_PAIRING_INTENT_FORMAT`
-- `LOCAL_PAIRING_REVIEW_FORMAT`
-- `LOCAL_SERVICE_NAME`
-- `LOCAL_SERVICE_OPERATIONS`
-- `LOCAL_SERVICE_PROTOCOL`
-- `LOCAL_STORAGE_ACCESS_MODES`
-- `LOCAL_STORAGE_APPROVAL_FORMAT`
-- `LOCAL_STORAGE_PURPOSES`
-- `LOCAL_STORAGE_REVIEW_FORMAT`
-- `LocalClientGrant`
-- `LocalClientIdentity`
-- `LocalClientSurface`
-- `LocalGrantRevocationOptions`
-- `LocalGrantSelector`
-- `LocalGrantStore`
-- `LocalGrantStoreOptions`
-- `LocalGrantStoreRevocationOptions`
-- `LocalPairingApproval`
-- `LocalPairingReview`
-- `LocalPairingReviewOperation`
-- `LocalServiceClient`
-- `LocalServiceClientOptions`
-- `LocalServiceContext`
-- `LocalServiceDispatchSignerRequestOptions`
-- `LocalServiceExchange`
-- `LocalServiceExchangeOptions`
-- `LocalServiceOperation`
-- `LocalServiceRequest`
-- `LocalServiceResponse`
-- `LocalStorageAccessMode`
-- `LocalStorageApproval`
-- `LocalStorageApprovalRequirement`
-- `LocalStoragePurpose`
-- `LocalStorageReview`
-- `LocalStorageReviewEntry`
-- `MAX_LOCAL_GRANT_STORE_GRANTS`
-- `MAX_LOCAL_GRANT_STORE_JSON_BYTES`
-- `MAX_NATIVE_MESSAGE_BYTES`
-- `MAX_SERVICE_JSON_BYTES`
-- `NATIVE_HOST_DESCRIPTION`
-- `NATIVE_HOST_INSTALL_APPROVAL_FORMAT`
-- `NATIVE_HOST_INSTALL_EXECUTION_FORMAT`
-- `NATIVE_HOST_INSTALL_PLAN_FORMAT`
-- `NATIVE_HOST_NAME`
-- `NATIVE_MESSAGE_LENGTH_BYTES`
-- `NativeHostBrowser`
-- `NativeHostInstallApproval`
-- `NativeHostInstallApprovalOptions`
-- `NativeHostInstallExecution`
-- `NativeHostInstallExecutionOptions`
-- `NativeHostInstallPlan`
-- `NativeHostInstallPlanOptions`
-- `NativeHostManifest`
-- `NativeHostManifestOptions`
-- `NativeMessageFrameExchange`
-- `NativeMessagingLocalServiceClientOptions`
-- `PairableLocalServiceOperation`
-- `PairingIntent`
-- `RouteDispatchEntry`
-- `SIGNER_TRANSPORT_ERROR_CODES`
-- `SignerDispatchRequest`
-- `SignerRequestDispatcher`
-- `SignerRouteUnavailableError`
-- `SignerTransportError`
-- `SignerTransportErrorCode`
-- `appendLocalGrant`
-- `appendLocalGrantRevocation`
-- `approveLocalStorageReview`
-- `approveNativeHostInstallPlan`
-- `approvePairingIntent`
-- `buildNativeHostInstallPlan`
-- `buildNativeHostManifest`
-- `clientIdForIdentity`
-- `createLocalGrantStore`
-- `createLocalStorageReview`
-- `createNativeMessagingLocalServiceClient`
-- `createRouteDispatcher`
-- `decodeNativeMessage`
-- `encodeNativeMessage`
-- `executeNativeHostInstallApproval`
-- `handleLocalServiceRequest`
-- `handleLocalServiceRequestAsync`
-- `parseLocalClientIdentity`
-- `parseLocalGrant`
-- `parseLocalGrantStore`
-- `parseLocalPairingApproval`
-- `parseLocalStorageApproval`
-- `parseLocalStorageReview`
-- `parseLocalStorageReviewEntry`
-- `parseNativeHostInstallApproval`
-- `parseNativeHostInstallExecution`
-- `parseNativeHostInstallPlan`
-- `parsePairingIntent`
-- `requireLocalStorageApprovalEntry`
-- `reviewPairingIntent`
-- `revokeLocalGrant`
-- `serializeLocalGrantStore`
-- `validateLocalServiceResponse`
-
-Additional package subpaths:
-- `@nsealr/client/browser`: `LOCAL_CLIENT_SURFACES`, `LOCAL_PAIRING_INTENT_FORMAT`, `LOCAL_SERVICE_NAME`, `LOCAL_SERVICE_OPERATIONS`, `LOCAL_SERVICE_PROTOCOL`, `LocalClientGrant`, `LocalClientIdentity`, `LocalClientSurface`, `LocalPairingReview`, `LocalServiceClient`, `LocalServiceClientOptions`, `LocalServiceExchange`, `LocalServiceExchangeOptions`, `LocalServiceOperation`, `LocalServiceRequest`, `LocalServiceResponse`, `MAX_NATIVE_MESSAGE_BYTES`, `MAX_SERVICE_JSON_BYTES`, `NATIVE_HOST_NAME`, `NATIVE_MESSAGE_LENGTH_BYTES`, `NativeMessageFrameExchange`, `NativeMessagingLocalServiceClientOptions`, `PairableLocalServiceOperation`, `PairingIntent`, `clientIdForIdentity`, `createNativeMessagingLocalServiceClient`, `decodeNativeMessage`, `encodeNativeMessage`, `parseLocalClientIdentity`, `reviewPairingIntent`
-- `@nsealr/client/client-identity`: `LOCAL_CLIENT_SURFACES`, `LocalClientIdentity`, `LocalClientSurface`, `parseLocalClientIdentity`
-
-## @nsealr/core
-
-Nostr event hashing and signed-event verification helpers for nSealr.
-
-Source entrypoint: `packages/core/src/index.ts`
-
-Exports:
-- `EventTemplate`
-- `SignEventRequest`
-- `SignEventResponse`
-- `SignedEvent`
-- `VerificationResult`
-- `bytesToHex`
-- `canonicalEventSerialization`
-- `computeEventId`
-- `decrypt`
-- `encrypt`
-- `getConversationKey`
-- `hexToBytes`
-- `sha256Utf8Hex`
-- `verifySchnorrSignature`
-- `verifySignedEventResponse`
-
-## @nsealr/fixtures
-
-Shared nSealr specs fixture loading and fixture validation helpers.
-
-Source entrypoint: `packages/fixtures/src/index.ts`
-
-Exports:
-- `SpecsFixtureSet`
-- `loadSpecsFixtures`
-- `resolveSpecsRoot`
-- `validateAccessSurfaceFixture`
-- `validateFeatureMatrixFixture`
-- `validatePersistentSecretCustodyFixture`
-- `validateReviewTranscriptFixture`
-- `validateRouteRefusalContractFixture`
-- `validateSourcePublicKeyProofFixture`
-
-Additional package subpaths:
-- `@nsealr/fixtures/specs-root`: `resolveSpecsRoot`
-
-## @nsealr/framing
-
-nSealr serial-frame encoding and decoding for USB CDC and UART experiments.
-
-Source entrypoint: `packages/framing/src/index.ts`
-
-Exports:
-- `SERIAL_FRAME_PREFIX`
-- `SerialFrame`
-- `SerialFrameType`
-- `decodeSerialFrame`
-- `encodeSerialFrame`
-
-## @nsealr/nip46
-
-Already-decrypted NIP-46 bridge, connect-review approval, connection-token descriptor, relay-event envelope, relay-step, and permission helpers for nSealr companion.
-
-Source entrypoint: `packages/nip46/src/index.ts`
-
-Exports:
-- `ActiveSessionRecordInput`
-- `InMemoryRelay`
-- `InMemorySessionStore`
-- `NIP46_SESSION_ACTIVE_PHASE_FLAGS`
-- `NIP46_SESSION_SECRET_FIELDS`
-- `Nip46AuthChallengeApproval`
-- `Nip46AuthChallengeApprovalOptions`
-- `Nip46AuthChallengeReview`
-- `Nip46BridgeDecision`
-- `Nip46ConnectApproval`
-- `Nip46ConnectApprovalOptions`
-- `Nip46ConnectIntent`
-- `Nip46ConnectReview`
-- `Nip46ConnectionTokenResponse`
-- `Nip46ConnectionUriDescriptor`
-- `Nip46Permission`
-- `Nip46PermissionRequirement`
-- `Nip46RelayEventDirection`
-- `Nip46RelayEventEnvelope`
-- `Nip46RelayRequestStep`
-- `Nip46RelayResponseResultType`
-- `Nip46RelayResponseStep`
-- `Nip46RequestMessage`
-- `Nip46ResponseMessage`
-- `Nip46SessionActive`
-- `Nip46SessionActivePhase`
-- `Nip46SessionLifecycle`
-- `Nip46SessionLifecycleCheckpointOptions`
-- `Nip46SessionManager`
-- `Nip46SessionManagerOptions`
-- `Nip46SessionRequestGate`
-- `NostrToolsRelay`
-- `RelayEvent`
-- `RelayEventHandler`
-- `RelayFilter`
-- `RelayPool`
-- `RelaySubscription`
-- `RelayTransport`
-- `SessionPhase`
-- `SessionStore`
-- `approveNip46AuthChallengeReview`
-- `approveNip46ConnectReview`
-- `buildNip46RequestEvent`
-- `createNip46SessionLifecycleCheckpoint`
-- `decideNip46BridgeAction`
-- `decryptNip46Event`
-- `evaluateNip46RelayRequestStep`
-- `evaluateNip46RelayResponseStep`
-- `evaluateNip46SessionRequestGate`
-- `eventMatchesFilter`
-- `isNip46RequestPermitted`
-- `nip46PermissionLabel`
-- `nip46PermissionRequirementFromRequest`
-- `nip46ResponseFromNSealr`
-- `nsealrRequestFromNip46`
-- `parseNip46ApprovedPermissions`
-- `parseNip46AuthChallengeApproval`
-- `parseNip46AuthChallengeReview`
-- `parseNip46ConnectApproval`
-- `parseNip46ConnectIntent`
-- `parseNip46ConnectReview`
-- `parseNip46ConnectionUri`
-- `parseNip46Permissions`
-- `parseNip46PolicyFile`
-- `parseNip46RelayEventEnvelope`
-- `parseNip46SessionActive`
-- `parseNip46SessionLifecycle`
-- `requireResponseMessage`
-- `respondToLocalNip46Request`
-- `reviewNip46AuthChallengeStep`
-- `reviewNip46ConnectIntent`
-- `reviewNip46ConnectMessage`
-- `toActiveSessionRecord`
-- `verifyNip46ConnectionTokenResponse`
-
-## @nsealr/policy
-
-Secretless account, route, grant, policy-change, and policy-decision helpers for nSealr companion.
-
-Source entrypoint: `packages/policy/src/index.ts`
-
-Exports:
-- `AccountDescriptor`
-- `GrantDescriptor`
-- `GrantPermission`
-- `GrantUsageSnapshot`
-- `PolicyChangeProposal`
-- `PolicyChangeReview`
-- `PolicyChangeReviewContext`
-- `PolicyChangeReviewPage`
-- `PolicyChangeReviewVector`
-- `PolicyDecision`
-- `PolicyDecisionRequest`
-- `PolicyProfile`
-- `RouteCustody`
-- `RouteSelection`
-- `RouteSelectionRequest`
-- `RouteType`
-- `SignerRoute`
-- `decidePolicyRequest`
-- `parseAccountDescriptor`
-- `parseGrantDescriptor`
-- `parsePolicyChangeProposal`
-- `parsePolicyChangeReviewContext`
-- `parsePolicyChangeReviewVector`
-- `parsePolicyDecisionRequest`
-- `parsePolicyProfile`
-- `parseRouteSelection`
-- `parseRouteSelectionRequest`
-- `reviewPolicyChangeProposal`
-- `selectAccountRoute`
-- `validatePolicyChangeProposalContext`
-
-## @nsealr/protocol
-
-nSealr request and response validation with shared v0 implementation limits.
-
-Source entrypoint: `packages/protocol/src/index.ts`
-
-Exports:
-- `Base64UrlPayloadErrorMessages`
-- `NSEALR_V0_LIMITS`
-- `ValidationResult`
-- `assertBase64UrlPayload`
-- `compactJsonUtf8ByteLength`
-- `decodeBase64Url`
-- `encodeBase64Url`
-- `isSafeNonNegativeInteger`
-- `jsonToUtf8Bytes`
-- `nSealrV0Limits`
-- `parseStrictJson`
-- `utf8ByteLength`
-- `validateRequest`
-- `validateResponse`
-
-## @nsealr/qr
-
-Static and animated nSealr QR envelope encoding and decoding.
-
-Source entrypoint: `packages/qr/src/index.ts`
-
-Exports:
-- `ANIMATED_QR_ENVELOPE_PREFIX`
-- `AnimatedQrEnvelopeOptions`
-- `QR_ENVELOPE_PREFIX`
-- `decodeAnimatedQrEnvelopeFrames`
-- `decodeQrEnvelope`
-- `encodeAnimatedQrEnvelopeFrames`
-- `encodeQrEnvelope`
-
-## @nsealr/review
-
-Deterministic Nostr event review summaries and constrained-display page rendering.
-
-Source entrypoint: `packages/review/src/index.ts`
-
-Exports:
-- `DEVELOPMENT_REVIEW_AUTHOR_PUBKEY`
-- `EventReview`
-- `REVIEW_DETAIL_BODY_LINE_STYLES`
-- `ReviewBodyLineStyle`
-- `ReviewDetailPage`
-- `ReviewDetailPageLimits`
-- `ReviewPage`
-- `ScreenReview`
-- `approvalDigestForRequest`
-- `renderReviewDetailPages`
-- `renderReviewPages`
-- `reviewEventTemplate`
-- `screenReviewForRequest`
 
 ## @nsealr/sdk
 
@@ -393,61 +23,133 @@ Source entrypoint: `packages/sdk/src/index.ts`
 
 Exports:
 - `browserProvider`
+- `browserProvider.BrowserNativeMessageOptions`
+- `browserProvider.BrowserNativeMessageSender`
+- `browserProvider.BrowserNativeMessagingLocalServiceClientOptions`
+- `browserProvider.BrowserProviderBackend`
+- `browserProvider.BrowserProviderOptions`
+- `browserProvider.LocalServiceBrowserProviderBackendOptions`
+- `browserProvider.NATIVE_HOST_NAME`
+- `browserProvider.Nip07Provider`
+- `browserProvider.createBrowserNativeMessagingLocalServiceClient`
+- `browserProvider.createLocalServiceBrowserProviderBackend`
+- `browserProvider.createNip07Provider`
 - `client`
+- `client.LOCAL_CLIENT_SURFACES`
+- `client.LOCAL_PAIRING_INTENT_FORMAT`
+- `client.LOCAL_SERVICE_NAME`
+- `client.LOCAL_SERVICE_OPERATIONS`
+- `client.LOCAL_SERVICE_PROTOCOL`
+- `client.LocalClientGrant`
+- `client.LocalClientIdentity`
+- `client.LocalClientSurface`
+- `client.LocalPairingReview`
+- `client.LocalServiceClient`
+- `client.LocalServiceClientOptions`
+- `client.LocalServiceExchange`
+- `client.LocalServiceExchangeOptions`
+- `client.LocalServiceOperation`
+- `client.LocalServiceRequest`
+- `client.LocalServiceResponse`
+- `client.MAX_NATIVE_MESSAGE_BYTES`
+- `client.MAX_SERVICE_JSON_BYTES`
+- `client.NATIVE_HOST_NAME`
+- `client.NATIVE_MESSAGE_LENGTH_BYTES`
+- `client.NativeMessageFrameExchange`
+- `client.NativeMessagingLocalServiceClientOptions`
+- `client.PairableLocalServiceOperation`
+- `client.PairingIntent`
+- `client.clientIdForIdentity`
+- `client.createNativeMessagingLocalServiceClient`
+- `client.decodeNativeMessage`
+- `client.encodeNativeMessage`
+- `client.parseLocalClientIdentity`
+- `client.reviewPairingIntent`
 - `core`
-- `framing`
-- `nip46`
+- `core.EventTemplate`
+- `core.SignEventRequest`
+- `core.SignEventResponse`
+- `core.SignedEvent`
+- `core.VerificationResult`
+- `core.bytesToHex`
+- `core.canonicalEventSerialization`
+- `core.computeEventId`
+- `core.decrypt`
+- `core.encrypt`
+- `core.getConversationKey`
+- `core.hexToBytes`
+- `core.sha256Utf8Hex`
+- `core.verifySchnorrSignature`
+- `core.verifySignedEventResponse`
 - `policy`
+- `policy.AccountDescriptor`
+- `policy.GrantDescriptor`
+- `policy.GrantPermission`
+- `policy.GrantUsageSnapshot`
+- `policy.PolicyChangeProposal`
+- `policy.PolicyChangeReview`
+- `policy.PolicyChangeReviewContext`
+- `policy.PolicyChangeReviewPage`
+- `policy.PolicyChangeReviewVector`
+- `policy.PolicyDecision`
+- `policy.PolicyDecisionRequest`
+- `policy.PolicyProfile`
+- `policy.RouteCustody`
+- `policy.RouteSelection`
+- `policy.RouteSelectionRequest`
+- `policy.RouteType`
+- `policy.SignerRoute`
+- `policy.decidePolicyRequest`
+- `policy.parseAccountDescriptor`
+- `policy.parseGrantDescriptor`
+- `policy.parsePolicyChangeProposal`
+- `policy.parsePolicyChangeReviewContext`
+- `policy.parsePolicyChangeReviewVector`
+- `policy.parsePolicyDecisionRequest`
+- `policy.parsePolicyProfile`
+- `policy.parseRouteSelection`
+- `policy.parseRouteSelectionRequest`
+- `policy.reviewPolicyChangeProposal`
+- `policy.selectAccountRoute`
+- `policy.validatePolicyChangeProposalContext`
 - `protocol`
+- `protocol.Base64UrlPayloadErrorMessages`
+- `protocol.NSEALR_V0_LIMITS`
+- `protocol.ValidationResult`
+- `protocol.assertBase64UrlPayload`
+- `protocol.compactJsonUtf8ByteLength`
+- `protocol.decodeBase64Url`
+- `protocol.encodeBase64Url`
+- `protocol.isSafeNonNegativeInteger`
+- `protocol.jsonToUtf8Bytes`
+- `protocol.nSealrV0Limits`
+- `protocol.parseStrictJson`
+- `protocol.utf8ByteLength`
+- `protocol.validateRequest`
+- `protocol.validateResponse`
 - `qr`
+- `qr.ANIMATED_QR_ENVELOPE_PREFIX`
+- `qr.AnimatedQrEnvelopeOptions`
+- `qr.QR_ENVELOPE_PREFIX`
+- `qr.decodeAnimatedQrEnvelopeFrames`
+- `qr.decodeQrEnvelope`
+- `qr.encodeAnimatedQrEnvelopeFrames`
+- `qr.encodeQrEnvelope`
 - `review`
-- `smartcard`
+- `review.DEVELOPMENT_REVIEW_AUTHOR_PUBKEY`
+- `review.EventReview`
+- `review.REVIEW_DETAIL_BODY_LINE_STYLES`
+- `review.ReviewBodyLineStyle`
+- `review.ReviewDetailPage`
+- `review.ReviewDetailPageLimits`
+- `review.ReviewPage`
+- `review.ScreenReview`
+- `review.approvalDigestForRequest`
+- `review.renderReviewDetailPages`
+- `review.renderReviewPages`
+- `review.reviewEventTemplate`
+- `review.screenReviewForRequest`
 
 Additional package subpaths:
-- `@nsealr/sdk/browser`: `browserProvider`, `client`, `core`, `policy`, `protocol`, `qr`, `review`
-
-## @nsealr/smartcard
-
-APDU, PC/SC, and display-less smartcard signer boundary for nSealr.
-
-Source entrypoint: `packages/smartcard/src/index.ts`
-
-Exports:
-- `CommandApdu`
-- `GET_PUBLIC_KEY_INS`
-- `NSEALR_CLA`
-- `PcscApduTransport`
-- `PcscConnection`
-- `PcscReader`
-- `PcscReaderProvider`
-- `PcscTransmitResult`
-- `PcscUnavailableError`
-- `ResponseApdu`
-- `SIGN_EVENT_ID_INS`
-- `SW_CLA_NOT_SUPPORTED`
-- `SW_INCORRECT_P1P2`
-- `SW_INS_NOT_SUPPORTED`
-- `SW_NO_ERROR`
-- `SW_WRONG_LENGTH`
-- `SmartcardApduTransport`
-- `SmartcardReviewAcknowledgement`
-- `SmartcardSigner`
-
-## @nsealr/transport
-
-Secretless signer transport adapters and verified exchange boundaries for nSealr companion.
-
-Source entrypoint: `packages/transport/src/index.ts`
-
-Exports:
-- `JsonFileTransport`
-- `JsonLineStdioTransport`
-- `SerialFrameTransport`
-- `SerialLinePort`
-- `SerialLinePortOpener`
-- `SerialLineStreamPort`
-- `SerialLineTransport`
-- `SignerTransport`
-- `exchangeSerialLineRequest`
-- `readJsonFile`
-- `writeJsonFile`
+- `@nsealr/sdk/browser`: `browserProvider`, `browserProvider.BrowserNativeMessageOptions`, `browserProvider.BrowserNativeMessageSender`, `browserProvider.BrowserNativeMessagingLocalServiceClientOptions`, `browserProvider.BrowserProviderBackend`, `browserProvider.BrowserProviderOptions`, `browserProvider.LocalServiceBrowserProviderBackendOptions`, `browserProvider.NATIVE_HOST_NAME`, `browserProvider.Nip07Provider`, `browserProvider.createBrowserNativeMessagingLocalServiceClient`, `browserProvider.createLocalServiceBrowserProviderBackend`, `browserProvider.createNip07Provider`, `client`, `client.LOCAL_CLIENT_SURFACES`, `client.LOCAL_PAIRING_INTENT_FORMAT`, `client.LOCAL_SERVICE_NAME`, `client.LOCAL_SERVICE_OPERATIONS`, `client.LOCAL_SERVICE_PROTOCOL`, `client.LocalClientGrant`, `client.LocalClientIdentity`, `client.LocalClientSurface`, `client.LocalPairingReview`, `client.LocalServiceClient`, `client.LocalServiceClientOptions`, `client.LocalServiceExchange`, `client.LocalServiceExchangeOptions`, `client.LocalServiceOperation`, `client.LocalServiceRequest`, `client.LocalServiceResponse`, `client.MAX_NATIVE_MESSAGE_BYTES`, `client.MAX_SERVICE_JSON_BYTES`, `client.NATIVE_HOST_NAME`, `client.NATIVE_MESSAGE_LENGTH_BYTES`, `client.NativeMessageFrameExchange`, `client.NativeMessagingLocalServiceClientOptions`, `client.PairableLocalServiceOperation`, `client.PairingIntent`, `client.clientIdForIdentity`, `client.createNativeMessagingLocalServiceClient`, `client.decodeNativeMessage`, `client.encodeNativeMessage`, `client.parseLocalClientIdentity`, `client.reviewPairingIntent`, `core`, `core.EventTemplate`, `core.SignEventRequest`, `core.SignEventResponse`, `core.SignedEvent`, `core.VerificationResult`, `core.bytesToHex`, `core.canonicalEventSerialization`, `core.computeEventId`, `core.decrypt`, `core.encrypt`, `core.getConversationKey`, `core.hexToBytes`, `core.sha256Utf8Hex`, `core.verifySchnorrSignature`, `core.verifySignedEventResponse`, `policy`, `policy.AccountDescriptor`, `policy.GrantDescriptor`, `policy.GrantPermission`, `policy.GrantUsageSnapshot`, `policy.PolicyChangeProposal`, `policy.PolicyChangeReview`, `policy.PolicyChangeReviewContext`, `policy.PolicyChangeReviewPage`, `policy.PolicyChangeReviewVector`, `policy.PolicyDecision`, `policy.PolicyDecisionRequest`, `policy.PolicyProfile`, `policy.RouteCustody`, `policy.RouteSelection`, `policy.RouteSelectionRequest`, `policy.RouteType`, `policy.SignerRoute`, `policy.decidePolicyRequest`, `policy.parseAccountDescriptor`, `policy.parseGrantDescriptor`, `policy.parsePolicyChangeProposal`, `policy.parsePolicyChangeReviewContext`, `policy.parsePolicyChangeReviewVector`, `policy.parsePolicyDecisionRequest`, `policy.parsePolicyProfile`, `policy.parseRouteSelection`, `policy.parseRouteSelectionRequest`, `policy.reviewPolicyChangeProposal`, `policy.selectAccountRoute`, `policy.validatePolicyChangeProposalContext`, `protocol`, `protocol.Base64UrlPayloadErrorMessages`, `protocol.NSEALR_V0_LIMITS`, `protocol.ValidationResult`, `protocol.assertBase64UrlPayload`, `protocol.compactJsonUtf8ByteLength`, `protocol.decodeBase64Url`, `protocol.encodeBase64Url`, `protocol.isSafeNonNegativeInteger`, `protocol.jsonToUtf8Bytes`, `protocol.nSealrV0Limits`, `protocol.parseStrictJson`, `protocol.utf8ByteLength`, `protocol.validateRequest`, `protocol.validateResponse`, `qr`, `qr.ANIMATED_QR_ENVELOPE_PREFIX`, `qr.AnimatedQrEnvelopeOptions`, `qr.QR_ENVELOPE_PREFIX`, `qr.decodeAnimatedQrEnvelopeFrames`, `qr.decodeQrEnvelope`, `qr.encodeAnimatedQrEnvelopeFrames`, `qr.encodeQrEnvelope`, `review`, `review.DEVELOPMENT_REVIEW_AUTHOR_PUBKEY`, `review.EventReview`, `review.REVIEW_DETAIL_BODY_LINE_STYLES`, `review.ReviewBodyLineStyle`, `review.ReviewDetailPage`, `review.ReviewDetailPageLimits`, `review.ReviewPage`, `review.ScreenReview`, `review.approvalDigestForRequest`, `review.renderReviewDetailPages`, `review.renderReviewPages`, `review.reviewEventTemplate`, `review.screenReviewForRequest`
+- `@nsealr/sdk/node`: `browserProvider`, `browserProvider.BrowserNativeMessageOptions`, `browserProvider.BrowserNativeMessageSender`, `browserProvider.BrowserNativeMessagingLocalServiceClientOptions`, `browserProvider.BrowserProviderBackend`, `browserProvider.BrowserProviderOptions`, `browserProvider.LocalServiceBrowserProviderBackendOptions`, `browserProvider.NATIVE_HOST_NAME`, `browserProvider.Nip07Provider`, `browserProvider.createBrowserNativeMessagingLocalServiceClient`, `browserProvider.createLocalServiceBrowserProviderBackend`, `browserProvider.createNip07Provider`, `client`, `client.ChromiumNativeHostManifest`, `client.EXTERNAL_REVIEW_ACKNOWLEDGEMENT_FORMAT`, `client.ExternalReviewAcknowledgement`, `client.FirefoxNativeHostManifest`, `client.LOCAL_CLIENT_SURFACES`, `client.LOCAL_GRANT_STORE_FORMAT`, `client.LOCAL_PAIRING_APPROVAL_FORMAT`, `client.LOCAL_PAIRING_INTENT_FORMAT`, `client.LOCAL_PAIRING_REVIEW_FORMAT`, `client.LOCAL_SERVICE_NAME`, `client.LOCAL_SERVICE_OPERATIONS`, `client.LOCAL_SERVICE_PROTOCOL`, `client.LOCAL_STORAGE_ACCESS_MODES`, `client.LOCAL_STORAGE_APPROVAL_FORMAT`, `client.LOCAL_STORAGE_PURPOSES`, `client.LOCAL_STORAGE_REVIEW_FORMAT`, `client.LocalClientGrant`, `client.LocalClientIdentity`, `client.LocalClientSurface`, `client.LocalGrantRevocationOptions`, `client.LocalGrantSelector`, `client.LocalGrantStore`, `client.LocalGrantStoreOptions`, `client.LocalGrantStoreRevocationOptions`, `client.LocalPairingApproval`, `client.LocalPairingReview`, `client.LocalPairingReviewOperation`, `client.LocalServiceClient`, `client.LocalServiceClientOptions`, `client.LocalServiceContext`, `client.LocalServiceDispatchSignerRequestOptions`, `client.LocalServiceExchange`, `client.LocalServiceExchangeOptions`, `client.LocalServiceOperation`, `client.LocalServiceRequest`, `client.LocalServiceResponse`, `client.LocalStorageAccessMode`, `client.LocalStorageApproval`, `client.LocalStorageApprovalRequirement`, `client.LocalStoragePurpose`, `client.LocalStorageReview`, `client.LocalStorageReviewEntry`, `client.MAX_LOCAL_GRANT_STORE_GRANTS`, `client.MAX_LOCAL_GRANT_STORE_JSON_BYTES`, `client.MAX_NATIVE_MESSAGE_BYTES`, `client.MAX_SERVICE_JSON_BYTES`, `client.NATIVE_HOST_DESCRIPTION`, `client.NATIVE_HOST_INSTALL_APPROVAL_FORMAT`, `client.NATIVE_HOST_INSTALL_EXECUTION_FORMAT`, `client.NATIVE_HOST_INSTALL_PLAN_FORMAT`, `client.NATIVE_HOST_NAME`, `client.NATIVE_MESSAGE_LENGTH_BYTES`, `client.NativeHostBrowser`, `client.NativeHostInstallApproval`, `client.NativeHostInstallApprovalOptions`, `client.NativeHostInstallExecution`, `client.NativeHostInstallExecutionOptions`, `client.NativeHostInstallPlan`, `client.NativeHostInstallPlanOptions`, `client.NativeHostManifest`, `client.NativeHostManifestOptions`, `client.NativeMessageFrameExchange`, `client.NativeMessagingLocalServiceClientOptions`, `client.PairableLocalServiceOperation`, `client.PairingIntent`, `client.RouteDispatchEntry`, `client.SIGNER_TRANSPORT_ERROR_CODES`, `client.SignerDispatchRequest`, `client.SignerRequestDispatcher`, `client.SignerRouteUnavailableError`, `client.SignerTransportError`, `client.SignerTransportErrorCode`, `client.appendLocalGrant`, `client.appendLocalGrantRevocation`, `client.approveLocalStorageReview`, `client.approveNativeHostInstallPlan`, `client.approvePairingIntent`, `client.buildNativeHostInstallPlan`, `client.buildNativeHostManifest`, `client.clientIdForIdentity`, `client.createLocalGrantStore`, `client.createLocalStorageReview`, `client.createNativeMessagingLocalServiceClient`, `client.createRouteDispatcher`, `client.decodeNativeMessage`, `client.encodeNativeMessage`, `client.executeNativeHostInstallApproval`, `client.handleLocalServiceRequest`, `client.handleLocalServiceRequestAsync`, `client.parseLocalClientIdentity`, `client.parseLocalGrant`, `client.parseLocalGrantStore`, `client.parseLocalPairingApproval`, `client.parseLocalStorageApproval`, `client.parseLocalStorageReview`, `client.parseLocalStorageReviewEntry`, `client.parseNativeHostInstallApproval`, `client.parseNativeHostInstallExecution`, `client.parseNativeHostInstallPlan`, `client.parsePairingIntent`, `client.requireLocalStorageApprovalEntry`, `client.reviewPairingIntent`, `client.revokeLocalGrant`, `client.serializeLocalGrantStore`, `client.validateLocalServiceResponse`, `core`, `core.EventTemplate`, `core.SignEventRequest`, `core.SignEventResponse`, `core.SignedEvent`, `core.VerificationResult`, `core.bytesToHex`, `core.canonicalEventSerialization`, `core.computeEventId`, `core.decrypt`, `core.encrypt`, `core.getConversationKey`, `core.hexToBytes`, `core.sha256Utf8Hex`, `core.verifySchnorrSignature`, `core.verifySignedEventResponse`, `framing`, `framing.SERIAL_FRAME_PREFIX`, `framing.SerialFrame`, `framing.SerialFrameType`, `framing.decodeSerialFrame`, `framing.encodeSerialFrame`, `nip46`, `nip46.ActiveSessionRecordInput`, `nip46.InMemoryRelay`, `nip46.InMemorySessionStore`, `nip46.NIP46_SESSION_ACTIVE_PHASE_FLAGS`, `nip46.NIP46_SESSION_SECRET_FIELDS`, `nip46.Nip46AuthChallengeApproval`, `nip46.Nip46AuthChallengeApprovalOptions`, `nip46.Nip46AuthChallengeReview`, `nip46.Nip46BridgeDecision`, `nip46.Nip46ConnectApproval`, `nip46.Nip46ConnectApprovalOptions`, `nip46.Nip46ConnectIntent`, `nip46.Nip46ConnectReview`, `nip46.Nip46ConnectionTokenResponse`, `nip46.Nip46ConnectionUriDescriptor`, `nip46.Nip46Permission`, `nip46.Nip46PermissionRequirement`, `nip46.Nip46RelayEventDirection`, `nip46.Nip46RelayEventEnvelope`, `nip46.Nip46RelayRequestStep`, `nip46.Nip46RelayResponseResultType`, `nip46.Nip46RelayResponseStep`, `nip46.Nip46RequestMessage`, `nip46.Nip46ResponseMessage`, `nip46.Nip46SessionActive`, `nip46.Nip46SessionActivePhase`, `nip46.Nip46SessionLifecycle`, `nip46.Nip46SessionLifecycleCheckpointOptions`, `nip46.Nip46SessionManager`, `nip46.Nip46SessionManagerOptions`, `nip46.Nip46SessionRequestGate`, `nip46.NostrToolsRelay`, `nip46.RelayEvent`, `nip46.RelayEventHandler`, `nip46.RelayFilter`, `nip46.RelayPool`, `nip46.RelaySubscription`, `nip46.RelayTransport`, `nip46.SessionPhase`, `nip46.SessionStore`, `nip46.approveNip46AuthChallengeReview`, `nip46.approveNip46ConnectReview`, `nip46.buildNip46RequestEvent`, `nip46.createNip46SessionLifecycleCheckpoint`, `nip46.decideNip46BridgeAction`, `nip46.decryptNip46Event`, `nip46.evaluateNip46RelayRequestStep`, `nip46.evaluateNip46RelayResponseStep`, `nip46.evaluateNip46SessionRequestGate`, `nip46.eventMatchesFilter`, `nip46.isNip46RequestPermitted`, `nip46.nip46PermissionLabel`, `nip46.nip46PermissionRequirementFromRequest`, `nip46.nip46ResponseFromNSealr`, `nip46.nsealrRequestFromNip46`, `nip46.parseNip46ApprovedPermissions`, `nip46.parseNip46AuthChallengeApproval`, `nip46.parseNip46AuthChallengeReview`, `nip46.parseNip46ConnectApproval`, `nip46.parseNip46ConnectIntent`, `nip46.parseNip46ConnectReview`, `nip46.parseNip46ConnectionUri`, `nip46.parseNip46Permissions`, `nip46.parseNip46PolicyFile`, `nip46.parseNip46RelayEventEnvelope`, `nip46.parseNip46SessionActive`, `nip46.parseNip46SessionLifecycle`, `nip46.requireResponseMessage`, `nip46.respondToLocalNip46Request`, `nip46.reviewNip46AuthChallengeStep`, `nip46.reviewNip46ConnectIntent`, `nip46.reviewNip46ConnectMessage`, `nip46.toActiveSessionRecord`, `nip46.verifyNip46ConnectionTokenResponse`, `policy`, `policy.AccountDescriptor`, `policy.GrantDescriptor`, `policy.GrantPermission`, `policy.GrantUsageSnapshot`, `policy.PolicyChangeProposal`, `policy.PolicyChangeReview`, `policy.PolicyChangeReviewContext`, `policy.PolicyChangeReviewPage`, `policy.PolicyChangeReviewVector`, `policy.PolicyDecision`, `policy.PolicyDecisionRequest`, `policy.PolicyProfile`, `policy.RouteCustody`, `policy.RouteSelection`, `policy.RouteSelectionRequest`, `policy.RouteType`, `policy.SignerRoute`, `policy.decidePolicyRequest`, `policy.parseAccountDescriptor`, `policy.parseGrantDescriptor`, `policy.parsePolicyChangeProposal`, `policy.parsePolicyChangeReviewContext`, `policy.parsePolicyChangeReviewVector`, `policy.parsePolicyDecisionRequest`, `policy.parsePolicyProfile`, `policy.parseRouteSelection`, `policy.parseRouteSelectionRequest`, `policy.reviewPolicyChangeProposal`, `policy.selectAccountRoute`, `policy.validatePolicyChangeProposalContext`, `protocol`, `protocol.Base64UrlPayloadErrorMessages`, `protocol.NSEALR_V0_LIMITS`, `protocol.ValidationResult`, `protocol.assertBase64UrlPayload`, `protocol.compactJsonUtf8ByteLength`, `protocol.decodeBase64Url`, `protocol.encodeBase64Url`, `protocol.isSafeNonNegativeInteger`, `protocol.jsonToUtf8Bytes`, `protocol.nSealrV0Limits`, `protocol.parseStrictJson`, `protocol.utf8ByteLength`, `protocol.validateRequest`, `protocol.validateResponse`, `qr`, `qr.ANIMATED_QR_ENVELOPE_PREFIX`, `qr.AnimatedQrEnvelopeOptions`, `qr.QR_ENVELOPE_PREFIX`, `qr.decodeAnimatedQrEnvelopeFrames`, `qr.decodeQrEnvelope`, `qr.encodeAnimatedQrEnvelopeFrames`, `qr.encodeQrEnvelope`, `review`, `review.DEVELOPMENT_REVIEW_AUTHOR_PUBKEY`, `review.EventReview`, `review.REVIEW_DETAIL_BODY_LINE_STYLES`, `review.ReviewBodyLineStyle`, `review.ReviewDetailPage`, `review.ReviewDetailPageLimits`, `review.ReviewPage`, `review.ScreenReview`, `review.approvalDigestForRequest`, `review.renderReviewDetailPages`, `review.renderReviewPages`, `review.reviewEventTemplate`, `review.screenReviewForRequest`
