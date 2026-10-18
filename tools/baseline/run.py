@@ -12,7 +12,7 @@ from bootstrap import Recorder, sha256, write_json
 
 
 def statuses(root: Path, inputs: dict) -> dict:
-    return {name: subprocess.check_output(['git', 'status', '--porcelain'], cwd=root/('firmware' if name == 'nsealr' else name), text=True) for name in inputs}
+    return {name: subprocess.check_output(['git', 'status', '--porcelain'], cwd=root/name, text=True) for name in inputs}
 
 
 def main() -> int:
@@ -24,7 +24,7 @@ def main() -> int:
     env = json.loads((root/'environment.json').read_text())
     inputs = json.loads((root/'source-commits.json').read_text())
     for name, expected in inputs.items():
-        source = root/('firmware' if name == 'nsealr' else name)
+        source = root/name
         actual = subprocess.check_output(['git', 'rev-parse', 'HEAD'], cwd=source, text=True).strip()
         if actual != expected:
             raise ValueError(f'{name}: source pin drift: {actual} != {expected}')
@@ -33,32 +33,22 @@ def main() -> int:
     before = statuses(root, inputs)
     expected = json.loads((root/'source-state.json').read_text())
     for name in inputs:
-        source = root/('firmware' if name == 'nsealr' else name)
+        source = root/name
         diff = hashlib.sha256(subprocess.check_output(['git','diff','--binary'],cwd=source)).hexdigest()
         if before[name] != expected[name]['status'] or diff != expected[name]['diff_sha256']:
             raise ValueError(f'{name}: undeclared source delta before baseline')
     write_json(directory/'source-before.json', before)
     if args.smoke:
-        recorder.run('core-smoke', ['make', 'test', 'cargo-test'], root/'firmware', required=False)
-        if 'lab' in inputs:
-            recorder.run('fixture-snapshots', ['python3', 'scripts/check_fixture_snapshots.py'], root/'lab', required=False)
-            recorder.run('integration-helper-tests', ['python3', '-m', 'unittest', 'discover', '-s', 'tests', '-p', 'test_integration_support.py'], root/'lab', required=False)
+        recorder.run('product-smoke', ['make', 'test', 'cargo-test'], root/'nsealr', required=False)
     else:
-        # -k executes remaining independent targets after a failure while
-        # retaining make's failing status, including stale API checks.
-        for name in ('firmware', 'specs', 'companion', 'raspberry', 'smartcard', 'hardware', 'website', 'lab'):
-            if (root/name).exists():
-                recorder.run(f'{name}-ci', ['make', '-k', 'ci'], root/name, required=False)
-        if 'lab' in inputs:
-            # One uninterrupted invocation of the complete existing recipe.
-            # No command-line PYTHON/VENV overrides leak through recursive make.
-            recorder.run('full-integration', ['make', 'integration'], root/'lab', required=False)
+        # One complete product entrypoint; -k preserves independent failures.
+        recorder.run('product-ci', ['make', '-k', 'ci'], root/'nsealr', required=False)
     write_json(directory/'source-after.json', statuses(root, inputs))
     skipped = [
         {'gate': 'NSEALR_LIVE_E2E relay test', 'reason': 'not enabled in this offline software baseline; Docker/relay run requires separate evidence'},
         {'gate': 'interactive Chromium/Firefox session', 'reason': 'package/DOM/native-messaging checks do not exercise an installed browser session'},
-        {'gate': 'real hardware approval/signing, GPIO/camera/display and card/USB', 'reason': 'no identified sample/operator; simulator and safe probe are software evidence only'},
-        {'gate': 'manufacturing, provisioning, secure-element custody and physical entropy', 'reason': 'outside R00 software baseline; no production keys or irreversible operations'},
+        {'gate': 'real hardware approval/signing, GPIO/camera/display and USB', 'reason': 'no identified sample/operator; simulator and safe probe are software evidence only'},
+        {'gate': 'manufacturing, provisioning, secure-element custody and physical entropy', 'reason': 'outside software acceptance; no production keys or irreversible operations'},
     ]
     write_json(directory/'skips.json', skipped)
     failed = [r['label'] for r in recorder.results if r['exit_code']]

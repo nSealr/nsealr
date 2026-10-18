@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Create a cold, pinned Linux x86_64 software baseline; never reuse a destination."""
+"""Create a cold, pinned Linux x86_64 product bootstrap; never reuse a destination."""
 from __future__ import annotations
 
 import argparse
@@ -92,7 +92,7 @@ def extract(path: Path, destination: Path) -> None:
 def fetch(recorder: Recorder, name: str, origin: str, commit: str, root: Path) -> None:
     path = root / name
     recorder.run(f'{name}-init', ['git', 'init', str(path)], root)
-    recorder.run(f'{name}-fetch', ['git', 'fetch', '--depth=1', origin, commit], path)
+    recorder.run(f'{name}-fetch', ['git', 'fetch', '--no-tags', origin, commit], path)
     recorder.run(f'{name}-checkout', ['git', 'checkout', '--detach', 'FETCH_HEAD'], path)
     actual = subprocess.check_output(['git', 'rev-parse', 'HEAD'], cwd=path, text=True).strip()
     dirty = subprocess.check_output(['git', 'status', '--porcelain'], cwd=path, text=True).strip()
@@ -100,42 +100,11 @@ def fetch(recorder: Recorder, name: str, origin: str, commit: str, root: Path) -
         raise ValueError(f'{name}: expected clean checkout of {commit}, got {actual} {dirty}')
 
 
-def apply_lab_overlay(recorder: Recorder, root: Path, commit: str, manifest: Path, record: str) -> None:
-    """Apply one selected patch only to its verified source and preimage."""
-    overlay = json.loads(manifest.read_text())
-    patch = manifest.with_suffix('.patch')
-    actual = subprocess.check_output(['git', 'rev-parse', 'HEAD'], cwd=root/'lab', text=True).strip()
-    if sha256(patch) != overlay['patch_sha256'] or commit != overlay['commit'] or actual != commit:
-        raise ValueError('overlay source/patch pin mismatch')
-    for name, hashes in overlay['files'].items():
-        if sha256(root/'lab'/name) != hashes['before_sha256']:
-            raise ValueError(f'overlay preimage mismatch: {name}')
-    recorder.run(record+'-check', ['git', 'apply', '--check', str(patch)], root/'lab')
-    recorder.run(record+'-apply', ['git', 'apply', str(patch)], root/'lab')
-    for name, hashes in overlay['files'].items():
-        if sha256(root/'lab'/name) != hashes['after_sha256']:
-            raise ValueError(f'overlay output mismatch: {name}')
-    write_json(root/'evidence'/f'{record}.json', overlay)
-
-
-def apply_lab_overlays(recorder: Recorder, root: Path, commit: str) -> None:
-    # Explicit current tuple; historical R00 refs retain their own inputs/runner.
-    for manifest, record in (
-        (HERE/'overlays/lab-provenance.json', 'overlay'),
-        (SOURCE/'docs/restart/implementation/S01/lab-metadata-v1.json', 'metadata-v1-overlay'),
-        (HERE/'overlays/lab-provenance-followup.json', 'provenance-followup-overlay'),
-    ):
-        apply_lab_overlay(recorder, root, commit, manifest, record)
-
-
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('destination', type=Path, help='must not already exist')
-    parser.add_argument('--mirrors', type=Path, help='authorized sibling Git repositories; transport only, pins still verified')
-    parser.add_argument('--core-only', action='store_true', help='public core only; no private integration sources')
     args = parser.parse_args()
     root = args.destination.absolute()
-    mirrors = args.mirrors.resolve() if args.mirrors else None
     if root.exists() or root.is_symlink():
         parser.error(f'destination already exists: {root}')
     if platform.system() != 'Linux' or platform.machine() != 'x86_64' or platform.libc_ver()[0] != 'glibc':
@@ -160,16 +129,9 @@ def main() -> int:
     # Git source retrieval may use the caller's authorized credential setup;
     # execution uses the separate, minimal runtime environment recorded above.
     clones = Recorder(root/'evidence/clones', dict(os.environ))
-    fetch(clones, 'firmware', str(SOURCE), candidate, root)
+    fetch(clones, 'nsealr', str(SOURCE), candidate, root)
     inputs = {'nsealr': candidate}
-    if not args.core_only:
-        for name, entry in lock['repositories'].items():
-            origin = str(mirrors/name) if mirrors else entry['url']
-            fetch(clones, name, origin, entry['commit'], root)
-            inputs[name] = entry['commit']
     write_json(root/'source-commits.json', inputs)
-    if 'lab' in inputs:
-        apply_lab_overlays(clones, root, inputs['lab'])
     recorder = Recorder(root/'evidence/bootstrap', env)
     for name, entry in lock['tools'].items():
         asset = t/'downloads'/entry['filename']
@@ -204,12 +166,8 @@ def main() -> int:
     recorder.run('rustup-disable-self-update', ['rustup', 'set', 'auto-self-update', 'disable'], root)
     recorder.run('rust-toolchain', ['rustup', 'toolchain', 'install', lock['rust_version'], '--profile', 'minimal', '--component', 'rustfmt,clippy,llvm-tools-preview', '--target', 'riscv32imafc-unknown-none-elf'], root)
     recorder.run('rust-default', ['rustup', 'default', lock['rust_version']], root)
-    for name in ('companion', 'website'):
-        if (root/name).exists():
-            recorder.run(f'{name}-frozen-install', ['pnpm', 'install', '--frozen-lockfile'], root/name)
-    for name in ('lab', 'raspberry', 'smartcard'):
-        if (root/name).exists():
-            recorder.run(f'{name}-setup', ['make', 'setup'], root/name)
+    recorder.run('product-frozen-install', ['pnpm', 'install', '--frozen-lockfile'], root/'nsealr')
+    recorder.run('pi-setup', ['make', 'setup'], root/'nsealr/apps/pi')
     versions = {}
     for name, command in {'python':['python3','--version'], 'pip':['python3','-m','pip','--version'], 'node':['node','--version'], 'npm':['npm','--version'], 'pnpm':['pnpm','--version'], 'rust':['rustc','--version'], 'cargo':['cargo','--version'], 'rustup':['rustup','--version'], 'cargo-deny':['cargo','deny','--version'], 'cargo-llvm-cov':['cargo','llvm-cov','--version'], 'cc':['cc','--version'], 'make':['make','--version'], 'git':['git','--version'], 'libc':['ldd','--version']}.items():
         versions[name] = subprocess.check_output(command, cwd=root, env=env, text=True, stderr=subprocess.STDOUT).splitlines()[0]
@@ -219,11 +177,11 @@ def main() -> int:
             raise ValueError(f'{name}: expected {expected}, got {versions[name]}')
     source_state = {}
     for name in inputs:
-        source = root/('firmware' if name == 'nsealr' else name)
+        source = root/name
         source_state[name] = {'status':subprocess.check_output(['git','status','--porcelain'],cwd=source,text=True), 'diff_sha256':hashlib.sha256(subprocess.check_output(['git','diff','--binary'],cwd=source)).hexdigest()}
     write_json(root/'source-state.json', source_state)
-    write_json(root/'evidence/environment-manifest.json', dict(candidate=candidate, created=utc(), versions=versions, kernel=platform.platform(), os_release=Path('/etc/os-release').read_text(), bootstrap_sha256=sha256(HERE/'bootstrap.py'), inputs_sha256=sha256(HERE/'inputs.json'), cold_destination=True, core_only=args.core_only))
-    print(f'Bootstrap complete. Run: python3 {root}/firmware/tools/baseline/run.py {root}', flush=True)
+    write_json(root/'evidence/environment-manifest.json', dict(candidate=candidate, created=utc(), versions=versions, kernel=platform.platform(), os_release=Path('/etc/os-release').read_text(), bootstrap_sha256=sha256(HERE/'bootstrap.py'), inputs_sha256=sha256(HERE/'inputs.json'), cold_destination=True, scope="single public product checkout; hardware and optional physical resources are separate", os_hermetic=False))
+    print(f'Bootstrap complete. Run: python3 {root}/nsealr/tools/baseline/run.py {root}', flush=True)
     return 0
 
 
