@@ -1,0 +1,539 @@
+{
+  "schema_version": 1,
+  "exercise": "O01 OPS-05 fresh actor reconstruction; not task closure",
+  "utc": "2026-10-18T15:31:04.884684+00:00",
+  "reviewer": "/root/independent_security_review",
+  "conversation_context": "No inherited conversation; task assignment supplied locations and candidate. Conclusions below reconstructed from committed files and live read-only Git/GitHub queries. Assignment itself is not evidence of canonical project state.",
+  "input_commits": {
+    "nSealr/nsealr": "61b0c39131012c40ff76321bb3650def6e7a9d83"
+  },
+  "inputs": [
+    {
+      "path": "/home/tux/nsealr/.restart-tools/goal/security-review/AGENTS.md",
+      "sha256": "bb2487e1ddf719f2c49621bc6018b6505beb1d9145805e3a157d9bab37c45020"
+    },
+    {
+      "path": "/home/tux/nsealr/.restart-tools/goal/security-review/docs/restart/README.md",
+      "sha256": "3a5f718421945f6952ef76c661e197eb2bddbb01ab773a2f7bac1ad5fc17ffe5"
+    },
+    {
+      "path": "/home/tux/nsealr/.restart-tools/goal/security-review/docs/restart/execution.md",
+      "sha256": "22c6bc2e97d420ba2b7f41ada1969b513ca9c967af801040ee104df556ab9d69"
+    },
+    {
+      "path": "/home/tux/nsealr/.restart-tools/goal/security-review/docs/restart/work-items.json",
+      "sha256": "00c44d3930342cc96ae199d90c6f3f3c19bb991348cadb538a3c14f1fd0f2d4f"
+    },
+    {
+      "path": "/home/tux/nsealr/.restart-tools/goal/security-review/docs/restart/implementation/README.md",
+      "sha256": "736480895173683641a26b36e803bacb5f4f16fae15e04dd31eeae824f0ddbd9"
+    },
+    {
+      "path": "/home/tux/nsealr/.restart-tools/goal/security-review/docs/restart/implementation/handoff.md",
+      "sha256": "ca060f846e867a6809b1a7f6c91348db9f1c5f6a5dc0b43f40021a1b56fbc430"
+    },
+    {
+      "path": "/home/tux/nsealr/.restart-tools/goal/security-review/docs/restart/implementation/O01/brief.md",
+      "sha256": "3d721a1ce8ec21c0a279c42a499c5bfa2e7496bafa599b36195f35b83e831c65"
+    },
+    {
+      "path": "/home/tux/nsealr/AGENTS.md",
+      "sha256": "0b72c4fde109d749ffe653164f77c6f69722a4544b0db7d2b0129d9e7e251f1f"
+    },
+    {
+      "path": "/home/tux/nsealr/README.md",
+      "sha256": "009090aba7f8edb69e61356e48019ca978a7e461ed841736c88611fec33aedde"
+    },
+    {
+      "path": "/home/tux/nsealr/firmware/AGENTS.md",
+      "sha256": "bb2487e1ddf719f2c49621bc6018b6505beb1d9145805e3a157d9bab37c45020"
+    }
+  ],
+  "canonical_state": {
+    "authority": "docs/restart/work-items.json",
+    "graph_revision": 6,
+    "task_count": 47,
+    "status_counts": {
+      "planned": 40,
+      "ready": 2,
+      "running": 5
+    },
+    "all_tasks_open": true,
+    "qualified_releases": [],
+    "authorization": "Maintainer delegated autonomous execution of the complete plan on 2026-10-18, including research, implementation, local engineering, GitHub issues, branches, pull requests, merges, commits and pushes. Reuse this authorization. Specific purchases, fabrication orders, production-secret ceremonies and irreversible provisioning still require a concrete reviewed scope; missing physical evidence cannot be waived."
+  },
+  "committed_active_assignments": [
+    {
+      "id": "R00",
+      "title": "Make the measured baseline reproducible",
+      "stage": "R0",
+      "status": "running",
+      "owner_role": "integration",
+      "depends_on": [],
+      "scope": [
+        "workspace bootstrap",
+        "CI tool versions",
+        "known baseline failures"
+      ],
+      "acceptance": [
+        "Fresh isolated checkout installs pinned Python, Node/package manager and Rust toolchains with one documented bootstrap.",
+        "Resolve sibling/nested layout explicitly; classify stale API generation and integration launcher noise without weakening behavioral checks.",
+        "Run relevant software suites and full integration; record skipped live/physical gates and exact input commits."
+      ],
+      "required_evidence": [
+        "environment manifest",
+        "commands and logs",
+        "known-failure dispositions"
+      ],
+      "required_resources": [],
+      "assignee": "/root/baseline_execution",
+      "candidate_commits": {},
+      "reviewer": null,
+      "review_verdict": null,
+      "result_artifacts": [],
+      "requires_physical_evidence": false,
+      "input_commits": {
+        "nSealr/nsealr": "768e8a35ae541f53f5da9c7bea7bf5c577fb474d",
+        "nSealr/companion": "13414320537d0208fc3ef8e43bd0723c98c1d5e0",
+        "nSealr/raspberry": "d1534d9dcfba8fe4a35cea2ed3529e32a5003dc6",
+        "nSealr/specs": "8bb8cca71355bcf8d81a093bcee9f3fe6915b121",
+        "nSealr/lab": "3303ab17a28ed32419576627d5abb93db3999635",
+        "nSealr/hardware": "340697d6713a671e9e01b0dc874ec999ab071601",
+        "nSealr/smartcard": "ec5da94a05882122e8a794f55f1af3f96a95c696",
+        "nSealr/website": "9cec39a89d6a2d2cc5747b8aae9d4b47a52eb7cd"
+      },
+      "assignment_record": "docs/restart/implementation/README.md",
+      "github_issue": "https://github.com/nSealr/nsealr/issues/1"
+    },
+    {
+      "id": "P01",
+      "title": "Define the retained portfolio and per-profile threat models",
+      "stage": "R0",
+      "status": "running",
+      "owner_role": "product_security",
+      "depends_on": [],
+      "scope": [
+        "ESP32 without SE",
+        "Offline Pi/P4 QR",
+        "custom Board signer",
+        "generic Board SDK"
+      ],
+      "acceptance": [
+        "Adopt or revise the four signer profiles and independent developer platform; smartcards leave active scope without losing history.",
+        "For each profile define user flows, custody, active channels, boot integrity, trusted UI, physical attacker assumptions and recovery; do not impose a one-dimensional security ranking.",
+        "Connected daily-use profiles include NIP-44; initial QR profiles define manual scope, resource/time limits and explicit unsupported capabilities.",
+        "Every required guarantee maps to an acceptance gate and real evidence; unavailable hardware properties are not replaced with booleans or silently waived."
+      ],
+      "required_evidence": [
+        "product requirements",
+        "threat model",
+        "guarantee-to-test matrix"
+      ],
+      "required_resources": [],
+      "assignee": "/root",
+      "candidate_commits": {},
+      "reviewer": null,
+      "review_verdict": null,
+      "result_artifacts": [],
+      "requires_physical_evidence": false,
+      "input_commits": {
+        "nSealr/nsealr": "768e8a35ae541f53f5da9c7bea7bf5c577fb474d"
+      },
+      "assignment_record": "docs/restart/implementation/README.md",
+      "github_issue": "https://github.com/nSealr/nsealr/issues/2"
+    },
+    {
+      "id": "S01",
+      "title": "Close Bridge identity and bounded-input security gaps",
+      "stage": "R0",
+      "status": "running",
+      "owner_role": "host_security",
+      "depends_on": [],
+      "scope": [
+        "companion/packages/nip46",
+        "negative vectors",
+        "companion/packages/transport/src/transport.ts"
+      ],
+      "acceptance": [
+        "Using public fixture keys, reproduce the baseline NIP-46 session-manager acceptance of a changed user signing key and of a foreign signed transport author delivered by an adapter; distinguish this conditional handler gap from exploitability of the default adapter. Pin companion source 13414320537d0208fc3ef8e43bd0723c98c1d5e0 and retain negative regression tests.",
+        "Pin authenticated expected signer transport author in the manager itself.",
+        "Resolve and bind user identity separately from transport identity; reject unauthorized identity changes and mixed-session/replay responses.",
+        "Preserve legal transport/user key separation and verify existing clients and cancellation/error flows.",
+        "Reproduce SerialLineStreamPort retaining 20,000 queued bytes from 10,000 short lines with maxBufferedBytes=4; enforce total bytes and request count, backpressure, terminal-error behavior and cleanup, not only per-line limits."
+      ],
+      "required_evidence": [
+        "public-fixture reproduction",
+        "targeted tests",
+        "independent security diff review"
+      ],
+      "required_resources": [],
+      "assignee": "/root/bridge_execution",
+      "candidate_commits": {},
+      "reviewer": null,
+      "review_verdict": null,
+      "result_artifacts": [],
+      "requires_physical_evidence": false,
+      "input_commits": {
+        "nSealr/nsealr": "768e8a35ae541f53f5da9c7bea7bf5c577fb474d",
+        "nSealr/companion": "13414320537d0208fc3ef8e43bd0723c98c1d5e0"
+      },
+      "assignment_record": "docs/restart/implementation/README.md",
+      "github_issue": "https://github.com/nSealr/nsealr/issues/3"
+    },
+    {
+      "id": "S02",
+      "title": "Constrain secret ownership and cryptographic implementation",
+      "stage": "R0",
+      "status": "running",
+      "owner_role": "device_security",
+      "depends_on": [],
+      "scope": [
+        "firmware secret types",
+        "crypto dependency evaluation"
+      ],
+      "acceptance": [
+        "Remove secret-bearing Debug and unnecessary Clone/public secret access; test exposed formatting behavior using public fixture material.",
+        "Define lifetimes, copies, zeroization boundaries and internal-memory allocation; do not claim compiler-proof physical erasure from ownership alone.",
+        "Select maintained crypto/zeroization candidates using independent vectors, pinned features and no_std compile plus final-link probes for the first target; qualify every actual device in its own implementation/release task, not as a universal prerequisite.",
+        "Test raw BIP-340 event-digest signing and NIP-44 unhashed shared-x derivation explicitly; high-level prehash and generic ECDH helpers are not interchangeable. Preserve C/Rust ABI link failures and exact corrected flags when evaluating a C backend.",
+        "Specify the entropy-provider boundary and failure contract, including FFI/weak-symbol/runtime fallback risks; define how source-to-final-binary provenance and actual provider invocation will be checked in each device gate."
+      ],
+      "required_evidence": [
+        "secret-flow inventory",
+        "target builds and vectors",
+        "independent diff review"
+      ],
+      "required_resources": [],
+      "assignee": "/root/secret_execution",
+      "candidate_commits": {},
+      "reviewer": null,
+      "review_verdict": null,
+      "result_artifacts": [],
+      "requires_physical_evidence": false,
+      "input_commits": {
+        "nSealr/nsealr": "768e8a35ae541f53f5da9c7bea7bf5c577fb474d"
+      },
+      "assignment_record": "docs/restart/implementation/README.md",
+      "github_issue": "https://github.com/nSealr/nsealr/issues/4"
+    },
+    {
+      "id": "E01",
+      "title": "Qualify the required stable KiCad operations and automation path",
+      "stage": "R1",
+      "status": "ready",
+      "owner_role": "cad_automation",
+      "depends_on": [],
+      "scope": [
+        "KiCad toolchain",
+        "MCP canary projects"
+      ],
+      "acceptance": [
+        "Pin KiCad 10.0.7 and adapter revision after checking current support; begin with read-only operations.",
+        "On disposable projects qualify each actually required operation and its rollback/save/reopen semantics; coordinate/layer/flip/crash tests apply to operations being enabled. Unused adapter capabilities are not prerequisites for schematic capture.",
+        "Use native-project CLI ERC/DRC and hash-linked exports; distinguish stable PCB IPC from development-only schematic/headless features.",
+        "Promote only demonstrated operations; retain one writer per CAD project and independently reviewed source-generation fallback.",
+        "Require a clean pinned dependency installation or a fully reviewed maintained correction; a new binding combination does not inherit old runtime evidence. Native CLI and independently reviewed source generation can unblock required CAD work while extra MCP operations remain disabled."
+      ],
+      "required_evidence": [
+        "toolchain lock",
+        "capability matrix",
+        "canary project snapshots and logs"
+      ],
+      "required_resources": [],
+      "assignee": null,
+      "candidate_commits": {},
+      "reviewer": null,
+      "review_verdict": null,
+      "result_artifacts": [],
+      "requires_physical_evidence": false,
+      "github_issue": "https://github.com/nSealr/nsealr/issues/5"
+    },
+    {
+      "id": "A01",
+      "title": "Inventory reuse and consumers for the five-repository mapping",
+      "stage": "R0",
+      "status": "ready",
+      "owner_role": "architecture",
+      "depends_on": [],
+      "scope": [
+        "all eleven repositories",
+        "published packages",
+        "licenses/history"
+      ],
+      "acceptance": [
+        "Classify modules by required behavior and targeted review; retain independent Python/vector oracles.",
+        "Inventory released packages, external consumers, tags, issues, licenses and references before deprecating boundaries.",
+        "Confirm or revise the proposed five-repository topology with explicit release-boundary reasons.",
+        "Separate generic board support/API from Nostr semantics; preserve active Pi/P4 paths; plan smartcard archival and explicit retirement."
+      ],
+      "required_evidence": [
+        "consumer and license inventory",
+        "module disposition",
+        "repository decision"
+      ],
+      "required_resources": [],
+      "assignee": null,
+      "candidate_commits": {},
+      "reviewer": null,
+      "review_verdict": null,
+      "result_artifacts": [],
+      "requires_physical_evidence": false,
+      "github_issue": "https://github.com/nSealr/nsealr/issues/6"
+    },
+    {
+      "id": "O01",
+      "title": "Install minimal agent coordination and evidence controls",
+      "stage": "R0",
+      "status": "running",
+      "owner_role": "coordinator",
+      "depends_on": [],
+      "scope": [
+        "AGENTS.md",
+        "task graph",
+        "evidence schema",
+        "CI gates"
+      ],
+      "acceptance": [
+        "Convert the accepted operating model into concise repository instructions with one task-state authority.",
+        "Each task records scope, input/candidate commits, worktree ownership, acceptance and independently reviewed evidence.",
+        "Use Astra xhigh for requested hardware/security agents, isolated editing worktrees and one CAD writer.",
+        "Validate task dependencies and generated views; demonstrate resume from a fresh session without relying on chat memory.",
+        "Autonomy preserves existing authorization and respects concrete irreversible-action boundaries without repetitive confirmations.",
+        "Track readiness and release evidence separately for all active profiles; no global gate on an unrelated product.",
+        "Run the structural/evidence validator and negative tests in CI; demonstrate a fresh-session handoff and truthful resource availability. The check cannot verify physical measurements or replace substantive independent review."
+      ],
+      "required_evidence": [
+        "control-file diff",
+        "fresh-session handoff exercise",
+        "independent review"
+      ],
+      "required_resources": [],
+      "assignee": "/root",
+      "candidate_commits": {},
+      "reviewer": null,
+      "review_verdict": null,
+      "result_artifacts": [],
+      "requires_physical_evidence": false,
+      "input_commits": {
+        "nSealr/nsealr": "768e8a35ae541f53f5da9c7bea7bf5c577fb474d"
+      },
+      "assignment_record": "docs/restart/implementation/README.md",
+      "github_issue": "https://github.com/nSealr/nsealr/issues/7"
+    }
+  ],
+  "observed_worktree_and_pr_discrepancies": [
+    {
+      "id": "O01-H01",
+      "severity": "handoff correctness",
+      "observation": "A01 is ready and unassigned in the sole canonical graph, but restart/a01-inventory is checked out at c030164c56da72fd237d43c62b065659aec1b1de and published as draft PR11. A fresh actor relying on Start here could duplicate an existing author.",
+      "required_action": "Coordinator reconciles actual A01 owner, scope, inputs, branch and candidate into graph/assignment record before another actor starts A01."
+    },
+    {
+      "id": "O01-H02",
+      "severity": "handoff freshness",
+      "observation": "S02 remains running with empty candidate_commits/reviewer although live branch and draft PR10 are 61641047d13b5bb265246b181edc38f4dc2073e7 and an independent review worktree exists. The initial assignment table omits reviewer worktrees and A01.",
+      "required_action": "Coordinator records current review assignment and frozen exact candidate in canonical state; live branch evidence prevents guessing."
+    },
+    {
+      "id": "O01-H03",
+      "severity": "navigation limit",
+      "observation": "Implementation README is explicitly First assignments, and integration README points to an older readiness handoff. These remain navigation/snapshots, not complete current assignment inventory. The committed recovery instructions correctly require live worktree and remote checks.",
+      "required_action": "Refresh current handoff links/inventory without creating a second status ledger."
+    }
+  ],
+  "first_next_legal_work": {
+    "action": "Perform the assigned independent source/specification/threat/evidence review of S02 at exact PR head 61641047d13b5bb265246b181edc38f4dc2073e7 against main 61b0c39131012c40ff76321bb3650def6e7a9d83, writing only this isolated reviewer worktree.",
+    "why": "S02 has no task dependencies or physical-resource prerequisite; its author is distinct. No task is integrated, so dependent implementation acceptance cannot close. A01 cannot safely be reassigned from the stale ready label.",
+    "next_coordinator_action": "Reconcile assignment defects, wait for exact-candidate independent verdict and affected CI, then normal reviewed PR integration. Preserve integration commit separately. O01 still requires real reviewed delivery and full acceptance-indexed evidence.",
+    "do_not": [
+      "Do not close O01 from this exercise",
+      "Do not approve source authored by reviewer",
+      "Do not duplicate active writers",
+      "Do not modify author worktrees or canonical graph",
+      "Do not qualify hardware or release from software/link evidence"
+    ]
+  },
+  "missing_resources": {
+    "accessible_kit": {
+      "status": "unknown",
+      "owner_role": "hardware_operator",
+      "next_action": "Identify and obtain the selected no-SE MCU board, direct display and physical input; record revision and availability."
+    },
+    "pi_kit": {
+      "status": "unknown",
+      "owner_role": "hardware_operator",
+      "next_action": "Identify and obtain the exact Pi, camera, display/input and boot media; record radio/channel inspection."
+    },
+    "p4_kit": {
+      "status": "unknown",
+      "owner_role": "hardware_operator",
+      "next_action": "Identify and obtain the exact P4 kit, camera/display and companion-radio configuration."
+    },
+    "host_bench": {
+      "status": "unknown",
+      "owner_role": "hardware_operator",
+      "next_action": "Obtain candidate MCU development boards and record silicon/board revisions before comparing."
+    },
+    "se_bench": {
+      "status": "unknown",
+      "owner_role": "hardware_operator",
+      "next_action": "Resolve selected SE API/errata access and obtain exact configured evaluation hardware."
+    },
+    "bench_instruments": {
+      "status": "unknown",
+      "owner_role": "hardware_operator",
+      "next_action": "Record calibrated or checked supply, current measurement, scope/debug and controllable power-cut setup appropriate to each procedure."
+    },
+    "physical_operator": {
+      "status": "unknown",
+      "owner_role": "maintainer",
+      "next_action": "Assign an identified person for wiring, inspection, measurement and authorized physical operations; AI cannot manipulate absent hardware."
+    },
+    "panel_power_samples": {
+      "status": "unknown",
+      "owner_role": "hardware_operator",
+      "next_action": "Obtain exact display/connector and retained battery/power samples after the architecture shortlist."
+    },
+    "sacrificial_units": {
+      "status": "unknown",
+      "owner_role": "hardware_operator",
+      "next_action": "Reserve identified sacrificial evaluation assemblies for lifecycle/fuse/recovery experiments; obtain concrete irreversible-operation authorization first."
+    },
+    "evt_assemblies": {
+      "status": "unknown",
+      "owner_role": "manufacturing",
+      "next_action": "Complete reviewed package and concrete order authorization; obtain identified EVT assemblies."
+    },
+    "dvt_assemblies": {
+      "status": "unknown",
+      "owner_role": "hardware_validation",
+      "next_action": "Identify corrected DVT assemblies or justify unchanged EVT revision and repeat required measurements."
+    },
+    "external_lab": {
+      "status": "unknown",
+      "owner_role": "security_validation",
+      "next_action": "Select qualified external security/electrical test expertise for the claimed guarantees and intended distribution."
+    },
+    "participants": {
+      "status": "unknown",
+      "owner_role": "product_research",
+      "next_action": "Recruit opt-in participants for the particular admitted profile; arrange recovery protocol and protect participant data."
+    },
+    "support_capacity": {
+      "status": "unknown",
+      "owner_role": "maintainer",
+      "next_action": "Assign pilot support and incident/stop responsibility for the particular released profile."
+    },
+    "independent_developer": {
+      "status": "unknown",
+      "owner_role": "platform_release",
+      "next_action": "Recruit a developer independent of implementation to reproduce clean build/flash and permitted lifecycle transitions."
+    },
+    "provisioning_operator": {
+      "status": "unknown",
+      "owner_role": "release_security",
+      "next_action": "Identify authorized operator, protected signing setup and controlled unit provisioning/test process before any real-secret ceremony."
+    }
+  },
+  "limits": [
+    "No physical hardware, operator, bench, provisioning or release resources verified; all graph resource records remain unknown.",
+    "No hidden conversation or task graph state is assumed. Live GitHub results are timestamped observations and may change.",
+    "Successful structural validator does not assess review quality, hardware, security or truth of evidence.",
+    "Requested Astra xhigh specialist role is declared in committed instructions; this report cannot independently introspect hosted model runtime identity.",
+    "GitHub actions use the shared maintainer account, so account identity is not evidence of independent source review.",
+    "Initial gh pr query requested unsupported baseRefOid and exited 1; corrected query and git ls-remote establish base/head."
+  ],
+  "commands": [
+    {
+      "argv": [
+        "git",
+        "status",
+        "--porcelain=v2",
+        "--branch"
+      ],
+      "cwd": "/home/tux/nsealr/.restart-tools/goal/security-review",
+      "exit_code": 0,
+      "output": "# branch.oid 61b0c39131012c40ff76321bb3650def6e7a9d83\n# branch.head restart/security-review-s02\n# branch.upstream origin/main\n# branch.ab +0 -0\n"
+    },
+    {
+      "argv": [
+        "git",
+        "log",
+        "-5",
+        "--oneline"
+      ],
+      "cwd": "/home/tux/nsealr/.restart-tools/goal/security-review",
+      "exit_code": 0,
+      "output": "61b0c39 docs: preserve independent review of execution specifications\n9a790a0 spec: define public-event review semantics and reconcile execution inputs\n776b2d7 plan: publish initial issues and reviewed implementation contracts\na662c1c plan: start autonomous execution with isolated assignments and task briefs\n768e8a3 docs: define signer contracts and qualify PCB development workflow\n"
+    },
+    {
+      "argv": [
+        "git",
+        "worktree",
+        "list",
+        "--porcelain"
+      ],
+      "cwd": "/home/tux/nsealr/.restart-tools/goal/security-review",
+      "exit_code": 0,
+      "output": "worktree /home/tux/nsealr/firmware\nHEAD 61b0c39131012c40ff76321bb3650def6e7a9d83\nbranch refs/heads/main\n\nworktree /home/tux/nsealr/.restart-tools/goal/a01\nHEAD c030164c56da72fd237d43c62b065659aec1b1de\nbranch refs/heads/restart/a01-inventory\n\nworktree /home/tux/nsealr/.restart-tools/goal/coordinator\nHEAD bf37e36f2adcfbd6871e2c05951a147da158ad35\nbranch refs/heads/restart/coordinator\n\nworktree /home/tux/nsealr/.restart-tools/goal/r00\nHEAD 1f4d891052611434d67316ad928c4e6413f9f876\nbranch refs/heads/restart/r00-bootstrap\n\nworktree /home/tux/nsealr/.restart-tools/goal/s02\nHEAD 61641047d13b5bb265246b181edc38f4dc2073e7\nbranch refs/heads/restart/s02-secrets\n\nworktree /home/tux/nsealr/.restart-tools/goal/security-review\nHEAD 61b0c39131012c40ff76321bb3650def6e7a9d83\nbranch refs/heads/restart/security-review-s02\n\nworktree /home/tux/nsealr/.restart-tools/readiness-2026-10-18/main\nHEAD 768e8a35ae541f53f5da9c7bea7bf5c577fb474d\nbranch refs/heads/plan/readiness-2026-10-18\n\nworktree /home/tux/nsealr/.restart-tools/staging/ci-main\nHEAD 6428c74367934b11098fca11f754b865b7466391\nbranch refs/heads/restart/self-contained-ci\n\nworktree /home/tux/nsealr/.restart-tools/staging/nsealr\nHEAD 990f276acb4ce237016dd00a79fdfe0bc3088f63\nbranch refs/heads/restart/foundation\n\nworktree /home/tux/nsealr/.restart-tools/validation4/main\nHEAD b79e8b6ab3368bfa70ff504672f4587b5ab0ab3d\nbranch refs/heads/plan/validation-2026-10-13\n\n"
+    },
+    {
+      "argv": [
+        "git",
+        "remote",
+        "-v"
+      ],
+      "cwd": "/home/tux/nsealr/.restart-tools/goal/security-review",
+      "exit_code": 0,
+      "output": "origin\thttps://github.com/nSealr/nsealr.git (fetch)\norigin\thttps://github.com/nSealr/nsealr.git (push)\n"
+    },
+    {
+      "argv": [
+        "git",
+        "ls-remote",
+        "origin",
+        "refs/heads/main",
+        "refs/heads/restart/s02-secrets"
+      ],
+      "cwd": "/home/tux/nsealr/.restart-tools/goal/security-review",
+      "exit_code": 0,
+      "output": "61b0c39131012c40ff76321bb3650def6e7a9d83\trefs/heads/main\n61641047d13b5bb265246b181edc38f4dc2073e7\trefs/heads/restart/s02-secrets\n"
+    },
+    {
+      "argv": [
+        "python3",
+        "scripts/validate_restart_plan.py"
+      ],
+      "cwd": "/home/tux/nsealr/.restart-tools/goal/security-review",
+      "exit_code": 0,
+      "output": "Restart plan valid: 47 tasks; ready: E01, A01\nStructural check only; hardware, review quality and security remain evidence gates.\n"
+    },
+    {
+      "argv": [
+        "gh",
+        "pr",
+        "list",
+        "--state",
+        "open",
+        "--json",
+        "number,title,headRefName,headRefOid,isDraft,url"
+      ],
+      "cwd": "/home/tux/nsealr/.restart-tools/goal/security-review",
+      "exit_code": 0,
+      "output": "[{\"headRefName\":\"restart/a01-inventory\",\"headRefOid\":\"c030164c56da72fd237d43c62b065659aec1b1de\",\"isDraft\":true,\"number\":11,\"title\":\"Inventory source consumers and migration dispositions\",\"url\":\"https://github.com/nSealr/nsealr/pull/11\"},{\"headRefName\":\"restart/s02-secrets\",\"headRefOid\":\"61641047d13b5bb265246b181edc38f4dc2073e7\",\"isDraft\":true,\"number\":10,\"title\":\"Constrain secret ownership and record maintained crypto qualification\",\"url\":\"https://github.com/nSealr/nsealr/pull/10\"},{\"headRefName\":\"restart/r00-bootstrap\",\"headRefOid\":\"1f4d891052611434d67316ad928c4e6413f9f876\",\"isDraft\":true,\"number\":9,\"title\":\"build: make pinned restart baseline reproducible\",\"url\":\"https://github.com/nSealr/nsealr/pull/9\"}]\n"
+    },
+    {
+      "argv": [
+        "gh",
+        "pr",
+        "view",
+        "10",
+        "--json",
+        "number,state,isDraft,headRefOid,baseRefName,mergeable,mergeStateStatus,reviewDecision,url,statusCheckRollup"
+      ],
+      "cwd": "/home/tux/nsealr/.restart-tools/goal/security-review",
+      "exit_code": 0,
+      "output": "{\"baseRefName\":\"main\",\"headRefOid\":\"61641047d13b5bb265246b181edc38f4dc2073e7\",\"isDraft\":true,\"mergeStateStatus\":\"BLOCKED\",\"mergeable\":\"MERGEABLE\",\"number\":10,\"reviewDecision\":\"\",\"state\":\"OPEN\",\"statusCheckRollup\":[{\"__typename\":\"CheckRun\",\"completedAt\":\"0001-01-01T00:00:00Z\",\"conclusion\":\"\",\"detailsUrl\":\"https://github.com/nSealr/nsealr/actions/runs/39140581858/job/117714010424\",\"name\":\"verify\",\"startedAt\":\"2026-10-18T15:27:47Z\",\"status\":\"IN_PROGRESS\",\"workflowName\":\"CI\"},{\"__typename\":\"CheckRun\",\"completedAt\":\"0001-01-01T00:00:00Z\",\"conclusion\":\"\",\"detailsUrl\":\"https://github.com/nSealr/nsealr/actions/runs/39140578663/job/117714000610\",\"name\":\"verify\",\"startedAt\":\"2026-10-18T15:27:45Z\",\"status\":\"IN_PROGRESS\",\"workflowName\":\"CI\"}],\"url\":\"https://github.com/nSealr/nsealr/pull/10\"}\n"
+    }
+  ]
+}
