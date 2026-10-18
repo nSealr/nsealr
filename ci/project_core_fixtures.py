@@ -28,7 +28,7 @@ def project(output):
     functions=[]
     for name,source in [('basic','kind-1-basic'),('tagged','kind-1-tags')]:
         review=load('vectors/review-screens/'+source+'.json')['screen_review']
-        functions.append('pub fn '+name+'_trusted_review_request() -> TrustedReviewRequest { trusted_review_request('+quote(review['request_id'])+','+quote(review['approval_digest'])+',&'+pages(review['pages'])+') }')
+        functions.append('pub fn '+name+'_trusted_review_request() -> TrustedReviewRequest { trusted_review_request('+quote(review['request_id'])+','+name.upper()+'_REVIEW_SCREEN_APPROVAL_DIGEST,&'+pages(review['pages'])+') }')
     first=load('vectors/review-detail-pages/kind-1-control-escapes-t-display-s3.json')
     functions.append('pub fn t_display_s3_review_limits() -> crate::review::display::ReviewDisplayLimits { crate::review::display::'+limits(first['limits'])+' }')
     (output/'review-fixtures.rs').write_text('\n'.join(functions))
