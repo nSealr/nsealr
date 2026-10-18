@@ -1,0 +1,102 @@
+{
+  "schema_version": 1,
+  "task": "S01",
+  "input_commits": {
+    "nSealr/nsealr": "9194e292aa8a3176874cc9bf5814cefc26b6fe1a",
+    "nSealr/companion": "13414320537d0208fc3ef8e43bd0723c98c1d5e0",
+    "nSealr/specs": "8bb8cca71355bcf8d81a093bcee9f3fe6915b121",
+    "nSealr/lab": "3303ab17a28ed32419576627d5abb93db3999635"
+  },
+  "candidate_commits": {
+    "nSealr/nsealr": "f4c35c1c455528501c91747eb503dc78b4050f9d",
+    "nSealr/companion": "678796900e462f5504e47fe934e2e5f23d85824f",
+    "nSealr/specs": "45f8b6ff1123f3f55be4ce457fd1008e91043cc2"
+  },
+  "acceptance": [
+    "Using public fixture keys, reproduce the baseline NIP-46 session-manager acceptance of a changed user signing key and of a foreign signed transport author delivered by an adapter; distinguish this conditional handler gap from exploitability of the default adapter. Pin companion source 13414320537d0208fc3ef8e43bd0723c98c1d5e0 and retain negative regression tests.",
+    "Pin authenticated expected signer transport author in the manager itself.",
+    "Resolve and bind user identity separately from transport identity; reject unauthorized identity changes and mixed-session/replay responses.",
+    "Preserve legal transport/user key separation and verify existing clients and cancellation/error flows.",
+    "Reproduce SerialLineStreamPort retaining 20,000 queued bytes from 10,000 short lines with maxBufferedBytes=4; enforce total bytes and request count, backpressure, terminal-error behavior and cleanup, not only per-line limits."
+  ],
+  "review": {
+    "assignee": "/root/bridge_execution",
+    "reviewer": "/root/independent_controls_review",
+    "verdict": "pass"
+  },
+  "acceptance_results": [
+    {
+      "index": 0,
+      "outcome": "pass",
+      "proof_kind": "executed_test",
+      "evidence_paths": [
+        "docs/restart/implementation/S01/source-evidence/companion/docs/restart/S01/evidence/baseline-results.json",
+        "docs/restart/implementation/S01/source-evidence/companion/docs/restart/S01/independent-review/final/review-result.json",
+        "docs/restart/implementation/reviews/S01-provenance/composite-boundary.json",
+        "docs/restart/implementation/reviews/S01-provenance/review.json",
+        "docs/restart/implementation/S01/provenance-followup-execution.json",
+        "docs/restart/implementation/S01/adoption-correspondence.json"
+      ]
+    },
+    {
+      "index": 1,
+      "outcome": "pass",
+      "proof_kind": "executed_test",
+      "evidence_paths": [
+        "docs/restart/implementation/S01/source-evidence/companion/docs/restart/S01/independent-review/final/review-result.json",
+        "docs/restart/implementation/S01/source-evidence/companion/docs/restart/S01/independent-review/final/adversarial.json",
+        "docs/restart/implementation/reviews/S01-provenance/composite-boundary.json",
+        "docs/restart/implementation/reviews/S01-provenance/review.json",
+        "docs/restart/implementation/S01/provenance-followup-execution.json",
+        "docs/restart/implementation/S01/adoption-correspondence.json"
+      ]
+    },
+    {
+      "index": 2,
+      "outcome": "pass",
+      "proof_kind": "executed_test",
+      "evidence_paths": [
+        "docs/restart/implementation/S01/source-evidence/companion/docs/restart/S01/independent-review/final/review-result.json",
+        "docs/restart/implementation/S01/source-evidence/companion/docs/restart/S01/independent-review/specs/review-result.json",
+        "docs/restart/implementation/reviews/S01-provenance/composite-boundary.json",
+        "docs/restart/implementation/reviews/S01-provenance/review.json",
+        "docs/restart/implementation/S01/provenance-followup-execution.json",
+        "docs/restart/implementation/S01/adoption-correspondence.json"
+      ]
+    },
+    {
+      "index": 3,
+      "outcome": "pass",
+      "proof_kind": "executed_test",
+      "evidence_paths": [
+        "docs/restart/implementation/S01/source-evidence/companion/docs/restart/S01/independent-review/final/review-result.json",
+        "docs/restart/implementation/S01/source-evidence/companion/docs/restart/S01/independent-review/specs/review-result.json",
+        "docs/restart/implementation/reviews/S01-provenance/composite-boundary.json",
+        "docs/restart/implementation/reviews/S01-provenance/review.json",
+        "docs/restart/implementation/S01/provenance-followup-execution.json",
+        "docs/restart/implementation/S01/adoption-correspondence.json"
+      ]
+    },
+    {
+      "index": 4,
+      "outcome": "pass",
+      "proof_kind": "executed_test",
+      "evidence_paths": [
+        "docs/restart/implementation/S01/source-evidence/companion/docs/restart/S01/evidence/baseline-results.json",
+        "docs/restart/implementation/S01/source-evidence/companion/docs/restart/S01/independent-review/final/review-result.json",
+        "docs/restart/implementation/S01/source-evidence/companion/docs/restart/S01/independent-review/final/lifecycle.json",
+        "docs/restart/implementation/reviews/S01-provenance/composite-boundary.json",
+        "docs/restart/implementation/reviews/S01-provenance/review.json",
+        "docs/restart/implementation/S01/provenance-followup-execution.json",
+        "docs/restart/implementation/S01/adoption-correspondence.json"
+      ]
+    }
+  ],
+  "recorded_utc": "2026-10-18T17:22:48.199056+00:00",
+  "review_composition": "Original distinct Bridge/specs security reviews plus exact byte correspondence, original integration source audit and current distinct provenance correction review. No replacement or rerun of unchanged prior campaigns is claimed.",
+  "integration_reconciliation": "docs/restart/implementation/S01/adoption-correspondence.json",
+  "limits": [
+    "Verified candidate only; actual adoption/mainCI and later graph lifecycle record remain required.",
+    "No third-party client/browser/hardware release, production custody or qualified physical entropy/UI/clock."
+  ]
+}
