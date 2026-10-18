@@ -46,7 +46,11 @@ class Recorder:
         with log.open('w') as stream:
             stream.write(json.dumps(result) + '\n')
             stream.flush()
-            code = subprocess.run(argv, cwd=cwd, env=self.env, stdout=stream, stderr=subprocess.STDOUT).returncode
+            with subprocess.Popen(argv, cwd=cwd, env=self.env, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True) as process:
+                for line in process.stdout:
+                    stream.write(line)
+                    print(line, end="", flush=True)
+                code = process.wait()
         result.update(ended=utc(), exit_code=code, sha256=sha256(log))
         self.results.append(result)
         write_json(self.directory / 'commands.json', self.results)
