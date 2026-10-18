@@ -106,6 +106,18 @@ class RecoveryTests(unittest.TestCase):
             with self.assertRaisesRegex(PreflightError, "evidence tag mismatch"):
                 admission.public_refs(self.manifest, self.root, self.root / "public")
 
+    def test_remote_main_advance_rejected_even_when_selected_is_ancestor(self):
+        self.manifest["sources"][0].update(visibility="public", require_current_main=True)
+        (self.repo / "later.txt").write_text("later source must be reconciled\n")
+        git(self.repo, "add", ".")
+        git(self.repo, "commit", "-qm", "later source")
+        later = git(self.repo, "rev-parse", "HEAD").decode().strip()
+        git(self.repo, "merge-base", "--is-ancestor", self.pin, later)
+        remote = (later + "\trefs/heads/main\n").encode()
+        with patch.object(admission.Recorder, "run", return_value=remote):
+            with self.assertRaisesRegex(PreflightError, "frozen public main advanced"):
+                admission.public_refs(self.manifest, self.root, self.root / "public")
+
     def overlay(self):
         patch_bytes = b"synthetic patch identity; not applied by this command\n"
         record = {"repository": "example/source", "commit": self.pin, "patch_sha256": digest(patch_bytes),

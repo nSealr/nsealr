@@ -170,6 +170,8 @@ def public_refs(manifest: dict, source_root: Path, output: Path) -> dict:
             main = remote.get("refs/heads/main")
             if not main:
                 raise PreflightError("public main reference unavailable")
+            if entry.get("require_current_main") and main != source.commit:
+                raise PreflightError(f"frozen public main advanced or changed: {source.name}; reconcile before import")
             result = subprocess.run(["git", "-C", str(source.repo), "merge-base", "--is-ancestor", source.commit, main], capture_output=True)
             if result.returncode:
                 raise PreflightError(f"selected public source not established in remote main: {source.name}")
@@ -182,11 +184,13 @@ def public_refs(manifest: dict, source_root: Path, output: Path) -> dict:
                     matched.append(tag)
             rows.append({"source": source.name, "repository": entry["repository"], "selected_commit": source.commit,
                          "remote_main": main, "selected_in_remote_main_history": True,
+                         "require_current_main": entry.get("require_current_main", False),
+                         "remote_main_equals_selected": main == source.commit,
                          "reviewed_evidence_tags": matched, "remote_refs_sha256": digest(raw)})
         finally:
             source.close()
     summary = {"observed_utc": now(), "public_sources": rows, "commands_sha256": digest(canonical(recorder.rows)),
-               "scope": "Read-only public ref reconciliation; evidence tags identify preserved reviews, not product releases."}
+               "scope": "Read-only public refs; required current mains must equal exact pins. Recheck before/after eventual import; this observation does not authorize import. Evidence tags preserve reviews, not product releases."}
     write_private(output / "summary.json", canonical(summary))
     return summary
 

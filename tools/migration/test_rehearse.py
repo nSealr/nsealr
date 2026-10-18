@@ -93,6 +93,11 @@ class PreflightTests(unittest.TestCase):
         self.assertEqual(before["files"], after["files"])
         self.assertTrue(after["sources"][0]["dirty_worktree_observed"])
 
+    def test_historical_directory_link_resolves_to_committed_descendants(self):
+        links = migration.markdown_links("evidence/notes.md", b"[directory](../vectors/)\n", {"vectors/.hidden.json": {}})
+        self.assertTrue(links[0]["exists_at_inventory_commit"])
+        self.assertEqual(links[0]["target_kind"], "directory")
+
     def test_tampered_frozen_artifact_fails(self):
         self.put("evidence/check.log", b"changed evidence")
         self.commit()

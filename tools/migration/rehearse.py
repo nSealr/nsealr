@@ -186,8 +186,11 @@ def markdown_links(path: str, data: bytes, files: dict) -> list[dict]:
             continue
         resolved = posixpath.normpath(posixpath.join(posixpath.dirname(path), unquote(parsed.path)))
         safe = not resolved.startswith(("/", "../")) and resolved != ".."
+        is_file = resolved in files
+        is_directory = any(p.startswith(resolved.rstrip("/") + "/") for p in files)
         output.append({"target": target, "resolved_path": resolved,
-                       "exists_at_inventory_commit": safe and resolved in files,
+                       "exists_at_inventory_commit": safe and (is_file or is_directory),
+                       "target_kind": "file" if is_file else "directory" if is_directory else "missing",
                        "interpretation": "historical link; unresolved origins require explicit source/reference reconciliation"})
     return output
 
@@ -264,6 +267,8 @@ def validate_manifest(manifest: dict) -> None:
             raise PreflightError("source name must be a safe single identifier")
         if source.get("visibility") not in {"public", "private"}:
             raise PreflightError("source visibility must be explicit")
+        if "require_current_main" in source and not isinstance(source["require_current_main"], bool):
+            raise PreflightError("current-main requirement must be a boolean")
         if source["visibility"] == "private" and source["default"]["action"] != "exclude":
             raise PreflightError("private sources require default exclusion")
         for rule in [*source["rules"], source["default"]]:
