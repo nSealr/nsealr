@@ -1,0 +1,474 @@
+{"label": "full-integration", "argv": ["make", "integration"], "cwd": "/home/tux/nsealr/.restart-tools/goal/s01-integration/docs/restart/implementation/S01/.work/runtime/lab", "started": "2026-10-18T16:23:48.062737+00:00", "log": "08-full-integration.log"}
+python3 -m venv .venv
+.venv/bin/python -m pip install --disable-pip-version-check -r requirements.txt
+Looking in links: /home/tux/nsealr/.restart-tools/goal/s01-integration/docs/restart/implementation/S01/.work/runtime/.tools/wheels
+Requirement already satisfied: PyYAML==6.0.3 in ./.venv/lib/python3.12/site-packages (from -r requirements.txt (line 1)) (6.0.3)
+npm exec --yes --package=pnpm@10.33.4 -- make integration-pnpm
+make[1]: Entering directory '/home/tux/nsealr/.restart-tools/goal/s01-integration/docs/restart/implementation/S01/.work/runtime/lab'
+.venv/bin/python scripts/check_fixture_snapshots.py
+nSealr specs fixture snapshot check passed (546 files)
+.venv/bin/python scripts/integration_feature_matrix.py
+nSealr cross-repo feature matrix validation passed
+.venv/bin/python scripts/integration_companion_fixtures.py
+
+> @nsealr/companion-workspace@0.1.0 build /home/tux/nsealr/.restart-tools/goal/s01-integration/docs/restart/implementation/S01/.work/runtime/companion
+> node scripts/build_packages.mjs
+
+nSealr package build artifacts generated
+nSealr cross-repo companion fixture verification passed
+.venv/bin/python scripts/integration_companion_policy_cli.py
+
+> @nsealr/companion-workspace@0.1.0 build /home/tux/nsealr/.restart-tools/goal/s01-integration/docs/restart/implementation/S01/.work/runtime/companion
+> node scripts/build_packages.mjs
+
+nSealr package build artifacts generated
+
+> @nsealr/companion-workspace@0.1.0 nsealr /home/tux/nsealr/.restart-tools/goal/s01-integration/docs/restart/implementation/S01/.work/runtime/companion
+> pnpm --filter @nsealr/cli nsealr policy review-change --proposal /home/tux/nsealr/.restart-tools/goal/s01-integration/docs/restart/implementation/S01/.work/runtime/.tools/tmp/nsealr-policy-cli-cross-repo-9a23po8a/custom-hardware-wallet-enable-kind-1-automation-proposal.json --account /home/tux/nsealr/.restart-tools/goal/s01-integration/docs/restart/implementation/S01/.work/runtime/specs/vectors/accounts/custom-hardware-wallet-slot-0.json --current-policy /home/tux/nsealr/.restart-tools/goal/s01-integration/docs/restart/implementation/S01/.work/runtime/specs/vectors/policies/manual-only-persistent-device.json --proposed-policy /home/tux/nsealr/.restart-tools/goal/s01-integration/docs/restart/implementation/S01/.work/runtime/specs/vectors/policies/scoped-automation-daily-use.json --grant /home/tux/nsealr/.restart-tools/goal/s01-integration/docs/restart/implementation/S01/.work/runtime/specs/vectors/grants/custom-hardware-wallet-kind-1-session.json --out /home/tux/nsealr/.restart-tools/goal/s01-integration/docs/restart/implementation/S01/.work/runtime/.tools/tmp/nsealr-policy-cli-cross-repo-9a23po8a/custom-hardware-wallet-enable-kind-1-automation-review.json
+
+
+> @nsealr/cli@0.1.0 nsealr /home/tux/nsealr/.restart-tools/goal/s01-integration/docs/restart/implementation/S01/.work/runtime/companion/apps/cli
+> node --disable-warning=DEP0205 --import tsx src/index.ts policy review-change --proposal /home/tux/nsealr/.restart-tools/goal/s01-integration/docs/restart/implementation/S01/.work/runtime/.tools/tmp/nsealr-policy-cli-cross-repo-9a23po8a/custom-hardware-wallet-enable-kind-1-automation-proposal.json --account /home/tux/nsealr/.restart-tools/goal/s01-integration/docs/restart/implementation/S01/.work/runtime/specs/vectors/accounts/custom-hardware-wallet-slot-0.json --current-policy /home/tux/nsealr/.restart-tools/goal/s01-integration/docs/restart/implementation/S01/.work/runtime/specs/vectors/policies/manual-only-persistent-device.json --proposed-policy /home/tux/nsealr/.restart-tools/goal/s01-integration/docs/restart/implementation/S01/.work/runtime/specs/vectors/policies/scoped-automation-daily-use.json --grant /home/tux/nsealr/.restart-tools/goal/s01-integration/docs/restart/implementation/S01/.work/runtime/specs/vectors/grants/custom-hardware-wallet-kind-1-session.json --out /home/tux/nsealr/.restart-tools/goal/s01-integration/docs/restart/implementation/S01/.work/runtime/.tools/tmp/nsealr-policy-cli-cross-repo-9a23po8a/custom-hardware-wallet-enable-kind-1-automation-review.json
+
+
+> @nsealr/companion-workspace@0.1.0 nsealr /home/tux/nsealr/.restart-tools/goal/s01-integration/docs/restart/implementation/S01/.work/runtime/companion
+> pnpm --filter @nsealr/cli nsealr policy review-change --proposal /home/tux/nsealr/.restart-tools/goal/s01-integration/docs/restart/implementation/S01/.work/runtime/.tools/tmp/nsealr-policy-cli-cross-repo-9a23po8a/esp32-usb-enable-kind-1-automation-proposal.json --account /home/tux/nsealr/.restart-tools/goal/s01-integration/docs/restart/implementation/S01/.work/runtime/specs/vectors/accounts/esp32-usb-device-slot-0.json --current-policy /home/tux/nsealr/.restart-tools/goal/s01-integration/docs/restart/implementation/S01/.work/runtime/specs/vectors/policies/manual-only-persistent-device.json --proposed-policy /home/tux/nsealr/.restart-tools/goal/s01-integration/docs/restart/implementation/S01/.work/runtime/specs/vectors/policies/scoped-automation-daily-use.json --grant /home/tux/nsealr/.restart-tools/goal/s01-integration/docs/restart/implementation/S01/.work/runtime/specs/vectors/grants/esp32-usb-kind-1-session.json --out /home/tux/nsealr/.restart-tools/goal/s01-integration/docs/restart/implementation/S01/.work/runtime/.tools/tmp/nsealr-policy-cli-cross-repo-9a23po8a/esp32-usb-enable-kind-1-automation-review.json
+
+
+> @nsealr/cli@0.1.0 nsealr /home/tux/nsealr/.restart-tools/goal/s01-integration/docs/restart/implementation/S01/.work/runtime/companion/apps/cli
+> node --disable-warning=DEP0205 --import tsx src/index.ts policy review-change --proposal /home/tux/nsealr/.restart-tools/goal/s01-integration/docs/restart/implementation/S01/.work/runtime/.tools/tmp/nsealr-policy-cli-cross-repo-9a23po8a/esp32-usb-enable-kind-1-automation-proposal.json --account /home/tux/nsealr/.restart-tools/goal/s01-integration/docs/restart/implementation/S01/.work/runtime/specs/vectors/accounts/esp32-usb-device-slot-0.json --current-policy /home/tux/nsealr/.restart-tools/goal/s01-integration/docs/restart/implementation/S01/.work/runtime/specs/vectors/policies/manual-only-persistent-device.json --proposed-policy /home/tux/nsealr/.restart-tools/goal/s01-integration/docs/restart/implementation/S01/.work/runtime/specs/vectors/policies/scoped-automation-daily-use.json --grant /home/tux/nsealr/.restart-tools/goal/s01-integration/docs/restart/implementation/S01/.work/runtime/specs/vectors/grants/esp32-usb-kind-1-session.json --out /home/tux/nsealr/.restart-tools/goal/s01-integration/docs/restart/implementation/S01/.work/runtime/.tools/tmp/nsealr-policy-cli-cross-repo-9a23po8a/esp32-usb-enable-kind-1-automation-review.json
+
+nSealr cross-repo companion policy-change review CLI verification passed
+.venv/bin/python scripts/integration_companion_nip46_cli.py
+
+> @nsealr/companion-workspace@0.1.0 build /home/tux/nsealr/.restart-tools/goal/s01-integration/docs/restart/implementation/S01/.work/runtime/companion
+> node scripts/build_packages.mjs
+
+nSealr package build artifacts generated
+
+> @nsealr/companion-workspace@0.1.0 nsealr /home/tux/nsealr/.restart-tools/goal/s01-integration/docs/restart/implementation/S01/.work/runtime/companion
+> pnpm --filter @nsealr/cli nsealr nip46 decide --message /home/tux/nsealr/.restart-tools/goal/s01-integration/docs/restart/implementation/S01/.work/runtime/.tools/tmp/nsealr-nip46-cross-repo-_grbutg1/sign-event-permitted-message.json --policy-file /home/tux/nsealr/.restart-tools/goal/s01-integration/docs/restart/implementation/S01/.work/runtime/specs/vectors/nip46-policy-files/sign-event-kind-1-approved.json --out /home/tux/nsealr/.restart-tools/goal/s01-integration/docs/restart/implementation/S01/.work/runtime/.tools/tmp/nsealr-nip46-cross-repo-_grbutg1/sign-event-permitted-decision.json
+
+
+> @nsealr/cli@0.1.0 nsealr /home/tux/nsealr/.restart-tools/goal/s01-integration/docs/restart/implementation/S01/.work/runtime/companion/apps/cli
+> node --disable-warning=DEP0205 --import tsx src/index.ts nip46 decide --message /home/tux/nsealr/.restart-tools/goal/s01-integration/docs/restart/implementation/S01/.work/runtime/.tools/tmp/nsealr-nip46-cross-repo-_grbutg1/sign-event-permitted-message.json --policy-file /home/tux/nsealr/.restart-tools/goal/s01-integration/docs/restart/implementation/S01/.work/runtime/specs/vectors/nip46-policy-files/sign-event-kind-1-approved.json --out /home/tux/nsealr/.restart-tools/goal/s01-integration/docs/restart/implementation/S01/.work/runtime/.tools/tmp/nsealr-nip46-cross-repo-_grbutg1/sign-event-permitted-decision.json
+
+
+> @nsealr/companion-workspace@0.1.0 nsealr /home/tux/nsealr/.restart-tools/goal/s01-integration/docs/restart/implementation/S01/.work/runtime/companion
+> pnpm --filter @nsealr/cli nsealr nip46 decide --message /home/tux/nsealr/.restart-tools/goal/s01-integration/docs/restart/implementation/S01/.work/runtime/.tools/tmp/nsealr-nip46-cross-repo-_grbutg1/sign-event-denied-message.json --out /home/tux/nsealr/.restart-tools/goal/s01-integration/docs/restart/implementation/S01/.work/runtime/.tools/tmp/nsealr-nip46-cross-repo-_grbutg1/sign-event-denied-decision.json --permissions sign_event:4
+
+
+> @nsealr/cli@0.1.0 nsealr /home/tux/nsealr/.restart-tools/goal/s01-integration/docs/restart/implementation/S01/.work/runtime/companion/apps/cli
+> node --disable-warning=DEP0205 --import tsx src/index.ts nip46 decide --message /home/tux/nsealr/.restart-tools/goal/s01-integration/docs/restart/implementation/S01/.work/runtime/.tools/tmp/nsealr-nip46-cross-repo-_grbutg1/sign-event-denied-message.json --out /home/tux/nsealr/.restart-tools/goal/s01-integration/docs/restart/implementation/S01/.work/runtime/.tools/tmp/nsealr-nip46-cross-repo-_grbutg1/sign-event-denied-decision.json --permissions sign_event:4
+
+
+> @nsealr/companion-workspace@0.1.0 nsealr /home/tux/nsealr/.restart-tools/goal/s01-integration/docs/restart/implementation/S01/.work/runtime/companion
+> pnpm --filter @nsealr/cli nsealr nip46 decide --message /home/tux/nsealr/.restart-tools/goal/s01-integration/docs/restart/implementation/S01/.work/runtime/.tools/tmp/nsealr-nip46-cross-repo-_grbutg1/connect-review-message.json --out /home/tux/nsealr/.restart-tools/goal/s01-integration/docs/restart/implementation/S01/.work/runtime/.tools/tmp/nsealr-nip46-cross-repo-_grbutg1/connect-review-decision.json
+
+
+> @nsealr/cli@0.1.0 nsealr /home/tux/nsealr/.restart-tools/goal/s01-integration/docs/restart/implementation/S01/.work/runtime/companion/apps/cli
+> node --disable-warning=DEP0205 --import tsx src/index.ts nip46 decide --message /home/tux/nsealr/.restart-tools/goal/s01-integration/docs/restart/implementation/S01/.work/runtime/.tools/tmp/nsealr-nip46-cross-repo-_grbutg1/connect-review-message.json --out /home/tux/nsealr/.restart-tools/goal/s01-integration/docs/restart/implementation/S01/.work/runtime/.tools/tmp/nsealr-nip46-cross-repo-_grbutg1/connect-review-decision.json
+
+
+> @nsealr/companion-workspace@0.1.0 nsealr /home/tux/nsealr/.restart-tools/goal/s01-integration/docs/restart/implementation/S01/.work/runtime/companion
+> pnpm --filter @nsealr/cli nsealr nip46 review-connect --message /home/tux/nsealr/.restart-tools/goal/s01-integration/docs/restart/implementation/S01/.work/runtime/.tools/tmp/nsealr-nip46-cross-repo-_grbutg1/connect-review-message.json --out /home/tux/nsealr/.restart-tools/goal/s01-integration/docs/restart/implementation/S01/.work/runtime/.tools/tmp/nsealr-nip46-cross-repo-_grbutg1/connect-review.json
+
+
+> @nsealr/cli@0.1.0 nsealr /home/tux/nsealr/.restart-tools/goal/s01-integration/docs/restart/implementation/S01/.work/runtime/companion/apps/cli
+> node --disable-warning=DEP0205 --import tsx src/index.ts nip46 review-connect --message /home/tux/nsealr/.restart-tools/goal/s01-integration/docs/restart/implementation/S01/.work/runtime/.tools/tmp/nsealr-nip46-cross-repo-_grbutg1/connect-review-message.json --out /home/tux/nsealr/.restart-tools/goal/s01-integration/docs/restart/implementation/S01/.work/runtime/.tools/tmp/nsealr-nip46-cross-repo-_grbutg1/connect-review.json
+
+
+> @nsealr/companion-workspace@0.1.0 nsealr /home/tux/nsealr/.restart-tools/goal/s01-integration/docs/restart/implementation/S01/.work/runtime/companion
+> pnpm --filter @nsealr/cli nsealr nip46 approve-connect --review /home/tux/nsealr/.restart-tools/goal/s01-integration/docs/restart/implementation/S01/.work/runtime/.tools/tmp/nsealr-nip46-cross-repo-_grbutg1/connect-review.json --reviewed-connect-digest 4591a3b711e32fdbadbfce542b15127490f8215351e621b0a0e0ed1e4f093225 --approved-at 1900000001 --out /home/tux/nsealr/.restart-tools/goal/s01-integration/docs/restart/implementation/S01/.work/runtime/.tools/tmp/nsealr-nip46-cross-repo-_grbutg1/connect-approval.json
+
+
+> @nsealr/cli@0.1.0 nsealr /home/tux/nsealr/.restart-tools/goal/s01-integration/docs/restart/implementation/S01/.work/runtime/companion/apps/cli
+> node --disable-warning=DEP0205 --import tsx src/index.ts nip46 approve-connect --review /home/tux/nsealr/.restart-tools/goal/s01-integration/docs/restart/implementation/S01/.work/runtime/.tools/tmp/nsealr-nip46-cross-repo-_grbutg1/connect-review.json --reviewed-connect-digest 4591a3b711e32fdbadbfce542b15127490f8215351e621b0a0e0ed1e4f093225 --approved-at 1900000001 --out /home/tux/nsealr/.restart-tools/goal/s01-integration/docs/restart/implementation/S01/.work/runtime/.tools/tmp/nsealr-nip46-cross-repo-_grbutg1/connect-approval.json
+
+
+> @nsealr/companion-workspace@0.1.0 nsealr /home/tux/nsealr/.restart-tools/goal/s01-integration/docs/restart/implementation/S01/.work/runtime/companion
+> pnpm --filter @nsealr/cli nsealr nip46 review-auth-challenge --step /home/tux/nsealr/.restart-tools/goal/s01-integration/docs/restart/implementation/S01/.work/runtime/.tools/tmp/nsealr-nip46-cross-repo-_grbutg1/auth-challenge-step.json --out /home/tux/nsealr/.restart-tools/goal/s01-integration/docs/restart/implementation/S01/.work/runtime/.tools/tmp/nsealr-nip46-cross-repo-_grbutg1/auth-challenge-review.json
+
+
+> @nsealr/cli@0.1.0 nsealr /home/tux/nsealr/.restart-tools/goal/s01-integration/docs/restart/implementation/S01/.work/runtime/companion/apps/cli
+> node --disable-warning=DEP0205 --import tsx src/index.ts nip46 review-auth-challenge --step /home/tux/nsealr/.restart-tools/goal/s01-integration/docs/restart/implementation/S01/.work/runtime/.tools/tmp/nsealr-nip46-cross-repo-_grbutg1/auth-challenge-step.json --out /home/tux/nsealr/.restart-tools/goal/s01-integration/docs/restart/implementation/S01/.work/runtime/.tools/tmp/nsealr-nip46-cross-repo-_grbutg1/auth-challenge-review.json
+
+
+> @nsealr/companion-workspace@0.1.0 nsealr /home/tux/nsealr/.restart-tools/goal/s01-integration/docs/restart/implementation/S01/.work/runtime/companion
+> pnpm --filter @nsealr/cli nsealr nip46 approve-auth-challenge --review /home/tux/nsealr/.restart-tools/goal/s01-integration/docs/restart/implementation/S01/.work/runtime/.tools/tmp/nsealr-nip46-cross-repo-_grbutg1/auth-challenge-review.json --reviewed-auth-challenge-digest 5b747488c9ce1037751d48004f6b30db5719b88477e4695fedf67f7e3a1abe19 --approved-at 1900000200 --out /home/tux/nsealr/.restart-tools/goal/s01-integration/docs/restart/implementation/S01/.work/runtime/.tools/tmp/nsealr-nip46-cross-repo-_grbutg1/auth-challenge-approval.json
+
+
+> @nsealr/cli@0.1.0 nsealr /home/tux/nsealr/.restart-tools/goal/s01-integration/docs/restart/implementation/S01/.work/runtime/companion/apps/cli
+> node --disable-warning=DEP0205 --import tsx src/index.ts nip46 approve-auth-challenge --review /home/tux/nsealr/.restart-tools/goal/s01-integration/docs/restart/implementation/S01/.work/runtime/.tools/tmp/nsealr-nip46-cross-repo-_grbutg1/auth-challenge-review.json --reviewed-auth-challenge-digest 5b747488c9ce1037751d48004f6b30db5719b88477e4695fedf67f7e3a1abe19 --approved-at 1900000200 --out /home/tux/nsealr/.restart-tools/goal/s01-integration/docs/restart/implementation/S01/.work/runtime/.tools/tmp/nsealr-nip46-cross-repo-_grbutg1/auth-challenge-approval.json
+
+
+> @nsealr/companion-workspace@0.1.0 nsealr /home/tux/nsealr/.restart-tools/goal/s01-integration/docs/restart/implementation/S01/.work/runtime/companion
+> pnpm --filter @nsealr/cli nsealr nip46 create-session-checkpoint --review /home/tux/nsealr/.restart-tools/goal/s01-integration/docs/restart/implementation/S01/.work/runtime/.tools/tmp/nsealr-nip46-cross-repo-_grbutg1/connect-review.json --approval /home/tux/nsealr/.restart-tools/goal/s01-integration/docs/restart/implementation/S01/.work/runtime/.tools/tmp/nsealr-nip46-cross-repo-_grbutg1/connect-approval.json --name nostrconnect-approved-kind-1-checkpoint --client-pubkey bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb --relays wss://relay1.example.com/,wss://relay2.example.com/path --policy-file /home/tux/nsealr/.restart-tools/goal/s01-integration/docs/restart/implementation/S01/.work/runtime/specs/vectors/nip46-policy-files/sign-event-kind-1-approved.json --expires-at 1900003601 --out /home/tux/nsealr/.restart-tools/goal/s01-integration/docs/restart/implementation/S01/.work/runtime/.tools/tmp/nsealr-nip46-cross-repo-_grbutg1/connect-session-checkpoint.json
+
+
+> @nsealr/cli@0.1.0 nsealr /home/tux/nsealr/.restart-tools/goal/s01-integration/docs/restart/implementation/S01/.work/runtime/companion/apps/cli
+> node --disable-warning=DEP0205 --import tsx src/index.ts nip46 create-session-checkpoint --review /home/tux/nsealr/.restart-tools/goal/s01-integration/docs/restart/implementation/S01/.work/runtime/.tools/tmp/nsealr-nip46-cross-repo-_grbutg1/connect-review.json --approval /home/tux/nsealr/.restart-tools/goal/s01-integration/docs/restart/implementation/S01/.work/runtime/.tools/tmp/nsealr-nip46-cross-repo-_grbutg1/connect-approval.json --name nostrconnect-approved-kind-1-checkpoint --client-pubkey bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb --relays wss://relay1.example.com/,wss://relay2.example.com/path --policy-file /home/tux/nsealr/.restart-tools/goal/s01-integration/docs/restart/implementation/S01/.work/runtime/specs/vectors/nip46-policy-files/sign-event-kind-1-approved.json --expires-at 1900003601 --out /home/tux/nsealr/.restart-tools/goal/s01-integration/docs/restart/implementation/S01/.work/runtime/.tools/tmp/nsealr-nip46-cross-repo-_grbutg1/connect-session-checkpoint.json
+
+
+> @nsealr/companion-workspace@0.1.0 nsealr /home/tux/nsealr/.restart-tools/goal/s01-integration/docs/restart/implementation/S01/.work/runtime/companion
+> pnpm --filter @nsealr/cli nsealr nip46 gate-session-request --session /home/tux/nsealr/.restart-tools/goal/s01-integration/docs/restart/implementation/S01/.work/runtime/.tools/tmp/nsealr-nip46-cross-repo-_grbutg1/connect-session-checkpoint.json --event /home/tux/nsealr/.restart-tools/goal/s01-integration/docs/restart/implementation/S01/.work/runtime/.tools/tmp/nsealr-nip46-cross-repo-_grbutg1/session-gate-event.json --message /home/tux/nsealr/.restart-tools/goal/s01-integration/docs/restart/implementation/S01/.work/runtime/.tools/tmp/nsealr-nip46-cross-repo-_grbutg1/session-gate-message.json --evaluated-at 1900000100 --out /home/tux/nsealr/.restart-tools/goal/s01-integration/docs/restart/implementation/S01/.work/runtime/.tools/tmp/nsealr-nip46-cross-repo-_grbutg1/session-gate.json
+
+
+> @nsealr/cli@0.1.0 nsealr /home/tux/nsealr/.restart-tools/goal/s01-integration/docs/restart/implementation/S01/.work/runtime/companion/apps/cli
+> node --disable-warning=DEP0205 --import tsx src/index.ts nip46 gate-session-request --session /home/tux/nsealr/.restart-tools/goal/s01-integration/docs/restart/implementation/S01/.work/runtime/.tools/tmp/nsealr-nip46-cross-repo-_grbutg1/connect-session-checkpoint.json --event /home/tux/nsealr/.restart-tools/goal/s01-integration/docs/restart/implementation/S01/.work/runtime/.tools/tmp/nsealr-nip46-cross-repo-_grbutg1/session-gate-event.json --message /home/tux/nsealr/.restart-tools/goal/s01-integration/docs/restart/implementation/S01/.work/runtime/.tools/tmp/nsealr-nip46-cross-repo-_grbutg1/session-gate-message.json --evaluated-at 1900000100 --out /home/tux/nsealr/.restart-tools/goal/s01-integration/docs/restart/implementation/S01/.work/runtime/.tools/tmp/nsealr-nip46-cross-repo-_grbutg1/session-gate.json
+
+
+> @nsealr/companion-workspace@0.1.0 nsealr /home/tux/nsealr/.restart-tools/goal/s01-integration/docs/restart/implementation/S01/.work/runtime/companion
+> pnpm --filter @nsealr/cli nsealr nip46 parse-connection-uri --uri-file /home/tux/nsealr/.restart-tools/goal/s01-integration/docs/restart/implementation/S01/.work/runtime/.tools/tmp/nsealr-nip46-cross-repo-_grbutg1/bunker-remote-signer-token.txt --out /home/tux/nsealr/.restart-tools/goal/s01-integration/docs/restart/implementation/S01/.work/runtime/.tools/tmp/nsealr-nip46-cross-repo-_grbutg1/bunker-remote-signer-token.json
+
+
+> @nsealr/cli@0.1.0 nsealr /home/tux/nsealr/.restart-tools/goal/s01-integration/docs/restart/implementation/S01/.work/runtime/companion/apps/cli
+> node --disable-warning=DEP0205 --import tsx src/index.ts nip46 parse-connection-uri --uri-file /home/tux/nsealr/.restart-tools/goal/s01-integration/docs/restart/implementation/S01/.work/runtime/.tools/tmp/nsealr-nip46-cross-repo-_grbutg1/bunker-remote-signer-token.txt --out /home/tux/nsealr/.restart-tools/goal/s01-integration/docs/restart/implementation/S01/.work/runtime/.tools/tmp/nsealr-nip46-cross-repo-_grbutg1/bunker-remote-signer-token.json
+
+
+> @nsealr/companion-workspace@0.1.0 nsealr /home/tux/nsealr/.restart-tools/goal/s01-integration/docs/restart/implementation/S01/.work/runtime/companion
+> pnpm --filter @nsealr/cli nsealr nip46 parse-connection-uri --uri-file /home/tux/nsealr/.restart-tools/goal/s01-integration/docs/restart/implementation/S01/.work/runtime/.tools/tmp/nsealr-nip46-cross-repo-_grbutg1/nostrconnect-client-token.txt --out /home/tux/nsealr/.restart-tools/goal/s01-integration/docs/restart/implementation/S01/.work/runtime/.tools/tmp/nsealr-nip46-cross-repo-_grbutg1/nostrconnect-client-token.json
+
+
+> @nsealr/cli@0.1.0 nsealr /home/tux/nsealr/.restart-tools/goal/s01-integration/docs/restart/implementation/S01/.work/runtime/companion/apps/cli
+> node --disable-warning=DEP0205 --import tsx src/index.ts nip46 parse-connection-uri --uri-file /home/tux/nsealr/.restart-tools/goal/s01-integration/docs/restart/implementation/S01/.work/runtime/.tools/tmp/nsealr-nip46-cross-repo-_grbutg1/nostrconnect-client-token.txt --out /home/tux/nsealr/.restart-tools/goal/s01-integration/docs/restart/implementation/S01/.work/runtime/.tools/tmp/nsealr-nip46-cross-repo-_grbutg1/nostrconnect-client-token.json
+
+
+> @nsealr/companion-workspace@0.1.0 nsealr /home/tux/nsealr/.restart-tools/goal/s01-integration/docs/restart/implementation/S01/.work/runtime/companion
+> pnpm --filter @nsealr/cli nsealr nip46 verify-connection-token-response --uri-file /home/tux/nsealr/.restart-tools/goal/s01-integration/docs/restart/implementation/S01/.work/runtime/.tools/tmp/nsealr-nip46-cross-repo-_grbutg1/connection-token-response-uri.txt --step /home/tux/nsealr/.restart-tools/goal/s01-integration/docs/restart/implementation/S01/.work/runtime/.tools/tmp/nsealr-nip46-cross-repo-_grbutg1/connection-token-response-step.json --out /home/tux/nsealr/.restart-tools/goal/s01-integration/docs/restart/implementation/S01/.work/runtime/.tools/tmp/nsealr-nip46-cross-repo-_grbutg1/connection-token-response.json
+
+
+> @nsealr/cli@0.1.0 nsealr /home/tux/nsealr/.restart-tools/goal/s01-integration/docs/restart/implementation/S01/.work/runtime/companion/apps/cli
+> node --disable-warning=DEP0205 --import tsx src/index.ts nip46 verify-connection-token-response --uri-file /home/tux/nsealr/.restart-tools/goal/s01-integration/docs/restart/implementation/S01/.work/runtime/.tools/tmp/nsealr-nip46-cross-repo-_grbutg1/connection-token-response-uri.txt --step /home/tux/nsealr/.restart-tools/goal/s01-integration/docs/restart/implementation/S01/.work/runtime/.tools/tmp/nsealr-nip46-cross-repo-_grbutg1/connection-token-response-step.json --out /home/tux/nsealr/.restart-tools/goal/s01-integration/docs/restart/implementation/S01/.work/runtime/.tools/tmp/nsealr-nip46-cross-repo-_grbutg1/connection-token-response.json
+
+NIP-46 v1 auth-negative executed: relay-step-response-auth-url-with-credentials
+NIP-46 v1 auth-negative executed: relay-step-response-auth-url-with-fragment
+NIP-46 v1 auth-negative executed: relay-step-response-auth-url-wrong-scheme
+nSealr cross-repo companion NIP-46 decision, connect-review, connect-approval, auth-challenge review, auth-challenge rejection, session checkpoint, session gate, connection URI, and connection token response CLI verification passed
+.venv/bin/python scripts/integration_companion_serial_frame_cli.py
+
+> @nsealr/companion-workspace@0.1.0 build /home/tux/nsealr/.restart-tools/goal/s01-integration/docs/restart/implementation/S01/.work/runtime/companion
+> node scripts/build_packages.mjs
+
+nSealr package build artifacts generated
+nSealr cross-repo companion serial-frame CLI verification passed
+.venv/bin/python scripts/integration_companion_service_context.py
+
+> @nsealr/companion-workspace@0.1.0 build /home/tux/nsealr/.restart-tools/goal/s01-integration/docs/restart/implementation/S01/.work/runtime/companion
+> node scripts/build_packages.mjs
+
+nSealr package build artifacts generated
+
+> @nsealr/companion-workspace@0.1.0 nsealr /home/tux/nsealr/.restart-tools/goal/s01-integration/docs/restart/implementation/S01/.work/runtime/companion
+> pnpm --filter @nsealr/cli nsealr local review-storage --grant-store /home/tux/nsealr/.restart-tools/goal/s01-integration/docs/restart/implementation/S01/.work/runtime/.tools/tmp/nsealr-service-context-bg2le_l9/local-grants.json --out /home/tux/nsealr/.restart-tools/goal/s01-integration/docs/restart/implementation/S01/.work/runtime/.tools/tmp/nsealr-service-context-bg2le_l9/storage-review.json
+
+
+> @nsealr/cli@0.1.0 nsealr /home/tux/nsealr/.restart-tools/goal/s01-integration/docs/restart/implementation/S01/.work/runtime/companion/apps/cli
+> node --disable-warning=DEP0205 --import tsx src/index.ts local review-storage --grant-store /home/tux/nsealr/.restart-tools/goal/s01-integration/docs/restart/implementation/S01/.work/runtime/.tools/tmp/nsealr-service-context-bg2le_l9/local-grants.json --out /home/tux/nsealr/.restart-tools/goal/s01-integration/docs/restart/implementation/S01/.work/runtime/.tools/tmp/nsealr-service-context-bg2le_l9/storage-review.json
+
+
+> @nsealr/companion-workspace@0.1.0 nsealr /home/tux/nsealr/.restart-tools/goal/s01-integration/docs/restart/implementation/S01/.work/runtime/companion
+> pnpm --filter @nsealr/cli nsealr local approve-storage --review /home/tux/nsealr/.restart-tools/goal/s01-integration/docs/restart/implementation/S01/.work/runtime/.tools/tmp/nsealr-service-context-bg2le_l9/storage-review.json --reviewed-storage-digest 7651d9e77ab08dc9153a84347e356ec8cba21da0c689728b66204f8d60e4a0cb --approved-at 1900000001 --out /home/tux/nsealr/.restart-tools/goal/s01-integration/docs/restart/implementation/S01/.work/runtime/.tools/tmp/nsealr-service-context-bg2le_l9/storage-approval.json
+
+
+> @nsealr/cli@0.1.0 nsealr /home/tux/nsealr/.restart-tools/goal/s01-integration/docs/restart/implementation/S01/.work/runtime/companion/apps/cli
+> node --disable-warning=DEP0205 --import tsx src/index.ts local approve-storage --review /home/tux/nsealr/.restart-tools/goal/s01-integration/docs/restart/implementation/S01/.work/runtime/.tools/tmp/nsealr-service-context-bg2le_l9/storage-review.json --reviewed-storage-digest 7651d9e77ab08dc9153a84347e356ec8cba21da0c689728b66204f8d60e4a0cb --approved-at 1900000001 --out /home/tux/nsealr/.restart-tools/goal/s01-integration/docs/restart/implementation/S01/.work/runtime/.tools/tmp/nsealr-service-context-bg2le_l9/storage-approval.json
+
+
+> @nsealr/companion-workspace@0.1.0 nsealr /home/tux/nsealr/.restart-tools/goal/s01-integration/docs/restart/implementation/S01/.work/runtime/companion
+> pnpm --filter @nsealr/cli nsealr local review-storage --account-store /home/tux/nsealr/.restart-tools/goal/s01-integration/docs/restart/implementation/S01/.work/runtime/.tools/tmp/nsealr-service-context-bg2le_l9/accounts.json --route-driver-store /home/tux/nsealr/.restart-tools/goal/s01-integration/docs/restart/implementation/S01/.work/runtime/.tools/tmp/nsealr-service-context-bg2le_l9/oversized-ignored-lines-drivers.json --out /home/tux/nsealr/.restart-tools/goal/s01-integration/docs/restart/implementation/S01/.work/runtime/.tools/tmp/nsealr-service-context-bg2le_l9/route-driver-storage-review.json
+
+
+> @nsealr/cli@0.1.0 nsealr /home/tux/nsealr/.restart-tools/goal/s01-integration/docs/restart/implementation/S01/.work/runtime/companion/apps/cli
+> node --disable-warning=DEP0205 --import tsx src/index.ts local review-storage --account-store /home/tux/nsealr/.restart-tools/goal/s01-integration/docs/restart/implementation/S01/.work/runtime/.tools/tmp/nsealr-service-context-bg2le_l9/accounts.json --route-driver-store /home/tux/nsealr/.restart-tools/goal/s01-integration/docs/restart/implementation/S01/.work/runtime/.tools/tmp/nsealr-service-context-bg2le_l9/oversized-ignored-lines-drivers.json --out /home/tux/nsealr/.restart-tools/goal/s01-integration/docs/restart/implementation/S01/.work/runtime/.tools/tmp/nsealr-service-context-bg2le_l9/route-driver-storage-review.json
+
+
+> @nsealr/companion-workspace@0.1.0 nsealr /home/tux/nsealr/.restart-tools/goal/s01-integration/docs/restart/implementation/S01/.work/runtime/companion
+> pnpm --filter @nsealr/cli nsealr local approve-storage --review /home/tux/nsealr/.restart-tools/goal/s01-integration/docs/restart/implementation/S01/.work/runtime/.tools/tmp/nsealr-service-context-bg2le_l9/route-driver-storage-review.json --reviewed-storage-digest 05a762333488c077b8af7d2d74dab4f56d1d292ad626ad730c02727e83bf92a0 --approved-at 1900000001 --out /home/tux/nsealr/.restart-tools/goal/s01-integration/docs/restart/implementation/S01/.work/runtime/.tools/tmp/nsealr-service-context-bg2le_l9/route-driver-storage-approval.json
+
+
+> @nsealr/cli@0.1.0 nsealr /home/tux/nsealr/.restart-tools/goal/s01-integration/docs/restart/implementation/S01/.work/runtime/companion/apps/cli
+> node --disable-warning=DEP0205 --import tsx src/index.ts local approve-storage --review /home/tux/nsealr/.restart-tools/goal/s01-integration/docs/restart/implementation/S01/.work/runtime/.tools/tmp/nsealr-service-context-bg2le_l9/route-driver-storage-review.json --reviewed-storage-digest 05a762333488c077b8af7d2d74dab4f56d1d292ad626ad730c02727e83bf92a0 --approved-at 1900000001 --out /home/tux/nsealr/.restart-tools/goal/s01-integration/docs/restart/implementation/S01/.work/runtime/.tools/tmp/nsealr-service-context-bg2le_l9/route-driver-storage-approval.json
+
+
+> @nsealr/companion-workspace@0.1.0 nsealr /home/tux/nsealr/.restart-tools/goal/s01-integration/docs/restart/implementation/S01/.work/runtime/companion
+> pnpm --filter @nsealr/cli nsealr local review-storage --account-store /home/tux/nsealr/.restart-tools/goal/s01-integration/docs/restart/implementation/S01/.work/runtime/.tools/tmp/nsealr-service-context-bg2le_l9/accounts.json --route-driver-store /home/tux/nsealr/.restart-tools/goal/s01-integration/docs/restart/implementation/S01/.work/runtime/.tools/tmp/nsealr-service-context-bg2le_l9/oversized-timeout-drivers.json --out /home/tux/nsealr/.restart-tools/goal/s01-integration/docs/restart/implementation/S01/.work/runtime/.tools/tmp/nsealr-service-context-bg2le_l9/route-driver-storage-review.json
+
+
+> @nsealr/cli@0.1.0 nsealr /home/tux/nsealr/.restart-tools/goal/s01-integration/docs/restart/implementation/S01/.work/runtime/companion/apps/cli
+> node --disable-warning=DEP0205 --import tsx src/index.ts local review-storage --account-store /home/tux/nsealr/.restart-tools/goal/s01-integration/docs/restart/implementation/S01/.work/runtime/.tools/tmp/nsealr-service-context-bg2le_l9/accounts.json --route-driver-store /home/tux/nsealr/.restart-tools/goal/s01-integration/docs/restart/implementation/S01/.work/runtime/.tools/tmp/nsealr-service-context-bg2le_l9/oversized-timeout-drivers.json --out /home/tux/nsealr/.restart-tools/goal/s01-integration/docs/restart/implementation/S01/.work/runtime/.tools/tmp/nsealr-service-context-bg2le_l9/route-driver-storage-review.json
+
+
+> @nsealr/companion-workspace@0.1.0 nsealr /home/tux/nsealr/.restart-tools/goal/s01-integration/docs/restart/implementation/S01/.work/runtime/companion
+> pnpm --filter @nsealr/cli nsealr local approve-storage --review /home/tux/nsealr/.restart-tools/goal/s01-integration/docs/restart/implementation/S01/.work/runtime/.tools/tmp/nsealr-service-context-bg2le_l9/route-driver-storage-review.json --reviewed-storage-digest 4b95e2422dc99e0fbef8bfe067f6222a82eba6c8cd53bdf9df1cf44aa03b7630 --approved-at 1900000002 --out /home/tux/nsealr/.restart-tools/goal/s01-integration/docs/restart/implementation/S01/.work/runtime/.tools/tmp/nsealr-service-context-bg2le_l9/route-driver-storage-approval.json
+
+
+> @nsealr/cli@0.1.0 nsealr /home/tux/nsealr/.restart-tools/goal/s01-integration/docs/restart/implementation/S01/.work/runtime/companion/apps/cli
+> node --disable-warning=DEP0205 --import tsx src/index.ts local approve-storage --review /home/tux/nsealr/.restart-tools/goal/s01-integration/docs/restart/implementation/S01/.work/runtime/.tools/tmp/nsealr-service-context-bg2le_l9/route-driver-storage-review.json --reviewed-storage-digest 4b95e2422dc99e0fbef8bfe067f6222a82eba6c8cd53bdf9df1cf44aa03b7630 --approved-at 1900000002 --out /home/tux/nsealr/.restart-tools/goal/s01-integration/docs/restart/implementation/S01/.work/runtime/.tools/tmp/nsealr-service-context-bg2le_l9/route-driver-storage-approval.json
+
+nSealr companion service context storage-approval integration passed
+.venv/bin/python scripts/integration_companion_route_identity.py
+
+> @nsealr/companion-workspace@0.1.0 build /home/tux/nsealr/.restart-tools/goal/s01-integration/docs/restart/implementation/S01/.work/runtime/companion
+> node scripts/build_packages.mjs
+
+nSealr package build artifacts generated
+nSealr companion selected-route response identity integration passed
+nSealr cross-repo companion route identity smoke test passed
+.venv/bin/python scripts/integration_companion_sdk_browser.py
+
+> @nsealr/companion-workspace@0.1.0 build /home/tux/nsealr/.restart-tools/goal/s01-integration/docs/restart/implementation/S01/.work/runtime/companion
+> node scripts/build_packages.mjs
+
+nSealr package build artifacts generated
+
+> @nsealr/companion-workspace@0.1.0 browser-runtime-imports:check /home/tux/nsealr/.restart-tools/goal/s01-integration/docs/restart/implementation/S01/.work/runtime/companion
+> node scripts/check_browser_runtime_imports.mjs
+
+companion browser runtime import hygiene passed (65 source files)
+nSealr browser-safe SDK facade integration passed
+nSealr cross-repo browser-safe SDK facade verification passed
+.venv/bin/python scripts/integration_browser_extension_package_plan.py
+
+> @nsealr/companion-workspace@0.1.0 build /home/tux/nsealr/.restart-tools/goal/s01-integration/docs/restart/implementation/S01/.work/runtime/companion
+> node scripts/build_packages.mjs
+
+nSealr package build artifacts generated
+nSealr cross-repo browser-extension package-plan CLI verification passed
+.venv/bin/python scripts/integration_browser_extension_package_build.py
+
+> @nsealr/companion-workspace@0.1.0 build /home/tux/nsealr/.restart-tools/goal/s01-integration/docs/restart/implementation/S01/.work/runtime/companion
+> node scripts/build_packages.mjs
+
+nSealr package build artifacts generated
+nSealr cross-repo browser-extension package-build verification passed
+.venv/bin/python scripts/integration_browser_extension_origin_permission_cli.py
+
+> @nsealr/companion-workspace@0.1.0 build /home/tux/nsealr/.restart-tools/goal/s01-integration/docs/restart/implementation/S01/.work/runtime/companion
+> node scripts/build_packages.mjs
+
+nSealr package build artifacts generated
+nSealr cross-repo browser-extension origin-permission CLI verification passed
+.venv/bin/python scripts/integration_browser_extension_origin_review_control.py
+
+> @nsealr/companion-workspace@0.1.0 build /home/tux/nsealr/.restart-tools/goal/s01-integration/docs/restart/implementation/S01/.work/runtime/companion
+> node scripts/build_packages.mjs
+
+nSealr package build artifacts generated
+nSealr cross-repo browser-extension origin-review control verification passed
+.venv/bin/python scripts/integration_browser_extension_origin_approval_control.py
+
+> @nsealr/companion-workspace@0.1.0 build /home/tux/nsealr/.restart-tools/goal/s01-integration/docs/restart/implementation/S01/.work/runtime/companion
+> node scripts/build_packages.mjs
+
+nSealr package build artifacts generated
+nSealr cross-repo browser-extension origin-approval control verification passed
+.venv/bin/python scripts/integration_browser_native_messaging_manifest.py
+
+> @nsealr/companion-workspace@0.1.0 build /home/tux/nsealr/.restart-tools/goal/s01-integration/docs/restart/implementation/S01/.work/runtime/companion
+> node scripts/build_packages.mjs
+
+nSealr package build artifacts generated
+nSealr cross-repo browser native-messaging manifest verification passed
+.venv/bin/python scripts/integration_hardware_validation.py
+nSealr cross-repo hardware validation passed
+.venv/bin/python scripts/integration_raspberry_hardware_probe.py
+make[2]: Entering directory '/home/tux/nsealr/.restart-tools/goal/s01-integration/docs/restart/implementation/S01/.work/runtime/raspberry'
+python3 -m venv .venv
+.venv/bin/python -m pip install --disable-pip-version-check -r requirements.txt
+Looking in links: /home/tux/nsealr/.restart-tools/goal/s01-integration/docs/restart/implementation/S01/.work/runtime/.tools/wheels
+Requirement already satisfied: mnemonic==0.21 in ./.venv/lib/python3.12/site-packages (from -r requirements.txt (line 1)) (0.21)
+Requirement already satisfied: secp256k1==0.14.0 in ./.venv/lib/python3.12/site-packages (from -r requirements.txt (line 2)) (0.14.0)
+Requirement already satisfied: cffi>=1.3.0 in ./.venv/lib/python3.12/site-packages (from secp256k1==0.14.0->-r requirements.txt (line 2)) (2.1.1)
+Requirement already satisfied: pycparser in ./.venv/lib/python3.12/site-packages (from cffi>=1.3.0->secp256k1==0.14.0->-r requirements.txt (line 2)) (3.11)
+PIP_IN_TREE_BUILD="$( .venv/bin/python -m pip install --use-feature=in-tree-build --help >/dev/null 2>&1 && printf '%s' '--use-feature=in-tree-build' || true )"; \
+.venv/bin/python -m pip install --disable-pip-version-check $PIP_IN_TREE_BUILD .
+Looking in links: /home/tux/nsealr/.restart-tools/goal/s01-integration/docs/restart/implementation/S01/.work/runtime/.tools/wheels
+Processing /home/tux/nsealr/.restart-tools/goal/s01-integration/docs/restart/implementation/S01/.work/runtime/raspberry
+  Installing build dependencies: started
+  Installing build dependencies: finished with status 'done'
+  Getting requirements to build wheel: started
+  Getting requirements to build wheel: finished with status 'done'
+  Preparing metadata (pyproject.toml): started
+  Preparing metadata (pyproject.toml): finished with status 'done'
+Requirement already satisfied: mnemonic==0.21 in ./.venv/lib/python3.12/site-packages (from nsealr-vault==0.1.0) (0.21)
+Requirement already satisfied: secp256k1==0.14.0 in ./.venv/lib/python3.12/site-packages (from nsealr-vault==0.1.0) (0.14.0)
+Requirement already satisfied: cffi>=1.3.0 in ./.venv/lib/python3.12/site-packages (from secp256k1==0.14.0->nsealr-vault==0.1.0) (2.1.1)
+Requirement already satisfied: pycparser in ./.venv/lib/python3.12/site-packages (from cffi>=1.3.0->secp256k1==0.14.0->nsealr-vault==0.1.0) (3.11)
+Building wheels for collected packages: nsealr-vault
+  Building wheel for nsealr-vault (pyproject.toml): started
+  Building wheel for nsealr-vault (pyproject.toml): finished with status 'done'
+  Created wheel for nsealr-vault: filename=nsealr_vault-0.1.0-py3-none-any.whl size=42849 sha256=7581406c1e887f775d56a360466a436e7b8db7f8f8487a049927a0c1ae912bc0
+  Stored in directory: /home/tux/nsealr/.restart-tools/goal/s01-integration/docs/restart/implementation/S01/.work/runtime/.tools/tmp/pip-ephem-wheel-cache-5uf_kioy/wheels/72/51/0c/1a9988c7006eb841f26b0ae24a1263fc56713da8501a12b21a
+Successfully built nsealr-vault
+Installing collected packages: nsealr-vault
+  Attempting uninstall: nsealr-vault
+    Found existing installation: nsealr-vault 0.1.0
+    Uninstalling nsealr-vault-0.1.0:
+      Successfully uninstalled nsealr-vault-0.1.0
+Successfully installed nsealr-vault-0.1.0
+make[2]: Leaving directory '/home/tux/nsealr/.restart-tools/goal/s01-integration/docs/restart/implementation/S01/.work/runtime/raspberry'
+nSealr cross-repo Raspberry hardware-probe smoke passed
+.venv/bin/python scripts/integration_smartcard_protocol.py
+nSealr cross-repo smartcard protocol verification passed
+.venv/bin/python scripts/integration_vault_companion.py
+
+> @nsealr/companion-workspace@0.1.0 build /home/tux/nsealr/.restart-tools/goal/s01-integration/docs/restart/implementation/S01/.work/runtime/companion
+> node scripts/build_packages.mjs
+
+nSealr package build artifacts generated
+make[2]: Entering directory '/home/tux/nsealr/.restart-tools/goal/s01-integration/docs/restart/implementation/S01/.work/runtime/raspberry'
+python3 -m venv .venv
+.venv/bin/python -m pip install --disable-pip-version-check -r requirements.txt
+Looking in links: /home/tux/nsealr/.restart-tools/goal/s01-integration/docs/restart/implementation/S01/.work/runtime/.tools/wheels
+Requirement already satisfied: mnemonic==0.21 in ./.venv/lib/python3.12/site-packages (from -r requirements.txt (line 1)) (0.21)
+Requirement already satisfied: secp256k1==0.14.0 in ./.venv/lib/python3.12/site-packages (from -r requirements.txt (line 2)) (0.14.0)
+Requirement already satisfied: cffi>=1.3.0 in ./.venv/lib/python3.12/site-packages (from secp256k1==0.14.0->-r requirements.txt (line 2)) (2.1.1)
+Requirement already satisfied: pycparser in ./.venv/lib/python3.12/site-packages (from cffi>=1.3.0->secp256k1==0.14.0->-r requirements.txt (line 2)) (3.11)
+PIP_IN_TREE_BUILD="$( .venv/bin/python -m pip install --use-feature=in-tree-build --help >/dev/null 2>&1 && printf '%s' '--use-feature=in-tree-build' || true )"; \
+.venv/bin/python -m pip install --disable-pip-version-check $PIP_IN_TREE_BUILD .
+Looking in links: /home/tux/nsealr/.restart-tools/goal/s01-integration/docs/restart/implementation/S01/.work/runtime/.tools/wheels
+Processing /home/tux/nsealr/.restart-tools/goal/s01-integration/docs/restart/implementation/S01/.work/runtime/raspberry
+  Installing build dependencies: started
+  Installing build dependencies: finished with status 'done'
+  Getting requirements to build wheel: started
+  Getting requirements to build wheel: finished with status 'done'
+  Preparing metadata (pyproject.toml): started
+  Preparing metadata (pyproject.toml): finished with status 'done'
+Requirement already satisfied: mnemonic==0.21 in ./.venv/lib/python3.12/site-packages (from nsealr-vault==0.1.0) (0.21)
+Requirement already satisfied: secp256k1==0.14.0 in ./.venv/lib/python3.12/site-packages (from nsealr-vault==0.1.0) (0.14.0)
+Requirement already satisfied: cffi>=1.3.0 in ./.venv/lib/python3.12/site-packages (from secp256k1==0.14.0->nsealr-vault==0.1.0) (2.1.1)
+Requirement already satisfied: pycparser in ./.venv/lib/python3.12/site-packages (from cffi>=1.3.0->secp256k1==0.14.0->nsealr-vault==0.1.0) (3.11)
+Building wheels for collected packages: nsealr-vault
+  Building wheel for nsealr-vault (pyproject.toml): started
+  Building wheel for nsealr-vault (pyproject.toml): finished with status 'done'
+  Created wheel for nsealr-vault: filename=nsealr_vault-0.1.0-py3-none-any.whl size=42849 sha256=46af8ec7b4ab991d8dc392293a3329f8aad277c46e4cc961e449496293d8cde4
+  Stored in directory: /home/tux/nsealr/.restart-tools/goal/s01-integration/docs/restart/implementation/S01/.work/runtime/.tools/tmp/pip-ephem-wheel-cache-h48u5sk0/wheels/72/51/0c/1a9988c7006eb841f26b0ae24a1263fc56713da8501a12b21a
+Successfully built nsealr-vault
+Installing collected packages: nsealr-vault
+  Attempting uninstall: nsealr-vault
+    Found existing installation: nsealr-vault 0.1.0
+    Uninstalling nsealr-vault-0.1.0:
+      Successfully uninstalled nsealr-vault-0.1.0
+Successfully installed nsealr-vault-0.1.0
+make[2]: Leaving directory '/home/tux/nsealr/.restart-tools/goal/s01-integration/docs/restart/implementation/S01/.work/runtime/raspberry'
+
+> @nsealr/companion-workspace@0.1.0 nsealr /home/tux/nsealr/.restart-tools/goal/s01-integration/docs/restart/implementation/S01/.work/runtime/companion
+> pnpm --filter @nsealr/cli nsealr request sign-event --event-template /home/tux/nsealr/.restart-tools/goal/s01-integration/docs/restart/implementation/S01/.work/runtime/.tools/tmp/nsealr-cross-repo-y_z029k3/template.json --out /home/tux/nsealr/.restart-tools/goal/s01-integration/docs/restart/implementation/S01/.work/runtime/.tools/tmp/nsealr-cross-repo-y_z029k3/request.qr --output-format qr
+
+
+> @nsealr/cli@0.1.0 nsealr /home/tux/nsealr/.restart-tools/goal/s01-integration/docs/restart/implementation/S01/.work/runtime/companion/apps/cli
+> node --disable-warning=DEP0205 --import tsx src/index.ts request sign-event --event-template /home/tux/nsealr/.restart-tools/goal/s01-integration/docs/restart/implementation/S01/.work/runtime/.tools/tmp/nsealr-cross-repo-y_z029k3/template.json --out /home/tux/nsealr/.restart-tools/goal/s01-integration/docs/restart/implementation/S01/.work/runtime/.tools/tmp/nsealr-cross-repo-y_z029k3/request.qr --output-format qr
+
+
+> @nsealr/companion-workspace@0.1.0 nsealr /home/tux/nsealr/.restart-tools/goal/s01-integration/docs/restart/implementation/S01/.work/runtime/companion
+> pnpm --filter @nsealr/cli nsealr review-request --request /home/tux/nsealr/.restart-tools/goal/s01-integration/docs/restart/implementation/S01/.work/runtime/.tools/tmp/nsealr-cross-repo-y_z029k3/request.qr --request-format qr --author-pubkey 17162c921dc4d2518f9a101db33695df1afb56ab82f5ff3e5da6eec3ca5cd917 --out /home/tux/nsealr/.restart-tools/goal/s01-integration/docs/restart/implementation/S01/.work/runtime/.tools/tmp/nsealr-cross-repo-y_z029k3/companion-review.json
+
+
+> @nsealr/cli@0.1.0 nsealr /home/tux/nsealr/.restart-tools/goal/s01-integration/docs/restart/implementation/S01/.work/runtime/companion/apps/cli
+> node --disable-warning=DEP0205 --import tsx src/index.ts review-request --request /home/tux/nsealr/.restart-tools/goal/s01-integration/docs/restart/implementation/S01/.work/runtime/.tools/tmp/nsealr-cross-repo-y_z029k3/request.qr --request-format qr --author-pubkey 17162c921dc4d2518f9a101db33695df1afb56ab82f5ff3e5da6eec3ca5cd917 --out /home/tux/nsealr/.restart-tools/goal/s01-integration/docs/restart/implementation/S01/.work/runtime/.tools/tmp/nsealr-cross-repo-y_z029k3/companion-review.json
+
+
+> @nsealr/companion-workspace@0.1.0 nsealr /home/tux/nsealr/.restart-tools/goal/s01-integration/docs/restart/implementation/S01/.work/runtime/companion
+> pnpm --filter @nsealr/cli nsealr review-request --request /home/tux/nsealr/.restart-tools/goal/s01-integration/docs/restart/implementation/S01/.work/runtime/.tools/tmp/nsealr-cross-repo-y_z029k3/request.qr --request-format qr --screen-review --author-pubkey 17162c921dc4d2518f9a101db33695df1afb56ab82f5ff3e5da6eec3ca5cd917 --out /home/tux/nsealr/.restart-tools/goal/s01-integration/docs/restart/implementation/S01/.work/runtime/.tools/tmp/nsealr-cross-repo-y_z029k3/companion-screen-review.json
+
+
+> @nsealr/cli@0.1.0 nsealr /home/tux/nsealr/.restart-tools/goal/s01-integration/docs/restart/implementation/S01/.work/runtime/companion/apps/cli
+> node --disable-warning=DEP0205 --import tsx src/index.ts review-request --request /home/tux/nsealr/.restart-tools/goal/s01-integration/docs/restart/implementation/S01/.work/runtime/.tools/tmp/nsealr-cross-repo-y_z029k3/request.qr --request-format qr --screen-review --author-pubkey 17162c921dc4d2518f9a101db33695df1afb56ab82f5ff3e5da6eec3ca5cd917 --out /home/tux/nsealr/.restart-tools/goal/s01-integration/docs/restart/implementation/S01/.work/runtime/.tools/tmp/nsealr-cross-repo-y_z029k3/companion-screen-review.json
+
+
+> @nsealr/companion-workspace@0.1.0 nsealr /home/tux/nsealr/.restart-tools/goal/s01-integration/docs/restart/implementation/S01/.work/runtime/companion
+> pnpm --filter @nsealr/cli nsealr review-request --request /home/tux/nsealr/.restart-tools/goal/s01-integration/docs/restart/implementation/S01/.work/runtime/.tools/tmp/nsealr-cross-repo-y_z029k3/request.qr --request-format qr --detail-pages --author-pubkey 17162c921dc4d2518f9a101db33695df1afb56ab82f5ff3e5da6eec3ca5cd917 --max-title-chars 18 --max-body-lines 5 --max-line-chars 26 --max-compact-body-lines 9 --max-compact-line-chars 48 --out /home/tux/nsealr/.restart-tools/goal/s01-integration/docs/restart/implementation/S01/.work/runtime/.tools/tmp/nsealr-cross-repo-y_z029k3/companion-detail-pages.json
+
+
+> @nsealr/cli@0.1.0 nsealr /home/tux/nsealr/.restart-tools/goal/s01-integration/docs/restart/implementation/S01/.work/runtime/companion/apps/cli
+> node --disable-warning=DEP0205 --import tsx src/index.ts review-request --request /home/tux/nsealr/.restart-tools/goal/s01-integration/docs/restart/implementation/S01/.work/runtime/.tools/tmp/nsealr-cross-repo-y_z029k3/request.qr --request-format qr --detail-pages --author-pubkey 17162c921dc4d2518f9a101db33695df1afb56ab82f5ff3e5da6eec3ca5cd917 --max-title-chars 18 --max-body-lines 5 --max-line-chars 26 --max-compact-body-lines 9 --max-compact-line-chars 48 --out /home/tux/nsealr/.restart-tools/goal/s01-integration/docs/restart/implementation/S01/.work/runtime/.tools/tmp/nsealr-cross-repo-y_z029k3/companion-detail-pages.json
+
+
+> @nsealr/companion-workspace@0.1.0 nsealr /home/tux/nsealr/.restart-tools/goal/s01-integration/docs/restart/implementation/S01/.work/runtime/companion
+> pnpm --filter @nsealr/cli nsealr verify-response --request /home/tux/nsealr/.restart-tools/goal/s01-integration/docs/restart/implementation/S01/.work/runtime/.tools/tmp/nsealr-cross-repo-y_z029k3/request.qr --request-format qr --response /home/tux/nsealr/.restart-tools/goal/s01-integration/docs/restart/implementation/S01/.work/runtime/.tools/tmp/nsealr-cross-repo-y_z029k3/response.qr --response-format qr
+
+
+> @nsealr/cli@0.1.0 nsealr /home/tux/nsealr/.restart-tools/goal/s01-integration/docs/restart/implementation/S01/.work/runtime/companion/apps/cli
+> node --disable-warning=DEP0205 --import tsx src/index.ts verify-response --request /home/tux/nsealr/.restart-tools/goal/s01-integration/docs/restart/implementation/S01/.work/runtime/.tools/tmp/nsealr-cross-repo-y_z029k3/request.qr --request-format qr --response /home/tux/nsealr/.restart-tools/goal/s01-integration/docs/restart/implementation/S01/.work/runtime/.tools/tmp/nsealr-cross-repo-y_z029k3/response.qr --response-format qr
+
+response verified
+
+> @nsealr/companion-workspace@0.1.0 nsealr /home/tux/nsealr/.restart-tools/goal/s01-integration/docs/restart/implementation/S01/.work/runtime/companion
+> pnpm --filter @nsealr/cli nsealr verify-response --request /home/tux/nsealr/.restart-tools/goal/s01-integration/docs/restart/implementation/S01/.work/runtime/.tools/tmp/nsealr-cross-repo-y_z029k3/request.qr --request-format qr --response /home/tux/nsealr/.restart-tools/goal/s01-integration/docs/restart/implementation/S01/.work/runtime/.tools/tmp/nsealr-cross-repo-y_z029k3/detail-flow-response.qr --response-format qr
+
+
+> @nsealr/cli@0.1.0 nsealr /home/tux/nsealr/.restart-tools/goal/s01-integration/docs/restart/implementation/S01/.work/runtime/companion/apps/cli
+> node --disable-warning=DEP0205 --import tsx src/index.ts verify-response --request /home/tux/nsealr/.restart-tools/goal/s01-integration/docs/restart/implementation/S01/.work/runtime/.tools/tmp/nsealr-cross-repo-y_z029k3/request.qr --request-format qr --response /home/tux/nsealr/.restart-tools/goal/s01-integration/docs/restart/implementation/S01/.work/runtime/.tools/tmp/nsealr-cross-repo-y_z029k3/detail-flow-response.qr --response-format qr
+
+response verified
+
+> @nsealr/companion-workspace@0.1.0 nsealr /home/tux/nsealr/.restart-tools/goal/s01-integration/docs/restart/implementation/S01/.work/runtime/companion
+> pnpm --filter @nsealr/cli nsealr verify-response --request /home/tux/nsealr/.restart-tools/goal/s01-integration/docs/restart/implementation/S01/.work/runtime/.tools/tmp/nsealr-cross-repo-y_z029k3/request.qr --request-format qr --response /home/tux/nsealr/.restart-tools/goal/s01-integration/docs/restart/implementation/S01/.work/runtime/.tools/tmp/nsealr-cross-repo-y_z029k3/detail-flow-response.qra --response-format qr-animated
+
+
+> @nsealr/cli@0.1.0 nsealr /home/tux/nsealr/.restart-tools/goal/s01-integration/docs/restart/implementation/S01/.work/runtime/companion/apps/cli
+> node --disable-warning=DEP0205 --import tsx src/index.ts verify-response --request /home/tux/nsealr/.restart-tools/goal/s01-integration/docs/restart/implementation/S01/.work/runtime/.tools/tmp/nsealr-cross-repo-y_z029k3/request.qr --request-format qr --response /home/tux/nsealr/.restart-tools/goal/s01-integration/docs/restart/implementation/S01/.work/runtime/.tools/tmp/nsealr-cross-repo-y_z029k3/detail-flow-response.qra --response-format qr-animated
+
+response verified
+
+> @nsealr/companion-workspace@0.1.0 nsealr /home/tux/nsealr/.restart-tools/goal/s01-integration/docs/restart/implementation/S01/.work/runtime/companion
+> pnpm --filter @nsealr/cli nsealr verify-response --request /home/tux/nsealr/.restart-tools/goal/s01-integration/docs/restart/implementation/S01/.work/runtime/.tools/tmp/nsealr-cross-repo-y_z029k3/request.qr --request-format qr --response /home/tux/nsealr/.restart-tools/goal/s01-integration/docs/restart/implementation/S01/.work/runtime/.tools/tmp/nsealr-cross-repo-y_z029k3/seedqr-flow-response.qr --response-format qr
+
+
+> @nsealr/cli@0.1.0 nsealr /home/tux/nsealr/.restart-tools/goal/s01-integration/docs/restart/implementation/S01/.work/runtime/companion/apps/cli
+> node --disable-warning=DEP0205 --import tsx src/index.ts verify-response --request /home/tux/nsealr/.restart-tools/goal/s01-integration/docs/restart/implementation/S01/.work/runtime/.tools/tmp/nsealr-cross-repo-y_z029k3/request.qr --request-format qr --response /home/tux/nsealr/.restart-tools/goal/s01-integration/docs/restart/implementation/S01/.work/runtime/.tools/tmp/nsealr-cross-repo-y_z029k3/seedqr-flow-response.qr --response-format qr
+
+response verified
+
+> @nsealr/companion-workspace@0.1.0 nsealr /home/tux/nsealr/.restart-tools/goal/s01-integration/docs/restart/implementation/S01/.work/runtime/companion
+> pnpm --filter @nsealr/cli nsealr verify-response --request /home/tux/nsealr/.restart-tools/goal/s01-integration/docs/restart/implementation/S01/.work/runtime/.tools/tmp/nsealr-cross-repo-y_z029k3/request.qr --request-format qr --response /home/tux/nsealr/.restart-tools/goal/s01-integration/docs/restart/implementation/S01/.work/runtime/.tools/tmp/nsealr-cross-repo-y_z029k3/nsec-flow-response.qr --response-format qr
+
+
+> @nsealr/cli@0.1.0 nsealr /home/tux/nsealr/.restart-tools/goal/s01-integration/docs/restart/implementation/S01/.work/runtime/companion/apps/cli
+> node --disable-warning=DEP0205 --import tsx src/index.ts verify-response --request /home/tux/nsealr/.restart-tools/goal/s01-integration/docs/restart/implementation/S01/.work/runtime/.tools/tmp/nsealr-cross-repo-y_z029k3/request.qr --request-format qr --response /home/tux/nsealr/.restart-tools/goal/s01-integration/docs/restart/implementation/S01/.work/runtime/.tools/tmp/nsealr-cross-repo-y_z029k3/nsec-flow-response.qr --response-format qr
+
+response verified
+nSealr cross-repo Raspberry QR flow/companion smoke test passed
+.venv/bin/python scripts/integration_smartcard_companion.py
+
+> @nsealr/companion-workspace@0.1.0 build /home/tux/nsealr/.restart-tools/goal/s01-integration/docs/restart/implementation/S01/.work/runtime/companion
+> node scripts/build_packages.mjs
+
+nSealr package build artifacts generated
+
+> @nsealr/companion-workspace@0.1.0 nsealr /home/tux/nsealr/.restart-tools/goal/s01-integration/docs/restart/implementation/S01/.work/runtime/companion
+> pnpm --filter @nsealr/cli nsealr request sign-event --event-template /home/tux/nsealr/.restart-tools/goal/s01-integration/docs/restart/implementation/S01/.work/runtime/.tools/tmp/nsealr-smartcard-cross-repo-8gi0y9p7/template.json --out /home/tux/nsealr/.restart-tools/goal/s01-integration/docs/restart/implementation/S01/.work/runtime/.tools/tmp/nsealr-smartcard-cross-repo-8gi0y9p7/request.json
+
+
+> @nsealr/cli@0.1.0 nsealr /home/tux/nsealr/.restart-tools/goal/s01-integration/docs/restart/implementation/S01/.work/runtime/companion/apps/cli
+> node --disable-warning=DEP0205 --import tsx src/index.ts request sign-event --event-template /home/tux/nsealr/.restart-tools/goal/s01-integration/docs/restart/implementation/S01/.work/runtime/.tools/tmp/nsealr-smartcard-cross-repo-8gi0y9p7/template.json --out /home/tux/nsealr/.restart-tools/goal/s01-integration/docs/restart/implementation/S01/.work/runtime/.tools/tmp/nsealr-smartcard-cross-repo-8gi0y9p7/request.json
+
+
+> @nsealr/companion-workspace@0.1.0 nsealr /home/tux/nsealr/.restart-tools/goal/s01-integration/docs/restart/implementation/S01/.work/runtime/companion
+> pnpm --filter @nsealr/cli nsealr review-request --request /home/tux/nsealr/.restart-tools/goal/s01-integration/docs/restart/implementation/S01/.work/runtime/.tools/tmp/nsealr-smartcard-cross-repo-8gi0y9p7/request.json --screen-review --out /home/tux/nsealr/.restart-tools/goal/s01-integration/docs/restart/implementation/S01/.work/runtime/.tools/tmp/nsealr-smartcard-cross-repo-8gi0y9p7/screen-review.json
+
+
+> @nsealr/cli@0.1.0 nsealr /home/tux/nsealr/.restart-tools/goal/s01-integration/docs/restart/implementation/S01/.work/runtime/companion/apps/cli
+> node --disable-warning=DEP0205 --import tsx src/index.ts review-request --request /home/tux/nsealr/.restart-tools/goal/s01-integration/docs/restart/implementation/S01/.work/runtime/.tools/tmp/nsealr-smartcard-cross-repo-8gi0y9p7/request.json --screen-review --out /home/tux/nsealr/.restart-tools/goal/s01-integration/docs/restart/implementation/S01/.work/runtime/.tools/tmp/nsealr-smartcard-cross-repo-8gi0y9p7/screen-review.json
+
+
+> @nsealr/companion-workspace@0.1.0 nsealr /home/tux/nsealr/.restart-tools/goal/s01-integration/docs/restart/implementation/S01/.work/runtime/companion
+> pnpm --filter @nsealr/cli nsealr smartcard-sim-sign --secret-key 1111111111111111111111111111111111111111111111111111111111111111 --request /home/tux/nsealr/.restart-tools/goal/s01-integration/docs/restart/implementation/S01/.work/runtime/.tools/tmp/nsealr-smartcard-cross-repo-8gi0y9p7/request.json --review-acknowledged --approval-digest c3fde4e8c16f3e9bf1c7aa91ce19f7c5e4b9e7eb7eda4cf2962b46a6d7749397 --out /home/tux/nsealr/.restart-tools/goal/s01-integration/docs/restart/implementation/S01/.work/runtime/.tools/tmp/nsealr-smartcard-cross-repo-8gi0y9p7/response.json
+
+
+> @nsealr/cli@0.1.0 nsealr /home/tux/nsealr/.restart-tools/goal/s01-integration/docs/restart/implementation/S01/.work/runtime/companion/apps/cli
+> node --disable-warning=DEP0205 --import tsx src/index.ts smartcard-sim-sign --secret-key 1111111111111111111111111111111111111111111111111111111111111111 --request /home/tux/nsealr/.restart-tools/goal/s01-integration/docs/restart/implementation/S01/.work/runtime/.tools/tmp/nsealr-smartcard-cross-repo-8gi0y9p7/request.json --review-acknowledged --approval-digest c3fde4e8c16f3e9bf1c7aa91ce19f7c5e4b9e7eb7eda4cf2962b46a6d7749397 --out /home/tux/nsealr/.restart-tools/goal/s01-integration/docs/restart/implementation/S01/.work/runtime/.tools/tmp/nsealr-smartcard-cross-repo-8gi0y9p7/response.json
+
+
+> @nsealr/companion-workspace@0.1.0 nsealr /home/tux/nsealr/.restart-tools/goal/s01-integration/docs/restart/implementation/S01/.work/runtime/companion
+> pnpm --filter @nsealr/cli nsealr verify-response --request /home/tux/nsealr/.restart-tools/goal/s01-integration/docs/restart/implementation/S01/.work/runtime/.tools/tmp/nsealr-smartcard-cross-repo-8gi0y9p7/request.json --response /home/tux/nsealr/.restart-tools/goal/s01-integration/docs/restart/implementation/S01/.work/runtime/.tools/tmp/nsealr-smartcard-cross-repo-8gi0y9p7/response.json
+
+
+> @nsealr/cli@0.1.0 nsealr /home/tux/nsealr/.restart-tools/goal/s01-integration/docs/restart/implementation/S01/.work/runtime/companion/apps/cli
+> node --disable-warning=DEP0205 --import tsx src/index.ts verify-response --request /home/tux/nsealr/.restart-tools/goal/s01-integration/docs/restart/implementation/S01/.work/runtime/.tools/tmp/nsealr-smartcard-cross-repo-8gi0y9p7/request.json --response /home/tux/nsealr/.restart-tools/goal/s01-integration/docs/restart/implementation/S01/.work/runtime/.tools/tmp/nsealr-smartcard-cross-repo-8gi0y9p7/response.json
+
+response verified
+nSealr smartcard local-service acknowledgement boundary passed
+nSealr cross-repo smartcard companion simulator smoke test passed
+make[1]: Leaving directory '/home/tux/nsealr/.restart-tools/goal/s01-integration/docs/restart/implementation/S01/.work/runtime/lab'

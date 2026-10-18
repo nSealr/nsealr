@@ -1,0 +1,54 @@
+{
+  "phase": "S01 core snapshot and cross-repository integration",
+  "author": "/root/baseline_execution",
+  "specification_brief_commit": "408645802b442c942a0d4da3ee6d179406553616",
+  "specification_review": "integration-spec-review.json",
+  "core_input_commit": "9194e292aa8a3176874cc9bf5814cefc26b6fe1a",
+  "tested_input_commits": {
+    "nsealr": "41f5d2d193e4a00227737e1f8d71ce57e39ea889",
+    "companion": "678796900e462f5504e47fe934e2e5f23d85824f",
+    "specs": "45f8b6ff1123f3f55be4ce457fd1008e91043cc2",
+    "raspberry": "d1534d9dcfba8fe4a35cea2ed3529e32a5003dc6",
+    "lab": "3303ab17a28ed32419576627d5abb93db3999635",
+    "hardware": "340697d6713a671e9e01b0dc874ec999ab071601",
+    "smartcard": "ec5da94a05882122e8a794f55f1af3f96a95c696",
+    "website": "9cec39a89d6a2d2cc5747b8aae9d4b47a52eb7cd"
+  },
+  "overlay_helper_candidate": "23e8b376ec8bcc7c2c46368aac5b4ac272f8022f",
+  "snapshot_candidate": "41f5d2d193e4a00227737e1f8d71ce57e39ea889",
+  "result": "all eight software suites and one uninterrupted20-step integration passed",
+  "cold_install": false,
+  "isolation": "Fresh clean depth1 tracked checkouts; owned copies of retained pinned R00 runtimes/dependency caches; host kernel/libc/compiler/TLS roots and HOME remain inputs",
+  "fixture_inventory": {
+    "complete_files": 221,
+    "changed_raw_paths": 22,
+    "comparison_count": 546,
+    "specs_commit": "45f8b6ff1123f3f55be4ce457fd1008e91043cc2"
+  },
+  "declared_lab_overlays": [
+    "../../../../tools/baseline/overlays/lab-provenance.json",
+    "lab-metadata-v1.json"
+  ],
+  "observed_counts": {
+    "core_unit": 227,
+    "core_secret_boundary": 4,
+    "simulator": 20,
+    "specs": 92,
+    "companion_passed": 716,
+    "companion_live_skipped": 1,
+    "raspberry": 150,
+    "smartcard": 40,
+    "hardware_documentation": 43,
+    "website": 9,
+    "lab": 157
+  },
+  "inherited_failure_disposition": "Original SOURCE checker and v0-only negative discovery fail as expected and are saved; declared overlays correct only these tooling consumers. Current companion API freshness and API-review gates pass; historical R00 failure evidence remains unchanged.",
+  "tracked_source_after": "Only four declared lab-overlay files differ; hardware/website compileall creates untracked bytecode, preserved in source-after records.",
+  "limits": [
+    "Native simulator executes its declared categories; the complete snapshot also retains categories excluded by that harness. Python/specs and TypeScript consumers exercise metadata-v1.",
+    "Live relay, installed interactive browsers and identified physical device approval/signing remain untested; see evidence/suites/skips.json. Safe-probe/simulator success is not hardware qualification.",
+    "This integration evidence does not self-approve the broader S01 task, merge repositories, close task state or replace the distinct Bridge/specs security reviews."
+  ],
+  "final_review_required": true,
+  "artifact_scan": "Selected logs/metadata only; no private history or credentials copied. Common credential-token pattern scan found no matches; public fixture data and local source paths remain."
+}
