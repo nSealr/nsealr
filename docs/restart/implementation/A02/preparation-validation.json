@@ -1,0 +1,51 @@
+{
+  "checked_utc": "2026-10-18T16:41:32.804096+00:00",
+  "scope": "Preparation only: syntax, source-object hashes, structural validator and document whitespace. No product/rehearsal acceptance run.",
+  "commands": [
+    {
+      "label": "restart-plan",
+      "command": [
+        "python3",
+        "scripts/validate_restart_plan.py"
+      ],
+      "cwd": "/home/tux/nsealr/.restart-tools/goal/a02",
+      "exit_code": 0,
+      "stdout": "Restart plan valid: 47 tasks; ready: E01\nStructural check only; hardware, review quality and security remain evidence gates.\n",
+      "stderr": ""
+    },
+    {
+      "label": "staged-whitespace",
+      "command": [
+        "git",
+        "diff",
+        "--cached",
+        "--check"
+      ],
+      "cwd": "/home/tux/nsealr/.restart-tools/goal/a02",
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ""
+    }
+  ],
+  "initial_check_note": {
+    "command": "git diff --no-index --check /dev/null docs/restart/implementation/A02/brief.md",
+    "exit_code": 1,
+    "stdout": "",
+    "stderr": "",
+    "classification": "No-index reported file differences without whitespace diagnostics. Replaced validation invocation with staged git diff --check; passing result recorded above."
+  },
+  "json_files_valid": [
+    "input-notes.json",
+    "source-observations.json"
+  ],
+  "rechecked_source_paths": 51,
+  "artifact_sha256": {
+    "brief.md": "b5fc06015b8edd2111688f7e81ca8860d25290a7cf5672bb5761fa0b0592bb20",
+    "input-notes.json": "ec6ace854eab78923f91709f4ee979e88b2a3a9965bccca32ece5cacc7392255",
+    "source-observations.json": "ea945ba2eba4843e46717549220dbd4c6f39d1289bf21a410d4e3995f2c25fab"
+  },
+  "limits": [
+    "The base graph predates dependency/metadata reconciliation. A structural pass does not authorize implementation or close A02.",
+    "Distinct specification review and final S01 tuple reconciliation remain required."
+  ]
+}

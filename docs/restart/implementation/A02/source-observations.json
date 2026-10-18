@@ -1,0 +1,606 @@
+{
+  "observed_utc": "2026-10-18T16:40:34.520672+00:00",
+  "kind": "preparatory_read_only_source_observation",
+  "method": [
+    "git -C REPO rev-parse COMMIT^{tree}",
+    "git -C REPO ls-tree -r -z COMMIT",
+    "git -C REPO show COMMIT:PATH",
+    "git -C REPO for-each-ref --format=%(refname) %(objectname) %(*objectname) refs/tags"
+  ],
+  "limits": [
+    "Pins are historical Git objects, not copied worktree content.",
+    "Per-path hashes identify the source surfaces inspected or inventoried; no execution or full security audit is claimed.",
+    "Local tag observations can lag remote tags; final import must reconcile remote evidence refs and verify peeled commits.",
+    "No private Git history or private source content is imported by this observation.",
+    "Root licenses do not resolve nested third-party rights."
+  ],
+  "repositories": [
+    {
+      "repository": "nSealr/nsealr",
+      "commit": "1df3eb421e7a0aa3c64964601d80c6c1a4577a99",
+      "tree": "35c512966eb618ce3fd666c463bd1010ebf66660",
+      "tracked_file_count": 2655,
+      "root_license": {
+        "path": "LICENSE",
+        "sha256": "29162f01bca1fe74659e6da905b5c4d14c87df052bf92de1e60336cf02bb1b09",
+        "first_line": "MIT License"
+      },
+      "inspected_or_inventoried_paths": [
+        {
+          "path": "Cargo.toml",
+          "mode": "100644",
+          "kind": "blob",
+          "blob": "323049e8b1b17d6fa8387ab6f61f20147b44fe91",
+          "sha256": "056d5245eb259bb54f567622b610f959073848c3e01720b96ec4743f5d962747",
+          "bytes": 1252
+        },
+        {
+          "path": "Cargo.lock",
+          "mode": "100644",
+          "kind": "blob",
+          "blob": "965e36918d4aa6c76a59be6c9d7cb7e545e1753a",
+          "sha256": "92be519cdf623cc5e96fba7420cad3e4cf5ff0f08574f8e5969a65c48df54b1b",
+          "bytes": 5592
+        },
+        {
+          "path": "rust-toolchain.toml",
+          "mode": "100644",
+          "kind": "blob",
+          "blob": "fb1dd8c5ba2d39ec0608c02277260dcd31cb81f5",
+          "sha256": "50811dc099ce423f19f532710f53045903af72848e441397ed241266cb1541c7",
+          "bytes": 593
+        },
+        {
+          "path": ".cargo/config.toml",
+          "mode": "100644",
+          "kind": "blob",
+          "blob": "45b3191a534a276dc461b7d286687565777b331b",
+          "sha256": "98e1cf108d2b5aa2ff9d9fb6f58df4d0332df3a85411cf8c1249c615edecf625",
+          "bytes": 716
+        },
+        {
+          "path": "Makefile",
+          "mode": "100644",
+          "kind": "blob",
+          "blob": "651128220e5068a5a833621a05a4e1ebb83cd576",
+          "sha256": "c821598a95c1e971e36072371b85cb85dede3fbe1d53a4dbb4c98d31a899545e",
+          "bytes": 2957
+        },
+        {
+          "path": ".github/workflows/ci.yml",
+          "mode": "100644",
+          "kind": "blob",
+          "blob": "4850f9beeebfa8a8e2a70a888a6249ae7957863b",
+          "sha256": "5a9cfe4b8af9546aa3662c3a6f33ddbb76761795447f8034e7b3e40270f1f835",
+          "bytes": 855
+        },
+        {
+          "path": "crates/nsealr-core/Cargo.toml",
+          "mode": "100644",
+          "kind": "blob",
+          "blob": "d1e390044d1ee304b7772fad3589a728bc697adb",
+          "sha256": "628a4f6591a0b6b5d8406bad3dc849e304f01d4a54394c530809967ebe0728e4",
+          "bytes": 652
+        },
+        {
+          "path": "crates/nsealr-core/src/protocol.rs",
+          "mode": "100644",
+          "kind": "blob",
+          "blob": "406d77704d4bd3d5e56e15360ea94c3e738aef2f",
+          "sha256": "c0ae1f165ae375486665b1198fd5edd7cacb24caf186d7de43695bd147b944eb",
+          "bytes": 55238
+        },
+        {
+          "path": "crates/nsealr-core/src/review/test_fixtures.rs",
+          "mode": "100644",
+          "kind": "blob",
+          "blob": "fa9a7cf28ca644dc3f4d08a82af87d80379371f3",
+          "sha256": "739f42d85218bc818e163dea1d059bc7687ee4f5c7d2d32d0bd1ce19011d942e",
+          "bytes": 7303
+        },
+        {
+          "path": "apps/desktop-simulator/Cargo.toml",
+          "mode": "100644",
+          "kind": "blob",
+          "blob": "51597af457cf8c4a9494d4b8f5a1ec716dcf9080",
+          "sha256": "ffd51a641452a8d439df3a3540a33f655a07dfb23543fbc7fb1dc6ab2f296d7d",
+          "bytes": 1537
+        },
+        {
+          "path": "apps/desktop-simulator/src/lib.rs",
+          "mode": "100644",
+          "kind": "blob",
+          "blob": "5995d2a326265cfe94bd8a4d0008b2d204baa19d",
+          "sha256": "570e46a728b43561d6843e381b94f17d892eebd2809e0ab067055d6e4edae5bf",
+          "bytes": 10931
+        },
+        {
+          "path": "scripts/validate_restart_plan.py",
+          "mode": "100644",
+          "kind": "blob",
+          "blob": "866c6a92e8ddc40c7075960caf99c533a6287b4a",
+          "sha256": "aebf3568afd1e868e4dc2bb8754e14a67f3a34053da907f9be24f6297900010c",
+          "bytes": 11226
+        },
+        {
+          "path": "tools/baseline/inputs.json",
+          "mode": "100644",
+          "kind": "blob",
+          "blob": "a7e08c25f6e32cb33f5155c84255822efcc268ca",
+          "sha256": "546067e92916c93d58ac7e063f79ba7b279eca7f73be9d7f86baec97e6642e59",
+          "bytes": 6729
+        },
+        {
+          "path": "tools/baseline/run.py",
+          "mode": "100644",
+          "kind": "blob",
+          "blob": "9a30b2578cc2388c3cced89a2e3e6ebeb8195379",
+          "sha256": "602a3161fdc5231730ae1fb216b05e746fb6d8a8c64ebc6482a3f9c210f5491d",
+          "bytes": 4283
+        },
+        {
+          "path": "docs/restart/implementation/A01/disposition.md",
+          "mode": "100644",
+          "kind": "blob",
+          "blob": "254f5b10bc05aa55efb44032d2ae7dde999942ce",
+          "sha256": "a7a28a5ffe953c30d625b893b13e1561da1448909b0fa174c9c055ab27fab7b5",
+          "bytes": 10522
+        },
+        {
+          "path": "docs/restart/implementation/A01/review.json",
+          "mode": "100644",
+          "kind": "blob",
+          "blob": "c8dd6bf8a1b0aa1b6773c71152513504c67051c7",
+          "sha256": "5b9fc9fa2b9385bd913494a0b8b7f001711a5ac5588109fada896b0980609db9",
+          "bytes": 13177
+        }
+      ],
+      "local_tags_at_observation": [
+        "refs/tags/evidence/a01-reviewed-20261018 51a0d2a88618fc73fd0263b3122359bc2c7a85e3 ",
+        "refs/tags/evidence/e01-reviewed-20261018 89943be5a52ce43058d446da640b5fb550a124d3 ",
+        "refs/tags/evidence/o01-reviewed-20261018 b040f03a203c61e54e272c3f8bee028c9ee083cf ",
+        "refs/tags/evidence/p01-reviewed-20261018 df4cff34b4733aaac04db9b176db7c4edfc256d8 ",
+        "refs/tags/evidence/r00-controls-20261018 5053dcd734e25ed3d77fa4df2968d5313812c1ed ",
+        "refs/tags/evidence/r00-full-20261018 f853757a5080003036aacb797999410398816f16 ",
+        "refs/tags/evidence/r00-relative-20261018 e1336ef4c062ef37cecd00c96e20f551c02ecd31 ",
+        "refs/tags/evidence/r00-reviewed-20261018 303b4c9d9386147220abaf2cf754c5c47e458dff ",
+        "refs/tags/evidence/s02-reviewed-20261018 61641047d13b5bb265246b181edc38f4dc2073e7 "
+      ],
+      "tracked_fixture_snapshot_files": 223
+    },
+    {
+      "repository": "nSealr/companion",
+      "commit": "678796900e462f5504e47fe934e2e5f23d85824f",
+      "tree": "4a5c5fc349dfef6516d6e7871f8c94fae8a16354",
+      "tracked_file_count": 617,
+      "root_license": {
+        "path": "LICENSE",
+        "sha256": "29162f01bca1fe74659e6da905b5c4d14c87df052bf92de1e60336cf02bb1b09",
+        "first_line": "MIT License"
+      },
+      "inspected_or_inventoried_paths": [
+        {
+          "path": "package.json",
+          "mode": "100644",
+          "kind": "blob",
+          "blob": "8a5b4a2a387d17e68d7483a24707068480581f6f",
+          "sha256": "f3b4eeb17e87c6ad52783f419a03b730c3c82ff511eccb938102b2cb760fb570",
+          "bytes": 2639
+        },
+        {
+          "path": "pnpm-workspace.yaml",
+          "mode": "100644",
+          "kind": "blob",
+          "blob": "c263bee35b4a4d34ce4666289ed3df73183b52ab",
+          "sha256": "7b7754bc7d237d1b8593b8cc94f1997ba735a80b0695a6dc6c63ef87749869ed",
+          "bytes": 41
+        },
+        {
+          "path": "pnpm-lock.yaml",
+          "mode": "100644",
+          "kind": "blob",
+          "blob": "a21a3b751f0f03bee15e7144023af52e579a487e",
+          "sha256": "5760e8832bbe4c5b8dee99b00b038124de04357005c884738ccca04f087cffdc",
+          "bytes": 54598
+        },
+        {
+          "path": "tsconfig.json",
+          "mode": "100644",
+          "kind": "blob",
+          "blob": "ecbc4171e0ed7266899f671a5d39f2c0be53e4d3",
+          "sha256": "d2954139eff102c4a5dde07c7dca631ef5cec9c6e4023addd0375f3c7bf04a56",
+          "bytes": 409
+        },
+        {
+          "path": "scripts/package_set.mjs",
+          "mode": "100644",
+          "kind": "blob",
+          "blob": "276e16a22932fcb5ef377513d6e61b81edf6e74e",
+          "sha256": "8717c216622501c8bc42190e9b0d404ada70223210aeb796e558f963c7ce89e4",
+          "bytes": 8555
+        },
+        {
+          "path": "scripts/build_packages.mjs",
+          "mode": "100644",
+          "kind": "blob",
+          "blob": "a50638d696b3e2ec4e9d26e39d5d7c934f44800a",
+          "sha256": "00d8ac2225e039dda7b517d82873afee06d9d3c7489b3a8c67fe04a9a6e88936",
+          "bytes": 2165
+        },
+        {
+          "path": "packages/sdk/package.json",
+          "mode": "100644",
+          "kind": "blob",
+          "blob": "059ebb85d60fbee982780acf020e7fac670c58a9",
+          "sha256": "6ac790114ed20fae9f450d5769467b905a9f9634334e8ab860d0a938c79ea789",
+          "bytes": 1341
+        },
+        {
+          "path": "packages/sdk/src/index.ts",
+          "mode": "100644",
+          "kind": "blob",
+          "blob": "28dcf2a5c1a81de581779bab94ca12db6eae3574",
+          "sha256": "788da92c641bd2479b600ac5a794e4efbafcf583d60b6bbb202bb0ba820ebdae",
+          "bytes": 557
+        },
+        {
+          "path": "packages/sdk/src/browser.ts",
+          "mode": "100644",
+          "kind": "blob",
+          "blob": "41dfa3bb461d3451adfd653bd04e06b70b65906d",
+          "sha256": "32c6b96b492cf8d7fb6a1cf2e9a71c2c4a1c76c0d79c42be33f75486152bd1fa",
+          "bytes": 400
+        },
+        {
+          "path": "packages/fixtures/src/specs-root.ts",
+          "mode": "100644",
+          "kind": "blob",
+          "blob": "a0aad601794f14b7a120c062df49dc88a99393c4",
+          "sha256": "57e54041acc54e87498d529db5372c1e97a8b34960313fd43990a0d836248ee6",
+          "bytes": 522
+        },
+        {
+          "path": "apps/cli/package.json",
+          "mode": "100644",
+          "kind": "blob",
+          "blob": "d4fab985a6c6da8992b4fa5e51f055eefd319635",
+          "sha256": "289e5eb78c9b17055691ac8f24447c4a6351b1e29e7703a6bf381d0d26700057",
+          "bytes": 828
+        },
+        {
+          "path": "apps/cli/src/index.ts",
+          "mode": "100644",
+          "kind": "blob",
+          "blob": "121c649ec20d3758a72505c74e808639daaf05cb",
+          "sha256": "a32a6e58de47441563991308b6454e3a665a73a4f39c8b00f7da27fef93a0faa",
+          "bytes": 76365
+        },
+        {
+          "path": "apps/sdk-examples/src/index.ts",
+          "mode": "100644",
+          "kind": "blob",
+          "blob": "22652841a40071889a2e13185f7e4929ea05da59",
+          "sha256": "2ffef8899d0ef0323c1b12705f3f4eb07f9c61a3e45392d038a8b1878df4f54b",
+          "bytes": 17126
+        }
+      ],
+      "local_tags_at_observation": [
+        "refs/tags/evidence/s01-reviewed-20261018 9e023ccef300ddeb738c377fe68b130a94123477 "
+      ],
+      "tracked_fixture_snapshot_files": 225
+    },
+    {
+      "repository": "nSealr/raspberry",
+      "commit": "d1534d9dcfba8fe4a35cea2ed3529e32a5003dc6",
+      "tree": "01f23b340f2f37e555494f6c9ac0a37a8d88fd31",
+      "tracked_file_count": 117,
+      "root_license": {
+        "path": "LICENSE",
+        "sha256": "29162f01bca1fe74659e6da905b5c4d14c87df052bf92de1e60336cf02bb1b09",
+        "first_line": "MIT License"
+      },
+      "inspected_or_inventoried_paths": [
+        {
+          "path": "pyproject.toml",
+          "mode": "100644",
+          "kind": "blob",
+          "blob": "33baaa106d3c495ef6f3eab5e55eb5f590b50f4a",
+          "sha256": "dbc0a40444aac192cb1f81aac81016c8acdb1fe1ba27517ffa6c72e3f792cc74",
+          "bytes": 435
+        },
+        {
+          "path": "requirements.txt",
+          "mode": "100644",
+          "kind": "blob",
+          "blob": "b47782cb9e50c51364126957be9418cb13848635",
+          "sha256": "e2c6fe9b44a722be20de11f460664078e462fd8e21587c5d959de38813890110",
+          "bytes": 33
+        },
+        {
+          "path": "Makefile",
+          "mode": "100644",
+          "kind": "blob",
+          "blob": "16ce0de4e478738f5a2705fdcd0cdce8e0303a8f",
+          "sha256": "58e15e7e370b16b658019fe4ae835143a375cce38882ef37ffe0b814fc1aafc3",
+          "bytes": 690
+        },
+        {
+          "path": "app/nsealr_vault/crypto.py",
+          "mode": "100644",
+          "kind": "blob",
+          "blob": "90e221f04002fee1d880c8e89d769a85e0128a45",
+          "sha256": "8f5638ee65ff7dc9ef5ec97cf7b2bb3e8f72e54d30cbe3f36472b66ccfb1373e",
+          "bytes": 2954
+        },
+        {
+          "path": "app/nsealr_vault/signer.py",
+          "mode": "100644",
+          "kind": "blob",
+          "blob": "323977a0a1e22dd8958585c64abd2c4c39b3660d",
+          "sha256": "7d91cbe25413630912d70068fd81f4b14a2f1544804b2f4b9ee654c18659d630",
+          "bytes": 5168
+        },
+        {
+          "path": "app/nsealr_vault/adapters.py",
+          "mode": "100644",
+          "kind": "blob",
+          "blob": "8ef02a533e482993e79c563ab36d52ea4cc930c0",
+          "sha256": "23b8707e11fa550013d3e8f6a80ab523b858b3d6ccf7dcfbd19ec0854a99ac25",
+          "bytes": 4362
+        },
+        {
+          "path": "app/nsealr_vault/seed_signer_hardware.py",
+          "mode": "100644",
+          "kind": "blob",
+          "blob": "45d74c786d36e3e8bd9a02c3093ef278bc1b3cb5",
+          "sha256": "c9d2fb3f4c5b17d1e12083b759bed02e22d2676e04041edba15dbb02c64001d3",
+          "bytes": 25078
+        },
+        {
+          "path": "tests/test_vault_core.py",
+          "mode": "100644",
+          "kind": "blob",
+          "blob": "9342eccef7bc1768f8dd255da033249688a03fd2",
+          "sha256": "0951eacfa5adcfd4ddc6b747cd176cfde3da64ee80568b068705234b90b692aa",
+          "bytes": 123375
+        },
+        {
+          "path": "tests/test_seed_signer_hardware.py",
+          "mode": "100644",
+          "kind": "blob",
+          "blob": "d88ced961e925608a84f733deb2f767b9a7b5b03",
+          "sha256": "9db77cbf029bc52392ec475e653012fb717a769e0b8f71fa1ca1f0ccada9743b",
+          "bytes": 26831
+        },
+        {
+          "path": "tests/test_st7789_layout.py",
+          "mode": "100644",
+          "kind": "blob",
+          "blob": "7af9d50a088800dfe700ebf204f4484c6162631f",
+          "sha256": "2431fc19e46e875e0c73851c3625f08e0d2360f844c7b73772ab3fe8d607bd41",
+          "bytes": 2743
+        }
+      ],
+      "local_tags_at_observation": [],
+      "tracked_fixture_snapshot_files": 76
+    },
+    {
+      "repository": "nSealr/specs",
+      "commit": "45f8b6ff1123f3f55be4ce457fd1008e91043cc2",
+      "tree": "6fa7f0530bb4cb05a35aee956a19088325de959b",
+      "tracked_file_count": 295,
+      "root_license": {
+        "path": "LICENSE",
+        "sha256": "e0456cbab4f7b5e7203e678faff37eadbdfef02e822db3b7a52a1dd9d3dc514a",
+        "first_line": "Creative Commons CC0 1.0 Universal"
+      },
+      "inspected_or_inventoried_paths": [
+        {
+          "path": "Makefile",
+          "mode": "100644",
+          "kind": "blob",
+          "blob": "bfc08f750b8eee0eb7f7e36fcb1130a098a5f592",
+          "sha256": "4ac49e5541a5ead3439e361127cac51913e2c51f17c1b7f6086857c16cca37af",
+          "bytes": 485
+        },
+        {
+          "path": "requirements.txt",
+          "mode": "100644",
+          "kind": "blob",
+          "blob": "3ff84a44af989d5a598f7f638137cc221aa71a20",
+          "sha256": "f38f3acde511a32a8346e0acda5483eea29e6dd8a21668c46d9887d5f4fdc1c4",
+          "bytes": 19
+        },
+        {
+          "path": "scripts/verify_specs.py",
+          "mode": "100644",
+          "kind": "blob",
+          "blob": "e9f9f79e56353f437186b59171df4a8e4a50740e",
+          "sha256": "bcd993bb7d52a44f2f32f524612392f6f26b9462f8af10e213c9e166a344c3d0",
+          "bytes": 307436
+        },
+        {
+          "path": "scripts/generate_fixtures.py",
+          "mode": "100644",
+          "kind": "blob",
+          "blob": "d79c0ce118681435fc776a56983f034db4f00838",
+          "sha256": "aadf8b86116f6103d71de9ce2d7ea0c5c9979dfc955b0219a0d5b1b496d6519a",
+          "bytes": 4966
+        },
+        {
+          "path": "docs/S01-metadata-v1.md",
+          "mode": "100644",
+          "kind": "blob",
+          "blob": "70a9c46d77a214a64ded2a7fa93f7a89dd1ee8ba",
+          "sha256": "823b0ba24794f4d0be78115b0359e0bc5ca81f9bb986c15922ee1dd8d125de05",
+          "bytes": 5393
+        },
+        {
+          "path": "tests/test_nip46_response_v1.py",
+          "mode": "100644",
+          "kind": "blob",
+          "blob": "300fc03a11efda9153e76f45f23865db80e8afd5",
+          "sha256": "6da486f3fa5a4162e817040fd31b48e1f47ffe719fec37d5296255689a8c8880",
+          "bytes": 6404
+        },
+        {
+          "path": "tests/test_verify_specs.py",
+          "mode": "100644",
+          "kind": "blob",
+          "blob": "eb3b8830b23d2c47526134ad723472640a3b438e",
+          "sha256": "2e4f59d56805ba0275b8180503d408c06aa28ce75be342e4f0474739a72e9ba8",
+          "bytes": 57284
+        }
+      ],
+      "local_tags_at_observation": [
+        "refs/tags/evidence/s01-oracle-reviewed-20261018 b0022f3dd8b1c2b1bb553c0e5f84e81fb312396a "
+      ],
+      "tracked_fixture_snapshot_files": 0
+    },
+    {
+      "repository": "nSealr/lab",
+      "commit": "3303ab17a28ed32419576627d5abb93db3999635",
+      "tree": "1e3ac62680ecc24d3918e70a74c75733494dd3bb",
+      "tracked_file_count": 149,
+      "root_license": {
+        "path": "LICENSE",
+        "sha256": "e0456cbab4f7b5e7203e678faff37eadbdfef02e822db3b7a52a1dd9d3dc514a",
+        "first_line": "Creative Commons CC0 1.0 Universal"
+      },
+      "inspected_or_inventoried_paths": [
+        {
+          "path": "Makefile",
+          "mode": "100644",
+          "kind": "blob",
+          "blob": "18daa181917541ddc646a580507cecd1aef7c146",
+          "sha256": "87ca45adaa9a0506ec6d99139cc726ef435b013e44b01a6525832326754edc03",
+          "bytes": 2686
+        },
+        {
+          "path": "scripts/integration_support.py",
+          "mode": "100644",
+          "kind": "blob",
+          "blob": "24be1950d1dfecd6ff357f4229ed5740ab436fa2",
+          "sha256": "e0b15e66056d6ac5ae5a82425f1cf2c2f29bf6cbfa8565db6498f73cb8790b20",
+          "bytes": 2390
+        },
+        {
+          "path": "scripts/integration_feature_matrix.py",
+          "mode": "100644",
+          "kind": "blob",
+          "blob": "c5c6fc1c7bf9769179cbfbe2785c936dfeda2183",
+          "sha256": "8d84db1897be2d0f0abbbfea67e55899b079bbe4c75cd8e49a88ea5fb1b190d2",
+          "bytes": 3799
+        },
+        {
+          "path": "scripts/integration_vault_companion.py",
+          "mode": "100644",
+          "kind": "blob",
+          "blob": "461ac2f0285ffebd839aaad61a7167428292a2c9",
+          "sha256": "185fc798b40f662ca514f74e442cf1f80df990dffb70da83ada6cace767a2e2b",
+          "bytes": 29885
+        },
+        {
+          "path": "scripts/integration_hardware_validation.py",
+          "mode": "100644",
+          "kind": "blob",
+          "blob": "89815785c4cd577e64b4ba50de4a4b967df28f68",
+          "sha256": "5236a11890dc173c90f438ecad96d2a936b1bcdb210ce4752daf2b9cbe9fefa5",
+          "bytes": 3309
+        }
+      ],
+      "local_tags_at_observation": [],
+      "tracked_fixture_snapshot_files": 0
+    },
+    {
+      "repository": "nSealr/board-sdk",
+      "commit": "043e64ceb745a323f9a332cc02fae2993388fabe",
+      "tree": "818ada7d6edd6a71aa94ab73e195d5be0e924a26",
+      "tracked_file_count": 4,
+      "root_license": {
+        "path": "LICENSE",
+        "sha256": "25568053e878aa2d966a2c7f48d312fc12f9e7d115fed66728a8b1075d866b45",
+        "first_line": "MIT License"
+      },
+      "inspected_or_inventoried_paths": [],
+      "local_tags_at_observation": [],
+      "tracked_fixture_snapshot_files": 0
+    },
+    {
+      "repository": "nSealr/hardware",
+      "commit": "340697d6713a671e9e01b0dc874ec999ab071601",
+      "tree": "f59e790ff66cf035d44980a5225b3343337a0529",
+      "tracked_file_count": 82,
+      "root_license": {
+        "path": "LICENSE",
+        "sha256": "736ccce80f3081f160339b52801847f671aa50c5b6086bd3195a349545e1ce11",
+        "first_line": "CERN Open Hardware Licence Version 2 - Permissive"
+      },
+      "inspected_or_inventoried_paths": [],
+      "local_tags_at_observation": [],
+      "tracked_fixture_snapshot_files": 7
+    },
+    {
+      "repository": "nSealr/website",
+      "commit": "9cec39a89d6a2d2cc5747b8aae9d4b47a52eb7cd",
+      "tree": "cc168e7ececfb2e4d64bb530cadbfcd4dc2b69a9",
+      "tracked_file_count": 111,
+      "root_license": {
+        "path": "LICENSE",
+        "sha256": "29162f01bca1fe74659e6da905b5c4d14c87df052bf92de1e60336cf02bb1b09",
+        "first_line": "MIT License"
+      },
+      "inspected_or_inventoried_paths": [],
+      "local_tags_at_observation": [],
+      "tracked_fixture_snapshot_files": 0
+    },
+    {
+      "repository": "nSealr/.github",
+      "commit": "67dad0dfea9ced6b822454f504b26c2a04f43021",
+      "tree": "3f38baeb4a3cec3c18df1005733027e2e864605d",
+      "tracked_file_count": 21,
+      "root_license": {
+        "path": "LICENSE",
+        "sha256": "29162f01bca1fe74659e6da905b5c4d14c87df052bf92de1e60336cf02bb1b09",
+        "first_line": "MIT License"
+      },
+      "inspected_or_inventoried_paths": [],
+      "local_tags_at_observation": [],
+      "tracked_fixture_snapshot_files": 0
+    },
+    {
+      "repository": "nSealr/smartcard",
+      "commit": "ec5da94a05882122e8a794f55f1af3f96a95c696",
+      "tree": "c41139680efce9eb58c89a863caf232d80c55d09",
+      "tracked_file_count": 41,
+      "root_license": {
+        "path": "LICENSE",
+        "sha256": "29162f01bca1fe74659e6da905b5c4d14c87df052bf92de1e60336cf02bb1b09",
+        "first_line": "MIT License"
+      },
+      "inspected_or_inventoried_paths": [],
+      "local_tags_at_observation": [],
+      "tracked_fixture_snapshot_files": 17
+    },
+    {
+      "repository": "nSealr/workspace",
+      "commit": "e7d3a2654973628d040354805370f6520e3704ad",
+      "tree": "b9ea1a001f90521c162c81ae070a37250e844c7c",
+      "tracked_file_count": 1056,
+      "root_license": null,
+      "inspected_or_inventoried_paths": [],
+      "local_tags_at_observation": [],
+      "tracked_fixture_snapshot_files": 0
+    },
+    {
+      "repository": "nSealr/hardware-legacy-tropic01-universal",
+      "commit": "699e034f034cd324fe05de94bc01eec04edec88f",
+      "tree": "ccba69e56a7e127ccda0a1539241494a094ec8b9",
+      "tracked_file_count": 122,
+      "root_license": null,
+      "inspected_or_inventoried_paths": [],
+      "local_tags_at_observation": [],
+      "tracked_fixture_snapshot_files": 0
+    }
+  ]
+}
