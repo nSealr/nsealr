@@ -34,13 +34,13 @@ OVERLAYS={
  'test_wrong_declared_commit_is_rejected_before_mutation':('Source fetch requires the exact selected commit; declared migration commit identities cannot be forged.','test_declared_commit_identity_cannot_be_forged'),
  'test_wrong_output_hash_is_rejected_and_not_recorded_as_pass':('Replay verifies every declared postimage before committing; current artifacts bind their own immutable source.','test_forged_postimage_rejected')}
 
-def reconcile(author,target,runtime,out):
+def reconcile(author,target,runtime,out,cold):
  admission=author/'docs/restart/implementation/A02/admission-evidence'
  before=json.loads((admission/'case-dispositions.json').read_bytes());old_python=json.loads((admission/'core-python-cases.json').read_bytes())
  named=runtime/'named-python-execution-01';groups={}
  for name in ['contracts','pi','helpers','root-controls','bootstrap']:
   data=json.loads((named/(name+'.json')).read_bytes());assert data['successful'];groups[name]={r['case_id']:r for r in data['rows']};assert len(groups[name])==data['tests_run']
- cold=runtime/'cold-product-02';full=cold/'evidence/suites/00-product-ci.log';result=json.loads((cold/'evidence/suites/result.json').read_bytes());assert result['all_passed'] and not result['source_changed_after'];log=full.read_text();rust_ids=set(re.findall(r'^test (.+?) \.\.\. ok$',log,re.M))
+ full=cold/'evidence/suites/00-product-ci.log';result=json.loads((cold/'evidence/suites/result.json').read_bytes());assert result['all_passed'] and not result['source_changed_after'];log=full.read_text();rust_ids=set(re.findall(r'^test (.+?) \.\.\. ok$',log,re.M))
  assert read_git(target,'rev-parse','HEAD').decode().strip()==result['input_commits']['nsealr']
  rows=[];seen_after=set();artifact_controls=groups['root-controls']
  def bind(group,name):
@@ -99,4 +99,4 @@ def reconcile(author,target,runtime,out):
  print(json.dumps(summary,sort_keys=True))
 
 if __name__=='__main__':
- p=argparse.ArgumentParser(description=__doc__);p.add_argument('--author-repo',type=Path,required=True);p.add_argument('--target',type=Path,required=True);p.add_argument('--runtime',type=Path,required=True);p.add_argument('--output',type=Path,required=True);a=p.parse_args();reconcile(a.author_repo,a.target,a.runtime,a.output)
+ p=argparse.ArgumentParser(description=__doc__);p.add_argument('--author-repo',type=Path,required=True);p.add_argument('--target',type=Path,required=True);p.add_argument('--runtime',type=Path,required=True);p.add_argument('--cold-runtime',type=Path,required=True);p.add_argument('--output',type=Path,required=True);a=p.parse_args();reconcile(a.author_repo,a.target,a.runtime,a.output,a.cold_runtime)
