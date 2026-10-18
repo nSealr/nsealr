@@ -28,17 +28,27 @@ exact inspected source tuple. Do not implement against moving worktrees.
 Before implementation, the coordinator must publish the bounded assignment,
 reconcile the integrated R00/A01 graph, assign a different spec reviewer, and
 record approval of this exact brief and input notes. Before import, pin the final
-integrated S01 nsealr/companion/specs tuple and its provenance-helper patch; verify
-its post-integration result. S01 is a source-consistency gate here, not an invented
-task-graph dependency. Any changed source affecting this brief needs explicit
-reconciliation and affected review, not silent adoption of latest main.
+integrated S01 nsealr/companion/specs tuple and its corrected provenance-helper
+patch. The checker must reject missing required `SOURCE.json` and fixture changes
+hidden behind dotfile exclusions; correct current snapshot bytes alone do not
+prove those enforcement properties. Record exact helper preimage, postimage and
+patch hashes/manifests, the refreshed coherent active bootstrap input tuple and
+default, renewed distinct review and successful affected integration. The earlier
+`23e8b37` helper and `41f5d2d193e4a00227737e1f8d71ce57e39ea889` snapshot are
+historical observations, not sufficient import admission. S01 is a
+source-consistency gate here, not an invented task-graph dependency. Any changed
+source affecting this brief needs explicit reconciliation and affected review,
+not silent adoption of latest main.
 
 Owned tracked paths are `docs/restart/implementation/A02/` and, after approval,
 `tools/migration/`. The isolated target repository and temporary inputs may be
 created only under the author's ignored runtime directory. No canonical product
 file, other source checkout, main branch, source-repository settings or package
-registry is mutated by A02. A03 owns adoption/redirect publication/archive actions.
-The final reviewer must differ from the implementer and review exact commits.
+registry is mutated by A02. Later adoption, redirect publication and archival are
+coordinator-owned actions under the existing authorization, requiring a separately
+recorded concrete scope and review after the rehearsal. This brief does not invent
+a further task ID; any independently tracked work must first enter the canonical
+graph. The final reviewer must differ from the implementer and review exact commits.
 
 ## Source facts that constrain the design
 
@@ -86,7 +96,7 @@ a reason. No implicit catch-all import from private sources is permitted.
 | same companion | `apps/{browser-extension,cli,consumer-smoke,sdk-examples,service}/` | `apps/bridge/<name>/`; preserve origin/native-message, queue, identity, cancellation, error and non-smartcard consumer behavior. |
 | same companion | Root package/lock/TS/test configuration, selected `scripts/*.mjs`, documentation supporting retained modules, MIT license | Root JS workspace; scripts under `tools/bridge/`; retained docs under `docs/bridge/`; preserve notice under `LICENSES/companion-MIT.txt`. Reconcile collisions explicitly. Do not import package-publishing workflows as enabled release jobs. |
 | same companion | `packages/smartcard/`, smartcard-only CLI/examples/tests and fixture snapshots | Retire active smartcard package/commands and record each removed assertion. Snapshots deduplicate against the contract artifact. Source remains recoverable in its source bundle and public Git history. |
-| raspberry `d1534d9dcfba8fe4a35cea2ed3529e32a5003dc6` | `app/nsealr_vault/`, `tests/test_*.py`, `os/stateless-qr-vault-profile.md`, pyproject/requirements, relevant docs, MIT license | `apps/pi/` with adapter and reference-harness scope stated explicitly. Preserve all three Python test modules. Freeze independent crypto/oracle behavior; do not route oracle expectations through Rust or the SDK. Existing signing harness is not a second newly approved production engine. QP01/K03 must qualify the eventual shared-engine adapter before product support. |
+| raspberry `d1534d9dcfba8fe4a35cea2ed3529e32a5003dc6` | `app/nsealr_vault/`, `tests/test_*.py`, `os/stateless-qr-vault-profile.md`, pyproject/requirements, relevant docs, MIT license | `apps/pi/` with adapter and reference-harness scope stated explicitly. Preserve all three Python test modules. Freeze independent crypto/oracle behavior; do not route oracle expectations through Rust or the SDK. Existing signing harness is not a second newly approved production engine. K01 owns the portable engine, QP01 the exact kit/image feasibility, and Q02 the shared-engine Pi integration and physical qualification before product support. |
 | same raspberry | `tests/fixtures/specs/`, generic cloned repo validators and scaffolding | Deduplicate fixture data; replace only structure assertions with checks for the actual new boundary. Do not retain empty `.gitkeep` directories as proof. |
 | specs `45f8b6ff1123f3f55be4ce457fd1008e91043cc2`, subject to S01 reconciliation | `protocols/`, `schemas/`, `vectors/`, `examples/`, `scripts/verify_specs.py`, `scripts/generate_fixtures.py`, `tests/`, requirements, relevant protocol notes and CC0 license | One artifact `protocols/contracts/v1/` with content, verifier, independent tests, generator and CC0 notice. The artifact's v1 identifies its inventory/schema, not a claim that every inherited wire format is v1. Active smartcard-specific contracts/cases are removed with a per-case ledger; mixed fixtures receive reviewed edits. |
 | lab `3303ab17a28ed32419576627d5abb93db3999635` plus exact approved S01 helper delta | Only named integration scripts, `integration_support.py`, `browser_integration_support.py`, corresponding tests and CC0 license needed by the integration matrix below | `tests/integration/` and `LICENSES/lab-tooling-CC0.txt`, after per-file privacy/notice review. Adapt explicit roots/commands, never import private Git objects/history or private wiki/plans. The helper patch is an independently hashed transformation, not a fictitious lab commit. |
@@ -137,7 +147,8 @@ and runnable existing consumers. It is not a public deployment or device release
    code and declarations so its tarball has no unpublished internal dependency,
    source-worktree import, private signer, smartcard implementation or credential.
    Browser exports must bundle/run without Node-only modules. This is local pack
-   verification; package ownership/publication remains A03/release work.
+   verification; package ownership/publication remains a later coordinator-owned,
+   concretely scoped release action.
 5. **Existing functionality and honest gaps.** Retain Pi reference signing and
    adapters, Rust review/parsing/vector coverage and Bridge behavior, including
    the corrected S01 identity/queue cases and S02 secret/hash cases. Preserve
@@ -146,8 +157,9 @@ and runnable existing consumers. It is not a public deployment or device release
 6. **One canonical plan.** In the isolated target only, atomically move
    `docs/restart/work-items.json` to `plan/work-items.json`; update validator default,
    live navigation/AGENTS/bootstrap/CI consumers and negative tests together. Keep
-   one state file. Apply the closed-evidence migration rules below. An A03 adoption
-   must replay this move against then-current main without losing states.
+   one state file. Apply the closed-evidence migration rules below. A later
+   coordinator-owned adoption must replay this move against then-current main
+   without losing states.
 7. **Bounded failure behavior.** Import refuses existing destinations, pin/tree
    drift, unlisted path collisions, unsafe paths/symlinks, missing rights records,
    undeclared deltas and dirty source use. No remote push URL is installed on the
@@ -220,12 +232,21 @@ the canonical public repository's pinned history, never a merge of private repos
 Record absent tags as an observed empty set, not inferred aliases. Bundles are
 local recovery artifacts; publish only permitted manifest/evidence content.
 
-Perform a before-state run from fresh checkouts of the final S01 tuple using the
-R00 runtime pins. Existing S01 logs are context, not a substitute for the A02
-comparison. Run all eight existing software CI suites and the unchanged twenty-step
-lab integration once. Record the exact approved helper overlay. The baseline may
-include archived smartcard tests for comparison without making them product gates.
-Any unexpected failure is investigated/classified before equivalence is asserted.
+Establish before-state coverage for all eight existing software CI suites and the
+twenty-step lab integration on the final S01 tuple using the R00 runtime pins.
+Independently reviewed exact final-S01 evidence may be reused only after checking
+source commits/declared deltas, environment/tool versions, commands, case inventories
+and artifact hashes for equivalence to this comparison. Record the exact approved
+corrected helper overlay and a per-gate reuse/equivalence decision. Repeat affected
+checks when source, environment, commands, cases or relevant concerns change;
+missing or non-equivalent evidence requires fresh execution for that boundary.
+The corrected provenance/default bootstrap boundary requires renewed independent
+review and successful affected integration before import. Do not rerun unrelated
+unchanged suites merely to create new timestamps. The baseline may include archived
+smartcard tests for comparison without making them product gates. Preserve all
+failures and classifications. Always execute the complete after-migration
+acceptance below against the actual migrated candidate; historical evidence cannot
+replace it.
 
 `import` creates one exact-copy import commit and then separate declared migration
 commits. Record `repository + commit + tag(s) + old path + blob/mode + SHA-256 ->
@@ -303,8 +324,9 @@ explicitly unexecuted gates with their existing owners and resources.
 
 Prepare (do not publish) source-repository README notices pointing to the intended
 new paths and a migration map. Identify the canonical repository by identity;
-never recreate the `firmware` slug or change public visibility. A03 applies notices
-and archives only after its own final tree/consumer review and integration.
+never recreate the `firmware` slug or change public visibility. The coordinator
+applies notices and archives only as a separately scoped later action after final
+tree/consumer review and integration under the existing authorization.
 
 Maintain an external-Nostr interoperability plan tied to named NIP-01/BIP340,
 NIP-07/NIP-46 and supported encoding/crypto revisions already captured in source.
@@ -320,14 +342,19 @@ transformation commits, final candidate bundle and logs. On a failed gate, stop
 the result at failure and keep evidence. Discard only the owned disposable target
 after verifying its identity and preserving evidence; reproduce it from manifest
 and bundles into another absent destination. No force push/reset or canonical
-repository deletion is part of rollback. Future A03 adoption needs its own
-coordinated revert and navigation procedure; this rehearsal does not perform it.
+repository deletion is part of rollback. Future coordinator-owned adoption needs
+its own reviewed revert and navigation procedure; this rehearsal does not perform
+it.
 
 ## Review and stop conditions
 
 Before implementation: distinct spec approval and the reconciled assignment.
-Before import: final S01 tuple/overlay, complete selected-file rights/privacy
-record, exact import map and original-vs-new gate disposition. Stop affected work
+Before import: the final repaired S01 provenance checker, exact corrected helper
+pre/postimage and patch manifests, refreshed coherent bootstrap tuple/default,
+renewed distinct review and successful affected integration; complete selected-file
+rights/privacy record, exact import map and original-vs-new gate disposition.
+Snapshot byte equality and earlier helper/snapshot candidates alone do not meet
+this prerequisite. Stop affected work
 on missing source object, unreviewed changed input, unexplained fixture mismatch,
 unresolved rights, undeclared delta, non-reproducible import or failing required
 behavior. Missing future device/SDK implementations are recorded limitations,
