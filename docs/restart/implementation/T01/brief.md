@@ -163,7 +163,7 @@ positive/negative vectors. One manifest covers the files and all consumers.
 No second snapshot, hidden generated oracle or separate live specification repo
 is added. Preserve frozen historical evidence and provenance unchanged.
 
-Use `nsealr.signing.v1` for the new device JSON request/response semantics, with
+Use `nsealr.signing.v2` for the new device JSON request/response semantics, with
 envelope `version: 2` (the retired `nsealr.signing.v0` used `version: 1`). Make this
 mapping explicit in the contract; never infer a protocol version from an artifact
 directory or NIP number. All active consumers switch atomically to version 2.
@@ -364,10 +364,20 @@ decoded legacy request ceiling to make discovery pass. A compact manifest
 reference plus bounded runtime deltas may be used on constrained transports,
 but the receiver must resolve the exact locally trusted manifest and account for
 the full resolved limits; unknown references reject. The full form and reference
-form have disjoint explicit schema variants and identical resolved semantics.
-Compact deltas may only reduce availability or select a configuration explicitly
-allowed by that manifest. They cannot change profile, custody, algorithms, method
-semantics, hard limits or evidence. Discovery is a non-secret metadata exchange;
+form have disjoint explicit schema variants. Their resolved semantics must be
+identical for every runtime state representable by the compact form within the
+transport cap. If a runtime change needs a field outside the permitted deltas,
+or the complete necessary deltas cannot fit that cap, discovery and operation
+are unavailable on that constrained transport. Invalidate the previous route;
+do not omit a necessary change, retain stale availability, infer an available
+static default or enlarge the cap. Return a bounded unavailable response where
+possible; a transport failure still permits no operation dispatch.
+Compact deltas may report current availability only for methods statically
+supported by that manifest and select only explicitly allowed configurations.
+An explicit available report remains untrusted routing input subject to the local
+adapter/manifest intersection; omission keeps the unavailable/unknown default.
+Deltas cannot change profile, custody, algorithms, method semantics, hard limits
+or evidence. Discovery is a non-secret metadata exchange;
 it does not require a prior usable operation route. Resolve and validate its
 manifest before allowing any operation dispatch. This avoids a discovery/routing
 cycle while preserving refusal of unknown implementation manifests.
@@ -377,7 +387,9 @@ S03's portable 4096-byte input/2048-content/4096-arena and retained 8 KiB operat
 descriptor or embed another operation copy. S01's existing cumulative host limits
 remain enforced. Profile owners later replace conformance settings with exact
 qualified values and must reject any target exceeding common hard capacities.
-No physical resource is available for T01; no measured device ceiling is invented.
+Physical hardware and operator inventory is unknown/not yet identified for T01;
+no physical measurements have been established. Neither resource availability nor
+absence is inferred, and no measured device ceiling is invented.
 
 ## Proposed implementation boundary and sequence
 
@@ -425,8 +437,9 @@ Python contract checker; expected results must not come from code under test.
 Exercise downstream service-to-transport dispatch with a recording fake transport,
 including zero writes on rejection and unchanged S03 zero product crypto output.
 Run affected Rust, Bridge, Python, common-fixture and migration/provenance gates;
-then the consolidated CI recipe once coherent. Required unavailable hardware
-checks remain open under their owning tasks, never marked passed by simulation.
+then the consolidated CI recipe once coherent. Unperformed hardware checks remain
+open under their owning tasks, with inventory status unknown until established;
+they are never marked passed by simulation.
 
 Stop for a missing required security decision, changed source/approved schema,
 unbounded state, inability to preserve S01/S03 properties, inability to fit the

@@ -246,7 +246,7 @@
       "cases": [
         {
           "id": "S-01",
-          "input_or_action": "Valid full descriptor and compact manifest-reference descriptor resolve to the same exact trusted local manifest and bounded deltas.",
+          "input_or_action": "Valid full descriptor and compact manifest-reference descriptor resolve the same representable runtime state through the exact trusted local manifest and complete bounded deltas.",
           "independent_expected_result": "Identical semantic capability result; labels remain untrusted; no arbitrary reference retrieval."
         },
         {
@@ -273,6 +273,11 @@
           "id": "S-06",
           "input_or_action": "Inspect exported SDK/browser/Node types, CLI/service examples and Python reference responses after cutover.",
           "independent_expected_result": "Only new active capability/account/route contracts exposed; unchanged external Nostr methods/events remain valid. Frozen historical evidence is preserved byte-for-byte."
+        },
+        {
+          "id": "S-07",
+          "input_or_action": "Start with a compatible compact descriptor, then change runtime state either outside its permitted delta fields or so the complete necessary deltas exceed the constrained transport cap. Attempt discovery and dispatch using the previous route.",
+          "independent_expected_result": "Invalidate the previous route; discovery and operation are unavailable on that constrained transport, with a bounded unavailable response where possible and zero operation writes. Never omit a necessary change, preserve stale availability, infer an available static default or raise the cap. A representable state still resolves identically to the full form under S-01."
         }
       ],
       "commands": [
@@ -550,11 +555,12 @@
       "R00-approved software toolchains and host test runtime",
       "Public disposable test identities and independent fixture sources"
     ],
-    "unavailable": [
-      "Identified ESP32/Pi/P4/custom assemblies",
-      "Physical operator/bench/entropy/boot/PIN/power-cut measurements"
+    "consequence": "Portable T01 contract/runtime routing work can finish without physical evidence; unknown inventory does not establish resource absence or availability. No device/property/production release is qualified.",
+    "unknown_inventory": [
+      "Identified ESP32/Pi/P4/custom assemblies: inventory not yet provided or verified.",
+      "Physical operator and bench availability: inventory not yet provided or verified."
     ],
-    "consequence": "Portable T01 contract/runtime routing work can finish without hardware; no device/property/production release is qualified."
+    "measurement_status": "No physical entropy/boot/PIN/power-cut measurements or measured target limits have been established for this task."
   },
   "required_evidence": [
     "Exact source/candidate and all schema/vector/manifest hashes",
@@ -594,12 +600,42 @@
       {
         "command": "Python json.loads plus Git-object SHA-256 verification of every source-audit inspected_files entry and cross-reference validation of criteria/suites/commands/gaps",
         "exit_code": 0,
-        "result": "44 immutable source file hashes; all five criteria mapped; 41 independently specified cases; three owned preparation files only."
+        "result": "Initial candidate: 44 immutable source file hashes; all five criteria mapped; 41 independently specified cases; three owned preparation files only."
       },
       {
         "command": "git diff --cached --check",
         "exit_code": 0,
         "result": "All three staged new files pass whitespace check; staged scope contains exactly the authorized preparation paths."
+      }
+    ],
+    "revision_review": {
+      "commit": "3a7146225cb18a15af35bfb57dca0f9f06360f01",
+      "path": "docs/restart/implementation/reviews/T01-spec.json",
+      "sha256": "fd320fb4e34c0c8e38f3e240bd3c8f55bd536258af154e20b607127c81a968ea",
+      "reviewed_candidate": "5043589737e8f60cfaf59a9fd405c92504146b4a",
+      "verdict": "changes_requested",
+      "addressed_findings": [
+        "T01-SPEC-01",
+        "T01-SPEC-02",
+        "T01-SPEC-03"
+      ],
+      "scope": "Narrow revision of three preparation files only. No product code authorization; exact revised candidate needs review and separate A02/S03 reconciliation before implementation."
+    },
+    "revision_results": [
+      {
+        "command": "python3 scripts/validate_restart_plan.py",
+        "exit_code": 0,
+        "result": "Unchanged preparation graph validates: 47 tasks; structural check only."
+      },
+      {
+        "command": "Python JSON parsing, immutable Git blob/byte-count/SHA-256 verification, criteria/suite/command/gap references and prior-case-ID comparison",
+        "exit_code": 0,
+        "result": "44 source files match immutable inputs. Five criteria preserved; all 41 prior case IDs retained and S-07 added. Active contract is nsealr.signing.v2/envelope 2; physical inventory unknown. Exactly three preparation paths modified."
+      },
+      {
+        "command": "git diff --check",
+        "exit_code": 0,
+        "result": "Narrow three-file revision passes whitespace check; no product source changes."
       }
     ]
   }
