@@ -81,7 +81,7 @@ contract-ci:
 	$(MAKE) -C protocols/contracts/v1 ci
 
 bridge-ci:
-	pnpm ci
+	pnpm run ci
 
 pi-ci:
 	$(MAKE) -C apps/pi ci
