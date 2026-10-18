@@ -1,0 +1,58 @@
+{"label": "current-default-bootstrap", "argv": ["/usr/bin/python3", "/home/tux/nsealr/.restart-tools/goal/s01-integration/tools/baseline/bootstrap.py", "/home/tux/nsealr/.restart-tools/goal/s01-integration/docs/restart/implementation/S01/.work/current-default", "--mirrors", "/home/tux/nsealr"], "cwd": "/home/tux/nsealr/.restart-tools/goal/s01-integration", "started": "2026-10-18T17:02:37.138800+00:00", "log": "00-current-default-bootstrap.log"}
+firmware-init: ['git', 'init', '/home/tux/nsealr/.restart-tools/goal/s01-integration/docs/restart/implementation/S01/.work/current-default/firmware']
+firmware-fetch: ['git', 'fetch', '--depth=1', '/home/tux/nsealr/.restart-tools/goal/s01-integration', '7a32eed82f542e818fad1c48d6815a38930eac32']
+firmware-checkout: ['git', 'checkout', '--detach', 'FETCH_HEAD']
+companion-init: ['git', 'init', '/home/tux/nsealr/.restart-tools/goal/s01-integration/docs/restart/implementation/S01/.work/current-default/companion']
+companion-fetch: ['git', 'fetch', '--depth=1', '/home/tux/nsealr/companion', '678796900e462f5504e47fe934e2e5f23d85824f']
+companion-checkout: ['git', 'checkout', '--detach', 'FETCH_HEAD']
+raspberry-init: ['git', 'init', '/home/tux/nsealr/.restart-tools/goal/s01-integration/docs/restart/implementation/S01/.work/current-default/raspberry']
+raspberry-fetch: ['git', 'fetch', '--depth=1', '/home/tux/nsealr/raspberry', 'd1534d9dcfba8fe4a35cea2ed3529e32a5003dc6']
+raspberry-checkout: ['git', 'checkout', '--detach', 'FETCH_HEAD']
+specs-init: ['git', 'init', '/home/tux/nsealr/.restart-tools/goal/s01-integration/docs/restart/implementation/S01/.work/current-default/specs']
+specs-fetch: ['git', 'fetch', '--depth=1', '/home/tux/nsealr/specs', '45f8b6ff1123f3f55be4ce457fd1008e91043cc2']
+specs-checkout: ['git', 'checkout', '--detach', 'FETCH_HEAD']
+lab-init: ['git', 'init', '/home/tux/nsealr/.restart-tools/goal/s01-integration/docs/restart/implementation/S01/.work/current-default/lab']
+lab-fetch: ['git', 'fetch', '--depth=1', '/home/tux/nsealr/lab', '3303ab17a28ed32419576627d5abb93db3999635']
+lab-checkout: ['git', 'checkout', '--detach', 'FETCH_HEAD']
+hardware-init: ['git', 'init', '/home/tux/nsealr/.restart-tools/goal/s01-integration/docs/restart/implementation/S01/.work/current-default/hardware']
+hardware-fetch: ['git', 'fetch', '--depth=1', '/home/tux/nsealr/hardware', '340697d6713a671e9e01b0dc874ec999ab071601']
+hardware-checkout: ['git', 'checkout', '--detach', 'FETCH_HEAD']
+smartcard-init: ['git', 'init', '/home/tux/nsealr/.restart-tools/goal/s01-integration/docs/restart/implementation/S01/.work/current-default/smartcard']
+smartcard-fetch: ['git', 'fetch', '--depth=1', '/home/tux/nsealr/smartcard', 'ec5da94a05882122e8a794f55f1af3f96a95c696']
+smartcard-checkout: ['git', 'checkout', '--detach', 'FETCH_HEAD']
+website-init: ['git', 'init', '/home/tux/nsealr/.restart-tools/goal/s01-integration/docs/restart/implementation/S01/.work/current-default/website']
+website-fetch: ['git', 'fetch', '--depth=1', '/home/tux/nsealr/website', '9cec39a89d6a2d2cc5747b8aae9d4b47a52eb7cd']
+website-checkout: ['git', 'checkout', '--detach', 'FETCH_HEAD']
+overlay-check: ['git', 'apply', '--check', '/home/tux/nsealr/.restart-tools/goal/s01-integration/tools/baseline/overlays/lab-provenance.patch']
+overlay-apply: ['git', 'apply', '/home/tux/nsealr/.restart-tools/goal/s01-integration/tools/baseline/overlays/lab-provenance.patch']
+metadata-v1-overlay-check: ['git', 'apply', '--check', '/home/tux/nsealr/.restart-tools/goal/s01-integration/docs/restart/implementation/S01/lab-metadata-v1.patch']
+metadata-v1-overlay-apply: ['git', 'apply', '/home/tux/nsealr/.restart-tools/goal/s01-integration/docs/restart/implementation/S01/lab-metadata-v1.patch']
+provenance-followup-overlay-check: ['git', 'apply', '--check', '/home/tux/nsealr/.restart-tools/goal/s01-integration/tools/baseline/overlays/lab-provenance-followup.patch']
+provenance-followup-overlay-apply: ['git', 'apply', '/home/tux/nsealr/.restart-tools/goal/s01-integration/tools/baseline/overlays/lab-provenance-followup.patch']
+download https://github.com/astral-sh/python-build-standalone/releases/download/20261013/cpython-3.12.15%2B20261013-x86_64-unknown-linux-gnu-install_only_stripped.tar.gz
+download https://nodejs.org/dist/v24.22.0/node-v24.22.0-linux-x64.tar.xz
+download https://registry.npmjs.org/pnpm/-/pnpm-10.33.4.tgz
+download https://static.rust-lang.org/rustup/archive/1.29.1/x86_64-unknown-linux-gnu/rustup-init
+download https://github.com/EmbarkStudios/cargo-deny/releases/download/0.20.2/cargo-deny-0.20.2-x86_64-unknown-linux-musl.tar.gz
+download https://github.com/taiki-e/cargo-llvm-cov/releases/download/v0.9.1/cargo-llvm-cov-x86_64-unknown-linux-gnu.tar.gz
+download https://files.pythonhosted.org/packages/44/3c/d717024885424591d5376220b5e836c2d5293ce2011523c9de23ff7bf068/pip-25.3-py3-none-any.whl
+download https://files.pythonhosted.org/packages/a3/dc/17031897dae0efacfea57dfd3a82fdd2a2aeb58e0ff71b77b87e44edc772/setuptools-80.9.0-py3-none-any.whl
+download https://files.pythonhosted.org/packages/0b/2c/87f3254fd8ffd29e4c02732eee68a83a1d3c346ae39bc6822dcbcb697f2b/wheel-0.45.1-py3-none-any.whl
+download https://files.pythonhosted.org/packages/20/12/38679034af332785aac8774540895e234f4d07f7545804097de4b666afd8/packaging-25.0-py3-none-any.whl
+download https://files.pythonhosted.org/packages/8b/9d/b3589d3877982d4f2329302ef98a8026e7f4443c765c46cfecc8858c6b4b/pyyaml-6.0.3-cp312-cp312-manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_28_x86_64.whl
+download https://files.pythonhosted.org/packages/57/48/5abb16ce7f9d97b728e6b97c704ceaa614362e0847651f379ed0511942a0/mnemonic-0.21-py3-none-any.whl
+download https://files.pythonhosted.org/packages/9c/6c/e63892de8d7582ab30602ccc1cf0ecd88a30b1a09424eb847c863fd46d9f/secp256k1-0.14.0-cp312-cp312-manylinux_2_17_x86_64.manylinux2014_x86_64.whl
+download https://files.pythonhosted.org/packages/b1/db/dceb9dd5b231e1da801793f8acc9f3c52a7e1afe40bb1aae37e02b0faad5/cffi-2.1.1-cp312-cp312-manylinux2014_x86_64.manylinux_2_17_x86_64.whl
+download https://files.pythonhosted.org/packages/90/11/0e6f11117525ff0eec40ebac3d313376f102df93ca44ad9e893ee85e4f89/pycparser-3.11-py3-none-any.whl
+python-packages: ['python3', '-m', 'pip', 'install', '--no-deps', '/home/tux/nsealr/.restart-tools/goal/s01-integration/docs/restart/implementation/S01/.work/current-default/.tools/wheels/pip-25.3-py3-none-any.whl', '/home/tux/nsealr/.restart-tools/goal/s01-integration/docs/restart/implementation/S01/.work/current-default/.tools/wheels/setuptools-80.9.0-py3-none-any.whl', '/home/tux/nsealr/.restart-tools/goal/s01-integration/docs/restart/implementation/S01/.work/current-default/.tools/wheels/wheel-0.45.1-py3-none-any.whl', '/home/tux/nsealr/.restart-tools/goal/s01-integration/docs/restart/implementation/S01/.work/current-default/.tools/wheels/packaging-25.0-py3-none-any.whl', '/home/tux/nsealr/.restart-tools/goal/s01-integration/docs/restart/implementation/S01/.work/current-default/.tools/wheels/pyyaml-6.0.3-cp312-cp312-manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_28_x86_64.whl', '/home/tux/nsealr/.restart-tools/goal/s01-integration/docs/restart/implementation/S01/.work/current-default/.tools/wheels/mnemonic-0.21-py3-none-any.whl', '/home/tux/nsealr/.restart-tools/goal/s01-integration/docs/restart/implementation/S01/.work/current-default/.tools/wheels/secp256k1-0.14.0-cp312-cp312-manylinux_2_17_x86_64.manylinux2014_x86_64.whl', '/home/tux/nsealr/.restart-tools/goal/s01-integration/docs/restart/implementation/S01/.work/current-default/.tools/wheels/cffi-2.1.1-cp312-cp312-manylinux2014_x86_64.manylinux_2_17_x86_64.whl', '/home/tux/nsealr/.restart-tools/goal/s01-integration/docs/restart/implementation/S01/.work/current-default/.tools/wheels/pycparser-3.11-py3-none-any.whl']
+python-dependency-check: ['python3', '-m', 'pip', 'check']
+rustup-install: ['/home/tux/nsealr/.restart-tools/goal/s01-integration/docs/restart/implementation/S01/.work/current-default/.tools/downloads/rustup-init', '-y', '--no-modify-path', '--profile', 'minimal', '--default-toolchain', 'none']
+rustup-disable-self-update: ['rustup', 'set', 'auto-self-update', 'disable']
+rust-toolchain: ['rustup', 'toolchain', 'install', '1.95.0', '--profile', 'minimal', '--component', 'rustfmt,clippy,llvm-tools-preview', '--target', 'riscv32imafc-unknown-none-elf']
+rust-default: ['rustup', 'default', '1.95.0']
+companion-frozen-install: ['pnpm', 'install', '--frozen-lockfile']
+website-frozen-install: ['pnpm', 'install', '--frozen-lockfile']
+lab-setup: ['make', 'setup']
+raspberry-setup: ['make', 'setup']
+smartcard-setup: ['make', 'setup']
+Bootstrap complete. Run: python3 /home/tux/nsealr/.restart-tools/goal/s01-integration/docs/restart/implementation/S01/.work/current-default/firmware/tools/baseline/run.py /home/tux/nsealr/.restart-tools/goal/s01-integration/docs/restart/implementation/S01/.work/current-default
