@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Validate the shared signer feature matrix against lab taxonomy docs."""
+"""Validate the shared signer feature matrix against current component ownership."""
 
 from __future__ import annotations
 
@@ -8,36 +8,15 @@ import re
 from pathlib import Path
 
 
-ROOT = Path(__file__).resolve().parents[1]
-ORG = ROOT.parent
-FEATURE_MATRIX = ORG / "specs/vectors/features/signer-feature-matrix-v0.json"
-LAB_DOCS = (
-    ROOT / "docs/historical-feature-contract-01.md",
-    ROOT / "docs/historical-feature-contract-02.md",
-    ROOT / "docs/historical-feature-contract-03.md",
-)
-
+ROOT = Path(__file__).resolve().parents[2]
+FEATURE_MATRIX = ROOT / "protocols/contracts/v1/vectors/features/signer-feature-matrix-v0.json"
+# Existing conformance component identifiers; these are requirements and software
+# fixtures, not proof that a board/driver/production custody profile is qualified.
 EXPECTED_SIGNER_FAMILIES = {
-    "raspberry_qr_vault": {
-        "label": "nSealr Vault — Pi edition",
-        "repository": "raspberry",
-    },
-    "esp32_qr_vault": {
-        "label": "nSealr Vault — ESP32 edition",
-        "repository": "firmware",
-    },
-    "esp32_usb_nip46": {
-        "label": "nSealr Key",
-        "repository": "firmware",
-    },
-    "smartcard": {
-        "label": "nSealr Card",
-        "repository": "smartcard",
-    },
-    "custom_hardware_wallet": {
-        "label": "nSealr One",
-        "repository": "hardware",
-    },
+    "raspberry_qr_vault": {"label": "nSealr Vault — Pi edition", "repository": "nsealr"},
+    "esp32_qr_vault": {"label": "nSealr Vault — ESP32 edition", "repository": "nsealr"},
+    "esp32_usb_nip46": {"label": "nSealr Key", "repository": "nsealr"},
+    "custom_hardware_wallet": {"label": "nSealr One", "repository": "nsealr"},
 }
 
 
@@ -78,25 +57,11 @@ def validate_feature_matrix(path: Path, matrix: dict) -> None:
             raise ValueError(f"{path}: features missing for {solution_id}")
 
 
-def validate_feature_matrix_docs(paths: tuple[Path, ...] | list[Path] = LAB_DOCS) -> None:
-    required_patterns = (
-        (r"Feature\s+Conformance", "Feature Conformance"),
-        (r"vectors/features/signer-feature-matrix-v0\.json", "vectors/features/signer-feature-matrix-v0.json"),
-        (r"same\s+behavior", "same behavior"),
-    )
-    for path in paths:
-        text = path.read_text(encoding="utf-8")
-        missing = [label for pattern, label in required_patterns if not re.search(pattern, text)]
-        if missing:
-            raise ValueError(f"{path}: missing feature matrix contract reference: {', '.join(missing)}")
-
-
 def main() -> int:
     if not FEATURE_MATRIX.exists():
-        raise FileNotFoundError(f"missing sibling specs feature matrix: {FEATURE_MATRIX}")
+        raise FileNotFoundError(f"missing authoritative feature matrix: {FEATURE_MATRIX}")
     validate_feature_matrix(FEATURE_MATRIX, load_feature_matrix(FEATURE_MATRIX))
-    validate_feature_matrix_docs()
-    print("nSealr cross-repo feature matrix validation passed")
+    print("nSealr integrated feature matrix validation passed")
     return 0
 
 

@@ -4,7 +4,7 @@ import { spawnSync } from "node:child_process";
 import { root } from "./package_set.mjs";
 
 function expectRejectedArgs(args, expectedPattern, label) {
-  const result = spawnSync(process.execPath, ["scripts/prepare_release_artifacts.mjs", ...args], {
+  const result = spawnSync(process.execPath, ["tools/bridge/prepare_release_artifacts.mjs", ...args], {
     cwd: root,
     encoding: "utf-8"
   });

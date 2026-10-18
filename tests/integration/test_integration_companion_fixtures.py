@@ -4,7 +4,7 @@ import unittest
 from pathlib import Path
 from tempfile import TemporaryDirectory
 
-from scripts.integration_companion_fixtures import (
+from tests.integration.integration_companion_fixtures import (
     build_fixture_verify_command,
     expected_fixture_output,
 )

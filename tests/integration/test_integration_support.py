@@ -8,7 +8,7 @@ from contextlib import redirect_stderr, redirect_stdout
 from pathlib import Path
 from unittest.mock import ANY, patch
 
-from scripts.integration_support import (
+from tests.integration.integration_support import (
     DEP0205_SUPPRESSION,
     PINNED_PNPM_COMMAND,
     build_pnpm_workspace,
@@ -51,7 +51,7 @@ class IntegrationSupportTests(unittest.TestCase):
         workspace = Path("/tmp/nsealr-companion")
         completed = subprocess.CompletedProcess(args=["pnpm"], returncode=0)
 
-        with patch("scripts.integration_support.run_command", return_value=completed) as run:
+        with patch("tests.integration.integration_support.run_command", return_value=completed) as run:
             result = install_pnpm_workspace(workspace)
 
         self.assertIs(result, completed)
@@ -62,7 +62,7 @@ class IntegrationSupportTests(unittest.TestCase):
         workspace = Path("/tmp/nsealr-companion")
         completed = subprocess.CompletedProcess(args=["pnpm"], returncode=0)
 
-        with patch("scripts.integration_support.run_command", return_value=completed) as run:
+        with patch("tests.integration.integration_support.run_command", return_value=completed) as run:
             result = build_pnpm_workspace(workspace)
 
         self.assertIs(result, completed)

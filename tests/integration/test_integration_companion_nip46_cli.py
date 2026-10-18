@@ -5,7 +5,7 @@ import tempfile
 import unittest
 from pathlib import Path
 
-from scripts.integration_companion_nip46_cli import (
+from tests.integration.integration_companion_nip46_cli import (
     build_nip46_auth_challenge_approval_command,
     build_nip46_auth_challenge_review_command,
     build_nip46_connect_approval_command,

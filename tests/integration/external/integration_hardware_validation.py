@@ -12,16 +12,16 @@ reference requirements.
 from __future__ import annotations
 
 import json
+import os
 import subprocess
 from dataclasses import dataclass
 from pathlib import Path
 
 
-ROOT = Path(__file__).resolve().parents[1]
-ORG = ROOT.parent
-HARDWARE = ORG / "hardware"
-ESP32_WAVESHARE_BOARD_PROFILE = ORG / "firmware/boards/waveshare_esp32_s3_touch_lcd_3_5b_c.json"
-HARDWARE_ESP32_QR_REQUIREMENTS = ORG / "hardware/pcb/reference-esp32-s3-qr-signer/requirements.json"
+ROOT = Path(__file__).resolve().parents[3]
+HARDWARE = Path(os.environ["NSEALR_HARDWARE_ROOT"]).resolve() if "NSEALR_HARDWARE_ROOT" in os.environ else None
+ESP32_WAVESHARE_BOARD_PROFILE = ROOT / "boards/waveshare_esp32_s3_touch_lcd_3_5b_c.json"
+HARDWARE_ESP32_QR_REQUIREMENTS = HARDWARE / "pcb/reference-esp32-s3-qr-signer/requirements.json" if HARDWARE else None
 
 
 @dataclass(frozen=True)
@@ -65,8 +65,8 @@ def validate_esp32_qr_secondary_target_alignment(board_profile_path: Path, requi
 
 
 def main() -> int:
-    if not HARDWARE.exists():
-        raise FileNotFoundError(f"missing sibling repository: {HARDWARE}")
+    if HARDWARE is None or not HARDWARE.exists():
+        raise FileNotFoundError(f"explicit NSEALR_HARDWARE_ROOT is required for external hardware regression: {HARDWARE}")
     if not ESP32_WAVESHARE_BOARD_PROFILE.exists():
         raise FileNotFoundError(f"missing sibling ESP32 Waveshare board profile: {ESP32_WAVESHARE_BOARD_PROFILE}")
     if not HARDWARE_ESP32_QR_REQUIREMENTS.exists():
@@ -75,7 +75,7 @@ def main() -> int:
     command = build_hardware_validation_command(hardware=HARDWARE)
     run(command.argv, command.cwd)
     validate_esp32_qr_secondary_target_alignment(ESP32_WAVESHARE_BOARD_PROFILE, HARDWARE_ESP32_QR_REQUIREMENTS)
-    print("nSealr cross-repo hardware validation passed")
+    print("nSealr integrated hardware validation passed")
     return 0
 
 

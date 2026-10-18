@@ -7,21 +7,20 @@ import tempfile
 from pathlib import Path
 
 try:
-    from scripts.integration_support import build_pnpm_workspace, install_pnpm_workspace, run_command
+    from tests.integration.integration_support import build_pnpm_workspace, install_pnpm_workspace, run_command
 except ModuleNotFoundError:  # pragma: no cover - direct script execution
     from integration_support import build_pnpm_workspace, install_pnpm_workspace, run_command
 
 
-ROOT = Path(__file__).resolve().parents[1]
-ORG = ROOT.parent
-COMPANION = ORG / "companion"
+ROOT = Path(__file__).resolve().parents[2]
+COMPANION = ROOT
 
 
 def _node_script() -> str:
-    background = (COMPANION / "apps/browser-extension/src/background.ts").as_uri()
-    runtime_message = (COMPANION / "apps/browser-extension/src/runtime-message.ts").as_uri()
-    pending_control = (COMPANION / "apps/browser-extension/src/pending-control.ts").as_uri()
-    storage = (COMPANION / "apps/browser-extension/src/origin-permission-storage.ts").as_uri()
+    background = (COMPANION / "apps/bridge/browser-extension/src/background.ts").as_uri()
+    runtime_message = (COMPANION / "apps/bridge/browser-extension/src/runtime-message.ts").as_uri()
+    pending_control = (COMPANION / "apps/bridge/browser-extension/src/pending-control.ts").as_uri()
+    storage = (COMPANION / "apps/bridge/browser-extension/src/origin-permission-storage.ts").as_uri()
     return f"""
 const {{ createBrowserExtensionBackgroundController }} = await import({background!r});
 const {{ handleBrowserExtensionRuntimeMessage }} = await import({runtime_message!r});
@@ -144,7 +143,7 @@ if (nativeMessages.length !== 0) {{
 
 def main() -> int:
     if not COMPANION.exists():
-        raise FileNotFoundError(f"missing sibling repository: {COMPANION}")
+        raise FileNotFoundError(f"missing product component: {COMPANION}")
 
     install_pnpm_workspace(COMPANION)
     build_pnpm_workspace(COMPANION)
@@ -161,7 +160,7 @@ def main() -> int:
             str(script_path),
         ], COMPANION)
 
-    print("nSealr cross-repo browser-extension origin-approval control verification passed")
+    print("nSealr integrated browser-extension origin-approval control verification passed")
     return 0
 
 

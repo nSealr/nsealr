@@ -6,7 +6,7 @@ import unittest
 from hashlib import sha256
 from pathlib import Path
 
-from scripts.integration_browser_extension_package_build import (
+from tests.integration.integration_browser_extension_package_build import (
     CONTENT_SCRIPT_MATCH,
     EXPECTED_FILES,
     EXTENSION_ID,
@@ -18,9 +18,9 @@ from scripts.integration_browser_extension_package_build import (
     ROUTE_TYPE,
     assert_package_build,
 )
-from scripts.browser_integration_support import build_browser_package_build_command
-from scripts.browser_integration_support import build_browser_route_config_approval_command
-from scripts.browser_integration_support import build_browser_route_config_review_command
+from tests.integration.browser_integration_support import build_browser_package_build_command
+from tests.integration.browser_integration_support import build_browser_route_config_approval_command
+from tests.integration.browser_integration_support import build_browser_route_config_review_command
 
 
 def _sha256_text(source: str) -> str:

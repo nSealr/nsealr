@@ -19,7 +19,7 @@ from pathlib import Path
 from typing import Any
 
 try:
-    from scripts.browser_integration_support import (
+    from tests.integration.browser_integration_support import (
         build_browser_package_build_command,
         build_browser_package_plan_command,
         build_browser_package_verify_command,
@@ -27,7 +27,7 @@ try:
         build_browser_route_config_review_command,
         run_json_command,
     )
-    from scripts.integration_support import build_pnpm_workspace, install_pnpm_workspace
+    from tests.integration.integration_support import build_pnpm_workspace, install_pnpm_workspace
 except ModuleNotFoundError:  # pragma: no cover - direct script execution
     from browser_integration_support import (
         build_browser_package_build_command,
@@ -40,9 +40,8 @@ except ModuleNotFoundError:  # pragma: no cover - direct script execution
     from integration_support import build_pnpm_workspace, install_pnpm_workspace
 
 
-ROOT = Path(__file__).resolve().parents[1]
-ORG = ROOT.parent
-COMPANION = ORG / "companion"
+ROOT = Path(__file__).resolve().parents[3]
+COMPANION = ROOT
 SMOKE_FORMAT = "nsealr-browser-extension-chromium-smoke-v0"
 LOCAL_PAIRING_DIGEST = "a" * 64
 ROUTE_ACCOUNT_ID = "esp32-usb-slot-0"

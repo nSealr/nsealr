@@ -3,7 +3,7 @@ from __future__ import annotations
 import unittest
 from pathlib import Path
 
-from scripts.integration_browser_native_messaging_manifest import (
+from tests.integration.integration_browser_native_messaging_manifest import (
     CHROMIUM_EXTENSION_ID,
     FIREFOX_EXTENSION_ID,
     SERVICE_HOST_PATH,

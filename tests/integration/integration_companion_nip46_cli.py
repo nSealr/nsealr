@@ -11,15 +11,14 @@ from pathlib import Path
 from typing import Any
 
 try:
-    from scripts.integration_support import build_pnpm_workspace, env_for_command, install_pnpm_workspace, run_command
+    from tests.integration.integration_support import build_pnpm_workspace, env_for_command, install_pnpm_workspace, run_command
 except ModuleNotFoundError:  # pragma: no cover - direct script execution
     from integration_support import build_pnpm_workspace, env_for_command, install_pnpm_workspace, run_command
 
 
-ROOT = Path(__file__).resolve().parents[1]
-ORG = ROOT.parent
-COMPANION = ORG / "companion"
-SPECS = ORG / "specs"
+ROOT = Path(__file__).resolve().parents[2]
+COMPANION = ROOT
+SPECS = ROOT / "protocols/contracts/v1"
 SIGN_EVENT_KIND_1_POLICY = SPECS / "vectors/nip46-policy-files/sign-event-kind-1-approved.json"
 
 
@@ -557,7 +556,7 @@ def assert_session_gate_rejected(command: CommandPlan, out_path: Path, expected_
 def main() -> int:
     for repo in (COMPANION, SPECS):
         if not repo.exists():
-            raise FileNotFoundError(f"missing sibling repository: {repo}")
+            raise FileNotFoundError(f"missing product component: {repo}")
 
     install_pnpm_workspace(COMPANION)
     build_pnpm_workspace(COMPANION)
@@ -584,7 +583,7 @@ def main() -> int:
         ("connect-review", connect, connect["bridge_decisions"][0], False),
     ]
 
-    with tempfile.TemporaryDirectory(prefix="nsealr-nip46-cross-repo-") as temp_dir:
+    with tempfile.TemporaryDirectory(prefix="nsealr-nip46-integrated-") as temp_dir:
         temp = Path(temp_dir)
         for name, vector, check, use_policy_file in checks:
             message_path = temp / f"{name}-message.json"
@@ -856,7 +855,7 @@ def main() -> int:
             assert_connection_uri_rejected(command, descriptor_path, vector["expected_error"])
 
     print(
-        "nSealr cross-repo companion NIP-46 decision, connect-review, "
+        "nSealr integrated companion NIP-46 decision, connect-review, "
         "connect-approval, auth-challenge review, auth-challenge rejection, "
         "session checkpoint, session gate, connection URI, and connection "
         "token response CLI verification passed"

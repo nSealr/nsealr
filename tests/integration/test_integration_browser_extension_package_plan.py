@@ -3,7 +3,7 @@ from __future__ import annotations
 import unittest
 from pathlib import Path
 
-from scripts.integration_browser_extension_package_plan import (
+from tests.integration.integration_browser_extension_package_plan import (
     CONTENT_SCRIPT_MATCH,
     FIREFOX_EXTENSION_ID,
     NATIVE_HOST_NAME,
@@ -118,22 +118,22 @@ class IntegrationBrowserExtensionPackagePlanTests(unittest.TestCase):
             "entrypoints": [
                 {
                     "role": "background_service_worker",
-                    "source": "apps/browser-extension/src/nsealr-background-entrypoint.ts",
+                    "source": "apps/bridge/browser-extension/src/nsealr-background-entrypoint.ts",
                     "output": "nsealr-background-entrypoint.js",
                 },
                 {
                     "role": "content_script",
-                    "source": "apps/browser-extension/src/nsealr-content-script-entrypoint.ts",
+                    "source": "apps/bridge/browser-extension/src/nsealr-content-script-entrypoint.ts",
                     "output": "nsealr-content-script-entrypoint.js",
                 },
                 {
                     "role": "page_script",
-                    "source": "apps/browser-extension/src/nsealr-page-script-entrypoint.ts",
+                    "source": "apps/bridge/browser-extension/src/nsealr-page-script-entrypoint.ts",
                     "output": "nsealr-page-script-entrypoint.js",
                 },
                 {
                     "role": "action_popup",
-                    "source": "apps/browser-extension/src/nsealr-popup-entrypoint.ts",
+                    "source": "apps/bridge/browser-extension/src/nsealr-popup-entrypoint.ts",
                     "output": "nsealr-popup-entrypoint.js",
                 },
             ],
@@ -183,22 +183,22 @@ class IntegrationBrowserExtensionPackagePlanTests(unittest.TestCase):
             "entrypoints": [
                 {
                     "role": "background_service_worker",
-                    "source": "apps/browser-extension/src/nsealr-background-entrypoint.ts",
+                    "source": "apps/bridge/browser-extension/src/nsealr-background-entrypoint.ts",
                     "output": "nsealr-background-entrypoint.js",
                 },
                 {
                     "role": "content_script",
-                    "source": "apps/browser-extension/src/nsealr-content-script-entrypoint.ts",
+                    "source": "apps/bridge/browser-extension/src/nsealr-content-script-entrypoint.ts",
                     "output": "nsealr-content-script-entrypoint.js",
                 },
                 {
                     "role": "page_script",
-                    "source": "apps/browser-extension/src/nsealr-page-script-entrypoint.ts",
+                    "source": "apps/bridge/browser-extension/src/nsealr-page-script-entrypoint.ts",
                     "output": "nsealr-page-script-entrypoint.js",
                 },
                 {
                     "role": "action_popup",
-                    "source": "apps/browser-extension/src/nsealr-popup-entrypoint.ts",
+                    "source": "apps/bridge/browser-extension/src/nsealr-popup-entrypoint.ts",
                     "output": "nsealr-popup-entrypoint.js",
                 },
             ],
@@ -244,22 +244,22 @@ class IntegrationBrowserExtensionPackagePlanTests(unittest.TestCase):
             "entrypoints": [
                 {
                     "role": "background_service_worker",
-                    "source": "apps/browser-extension/src/nsealr-background-entrypoint.ts",
+                    "source": "apps/bridge/browser-extension/src/nsealr-background-entrypoint.ts",
                     "output": "nsealr-background-entrypoint.js",
                 },
                 {
                     "role": "content_script",
-                    "source": "apps/browser-extension/src/nsealr-content-script-entrypoint.ts",
+                    "source": "apps/bridge/browser-extension/src/nsealr-content-script-entrypoint.ts",
                     "output": "nsealr-content-script-entrypoint.js",
                 },
                 {
                     "role": "page_script",
-                    "source": "apps/browser-extension/src/nsealr-page-script-entrypoint.ts",
+                    "source": "apps/bridge/browser-extension/src/nsealr-page-script-entrypoint.ts",
                     "output": "nsealr-page-script-entrypoint.js",
                 },
                 {
                     "role": "action_popup",
-                    "source": "apps/browser-extension/src/nsealr-popup-entrypoint.ts",
+                    "source": "apps/bridge/browser-extension/src/nsealr-popup-entrypoint.ts",
                     "output": "nsealr-popup-entrypoint.js",
                 },
             ],
@@ -315,22 +315,22 @@ class IntegrationBrowserExtensionPackagePlanTests(unittest.TestCase):
             "entrypoints": [
                 {
                     "role": "background_service_worker",
-                    "source": "apps/browser-extension/src/nsealr-background-entrypoint.ts",
+                    "source": "apps/bridge/browser-extension/src/nsealr-background-entrypoint.ts",
                     "output": "nsealr-background-entrypoint.js",
                 },
                 {
                     "role": "content_script",
-                    "source": "apps/browser-extension/src/nsealr-content-script-entrypoint.ts",
+                    "source": "apps/bridge/browser-extension/src/nsealr-content-script-entrypoint.ts",
                     "output": "nsealr-content-script-entrypoint.js",
                 },
                 {
                     "role": "page_script",
-                    "source": "apps/browser-extension/src/nsealr-page-script-entrypoint.ts",
+                    "source": "apps/bridge/browser-extension/src/nsealr-page-script-entrypoint.ts",
                     "output": "nsealr-page-script-entrypoint.js",
                 },
                 {
                     "role": "action_popup",
-                    "source": "apps/browser-extension/src/nsealr-popup-entrypoint.ts",
+                    "source": "apps/bridge/browser-extension/src/nsealr-popup-entrypoint.ts",
                     "output": "nsealr-popup-entrypoint.js",
                 },
             ],

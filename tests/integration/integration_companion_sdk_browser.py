@@ -9,14 +9,13 @@ from dataclasses import dataclass
 from pathlib import Path
 
 try:
-    from scripts.integration_support import build_pnpm_workspace, install_pnpm_workspace, run_command
+    from tests.integration.integration_support import build_pnpm_workspace, install_pnpm_workspace, run_command
 except ModuleNotFoundError:  # pragma: no cover - direct script execution
     from integration_support import build_pnpm_workspace, install_pnpm_workspace, run_command
 
 
-ROOT = Path(__file__).resolve().parents[1]
-ORG = ROOT.parent
-COMPANION = ORG / "companion"
+ROOT = Path(__file__).resolve().parents[2]
+COMPANION = ROOT
 
 
 @dataclass(frozen=True)
@@ -66,7 +65,7 @@ def write_sdk_browser_script(path: Path) -> None:
 
 def main() -> int:
     if not COMPANION.exists():
-        raise FileNotFoundError(f"missing sibling repository: {COMPANION}")
+        raise FileNotFoundError(f"missing product component: {COMPANION}")
 
     install_pnpm_workspace(COMPANION)
     build_pnpm_workspace(COMPANION)
@@ -88,7 +87,8 @@ def main() -> int:
         except OSError:
             pass
 
-    print("nSealr cross-repo browser-safe SDK facade verification passed")
+    run_command(["pnpm", "pack-smoke"], COMPANION)
+    print("nSealr integrated browser-safe SDK facade and isolated packed SDK verification passed")
     return 0
 
 
