@@ -433,6 +433,13 @@
       },
       "rules": [
         {
+          "id": "retained-structure-checker",
+          "action": "transform",
+          "reason": "Existing Makefile/renamed-checkout test consumer requires this checker. Adapt active paths/owner and preserve license/missing-directory negatives; retire obsolete standalone-repository file-list assertions explicitly.",
+          "path": "scripts/verify_repo.py",
+          "destination": "apps/pi/scripts/verify_repo.py"
+        },
+        {
           "id": "pi-snapshot-metadata",
           "action": "retire",
           "reason": "Metadata replaced by authoritative artifact.",
@@ -541,6 +548,13 @@
         "sha256": "e0456cbab4f7b5e7203e678faff37eadbdfef02e822db3b7a52a1dd9d3dc514a"
       },
       "rules": [
+        {
+          "id": "retained-structure-checker",
+          "action": "transform",
+          "reason": "Existing Makefile/renamed-checkout test consumer requires this checker. Adapt active paths/owner and preserve license/missing-directory negatives; retire obsolete standalone-repository file-list assertions explicitly.",
+          "path": "scripts/verify_repo.py",
+          "destination": "protocols/contracts/v1/scripts/verify_repo.py"
+        },
         {
           "id": "retired-vectors-route-selections-smartcard-sign-event-slot-0.json",
           "action": "retire",
@@ -1125,5 +1139,13 @@
     "docs/restart/implementation/reviews/S01-provenance/review.json": "466ea22953b1e2aec4da21021c0c0bb2b9f109cf2b56acf59ad3870e0db53493",
     "docs/restart/implementation/reviews/S01-adoption/review.json": "1ec2386f63688ab877515c70fd941b8eecf3313ffe8ceea096d316b76dddf136",
     "docs/restart/implementation/reviews/S01-state/review.json": "079eed7cabaf6d9eda58797ae1c29d4297b323be1d090b48193c40db4e92ff4d"
+  },
+  "privacy_preimport_exceptions": {
+    "source": "lab",
+    "paths": [
+      "scripts/integration_feature_matrix.py",
+      "tests/test_integration_feature_matrix.py"
+    ],
+    "scope": "Only bijective replacement of three excluded private document path literals by neutral historical fixture paths before public commit. Protected patch and original preimage hashes require distinct admission review; later behavior changes remain separate."
   }
 }
