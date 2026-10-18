@@ -1,5 +1,12 @@
 # Client and optical qualification
 
+
+Protocol pins and client observations in this dated research are historical inputs.
+The current first-release normative protocol baseline and message/setup obligations
+are selected by [P01 requirements](implementation/P01/requirements.md). Reconcile
+these inputs against that accepted baseline and actual client lockfiles before
+implementation; the older pin below is not a competing current authority.
+
 Research date: 2026-10-13. This is a source-backed test selection, **not a compatibility announcement**. Source review does not establish successful operation against the deployed website, its dependencies or an actual signer.
 
 ## Initial integration candidates
