@@ -15,6 +15,12 @@ The machine-readable register is authoritative for recorded digests, source path
 
 Use two exact source builds before testing changing deployed websites. A website run must record its observed origin, assets/build identifier and correspondence limits. It cannot inherit the source-build result from its name. Add another client only to resolve a concrete coverage or feasibility gap; do not retain an unusable candidate through deprecated methods or blind signing.
 
+### Prospective source-build procedure
+
+These commands are planned C01 work and have not been run in P02. In separate exact source checkouts, record the selected compatible Node runtime and use each declared package-manager version. Run `pnpm install --frozen-lockfile`; build noStrudel with `pnpm run build` (its actual script is TypeScript checking followed by Vite), and Coracle with `pnpm run build:web` (the selected web script, rather than its native synchronization build). Preserve failed install/build output and the unchanged lockfiles. A failed build leaves that candidate unqualified; changing a dependency requires a new explicit source reconciliation.
+
+Serve the resulting build on a controlled loopback origin with `pnpm exec vite preview --host 127.0.0.1 --port 4173`, then repeat the origin-isolation cases with a separately recorded origin/port. C01 records the actual loaded assets and uses the exact browser's official extension installation/debugging procedure to exercise the qualified extension/native-host package. A dev server or packaged-manifest mock does not replace the real background, injection, lifecycle and device tests. Actual commands, runtime versions and outcomes belong in that run record.
+
 ## What each delivery proves
 
 | Delivery | Applicable scenarios | Actual acceptance owners |
