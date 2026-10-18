@@ -41,7 +41,7 @@ def restore(target,base,added,output):
  original=audit(target,reachable(target,base),commits(target,base),added,base)
  rec.run('candidate-bundle',['git','-C',str(target),'bundle','create',str(bundle),'refs/heads/rehearsal'],output,env=env)
  rec.run('bundle-verify',['git','-C',str(target),'bundle','verify',str(bundle)],output,env=env)
- rec.run('empty-restore',['git','-c','init.templateDir=','init','--initial-branch=rehearsal',str(restored)],output,env=env)
+ rec.run('empty-restore',['git','-c','init.templateDir=','init','--initial-branch=intake',str(restored)],output,env=env)
  rec.run('restore-selected-branch',['git','-C',str(restored),'fetch','--no-tags','--no-write-fetch-head',str(bundle),'refs/heads/rehearsal:refs/heads/rehearsal'],output,env=env)
  rec.run('restore-checkout',['git','-C',str(restored),'checkout','--force','rehearsal'],output,env=env)
  rec.run('restore-fsck',['git','-C',str(restored),'fsck','--full','--strict'],output,env=env)
