@@ -13,6 +13,7 @@ from rehearse import canonical, decode_json, digest, safe_path, write_private
 
 class Changes:
     def __init__(self, target: Path):
+        target = target.resolve()
         self.target = target
         if read_git(target, 'status', '--porcelain'):
             raise ValueError('transformation must start from a clean target')
