@@ -7,7 +7,6 @@ from unittest.mock import patch
 
 from scripts.verify_specs import (
     check_access_surface_vector,
-    check_smartcard_apdu_vector,
     check_device_security_profile_vector,
     check_feature_matrix_vector,
     check_review_detail_page_vector,
@@ -42,7 +41,6 @@ from scripts.verify_specs import (
     seedqr_vector_names,
     review_vector_names,
     route_refusal_contract_vector_names,
-    smartcard_apdu_vector_names,
     session_import_review_vector_names,
     session_source_backup_vector_names,
     source_public_key_proof_vector_names,
@@ -372,27 +370,7 @@ class VerifySpecsTests(unittest.TestCase):
 
             self.assertEqual(errors, [], name)
 
-    def test_smartcard_apdu_vectors_are_discovered_from_directory(self) -> None:
-        names = smartcard_apdu_vector_names()
 
-        self.assertEqual(names, vector_names_from_dir("vectors/smartcard"))
-        self.assertIn("get-public-key", names)
-        self.assertIn("get-public-key-nonzero-p1", names)
-        self.assertIn("get-public-key-with-le", names)
-        self.assertIn("sign-event-id-kind-1-basic", names)
-        self.assertIn("sign-event-id-nonzero-p2", names)
-        self.assertIn("sign-event-id-with-le", names)
-        self.assertIn("sign-event-id-wrong-length", names)
-        self.assertIn("unsupported-cla", names)
-        self.assertIn("unsupported-ins", names)
-
-    def test_smartcard_apdu_vectors_validate_commands_and_status_words(self) -> None:
-        for name in smartcard_apdu_vector_names():
-            errors: list[str] = []
-
-            check_smartcard_apdu_vector(name, errors)
-
-            self.assertEqual(errors, [], name)
 
     def test_nip46_policy_file_schema_declares_required_contract(self) -> None:
         schema = load_json("schemas/nip46-policy-file-v0.schema.json")
@@ -523,10 +501,10 @@ class VerifySpecsTests(unittest.TestCase):
         )
         self.assertIn("raspberry-qr-nip06-account-0", verify_specs.account_descriptor_vector_names())
         self.assertIn("esp32-qr-nip06-account-0", verify_specs.account_descriptor_vector_names())
-        self.assertIn("smartcard-slot-0", verify_specs.account_descriptor_vector_names())
+        self.assertNotIn("smartcard-slot-0", verify_specs.account_descriptor_vector_names())
         self.assertIn("custom-hardware-wallet-slot-0", verify_specs.account_descriptor_vector_names())
         self.assertIn("manual-only-qr-vault", verify_specs.policy_profile_vector_names())
-        self.assertIn("manual-only-displayless-smartcard", verify_specs.policy_profile_vector_names())
+        self.assertNotIn("manual-only-displayless-smartcard", verify_specs.policy_profile_vector_names())
         self.assertIn("esp32-usb-kind-1-session", verify_specs.grant_descriptor_vector_names())
 
     def test_identity_policy_contract_vectors_validate(self) -> None:
@@ -865,18 +843,13 @@ class VerifySpecsTests(unittest.TestCase):
         self.assertIn("QR vault routes must remain manual_only with grants_allowed false", "\n".join(errors))
 
     def test_policy_profiles_reject_automation_for_display_less_smartcard_routes(self) -> None:
-        policy = deepcopy(load_json("vectors/policies/manual-only-displayless-smartcard.json"))
+        policy = deepcopy(load_json("vectors/policies/manual-only-qr-vault.json"))
+        policy["route_types"] = ["smartcard"]
         policy["mode"] = "scoped_automation"
         policy["grants_allowed"] = True
         errors: list[str] = []
-
-        verify_specs.check_policy_profile_shape(
-            "vectors/policies/mutated-smartcard-automation.json",
-            policy,
-            errors,
-        )
-
-        self.assertIn("display-less smartcard routes must remain manual_only", "\n".join(errors))
+        verify_specs.check_policy_profile_shape("retired-card-policy", policy, errors)
+        self.assertIn("route_types contain unknown routes", "\n".join(errors))
 
     def test_policy_profiles_reject_automation_for_external_nip46_routes(self) -> None:
         policy = deepcopy(load_json("vectors/policies/external-signer-manual-route.json"))
@@ -900,24 +873,15 @@ class VerifySpecsTests(unittest.TestCase):
         self.assertIn("external NIP-46 routes must remain external-policy manual without nSealr grants", "\n".join(errors))
 
     def test_account_descriptors_reject_display_less_smartcard_trusted_review_claims(self) -> None:
-        account = deepcopy(load_json("vectors/accounts/smartcard-slot-0.json"))
+        account = deepcopy(load_json("vectors/accounts/esp32-usb-device-slot-0.json"))
+        account["signer_route"]["type"] = "smartcard"
         account["signer_route"]["trusted_review"] = "device_display"
         account["signer_route"]["policy_support"] = "scoped_automation"
         account["capabilities"]["physical_review"] = True
         account["capabilities"]["persistent_grants"] = True
         errors: list[str] = []
-
-        verify_specs.check_account_descriptor_shape(
-            "vectors/accounts/mutated-smartcard-trusted-review.json",
-            account,
-            errors,
-        )
-
-        joined = "\n".join(errors)
-        self.assertIn("smartcard routes must remain display_less", joined)
-        self.assertIn("display-less smartcard routes must use manual_only policy support", joined)
-        self.assertIn("display-less smartcard routes must not claim physical review or approval", joined)
-        self.assertIn("display-less smartcard routes must not support persistent grants", joined)
+        verify_specs.check_account_descriptor_shape("retired-card-trust-claim", account, errors)
+        self.assertIn("signer_route.type", "\n".join(errors))
 
     def test_account_descriptors_reject_external_nip46_persistent_grants(self) -> None:
         account = deepcopy(load_json("vectors/accounts/external-nip46-bunker.json"))
@@ -933,17 +897,17 @@ class VerifySpecsTests(unittest.TestCase):
         self.assertIn("external NIP-46 routes must not claim nSealr persistent grants", "\n".join(errors))
 
     def test_account_descriptors_reject_policy_route_mismatch(self) -> None:
-        account = deepcopy(load_json("vectors/accounts/smartcard-slot-0.json"))
+        account = deepcopy(load_json("vectors/accounts/esp32-qr-nip06-account-0.json"))
         account["policy_profile_id"] = "policy-scoped-automation-daily-use"
         errors: list[str] = []
 
         verify_specs.check_account_descriptor_shape(
-            "vectors/accounts/mutated-smartcard-policy-route.json",
+            "vectors/accounts/mutated-qr-policy-route.json",
             account,
             errors,
         )
 
-        self.assertIn("policy_profile_id does not include signer route type smartcard", "\n".join(errors))
+        self.assertIn("policy_profile_id does not include signer route type esp32_qr_vault", "\n".join(errors))
 
     def test_grant_descriptors_reject_wildcard_or_non_persistent_policy_routes(self) -> None:
         grant = deepcopy(load_json("vectors/grants/esp32-usb-kind-1-session.json"))

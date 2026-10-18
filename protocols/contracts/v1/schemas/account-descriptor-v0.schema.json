@@ -1,8 +1,540 @@
 {
-  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$defs": {
+    "recovery": {
+      "oneOf": [
+        {
+          "additionalProperties": false,
+          "properties": {
+            "account": {
+              "minimum": 0,
+              "type": "integer"
+            },
+            "path": {
+              "pattern": "^m/44'/1237'/",
+              "type": "string"
+            },
+            "source_fingerprint": {
+              "pattern": "^[0-9a-f]{16}$",
+              "type": "string"
+            },
+            "source_vector": {
+              "minLength": 1,
+              "type": "string"
+            },
+            "type": {
+              "const": "nip06"
+            }
+          },
+          "required": [
+            "type",
+            "path",
+            "account",
+            "source_vector",
+            "source_fingerprint"
+          ],
+          "type": "object"
+        },
+        {
+          "additionalProperties": false,
+          "properties": {
+            "backup_required": {
+              "type": "boolean"
+            },
+            "slot_id": {
+              "minLength": 1,
+              "type": "string"
+            },
+            "type": {
+              "const": "device_slot"
+            }
+          },
+          "required": [
+            "type",
+            "slot_id",
+            "backup_required"
+          ],
+          "type": "object"
+        },
+        {
+          "additionalProperties": false,
+          "properties": {
+            "backup_required": {
+              "type": "boolean"
+            },
+            "card_id": {
+              "minLength": 1,
+              "type": "string"
+            },
+            "slot_id": {
+              "minLength": 1,
+              "type": "string"
+            },
+            "type": {
+              "const": "card_slot"
+            }
+          },
+          "required": [
+            "type",
+            "card_id",
+            "slot_id",
+            "backup_required"
+          ],
+          "type": "object"
+        },
+        {
+          "additionalProperties": false,
+          "properties": {
+            "backup_required": {
+              "type": "boolean"
+            },
+            "device_id": {
+              "minLength": 1,
+              "type": "string"
+            },
+            "slot_id": {
+              "minLength": 1,
+              "type": "string"
+            },
+            "type": {
+              "const": "hardware_wallet_slot"
+            }
+          },
+          "required": [
+            "type",
+            "device_id",
+            "slot_id",
+            "backup_required"
+          ],
+          "type": "object"
+        },
+        {
+          "additionalProperties": false,
+          "properties": {
+            "external_signer_id": {
+              "minLength": 1,
+              "type": "string"
+            },
+            "type": {
+              "const": "external_signer"
+            }
+          },
+          "required": [
+            "type",
+            "external_signer_id"
+          ],
+          "type": "object"
+        }
+      ]
+    }
+  },
   "$id": "https://nsealr.dev/schemas/account-descriptor-v0.schema.json",
-  "title": "nSealr Account Descriptor v0",
-  "type": "object",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "signer_route": {
+            "properties": {
+              "type": {
+                "const": "raspberry_qr_vault"
+              }
+            },
+            "required": [
+              "type"
+            ]
+          }
+        },
+        "required": [
+          "signer_route"
+        ]
+      },
+      "then": {
+        "properties": {
+          "capabilities": {
+            "properties": {
+              "persistent_grants": {
+                "const": false
+              },
+              "physical_approval": {
+                "const": true
+              },
+              "physical_review": {
+                "const": true
+              }
+            }
+          },
+          "signer_route": {
+            "properties": {
+              "custody": {
+                "const": "stateless_session"
+              },
+              "policy_support": {
+                "const": "manual_only"
+              },
+              "repository": {
+                "const": "nsealr"
+              },
+              "transport": {
+                "const": "qr"
+              },
+              "trusted_review": {
+                "const": "device_display"
+              }
+            },
+            "required": [
+              "repository"
+            ]
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "signer_route": {
+            "properties": {
+              "type": {
+                "const": "esp32_qr_vault"
+              }
+            },
+            "required": [
+              "type"
+            ]
+          }
+        },
+        "required": [
+          "signer_route"
+        ]
+      },
+      "then": {
+        "properties": {
+          "capabilities": {
+            "properties": {
+              "persistent_grants": {
+                "const": false
+              },
+              "physical_approval": {
+                "const": true
+              },
+              "physical_review": {
+                "const": true
+              }
+            }
+          },
+          "signer_route": {
+            "properties": {
+              "custody": {
+                "const": "stateless_session"
+              },
+              "policy_support": {
+                "const": "manual_only"
+              },
+              "repository": {
+                "const": "nsealr"
+              },
+              "transport": {
+                "const": "qr"
+              },
+              "trusted_review": {
+                "const": "device_display"
+              }
+            },
+            "required": [
+              "repository"
+            ]
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "signer_route": {
+            "properties": {
+              "type": {
+                "const": "esp32_usb_nip46"
+              }
+            },
+            "required": [
+              "type"
+            ]
+          }
+        },
+        "required": [
+          "signer_route"
+        ]
+      },
+      "then": {
+        "properties": {
+          "capabilities": {
+            "properties": {
+              "persistent_grants": {
+                "const": true
+              },
+              "physical_approval": {
+                "const": true
+              },
+              "physical_review": {
+                "const": true
+              }
+            }
+          },
+          "signer_route": {
+            "properties": {
+              "custody": {
+                "const": "device_persistent"
+              },
+              "policy_support": {
+                "const": "scoped_automation"
+              },
+              "repository": {
+                "const": "nsealr"
+              },
+              "transport": {
+                "const": "usb"
+              },
+              "trusted_review": {
+                "const": "device_display"
+              }
+            },
+            "required": [
+              "repository"
+            ]
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "signer_route": {
+            "properties": {
+              "type": {
+                "const": "custom_hardware_wallet"
+              }
+            },
+            "required": [
+              "type"
+            ]
+          }
+        },
+        "required": [
+          "signer_route"
+        ]
+      },
+      "then": {
+        "properties": {
+          "capabilities": {
+            "properties": {
+              "persistent_grants": {
+                "const": true
+              },
+              "physical_approval": {
+                "const": true
+              },
+              "physical_review": {
+                "const": true
+              }
+            }
+          },
+          "signer_route": {
+            "properties": {
+              "custody": {
+                "const": "custom_hardware_persistent"
+              },
+              "policy_support": {
+                "const": "scoped_automation"
+              },
+              "repository": {
+                "const": "nsealr"
+              },
+              "transport": {
+                "const": "usb"
+              },
+              "trusted_review": {
+                "const": "device_display"
+              }
+            },
+            "required": [
+              "repository"
+            ]
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "signer_route": {
+            "properties": {
+              "type": {
+                "const": "external_nip46"
+              }
+            },
+            "required": [
+              "type"
+            ]
+          }
+        },
+        "required": [
+          "signer_route"
+        ]
+      },
+      "then": {
+        "properties": {
+          "capabilities": {
+            "properties": {
+              "persistent_grants": {
+                "const": false
+              },
+              "physical_approval": {
+                "const": false
+              },
+              "physical_review": {
+                "const": false
+              }
+            }
+          },
+          "signer_route": {
+            "not": {
+              "required": [
+                "repository"
+              ]
+            },
+            "properties": {
+              "custody": {
+                "const": "external_signer"
+              },
+              "policy_support": {
+                "const": "external"
+              },
+              "transport": {
+                "const": "nip46_relay"
+              },
+              "trusted_review": {
+                "const": "external_policy"
+              }
+            }
+          }
+        }
+      }
+    }
+  ],
+  "properties": {
+    "account_id": {
+      "pattern": "^[A-Za-z0-9._:-]{1,128}$",
+      "type": "string"
+    },
+    "capabilities": {
+      "additionalProperties": false,
+      "properties": {
+        "methods": {
+          "items": {
+            "enum": [
+              "get_capabilities",
+              "get_signing_status",
+              "get_public_key",
+              "sign_event"
+            ]
+          },
+          "type": "array",
+          "uniqueItems": true
+        },
+        "persistent_grants": {
+          "type": "boolean"
+        },
+        "physical_approval": {
+          "type": "boolean"
+        },
+        "physical_review": {
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "methods",
+        "physical_review",
+        "physical_approval",
+        "persistent_grants"
+      ],
+      "type": "object"
+    },
+    "format": {
+      "const": "nsealr-account-descriptor-v0"
+    },
+    "label": {
+      "minLength": 1,
+      "type": "string"
+    },
+    "policy_profile_id": {
+      "pattern": "^policy-[A-Za-z0-9._:-]{1,121}$",
+      "type": "string"
+    },
+    "public_key": {
+      "pattern": "^[0-9a-f]{64}$",
+      "type": "string"
+    },
+    "recovery": {
+      "$ref": "#/$defs/recovery"
+    },
+    "signer_route": {
+      "additionalProperties": false,
+      "properties": {
+        "custody": {
+          "enum": [
+            "stateless_session",
+            "device_persistent",
+            "custom_hardware_persistent",
+            "external_signer"
+          ]
+        },
+        "policy_support": {
+          "enum": [
+            "manual_only",
+            "scoped_automation",
+            "external"
+          ]
+        },
+        "repository": {
+          "enum": [
+            "nsealr"
+          ]
+        },
+        "transport": {
+          "enum": [
+            "qr",
+            "usb",
+            "nip46_relay",
+            "embedded"
+          ]
+        },
+        "trusted_review": {
+          "enum": [
+            "device_display",
+            "external_review",
+            "external_policy"
+          ]
+        },
+        "type": {
+          "enum": [
+            "raspberry_qr_vault",
+            "esp32_qr_vault",
+            "esp32_usb_nip46",
+            "custom_hardware_wallet",
+            "external_nip46"
+          ]
+        }
+      },
+      "required": [
+        "type",
+        "transport",
+        "custody",
+        "trusted_review",
+        "policy_support"
+      ],
+      "type": "object"
+    }
+  },
   "required": [
     "format",
     "account_id",
@@ -13,320 +545,6 @@
     "capabilities",
     "policy_profile_id"
   ],
-  "properties": {
-    "format": { "const": "nsealr-account-descriptor-v0" },
-    "account_id": { "type": "string", "pattern": "^[A-Za-z0-9._:-]{1,128}$" },
-    "label": { "type": "string", "minLength": 1 },
-    "public_key": { "type": "string", "pattern": "^[0-9a-f]{64}$" },
-    "signer_route": {
-      "type": "object",
-      "required": ["type", "transport", "custody", "trusted_review", "policy_support"],
-      "properties": {
-        "type": {
-          "enum": [
-            "raspberry_qr_vault",
-            "esp32_qr_vault",
-            "esp32_usb_nip46",
-            "smartcard",
-            "custom_hardware_wallet",
-            "external_nip46"
-          ]
-        },
-        "repository": {
-          "enum": ["raspberry", "firmware", "smartcard", "hardware"]
-        },
-        "transport": {
-          "enum": ["qr", "usb", "smartcard", "nfc", "nip46_relay", "embedded"]
-        },
-        "custody": {
-          "enum": [
-            "stateless_session",
-            "device_persistent",
-            "card_persistent",
-            "custom_hardware_persistent",
-            "external_signer"
-          ]
-        },
-        "trusted_review": {
-          "enum": ["device_display", "external_review", "external_policy", "display_less"]
-        },
-        "policy_support": {
-          "enum": ["manual_only", "scoped_automation", "external"]
-        }
-      },
-      "additionalProperties": false
-    },
-    "recovery": { "$ref": "#/$defs/recovery" },
-    "capabilities": {
-      "type": "object",
-      "required": ["methods", "physical_review", "physical_approval", "persistent_grants"],
-      "properties": {
-        "methods": {
-          "type": "array",
-          "items": {
-            "enum": ["get_capabilities", "get_signing_status", "get_public_key", "sign_event"]
-          },
-          "uniqueItems": true
-        },
-        "physical_review": { "type": "boolean" },
-        "physical_approval": { "type": "boolean" },
-        "persistent_grants": { "type": "boolean" }
-      },
-      "additionalProperties": false
-    },
-    "policy_profile_id": { "type": "string", "pattern": "^policy-[A-Za-z0-9._:-]{1,121}$" }
-  },
-  "allOf": [
-    {
-      "if": {
-        "properties": {
-          "signer_route": {
-            "properties": { "type": { "const": "raspberry_qr_vault" } },
-            "required": ["type"]
-          }
-        },
-        "required": ["signer_route"]
-      },
-      "then": {
-        "properties": {
-          "signer_route": {
-            "required": ["repository"],
-            "properties": {
-              "repository": { "const": "raspberry" },
-              "transport": { "const": "qr" },
-              "custody": { "const": "stateless_session" },
-              "trusted_review": { "const": "device_display" },
-              "policy_support": { "const": "manual_only" }
-            }
-          },
-          "capabilities": {
-            "properties": {
-              "physical_review": { "const": true },
-              "physical_approval": { "const": true },
-              "persistent_grants": { "const": false }
-            }
-          }
-        }
-      }
-    },
-    {
-      "if": {
-        "properties": {
-          "signer_route": {
-            "properties": { "type": { "const": "esp32_qr_vault" } },
-            "required": ["type"]
-          }
-        },
-        "required": ["signer_route"]
-      },
-      "then": {
-        "properties": {
-          "signer_route": {
-            "required": ["repository"],
-            "properties": {
-              "repository": { "const": "firmware" },
-              "transport": { "const": "qr" },
-              "custody": { "const": "stateless_session" },
-              "trusted_review": { "const": "device_display" },
-              "policy_support": { "const": "manual_only" }
-            }
-          },
-          "capabilities": {
-            "properties": {
-              "physical_review": { "const": true },
-              "physical_approval": { "const": true },
-              "persistent_grants": { "const": false }
-            }
-          }
-        }
-      }
-    },
-    {
-      "if": {
-        "properties": {
-          "signer_route": {
-            "properties": { "type": { "const": "esp32_usb_nip46" } },
-            "required": ["type"]
-          }
-        },
-        "required": ["signer_route"]
-      },
-      "then": {
-        "properties": {
-          "signer_route": {
-            "required": ["repository"],
-            "properties": {
-              "repository": { "const": "firmware" },
-              "transport": { "const": "usb" },
-              "custody": { "const": "device_persistent" },
-              "trusted_review": { "const": "device_display" },
-              "policy_support": { "const": "scoped_automation" }
-            }
-          },
-          "capabilities": {
-            "properties": {
-              "physical_review": { "const": true },
-              "physical_approval": { "const": true },
-              "persistent_grants": { "const": true }
-            }
-          }
-        }
-      }
-    },
-    {
-      "if": {
-        "properties": {
-          "signer_route": {
-            "properties": { "type": { "const": "smartcard" } },
-            "required": ["type"]
-          }
-        },
-        "required": ["signer_route"]
-      },
-      "then": {
-        "properties": {
-          "signer_route": {
-            "required": ["repository"],
-            "properties": {
-              "repository": { "const": "smartcard" },
-              "transport": { "const": "smartcard" },
-              "custody": { "const": "card_persistent" },
-              "trusted_review": { "const": "display_less" },
-              "policy_support": { "const": "manual_only" }
-            }
-          },
-          "capabilities": {
-            "properties": {
-              "physical_review": { "const": false },
-              "physical_approval": { "const": false },
-              "persistent_grants": { "const": false }
-            }
-          }
-        }
-      }
-    },
-    {
-      "if": {
-        "properties": {
-          "signer_route": {
-            "properties": { "type": { "const": "custom_hardware_wallet" } },
-            "required": ["type"]
-          }
-        },
-        "required": ["signer_route"]
-      },
-      "then": {
-        "properties": {
-          "signer_route": {
-            "required": ["repository"],
-            "properties": {
-              "repository": { "const": "hardware" },
-              "transport": { "const": "usb" },
-              "custody": { "const": "custom_hardware_persistent" },
-              "trusted_review": { "const": "device_display" },
-              "policy_support": { "const": "scoped_automation" }
-            }
-          },
-          "capabilities": {
-            "properties": {
-              "physical_review": { "const": true },
-              "physical_approval": { "const": true },
-              "persistent_grants": { "const": true }
-            }
-          }
-        }
-      }
-    },
-    {
-      "if": {
-        "properties": {
-          "signer_route": {
-            "properties": { "type": { "const": "external_nip46" } },
-            "required": ["type"]
-          }
-        },
-        "required": ["signer_route"]
-      },
-      "then": {
-        "properties": {
-          "signer_route": {
-            "not": { "required": ["repository"] },
-            "properties": {
-              "transport": { "const": "nip46_relay" },
-              "custody": { "const": "external_signer" },
-              "trusted_review": { "const": "external_policy" },
-              "policy_support": { "const": "external" }
-            }
-          },
-          "capabilities": {
-            "properties": {
-              "physical_review": { "const": false },
-              "physical_approval": { "const": false },
-              "persistent_grants": { "const": false }
-            }
-          }
-        }
-      }
-    }
-  ],
-  "$defs": {
-    "recovery": {
-      "oneOf": [
-        {
-          "type": "object",
-          "required": ["type", "path", "account", "source_vector", "source_fingerprint"],
-          "properties": {
-            "type": { "const": "nip06" },
-            "path": { "type": "string", "pattern": "^m/44'/1237'/" },
-            "account": { "type": "integer", "minimum": 0 },
-            "source_vector": { "type": "string", "minLength": 1 },
-            "source_fingerprint": { "type": "string", "pattern": "^[0-9a-f]{16}$" }
-          },
-          "additionalProperties": false
-        },
-        {
-          "type": "object",
-          "required": ["type", "slot_id", "backup_required"],
-          "properties": {
-            "type": { "const": "device_slot" },
-            "slot_id": { "type": "string", "minLength": 1 },
-            "backup_required": { "type": "boolean" }
-          },
-          "additionalProperties": false
-        },
-        {
-          "type": "object",
-          "required": ["type", "card_id", "slot_id", "backup_required"],
-          "properties": {
-            "type": { "const": "card_slot" },
-            "card_id": { "type": "string", "minLength": 1 },
-            "slot_id": { "type": "string", "minLength": 1 },
-            "backup_required": { "type": "boolean" }
-          },
-          "additionalProperties": false
-        },
-        {
-          "type": "object",
-          "required": ["type", "device_id", "slot_id", "backup_required"],
-          "properties": {
-            "type": { "const": "hardware_wallet_slot" },
-            "device_id": { "type": "string", "minLength": 1 },
-            "slot_id": { "type": "string", "minLength": 1 },
-            "backup_required": { "type": "boolean" }
-          },
-          "additionalProperties": false
-        },
-        {
-          "type": "object",
-          "required": ["type", "external_signer_id"],
-          "properties": {
-            "type": { "const": "external_signer" },
-            "external_signer_id": { "type": "string", "minLength": 1 }
-          },
-          "additionalProperties": false
-        }
-      ]
-    }
-  },
-  "additionalProperties": false
+  "title": "nSealr Account Descriptor v0",
+  "type": "object"
 }

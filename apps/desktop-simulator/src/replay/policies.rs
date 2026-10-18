@@ -17,13 +17,12 @@
 use super::{arr_field, obj_field, str_field, ReplayResult};
 use serde_json::Value;
 
-/// The frozen family ids (cross-repo test contract — never rename) plus the
+/// The retained route ids (versioned contract artifact) plus the
 /// companion-owned external route that policy profiles may target.
 const KNOWN_ROUTE_TYPES: &[&str] = &[
     "raspberry_qr_vault",
     "esp32_qr_vault",
     "esp32_usb_nip46",
-    "smartcard",
     "custom_hardware_wallet",
     "external_nip46",
 ];

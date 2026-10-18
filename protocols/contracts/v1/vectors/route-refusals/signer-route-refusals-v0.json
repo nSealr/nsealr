@@ -1,9 +1,14 @@
 {
-  "name": "signer-route-refusals-v0",
-  "format": "nsealr-route-refusal-contract-v0",
-  "request_vector": "examples/request-kind-1-basic.json",
   "cases": [
     {
+      "external_review_acknowledgement": {
+        "mode": "unsupported",
+        "unsupported_error": {
+          "error_code": "external_review_acknowledgement_unsupported",
+          "message": "external review acknowledgement is only supported for display-less sign_event dispatch",
+          "retryable": false
+        }
+      },
       "route_selection_vector": "custom-hardware-wallet-sign-event-slot-0",
       "route_type": "custom_hardware_wallet",
       "trusted_review": "device_display",
@@ -11,7 +16,9 @@
         "error_code": "signer_route_unavailable",
         "message": "signer dispatch is not configured",
         "retryable": false
-      },
+      }
+    },
+    {
       "external_review_acknowledgement": {
         "mode": "unsupported",
         "unsupported_error": {
@@ -19,9 +26,7 @@
           "message": "external review acknowledgement is only supported for display-less sign_event dispatch",
           "retryable": false
         }
-      }
-    },
-    {
+      },
       "route_selection_vector": "esp32-qr-sign-event-account-0",
       "route_type": "esp32_qr_vault",
       "trusted_review": "device_display",
@@ -29,7 +34,9 @@
         "error_code": "signer_route_unavailable",
         "message": "signer dispatch is not configured",
         "retryable": false
-      },
+      }
+    },
+    {
       "external_review_acknowledgement": {
         "mode": "unsupported",
         "unsupported_error": {
@@ -37,9 +44,7 @@
           "message": "external review acknowledgement is only supported for display-less sign_event dispatch",
           "retryable": false
         }
-      }
-    },
-    {
+      },
       "route_selection_vector": "esp32-usb-sign-event-slot-0",
       "route_type": "esp32_usb_nip46",
       "trusted_review": "device_display",
@@ -47,7 +52,9 @@
         "error_code": "signer_route_unavailable",
         "message": "signer dispatch is not configured",
         "retryable": false
-      },
+      }
+    },
+    {
       "external_review_acknowledgement": {
         "mode": "unsupported",
         "unsupported_error": {
@@ -55,9 +62,7 @@
           "message": "external review acknowledgement is only supported for display-less sign_event dispatch",
           "retryable": false
         }
-      }
-    },
-    {
+      },
       "route_selection_vector": "external-nip46-sign-event-bunker",
       "route_type": "external_nip46",
       "trusted_review": "external_policy",
@@ -65,7 +70,9 @@
         "error_code": "signer_route_unavailable",
         "message": "signer dispatch is not configured",
         "retryable": false
-      },
+      }
+    },
+    {
       "external_review_acknowledgement": {
         "mode": "unsupported",
         "unsupported_error": {
@@ -73,9 +80,7 @@
           "message": "external review acknowledgement is only supported for display-less sign_event dispatch",
           "retryable": false
         }
-      }
-    },
-    {
+      },
       "route_selection_vector": "raspberry-qr-sign-event-account-0",
       "route_type": "raspberry_qr_vault",
       "trusted_review": "device_display",
@@ -83,47 +88,19 @@
         "error_code": "signer_route_unavailable",
         "message": "signer dispatch is not configured",
         "retryable": false
-      },
-      "external_review_acknowledgement": {
-        "mode": "unsupported",
-        "unsupported_error": {
-          "error_code": "external_review_acknowledgement_unsupported",
-          "message": "external review acknowledgement is only supported for display-less sign_event dispatch",
-          "retryable": false
-        }
-      }
-    },
-    {
-      "route_selection_vector": "smartcard-sign-event-slot-0",
-      "route_type": "smartcard",
-      "trusted_review": "display_less",
-      "without_dispatcher_after_ack": {
-        "error_code": "signer_route_unavailable",
-        "message": "signer dispatch is not configured",
-        "retryable": false
-      },
-      "external_review_acknowledgement": {
-        "mode": "required",
-        "missing_error": {
-          "error_code": "external_review_acknowledgement_required",
-          "message": "display-less signer dispatch requires external review acknowledgement",
-          "retryable": false
-        },
-        "mismatch_error": {
-          "error_code": "external_review_acknowledgement_mismatch",
-          "message": "external review approval_digest does not match signer request",
-          "retryable": false
-        }
       }
     }
   ],
+  "format": "nsealr-route-refusal-contract-v0",
+  "name": "signer-route-refusals-v0",
+  "request_vector": "examples/request-kind-1-basic.json",
   "safety": {
-    "stores_production_secrets": false,
     "contains_secret_material": false,
     "creates_grants": false,
     "dispatches_without_signer": false,
     "requires_shared_request_validation": true,
-    "requires_signed_response_verification": true
+    "requires_signed_response_verification": true,
+    "stores_production_secrets": false
   },
   "scope": "Secretless route-refusal contract for local companion dispatch before production signer drivers exist. It covers the five signer families plus the external NIP-46 adapter route, is not a signer family, does not grant policy authority to the companion, does not open relays, and does not enable signing."
 }

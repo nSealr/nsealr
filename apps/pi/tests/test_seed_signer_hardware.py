@@ -26,7 +26,7 @@ from nsealr_vault.session_import_flow import SessionImportFlowError, StatelessSe
 from nsealr_vault.qr import decode_animated_qr_envelope_frames, encode_animated_qr_envelope_frames, encode_qr_envelope
 
 
-SPECS = Path(__file__).resolve().parent / "fixtures/specs"
+SPECS = Path(__file__).resolve().parents[3] / "protocols/contracts/v1"
 
 
 class FakeGpio:
