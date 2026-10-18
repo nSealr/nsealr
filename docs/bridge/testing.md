@@ -1,6 +1,6 @@
 # Bridge verification
 
-Run `pnpm ci` from the product root after the frozen dependency install. This
+Run `pnpm run ci` from the product root after the frozen dependency install. This
 executes build/type checking, all retained Vitest cases, consumer/examples/README
 checks, generated API and boundary review checks, registry/import/browser gates,
 release-output safety and an actual isolated packed SDK consumer.
