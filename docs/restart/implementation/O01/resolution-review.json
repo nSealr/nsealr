@@ -1,0 +1,116 @@
+{
+  "utc": "2026-10-18T15:35:43.646611+00:00",
+  "scope": "Independent review of metadata correction only; not P01/O01/task closure or product approval",
+  "author": "/root",
+  "reviewer": "/root/independent_security_review",
+  "base": "61b0c39131012c40ff76321bb3650def6e7a9d83",
+  "candidate": "f3bb1bff12038d67c8ba54d1a2af6aa68f2591ac",
+  "files": [
+    {
+      "path": "docs/restart/work-items.json",
+      "sha256": "bae28c2bae724e9dcf427de68e636db1f60493ce1e8bf2a36d0afc7f7d2df5c2"
+    },
+    {
+      "path": "docs/restart/implementation/README.md",
+      "sha256": "b7a46bcf31af9ffff995bff7151b5a05ff1c13eabd83912de754ff564047d528"
+    },
+    {
+      "path": "docs/restart/implementation/handoff.md",
+      "sha256": "08aa4392ad9a07c157fb717ae1036151bff03a55080dba7deab544546afdbff7"
+    }
+  ],
+  "verdict": "pass",
+  "findings_resolved_in_candidate": [
+    "O01-H01: A01 now running with actual root ownership, all 12 source inputs and PR11 assignment; no duplicate ready assignment.",
+    "O01-H02: R00/S01/S02 are review with exact heads matching live draft PR9/companion PR1/PR10 and distinct assigned reviewers; navigation includes reviewer branches."
+  ],
+  "observations": [
+    "O01-H03: navigation now explicitly explains publication lag and proposed-versus-integrated state. Older integration-directory README remains a dated navigation source, not canonical task state.",
+    "Acceptance strings, dependencies and unknown resource registry are unchanged; no task marked verified or integrated.",
+    "Metadata validator passes; corrected candidate must still pass CI and merge before main reflects it.",
+    "Original fresh-session.json is preserved as the baseline observation, not rewritten to claim it saw corrected state."
+  ],
+  "remaining_limit": "Scope is truthful handoff state and recovery controls. Does not independently approve A01 research, R00/S01/S02 implementation or all O01 requirements.",
+  "commands": [
+    {
+      "argv": [
+        "git",
+        "diff",
+        "--stat",
+        "61b0c39131012c40ff76321bb3650def6e7a9d83",
+        "f3bb1bff12038d67c8ba54d1a2af6aa68f2591ac"
+      ],
+      "cwd": "/home/tux/nsealr/.restart-tools/goal/security-review",
+      "exit_code": 0,
+      "output": " docs/restart/implementation/README.md  |  7 ++++-\n docs/restart/implementation/handoff.md |  2 +-\n docs/restart/work-items.json           | 50 +++++++++++++++++++++++++---------\n 3 files changed, 44 insertions(+), 15 deletions(-)\n"
+    },
+    {
+      "argv": [
+        "python3",
+        "scripts/validate_restart_plan.py"
+      ],
+      "cwd": "/home/tux/nsealr/.restart-tools/goal/coordinator",
+      "exit_code": 0,
+      "output": "Restart plan valid: 47 tasks; ready: E01\nStructural check only; hardware, review quality and security remain evidence gates.\n"
+    },
+    {
+      "argv": [
+        "gh",
+        "pr",
+        "list",
+        "--state",
+        "open",
+        "--json",
+        "number,headRefName,headRefOid,isDraft,url"
+      ],
+      "cwd": "/home/tux/nsealr/.restart-tools/goal/security-review",
+      "exit_code": 0,
+      "output": "[{\"headRefName\":\"restart/a01-inventory\",\"headRefOid\":\"c030164c56da72fd237d43c62b065659aec1b1de\",\"isDraft\":true,\"number\":11,\"url\":\"https://github.com/nSealr/nsealr/pull/11\"},{\"headRefName\":\"restart/s02-secrets\",\"headRefOid\":\"61641047d13b5bb265246b181edc38f4dc2073e7\",\"isDraft\":true,\"number\":10,\"url\":\"https://github.com/nSealr/nsealr/pull/10\"},{\"headRefName\":\"restart/r00-bootstrap\",\"headRefOid\":\"1f4d891052611434d67316ad928c4e6413f9f876\",\"isDraft\":true,\"number\":9,\"url\":\"https://github.com/nSealr/nsealr/pull/9\"}]\n"
+    },
+    {
+      "argv": [
+        "gh",
+        "pr",
+        "list",
+        "--state",
+        "open",
+        "--json",
+        "number,headRefName,headRefOid,isDraft,url"
+      ],
+      "cwd": "/home/tux/nsealr/companion",
+      "exit_code": 0,
+      "output": "[{\"headRefName\":\"restart/s01-bridge\",\"headRefOid\":\"143e6fb260431dc9cb97a72d6c019e3c6c5c6bf1\",\"isDraft\":true,\"number\":1,\"url\":\"https://github.com/nSealr/companion/pull/1\"}]\n"
+    },
+    {
+      "argv": [
+        "git",
+        "worktree",
+        "list"
+      ],
+      "cwd": "/home/tux/nsealr/.restart-tools/goal/security-review",
+      "exit_code": 0,
+      "output": "/home/tux/nsealr/firmware                                  61b0c39 [main]\n/home/tux/nsealr/.restart-tools/goal/a01                   c030164 [restart/a01-inventory]\n/home/tux/nsealr/.restart-tools/goal/coordinator           f3bb1bf [restart/execution-state]\n/home/tux/nsealr/.restart-tools/goal/r00                   1f4d891 [restart/r00-bootstrap]\n/home/tux/nsealr/.restart-tools/goal/s02                   6164104 [restart/s02-secrets]\n/home/tux/nsealr/.restart-tools/goal/security-review       61b0c39 [restart/security-review-s02]\n/home/tux/nsealr/.restart-tools/readiness-2026-10-18/main  768e8a3 [plan/readiness-2026-10-18]\n/home/tux/nsealr/.restart-tools/staging/ci-main            6428c74 [restart/self-contained-ci]\n/home/tux/nsealr/.restart-tools/staging/nsealr             990f276 [restart/foundation]\n/home/tux/nsealr/.restart-tools/validation4/main           b79e8b6 [plan/validation-2026-10-13]\n"
+    },
+    {
+      "argv": [
+        "git",
+        "worktree",
+        "list"
+      ],
+      "cwd": "/home/tux/nsealr/companion",
+      "exit_code": 0,
+      "output": "/home/tux/nsealr/companion                          1341432 [main]\n/home/tux/nsealr/.restart-tools/goal/bridge-review  d385ddb [review/s01]\n/home/tux/nsealr/.restart-tools/goal/s01            143e6fb [restart/s01-bridge]\n"
+    },
+    {
+      "argv": [
+        "git",
+        "ls-remote",
+        "origin",
+        "refs/heads/main"
+      ],
+      "cwd": "/home/tux/nsealr/.restart-tools/goal/security-review",
+      "exit_code": 0,
+      "output": "61b0c39131012c40ff76321bb3650def6e7a9d83\trefs/heads/main\n"
+    }
+  ]
+}
