@@ -26,7 +26,6 @@ B64URL_RE = re.compile(r"^[A-Za-z0-9_-]+$")
 QR_PREFIX = "nsealr1:"
 ANIMATED_QR_PREFIX = "nsealr1a:"
 SERIAL_PREFIX = "nsealr1f:"
-APDU_HEX_RE = re.compile(r"^[0-9a-f]+$")
 BECH32_CHARSET = "qpzry9x8gf2tvdw0s3jn54khce6mua7l"
 BECH32_CHARSET_REV = {char: index for index, char in enumerate(BECH32_CHARSET)}
 LIMIT_PROFILE = "vectors/limits/nsealr-v0.json"
@@ -36,23 +35,20 @@ ROUTE_TYPES = {
     "raspberry_qr_vault",
     "esp32_qr_vault",
     "esp32_usb_nip46",
-    "smartcard",
     "custom_hardware_wallet",
     "external_nip46",
 }
 QR_ROUTE_TYPES = {"raspberry_qr_vault", "esp32_qr_vault"}
 ROUTE_REPOSITORIES = {
-    "raspberry_qr_vault": "raspberry",
-    "esp32_qr_vault": "firmware",
-    "esp32_usb_nip46": "firmware",
-    "smartcard": "smartcard",
-    "custom_hardware_wallet": "hardware",
+    "raspberry_qr_vault": "nsealr",
+    "esp32_qr_vault": "nsealr",
+    "esp32_usb_nip46": "nsealr",
+    "custom_hardware_wallet": "nsealr",
 }
-ROUTE_TRANSPORTS = {"qr", "usb", "smartcard", "nfc", "nip46_relay", "embedded"}
+ROUTE_TRANSPORTS = {"qr", "usb", "nip46_relay", "embedded"}
 ROUTE_CUSTODY_MODES = {
     "stateless_session",
     "device_persistent",
-    "card_persistent",
     "custom_hardware_persistent",
     "external_signer",
 }
@@ -65,7 +61,7 @@ LOCAL_SERVICE_PAIRABLE_OPERATIONS = {
     "dispatch_signer_request",
     "verify_signer_response",
 }
-ROUTE_REVIEW_MODES = {"device_display", "external_review", "external_policy", "display_less"}
+ROUTE_REVIEW_MODES = {"device_display", "external_review", "external_policy"}
 POLICY_SUPPORT_MODES = {"manual_only", "scoped_automation", "external"}
 POLICY_MODES = {"manual_only", "scoped_automation"}
 POLICY_REVIEW_REQUIREMENTS = {
@@ -162,7 +158,6 @@ FEATURE_SOLUTION_IDS = {
     "raspberry_qr_vault",
     "esp32_qr_vault",
     "esp32_usb_nip46",
-    "smartcard",
     "custom_hardware_wallet",
 }
 FEATURE_IDS = {
@@ -185,8 +180,6 @@ FEATURE_IDS = {
     "nip46_decrypted_bridge",
     "scoped_policy_automation",
     "persistent_secret_custody",
-    "smartcard_apdu",
-    "external_review_acknowledgement",
     "secure_boot_hardening",
     "response_verification",
 }
@@ -938,8 +931,6 @@ def session_source_backup_vector_names() -> list[str]:
     return sorted(path.stem for path in (ROOT / "vectors" / "session-source-backups").glob("*.json"))
 
 
-def smartcard_apdu_vector_names() -> list[str]:
-    return sorted(path.stem for path in (ROOT / "vectors" / "smartcard").glob("*.json"))
 
 
 def invalid_vector_names() -> list[str]:
@@ -1248,19 +1239,6 @@ def check_account_descriptor_shape(path: str, value: object, errors: list[str]) 
             errors.append(f"{path}: ESP32 USB/NIP-46 routes require physical review and approval")
         if capabilities.get("persistent_grants") is not True:
             errors.append(f"{path}: ESP32 USB/NIP-46 routes require persistent grant support")
-    elif route_type == "smartcard":
-        if route.get("transport") != "smartcard":
-            errors.append(f"{path}: smartcard routes must use smartcard transport")
-        if route.get("custody") != "card_persistent":
-            errors.append(f"{path}: smartcard routes must use card_persistent custody")
-        if route.get("trusted_review") != "display_less":
-            errors.append(f"{path}: smartcard routes must remain display_less")
-        if route.get("policy_support") != "manual_only":
-            errors.append(f"{path}: display-less smartcard routes must use manual_only policy support")
-        if capabilities.get("physical_review") is not False or capabilities.get("physical_approval") is not False:
-            errors.append(f"{path}: display-less smartcard routes must not claim physical review or approval")
-        if capabilities.get("persistent_grants") is not False:
-            errors.append(f"{path}: display-less smartcard routes must not support persistent grants")
     elif route_type == "custom_hardware_wallet":
         if route.get("transport") != "usb":
             errors.append(f"{path}: custom hardware-wallet routes must use usb transport in v0")
@@ -1430,8 +1408,6 @@ def check_policy_profile_shape(path: str, value: object, errors: list[str]) -> N
                 errors.append(f"{path}: risk_tiers.{risk_name} uses unsupported tier {risk_tier!r}")
     if set(route_types) & QR_ROUTE_TYPES and (mode != "manual_only" or value.get("grants_allowed") is not False):
         errors.append(f"{path}: QR vault routes must remain manual_only with grants_allowed false")
-    if "smartcard" in route_types and (mode != "manual_only" or value.get("grants_allowed") is not False):
-        errors.append(f"{path}: display-less smartcard routes must remain manual_only with grants_allowed false")
     if "external_nip46" in route_types and (mode != "manual_only" or value.get("grants_allowed") is not False):
         errors.append(f"{path}: external NIP-46 routes must remain external-policy manual without nSealr grants")
     if mode == "manual_only" and value.get("grants_allowed") is True:
@@ -1703,7 +1679,7 @@ def check_policy_decision_request_shape(path: str, request: object, errors: list
     check_string_id(path, "request.account_id", request.get("account_id"), errors)
     if request.get("route_type") not in ROUTE_TYPES:
         errors.append(f"{path}: request.route_type is unknown")
-    elif request.get("route_type") not in {"esp32_usb_nip46", "smartcard", "custom_hardware_wallet", "external_nip46"}:
+    elif request.get("route_type") not in {"esp32_usb_nip46", "custom_hardware_wallet", "external_nip46"}:
         errors.append(f"{path}: request.route_type must be a persistent or external route")
     if not isinstance(request.get("client_pubkey"), str) or not HEX32_RE.fullmatch(request["client_pubkey"]):
         errors.append(f"{path}: request.client_pubkey must be 32-byte lowercase hex")
@@ -1771,7 +1747,7 @@ def check_policy_decision_shape(path: str, decision: object, errors: list[str]) 
     if type(audit.get("occurred_at")) is not int or audit["occurred_at"] <= 0:
         errors.append(f"{path}: audit_event.occurred_at must be a positive integer")
     check_string_id(path, "audit_event.account_id", audit.get("account_id"), errors)
-    if audit.get("route_type") not in {"esp32_usb_nip46", "smartcard", "custom_hardware_wallet", "external_nip46"}:
+    if audit.get("route_type") not in {"esp32_usb_nip46", "custom_hardware_wallet", "external_nip46"}:
         errors.append(f"{path}: audit_event.route_type must be a persistent or external route")
     if not isinstance(audit.get("client_pubkey"), str) or not HEX32_RE.fullmatch(audit["client_pubkey"]):
         errors.append(f"{path}: audit_event.client_pubkey must be 32-byte lowercase hex")
@@ -6189,128 +6165,12 @@ def check_nip46_session_gate_vector(rel: str, errors: list[str]) -> None:
         errors.append(f"{vector_path}: scope must state relay/NIP-44/ack/dispatch/persistence non-enabling boundary")
 
 
-SMARTCARD_APDU_EXPECTATIONS = {
-    "get-public-key": {
-        "cla": "80",
-        "ins": "10",
-        "command_hex": "80100000",
-        "status_word": "9000",
-        "response_data_hex": lambda: load_json("vectors/keys/test-key-1.json")["public_key"],
-    },
-    "sign-event-id-kind-1-basic": {
-        "cla": "80",
-        "ins": "20",
-        "event_id": lambda: load_json("vectors/events/kind-1-basic.json")["event_id"],
-        "command_hex": lambda: f"8020000020{load_json('vectors/events/kind-1-basic.json')['event_id']}",
-        "status_word": "9000",
-        "expected_data_length": 64,
-    },
-    "sign-event-id-wrong-length": {
-        "cla": "80",
-        "ins": "20",
-        "command_hex": "8020000001ff",
-        "status_word": "6700",
-        "response_hex": "6700",
-    },
-    "get-public-key-nonzero-p1": {
-        "cla": "80",
-        "ins": "10",
-        "command_hex": "80100100",
-        "status_word": "6a86",
-        "response_hex": "6a86",
-    },
-    "get-public-key-with-le": {
-        "cla": "80",
-        "ins": "10",
-        "command_hex": "8010000000",
-        "status_word": "6700",
-        "response_hex": "6700",
-    },
-    "sign-event-id-nonzero-p2": {
-        "cla": "80",
-        "ins": "20",
-        "event_id": lambda: load_json("vectors/events/kind-1-basic.json")["event_id"],
-        "command_hex": lambda: f"8020000120{load_json('vectors/events/kind-1-basic.json')['event_id']}",
-        "status_word": "6a86",
-        "response_hex": "6a86",
-    },
-    "sign-event-id-with-le": {
-        "cla": "80",
-        "ins": "20",
-        "event_id": lambda: load_json("vectors/events/kind-1-basic.json")["event_id"],
-        "command_hex": lambda: f"8020000020{load_json('vectors/events/kind-1-basic.json')['event_id']}00",
-        "status_word": "6700",
-        "response_hex": "6700",
-    },
-    "unsupported-cla": {
-        "cla": "00",
-        "ins": "10",
-        "command_hex": "00100000",
-        "status_word": "6e00",
-        "response_hex": "6e00",
-    },
-    "unsupported-ins": {
-        "cla": "80",
-        "ins": "ff",
-        "command_hex": "80ff0000",
-        "status_word": "6d00",
-        "response_hex": "6d00",
-    },
-}
 
 
-def expected_apdu_value(value: object) -> object:
-    if callable(value):
-        return value()
-    return value
 
 
-def apdu_vector_status_word(vector: dict) -> str | None:
-    status = vector.get("expected_status_word", vector.get("status_word"))
-    return status if isinstance(status, str) else None
 
 
-def check_smartcard_apdu_vector(rel: str, errors: list[str]) -> None:
-    vector_path = f"vectors/smartcard/{rel}.json"
-    vector = load_required_json(vector_path, errors)
-    if vector is None:
-        return
-    expectation = SMARTCARD_APDU_EXPECTATIONS.get(rel)
-    if expectation is None:
-        errors.append(f"{vector_path}: unexpected smartcard APDU vector")
-        return
-
-    if vector.get("name") != rel:
-        errors.append(f"{vector_path}: name mismatch")
-    if vector.get("format") != "smartcard-apdu-v0":
-        errors.append(f"{vector_path}: format mismatch")
-    for field in ("cla", "ins", "event_id", "command_hex"):
-        if field not in expectation:
-            continue
-        expected = expected_apdu_value(expectation[field])
-        if vector.get(field) != expected:
-            errors.append(f"{vector_path}: {field} mismatch")
-
-    command_hex = vector.get("command_hex", "")
-    if not isinstance(command_hex, str) or len(command_hex) % 2 != 0 or not APDU_HEX_RE.fullmatch(command_hex):
-        errors.append(f"{vector_path}: command_hex must be even-length lowercase hex")
-
-    expected_status = expected_apdu_value(expectation["status_word"])
-    if apdu_vector_status_word(vector) != expected_status:
-        errors.append(f"{vector_path}: status word mismatch")
-
-    if "response_data_hex" in expectation:
-        expected_response_data = expected_apdu_value(expectation["response_data_hex"])
-        if vector.get("response_data_hex") != expected_response_data:
-            errors.append(f"{vector_path}: response_data_hex mismatch")
-        expected_response_hex = f"{expected_response_data}{expected_status}"
-        if vector.get("response_hex") != expected_response_hex:
-            errors.append(f"{vector_path}: response_hex mismatch")
-    elif "response_hex" in expectation and vector.get("response_hex") != expectation["response_hex"]:
-        errors.append(f"{vector_path}: response_hex mismatch")
-
-    if "expected_data_length" in expectation and vector.get("expected_data_length") != expectation["expected_data_length"]:
-        errors.append(f"{vector_path}: expected_data_length mismatch")
 
 
 def main() -> int:
@@ -6619,9 +6479,6 @@ def main() -> int:
 
     for rel in device_security_profile_vector_names():
         check_device_security_profile_vector(rel, errors)
-
-    for rel in smartcard_apdu_vector_names():
-        check_smartcard_apdu_vector(rel, errors)
 
     for rel in invalid_vector_names():
         check_invalid_vector(rel, errors)

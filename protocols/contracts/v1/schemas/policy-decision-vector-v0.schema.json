@@ -1,72 +1,98 @@
 {
-  "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://nsealr.dev/schemas/policy-decision-vector-v0.schema.json",
-  "title": "nSealr Policy Decision Vector v0",
-  "type": "object",
-  "required": ["name", "format", "policy_profile_id", "request", "decision"],
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
   "properties": {
-    "name": { "type": "string", "pattern": "^[A-Za-z0-9._:-]{1,128}$" },
-    "format": { "const": "nsealr-policy-decision-vector-v0" },
-    "policy_profile_id": { "type": "string", "pattern": "^policy-[A-Za-z0-9._:-]{1,121}$" },
-    "request": {
-      "type": "object",
-      "required": [
-        "account_id",
-        "route_type",
-        "client_pubkey",
-        "permission",
-        "now",
-        "grant_ids",
-        "grant_usage",
-        "revoked_grant_ids"
-      ],
-      "properties": {
-        "account_id": { "type": "string", "pattern": "^[A-Za-z0-9._:-]{1,128}$" },
-        "route_type": {
-          "enum": ["esp32_usb_nip46", "smartcard", "custom_hardware_wallet", "external_nip46"]
-        },
-        "client_pubkey": { "type": "string", "pattern": "^[0-9a-f]{64}$" },
-        "permission": {
-          "type": "object",
-          "required": ["method"],
-          "properties": {
-            "method": { "type": "string", "minLength": 1 },
-            "parameter": { "type": "string" },
-            "event_kind": { "type": "integer", "minimum": 0 }
-          },
-          "additionalProperties": false
-        },
-        "now": { "type": "integer", "minimum": 1 },
-        "grant_ids": {
-          "type": "array",
-          "items": { "type": "string", "pattern": "^grant-[A-Za-z0-9._:-]{1,122}$" }
-        },
-        "grant_usage": {
-          "type": "object",
-          "propertyNames": { "pattern": "^grant-[A-Za-z0-9._:-]{1,122}$" },
-          "additionalProperties": {
-            "type": "object",
-            "required": ["window_started_at", "uses"],
-            "properties": {
-              "window_started_at": { "type": "integer", "minimum": 1 },
-              "uses": { "type": "integer", "minimum": 0 }
-            },
-            "additionalProperties": false
-          }
-        },
-        "revoked_grant_ids": {
-          "type": "array",
-          "items": { "type": "string", "pattern": "^grant-[A-Za-z0-9._:-]{1,122}$" }
-        }
-      },
-      "additionalProperties": false
-    },
     "decision": {
-      "type": "object",
-      "required": ["format", "decision", "reason", "audit_event"],
+      "additionalProperties": false,
       "properties": {
-        "format": { "const": "nsealr-policy-decision-v0" },
-        "decision": { "enum": ["allow", "deny", "manual_review"] },
+        "audit_event": {
+          "additionalProperties": false,
+          "properties": {
+            "account_id": {
+              "pattern": "^[A-Za-z0-9._:-]{1,128}$",
+              "type": "string"
+            },
+            "client_pubkey": {
+              "pattern": "^[0-9a-f]{64}$",
+              "type": "string"
+            },
+            "decision": {
+              "enum": [
+                "allow",
+                "deny",
+                "manual_review"
+              ]
+            },
+            "format": {
+              "const": "nsealr-grant-audit-event-v0"
+            },
+            "grant_id": {
+              "pattern": "^grant-[A-Za-z0-9._:-]{1,122}$",
+              "type": "string"
+            },
+            "occurred_at": {
+              "minimum": 1,
+              "type": "integer"
+            },
+            "permission": {
+              "additionalProperties": false,
+              "properties": {
+                "event_kind": {
+                  "minimum": 0,
+                  "type": "integer"
+                },
+                "method": {
+                  "minLength": 1,
+                  "type": "string"
+                },
+                "parameter": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "method"
+              ],
+              "type": "object"
+            },
+            "reason": {
+              "minLength": 1,
+              "type": "string"
+            },
+            "route_type": {
+              "enum": [
+                "esp32_usb_nip46",
+                "custom_hardware_wallet",
+                "external_nip46"
+              ]
+            }
+          },
+          "required": [
+            "format",
+            "occurred_at",
+            "account_id",
+            "route_type",
+            "client_pubkey",
+            "permission",
+            "decision",
+            "reason"
+          ],
+          "type": "object"
+        },
+        "decision": {
+          "enum": [
+            "allow",
+            "deny",
+            "manual_review"
+          ]
+        },
+        "format": {
+          "const": "nsealr-policy-decision-v0"
+        },
+        "grant_id": {
+          "pattern": "^grant-[A-Za-z0-9._:-]{1,122}$",
+          "type": "string"
+        },
         "reason": {
           "enum": [
             "decrypt_requires_manual_review",
@@ -80,38 +106,128 @@
             "policy_route_mismatch",
             "unknown_method_requires_manual_review"
           ]
-        },
-        "grant_id": { "type": "string", "pattern": "^grant-[A-Za-z0-9._:-]{1,122}$" },
-        "audit_event": {
-          "type": "object",
-          "required": ["format", "occurred_at", "account_id", "route_type", "client_pubkey", "permission", "decision", "reason"],
-          "properties": {
-            "format": { "const": "nsealr-grant-audit-event-v0" },
-            "occurred_at": { "type": "integer", "minimum": 1 },
-            "account_id": { "type": "string", "pattern": "^[A-Za-z0-9._:-]{1,128}$" },
-            "route_type": {
-              "enum": ["esp32_usb_nip46", "smartcard", "custom_hardware_wallet", "external_nip46"]
-            },
-            "client_pubkey": { "type": "string", "pattern": "^[0-9a-f]{64}$" },
-            "permission": {
-              "type": "object",
-              "required": ["method"],
-              "properties": {
-                "method": { "type": "string", "minLength": 1 },
-                "parameter": { "type": "string" },
-                "event_kind": { "type": "integer", "minimum": 0 }
-              },
-              "additionalProperties": false
-            },
-            "decision": { "enum": ["allow", "deny", "manual_review"] },
-            "reason": { "type": "string", "minLength": 1 },
-            "grant_id": { "type": "string", "pattern": "^grant-[A-Za-z0-9._:-]{1,122}$" }
-          },
-          "additionalProperties": false
         }
       },
-      "additionalProperties": false
+      "required": [
+        "format",
+        "decision",
+        "reason",
+        "audit_event"
+      ],
+      "type": "object"
+    },
+    "format": {
+      "const": "nsealr-policy-decision-vector-v0"
+    },
+    "name": {
+      "pattern": "^[A-Za-z0-9._:-]{1,128}$",
+      "type": "string"
+    },
+    "policy_profile_id": {
+      "pattern": "^policy-[A-Za-z0-9._:-]{1,121}$",
+      "type": "string"
+    },
+    "request": {
+      "additionalProperties": false,
+      "properties": {
+        "account_id": {
+          "pattern": "^[A-Za-z0-9._:-]{1,128}$",
+          "type": "string"
+        },
+        "client_pubkey": {
+          "pattern": "^[0-9a-f]{64}$",
+          "type": "string"
+        },
+        "grant_ids": {
+          "items": {
+            "pattern": "^grant-[A-Za-z0-9._:-]{1,122}$",
+            "type": "string"
+          },
+          "type": "array"
+        },
+        "grant_usage": {
+          "additionalProperties": {
+            "additionalProperties": false,
+            "properties": {
+              "uses": {
+                "minimum": 0,
+                "type": "integer"
+              },
+              "window_started_at": {
+                "minimum": 1,
+                "type": "integer"
+              }
+            },
+            "required": [
+              "window_started_at",
+              "uses"
+            ],
+            "type": "object"
+          },
+          "propertyNames": {
+            "pattern": "^grant-[A-Za-z0-9._:-]{1,122}$"
+          },
+          "type": "object"
+        },
+        "now": {
+          "minimum": 1,
+          "type": "integer"
+        },
+        "permission": {
+          "additionalProperties": false,
+          "properties": {
+            "event_kind": {
+              "minimum": 0,
+              "type": "integer"
+            },
+            "method": {
+              "minLength": 1,
+              "type": "string"
+            },
+            "parameter": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "method"
+          ],
+          "type": "object"
+        },
+        "revoked_grant_ids": {
+          "items": {
+            "pattern": "^grant-[A-Za-z0-9._:-]{1,122}$",
+            "type": "string"
+          },
+          "type": "array"
+        },
+        "route_type": {
+          "enum": [
+            "esp32_usb_nip46",
+            "custom_hardware_wallet",
+            "external_nip46"
+          ]
+        }
+      },
+      "required": [
+        "account_id",
+        "route_type",
+        "client_pubkey",
+        "permission",
+        "now",
+        "grant_ids",
+        "grant_usage",
+        "revoked_grant_ids"
+      ],
+      "type": "object"
     }
   },
-  "additionalProperties": false
+  "required": [
+    "name",
+    "format",
+    "policy_profile_id",
+    "request",
+    "decision"
+  ],
+  "title": "nSealr Policy Decision Vector v0",
+  "type": "object"
 }

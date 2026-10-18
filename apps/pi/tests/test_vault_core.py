@@ -85,10 +85,7 @@ ROOT = Path(__file__).resolve().parents[1]
 
 
 def specs_dir() -> Path:
-    sibling = ROOT.parent / "specs"
-    if sibling.exists():
-        return sibling
-    return ROOT / "tests/fixtures/specs"
+    return ROOT.parents[1] / "protocols/contracts/v1"
 
 
 SPECS = specs_dir()

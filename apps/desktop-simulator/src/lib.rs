@@ -10,9 +10,9 @@
 //!
 //! [`vectors_root`] is the *one* place that resolves where category directories
 //! live. It honours the `NSEALR_VECTORS_ROOT` environment override and otherwise
-//! defaults to the complete pinned snapshot in this repository at
-//! `tests/fixtures/specs/vectors`. A standalone checkout needs no sibling repo.
-//! See `tests/fixtures/specs/SOURCE.json` for provenance and file hashes.
+//! defaults to the authoritative contract artifact in this repository at
+//! `protocols/contracts/v1/vectors`. A standalone checkout needs no sibling repo.
+//! See `protocols/contracts/v1/manifest.json` for provenance and file hashes.
 #![deny(missing_docs)]
 
 use std::path::{Path, PathBuf};
@@ -41,9 +41,9 @@ pub fn vectors_root() -> PathBuf {
         .nth(2)
         .expect("crate manifest dir has a workspace-root ancestor");
     workspace_root
-        .join("tests")
-        .join("fixtures")
-        .join("specs")
+        .join("protocols")
+        .join("contracts")
+        .join("v1")
         .join("vectors")
 }
 
@@ -95,7 +95,6 @@ pub const EXCLUDED_CATEGORIES: &[&str] = &[
     "policy-decisions", // companion policy-engine adjudication outcomes.
     "route-refusals",   // companion routing surface (drift-only snapshots).
     "route-selections", // companion routing surface (drift-only snapshots).
-    "smartcard",        // solution-3 applet contract (smartcard/companion, Phase 06).
 ];
 
 /// The restricted `invalid/` filename prefixes this harness owns: the decoder
