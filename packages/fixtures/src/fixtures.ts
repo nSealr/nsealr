@@ -510,7 +510,6 @@ const FEATURE_SOLUTION_IDS = new Set([
   "raspberry_qr_vault",
   "esp32_qr_vault",
   "esp32_usb_nip46",
-  "smartcard",
   "custom_hardware_wallet"
 ]);
 const ACCESS_SURFACE_SAFETY = {
