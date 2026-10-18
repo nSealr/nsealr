@@ -73,8 +73,11 @@ relay URI, current connection challenge and a declared freshness/time model,
 with local consent separate from message approval. Reconnect/challenge change,
 cancellation and timeout invalidate pending authentication. Show the full
 challenge with bounded inspectable presentation; reject unsupported tags, hidden
-payload, stale/wrong relay or replayed challenge. Publish no AUTH event as an
-ordinary post. A client/relay that cannot meet this contract is unsupported for
+payload, stale/wrong relay or replayed challenge. Relay URI, challenge and time
+supplied by a host remain host claims unless independently authenticated;
+displaying them does not attest remote origin or a trusted wall clock. C02 must
+name and test the trust needed for its claimed freshness. Publish no AUTH event
+as an ordinary post. A client/relay that cannot meet this contract is unsupported for
 that message workflow; no silent fallback to an unprotected mailbox. C02 owns
 this evidence and connected device/client tasks exercise it. NIP-98 and other
 authentication flows still require separate admission.
