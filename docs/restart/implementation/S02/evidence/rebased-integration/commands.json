@@ -1,0 +1,138 @@
+{
+  "utc": "2026-10-18T15:26:55.515246+00:00",
+  "candidate_commit": "3cabfe3c49ee41702001b18e223447da9d4d609c",
+  "dirty_at_start": "",
+  "runs": [
+    {
+      "name": "rustc",
+      "started_utc": "2026-10-18T15:26:55.523207+00:00",
+      "command": [
+        "rustc",
+        "-vV"
+      ],
+      "cwd": "/home/tux/nsealr/.restart-tools/goal/s02",
+      "env_overrides": {},
+      "exit_code": 0,
+      "log": "docs/restart/implementation/S02/evidence/rebased-integration/rustc.log",
+      "sha256": "4fdff2578428e9c5c08ddd7a0d3079c1a106b1cdaa46e73e46f7cd32b0fb9cad"
+    },
+    {
+      "name": "cargo-tree-core",
+      "started_utc": "2026-10-18T15:26:55.545161+00:00",
+      "command": [
+        "cargo",
+        "tree",
+        "--locked",
+        "-p",
+        "nsealr-core",
+        "-e",
+        "features",
+        "--target",
+        "riscv32imafc-unknown-none-elf"
+      ],
+      "cwd": "/home/tux/nsealr/.restart-tools/goal/s02",
+      "env_overrides": {},
+      "exit_code": 0,
+      "log": "docs/restart/implementation/S02/evidence/rebased-integration/cargo-tree-core.log",
+      "sha256": "37025e8f2142c8965a600d6dc3d2f63bf85c458bd9ddc6fb0350258d9469fe39"
+    },
+    {
+      "name": "workspace-tests",
+      "started_utc": "2026-10-18T15:26:55.574312+00:00",
+      "command": [
+        "cargo",
+        "test",
+        "--workspace",
+        "--locked"
+      ],
+      "cwd": "/home/tux/nsealr/.restart-tools/goal/s02",
+      "env_overrides": {},
+      "exit_code": 0,
+      "log": "docs/restart/implementation/S02/evidence/rebased-integration/workspace-tests.log",
+      "sha256": "1f0a9ba2135947ba0365857d712bebc286eb44ab1d1960e4fbcd388cfb771fd9"
+    },
+    {
+      "name": "full-ci",
+      "started_utc": "2026-10-18T15:26:56.206081+00:00",
+      "command": [
+        "make",
+        "ci"
+      ],
+      "cwd": "/home/tux/nsealr/.restart-tools/goal/s02",
+      "env_overrides": {},
+      "exit_code": 0,
+      "log": "docs/restart/implementation/S02/evidence/rebased-integration/full-ci.log",
+      "sha256": "e4883b339cc5cfe38d3e801460f4bbff1fd171caf7e5bcdd8d7ec493290fb99e"
+    },
+    {
+      "name": "core-final-link",
+      "started_utc": "2026-10-18T15:27:17.000388+00:00",
+      "command": [
+        "cargo",
+        "rustc",
+        "--manifest-path",
+        "docs/restart/implementation/S02/probes/core-link/Cargo.toml",
+        "--locked",
+        "--offline",
+        "--release",
+        "--target",
+        "riscv32imafc-unknown-none-elf",
+        "--",
+        "-C",
+        "link-arg=--entry=_start"
+      ],
+      "cwd": "/home/tux/nsealr/.restart-tools/goal/s02",
+      "env_overrides": {
+        "CARGO_TARGET_DIR": "/home/tux/nsealr/.restart-tools/goal/s02/target/s02-core-link"
+      },
+      "exit_code": 0,
+      "log": "docs/restart/implementation/S02/evidence/rebased-integration/core-final-link.log",
+      "sha256": "a623d8f43c7c8fcf9119c8ff149ab542ee3784726f012133a443b9b40c6dd612"
+    },
+    {
+      "name": "core-readelf",
+      "started_utc": "2026-10-18T15:27:18.002554+00:00",
+      "command": [
+        "readelf",
+        "-hSW",
+        "/home/tux/nsealr/.restart-tools/goal/s02/target/s02-core-link/riscv32imafc-unknown-none-elf/release/s02-core-link"
+      ],
+      "cwd": "/home/tux/nsealr/.restart-tools/goal/s02",
+      "env_overrides": {},
+      "exit_code": 0,
+      "log": "docs/restart/implementation/S02/evidence/rebased-integration/core-readelf.log",
+      "sha256": "e871b1aadbe7d7cb0b7d56a1147954f56a989b4bc9ed26af3c7c560810b5c1af"
+    },
+    {
+      "name": "core-nm",
+      "started_utc": "2026-10-18T15:27:18.003861+00:00",
+      "command": [
+        "nm",
+        "-u",
+        "/home/tux/nsealr/.restart-tools/goal/s02/target/s02-core-link/riscv32imafc-unknown-none-elf/release/s02-core-link"
+      ],
+      "cwd": "/home/tux/nsealr/.restart-tools/goal/s02",
+      "env_overrides": {},
+      "exit_code": 0,
+      "log": "docs/restart/implementation/S02/evidence/rebased-integration/core-nm.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "core-size",
+      "started_utc": "2026-10-18T15:27:18.016194+00:00",
+      "command": [
+        "size",
+        "-A",
+        "/home/tux/nsealr/.restart-tools/goal/s02/target/s02-core-link/riscv32imafc-unknown-none-elf/release/s02-core-link"
+      ],
+      "cwd": "/home/tux/nsealr/.restart-tools/goal/s02",
+      "env_overrides": {},
+      "exit_code": 0,
+      "log": "docs/restart/implementation/S02/evidence/rebased-integration/core-size.log",
+      "sha256": "d22120c472acd09f2992921a377301860004bb55aa7bebe3c29328b7129b2382"
+    }
+  ],
+  "core_elf_sha256": "d89d19f8b05cde63b635da4ca74a486f9ef107a9764c36f9d3d84094aa920d28",
+  "no_undefined_symbols": true,
+  "passed": true
+}
