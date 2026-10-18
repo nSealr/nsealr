@@ -1,0 +1,179 @@
+{
+  "schema": "independent-specification-review-v1",
+  "task": "P01",
+  "reviewer": "/root/independent_security_review",
+  "author": "/root",
+  "independence": "The reviewer authored no reviewed P01 source. Only independent review artifacts were written in the reviewer's assigned worktree.",
+  "input_commit": "768e8a35ae541f53f5da9c7bea7bf5c577fb474d",
+  "initial_review_candidate": "2d68108d50517c93e08b29cb6d7b6d6cf35f62cf",
+  "reviewed_candidate": "df4cff34b4733aaac04db9b176db7c4edfc256d8",
+  "pr": "https://github.com/nSealr/nsealr/pull/13",
+  "verdict": "PASS",
+  "scope": "All four canonical P01 acceptances, the six authored specification/navigation files bound in input-bindings.json, and relevant owner/evidence contracts. This is specification acceptance, not implementation or release qualification.",
+  "binding_artifact": "input-bindings.json",
+  "binding_rule": "This verdict applies only to the exact six authored file bytes in final_authored_files. Any source change requires affected review; metadata-only integration may retain the verdict only after explicit source-equality reconciliation.",
+  "initial_findings": [
+    {
+      "id": "P01-R1",
+      "severity": "blocking specification completeness",
+      "candidate": "2d68108d50517c93e08b29cb6d7b6d6cf35f62cf",
+      "finding": "The proposed connected DM release lacked a viable fresh-identity receiving setup. The exact public catalog omitted kind 10050 while unsupported kinds rejected. Pinned NIP-17 requires recipient DM relay advertisement for delivery; common relays can additionally require NIP-42 authentication. A new native identity could not establish this advertised workflow through the admitted operations.",
+      "impact": "A promised user journey was incomplete; this was not evidence of an exploitable runtime vulnerability.",
+      "resolution_candidate": "df4cff34b4733aaac04db9b176db7c4edfc256d8",
+      "resolution": "Connected-only 10050 setup/replacement now requires exact relay review, explicit withdrawal, checked advertisement and publication/receive qualification from a fresh identity. Conditional NIP-42 admission is mandatory for a selected relay requiring AUTH, with separate consent, relay/challenge/session scope and explicit host-origin/time trust limits. Offline profiles reject these operations. Initial message scope is one-to-one text kind 14 plus sender copy; optional extensions are deferred.",
+      "status": "resolved"
+    },
+    {
+      "id": "P01-R2",
+      "severity": "navigation ambiguity",
+      "candidate": "2d68108d50517c93e08b29cb6d7b6d6cf35f62cf",
+      "finding": "Linked client-qualification research described older a79e21d protocol links as current normative sources while P01 selected 37db639. No conflicting public-event rule was established, but readers could select competing source baselines.",
+      "resolution": "The dated research now explicitly marks its protocol pins and observations as historical, points to P01's current baseline and requires deliberate reconciliation before implementation. Historical citations remain available.",
+      "status": "resolved"
+    }
+  ],
+  "acceptance_review": [
+    {
+      "index": 1,
+      "canonical_acceptance": "Adopt or revise the four signer profiles and independent developer platform; smartcards leave active scope without losing history.",
+      "verdict": "PASS",
+      "reason": "Requirements retain commercial ESP32 without SE, Pi QR, P4 QR and custom Board Signer as independently qualified profiles, alongside generic Board SDK as a separate release. Native one-identity custody/recovery is explicit. Smartcards are retired from active scope, while repositories.md retains the public archive/history disposition. The product navigation points to one current authority and preserves the original proposal by commit.",
+      "owners_and_gates": [
+        "D01-D03",
+        "QP01/Q02/Q04",
+        "QP02/Q03/Q05",
+        "H04/V02/V03/S05",
+        "B01/B02/B03"
+      ]
+    },
+    {
+      "index": 2,
+      "canonical_acceptance": "For each profile define user flows, custody, active channels, boot integrity, trusted UI, physical attacker assumptions and recovery; do not impose a one-dimensional security ranking.",
+      "verdict": "PASS",
+      "reason": "Initialize, pair, connected operation, optical operation, message and lock/recover/update journeys state visible outcomes and failures. Profile tables separately identify USB and MCU custody; Linux/image/camera/interpreter trust; P4 DMA and companion radios; custom SE/MCU/UI, firmware-root and production boundaries. Generic SDK explicitly starts with one trusted firmware image. Recovery is local nsec with checksum and expected-identity drill; optional legacy compatibility and deferred NIP-49 do not silently redefine the default. Physical substitution, debug, rollback, backups and supply-chain assumptions remain explicit, with no universal security grade.",
+      "owners_and_gates": [
+        "PROD-01 through PROD-05",
+        "PROD-10 through PROD-12",
+        "per-profile threat tables",
+        "S03/K01",
+        "D02/S04",
+        "QP01/QP02",
+        "H02/H02S/B02"
+      ]
+    },
+    {
+      "index": 3,
+      "canonical_acceptance": "Connected daily-use profiles include NIP-44; initial QR profiles define manual scope, resource/time limits and explicit unsupported capabilities.",
+      "verdict": "PASS",
+      "reason": "Connected releases require bounded NIP-44 and a qualified one-to-one NIP-17/59 path, including fresh-identity DM relay setup and required relay authentication. Primitive encryption/decryption cannot certify missing outer context; recipient/plaintext-to-seal binding and actual client ordering belong to C02. Manual Pi/P4 has session-only local reload, separated recovery QR, no messaging or persistent automation. Finite byte/count/frame/queue/work/deadline/output limits are mandatory; measured, versioned numeric values remain exact-device gates, not inherited protocol maxima.",
+      "owners_and_gates": [
+        "PROD-07 through PROD-09",
+        "C02 and named-client/device qualification",
+        "T01/Q01/QH01",
+        "QP01/QP02/Q02/Q03"
+      ]
+    },
+    {
+      "index": 4,
+      "canonical_acceptance": "Every required guarantee maps to an acceptance gate and real evidence; unavailable hardware properties are not replaced with booleans or silently waived.",
+      "verdict": "PASS",
+      "reason": "The requirement matrix and profile tables map semantic guarantees to implementation and actual admission owners. The event-review matrix specifies exact public kinds and honest field/tag treatment, providing a semantic oracle for independent fixtures without claiming rendering success. Candidate boards remain engineering leads, with revision, boot/custody/interface and measured UI gates. Two-button recovery can fail admission; a disabled radio cannot establish absence; SE branding cannot establish native BIP340/non-exportability; successful flags cannot establish physical controls.",
+      "owners_and_gates": [
+        "PROD-01 through PROD-12",
+        "event-review-contract fixture families",
+        "D01/QP01/QP02/H04",
+        "V01/V02/V03",
+        "B02/B03",
+        "release gates"
+      ]
+    }
+  ],
+  "independent_source_backed_walkthroughs": [
+    {
+      "case": "Fresh identity with no DM relay advertisement",
+      "method": "Start from local native generation, then attempt first receive and peer send using the admitted operations; compare transition requirements to pinned NIP-17 Publishing and NIP-42.",
+      "result": "Produced blocking finding P01-R1 against the initial candidate. Final specification supplies a locally approved 10050 setup and publication/receive path, rejects absent/invalid recipient advertisement and qualifies AUTH where required. This is a reviewed design transition, not an executed client test."
+    },
+    {
+      "case": "Host submits an AUTH challenge for an unrelated relay or stale session",
+      "method": "Separate the signed relay/challenge/time fields from the host's unverifiable claim about remote origin; compare NIP-42 connection lifetime and timestamp checks.",
+      "result": "Final contract binds separate local consent and invalidation to relay/challenge/session and requires declared freshness trust. It does not falsely attest an authenticated relay or wall clock from display alone. C02 must still prove its chosen model and fail unsupported workflows."
+    },
+    {
+      "case": "Host replaces signing identity or hides an added tag suffix",
+      "method": "Apply a hostile template carrying host-controlled pubkey/id/sig and a recognized tag with extra strings; compare NIP-01 serialization and NIP-07/46 signEvent input boundary.",
+      "result": "Engine owns user pubkey/id/sig; extra top-level members reject. Ordered tag bytes are preserved and every suffix shown. Malformed recognized prefixes reject rather than downgrade to uninterpreted data. Changed data requires new review; complete display must be feasible within qualified bounds."
+    },
+    {
+      "case": "Ambiguous reply, forged repost preview and misleading reaction target",
+      "method": "Compare unmarked NIP-10 references, NIP-18 embedded-original and relay requirements, and NIP-25 multiple references against the renderer oracle.",
+      "result": "Unmarked context is honestly ambiguous, non-kind-1 reply is unsupported, nonempty kind-6 original must verify and match, empty original is explicitly unverified, and final e/p reaction target is identified. No remote image executes. Kind-16 repost and kind-17 external reaction remain unsupported."
+    },
+    {
+      "case": "Replacement and deletion imply more than the signer knows",
+      "method": "Walk through empty kind-3 and kind-10002 lists, omitted relay marker, and kind-5 address identifiers containing additional colons; compare NIP-02/65/09.",
+      "result": "Full-list replacement and clear-all are explicit; absent read/write marker means both; an address preserves its remainder identifier. No unverified prior-state diff, target ownership or guaranteed remote erasure is claimed."
+    },
+    {
+      "case": "Host encrypts readable text then asks to sign unrelated opaque seal",
+      "method": "Follow the standard bare pubkey/payload RPC boundary into NIP-59 seals and NIP-17 message identity requirements.",
+      "result": "Primitive permission is insufficient: C02 must bind reviewed recipient/plaintext to ciphertext and the eventual seal, verify supplied context at its actual boundary, and reject opaque/mismatched requests or incompatible client order. Stable conversation-key export is prohibited."
+    },
+    {
+      "case": "QR reassembly flood, recovery QR disguised as operation, and power loss",
+      "method": "Follow optical ingest, retained bytes, request correlation, local review, result scan and session reload across the Pi/P4 and Bridge boundaries.",
+      "result": "Finite work/state/deadline limits precede expensive work; secret recovery is separate; mixed/replayed input and stale identity fail; receiver independently verifies outputs. No automatic grant or persistent offline secret is introduced. Numeric limits and camera/screen behavior are still measured later."
+    },
+    {
+      "case": "Lost kit, exposed backup, or unworkable local recovery controls",
+      "method": "Compare direct scalar nsec with NIP-19 semantics and deferred NIP-49 password/KDF requirements, then attempt recovery on each profile.",
+      "result": "nsec is an unencrypted copy, not revocation or a new identity. Same-public-key recovery and checksum usability must be demonstrated locally; an impractical device fails admission without plaintext host fallback. Deferred KDF work cannot silently weaken NIP-49."
+    },
+    {
+      "case": "Substituted boot media, disabled companion radio, or firmware ownership change",
+      "method": "Apply the declared hostile host and physical actor separately to Pi, P4, no-SE ESP32, custom SE board and generic SDK.",
+      "result": "The model keeps Linux/camera/interpreter and MCU/DMA/firmware in the trusted path, distinguishes absent from disabled radios, requires actual boot/debug and SE object evidence, and forbids silent inheritance of privileged state across ownership changes. A generic SDK is not hostile-app isolation."
+    }
+  ],
+  "protocol_review": {
+    "pin": "37db639582d857e12468dcccd99b2c7f1d657da9",
+    "primary_source_bindings": "input-bindings.json:pinned_primary_sources",
+    "reviewed_nips": [
+      1,
+      2,
+      7,
+      9,
+      10,
+      17,
+      18,
+      19,
+      25,
+      42,
+      44,
+      46,
+      49,
+      59,
+      65
+    ],
+    "conclusion": "No remaining contradiction found between admitted product semantics and the pinned protocol definitions. Rejection of optional kinds, custom emoji, unsupported replies, malformed references, unrenderable content and incompatible client sequences is an explicit product restriction. NIP-44 extended lengths still require smaller device caps and checked arithmetic; no forward-secrecy or unseen-signature claim follows from primitive support."
+  },
+  "limits_and_open_gates": [
+    "No product implementation tests were run for P01; semantic analysis and protocol/user-flow walkthroughs are the evidence. Retrieval hashes and CI are provenance/integration checks, not proof of prose correctness.",
+    "K01 must fix exact integer/URI/reference syntax against the pin before implementation, and independently test canonical bytes, full rendering and hostile variants. Product-level decisions here do not replace that implementation brief.",
+    "C02 must qualify actual client call ordering, full message context, recipient/plaintext/seal binding, fresh 10050 setup/publication/receive and each required NIP-42 relay with its real freshness/authentication assumptions. No current deployed-client compatibility is established.",
+    "Every exact device needs measured resource limits, physical approval, readable complete review, local recovery usability and expected-key restoration. Current hardware names are engineering leads, not selected qualified assemblies.",
+    "No entropy-provider, physical-erasure, radio-absence, firmware-enforcement, SE custody, production, or real-key admission follows from this review.",
+    "The reviewed graph still names initial candidate 2d68108 with no verdict. Coordinator must reconcile the final candidate, accepted review artifacts and affected CI before canonical task closure. Reviewer does not edit the graph or close P01/O01."
+  ],
+  "s02_reconciliation": "s02-integration-acknowledgement.json confirms prior review applicability through unchanged 670 source files, unchanged 69 brief/evidence files, unchanged review and successful main CI at e214fc57. It grants no additional product or hardware admission.",
+  "recorded_utc": "2026-10-18T16:13:38.765164+00:00",
+  "binding_artifact_sha256": "1d54cf5e60c75951dccf22aceed61f1db46cc815cf51a5900291c8fd2684a904",
+  "authored_file_hashes": {
+    "docs/restart/product-contract.md": "c6ff778a21e1983e5c447d235b58c22cdc94685671ebef8b4cee618cb93467ae",
+    "docs/restart/implementation/P01/brief.md": "5d5d2c000cb4bc01404ea82b0162ac1119c0830996491ed6cbd4f6dbe886c874",
+    "docs/restart/implementation/P01/requirements.md": "f8635e2941895b7d4043e769c9b73e2064036b1358e5f4266854b074a9b81326",
+    "docs/restart/implementation/P01/event-review-contract.md": "acaec734d7f5317097dde97eb071c59132ee3a1ed6af1fdb3f6289d1a0950043",
+    "docs/restart/implementation/P01/threat-models.md": "ebf8d5a821eb4843d7b961840a4b21cc74a2997dfa5b9e15f0cc6907586ffee0",
+    "docs/restart/client-qualification.md": "beedbdd3e78635edfa617c7344cd034549d716d5cc4194693f081cb4a06f3f31"
+  }
+}
