@@ -8,7 +8,8 @@ from pathlib import Path
 import subprocess
 
 ROOT = Path(__file__).resolve().parents[5]
-OUT = ROOT / "docs/restart/implementation/S02/evidence/integration"
+OUT = Path(os.environ.get("NSEALR_S02_EVIDENCE_ROOT",
+                          str(ROOT / "docs/restart/implementation/S02/evidence/integration"))).resolve()
 OUT.mkdir(parents=True, exist_ok=True)
 manifest = {
     "utc": datetime.datetime.now(datetime.timezone.utc).isoformat(),
