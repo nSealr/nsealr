@@ -34,3 +34,10 @@ nsealr-core = { path = "../../crates/nsealr-core", version = "0.0.0", features =
 # re-serialized into the parsers are byte-faithful to the canonical vectors;
 # `Value` equality stays order-independent regardless.
 serde_json = { version = "1", features = ["preserve_order"] }
+
+[workspace]
+resolver = "2"
+members = ["."]
+
+[profile.release]
+codegen-units = 1

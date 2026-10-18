@@ -28,10 +28,10 @@ from pathlib import Path
 EPSILON = 1e-6
 
 
-def workspace_packages() -> dict[str, Path]:
+def workspace_packages(manifest="Cargo.toml") -> dict[str, Path]:
     """Return {package name: package root dir} for workspace members only."""
     out = subprocess.run(
-        ["cargo", "metadata", "--no-deps", "--format-version", "1"],
+        ["cargo", "metadata", "--no-deps", "--format-version", "1", "--manifest-path", manifest],
         check=True,
         capture_output=True,
         text=True,
@@ -39,7 +39,7 @@ def workspace_packages() -> dict[str, Path]:
     meta = json.loads(out)
     return {
         pkg["name"]: Path(pkg["manifest_path"]).resolve().parent
-        for pkg in meta["packages"]
+        for pkg in meta["packages"] if pkg["id"] in meta["workspace_members"]
     }
 
 
@@ -68,21 +68,23 @@ def measured_line_coverage(cov_json: Path, roots: dict[str, Path]) -> dict[str, 
         total[owner] += lines["count"]
 
     return {
-        name: (100.0 if total[name] == 0 else 100.0 * covered[name] / total[name])
+        name: (0.0 if total[name] == 0 else 100.0 * covered[name] / total[name])
         for name in roots
     }
 
 
 def main(argv: list[str]) -> int:
-    if len(argv) != 3:
-        print(f"usage: {argv[0]} <cargo-llvm-cov-json> <ratchet-json>", file=sys.stderr)
+    if len(argv) != 4:
+        print(f"usage: {argv[0]} <cargo-llvm-cov-json> <ratchet-json> <host-coverage-json>", file=sys.stderr)
         return 2
 
     cov_json = Path(argv[1])
     ratchet = json.loads(Path(argv[2]).read_text())
     floors: dict[str, float] = ratchet["coverage"]["floors"]
 
-    roots = workspace_packages()
+    core_roots = workspace_packages()
+    host_roots = workspace_packages("apps/desktop-simulator/Cargo.toml")
+    roots = {**core_roots, **host_roots}
     missing_floor = sorted(set(roots) - set(floors))
     stale_floor = sorted(set(floors) - set(roots))
     if missing_floor:
@@ -100,7 +102,8 @@ def main(argv: list[str]) -> int:
         )
         return 1
 
-    measured = measured_line_coverage(cov_json, roots)
+    measured = {**measured_line_coverage(cov_json, core_roots),
+                **measured_line_coverage(Path(argv[3]), host_roots)}
     failed = False
     print("package                        measured   floor   status")
     print("-" * 58)
