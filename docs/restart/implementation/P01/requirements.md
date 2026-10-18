@@ -1,6 +1,6 @@
-# First-release requirements — candidate for independent review
+# First-release product requirements
 
-Date: 2026-10-18. This candidate makes the proposed product direction concrete. It is not yet the independently accepted P01 result and does not announce implemented features. Source and protocol inputs remain pinned in the parent brief. The task graph is the only execution-state authority.
+Date: 2026-10-18. These requirements define the first-release product contract. Source and protocol inputs remain pinned in the parent brief. The task graph records actual independent acceptance and integration; this document does not announce implemented features or qualified hardware.
 
 ## Portfolio and user outcome
 
@@ -69,6 +69,6 @@ Each candidate needs exact revision/package, manufacturer drawings/source, board
 
 Read with [the threat models](threat-models.md). The requirement owner is responsible for a positive case and hostile variants at the boundary of its claim, including identity substitution, changed/hidden fields, invalid parsing, queue floods, authorization replay, lock/reset/account switch, malformed QR, opaque DM substitution, interrupted vault write and firmware rollback.
 
-P01 can accept semantic scope and threat assumptions through source-backed review. Numeric capacities, actual recovery ergonomics and exact hardware admission remain measured task/release gates; this document does not close them. If final P01 review identifies a missing semantic decision, resolve it before acceptance rather than treating this candidate's existence as proof.
+P01 can accept semantic scope and threat assumptions through source-backed review. Numeric capacities, actual recovery ergonomics and exact hardware admission remain measured task/release gates; this document does not close them. If final P01 review identifies a missing semantic decision, resolve it before acceptance rather than treating this document's existence as proof.
 
 Primary additional sources: [NIP-19](https://github.com/nostr-protocol/nips/blob/37db639582d857e12468dcccd99b2c7f1d657da9/19.md), [NIP-49](https://github.com/nostr-protocol/nips/blob/37db639582d857e12468dcccd99b2c7f1d657da9/49.md); opened and reviewed on 2026-10-18. Their definitions support the format/KDF comparison, not a claim of tested nSealr recovery.
