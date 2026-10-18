@@ -43,7 +43,12 @@ def main() -> int:
     else:
         # One complete product entrypoint; -k preserves independent failures.
         recorder.run('product-ci', ['make', '-k', 'ci'], root/'nsealr', required=False)
-    write_json(directory/'source-after.json', statuses(root, inputs))
+    after = statuses(root, inputs)
+    write_json(directory/'source-after.json', after)
+    changed = [name for name in inputs if after[name] != before[name] or hashlib.sha256(subprocess.check_output(['git','diff','--binary'],cwd=root/name)).hexdigest() != expected[name]['diff_sha256']]
+    for name in inputs:
+        if subprocess.check_output(['git','rev-parse','HEAD'],cwd=root/name,text=True).strip() != inputs[name] and name not in changed:
+            changed.append(name)
     skipped = [
         {'gate': 'NSEALR_LIVE_E2E relay test', 'reason': 'not enabled in this offline software baseline; Docker/relay run requires separate evidence'},
         {'gate': 'interactive Chromium/Firefox session', 'reason': 'package/DOM/native-messaging checks do not exercise an installed browser session'},
@@ -52,9 +57,9 @@ def main() -> int:
     ]
     write_json(directory/'skips.json', skipped)
     failed = [r['label'] for r in recorder.results if r['exit_code']]
-    write_json(directory/'result.json', {'input_commits':inputs, 'mode':'smoke' if args.smoke else 'full', 'failed_commands':failed, 'commands_sha256':sha256(directory/'commands.json'), 'all_passed':not failed})
+    write_json(directory/'result.json', {'input_commits':inputs, 'mode':'smoke' if args.smoke else 'full', 'failed_commands':failed, 'commands_sha256':sha256(directory/'commands.json'), 'source_changed_after':changed, 'all_passed':not failed and not changed})
     print(json.dumps({'failed_commands': failed, 'evidence': str(directory)}))
-    return int(bool(failed))
+    return int(bool(failed or changed))
 
 
 if __name__ == '__main__':
