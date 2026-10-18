@@ -2,6 +2,8 @@
 
 A Codex coordinator maintains the task graph and assigns bounded work to independent implementers/reviewers. Git worktrees, CI and evidence files are sufficient initially. Hardware/security specialists use the maintainer-requested Astra xhigh configuration after checking availability. This foundation does not start an unattended service.
 
+The [development contract](development.md) defines specification readiness, first-tranche substeps and a worked one-use authorization contract. A roadmap task is not automatically an implementation-ready brief. Requirements and experiments must be resolved at the boundary being implemented before claiming conformance.
+
 Task lifecycle: planned → ready → running → review → verified → integrated. A blocked task identifies the missing resource, owner and next action. Dependencies must be integrated before dependent acceptance is closed. A code author cannot approve its own final candidate.
 
 `work-items.json` is the only task-state authority. `required_resources` refers to its resource registry; an unknown resource cannot support a ready/running claim. Preparatory research on a planned task is allowed without closing its dependent acceptance. Assign a concrete person for physical procedures and confirm the sample/instrument/access record before starting them. An AI role name is not a physical operator.

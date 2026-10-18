@@ -2,6 +2,8 @@
 
 This is the engineering direction adopted for the restart. It does not mark future implementation or hardware tasks complete. Product software is pre-production.
 
+The October 18 extension adds a proposed cross-device product contract, first-tranche development steps, hardware-reference findings and a clean-install KiCad runtime canary. Graph revision 5 strengthens entropy-provider and SE-reset acceptance. These additions clarify readiness; they do not close P01, E01 or any device release gate.
+
 The objective is a useful Nostr signer ecosystem with accessible connected hardware, two independent offline implementations and a general-purpose programmable security board. Success means real client interoperability, understandable approval, reliable recovery and reproducible third-party development.
 
 1. [Architecture and security boundaries](architecture.md)
@@ -11,6 +13,9 @@ The objective is a useful Nostr signer ecosystem with accessible connected hardw
 5. [Machine-readable implementation graph](work-items.json)
 6. [Decision validation and feasibility limits](validation.md)
 7. [Client and optical qualification](client-qualification.md)
+8. [Specification-first development and initial work packages](development.md)
+9. [Proposed product contract, feature matrix and user journeys](product-contract.md)
+10. [PCB pipeline, tool capabilities and reference designs](pcb-development.md)
 
 The graph records **47 implementation tasks**, their dependencies, scope, acceptance and required resources. All remain open in this foundation: a research result or administrative rename is not a completed implementation gate. Ready tasks still require source reconciliation before work starts.
 

@@ -1,4 +1,4 @@
-# Decision validation — 2026-10-13
+# Decision validation — 2026-10-13, extended 2026-10-18
 
 This revision challenges the restart direction against source, current primary specifications and bounded experiments. It supports **starting the implementation and bench programme**. It does not freeze a PCB, certify security, establish market demand or mark the 47 implementation tasks complete.
 
@@ -11,7 +11,7 @@ This revision challenges the restart direction against source, current primary s
 | Five destination repositories | Main product integration belongs together; generic hardware and firmware-development consumers can release independently. | Migration rehearsal, clean consumer builds, provenance and actual release ownership. Keep transitional source repos until verified disposition. |
 | Keep `board-sdk` | It identifies firmware development for the programmable board. The TypeScript integration SDK already has a different audience and belongs in `nsealr/packages/`. | A concise name is a preference, not a provable engineering optimum. Reconsider only if the consumer boundary changes; a rename alone would improve no capability. |
 | Bench STM32U5 and an SE before freezing the custom design | Trusted review needs control over execution, input/display, memory and peripherals. A security-oriented MCU plus an SE is a candidate architecture, not a guarantee. | Exact commands, documentation access, pin mux, recovery and adversarial tests. S3 remains a comparator; extra SEs, NFC and cameras must earn their cost and attack surface. |
-| Stable KiCad with qualified operations | Native sources, CLI checks and exports work independently of how agents issue edits. The prior nonempty canary demonstrated a limited set of real operations. | A clean dependency tuple and each needed IPC mutation must earn runtime qualification. Tool registration or dependency installation is not a PCB design test. |
+| Stable KiCad with qualified operations | Native sources, CLI checks and exports work independently of how agents issue edits. A nonempty canary and six real MCP operations now also pass with a clean dependency tuple. | Each additional needed operation must earn qualification. Text-edit/save proof is not routing, visual review or a PCB design test. |
 
 ## Corrections made by this review
 
@@ -47,7 +47,9 @@ The [official ST pin data](https://github.com/STMicroelectronics/STM32_open_pin_
 
 ## CAD and production evidence
 
-The previous KiCad 10.0.7 canary remains valid only for its recorded environment and operations. The KiPilot vendored Python wheel had generated protobuf code requiring a runtime incompatible with its declared dependency range. A new isolated installation with official `kicad-python 0.8.0` and `protobuf 5.29.6` resolves cleanly and imports the required PCB modules. That is a candidate to runtime-qualify, not an already-qualified replacement; some newer optional modules still fail to import.
+The previous KiCad 10.0.7 canary remains valid only for its recorded environment and operations. The KiPilot vendored Python wheel had generated protobuf code requiring a runtime incompatible with its declared dependency range. On October 18 a new normal installation with official `kicad-python 0.8.0`, `protobuf 5.29.6`, MCP 1.30.0 and KiPilot `303e62010172bf99c2aa41c10237c18bcabcca7a` passed dependency checks and the bounded runtime canary against KiCad 10.0.7. The installed binding files match the official wheel; no dependency bypass was used.
+
+Actual stdio MCP checks covered board summary, footprints, pads, text, text update and save: disabled-mutation rejection, a no-change dry run, stale-text rejection, persisted edit after editor restart, restoration and a second restart check. Native intentional bad ERC/DRC failed, corrected checks passed, and independent connectivity assertions plus Gerber/drill/BOM/placement exports passed for a three-component, seven-pad, three-net, thirteen-track canary. This qualifies those operations only. Fresh-process imports of optional `board_jobs`, `board_rules`, `schematic` and `schematic_types` still fail; 135 advertised tools are not 135 qualified tools. See the [PCB development contract](pcb-development.md) for the operation and physical-gate boundaries.
 
 Official [KiCad IPC documentation](https://dev-docs.kicad.org/en/apis-and-binding/ipc-api/for-addon-developers/) distinguishes stable GUI/PCB support from KiCad 11 development features. [Protobuf's runtime policy](https://protobuf.dev/support/cross-version-runtime-guarantee/) explains why ignoring the version conflict is not a repair. E01 retains a native CLI/source-generation fallback and enables only demonstrated calls.
 

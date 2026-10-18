@@ -1,7 +1,7 @@
 {
   "schema_version": 2,
   "project": "nSealr restart",
-  "as_of": "2026-10-13",
+  "as_of": "2026-10-18",
   "adoption_status": "accepted_restart_direction_implementation_open",
   "purpose": "Shared Nostr engine, independent ESP32, Pi, P4 and custom-board signer releases, plus a generic Board/SDK.",
   "baseline_manifest": "baseline.md",
@@ -195,7 +195,8 @@
         "Remove secret-bearing Debug and unnecessary Clone/public secret access; test exposed formatting behavior using public fixture material.",
         "Define lifetimes, copies, zeroization boundaries and internal-memory allocation; do not claim compiler-proof physical erasure from ownership alone.",
         "Select maintained crypto/zeroization candidates using independent vectors, pinned features and no_std compile plus final-link probes for the first target; qualify every actual device in its own implementation/release task, not as a universal prerequisite.",
-        "Test raw BIP-340 event-digest signing and NIP-44 unhashed shared-x derivation explicitly; high-level prehash and generic ECDH helpers are not interchangeable. Preserve C/Rust ABI link failures and exact corrected flags when evaluating a C backend."
+        "Test raw BIP-340 event-digest signing and NIP-44 unhashed shared-x derivation explicitly; high-level prehash and generic ECDH helpers are not interchangeable. Preserve C/Rust ABI link failures and exact corrected flags when evaluating a C backend.",
+        "Specify the entropy-provider boundary and failure contract, including FFI/weak-symbol/runtime fallback risks; define how source-to-final-binary provenance and actual provider invocation will be checked in each device gate."
       ],
       "required_evidence": [
         "secret-flow inventory",
@@ -378,7 +379,8 @@
         "Resolve lawful access to mandatory API/errata/update and developer distribution terms for the exact SE candidate before running commands.",
         "On identified evaluation hardware demonstrate the required algorithms and exact key/ciphertext handling, authenticated-channel enrollment, wrapped-key release/relock, PIN persistence and reset assumptions from S04.",
         "Record command traces using public fixture material and controlled power/reset faults; reject unsupported native BIP-340/non-exportability claims.",
-        "Reject or revise the candidate when a required service, lifecycle guarantee or reproducible developer access cannot be demonstrated. Complete product lifecycle remains V02/V03."
+        "Reject or revise the candidate when a required service, lifecycle guarantee or reproducible developer access cannot be demonstrated. Complete product lifecycle remains V02/V03.",
+        "Negatively test selected SE object read/export permissions and partial/full reset or reconfiguration paths against S04, including retry counters, surviving secrets and authenticated-channel state. Use identified sacrificial units and preserve failed traces; a configured permission label is not proof of enforcement."
       ],
       "required_evidence": [
         "exact SE configuration and document register",
@@ -594,7 +596,8 @@
         "Host never receives the identity secret; transport and device pairing credentials have explicit lifecycles.",
         "Reject/cancel/replay/substitution/malformed/disconnect cases pass on hardware.",
         "Use public test identities and record actual flashable build, memory map and board version.",
-        "On this exact target measure peak stack/RAM, worst-case parser/crypto/transport time and entropy failure behavior; qualify backend features and final binary ABI. Compile/link-only probes do not close this device gate."
+        "On this exact target measure peak stack/RAM, worst-case parser/crypto/transport time and entropy failure behavior; qualify backend features and final binary ABI. Compile/link-only probes do not close this device gate.",
+        "Trace entropy from the approved source through the linked/runtime provider to actual device invocation; reject unintended deterministic output or an unqualified fallback and exercise failure/stuck-source handling. An explicitly qualified OS CSPRNG/DRBG is not prohibited. Statistical output checks alone cannot establish entropy quality. Record the exact binary and instrumentation limits."
       ],
       "required_evidence": [
         "device binary/hash",
@@ -639,7 +642,8 @@
         "Inject power loss at every persistent-state transition; prove safe recovery and no PIN-attempt rollback.",
         "Test unsigned/rollback image rejection, interrupted updates, debug/lifecycle state and post-provisioning recovery.",
         "Verify RNG behavior, secret memory placement and wipe limits on the actual target; independently review remaining exposure.",
-        "On this exact target measure peak stack/RAM, worst-case parser/crypto/transport time and entropy failure behavior; qualify backend features and final binary ABI. Compile/link-only probes do not close this device gate."
+        "On this exact target measure peak stack/RAM, worst-case parser/crypto/transport time and entropy failure behavior; qualify backend features and final binary ABI. Compile/link-only probes do not close this device gate.",
+        "Trace entropy from the approved source through the linked/runtime provider to actual device invocation; reject unintended deterministic output or an unqualified fallback and exercise failure/stuck-source handling. An explicitly qualified OS CSPRNG/DRBG is not prohibited. Statistical output checks alone cannot establish entropy quality. Record the exact binary and instrumentation limits."
       ],
       "required_evidence": [
         "provisioning record",
@@ -1438,7 +1442,8 @@
         "Choose and measure the minimal driver/FFI boundary; any retained UI/input code remains in the trusted computing base.",
         "On the actual kit scan, import a public test identity, review, approve/reject, sign, return QR and verify independently.",
         "Prove session-only custody and no secret writes through logs, swap, dumps or image tooling; preserve a working path until parity passes.",
-        "On this exact target measure peak stack/RAM, worst-case parser/crypto/transport time and entropy failure behavior; qualify backend features and final binary ABI. Compile/link-only probes do not close this device gate."
+        "On this exact target measure peak stack/RAM, worst-case parser/crypto/transport time and entropy failure behavior; qualify backend features and final binary ABI. Compile/link-only probes do not close this device gate.",
+        "Trace entropy from the approved source through the linked/runtime provider to actual device invocation; reject unintended deterministic output or an unqualified fallback and exercise failure/stuck-source handling. An explicitly qualified OS CSPRNG/DRBG is not prohibited. Statistical output checks alone cannot establish entropy quality. Record the exact binary and instrumentation limits."
       ],
       "required_evidence": [
         "Pi image/source manifest",
@@ -1480,7 +1485,8 @@
         "Exercise complete QR request/review/approval/signature cycle, malformed optical input and cancellation on hardware.",
         "Qualify secret placement, no persistent secrets, actual communication modes and authenticated update/recovery.",
         "No claim that P4-family support establishes a particular camera or radio-free board.",
-        "On this exact target measure peak stack/RAM, worst-case parser/crypto/transport time and entropy failure behavior; qualify backend features and final binary ABI. Compile/link-only probes do not close this device gate."
+        "On this exact target measure peak stack/RAM, worst-case parser/crypto/transport time and entropy failure behavior; qualify backend features and final binary ABI. Compile/link-only probes do not close this device gate.",
+        "Trace entropy from the approved source through the linked/runtime provider to actual device invocation; reject unintended deterministic output or an unqualified fallback and exercise failure/stuck-source handling. An explicitly qualified OS CSPRNG/DRBG is not prohibited. Statistical output checks alone cannot establish entropy quality. Record the exact binary and instrumentation limits."
       ],
       "required_evidence": [
         "flashable image",
@@ -1642,7 +1648,8 @@
         "Bring up chosen components on evaluation/reference hardware using maintained upstream drivers where appropriate.",
         "Run an independently buildable non-Nostr example that exercises consent and a supported crypto/key operation without importing nsealr.",
         "Keep demonstration protocols labelled as examples; P256/Ed25519 primitives are not claims of complete SSH/FIDO products.",
-        "Document custody location, unsupported operations and developer/provisioned recovery behavior."
+        "Document custody location, unsupported operations and developer/provisioned recovery behavior.",
+        "Trace the generic SDK entropy service from approved source through the linked/runtime provider to actual evaluation-hardware invocation; exercise failure/stuck-source handling and reject unintended deterministic output or an unqualified fallback. A qualified OS CSPRNG/DRBG is permitted; no Nostr dependency is introduced."
       ],
       "required_evidence": [
         "standalone example",
@@ -1685,7 +1692,8 @@
         "Repeat Nostr custody, one-use consent, PIN, backup and boot/update/power-cut tests on identified custom assemblies.",
         "Bind actual SDK, bootloader, component, board revision and application in the evidence manifest.",
         "Generic SDK/board acceptance does not substitute for custom Board signer application/security acceptance.",
-        "On this exact target measure peak stack/RAM, worst-case parser/crypto/transport time and entropy failure behavior; qualify backend features and final binary ABI. Compile/link-only probes do not close this device gate."
+        "On this exact target measure peak stack/RAM, worst-case parser/crypto/transport time and entropy failure behavior; qualify backend features and final binary ABI. Compile/link-only probes do not close this device gate.",
+        "Trace entropy from the approved source through the linked/runtime provider to actual device invocation; reject unintended deterministic output or an unqualified fallback and exercise failure/stuck-source handling. An explicitly qualified OS CSPRNG/DRBG is not prohibited. Statistical output checks alone cannot establish entropy quality. Record the exact binary and instrumentation limits."
       ],
       "required_evidence": [
         "custom Board signer hardware traces",
@@ -1726,7 +1734,8 @@
         "Independent developer builds the non-Nostr example without nsealr and reproduces board bring-up and allowed firmware ownership transitions.",
         "Publish exact schematic/BOM/SDK/bootloader compatibility, production test evidence and lifecycle limitations.",
         "Close independent findings for generic security services before advertising their guarantees; no custom Board signer/client-pilot dependency.",
-        "Independently qualify generic-board small-lot production/test yield, authorized provisioning, firmware-signing/update/recovery and shipping state before a platform release. This evidence belongs here and cannot be borrowed from downstream Nostr production R01."
+        "Independently qualify generic-board small-lot production/test yield, authorized provisioning, firmware-signing/update/recovery and shipping state before a platform release. This evidence belongs here and cannot be borrowed from downstream Nostr production R01.",
+        "Repeat entropy-provider provenance, actual invocation and failure/stuck-source tests on the generic release binary and identified intended board assemblies. Do not borrow Nostr application evidence; record instrumentation limits and remaining entropy assumptions."
       ],
       "required_evidence": [
         "platform release manifest",
@@ -1822,7 +1831,7 @@
       "requires_physical_evidence": true
     }
   ],
-  "revision": 4,
+  "revision": 5,
   "scope_document": "repositories.md",
   "active_profiles": [
     "esp32_no_se",
