@@ -1,0 +1,101 @@
+
+ RUN  v4.1.5 /home/tux/nsealr/.restart-tools/goal/s01
+
+(node:1044898) PromiseRejectionHandledWarning: Promise rejection was handled asynchronously (rejection id: 2)
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:1044898) PromiseRejectionHandledWarning: Promise rejection was handled asynchronously (rejection id: 5)
+ ❯ packages/nip46/src/session-security.test.ts (34 tests | 2 failed | 31 skipped) 98ms
+     × rejects retry while a timed-out subscription acquisition remains unresolved 20ms
+     × retains an unsettled publication slot across timeout and reclaims it on settlement 59ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 2 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  packages/nip46/src/session-security.test.ts > S01 unsettled adapter operation bounds > rejects retry while a timed-out subscription acquisition remains unresolved
+AssertionError: expected [Function] to throw error matching /acquisition.*pending/ but got 'NIP-46 subscribe timed out'
+
+- Expected:
+/acquisition.*pending/
+
++ Received:
+"NIP-46 subscribe timed out"
+
+ ❯ packages/nip46/src/session-security.test.ts:328:32
+    326|     await first;
+    327|     const retry = session.connect();
+    328|     const check = expect(retry).rejects.toThrow(/acquisition.*pending/…
+       |                                ^
+    329|     await vi.advanceTimersByTimeAsync(11);
+    330|     await check;
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/2]⎯
+
+ FAIL  packages/nip46/src/session-security.test.ts > S01 unsettled adapter operation bounds > retains an unsettled publication slot across timeout and reclaims it on settlement
+AssertionError: expected [Function] to throw error matching /publish.*limit/ but got 'NIP-46 request "sign_event" timed out'
+
+- Expected:
+/publish.*limit/
+
++ Received:
+"NIP-46 request \"sign_event\" timed out"
+
+ ❯ packages/nip46/src/session-security.test.ts:351:54
+    349|     await vi.advanceTimersByTimeAsync(11);
+    350|     await first;
+    351|     const check = expect(session.signEvent(template)).rejects.toThrow(…
+       |                                                      ^
+    352|     await vi.advanceTimersByTimeAsync(11);
+    353|     await check;
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/2]⎯
+
+⎯⎯⎯⎯⎯⎯ Unhandled Errors ⎯⎯⎯⎯⎯⎯
+
+Vitest caught 2 unhandled errors during the test run.
+This might cause false positive tests. Resolve unhandled errors to make sure your tests are not affected.
+
+⎯⎯⎯⎯ Unhandled Rejection ⎯⎯⎯⎯⎯
+AssertionError: expected [Function] to throw error matching /acquisition.*pending/ but got 'NIP-46 subscribe timed out'
+ ❯ _Assertion.__VITEST_REJECTS__ node_modules/.pnpm/@vitest+expect@4.1.5/node_modules/@vitest/expect/dist/index.js:1747:17
+ ❯ _Assertion.propertyGetter node_modules/.pnpm/chai@6.2.2/node_modules/chai/index.js:1570:27
+ ❯ Object.proxyGetter [as get] node_modules/.pnpm/chai@6.2.2/node_modules/chai/index.js:1659:22
+ ❯ packages/nip46/src/session-security.test.ts:328:32
+    326|     await first;
+    327|     const retry = session.connect();
+    328|     const check = expect(retry).rejects.toThrow(/acquisition.*pending/…
+       |                                ^
+    329|     await vi.advanceTimersByTimeAsync(11);
+    330|     await check;
+ ❯ node_modules/.pnpm/@vitest+runner@4.1.5/node_modules/@vitest/runner/dist/chunk-artifact.js:1903:20
+
+This error originated in "packages/nip46/src/session-security.test.ts" test file. It doesn't mean the error was thrown inside the file itself, but while it was running.
+The latest test that might've caused the error is "rejects retry while a timed-out subscription acquisition remains unresolved". It might mean one of the following:
+- The error was thrown, while Vitest was running this test.
+- If the error occurred after the test had been completed, this was the last documented test before it was thrown.
+
+⎯⎯⎯⎯ Unhandled Rejection ⎯⎯⎯⎯⎯
+AssertionError: expected [Function] to throw error matching /publish.*limit/ but got 'NIP-46 request "sign_event" timed out'
+ ❯ _Assertion.__VITEST_REJECTS__ node_modules/.pnpm/@vitest+expect@4.1.5/node_modules/@vitest/expect/dist/index.js:1747:17
+ ❯ _Assertion.propertyGetter node_modules/.pnpm/chai@6.2.2/node_modules/chai/index.js:1570:27
+ ❯ Object.proxyGetter [as get] node_modules/.pnpm/chai@6.2.2/node_modules/chai/index.js:1659:22
+ ❯ packages/nip46/src/session-security.test.ts:351:54
+    349|     await vi.advanceTimersByTimeAsync(11);
+    350|     await first;
+    351|     const check = expect(session.signEvent(template)).rejects.toThrow(…
+       |                                                      ^
+    352|     await vi.advanceTimersByTimeAsync(11);
+    353|     await check;
+ ❯ node_modules/.pnpm/@vitest+runner@4.1.5/node_modules/@vitest/runner/dist/chunk-artifact.js:1903:20
+
+This error originated in "packages/nip46/src/session-security.test.ts" test file. It doesn't mean the error was thrown inside the file itself, but while it was running.
+The latest test that might've caused the error is "retains an unsettled publication slot across timeout and reclaims it on settlement". It might mean one of the following:
+- The error was thrown, while Vitest was running this test.
+- If the error occurred after the test had been completed, this was the last documented test before it was thrown.
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯
+
+
+ Test Files  1 failed (1)
+      Tests  2 failed | 1 passed | 31 skipped (34)
+     Errors  2 errors
+   Start at  17:21:28
+   Duration  301ms (transform 68ms, setup 0ms, import 129ms, tests 98ms, environment 0ms)
+

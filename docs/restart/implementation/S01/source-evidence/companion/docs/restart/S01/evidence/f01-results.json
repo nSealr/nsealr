@@ -1,0 +1,198 @@
+{
+  "recorded_utc": "2026-10-18T15:50:42.223905+00:00",
+  "task": "S01",
+  "author": "/root/bridge_execution",
+  "source_candidate": "da2869792af862e62022744585e5a4681c422838",
+  "previous_candidate": "d385ddb0c775a1e863e9db0ee9ae38fee5f19057",
+  "previous_evidence": "143e6fb260431dc9cb97a72d6c019e3c6c5c6bf1",
+  "independent_finding": {
+    "id": "F01 / S01-QUEUE-03",
+    "reviewer": "/root/independent_bridge_review",
+    "review_commit": "67804a5d1995504a69d2fe49618da8e263ec3d89",
+    "finding": "Asynchronous destruction with emitClose:false retains port listeners after closed=true. Synchronous completion can set closed=true before a queued destruction error, so immediate handler removal is unsafe.",
+    "review_disposition": "Previous candidate requests changes. This author reports correction evidence; renewed independent review and coordinator integration are required."
+  },
+  "regressions_before_fix": [
+    {
+      "commit": "ce80d319d999400aec8739b9152d8bec822e3cef",
+      "manifest": "docs/restart/S01/evidence/f01-regression-red.json",
+      "failed": 3,
+      "passed": 20,
+      "description": "Separate/shared async suppressed-close leak and delayed destruction-error cleanup"
+    },
+    {
+      "commit": "4984a6e3662098f7ea2686f5c8d9fd791b8b69f3",
+      "manifest": "docs/restart/S01/evidence/f01-error-order-red.json",
+      "failed": 5,
+      "passed": 20,
+      "description": "Adds synchronous callback/error ordering controls to the retained leaks"
+    }
+  ],
+  "source_changes": [
+    {
+      "commit": "ca9de811a4e816863fe5ee37cc00516eec3c8190",
+      "description": "One documented _destroy completion wrapper per owned distinct stream; original receiver/error and once completion; conditional exact descriptor restoration; error handlers remain through queued Node errors; no polling/private-state reads. Constructor rollback for unreplaceable/already-destroyed streams. 24 new regressions, now 37 stream-security tests."
+    },
+    {
+      "commit": "da2869792af862e62022744585e5a4681c422838",
+      "description": "Coordinator-requested version-neutral metadata response rejection label; helper and invalid fixture expectation changed together, with strict rejection semantics preserved."
+    }
+  ],
+  "accepted_scope": "Root authorized completion wrapper subject to independent review, including sync/async, throw/suppression, shared duplex, callback identity/deduplication, restoration, and readonly/nonextensible rollback. Metadata label correction requested separately within the owned helper/fixture scope.",
+  "validation": [
+    {
+      "manifest": "docs/restart/S01/evidence/f01-final-build.json",
+      "description": "Final exact-source package build"
+    },
+    {
+      "manifest": "docs/restart/S01/evidence/f01-final-targeted.json",
+      "tests_passed": 284,
+      "tests_skipped": 1,
+      "skip": "Docker gate separately enabled below"
+    },
+    {
+      "manifest": "docs/restart/S01/evidence/f01-reviewer-probe.json",
+      "cases_passed": 4,
+      "description": "Unmodified independent reproduction, including async emitClose:false"
+    },
+    {
+      "manifest": "docs/restart/S01/evidence/f01-final-ci.json",
+      "tests_passed": 710,
+      "tests_skipped": 1,
+      "description": "Full make ci with build, tests, consumer/example/README, API, registry, browser, imports, release/package, lint and dependency audit gates"
+    },
+    {
+      "manifest": "docs/restart/S01/evidence/f01-final-live-relay.json",
+      "tests_passed": 1,
+      "tests_skipped": 0,
+      "description": "Docker-gated live relay enabled explicitly"
+    }
+  ],
+  "development_checks": "f01-first-correction, f01-expanded-targeted and f01-typecheck preserve precommit diagnostics with dirty source recorded; f01-candidate-build is ca9de81 before the metadata label correction. Final validation entries above are all da286979 exact-source and supersede these intermediate checks.",
+  "tool_tuple": {
+    "node": "v24.22.0",
+    "npm": "11.19.1",
+    "pnpm": "10.33.4",
+    "node_archive_sha256": "cc2f601cee82d9a5a233302fe307abc600727035fd7d2c3a3571755989e95008",
+    "source_manifest": "docs/restart/S01/evidence/f01-node-sources.json"
+  },
+  "live_relay": {
+    "docker_version": "29.5.3",
+    "repo_digests": [
+      "scsibug/nostr-rs-relay@sha256:48d54c2d2781577cf3ed2951112f0953dc2c5e7c9d2ea20c64e8c0fa37d16e4d"
+    ],
+    "remaining_containers": "",
+    "claim_limit": "In-repository signer harness over actual relay/WebSocket I/O; no named external-client or physical-device interoperability claim."
+  },
+  "fixture_handoff": {
+    "path": "tests/fixtures/specs/vectors/invalid/relay-step-response-unsupported-result.json",
+    "sha256": "fd034c069497a04326bdcad79f853c2c1ad37bf5ca357abd1c4f6c1befd43c2b",
+    "expected_error": "result is not a supported response shape",
+    "remaining_vectors": "Unchanged from prior source candidate. Root owns sibling specs migration."
+  },
+  "limitations": [
+    "Streams must be live, exclusively owned, with replaceable _destroy implementation hooks. Callers must not alter/freeze hooks during ownership. Constructor failures leave no installed port hooks/listeners.",
+    "A custom _destroy that never completes retains its observer until completion; port buffers and pending I/O cancel immediately. No timer polling or forced cancellation is claimed.",
+    "Prior identity/JSON regressions remain passing; no change to default-adapter exploitability distinction or protocol compatibility claims.",
+    "This evidence supersedes the old candidate cleanup claim; original logs remain unchanged. No independent approval, merge, whole S01 closure or physical-release claim."
+  ],
+  "pull_request": "https://github.com/nSealr/companion/pull/1",
+  "artifacts": [
+    {
+      "path": "docs/restart/S01/evidence/f01-candidate-build.json",
+      "sha256": "21b15bdf18cd7da9646db43bcdb74c3c347ef42aed8a1e1b55d8922f2f981ba2"
+    },
+    {
+      "path": "docs/restart/S01/evidence/f01-candidate-build.log",
+      "sha256": "90d3c0a3a40aa0ceb66174ebf300e20b56d67096e7e39c12d2c1727533b94384"
+    },
+    {
+      "path": "docs/restart/S01/evidence/f01-error-order-red.json",
+      "sha256": "d7ce7e5f865d86d000fa296f9db3cdb6852156f8f26f82b8a2c4692a2ee2026c"
+    },
+    {
+      "path": "docs/restart/S01/evidence/f01-error-order-red.log",
+      "sha256": "e505ac036b8fc5b3df9d18de8e66d8daecc493048a362ecb2050520ce0d68fc0"
+    },
+    {
+      "path": "docs/restart/S01/evidence/f01-expanded-targeted.json",
+      "sha256": "cbd3a8f57a06d587bcee81187230e63ea09670dde6d0cc5904beeb24e7abb1c3"
+    },
+    {
+      "path": "docs/restart/S01/evidence/f01-expanded-targeted.log",
+      "sha256": "f8d05a65e572760ffecfb8d990bfb94e4aeda48947d221fd6c79b46b3268d7de"
+    },
+    {
+      "path": "docs/restart/S01/evidence/f01-final-build.json",
+      "sha256": "2a41d239f95088fdc50d8935649a944659bea330867f385caa3de0a367a42e64"
+    },
+    {
+      "path": "docs/restart/S01/evidence/f01-final-build.log",
+      "sha256": "90d3c0a3a40aa0ceb66174ebf300e20b56d67096e7e39c12d2c1727533b94384"
+    },
+    {
+      "path": "docs/restart/S01/evidence/f01-final-ci.json",
+      "sha256": "c1043605f3e7332a1a7d1f840411fce7155793e39f8faca04516cd2e24653288"
+    },
+    {
+      "path": "docs/restart/S01/evidence/f01-final-ci.log",
+      "sha256": "23791df0e43c42385a3c44c02eb92b2d465b2a0e6a302d9c5c1e90820b1ae866"
+    },
+    {
+      "path": "docs/restart/S01/evidence/f01-final-live-relay.json",
+      "sha256": "27ea4727d8810eceb0e64e24ce32a81bc7c4daa602a480397772e9b6080d940c"
+    },
+    {
+      "path": "docs/restart/S01/evidence/f01-final-live-relay.log",
+      "sha256": "00372a2620594eb34aa56da32bac2c12225b65636cc8c3c956a9a2e19a3d1992"
+    },
+    {
+      "path": "docs/restart/S01/evidence/f01-final-targeted.json",
+      "sha256": "7b17c0713e3c3ab4a869c27fe9801a883da1a842f90d950170bfe408f60fe2bd"
+    },
+    {
+      "path": "docs/restart/S01/evidence/f01-final-targeted.log",
+      "sha256": "720d47a3a30b2e3f9711ba7ee8021e3a08bf3db9d014cbf9d48434ac5dad7379"
+    },
+    {
+      "path": "docs/restart/S01/evidence/f01-first-correction.json",
+      "sha256": "fff1f7665092814cf767c2ea5e7aa81d0dae89b849cb56ed5e186b2ef2210833"
+    },
+    {
+      "path": "docs/restart/S01/evidence/f01-first-correction.log",
+      "sha256": "9b27cdef44edca7bb98c8a3d0918a8ca87f3597cadbfce23755579083ac240b1"
+    },
+    {
+      "path": "docs/restart/S01/evidence/f01-node-sources.json",
+      "sha256": "349c7c8638c37adf7366914e019ecd6075a6a97e96382ef2e44205b66e26777e"
+    },
+    {
+      "path": "docs/restart/S01/evidence/f01-regression-red.json",
+      "sha256": "adb6a25f46d98512eebf3cf3eca3a46167677f2f762eb315a0fbf20ec4e6dc49"
+    },
+    {
+      "path": "docs/restart/S01/evidence/f01-regression-red.log",
+      "sha256": "86bf68a52d6edb7b31ddb78a02e5b7f3b4d081f4983d5e1b0f5c854c316bf167"
+    },
+    {
+      "path": "docs/restart/S01/evidence/f01-reviewer-probe.json",
+      "sha256": "2f0187bbdcae78e765dfa676c73e913831c4f321a0271f6d599c085f94df1a67"
+    },
+    {
+      "path": "docs/restart/S01/evidence/f01-reviewer-probe.log",
+      "sha256": "7e014c0033621d7ae2e2dff0c917f80f397c67f624a9fe11a849e13d95e798b3"
+    },
+    {
+      "path": "docs/restart/S01/evidence/f01-reviewer-probe.mjs",
+      "sha256": "57249c1b1474e911dddc442d55725b29c4af5dc22e6a7f4a6e2a9c4cceac36bd"
+    },
+    {
+      "path": "docs/restart/S01/evidence/f01-typecheck.json",
+      "sha256": "73891b3a1c12dea0a309f6e30cf34402a33a75bd97845c30c561aabefa0ec157"
+    },
+    {
+      "path": "docs/restart/S01/evidence/f01-typecheck.log",
+      "sha256": "363aa62786f71ad85490319929fea6cd97a65d0c105c4fb48f55c3960c338191"
+    }
+  ]
+}

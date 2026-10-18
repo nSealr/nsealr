@@ -1,0 +1,91 @@
+
+ RUN  v4.1.5 /home/tux/nsealr/.restart-tools/goal/s01
+
+ ❯ packages/transport/src/stream-security.test.ts (23 tests | 3 failed) 16ms
+     × cleans completed destruction: emitClose=false, async=true, shared=false 2ms
+     × cleans completed destruction: emitClose=false, async=true, shared=true 0ms
+     × keeps errors handled until delayed destruction completes: emitClose=false 1ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 3 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  packages/transport/src/stream-security.test.ts > S01 stream limits, errors and cleanup > cleans completed destruction: emitClose=false, async=true, shared=false
+ FAIL  packages/transport/src/stream-security.test.ts > S01 stream limits, errors and cleanup > cleans completed destruction: emitClose=false, async=true, shared=true
+AssertionError: expected [ [ 'close', …(1) ], …(2) ] to deeply equal [ [ 'prefinish', …(1) ] ]
+
+- Expected
++ Received
+
+@@ -1,7 +1,19 @@
+  [
+    [
++     "close",
++     [
++       [Function onInputClose],
++     ],
++   ],
++   [
++     "error",
++     [
++       [Function onError],
++     ],
++   ],
++   [
+      "prefinish",
+      [
+        [Function prefinish],
+      ],
+    ],
+
+ ❯ packages/transport/src/stream-security.test.ts:73:36
+     71|           await tick();
+     72|           expect(input.closed && output.closed).toBe(true);
+     73|           expect(listeners(input)).toEqual(inheritedInput);
+       |                                    ^
+     74|           expect(listeners(output)).toEqual(inheritedOutput);
+     75|         });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/3]⎯
+
+ FAIL  packages/transport/src/stream-security.test.ts > S01 stream limits, errors and cleanup > keeps errors handled until delayed destruction completes: emitClose=false
+AssertionError: expected [ [ 'close', …(1) ], …(2) ] to deeply equal [ [ 'prefinish', …(1) ] ]
+
+- Expected
++ Received
+
+@@ -1,7 +1,19 @@
+  [
+    [
++     "close",
++     [
++       [Function onInputClose],
++     ],
++   ],
++   [
++     "error",
++     [
++       [Function onError],
++     ],
++   ],
++   [
+      "prefinish",
+      [
+        [Function prefinish],
+      ],
+    ],
+
+ ❯ packages/transport/src/stream-security.test.ts:99:32
+     97|       await tick();
+     98|       expect(input.closed && output.closed).toBe(true);
+     99|       expect(listeners(input)).toEqual(inheritedInput);
+       |                                ^
+    100|       expect(listeners(output)).toEqual(inheritedOutput);
+    101|       await expect(port.readLine()).rejects.toThrow(/closed/);
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/3]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  3 failed | 20 passed (23)
+   Start at  17:43:25
+   Duration  146ms (transform 43ms, setup 0ms, import 64ms, tests 16ms, environment 0ms)
+

@@ -1,0 +1,38 @@
+
+ RUN  v4.1.5 /home/tux/nsealr/.restart-tools/goal/s01
+
+ ❯ apps/cli/src/index.test.ts (61 tests | 1 failed | 55 skipped) 169ms
+     × S01 metadata fixture comparison ignores object key order 56ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  apps/cli/src/index.test.ts > nsealr CLI > S01 metadata fixture comparison ignores object key order
+AssertionError: promise rejected "Error: invalid NIP-46 relay step fixture …" instead of resolving
+ ❯ apps/cli/src/index.test.ts:255:74
+    253|     vector.expected_step = reverseKeys(vector.expected_step) as Record…
+    254|     writeFileSync(path, JSON.stringify(vector));
+    255|     await expect(runCli(["fixture", "verify", "--specs", tempSpecsRoot…
+       |                                                                          ^
+    256|   });
+    257|
+
+Caused by: Error: invalid NIP-46 relay step fixture switch-relays-response-step: step mismatch
+ ❯ Command.<anonymous> apps/cli/src/index.ts:855:17
+ ❯ Command.listener [as _actionHandler] node_modules/.pnpm/commander@14.0.2/node_modules/commander/lib/command.js:568:17
+ ❯ node_modules/.pnpm/commander@14.0.2/node_modules/commander/lib/command.js:1604:14
+ ❯ Command._chainOrCall node_modules/.pnpm/commander@14.0.2/node_modules/commander/lib/command.js:1488:12
+ ❯ Command._parseCommand node_modules/.pnpm/commander@14.0.2/node_modules/commander/lib/command.js:1603:27
+ ❯ node_modules/.pnpm/commander@14.0.2/node_modules/commander/lib/command.js:1367:27
+ ❯ Command._chainOrCall node_modules/.pnpm/commander@14.0.2/node_modules/commander/lib/command.js:1488:12
+ ❯ Command._dispatchSubcommand node_modules/.pnpm/commander@14.0.2/node_modules/commander/lib/command.js:1363:25
+ ❯ Command._parseCommand node_modules/.pnpm/commander@14.0.2/node_modules/commander/lib/command.js:1559:19
+ ❯ Command.parseAsync node_modules/.pnpm/commander@14.0.2/node_modules/commander/lib/command.js:1122:16
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  1 failed | 5 passed | 55 skipped (61)
+   Start at  17:28:19
+   Duration  545ms (transform 230ms, setup 0ms, import 309ms, tests 169ms, environment 0ms)
+

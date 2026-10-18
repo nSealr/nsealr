@@ -1,0 +1,113 @@
+
+ RUN  v4.1.5 /home/tux/nsealr/.restart-tools/goal/s01
+
+ ❯ packages/transport/src/stream-security.test.ts (25 tests | 5 failed) 16ms
+     × keeps errors handled after synchronous destruction callback: emitClose=true 2ms
+     × cleans completed destruction: emitClose=false, async=true, shared=false 1ms
+     × cleans completed destruction: emitClose=false, async=true, shared=true 0ms
+     × keeps errors handled until delayed destruction completes: emitClose=false 1ms
+     × keeps errors handled after synchronous destruction callback: emitClose=false 0ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 5 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  packages/transport/src/stream-security.test.ts > S01 stream limits, errors and cleanup > keeps errors handled after synchronous destruction callback: emitClose=true
+ FAIL  packages/transport/src/stream-security.test.ts > S01 stream limits, errors and cleanup > keeps errors handled after synchronous destruction callback: emitClose=false
+AssertionError: expected false to be true // Object.is equality
+
+- Expected
++ Received
+
+- true
++ false
+
+ ❯ packages/transport/src/stream-security.test.ts:119:23
+    117|       await tick();
+    118|       await tick();
+    119|       expect(guarded).toBe(true);
+       |                       ^
+    120|       expect(errors).toEqual([error, error]);
+    121|       expect(listeners(input)).toEqual(inheritedInput);
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/5]⎯
+
+ FAIL  packages/transport/src/stream-security.test.ts > S01 stream limits, errors and cleanup > cleans completed destruction: emitClose=false, async=true, shared=false
+ FAIL  packages/transport/src/stream-security.test.ts > S01 stream limits, errors and cleanup > cleans completed destruction: emitClose=false, async=true, shared=true
+AssertionError: expected [ [ 'close', …(1) ], …(2) ] to deeply equal [ [ 'prefinish', …(1) ] ]
+
+- Expected
++ Received
+
+@@ -1,7 +1,19 @@
+  [
+    [
++     "close",
++     [
++       [Function onInputClose],
++     ],
++   ],
++   [
++     "error",
++     [
++       [Function onError],
++     ],
++   ],
++   [
+      "prefinish",
+      [
+        [Function prefinish],
+      ],
+    ],
+
+ ❯ packages/transport/src/stream-security.test.ts:73:36
+     71|           await tick();
+     72|           expect(input.closed && output.closed).toBe(true);
+     73|           expect(listeners(input)).toEqual(inheritedInput);
+       |                                    ^
+     74|           expect(listeners(output)).toEqual(inheritedOutput);
+     75|         });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/5]⎯
+
+ FAIL  packages/transport/src/stream-security.test.ts > S01 stream limits, errors and cleanup > keeps errors handled until delayed destruction completes: emitClose=false
+AssertionError: expected [ [ 'close', …(1) ], …(2) ] to deeply equal [ [ 'prefinish', …(1) ] ]
+
+- Expected
++ Received
+
+@@ -1,7 +1,19 @@
+  [
+    [
++     "close",
++     [
++       [Function onInputClose],
++     ],
++   ],
++   [
++     "error",
++     [
++       [Function onError],
++     ],
++   ],
++   [
+      "prefinish",
+      [
+        [Function prefinish],
+      ],
+    ],
+
+ ❯ packages/transport/src/stream-security.test.ts:99:32
+     97|       await tick();
+     98|       expect(input.closed && output.closed).toBe(true);
+     99|       expect(listeners(input)).toEqual(inheritedInput);
+       |                                ^
+    100|       expect(listeners(output)).toEqual(inheritedOutput);
+    101|       await expect(port.readLine()).rejects.toThrow(/closed/);
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/5]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  5 failed | 20 passed (25)
+   Start at  17:44:34
+   Duration  149ms (transform 41ms, setup 0ms, import 62ms, tests 16ms, environment 0ms)
+

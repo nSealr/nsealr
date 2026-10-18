@@ -1,0 +1,352 @@
+
+ RUN  v4.1.5 /home/tux/nsealr/.restart-tools/goal/s01
+
+ ❯ packages/framing/src/serial-security.test.ts (5 tests | 3 failed) 6ms
+     × rejects duplicate members: {"request_id":"a","request_id":"b"} 4ms
+     × rejects duplicate members: {"request_id":"a","\u0072equest_id":"b"} 1ms
+     × rejects duplicate members: {"params":{"kind":1,"kind":2}} 0ms
+ ❯ packages/nip46/src/session-security.test.ts (12 tests | 10 failed) 390ms
+     × discovers the user separately from transport before activation 35ms
+     × rejects a changed user key with a valid event signature 55ms
+     × ignores foreign signed transport authors delivered past adapter filters 36ms
+     × rejects duplicate wire JSON without consuming the request 34ms
+     × rejects escaped duplicate wire JSON without consuming the request 34ms
+     × rejects nested signed-event duplicate members 28ms
+     × cannot reactivate after close races a response 13ms
+     × does not reuse IDs when the caller RNG repeats 42ms
+     × permits a signed user result distinct from transport author 8ms
+     × rejects signed ambiguous recipient tags 8ms
+ ❯ packages/transport/src/stream-security.test.ts (4 tests | 4 failed) 5011ms
+     × rejects 10000 short lines before retaining 20000 bytes under a four-byte cap 6ms
+     × pauses queued complete lines and resumes after consumption 2ms
+     × bounds pending readers and rejects them on close 1ms
+     × cancels a stalled pending write and rejects later writes 5001ms
+
+⎯⎯⎯⎯⎯⎯ Failed Tests 17 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  packages/framing/src/serial-security.test.ts > S01 serial raw JSON boundary > rejects duplicate members: {"request_id":"a","request_id":"b"}
+ FAIL  packages/framing/src/serial-security.test.ts > S01 serial raw JSON boundary > rejects duplicate members: {"request_id":"a","\u0072equest_id":"b"}
+ FAIL  packages/framing/src/serial-security.test.ts > S01 serial raw JSON boundary > rejects duplicate members: {"params":{"kind":1,"kind":2}}
+AssertionError: expected [Function] to throw an error
+
+- Expected:
+null
+
++ Received:
+undefined
+
+ ❯ packages/framing/src/serial-security.test.ts:13:50
+     11| describe("S01 serial raw JSON boundary", () => {
+     12|   it.each(['{"request_id":"a","request_id":"b"}', '{"request_id":"a","…
+     13|     expect(() => decodeSerialFrame(frame(json))).toThrow(/JSON|duplica…
+       |                                                  ^
+     14|   });
+     15|   it.each(['{}{}', '{} trailing'])("keeps trailing-data rejection: %s"…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/17]⎯
+
+ FAIL  packages/nip46/src/session-security.test.ts > S01 authenticated session boundary > discovers the user separately from transport before activation
+AssertionError: expected [ 'connect' ] to deeply equal [ 'connect', 'get_public_key' ]
+
+- Expected
++ Received
+
+  [
+    "connect",
+-   "get_public_key",
+  ]
+
+ ❯ packages/nip46/src/session-security.test.ts:49:41
+     47|     const { session, messages } = harness();
+     48|     await session.connect();
+     49|     expect(messages.map(m => m.method)).toEqual(["connect", "get_publi…
+       |                                         ^
+     50|     expect((session as unknown as { userPubkey?: string }).userPubkey)…
+     51|     expect((await session.signEvent(template)).pubkey).toBe(userPubkey…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/17]⎯
+
+ FAIL  packages/nip46/src/session-security.test.ts > S01 authenticated session boundary > rejects a changed user key with a valid event signature
+AssertionError: promise resolved "{ created_at: 1700000000, …(6) }" instead of rejecting
+
+- Expected
++ Received
+
+- Error {
+-   "message": "rejected promise",
++ {
++   "content": "S01 public fixture",
++   "created_at": 1700000000,
++   "id": "c0b110f6f26aad9779733e7a37c19674797ada8952db5eb380f0fa4fbf6859b6",
++   "kind": 1,
++   "pubkey": "e493dbf1c10d80f3581e4904930b1404cc6c13900ee0758474fa94abe8c4cd13",
++   "sig": "12b22cdd232e34ef23156d2e091b6e22589d3f8936c297e4e880a068422ef637f7590da312950dde79cea4674cec1691a5ef888ce9b1a84b9c08c1ae05ab9987",
++   "tags": [],
+  }
+
+ ❯ packages/nip46/src/session-security.test.ts:64:46
+     62|     expect((await session.signEvent(template)).pubkey).toBe(userPubkey…
+     63|     selected = foreign;
+     64|     await expect(session.signEvent(template)).rejects.toThrow(/user|id…
+       |                                              ^
+     65|   });
+     66|
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/17]⎯
+
+ FAIL  packages/nip46/src/session-security.test.ts > S01 authenticated session boundary > ignores foreign signed transport authors delivered past adapter filters
+AssertionError: promise resolved "{ created_at: 1700000000, …(6) }" instead of rejecting
+
+- Expected
++ Received
+
+- Error {
+-   "message": "rejected promise",
++ {
++   "content": "S01 public fixture",
++   "created_at": 1700000000,
++   "id": "1d6e08d794224c96aa8d98d4ce3e6c8f7ddd515d0fb21497b4cd704691461058",
++   "kind": 1,
++   "pubkey": "f9308a019258c31049344f85f89d5229b531c845836f99b08601f113bce036f9",
++   "sig": "6480fc46f39ae9458c180fae7037842c8345d459b3e270202d62f54546de94076e50d11cc0d22a5fae33b1cfc9368277d38fe489622d3c7e58252f9018bc36a7",
++   "tags": [],
+  }
+
+ ❯ packages/nip46/src/session-security.test.ts:74:46
+     72|     });
+     73|     await session.connect();
+     74|     await expect(session.signEvent(template)).rejects.toThrow("expecte…
+       |                                              ^
+     75|   });
+     76|
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/17]⎯
+
+ FAIL  packages/nip46/src/session-security.test.ts > S01 authenticated session boundary > rejects duplicate wire JSON without consuming the request
+AssertionError: promise resolved "{ created_at: 1700000000, …(6) }" instead of rejecting
+
+- Expected
++ Received
+
+- Error {
+-   "message": "rejected promise",
++ {
++   "content": "S01 public fixture",
++   "created_at": 1700000000,
++   "id": "1d6e08d794224c96aa8d98d4ce3e6c8f7ddd515d0fb21497b4cd704691461058",
++   "kind": 1,
++   "pubkey": "f9308a019258c31049344f85f89d5229b531c845836f99b08601f113bce036f9",
++   "sig": "fb2d7132031c5158cafbd90c097597b62657cb0d404376e6f4bef3d1a6f5903a62eebb41658715e19fed16b8a339548c9577267ea5d617f83d9e00568339c578",
++   "tags": [],
+  }
+
+ ❯ packages/nip46/src/session-security.test.ts:86:46
+     84|     });
+     85|     await session.connect();
+     86|     await expect(session.signEvent(template)).rejects.toThrow("strict …
+       |                                              ^
+     87|   });
+     88|
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[5/17]⎯
+
+ FAIL  packages/nip46/src/session-security.test.ts > S01 authenticated session boundary > rejects escaped duplicate wire JSON without consuming the request
+AssertionError: promise resolved "{ created_at: 1700000000, …(6) }" instead of rejecting
+
+- Expected
++ Received
+
+- Error {
+-   "message": "rejected promise",
++ {
++   "content": "S01 public fixture",
++   "created_at": 1700000000,
++   "id": "1d6e08d794224c96aa8d98d4ce3e6c8f7ddd515d0fb21497b4cd704691461058",
++   "kind": 1,
++   "pubkey": "f9308a019258c31049344f85f89d5229b531c845836f99b08601f113bce036f9",
++   "sig": "652253e2ca5a803965c9163d59ce853c32295b299b4cd01968bd191a69159b5cdaee0084dcc7362088c0f0a92cb8d67aacf75bdfc21920f5414d01093063e473",
++   "tags": [],
+  }
+
+ ❯ packages/nip46/src/session-security.test.ts:86:46
+     84|     });
+     85|     await session.connect();
+     86|     await expect(session.signEvent(template)).rejects.toThrow("strict …
+       |                                              ^
+     87|   });
+     88|
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[6/17]⎯
+
+ FAIL  packages/nip46/src/session-security.test.ts > S01 authenticated session boundary > rejects nested signed-event duplicate members
+AssertionError: promise resolved "{ …(7) }" instead of rejecting
+
+- Expected
++ Received
+
+- Error {
+-   "message": "rejected promise",
++ {
++   "content": "S01 public fixture",
++   "created_at": 1700000000,
++   "id": "1d6e08d794224c96aa8d98d4ce3e6c8f7ddd515d0fb21497b4cd704691461058",
++   "kind": 1,
++   "pubkey": "f9308a019258c31049344f85f89d5229b531c845836f99b08601f113bce036f9",
++   "sig": "28abef22495f7b96c965b730082cc319f1ab49e65e326f06b5203b6d8357671583b835eb6aedfb188434f3b9eaa9357babc7d7e8c75ee82268bd3e4b9851c9a4",
++   "tags": [],
+  }
+
+ ❯ packages/nip46/src/session-security.test.ts:96:46
+     94|     });
+     95|     await session.connect();
+     96|     await expect(session.signEvent(template)).rejects.toThrow(/duplica…
+       |                                              ^
+     97|   });
+     98|
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[7/17]⎯
+
+ FAIL  packages/nip46/src/session-security.test.ts > S01 authenticated session boundary > cannot reactivate after close races a response
+AssertionError: promise resolved "undefined" instead of rejecting
+
+- Expected:
+Error {
+  "message": "rejected promise",
+}
+
++ Received:
+undefined
+
+ ❯ packages/nip46/src/session-security.test.ts:103:36
+    101|     const original = transport.publish;
+    102|     transport.publish = async event => { await original(event); await …
+    103|     await expect(session.connect()).rejects.toThrow(/clos/i);
+       |                                    ^
+    104|     expect(session.phase).toBe("session_closed");
+    105|   });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[8/17]⎯
+
+ FAIL  packages/nip46/src/session-security.test.ts > S01 authenticated session boundary > does not reuse IDs when the caller RNG repeats
+AssertionError: expected 1 to be 3 // Object.is equality
+
+- Expected
++ Received
+
+- 3
++ 1
+
+ ❯ packages/nip46/src/session-security.test.ts:112:51
+    110|     await session.signEvent(template);
+    111|     await session.signEvent(template);
+    112|     expect(new Set(messages.map(m => m.id)).size).toBe(messages.length…
+       |                                                   ^
+    113|   });
+    114| });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[9/17]⎯
+
+ FAIL  packages/nip46/src/session-security.test.ts > S01 distinct metadata identities and envelope > permits a signed user result distinct from transport author
+Error: NIP-46 signed-event response pubkey does not match relay event sender
+ ❯ relayResponseResultType packages/nip46/src/nip46.ts:931:11
+    929|   }
+    930|   if (event.pubkey !== senderPubkey) {
+    931|     throw new Error("NIP-46 signed-event response pubkey does not matc…
+       |           ^
+    932|   }
+    933|   const computedId = computeEventId({
+ ❯ evaluateNip46RelayResponseStep packages/nip46/src/nip46.ts:965:7
+ ❯ packages/nip46/src/session-security.test.ts:150:12
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[10/17]⎯
+
+ FAIL  packages/nip46/src/session-security.test.ts > S01 distinct metadata identities and envelope > rejects signed ambiguous recipient tags
+AssertionError: expected [Function] to throw an error
+
+- Expected:
+null
+
++ Received:
+undefined
+
+ ❯ packages/nip46/src/session-security.test.ts:155:52
+    153|     const original = buildNip46RequestEvent(remote, getPublicKey(clien…
+    154|     const event = finalizeEvent({ ...original, tags: [...original.tags…
+    155|     expect(() => decryptNip46Event(client, event)).toThrow(/recipient|…
+       |                                                    ^
+    156|   });
+    157| });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[11/17]⎯
+
+ FAIL  packages/transport/src/stream-security.test.ts > S01 stream retained-state bounds > rejects 10000 short lines before retaining 20000 bytes under a four-byte cap
+AssertionError: baseline retains 20000 bytes: expected 20000 to be less than or equal to 4
+ ❯ packages/transport/src/stream-security.test.ts:13:72
+     11|     const retainedBytes = Buffer.byteLength(diagnostic.buffer);
+     12|     try {
+     13|       expect(retainedBytes, `baseline retains ${retainedBytes} bytes`)…
+       |                                                                        ^
+     14|       await expect(port.readLine()).rejects.toThrow(/buffer|limit|boun…
+     15|     } finally { port.close(); }
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[12/17]⎯
+
+ FAIL  packages/transport/src/stream-security.test.ts > S01 stream retained-state bounds > pauses queued complete lines and resumes after consumption
+AssertionError: expected false to be true // Object.is equality
+
+- Expected
++ Received
+
+- true
++ false
+
+ ❯ packages/transport/src/stream-security.test.ts:23:32
+     21|     try {
+     22|       input.write("a\nb\n");
+     23|       expect(input.isPaused()).toBe(true);
+       |                                ^
+     24|       expect(await port.readLine()).toBe("a\n");
+     25|       expect(await port.readLine()).toBe("b\n");
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[13/17]⎯
+
+ FAIL  packages/transport/src/stream-security.test.ts > S01 stream retained-state bounds > bounds pending readers and rejects them on close
+AssertionError: promise resolved "null" instead of rejecting
+
+- Expected:
+Error {
+  "message": "rejected promise",
+}
+
++ Received:
+null
+
+ ❯ packages/transport/src/stream-security.test.ts:33:37
+     31|     const port = new SerialLineStreamPort({ input: new PassThrough(), …
+     32|     const first = port.readLine();
+     33|     const firstCheck = expect(first).rejects.toThrow(/clos/i);
+       |                                     ^
+     34|     const secondCheck = expect(port.readLine()).rejects.toThrow(/pendi…
+     35|     port.close();
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[14/17]⎯
+
+ FAIL  packages/transport/src/stream-security.test.ts > S01 stream retained-state bounds > cancels a stalled pending write and rejects later writes
+Error: Test timed out in 5000ms.
+If this is a long-running test, pass a timeout value as the last argument or configure it globally with "testTimeout".
+ ❯ packages/transport/src/stream-security.test.ts:39:3
+     37|   });
+     38|
+     39|   it("cancels a stalled pending write and rejects later writes", async…
+       |   ^
+     40|     const output = new Writable({ write() {} });
+     41|     const port = new SerialLineStreamPort({ input: new PassThrough(), …
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[15/17]⎯
+
+
+ Test Files  3 failed (3)
+      Tests  17 failed | 4 passed (21)
+   Start at  17:11:49
+   Duration  5.16s (transform 114ms, setup 0ms, import 227ms, tests 5.41s, environment 0ms)
+

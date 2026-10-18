@@ -1,0 +1,88 @@
+.FFF.E...FE
+======================================================================
+ERROR: test_exact_json_comparator (test_nip46_response_v1.ResponseIdentityTests.test_exact_json_comparator)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/tux/nsealr/.restart-tools/goal/specs-s01/tests/test_nip46_response_v1.py", line 105, in test_exact_json_comparator
+    self.assertTrue(v.exact_json_equal({'a':True,'b':[1,2]},{'b':[1,2],'a':True}))
+                    ^^^^^^^^^^^^^^^^^^
+AttributeError: module 'scripts.verify_specs' has no attribute 'exact_json_equal'
+
+======================================================================
+ERROR: test_same_key_control (test_nip46_response_v1.ResponseIdentityTests.test_same_key_control)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/tux/nsealr/.restart-tools/goal/specs-s01/tests/test_nip46_response_v1.py", line 82, in test_same_key_control
+    self.assertEqual(errors,[]);self.assertIs(result['result_pubkey_bound_to_expected_user'],True)
+                                              ~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+KeyError: 'result_pubkey_bound_to_expected_user'
+
+======================================================================
+FAIL: test_digit_only_metadata_key_is_not_a_json_number (test_nip46_response_v1.ResponseIdentityTests.test_digit_only_metadata_key_is_not_a_json_number)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/tux/nsealr/.restart-tools/goal/specs-s01/tests/test_nip46_response_v1.py", line 87, in test_digit_only_metadata_key_is_not_a_json_number
+    self.assertEqual(errors,[]);self.assertEqual(result['result_pubkey'],'1'*64)
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: Lists differ: ['independent-v1: signed event must be an object'] != []
+
+First list contains 1 additional elements.
+First extra element 0:
+'independent-v1: signed event must be an object'
+
+- ['independent-v1: signed event must be an object']
++ []
+
+======================================================================
+FAIL: test_distinct_inner_author_signature (test_nip46_response_v1.ResponseIdentityTests.test_distinct_inner_author_signature)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/tux/nsealr/.restart-tools/goal/specs-s01/tests/test_nip46_response_v1.py", line 48, in test_distinct_inner_author_signature
+    self.assertEqual(errors,[]);self.assertIsNotNone(result)
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: Lists differ: ['independent-v1: NIP-46 signed-event resp[42 chars]der'] != []
+
+First list contains 1 additional elements.
+First extra element 0:
+'independent-v1: NIP-46 signed-event response pubkey does not match relay event sender'
+
++ []
+- ['independent-v1: NIP-46 signed-event response pubkey does not match relay '
+-  'event sender']
+
+======================================================================
+FAIL: test_distinct_user_public_key (test_nip46_response_v1.ResponseIdentityTests.test_distinct_user_public_key)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/tux/nsealr/.restart-tools/goal/specs-s01/tests/test_nip46_response_v1.py", line 42, in test_distinct_user_public_key
+    self.assertEqual(errors,[]);self.assertIsNotNone(result)
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: Lists differ: ['independent-v1: NIP-46 public-key response does not match relay event sender'] != []
+
+First list contains 1 additional elements.
+First extra element 0:
+'independent-v1: NIP-46 public-key response does not match relay event sender'
+
+- ['independent-v1: NIP-46 public-key response does not match relay event sender']
++ []
+
+======================================================================
+FAIL: test_missing_expected_user_is_unbound (test_nip46_response_v1.ResponseIdentityTests.test_missing_expected_user_is_unbound)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/tux/nsealr/.restart-tools/goal/specs-s01/tests/test_nip46_response_v1.py", line 55, in test_missing_expected_user_is_unbound
+    self.assertEqual(errors,[]);self.assertIs(result['result_pubkey_bound_to_expected_user'],False)
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: Lists differ: ['independent-v1: NIP-46 public-key response does not match relay event sender'] != []
+
+First list contains 1 additional elements.
+First extra element 0:
+'independent-v1: NIP-46 public-key response does not match relay event sender'
+
+- ['independent-v1: NIP-46 public-key response does not match relay event sender']
++ []
+
+----------------------------------------------------------------------
+Ran 11 tests in 0.007s
+
+FAILED (failures=4, errors=2)

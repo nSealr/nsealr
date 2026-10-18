@@ -1,0 +1,204 @@
+{
+  "recorded_utc": "2026-10-18T15:30:53.753547+00:00",
+  "task": "S01",
+  "author": "/root/bridge_execution",
+  "source_candidate": "d385ddb0c775a1e863e9db0ee9ae38fee5f19057",
+  "input_commits": {
+    "companion": "13414320537d0208fc3ef8e43bd0723c98c1d5e0",
+    "main_requirements": "768e8a35ae541f53f5da9c7bea7bf5c577fb474d"
+  },
+  "specification_review": {
+    "reviewer": "/root",
+    "reviewed_commit": "55bee979fff2db784c2cedbad67e24cbb1262d26",
+    "accepted_clarifications_commit": "cd8c3db894793313a9ccb42c2ab475149a8bf3e6",
+    "later_refinements": "Accepted by /root and recorded in brief: unsettled adapter bounds, metadata-v1 direct consumers, strict structural metadata comparison."
+  },
+  "independent_final_review": "Required from coordinator-appointed reviewer; this author does not approve or merge the candidate.",
+  "validation": [
+    {
+      "command": "make ci",
+      "exit_code": 0,
+      "tests_passed": 686,
+      "tests_skipped": 1,
+      "skip": "Docker live test is separately gated and passed in the next record.",
+      "manifest": "docs/restart/S01/evidence/final-ci.json"
+    },
+    {
+      "command": "NSEALR_LIVE_E2E=1 pnpm exec vitest run --maxWorkers=4 packages/nip46/src/session-live.e2e.test.ts",
+      "exit_code": 0,
+      "tests_passed": 1,
+      "tests_skipped": 0,
+      "manifest": "docs/restart/S01/evidence/live-relay.json"
+    },
+    {
+      "command": "pnpm exec vitest run --maxWorkers=4 packages/nip46 packages/transport packages/protocol packages/framing apps/cli/src/index.test.ts",
+      "exit_code": 0,
+      "tests_passed": 232,
+      "tests_skipped": 1,
+      "manifest": "docs/restart/S01/evidence/targeted.json"
+    }
+  ],
+  "live_relay": {
+    "docker_version": "29.5.3",
+    "image_reference": "scsibug/nostr-rs-relay:latest",
+    "resolved_repo_digests": [
+      "scsibug/nostr-rs-relay@sha256:48d54c2d2781577cf3ed2951112f0953dc2c5e7c9d2ea20c64e8c0fa37d16e4d"
+    ],
+    "image_id": "sha256:48d54c2d2781577cf3ed2951112f0953dc2c5e7c9d2ea20c64e8c0fa37d16e4d",
+    "container_cleanup": "Harness afterAll removed its container; docker ps --filter ancestor=scsibug/nostr-rs-relay returned no container after run.",
+    "claim_limit": "Actual WebSocket/relay transport with in-repository signer harness; not an external client or physical device claim."
+  },
+  "default_adapter_source": {
+    "dependency": "nostr-tools@2.23.3",
+    "abstract_relay_sha256": "840d7880ecb1918eed1e4d87d48db0f23b24ca436543506d6b3eec74e95f7926",
+    "pool_sha256": "e745566488bb74884cb78bcbc61cfbaeeec9c3a3ae601275ea752c87deffb6af",
+    "finding": "Locked SimplePool verifies event and applies matching author filter before onevent. Executed control replaces WebSocket I/O only; foreign author ignored, legitimate author delivered. Conditional manager acceptance is not a demonstrated default-adapter exploit."
+  },
+  "acceptance_evidence": [
+    {
+      "index": 0,
+      "claim": "Public fixture reproduction at pinned baseline, with default-adapter distinction",
+      "paths": [
+        "docs/restart/S01/evidence/baseline-results.json",
+        "docs/restart/S01/evidence/regressions-before-corrected-control.log",
+        "packages/nip46/src/session-security.test.ts"
+      ]
+    },
+    {
+      "index": 1,
+      "claim": "Manager itself pins authenticated configured transport author",
+      "paths": [
+        "packages/nip46/src/session-manager.ts",
+        "packages/nip46/src/session-protocol.ts",
+        "docs/restart/S01/evidence/targeted.log"
+      ]
+    },
+    {
+      "index": 2,
+      "claim": "User identity resolved separately; unauthorized key changes and mixed-session/replay responses rejected",
+      "paths": [
+        "packages/nip46/src/session-manager.ts",
+        "packages/nip46/src/session-security.test.ts",
+        "docs/restart/S01/evidence/targeted.log"
+      ]
+    },
+    {
+      "index": 3,
+      "claim": "Distinct transport/user keys, existing in-repository consumers, cancellation/error paths pass",
+      "paths": [
+        "packages/nip46/src/session-security.test.ts",
+        "docs/restart/S01/evidence/final-ci.log",
+        "docs/restart/S01/evidence/live-relay.log"
+      ]
+    },
+    {
+      "index": 4,
+      "claim": "20000-byte short-line reproduction corrected with aggregate byte/line and pending-operation bounds, backpressure, terminal errors and cleanup",
+      "paths": [
+        "docs/restart/S01/evidence/regressions-before-corrected-control.log",
+        "packages/transport/src/stream-security.test.ts",
+        "packages/transport/src/transport.ts",
+        "docs/restart/S01/evidence/targeted.log"
+      ]
+    }
+  ],
+  "retained_failure_resolutions": [
+    "Baseline make setup failed with mismatched pnpm store and no TTY. Explicit isolated store environment and CI=true resolved it; baseline-ci and baseline-ci-configured records retained.",
+    "Baseline make ci passed 611 tests but stopped at stale generated API docs. Source regeneration and accurate custody/runtime documentation resolved it without changing any gate.",
+    "First default-adapter test incorrectly stubbed global WebSocket after the dependency captured it. Its raw failure is retained; corrected control uses the dependency WebSocket injection API and passes.",
+    "Unsettled adapter regression produced two expected failures before separate outstanding-operation bounds; assertion errors from those expected-failure probes are retained and absent from final passing runs.",
+    "First full implementation CI found two CLI JSON text-order mismatches. Fixture field reordering produced a green intermediate CI but was reviewed as inherited verifier debt. Strict structural comparison now accepts object key order only, with exact value/type/array/missing/extra controls. metadata-order-before.log preserves the failing independent control.",
+    "Development-only type errors in Readable/Writable identity comparison and a test Promise generic were corrected; one test oracle mutated its shared template via nostr-tools finalizeEvent and now clones it. Cleanup test now compares inherited stream listener baseline instead of deleting Node-owned prefinish listeners. These transient tool outputs are summarized here; they are not represented as saved raw logs."
+  ],
+  "integration_handoff": {
+    "pull_request": "https://github.com/nSealr/companion/pull/1",
+    "parent_issue": "https://github.com/nSealr/nsealr/issues/3",
+    "fixture_base": "tests/fixtures/specs/vectors",
+    "fixture_source_commit": "22d04c988918bd5895b76666377bb843cba18760",
+    "fixture_note": "Exact fixture content unchanged in final candidate. Coordinator mirrors v1 vectors plus corresponding specs validation/docs in separately owned worktree before sibling integration.",
+    "remaining": "Independent exact-source final review, sibling specs integration and coordinator merge/graph closure. Author does not claim whole S01 closure.",
+    "deferred": "Unrelated legacy CLI JSON text comparisons remain for A02; external client/browser account onboarding and physical device qualification are not claimed."
+  },
+  "artifacts": [
+    {
+      "path": "docs/restart/S01/evidence/baseline-ci-configured.json",
+      "sha256": "09b7e9337ed7f1bde30cdba6d1c51dc55245a393c149eabc6477af34f5fdec7d"
+    },
+    {
+      "path": "docs/restart/S01/evidence/baseline-ci-configured.log",
+      "sha256": "3e4819467f66c33abc1054ddc7c4de20cabdd3ea75bb88b9070af243676a3c42"
+    },
+    {
+      "path": "docs/restart/S01/evidence/baseline-ci.json",
+      "sha256": "7d3f51bd3a83f134d8d6300ca5d0e09ffd13e47ee89dfc0e191bca070405c804"
+    },
+    {
+      "path": "docs/restart/S01/evidence/baseline-ci.log",
+      "sha256": "fd2928edd306a5b80b837743d8d28f3e4a2958b53cdd0f51ef9c8a61212eda54"
+    },
+    {
+      "path": "docs/restart/S01/evidence/baseline-results.json",
+      "sha256": "d7ba44d39b896b160f732370a10b622090d88f397e8a16634de6f3626bbcaad2"
+    },
+    {
+      "path": "docs/restart/S01/evidence/candidate-ci-fixture-order.json",
+      "sha256": "283147211155b563809f8c6891658fdbd79d946ffe674f51e696510b8c30af60"
+    },
+    {
+      "path": "docs/restart/S01/evidence/candidate-ci-fixture-order.log",
+      "sha256": "22735dfddee56b1c21bf6dd58849cb17504c41e5200a8fb37cbd2e9aa7a5756b"
+    },
+    {
+      "path": "docs/restart/S01/evidence/candidate-ci.json",
+      "sha256": "f9d7786a557cf5456f00d28a72f2051f33dab426bfeff24127331a4ea429f2e7"
+    },
+    {
+      "path": "docs/restart/S01/evidence/candidate-ci.log",
+      "sha256": "9c8041843c3fe4ebcca7018b146556996a23b6c0ef89ad722860e2f980e09c4f"
+    },
+    {
+      "path": "docs/restart/S01/evidence/docker-pull.log",
+      "sha256": "fdffa0e06b1a553ff9d26340d43d7200ec4e9ae66ace35a32b1a94d2b13fa4a1"
+    },
+    {
+      "path": "docs/restart/S01/evidence/final-ci.json",
+      "sha256": "782539d1779ca63265e77a3db7c365c79e10353a174348ea07d69ca17d1af559"
+    },
+    {
+      "path": "docs/restart/S01/evidence/final-ci.log",
+      "sha256": "ea189abf13d2974acfd325a9ebbd4dcbaa0341bfefa17cacafc4007aa7d944de"
+    },
+    {
+      "path": "docs/restart/S01/evidence/live-relay.json",
+      "sha256": "ae31cdecc207ea6b95f5ecb6078be3fb8c9def5ba34ba2d6758ecd06859f7fc3"
+    },
+    {
+      "path": "docs/restart/S01/evidence/live-relay.log",
+      "sha256": "e7ed5cad3f570ef2fc27b4ff7f23160d7f2e28fd82f698ba009e0dc11a068575"
+    },
+    {
+      "path": "docs/restart/S01/evidence/metadata-order-before.log",
+      "sha256": "52e854a282494a7e46addb795be91a4ca1929c295f8e46ab590db078229cbdae"
+    },
+    {
+      "path": "docs/restart/S01/evidence/regressions-before-corrected-control.log",
+      "sha256": "224947976a99583026173d0f307af694d544ccea5edb8ef939de0a403faf1bd2"
+    },
+    {
+      "path": "docs/restart/S01/evidence/regressions-before.log",
+      "sha256": "b65d12818952c6e5c3a8033cc6fd601066597bd16665c1f9aebafb5f519d557b"
+    },
+    {
+      "path": "docs/restart/S01/evidence/targeted.json",
+      "sha256": "72c7e5af8acf2c1fdc86f7032ca3bb8f51df49fc75326a4113e1a851e147a252"
+    },
+    {
+      "path": "docs/restart/S01/evidence/targeted.log",
+      "sha256": "ae6867d380cd42438dcaf9f1a013c9d656c1dc6146be3a06063699c4ce36e8ac"
+    },
+    {
+      "path": "docs/restart/S01/evidence/unsettled-adapter-before.log",
+      "sha256": "144e596ae6df85f2f5e006e865b392470bc9056c2e8bd20f3edb36aa08c5a801"
+    }
+  ]
+}

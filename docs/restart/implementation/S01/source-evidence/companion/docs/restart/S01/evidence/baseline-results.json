@@ -1,0 +1,44 @@
+{
+  "recorded_utc": "2026-10-18T15:12:35.277928+00:00",
+  "baseline_commit": "13414320537d0208fc3ef8e43bd0723c98c1d5e0",
+  "spec_commit": "cd8c3db894793313a9ccb42c2ab475149a8bf3e6",
+  "regression_commit": "d7d9780cf8d9f7ed1267227b9f759550ce89c8fb",
+  "command": "pnpm exec vitest run --maxWorkers=4 packages/nip46/src/session-security.test.ts packages/transport/src/stream-security.test.ts packages/framing/src/serial-security.test.ts",
+  "exit_code": 1,
+  "outcomes": {
+    "tests_failed": 17,
+    "tests_passed": 4,
+    "changed_user_key": "A correctly signed result using public fixture scalar 4 instead of established scalar 3 was accepted.",
+    "foreign_transport_author": "Injected adapter delivers correctly signed outer event from scalar4; manager accepts despite configured remote scalar2.",
+    "default_adapter_control": "Actual locked SimplePool with only WebSocket I/O replaced filters foreign signed event; legitimate signed event delivered. No default-adapter exploit demonstrated.",
+    "serial": "10000 x-newline lines retain exactly20000 bytes with maxBufferedBytes4.",
+    "controls": "Existing trailing JSON rejection retained. First probe attempted global WebSocket stub but dependency captures WebSocket at module load; corrected control uses dependency-provided useWebSocketImplementation. Both raw logs retained.",
+    "baseline_ci": "611 passed,1 live skipped; inherited generated API docs stale, make ci stops at api-docs. Initial setup failure from mismatched store environment retained."
+  },
+  "artifacts": [
+    {
+      "path": "docs/restart/S01/evidence/baseline-ci.log",
+      "sha256": "fd2928edd306a5b80b837743d8d28f3e4a2958b53cdd0f51ef9c8a61212eda54"
+    },
+    {
+      "path": "docs/restart/S01/evidence/baseline-ci.json",
+      "sha256": "7d3f51bd3a83f134d8d6300ca5d0e09ffd13e47ee89dfc0e191bca070405c804"
+    },
+    {
+      "path": "docs/restart/S01/evidence/baseline-ci-configured.log",
+      "sha256": "3e4819467f66c33abc1054ddc7c4de20cabdd3ea75bb88b9070af243676a3c42"
+    },
+    {
+      "path": "docs/restart/S01/evidence/baseline-ci-configured.json",
+      "sha256": "09b7e9337ed7f1bde30cdba6d1c51dc55245a393c149eabc6477af34f5fdec7d"
+    },
+    {
+      "path": "docs/restart/S01/evidence/regressions-before.log",
+      "sha256": "b65d12818952c6e5c3a8033cc6fd601066597bd16665c1f9aebafb5f519d557b"
+    },
+    {
+      "path": "docs/restart/S01/evidence/regressions-before-corrected-control.log",
+      "sha256": "224947976a99583026173d0f307af694d544ccea5edb8ef939de0a403faf1bd2"
+    }
+  ]
+}
