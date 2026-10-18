@@ -1,4 +1,4 @@
-# Execution handoff — first implementation tranche
+# Execution handoff
 
 Date: 2026-10-18. This handoff gives navigation and recovery procedures, not a second task-status ledger. Read the current graph before choosing work.
 
@@ -6,13 +6,13 @@ Date: 2026-10-18. This handoff gives navigation and recovery procedures, not a s
 
 1. Read the repository `AGENTS.md`, `docs/restart/README.md`, `execution.md` and the task in `work-items.json`.
 2. Run `git status --short`, `git log -5 --oneline`, `git worktree list` and `python3 scripts/validate_restart_plan.py`. Check remote branch and PR heads before assuming a local candidate is current.
-3. For running/review tasks, follow their assignment and owning brief. The assignment table in `implementation/README.md` names the exact path in its owning repository/branch: S01 is in companion's `docs/restart/S01/brief.md`, while R00/S02 use `docs/restart/implementation/<task>/brief.md` in nsealr. A01's candidate is in draft PR #11 until integrated. Compare actual worktrees and PRs with the committed graph; report publication lag instead of silently assuming an unmerged state update is already authoritative. Do not duplicate an active author. Read exact input commits, writable paths, known failures and required resources.
+3. For running/review tasks, follow the current graph's assignment and owning brief. For integrated tasks, follow their result manifest, immutable review/evidence and integration record. The first-tranche table in `implementation/README.md` is historical navigation, not a current assignment list. Compare actual worktrees and PRs with the graph; report publication lag instead of assuming an unmerged update is authoritative. Do not duplicate an active author. Read exact input commits, writable paths, known failures and required resources.
 4. For a review, inspect the actual candidate and scope, then check the specification, threat adequacy and maintainability separately. Record candidate hashes and substantive findings. Changed candidates invalidate affected approval.
 5. Integrate only after required CI passes on the relevant candidate; preserve branch protection and use a normal reviewed PR. Record integration commit separately from the reviewed implementation commit.
 
 Local integration directory: `/home/tux/nsealr`; it is not a repository. Local `firmware/` is the public `nSealr/nsealr` repository. Isolated authors work under `.restart-tools/goal/`. Existing `companion`, `raspberry`, `specs`, `lab` and private `workspace` remain source repositories until A01/A02 disposition and migration gates pass. Do not archive them early.
 
-## Input baseline
+## Historical first-tranche input baseline
 
 | Repository | Input commit |
 | --- | --- |
@@ -23,11 +23,11 @@ Local integration directory: `/home/tux/nsealr`; it is not a repository. Local `
 
 These inputs precede implementation; later task input records supersede them. Each author must reconcile its actual source, not reuse historical results as current proof.
 
-## What to implement first
+## Product outcome and remaining gates
 
-The first software outcome is a request reaching an actual device, exact local review, one-use authorization, a valid signature and expected-key verification. R00 establishes repeatable tools; S01 fixes Bridge boundaries; S02 fixes secret ownership and crypto selection; P01 resolves the product contract. K01 and device work start only after their declared dependencies integrate. First experiments use public disposable identities.
+The first device outcome is a request reaching an actual device, exact local review, one-use authorization, a valid signature and expected-key verification. R00 owns repeatable tools, S01 Bridge boundaries, S02 secret ownership/crypto selection and P01 the product contract. Their actual completion and evidence are recorded in the graph. K01 and device work start only after their declared dependencies integrate. First experiments use public disposable identities.
 
-No signer/production release is presently qualified. Current source has disabled signing paths and known consent/secret issues. No connected signer kit, Pi kit, P4 kit, SE evaluation board, instrument access or physical operator has been confirmed. A server USB inventory is not an inventory of the maintainer's hardware. Do not mark resources available from an AI role name, installed tools or assumed shipping dates.
+Read the current profile release gates before making support claims. The historical baseline's secret defects are not a statement about repaired source: inspect S02's exact result and later changes. Disabled signing paths and outstanding authorization/device requirements need their own implementation and acceptance; a passing software baseline does not qualify a production signer. Physical availability comes only from the graph's resource records and concrete confirmations. A server USB inventory is not an inventory of the maintainer's hardware. Do not mark resources available from an AI role name, installed tools or assumed shipping dates.
 
 ## Commit and publication policy
 

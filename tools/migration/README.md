@@ -1,11 +1,40 @@
 # A02 inventory and preflight
 
-This first tooling increment reads exact Git commits and writes a protected local
-inventory. It has no import, assembly, bundle-creation, remote mutation or
-publication operation. The accepted specification remains at
+These tools read exact Git commits, write a protected local inventory, and create
+and verify protected recovery bundles. They have no target import, assembly,
+remote mutation or publication operation. The accepted specification remains at
 `docs/restart/implementation/A02/brief.md`; its four reviewed preparation files are
 unchanged. The provisional preflight inputs are deliberately separate from future
 admitted import inputs.
+
+`admission-inputs.json` freezes the final `f2ef70f` input after repaired S01 adoption
+and successful main CI. It preserves the earlier provisional manifest and records
+the corrected overlay chain; it does not grant import admission. From the same
+runtime parent, run the following with distinct absent destinations:
+
+```sh
+python3 tools/migration/admission.py overlay-chain --manifest docs/restart/implementation/A02/admission-inputs.json --source-root /home/tux/nsealr --destination "$PWD/tools/migration/.runtime/overlays-01"
+python3 tools/migration/admission.py recover --manifest docs/restart/implementation/A02/admission-inputs.json --source-root /home/tux/nsealr --destination "$PWD/tools/migration/.runtime/recovery-01"
+python3 tools/migration/admission.py public-refs --manifest docs/restart/implementation/A02/admission-inputs.json --source-root /home/tux/nsealr --destination "$PWD/tools/migration/.runtime/public-refs-01"
+python3 tools/migration/admission.py canonical-plan --manifest docs/restart/implementation/A02/admission-inputs.json --source-root /home/tux/nsealr --destination "$PWD/tools/migration/.runtime/plan-01"
+```
+
+Use the verified pinned Python interpreter when recording acceptance. Recovery
+freezes all local ref objects, captures them in a new protected bare repository,
+creates and verifies its bundle, restores into another absent bare repository,
+then checks every restored ref and the selected commit/tree plus `git fsck`.
+Canonical source refs and files remain untouched. These repositories are recovery
+copies only; no consolidated product exists. Raw logs, bundles, private ref names
+and all restored objects stay in the mode-0700 ignored runtime. Only the sanitized
+summary may enter public evidence. Permissions and corruption refusal are tested.
+
+The overlay command checks exact source artifacts and pre/postimage continuity;
+it does not claim patches were applied. The canonical-plan command executes the
+existing complete validator and its controls against the exact clean canonical
+checkout, verifying source/evidence correspondence before and after. Public refs
+are queried read-only; evidence tags are review anchors, not release versions.
+Every command records tool environment, timestamps, exit status and log digests.
+User-space version pins do not make the OS or hosted CI hermetic.
 
 From the author worktree, with an existing ignored runtime parent:
 
