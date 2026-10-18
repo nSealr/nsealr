@@ -1,8 +1,8 @@
-# Restart baseline — 2026-10-13
+# nSealr restart and execution
 
 This is the engineering direction adopted for the restart. It does not mark future implementation or hardware tasks complete. Product software is pre-production.
 
-The October 18 extension adds a proposed cross-device product contract, first-tranche development steps, hardware-reference findings and a clean-install KiCad runtime canary. Graph revision 5 strengthens entropy-provider and SE-reset acceptance. These additions clarify readiness; they do not close P01, E01 or any device release gate.
+The October 18 execution adds independently reviewed product requirements, source disposition, secret ownership, reproducible software tooling and bounded KiCad qualification. Read [the current task graph](work-items.json) for accepted candidates, integration records and open work. Earlier readiness views are dated snapshots, not current status.
 
 The objective is a useful Nostr signer ecosystem with accessible connected hardware, two independent offline implementations and a general-purpose programmable security board. Success means real client interoperability, understandable approval, reliable recovery and reproducible third-party development.
 
@@ -14,16 +14,16 @@ The objective is a useful Nostr signer ecosystem with accessible connected hardw
 6. [Decision validation and feasibility limits](validation.md)
 7. [Client and optical qualification](client-qualification.md)
 8. [Specification-first development and initial work packages](development.md)
-9. [Proposed product contract, feature matrix and user journeys](product-contract.md)
+9. [Product contract, feature matrix and user journeys](product-contract.md)
 10. [PCB pipeline, tool capabilities and reference designs](pcb-development.md)
 
-The graph records **47 implementation tasks**, their dependencies, scope, acceptance and required resources. All remain open in this foundation: a research result or administrative rename is not a completed implementation gate. Ready tasks still require source reconciliation before work starts.
+The graph records **47 implementation tasks**, their dependencies, scope, acceptance and required resources. A research result or administrative rename does not close an implementation gate. Ready tasks still require source reconciliation and an accepted brief before implementation. No device release is qualified.
 
 ## Start here on the next session
 
-Verify the actual checkout and run `python3 scripts/validate_restart_plan.py`. Begin R00 (repeatable baseline), P01 (per-profile requirements/threat models), S01/S02 (identity and secret boundaries), A01 (source disposition), E01 (required CAD operations) and O01 (coordination/evidence) in disjoint scopes. Collect component sources in parallel, but H01 acceptance depends on P01. The 2026-10-13 audit contains evidence to ingest into these tasks, not permission to mark them complete without reviewing their full acceptance criteria.
+Verify the actual checkout and run `python3 scripts/validate_restart_plan.py`. Follow [the execution handoff](implementation/handoff.md), reconcile actual branches/PRs with the graph, and select eligible work without duplicating an active author. Preserve the existing reviewed evidence; do not rerun completed tasks merely because a new session starts. Source changes, failures or unresolved concerns determine which checks must run again.
 
-Then rehearse A02 locally: selected source only, explicit provenance, new clean contracts and green behavior checks. Archive a source repository only after its disposition is verified. Physical resources can block one profile without blocking the others.
+Rehearse A02 locally after its brief and input tuple are accepted: selected source only, explicit provenance, one authoritative contract artifact and equivalent executed behavior checks. The S01 provenance-checker correction and renewed review must precede importing that tooling. Archive a source repository only after its disposition is verified. Physical resources can block one profile without blocking the others.
 
 ## Delivery order
 
