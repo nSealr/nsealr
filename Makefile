@@ -19,6 +19,7 @@ test:
 	python3 scripts/verify_repo.py
 	python3 scripts/validate_restart_plan.py
 	python3 -m unittest discover -s scripts -p 'test_validate_restart_plan.py'
+	python3 -m unittest discover -s tools/baseline -p 'test_*.py'
 
 lint:
 	python3 scripts/verify_repo.py
