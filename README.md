@@ -22,25 +22,33 @@ Connected and Offline describe interaction modes, **not security levels**. Each 
 
 - `crates/nsealr-core`: a portable Rust core with bounded protocol, review and session foundations. Its authorization and secret-handling design is under revalidation.
 - `apps/desktop-simulator`: a host conformance harness. The current Rust path deliberately returns `signing_disabled`; it is not a working MCU signer.
-- `boards/`, `tests/`, `ci/`, `scripts/`: experimental profiles, fixtures and checks inherited from the measured baseline. A profile file is not hardware qualification.
-- `docs/restart/`: the accepted restart direction, migration gates and resumable work graph.
+- `apps/bridge/`, `packages/`: host clients, CLI, service, browser integration and the sole public TypeScript SDK. Internal packages are private.
+- `apps/pi/`: retained Python QR reference/application harness; engine adoption and physical Pi qualification remain separate tasks.
+- `protocols/contracts/v1/`: one authoritative artifact shared by independent Python, Rust and TypeScript consumers.
+- `boards/`, `tests/`, `ci/`, `scripts/`: experimental profiles and software checks. A profile file is not hardware qualification.
+- `plan/work-items.json`: the sole task graph; `plan/evidence-index.json` binds immutable historical evidence.
+- `docs/product/`: current product requirements; `docs/restart/` preserves decisions and historical review evidence.
 
-Host and Pi code currently remain in their original repositories until selected code has migrated and passed its gates. We are consolidating ownership, not claiming consolidation has already happened.
+Selected host and Pi code now share this source checkout. Their original licensed source identities and declared migration changes remain recorded in A02 evidence. The Board SDK stays independent and Nostr-free; custom hardware is not a product build prerequisite.
 
 Start with [the restart plan](docs/restart/README.md), [architecture](docs/restart/architecture.md), [repository mapping](docs/restart/repositories.md) and [agent instructions](AGENTS.md). Earlier phase documents describe the historical implementation; they do not freeze the new architecture.
 
-## Build the existing Rust baseline
+## Build and verify
 
-Install the toolchain pinned in `rust-toolchain.toml`, then run:
+Use the [pinned product bootstrap](tools/baseline/README.md) for a clean Linux
+x86_64/glibc runtime. With those tools on PATH:
 
 ```sh
-cargo test --workspace
-cargo test -p nsealr-core --features std
-cargo fmt --all --check
-python3 scripts/verify_repo.py
+pnpm install --frozen-lockfile
+make ci
 ```
 
-`make ci` adds target compilation, lint, dependency, coverage and reproducibility gates. Host tests and a compiled core library do not demonstrate a complete device application or physical security.
+The complete gate covers independent contracts, core and host Rust workspaces,
+Bridge packages and packed consumers, Pi, source/evidence integrity and the
+17-step product integration. `make integration` runs that integration separately.
+Rust target compilation, coverage floors and reproducibility remain mandatory.
+Installed browsers, live relays, attached boards and physical security require
+separate evidence; successful software checks do not qualify a device release.
 
 ## Project boundaries
 

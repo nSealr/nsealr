@@ -23,19 +23,20 @@ Each feature has a canonical `contract_id`. A solution may mark that feature as:
 If a feature is active (`required`, `optional`, or `research`), the solution
 must use the canonical `contract_id` and pass the vectors behind that contract.
 This keeps shared behavior aligned even when code is written in different
-languages for Raspberry, ESP32, smartcard, companion, or custom hardware.
+languages for Pi, ESP32, Bridge, or custom hardware.
 
-## First-Class Signer Families
+## Retained Conformance Components
 
 - `raspberry_qr_vault`: nSealr Vault — Pi edition.
 - `esp32_qr_vault`: nSealr Vault — ESP32 edition.
 - `esp32_usb_nip46`: nSealr Key.
-- `smartcard`: nSealr Card.
 - `custom_hardware_wallet`: nSealr One.
 
-Infrastructure repositories such as `companion`, `specs`, `lab`, `hardware`,
-and `website` are not signer families by themselves. They implement, validate,
-or document the contracts used by the families above.
+These existing identifiers describe conformance fixtures, not a new public
+profile or compatibility promise. Product software is owned by nsealr. Generic
+board software is owned by board-sdk; hardware, website and .github retain their
+separate responsibilities. A02 does not qualify a physical implementation or
+introduce the later capability/profile contract.
 
 Browser extension, npm SDK, CLI, local companion service, desktop UI, and full
 NIP-46 relay-session work are also not signer families. They are companion

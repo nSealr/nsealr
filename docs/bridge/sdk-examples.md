@@ -6,12 +6,12 @@ They are CI guards for public package usage, not production signer code.
 Run them with:
 
 ```sh
-make examples-smoke
+pnpm examples-smoke
 ```
 
-The examples import public packages through their package entrypoints after
-`dist` artifacts are built. The examples import every publishable public
-package and cover:
+The development examples use retained internal modules and the public SDK after
+`dist` artifacts are built. The separate packed SDK check proves independent
+public consumption. Examples cover:
 
 - request validation, response validation, event-id computation, signed-output
   verification, and static QR envelope round-trip;
@@ -25,10 +25,10 @@ package and cover:
   client adaptation, and refused `signEvent` behavior over an injected backend;
 - already-decrypted NIP-46 bridge decisions for permitted and denied requests;
 - platform-neutral `@nsealr/sdk` facade imports for browser-provider, client,
-  core, protocol, and smartcard namespaces;
+  core and protocol namespaces;
 - browser-safe `@nsealr/sdk/browser` facade imports for the NIP-07 provider,
   browser local-service client, and pure core/policy/protocol/QR/review helpers;
-- smartcard APDU command/response round-trip and package-owned serial-line
+- package-owned serial-line
   exchange against an in-memory port that returns `signing_disabled`.
 
 The examples must stay secretless. They may use deterministic signed fixture
@@ -41,7 +41,7 @@ Package README snippets are a separate public-doc gate. Mark runnable snippets
 with `nsealr-readme-example` and verify them with:
 
 ```sh
-make readme-examples
+pnpm readme-examples:check
 ```
 
 README snippets are extracted from publishable package READMEs and executed

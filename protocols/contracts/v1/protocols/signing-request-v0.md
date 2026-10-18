@@ -1,7 +1,7 @@
 # Signing Request Protocol v0
 
 This document defines the first nSealr signer request contract. It is the
-shared protocol used by companion software, QR vaults, ESP32 signers, smartcard
+shared protocol used by companion software, QR vaults, ESP32 signers,
 adapters, and future compatible implementations.
 
 ## Envelope
