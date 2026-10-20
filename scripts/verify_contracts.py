@@ -127,7 +127,7 @@ def inventory(artifact):
         if stat.S_ISDIR(mode):
             result[relative] = ('040000', None)
         elif stat.S_ISREG(mode):
-            result[relative] = ('100755' if mode & 0o111 else '100644', path.read_bytes())
+            result[relative] = ('100755' if mode & stat.S_IXUSR else '100644', path.read_bytes())
         else:
             raise ValueError('nonregular contract entry')
     return result
