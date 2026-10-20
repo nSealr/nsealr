@@ -10,10 +10,14 @@ ROOT=Path(__file__).resolve().parents[1]
 ARTIFACT=ROOT/'protocols/contracts/v1'
 ORIGIN='45f8b6ff1123f3f55be4ce457fd1008e91043cc2'
 INITIAL_IMPORT='86569e073da4faec0811d67137bbb0fd4f74c7c6'
+# Historical identity above remains literal manifest metadata. These permanent
+# protected-main ancestors have the exact original source/postimage trees after
+# the normal A02 rebase; runtime Git reads must resolve from a main-only fetch.
+SOURCE_POSTIMAGE='68508ea1eea1e07b0064fadd65b33433d72701f8'
 # This immutable migration postimage binds the active reviewed data, independently
 # of working-tree digests. A later contract change needs a declared/reviewed
 # source transition and a new baseline; merely editing manifest.json is invalid.
-BASELINE='5cb16cbaffc6b90ca9dfbb1ce7a5388e731d1ae0'
+BASELINE='59653fcc15c4cbc21a39d0a0dd5548abe46165b0'
 DATA_DIRS=('protocols','schemas','vectors','examples')
 CONSUMERS_SHA256='36389c1847c7277d70d960b8116da4c351f6950e1ecc57bfe17d68ec84426e0d'
 
@@ -74,7 +78,7 @@ def validate(artifact=ARTIFACT,repository=ROOT):
         if path.startswith('/') or '..' in path.split('/') or '\\' in path:raise ValueError('unsafe contract path')
         data=(artifact/path).read_bytes()
         if sha(data)!=row['sha256']:raise ValueError('contract byte tamper: '+path)
-        for commit,expected in [(INITIAL_IMPORT,row['original_sha256']),(BASELINE,row['sha256'])]:
+        for commit,expected in [(SOURCE_POSTIMAGE,row['original_sha256']),(BASELINE,row['sha256'])]:
             tree=git(repository,'ls-tree','-z',commit,'--','protocols/contracts/v1/'+path)
             if not tree.startswith((b'100644 blob ',b'100755 blob ')):raise ValueError('nonregular committed contract')
             if sha(committed(repository,commit,path))!=expected:raise ValueError('contract committed source/postimage mismatch')

@@ -1,0 +1,77 @@
+{
+  "recorded_utc": "2026-10-20T10:50:27.214740+00:00",
+  "source_base": "d931277bebbc5f43514b0e8438d65fb60603fa35",
+  "preimplementation_scope": "7618ea42a86a1c25790955090b2dee3350943ff8",
+  "existing_changed_files": [
+    "docs/restart/README.md",
+    "docs/restart/implementation/handoff.md",
+    "scripts/test_contracts.py",
+    "scripts/verify_contracts.py"
+  ],
+  "additional_tracked_paths": [
+    "docs/restart/implementation/A02/post-rebase-repair/brief.md",
+    "docs/restart/implementation/A02/post-rebase-repair/source-audit.json"
+  ],
+  "all_new_paths_within_admitted_proof_scope": true,
+  "new_paths_regular_nonexecutable_Git_100644": true,
+  "original_brief_and_audit_unchanged": true,
+  "artifact_tree_unchanged_from_main": true,
+  "manifest_sha256": "16bf215c6f65a5c616c30971cb860351272633ff6a8c75edc8246eab61f8bbeb",
+  "plan_bytes_unchanged": true,
+  "plan_sha256": "e6ca36b38c09ce44e48567cd58383616a5dc0f8ce5e03175c0a7047e01f1d4c2",
+  "evidence_index_unchanged": true,
+  "tasks": 47,
+  "resources": 16,
+  "release_paths": 5,
+  "closed_tasks": [
+    "R00",
+    "P01",
+    "S01",
+    "S02",
+    "E01",
+    "A01",
+    "O01"
+  ],
+  "frozen_unique_evidence_files": 1508,
+  "all_frozen_file_hashes_preserved": true,
+  "original_artifact_tests": 20,
+  "original_test_bodies_unchanged": true,
+  "total_artifact_tests": 24,
+  "added_artifact_tests": [
+    "test_missing_runtime_source_or_postimage_anchor_rejects",
+    "test_rewritten_history_validates_from_only_cold_main_with_historical_metadata",
+    "test_wrong_runtime_postimage_manifest_rejects_current_valid_manifest",
+    "test_wrong_runtime_source_bytes_reject_even_when_current_data_is_valid"
+  ],
+  "source_postimages": [
+    {
+      "path": "docs/restart/README.md",
+      "sha256": "2d76582cb62415ab602210e62e281806daa1ee7e656562bb87e771c27d39d114"
+    },
+    {
+      "path": "docs/restart/implementation/handoff.md",
+      "sha256": "85be4252814f93d9f71a2fbe1af0de6fc63e6583452eca7aa657730a1f46546b"
+    },
+    {
+      "path": "scripts/test_contracts.py",
+      "sha256": "cecf5fe2e9b91e647f7e443bce6abca54cbf1391825ef4daf44075034f5a39d4"
+    },
+    {
+      "path": "scripts/verify_contracts.py",
+      "sha256": "f2d7bcd0227e1cfa65a4e1ea3f5bf1aba82adef985af70d4f01777c4ea2a8aea"
+    }
+  ],
+  "probe_attempts": [
+    {
+      "attempt": 1,
+      "exit_code": 1,
+      "stderr": "Traceback (most recent call last):\n  File \"<stdin>\", line 10, in <module>\nAssertionError\n",
+      "cause": "The proof probe incorrectly demanded filesystem 0644; normal umask002 produces 0664 files, which Git correctly records as regular nonexecutable100644. No source, evidence bytes or Git mode failed. Corrected probe validates regular files with no execute bits."
+    },
+    {
+      "attempt": 2,
+      "exit_code": 0,
+      "result": "All invariants passed with actual Git regular-file semantics."
+    }
+  ]
+}

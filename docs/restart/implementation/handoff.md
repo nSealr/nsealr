@@ -2,29 +2,31 @@
 
 Date: 2026-10-20. This handoff gives navigation and recovery procedures, not a second task-status ledger. Read the current graph before choosing work.
 
-## Current A02 adoption candidate
+## Current A02 post-rebase repair
 
-The [adoption handoff](A02/coordinator-adoption/handoff.md) records the exact
-reviewed source/public append, copy inventories and remaining gates for
-`restart/a02-consolidation`. The maintainer cancelled the brief interruption;
-its checkpoint notes are historical inside that adoption record only. There is
-no active pause guard or separate plan area. Continue admitted work while
-preserving the source freeze and actual review/CI gates.
+The [adoption handoff](A02/coordinator-adoption/handoff.md) preserves the reviewed
+source/public append and copy inventories. PR31 passed distinct final review and
+full protected PR CI39406783194, then normally rebase-merged as main
+`d931277bebbc5f43514b0e8438d65fb60603fa35`. Exact-main CI39408038674 failed:
+the cold main-only bootstrap lacks two intermediate contract-provenance commits
+rewritten by that rebase. Their adopted counterparts have identical whole trees.
 
-The sole candidate graph is [plan/work-items.json](../../../plan/work-items.json).
-Until this branch is normally integrated, main's existing graph remains the
-adopted authority. The old pause-branch graph is an unmerged proposal. The seven
-checkpoint updates preserve source-specific accepted inputs and all original
-criteria/dependencies; S04 records its terminal assignment/source gates without
-an active author or a model retry. A02 is not closed by local review or metadata.
+Read the [admitted repair brief](A02/post-rebase-repair/brief.md) and
+[source audit](A02/post-rebase-repair/source-audit.json). The repair separates the
+literal historical import identity from the runtime source anchor and pins the
+reviewed baseline at permanent main ancestors. Preserve the failed hosted run,
+actual cold-main RED, exact review and subsequent repair proof in that scoped
+directory. A distinct exact final-diff review, full protected repair PR CI,
+normal integration and corrected-main CI remain required. Do not retry the
+deterministic failed run or add old branch objects to hide the lookup failure.
 
-Current-source and delivery reviews differ: source `daf8ba03` / author `bb03361`
-have a distinct local-rehearsal PASS, while this materialized append and metadata
-require their own exact review and actual full protected PR CI. Normal merge and
-the resulting exact main CI must precede separately reviewed A02 closure. Held
-S03/P02/T01/S04 and independent Board SDK/hardware sources are references only;
-they have not been imported into this candidate. No source archive, registry
-publication or physical qualification is included here.
+The sole adopted graph is [plan/work-items.json](../../../plan/work-items.json).
+Its seven incomplete checkpoints, original criteria/dependencies and closed
+evidence remain unchanged by this repair. A02 stays incomplete; S03 implementation
+is held until corrected-main CI and its own source/brief gates pass. Independent
+Board SDK/hardware work may continue within its accepted scope. The historical
+pause proposal is not another tracker. No source archive, registry publication,
+hardware qualification or task closure is included here.
 
 ## Recover the actual state
 

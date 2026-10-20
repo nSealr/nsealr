@@ -28,7 +28,7 @@ class ArtifactProvenanceTests(unittest.TestCase):
         self.baseline=self.git('rev-parse','HEAD').decode().strip()
         consumers=json.dumps({name:['vectors/*.json'] for name in ['bridge','engine','pi']}).encode()
         (self.artifact/'consumers.json').write_bytes(consumers)
-        for name,value in [('INITIAL_IMPORT',self.original),('BASELINE',self.baseline),('CONSUMERS_SHA256',verifier.sha(consumers))]:
+        for name,value in [('INITIAL_IMPORT',self.original),('SOURCE_POSTIMAGE',self.original),('BASELINE',self.baseline),('CONSUMERS_SHA256',verifier.sha(consumers))]:
             p=patch.object(verifier,name,value);p.start();self.addCleanup(p.stop)
 
     def git(self,*args):return subprocess.check_output(['git','-C',str(self.repo),*args],stderr=subprocess.STDOUT)
@@ -110,6 +110,60 @@ class ArtifactProvenanceTests(unittest.TestCase):
     def test_fully_valid_control_after_mutation_is_restored(self):
         p=self.artifact/'vectors/check.json';p.write_bytes(b'forged');self.reject();p.write_bytes(self.files['vectors/check.json'])
         self.assertEqual(self.check()['consumers'],['bridge','engine','pi'])
+
+    def test_rewritten_history_validates_from_only_cold_main_with_historical_metadata(self):
+        with TemporaryDirectory() as directory:
+            root=Path(directory);rewritten=root/'rewritten';rewritten.mkdir()
+            def run(repo,*args):
+                return subprocess.check_output(['git','-C',str(repo),*args],stderr=subprocess.STDOUT)
+            def commit(message):
+                run(rewritten,'add','.')
+                run(rewritten,'-c','user.name=Rebase regression','-c','user.email=rebase@example.invalid','commit','-qm',message)
+                return run(rewritten,'rev-parse','HEAD').decode().strip()
+            run(rewritten,'-c','init.templateDir=','init','-q','--initial-branch=main')
+            artifact=rewritten/'protocols/contracts/v1'
+            for path,data in self.files.items():
+                dest=artifact/path;dest.parent.mkdir(parents=True,exist_ok=True);dest.write_bytes(data)
+            adopted_source=commit('Rewritten source with identical tree')
+            (artifact/'manifest.json').write_bytes((self.artifact/'manifest.json').read_bytes())
+            adopted_baseline=commit('Rewritten postimage retaining historical identity')
+            (artifact/'consumers.json').write_bytes((self.artifact/'consumers.json').read_bytes())
+            main=commit('Main with actual consumers')
+            self.assertEqual(run(rewritten,'rev-parse',adopted_source+'^{tree}'),self.git('rev-parse',self.original+'^{tree}'))
+            self.assertEqual(run(rewritten,'rev-parse',adopted_baseline+'^{tree}'),self.git('rev-parse',self.baseline+'^{tree}'))
+            cold=root/'cold'
+            subprocess.check_output(['git','-c','init.templateDir=','init','-q','--initial-branch=intake',str(cold)],stderr=subprocess.STDOUT)
+            run(cold,'fetch','--no-tags','--no-write-fetch-head',str(rewritten),main+':refs/heads/main')
+            run(cold,'checkout','-q','main')
+            self.assertEqual(run(cold,'for-each-ref','--format=%(refname)').splitlines(),[b'refs/heads/main'])
+            self.assertEqual(run(cold,'remote'),b'')
+            self.assertFalse((cold/'.git/objects/info/alternates').exists())
+            for historical in [self.original,self.baseline]:
+                absent=subprocess.run(['git','-C',str(cold),'cat-file','-e',historical+'^{commit}'],capture_output=True)
+                self.assertEqual(absent.returncode,128)
+            for anchor in [adopted_source,adopted_baseline]:
+                run(cold,'merge-base','--is-ancestor',anchor,main)
+            metadata=json.loads((cold/'protocols/contracts/v1/manifest.json').read_bytes())
+            self.assertEqual(metadata['initial_import_commit'],self.original)
+            with patch.object(verifier,'SOURCE_POSTIMAGE',adopted_source),patch.object(verifier,'BASELINE',adopted_baseline):
+                self.assertEqual(verifier.validate(cold/'protocols/contracts/v1',cold)['files'],5)
+
+    def test_missing_runtime_source_or_postimage_anchor_rejects(self):
+        for name in ['SOURCE_POSTIMAGE','BASELINE']:
+            with self.subTest(anchor=name),patch.object(verifier,name,'0'*40):self.reject()
+
+    def test_wrong_runtime_source_bytes_reject_even_when_current_data_is_valid(self):
+        path=self.artifact/'vectors/check.json';path.write_bytes(b'wrong source')
+        self.git('add','.');self.commit('Wrong source anchor')
+        wrong=self.git('rev-parse','HEAD').decode().strip();path.write_bytes(self.files['vectors/check.json'])
+        with patch.object(verifier,'SOURCE_POSTIMAGE',wrong):self.reject()
+
+    def test_wrong_runtime_postimage_manifest_rejects_current_valid_manifest(self):
+        self.manifest['unreviewed_note']='forged baseline';self.write_manifest()
+        self.git('add','.');self.commit('Wrong postimage anchor')
+        wrong=self.git('rev-parse','HEAD').decode().strip()
+        self.manifest=json.loads(json.dumps(self.valid_manifest));self.write_manifest()
+        with patch.object(verifier,'BASELINE',wrong):self.reject()
 
 
 if __name__=='__main__':unittest.main()

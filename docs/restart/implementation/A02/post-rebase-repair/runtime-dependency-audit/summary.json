@@ -1,0 +1,44 @@
+{
+  "findings": [
+    {
+      "metadata_only": [
+        "ORIGIN=45f8b6ff1123f3f55be4ce457fd1008e91043cc2",
+        "INITIAL_IMPORT=86569e073da4faec0811d67137bbb0fd4f74c7c6"
+      ],
+      "path": "scripts/verify_contracts.py",
+      "result": "Only two broken intermediate runtime anchors, fixed within admitted scope; immutable metadata identity remains literal.",
+      "runtime_dereferences": {
+        "BASELINE": "59653fcc15c4cbc21a39d0a0dd5548abe46165b0",
+        "SOURCE_POSTIMAGE": "68508ea1eea1e07b0064fadd65b33433d72701f8"
+      }
+    },
+    {
+      "path": "scripts/verify_evidence.py",
+      "result": "Original public source remains permanent ancestor of adopted main, independently verified in cold corrected candidate proof; no repair needed.",
+      "runtime_dereferences": {
+        "SOURCE": "f2ef70f522af4977e15f81554a8c6eadcdbe8097"
+      }
+    },
+    {
+      "paths": [
+        "scripts/test_contracts.py",
+        "scripts/test_evidence.py"
+      ],
+      "result": "Actual Git synthetic histories generated within each test, not external historical-object dependencies."
+    },
+    {
+      "paths": [
+        "tools/baseline/bootstrap.py",
+        "tools/baseline/run.py"
+      ],
+      "result": "Runtime exact caller candidate/HEAD and dirty-state checks; bootstrap fetches only selected candidate. No hardcoded external historical commit lookup."
+    },
+    {
+      "path": ".github/workflows/ci.yml",
+      "result": "Pinned actions are external GitHub action revisions, not Git-object lookups inside product checkout; unchanged."
+    }
+  ],
+  "inspected_files": 364,
+  "other_observation": "ci/repro_build.sh copies current tracked source with rsync and does not dereference a historical Git anchor. Remaining 64-character literals in product-gate tests/Bridge controls are test-obligation hashes, not Git commit references. No additional broken runtime historical-object dependency found; no scope expansion.",
+  "scope": "Read-only inspection of current project CI entrypoints and executable gate/component source; source inventory binds inspected files. Frozen migration authoring/replay templates are historical and not ordinary product-CI entrypoints."
+}
