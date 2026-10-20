@@ -1,0 +1,145 @@
+[
+  {
+    "label": "pinned-runtime-identities",
+    "argv": [
+      "bash",
+      "-c",
+      "python3 --version && node --version && npm --version && pnpm --version && rustc --version && cargo --version"
+    ],
+    "cwd": "/home/tux/nsealr/.restart-tools/goal/a02-final-review/tools/migration/.runtime/reviewer-final/replay/initial-import/repository",
+    "started_utc": "2026-10-20T09:50:49.379737+00:00",
+    "ended_utc": "2026-10-20T09:50:49.613355+00:00",
+    "exit_code": 0,
+    "log": "pinned-runtime-identities.log",
+    "sha256": "5ad2b322292bfa1dce999c56c5e63fd4e86df3c4e22528c9ca72d4182623889c"
+  },
+  {
+    "label": "frozen-offline-js-install",
+    "argv": [
+      "pnpm",
+      "install",
+      "--frozen-lockfile",
+      "--offline"
+    ],
+    "cwd": "/home/tux/nsealr/.restart-tools/goal/a02-final-review/tools/migration/.runtime/reviewer-final/replay/initial-import/repository",
+    "started_utc": "2026-10-20T09:50:49.613610+00:00",
+    "ended_utc": "2026-10-20T09:50:50.356822+00:00",
+    "exit_code": 0,
+    "log": "frozen-offline-js-install.log",
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "label": "build-packed-sdk-inputs",
+    "argv": [
+      "pnpm",
+      "run",
+      "build"
+    ],
+    "cwd": "/home/tux/nsealr/.restart-tools/goal/a02-final-review/tools/migration/.runtime/reviewer-final/replay/initial-import/repository",
+    "started_utc": "2026-10-20T09:50:50.357094+00:00",
+    "ended_utc": "2026-10-20T09:50:59.907023+00:00",
+    "exit_code": 0,
+    "log": "build-packed-sdk-inputs.log",
+    "sha256": "dc78abe73243488735962475cbdb77db2653d249c28e7001be835952496fb7d6"
+  },
+  {
+    "label": "active-contract-route-and-s01-tests",
+    "argv": [
+      "pnpm",
+      "exec",
+      "vitest",
+      "run",
+      "--maxWorkers=4",
+      "apps/bridge/cli/src/index.test.ts",
+      "packages/client/src/local-service-client.test.ts",
+      "packages/client/src/service.test.ts",
+      "packages/policy/src/policy.test.ts",
+      "packages/fixtures/src/fixtures.test.ts",
+      "packages/nip46/src/session-manager.test.ts",
+      "packages/nip46/src/session-security.test.ts"
+    ],
+    "cwd": "/home/tux/nsealr/.restart-tools/goal/a02-final-review/tools/migration/.runtime/reviewer-final/replay/initial-import/repository",
+    "started_utc": "2026-10-20T09:50:59.907266+00:00",
+    "ended_utc": "2026-10-20T09:51:01.995224+00:00",
+    "exit_code": 0,
+    "log": "active-contract-route-and-s01-tests.log",
+    "sha256": "1b13f7c16fc0135bb72ea31eed34d14ebfe1c3837a4abf2c50894ac580ec5e9b"
+  },
+  {
+    "label": "isolated-sdk-tarball-node-browser-types",
+    "argv": [
+      "node",
+      "tools/bridge/pack_smoke.mjs"
+    ],
+    "cwd": "/home/tux/nsealr/.restart-tools/goal/a02-final-review/tools/migration/.runtime/reviewer-final/replay/initial-import/repository",
+    "started_utc": "2026-10-20T09:51:01.995467+00:00",
+    "ended_utc": "2026-10-20T09:51:03.419820+00:00",
+    "exit_code": 0,
+    "log": "isolated-sdk-tarball-node-browser-types.log",
+    "sha256": "ce3e6aac9058e54f8e332a042139e7153c8a9d5bc0fbc4b1291ca0009d8e69ad"
+  },
+  {
+    "label": "production-boundaries-and-negatives",
+    "argv": [
+      "pnpm",
+      "run",
+      "product-boundaries:check"
+    ],
+    "cwd": "/home/tux/nsealr/.restart-tools/goal/a02-final-review/tools/migration/.runtime/reviewer-final/replay/initial-import/repository",
+    "started_utc": "2026-10-20T09:51:03.420082+00:00",
+    "ended_utc": "2026-10-20T09:51:04.031481+00:00",
+    "exit_code": 0,
+    "log": "production-boundaries-and-negatives.log",
+    "sha256": "512d8ab2dbc87ccbe527f8763eb51ce09386902170080f88c11b7f1fdfd60301"
+  },
+  {
+    "label": "current-guides-and-negatives",
+    "argv": [
+      "pnpm",
+      "run",
+      "current-guides:check"
+    ],
+    "cwd": "/home/tux/nsealr/.restart-tools/goal/a02-final-review/tools/migration/.runtime/reviewer-final/replay/initial-import/repository",
+    "started_utc": "2026-10-20T09:51:04.031726+00:00",
+    "ended_utc": "2026-10-20T09:51:04.924106+00:00",
+    "exit_code": 0,
+    "log": "current-guides-and-negatives.log",
+    "sha256": "e6793a605cb508e856524e16c8e92805a618778bc03a52fe62a564e22c0ab850"
+  },
+  {
+    "label": "embedded-workspace-metadata",
+    "argv": [
+      "cargo",
+      "metadata",
+      "--locked",
+      "--offline",
+      "--format-version",
+      "1",
+      "--no-deps"
+    ],
+    "cwd": "/home/tux/nsealr/.restart-tools/goal/a02-final-review/tools/migration/.runtime/reviewer-final/replay/initial-import/repository",
+    "started_utc": "2026-10-20T09:51:04.924420+00:00",
+    "ended_utc": "2026-10-20T09:51:04.949170+00:00",
+    "exit_code": 0,
+    "log": "embedded-workspace-metadata.log",
+    "sha256": "9ac108c0bb733f368919318fa7b128848bde4d894fd7cbe535c3995da12116c3"
+  },
+  {
+    "label": "host-workspace-metadata",
+    "argv": [
+      "cargo",
+      "metadata",
+      "--locked",
+      "--offline",
+      "--format-version",
+      "1",
+      "--no-deps"
+    ],
+    "cwd": "/home/tux/nsealr/.restart-tools/goal/a02-final-review/tools/migration/.runtime/reviewer-final/replay/initial-import/repository/apps/desktop-simulator",
+    "started_utc": "2026-10-20T09:51:04.949374+00:00",
+    "ended_utc": "2026-10-20T09:51:04.972814+00:00",
+    "exit_code": 0,
+    "log": "host-workspace-metadata.log",
+    "sha256": "7303e3025f7da290e2d4f8ed682210f082e969fce18196b64d0ba3701d5e4532"
+  }
+]

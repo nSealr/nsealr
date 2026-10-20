@@ -1,0 +1,73 @@
+{
+  "tamper_controls": [
+    {
+      "probe": "actual hidden contract addition",
+      "refused": true,
+      "diagnostic": "contract inventory missing/extra file, including hidden files"
+    },
+    {
+      "probe": "actual fixture mutation plus forged matching manifest digest",
+      "refused": true,
+      "diagnostic": "contract manifest differs from immutable reviewed baseline"
+    },
+    {
+      "probe": "actual reintroduced stale snapshot root",
+      "refused": true,
+      "diagnostic": "stale duplicate contract snapshot: tests/fixtures/specs"
+    },
+    {
+      "probe": "actual frozen bytes with unchanged digest",
+      "refused": true,
+      "diagnostic": "frozen evidence bytes changed"
+    },
+    {
+      "probe": "actual missing historical closure row",
+      "refused": true,
+      "diagnostic": "missing/duplicate closed evidence closure entry"
+    },
+    {
+      "probe": "actual forged historical blob",
+      "refused": true,
+      "diagnostic": "wrong historical blob/mode"
+    },
+    {
+      "probe": "actual forged historical origin",
+      "refused": true,
+      "diagnostic": "evidence alias/source mismatch"
+    },
+    {
+      "probe": "actual current contract edit claiming original review",
+      "refused": true,
+      "diagnostic": "modified current contract falsely attributed to old review"
+    },
+    {
+      "probe": "actual duplicate live task graph",
+      "refused": true,
+      "diagnostic": "second live task graph"
+    }
+  ],
+  "all_exact_restores_passed": true,
+  "different_checkout_paths_from_unrelated_cwd": [
+    {
+      "artifact": "nsealr-contracts-v1",
+      "consumers": [
+        "bridge",
+        "engine",
+        "pi"
+      ],
+      "files": 251,
+      "source_commit": "45f8b6ff1123f3f55be4ce457fd1008e91043cc2"
+    },
+    {
+      "artifact": "nsealr-contracts-v1",
+      "consumers": [
+        "bridge",
+        "engine",
+        "pi"
+      ],
+      "files": 251,
+      "source_commit": "45f8b6ff1123f3f55be4ce457fd1008e91043cc2"
+    }
+  ],
+  "product_clean": true
+}
