@@ -19,7 +19,7 @@ BASELINE = '59653fcc15c4cbc21a39d0a0dd5548abe46165b0'
 # Selected A: only the final independently reviewed artifact subtree literal
 # belongs here, outside that subtree. Interim unbound source MUST fail closed.
 # Never derive trust from HEAD, a manifest, an environment variable or a ref.
-ARTIFACT_TREE_OID = None
+ARTIFACT_TREE_OID = 'b629e75d18190ded2403ffabe965b595a9bcf6a6'
 DATA_DIRS = ('protocols', 'schemas', 'vectors', 'examples')
 TOP_KEYS = {'artifact_format', 'artifact_id', 'source_commit', 'initial_import_commit',
             'consumer_coverage', 'generation', 'retirement', 'wire_versions', 'files'}
