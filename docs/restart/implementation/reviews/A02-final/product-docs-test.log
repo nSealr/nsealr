@@ -1,0 +1,59 @@
+python3 scripts/verify_repo.py
+nSealr consolidated product structure passed
+python3 scripts/validate_firmware.py
+nSealr firmware board-profile validation passed
+python3 scripts/verify_repo.py
+nSealr consolidated product structure passed
+python3 scripts/validate_restart_plan.py
+Restart plan valid: 47 tasks; ready: P02, S04, B01
+Structural check only; hardware, review quality and security remain evidence gates.
+python3 scripts/verify_evidence.py
+{"closed_files": 1508, "current_contracts": 5, "current_navigation_files": 18, "frozen_source": "f2ef70f522af4977e15f81554a8c6eadcdbe8097"}
+python3 scripts/verify_contracts.py
+{"artifact": "nsealr-contracts-v1", "consumers": ["bridge", "engine", "pi"], "files": 251, "source_commit": "45f8b6ff1123f3f55be4ce457fd1008e91043cc2"}
+python3 -m unittest discover -s scripts -p 'test_contracts.py'
+....................
+----------------------------------------------------------------------
+Ran 20 tests in 0.575s
+
+OK
+python3 -m unittest discover -s scripts -p 'test_evidence.py'
+..............
+----------------------------------------------------------------------
+Ran 14 tests in 0.293s
+
+OK
+python3 -m unittest discover -s scripts -p 'test_validate_restart_plan.py'
+..................
+----------------------------------------------------------------------
+Ran 18 tests in 0.005s
+
+OK
+python3 -m unittest discover -s scripts -p 'test_verify_repo.py'
+.....
+----------------------------------------------------------------------
+Ran 5 tests in 0.005s
+
+OK
+python3 -m unittest discover -s tools/baseline -p 'test_*.py'
+negative: ['/home/tux/nsealr/.restart-tools/goal/r00/tools/baseline/.work/final/.tools/python/bin/python3', '-c', 'import sys; print("out"); print("diagnostic", file=sys.stderr); sys.exit(7)']
+diagnostic
+out
+.download file:///tmp/tmp9jdcnre_/source
+...nsealr-init: ['git', 'init', '/tmp/tmpsfbunntu/nsealr']
+Initialized empty Git repository in /tmp/tmpsfbunntu/nsealr/.git/
+nsealr-fetch: ['git', 'fetch', '--no-tags', '/tmp/tmpsfbunntu/source', '016af4cfba3c06d701b6755b27a88b4f850b2ce1']
+From /tmp/tmpsfbunntu/source
+ * branch            016af4cfba3c06d701b6755b27a88b4f850b2ce1 -> FETCH_HEAD
+nsealr-checkout: ['git', 'checkout', '--detach', 'FETCH_HEAD']
+HEAD is now at 016af4c public
+.nsealr-init: ['git', 'init', '/tmp/tmpt32rbf_s/nsealr']
+Initialized empty Git repository in /tmp/tmpt32rbf_s/nsealr/.git/
+nsealr-fetch: ['git', 'fetch', '--no-tags', '/tmp/tmpt32rbf_s/source', '0000000000000000000000000000000000000000']
+fatal: git upload-pack: not our ref 0000000000000000000000000000000000000000
+fatal: remote error: upload-pack: not our ref 0000000000000000000000000000000000000000
+...
+----------------------------------------------------------------------
+Ran 8 tests in 0.166s
+
+OK

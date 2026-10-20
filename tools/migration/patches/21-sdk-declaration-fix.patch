@@ -1,0 +1,13 @@
+diff --git a/tools/bridge/bundle_sdk.mjs b/tools/bridge/bundle_sdk.mjs
+index 44201e3742f66d04f777686e58ba549a2f3ad1f8..cb2fc867ffd1b91cd327e82132bd602b9175d3a9 100644
+--- a/tools/bridge/bundle_sdk.mjs
++++ b/tools/bridge/bundle_sdk.mjs
+@@ -40,7 +40,7 @@ function declarations(directory) {
+ }
+ for (const path of declarations(out)) {
+   const source = readFileSync(path, "utf8");
+-  const relocated = source.replace(/(["'])@nsealr\/([a-z-]+)([^"']*)\1/gu, (_match, quote, name, subpath) => {
++  const relocated = source.replace(/(["'])@nsealr\/([a-z0-9-]+)([^"']*)\1/gu, (_match, quote, name, subpath) => {
+     assert(owned.includes(name), `forbidden declaration dependency ${name}`);
+     const manifest = sourceManifest(`@nsealr/${name}`);
+     const entry = manifest.exports[subpath ? `.${subpath}` : "."];

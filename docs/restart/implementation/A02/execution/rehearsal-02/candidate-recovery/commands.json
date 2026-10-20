@@ -1,0 +1,81 @@
+[
+  {
+    "command": [
+      "git",
+      "-C",
+      "/home/tux/nsealr/.restart-tools/goal/a02/tools/migration/.runtime/rehearsal-02/initial-import/repository",
+      "bundle",
+      "create",
+      "/home/tux/nsealr/.restart-tools/goal/a02/tools/migration/.runtime/rehearsal-02/candidate-recovery/candidate.bundle",
+      "refs/heads/rehearsal"
+    ],
+    "cwd": "/home/tux/nsealr/.restart-tools/goal/a02/tools/migration/.runtime/rehearsal-02/candidate-recovery",
+    "ended_utc": "2026-10-18T20:05:45.656050+00:00",
+    "environment_sha256": "1329698bcbfb60c23fcd6617913d050c6e9d7e2f46108c49c01bb2a19625fae5",
+    "exit_code": 0,
+    "explicit_environment_sha256": "25d37a2bfff48a55e6c2d6e2d1459dc61b61c25edcaba09692262aa63e03d094",
+    "label": "candidate-bundle",
+    "log": "00-candidate-bundle.log",
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "started_utc": "2026-10-18T20:05:45.433748+00:00"
+  },
+  {
+    "command": [
+      "git",
+      "-C",
+      "/home/tux/nsealr/.restart-tools/goal/a02/tools/migration/.runtime/rehearsal-02/initial-import/repository",
+      "bundle",
+      "verify",
+      "/home/tux/nsealr/.restart-tools/goal/a02/tools/migration/.runtime/rehearsal-02/candidate-recovery/candidate.bundle"
+    ],
+    "cwd": "/home/tux/nsealr/.restart-tools/goal/a02/tools/migration/.runtime/rehearsal-02/candidate-recovery",
+    "ended_utc": "2026-10-18T20:05:45.657153+00:00",
+    "environment_sha256": "1329698bcbfb60c23fcd6617913d050c6e9d7e2f46108c49c01bb2a19625fae5",
+    "exit_code": 0,
+    "explicit_environment_sha256": "25d37a2bfff48a55e6c2d6e2d1459dc61b61c25edcaba09692262aa63e03d094",
+    "label": "bundle-verify",
+    "log": "01-bundle-verify.log",
+    "sha256": "98927f12998d032e9c7bd622288e8b7c7d1b3d1b29c03bb9de6e8e8074b5009d",
+    "started_utc": "2026-10-18T20:05:45.656191+00:00"
+  },
+  {
+    "command": [
+      "git",
+      "-c",
+      "init.templateDir=",
+      "init",
+      "--initial-branch=rehearsal",
+      "/home/tux/nsealr/.restart-tools/goal/a02/tools/migration/.runtime/rehearsal-02/candidate-recovery/restored"
+    ],
+    "cwd": "/home/tux/nsealr/.restart-tools/goal/a02/tools/migration/.runtime/rehearsal-02/candidate-recovery",
+    "ended_utc": "2026-10-18T20:05:45.658797+00:00",
+    "environment_sha256": "1329698bcbfb60c23fcd6617913d050c6e9d7e2f46108c49c01bb2a19625fae5",
+    "exit_code": 0,
+    "explicit_environment_sha256": "25d37a2bfff48a55e6c2d6e2d1459dc61b61c25edcaba09692262aa63e03d094",
+    "label": "empty-restore",
+    "log": "02-empty-restore.log",
+    "sha256": "132d451c628c5795d2e843fd943c9acfc7bb9cad35ccfbfbdb2607a89e8c81fd",
+    "started_utc": "2026-10-18T20:05:45.657289+00:00"
+  },
+  {
+    "command": [
+      "git",
+      "-C",
+      "/home/tux/nsealr/.restart-tools/goal/a02/tools/migration/.runtime/rehearsal-02/candidate-recovery/restored",
+      "fetch",
+      "--no-tags",
+      "--no-write-fetch-head",
+      "/home/tux/nsealr/.restart-tools/goal/a02/tools/migration/.runtime/rehearsal-02/candidate-recovery/candidate.bundle",
+      "refs/heads/rehearsal:refs/heads/rehearsal"
+    ],
+    "cwd": "/home/tux/nsealr/.restart-tools/goal/a02/tools/migration/.runtime/rehearsal-02/candidate-recovery",
+    "ended_utc": "2026-10-18T20:05:45.659952+00:00",
+    "environment_sha256": "1329698bcbfb60c23fcd6617913d050c6e9d7e2f46108c49c01bb2a19625fae5",
+    "exit_code": 128,
+    "explicit_environment_sha256": "25d37a2bfff48a55e6c2d6e2d1459dc61b61c25edcaba09692262aa63e03d094",
+    "label": "restore-selected-branch",
+    "log": "03-restore-selected-branch.log",
+    "sha256": "61876d877bff93c55c2ac19a951ca611b0e6f10ff4ffeb53d0e101c3cb79880e",
+    "started_utc": "2026-10-18T20:05:45.658914+00:00"
+  }
+]

@@ -1,0 +1,58 @@
+diff --git a/ci/project_core_fixtures.py b/ci/project_core_fixtures.py
+index 4befbdcc5c3ac39f16acdb04dbf7703f3b838cbd..e7d826bbdd4cca15ddaf2e3ee7f464b71ea10082 100644
+--- a/ci/project_core_fixtures.py
++++ b/ci/project_core_fixtures.py
+@@ -28,7 +28,7 @@ def project(output):
+     functions=[]
+     for name,source in [('basic','kind-1-basic'),('tagged','kind-1-tags')]:
+         review=load('vectors/review-screens/'+source+'.json')['screen_review']
+-        functions.append('pub fn '+name+'_trusted_review_request() -> TrustedReviewRequest { trusted_review_request('+quote(review['request_id'])+','+quote(review['approval_digest'])+',&'+pages(review['pages'])+') }')
++        functions.append('pub fn '+name+'_trusted_review_request() -> TrustedReviewRequest { trusted_review_request('+quote(review['request_id'])+','+name.upper()+'_REVIEW_SCREEN_APPROVAL_DIGEST,&'+pages(review['pages'])+') }')
+     first=load('vectors/review-detail-pages/kind-1-control-escapes-t-display-s3.json')
+     functions.append('pub fn t_display_s3_review_limits() -> crate::review::display::ReviewDisplayLimits { crate::review::display::'+limits(first['limits'])+' }')
+     (output/'review-fixtures.rs').write_text('\n'.join(functions))
+diff --git a/crates/nsealr-core/src/review/qr.rs b/crates/nsealr-core/src/review/qr.rs
+index f7de55ffe6322cec390411177161507993a4af35..1b2313116c494bcc4c2ec8af7ecfdb432ac4a05b 100644
+--- a/crates/nsealr-core/src/review/qr.rs
++++ b/crates/nsealr-core/src/review/qr.rs
+@@ -1416,10 +1416,7 @@ mod tests {
+         assert!(joined_lines_for_title(pages.as_slice(), "Tags").contains("U+00E8"));
+         assert!(joined_lines_for_title(pages.as_slice(), "Tags").contains("U+1F600"));
+     }
+-    /// The four READ-ONLY specs/vectors/review-detail-pages fixtures as Rust
+-    /// literals (request JSON from the source specs/vectors/review vector,
+-    /// digest/limits/pages copied verbatim from the fixture file).
+-
++    // Extract every authoritative detail-page fixture without computing expectations.
+     include!(concat!(env!("OUT_DIR"), "/detail-fixtures.rs"));
+ 
+     // Beyond the named C++ cases: error messages/Display, the limits
+diff --git a/crates/nsealr-core/src/review/test_fixtures.rs b/crates/nsealr-core/src/review/test_fixtures.rs
+index ee84982881d4397b767b53b77ca13b724f7a5d0a..89f657a5fd62a42388af1a369383afcac31ec473 100644
+--- a/crates/nsealr-core/src/review/test_fixtures.rs
++++ b/crates/nsealr-core/src/review/test_fixtures.rs
+@@ -74,23 +74,9 @@ pub fn trusted_review_request(
+     }
+ }
+ 
+-/// The basic trusted-review request; request id, digest and all four pages
+-/// copied from the READ-ONLY specs/vectors/review-screens/kind-1-basic.json
+-/// (`screen_review`). The C++ consumed it as
+-/// `test_vectors::basic_trusted_review_request()`.
+-
++// Basic/tagged pages, digests and limits are extracted from the single artifact.
+ include!(concat!(env!("OUT_DIR"), "/review-fixtures.rs"));
+ 
+-/// The tagged trusted-review request; request id, digest and all four pages
+-/// copied from the READ-ONLY specs/vectors/review-screens/kind-1-tags.json
+-/// (`screen_review`). The C++ consumed it as
+-/// `test_vectors::tagged_trusted_review_request()`.
+-
+-/// The shared t-display-s3 review display limits. Mirrors the C++
+-/// `nsealr_esp32::t_display_s3_review_limits()`
+-/// (`esp32_s3_usb_signer/main/t_display_s3_raster.cpp`), which matches the
+-/// `limits` field of every READ-ONLY specs/vectors/review-detail-pages fixture.
+-
+ /// True if any frame body line contains `needle` (the C++ `lines_contain`).
+ pub fn frame_lines_contain(frame: &ReviewDisplayFrame, needle: &str) -> bool {
+     frame

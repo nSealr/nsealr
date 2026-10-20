@@ -1,0 +1,82 @@
+[
+  {
+    "command": [
+      "/home/tux/nsealr/.restart-tools/goal/r00/tools/baseline/.work/final/.tools/python/bin/python3",
+      "-B",
+      "tools/migration/contract_integrity_stage.py",
+      "--target",
+      "/home/tux/nsealr/.restart-tools/goal/a02/tools/migration/.runtime/rehearsal-01/repository",
+      "--author-repo",
+      "/home/tux/nsealr/.restart-tools/goal/a02",
+      "--output",
+      "/home/tux/nsealr/.restart-tools/goal/a02/tools/migration/.runtime/rehearsal-01/contract-integrity"
+    ],
+    "cwd": "/home/tux/nsealr/.restart-tools/goal/a02",
+    "ended_utc": "2026-10-18T19:16:35.318112+00:00",
+    "environment_sha256": "1329698bcbfb60c23fcd6617913d050c6e9d7e2f46108c49c01bb2a19625fae5",
+    "exit_code": 0,
+    "label": "artifact-integrity-transform",
+    "log": "00-artifact-integrity-transform.log",
+    "sha256": "523be3918ff58687820764c58437f883ab0ba55961eaa98633cf4dd2ebd73cd8",
+    "started_utc": "2026-10-18T19:16:35.212794+00:00"
+  },
+  {
+    "command": [
+      "python3",
+      "scripts/verify_contracts.py"
+    ],
+    "cwd": "/home/tux/nsealr/.restart-tools/goal/a02/tools/migration/.runtime/rehearsal-01/repository",
+    "ended_utc": "2026-10-18T19:16:36.546098+00:00",
+    "environment_sha256": "1329698bcbfb60c23fcd6617913d050c6e9d7e2f46108c49c01bb2a19625fae5",
+    "exit_code": 0,
+    "explicit_environment_sha256": "9e15f43432ba4de657cce71c4eae5027ac35347472dede62679a944ff2919d72",
+    "label": "artifact-provenance",
+    "log": "01-artifact-provenance.log",
+    "sha256": "5a55b9297524922045d80ae336a70c873b1def09daa7e38fe09572142b4911e3",
+    "started_utc": "2026-10-18T19:16:35.318251+00:00"
+  },
+  {
+    "command": [
+      "python3",
+      "-m",
+      "unittest",
+      "discover",
+      "-s",
+      "scripts",
+      "-p",
+      "test_contracts.py",
+      "-v"
+    ],
+    "cwd": "/home/tux/nsealr/.restart-tools/goal/a02/tools/migration/.runtime/rehearsal-01/repository",
+    "ended_utc": "2026-10-18T19:16:37.394537+00:00",
+    "environment_sha256": "1329698bcbfb60c23fcd6617913d050c6e9d7e2f46108c49c01bb2a19625fae5",
+    "exit_code": 0,
+    "explicit_environment_sha256": "9e15f43432ba4de657cce71c4eae5027ac35347472dede62679a944ff2919d72",
+    "label": "artifact-tamper-controls",
+    "log": "02-artifact-tamper-controls.log",
+    "sha256": "06b6803b91a188a3ad8d2a1fa80e5d5d3c9eee4e6993187f81f562e98f00cf9a",
+    "started_utc": "2026-10-18T19:16:36.546313+00:00"
+  },
+  {
+    "command": [
+      "python3",
+      "-m",
+      "unittest",
+      "discover",
+      "-s",
+      "tests/integration",
+      "-p",
+      "test_fixture_snapshots.py",
+      "-v"
+    ],
+    "cwd": "/home/tux/nsealr/.restart-tools/goal/a02/tools/migration/.runtime/rehearsal-01/repository",
+    "ended_utc": "2026-10-18T19:16:37.512514+00:00",
+    "environment_sha256": "1329698bcbfb60c23fcd6617913d050c6e9d7e2f46108c49c01bb2a19625fae5",
+    "exit_code": 0,
+    "explicit_environment_sha256": "9e15f43432ba4de657cce71c4eae5027ac35347472dede62679a944ff2919d72",
+    "label": "retained-consumer-scopes",
+    "log": "03-retained-consumer-scopes.log",
+    "sha256": "f460aee6deaaa20e2e9db1998905450e254c937cb7377dfb2bd3c1ff22f87e27",
+    "started_utc": "2026-10-18T19:16:37.394690+00:00"
+  }
+]

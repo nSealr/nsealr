@@ -1,0 +1,89 @@
+[
+  {
+    "command": [
+      "/home/tux/nsealr/.restart-tools/goal/r00/tools/baseline/.work/final/.tools/python/bin/python3",
+      "-B",
+      "tools/migration/artifact_stage.py",
+      "--target",
+      "/home/tux/nsealr/.restart-tools/goal/a02/tools/migration/.runtime/rehearsal-01/repository",
+      "--author-repo",
+      "/home/tux/nsealr/.restart-tools/goal/a02",
+      "--output",
+      "/home/tux/nsealr/.restart-tools/goal/a02/tools/migration/.runtime/rehearsal-01/contracts-transform"
+    ],
+    "cwd": "/home/tux/nsealr/.restart-tools/goal/a02",
+    "ended_utc": "2026-10-18T19:08:41.357336+00:00",
+    "environment_sha256": "1329698bcbfb60c23fcd6617913d050c6e9d7e2f46108c49c01bb2a19625fae5",
+    "exit_code": 0,
+    "label": "contract-artifact-transform",
+    "log": "00-contract-artifact-transform.log",
+    "sha256": "35c499379173d06e7e7eddb628da81564993a9c9f9ffc6e7b8f524373ba9efe9",
+    "started_utc": "2026-10-18T19:08:41.098204+00:00"
+  },
+  {
+    "command": [
+      "python3",
+      "scripts/verify_contracts.py"
+    ],
+    "cwd": "/home/tux/nsealr/.restart-tools/goal/a02/tools/migration/.runtime/rehearsal-01/repository",
+    "ended_utc": "2026-10-18T19:08:41.733081+00:00",
+    "environment_sha256": "1329698bcbfb60c23fcd6617913d050c6e9d7e2f46108c49c01bb2a19625fae5",
+    "exit_code": 0,
+    "explicit_environment_sha256": "6590873e2886900ffbca4488d53f92473b47a2323777416f503e526df6250cab",
+    "label": "contract-artifact-provenance",
+    "log": "01-contract-artifact-provenance.log",
+    "sha256": "0321ca554ed896384240bfb983a5d5f3ff538c7d76cc2b5a0c7f4cc3bf9d2773",
+    "started_utc": "2026-10-18T19:08:41.357519+00:00"
+  },
+  {
+    "command": [
+      "python3",
+      "-m",
+      "venv",
+      ".venv"
+    ],
+    "cwd": "/home/tux/nsealr/.restart-tools/goal/a02/tools/migration/.runtime/rehearsal-01/repository/protocols/contracts/v1",
+    "ended_utc": "2026-10-18T19:08:43.151578+00:00",
+    "environment_sha256": "1329698bcbfb60c23fcd6617913d050c6e9d7e2f46108c49c01bb2a19625fae5",
+    "exit_code": 0,
+    "explicit_environment_sha256": "6590873e2886900ffbca4488d53f92473b47a2323777416f503e526df6250cab",
+    "label": "contract-python-venv",
+    "log": "02-contract-python-venv.log",
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "started_utc": "2026-10-18T19:08:41.733299+00:00"
+  },
+  {
+    "command": [
+      ".venv/bin/python",
+      "-m",
+      "pip",
+      "install",
+      "-r",
+      "requirements.txt"
+    ],
+    "cwd": "/home/tux/nsealr/.restart-tools/goal/a02/tools/migration/.runtime/rehearsal-01/repository/protocols/contracts/v1",
+    "ended_utc": "2026-10-18T19:08:43.694271+00:00",
+    "environment_sha256": "1329698bcbfb60c23fcd6617913d050c6e9d7e2f46108c49c01bb2a19625fae5",
+    "exit_code": 0,
+    "explicit_environment_sha256": "6590873e2886900ffbca4488d53f92473b47a2323777416f503e526df6250cab",
+    "label": "contract-python-dependencies",
+    "log": "03-contract-python-dependencies.log",
+    "sha256": "b57c89bdcbced8ae312b5f0208f917388d0deb3cfed3e5a915bb432cbc6d4963",
+    "started_utc": "2026-10-18T19:08:43.151745+00:00"
+  },
+  {
+    "command": [
+      ".venv/bin/python",
+      "scripts/verify_specs.py"
+    ],
+    "cwd": "/home/tux/nsealr/.restart-tools/goal/a02/tools/migration/.runtime/rehearsal-01/repository/protocols/contracts/v1",
+    "ended_utc": "2026-10-18T19:08:43.794405+00:00",
+    "environment_sha256": "1329698bcbfb60c23fcd6617913d050c6e9d7e2f46108c49c01bb2a19625fae5",
+    "exit_code": 1,
+    "explicit_environment_sha256": "6590873e2886900ffbca4488d53f92473b47a2323777416f503e526df6250cab",
+    "label": "independent-contract-verifier",
+    "log": "04-independent-contract-verifier.log",
+    "sha256": "cea4ea2c482afcb60be5ad53525f23f8081eb68bbbe422e53151693ff53cd32f",
+    "started_utc": "2026-10-18T19:08:43.694515+00:00"
+  }
+]

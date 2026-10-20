@@ -1,0 +1,1386 @@
+diff --git a/tests/__init__.py b/tests/__init__.py
+new file mode 100644
+index 0000000000000000000000000000000000000000..69efe0b2356e147deed8e1073706021cbab4efc2
+--- /dev/null
++++ b/tests/__init__.py
+@@ -0,0 +1 @@
++"""Selected integration helpers; optional resources are invoked explicitly."""
+diff --git a/tests/integration/__init__.py b/tests/integration/__init__.py
+new file mode 100644
+index 0000000000000000000000000000000000000000..69efe0b2356e147deed8e1073706021cbab4efc2
+--- /dev/null
++++ b/tests/integration/__init__.py
+@@ -0,0 +1 @@
++"""Selected integration helpers; optional resources are invoked explicitly."""
+diff --git a/tests/integration/browser_integration_support.py b/tests/integration/browser_integration_support.py
+index 1def1032804765bddeee5419266c4ac9c5c3c23f..2c2167980cf3e79c3f696a5fae02c85d09533335 100644
+--- a/tests/integration/browser_integration_support.py
++++ b/tests/integration/browser_integration_support.py
+@@ -10,7 +10,7 @@ from pathlib import Path
+ from typing import Any
+ 
+ try:
+-    from scripts.integration_support import env_for_command, pinned_command, run_command
++    from tests.integration.integration_support import env_for_command, pinned_command, run_command
+ except ModuleNotFoundError:  # pragma: no cover - direct script execution
+     from integration_support import env_for_command, pinned_command, run_command
+ 
+diff --git a/tests/integration/external/__init__.py b/tests/integration/external/__init__.py
+new file mode 100644
+index 0000000000000000000000000000000000000000..69efe0b2356e147deed8e1073706021cbab4efc2
+--- /dev/null
++++ b/tests/integration/external/__init__.py
+@@ -0,0 +1 @@
++"""Selected integration helpers; optional resources are invoked explicitly."""
+diff --git a/tests/integration/external/integration_hardware_validation.py b/tests/integration/external/integration_hardware_validation.py
+index 89815785c4cd577e64b4ba50de4a4b967df28f68..a802ec69bd89b12ca6ac4aa2663a6490a51215c1 100644
+--- a/tests/integration/external/integration_hardware_validation.py
++++ b/tests/integration/external/integration_hardware_validation.py
+@@ -12,16 +12,16 @@ reference requirements.
+ from __future__ import annotations
+ 
+ import json
++import os
+ import subprocess
+ from dataclasses import dataclass
+ from pathlib import Path
+ 
+ 
+-ROOT = Path(__file__).resolve().parents[1]
+-ORG = ROOT.parent
+-HARDWARE = ORG / "hardware"
+-ESP32_WAVESHARE_BOARD_PROFILE = ORG / "firmware/boards/waveshare_esp32_s3_touch_lcd_3_5b_c.json"
+-HARDWARE_ESP32_QR_REQUIREMENTS = ORG / "hardware/pcb/reference-esp32-s3-qr-signer/requirements.json"
++ROOT = Path(__file__).resolve().parents[3]
++HARDWARE = Path(os.environ["NSEALR_HARDWARE_ROOT"]).resolve() if "NSEALR_HARDWARE_ROOT" in os.environ else None
++ESP32_WAVESHARE_BOARD_PROFILE = ROOT / "boards/waveshare_esp32_s3_touch_lcd_3_5b_c.json"
++HARDWARE_ESP32_QR_REQUIREMENTS = HARDWARE / "pcb/reference-esp32-s3-qr-signer/requirements.json" if HARDWARE else None
+ 
+ 
+ @dataclass(frozen=True)
+@@ -65,8 +65,8 @@ def validate_esp32_qr_secondary_target_alignment(board_profile_path: Path, requi
+ 
+ 
+ def main() -> int:
+-    if not HARDWARE.exists():
+-        raise FileNotFoundError(f"missing sibling repository: {HARDWARE}")
++    if HARDWARE is None or not HARDWARE.exists():
++        raise FileNotFoundError(f"explicit NSEALR_HARDWARE_ROOT is required for external hardware regression: {HARDWARE}")
+     if not ESP32_WAVESHARE_BOARD_PROFILE.exists():
+         raise FileNotFoundError(f"missing sibling ESP32 Waveshare board profile: {ESP32_WAVESHARE_BOARD_PROFILE}")
+     if not HARDWARE_ESP32_QR_REQUIREMENTS.exists():
+@@ -75,7 +75,7 @@ def main() -> int:
+     command = build_hardware_validation_command(hardware=HARDWARE)
+     run(command.argv, command.cwd)
+     validate_esp32_qr_secondary_target_alignment(ESP32_WAVESHARE_BOARD_PROFILE, HARDWARE_ESP32_QR_REQUIREMENTS)
+-    print("nSealr cross-repo hardware validation passed")
++    print("nSealr integrated hardware validation passed")
+     return 0
+ 
+ 
+diff --git a/tests/integration/integration_browser_extension_origin_approval_control.py b/tests/integration/integration_browser_extension_origin_approval_control.py
+index aac85188d0cc4716a19168d2f3cc18a0d2c5368b..5fa8d86a58f559ad5928357e5b5600907ae78b21 100644
+--- a/tests/integration/integration_browser_extension_origin_approval_control.py
++++ b/tests/integration/integration_browser_extension_origin_approval_control.py
+@@ -7,21 +7,20 @@ import tempfile
+ from pathlib import Path
+ 
+ try:
+-    from scripts.integration_support import build_pnpm_workspace, install_pnpm_workspace, run_command
++    from tests.integration.integration_support import build_pnpm_workspace, install_pnpm_workspace, run_command
+ except ModuleNotFoundError:  # pragma: no cover - direct script execution
+     from integration_support import build_pnpm_workspace, install_pnpm_workspace, run_command
+ 
+ 
+-ROOT = Path(__file__).resolve().parents[1]
+-ORG = ROOT.parent
+-COMPANION = ORG / "companion"
++ROOT = Path(__file__).resolve().parents[2]
++COMPANION = ROOT
+ 
+ 
+ def _node_script() -> str:
+-    background = (COMPANION / "apps/browser-extension/src/background.ts").as_uri()
+-    runtime_message = (COMPANION / "apps/browser-extension/src/runtime-message.ts").as_uri()
+-    pending_control = (COMPANION / "apps/browser-extension/src/pending-control.ts").as_uri()
+-    storage = (COMPANION / "apps/browser-extension/src/origin-permission-storage.ts").as_uri()
++    background = (COMPANION / "apps/bridge/browser-extension/src/background.ts").as_uri()
++    runtime_message = (COMPANION / "apps/bridge/browser-extension/src/runtime-message.ts").as_uri()
++    pending_control = (COMPANION / "apps/bridge/browser-extension/src/pending-control.ts").as_uri()
++    storage = (COMPANION / "apps/bridge/browser-extension/src/origin-permission-storage.ts").as_uri()
+     return f"""
+ const {{ createBrowserExtensionBackgroundController }} = await import({background!r});
+ const {{ handleBrowserExtensionRuntimeMessage }} = await import({runtime_message!r});
+@@ -144,7 +143,7 @@ if (nativeMessages.length !== 0) {{
+ 
+ def main() -> int:
+     if not COMPANION.exists():
+-        raise FileNotFoundError(f"missing sibling repository: {COMPANION}")
++        raise FileNotFoundError(f"missing product component: {COMPANION}")
+ 
+     install_pnpm_workspace(COMPANION)
+     build_pnpm_workspace(COMPANION)
+@@ -161,7 +160,7 @@ def main() -> int:
+             str(script_path),
+         ], COMPANION)
+ 
+-    print("nSealr cross-repo browser-extension origin-approval control verification passed")
++    print("nSealr integrated browser-extension origin-approval control verification passed")
+     return 0
+ 
+ 
+diff --git a/tests/integration/integration_browser_extension_origin_permission_cli.py b/tests/integration/integration_browser_extension_origin_permission_cli.py
+index 92fc33ab139d74d9146620ff5a29a26e4df64fbe..20730aa00850f8d2ec86b55f77daba99c79794b5 100644
+--- a/tests/integration/integration_browser_extension_origin_permission_cli.py
++++ b/tests/integration/integration_browser_extension_origin_permission_cli.py
+@@ -10,7 +10,7 @@ from pathlib import Path
+ from typing import Any
+ 
+ try:
+-    from scripts.browser_integration_support import (
++    from tests.integration.browser_integration_support import (
+         build_browser_origin_permission_approval_command,
+         build_browser_origin_permission_store_create_command,
+         build_browser_origin_permission_store_revoke_command,
+@@ -18,7 +18,7 @@ try:
+         run_failure_without_stdout,
+         run_json_command,
+     )
+-    from scripts.integration_support import build_pnpm_workspace, install_pnpm_workspace, run_command
++    from tests.integration.integration_support import build_pnpm_workspace, install_pnpm_workspace, run_command
+ except ModuleNotFoundError:  # pragma: no cover - direct script execution
+     from browser_integration_support import (
+         build_browser_origin_permission_approval_command,
+@@ -31,9 +31,8 @@ except ModuleNotFoundError:  # pragma: no cover - direct script execution
+     from integration_support import build_pnpm_workspace, install_pnpm_workspace, run_command
+ 
+ 
+-ROOT = Path(__file__).resolve().parents[1]
+-ORG = ROOT.parent
+-COMPANION = ORG / "companion"
++ROOT = Path(__file__).resolve().parents[2]
++COMPANION = ROOT
+ ORIGIN_PERMISSION_REVIEW_FORMAT = "nsealr-browser-origin-permission-review-v0"
+ ORIGIN_PERMISSION_APPROVAL_FORMAT = "nsealr-browser-origin-permission-approval-v0"
+ ORIGIN_PERMISSION_STORE_FORMAT = "nsealr-browser-origin-permission-store-v0"
+@@ -128,7 +127,7 @@ def assert_store(store: dict[str, Any], *, updated_at: int, approvals: list[dict
+ 
+ def main() -> int:
+     if not COMPANION.exists():
+-        raise FileNotFoundError(f"missing sibling repository: {COMPANION}")
++        raise FileNotFoundError(f"missing product component: {COMPANION}")
+ 
+     install_pnpm_workspace(COMPANION)
+     build_pnpm_workspace(COMPANION)
+@@ -196,7 +195,7 @@ def main() -> int:
+         if "backward" not in backwards.stderr:
+             raise AssertionError("origin-permission backward-timestamp rejection message drifted")
+ 
+-    print("nSealr cross-repo browser-extension origin-permission CLI verification passed")
++    print("nSealr integrated browser-extension origin-permission CLI verification passed")
+     return 0
+ 
+ 
+diff --git a/tests/integration/integration_browser_extension_origin_review_control.py b/tests/integration/integration_browser_extension_origin_review_control.py
+index f29338ff260a4ffc6be077a04488db7e82d24ce1..b4e480524f4d94773ee7ff9fc0c8051cd077d6de 100644
+--- a/tests/integration/integration_browser_extension_origin_review_control.py
++++ b/tests/integration/integration_browser_extension_origin_review_control.py
+@@ -7,20 +7,19 @@ import tempfile
+ from pathlib import Path
+ 
+ try:
+-    from scripts.integration_support import build_pnpm_workspace, install_pnpm_workspace, run_command
++    from tests.integration.integration_support import build_pnpm_workspace, install_pnpm_workspace, run_command
+ except ModuleNotFoundError:  # pragma: no cover - direct script execution
+     from integration_support import build_pnpm_workspace, install_pnpm_workspace, run_command
+ 
+ 
+-ROOT = Path(__file__).resolve().parents[1]
+-ORG = ROOT.parent
+-COMPANION = ORG / "companion"
++ROOT = Path(__file__).resolve().parents[2]
++COMPANION = ROOT
+ 
+ 
+ def _node_script() -> str:
+-    background = (COMPANION / "apps/browser-extension/src/background.ts").as_uri()
+-    runtime_message = (COMPANION / "apps/browser-extension/src/runtime-message.ts").as_uri()
+-    pending_control = (COMPANION / "apps/browser-extension/src/pending-control.ts").as_uri()
++    background = (COMPANION / "apps/bridge/browser-extension/src/background.ts").as_uri()
++    runtime_message = (COMPANION / "apps/bridge/browser-extension/src/runtime-message.ts").as_uri()
++    pending_control = (COMPANION / "apps/bridge/browser-extension/src/pending-control.ts").as_uri()
+     client = (COMPANION / "packages/client/src/index.ts").as_uri()
+     return f"""
+ const {{ createBrowserExtensionBackgroundController }} = await import({background!r});
+@@ -104,7 +103,7 @@ if (nativeMessages.length !== 1) {{
+ 
+ def main() -> int:
+     if not COMPANION.exists():
+-        raise FileNotFoundError(f"missing sibling repository: {COMPANION}")
++        raise FileNotFoundError(f"missing product component: {COMPANION}")
+ 
+     install_pnpm_workspace(COMPANION)
+     build_pnpm_workspace(COMPANION)
+@@ -121,7 +120,7 @@ def main() -> int:
+             str(script_path),
+         ], COMPANION)
+ 
+-    print("nSealr cross-repo browser-extension origin-review control verification passed")
++    print("nSealr integrated browser-extension origin-review control verification passed")
+     return 0
+ 
+ 
+diff --git a/tests/integration/integration_browser_extension_package_build.py b/tests/integration/integration_browser_extension_package_build.py
+index f0a3e42c09f0aa8a7a668977dfbcca21d0a65877..caa69c55ded3d64fb6d3f1fa6d676a7c34e9590f 100644
+--- a/tests/integration/integration_browser_extension_package_build.py
++++ b/tests/integration/integration_browser_extension_package_build.py
+@@ -12,7 +12,7 @@ from pathlib import Path
+ from typing import Any
+ 
+ try:
+-    from scripts.browser_integration_support import (
++    from tests.integration.browser_integration_support import (
+         build_browser_origin_permission_approval_command,
+         build_browser_origin_permission_store_create_command,
+         build_browser_origin_permission_store_upsert_command,
+@@ -24,7 +24,7 @@ try:
+         run_failure_without_stdout,
+         run_json_command,
+     )
+-    from scripts.integration_support import build_pnpm_workspace, install_pnpm_workspace, run_command
++    from tests.integration.integration_support import build_pnpm_workspace, install_pnpm_workspace, run_command
+ except ModuleNotFoundError:  # pragma: no cover - direct script execution
+     from browser_integration_support import (
+         build_browser_origin_permission_approval_command,
+@@ -41,9 +41,8 @@ except ModuleNotFoundError:  # pragma: no cover - direct script execution
+     from integration_support import build_pnpm_workspace, install_pnpm_workspace, run_command
+ 
+ 
+-ROOT = Path(__file__).resolve().parents[1]
+-ORG = ROOT.parent
+-COMPANION = ORG / "companion"
++ROOT = Path(__file__).resolve().parents[2]
++COMPANION = ROOT
+ PACKAGE_BUILD_FORMAT = "nsealr-browser-extension-package-build-v0"
+ PACKAGE_DIGEST_FORMAT = "nsealr-browser-extension-package-digest-v0"
+ PACKAGE_PLAN_FORMAT = "nsealr-browser-extension-package-plan-v0"
+@@ -796,7 +795,7 @@ def assert_origin_permission_store(store: dict[str, Any], approval: dict[str, An
+ 
+ def main() -> int:
+     if not COMPANION.exists():
+-        raise FileNotFoundError(f"missing sibling repository: {COMPANION}")
++        raise FileNotFoundError(f"missing product component: {COMPANION}")
+ 
+     install_pnpm_workspace(COMPANION)
+     build_pnpm_workspace(COMPANION)
+@@ -1100,7 +1099,7 @@ def main() -> int:
+         if source_tree_out_dir.exists():
+             raise AssertionError("browser package-build wrote output inside the companion source tree")
+ 
+-    print("nSealr cross-repo browser-extension package-build verification passed")
++    print("nSealr integrated browser-extension package-build verification passed")
+     return 0
+ 
+ 
+diff --git a/tests/integration/integration_browser_extension_package_plan.py b/tests/integration/integration_browser_extension_package_plan.py
+index fee67209e8520b726916432afd7f7d9b460f1cd5..aa679ad6a618735b7fd87b1b007f9c139e95d14e 100644
+--- a/tests/integration/integration_browser_extension_package_plan.py
++++ b/tests/integration/integration_browser_extension_package_plan.py
+@@ -10,13 +10,13 @@ from pathlib import Path
+ from typing import Any
+ 
+ try:
+-    from scripts.browser_integration_support import (
++    from tests.integration.browser_integration_support import (
+         CommandPlan,
+         build_browser_package_plan_command,
+         run_failure_without_stdout,
+         run_json_command,
+     )
+-    from scripts.integration_support import build_pnpm_workspace, install_pnpm_workspace, run_command
++    from tests.integration.integration_support import build_pnpm_workspace, install_pnpm_workspace, run_command
+ except ModuleNotFoundError:  # pragma: no cover - direct script execution
+     from browser_integration_support import (
+         CommandPlan,
+@@ -27,9 +27,8 @@ except ModuleNotFoundError:  # pragma: no cover - direct script execution
+     from integration_support import build_pnpm_workspace, install_pnpm_workspace, run_command
+ 
+ 
+-ROOT = Path(__file__).resolve().parents[1]
+-ORG = ROOT.parent
+-COMPANION = ORG / "companion"
++ROOT = Path(__file__).resolve().parents[2]
++COMPANION = ROOT
+ PACKAGE_PLAN_FORMAT = "nsealr-browser-extension-package-plan-v0"
+ PACKAGE_PLAN_DIGEST_FORMAT = "nsealr-browser-extension-package-plan-digest-v0"
+ PACKAGE_PLAN_REVIEW_FORMAT = "nsealr-browser-extension-package-plan-review-v0"
+@@ -159,22 +158,22 @@ def assert_package_plan(
+     expected_entrypoints = [
+         {
+             "role": "background_service_worker",
+-            "source": "apps/browser-extension/src/nsealr-background-entrypoint.ts",
++            "source": "apps/bridge/browser-extension/src/nsealr-background-entrypoint.ts",
+             "output": "nsealr-background-entrypoint.js",
+         },
+         {
+             "role": "content_script",
+-            "source": "apps/browser-extension/src/nsealr-content-script-entrypoint.ts",
++            "source": "apps/bridge/browser-extension/src/nsealr-content-script-entrypoint.ts",
+             "output": "nsealr-content-script-entrypoint.js",
+         },
+         {
+             "role": "page_script",
+-            "source": "apps/browser-extension/src/nsealr-page-script-entrypoint.ts",
++            "source": "apps/bridge/browser-extension/src/nsealr-page-script-entrypoint.ts",
+             "output": "nsealr-page-script-entrypoint.js",
+         },
+         {
+             "role": "action_popup",
+-            "source": "apps/browser-extension/src/nsealr-popup-entrypoint.ts",
++            "source": "apps/bridge/browser-extension/src/nsealr-popup-entrypoint.ts",
+             "output": "nsealr-popup-entrypoint.js",
+         },
+     ]
+@@ -215,7 +214,7 @@ def assert_package_plan_review(
+ 
+ def main() -> int:
+     if not COMPANION.exists():
+-        raise FileNotFoundError(f"missing sibling repository: {COMPANION}")
++        raise FileNotFoundError(f"missing product component: {COMPANION}")
+ 
+     install_pnpm_workspace(COMPANION)
+     build_pnpm_workspace(COMPANION)
+@@ -294,7 +293,7 @@ def main() -> int:
+     if "unsupported" not in write_result.stderr:
+         raise AssertionError("browser package-plan write-option rejection message drifted")
+ 
+-    print("nSealr cross-repo browser-extension package-plan CLI verification passed")
++    print("nSealr integrated browser-extension package-plan CLI verification passed")
+     return 0
+ 
+ 
+diff --git a/tests/integration/integration_browser_native_messaging_manifest.py b/tests/integration/integration_browser_native_messaging_manifest.py
+index 7a9454024585a21f232d36b78f9e0b681ffb5504..c932ae0d14df7c7b6b86c22139f706fb81d46d18 100644
+--- a/tests/integration/integration_browser_native_messaging_manifest.py
++++ b/tests/integration/integration_browser_native_messaging_manifest.py
+@@ -9,7 +9,7 @@ from pathlib import Path
+ from typing import Any
+ 
+ try:
+-    from scripts.browser_integration_support import (
++    from tests.integration.browser_integration_support import (
+         CommandPlan,
+         build_browser_package_plan_command,
+         build_native_host_install_approval_command,
+@@ -20,7 +20,7 @@ try:
+         run_json_command,
+         run_json_file_command,
+     )
+-    from scripts.integration_support import build_pnpm_workspace, install_pnpm_workspace, run_command
++    from tests.integration.integration_support import build_pnpm_workspace, install_pnpm_workspace, run_command
+ except ModuleNotFoundError:  # pragma: no cover - direct script execution
+     from browser_integration_support import (
+         CommandPlan,
+@@ -36,9 +36,8 @@ except ModuleNotFoundError:  # pragma: no cover - direct script execution
+     from integration_support import build_pnpm_workspace, install_pnpm_workspace, run_command
+ 
+ 
+-ROOT = Path(__file__).resolve().parents[1]
+-ORG = ROOT.parent
+-COMPANION = ORG / "companion"
++ROOT = Path(__file__).resolve().parents[2]
++COMPANION = ROOT
+ SERVICE_HOST_PATH = "/Applications/nSealr/nsealr-service"
+ CHROMIUM_NATIVE_MANIFEST_PATH = "/Users/example/Library/Application Support/Google/Chrome/NativeMessagingHosts/dev.nsealr.companion.json"
+ FIREFOX_NATIVE_MANIFEST_PATH = "/Users/example/Library/Application Support/Mozilla/NativeMessagingHosts/dev.nsealr.companion.json"
+@@ -211,7 +210,7 @@ def assert_native_host_install_execution(
+ 
+ def main() -> int:
+     if not COMPANION.exists():
+-        raise FileNotFoundError(f"missing sibling repository: {COMPANION}")
++        raise FileNotFoundError(f"missing product component: {COMPANION}")
+ 
+     install_pnpm_workspace(COMPANION)
+     build_pnpm_workspace(COMPANION)
+@@ -375,7 +374,7 @@ def main() -> int:
+         if "unknown option" not in install_result.stderr and "unsupported" not in install_result.stderr:
+             raise AssertionError("native-host install-option rejection message drifted")
+ 
+-    print("nSealr cross-repo browser native-messaging manifest verification passed")
++    print("nSealr integrated browser native-messaging manifest verification passed")
+     return 0
+ 
+ 
+diff --git a/tests/integration/integration_companion_fixtures.py b/tests/integration/integration_companion_fixtures.py
+index ecef20a42ba281f036116aafcf26dc0d9bf7d38a..a166051487879fc6b0552fd24ddf00c4864ba4c4 100644
+--- a/tests/integration/integration_companion_fixtures.py
++++ b/tests/integration/integration_companion_fixtures.py
+@@ -8,15 +8,14 @@ from dataclasses import dataclass
+ from pathlib import Path
+ 
+ try:
+-    from scripts.integration_support import build_pnpm_workspace, install_pnpm_workspace, run_command
++    from tests.integration.integration_support import build_pnpm_workspace, install_pnpm_workspace, run_command
+ except ModuleNotFoundError:  # pragma: no cover - direct script execution
+     from integration_support import build_pnpm_workspace, install_pnpm_workspace, run_command
+ 
+ 
+-ROOT = Path(__file__).resolve().parents[1]
+-ORG = ROOT.parent
+-COMPANION = ORG / "companion"
+-SPECS = ORG / "specs"
++ROOT = Path(__file__).resolve().parents[2]
++COMPANION = ROOT
++SPECS = ROOT / "protocols/contracts/v1"
+ 
+ 
+ @dataclass(frozen=True)
+@@ -85,7 +84,7 @@ def expected_fixture_output(specs: Path) -> str:
+ def main() -> int:
+     for repo in (COMPANION, SPECS):
+         if not repo.exists():
+-            raise FileNotFoundError(f"missing sibling repository: {repo}")
++            raise FileNotFoundError(f"missing product component: {repo}")
+ 
+     install_pnpm_workspace(COMPANION)
+     build_pnpm_workspace(COMPANION)
+@@ -96,7 +95,7 @@ def main() -> int:
+     if not output_lines or output_lines[-1] != expected_output:
+         raise AssertionError(f"unexpected fixture verification output: {result.stdout.strip()!r}")
+ 
+-    print("nSealr cross-repo companion fixture verification passed")
++    print("nSealr integrated companion fixture verification passed")
+     return 0
+ 
+ 
+diff --git a/tests/integration/integration_companion_nip46_cli.py b/tests/integration/integration_companion_nip46_cli.py
+index 93df128a77117ca203be0ac45625b55cc429e075..bd9533866dd660f182c606520eed48f780396309 100644
+--- a/tests/integration/integration_companion_nip46_cli.py
++++ b/tests/integration/integration_companion_nip46_cli.py
+@@ -11,15 +11,14 @@ from pathlib import Path
+ from typing import Any
+ 
+ try:
+-    from scripts.integration_support import build_pnpm_workspace, env_for_command, install_pnpm_workspace, run_command
++    from tests.integration.integration_support import build_pnpm_workspace, env_for_command, install_pnpm_workspace, run_command
+ except ModuleNotFoundError:  # pragma: no cover - direct script execution
+     from integration_support import build_pnpm_workspace, env_for_command, install_pnpm_workspace, run_command
+ 
+ 
+-ROOT = Path(__file__).resolve().parents[1]
+-ORG = ROOT.parent
+-COMPANION = ORG / "companion"
+-SPECS = ORG / "specs"
++ROOT = Path(__file__).resolve().parents[2]
++COMPANION = ROOT
++SPECS = ROOT / "protocols/contracts/v1"
+ SIGN_EVENT_KIND_1_POLICY = SPECS / "vectors/nip46-policy-files/sign-event-kind-1-approved.json"
+ 
+ 
+@@ -557,7 +556,7 @@ def assert_session_gate_rejected(command: CommandPlan, out_path: Path, expected_
+ def main() -> int:
+     for repo in (COMPANION, SPECS):
+         if not repo.exists():
+-            raise FileNotFoundError(f"missing sibling repository: {repo}")
++            raise FileNotFoundError(f"missing product component: {repo}")
+ 
+     install_pnpm_workspace(COMPANION)
+     build_pnpm_workspace(COMPANION)
+@@ -584,7 +583,7 @@ def main() -> int:
+         ("connect-review", connect, connect["bridge_decisions"][0], False),
+     ]
+ 
+-    with tempfile.TemporaryDirectory(prefix="nsealr-nip46-cross-repo-") as temp_dir:
++    with tempfile.TemporaryDirectory(prefix="nsealr-nip46-integrated-") as temp_dir:
+         temp = Path(temp_dir)
+         for name, vector, check, use_policy_file in checks:
+             message_path = temp / f"{name}-message.json"
+@@ -856,7 +855,7 @@ def main() -> int:
+             assert_connection_uri_rejected(command, descriptor_path, vector["expected_error"])
+ 
+     print(
+-        "nSealr cross-repo companion NIP-46 decision, connect-review, "
++        "nSealr integrated companion NIP-46 decision, connect-review, "
+         "connect-approval, auth-challenge review, auth-challenge rejection, "
+         "session checkpoint, session gate, connection URI, and connection "
+         "token response CLI verification passed"
+diff --git a/tests/integration/integration_companion_policy_cli.py b/tests/integration/integration_companion_policy_cli.py
+index 11ab73b110f9cc076cb265bc0db8b54aeb7e0ce7..4ad5152961a2d11223e35577fabe6780359b9cfc 100644
+--- a/tests/integration/integration_companion_policy_cli.py
++++ b/tests/integration/integration_companion_policy_cli.py
+@@ -11,15 +11,14 @@ from pathlib import Path
+ from typing import Any
+ 
+ try:
+-    from scripts.integration_support import build_pnpm_workspace, env_for_command, install_pnpm_workspace, run_command
++    from tests.integration.integration_support import build_pnpm_workspace, env_for_command, install_pnpm_workspace, run_command
+ except ModuleNotFoundError:  # pragma: no cover - direct script execution
+     from integration_support import build_pnpm_workspace, env_for_command, install_pnpm_workspace, run_command
+ 
+ 
+-ROOT = Path(__file__).resolve().parents[1]
+-ORG = ROOT.parent
+-COMPANION = ORG / "companion"
+-SPECS = ORG / "specs"
++ROOT = Path(__file__).resolve().parents[2]
++COMPANION = ROOT
++SPECS = ROOT / "protocols/contracts/v1"
+ 
+ 
+ @dataclass(frozen=True)
+@@ -128,7 +127,7 @@ def assert_rejected_without_output(command: CommandPlan, out_path: Path, expecte
+ def main() -> int:
+     for repo in (COMPANION, SPECS):
+         if not repo.exists():
+-            raise FileNotFoundError(f"missing sibling repository: {repo}")
++            raise FileNotFoundError(f"missing product component: {repo}")
+ 
+     vectors = policy_change_vectors(SPECS)
+     if not vectors:
+@@ -137,7 +136,7 @@ def main() -> int:
+     install_pnpm_workspace(COMPANION)
+     build_pnpm_workspace(COMPANION)
+ 
+-    with tempfile.TemporaryDirectory(prefix="nsealr-policy-cli-cross-repo-") as temp_dir:
++    with tempfile.TemporaryDirectory(prefix="nsealr-policy-cli-integrated-") as temp_dir:
+         temp = Path(temp_dir)
+         for vector in vectors:
+             proposal_path = temp / f"{vector['name']}-proposal.json"
+@@ -165,7 +164,7 @@ def main() -> int:
+         )
+         assert_rejected_without_output(command, invalid_review_path, "companion_authoritative must be false")
+ 
+-    print("nSealr cross-repo companion policy-change review CLI verification passed")
++    print("nSealr integrated companion policy-change review CLI verification passed")
+     return 0
+ 
+ 
+diff --git a/tests/integration/integration_companion_route_identity.py b/tests/integration/integration_companion_route_identity.py
+index 58c9f8b63a172117f5ed6b59334cd2663dffeac7..298250845246e7a5f6179d1dcc99de1c9ed9dbcc 100644
+--- a/tests/integration/integration_companion_route_identity.py
++++ b/tests/integration/integration_companion_route_identity.py
+@@ -9,15 +9,14 @@ from dataclasses import dataclass
+ from pathlib import Path
+ 
+ try:
+-    from scripts.integration_support import build_pnpm_workspace, install_pnpm_workspace, run_command
++    from tests.integration.integration_support import build_pnpm_workspace, install_pnpm_workspace, run_command
+ except ModuleNotFoundError:  # pragma: no cover - direct script execution
+     from integration_support import build_pnpm_workspace, install_pnpm_workspace, run_command
+ 
+ 
+-ROOT = Path(__file__).resolve().parents[1]
+-ORG = ROOT.parent
+-COMPANION = ORG / "companion"
+-SPECS = ORG / "specs"
++ROOT = Path(__file__).resolve().parents[2]
++COMPANION = ROOT
++SPECS = ROOT / "protocols/contracts/v1"
+ 
+ 
+ @dataclass(frozen=True)
+@@ -143,7 +142,7 @@ def write_route_identity_script(path: Path) -> None:
+ def main() -> int:
+     for repo in (COMPANION, SPECS):
+         if not repo.exists():
+-            raise FileNotFoundError(f"missing sibling repository: {repo}")
++            raise FileNotFoundError(f"missing product component: {repo}")
+ 
+     install_pnpm_workspace(COMPANION)
+     build_pnpm_workspace(COMPANION)
+@@ -163,7 +162,7 @@ def main() -> int:
+         except OSError:
+             pass
+ 
+-    print("nSealr cross-repo companion route identity smoke test passed")
++    print("nSealr integrated companion route identity smoke test passed")
+     return 0
+ 
+ 
+diff --git a/tests/integration/integration_companion_sdk_browser.py b/tests/integration/integration_companion_sdk_browser.py
+index 299218d7562f4cbb996fbf211bc7f11fc5c04dad..7d788675eb0fab28cbec101d94f7f6328cfe3d8d 100644
+--- a/tests/integration/integration_companion_sdk_browser.py
++++ b/tests/integration/integration_companion_sdk_browser.py
+@@ -9,14 +9,13 @@ from dataclasses import dataclass
+ from pathlib import Path
+ 
+ try:
+-    from scripts.integration_support import build_pnpm_workspace, install_pnpm_workspace, run_command
++    from tests.integration.integration_support import build_pnpm_workspace, install_pnpm_workspace, run_command
+ except ModuleNotFoundError:  # pragma: no cover - direct script execution
+     from integration_support import build_pnpm_workspace, install_pnpm_workspace, run_command
+ 
+ 
+-ROOT = Path(__file__).resolve().parents[1]
+-ORG = ROOT.parent
+-COMPANION = ORG / "companion"
++ROOT = Path(__file__).resolve().parents[2]
++COMPANION = ROOT
+ 
+ 
+ @dataclass(frozen=True)
+@@ -66,7 +65,7 @@ def write_sdk_browser_script(path: Path) -> None:
+ 
+ def main() -> int:
+     if not COMPANION.exists():
+-        raise FileNotFoundError(f"missing sibling repository: {COMPANION}")
++        raise FileNotFoundError(f"missing product component: {COMPANION}")
+ 
+     install_pnpm_workspace(COMPANION)
+     build_pnpm_workspace(COMPANION)
+@@ -88,7 +87,8 @@ def main() -> int:
+         except OSError:
+             pass
+ 
+-    print("nSealr cross-repo browser-safe SDK facade verification passed")
++    run_command(["pnpm", "pack-smoke"], COMPANION)
++    print("nSealr integrated browser-safe SDK facade and isolated packed SDK verification passed")
+     return 0
+ 
+ 
+diff --git a/tests/integration/integration_companion_serial_frame_cli.py b/tests/integration/integration_companion_serial_frame_cli.py
+index c6d3661cc354aa7dd2d1308c40c875861cdc7d4f..e1ecd8f573f2940507a86b936069d7e763428a2f 100644
+--- a/tests/integration/integration_companion_serial_frame_cli.py
++++ b/tests/integration/integration_companion_serial_frame_cli.py
+@@ -13,15 +13,14 @@ from pathlib import Path
+ from typing import Any
+ 
+ try:
+-    from scripts.integration_support import build_pnpm_workspace, install_pnpm_workspace, run_command
++    from tests.integration.integration_support import build_pnpm_workspace, install_pnpm_workspace, run_command
+ except ModuleNotFoundError:  # pragma: no cover - direct script execution
+     from integration_support import build_pnpm_workspace, install_pnpm_workspace, run_command
+ 
+ 
+-ROOT = Path(__file__).resolve().parents[1]
+-ORG = ROOT.parent
+-COMPANION = ORG / "companion"
+-SPECS = ORG / "specs"
++ROOT = Path(__file__).resolve().parents[2]
++COMPANION = ROOT
++SPECS = ROOT / "protocols/contracts/v1"
+ SERIAL_FRAME_PREFIX = "nsealr1f:"
+ 
+ 
+@@ -118,7 +117,7 @@ def decode_serial_frame(line: str) -> dict[str, Any]:
+ def main() -> int:
+     for repo in (COMPANION, SPECS):
+         if not repo.exists():
+-            raise FileNotFoundError(f"missing sibling repository: {repo}")
++            raise FileNotFoundError(f"missing product component: {repo}")
+ 
+     request_path = SPECS / "examples/request-get-capabilities.json"
+     response_path = SPECS / "examples/response-get-capabilities-esp32-s3-scaffold.json"
+@@ -199,7 +198,7 @@ def main() -> int:
+         if load_json(unwrapped_signing_status_response_path) != dynamic_status_response:
+             raise AssertionError("unwrapped signing-status response does not match expected response")
+ 
+-    print("nSealr cross-repo companion serial-frame CLI verification passed")
++    print("nSealr integrated companion serial-frame CLI verification passed")
+     return 0
+ 
+ 
+diff --git a/tests/integration/integration_companion_service_context.py b/tests/integration/integration_companion_service_context.py
+index 8315afbfc109afe0adc814215d53b5da7c7ae295..581f476353477f669adc0bc41c3a9d84673f5e50 100644
+--- a/tests/integration/integration_companion_service_context.py
++++ b/tests/integration/integration_companion_service_context.py
+@@ -9,15 +9,14 @@ import tempfile
+ from pathlib import Path
+ 
+ try:
+-    from scripts.integration_support import build_pnpm_workspace, env_for_command, install_pnpm_workspace, run_command
++    from tests.integration.integration_support import build_pnpm_workspace, env_for_command, install_pnpm_workspace, run_command
+ except ModuleNotFoundError:  # pragma: no cover - direct script execution
+     from integration_support import build_pnpm_workspace, env_for_command, install_pnpm_workspace, run_command
+ 
+ 
+-ROOT = Path(__file__).resolve().parents[1]
+-ORG = ROOT.parent
+-COMPANION = ORG / "companion"
+-SPECS = ORG / "specs"
++ROOT = Path(__file__).resolve().parents[2]
++COMPANION = ROOT
++SPECS = ROOT / "protocols/contracts/v1"
+ 
+ 
+ def service_command(*args: str) -> list[str]:
+@@ -141,7 +140,7 @@ def approve_route_driver_storage(
+ def main() -> int:
+     for repo in (COMPANION, SPECS):
+         if not repo.exists():
+-            raise FileNotFoundError(f"missing sibling repository: {repo}")
++            raise FileNotFoundError(f"missing product component: {repo}")
+ 
+     install_pnpm_workspace(COMPANION)
+     build_pnpm_workspace(COMPANION)
+@@ -191,7 +190,7 @@ def main() -> int:
+             )
+             if f"{option} is duplicated" not in duplicate.stderr:
+                 raise AssertionError(f"review-storage duplicate {option} error drifted")
+-            for unexpected in ("at Option.parseArg", "apps/cli/src/index.ts", "DEP0205"):
++            for unexpected in ("at Option.parseArg", "apps/bridge/cli/src/index.ts", "DEP0205"):
+                 if unexpected in duplicate.stderr:
+                     raise AssertionError(f"review-storage duplicate {option} leaked CLI diagnostic noise")
+             if duplicate_review_path.exists():
+diff --git a/tests/integration/integration_feature_matrix.py b/tests/integration/integration_feature_matrix.py
+index c574f4101254ec76bff24486aeb20b9d30f09c7c..3087bd776d020523f3235fb82a1543db220129b9 100644
+--- a/tests/integration/integration_feature_matrix.py
++++ b/tests/integration/integration_feature_matrix.py
+@@ -1,5 +1,5 @@
+ #!/usr/bin/env python3
+-"""Validate the shared signer feature matrix against lab taxonomy docs."""
++"""Validate the shared signer feature matrix against current component ownership."""
+ 
+ from __future__ import annotations
+ 
+@@ -8,36 +8,15 @@ import re
+ from pathlib import Path
+ 
+ 
+-ROOT = Path(__file__).resolve().parents[1]
+-ORG = ROOT.parent
+-FEATURE_MATRIX = ORG / "specs/vectors/features/signer-feature-matrix-v0.json"
+-LAB_DOCS = (
+-    ROOT / "docs/historical-feature-contract-01.md",
+-    ROOT / "docs/historical-feature-contract-02.md",
+-    ROOT / "docs/historical-feature-contract-03.md",
+-)
+-
++ROOT = Path(__file__).resolve().parents[2]
++FEATURE_MATRIX = ROOT / "protocols/contracts/v1/vectors/features/signer-feature-matrix-v0.json"
++# Existing conformance component identifiers; these are requirements and software
++# fixtures, not proof that a board/driver/production custody profile is qualified.
+ EXPECTED_SIGNER_FAMILIES = {
+-    "raspberry_qr_vault": {
+-        "label": "nSealr Vault — Pi edition",
+-        "repository": "raspberry",
+-    },
+-    "esp32_qr_vault": {
+-        "label": "nSealr Vault — ESP32 edition",
+-        "repository": "firmware",
+-    },
+-    "esp32_usb_nip46": {
+-        "label": "nSealr Key",
+-        "repository": "firmware",
+-    },
+-    "smartcard": {
+-        "label": "nSealr Card",
+-        "repository": "smartcard",
+-    },
+-    "custom_hardware_wallet": {
+-        "label": "nSealr One",
+-        "repository": "hardware",
+-    },
++    "raspberry_qr_vault": {"label": "nSealr Vault — Pi edition", "repository": "nsealr"},
++    "esp32_qr_vault": {"label": "nSealr Vault — ESP32 edition", "repository": "nsealr"},
++    "esp32_usb_nip46": {"label": "nSealr Key", "repository": "nsealr"},
++    "custom_hardware_wallet": {"label": "nSealr One", "repository": "nsealr"},
+ }
+ 
+ 
+@@ -78,25 +57,11 @@ def validate_feature_matrix(path: Path, matrix: dict) -> None:
+             raise ValueError(f"{path}: features missing for {solution_id}")
+ 
+ 
+-def validate_feature_matrix_docs(paths: tuple[Path, ...] | list[Path] = LAB_DOCS) -> None:
+-    required_patterns = (
+-        (r"Feature\s+Conformance", "Feature Conformance"),
+-        (r"vectors/features/signer-feature-matrix-v0\.json", "vectors/features/signer-feature-matrix-v0.json"),
+-        (r"same\s+behavior", "same behavior"),
+-    )
+-    for path in paths:
+-        text = path.read_text(encoding="utf-8")
+-        missing = [label for pattern, label in required_patterns if not re.search(pattern, text)]
+-        if missing:
+-            raise ValueError(f"{path}: missing feature matrix contract reference: {', '.join(missing)}")
+-
+-
+ def main() -> int:
+     if not FEATURE_MATRIX.exists():
+-        raise FileNotFoundError(f"missing sibling specs feature matrix: {FEATURE_MATRIX}")
++        raise FileNotFoundError(f"missing authoritative feature matrix: {FEATURE_MATRIX}")
+     validate_feature_matrix(FEATURE_MATRIX, load_feature_matrix(FEATURE_MATRIX))
+-    validate_feature_matrix_docs()
+-    print("nSealr cross-repo feature matrix validation passed")
++    print("nSealr integrated feature matrix validation passed")
+     return 0
+ 
+ 
+diff --git a/tests/integration/integration_raspberry_hardware_probe.py b/tests/integration/integration_raspberry_hardware_probe.py
+index 8e705687e669aadfbafcd1c95e51143c985d46f1..9a4b2871d5f26472f2f72afce28f2224498c2c46 100644
+--- a/tests/integration/integration_raspberry_hardware_probe.py
++++ b/tests/integration/integration_raspberry_hardware_probe.py
+@@ -9,14 +9,13 @@ from dataclasses import dataclass
+ from pathlib import Path
+ 
+ try:
+-    from scripts.integration_support import run_command
++    from tests.integration.integration_support import run_command
+ except ModuleNotFoundError:  # pragma: no cover - direct script execution
+     from integration_support import run_command
+ 
+ 
+-ROOT = Path(__file__).resolve().parents[1]
+-ORG = ROOT.parent
+-RASPBERRY = ORG / "raspberry"
++ROOT = Path(__file__).resolve().parents[2]
++RASPBERRY = ROOT / "apps/pi"
+ 
+ 
+ @dataclass(frozen=True)
+@@ -56,7 +55,7 @@ def assert_safe_probe_report(path: Path) -> None:
+ 
+ def main() -> int:
+     if not RASPBERRY.exists():
+-        raise FileNotFoundError(f"missing sibling repository: {RASPBERRY}")
++        raise FileNotFoundError(f"missing product component: {RASPBERRY}")
+ 
+     run_command(["make", "setup"], RASPBERRY)
+     with tempfile.TemporaryDirectory(prefix="nsealr-raspberry-probe-") as temp_dir:
+@@ -65,7 +64,7 @@ def main() -> int:
+         run_command(command.argv, command.cwd)
+         assert_safe_probe_report(probe_path)
+ 
+-    print("nSealr cross-repo Raspberry hardware-probe smoke passed")
++    print("nSealr integrated Raspberry hardware-probe smoke passed")
+     return 0
+ 
+ 
+diff --git a/tests/integration/integration_support.py b/tests/integration/integration_support.py
+index 24be1950d1dfecd6ff357f4229ed5740ab436fa2..af4862843e1e12748db2ab3bd77102940877a69f 100644
+--- a/tests/integration/integration_support.py
++++ b/tests/integration/integration_support.py
+@@ -1,5 +1,5 @@
+ #!/usr/bin/env python3
+-"""Shared helpers for cross-repo integration scripts."""
++"""Shared helpers for integrated integration scripts."""
+ 
+ from __future__ import annotations
+ 
+@@ -12,7 +12,7 @@ from typing import Mapping
+ 
+ DEP0205_SUPPRESSION = "--disable-warning=DEP0205"
+ PNPM_VERSION = "10.33.4"
+-PINNED_PNPM_COMMAND = ["npm", "exec", "--yes", f"--package=pnpm@{PNPM_VERSION}", "--", "pnpm"]
++PINNED_PNPM_COMMAND = ["pnpm"]
+ 
+ 
+ def _node_options_with_dep0205_suppressed(existing: str | None) -> str:
+@@ -24,6 +24,9 @@ def _node_options_with_dep0205_suppressed(existing: str | None) -> str:
+ 
+ def pinned_command(command: list[str]) -> list[str]:
+     if command and command[0] == "pnpm":
++        version = subprocess.run(["pnpm", "--version"], check=True, capture_output=True, text=True)
++        if version.stdout.strip() != PNPM_VERSION:
++            raise RuntimeError("pnpm version differs from the pinned product toolchain")
+         return [*PINNED_PNPM_COMMAND, *command[1:]]
+     return command
+ 
+diff --git a/tests/integration/integration_vault_companion.py b/tests/integration/integration_vault_companion.py
+index 461ac2f0285ffebd839aaad61a7167428292a2c9..8394b2e6abf832630381ab74fcdc637b5462e4e8 100644
+--- a/tests/integration/integration_vault_companion.py
++++ b/tests/integration/integration_vault_companion.py
+@@ -1,5 +1,5 @@
+ #!/usr/bin/env python3
+-"""Run the first cross-repo QR smoke test."""
++"""Run the first integrated QR smoke test."""
+ 
+ from __future__ import annotations
+ 
+@@ -9,16 +9,15 @@ from dataclasses import dataclass
+ from pathlib import Path
+ 
+ try:
+-    from scripts.integration_support import build_pnpm_workspace, install_pnpm_workspace, run_command
++    from tests.integration.integration_support import build_pnpm_workspace, install_pnpm_workspace, run_command
+ except ModuleNotFoundError:  # pragma: no cover - direct script execution
+     from integration_support import build_pnpm_workspace, install_pnpm_workspace, run_command
+ 
+ 
+-ROOT = Path(__file__).resolve().parents[1]
+-ORG = ROOT.parent
+-COMPANION = ORG / "companion"
+-RASPBERRY = ORG / "raspberry"
+-SPECS = ORG / "specs"
++ROOT = Path(__file__).resolve().parents[2]
++COMPANION = ROOT
++RASPBERRY = ROOT / "apps/pi"
++SPECS = ROOT / "protocols/contracts/v1"
+ 
+ 
+ @dataclass(frozen=True)
+@@ -534,7 +533,7 @@ def assert_session_backup_result_file(path: Path, vector: dict[str, object], for
+ def main() -> int:
+     for repo in (COMPANION, RASPBERRY, SPECS):
+         if not repo.exists():
+-            raise FileNotFoundError(f"missing sibling repository: {repo}")
++            raise FileNotFoundError(f"missing product component: {repo}")
+ 
+     install_pnpm_workspace(COMPANION)
+     build_pnpm_workspace(COMPANION)
+@@ -557,7 +556,7 @@ def main() -> int:
+         (SPECS / "vectors/session-source-backups/nsec-test-key-1-backup.json").read_text(encoding="utf-8")
+     )
+ 
+-    with tempfile.TemporaryDirectory(prefix="nsealr-cross-repo-") as temp_dir:
++    with tempfile.TemporaryDirectory(prefix="nsealr-integrated-") as temp_dir:
+         temp = Path(temp_dir)
+         template_path = temp / "template.json"
+         request_path = temp / "request.qr"
+@@ -831,7 +830,7 @@ def main() -> int:
+             COMPANION,
+         )
+ 
+-    print("nSealr cross-repo Raspberry QR flow/companion smoke test passed")
++    print("nSealr integrated Raspberry QR flow/companion smoke test passed")
+     return 0
+ 
+ 
+diff --git a/tests/integration/optional/__init__.py b/tests/integration/optional/__init__.py
+new file mode 100644
+index 0000000000000000000000000000000000000000..69efe0b2356e147deed8e1073706021cbab4efc2
+--- /dev/null
++++ b/tests/integration/optional/__init__.py
+@@ -0,0 +1 @@
++"""Selected integration helpers; optional resources are invoked explicitly."""
+diff --git a/tests/integration/optional/browser_extension_chromium_smoke.py b/tests/integration/optional/browser_extension_chromium_smoke.py
+index 6845ea5baae6ac23e91c438488551c0891d6ae90..4e756bd6995f2d82dba83adb643983e2ba88caba 100644
+--- a/tests/integration/optional/browser_extension_chromium_smoke.py
++++ b/tests/integration/optional/browser_extension_chromium_smoke.py
+@@ -19,7 +19,7 @@ from pathlib import Path
+ from typing import Any
+ 
+ try:
+-    from scripts.browser_integration_support import (
++    from tests.integration.browser_integration_support import (
+         build_browser_package_build_command,
+         build_browser_package_plan_command,
+         build_browser_package_verify_command,
+@@ -27,7 +27,7 @@ try:
+         build_browser_route_config_review_command,
+         run_json_command,
+     )
+-    from scripts.integration_support import build_pnpm_workspace, install_pnpm_workspace
++    from tests.integration.integration_support import build_pnpm_workspace, install_pnpm_workspace
+ except ModuleNotFoundError:  # pragma: no cover - direct script execution
+     from browser_integration_support import (
+         build_browser_package_build_command,
+@@ -40,9 +40,8 @@ except ModuleNotFoundError:  # pragma: no cover - direct script execution
+     from integration_support import build_pnpm_workspace, install_pnpm_workspace
+ 
+ 
+-ROOT = Path(__file__).resolve().parents[1]
+-ORG = ROOT.parent
+-COMPANION = ORG / "companion"
++ROOT = Path(__file__).resolve().parents[3]
++COMPANION = ROOT
+ SMOKE_FORMAT = "nsealr-browser-extension-chromium-smoke-v0"
+ LOCAL_PAIRING_DIGEST = "a" * 64
+ ROUTE_ACCOUNT_ID = "esp32-usb-slot-0"
+diff --git a/tests/integration/optional/hardware_companion_serial_smoke.py b/tests/integration/optional/hardware_companion_serial_smoke.py
+index 02d4d68d2ba1978cb50daf4f8a0f0738c42df46f..d43a348c3eb8e3ba41e296ddaa625d7c471bc9a2 100644
+--- a/tests/integration/optional/hardware_companion_serial_smoke.py
++++ b/tests/integration/optional/hardware_companion_serial_smoke.py
+@@ -19,15 +19,14 @@ from pathlib import Path
+ from typing import Any, Optional
+ 
+ try:
+-    from scripts.integration_support import PINNED_PNPM_COMMAND, run_command
++    from tests.integration.integration_support import PINNED_PNPM_COMMAND, run_command
+ except ModuleNotFoundError:  # pragma: no cover - direct script execution
+     from integration_support import PINNED_PNPM_COMMAND, run_command
+ 
+ 
+-ROOT = Path(__file__).resolve().parents[1]
+-ORG = ROOT.parent
+-COMPANION = ORG / "companion"
+-SPECS = ORG / "specs"
++ROOT = Path(__file__).resolve().parents[3]
++COMPANION = ROOT
++SPECS = ROOT / "protocols/contracts/v1"
+ PREFIX = "nsealr1f:"
+ 
+ 
+@@ -211,9 +210,9 @@ def run_smoke(
+     exchange_mode: str = "companion-serial-line",
+ ) -> dict[str, Any]:
+     if not COMPANION.exists():
+-        raise FileNotFoundError(f"missing sibling repository: {COMPANION}")
++        raise FileNotFoundError(f"missing product component: {COMPANION}")
+     if method == "sign-event-disabled" and not SPECS.exists():
+-        raise FileNotFoundError(f"missing sibling repository: {SPECS}")
++        raise FileNotFoundError(f"missing product component: {SPECS}")
+ 
+     pnpm = pnpm_command()
+     subprocess.run([*pnpm, "install"], cwd=COMPANION, check=True)
+diff --git a/tests/integration/test_hardware_companion_serial_smoke.py b/tests/integration/test_hardware_companion_serial_smoke.py
+index 002e2fd6e9bea986c387f2f7c3a96e390d07d2e2..577b854683e2f422064aa7727b0f430517a59e8c 100644
+--- a/tests/integration/test_hardware_companion_serial_smoke.py
++++ b/tests/integration/test_hardware_companion_serial_smoke.py
+@@ -3,7 +3,7 @@ from __future__ import annotations
+ import unittest
+ from pathlib import Path
+ 
+-from scripts.hardware_companion_serial_smoke import (
++from tests.integration.optional.hardware_companion_serial_smoke import (
+     assert_expected_response,
+     build_request_command,
+     build_serial_line_exchange_command,
+diff --git a/tests/integration/test_integration_browser_extension_package_build.py b/tests/integration/test_integration_browser_extension_package_build.py
+index 36bc7994b46be89c79310a50f8f9556d7e4076d2..75b388de25d3c85b6cecbf0636ea827cadc536e2 100644
+--- a/tests/integration/test_integration_browser_extension_package_build.py
++++ b/tests/integration/test_integration_browser_extension_package_build.py
+@@ -6,7 +6,7 @@ import unittest
+ from hashlib import sha256
+ from pathlib import Path
+ 
+-from scripts.integration_browser_extension_package_build import (
++from tests.integration.integration_browser_extension_package_build import (
+     CONTENT_SCRIPT_MATCH,
+     EXPECTED_FILES,
+     EXTENSION_ID,
+@@ -18,9 +18,9 @@ from scripts.integration_browser_extension_package_build import (
+     ROUTE_TYPE,
+     assert_package_build,
+ )
+-from scripts.browser_integration_support import build_browser_package_build_command
+-from scripts.browser_integration_support import build_browser_route_config_approval_command
+-from scripts.browser_integration_support import build_browser_route_config_review_command
++from tests.integration.browser_integration_support import build_browser_package_build_command
++from tests.integration.browser_integration_support import build_browser_route_config_approval_command
++from tests.integration.browser_integration_support import build_browser_route_config_review_command
+ 
+ 
+ def _sha256_text(source: str) -> str:
+diff --git a/tests/integration/test_integration_browser_extension_package_plan.py b/tests/integration/test_integration_browser_extension_package_plan.py
+index 43a7a2b8df7ec1a12e37b9633f7c80ad2eb18589..f01fd93c256dfe74bbe92ee832733d146c8fea02 100644
+--- a/tests/integration/test_integration_browser_extension_package_plan.py
++++ b/tests/integration/test_integration_browser_extension_package_plan.py
+@@ -3,7 +3,7 @@ from __future__ import annotations
+ import unittest
+ from pathlib import Path
+ 
+-from scripts.integration_browser_extension_package_plan import (
++from tests.integration.integration_browser_extension_package_plan import (
+     CONTENT_SCRIPT_MATCH,
+     FIREFOX_EXTENSION_ID,
+     NATIVE_HOST_NAME,
+@@ -118,22 +118,22 @@ class IntegrationBrowserExtensionPackagePlanTests(unittest.TestCase):
+             "entrypoints": [
+                 {
+                     "role": "background_service_worker",
+-                    "source": "apps/browser-extension/src/nsealr-background-entrypoint.ts",
++                    "source": "apps/bridge/browser-extension/src/nsealr-background-entrypoint.ts",
+                     "output": "nsealr-background-entrypoint.js",
+                 },
+                 {
+                     "role": "content_script",
+-                    "source": "apps/browser-extension/src/nsealr-content-script-entrypoint.ts",
++                    "source": "apps/bridge/browser-extension/src/nsealr-content-script-entrypoint.ts",
+                     "output": "nsealr-content-script-entrypoint.js",
+                 },
+                 {
+                     "role": "page_script",
+-                    "source": "apps/browser-extension/src/nsealr-page-script-entrypoint.ts",
++                    "source": "apps/bridge/browser-extension/src/nsealr-page-script-entrypoint.ts",
+                     "output": "nsealr-page-script-entrypoint.js",
+                 },
+                 {
+                     "role": "action_popup",
+-                    "source": "apps/browser-extension/src/nsealr-popup-entrypoint.ts",
++                    "source": "apps/bridge/browser-extension/src/nsealr-popup-entrypoint.ts",
+                     "output": "nsealr-popup-entrypoint.js",
+                 },
+             ],
+@@ -183,22 +183,22 @@ class IntegrationBrowserExtensionPackagePlanTests(unittest.TestCase):
+             "entrypoints": [
+                 {
+                     "role": "background_service_worker",
+-                    "source": "apps/browser-extension/src/nsealr-background-entrypoint.ts",
++                    "source": "apps/bridge/browser-extension/src/nsealr-background-entrypoint.ts",
+                     "output": "nsealr-background-entrypoint.js",
+                 },
+                 {
+                     "role": "content_script",
+-                    "source": "apps/browser-extension/src/nsealr-content-script-entrypoint.ts",
++                    "source": "apps/bridge/browser-extension/src/nsealr-content-script-entrypoint.ts",
+                     "output": "nsealr-content-script-entrypoint.js",
+                 },
+                 {
+                     "role": "page_script",
+-                    "source": "apps/browser-extension/src/nsealr-page-script-entrypoint.ts",
++                    "source": "apps/bridge/browser-extension/src/nsealr-page-script-entrypoint.ts",
+                     "output": "nsealr-page-script-entrypoint.js",
+                 },
+                 {
+                     "role": "action_popup",
+-                    "source": "apps/browser-extension/src/nsealr-popup-entrypoint.ts",
++                    "source": "apps/bridge/browser-extension/src/nsealr-popup-entrypoint.ts",
+                     "output": "nsealr-popup-entrypoint.js",
+                 },
+             ],
+@@ -244,22 +244,22 @@ class IntegrationBrowserExtensionPackagePlanTests(unittest.TestCase):
+             "entrypoints": [
+                 {
+                     "role": "background_service_worker",
+-                    "source": "apps/browser-extension/src/nsealr-background-entrypoint.ts",
++                    "source": "apps/bridge/browser-extension/src/nsealr-background-entrypoint.ts",
+                     "output": "nsealr-background-entrypoint.js",
+                 },
+                 {
+                     "role": "content_script",
+-                    "source": "apps/browser-extension/src/nsealr-content-script-entrypoint.ts",
++                    "source": "apps/bridge/browser-extension/src/nsealr-content-script-entrypoint.ts",
+                     "output": "nsealr-content-script-entrypoint.js",
+                 },
+                 {
+                     "role": "page_script",
+-                    "source": "apps/browser-extension/src/nsealr-page-script-entrypoint.ts",
++                    "source": "apps/bridge/browser-extension/src/nsealr-page-script-entrypoint.ts",
+                     "output": "nsealr-page-script-entrypoint.js",
+                 },
+                 {
+                     "role": "action_popup",
+-                    "source": "apps/browser-extension/src/nsealr-popup-entrypoint.ts",
++                    "source": "apps/bridge/browser-extension/src/nsealr-popup-entrypoint.ts",
+                     "output": "nsealr-popup-entrypoint.js",
+                 },
+             ],
+@@ -315,22 +315,22 @@ class IntegrationBrowserExtensionPackagePlanTests(unittest.TestCase):
+             "entrypoints": [
+                 {
+                     "role": "background_service_worker",
+-                    "source": "apps/browser-extension/src/nsealr-background-entrypoint.ts",
++                    "source": "apps/bridge/browser-extension/src/nsealr-background-entrypoint.ts",
+                     "output": "nsealr-background-entrypoint.js",
+                 },
+                 {
+                     "role": "content_script",
+-                    "source": "apps/browser-extension/src/nsealr-content-script-entrypoint.ts",
++                    "source": "apps/bridge/browser-extension/src/nsealr-content-script-entrypoint.ts",
+                     "output": "nsealr-content-script-entrypoint.js",
+                 },
+                 {
+                     "role": "page_script",
+-                    "source": "apps/browser-extension/src/nsealr-page-script-entrypoint.ts",
++                    "source": "apps/bridge/browser-extension/src/nsealr-page-script-entrypoint.ts",
+                     "output": "nsealr-page-script-entrypoint.js",
+                 },
+                 {
+                     "role": "action_popup",
+-                    "source": "apps/browser-extension/src/nsealr-popup-entrypoint.ts",
++                    "source": "apps/bridge/browser-extension/src/nsealr-popup-entrypoint.ts",
+                     "output": "nsealr-popup-entrypoint.js",
+                 },
+             ],
+diff --git a/tests/integration/test_integration_browser_native_messaging_manifest.py b/tests/integration/test_integration_browser_native_messaging_manifest.py
+index 69aa063c0550821624c93d7d6d883d2c3a3ef19e..e31c8eaca046e3d3d725711594eb724f8ac7bd67 100644
+--- a/tests/integration/test_integration_browser_native_messaging_manifest.py
++++ b/tests/integration/test_integration_browser_native_messaging_manifest.py
+@@ -3,7 +3,7 @@ from __future__ import annotations
+ import unittest
+ from pathlib import Path
+ 
+-from scripts.integration_browser_native_messaging_manifest import (
++from tests.integration.integration_browser_native_messaging_manifest import (
+     CHROMIUM_EXTENSION_ID,
+     FIREFOX_EXTENSION_ID,
+     SERVICE_HOST_PATH,
+diff --git a/tests/integration/test_integration_companion_fixtures.py b/tests/integration/test_integration_companion_fixtures.py
+index 09d8d0a11f22ee6f36cccb21c17b885937b20cb7..53a5e5c173e4aee837452b1aa40f32ff67eca5c0 100644
+--- a/tests/integration/test_integration_companion_fixtures.py
++++ b/tests/integration/test_integration_companion_fixtures.py
+@@ -4,7 +4,7 @@ import unittest
+ from pathlib import Path
+ from tempfile import TemporaryDirectory
+ 
+-from scripts.integration_companion_fixtures import (
++from tests.integration.integration_companion_fixtures import (
+     build_fixture_verify_command,
+     expected_fixture_output,
+ )
+diff --git a/tests/integration/test_integration_companion_nip46_cli.py b/tests/integration/test_integration_companion_nip46_cli.py
+index fccc669903b0c66583c62a7bb69daa836eaa4703..a405d42e835f791b04309fa8ba5b6985504853da 100644
+--- a/tests/integration/test_integration_companion_nip46_cli.py
++++ b/tests/integration/test_integration_companion_nip46_cli.py
+@@ -5,7 +5,7 @@ import tempfile
+ import unittest
+ from pathlib import Path
+ 
+-from scripts.integration_companion_nip46_cli import (
++from tests.integration.integration_companion_nip46_cli import (
+     build_nip46_auth_challenge_approval_command,
+     build_nip46_auth_challenge_review_command,
+     build_nip46_connect_approval_command,
+diff --git a/tests/integration/test_integration_companion_policy_cli.py b/tests/integration/test_integration_companion_policy_cli.py
+index 0127548704ed5094fa565df58d3e3973f8451de1..664e7e85cb9f1459e33b186e0fdb3a7b63e9b736 100644
+--- a/tests/integration/test_integration_companion_policy_cli.py
++++ b/tests/integration/test_integration_companion_policy_cli.py
+@@ -4,7 +4,7 @@ import tempfile
+ import unittest
+ from pathlib import Path
+ 
+-from scripts.integration_companion_policy_cli import build_policy_review_command, policy_change_vectors
++from tests.integration.integration_companion_policy_cli import build_policy_review_command, policy_change_vectors
+ 
+ 
+ class IntegrationCompanionPolicyCliTests(unittest.TestCase):
+diff --git a/tests/integration/test_integration_companion_sdk_browser.py b/tests/integration/test_integration_companion_sdk_browser.py
+index e27ed1b59f2e79265635a84f7d67e8b3d226c428..3c243a05e732f8f322f7972403751043745ed3b1 100644
+--- a/tests/integration/test_integration_companion_sdk_browser.py
++++ b/tests/integration/test_integration_companion_sdk_browser.py
+@@ -4,7 +4,7 @@ import unittest
+ from pathlib import Path
+ from tempfile import TemporaryDirectory
+ 
+-from scripts.integration_companion_sdk_browser import (
++from tests.integration.integration_companion_sdk_browser import (
+     build_browser_runtime_imports_command,
+     build_sdk_browser_command,
+     write_sdk_browser_script,
+diff --git a/tests/integration/test_integration_companion_serial_frame_cli.py b/tests/integration/test_integration_companion_serial_frame_cli.py
+index 62e00e1a639c3a7c11960da4c1d010a42c27bfeb..4cb72789dd7e14ef4193c52ea7af7d3f9596c5a3 100644
+--- a/tests/integration/test_integration_companion_serial_frame_cli.py
++++ b/tests/integration/test_integration_companion_serial_frame_cli.py
+@@ -3,7 +3,7 @@ from __future__ import annotations
+ import unittest
+ from pathlib import Path
+ 
+-from scripts.integration_companion_serial_frame_cli import (
++from tests.integration.integration_companion_serial_frame_cli import (
+     build_create_request_command,
+     build_unwrap_response_command,
+     build_wrap_request_command,
+diff --git a/tests/integration/test_integration_feature_matrix.py b/tests/integration/test_integration_feature_matrix.py
+index 28cd6b63cb29455f81a2d023565602e9d2902852..e25795516bda28d5376b2bdbf790e350d07a3583 100644
+--- a/tests/integration/test_integration_feature_matrix.py
++++ b/tests/integration/test_integration_feature_matrix.py
+@@ -2,10 +2,9 @@ import unittest
+ from pathlib import Path
+ from tempfile import TemporaryDirectory
+ 
+-from scripts.integration_feature_matrix import (
++from tests.integration.integration_feature_matrix import (
+     EXPECTED_SIGNER_FAMILIES,
+     validate_feature_matrix,
+-    validate_feature_matrix_docs,
+ )
+ 
+ 
+@@ -49,33 +48,6 @@ class FeatureMatrixIntegrationTests(unittest.TestCase):
+         with self.assertRaisesRegex(ValueError, "repository owner drift"):
+             validate_feature_matrix(Path("matrix.json"), matrix)
+ 
+-    def test_lab_docs_must_reference_feature_matrix_contract(self) -> None:
+-        with TemporaryDirectory() as tmp:
+-            root = Path(tmp)
+-            docs = [
+-                root / "docs/historical-feature-contract-01.md",
+-                root / "docs/historical-feature-contract-02.md",
+-                root / "docs/historical-feature-contract-03.md",
+-            ]
+-            for doc in docs:
+-                doc.parent.mkdir(parents=True, exist_ok=True)
+-                doc.write_text(
+-                    "Feature\nConformance v0\n"
+-                    "vectors/features/signer-feature-matrix-v0.json\n"
+-                    "same behavior when present\n",
+-                    encoding="utf-8",
+-                )
+-
+-            validate_feature_matrix_docs(docs)
+-
+-    def test_lab_docs_reject_missing_contract_reference(self) -> None:
+-        with TemporaryDirectory() as tmp:
+-            doc = Path(tmp) / "docs/historical-feature-contract-01.md"
+-            doc.parent.mkdir(parents=True)
+-            doc.write_text("Solution Matrix\n", encoding="utf-8")
+-
+-            with self.assertRaisesRegex(ValueError, "feature matrix contract"):
+-                validate_feature_matrix_docs([doc])
+ 
+ 
+ if __name__ == "__main__":
+diff --git a/tests/integration/test_integration_hardware_validation.py b/tests/integration/test_integration_hardware_validation.py
+index d7007ec90e8fb663afe0066780dbe5077040b616..5b94228c3772c825a43866b1040bbf5a0a505e2d 100644
+--- a/tests/integration/test_integration_hardware_validation.py
++++ b/tests/integration/test_integration_hardware_validation.py
+@@ -3,7 +3,7 @@ import unittest
+ from pathlib import Path
+ from tempfile import TemporaryDirectory
+ 
+-from scripts.integration_hardware_validation import (
++from tests.integration.external.integration_hardware_validation import (
+     build_hardware_validation_command,
+     validate_esp32_qr_secondary_target_alignment,
+ )
+diff --git a/tests/integration/test_integration_raspberry_hardware_probe.py b/tests/integration/test_integration_raspberry_hardware_probe.py
+index 0a5f070f4db91895c184978e5c63201de99c85f9..aff0a79a1e7772d8152d410e5c101edde810cf48 100644
+--- a/tests/integration/test_integration_raspberry_hardware_probe.py
++++ b/tests/integration/test_integration_raspberry_hardware_probe.py
+@@ -5,7 +5,7 @@ import tempfile
+ import unittest
+ from pathlib import Path
+ 
+-from scripts.integration_raspberry_hardware_probe import (
++from tests.integration.integration_raspberry_hardware_probe import (
+     assert_safe_probe_report,
+     build_hardware_probe_command,
+ )
+diff --git a/tests/integration/test_integration_support.py b/tests/integration/test_integration_support.py
+index a8966c7ef397b304ef889126a116b8cc3ddca0a9..55fa120ec0c7ec5fadfaa589acb0413da9b39550 100644
+--- a/tests/integration/test_integration_support.py
++++ b/tests/integration/test_integration_support.py
+@@ -8,7 +8,7 @@ from contextlib import redirect_stderr, redirect_stdout
+ from pathlib import Path
+ from unittest.mock import ANY, patch
+ 
+-from scripts.integration_support import (
++from tests.integration.integration_support import (
+     DEP0205_SUPPRESSION,
+     PINNED_PNPM_COMMAND,
+     build_pnpm_workspace,
+@@ -51,7 +51,7 @@ class IntegrationSupportTests(unittest.TestCase):
+         workspace = Path("/tmp/nsealr-companion")
+         completed = subprocess.CompletedProcess(args=["pnpm"], returncode=0)
+ 
+-        with patch("scripts.integration_support.run_command", return_value=completed) as run:
++        with patch("tests.integration.integration_support.run_command", return_value=completed) as run:
+             result = install_pnpm_workspace(workspace)
+ 
+         self.assertIs(result, completed)
+@@ -62,7 +62,7 @@ class IntegrationSupportTests(unittest.TestCase):
+         workspace = Path("/tmp/nsealr-companion")
+         completed = subprocess.CompletedProcess(args=["pnpm"], returncode=0)
+ 
+-        with patch("scripts.integration_support.run_command", return_value=completed) as run:
++        with patch("tests.integration.integration_support.run_command", return_value=completed) as run:
+             result = build_pnpm_workspace(workspace)
+ 
+         self.assertIs(result, completed)
+diff --git a/tests/integration/test_integration_vault_companion.py b/tests/integration/test_integration_vault_companion.py
+index d8136571aacbf20971fa2b426438fc4f6f2410f5..ebe89eff9cc9ff1a618a3e5cdc2d6e4da78cf5ac 100644
+--- a/tests/integration/test_integration_vault_companion.py
++++ b/tests/integration/test_integration_vault_companion.py
+@@ -5,7 +5,7 @@ import tempfile
+ import unittest
+ from pathlib import Path
+ 
+-from scripts.integration_vault_companion import (
++from tests.integration.integration_vault_companion import (
+     assert_display_frame_log,
+     assert_review_transcript_log,
+     assert_screen_review_files_equal,
+diff --git a/tools/bridge/check_release_artifacts_safety.mjs b/tools/bridge/check_release_artifacts_safety.mjs
+index 534c08d3b251ee6f7853fd1fb6cfc40547d622d3..350ed6d8a67d422d0d6d17a560747436a10764cf 100644
+--- a/tools/bridge/check_release_artifacts_safety.mjs
++++ b/tools/bridge/check_release_artifacts_safety.mjs
+@@ -4,7 +4,7 @@ import { spawnSync } from "node:child_process";
+ import { root } from "./package_set.mjs";
+ 
+ function expectRejectedArgs(args, expectedPattern, label) {
+-  const result = spawnSync(process.execPath, ["scripts/prepare_release_artifacts.mjs", ...args], {
++  const result = spawnSync(process.execPath, ["tools/bridge/prepare_release_artifacts.mjs", ...args], {
+     cwd: root,
+     encoding: "utf-8"
+   });

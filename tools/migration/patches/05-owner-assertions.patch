@@ -1,0 +1,88 @@
+diff --git a/apps/pi/tests/test_vault_core.py b/apps/pi/tests/test_vault_core.py
+index eb5e8abb6c6dd99c443a8b653f75bd02ab501166..48c131d31421944df6f3cb03551b74069749aa37 100644
+--- a/apps/pi/tests/test_vault_core.py
++++ b/apps/pi/tests/test_vault_core.py
+@@ -2815,7 +2815,7 @@ class VaultCoreTests(unittest.TestCase):
+         route = RASPBERRY_ACCOUNT_DESCRIPTOR["signer_route"]
+         selection = RASPBERRY_ROUTE_SELECTION["selection"]
+         self.assertEqual(route["type"], "raspberry_qr_vault")
+-        self.assertEqual(route["repository"], "raspberry")
++        self.assertEqual(route["repository"], "nsealr")
+         self.assertEqual(route["transport"], "qr")
+         self.assertEqual(route["custody"], "stateless_session")
+         self.assertEqual(route["trusted_review"], "device_display")
+diff --git a/protocols/contracts/v1/scripts/verify_specs.py b/protocols/contracts/v1/scripts/verify_specs.py
+index 6ff117c6aa2f7beacd39b48ce3fc01893512315f..3ac0ff3a69ba738c82c4836e3114c1384518a01d 100644
+--- a/protocols/contracts/v1/scripts/verify_specs.py
++++ b/protocols/contracts/v1/scripts/verify_specs.py
+@@ -5495,8 +5495,8 @@ def check_persistent_secret_custody_vector(rel: str, errors: list[str]) -> None:
+         errors.append(f"{vector_path}: contract_id mismatch")
+     if vector.get("solution") != "custom_hardware_wallet":
+         errors.append(f"{vector_path}: solution must be custom_hardware_wallet")
+-    if vector.get("repository") != "hardware":
+-        errors.append(f"{vector_path}: repository must be hardware")
++    if vector.get("repository") != "nsealr":
++        errors.append(f"{vector_path}: repository must be nsealr")
+     if vector.get("current_status") != "research":
+         errors.append(f"{vector_path}: current_status must be research")
+     scope = vector.get("scope")
+@@ -5598,8 +5598,8 @@ def check_device_security_profile_vector(rel: str, errors: list[str]) -> None:
+         errors.append(f"{vector_path}: contract_id mismatch")
+     if vector.get("solution") != "esp32_usb_nip46":
+         errors.append(f"{vector_path}: solution must be esp32_usb_nip46")
+-    if vector.get("repository") != "firmware":
+-        errors.append(f"{vector_path}: repository must be firmware")
++    if vector.get("repository") != "nsealr":
++        errors.append(f"{vector_path}: repository must be nsealr")
+     if vector.get("target") != "esp32_s3_usb_signer":
+         errors.append(f"{vector_path}: target must be esp32_s3_usb_signer")
+     if vector.get("profile") != "development_scaffold":
+diff --git a/protocols/contracts/v1/tests/test_verify_specs.py b/protocols/contracts/v1/tests/test_verify_specs.py
+index c9f1fdd306738288540c9fdcea5973270515a726..4f41416c8a0a60c30670170745116d1e09918a38 100644
+--- a/protocols/contracts/v1/tests/test_verify_specs.py
++++ b/protocols/contracts/v1/tests/test_verify_specs.py
+@@ -1015,7 +1015,7 @@ class VerifySpecsTests(unittest.TestCase):
+         self.assertFalse(account_schema["properties"]["capabilities"]["additionalProperties"])
+         self.assertEqual(account_schema["properties"]["policy_profile_id"]["pattern"], "^policy-[A-Za-z0-9._:-]{1,121}$")
+         account_route_semantics = account_schema["allOf"]
+-        self.assertEqual(len(account_route_semantics), 6)
++        self.assertEqual(len(account_route_semantics), 5)
+         self.assertIn({
+             "if": {
+                 "properties": {
+@@ -1031,7 +1031,7 @@ class VerifySpecsTests(unittest.TestCase):
+                     "signer_route": {
+                         "required": ["repository"],
+                         "properties": {
+-                            "repository": {"const": "firmware"},
++                            "repository": {"const": "nsealr"},
+                             "transport": {"const": "usb"},
+                             "custody": {"const": "device_persistent"},
+                             "trusted_review": {"const": "device_display"},
+@@ -1084,7 +1084,7 @@ class VerifySpecsTests(unittest.TestCase):
+         self.assertFalse(policy_schema["additionalProperties"])
+         self.assertFalse(policy_schema["properties"]["grant_constraints"]["additionalProperties"])
+         self.assertEqual(policy_schema["properties"]["policy_id"]["pattern"], "^policy-[A-Za-z0-9._:-]{1,121}$")
+-        self.assertEqual(len(policy_schema["allOf"]), 3)
++        self.assertEqual(len(policy_schema["allOf"]), 2)
+         self.assertIn({
+             "if": {
+                 "properties": {
+@@ -1136,7 +1136,7 @@ class VerifySpecsTests(unittest.TestCase):
+             "^policy-[A-Za-z0-9._:-]{1,121}$",
+         )
+         route_selection_semantics = route_selection_schema["properties"]["selection"]["allOf"]
+-        self.assertEqual(len(route_selection_semantics), 6)
++        self.assertEqual(len(route_selection_semantics), 5)
+         self.assertIn({
+             "if": {
+                 "properties": {"route_type": {"const": "esp32_usb_nip46"}},
+@@ -1145,7 +1145,7 @@ class VerifySpecsTests(unittest.TestCase):
+             "then": {
+                 "required": ["repository"],
+                 "properties": {
+-                    "repository": {"const": "firmware"},
++                    "repository": {"const": "nsealr"},
+                     "transport": {"const": "usb"},
+                     "custody": {"const": "device_persistent"},
+                     "trusted_review": {"const": "device_display"},

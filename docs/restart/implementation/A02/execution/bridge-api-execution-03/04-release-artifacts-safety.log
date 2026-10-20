@@ -1,0 +1,43 @@
+
+> @nsealr/bridge-workspace@0.1.0 release-artifacts:safety /home/tux/nsealr/.restart-tools/goal/a02/tools/migration/.runtime/rehearsal-01/repository
+> node tools/bridge/check_release_artifacts_safety.mjs
+
+ ELIFECYCLE  Command failed with exit code 1.
+node:internal/modules/run_main:107
+    triggerUncaughtException(
+    ^
+
+AssertionError [ERR_ASSERTION]: . must fail with the expected release output safety guard
+    at expectRejectedArgs (file:///home/tux/nsealr/.restart-tools/goal/a02/tools/migration/.runtime/rehearsal-01/repository/tools/bridge/check_release_artifacts_safety.mjs:12:10)
+    at expectRejectedOutput (file:///home/tux/nsealr/.restart-tools/goal/a02/tools/migration/.runtime/rehearsal-01/repository/tools/bridge/check_release_artifacts_safety.mjs:20:3)
+    at file:///home/tux/nsealr/.restart-tools/goal/a02/tools/migration/.runtime/rehearsal-01/repository/tools/bridge/check_release_artifacts_safety.mjs:28:3
+    at ModuleJob.run (node:internal/modules/esm/module_job:561:25)
+    at async node:internal/modules/esm/loader:647:26
+    at async asyncRunEntryPointWithESMLoader (node:internal/modules/run_main:101:5) {
+  generatedMessage: false,
+  code: 'ERR_ASSERTION',
+  actual: '\n' +
+    'node:internal/modules/cjs/loader:1568\n' +
+    '  throw err;\n' +
+    '  ^\n' +
+    '\n' +
+    "Error: Cannot find module '/home/tux/nsealr/.restart-tools/goal/a02/tools/migration/.runtime/rehearsal-01/repository/scripts/prepare_release_artifacts.mjs'\n" +
+    '    at Module._resolveFilename (node:internal/modules/cjs/loader:1564:15)\n' +
+    '    at wrapResolveFilename (node:internal/modules/cjs/loader:1118:27)\n' +
+    '    at defaultResolveImplForCJSLoading (node:internal/modules/cjs/loader:1142:10)\n' +
+    '    at resolveForCJSWithHooks (node:internal/modules/cjs/loader:1169:12)\n' +
+    '    at Module._load (node:internal/modules/cjs/loader:1341:5)\n' +
+    '    at wrapModuleLoad (node:internal/modules/cjs/loader:261:19)\n' +
+    '    at Module.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:154:5)\n' +
+    '    at node:internal/main/run_main_module:33:47 {\n' +
+    "  code: 'MODULE_NOT_FOUND',\n" +
+    '  requireStack: []\n' +
+    '}\n' +
+    '\n' +
+    'Node.js v24.22.0\n',
+  expected: /release artifact output directory must be a child of release-artifacts\//u,
+  operator: 'match',
+  diff: 'simple'
+}
+
+Node.js v24.22.0

@@ -1,0 +1,55 @@
+python3 -m venv .venv
+.venv/bin/python -m pip install --disable-pip-version-check -r requirements.txt
+Looking in links: /home/tux/nsealr/.restart-tools/goal/s01-integration/docs/restart/implementation/S01/.work/current-default/.tools/wheels
+Processing /home/tux/nsealr/.restart-tools/goal/s01-integration/docs/restart/implementation/S01/.work/current-default/.tools/wheels/mnemonic-0.21-py3-none-any.whl (from -r requirements.txt (line 1))
+Processing /home/tux/nsealr/.restart-tools/goal/s01-integration/docs/restart/implementation/S01/.work/current-default/.tools/wheels/secp256k1-0.14.0-cp312-cp312-manylinux_2_17_x86_64.manylinux2014_x86_64.whl (from -r requirements.txt (line 2))
+Processing /home/tux/nsealr/.restart-tools/goal/s01-integration/docs/restart/implementation/S01/.work/current-default/.tools/wheels/cffi-2.1.1-cp312-cp312-manylinux2014_x86_64.manylinux_2_17_x86_64.whl (from secp256k1==0.14.0->-r requirements.txt (line 2))
+Processing /home/tux/nsealr/.restart-tools/goal/s01-integration/docs/restart/implementation/S01/.work/current-default/.tools/wheels/pycparser-3.11-py3-none-any.whl (from cffi>=1.3.0->secp256k1==0.14.0->-r requirements.txt (line 2))
+Installing collected packages: pycparser, mnemonic, cffi, secp256k1
+Successfully installed cffi-2.1.1 mnemonic-0.21 pycparser-3.11 secp256k1-0.14.0
+PIP_IN_TREE_BUILD="$( .venv/bin/python -m pip install --use-feature=in-tree-build --help >/dev/null 2>&1 && printf '%s' '--use-feature=in-tree-build' || true )"; \
+.venv/bin/python -m pip install --disable-pip-version-check $PIP_IN_TREE_BUILD .
+Looking in links: /home/tux/nsealr/.restart-tools/goal/s01-integration/docs/restart/implementation/S01/.work/current-default/.tools/wheels
+Processing /home/tux/nsealr/.restart-tools/goal/a02/tools/migration/.runtime/rehearsal-01/repository/apps/pi
+  Installing build dependencies: started
+  Installing build dependencies: finished with status 'done'
+  Getting requirements to build wheel: started
+  Getting requirements to build wheel: finished with status 'done'
+  Preparing metadata (pyproject.toml): started
+  Preparing metadata (pyproject.toml): finished with status 'done'
+Requirement already satisfied: mnemonic==0.21 in ./.venv/lib/python3.12/site-packages (from nsealr-vault==0.1.0) (0.21)
+Requirement already satisfied: secp256k1==0.14.0 in ./.venv/lib/python3.12/site-packages (from nsealr-vault==0.1.0) (0.14.0)
+Requirement already satisfied: cffi>=1.3.0 in ./.venv/lib/python3.12/site-packages (from secp256k1==0.14.0->nsealr-vault==0.1.0) (2.1.1)
+Requirement already satisfied: pycparser in ./.venv/lib/python3.12/site-packages (from cffi>=1.3.0->secp256k1==0.14.0->nsealr-vault==0.1.0) (3.11)
+Building wheels for collected packages: nsealr-vault
+  Building wheel for nsealr-vault (pyproject.toml): started
+  Building wheel for nsealr-vault (pyproject.toml): finished with status 'done'
+  Created wheel for nsealr-vault: filename=nsealr_vault-0.1.0-py3-none-any.whl size=42849 sha256=f972dc994b55c7662d5dcb04b029188a918f0414c00351041a1497b59470bbbf
+  Stored in directory: /home/tux/nsealr/.restart-tools/goal/a02/tools/migration/.runtime/execution-state/tmp/pip-ephem-wheel-cache-u32mar7s/wheels/5a/f0/96/b4f8ed91de45410b9e565c228283fbe578fde237d19a97c12e
+Successfully built nsealr-vault
+Installing collected packages: nsealr-vault
+Successfully installed nsealr-vault-0.1.0
+.venv/bin/python scripts/verify_repo.py
+Component structure and license verified independently of checkout name
+.venv/bin/python -m unittest discover -s tests
+......................................................................................................E...............................................
+======================================================================
+ERROR: test_identity_policy_docs_pin_manual_stateless_route (test_vault_core.VaultCoreTests.test_identity_policy_docs_pin_manual_stateless_route)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/tux/nsealr/.restart-tools/goal/a02/tools/migration/.runtime/rehearsal-01/repository/apps/pi/tests/test_vault_core.py", line 2843, in test_identity_policy_docs_pin_manual_stateless_route
+    (ROOT / "README.md").read_text(encoding="utf-8"),
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/tux/nsealr/.restart-tools/goal/s01-integration/docs/restart/implementation/S01/.work/current-default/.tools/python/lib/python3.12/pathlib.py", line 1027, in read_text
+    with self.open(mode='r', encoding=encoding, errors=errors) as f:
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/tux/nsealr/.restart-tools/goal/s01-integration/docs/restart/implementation/S01/.work/current-default/.tools/python/lib/python3.12/pathlib.py", line 1013, in open
+    return io.open(self, mode, buffering, encoding, errors, newline)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+FileNotFoundError: [Errno 2] No such file or directory: '/home/tux/nsealr/.restart-tools/goal/a02/tools/migration/.runtime/rehearsal-01/repository/apps/pi/README.md'
+
+----------------------------------------------------------------------
+Ran 150 tests in 4.842s
+
+FAILED (errors=1)
+make: *** [Makefile:14: test] Error 1

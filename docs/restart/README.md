@@ -23,7 +23,7 @@ The graph records **47 implementation tasks**, their dependencies, scope, accept
 
 Verify the actual checkout and run `python3 scripts/validate_restart_plan.py`. Follow [the execution handoff](implementation/handoff.md), reconcile actual branches/PRs with the graph, and select eligible work without duplicating an active author. Preserve the existing reviewed evidence; do not rerun completed tasks merely because a new session starts. Source changes, failures or unresolved concerns determine which checks must run again.
 
-Rehearse A02 locally after its brief and input tuple are accepted: selected source only, explicit provenance, one authoritative contract artifact and equivalent executed behavior checks. The S01 provenance-checker correction and renewed review must precede importing that tooling. Archive a source repository only after its disposition is verified. Physical resources can block one profile without blocking the others.
+The local A02 rehearsal has passed distinct source review for product `daf8ba03` and author `bb03361`. This adoption branch appends its exact public evidence/tooling and reconciles seven assigned incomplete checkpoints; read the [current adoption handoff](implementation/A02/coordinator-adoption/handoff.md) and its copy inventories. Exact final adoption-diff review, actual protected PR CI, normal integration and actual main CI remain separate gates. A02 stays open in the initial PR; the frozen source main is `f2ef70f`. The sole moved graph is `plan/work-items.json`; the historical pause proposal is not another adopted tracker. Source notices/archival and registry publication are excluded from this scope. Physical resources can block one profile without blocking the others.
 
 ## Delivery order
 

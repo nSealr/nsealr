@@ -1,0 +1,30 @@
+diff --git a/packages/client/src/service.test.ts b/packages/client/src/service.test.ts
+index 8ce06741c9d16d4d67fbdd5d6a27ce85b351b2e1..2958f581715f6ee1af283282ad5ca6486388caa1 100644
+--- a/packages/client/src/service.test.ts
++++ b/packages/client/src/service.test.ts
+@@ -572,7 +572,7 @@ describe("local service boundary", () => {
+       ok: false,
+       error: {
+         code: "external_review_acknowledgement_unsupported",
+-        message: "external review acknowledgement is only supported for display-less sign_event dispatch"
++        message: "host review acknowledgements are unsupported for signer dispatch"
+       }
+     });
+     expect(called).toBe(false);
+diff --git a/tools/baseline/bootstrap.py b/tools/baseline/bootstrap.py
+index 4c52514fe4ba4608d5f3931069f74ce044d33c31..309620d9c03899233cbd61556f97a34908d29c18 100644
+--- a/tools/baseline/bootstrap.py
++++ b/tools/baseline/bootstrap.py
+@@ -46,7 +46,11 @@ class Recorder:
+         with log.open('w') as stream:
+             stream.write(json.dumps(result) + '\n')
+             stream.flush()
+-            code = subprocess.run(argv, cwd=cwd, env=self.env, stdout=stream, stderr=subprocess.STDOUT).returncode
++            with subprocess.Popen(argv, cwd=cwd, env=self.env, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True) as process:
++                for line in process.stdout:
++                    stream.write(line)
++                    print(line, end="", flush=True)
++                code = process.wait()
+         result.update(ended=utc(), exit_code=code, sha256=sha256(log))
+         self.results.append(result)
+         write_json(self.directory / 'commands.json', self.results)

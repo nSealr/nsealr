@@ -1,0 +1,55 @@
+diff --git a/AGENTS.md b/AGENTS.md
+index 9c8e96e73f8582fc2323d93b914c4940332467b9..beed526a130e5833f11fcde1ba8612074161cd5c 100644
+--- a/AGENTS.md
++++ b/AGENTS.md
+@@ -7,7 +7,7 @@ Read `docs/restart/README.md`, then the relevant task in `plan/work-items.json`.
+ - No compatibility obligation exists for experimental nSealr APIs or old product names. Version new contracts explicitly; preserve external Nostr interoperability and provenance.
+ - Select a task whose dependencies are satisfied. Record scope, input commits, exact candidate, acceptance commands, resources and remaining unknowns. No task is complete from prose or simulation alone.
+ - Use one worktree and editable scope per implementer, one writer per live CAD project. A different agent reviews the final diff. Changed candidates invalidate affected reviews.
+-- The requested specialist configuration is Astra `xhigh` for hardware and security. Verify availability in the current Codex installation; do not assume a model identifier is perpetually valid or silently substitute it.
++- The maintainer's latest model policy (2026-10-20) minimizes Astra: coordinator, implementers and reviewers default to `gpt-6.1-sol` with `xhigh` reasoning. Use `gpt-6-astra` `xhigh` only for an exceptional genuinely complex task/review, with a concrete assignment-specific reason recorded before escalation; hardware/security alone is insufficient. Verify actual runtime model/effort. Transfer existing assignments at safe checkpoints, preserving results/reviews. Historical model records remain unchanged.
+ - Run targeted checks, then affected integration gates. Preserve commands, environment, exit codes and artifact hashes. Record skips and inherited failures explicitly. Do not weaken checks merely to obtain green output.
+ - Hardware claims require exact part/revision documentation and applicable errata; assembled-board claims require identified physical measurements. ERC/DRC is necessary but insufficient.
+ - Reuse the maintainer's recorded authorization; do not request it twice. Repository reorganization/publication is authorized for this restart. No specific purchase, factory submission, production key ceremony or irreversible fuse operation is authorized merely by a research budget.
+diff --git a/docs/restart/execution.md b/docs/restart/execution.md
+index 43a1662c7f4a87d36eefac36e9a65479a85ec03e..00e991ea22a4897878016d629f6124d282bc1d25 100644
+--- a/docs/restart/execution.md
++++ b/docs/restart/execution.md
+@@ -1,6 +1,6 @@
+ # Execution and proof
+ 
+-A Codex coordinator maintains the task graph and assigns bounded work to independent implementers/reviewers. Git worktrees, CI and evidence files are sufficient initially. Hardware/security specialists use the maintainer-requested Astra xhigh configuration after checking availability. This foundation does not start an unattended service.
++A Codex coordinator maintains the task graph and assigns bounded work to independent implementers/reviewers. Git worktrees, CI and evidence files are sufficient initially. The latest maintainer policy (20 October 2026) uses `gpt-6.1-sol` with `xhigh` reasoning for coordinator, implementers and reviewers. Minimize Astra; `gpt-6-astra` `xhigh` is an exceptional escalation requiring a concrete task/review complexity reason recorded in its assignment. Hardware/security labels alone do not justify escalation. Verify runtime settings and transition existing authors only at safe recoverable checkpoints; preserve historical model evidence. This foundation does not start an unattended service.
+ 
+ The [development contract](development.md) defines specification readiness, first-tranche substeps and a worked one-use authorization contract. A roadmap task is not automatically an implementation-ready brief. Requirements and experiments must be resolved at the boundary being implemented before claiming conformance.
+ 
+diff --git a/plan/work-items.json b/plan/work-items.json
+index d7abbae2dd7d779bd58d553097a5d0c75d4e3279..03452b211bb6d43823d7388ffa7342872956aedd 100644
+--- a/plan/work-items.json
++++ b/plan/work-items.json
+@@ -8255,5 +8255,25 @@
+       "owner_role": "release_security",
+       "next_action": "Identify authorized operator, protected signing setup and controlled unit provisioning/test process before any real-secret ceremony."
+     }
++  },
++  "execution_model_policy": {
++    "authority": "Latest explicit maintainer clarification, superseding the earlier same-day Astra-coordinator request and earlier blanket specialist rule.",
++    "coordinator": {
++      "model": "gpt-6.1-sol",
++      "reasoning_effort": "xhigh"
++    },
++    "effective_date": "2026-10-20",
++    "exception": {
++      "model": "gpt-6-astra",
++      "reasoning_effort": "xhigh",
++      "requires": "Concrete assignment-specific complexity justification before exceptional escalation; minimize usage. Hardware/security category alone is insufficient."
++    },
++    "historical_acceptance": "Previously closed O01 acceptance/model records are historical; no closed criteria or evidence are rewritten. Future assignments follow this latest user authority.",
++    "integration": "Declared operational-policy-only A02 transformation under the latest maintainer authority. Source main f2 remains frozen; task records, historical O01 evidence and the unmerged pause task reconciliation are unchanged. Candidate policy awaits distinct review and normal adoption.",
++    "migration": "Checkpoint active authors safely and transfer scope/results to Sol; preserve historical runtime/review records.",
++    "subagents_default": {
++      "model": "gpt-6.1-sol",
++      "reasoning_effort": "xhigh"
++    }
+   }
+ }

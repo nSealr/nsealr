@@ -1,0 +1,506 @@
+diff --git a/package.json b/package.json
+index c816c0a62d4b73385b9d5d3d888e533f02effe07..2ed170472ae7d3a9ef65360eb57cbc8c9c8d28b1 100644
+--- a/package.json
++++ b/package.json
+@@ -4,7 +4,16 @@
+   },
+   "description": "Secretless host-side companion packages for nSealr signer integrations.",
+   "devDependencies": {
++    "@nsealr/browser-provider": "workspace:*",
++    "@nsealr/client": "workspace:*",
++    "@nsealr/core": "workspace:*",
+     "@nsealr/fixtures": "workspace:*",
++    "@nsealr/framing": "workspace:*",
++    "@nsealr/nip46": "workspace:*",
++    "@nsealr/policy": "workspace:*",
++    "@nsealr/protocol": "workspace:*",
++    "@nsealr/qr": "workspace:*",
++    "@nsealr/review": "workspace:*",
+     "@types/node": "24.10.1",
+     "esbuild": "0.27.7",
+     "nostr-tools": "^2.23.3",
+diff --git a/packages/sdk/LICENSE b/packages/sdk/LICENSE
+new file mode 100644
+index 0000000000000000000000000000000000000000..8f045d9584892b65a79d92752168e09b41df9c7e
+--- /dev/null
++++ b/packages/sdk/LICENSE
+@@ -0,0 +1,9 @@
++MIT License
++
++Copyright (c) 2026 nSealr contributors
++
++Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
++
++The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
++
++THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+\ No newline at end of file
+diff --git a/packages/sdk/package.json b/packages/sdk/package.json
+index 5569887b9934324e0713dd5140218d9a1a78b672..86b2cfb68967c2773aa1af9f17635f7054a1aa46 100644
+--- a/packages/sdk/package.json
++++ b/packages/sdk/package.json
+@@ -3,15 +3,9 @@
+     "url": "https://github.com/nSealr/nsealr/issues"
+   },
+   "dependencies": {
+-    "@nsealr/browser-provider": "workspace:*",
+-    "@nsealr/client": "workspace:*",
+-    "@nsealr/core": "workspace:*",
+-    "@nsealr/framing": "workspace:*",
+-    "@nsealr/nip46": "workspace:*",
+-    "@nsealr/policy": "workspace:*",
+-    "@nsealr/protocol": "workspace:*",
+-    "@nsealr/qr": "workspace:*",
+-    "@nsealr/review": "workspace:*"
++    "@noble/curves": "2.2.0",
++    "@noble/hashes": "2.2.0",
++    "nostr-tools": "2.23.3"
+   },
+   "description": "Platform-neutral SDK facade for nSealr browser, companion, and signer integrations.",
+   "exports": {
+@@ -30,7 +24,8 @@
+   },
+   "files": [
+     "dist",
+-    "README.md"
++    "README.md",
++    "LICENSE"
+   ],
+   "homepage": "https://github.com/nSealr/nsealr#readme",
+   "keywords": [
+diff --git a/pnpm-lock.yaml b/pnpm-lock.yaml
+index 2675936e6b3aca6883100ce1631adadf014989f0..a5137a906857044d977db74347e2fabea1de9a89 100644
+--- a/pnpm-lock.yaml
++++ b/pnpm-lock.yaml
+@@ -8,9 +8,36 @@ importers:
+ 
+   .:
+     devDependencies:
++      '@nsealr/browser-provider':
++        specifier: workspace:*
++        version: link:packages/browser-provider
++      '@nsealr/client':
++        specifier: workspace:*
++        version: link:packages/client
++      '@nsealr/core':
++        specifier: workspace:*
++        version: link:packages/core
+       '@nsealr/fixtures':
+         specifier: workspace:*
+         version: link:packages/fixtures
++      '@nsealr/framing':
++        specifier: workspace:*
++        version: link:packages/framing
++      '@nsealr/nip46':
++        specifier: workspace:*
++        version: link:packages/nip46
++      '@nsealr/policy':
++        specifier: workspace:*
++        version: link:packages/policy
++      '@nsealr/protocol':
++        specifier: workspace:*
++        version: link:packages/protocol
++      '@nsealr/qr':
++        specifier: workspace:*
++        version: link:packages/qr
++      '@nsealr/review':
++        specifier: workspace:*
++        version: link:packages/review
+       '@types/node':
+         specifier: 24.10.1
+         version: 24.10.1
+@@ -356,33 +383,15 @@ importers:
+ 
+   packages/sdk:
+     dependencies:
+-      '@nsealr/browser-provider':
+-        specifier: workspace:*
+-        version: link:../browser-provider
+-      '@nsealr/client':
+-        specifier: workspace:*
+-        version: link:../client
+-      '@nsealr/core':
+-        specifier: workspace:*
+-        version: link:../core
+-      '@nsealr/framing':
+-        specifier: workspace:*
+-        version: link:../framing
+-      '@nsealr/nip46':
+-        specifier: workspace:*
+-        version: link:../nip46
+-      '@nsealr/policy':
+-        specifier: workspace:*
+-        version: link:../policy
+-      '@nsealr/protocol':
+-        specifier: workspace:*
+-        version: link:../protocol
+-      '@nsealr/qr':
+-        specifier: workspace:*
+-        version: link:../qr
+-      '@nsealr/review':
+-        specifier: workspace:*
+-        version: link:../review
++      '@noble/curves':
++        specifier: 2.2.0
++        version: 2.2.0
++      '@noble/hashes':
++        specifier: 2.2.0
++        version: 2.2.0
++      nostr-tools:
++        specifier: 2.23.3
++        version: 2.23.3(typescript@6.0.3)
+ 
+   packages/transport:
+     dependencies:
+diff --git a/tools/bridge/build_packages.mjs b/tools/bridge/build_packages.mjs
+index ca986e34779654855a0148c876458ea6632e6bad..ec677cb26a02a7a5ee36af82572cf9ddb2a1e91a 100644
+--- a/tools/bridge/build_packages.mjs
++++ b/tools/bridge/build_packages.mjs
+@@ -78,4 +78,5 @@ for (const packageDir of packageOrder) {
+   runTsc(packageDir);
+ }
+ 
++await import("./bundle_sdk.mjs");
+ console.log("nSealr package build artifacts generated");
+diff --git a/tools/bridge/bundle_sdk.mjs b/tools/bridge/bundle_sdk.mjs
+new file mode 100644
+index 0000000000000000000000000000000000000000..44201e3742f66d04f777686e58ba549a2f3ad1f8
+--- /dev/null
++++ b/tools/bridge/bundle_sdk.mjs
+@@ -0,0 +1,58 @@
++#!/usr/bin/env node
++// Bundle owned runtime code and relocate declarations; third-party packages keep
++// their own distribution and license notices as exact external dependencies.
++import assert from "node:assert/strict";
++import { cpSync, mkdirSync, readdirSync, readFileSync, writeFileSync } from "node:fs";
++import { dirname, join, relative, resolve } from "node:path";
++import { build } from "esbuild";
++import { root, sourceManifest } from "./package_set.mjs";
++
++const owned = ["browser-provider", "client", "core", "framing", "nip46", "policy", "protocol", "qr", "review"];
++const sdkRoot = join(root, "packages/sdk");
++const out = join(sdkRoot, "dist");
++const reports = [];
++for (const [entry, platform] of [["index", "browser"], ["browser", "browser"], ["node", "node"]]) {
++  const result = await build({ absWorkingDir: root, entryPoints: [join(sdkRoot, `src/${entry}.ts`)],
++    outfile: join(out, `${entry}.js`), bundle: true, format: "esm", platform,
++    target: "es2022", external: ["@noble/*", "nostr-tools", "nostr-tools/*"],
++    sourcemap: false, legalComments: "eof", metafile: true, write: true });
++  for (const file of Object.keys(result.metafile.inputs)) {
++    assert(!/(?:^|\/)packages\/(?:dev-signer|fixtures|smartcard)\//u.test(file), `forbidden SDK input: ${file}`);
++    assert(!file.endsWith(".test.ts"), `test in SDK: ${file}`);
++  }
++  for (const artifact of Object.values(result.metafile.outputs)) {
++    assert(!artifact.imports.some((entry) => entry.path.startsWith("@nsealr/")), "packed SDK must contain its owned runtime");
++  }
++  reports.push({ entry, platform, ...result.metafile });
++}
++for (const name of owned) {
++  const destination = join(out, "internal", name);
++  mkdirSync(destination, { recursive: true });
++  for (const file of readdirSync(join(root, "packages", name, "dist"))) {
++    if (file.endsWith(".d.ts")) cpSync(join(root, "packages", name, "dist", file), join(destination, file));
++  }
++}
++function declarations(directory) {
++  return readdirSync(directory, { withFileTypes: true }).flatMap((entry) => {
++    const path = join(directory, entry.name);
++    return entry.isDirectory() ? declarations(path) : entry.name.endsWith(".d.ts") ? [path] : [];
++  });
++}
++for (const path of declarations(out)) {
++  const source = readFileSync(path, "utf8");
++  const relocated = source.replace(/(["'])@nsealr\/([a-z-]+)([^"']*)\1/gu, (_match, quote, name, subpath) => {
++    assert(owned.includes(name), `forbidden declaration dependency ${name}`);
++    const manifest = sourceManifest(`@nsealr/${name}`);
++    const entry = manifest.exports[subpath ? `.${subpath}` : "."];
++    assert(entry?.types?.startsWith("./dist/"), `unmapped declaration export ${name}${subpath}`);
++    const target = resolve(out, "internal", name, entry.types.slice("./dist/".length)).replace(/\.d\.ts$/u, ".js");
++    let specifier = relative(dirname(path), target).replaceAll("\\", "/");
++    if (!specifier.startsWith(".")) specifier = `./${specifier}`;
++    return `${quote}${specifier}${quote}`;
++  });
++  assert(!relocated.includes("@nsealr/"), `unbundled declaration in ${path}`);
++  writeFileSync(path, relocated);
++}
++mkdirSync(join(root, "build"), { recursive: true });
++writeFileSync(join(root, "build/sdk-bundle-report.json"), JSON.stringify(reports, null, 2) + "\n");
++console.log("SDK root/browser/Node runtime and owned declarations bundled");
+diff --git a/tools/bridge/check_public_imports.mjs b/tools/bridge/check_public_imports.mjs
+index ae368f6e83c8cf1afa13dc2fd7f8c34a953c66e1..444563902b00275fce15f4f42860c9f0195a45d0 100644
+--- a/tools/bridge/check_public_imports.mjs
++++ b/tools/bridge/check_public_imports.mjs
+@@ -3,9 +3,11 @@ import assert from "node:assert/strict";
+ import { existsSync, readdirSync, readFileSync, statSync } from "node:fs";
+ import { dirname, isAbsolute, join, relative, resolve } from "node:path";
+ import * as ts from "typescript";
+-import { packageDirName, packageExportSubpaths, publicPackages, root } from "./package_set.mjs";
++import { packageDirName, packageExportSubpaths, publicPackages, workspacePackages, root } from "./package_set.mjs";
+ 
+-const publicPackageSet = new Set(publicPackages);
++const runtimePackages = workspacePackages.map(({ manifest }) => manifest.name)
++  .filter((name) => !["@nsealr/dev-signer", "@nsealr/fixtures"].includes(name));
++const publicPackageSet = new Set(runtimePackages);
+ 
+ function collectSourceFiles(directory) {
+   const entries = readdirSync(directory, { withFileTypes: true });
+@@ -24,7 +26,7 @@ function collectSourceFiles(directory) {
+ }
+ 
+ const exportedSubpathsByPackage = new Map(
+-  publicPackages.map((packageName) => [packageName, new Set(packageExportSubpaths(packageName))])
++  runtimePackages.map((packageName) => [packageName, new Set(packageExportSubpaths(packageName))])
+ );
+ 
+ function nsealrPackageName(specifier) {
+@@ -127,7 +129,7 @@ function checkSourceFile(ownerPackage, packageSourceRoot, sourcePath) {
+   visit(source);
+ }
+ 
+-for (const packageName of publicPackages) {
++for (const packageName of runtimePackages) {
+   const packageSourceRoot = join(root, "packages", packageDirName(packageName), "src");
+   for (const sourcePath of collectSourceFiles(packageSourceRoot)) {
+     checkSourceFile(packageName, packageSourceRoot, sourcePath);
+diff --git a/tools/bridge/check_release_plan.mjs b/tools/bridge/check_release_plan.mjs
+index f8fb07ee098278ca2bef1ae19fd74f70e25bd189..a2afa18aa59ab34daa41b86a0e7f64dee184e05c 100644
+--- a/tools/bridge/check_release_plan.mjs
++++ b/tools/bridge/check_release_plan.mjs
+@@ -26,8 +26,8 @@ assert.equal(releasePlan.stores_production_secrets, false);
+ assert.equal(releasePlan.contains_secret_material, false);
+ assert.deepEqual(releasePlan.required_local_gates, [
+   "make ci",
+-  "make integration in ../lab",
+-  "make release-artifacts"
++  "make integration",
++  "pnpm release-artifacts"
+ ]);
+ 
+ const plannedPackageNames = releasePlan.packages.map((entry) => entry.name);
+@@ -39,7 +39,7 @@ for (const entry of releasePlan.packages) {
+   assert.equal(entry.version, releasePlan.version, `${entry.name} must use the synchronized release version`);
+   assert.match(entry.directory, /^packages\/[a-z0-9-]+$/u, `${entry.name} directory must stay package-local`);
+   assert.match(entry.tarball, /^nsealr-[a-z0-9-]+-\d+\.\d+\.\d+\.tgz$/u, `${entry.name} tarball name drifted`);
+-  assert.deepEqual(entry.files, ["dist", "README.md"], `${entry.name} must publish only dist and README`);
++  assert.deepEqual(entry.files, ["dist", "README.md", "LICENSE"], `${entry.name} must publish dist, README and the MIT notice`);
+   assert.deepEqual(entry.publish_config, { access: "public", provenance: true });
+   assert.equal(entry.license, "MIT");
+   assert.equal(entry.private, false);
+@@ -63,7 +63,7 @@ assert.equal(review.stores_production_secrets, false);
+ assert.equal(review.contains_secret_material, false);
+ assert.deepEqual(JSON.parse(companionPackageReleasePlanReviewJson()), review);
+ 
+-const cliReview = spawnSync(process.execPath, ["scripts/release_plan.mjs", "--", "--review"], {
++const cliReview = spawnSync(process.execPath, ["tools/bridge/release_plan.mjs", "--", "--review"], {
+   encoding: "utf-8"
+ });
+ assert.equal(cliReview.status, 0, cliReview.stderr);
+diff --git a/tools/bridge/pack_smoke.mjs b/tools/bridge/pack_smoke.mjs
+index 8ec7f4821729c1c2bb8f36a42a99a27d29449205..510e1857a7922af4ffeb1186f469d0f7434bb548 100644
+--- a/tools/bridge/pack_smoke.mjs
++++ b/tools/bridge/pack_smoke.mjs
+@@ -1,94 +1,95 @@
+ #!/usr/bin/env node
+-import { mkdtempSync, writeFileSync } from "node:fs";
++import assert from "node:assert/strict";
++import { mkdtempSync, readFileSync, writeFileSync } from "node:fs";
+ import { join } from "node:path";
+ import { tmpdir } from "node:os";
++import { spawnSync } from "node:child_process";
++import { build } from "esbuild";
+ import {
+-  assertCompanionPackageRegistry,
+-  assertPublicPackageTarball,
+-  packageFilename,
+-  packageManagerCommand,
+-  publicPackageExportSpecifiers,
+-  publicPackages,
+-  run,
+-  sourceManifest
++  assertCompanionPackageRegistry, assertPublicPackageTarball, packageFilename,
++  packageManagerCommand, publicPackages, root, run, sourceManifest
+ } from "./package_set.mjs";
+ 
+ assertCompanionPackageRegistry();
+-
+-function cleanNpmConsumerEnv() {
+-  const env = { ...process.env, npm_config_loglevel: "error" };
+-  for (const key of Object.keys(env)) {
+-    if (key.startsWith("npm_config_") && key !== "npm_config_loglevel") {
+-      delete env[key];
+-    }
+-  }
+-  return env;
+-}
+-
++assert.deepEqual(publicPackages, ["@nsealr/sdk"]);
+ const packageManager = packageManagerCommand();
+-const packDir = mkdtempSync(join(tmpdir(), "nsealr-pack-"));
+-const consumerDir = mkdtempSync(join(tmpdir(), "nsealr-pack-consumer-"));
+-const tarballs = new Map();
+-
+-for (const packageName of publicPackages) {
+-  const expectedManifest = sourceManifest(packageName);
+-  run(packageManager.command, [
+-    ...packageManager.prefixArgs,
+-    "--filter",
+-    packageName,
+-    "pack",
+-    "--pack-destination",
+-    packDir
+-  ], { env: packageManager.env });
+-  const tarball = join(packDir, packageFilename(expectedManifest));
+-  tarballs.set(packageName, tarball);
+-  assertPublicPackageTarball(packageName, tarball, expectedManifest);
++const packDir = mkdtempSync(join(tmpdir(), "nsealr-sdk-pack-"));
++const consumerDir = mkdtempSync(join(tmpdir(), "nsealr-sdk-consumer-"));
++const manifest = sourceManifest("@nsealr/sdk");
++run(packageManager.command, [...packageManager.prefixArgs, "--filter", "@nsealr/sdk", "pack", "--pack-destination", packDir], { env: packageManager.env });
++const tarball = join(packDir, packageFilename(manifest));
++assertPublicPackageTarball("@nsealr/sdk", tarball, manifest);
++assert(Object.keys(manifest.dependencies).every((name) => !name.startsWith("@nsealr/")), "tarball must not need unpublished packages");
++writeFileSync(join(consumerDir, "package.json"), JSON.stringify({name:"isolated-sdk-consumer",version:"0.0.0",private:true,type:"module",dependencies:{"@nsealr/sdk":`file:${tarball}`}},null,2));
++run("npm", ["install", "--ignore-scripts", "--no-audit", "--fund=false"], { cwd:consumerDir,env:process.env });
++const artifact = join(root,"protocols/contracts/v1");
++for (const name of ["request-kind-1-basic", "response-kind-1-basic"]) {
++  writeFileSync(join(consumerDir, `${name}.json`), readFileSync(join(artifact,`examples/${name}.json`)));
+ }
+-
+-writeFileSync(join(consumerDir, "package.json"), JSON.stringify({
+-  name: "nsealr-packed-consumer-smoke",
+-  version: "0.0.0",
+-  private: true,
+-  type: "module",
+-  dependencies: Object.fromEntries(publicPackages.map((packageName) => [packageName, `file:${tarballs.get(packageName)}`]))
+-}, null, 2));
+-
+-writeFileSync(join(consumerDir, "index.mjs"), `
++writeFileSync(join(consumerDir,"node.mjs"), `
+ import assert from "node:assert/strict";
+-
+-const packages = ${JSON.stringify(publicPackages, null, 2)};
+-const packageExports = ${JSON.stringify(publicPackageExportSpecifiers, null, 2)};
+-for (const specifier of packageExports) {
+-  const module = await import(specifier);
+-  assert(Object.keys(module).length > 0, specifier + " must import from packed tarball");
++import {readFileSync} from "node:fs";
++import * as root from "@nsealr/sdk";
++import * as browser from "@nsealr/sdk/browser";
++import * as node from "@nsealr/sdk/node";
++const request=JSON.parse(readFileSync(new URL("request-kind-1-basic.json",import.meta.url)));
++const response=JSON.parse(readFileSync(new URL("response-kind-1-basic.json",import.meta.url)));
++for (const sdk of [root,browser,node]) {
++  assert.equal(sdk.protocol.validateRequest(request).ok,true);
++  assert.equal(sdk.core.computeEventId(response.result.event),response.result.event.id);
++  assert.equal(sdk.core.verifySignedEventResponse(request,response).ok,true);
++  assert.deepEqual(sdk.qr.decodeQrEnvelope(sdk.qr.encodeQrEnvelope(request)),request);
++  assert.equal("smartcard" in sdk,false);
++  assert.equal("devSignRequest" in sdk,false);
+ }
+-assert(packageExports.length >= packages.length, "packed smoke must cover every public package root and subpath export");
+-
+-const { computeEventId } = await import("@nsealr/core");
+-const { validateRequest } = await import("@nsealr/protocol");
+-const { parseLocalClientIdentity } = await import("@nsealr/client/client-identity");
+-
+-assert.equal(validateRequest({
+-  version: 1,
+-  request_id: "packed-consumer-get-public-key",
+-  method: "get_public_key"
+-}).ok, true);
+-assert.equal(computeEventId({
+-  pubkey: "0".repeat(64),
+-  created_at: 1,
+-  kind: 1,
+-  tags: [],
+-  content: "packed consumer smoke"
+-}).length, 64);
+-assert.equal(parseLocalClientIdentity({
+-  surface: "browser_extension",
+-  origin: "https://example.com",
+-  app_name: "Packed Consumer Smoke",
+-  instance_id: "packed-consumer-smoke"
+-}).origin, "https://example.com");
+-
+-console.log("nSealr packed package smoke passed");
++assert.equal(typeof node.client.parseLocalGrantStore,"function");
++assert.equal(typeof node.nip46.decideNip46BridgeAction,"function");
++assert.equal("parseLocalGrantStore" in root.client,false);
++assert.equal("parseLocalGrantStore" in browser.client,false);
++await assert.rejects(import("@nsealr/core"),{code:"ERR_MODULE_NOT_FOUND"});
++await assert.rejects(import("@nsealr/sdk/dist/internal/core/index.js"),{code:"ERR_PACKAGE_PATH_NOT_EXPORTED"});
++console.log("isolated packed root/browser/Node behavior and hidden-import negatives passed");
+ `);
+-
+-run("npm", ["install", "--ignore-scripts", "--no-audit", "--fund=false"], { cwd: consumerDir, env: cleanNpmConsumerEnv() });
+-run("node", ["index.mjs"], { cwd: consumerDir });
++run("node",["node.mjs"],{cwd:consumerDir});
++writeFileSync(join(consumerDir,"browser-entry.mjs"), `
++import * as sdk from "@nsealr/sdk/browser";
++import request from "./request-kind-1-basic.json";
++import response from "./response-kind-1-basic.json";
++const provider=sdk.browserProvider.createNip07Provider({
++ client:{surface:"browser_extension",origin:"https://example.com",app_name:"Packed SDK",instance_id:"packed-sdk"},
++ backend:{getPublicKey:async()=>response.result.event.pubkey,signEventRequest:async()=>response},
++ nextRequestId:()=>request.request_id
++});
++globalThis.packedSdkResult=(async()=>({
++ pubkey:await provider.getPublicKey(),event:await provider.signEvent(request.params.event_template),
++ valid:sdk.core.verifySignedEventResponse(request,response).ok
++}))();
++`);
++const bundle = await build({absWorkingDir:consumerDir,entryPoints:["browser-entry.mjs"],bundle:true,format:"iife",platform:"browser",target:"es2022",write:false,metafile:true});
++assert(!Object.values(bundle.metafile.outputs).some((output)=>output.imports.some((item)=>item.external)),"browser consumer bundle has no unresolved external imports");
++writeFileSync(join(consumerDir,"browser-bundle.js"),bundle.outputFiles[0].text);
++writeFileSync(join(consumerDir,"browser-run.mjs"),`
++import assert from "node:assert/strict";
++import vm from "node:vm";
++import {readFileSync} from "node:fs";
++import {webcrypto} from "node:crypto";
++const context=vm.createContext({TextEncoder,TextDecoder,Uint8Array,ArrayBuffer,AbortController,crypto:webcrypto,setTimeout,clearTimeout,console});
++vm.runInContext(readFileSync("browser-bundle.js","utf8"),context);
++const result=await context.packedSdkResult;
++const expected=JSON.parse(readFileSync("response-kind-1-basic.json","utf8")).result.event;
++assert.equal(result.valid,true);assert.equal(result.pubkey,expected.pubkey);assert.equal(result.event.id,expected.id);
++console.log("packed browser bundle executes without Node module globals; real browser qualification remains separate");
++`);
++run("node",["browser-run.mjs"],{cwd:consumerDir});
++writeFileSync(join(consumerDir,"consumer.ts"),`
++import * as sdk from "@nsealr/sdk";
++import * as browser from "@nsealr/sdk/browser";
++import * as node from "@nsealr/sdk/node";
++const identity:sdk.client.LocalClientIdentity={surface:"browser_extension",origin:"https://example.com",app_name:"Types"};
++const request: sdk.core.SignEventRequest={version:1,request_id:"types",method:"sign_event",params:{event_template:{created_at:1,kind:1,tags:[],content:"types"}}};
++const provider:browser.browserProvider.Nip07Provider=browser.browserProvider.createNip07Provider({client:identity,backend:{getPublicKey:async()=>"1".repeat(64),signEventRequest:async()=>{throw new Error("no signer");}},nextRequestId:()=>request.request_id});
++void provider;void node.client.parseLocalGrantStore;void node.nip46.decideNip46BridgeAction;
++`);
++const tsc=join(root,"node_modules/typescript/bin/tsc");
++run("node",[tsc,"--ignoreConfig","--strict","--target","ES2022","--module","NodeNext","--moduleResolution","NodeNext","--noEmit","consumer.ts"],{cwd:consumerDir});
++console.log("single packed SDK runtime/browser/type acceptance passed");
+diff --git a/tools/bridge/package_set.mjs b/tools/bridge/package_set.mjs
+index aa0d1f9ac1e4cc3da0c91e30f258711bd4eddb27..89dba6cc664663c4e270893bc404cc8779d06fd0 100644
+--- a/tools/bridge/package_set.mjs
++++ b/tools/bridge/package_set.mjs
+@@ -163,6 +163,7 @@ export function assertCompanionPackageRegistry() {
+   const packageNames = new Set(workspacePackages.map(({ manifest }) => manifest.name));
+   const publicPackageSet = new Set(publicPackages);
+ 
++  assert.deepEqual(publicPackages, ["@nsealr/sdk"], "SDK is the sole public package");
+   assert(!publicPackageSet.has("@nsealr/dev-signer"), "@nsealr/dev-signer must stay private");
+   assert(privatePackages.includes("@nsealr/dev-signer"), "@nsealr/dev-signer must be registered as private");
+ 
+diff --git a/tools/bridge/release_plan.mjs b/tools/bridge/release_plan.mjs
+index 9dc721ac86e10603d81d98460b91f599c2cc4046..c1c17ba8266a10f052e0a4a5ed099042b952699b 100644
+--- a/tools/bridge/release_plan.mjs
++++ b/tools/bridge/release_plan.mjs
+@@ -45,8 +45,8 @@ export function buildCompanionPackageReleasePlan() {
+     packages,
+     required_local_gates: Object.freeze([
+       "make ci",
+-      "make integration in ../lab",
+-      "make release-artifacts"
++      "make integration",
++      "pnpm release-artifacts"
+     ]),
+     requires_trusted_publishing: true,
+     requires_npm_provenance: true,

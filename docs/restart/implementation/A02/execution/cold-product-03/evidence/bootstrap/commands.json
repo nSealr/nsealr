@@ -1,0 +1,137 @@
+[
+  {
+    "label": "python-packages",
+    "argv": [
+      "python3",
+      "-m",
+      "pip",
+      "install",
+      "--no-deps",
+      "/home/tux/nsealr/.restart-tools/goal/a02/tools/migration/.runtime/cold-product-03/.tools/wheels/pip-25.3-py3-none-any.whl",
+      "/home/tux/nsealr/.restart-tools/goal/a02/tools/migration/.runtime/cold-product-03/.tools/wheels/setuptools-80.9.0-py3-none-any.whl",
+      "/home/tux/nsealr/.restart-tools/goal/a02/tools/migration/.runtime/cold-product-03/.tools/wheels/wheel-0.45.1-py3-none-any.whl",
+      "/home/tux/nsealr/.restart-tools/goal/a02/tools/migration/.runtime/cold-product-03/.tools/wheels/packaging-25.0-py3-none-any.whl",
+      "/home/tux/nsealr/.restart-tools/goal/a02/tools/migration/.runtime/cold-product-03/.tools/wheels/pyyaml-6.0.3-cp312-cp312-manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_28_x86_64.whl",
+      "/home/tux/nsealr/.restart-tools/goal/a02/tools/migration/.runtime/cold-product-03/.tools/wheels/mnemonic-0.21-py3-none-any.whl",
+      "/home/tux/nsealr/.restart-tools/goal/a02/tools/migration/.runtime/cold-product-03/.tools/wheels/secp256k1-0.14.0-cp312-cp312-manylinux_2_17_x86_64.manylinux2014_x86_64.whl",
+      "/home/tux/nsealr/.restart-tools/goal/a02/tools/migration/.runtime/cold-product-03/.tools/wheels/cffi-2.1.1-cp312-cp312-manylinux2014_x86_64.manylinux_2_17_x86_64.whl",
+      "/home/tux/nsealr/.restart-tools/goal/a02/tools/migration/.runtime/cold-product-03/.tools/wheels/pycparser-3.11-py3-none-any.whl"
+    ],
+    "cwd": "/home/tux/nsealr/.restart-tools/goal/a02/tools/migration/.runtime/cold-product-03",
+    "started": "2026-10-18T20:10:23.063212+00:00",
+    "log": "00-python-packages.log",
+    "ended": "2026-10-18T20:10:24.525966+00:00",
+    "exit_code": 0,
+    "sha256": "d861f115bcb9035d0b32bf210ef990aec308eafb6383af284a2df751b48a53ae"
+  },
+  {
+    "label": "python-dependency-check",
+    "argv": [
+      "python3",
+      "-m",
+      "pip",
+      "check"
+    ],
+    "cwd": "/home/tux/nsealr/.restart-tools/goal/a02/tools/migration/.runtime/cold-product-03",
+    "started": "2026-10-18T20:10:24.526183+00:00",
+    "log": "01-python-dependency-check.log",
+    "ended": "2026-10-18T20:10:24.812223+00:00",
+    "exit_code": 0,
+    "sha256": "49dd068bdd7de528c79144bcff14963249c8129be6a8503818970c6c760e666d"
+  },
+  {
+    "label": "rustup-install",
+    "argv": [
+      "/home/tux/nsealr/.restart-tools/goal/a02/tools/migration/.runtime/cold-product-03/.tools/downloads/rustup-init",
+      "-y",
+      "--no-modify-path",
+      "--profile",
+      "minimal",
+      "--default-toolchain",
+      "none"
+    ],
+    "cwd": "/home/tux/nsealr/.restart-tools/goal/a02/tools/migration/.runtime/cold-product-03",
+    "started": "2026-10-18T20:10:24.812447+00:00",
+    "log": "02-rustup-install.log",
+    "ended": "2026-10-18T20:10:24.846027+00:00",
+    "exit_code": 0,
+    "sha256": "a1656e366ae2d083e0c1b5e568fa754906dd12cf4282dbd624ac19fffe818353"
+  },
+  {
+    "label": "rustup-disable-self-update",
+    "argv": [
+      "rustup",
+      "set",
+      "auto-self-update",
+      "disable"
+    ],
+    "cwd": "/home/tux/nsealr/.restart-tools/goal/a02/tools/migration/.runtime/cold-product-03",
+    "started": "2026-10-18T20:10:24.846203+00:00",
+    "log": "03-rustup-disable-self-update.log",
+    "ended": "2026-10-18T20:10:24.854899+00:00",
+    "exit_code": 0,
+    "sha256": "ed78080ae3c2fd6ab835d20f9d07a0c24b0f0e7452558cc8d7a621aeae7615b5"
+  },
+  {
+    "label": "rust-toolchain",
+    "argv": [
+      "rustup",
+      "toolchain",
+      "install",
+      "1.95.0",
+      "--profile",
+      "minimal",
+      "--component",
+      "rustfmt,clippy,llvm-tools-preview",
+      "--target",
+      "riscv32imafc-unknown-none-elf"
+    ],
+    "cwd": "/home/tux/nsealr/.restart-tools/goal/a02/tools/migration/.runtime/cold-product-03",
+    "started": "2026-10-18T20:10:24.855186+00:00",
+    "log": "04-rust-toolchain.log",
+    "ended": "2026-10-18T20:10:31.734280+00:00",
+    "exit_code": 0,
+    "sha256": "3e4c50e9aec03fad651c876451ef0cb300fde51ac4d30b5d9cbdfdf02c6f24fb"
+  },
+  {
+    "label": "rust-default",
+    "argv": [
+      "rustup",
+      "default",
+      "1.95.0"
+    ],
+    "cwd": "/home/tux/nsealr/.restart-tools/goal/a02/tools/migration/.runtime/cold-product-03",
+    "started": "2026-10-18T20:10:31.734555+00:00",
+    "log": "05-rust-default.log",
+    "ended": "2026-10-18T20:10:31.750042+00:00",
+    "exit_code": 0,
+    "sha256": "2b9376f0d059ec6535da2c1e00b53cf7d1384a6571038cdf471ba3024de8f527"
+  },
+  {
+    "label": "product-frozen-install",
+    "argv": [
+      "pnpm",
+      "install",
+      "--frozen-lockfile"
+    ],
+    "cwd": "/home/tux/nsealr/.restart-tools/goal/a02/tools/migration/.runtime/cold-product-03/nsealr",
+    "started": "2026-10-18T20:10:31.750239+00:00",
+    "log": "06-product-frozen-install.log",
+    "ended": "2026-10-18T20:10:33.079672+00:00",
+    "exit_code": 0,
+    "sha256": "df4ec69d9533f957cc1ee73aa99ee60668615b7f6c6732aec08341ee94514603"
+  },
+  {
+    "label": "pi-setup",
+    "argv": [
+      "make",
+      "setup"
+    ],
+    "cwd": "/home/tux/nsealr/.restart-tools/goal/a02/tools/migration/.runtime/cold-product-03/nsealr/apps/pi",
+    "started": "2026-10-18T20:10:33.079953+00:00",
+    "log": "07-pi-setup.log",
+    "ended": "2026-10-18T20:10:37.083148+00:00",
+    "exit_code": 0,
+    "sha256": "3681d4c6d3f61fae351b810ba9258460f7b3d664d1adc4e6dea01a33bc949566"
+  }
+]
