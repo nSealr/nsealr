@@ -2,31 +2,28 @@
 
 Date: 2026-10-20. This handoff gives navigation and recovery procedures, not a second task-status ledger. Read the current graph before choosing work.
 
-## Current A02 post-rebase repair
+## Current A02 source acceptance and closure
 
-The [adoption handoff](A02/coordinator-adoption/handoff.md) preserves the reviewed
-source/public append and copy inventories. PR31 passed distinct final review and
-full protected PR CI39406783194, then normally rebase-merged as main
-`d931277bebbc5f43514b0e8438d65fb60603fa35`. Exact-main CI39408038674 failed:
-the cold main-only bootstrap lacks two intermediate contract-provenance commits
-rewritten by that rebase. Their adopted counterparts have identical whole trees.
+Actual repaired main `b1c90139a651895284b2624da7d12903cf16bc9d` passed full
+corrected-main CI39412818666. Distinct source review `d280bfdc` accepts all five
+unchanged A02 criteria against the original five-repository import inputs. The
+[closure handoff](A02/closure/handoff.md) and [result](A02/closure/result.json)
+bind that source acceptance, actual CI/normal-rebase chain, complete review
+copies, cold-main proof and remaining metadata integration gates.
 
-Read the [admitted repair brief](A02/post-rebase-repair/brief.md) and
-[source audit](A02/post-rebase-repair/source-audit.json). The repair separates the
-literal historical import identity from the runtime source anchor and pins the
-reviewed baseline at permanent main ancestors. Preserve the failed hosted run,
-actual cold-main RED, exact review and subsequent repair proof in that scoped
-directory. A distinct exact final-diff review, full protected repair PR CI,
-normal integration and corrected-main CI remain required. Do not retry the
-deterministic failed run or add old branch objects to hide the lookup failure.
+The original adopted `d931277` main run failed; its exact capture and the bounded
+repair remain historical evidence. No failed observation or dated report is
+rewritten. The original f2/1,508-file index and seven prior closed records remain
+unchanged. New A02 evidence belongs to its graph-bound result artifacts, with no
+extension of the historical index.
 
-The sole adopted graph is [plan/work-items.json](../../../plan/work-items.json).
-Its seven incomplete checkpoints, original criteria/dependencies and closed
-evidence remain unchanged by this repair. A02 stays incomplete; S03 implementation
-is held until corrected-main CI and its own source/brief gates pass. Independent
-Board SDK/hardware work may continue within its accepted scope. The historical
-pause proposal is not another tracker. No source archive, registry publication,
-hardware qualification or task closure is included here.
+The sole task authority is [plan/work-items.json](../../../plan/work-items.json).
+Closure metadata still follows distinct root exact-diff review, full protected
+PR checks, normal merge and actual resulting-main CI. Dependent implementations
+need their own accepted source/specification and actual validation; no dependent
+task closes through A02. Source notices, archival, registry publication and
+physical qualification remain separate work. The historical pause proposal is
+not another tracker.
 
 ## Recover the actual state
 

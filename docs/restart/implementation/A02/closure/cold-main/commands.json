@@ -1,0 +1,358 @@
+[
+  {
+    "command": [
+      "git",
+      "-c",
+      "init.templateDir=",
+      "init",
+      "--initial-branch=intake",
+      "/home/tux/nsealr/.restart-tools/goal/a02-closure/tools/migration/.runtime/closure-cold-main-01/candidate"
+    ],
+    "cwd": "/home/tux/nsealr/.restart-tools/goal/a02-closure/tools/migration/.runtime/closure-cold-main-01",
+    "ended_utc": "2026-10-20T11:23:29.292138+00:00",
+    "environment_sha256": "1329698bcbfb60c23fcd6617913d050c6e9d7e2f46108c49c01bb2a19625fae5",
+    "exit_code": 0,
+    "explicit_environment_sha256": "9e3c5c25fbde3334949a511b978ece77f27b4e3fe73d236ef09c99de10f80439",
+    "label": "absent-destination-init",
+    "log": "00-absent-destination-init.log",
+    "sha256": "4d0c3c95e9b6797f1844a83285eaca002d357ed7245b3dc1f45740dbde5aa076",
+    "started_utc": "2026-10-20T11:23:29.288716+00:00"
+  },
+  {
+    "command": [
+      "git",
+      "fetch",
+      "--no-tags",
+      "--no-write-fetch-head",
+      "https://github.com/nSealr/nsealr.git",
+      "b1c90139a651895284b2624da7d12903cf16bc9d:refs/heads/candidate"
+    ],
+    "cwd": "/home/tux/nsealr/.restart-tools/goal/a02-closure/tools/migration/.runtime/closure-cold-main-01/candidate",
+    "ended_utc": "2026-10-20T11:23:30.319983+00:00",
+    "environment_sha256": "1329698bcbfb60c23fcd6617913d050c6e9d7e2f46108c49c01bb2a19625fae5",
+    "exit_code": 0,
+    "explicit_environment_sha256": "9e3c5c25fbde3334949a511b978ece77f27b4e3fe73d236ef09c99de10f80439",
+    "label": "public-exact-candidate-only-fetch",
+    "log": "01-public-exact-candidate-only-fetch.log",
+    "sha256": "fc964893a5cd76e0c2705715364619750ebaae6647540c64626548387e3c7584",
+    "started_utc": "2026-10-20T11:23:29.292264+00:00"
+  },
+  {
+    "command": [
+      "git",
+      "checkout",
+      "candidate"
+    ],
+    "cwd": "/home/tux/nsealr/.restart-tools/goal/a02-closure/tools/migration/.runtime/closure-cold-main-01/candidate",
+    "ended_utc": "2026-10-20T11:23:30.514291+00:00",
+    "environment_sha256": "1329698bcbfb60c23fcd6617913d050c6e9d7e2f46108c49c01bb2a19625fae5",
+    "exit_code": 0,
+    "explicit_environment_sha256": "9e3c5c25fbde3334949a511b978ece77f27b4e3fe73d236ef09c99de10f80439",
+    "label": "candidate-checkout",
+    "log": "02-candidate-checkout.log",
+    "sha256": "2b19e8110f9cac71fecce166937f95ad395e85219aa3a74fc90a2a19bb2b44f2",
+    "started_utc": "2026-10-20T11:23:30.320134+00:00"
+  },
+  {
+    "command": [
+      "git",
+      "rev-parse",
+      "HEAD",
+      "HEAD^{tree}"
+    ],
+    "cwd": "/home/tux/nsealr/.restart-tools/goal/a02-closure/tools/migration/.runtime/closure-cold-main-01/candidate",
+    "ended_utc": "2026-10-20T11:23:30.515798+00:00",
+    "environment_sha256": "1329698bcbfb60c23fcd6617913d050c6e9d7e2f46108c49c01bb2a19625fae5",
+    "exit_code": 0,
+    "explicit_environment_sha256": "9e3c5c25fbde3334949a511b978ece77f27b4e3fe73d236ef09c99de10f80439",
+    "label": "actual-head-tree",
+    "log": "03-actual-head-tree.log",
+    "sha256": "9cff3494758bf1e34089b5cdc7cbccfbbea9603f11aaf717568fe12ac05082a0",
+    "started_utc": "2026-10-20T11:23:30.514450+00:00"
+  },
+  {
+    "command": [
+      "git",
+      "for-each-ref",
+      "--format=%(refname) %(objectname)"
+    ],
+    "cwd": "/home/tux/nsealr/.restart-tools/goal/a02-closure/tools/migration/.runtime/closure-cold-main-01/candidate",
+    "ended_utc": "2026-10-20T11:23:30.516732+00:00",
+    "environment_sha256": "1329698bcbfb60c23fcd6617913d050c6e9d7e2f46108c49c01bb2a19625fae5",
+    "exit_code": 0,
+    "explicit_environment_sha256": "9e3c5c25fbde3334949a511b978ece77f27b4e3fe73d236ef09c99de10f80439",
+    "label": "only-selected-ref",
+    "log": "04-only-selected-ref.log",
+    "sha256": "9a8f782c3ea855144d076ac812c4ebefd6f5839f3e05b3802bf16aad1890ff78",
+    "started_utc": "2026-10-20T11:23:30.515925+00:00"
+  },
+  {
+    "command": [
+      "git",
+      "remote"
+    ],
+    "cwd": "/home/tux/nsealr/.restart-tools/goal/a02-closure/tools/migration/.runtime/closure-cold-main-01/candidate",
+    "ended_utc": "2026-10-20T11:23:30.517585+00:00",
+    "environment_sha256": "1329698bcbfb60c23fcd6617913d050c6e9d7e2f46108c49c01bb2a19625fae5",
+    "exit_code": 0,
+    "explicit_environment_sha256": "9e3c5c25fbde3334949a511b978ece77f27b4e3fe73d236ef09c99de10f80439",
+    "label": "no-configured-remotes",
+    "log": "05-no-configured-remotes.log",
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "started_utc": "2026-10-20T11:23:30.516845+00:00"
+  },
+  {
+    "command": [
+      "git",
+      "status",
+      "--porcelain"
+    ],
+    "cwd": "/home/tux/nsealr/.restart-tools/goal/a02-closure/tools/migration/.runtime/closure-cold-main-01/candidate",
+    "ended_utc": "2026-10-20T11:23:30.648324+00:00",
+    "environment_sha256": "1329698bcbfb60c23fcd6617913d050c6e9d7e2f46108c49c01bb2a19625fae5",
+    "exit_code": 0,
+    "explicit_environment_sha256": "9e3c5c25fbde3334949a511b978ece77f27b4e3fe73d236ef09c99de10f80439",
+    "label": "clean-source-before",
+    "log": "06-clean-source-before.log",
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "started_utc": "2026-10-20T11:23:30.517759+00:00"
+  },
+  {
+    "command": [
+      "git",
+      "cat-file",
+      "-e",
+      "86569e073da4faec0811d67137bbb0fd4f74c7c6^{commit}"
+    ],
+    "cwd": "/home/tux/nsealr/.restart-tools/goal/a02-closure/tools/migration/.runtime/closure-cold-main-01/candidate",
+    "ended_utc": "2026-10-20T11:23:30.650072+00:00",
+    "environment_sha256": "1329698bcbfb60c23fcd6617913d050c6e9d7e2f46108c49c01bb2a19625fae5",
+    "exit_code": 128,
+    "explicit_environment_sha256": "9e3c5c25fbde3334949a511b978ece77f27b4e3fe73d236ef09c99de10f80439",
+    "label": "historical-86569e0-absent",
+    "log": "07-historical-86569e0-absent.log",
+    "sha256": "aa70e60d239f599653e267725784122bbfe33e649e6703382bf0d4cc70b60aa9",
+    "started_utc": "2026-10-20T11:23:30.648596+00:00"
+  },
+  {
+    "command": [
+      "git",
+      "cat-file",
+      "-e",
+      "5cb16cbaffc6b90ca9dfbb1ce7a5388e731d1ae0^{commit}"
+    ],
+    "cwd": "/home/tux/nsealr/.restart-tools/goal/a02-closure/tools/migration/.runtime/closure-cold-main-01/candidate",
+    "ended_utc": "2026-10-20T11:23:30.651246+00:00",
+    "environment_sha256": "1329698bcbfb60c23fcd6617913d050c6e9d7e2f46108c49c01bb2a19625fae5",
+    "exit_code": 128,
+    "explicit_environment_sha256": "9e3c5c25fbde3334949a511b978ece77f27b4e3fe73d236ef09c99de10f80439",
+    "label": "historical-5cb16cb-absent",
+    "log": "08-historical-5cb16cb-absent.log",
+    "sha256": "7df8ef7c383dd2b29c9529c54adc98533b4dd7d51ee7657cfe4e9f97f0947877",
+    "started_utc": "2026-10-20T11:23:30.650224+00:00"
+  },
+  {
+    "command": [
+      "git",
+      "cat-file",
+      "-e",
+      "68508ea1eea1e07b0064fadd65b33433d72701f8^{commit}"
+    ],
+    "cwd": "/home/tux/nsealr/.restart-tools/goal/a02-closure/tools/migration/.runtime/closure-cold-main-01/candidate",
+    "ended_utc": "2026-10-20T11:23:30.652857+00:00",
+    "environment_sha256": "1329698bcbfb60c23fcd6617913d050c6e9d7e2f46108c49c01bb2a19625fae5",
+    "exit_code": 0,
+    "explicit_environment_sha256": "9e3c5c25fbde3334949a511b978ece77f27b4e3fe73d236ef09c99de10f80439",
+    "label": "permanent-68508ea-present",
+    "log": "09-permanent-68508ea-present.log",
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "started_utc": "2026-10-20T11:23:30.651562+00:00"
+  },
+  {
+    "command": [
+      "git",
+      "merge-base",
+      "--is-ancestor",
+      "68508ea1eea1e07b0064fadd65b33433d72701f8",
+      "b1c90139a651895284b2624da7d12903cf16bc9d"
+    ],
+    "cwd": "/home/tux/nsealr/.restart-tools/goal/a02-closure/tools/migration/.runtime/closure-cold-main-01/candidate",
+    "ended_utc": "2026-10-20T11:23:30.654416+00:00",
+    "environment_sha256": "1329698bcbfb60c23fcd6617913d050c6e9d7e2f46108c49c01bb2a19625fae5",
+    "exit_code": 0,
+    "explicit_environment_sha256": "9e3c5c25fbde3334949a511b978ece77f27b4e3fe73d236ef09c99de10f80439",
+    "label": "permanent-68508ea-ancestor",
+    "log": "10-permanent-68508ea-ancestor.log",
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "started_utc": "2026-10-20T11:23:30.653016+00:00"
+  },
+  {
+    "command": [
+      "git",
+      "cat-file",
+      "-e",
+      "59653fcc15c4cbc21a39d0a0dd5548abe46165b0^{commit}"
+    ],
+    "cwd": "/home/tux/nsealr/.restart-tools/goal/a02-closure/tools/migration/.runtime/closure-cold-main-01/candidate",
+    "ended_utc": "2026-10-20T11:23:30.655596+00:00",
+    "environment_sha256": "1329698bcbfb60c23fcd6617913d050c6e9d7e2f46108c49c01bb2a19625fae5",
+    "exit_code": 0,
+    "explicit_environment_sha256": "9e3c5c25fbde3334949a511b978ece77f27b4e3fe73d236ef09c99de10f80439",
+    "label": "permanent-59653fc-present",
+    "log": "11-permanent-59653fc-present.log",
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "started_utc": "2026-10-20T11:23:30.654577+00:00"
+  },
+  {
+    "command": [
+      "git",
+      "merge-base",
+      "--is-ancestor",
+      "59653fcc15c4cbc21a39d0a0dd5548abe46165b0",
+      "b1c90139a651895284b2624da7d12903cf16bc9d"
+    ],
+    "cwd": "/home/tux/nsealr/.restart-tools/goal/a02-closure/tools/migration/.runtime/closure-cold-main-01/candidate",
+    "ended_utc": "2026-10-20T11:23:30.656834+00:00",
+    "environment_sha256": "1329698bcbfb60c23fcd6617913d050c6e9d7e2f46108c49c01bb2a19625fae5",
+    "exit_code": 0,
+    "explicit_environment_sha256": "9e3c5c25fbde3334949a511b978ece77f27b4e3fe73d236ef09c99de10f80439",
+    "label": "permanent-59653fc-ancestor",
+    "log": "12-permanent-59653fc-ancestor.log",
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "started_utc": "2026-10-20T11:23:30.655749+00:00"
+  },
+  {
+    "command": [
+      "git",
+      "cat-file",
+      "-e",
+      "f2ef70f522af4977e15f81554a8c6eadcdbe8097^{commit}"
+    ],
+    "cwd": "/home/tux/nsealr/.restart-tools/goal/a02-closure/tools/migration/.runtime/closure-cold-main-01/candidate",
+    "ended_utc": "2026-10-20T11:23:30.657960+00:00",
+    "environment_sha256": "1329698bcbfb60c23fcd6617913d050c6e9d7e2f46108c49c01bb2a19625fae5",
+    "exit_code": 0,
+    "explicit_environment_sha256": "9e3c5c25fbde3334949a511b978ece77f27b4e3fe73d236ef09c99de10f80439",
+    "label": "permanent-f2ef70f-present",
+    "log": "13-permanent-f2ef70f-present.log",
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "started_utc": "2026-10-20T11:23:30.657038+00:00"
+  },
+  {
+    "command": [
+      "git",
+      "merge-base",
+      "--is-ancestor",
+      "f2ef70f522af4977e15f81554a8c6eadcdbe8097",
+      "b1c90139a651895284b2624da7d12903cf16bc9d"
+    ],
+    "cwd": "/home/tux/nsealr/.restart-tools/goal/a02-closure/tools/migration/.runtime/closure-cold-main-01/candidate",
+    "ended_utc": "2026-10-20T11:23:30.659174+00:00",
+    "environment_sha256": "1329698bcbfb60c23fcd6617913d050c6e9d7e2f46108c49c01bb2a19625fae5",
+    "exit_code": 0,
+    "explicit_environment_sha256": "9e3c5c25fbde3334949a511b978ece77f27b4e3fe73d236ef09c99de10f80439",
+    "label": "permanent-f2ef70f-ancestor",
+    "log": "14-permanent-f2ef70f-ancestor.log",
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "started_utc": "2026-10-20T11:23:30.658121+00:00"
+  },
+  {
+    "command": [
+      "git",
+      "cat-file",
+      "--batch-all-objects",
+      "--batch-check=%(objectname)"
+    ],
+    "cwd": "/home/tux/nsealr/.restart-tools/goal/a02-closure/tools/migration/.runtime/closure-cold-main-01/candidate",
+    "ended_utc": "2026-10-20T11:23:30.661796+00:00",
+    "environment_sha256": "1329698bcbfb60c23fcd6617913d050c6e9d7e2f46108c49c01bb2a19625fae5",
+    "exit_code": 0,
+    "explicit_environment_sha256": "9e3c5c25fbde3334949a511b978ece77f27b4e3fe73d236ef09c99de10f80439",
+    "label": "all-fetched-object-identities",
+    "log": "15-all-fetched-object-identities.log",
+    "sha256": "c367bb9523c9f7c0da7a8163c8980a90f81b32ca6a68e41cf0fc1b640c40f0e6",
+    "started_utc": "2026-10-20T11:23:30.659723+00:00"
+  },
+  {
+    "command": [
+      "git",
+      "rev-list",
+      "--objects",
+      "b1c90139a651895284b2624da7d12903cf16bc9d"
+    ],
+    "cwd": "/home/tux/nsealr/.restart-tools/goal/a02-closure/tools/migration/.runtime/closure-cold-main-01/candidate",
+    "ended_utc": "2026-10-20T11:23:30.670569+00:00",
+    "environment_sha256": "1329698bcbfb60c23fcd6617913d050c6e9d7e2f46108c49c01bb2a19625fae5",
+    "exit_code": 0,
+    "explicit_environment_sha256": "9e3c5c25fbde3334949a511b978ece77f27b4e3fe73d236ef09c99de10f80439",
+    "label": "only-candidate-reachable-objects",
+    "log": "16-only-candidate-reachable-objects.log",
+    "sha256": "fc3b508efa36d8bccbc3ba48c311acc6e7a9e5481055ce0d8d9d506981bed744",
+    "started_utc": "2026-10-20T11:23:30.662894+00:00"
+  },
+  {
+    "command": [
+      "git",
+      "fsck",
+      "--full",
+      "--strict"
+    ],
+    "cwd": "/home/tux/nsealr/.restart-tools/goal/a02-closure/tools/migration/.runtime/closure-cold-main-01/candidate",
+    "ended_utc": "2026-10-20T11:23:30.946127+00:00",
+    "environment_sha256": "1329698bcbfb60c23fcd6617913d050c6e9d7e2f46108c49c01bb2a19625fae5",
+    "exit_code": 0,
+    "explicit_environment_sha256": "9e3c5c25fbde3334949a511b978ece77f27b4e3fe73d236ef09c99de10f80439",
+    "label": "strict-object-integrity",
+    "log": "17-strict-object-integrity.log",
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "started_utc": "2026-10-20T11:23:30.673301+00:00"
+  },
+  {
+    "command": [
+      "/home/tux/nsealr/.restart-tools/goal/r00/tools/baseline/.work/final/.tools/python/bin/python3",
+      "-B",
+      "scripts/verify_contracts.py"
+    ],
+    "cwd": "/home/tux/nsealr/.restart-tools/goal/a02-closure/tools/migration/.runtime/closure-cold-main-01/candidate",
+    "ended_utc": "2026-10-20T11:23:32.083736+00:00",
+    "environment_sha256": "1329698bcbfb60c23fcd6617913d050c6e9d7e2f46108c49c01bb2a19625fae5",
+    "exit_code": 0,
+    "explicit_environment_sha256": "9e3c5c25fbde3334949a511b978ece77f27b4e3fe73d236ef09c99de10f80439",
+    "label": "corrected-actual-artifact-checker-GREEN",
+    "log": "18-corrected-actual-artifact-checker-GREEN.log",
+    "sha256": "5a55b9297524922045d80ae336a70c873b1def09daa7e38fe09572142b4911e3",
+    "started_utc": "2026-10-20T11:23:30.948134+00:00"
+  },
+  {
+    "command": [
+      "/home/tux/nsealr/.restart-tools/goal/r00/tools/baseline/.work/final/.tools/python/bin/python3",
+      "-B",
+      "scripts/verify_evidence.py"
+    ],
+    "cwd": "/home/tux/nsealr/.restart-tools/goal/a02-closure/tools/migration/.runtime/closure-cold-main-01/candidate",
+    "ended_utc": "2026-10-20T11:23:32.245280+00:00",
+    "environment_sha256": "1329698bcbfb60c23fcd6617913d050c6e9d7e2f46108c49c01bb2a19625fae5",
+    "exit_code": 0,
+    "explicit_environment_sha256": "9e3c5c25fbde3334949a511b978ece77f27b4e3fe73d236ef09c99de10f80439",
+    "label": "remaining-historical-evidence-anchor-GREEN",
+    "log": "19-remaining-historical-evidence-anchor-GREEN.log",
+    "sha256": "138790849cdcf7f3e23898c363e56fd327728e56d6e357aa838c9a78472114c5",
+    "started_utc": "2026-10-20T11:23:32.084013+00:00"
+  },
+  {
+    "command": [
+      "git",
+      "status",
+      "--porcelain"
+    ],
+    "cwd": "/home/tux/nsealr/.restart-tools/goal/a02-closure/tools/migration/.runtime/closure-cold-main-01/candidate",
+    "ended_utc": "2026-10-20T11:23:32.372060+00:00",
+    "environment_sha256": "1329698bcbfb60c23fcd6617913d050c6e9d7e2f46108c49c01bb2a19625fae5",
+    "exit_code": 0,
+    "explicit_environment_sha256": "9e3c5c25fbde3334949a511b978ece77f27b4e3fe73d236ef09c99de10f80439",
+    "label": "clean-source-after",
+    "log": "20-clean-source-after.log",
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "started_utc": "2026-10-20T11:23:32.245660+00:00"
+  }
+]
