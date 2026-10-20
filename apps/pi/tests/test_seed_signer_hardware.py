@@ -310,7 +310,7 @@ class SeedSignerHardwareTests(unittest.TestCase):
     def test_camera_qr_scanner_collects_animated_request_frames(self) -> None:
         animated = encode_animated_qr_envelope_frames(
             {
-                "version": 1,
+                "version": 2,
                 "request_id": "req-camera-animated",
                 "method": "sign_event",
                 "params": {"event_template": {"created_at": 1710000000, "kind": 1, "tags": [], "content": "hello"}},
@@ -556,7 +556,7 @@ class SeedSignerHardwareTests(unittest.TestCase):
         target = FakeDrawTarget()
         renderer = FakeQrMatrixRenderer([[True, False], [False, True]])
         display = SeedSignerSt7789ResponseQrDisplay(target=target, qr_renderer=renderer, quiet_zone_modules=1)
-        response_qr = encode_qr_envelope({"version": 1, "request_id": "req-response-display", "ok": True, "result": {}})
+        response_qr = encode_qr_envelope({"version": 2, "request_id": "req-response-display", "ok": True, "result": {}})
 
         display.emit_response_qr(response_qr)
 
@@ -579,7 +579,7 @@ class SeedSignerHardwareTests(unittest.TestCase):
             sleep=sleeps.append,
         )
         animated = encode_animated_qr_envelope_frames(
-            {"version": 1, "request_id": "req-response-display-animated", "ok": True, "result": {}},
+            {"version": 2, "request_id": "req-response-display-animated", "ok": True, "result": {}},
             chunk_size_chars=24,
         )
 
@@ -632,7 +632,7 @@ class SeedSignerHardwareTests(unittest.TestCase):
         target = FakeDrawTarget()
         renderer = FakeQrMatrixRenderer([[True], [False, True]])
         display = SeedSignerSt7789ResponseQrDisplay(target=target, qr_renderer=renderer)
-        response_qr = encode_qr_envelope({"version": 1, "request_id": "req-invalid-matrix", "ok": True, "result": {}})
+        response_qr = encode_qr_envelope({"version": 2, "request_id": "req-invalid-matrix", "ok": True, "result": {}})
 
         with self.assertRaisesRegex(ValueError, "QR matrix must be rectangular"):
             display.emit_response_qr(response_qr)
@@ -641,7 +641,7 @@ class SeedSignerHardwareTests(unittest.TestCase):
         target = FakeDrawTarget()
         renderer = FakeQrMatrixRenderer([[True, False, True], [False, True, False]])
         display = SeedSignerSt7789ResponseQrDisplay(target=target, qr_renderer=renderer)
-        response_qr = encode_qr_envelope({"version": 1, "request_id": "req-non-square-matrix", "ok": True, "result": {}})
+        response_qr = encode_qr_envelope({"version": 2, "request_id": "req-non-square-matrix", "ok": True, "result": {}})
 
         with self.assertRaisesRegex(ValueError, "QR matrix must be square"):
             display.emit_response_qr(response_qr)

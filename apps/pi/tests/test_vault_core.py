@@ -4,6 +4,7 @@ import sys
 import tempfile
 import unittest
 from pathlib import Path
+from unittest.mock import patch
 
 from nsealr_vault.crypto import sign_event, verify_schnorr_signature
 from nsealr_vault.adapters import ComposedButtonQrVaultIO, FileButtonQrVaultIO, FileQrVaultIO
@@ -78,7 +79,7 @@ from nsealr_vault.session_source_backup_flow import (
     run_session_source_backup_flow,
     run_session_source_backup_io_flow,
 )
-from nsealr_vault.signer import sign_request
+from nsealr_vault.signer import sign_request, validate_signing_request
 
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -96,7 +97,7 @@ BASIC_REQUEST = json.loads((SPECS / "examples/request-kind-1-basic.json").read_t
 TAGGED_REQUEST = json.loads((SPECS / "examples/request-kind-1-tags.json").read_text(encoding="utf-8"))
 ANIMATED_QR_VECTOR = json.loads((SPECS / "vectors/transports/qr-animated-response-kind-1-basic.json").read_text(encoding="utf-8"))
 SCROLL_DETAIL_REQUEST = {
-    "version": 1,
+    "version": 2,
     "request_id": "req-scroll-detail",
     "method": "sign_event",
     "params": {
@@ -419,6 +420,110 @@ class HardwareProbeTests(unittest.TestCase):
             report = json.loads(output.read_text(encoding="utf-8"))
             self.assertEqual(report["format"], "nsealr-raspberry-seedsigner-compatibility-probe-v0")
             self.assertFalse(report["production_signing_enabled"])
+
+
+class Wire2ReferenceTests(unittest.TestCase):
+    def test_numeric_two_get_public_key_retains_independent_key(self) -> None:
+        request = {"version": 2, "request_id": "pi-pubkey", "method": "get_public_key"}
+
+        self.assertEqual(
+            sign_request(request, KEY["secret_key"], approved=False),
+            {"version": 2, "request_id": "pi-pubkey", "ok": True, "result": {"public_key": KEY["public_key"]}},
+        )
+
+    def test_legacy_unknown_and_noninteger_versions_reject_before_crypto(self) -> None:
+        for version in (1, 0, 10, True, 2.0, "2", None):
+            request = {"version": version, "request_id": "pi-version", "method": "get_public_key"}
+            with self.subTest(version=repr(version)), patch("nsealr_vault.signer.xonly_pubkey_from_secret") as public_key:
+                response = sign_request(request, KEY["secret_key"], approved=True)
+                self.assertFalse(response["ok"])
+                self.assertEqual(response["version"], 2)
+                self.assertEqual(response["error"]["code"], "unsupported_version")
+                public_key.assert_not_called()
+
+    def test_retired_status_and_message_methods_do_not_fall_back(self) -> None:
+        for method in ("get_signing_status", "unknown", "nip44_encrypt", "nip44_decrypt"):
+            request = {"version": 2, "request_id": "pi-method", "method": method}
+            with self.subTest(method=method), patch("nsealr_vault.signer.sign_event") as signer:
+                response = sign_request(request, KEY["secret_key"], approved=True)
+                self.assertFalse(response["ok"])
+                self.assertEqual(response["error"]["code"], "unsupported_method")
+                signer.assert_not_called()
+
+    def test_discovery_is_complete_bounded_synthetic_reference_without_key_access(self) -> None:
+        request = {"version": 2, "request_id": "pi-discovery", "method": "get_capabilities"}
+        manifest = json.loads((SPECS / "examples/profile-manifests/pi_qr-conformance-v1.json").read_text())
+        expected = {
+            "format": "nsealr.capabilities.v1",
+            "form": "reference",
+            "profile": "pi_qr",
+            "implementation_id": "nsealr.conformance.pi_qr.v1",
+            "runtime": [{"method_id": "get_capabilities", "configuration": "configured", "availability": "available", "reason": None}],
+        }
+
+        with patch("nsealr_vault.signer.xonly_pubkey_from_secret") as public_key, patch("nsealr_vault.signer.sign_event") as signer:
+            response = sign_request(request, "not-a-key", approved=False)
+            public_key.assert_not_called()
+            signer.assert_not_called()
+        self.assertEqual(response, {"version": 2, "request_id": "pi-discovery", "ok": True, "result": {"capabilities": expected}})
+        self.assertTrue(manifest["conformance_only"])
+        self.assertEqual(manifest["profile"], expected["profile"])
+        self.assertEqual(manifest["implementation_id"], expected["implementation_id"])
+        self.assertEqual(manifest["custody"]["mode"], "volatile_session")
+        self.assertEqual(manifest["consent"], "manual_local")
+        self.assertEqual(manifest["secure_element"], {"state": "absent"})
+        omitted = [method for method in manifest["methods"] if method["id"] != "get_capabilities"]
+        self.assertEqual({method["id"] for method in omitted}, {"get_public_key", "sign_event"})
+        self.assertTrue(all(method["availability"] == "unavailable" and method["reason"] == "provider_missing" for method in omitted))
+        self.assertEqual(decode_qr_envelope(encode_qr_envelope(response)), response)
+        response["result"]["capabilities"]["runtime"][0]["availability"] = "unknown"
+        self.assertEqual(sign_request(request, "not-a-key", approved=False)["result"]["capabilities"], expected)
+
+    def test_request_id_ascii_boundary_and_invalid_error_id(self) -> None:
+        for request_id, valid in (("x" * 128, True), ("x" * 129, False), ("", False), ("é", False), ("a b", False), (None, False)):
+            request = {"version": 2, "request_id": request_id, "method": "get_capabilities"}
+            with self.subTest(request_id=request_id):
+                response = sign_request(request, "not-a-key", approved=False)
+                self.assertEqual(response["ok"], valid)
+                self.assertEqual(response["request_id"], request_id if valid else "unknown")
+
+    def test_no_params_or_extra_fields_in_discovery_and_public_key_requests(self) -> None:
+        for method in ("get_capabilities", "get_public_key"):
+            for extra in ({"params": {}}, {"profile": "pi_qr"}, {"approved": True}):
+                with self.subTest(method=method, extra=extra):
+                    request = {"version": 2, "request_id": "pi-exact", "method": method, **extra}
+                    with patch("nsealr_vault.signer.xonly_pubkey_from_secret") as public_key:
+                        response = sign_request(request, KEY["secret_key"], approved=True)
+                        self.assertFalse(response["ok"])
+                        self.assertEqual(response["error"]["code"], "invalid_request")
+                        public_key.assert_not_called()
+
+    def test_decoded_json_request_boundary_retains_existing_cap(self) -> None:
+        from nsealr_vault.limits import NSEALR_V0_LIMITS, compact_json_utf8_size
+
+        request = {"version": 2, "request_id": "pi-boundary", "method": "sign_event", "params": {"event_template": {"created_at": 0, "kind": 1, "tags": [["t", "x" * 64] for _ in range(4)], "content": ""}}}
+        request["params"]["event_template"]["content"] = "x" * (704 - compact_json_utf8_size(request))
+        self.assertEqual(compact_json_utf8_size(request), 704)
+        self.assertLessEqual(len(request["params"]["event_template"]["content"]), 512)
+        self.assertIsNone(validate_signing_request(request))
+        request["params"]["event_template"]["content"] += "x"
+        response = sign_request(request, KEY["secret_key"], approved=True)
+        self.assertFalse(response["ok"])
+        self.assertIn("max_decoded_request_json_bytes", response["error"]["message"])
+        self.assertEqual(NSEALR_V0_LIMITS, LIMIT_PROFILE["limits"])
+
+    def test_event_integer_bounds_preserve_frozen_s03_grammar(self) -> None:
+        for field, maximum in (("created_at", 9007199254740991), ("kind", 65535)):
+            request = {"version": 2, "request_id": "pi-integers", "method": "sign_event", "params": {"event_template": {"created_at": 0, "kind": 1, "tags": [], "content": ""}}}
+            request["params"]["event_template"][field] = maximum
+            self.assertIsNone(validate_signing_request(request))
+            for invalid in (maximum + 1, -1, True, 1.0):
+                request["params"]["event_template"][field] = invalid
+                with self.subTest(field=field, invalid=invalid), patch("nsealr_vault.signer.sign_event") as signer:
+                    response = sign_request(request, KEY["secret_key"], approved=True)
+                    self.assertFalse(response["ok"])
+                    self.assertEqual(response["error"]["code"], "invalid_request")
+                    signer.assert_not_called()
 
 
 class VaultCoreTests(unittest.TestCase):
@@ -1280,7 +1385,8 @@ class VaultCoreTests(unittest.TestCase):
 
         self.assertEqual(response["ok"], False)
         self.assertEqual(response["request_id"], BASIC_REQUEST["request_id"])
-        self.assertEqual(response["error"]["code"], "approval_digest_mismatch")
+        self.assertEqual(response["error"]["code"], "invalid_request")
+        self.assertIn("Approval digest does not match", response["error"]["message"])
 
         signed = sign_request(
             BASIC_REQUEST,
@@ -1308,7 +1414,7 @@ class VaultCoreTests(unittest.TestCase):
             request_path = Path(temp_root) / "request.qr"
             review_path = Path(temp_root) / "review.json"
             response_path = Path(temp_root) / "response.qr"
-            response_qr = encode_qr_envelope({"version": 1, "request_id": "req-file-io", "ok": False})
+            response_qr = encode_qr_envelope({"version": 2, "request_id": "req-file-io", "ok": False})
             request_path.write_text(encode_qr_envelope(BASIC_REQUEST) + "\n", encoding="utf-8")
 
             adapter = FileQrVaultIO(request_path, review_path, response_path, approved=True)
@@ -2817,12 +2923,17 @@ class VaultCoreTests(unittest.TestCase):
         self.assertEqual(route["type"], "raspberry_qr_vault")
         self.assertEqual(route["repository"], "nsealr")
         self.assertEqual(route["transport"], "qr")
-        self.assertEqual(route["custody"], "stateless_session")
+        self.assertEqual(route["custody"], "volatile_session")
         self.assertEqual(route["trusted_review"], "device_display")
         self.assertEqual(route["policy_support"], "manual_only")
-        self.assertTrue(RASPBERRY_ACCOUNT_DESCRIPTOR["capabilities"]["physical_review"])
-        self.assertTrue(RASPBERRY_ACCOUNT_DESCRIPTOR["capabilities"]["physical_approval"])
-        self.assertFalse(RASPBERRY_ACCOUNT_DESCRIPTOR["capabilities"]["persistent_grants"])
+        self.assertEqual(RASPBERRY_ACCOUNT_DESCRIPTOR["format"], "nsealr.account.v1")
+        self.assertEqual(RASPBERRY_ACCOUNT_DESCRIPTOR["profile"], "pi_qr")
+        self.assertEqual(RASPBERRY_ACCOUNT_DESCRIPTOR["implementation_id"], "nsealr.conformance.pi_qr.v1")
+        self.assertEqual(RASPBERRY_ACCOUNT_DESCRIPTOR["limits_id"], "nsealr.limits.conformance.v1")
+        self.assertEqual(
+            RASPBERRY_ACCOUNT_DESCRIPTOR["capabilities"],
+            {"methods": ["get_capabilities", "get_public_key", "sign_event"]},
+        )
         self.assertEqual(
             RASPBERRY_ACCOUNT_DESCRIPTOR["recovery"]["source_fingerprint"],
             session_import_review_vector("nip06-account-0-leader")["fingerprint"],
@@ -2835,7 +2946,17 @@ class VaultCoreTests(unittest.TestCase):
         self.assertEqual(selection["custody"], route["custody"])
         self.assertEqual(selection["trusted_review"], route["trusted_review"])
         self.assertEqual(selection["policy_support"], route["policy_support"])
-        self.assertFalse(selection["persistent_grants"])
+        self.assertEqual(selection["format"], "nsealr.route-selection.v1")
+        self.assertEqual(selection["profile"], RASPBERRY_ACCOUNT_DESCRIPTOR["profile"])
+        self.assertEqual(selection["implementation_id"], RASPBERRY_ACCOUNT_DESCRIPTOR["implementation_id"])
+        self.assertEqual(selection["limits_id"], RASPBERRY_ACCOUNT_DESCRIPTOR["limits_id"])
+        self.assertEqual(selection["contract"], "nsealr.signing.v2")
+        self.assertEqual(selection["method"], "sign_event")
+        self.assertEqual(selection["method_revision"], 1)
+        self.assertEqual(selection["operation_id"], "nostr.sign-event.v1")
+        self.assertEqual(selection["algorithm_id"], "bip340.secp256k1.v1")
+        self.assertEqual(selection["codec_id"], "nsealr.qr-envelope.v0")
+        self.assertNotIn("persistent_grants", selection)
         self.assertFalse(selection["contains_secret_material"])
 
         docs = "\n".join(
