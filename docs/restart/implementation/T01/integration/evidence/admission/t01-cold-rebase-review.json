@@ -1,0 +1,106 @@
+{
+  "task": "T01",
+  "reviewer": "/root",
+  "verdict": "PASS_ACTUAL_LOCAL_REBASE_COLD_SOURCE_CONTROLS_ONLY",
+  "candidate": "d2348f39d391858a8b26a2a674e157cd908af0e2",
+  "rebased_candidate": "bf7d81d748ea08f1d8586e7822241bc181e9024b",
+  "whole_tree": "c38ea227762451641e6566eb329ab74e57a5870a",
+  "artifact_subtree": "b629e75d18190ded2403ffabe965b595a9bcf6a6",
+  "author_command_receipt": "docs/restart/implementation/T01/integration/evidence/commands/wire2-actual-rebase-cold-main-01/command.json",
+  "receipt_sha256": "7cbf39cbc0b510e91a7e111b9d8b292d608711304047e46aa6b6ee1ec3fdd60e",
+  "author_code_read_in_full": true,
+  "all_paired_log_hashes_verified": true,
+  "actual_failures_read": "Missingtree/source/baseline produce actual Gitobject128 errors; wrongexisting source gives historical binding mismatch; bytes/hidden/owner-mode produce corresponding actual checker errors, not syntax/harness failure.",
+  "actual_controls": [
+    {
+      "control": "cold-rebased-main-valid",
+      "argv": [
+        "python3",
+        "scripts/verify_contracts.py"
+      ],
+      "cwd": "/home/tux/nsealr/.restart-tools/goal/t01-current-integration/target/t01-runtime/actual-rebase-cold-01/cold",
+      "exit_code": 0
+    },
+    {
+      "control": "wrong-or-missing-ARTIFACT_TREE_OID",
+      "argv": [
+        "python3",
+        "scripts/verify_contracts.py"
+      ],
+      "cwd": "/home/tux/nsealr/.restart-tools/goal/t01-current-integration/target/t01-runtime/actual-rebase-cold-01/cold",
+      "exit_code": 1
+    },
+    {
+      "control": "wrong-or-missing-SOURCE_POSTIMAGE",
+      "argv": [
+        "python3",
+        "scripts/verify_contracts.py"
+      ],
+      "cwd": "/home/tux/nsealr/.restart-tools/goal/t01-current-integration/target/t01-runtime/actual-rebase-cold-01/cold",
+      "exit_code": 1
+    },
+    {
+      "control": "wrong-or-missing-BASELINE",
+      "argv": [
+        "python3",
+        "scripts/verify_contracts.py"
+      ],
+      "cwd": "/home/tux/nsealr/.restart-tools/goal/t01-current-integration/target/t01-runtime/actual-rebase-cold-01/cold",
+      "exit_code": 1
+    },
+    {
+      "control": "wrong-or-missing-SOURCE_POSTIMAGE",
+      "argv": [
+        "python3",
+        "scripts/verify_contracts.py"
+      ],
+      "cwd": "/home/tux/nsealr/.restart-tools/goal/t01-current-integration/target/t01-runtime/actual-rebase-cold-01/cold",
+      "exit_code": 1
+    },
+    {
+      "control": "artifact-byte-tamper",
+      "argv": [
+        "python3",
+        "scripts/verify_contracts.py"
+      ],
+      "cwd": "/home/tux/nsealr/.restart-tools/goal/t01-current-integration/target/t01-runtime/actual-rebase-cold-01/cold",
+      "exit_code": 1
+    },
+    {
+      "control": "hidden-extra",
+      "argv": [
+        "python3",
+        "scripts/verify_contracts.py"
+      ],
+      "cwd": "/home/tux/nsealr/.restart-tools/goal/t01-current-integration/target/t01-runtime/actual-rebase-cold-01/cold",
+      "exit_code": 1
+    },
+    {
+      "control": "metadata-owner-execution-mode-tamper",
+      "argv": [
+        "python3",
+        "scripts/verify_contracts.py"
+      ],
+      "cwd": "/home/tux/nsealr/.restart-tools/goal/t01-current-integration/target/t01-runtime/actual-rebase-cold-01/cold",
+      "exit_code": 1
+    },
+    {
+      "control": "exact-restoration",
+      "argv": [
+        "python3",
+        "scripts/verify_contracts.py"
+      ],
+      "cwd": "/home/tux/nsealr/.restart-tools/goal/t01-current-integration/target/t01-runtime/actual-rebase-cold-01/cold",
+      "exit_code": 0
+    }
+  ],
+  "root_independent_readonly_cold_state": "Onlymain ref/no remote or alternate/shallow/graft; clean exact rebased/tree checked without rerunning product tests.",
+  "root_product_test_rerun": false,
+  "remaining": [
+    "Finalsource/42proof packaging/review",
+    "Protected realPR rebase",
+    "Cold reachability check on actuallyadoptedmain",
+    "FullactualmainCI",
+    "T01acceptance andphysicalrelease"
+  ]
+}

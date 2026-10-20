@@ -1,0 +1,45 @@
+python3 scripts/verify_repo.py
+nSealr consolidated product structure passed
+python3 scripts/validate_firmware.py
+nSealr firmware board-profile validation passed
+python3 scripts/verify_repo.py
+nSealr consolidated product structure passed
+python3 scripts/validate_restart_plan.py
+Restart plan valid: 47 tasks; ready: 
+Structural check only; hardware, review quality and security remain evidence gates.
+python3 scripts/verify_evidence.py
+{"closed_files": 1508, "current_contracts": 5, "current_navigation_files": 18, "frozen_source": "f2ef70f522af4977e15f81554a8c6eadcdbe8097"}
+python3 scripts/verify_contracts.py
+{"artifact": "nsealr-contracts-v1", "artifact_format": 2, "artifact_tree": "b629e75d18190ded2403ffabe965b595a9bcf6a6", "consumers": ["bridge", "engine", "pi"], "files": 255, "records": 266, "retired": 11, "source_commit": "45f8b6ff1123f3f55be4ce457fd1008e91043cc2"}
+python3 -m unittest discover -s scripts -p 'test_contracts.py'
+{"actual_git_index_mode": "100644", "approved_git_mode": "100755", "control": "owner_execution_mode", "expected_accept": false, "observed_POSIX_permissions": "0o645"}
+{"actual_git_index_mode": "100644", "approved_git_mode": "100755", "control": "owner_execution_mode", "expected_accept": false, "observed_POSIX_permissions": "0o654"}
+{"actual_git_index_mode": "100644", "approved_git_mode": "100755", "control": "owner_execution_mode", "expected_accept": false, "observed_POSIX_permissions": "0o644"}
+{"actual_git_index_mode": "100755", "approved_git_mode": "100755", "control": "owner_execution_mode", "expected_accept": true, "observed_POSIX_permissions": "0o744"}
+{"actual_git_index_mode": "100755", "approved_git_mode": "100755", "control": "owner_execution_mode", "expected_accept": true, "observed_POSIX_permissions": "0o760"}
+{"actual_git_index_mode": "100644", "approved_git_mode": "100644", "control": "nonowner_permissions_not_git_mode", "expected_accept": true, "observed_POSIX_permissions": "0o645"}
+{"actual_git_index_mode": "100644", "approved_git_mode": "100644", "control": "nonowner_permissions_not_git_mode", "expected_accept": true, "observed_POSIX_permissions": "0o654"}
+{"actual_git_index_mode": "100644", "approved_git_mode": "100644", "control": "nonowner_permissions_not_git_mode", "expected_accept": true, "observed_POSIX_permissions": "0o600"}
+{"actual_git_index_mode": "100644", "approved_git_mode": "100644", "control": "nonowner_permissions_not_git_mode", "expected_accept": true, "observed_POSIX_permissions": "0o664"}
+{"actual_git_index_mode": "100644", "approved_git_mode": "100644", "control": "nonowner_permissions_not_git_mode", "expected_accept": true, "observed_POSIX_permissions": "0o644"}
+{"adopted_baseline": "7da08019df914627adfa28dde44dfc3ee36afa04", "adopted_source": "9689715d708b15369e6218e2aae47380c4e0078e", "all_four_old_commit_cat_file_exits": 128, "approved_subtree": "8330c8e7bf8f6e1617ac5839d772ffa79516312b", "control": "actual_rebase_cold_main_only", "extra_remote_alternate_shallow_or_graft": false, "old_author": "612714939efad49f3473f66a4225a3c4b295afc0", "old_baseline": "9e6398bc05789dcffd59a3eabf0c4751660fe190", "old_candidate": "893976cf4f0924586fbd4aa7a250c25e7a6257c3", "old_import_metadata": "7c957b6071453b34bceaf361ab98817db556cb2b", "only_ref": "refs/heads/main", "original_and_baseline_whole_trees_equal": true, "rebased_main": "5dab31d7f94b7824d8de135f205f1076bf3730fc", "subtree_equal_before_after_actual_rebase": true, "subtree_reachable_from_main": true, "valid_then_tamper_then_restore": [5, "REJECT", 5]}
+python3 -m unittest discover -s scripts -p 'test_evidence.py'
+python3 -m unittest discover -s scripts -p 'test_validate_restart_plan.py'
+python3 -m unittest discover -s scripts -p 'test_verify_repo.py'
+python3 -m unittest discover -s tools/baseline -p 'test_*.py'
+negative: ['/home/tux/nsealr/.restart-tools/goal/r00/tools/baseline/.work/final/.tools/python/bin/python3', '-c', 'import sys; print("out"); print("diagnostic", file=sys.stderr); sys.exit(7)']
+diagnostic
+out
+download file:///tmp/nsealr-t01-current-integration/tmpqh5xjx8z/source
+nsealr-init: ['git', 'init', '/tmp/nsealr-t01-current-integration/tmpp3ujwr0m/nsealr']
+Initialized empty Git repository in /tmp/nsealr-t01-current-integration/tmpp3ujwr0m/nsealr/.git/
+nsealr-fetch: ['git', 'fetch', '--no-tags', '/tmp/nsealr-t01-current-integration/tmpp3ujwr0m/source', '24183c89a154718a909e1ab23822c784addfc8a3']
+From /tmp/nsealr-t01-current-integration/tmpp3ujwr0m/source
+ * branch            24183c89a154718a909e1ab23822c784addfc8a3 -> FETCH_HEAD
+nsealr-checkout: ['git', 'checkout', '--detach', 'FETCH_HEAD']
+HEAD is now at 24183c8 public
+nsealr-init: ['git', 'init', '/tmp/nsealr-t01-current-integration/tmpu7nnybmq/nsealr']
+Initialized empty Git repository in /tmp/nsealr-t01-current-integration/tmpu7nnybmq/nsealr/.git/
+nsealr-fetch: ['git', 'fetch', '--no-tags', '/tmp/nsealr-t01-current-integration/tmpu7nnybmq/source', '0000000000000000000000000000000000000000']
+fatal: git upload-pack: not our ref 0000000000000000000000000000000000000000
+fatal: remote error: upload-pack: not our ref 0000000000000000000000000000000000000000
