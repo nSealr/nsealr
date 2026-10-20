@@ -1,0 +1,30 @@
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  packages/transport/src/transport.test.ts > transport adapters > bounds actual incoming and outgoing frames by the effective local frame ceiling
+AssertionError: promise resolved "{ version: 2, …(3) }" instead of rejecting
+
+- Expected
++ Received
+
+- Error {
+-   "message": "rejected promise",
++ {
++   "ok": true,
++   "request_id": "req-pubkey-1",
++   "result": {
++     "public_key": "4f355bdcb7cc0af728ef3cceb9615d90684bb5b2ca5f859ab0f0b704075871aa",
++   },
++   "version": 2,
+  }
+
+ ❯ packages/transport/src/transport.test.ts:50:67
+     48|       const transport = new SerialLineTransport({ maxFrameBytes: ceili…
+     49|         port: { writeLine: async () => { writes++; }, readLine: async …
+     50|       if (ceiling < 226) await expect(transport.exchange(request)).rej…
+       |                                                                   ^
+     51|       else await expect(transport.exchange(request)).resolves.toEqual(…
+     52|       expect(writes).toBe(ceiling < 125 ? 0 : 1);
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+

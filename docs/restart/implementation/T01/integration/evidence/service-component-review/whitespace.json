@@ -1,0 +1,33 @@
+{
+  "checks": [
+    {
+      "argv": [
+        "git",
+        "diff",
+        "--cached",
+        "--check"
+      ],
+      "exit_code": 2,
+      "expected_exit": 2,
+      "stdout": "docs/restart/implementation/reviews/T01-service-component/focused-component-tests.stdout.log:9: new blank line at EOF.\ndocs/restart/implementation/reviews/T01-service-component/from-adopted-base.patch:15: trailing whitespace.\n+ \ndocs/restart/implementation/reviews/T01-service-component/from-adopted-base.patch:69: trailing whitespace.\n+ \ndocs/restart/implementation/reviews/T01-service-component/from-adopted-base.patch:73: trailing whitespace.\n+ \ndocs/restart/implementation/reviews/T01-service-component/from-adopted-base.patch:126: trailing whitespace.\n+ \ndocs/restart/implementation/reviews/T01-service-component/from-adopted-base.patch:511: trailing whitespace.\n+ \ndocs/restart/implementation/reviews/T01-service-component/from-adopted-base.patch:555: trailing whitespace.\n+ \ndocs/restart/implementation/reviews/T01-service-component/from-adopted-base.patch:706: trailing whitespace.\n+ \ndocs/restart/implementation/reviews/T01-service-component/from-adopted-base.patch:886: trailing whitespace.\n+ \ndocs/restart/implementation/reviews/T01-service-component/from-adopted-base.patch:888: trailing whitespace.\n+ \ndocs/restart/implementation/reviews/T01-service-component/from-adopted-base.patch:898: trailing whitespace.\n+ \ndocs/restart/implementation/reviews/T01-service-component/from-adopted-base.patch:913: trailing whitespace.\n+ \ndocs/restart/implementation/reviews/T01-service-component/from-adopted-base.patch:922: trailing whitespace.\n+ \ndocs/restart/implementation/reviews/T01-service-component/from-adopted-base.patch:1015: trailing whitespace.\n+ \ndocs/restart/implementation/reviews/T01-service-component/from-adopted-base.patch:1027: trailing whitespace.\n+ \ndocs/restart/implementation/reviews/T01-service-component/from-adopted-base.patch:1040: trailing whitespace.\n+ \ndocs/restart/implementation/reviews/T01-service-component/from-adopted-base.patch:1044: trailing whitespace.\n+ \ndocs/restart/implementation/reviews/T01-service-component/from-adopted-base.patch:1073: trailing whitespace.\n+ \ndocs/restart/implementation/reviews/T01-service-component/from-adopted-base.patch:1109: trailing whitespace.\n+ \ndocs/restart/implementation/reviews/T01-service-component/from-adopted-base.patch:1118: trailing whitespace.\n+ \ndocs/restart/implementation/reviews/T01-service-component/from-adopted-base.patch:1121: trailing whitespace.\n+ \ndocs/restart/implementation/reviews/T01-service-component/from-adopted-base.patch:1135: trailing whitespace.\n+ \ndocs/restart/implementation/reviews/T01-service-component/from-adopted-base.patch:1154: trailing whitespace.\n+ \ndocs/restart/implementation/reviews/T01-service-component/from-adopted-base.patch:1177: trailing whitespace.\n+ \ndocs/restart/implementation/reviews/T01-service-component/from-adopted-base.patch:1181: trailing whitespace.\n+ \ndocs/restart/implementation/reviews/T01-service-component/from-adopted-base.patch:1209: trailing whitespace.\n+ \ndocs/restart/implementation/reviews/T01-service-component/from-adopted-base.patch:1214: trailing whitespace.\n+ \ndocs/restart/implementation/reviews/T01-service-component/from-adopted-base.patch:1238: trailing whitespace.\n+ \ndocs/restart/implementation/reviews/T01-service-component/from-adopted-base.patch:1252: trailing whitespace.\n+ \ndocs/restart/implementation/reviews/T01-service-component/from-adopted-base.patch:1307: trailing whitespace.\n+ \ndocs/restart/implementation/reviews/T01-service-component/from-adopted-base.patch:1347: trailing whitespace.\n+ \ndocs/restart/implementation/reviews/T01-service-component/from-adopted-base.patch:1354: trailing whitespace.\n+ \ndocs/restart/implementation/reviews/T01-service-component/from-prior-checkpoint.patch:7: trailing whitespace.\n+ \ndocs/restart/implementation/reviews/T01-service-component/from-prior-checkpoint.patch:37: trailing whitespace.\n+ \ndocs/restart/implementation/reviews/T01-service-component/from-prior-checkpoint.patch:54: trailing whitespace.\n+ \ndocs/restart/implementation/reviews/T01-service-component/from-prior-checkpoint.patch:58: trailing whitespace.\n+ \ndocs/restart/implementation/reviews/T01-service-component/from-prior-checkpoint.patch:122: trailing whitespace.\n+ \ndocs/restart/implementation/reviews/T01-service-component/from-prior-checkpoint.patch:197: trailing whitespace.\n+ \ndocs/restart/implementation/reviews/T01-service-component/from-prior-checkpoint.patch:266: trailing whitespace.\n+ \n",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "git",
+        "diff",
+        "--cached",
+        "--check",
+        "--",
+        ".",
+        ":(exclude)**/*.log",
+        ":(exclude)**/*.patch"
+      ],
+      "exit_code": 0,
+      "expected_exit": 0,
+      "stdout": "",
+      "stderr": ""
+    }
+  ],
+  "reason": "Raw Git patch context lines contain the required leading space, and untouched raw Vitest stdout contains its final blank line. Preserve exact observations; all non-log/non-patch review source/proof whitespace passes. No product or acceptance rule changed."
+}

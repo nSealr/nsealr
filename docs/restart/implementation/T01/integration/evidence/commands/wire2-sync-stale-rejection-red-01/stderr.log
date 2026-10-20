@@ -1,0 +1,26 @@
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  packages/client/src/profile-dispatch.test.ts > actual local service to recording adapter compatibility > observes a late rejection when a synchronous dispatch invalidates its snapshot before returning a promise
+AssertionError: expected [ …(1) ] to deeply equal []
+
+- Expected
++ Received
+
+- []
++ [
++   Error {
++     "message": "late adapter rejection after snapshot invalidation",
++   },
++ ]
+
+ ❯ packages/client/src/profile-dispatch.test.ts:303:25
+    301|       reject(new Error("late adapter rejection after snapshot invalida…
+    302|       await new Promise<void>((resolve) => setImmediate(resolve));
+    303|       expect(unhandled).toEqual([]);
+       |                         ^
+    304|       expect(state.writes).toHaveLength(0);
+    305|       state.context.signerDispatcher = () => structuredClone(response);
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+

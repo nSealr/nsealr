@@ -1,0 +1,424 @@
+{
+  "candidate": "24b0b58a6ee085d8176a801a7bad5595d39965b7",
+  "status": "PASS_FINITE_SCHEMA_OBLIGATIONS_ONLY",
+  "execution_limit": "Finite evaluation of changed literal schema constraints, not a schema engine.\n\nExpected requirement sets come from unchanged pre-implementation inputs. This\ndoes not validate complete wire objects or recover raw numeric spelling.\n",
+  "requirements": [
+    {
+      "profile": "esp32_no_se",
+      "independent_expected_groups": [
+        "R-ID",
+        "R-AUTH",
+        "R-CATALOG",
+        "R-SECRET",
+        "R-BOUNDS",
+        "R-RECOVERY",
+        "R-LIFECYCLE",
+        "R-RELEASE",
+        "R-MSG"
+      ],
+      "observations": 514,
+      "accepted_sets": [
+        [
+          "R-ID",
+          "R-AUTH",
+          "R-CATALOG",
+          "R-SECRET",
+          "R-BOUNDS",
+          "R-RECOVERY",
+          "R-LIFECYCLE",
+          "R-RELEASE",
+          "R-MSG"
+        ]
+      ],
+      "observation_sha256": "650d9643b2b0c1551fcc871d09ad5313d2313347b886f72ac0d46fd4afce932d"
+    },
+    {
+      "profile": "pi_qr",
+      "independent_expected_groups": [
+        "R-ID",
+        "R-AUTH",
+        "R-CATALOG",
+        "R-SECRET",
+        "R-BOUNDS",
+        "R-RECOVERY",
+        "R-LIFECYCLE",
+        "R-RELEASE"
+      ],
+      "observations": 514,
+      "accepted_sets": [
+        [
+          "R-ID",
+          "R-AUTH",
+          "R-CATALOG",
+          "R-SECRET",
+          "R-BOUNDS",
+          "R-RECOVERY",
+          "R-LIFECYCLE",
+          "R-RELEASE"
+        ]
+      ],
+      "observation_sha256": "c6299ba97ce37488693c5f4233d775590bc0322f3350ed2919d478f13e897798"
+    },
+    {
+      "profile": "p4_qr",
+      "independent_expected_groups": [
+        "R-ID",
+        "R-AUTH",
+        "R-CATALOG",
+        "R-SECRET",
+        "R-BOUNDS",
+        "R-RECOVERY",
+        "R-LIFECYCLE",
+        "R-RELEASE"
+      ],
+      "observations": 514,
+      "accepted_sets": [
+        [
+          "R-ID",
+          "R-AUTH",
+          "R-CATALOG",
+          "R-SECRET",
+          "R-BOUNDS",
+          "R-RECOVERY",
+          "R-LIFECYCLE",
+          "R-RELEASE"
+        ]
+      ],
+      "observation_sha256": "c6299ba97ce37488693c5f4233d775590bc0322f3350ed2919d478f13e897798"
+    },
+    {
+      "profile": "custom_board",
+      "independent_expected_groups": [
+        "R-ID",
+        "R-AUTH",
+        "R-CATALOG",
+        "R-SECRET",
+        "R-BOUNDS",
+        "R-RECOVERY",
+        "R-LIFECYCLE",
+        "R-RELEASE",
+        "R-MSG"
+      ],
+      "observations": 514,
+      "accepted_sets": [
+        [
+          "R-ID",
+          "R-AUTH",
+          "R-CATALOG",
+          "R-SECRET",
+          "R-BOUNDS",
+          "R-RECOVERY",
+          "R-LIFECYCLE",
+          "R-RELEASE",
+          "R-MSG"
+        ]
+      ],
+      "observation_sha256": "650d9643b2b0c1551fcc871d09ad5313d2313347b886f72ac0d46fd4afce932d"
+    }
+  ],
+  "requirements_total_observations": 2056,
+  "numeric_boundaries": [
+    {
+      "schema": "signing-request-v2",
+      "field": "kind",
+      "actual_constraint": {
+        "type": "integer",
+        "minimum": 0,
+        "maximum": 65535
+      },
+      "checks": [
+        {
+          "input": -1,
+          "literal_constraints_accept": false,
+          "independent_expected": false
+        },
+        {
+          "input": 0,
+          "literal_constraints_accept": true,
+          "independent_expected": true
+        },
+        {
+          "input": 1,
+          "literal_constraints_accept": true,
+          "independent_expected": true
+        },
+        {
+          "input": 65535,
+          "literal_constraints_accept": true,
+          "independent_expected": true
+        },
+        {
+          "input": 65536,
+          "literal_constraints_accept": false,
+          "independent_expected": false
+        },
+        {
+          "input": 9007199254740991,
+          "literal_constraints_accept": false,
+          "independent_expected": false
+        },
+        {
+          "input": 9007199254740992,
+          "literal_constraints_accept": false,
+          "independent_expected": false
+        },
+        {
+          "input": 0.5,
+          "literal_constraints_accept": false,
+          "independent_expected": false
+        },
+        {
+          "input": 1.0,
+          "literal_constraints_accept": true,
+          "independent_expected": true
+        }
+      ]
+    },
+    {
+      "schema": "signing-request-v2",
+      "field": "created_at",
+      "actual_constraint": {
+        "type": "integer",
+        "minimum": 0,
+        "maximum": 9007199254740991
+      },
+      "checks": [
+        {
+          "input": -1,
+          "literal_constraints_accept": false,
+          "independent_expected": false
+        },
+        {
+          "input": 0,
+          "literal_constraints_accept": true,
+          "independent_expected": true
+        },
+        {
+          "input": 1,
+          "literal_constraints_accept": true,
+          "independent_expected": true
+        },
+        {
+          "input": 65535,
+          "literal_constraints_accept": true,
+          "independent_expected": true
+        },
+        {
+          "input": 65536,
+          "literal_constraints_accept": true,
+          "independent_expected": true
+        },
+        {
+          "input": 9007199254740991,
+          "literal_constraints_accept": true,
+          "independent_expected": true
+        },
+        {
+          "input": 9007199254740992,
+          "literal_constraints_accept": false,
+          "independent_expected": false
+        },
+        {
+          "input": 0.5,
+          "literal_constraints_accept": false,
+          "independent_expected": false
+        },
+        {
+          "input": 1.0,
+          "literal_constraints_accept": true,
+          "independent_expected": true
+        }
+      ]
+    },
+    {
+      "schema": "signing-response-v2",
+      "field": "kind",
+      "actual_constraint": {
+        "type": "integer",
+        "minimum": 0,
+        "maximum": 65535
+      },
+      "checks": [
+        {
+          "input": -1,
+          "literal_constraints_accept": false,
+          "independent_expected": false
+        },
+        {
+          "input": 0,
+          "literal_constraints_accept": true,
+          "independent_expected": true
+        },
+        {
+          "input": 1,
+          "literal_constraints_accept": true,
+          "independent_expected": true
+        },
+        {
+          "input": 65535,
+          "literal_constraints_accept": true,
+          "independent_expected": true
+        },
+        {
+          "input": 65536,
+          "literal_constraints_accept": false,
+          "independent_expected": false
+        },
+        {
+          "input": 9007199254740991,
+          "literal_constraints_accept": false,
+          "independent_expected": false
+        },
+        {
+          "input": 9007199254740992,
+          "literal_constraints_accept": false,
+          "independent_expected": false
+        },
+        {
+          "input": 0.5,
+          "literal_constraints_accept": false,
+          "independent_expected": false
+        },
+        {
+          "input": 1.0,
+          "literal_constraints_accept": true,
+          "independent_expected": true
+        }
+      ]
+    },
+    {
+      "schema": "signing-response-v2",
+      "field": "created_at",
+      "actual_constraint": {
+        "type": "integer",
+        "minimum": 0,
+        "maximum": 9007199254740991
+      },
+      "checks": [
+        {
+          "input": -1,
+          "literal_constraints_accept": false,
+          "independent_expected": false
+        },
+        {
+          "input": 0,
+          "literal_constraints_accept": true,
+          "independent_expected": true
+        },
+        {
+          "input": 1,
+          "literal_constraints_accept": true,
+          "independent_expected": true
+        },
+        {
+          "input": 65535,
+          "literal_constraints_accept": true,
+          "independent_expected": true
+        },
+        {
+          "input": 65536,
+          "literal_constraints_accept": true,
+          "independent_expected": true
+        },
+        {
+          "input": 9007199254740991,
+          "literal_constraints_accept": true,
+          "independent_expected": true
+        },
+        {
+          "input": 9007199254740992,
+          "literal_constraints_accept": false,
+          "independent_expected": false
+        },
+        {
+          "input": 0.5,
+          "literal_constraints_accept": false,
+          "independent_expected": false
+        },
+        {
+          "input": 1.0,
+          "literal_constraints_accept": true,
+          "independent_expected": true
+        }
+      ]
+    }
+  ],
+  "request_id_boundaries": [
+    {
+      "schema": "signing-request-v2",
+      "ASCII_request_id_length": 0,
+      "literal_constraints_accept": false
+    },
+    {
+      "schema": "signing-request-v2",
+      "ASCII_request_id_length": 1,
+      "literal_constraints_accept": true
+    },
+    {
+      "schema": "signing-request-v2",
+      "ASCII_request_id_length": 64,
+      "literal_constraints_accept": true
+    },
+    {
+      "schema": "signing-request-v2",
+      "ASCII_request_id_length": 128,
+      "literal_constraints_accept": true
+    },
+    {
+      "schema": "signing-request-v2",
+      "ASCII_request_id_length": 129,
+      "literal_constraints_accept": false
+    },
+    {
+      "schema": "signing-response-v2",
+      "ASCII_request_id_length": 0,
+      "literal_constraints_accept": false
+    },
+    {
+      "schema": "signing-response-v2",
+      "ASCII_request_id_length": 1,
+      "literal_constraints_accept": true
+    },
+    {
+      "schema": "signing-response-v2",
+      "ASCII_request_id_length": 64,
+      "literal_constraints_accept": true
+    },
+    {
+      "schema": "signing-response-v2",
+      "ASCII_request_id_length": 128,
+      "literal_constraints_accept": true
+    },
+    {
+      "schema": "signing-response-v2",
+      "ASCII_request_id_length": 129,
+      "literal_constraints_accept": false
+    },
+    {
+      "schema": "error-v0",
+      "ASCII_request_id_length": 0,
+      "literal_constraints_accept": false
+    },
+    {
+      "schema": "error-v0",
+      "ASCII_request_id_length": 1,
+      "literal_constraints_accept": true
+    },
+    {
+      "schema": "error-v0",
+      "ASCII_request_id_length": 64,
+      "literal_constraints_accept": true
+    },
+    {
+      "schema": "error-v0",
+      "ASCII_request_id_length": 128,
+      "literal_constraints_accept": true
+    },
+    {
+      "schema": "error-v0",
+      "ASCII_request_id_length": 129,
+      "literal_constraints_accept": false
+    }
+  ],
+  "disabled_error_version2_and_response_reference": true
+}

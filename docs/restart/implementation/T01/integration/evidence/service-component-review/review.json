@@ -1,0 +1,199 @@
+{
+  "schema_version": 1,
+  "task": "T01",
+  "component": "dispatch_service_driver_serial_capacity",
+  "reviewer": "/root/h01_sol",
+  "model": "gpt-6.1-sol",
+  "reasoning_effort": "xhigh",
+  "author": "/root/a02_sol",
+  "candidate": "104f5e369244dcdc3afe87bb91074067c6ad8ac7",
+  "candidate_tree": "cea265276082e920d1b067e3d2ed7cca92ddc01e",
+  "base": "dbad656997ad8cf9024ca1489291f5f1d4d3094a",
+  "prior_checkpoint": "24b0b58a6ee085d8176a801a7bad5595d39965b7",
+  "confirmed_finding_checkpoint": "fae35dd9a754cf1936cd7045435ff8bdbbf9284b",
+  "verdict": "REQUEST_CHANGES",
+  "blocking_findings": [
+    {
+      "id": "T01-SERVICE-01",
+      "path": "packages/client/src/service.ts",
+      "line": 928,
+      "property": "Async client authorization before operation dispatch",
+      "actual": "Unpaired/revoked/expired/wrong-operation clients dispatch/write successfully; sync denies exact same inputs before open/write.",
+      "origin": "Inherited adopteddbad entry bytes unchanged",
+      "evidence": "authorization.stdout.log"
+    },
+    {
+      "id": "T01-SERVICE-02",
+      "path": "packages/client/src/service.ts",
+      "line": 1182,
+      "related": [
+        "apps/bridge/service/src/drivers.ts:236",
+        "packages/transport/src/transport.ts:532"
+      ],
+      "property": "Actual encoded response frame obeys effective frame limit",
+      "actual": "Knownpositive fits226, actualschema-valid errorframe431/JSON296 accepted under effectiveframe226/JSON704.",
+      "evidence": "capacity-lifecycle.stdout.log"
+    },
+    {
+      "id": "T01-SERVICE-03",
+      "path": "packages/client/src/service.ts",
+      "line": 1200,
+      "property": "Sync Promise rejections handled on every stale/error exit while reservations wait for settlement",
+      "actual": "Postdispatch currentcheckthrow returns before catchattachment; later adapterPromise rejection emits unhandledRejection despite revokedhook.",
+      "evidence": "capacity-lifecycle.stdout.log"
+    }
+  ],
+  "actual_reviewer_checks": [
+    {
+      "receipt": "authorization.command.json",
+      "exit": 0,
+      "role": "Defect observation, five public-fixture scenarios and recording-only driver"
+    },
+    {
+      "receipt": "capacity-lifecycle.command.json",
+      "exit": 0,
+      "role": "Two bounded defect observations, not desired acceptance"
+    },
+    {
+      "receipt": "focused-component-tests.command.json",
+      "exit": 0,
+      "files": 4,
+      "tests": 81,
+      "role": "Existing targeted suite passes but omits reproduced paths"
+    }
+  ],
+  "source_evidence": "22primary bindings,15authorreceipt/log hashes,3independent input hashes,8scope sourcehashes,artifact24to104unchanged. Actual dirty receipts retain original identity.",
+  "production_changes": false,
+  "full_T01_or_source_or_artifact_acceptance": false,
+  "adoption_or_taskclosure": false,
+  "excluded": "No broadCI,metadata-schema-parser/Pi/provenance/hardware review. Root artifact-accountschema finding separate.",
+  "next": "A02 corrections and distinct affected review on stable checkpoint; root retains exactpin/fullgates/protected actualmain.",
+  "artifacts": [
+    {
+      "path": "authorization-attempt-01.command.json",
+      "bytes": 570,
+      "sha256": "c99dc2ab2e3f6cd235aa28ee4655dd086ae58bc7aa9efd3fb5d91fdbe5502e25"
+    },
+    {
+      "path": "authorization-attempt-01.stderr.log",
+      "bytes": 1267,
+      "sha256": "041a4d60128d83ce903cebaac4e527a4f93069b0bbb67e7092753675231e95f9"
+    },
+    {
+      "path": "authorization-attempt-01.stdout.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "authorization.command.json",
+      "bytes": 588,
+      "sha256": "97182c7a29b4405f495f7b7abd9dcf0ffbeea5b48f5c21bc8cf5dc8f9ac49773"
+    },
+    {
+      "path": "authorization.stderr.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "authorization.stdout.log",
+      "bytes": 1883,
+      "sha256": "5aaad477e5c6d3d859096718dfa5359ab72a3b555db1434c06d7bd6b430236c1"
+    },
+    {
+      "path": "capacity-lifecycle.command.json",
+      "bytes": 595,
+      "sha256": "c4e7d809962fdaa0dabfb63cf6068e26144d11dadea6daf1f5957822dcdccdc5"
+    },
+    {
+      "path": "capacity-lifecycle.stderr.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "capacity-lifecycle.stdout.log",
+      "bytes": 1095,
+      "sha256": "36135db79658fa9d20a367af25bfe4c977003b22e024ee626724cd86ecbbc3fb"
+    },
+    {
+      "path": "final-report.md",
+      "bytes": 7776,
+      "sha256": "42587a2ef5f55c84b8fd579ea9696ee801bb275a4c1c65717a0ba7f91c45573c"
+    },
+    {
+      "path": "focused-component-tests.command.json",
+      "bytes": 2367,
+      "sha256": "d071e7dc6f3c67a738303ff22064ea80059630f0ddcc45a31f6be96baf225bab"
+    },
+    {
+      "path": "focused-component-tests.stderr.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "focused-component-tests.stdout.log",
+      "bytes": 251,
+      "sha256": "71faadba524c6e096b0dc9c4ab07a41e54478a5a14c12d3e075e0314c9baa065"
+    },
+    {
+      "path": "from-adopted-base.patch",
+      "bytes": 82477,
+      "sha256": "0d13729ff465b6aed3f47121e6c769acdc7210198d5f2b095b5855b18b3def72"
+    },
+    {
+      "path": "from-prior-checkpoint.patch",
+      "bytes": 20155,
+      "sha256": "87ce8b3623275b98d31502966eb84d7ec629f0bb71a05f3a6b4223ffc0cfb6f7"
+    },
+    {
+      "path": "report.md",
+      "bytes": 2823,
+      "sha256": "4c310259e5da136bc8901a3d24af0a87e82cdcac7073ba6cc04e4f4a8f46ccec"
+    },
+    {
+      "path": "reproduce-authorization-attempt-01.ts",
+      "bytes": 5164,
+      "sha256": "5a7aeb7fb371d55d49ce8c526906ba66dc82976f5577b10a8d3588b407176ab7"
+    },
+    {
+      "path": "reproduce-authorization.ts",
+      "bytes": 5180,
+      "sha256": "2a1b7a516f354e2d0aa9b1618efc520b9a04af63cf78c1eb2ce74877bbb9f1d3"
+    },
+    {
+      "path": "reproduce-capacity-lifecycle.ts",
+      "bytes": 7302,
+      "sha256": "14438c2c90afa8504bba84fa74bc2374c28c89926d659ae6397e07cfa5bd65a7"
+    },
+    {
+      "path": "review-build.command.json",
+      "bytes": 364,
+      "sha256": "7af23abdb7b59799258e2c66f03a1b6fe4d517a9a0ee58ca4ef5e20ba780ed1a"
+    },
+    {
+      "path": "review-build.stderr.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "review-build.stdout.log",
+      "bytes": 248,
+      "sha256": "134c48ec96e755c265f6550e62cc7c48346ccedd4df9ee43fd05d6a5cb0da868"
+    },
+    {
+      "path": "source-bindings-checkpoint.json",
+      "bytes": 4804,
+      "sha256": "bd7f046fe97438f2c66b3bd5ba79777c2ed09e735352409dc2968acfb7bb2efa"
+    },
+    {
+      "path": "source-bindings.json",
+      "bytes": 14148,
+      "sha256": "b400942b5e3ccff5a7f422e044b325c9a4ba7d290f7ca495b668d3d3cbd3c04b"
+    },
+    {
+      "path": "whitespace.json",
+      "bytes": 5222,
+      "sha256": "c3e3a34c3071a3d793b4880711c493ec8cc53b3cbbabbb26fd00cbc66b352c56"
+    }
+  ],
+  "self_binding": "External enclosingreviewcommit and JSON hash; no selfhash."
+}

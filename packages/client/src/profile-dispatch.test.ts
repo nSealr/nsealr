@@ -283,6 +283,30 @@ describe("actual local service to recording adapter compatibility", () => {
     expect(handleLocalServiceRequest(state.envelope, state.context).ok).toBe(true);
   });
 
+  it("observes a late rejection when a synchronous dispatch invalidates its snapshot before returning a promise", async () => {
+    const state = setup(); let reject!: (reason: unknown) => void; let captured!: SignerDispatchRequest;
+    const unhandled: unknown[] = [];
+    const record = (error: unknown) => { unhandled.push(error); };
+    process.on("unhandledRejection", record);
+    try {
+      state.context.signerDispatcher = (dispatch) => {
+        captured = dispatch;
+        state.live.generation++;
+        return new Promise((_resolve, refusal) => { reject = refusal; });
+      };
+      expect(handleLocalServiceRequest(state.envelope, state.context)).toMatchObject({ ok: false });
+      expect(() => captured.before_write!()).toThrow(/no longer active/);
+      state.live.generation = 1;
+      expect(handleLocalServiceRequest(state.envelope, state.context)).toMatchObject({ ok: false, error: { code: "runtime_unavailable" } });
+      reject(new Error("late adapter rejection after snapshot invalidation"));
+      await new Promise<void>((resolve) => setImmediate(resolve));
+      expect(unhandled).toEqual([]);
+      expect(state.writes).toHaveLength(0);
+      state.context.signerDispatcher = () => structuredClone(response);
+      expect(handleLocalServiceRequest(state.envelope, state.context).ok).toBe(true);
+    } finally { process.off("unhandledRejection", record); }
+  });
+
   it("L-01/R-05: complete local review-plan observations bind request, implementation, connection, context and geometry", async () => {
     for (const change of [undefined, { pages: 0 }, { pages: Number.NaN }, { request_sha256: "0".repeat(64) }, { implementation_id: "wrong" }, { connection_id: "wrong" }, { generation: 2 }, { geometry_id: "" }, { context_id: "" }]) {
       const state = setup();

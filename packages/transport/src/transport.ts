@@ -484,8 +484,9 @@ export class SerialLineTransport implements SignerTransport {
   private lastClock = 0;
   private workBytes = 0;
   private readonly maxWorkBytes: number;
+  private readonly maxFrameBytes: number;
 
-  constructor(options: { port: SerialLinePort; maxIgnoredLines?: number; responseTimeoutMs?: number; beforeWrite?: () => void; abortSignal?: AbortSignal; maxWorkBytes?: number }) {
+  constructor(options: { port: SerialLinePort; maxIgnoredLines?: number; responseTimeoutMs?: number; beforeWrite?: () => void; abortSignal?: AbortSignal; maxWorkBytes?: number; maxFrameBytes?: number }) {
     this.port = options.port;
     this.maxIgnoredLines = options.maxIgnoredLines ?? 32;
     this.responseTimeoutMs = options.responseTimeoutMs ?? 30_000;
@@ -495,6 +496,8 @@ export class SerialLineTransport implements SignerTransport {
     this.abortSignal = options.abortSignal;
     this.maxWorkBytes = options.maxWorkBytes ?? (this.maxIgnoredLines + 2) * NSEALR_V0_LIMITS.max_serial_frame_bytes;
     if (!Number.isSafeInteger(this.maxWorkBytes) || this.maxWorkBytes < 1 || this.maxWorkBytes > 1_048_576) throw new Error("maxWorkBytes must be a finite integer in 1..1048576");
+    this.maxFrameBytes = options.maxFrameBytes ?? NSEALR_V0_LIMITS.max_serial_frame_bytes;
+    if (!Number.isSafeInteger(this.maxFrameBytes) || this.maxFrameBytes < 1 || this.maxFrameBytes > NSEALR_V0_LIMITS.max_serial_frame_bytes) throw new Error("maxFrameBytes must be a finite integer in 1..1024");
   }
 
   async exchange(request: unknown): Promise<unknown> {
@@ -530,9 +533,10 @@ export class SerialLineTransport implements SignerTransport {
   }
 
   private accountWork(line: string): void {
-    if (line.length > NSEALR_V0_LIMITS.max_serial_frame_bytes) throw new Error("serial input line exceeds frame capacity");
+    if (line.length > this.maxFrameBytes) throw new Error("serial frame exceeds effective frame capacity");
     const size = utf8ByteLength(line);
-    if (size > NSEALR_V0_LIMITS.max_serial_frame_bytes || this.workBytes + size > this.maxWorkBytes) throw new Error("serial operation exceeds cumulative byte/work capacity");
+    if (size > this.maxFrameBytes) throw new Error("serial frame exceeds effective frame capacity");
+    if (this.workBytes + size > this.maxWorkBytes) throw new Error("serial operation exceeds cumulative byte/work capacity");
     this.workBytes += size;
   }
 

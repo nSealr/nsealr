@@ -1,0 +1,51 @@
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 2 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  packages/transport/src/transport.test.ts > transport adapters > bounds actual incoming and outgoing frames by the effective local frame ceiling
+AssertionError: expected 125 to be 124 // Object.is equality
+
+- Expected
++ Received
+
+- 124
++ 125
+
+ ❯ packages/transport/src/transport.test.ts:44:77
+     42|     // Independent compact-JSON/base64url framing lengths: request 67 …
+     43|     // response 142 bytes; with the unchanged frame header/checksum: 1…
+     44|     expect(encodeSerialFrame({ type: "request", payload: request }).le…
+       |                                                                             ^
+     45|     expect(encodeSerialFrame({ type: "response", payload: response }).…
+     46|     for (const ceiling of [123, 124, 225, 226, 227]) {
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/2]⎯
+
+ FAIL  apps/bridge/service/src/drivers.test.ts > service route drivers > applies the effective serial frame ceiling to actual peer errors as well as positive responses
+AssertionError: promise resolved "{ version: 2, …(3) }" instead of rejecting
+
+- Expected
++ Received
+
+- Error {
+-   "message": "rejected promise",
++ {
++   "error": {
++     "code": "user_rejected",
++     "message": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
++     "retryable": false,
++   },
++   "ok": false,
++   "request_id": "req-pubkey-1",
++   "version": 2,
+  }
+
+ ❯ apps/bridge/service/src/drivers.test.ts:76:35
+     74|       const operation = dispatcher({ ...dispatchRequest, request, effe…
+     75|       if (response === positive) await expect(operation).resolves.toEq…
+     76|       else await expect(operation).rejects.toMatchObject({ code: "sign…
+       |                                   ^
+     77|       expect({ writes, closes }).toEqual({ writes: 1, closes: 1 });
+     78|     }
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/2]⎯
+

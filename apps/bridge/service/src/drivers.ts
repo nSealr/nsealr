@@ -239,6 +239,7 @@ async function dispatchSerialLineRoute(
       responseTimeoutMs: Math.min(route.serial_line.response_timeout_ms ?? 30_000, dispatch.effective_limits.method.deadline_ms, dispatch.effective_limits.transport.deadline_ms),
       beforeWrite: dispatch.before_write,
       abortSignal: dispatch.abort_signal,
+      maxFrameBytes: dispatch.effective_limits.transport.frame_bytes,
       maxWorkBytes: Math.min(dispatch.effective_limits.method.parse_work, dispatch.effective_limits.transport.parse_work)
     });
     return await transport.exchange(dispatch.request);

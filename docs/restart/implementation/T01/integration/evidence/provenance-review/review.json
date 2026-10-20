@@ -1,0 +1,120 @@
+{
+  "schema_version": 1,
+  "task": "T01",
+  "component": "selected_A_format2_provenance_checker_before_final_pin",
+  "reviewer": "/root/h01_sol",
+  "model": "gpt-6.1-sol",
+  "reasoning_effort": "xhigh",
+  "author": "/root/b01_final_review",
+  "candidate_commit": "0c4c223c94fb0b4b33e3a9fd571cf5fd88cfa4f4",
+  "candidate_tree": "7abb5528256e46ccf6e1ffaf7aeaa35c3c043ebf",
+  "product_candidate": "2afbd78ca4eaccdab3f7b8ffa434a75b0b22ee15",
+  "base": "793b4d4e800f3e18c1a625b074c0293dc5d974ab",
+  "verdict": "REQUEST_CHANGES",
+  "blocking_findings": [
+    {
+      "id": "T01-PROV-01",
+      "path": "scripts/verify_contracts.py",
+      "line": 130,
+      "property": "Working regular mode must equal pinned Git mode",
+      "actual": "Any execute bit maps100755; Git uses owner execute bit. Approved100755 pluschmod0645 passes checker although actualGit reports/stages100644.",
+      "evidence": "mode-reproduction.stdout.log",
+      "required": "Use Git owner-executable semantics with realGit mixed-bit regressions; preserve24+12 and existing negative obligations. No allPOSIX permission claim."
+    }
+  ],
+  "actual_checks": [
+    {
+      "command": "component-tests.command.json",
+      "exit": 0,
+      "tests": 36,
+      "scope": "Synthetic provenance and real disposable Git only"
+    },
+    {
+      "command": "source-unbound.command.json",
+      "exit": 1,
+      "source_PASS": false,
+      "role": "Required unbound literal refusal"
+    },
+    {
+      "command": "mode-reproduction.command.json",
+      "exit": 0,
+      "role": "Defect reproduced, not desired acceptance"
+    }
+  ],
+  "scope": "No product/script changes; only this report and paired proof. No hardware research, artifact/Pi/fullmakeci/all42/all170+3/fullT01/adoption/release acceptance.",
+  "next": "Delta review after author correction; final literal/stableartifact/fullgates/protected actualmain remain root owned.",
+  "production_pin": null,
+  "artifacts": [
+    {
+      "path": "component-tests.command.json",
+      "bytes": 1367,
+      "sha256": "a7aa7138c90dcbb1d837404fd2f30718256f66da97f1c47a1b5470bb7e49d2cb"
+    },
+    {
+      "path": "component-tests.stderr.log",
+      "bytes": 5863,
+      "sha256": "7608978e146b9d73794bb7d7b4d995d285a27c54ffdcb677ce8c0b9a9c3f0e4e"
+    },
+    {
+      "path": "component-tests.stdout.log",
+      "bytes": 852,
+      "sha256": "ce4333831fecf6132acec5ded0cb53fc32d59b53c566df68f86bc5a5c8dced5f"
+    },
+    {
+      "path": "inspection-correction.json",
+      "bytes": 1794,
+      "sha256": "0bfdbfc5bbfd160fb15b41d05b89049489c00a2f0d2e0c821a1e2355a5fab141"
+    },
+    {
+      "path": "mode-reproduction.command.json",
+      "bytes": 1312,
+      "sha256": "a5f6edc59e03ca80577482a35abe54943aca6fe55df14ae15fccb63f9608ad4e"
+    },
+    {
+      "path": "mode-reproduction.stderr.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "mode-reproduction.stdout.log",
+      "bytes": 1520,
+      "sha256": "628a0023ca23b2afe3a9f13d417bbd3b1e49da677089f5e5dcacd320ce634a64"
+    },
+    {
+      "path": "report.md",
+      "bytes": 6149,
+      "sha256": "a6f9867641dd3eb3a8a4313172405cd2167a46ab1ee6fbfbd894bf5b2e2c488a"
+    },
+    {
+      "path": "reproduce-mode.py",
+      "bytes": 2367,
+      "sha256": "f04298e0e6d50aeea466876131ae556f560f72a2ad7903548ecfd3f31acab091"
+    },
+    {
+      "path": "source-bindings.json",
+      "bytes": 6605,
+      "sha256": "c5c9ea4216eb8498f65a9169c57a502fae485e0745940ac2944a2264802804e1"
+    },
+    {
+      "path": "source-unbound.command.json",
+      "bytes": 1243,
+      "sha256": "c313be712d28e8e8b5f8d4788a614ce5b4b2a2fcc34ca955ac6498060db58f5c"
+    },
+    {
+      "path": "source-unbound.stderr.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "source-unbound.stdout.log",
+      "bytes": 75,
+      "sha256": "57a64288d2b03e2eb62b9aa7d64de755e8cab1a9832830454ac1c4bba8f48daa"
+    },
+    {
+      "path": "test-method-preservation.json",
+      "bytes": 2397,
+      "sha256": "3c90b9750c416125b72a6c97572a4108d7555b7bc02972e396736e6c404f8cb9"
+    }
+  ],
+  "self_binding": "External review commit and JSON hash; no self hash."
+}
