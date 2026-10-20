@@ -20,7 +20,7 @@ export type SignedEvent = EventTemplate & {
 };
 
 export type SignEventRequest = {
-  version: 1;
+  version: 2;
   request_id: string;
   method: "sign_event";
   params: {
@@ -29,7 +29,7 @@ export type SignEventRequest = {
 };
 
 export type SignEventResponse = {
-  version: 1;
+  version: 2;
   request_id: string;
   ok: true;
   result: {

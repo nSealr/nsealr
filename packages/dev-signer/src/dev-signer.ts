@@ -31,11 +31,11 @@ export function signTemplate(template: EventTemplate, secretKeyHex: string): Sig
 }
 
 export function devSignRequest(request: SignEventRequest, secretKeyHex: string): SignEventResponse {
-  if (request.version !== 1 || request.method !== "sign_event") {
+  if (request.version !== 2 || request.method !== "sign_event") {
     throw new Error("devSignRequest only supports v0 sign_event requests");
   }
   return {
-    version: 1,
+    version: 2,
     request_id: request.request_id,
     ok: true,
     result: {

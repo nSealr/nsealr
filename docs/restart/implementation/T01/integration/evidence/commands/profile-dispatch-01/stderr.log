@@ -1,0 +1,41 @@
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 2 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  packages/client/src/profile-dispatch.test.ts > actual local service to recording adapter compatibility > R-02: equivalent QR operation uses volatile custody and its own lower finite deadline
+AssertionError: expected false to be true // Object.is equality
+
+- Expected
++ Received
+
+- true
++ false
+
+ ❯ packages/client/src/profile-dispatch.test.ts:69:23
+     67|     state.live.adapter_limits.methods.find((method) => method.method_i…
+     68|     const result = await handleLocalServiceRequestAsync(state.envelope…
+     69|     expect(result.ok).toBe(true);
+       |                       ^
+     70|     expect(state.writes).toEqual([encodeQrEnvelope(request)]);
+     71|     expect(state.captured!.route_selection.custody).toBe("volatile_ses…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/2]⎯
+
+ FAIL  packages/client/src/profile-dispatch.test.ts > actual local service to recording adapter compatibility > L-04/L-06: exact expiry, rollback and missing clocks refuse writes and release pending state
+AssertionError: expected false to be true // Object.is equality
+
+- Expected
++ Received
+
+- true
++ false
+
+ ❯ packages/client/src/profile-dispatch.test.ts:147:88
+    145|     for (const time of [99, 100, 101]) {
+    146|       const state = setup(); state.beforeWrite = () => { state.now = t…
+    147|       expect((await handleLocalServiceRequestAsync(state.envelope, sta…
+       |                                                                                        ^
+    148|       expect(state.writes.length).toBe(time < 100 ? 1 : 0);
+    149|     }
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/2]⎯
+

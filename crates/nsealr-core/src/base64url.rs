@@ -269,7 +269,7 @@ mod tests {
         ));
         let mut raw = [0u8; 256];
         let decoded = decode_base64url(PAYLOAD, &mut raw).expect("decode fits");
-        assert!(decoded.starts_with(br#"{"version":1,"#));
+        assert!(decoded.starts_with(br#"{"version":2,"#));
         let mut re = [0u8; 320];
         let reencoded = encode_base64url(decoded, &mut re).expect("encode fits");
         assert_eq!(reencoded, PAYLOAD);

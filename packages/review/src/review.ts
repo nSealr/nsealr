@@ -310,20 +310,20 @@ export function renderReviewDetailPages(review: EventReview, limits: ReviewDetai
 }
 
 function requireSignEventRequest(value: unknown): {
-  version: 1;
+  version: 2;
   request_id: string;
   method: "sign_event";
   params: { event_template: unknown };
 } {
   if (!isRecord(value)) throw new Error("screen review requires request object");
-  if (value.version !== 1) throw new Error("screen review requires version 1");
+  if (value.version !== 2) throw new Error("screen review requires version 2");
   if (typeof value.request_id !== "string") throw new Error("screen review requires request_id");
   if (value.method !== "sign_event") throw new Error("screen review supports sign_event requests only");
   if (!isRecord(value.params) || !("event_template" in value.params)) {
     throw new Error("screen review requires params.event_template");
   }
   return {
-    version: 1,
+    version: 2,
     request_id: value.request_id,
     method: "sign_event",
     params: { event_template: value.params.event_template }
