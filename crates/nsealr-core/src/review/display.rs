@@ -1,3 +1,6 @@
+//! Legacy preview-only renderer. Its bounded ellipsis is unsuitable for consent;
+//! complete authorization inspection lives in [`crate::review::event`].
+//!
 //! Trusted review display rendering — bounded frames for a tiny display.
 //!
 //! Ported from the C++ reference `host_core` sources `src/review_display.cpp` +
@@ -72,7 +75,7 @@ impl Default for ReviewDisplayLimits {
     }
 }
 
-/// Errors reported by [`render_review_page`]. Each variant except
+/// Errors reported by [`render_preview_page`]. Each variant except
 /// [`Self::LimitsExceedCapacity`] corresponds to a distinct C++ throw site;
 /// [`Self::message`] returns the exact C++ text.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -134,14 +137,14 @@ pub struct ReviewDisplayFrame {
 }
 
 /// Renders one review page into a bounded display frame. Mirrors the C++
-/// `render_review_page`.
+/// `render_preview_page`.
 ///
 /// # Errors
 ///
 /// See [`ReviewDisplayError`]; the validation order matches the C++ (limits →
 /// total pages → page index → title empty → title width), with the capacity
 /// check first (no C++ analogue).
-pub fn render_review_page(
+pub fn render_preview_page(
     page: &ReviewPage<'_>,
     page_index: usize,
     total_pages: usize,
@@ -444,7 +447,7 @@ mod tests {
             )),
             "Author",
         ]);
-        let frame = render_review_page(
+        let frame = render_preview_page(
             &page("Event", &lines, ReviewPageAction::Next),
             0,
             4,
@@ -477,7 +480,7 @@ mod tests {
         review_page.page_indicator = "Page 2/4";
         review_page.body_line_styles = &[ReviewBodyLineStyle::Meta, ReviewBodyLineStyle::Value];
 
-        let frame = render_review_page(
+        let frame = render_preview_page(
             &review_page,
             4,
             12,
@@ -508,7 +511,7 @@ mod tests {
             env!("OUT_DIR"),
             "/field-2e727214870520e091c3f4b4.txt"
         ))]);
-        let frame = render_review_page(
+        let frame = render_preview_page(
             &page("Decision", &lines, ReviewPageAction::ApproveOrReject),
             3,
             4,
@@ -538,7 +541,7 @@ mod tests {
     #[test]
     fn wraps_and_truncates_long_body_lines() {
         let lines = lines_of(&["0123456789abcdef0123456789abcdef0123456789abcdef"]);
-        let frame = render_review_page(
+        let frame = render_preview_page(
             &page("Content", &lines, ReviewPageAction::Next),
             1,
             4,
@@ -565,7 +568,7 @@ mod tests {
     #[test]
     fn wraps_utf8_without_splitting_codepoints() {
         let lines = lines_of(&["abc\u{e8}def"]);
-        let frame = render_review_page(
+        let frame = render_preview_page(
             &page("Content", &lines, ReviewPageAction::Next),
             0,
             1,
@@ -601,7 +604,7 @@ mod tests {
         long_preview.push_str("...");
         let lines = lines_of(&[long_preview.as_str()]);
 
-        let frame = render_review_page(
+        let frame = render_preview_page(
             &page("Content", &lines, ReviewPageAction::Next),
             1,
             4,
@@ -642,7 +645,7 @@ mod tests {
     #[test]
     fn matches_shared_utf8_boundary_frame_vector() {
         let lines = lines_of(&["abc\u{e8}def"]);
-        let frame = render_review_page(
+        let frame = render_preview_page(
             &page("Content", &lines, ReviewPageAction::Next),
             1,
             4,
@@ -668,15 +671,15 @@ mod tests {
         let event_page = page("Event", &lines, ReviewPageAction::Next);
 
         assert_eq!(
-            render_review_page(&event_page, 4, 4, ReviewDisplayLimits::default()),
+            render_preview_page(&event_page, 4, 4, ReviewDisplayLimits::default()),
             Err(ReviewDisplayError::PageIndexOutOfRange),
         );
         assert_eq!(
-            render_review_page(&event_page, 0, 0, ReviewDisplayLimits::default()),
+            render_preview_page(&event_page, 0, 0, ReviewDisplayLimits::default()),
             Err(ReviewDisplayError::ZeroTotalPages),
         );
         assert_eq!(
-            render_review_page(
+            render_preview_page(
                 &page(
                     "This title is too long for a tiny trusted display",
                     &lines,
@@ -708,7 +711,7 @@ mod tests {
             ..ReviewDisplayLimits::default()
         };
         assert_eq!(
-            render_review_page(&event_page, 0, 1, zeroed),
+            render_preview_page(&event_page, 0, 1, zeroed),
             Err(ReviewDisplayError::ZeroLimits),
         );
         let too_wide = ReviewDisplayLimits {
@@ -716,18 +719,18 @@ mod tests {
             ..ReviewDisplayLimits::default()
         };
         assert_eq!(
-            render_review_page(&event_page, 0, 1, too_wide),
+            render_preview_page(&event_page, 0, 1, too_wide),
             Err(ReviewDisplayError::LimitsExceedCapacity),
         );
         let empty_title = page("", &lines, ReviewPageAction::Next);
         assert_eq!(
-            render_review_page(&empty_title, 0, 1, ReviewDisplayLimits::default()),
+            render_preview_page(&empty_title, 0, 1, ReviewDisplayLimits::default()),
             Err(ReviewDisplayError::EmptyTitle),
         );
 
         // An empty body line survives as one empty wrapped line (C++ wrap_line).
         let with_empty = lines_of(&["", "after"]);
-        let frame = render_review_page(
+        let frame = render_preview_page(
             &page("Event", &with_empty, ReviewPageAction::Next),
             0,
             1,
@@ -738,7 +741,7 @@ mod tests {
 
         // A body that fills the budget exactly is kept without an ellipsis.
         let exact = lines_of(&["0123456789abcdef0123456789abcdef"]);
-        let frame = render_review_page(
+        let frame = render_preview_page(
             &page("Content", &exact, ReviewPageAction::Next),
             0,
             1,

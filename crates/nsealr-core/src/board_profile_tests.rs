@@ -19,7 +19,7 @@ use crate::qr::limits::MAX_SERIAL_FRAME_BYTES;
 use crate::review::buttons::{update_button_state, ButtonState, ButtonTimings};
 use crate::review::controls::ReviewButton;
 use crate::review::display::{
-    render_review_page, ReviewDisplayFrame, ReviewDisplayLimits, ReviewPage,
+    render_preview_page, ReviewDisplayFrame, ReviewDisplayLimits, ReviewPage,
 };
 use crate::review::types::{
     ReviewBodyLineStyle, ReviewBodyLineStyles, ReviewPageAction, ReviewPageLines,
@@ -533,7 +533,7 @@ fn assert_body_lines(frame: &ReviewDisplayFrame, expected: &[&str]) {
 // the boot and review rasters are deterministic pure functions of the frame and
 // the profile, sampled at the same pixels with the same expected colors. The
 // compact frame is additionally produced by the crate's public
-// `render_review_page` with the profile limits (full stack: renderer output
+// `render_preview_page` with the profile limits (full stack: renderer output
 // drives the raster; the C++ hand-built it, and both must be identical).
 #[test]
 fn t_display_s3_raster_has_stable_boot_and_review_pixels() {
@@ -594,7 +594,7 @@ fn t_display_s3_raster_has_stable_boot_and_review_pixels() {
     let mut page_lines = ReviewPageLines::new();
     page_lines.try_push("bytes: 281").unwrap();
     page_lines.try_push("abcdef").unwrap();
-    let rendered = render_review_page(
+    let rendered = render_preview_page(
         &ReviewPage {
             title: "Content",
             lines: page_lines.as_slice(),

@@ -9,7 +9,7 @@ use super::{
 };
 use nsealr_core::qr::envelope::{parse_qr_signing_request, QrSigningRequest};
 use nsealr_core::review::controls::ReviewButton;
-use nsealr_core::review::display::{render_review_page, ReviewDisplayLimits, ReviewPage};
+use nsealr_core::review::display::{render_preview_page, ReviewDisplayLimits, ReviewPage};
 use nsealr_core::review::qr::{
     build_qr_display_review_pages, build_qr_display_review_request, build_qr_review_pages,
     build_qr_trusted_review_request,
@@ -222,8 +222,8 @@ pub(super) fn replay_display_frame(value: &Value) -> ReplayResult {
                 page_indicator: page.page_indicator.as_str(),
                 body_line_styles: page.body_line_styles.as_slice(),
             };
-            render_review_page(&view, page_index, total, limits)
-                .map_err(|e| format!("render_review_page: {e:?}"))?
+            render_preview_page(&view, page_index, total, limits)
+                .map_err(|e| format!("render_preview_page: {e:?}"))?
         }
         Err(nsealr_core::review::qr::QrReviewError::Capacity) if page_index == 1 => {
             let window = limits.max_body_lines * limits.max_line_chars + 1;
@@ -255,8 +255,8 @@ pub(super) fn replay_display_frame(value: &Value) -> ReplayResult {
                 body_line_styles: &[],
             };
             // The screen layout is fixed at four pages (Event/Content/Tags/Decision).
-            render_review_page(&view, page_index, 4, limits)
-                .map_err(|e| format!("render_review_page (bounded): {e:?}"))?
+            render_preview_page(&view, page_index, 4, limits)
+                .map_err(|e| format!("render_preview_page (bounded): {e:?}"))?
         }
         Err(e) => return Err(format!("build_qr_review_pages: {e:?}")),
     };
@@ -313,7 +313,7 @@ struct WantStep<'a> {
     frame: &'a Value,
     button: ReviewButton,
     decision: Option<bool>,
-    approved_for_signing: bool,
+    review_approved: bool,
 }
 
 fn want_steps_of(value: &Value) -> Result<Vec<WantStep<'_>>, String> {
@@ -345,15 +345,15 @@ fn want_steps_of(value: &Value) -> Result<Vec<WantStep<'_>>, String> {
                 Some(Value::Bool(b)) => Some(*b),
                 Some(other) => return Err(format!("{ctx}: decision not a bool/null: {other}")),
             };
-            let approved_for_signing = want
+            let review_approved = want
                 .get("approved_for_signing")
                 .and_then(Value::as_bool)
-                .ok_or_else(|| format!("{ctx}: approved_for_signing missing"))?;
+                .ok_or_else(|| format!("{ctx}: review_approved missing"))?;
             Ok(WantStep {
                 frame: obj_field(want, "frame")?,
                 button,
                 decision,
-                approved_for_signing,
+                review_approved,
             })
         })
         .collect()
@@ -411,8 +411,8 @@ pub(super) fn replay_transcript(value: &Value) -> ReplayResult {
                         want.decision
                     ));
                 }
-                if session.can_sign() != want.approved_for_signing {
-                    return Err(format!("{ctx}: approved_for_signing mismatch"));
+                if session.review_approved() != want.review_approved {
+                    return Err(format!("{ctx}: review_approved mismatch"));
                 }
             }
         }
@@ -447,8 +447,8 @@ pub(super) fn replay_transcript(value: &Value) -> ReplayResult {
                 if step.decision != want.decision {
                     return Err(format!("{ctx}: decision mismatch"));
                 }
-                if step.approved_for_signing != want.approved_for_signing {
-                    return Err(format!("{ctx}: approved_for_signing mismatch"));
+                if step.review_approved != want.review_approved {
+                    return Err(format!("{ctx}: review_approved mismatch"));
                 }
             }
         }

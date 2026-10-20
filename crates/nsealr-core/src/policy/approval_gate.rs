@@ -1,10 +1,10 @@
-//! Approval-digest binding gate.
+//! Legacy preview decisions only. These copied strings/booleans cannot authorize
+//! execution. The sole execution owner is [`crate::authorization::AuthorizationSession`].
 //!
-//! Ported from the C++ reference `host_core` sources `src/approval_gate.cpp` +
-//! `include/nsealr/approval_gate.hpp` for behaviour parity. The gate binds a
-//! signing decision to a specific `(request_id, approval_digest)` pair: signing
-//! is only permitted once that exact pair has been explicitly approved, so a
-//! companion cannot swap the reviewed material out from under an approval.
+//! This diagnostic record retains the pair matching from the C++ reference
+//! `host_core` sources `src/approval_gate.cpp` and
+//! `include/nsealr/approval_gate.hpp`. Matching an approved pair records only
+//! a preview decision; it supplies no authority to execute an operation.
 //!
 //! The C++ used `std::string` for the request id and approval digest; this
 //! allocation-free port stores them as bounded inline text ([`FixedStr`]). The
@@ -29,7 +29,7 @@ pub type ApprovalRequestId = FixedStr<MAX_APPROVAL_REQUEST_ID_CHARS>;
 /// An approval digest bound by the gate.
 pub type ApprovalDigest = FixedStr<MAX_APPROVAL_DIGEST_CHARS>;
 
-/// The current decision recorded by an [`ApprovalGate`]. Mirrors the C++
+/// The current decision recorded by a [`ReviewDecisionState`]. Mirrors the C++
 /// `ApprovalDecision`.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum ApprovalDecision {
@@ -41,16 +41,17 @@ pub enum ApprovalDecision {
     Rejected,
 }
 
-/// Binds a signing decision to a reviewed `(request_id, approval_digest)` pair.
-/// Mirrors the C++ `ApprovalGate` method for method.
+/// Records a diagnostic preview decision for a `(request_id, approval_digest)` pair.
+/// It grants no signing authority and is never accepted by the execution owner.
+/// Retains historical preview decision behavior without execution authority.
 #[derive(Debug, Clone, PartialEq, Eq)]
-pub struct ApprovalGate {
+pub struct ReviewDecisionState {
     active_request_id: ApprovalRequestId,
     active_approval_digest: ApprovalDigest,
     decision: ApprovalDecision,
 }
 
-impl ApprovalGate {
+impl ReviewDecisionState {
     /// Creates a gate with no active review (the C++ default-constructed state:
     /// empty ids and a [`ApprovalDecision::Pending`] decision).
     #[must_use]
@@ -96,10 +97,10 @@ impl ApprovalGate {
     }
 
     /// Returns `true` iff the active review was approved and `request_id`/
-    /// `approval_digest` still exactly match the approved pair. Mirrors the C++
-    /// `can_sign`.
+    /// `approval_digest` still exactly match the approved pair. This is a
+    /// diagnostic query, not a one-use execution authorization.
     #[must_use]
-    pub fn can_sign(&self, request_id: &str, approval_digest: &str) -> bool {
+    pub fn review_approved(&self, request_id: &str, approval_digest: &str) -> bool {
         self.decision == ApprovalDecision::Approved
             && self.active_request_id == request_id
             && self.active_approval_digest == approval_digest
@@ -125,7 +126,7 @@ impl ApprovalGate {
     }
 }
 
-impl Default for ApprovalGate {
+impl Default for ReviewDecisionState {
     fn default() -> Self {
         Self::new()
     }
@@ -151,7 +152,7 @@ mod tests {
     // Port of the C++ `test_approval_gate_requires_matching_approval`.
     #[test]
     fn requires_matching_approval() {
-        let mut gate = ApprovalGate::new();
+        let mut gate = ReviewDecisionState::new();
         gate.begin_review(
             include_str!(concat!(
                 env!("OUT_DIR"),
@@ -175,14 +176,14 @@ mod tests {
         );
 
         // Pending never permits signing, even for the exact bound pair.
-        assert!(!gate.can_sign(
+        assert!(!gate.review_approved(
             include_str!(concat!(
                 env!("OUT_DIR"),
                 "/field-ef8f1cdc03d2b7514fa6d71d.txt"
             )),
             BASIC_REVIEW_SCREEN_APPROVAL_DIGEST
         ));
-        assert!(!gate.can_sign("different", BASIC_REVIEW_SCREEN_APPROVAL_DIGEST));
+        assert!(!gate.review_approved("different", BASIC_REVIEW_SCREEN_APPROVAL_DIGEST));
 
         // Approving a mismatched digest does not record an approval.
         gate.approve(
@@ -192,7 +193,7 @@ mod tests {
             )),
             "00",
         );
-        assert!(!gate.can_sign(
+        assert!(!gate.review_approved(
             include_str!(concat!(
                 env!("OUT_DIR"),
                 "/field-ef8f1cdc03d2b7514fa6d71d.txt"
@@ -202,7 +203,7 @@ mod tests {
 
         // Approving a mismatched request id does not record an approval.
         gate.approve("different", BASIC_REVIEW_SCREEN_APPROVAL_DIGEST);
-        assert!(!gate.can_sign(
+        assert!(!gate.review_approved(
             include_str!(concat!(
                 env!("OUT_DIR"),
                 "/field-ef8f1cdc03d2b7514fa6d71d.txt"
@@ -219,14 +220,14 @@ mod tests {
             BASIC_REVIEW_SCREEN_APPROVAL_DIGEST,
         );
         assert_eq!(gate.decision(), ApprovalDecision::Approved);
-        assert!(gate.can_sign(
+        assert!(gate.review_approved(
             include_str!(concat!(
                 env!("OUT_DIR"),
                 "/field-ef8f1cdc03d2b7514fa6d71d.txt"
             )),
             BASIC_REVIEW_SCREEN_APPROVAL_DIGEST
         ));
-        assert!(!gate.can_sign(
+        assert!(!gate.review_approved(
             include_str!(concat!(
                 env!("OUT_DIR"),
                 "/field-ef8f1cdc03d2b7514fa6d71d.txt"
@@ -237,7 +238,7 @@ mod tests {
         // Rejecting the new review is terminal and blocks signing.
         gate.begin_review("req-kind-1-tags", TAGGED_REVIEW_SCREEN_APPROVAL_DIGEST);
         gate.reject("req-kind-1-tags");
-        assert!(!gate.can_sign("req-kind-1-tags", TAGGED_REVIEW_SCREEN_APPROVAL_DIGEST));
+        assert!(!gate.review_approved("req-kind-1-tags", TAGGED_REVIEW_SCREEN_APPROVAL_DIGEST));
         assert_eq!(gate.decision(), ApprovalDecision::Rejected);
     }
 
@@ -245,13 +246,13 @@ mod tests {
     // `reject`), and Default matches an explicitly `new()` gate.
     #[test]
     fn reject_ignores_mismatched_request_and_default_is_pending() {
-        assert_eq!(ApprovalGate::default(), ApprovalGate::new());
+        assert_eq!(ReviewDecisionState::default(), ReviewDecisionState::new());
 
-        let mut gate = ApprovalGate::new();
+        let mut gate = ReviewDecisionState::new();
         gate.begin_review("req-active", BASIC_REVIEW_SCREEN_APPROVAL_DIGEST);
         gate.reject("req-other");
         assert_eq!(gate.decision(), ApprovalDecision::Pending);
         gate.approve("req-active", BASIC_REVIEW_SCREEN_APPROVAL_DIGEST);
-        assert!(gate.can_sign("req-active", BASIC_REVIEW_SCREEN_APPROVAL_DIGEST));
+        assert!(gate.review_approved("req-active", BASIC_REVIEW_SCREEN_APPROVAL_DIGEST));
     }
 }
