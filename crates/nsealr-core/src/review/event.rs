@@ -600,7 +600,15 @@ impl ReviewDocument<'_> {
             let mut buf = [0; 20];
             value(label, ascii(decimal(n, &mut buf)))?;
         }
-        value("Signed content (plain text)", self.event.content())?;
+        let content_role = match self.event.kind() {
+            0 => "Signed content: profile metadata JSON",
+            3 | 10002 => "Signed content: additional uninterpreted data",
+            5 => "Signed content: deletion reason",
+            6 => "Signed content: original event JSON",
+            7 => "Signed content: reaction value",
+            _ => "Signed content (plain text)", // Kind1; unsupported kinds rejected above.
+        };
+        value(content_role, self.event.content())?;
         let last_named = |name| {
             (0..self.event.tag_count())
                 .rev()
