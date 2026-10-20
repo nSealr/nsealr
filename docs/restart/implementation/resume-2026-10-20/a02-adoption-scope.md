@@ -10,9 +10,9 @@ The canonical source main remains frozen at `f2ef70f522af4977e15f81554a8c6eadcdb
 - Reviewed source candidate to be accepted: isolated product
   `daf8ba03a9eb820f99b0f1bf5c4f553a7961e008`, tree
   `db0687a5ec15228e944360e00e391a4fff863f5d`; 39 declared transformations.
-- Author reports/tooling: `c9958ec9cf2a6f04ee210d40de4c8f84bb57ef64` on
+- Author reports/tooling: `bb033619b5346302833d717eb501bfa4e3653a1b` on
   `restart/a02-rehearsal`. Content-manifest SHA256:
-  `a4b7c58f42768faa13d3496722d8ab48e2ab1665ccbe141533f2a16a481bbd8c`.
+  `38b2fb69ef3f1e8a2414d168b005d6f674e2eabebe84d252f2239494cea0917e`.
 - Actual restored candidate bundle:
   `a02/tools/migration/.runtime/rehearsal-04/candidate-recovery/candidate.bundle`
   under the local goal directory; SHA256
@@ -105,9 +105,11 @@ task/evidence validity. Do not delete/reset history or discard the failed proof.
 ## Affected source correction before scope acceptance
 
 The original full substantive review anchor is author `f9a09ba`; final exact author
-`c9958ec` corrects only a stale paragraph saying the completed failure/removal
-ledger was pending and its content-manifest binding. The isolated product and
-all other payload bytes/modes remain unchanged. The final rehearsal reviewer
-checks this exact two-file delta and binds the corrected author; the scope
-reviewer checks the corresponding prospective-map binding update. No unrelated
-suite/replay or historical evidence is rewritten for the prose correction.
+`bb03361` corrects three files: stale pending-ledger prose in the final report,
+its derived current progress-index hash, and the content-manifest binding/receipt.
+Independent review caught the intervening stale index at `c9958ec`; that finding
+and source state remain preserved. All 755 current artifact hashes and 982 package
+member hashes now verify. The isolated product and all other payload bytes/modes
+remain unchanged. The final reviewer checks this bounded delta and binds the
+corrected author; the scope reviewer checks the prospective-map update. No
+unrelated suite/replay or historical command/result is rewritten.
