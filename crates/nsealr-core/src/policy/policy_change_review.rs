@@ -750,7 +750,7 @@ pub struct PolicyChangeReviewTranscriptStep {
     pub decision: Option<bool>,
     /// Whether the session's approval gate holds an approval for the policy
     /// change after this step (C++ `approved_for_policy_change`, recorded from
-    /// `session.can_sign()`).
+    /// `session.review_approved()`).
     pub approved_for_policy_change: bool,
 }
 
@@ -869,7 +869,7 @@ pub fn run_policy_change_review_flow(
             page_index,
             button,
             decision,
-            approved_for_policy_change: session.can_sign(),
+            approved_for_policy_change: session.review_approved(),
         })?;
 
         if let Some(approved) = decision {

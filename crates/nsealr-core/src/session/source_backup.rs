@@ -6,7 +6,7 @@
 //! builder and the secret-revealing backup payload. Milestone M-T3.4b adds the
 //! interactive flows the C++ layered on top (`run_session_source_backup_flow`,
 //! `run_session_source_backup_io_flow`, `SessionSourceBackupIo`) now that the
-//! M-T3.6 review substrate (`ReviewControlSession`, `render_review_page`) exists.
+//! M-T3.6 review substrate (`ReviewControlSession`, `render_preview_page`) exists.
 //!
 //! The C++ `backup_format_for` also carried an "unsupported source type" throw
 //! that was unreachable (the kind enum is exhaustive); the Rust `match` makes
@@ -16,7 +16,7 @@ use crate::bip39::{self, Bip39Error};
 use crate::nip19::{self, NsecError};
 use crate::review::controls::{ReviewButton, ReviewControlSession, ReviewControlsError};
 use crate::review::display::{
-    render_review_page, ReviewDisplayError, ReviewDisplayFrame, ReviewDisplayLimits, ReviewPage,
+    render_preview_page, ReviewDisplayError, ReviewDisplayFrame, ReviewDisplayLimits, ReviewPage,
 };
 use crate::review::types::{
     ReviewBodyLineStyles, ReviewPageAction, ReviewPageLine, ReviewPageLines, TrustedReviewPage,
@@ -587,7 +587,7 @@ pub fn run_session_source_backup_io_flow(
     for _ in 0..max_button_steps {
         let page_index = controls.current_page_index();
         let page = &review.pages[page_index];
-        let frame = render_review_page(
+        let frame = render_preview_page(
             &ReviewPage {
                 title: page.title.as_str(),
                 lines: page.lines.as_slice(),

@@ -728,10 +728,11 @@ fn append_section_pages(
     };
     let logical_page_count = 4usize;
     let mut total = 0usize;
-    for_each_detail_line(section, request, identity, limits, &mut |_, _| {
+    let mut count_line = |_: &str, _: ReviewBodyLineStyle| {
         total += 1;
         Ok(())
-    })?;
+    };
+    for_each_detail_line(section, request, identity, limits, &mut count_line)?;
     // Every section enumerator emits at least one line (each has a non-empty
     // fallback), so the C++ empty-body fallback page (a single "" line) is
     // unreachable here and `total` is always positive.
@@ -1370,7 +1371,7 @@ mod tests {
         let first_frame = session.current_frame().unwrap();
         assert_eq!(first_frame.title, "Event");
         assert_eq!(first_frame.page_indicator, "Page 1/4");
-        assert!(!session.can_sign());
+        assert!(!session.review_approved());
 
         assert_eq!(
             session.handle_button(ReviewButton::Approve),
@@ -1383,11 +1384,11 @@ mod tests {
 
         let decision_frame = session.current_frame().unwrap();
         assert_eq!(decision_frame.title, "Decision");
-        assert!(!session.can_sign());
+        assert!(!session.review_approved());
 
         let approval = session.handle_button(ReviewButton::Approve);
         assert_eq!(approval, Ok(Some(true)));
-        assert!(session.can_sign());
+        assert!(session.review_approved());
         assert_eq!(session.decision(), ApprovalDecision::Approved);
         let _ = frame_lines_contain(&decision_frame, "Approve");
     }
@@ -1482,11 +1483,12 @@ mod tests {
             )),
         );
 
-        // An empty tag renders "empty tag" on both the summary and display
-        // pages (the C++ tag_lines / detailed_tag_lines fallbacks).
-        let empty_tag_request = parse(
-            "{\"version\":1,\"request_id\":\"req-empty-tag\",\"method\":\"sign_event\",\"params\":{\"event_template\":{\"created_at\":1710000500,\"kind\":1,\"tags\":[[]],\"content\":\"x\"}}}",
-        );
+        // Empty tags now reject at intake. A fabricated diagnostic preview
+        // record still renders its explicit empty-tag fallback; it is not authority.
+        let invalid = "{\"version\":1,\"request_id\":\"r\",\"method\":\"sign_event\",\"params\":{\"event_template\":{\"created_at\":0,\"kind\":1,\"tags\":[[]],\"content\":\"x\"}}}";
+        assert!(parse_qr_signing_request(invalid.as_bytes()).is_err());
+        let mut empty_tag_request = parse(&invalid.replace("[[]]", "[]"));
+        empty_tag_request.event_template.tag_count = 1;
         let summary = build_qr_review_pages(&empty_tag_request, dev()).unwrap();
         let tags_lines: Vec<&str> = summary.as_slice()[2]
             .lines
@@ -1644,39 +1646,18 @@ mod tests {
         );
 
         // Raw request bytes with invalid UTF-8 (only reachable outside the
-        // envelope decode paths, which validate UTF-8 first) are rejected as
-        // RequestNotUtf8 by the summary and display builders.
+        // envelope decode paths) now reject in the shared reader before review.
         let mut invalid_content = Vec::from(
             &b"{\"version\":1,\"request_id\":\"req-bad-utf8\",\"method\":\"sign_event\",\"params\":{\"event_template\":{\"created_at\":1710000620,\"kind\":1,\"tags\":[],\"content\":\""[..],
         );
         invalid_content.push(0xff);
         invalid_content.extend_from_slice(b"\"}}}");
-        let request = parse_qr_signing_request(&invalid_content).unwrap();
-        assert_eq!(
-            build_qr_review_pages(&request, dev()),
-            Err(QrReviewError::RequestNotUtf8),
-        );
-        assert_eq!(
-            build_qr_display_review_pages(&request, dev(), t_display_s3_review_limits()),
-            Err(QrReviewError::RequestNotUtf8),
-        );
-        assert_eq!(
-            build_qr_trusted_review_request(&request, dev()),
-            Err(QrReviewError::RequestNotUtf8),
-        );
+        assert!(parse_qr_signing_request(&invalid_content).is_err());
         let mut invalid_tag = Vec::from(
             &b"{\"version\":1,\"request_id\":\"req-bad-utf8-tag\",\"method\":\"sign_event\",\"params\":{\"event_template\":{\"created_at\":1710000640,\"kind\":1,\"tags\":[[\"t\",\""[..],
         );
         invalid_tag.push(0xfe);
         invalid_tag.extend_from_slice(b"\"]],\"content\":\"ok\"}}}");
-        let request = parse_qr_signing_request(&invalid_tag).unwrap();
-        assert_eq!(
-            build_qr_review_pages(&request, dev()),
-            Err(QrReviewError::RequestNotUtf8),
-        );
-        assert_eq!(
-            build_qr_display_review_request(&request, dev(), t_display_s3_review_limits()),
-            Err(QrReviewError::RequestNotUtf8),
-        );
+        assert!(parse_qr_signing_request(&invalid_tag).is_err());
     }
 }

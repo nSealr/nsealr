@@ -15,18 +15,9 @@
 //!   order, no duplicates), a common digest/total, per-frame chunk limits, then
 //!   validates the reassembled payload like the static path plus the whole-JSON
 //!   digest, against [`MAX_ANIMATED_QR_DECODED_JSON_BYTES`].
-//! - **Signing request** — a hand-rolled, non-recursive JSON top-level-object
-//!   scanner (mirroring the C++ `parse_top_level_object`): strings decode the
-//!   standard two-character escapes plus `\uXXXX` (via [`crate::unicode`], with
-//!   surrogate-pair combination), numbers are integer-only tokens (`-?[0-9]+`),
-//!   nested containers are skipped by depth counting **without** validating their
-//!   internal grammar (only strings inside them are parsed). The top level
-//!   tolerates *no* unknown fields (`version`/`request_id`/`method`/`params`
-//!   only, and `params` only `event_template`); the event template requires
-//!   exactly `created_at`/`kind`/`tags`/`content`, bans `id`/`pubkey`/`sig`, and
-//!   enforces every `limits` maximum. The raw `event_template`/`tags` JSON text
-//!   is preserved by byte range so escape sequences survive verbatim (the C++
-//!   kept `std::string` copies; this port keeps offsets into the envelope JSON).
+//! - **Signing request** — the shared strict [`crate::event::ParsedRequest`]
+//!   reader validates decoded duplicate keys, exact shapes, bounded unsigned
+//!   integers and Unicode before producing a diagnostic preview copy.
 //!
 //! The C++ returned heap strings/vectors. This port writes envelope output into
 //! caller buffers, hands animated frames to a callback one at a time, and returns
@@ -42,10 +33,10 @@ use crate::hash::sha256_hex;
 use crate::qr::limits::{
     MAX_ANIMATED_QR_DECODED_JSON_BYTES, MAX_ANIMATED_QR_FRAME_COUNT,
     MAX_ANIMATED_QR_FRAME_PAYLOAD_CHARS, MAX_CONTENT_UTF8_BYTES, MAX_DECODED_REQUEST_JSON_BYTES,
-    MAX_REQUEST_ID_LENGTH, MAX_SAFE_INTEGER, MAX_STATIC_QR_DECODED_JSON_BYTES, MAX_TAG_COUNT,
-    MAX_TAG_FIELDS_PER_TAG, MAX_TAG_FIELD_UTF8_BYTES,
+    MAX_REQUEST_ID_LENGTH, MAX_STATIC_QR_DECODED_JSON_BYTES, MAX_TAG_COUNT, MAX_TAG_FIELDS_PER_TAG,
+    MAX_TAG_FIELD_UTF8_BYTES,
 };
-use crate::unicode::{append_json_unicode_escape, is_valid_utf8, UnicodeError};
+use crate::unicode::is_valid_utf8;
 
 /// The static envelope prefix. Mirrors the C++ `kPrefix`.
 pub const PREFIX: &[u8] = b"nsealr1:";
@@ -206,8 +197,7 @@ struct TagField {
 pub struct QrEventTemplate {
     /// The `created_at` value.
     pub created_at: u64,
-    /// The `kind` value. The C++ stored an `int` after a `<= INT_MAX` check; this
-    /// port keeps the same accepted range (`0..=i32::MAX`).
+    /// The `kind` value, restricted to 0..=65535 by the shared strict reader.
     pub kind: i32,
     /// Raw byte range of the `tags` array inside the request JSON.
     pub tags_json: (usize, usize),
@@ -683,581 +673,46 @@ pub fn encode_animated_qr_envelope_json(
     }
     Ok(())
 }
-
-/// Kinds of JSON values the request scanner distinguishes. Mirrors the C++
-/// `JsonValueKind`.
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
-enum JsonKind {
-    String,
-    Number,
-    Object,
-    Array,
-    Literal,
-}
-
-/// A scanned member value: its kind and byte span within the scanned slice.
-/// Mirrors the C++ `JsonTopLevelValue` (which copied the text; this keeps spans).
-#[derive(Clone, Copy)]
-struct ValueSpan {
-    kind: JsonKind,
-    start: usize,
-    end: usize,
-}
-
-/// Longest known member key is `event_template` (14 bytes); keys that decode
-/// longer than this buffer cannot match any known name and are treated as
-/// unknown fields.
-const MAX_MEMBER_KEY_LEN: usize = 16;
-
-/// The hand-rolled, non-recursive JSON scanner. Mirrors the helper functions in
-/// the C++ `qr_envelope.cpp` anonymous namespace (`skip_ws`,
-/// `parse_simple_json_string`, `parse_json_number_token`, `skip_json_container`,
-/// `parse_json_literal_token`, `parse_json_value_token`,
-/// `parse_top_level_object`).
-struct Scanner<'j> {
-    json: &'j [u8],
-    offset: usize,
-}
-
-/// Member callback for [`Scanner::for_each_member`]: receives the scanner
-/// (positioned at the member value) and the decoded key.
-type OnMember<'s, 'j> = dyn FnMut(&mut Scanner<'j>, &[u8]) -> Result<(), QrEnvelopeError> + 's;
-
-impl<'j> Scanner<'j> {
-    fn new(json: &'j [u8]) -> Self {
-        Self { json, offset: 0 }
-    }
-
-    fn peek(&self) -> Option<u8> {
-        self.json.get(self.offset).copied()
-    }
-
-    /// Mirrors the C++ `skip_ws`.
-    fn skip_ws(&mut self) {
-        while let Some(byte) = self.peek() {
-            if !matches!(byte, b' ' | b'\n' | b'\r' | b'\t') {
-                return;
-            }
-            self.offset += 1;
-        }
-    }
-
-    /// Mirrors the C++ `parse_simple_json_string`; decoded bytes go to `sink`.
-    /// All grammar failures (missing quote, bad/truncated escape, bad `\uXXXX`,
-    /// control character, unterminated) map to
-    /// [`QrEnvelopeError::RequestJsonMalformed`] (distinct messages in the C++).
-    fn parse_string(&mut self, sink: &mut dyn FnMut(&[u8])) -> Result<(), QrEnvelopeError> {
-        if self.peek() != Some(b'"') {
-            return Err(QrEnvelopeError::RequestJsonMalformed);
-        }
-        self.offset += 1;
-        while self.offset < self.json.len() {
-            let ch = self.json[self.offset];
-            self.offset += 1;
-            if ch == b'"' {
-                return Ok(());
-            }
-            if ch == b'\\' {
-                let escaped = self.peek().ok_or(QrEnvelopeError::RequestJsonMalformed)?;
-                self.offset += 1;
-                match escaped {
-                    b'"' | b'\\' | b'/' => sink(&[escaped]),
-                    b'b' => sink(b"\x08"),
-                    b'f' => sink(b"\x0c"),
-                    b'n' => sink(b"\n"),
-                    b'r' => sink(b"\r"),
-                    b't' => sink(b"\t"),
-                    b'u' => {
-                        let mut utf8 = [0u8; 4];
-                        let fragment =
-                            append_json_unicode_escape(self.json, &mut self.offset, &mut utf8)
-                                .map_err(|_: UnicodeError| QrEnvelopeError::RequestJsonMalformed)?;
-                        sink(fragment);
-                    }
-                    _ => return Err(QrEnvelopeError::RequestJsonMalformed),
-                }
-                continue;
-            }
-            if ch < 0x20 {
-                return Err(QrEnvelopeError::RequestJsonMalformed);
-            }
-            sink(&[ch]);
-        }
-        Err(QrEnvelopeError::RequestJsonMalformed)
-    }
-
-    /// Mirrors the C++ `parse_json_number_token`: integer-only (`-?[0-9]+`).
-    fn parse_number_token(&mut self) -> Result<(usize, usize), QrEnvelopeError> {
-        let start = self.offset;
-        if self.peek() == Some(b'-') {
-            self.offset += 1;
-        }
-        while matches!(self.peek(), Some(b'0'..=b'9')) {
-            self.offset += 1;
-        }
-        if self.offset == start || (self.offset == start + 1 && self.json[start] == b'-') {
-            return Err(QrEnvelopeError::RequestJsonMalformed);
-        }
-        Ok((start, self.offset))
-    }
-
-    /// Mirrors the C++ `skip_json_container`: depth-counts only the given
-    /// open/close pair, skipping (and escape-validating) strings; the interior
-    /// grammar is otherwise not validated. The caller guarantees the scanner
-    /// sits on `open` (the C++ re-checked it; dead branch, omitted).
-    fn skip_container(&mut self, open: u8, close: u8) -> Result<(), QrEnvelopeError> {
-        let mut depth = 0usize;
-        while self.offset < self.json.len() {
-            let ch = self.json[self.offset];
-            if ch == b'"' {
-                self.parse_string(&mut |_| {})?;
-                continue;
-            }
-            if ch == open {
-                depth += 1;
-            } else if ch == close {
-                depth -= 1;
-                self.offset += 1;
-                if depth == 0 {
-                    return Ok(());
-                }
-                continue;
-            }
-            self.offset += 1;
-        }
-        Err(QrEnvelopeError::RequestJsonMalformed)
-    }
-
-    /// Mirrors the C++ `parse_json_literal_token` (`true`/`false`/`null`).
-    fn parse_literal(&mut self) -> Result<(), QrEnvelopeError> {
-        for literal in [&b"true"[..], b"false", b"null"] {
-            if self.json[self.offset..].starts_with(literal) {
-                self.offset += literal.len();
-                return Ok(());
-            }
-        }
-        Err(QrEnvelopeError::RequestJsonMalformed)
-    }
-
-    /// Mirrors the C++ `parse_json_value_token`; string content goes to `sink`.
-    fn parse_value(&mut self, sink: &mut dyn FnMut(&[u8])) -> Result<ValueSpan, QrEnvelopeError> {
-        self.skip_ws();
-        let Some(ch) = self.peek() else {
-            return Err(QrEnvelopeError::RequestJsonMalformed);
-        };
-        let start = self.offset;
-        let kind = match ch {
-            b'"' => {
-                self.parse_string(sink)?;
-                JsonKind::String
-            }
-            b'{' => {
-                self.skip_container(b'{', b'}')?;
-                JsonKind::Object
-            }
-            b'[' => {
-                self.skip_container(b'[', b']')?;
-                JsonKind::Array
-            }
-            b'0'..=b'9' | b'-' => {
-                self.parse_number_token()?;
-                JsonKind::Number
-            }
-            _ => {
-                self.parse_literal()?;
-                JsonKind::Literal
-            }
-        };
-        Ok(ValueSpan {
-            kind,
-            start,
-            end: self.offset,
-        })
-    }
-
-    /// Walks a JSON object member by member, mirroring the C++
-    /// `parse_top_level_object` loop structure exactly (including its lenient
-    /// acceptance of a trailing comma at end of input). `on_member` receives the
-    /// scanner (positioned at the value) and the decoded key (truncated to
-    /// [`MAX_MEMBER_KEY_LEN`] — no known key is that long, so a truncated key
-    /// simply matches nothing).
-    fn for_each_member(&mut self, on_member: &mut OnMember<'_, 'j>) -> Result<(), QrEnvelopeError> {
-        self.skip_ws();
-        if self.peek() != Some(b'{') {
-            return Err(QrEnvelopeError::RequestNotObject);
-        }
-        self.offset += 1;
-        self.skip_ws();
-        if self.peek() == Some(b'}') {
-            self.offset += 1;
-        } else {
-            while self.offset < self.json.len() {
-                self.skip_ws();
-                let mut key = [0u8; MAX_MEMBER_KEY_LEN];
-                let mut key_len = 0usize;
-                self.parse_string(&mut |fragment| {
-                    for &byte in fragment {
-                        if key_len < key.len() {
-                            key[key_len] = byte;
-                        }
-                        key_len += 1;
-                    }
-                })?;
-                self.skip_ws();
-                if self.peek() != Some(b':') {
-                    return Err(QrEnvelopeError::RequestJsonMalformed);
-                }
-                self.offset += 1;
-                on_member(self, &key[..key_len.min(key.len())])?;
-                self.skip_ws();
-                match self.peek() {
-                    Some(b',') => {
-                        self.offset += 1;
-                        continue;
-                    }
-                    Some(b'}') => {
-                        self.offset += 1;
-                        break;
-                    }
-                    _ => return Err(QrEnvelopeError::RequestJsonMalformed),
-                }
-            }
-        }
-        self.skip_ws();
-        if self.offset != self.json.len() {
-            return Err(QrEnvelopeError::RequestJsonMalformed);
-        }
-        Ok(())
-    }
-}
-
-/// Parses a canonical unsigned decimal within the JSON safe-integer range.
-/// Mirrors the C++ `parse_unsigned_decimal`; `field_error` is the per-field
-/// variant (the C++ took the field name for its message).
-fn parse_unsigned_decimal(
-    token: &[u8],
-    field_error: QrEnvelopeError,
-) -> Result<u64, QrEnvelopeError> {
-    if token.is_empty() || token[0] == b'-' {
-        return Err(field_error);
-    }
-    let mut value = 0u64;
-    for &byte in token {
-        if !byte.is_ascii_digit() {
-            return Err(field_error);
-        }
-        value = value
-            .checked_mul(10)
-            .and_then(|v| v.checked_add(u64::from(byte - b'0')))
-            .ok_or(field_error)?;
-    }
-    if value > MAX_SAFE_INTEGER {
-        return Err(field_error);
-    }
-    Ok(value)
-}
-
-/// Parses the `tags` array span into `request`, mirroring the C++
-/// `parse_tags_array`: every element must be an array of strings, each decoded
-/// field at most [`MAX_TAG_FIELD_UTF8_BYTES`] bytes, at most
-/// [`MAX_TAG_FIELDS_PER_TAG`] fields per tag and [`MAX_TAG_COUNT`] tags.
-///
-/// The span is the exact `[...]` container text (guaranteed by the caller's
-/// kind check), so the C++ leading-`[` and trailing-data guards are unreachable
-/// and omitted. The C++ `max_total_tag_utf8_bytes` sweep is likewise
-/// unreachable here: decoded text never exceeds its JSON source, which the
-/// request guard bounds to [`MAX_DECODED_REQUEST_JSON_BYTES`] (704) — far below
-/// the 4096-byte tag-total limit — so that dead check is omitted too.
-fn parse_tags_array(
-    tags_json: &[u8],
-    request: &mut QrSigningRequest,
-) -> Result<usize, QrEnvelopeError> {
-    let mut scanner = Scanner::new(tags_json);
-    scanner.offset = 1; // Past the '[' the kind check guarantees.
-    let mut tag_count = 0usize;
-    scanner.skip_ws();
-    if scanner.peek() == Some(b']') {
-        // Empty tags array. (The C++ advanced past the ']' for its trailing-data
-        // check; that check is unreachable on this exact span and omitted.)
-    } else {
-        while scanner.offset < tags_json.len() {
-            scanner.skip_ws();
-            if scanner.peek() != Some(b'[') {
-                return Err(QrEnvelopeError::RequestBadTags);
-            }
-            scanner.offset += 1;
-            let mut fields_in_tag = 0usize;
-            scanner.skip_ws();
-            if scanner.peek() == Some(b']') {
-                scanner.offset += 1;
-            } else {
-                while scanner.offset < tags_json.len() {
-                    scanner.skip_ws();
-                    let field_start = request.tag_fields_text_len;
-                    let mut decoded = 0usize;
-                    {
-                        let text = &mut request.tag_fields_text;
-                        scanner.parse_string(&mut |fragment| {
-                            for &byte in fragment {
-                                // In-bounds by construction: stored bytes plus
-                                // this field's decoded bytes never exceed the
-                                // total decoded tag text, which is strictly
-                                // smaller than its (<= 704-byte) JSON source.
-                                text[field_start + decoded] = byte;
-                                decoded += 1;
-                            }
-                        })?;
-                    }
-                    if decoded > MAX_TAG_FIELD_UTF8_BYTES {
-                        return Err(QrEnvelopeError::TagFieldTooLong);
-                    }
-                    // Store the field if it is within both capacity limits; the
-                    // C++ enforced those limits only after the tag closed, so
-                    // over-limit fields are counted (for the later checks) but
-                    // not stored. Decoded text is always shorter than its JSON
-                    // source (quotes and escapes only shrink), so the packed
-                    // buffer, sized MAX_DECODED_REQUEST_JSON_BYTES, never fills.
-                    if fields_in_tag < MAX_TAG_FIELDS_PER_TAG && tag_count < MAX_TAG_COUNT {
-                        request.tag_fields[request.tag_field_count] = TagField {
-                            tag: tag_count,
-                            start: field_start,
-                            end: field_start + decoded,
-                        };
-                        request.tag_field_count += 1;
-                        request.tag_fields_text_len = field_start + decoded;
-                    }
-                    fields_in_tag += 1;
-                    scanner.skip_ws();
-                    match scanner.peek() {
-                        Some(b',') => {
-                            scanner.offset += 1;
-                            continue;
-                        }
-                        Some(b']') => {
-                            scanner.offset += 1;
-                            break;
-                        }
-                        _ => return Err(QrEnvelopeError::RequestBadTags),
-                    }
-                }
-            }
-            if fields_in_tag > MAX_TAG_FIELDS_PER_TAG {
-                return Err(QrEnvelopeError::TooManyTagFields);
-            }
-            tag_count += 1;
-            if tag_count > MAX_TAG_COUNT {
-                return Err(QrEnvelopeError::TooManyTags);
-            }
-            scanner.skip_ws();
-            match scanner.peek() {
-                Some(b',') => {
-                    scanner.offset += 1;
-                    continue;
-                }
-                // Closing ']' of the whole array; nothing follows on this exact
-                // span (see the trailing-data note above).
-                Some(b']') => break,
-                _ => return Err(QrEnvelopeError::RequestBadTags),
-            }
-        }
-    }
-    Ok(tag_count)
-}
-
-/// Parses a decoded envelope's JSON as a sign-event signing request. Mirrors the
-/// C++ `parse_qr_signing_request` (which took a `QrEnvelope`; only the JSON is
-/// read, so this port takes the JSON bytes directly).
-///
-/// # Errors
-///
-/// See [`QrEnvelopeError`]; full parity with the C++ field/tolerance rules and
-/// check order (size guard → grammar → unknown field → version → request_id →
-/// method → params → params unknown → event_template → forbidden → unknown →
-/// required kinds → content size → kind value → created_at value → tags array).
+/// Parses the legacy-size envelope with the shared strict event reader.
+/// This copied preview record carries no execution authority. Detailed legacy
+/// scanner error precedence is retired; invalid JSON/shape/range is malformed.
 pub fn parse_qr_signing_request(payload_json: &[u8]) -> Result<QrSigningRequest, QrEnvelopeError> {
+    use crate::event::{OperationLimits, ParsedRequest, RequestMethod};
     if payload_json.len() > MAX_DECODED_REQUEST_JSON_BYTES {
         return Err(QrEnvelopeError::ExceedsRequestJsonBytes);
     }
-
-    // --- Top level ---
-    let mut unknown = false;
-    let mut version_val: Option<ValueSpan> = None;
-    let mut rid_buf = [0u8; MAX_REQUEST_ID_LENGTH];
-    let mut rid: Option<(JsonKind, usize, bool)> = None; // kind, decoded len, overflow
-    let mut method_val: Option<(JsonKind, bool)> = None; // kind, equals "sign_event"
-    let mut params_val: Option<ValueSpan> = None;
-    let mut scanner = Scanner::new(payload_json);
-    scanner.for_each_member(&mut |sc, key| {
-        match key {
-            b"version" => version_val = Some(sc.parse_value(&mut |_| {})?),
-            b"request_id" => {
-                let mut len = 0usize;
-                let mut overflow = false;
-                let span = sc.parse_value(&mut |fragment| {
-                    for &byte in fragment {
-                        if len < rid_buf.len() {
-                            rid_buf[len] = byte;
-                            len += 1;
-                        } else {
-                            overflow = true;
-                        }
-                    }
-                })?;
-                rid = Some((span.kind, len, overflow));
-            }
-            b"method" => {
-                let mut buf = [0u8; 16];
-                let mut len = 0usize;
-                let span = sc.parse_value(&mut |fragment| {
-                    for &byte in fragment {
-                        if len < buf.len() {
-                            buf[len] = byte;
-                        }
-                        len += 1;
-                    }
-                })?;
-                method_val = Some((span.kind, &buf[..len.min(buf.len())] == b"sign_event"));
-            }
-            b"params" => params_val = Some(sc.parse_value(&mut |_| {})?),
-            _ => {
-                unknown = true;
-                sc.parse_value(&mut |_| {})?;
-            }
-        }
-        Ok(())
-    })?;
-    if unknown {
-        return Err(QrEnvelopeError::RequestUnknownField);
-    }
-    let version_ok = version_val.is_some_and(|value| {
-        value.kind == JsonKind::Number && &payload_json[value.start..value.end] == b"1"
-    });
-    if !version_ok {
-        return Err(QrEnvelopeError::RequestBadVersion);
-    }
-    let (rid_kind, rid_len, rid_overflow) = rid.ok_or(QrEnvelopeError::RequestBadRequestId)?;
-    if rid_kind != JsonKind::String || rid_overflow || !is_request_id(&rid_buf[..rid_len]) {
-        return Err(QrEnvelopeError::RequestBadRequestId);
-    }
-    let method_ok = method_val.is_some_and(|(kind, matches)| kind == JsonKind::String && matches);
-    if !method_ok {
+    let limits = OperationLimits {
+        input_bytes: MAX_DECODED_REQUEST_JSON_BYTES,
+        content_bytes: MAX_CONTENT_UTF8_BYTES,
+        tags: MAX_TAG_COUNT,
+        fields_per_tag: MAX_TAG_FIELDS_PER_TAG,
+        field_bytes: MAX_TAG_FIELD_UTF8_BYTES,
+        ..OperationLimits::conformance()
+    };
+    let parsed = ParsedRequest::parse(payload_json, limits)
+        .map_err(|_| QrEnvelopeError::RequestJsonMalformed)?;
+    if parsed.method() != RequestMethod::SignEvent {
         return Err(QrEnvelopeError::RequestBadMethod);
     }
-    let params = params_val.ok_or(QrEnvelopeError::RequestParamsRequired)?;
-    if params.kind != JsonKind::Object {
-        return Err(QrEnvelopeError::RequestParamsRequired);
-    }
-
-    // --- params ---
-    let mut params_unknown = false;
-    let mut template_val: Option<ValueSpan> = None;
-    let mut params_scanner = Scanner::new(&payload_json[params.start..params.end]);
-    params_scanner.for_each_member(&mut |sc, key| {
-        if key == b"event_template" {
-            template_val = Some(sc.parse_value(&mut |_| {})?);
-        } else {
-            params_unknown = true;
-            sc.parse_value(&mut |_| {})?;
-        }
-        Ok(())
-    })?;
-    if params_unknown {
-        return Err(QrEnvelopeError::RequestParamsUnknownField);
-    }
-    let template = template_val.ok_or(QrEnvelopeError::RequestEventTemplateRequired)?;
-    if template.kind != JsonKind::Object {
-        return Err(QrEnvelopeError::RequestEventTemplateRequired);
-    }
-    let template_abs = (params.start + template.start, params.start + template.end);
-
-    // --- event_template ---
-    let template_json = &payload_json[template_abs.0..template_abs.1];
-    let mut forbidden = false;
-    let mut template_unknown = false;
-    let mut created_at_val: Option<ValueSpan> = None;
-    let mut kind_val: Option<ValueSpan> = None;
-    let mut tags_val: Option<ValueSpan> = None;
-    let mut content_buf = [0u8; MAX_CONTENT_UTF8_BYTES];
-    let mut content_state: Option<(JsonKind, usize)> = None; // kind, decoded len
-    let mut template_scanner = Scanner::new(template_json);
-    template_scanner.for_each_member(&mut |sc, key| {
-        match key {
-            b"id" | b"pubkey" | b"sig" => {
-                forbidden = true;
-                sc.parse_value(&mut |_| {})?;
-            }
-            b"created_at" => created_at_val = Some(sc.parse_value(&mut |_| {})?),
-            b"kind" => kind_val = Some(sc.parse_value(&mut |_| {})?),
-            b"tags" => tags_val = Some(sc.parse_value(&mut |_| {})?),
-            b"content" => {
-                let mut len = 0usize;
-                let span = sc.parse_value(&mut |fragment| {
-                    for &byte in fragment {
-                        if len < content_buf.len() {
-                            content_buf[len] = byte;
-                        }
-                        len += 1;
-                    }
-                })?;
-                content_state = Some((span.kind, len));
-            }
-            _ => {
-                template_unknown = true;
-                sc.parse_value(&mut |_| {})?;
-            }
-        }
-        Ok(())
-    })?;
-    if forbidden {
-        return Err(QrEnvelopeError::RequestEventTemplateForbiddenField);
-    }
-    if template_unknown {
-        return Err(QrEnvelopeError::RequestEventTemplateUnknownField);
-    }
-    let created_at = created_at_val
-        .filter(|value| value.kind == JsonKind::Number)
-        .ok_or(QrEnvelopeError::RequestBadCreatedAt)?;
-    let kind = kind_val
-        .filter(|value| value.kind == JsonKind::Number)
-        .ok_or(QrEnvelopeError::RequestBadKind)?;
-    let tags = tags_val
-        .filter(|value| value.kind == JsonKind::Array)
-        .ok_or(QrEnvelopeError::RequestBadTags)?;
-    let (content_kind, content_len) = content_state.ok_or(QrEnvelopeError::RequestBadContent)?;
-    if content_kind != JsonKind::String {
-        return Err(QrEnvelopeError::RequestBadContent);
-    }
-    if content_len > MAX_CONTENT_UTF8_BYTES {
-        return Err(QrEnvelopeError::ContentTooLong);
-    }
-    let kind_value = parse_unsigned_decimal(
-        &template_json[kind.start..kind.end],
-        QrEnvelopeError::RequestBadKind,
-    )?;
-    if kind_value > i32::MAX as u64 {
-        return Err(QrEnvelopeError::RequestBadKind);
-    }
-    let created_at_value = parse_unsigned_decimal(
-        &template_json[created_at.start..created_at.end],
-        QrEnvelopeError::RequestBadCreatedAt,
-    )?;
-    let tags_abs = (template_abs.0 + tags.start, template_abs.0 + tags.end);
-
+    let event = parsed
+        .event
+        .as_ref()
+        .ok_or(QrEnvelopeError::RequestEventTemplateRequired)?;
     let mut request = QrSigningRequest {
         version: 1,
-        request_id: rid_buf,
-        request_id_len: rid_len,
+        request_id: [0; MAX_REQUEST_ID_LENGTH],
+        request_id_len: parsed.request_id().len(),
         has_params: true,
         has_event_template: true,
-        event_template_json: template_abs,
+        event_template_json: parsed.raw_template,
         event_template: QrEventTemplate {
-            created_at: created_at_value,
-            kind: kind_value as i32,
-            tags_json: tags_abs,
-            tag_count: 0,
+            created_at: event.created_at(),
+            kind: i32::from(event.kind()),
+            tags_json: event.raw_tags,
+            tag_count: event.tag_count(),
         },
-        content: content_buf,
-        content_len,
+        content: [0; MAX_CONTENT_UTF8_BYTES],
+        content_len: event.content().len(),
         tag_fields_text: [0; MAX_DECODED_REQUEST_JSON_BYTES],
         tag_fields_text_len: 0,
         tag_fields: [TagField {
@@ -1267,8 +722,18 @@ pub fn parse_qr_signing_request(payload_json: &[u8]) -> Result<QrSigningRequest,
         }; MAX_TAG_COUNT * MAX_TAG_FIELDS_PER_TAG],
         tag_field_count: 0,
     };
-    request.event_template.tag_count =
-        parse_tags_array(&payload_json[tags_abs.0..tags_abs.1], &mut request)?;
+    request.request_id[..request.request_id_len].copy_from_slice(parsed.request_id().as_bytes());
+    request.content[..request.content_len].copy_from_slice(event.content().as_bytes());
+    for tag in 0..event.tag_count() {
+        for field in event.tag(tag).expect("bounded tag index") {
+            let start = request.tag_fields_text_len;
+            let end = start + field.len();
+            request.tag_fields_text[start..end].copy_from_slice(field.as_bytes());
+            request.tag_fields[request.tag_field_count] = TagField { tag, start, end };
+            request.tag_field_count += 1;
+            request.tag_fields_text_len = end;
+        }
+    }
     Ok(request)
 }
 
@@ -1276,7 +741,8 @@ pub fn parse_qr_signing_request(payload_json: &[u8]) -> Result<QrSigningRequest,
 pub(crate) mod tests {
     use super::*;
     use crate::qr::limits::{
-        MAX_QR_RESPONSE_DISPLAY_CYCLES, MAX_SERIAL_FRAME_BYTES, MAX_TOTAL_TAG_UTF8_BYTES,
+        MAX_QR_RESPONSE_DISPLAY_CYCLES, MAX_SAFE_INTEGER, MAX_SERIAL_FRAME_BYTES,
+        MAX_TOTAL_TAG_UTF8_BYTES,
     };
     use std::string::String;
     use std::vec::Vec;
@@ -1673,11 +1139,11 @@ pub(crate) mod tests {
         let cases: &[(&[u8], QrEnvelopeError)] = &[
             (
                 br#"{"version":2,"request_id":"req-kind-1-basic","method":"sign_event","params":{}}"#,
-                QrEnvelopeError::RequestBadVersion,
+                QrEnvelopeError::RequestJsonMalformed,
             ),
             (
                 br#"{"version":1,"request_id":"bad id","method":"sign_event","params":{}}"#,
-                QrEnvelopeError::RequestBadRequestId,
+                QrEnvelopeError::RequestJsonMalformed,
             ),
             (
                 br#"{"version":1,"request_id":"req-kind-1-basic","method":"get_public_key"}"#,
@@ -1685,43 +1151,43 @@ pub(crate) mod tests {
             ),
             (
                 br#"{"version":1,"request_id":"req-kind-1-basic","method":"sign_event"}"#,
-                QrEnvelopeError::RequestParamsRequired,
+                QrEnvelopeError::RequestJsonMalformed,
             ),
             (
                 br#"{"version":1,"request_id":"req-kind-1-basic","method":"sign_event","params":{}}"#,
-                QrEnvelopeError::RequestEventTemplateRequired,
+                QrEnvelopeError::RequestJsonMalformed,
             ),
             (
                 br#"{"version":1,"request_id":"req-kind-1-basic","method":"sign_event","params":{"event_template":[]}}"#,
-                QrEnvelopeError::RequestEventTemplateRequired,
+                QrEnvelopeError::RequestJsonMalformed,
             ),
             (
                 br#"{"version":1,"request_id":"req-kind-1-basic","method":"sign_event","params":{"event_template":{"created_at":1710000000,"kind":1,"tags":[],"content":"","id":"00"}}}"#,
-                QrEnvelopeError::RequestEventTemplateForbiddenField,
+                QrEnvelopeError::RequestJsonMalformed,
             ),
             (
                 br#"{"version":1,"request_id":"req-kind-1-basic","method":"sign_event","params":{"event_template":{"created_at":1710000000,"kind":1,"tags":[],"content":"","pubkey":"00"}}}"#,
-                QrEnvelopeError::RequestEventTemplateForbiddenField,
+                QrEnvelopeError::RequestJsonMalformed,
             ),
             (
                 br#"{"version":1,"request_id":"req-kind-1-basic","method":"sign_event","params":{"event_template":{"created_at":1710000000,"kind":1,"tags":[],"content":"","sig":"00"}}}"#,
-                QrEnvelopeError::RequestEventTemplateForbiddenField,
+                QrEnvelopeError::RequestJsonMalformed,
             ),
             (
                 br#"{"version":1,"request_id":"req-kind-1-basic","method":"sign_event","params":{"event_template":{"kind":1,"tags":[],"content":""}}}"#,
-                QrEnvelopeError::RequestBadCreatedAt,
+                QrEnvelopeError::RequestJsonMalformed,
             ),
             (
                 br#"{"version":1,"request_id":"req-kind-1-basic","method":"sign_event","params":{"event_template":{"created_at":1710000000,"kind":"1","tags":[],"content":""}}}"#,
-                QrEnvelopeError::RequestBadKind,
+                QrEnvelopeError::RequestJsonMalformed,
             ),
             (
                 br#"{"version":1,"request_id":"req-kind-1-basic","method":"sign_event","params":{"event_template":{"created_at":1710000000,"kind":1,"tags":{},"content":""}}}"#,
-                QrEnvelopeError::RequestBadTags,
+                QrEnvelopeError::RequestJsonMalformed,
             ),
             (
                 br#"{"version":1,"request_id":"req-kind-1-basic","method":"sign_event","params":{"event_template":{"created_at":1710000000,"kind":1,"tags":[]}}}"#,
-                QrEnvelopeError::RequestBadContent,
+                QrEnvelopeError::RequestJsonMalformed,
             ),
             (
                 br#"{"version":1,"request_id":"req-invalid-unicode","method":"sign_event","params":{"event_template":{"created_at":1710000000,"kind":1,"tags":[],"content":"\uD83D"}}}"#,
@@ -2254,7 +1720,7 @@ pub(crate) mod tests {
 
     // Direct coverage of the request-parser tolerance rules the C++ exercises via
     // its JSON scanner: whitespace, the full escape set, nested containers skipped
-    // without grammar validation.
+    // with strict schema validation.
     #[test]
     fn request_parser_tolerances() {
         // Whitespace everywhere; escape set \" \\ \/ \b \f \n \r \t in content.
@@ -2272,7 +1738,7 @@ pub(crate) mod tests {
         // Empty top-level object -> version required.
         assert_eq!(
             parse_qr_signing_request(b"{}").unwrap_err(),
-            QrEnvelopeError::RequestBadVersion,
+            QrEnvelopeError::RequestJsonMalformed,
         );
 
         // Literals (true/false/null) parse as top-level value tokens; the
@@ -2282,15 +1748,15 @@ pub(crate) mod tests {
                 br#"{"version":1,"request_id":"r","method":"sign_event","params":{},"extra":null}"#
             )
             .unwrap_err(),
-            QrEnvelopeError::RequestUnknownField,
+            QrEnvelopeError::RequestJsonMalformed,
         );
 
         // A key longer than any known member name is an unknown field (the
-        // decoder truncates it past the known-key buffer).
+        // decoder rejects it at the known-key bound).
         assert_eq!(
             parse_qr_signing_request(br#"{"version":1,"a_key_longer_than_any_known_member":1}"#)
                 .unwrap_err(),
-            QrEnvelopeError::RequestUnknownField,
+            QrEnvelopeError::RequestJsonMalformed,
         );
 
         // String values everywhere a non-string is expected: version as a string
@@ -2302,25 +1768,25 @@ pub(crate) mod tests {
                 br#"{"version":"1","request_id":"r","method":"sign_event","params":{}}"#
             )
             .unwrap_err(),
-            QrEnvelopeError::RequestBadVersion,
+            QrEnvelopeError::RequestJsonMalformed,
         );
         assert_eq!(
             parse_qr_signing_request(
                 br#"{"version":1,"request_id":"r","method":"sign_event","params":"x"}"#
             )
             .unwrap_err(),
-            QrEnvelopeError::RequestParamsRequired,
+            QrEnvelopeError::RequestJsonMalformed,
         );
         assert_eq!(
             parse_qr_signing_request(br#"{"version":1,"extra":"v"}"#).unwrap_err(),
-            QrEnvelopeError::RequestUnknownField,
+            QrEnvelopeError::RequestJsonMalformed,
         );
         assert_eq!(
             parse_qr_signing_request(
                 br#"{"version":1,"request_id":"r","method":"sign_event","params":{"event_template":{"created_at":1,"kind":1,"tags":[],"content":"","extra":"v"}}}"#
             )
             .unwrap_err(),
-            QrEnvelopeError::RequestEventTemplateUnknownField,
+            QrEnvelopeError::RequestJsonMalformed,
         );
 
         // A method value longer than the comparison buffer is just a mismatch.
@@ -2329,7 +1795,7 @@ pub(crate) mod tests {
                 br#"{"version":1,"request_id":"r","method":"a_method_longer_than_the_buffer","params":{}}"#
             )
             .unwrap_err(),
-            QrEnvelopeError::RequestBadMethod,
+            QrEnvelopeError::RequestJsonMalformed,
         );
 
         // params with an unknown member (event_template present too).
@@ -2338,7 +1804,7 @@ pub(crate) mod tests {
                 br#"{"version":1,"request_id":"r","method":"sign_event","params":{"event_template":{"created_at":1,"kind":1,"tags":[],"content":""},"other":1}}"#
             )
             .unwrap_err(),
-            QrEnvelopeError::RequestParamsUnknownField,
+            QrEnvelopeError::RequestJsonMalformed,
         );
 
         // event_template with an unknown (non-forbidden) member.
@@ -2347,7 +1813,7 @@ pub(crate) mod tests {
                 br#"{"version":1,"request_id":"r","method":"sign_event","params":{"event_template":{"created_at":1,"kind":1,"tags":[],"content":"","extra":1}}}"#
             )
             .unwrap_err(),
-            QrEnvelopeError::RequestEventTemplateUnknownField,
+            QrEnvelopeError::RequestJsonMalformed,
         );
     }
 
@@ -2419,14 +1885,14 @@ pub(crate) mod tests {
                 br#"{"version":1,"request_id":"r","method":"sign_event","params":{"event_template":{"created_at":1,"kind":1,"tags":["x"],"content":""}}}"#
             )
             .unwrap_err(),
-            QrEnvelopeError::RequestBadTags,
+            QrEnvelopeError::RequestJsonMalformed,
         );
         assert_eq!(
             parse_qr_signing_request(
                 br#"{"version":1,"request_id":"r","method":"sign_event","params":{"event_template":{"created_at":1,"kind":1,"tags":[["a" "b"]],"content":""}}}"#
             )
             .unwrap_err(),
-            QrEnvelopeError::RequestBadTags,
+            QrEnvelopeError::RequestJsonMalformed,
         );
         // content that is not a string.
         assert_eq!(
@@ -2434,7 +1900,7 @@ pub(crate) mod tests {
                 br#"{"version":1,"request_id":"r","method":"sign_event","params":{"event_template":{"created_at":1,"kind":1,"tags":[],"content":7}}}"#
             )
             .unwrap_err(),
-            QrEnvelopeError::RequestBadContent,
+            QrEnvelopeError::RequestJsonMalformed,
         );
         // kind fits u64 and MAX_SAFE_INTEGER but exceeds i32::MAX -> kind invalid.
         assert_eq!(
@@ -2442,7 +1908,7 @@ pub(crate) mod tests {
                 br#"{"version":1,"request_id":"r","method":"sign_event","params":{"event_template":{"created_at":1,"kind":2147483648,"tags":[],"content":""}}}"#
             )
             .unwrap_err(),
-            QrEnvelopeError::RequestBadKind,
+            QrEnvelopeError::RequestJsonMalformed,
         );
         // Tags-array grammar: separator junk between tags (C++ "tags array
         // separator is invalid").
@@ -2451,7 +1917,7 @@ pub(crate) mod tests {
                 br#"{"version":1,"request_id":"r","method":"sign_event","params":{"event_template":{"created_at":1,"kind":1,"tags":[["a"];["b"]],"content":""}}}"#
             )
             .unwrap_err(),
-            QrEnvelopeError::RequestBadTags,
+            QrEnvelopeError::RequestJsonMalformed,
         );
     }
 
@@ -2463,7 +1929,7 @@ pub(crate) mod tests {
         long_id.push_str(r#"","method":"sign_event","params":{}}"#);
         assert_eq!(
             parse_qr_signing_request(long_id.as_bytes()).unwrap_err(),
-            QrEnvelopeError::RequestBadRequestId,
+            QrEnvelopeError::RequestJsonMalformed,
         );
 
         // Request JSON over MAX_DECODED_REQUEST_JSON_BYTES (checked before parsing).
@@ -2483,7 +1949,7 @@ pub(crate) mod tests {
                 br#"{"version":1,"request_id":"r","method":"sign_event","params":{"event_template":{"created_at":1,"kind":1,"tags":[["1","2","3","4","5","6","7","8","9"]],"content":""}}}"#
             )
             .unwrap_err(),
-            QrEnvelopeError::TooManyTagFields,
+            QrEnvelopeError::RequestJsonMalformed,
         );
     }
 
@@ -2501,7 +1967,7 @@ pub(crate) mod tests {
         assert!(json.len() <= MAX_DECODED_REQUEST_JSON_BYTES);
         assert_eq!(
             parse_qr_signing_request(json.as_bytes()).unwrap_err(),
-            QrEnvelopeError::ContentTooLong,
+            QrEnvelopeError::RequestJsonMalformed,
         );
     }
 
@@ -2529,16 +1995,6 @@ pub(crate) mod tests {
         assert_eq!(
             map_payload_decode_error(Base64UrlError::OutputTooSmall),
             QrEnvelopeError::OutputTooSmall,
-        );
-        // parse_unsigned_decimal rejects non-digits (the C++ shared this helper
-        // contract; the tokenizer pre-filters digits on the public paths).
-        assert_eq!(
-            parse_unsigned_decimal(b"12x", QrEnvelopeError::RequestBadKind),
-            Err(QrEnvelopeError::RequestBadKind),
-        );
-        assert_eq!(
-            parse_unsigned_decimal(b"17", QrEnvelopeError::RequestBadKind),
-            Ok(17),
         );
     }
 
@@ -2577,7 +2033,7 @@ pub(crate) mod tests {
         json.push_str(r#""]],"content":""}}}"#);
         assert_eq!(
             parse_qr_signing_request(json.as_bytes()).unwrap_err(),
-            QrEnvelopeError::TagFieldTooLong,
+            QrEnvelopeError::RequestJsonMalformed,
         );
     }
 }

@@ -3,8 +3,7 @@
 //! Ported from the C++ reference `host_core` sources `src/device_protocol.cpp` +
 //! `include/nsealr/device_protocol.hpp` for behaviour parity: the same
 //! signer-identity gate at entry, the same request-frame decode, the same
-//! lenient metadata JSON scanner (`version`/`request_id`/`method`/`params`,
-//! unknown top-level fields flagged), the same
+//! strict shared JSON reader (decoded duplicate keys and trailing data reject),
 //! `get_capabilities`/`get_public_key`/`get_signing_status`/`sign_event`
 //! dispatch with byte-identical response JSON, the same
 //! `{"error":"unsupported_request"}` error frame for every rejected request,
@@ -29,22 +28,15 @@ use crate::base64url::{decode_base64url, encode_base64url, encoded_len, Base64Ur
 use crate::policy::signing_policy::{
     evaluate_signing_readiness, SigningGateNames, SigningReadiness,
 };
-use crate::qr::envelope::is_request_id;
 use crate::qr::limits::{MAX_DECODED_REQUEST_JSON_BYTES, MAX_SERIAL_FRAME_BYTES};
 use crate::review::display::{ReviewDisplayFrame, ReviewDisplayLimits};
 use crate::review::serial::{begin_serial_sign_event_trusted_review, SerialReviewError};
 use crate::review::signer_identity::{is_valid_nostr_public_key, SignerIdentity};
 use crate::review::trusted::TrustedReviewSession;
 use crate::serial::frame::{decode_serial_frame, encode_serial_frame, FrameType, SerialFrameError};
-use crate::unicode::{append_json_unicode_escape, is_valid_utf8};
+use crate::unicode::is_valid_utf8;
 use core::fmt;
 
-/// Maximum decoded `request_id` bytes the metadata scanner keeps (the shared
-/// request-id length rule; longer ids can never validate).
-const MAX_METADATA_REQUEST_ID: usize = 128;
-/// Maximum decoded `method` bytes kept (the longest supported method is
-/// `get_signing_status`, 18 bytes; longer methods can never match).
-const MAX_METADATA_METHOD: usize = 24;
 /// Maximum rendered response JSON bytes (capability response with a maximum
 /// request id is ~590 bytes; 768 leaves headroom).
 const MAX_RESPONSE_JSON_BYTES: usize = 768;
@@ -190,28 +182,19 @@ pub fn handle_serial_frame_with_review_preview(
     if !is_valid_utf8(request_json) {
         return unsupported();
     }
-    let metadata = parse_request_metadata(request_json)?;
-    if !metadata.version_one
-        || !is_request_id(metadata.request_id())
-        || metadata.has_unknown_top_level_field
-    {
-        return unsupported();
-    }
-    match metadata.method() {
-        b"get_capabilities" => {
-            if metadata.has_params {
-                return unsupported();
-            }
+    let metadata = match parse_request_metadata(request_json) {
+        Ok(metadata) => metadata,
+        Err(_) => return unsupported(),
+    };
+    match metadata.parsed.method() {
+        crate::event::RequestMethod::Capabilities => {
             let mut json = ResponseJson::new();
             json.push(r#"{"version":1,"request_id":""#);
             json.push_bytes(metadata.request_id());
             json.push(r#"","ok":true,"result":{"capabilities":{"device":{"name":"nSealr ESP32-S3 USB Signer Scaffold","firmware":"nsealr-esp32-s3-usb-signer","hardware":"esp32-s3-devkitc-1"},"protocols":["nsealr.signing.v0","nsealr.serial-frame.v0"],"methods":["get_capabilities","get_signing_status","get_public_key","sign_event"],"transports":["usb-serial-jtag"],"signing_enabled":false,"requires_physical_approval":true}}}"#);
             respond(&json)
         }
-        b"get_public_key" => {
-            if metadata.has_params {
-                return unsupported();
-            }
+        crate::event::RequestMethod::PublicKey => {
             // The C++ re-validated the identity inside
             // `public_key_response_json`; the entry gate above already proved
             // the same property for the same identity.
@@ -223,10 +206,7 @@ pub fn handle_serial_frame_with_review_preview(
             json.push(r#""}}"#);
             respond(&json)
         }
-        b"get_signing_status" => {
-            if metadata.has_params {
-                return unsupported();
-            }
+        crate::event::RequestMethod::SigningStatus => {
             let status = evaluate_signing_readiness(&scaffold_signing_readiness());
             let mut json = ResponseJson::new();
             json.push(r#"{"version":1,"request_id":""#);
@@ -238,7 +218,7 @@ pub fn handle_serial_frame_with_review_preview(
             json.push(r#"]}}}"#);
             respond(&json)
         }
-        b"sign_event" => {
+        crate::event::RequestMethod::SignEvent => {
             let request_text =
                 core::str::from_utf8(request_json).map_err(|_| DeviceProtocolError::Capacity)?;
             let session = match begin_serial_sign_event_trusted_review(
@@ -264,7 +244,6 @@ pub fn handle_serial_frame_with_review_preview(
             result.review_session = Some(session);
             Ok(result)
         }
-        _ => unsupported(),
     }
 }
 
@@ -378,277 +357,23 @@ fn respond(json: &ResponseJson) -> Result<SerialFrameHandlingResult, DeviceProto
 
 // --- Request metadata scanner -------------------------------------------
 
-/// The scanned top-level request metadata. Mirrors the C++ `RequestMetadata`.
+/// Strict shared-reader metadata. It carries no authority.
 struct RequestMetadata {
-    version_one: bool,
-    has_unknown_top_level_field: bool,
-    has_params: bool,
-    request_id: [u8; MAX_METADATA_REQUEST_ID],
-    request_id_len: usize,
-    request_id_overflow: bool,
-    method: [u8; MAX_METADATA_METHOD],
-    method_len: usize,
-    method_overflow: bool,
+    parsed: crate::event::ParsedRequest,
 }
-
 impl RequestMetadata {
-    fn new() -> Self {
-        Self {
-            version_one: false,
-            has_unknown_top_level_field: false,
-            has_params: false,
-            request_id: [0; MAX_METADATA_REQUEST_ID],
-            request_id_len: 0,
-            request_id_overflow: false,
-            method: [0; MAX_METADATA_METHOD],
-            method_len: 0,
-            method_overflow: false,
-        }
-    }
-
-    /// The decoded request id (empty on overflow — an over-long id can never
-    /// validate, exactly as the C++ length rule rejected it).
     fn request_id(&self) -> &[u8] {
-        if self.request_id_overflow {
-            b""
-        } else {
-            &self.request_id[..self.request_id_len]
-        }
-    }
-
-    /// The decoded method (empty on overflow — an over-long method can never
-    /// match a supported name).
-    fn method(&self) -> &[u8] {
-        if self.method_overflow {
-            b""
-        } else {
-            &self.method[..self.method_len]
-        }
+        self.parsed.request_id().as_bytes()
     }
 }
-
-/// Mirrors the C++ `skip_ws` in `device_protocol.cpp`.
-fn skip_ws(json: &[u8], offset: &mut usize) {
-    while *offset < json.len() {
-        if !matches!(json[*offset], b' ' | b'\n' | b'\r' | b'\t') {
-            return;
-        }
-        *offset += 1;
-    }
-}
-
-/// Mirrors the C++ `parse_json_string` in `device_protocol.cpp` (decodes the
-/// standard escapes and `\uXXXX`; unlike the envelope parser it does not
-/// reject raw control bytes). Decoded bytes go to `sink`.
-fn parse_json_string(
-    json: &[u8],
-    offset: &mut usize,
-    sink: &mut dyn FnMut(&[u8]),
-) -> Result<(), DeviceProtocolError> {
-    if *offset >= json.len() || json[*offset] != b'"' {
-        return Err(DeviceProtocolError::RequestJsonMalformed);
-    }
-    *offset += 1;
-    while *offset < json.len() {
-        let ch = json[*offset];
-        *offset += 1;
-        if ch == b'"' {
-            return Ok(());
-        }
-        if ch == b'\\' {
-            if *offset >= json.len() {
-                return Err(DeviceProtocolError::RequestJsonMalformed);
-            }
-            let escaped = json[*offset];
-            *offset += 1;
-            match escaped {
-                b'"' | b'\\' | b'/' => sink(&[escaped]),
-                b'b' => sink(b"\x08"),
-                b'f' => sink(b"\x0c"),
-                b'n' => sink(b"\n"),
-                b'r' => sink(b"\r"),
-                b't' => sink(b"\t"),
-                b'u' => {
-                    let mut utf8 = [0u8; 4];
-                    let fragment = append_json_unicode_escape(json, offset, &mut utf8)
-                        .map_err(|_| DeviceProtocolError::RequestJsonMalformed)?;
-                    sink(fragment);
-                }
-                _ => return Err(DeviceProtocolError::RequestJsonMalformed),
-            }
-            continue;
-        }
-        sink(&[ch]);
-    }
-    Err(DeviceProtocolError::RequestJsonMalformed)
-}
-
-/// Mirrors the C++ `skip_json_value` in `device_protocol.cpp` (strings and
-/// containers parsed structurally; primitive tokens skipped without grammar
-/// validation, unlike the envelope parser).
-fn skip_json_value(json: &[u8], offset: &mut usize) -> Result<(), DeviceProtocolError> {
-    skip_ws(json, offset);
-    if *offset >= json.len() {
-        return Err(DeviceProtocolError::RequestJsonMalformed);
-    }
-    if json[*offset] == b'"' {
-        return parse_json_string(json, offset, &mut |_| {});
-    }
-    if json[*offset] == b'{' {
-        *offset += 1;
-        loop {
-            skip_ws(json, offset);
-            if *offset >= json.len() {
-                return Err(DeviceProtocolError::RequestJsonMalformed);
-            }
-            if json[*offset] == b'}' {
-                *offset += 1;
-                return Ok(());
-            }
-            parse_json_string(json, offset, &mut |_| {})?;
-            skip_ws(json, offset);
-            if *offset >= json.len() || json[*offset] != b':' {
-                return Err(DeviceProtocolError::RequestJsonMalformed);
-            }
-            *offset += 1;
-            skip_json_value(json, offset)?;
-            skip_ws(json, offset);
-            if *offset < json.len() && json[*offset] == b',' {
-                *offset += 1;
-                continue;
-            }
-            if *offset < json.len() && json[*offset] == b'}' {
-                *offset += 1;
-                return Ok(());
-            }
-            return Err(DeviceProtocolError::RequestJsonMalformed);
-        }
-    }
-    if json[*offset] == b'[' {
-        *offset += 1;
-        loop {
-            skip_ws(json, offset);
-            if *offset >= json.len() {
-                return Err(DeviceProtocolError::RequestJsonMalformed);
-            }
-            if json[*offset] == b']' {
-                *offset += 1;
-                return Ok(());
-            }
-            skip_json_value(json, offset)?;
-            skip_ws(json, offset);
-            if *offset < json.len() && json[*offset] == b',' {
-                *offset += 1;
-                continue;
-            }
-            if *offset < json.len() && json[*offset] == b']' {
-                *offset += 1;
-                return Ok(());
-            }
-            return Err(DeviceProtocolError::RequestJsonMalformed);
-        }
-    }
-    while *offset < json.len() {
-        if matches!(
-            json[*offset],
-            b',' | b'}' | b']' | b' ' | b'\n' | b'\r' | b'\t'
-        ) {
-            return Ok(());
-        }
-        *offset += 1;
-    }
-    Ok(())
-}
-
-/// Mirrors the C++ `parse_request_metadata` in `device_protocol.cpp`,
-/// including its leniencies (no trailing-data check after the closing brace,
-/// missing commas tolerated at end of input).
 fn parse_request_metadata(json: &[u8]) -> Result<RequestMetadata, DeviceProtocolError> {
-    let mut offset = 0usize;
-    skip_ws(json, &mut offset);
-    if offset >= json.len() || json[offset] != b'{' {
-        return Err(DeviceProtocolError::RequestJsonMalformed);
-    }
-    offset += 1;
-
-    let mut metadata = RequestMetadata::new();
-    loop {
-        skip_ws(json, &mut offset);
-        if offset >= json.len() {
-            return Err(DeviceProtocolError::RequestJsonMalformed);
-        }
-        if json[offset] == b'}' {
-            // The C++ advanced past the brace before breaking; nothing reads
-            // the offset afterwards (no trailing-data check, by design).
-            break;
-        }
-        let mut key = [0u8; 16];
-        let mut key_len = 0usize;
-        parse_json_string(json, &mut offset, &mut |fragment| {
-            for &byte in fragment {
-                if key_len < key.len() {
-                    key[key_len] = byte;
-                }
-                key_len += 1;
-            }
-        })?;
-        skip_ws(json, &mut offset);
-        if offset >= json.len() || json[offset] != b':' {
-            return Err(DeviceProtocolError::RequestJsonMalformed);
-        }
-        offset += 1;
-        skip_ws(json, &mut offset);
-        match &key[..key_len.min(key.len())] {
-            b"request_id" => {
-                let request_id = &mut metadata.request_id;
-                let request_id_len = &mut metadata.request_id_len;
-                let overflow = &mut metadata.request_id_overflow;
-                parse_json_string(json, &mut offset, &mut |fragment| {
-                    for &byte in fragment {
-                        if *request_id_len < request_id.len() {
-                            request_id[*request_id_len] = byte;
-                            *request_id_len += 1;
-                        } else {
-                            *overflow = true;
-                        }
-                    }
-                })?;
-            }
-            b"method" => {
-                let method = &mut metadata.method;
-                let method_len = &mut metadata.method_len;
-                let overflow = &mut metadata.method_overflow;
-                parse_json_string(json, &mut offset, &mut |fragment| {
-                    for &byte in fragment {
-                        if *method_len < method.len() {
-                            method[*method_len] = byte;
-                            *method_len += 1;
-                        } else {
-                            *overflow = true;
-                        }
-                    }
-                })?;
-            }
-            b"version" => {
-                let token_start = offset;
-                skip_json_value(json, &mut offset)?;
-                metadata.version_one = &json[token_start..offset] == b"1";
-            }
-            b"params" => {
-                metadata.has_params = true;
-                skip_json_value(json, &mut offset)?;
-            }
-            _ => {
-                metadata.has_unknown_top_level_field = true;
-                skip_json_value(json, &mut offset)?;
-            }
-        }
-        skip_ws(json, &mut offset);
-        if offset < json.len() && json[offset] == b',' {
-            offset += 1;
-        }
-    }
-    Ok(metadata)
+    let limits = crate::event::OperationLimits {
+        input_bytes: MAX_DECODED_REQUEST_JSON_BYTES,
+        ..crate::event::OperationLimits::conformance()
+    };
+    crate::event::ParsedRequest::parse(json, limits)
+        .map(|parsed| RequestMetadata { parsed })
+        .map_err(|_| DeviceProtocolError::RequestJsonMalformed)
 }
 
 #[cfg(test)]
@@ -826,7 +551,7 @@ mod tests {
         assert_eq!(session.current_frame().unwrap().title, "Content");
         assert_eq!(session.handle_button(ReviewButton::Next), Ok(None));
         assert_eq!(session.current_frame().unwrap().title, "Tags");
-        assert!(!session.can_sign());
+        assert!(!session.review_approved());
     }
 
     // Port of the C++ `test_device_protocol_reports_development_public_key`.
@@ -1136,10 +861,12 @@ mod tests {
                 SerialFrameError::ChecksumMismatch
             )),
         );
-        // Malformed metadata JSON propagates the scanner error (C++ threw).
+        // Every invalid request receives the same unsupported frame after strict parsing.
         assert_eq!(
-            handle_serial_frame(&request_frame_for_test("{\"version\":1,"), &dev()),
-            Err(DeviceProtocolError::RequestJsonMalformed),
+            handle_serial_frame(&request_frame_for_test("{\"version\":1,"), &dev())
+                .unwrap()
+                .as_bytes(),
+            error_frame_for_test(UNSUPPORTED_RESPONSE_JSON).as_slice(),
         );
         // Invalid UTF-8 payload bytes are answered with the error frame.
         let mut payload = [0u8; 8];
@@ -1245,7 +972,7 @@ mod tests {
         // over-long method can never match — both answered with the error
         // frame (the C++ built unbounded strings and failed the same checks).
         let mut long_id = String::from(r#"{"version":1,"request_id":""#);
-        for _ in 0..(MAX_METADATA_REQUEST_ID + 1) {
+        for _ in 0..(128 + 1) {
             long_id.push('a');
         }
         long_id.push_str(r#"","method":"get_public_key"}"#);
@@ -1257,7 +984,7 @@ mod tests {
         );
         let mut long_method =
             String::from(r#"{"version":1,"request_id":"req-long-method","method":""#);
-        for _ in 0..(MAX_METADATA_METHOD + 1) {
+        for _ in 0..(24 + 1) {
             long_method.push('m');
         }
         long_method.push_str(r#""}"#);
@@ -1278,8 +1005,7 @@ mod tests {
             error_frame_for_test(UNSUPPORTED_RESPONSE_JSON).as_slice(),
         );
 
-        // Every scanner grammar failure maps to RequestJsonMalformed (the
-        // distinct C++ SerialFrameError messages).
+        // Every malformed JSON input rejects with the same unsupported wire frame.
         for bad_json in [
             // Top level is not an object.
             "[1]",
@@ -1311,8 +1037,10 @@ mod tests {
             "{\"method\":123}",
         ] {
             assert_eq!(
-                handle_serial_frame(&request_frame_for_test(bad_json), &dev()),
-                Err(DeviceProtocolError::RequestJsonMalformed),
+                handle_serial_frame(&request_frame_for_test(bad_json), &dev())
+                    .unwrap()
+                    .as_bytes(),
+                error_frame_for_test(UNSUPPORTED_RESPONSE_JSON).as_slice(),
                 "expected malformed: {bad_json}",
             );
         }

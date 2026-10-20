@@ -12,6 +12,11 @@ fn main() {
         "cargo:rerun-if-changed={}",
         root.join("protocols/contracts/v1").display()
     );
+    println!(
+        "cargo:rerun-if-changed={}",
+        root.join("docs/restart/implementation/S03/vectors.json")
+            .display()
+    );
     let status = Command::new("python3")
         .arg(script)
         .arg(env::var_os("OUT_DIR").unwrap())

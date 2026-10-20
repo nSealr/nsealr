@@ -121,8 +121,8 @@ pub struct QrReviewTranscriptStep {
     pub button: ReviewButton,
     /// The terminal decision, if this step produced one.
     pub decision: Option<bool>,
-    /// Whether the flow was approved for signing after this step.
-    pub approved_for_signing: bool,
+    /// Diagnostic preview outcome after this step; grants no signing authority.
+    pub review_approved: bool,
 }
 
 /// A fixed-capacity transcript — the allocation-free stand-in for the C++
@@ -197,8 +197,8 @@ pub struct QrReviewIoFlowResult {
     pub approval_digest: TrustedReviewApprovalDigest,
     /// The terminal decision.
     pub decision: Option<bool>,
-    /// Whether the flow ended approved for signing.
-    pub approved_for_signing: bool,
+    /// Diagnostic terminal preview outcome; grants no signing authority.
+    pub review_approved: bool,
     /// The recorded steps.
     pub transcript: QrReviewTranscript,
 }
@@ -331,11 +331,11 @@ impl QrReviewFlow {
         self.session.decision()
     }
 
-    /// Whether the review was approved for signing. Mirrors the C++
-    /// `approved_for_signing` (`session.can_sign()`).
+    /// Whether this diagnostic preview reached its approved state.
+    /// This observation is not one-use authorization to execute or sign.
     #[must_use]
-    pub fn approved_for_signing(&self) -> bool {
-        self.session.can_sign()
+    pub fn review_approved(&self) -> bool {
+        self.session.review_approved()
     }
 
     /// Handles one button press. Mirrors the C++ `handle_button`.
@@ -384,7 +384,7 @@ pub fn run_qr_review_io_flow(
                 frame,
                 button,
                 decision,
-                approved_for_signing: flow.approved_for_signing(),
+                review_approved: flow.review_approved(),
             })
             .map_err(|_| QrReviewFlowError::Capacity)?;
         step += 1;
@@ -396,7 +396,7 @@ pub fn run_qr_review_io_flow(
         request_id: flow.request_id.clone(),
         approval_digest: flow.approval_digest.clone(),
         decision,
-        approved_for_signing: flow.approved_for_signing(),
+        review_approved: flow.review_approved(),
         transcript,
     })
 }
@@ -426,7 +426,7 @@ pub fn run_qr_review_transcript(
                 frame,
                 button,
                 decision,
-                approved_for_signing: flow.approved_for_signing(),
+                review_approved: flow.review_approved(),
             })
             .map_err(|_| QrReviewFlowError::Capacity)?;
     }
@@ -539,7 +539,7 @@ mod tests {
 
         assert_eq!(flow.request_id(), expected.request_id.as_str());
         assert_eq!(flow.approval_digest(), expected.approval_digest.as_str());
-        assert!(!flow.approved_for_signing());
+        assert!(!flow.review_approved());
 
         let first_frame = flow.current_frame().unwrap();
         assert_eq!(first_frame.title, "Event");
@@ -556,11 +556,11 @@ mod tests {
 
         let decision_frame = flow.current_frame().unwrap();
         assert_eq!(decision_frame.title, "Decision");
-        assert!(!flow.approved_for_signing());
+        assert!(!flow.review_approved());
 
         let approval = flow.handle_button(ReviewButton::Approve);
         assert_eq!(approval, Ok(Some(true)));
-        assert!(flow.approved_for_signing());
+        assert!(flow.review_approved());
         assert_eq!(flow.decision(), ApprovalDecision::Approved);
     }
 
@@ -601,7 +601,7 @@ mod tests {
                 "/field-ef8f1cdc03d2b7514fa6d71d.txt"
             ))
         );
-        assert!(result.approved_for_signing);
+        assert!(result.review_approved);
         assert_eq!(io.frames.len(), 4);
     }
 
@@ -712,7 +712,7 @@ mod tests {
         )
         .unwrap();
         assert_eq!(result.approval_digest, expected.approval_digest);
-        assert!(result.approved_for_signing);
+        assert!(result.review_approved);
         assert!(!io.frames.is_empty());
         assert!(frame_lines_contain(&io.frames[0], selected_pubkey_prefix));
         assert!(!frame_lines_contain(
@@ -736,7 +736,7 @@ mod tests {
         assert_eq!(
             QrReviewFlow::new(unsafe_envelope, dev(), ReviewDisplayLimits::default()),
             Err(QrReviewFlowError::Envelope(
-                QrEnvelopeError::RequestEventTemplateForbiddenField,
+                QrEnvelopeError::RequestJsonMalformed,
             )),
         );
     }
@@ -751,7 +751,7 @@ mod tests {
         body_line_styles: Vec<ReviewBodyLineStyle>,
         button: ReviewButton,
         decision: Option<bool>,
-        approved_for_signing: bool,
+        review_approved: bool,
     }
 
     /// The C++ `assert_qr_review_transcript_equals` (every frame field plus
@@ -776,10 +776,7 @@ mod tests {
             );
             assert_eq!(step.button, expected_step.button);
             assert_eq!(step.decision, expected_step.decision);
-            assert_eq!(
-                step.approved_for_signing,
-                expected_step.approved_for_signing
-            );
+            assert_eq!(step.review_approved, expected_step.review_approved);
         }
     }
 
@@ -853,7 +850,7 @@ mod tests {
             ))
         );
         assert_eq!(transcript.step(3).decision, Some(true));
-        assert!(transcript.step(3).approved_for_signing);
+        assert!(transcript.step(3).review_approved);
     }
 
     // Port of the C++ `test_qr_review_flow_transcript_records_early_rejection`.
@@ -875,7 +872,7 @@ mod tests {
             "Short Text Note"
         ));
         assert_eq!(transcript.step(0).decision, Some(false));
-        assert!(!transcript.step(0).approved_for_signing);
+        assert!(!transcript.step(0).review_approved);
     }
 
     // Port of the C++ `test_qr_review_flow_transcript_matches_shared_detail_scroll_vector`.
@@ -894,7 +891,7 @@ mod tests {
         assert_transcript_equals(&transcript, &expected);
         assert_eq!(transcript.step(2).frame.action_hint, "Next/Scroll");
         assert_eq!(transcript.step(2).button, ReviewButton::Back);
-        assert!(transcript.step(transcript.len() - 1).approved_for_signing);
+        assert!(transcript.step(transcript.len() - 1).review_approved);
     }
 
     // Port of the C++ `test_qr_review_io_flow_drives_scanner_display_and_buttons_without_signing`.
@@ -914,7 +911,7 @@ mod tests {
         );
         assert_eq!(result.approval_digest, BASIC_REVIEW_SCREEN_APPROVAL_DIGEST);
         assert_eq!(result.decision, Some(true));
-        assert!(result.approved_for_signing);
+        assert!(result.review_approved);
         assert_eq!(result.transcript.len(), 4);
         assert_eq!(result.transcript.step(2).frame.title, "Tags");
         let tags_body: Vec<&str> = result
@@ -1040,7 +1037,7 @@ mod tests {
                 body_line_styles: vec![],
                 button: ReviewButton::Next,
                 decision: None,
-                approved_for_signing: false,
+                review_approved: false,
             },
             TranscriptStepFixture {
                 title: "Content",
@@ -1053,7 +1050,7 @@ mod tests {
                 body_line_styles: vec![],
                 button: ReviewButton::Next,
                 decision: None,
-                approved_for_signing: false,
+                review_approved: false,
             },
             TranscriptStepFixture {
                 title: "Tags",
@@ -1063,7 +1060,7 @@ mod tests {
                 body_line_styles: vec![],
                 button: ReviewButton::Next,
                 decision: None,
-                approved_for_signing: false,
+                review_approved: false,
             },
             TranscriptStepFixture {
                 title: "Decision",
@@ -1079,7 +1076,7 @@ mod tests {
                 body_line_styles: vec![],
                 button: ReviewButton::Approve,
                 decision: Some(true),
-                approved_for_signing: true,
+                review_approved: true,
             },
         ]
     }
@@ -1117,7 +1114,7 @@ mod tests {
                 ],
                 button: ReviewButton::Next,
                 decision: None,
-                approved_for_signing: false,
+                review_approved: false,
             },
             TranscriptStepFixture {
                 title: "Content",
@@ -1161,7 +1158,7 @@ mod tests {
                 ],
                 button: ReviewButton::Next,
                 decision: None,
-                approved_for_signing: false,
+                review_approved: false,
             },
             TranscriptStepFixture {
                 title: "Tags",
@@ -1200,7 +1197,7 @@ mod tests {
                 ],
                 button: ReviewButton::Back,
                 decision: None,
-                approved_for_signing: false,
+                review_approved: false,
             },
             TranscriptStepFixture {
                 title: "Tags",
@@ -1226,7 +1223,7 @@ mod tests {
                 ],
                 button: ReviewButton::Back,
                 decision: None,
-                approved_for_signing: false,
+                review_approved: false,
             },
             TranscriptStepFixture {
                 title: "Tags",
@@ -1259,7 +1256,7 @@ mod tests {
                 ],
                 button: ReviewButton::Back,
                 decision: None,
-                approved_for_signing: false,
+                review_approved: false,
             },
             TranscriptStepFixture {
                 title: "Tags",
@@ -1272,7 +1269,7 @@ mod tests {
                 body_line_styles: vec![ReviewBodyLineStyle::Value, ReviewBodyLineStyle::Value],
                 button: ReviewButton::Next,
                 decision: None,
-                approved_for_signing: false,
+                review_approved: false,
             },
             TranscriptStepFixture {
                 title: "Decision",
@@ -1291,7 +1288,7 @@ mod tests {
                 body_line_styles: vec![ReviewBodyLineStyle::Normal, ReviewBodyLineStyle::Normal],
                 button: ReviewButton::Approve,
                 decision: Some(true),
-                approved_for_signing: true,
+                review_approved: true,
             },
         ]
     }
