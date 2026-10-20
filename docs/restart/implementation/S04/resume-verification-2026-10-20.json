@@ -1,0 +1,93 @@
+{
+  "schema_version": 1,
+  "task": "S04",
+  "author": "/root/s04_resume",
+  "created_utc": "2026-10-20T09:31:13.280558+00:00",
+  "status": "AUTHOR_BINDING_CHECKS_ONLY_NOT_INDEPENDENT_REVIEW",
+  "parent_commit": "e823fecfd4bdc5d2eb0e4b31aedc3ac66cfabe36",
+  "environment": {
+    "python": "3.13.5 (main, Aug 10 2026, 12:06:59) [GCC 14.2.0]",
+    "platform": "Linux-6.12.101+deb13-amd64-x86_64-with-glibc2.41",
+    "git": "git version 2.47.3"
+  },
+  "checks": [
+    {
+      "check": "Historical pause artifact SHA256",
+      "result": "PASS",
+      "count": 15
+    },
+    {
+      "check": "New retrieval status, length and SHA256",
+      "result": "PASS",
+      "count": 12
+    },
+    {
+      "check": "True Git root tree and exact new file mode/blob bindings",
+      "result": "PASS",
+      "count": 4
+    },
+    {
+      "check": "Admitted historical manuals have PDF signatures",
+      "result": "PASS",
+      "count": 2
+    },
+    {
+      "check": "Paused reset model output remains absent",
+      "result": "PASS",
+      "note": "No model was executed during this turn."
+    },
+    {
+      "check": "git diff --cached --check",
+      "exit_code": 0,
+      "result": "PASS"
+    },
+    {
+      "check": "Staged scope contains four authored S04 Markdown/JSON files only",
+      "result": "PASS",
+      "paths": [
+        "docs/restart/implementation/S04/RESUME-HANDOFF-2026-10-20.md",
+        "docs/restart/implementation/S04/resume-findings-2026-10-20.md",
+        "docs/restart/implementation/S04/resume-source-addendum-2026-10-20.json",
+        "docs/restart/implementation/S04/resume-verification-2026-10-20.json"
+      ]
+    }
+  ],
+  "corrected_check_attempt": {
+    "command": "Author inline Python binding check",
+    "exit_code": 1,
+    "reason": "The first check mistakenly expected 16 rows in the historical pause hash table; actual table has 15. Corrected row-count assertion and handoff wording; no source/artifact hash mismatch was observed."
+  },
+  "unexecuted": [
+    "evidence/explore_reset.py",
+    "Any new custody/cryptographic/serializer model",
+    "Hardware commands and physical tests"
+  ],
+  "unchanged_checks_not_repeated": [
+    "TM-HMAC-1 primitive/vector/fault suite",
+    "Canonical restart-plan full suite"
+  ],
+  "limits": "These checks bind source bytes and preserve prior evidence. They do not prove applet behavior, lifecycle enforcement or source applicability. All seven S04 criteria remain incomplete.",
+  "artifacts": [
+    {
+      "path": "resume-findings-2026-10-20.md",
+      "bytes": 5635,
+      "sha256": "bd6669955dbacea08b612da04e912fe07d5cbaa3b70c06863a4dd89a5df65e0e",
+      "git_blob": "b28e55991cdc5f3a00a680c1d054729eaaaf669d",
+      "git_mode": "100644"
+    },
+    {
+      "path": "resume-source-addendum-2026-10-20.json",
+      "bytes": 13997,
+      "sha256": "6235418180415df3af742c747d21e43ee5743cb435f2ad047ce2c6a4a16903fe",
+      "git_blob": "70dd515a93f624bef8caf4eae7e72eebd8ed8f5b",
+      "git_mode": "100644"
+    },
+    {
+      "path": "RESUME-HANDOFF-2026-10-20.md",
+      "bytes": 4095,
+      "sha256": "a1a049e149886815834c99e88a83400b9eadb1b9a5831e62222a4ab8305d5bfd",
+      "git_blob": "42e809ccce26e1393d08f5c7feff1cee5b1ba037",
+      "git_mode": "100644"
+    }
+  ]
+}
