@@ -1,0 +1,16 @@
+{"label": "actual-native-reference-ABI", "argv": ["python3", "-c", "import sys,json,hashlib,pathlib,ctypes,_ctypes,secp256k1; modules={name:module.__file__ for name,module in sys.modules.items() if name.startswith(\"secp256k1\") and str(getattr(module,\"__file__\",\"\")).endswith(\".so\")}; assert len(modules)==1,modules; print(json.dumps({\"secp256k1_native\":[{\"module\":name,\"path\":path,\"sha256\":hashlib.sha256(pathlib.Path(path).read_bytes()).hexdigest()} for name,path in modules.items()],\"ctypes_native\":{\"origin\":_ctypes.__spec__.origin,\"standalone_module_file\":getattr(_ctypes,\"__file__\",None),\"interpreter\":sys.executable,\"interpreter_sha256\":hashlib.sha256(pathlib.Path(sys.executable).read_bytes()).hexdigest()}},indent=2))"], "cwd": "/home/tux/nsealr/.restart-tools/goal/qp01-engine-boundary", "started": "2026-10-20T19:22:13.290435+00:00", "log": "00-actual-native-reference-ABI.log"}
+{
+  "secp256k1_native": [
+    {
+      "module": "secp256k1._libsecp256k1",
+      "path": "/home/tux/nsealr/.restart-tools/goal/r00/tools/baseline/.work/final/.tools/python/lib/python3.12/site-packages/secp256k1/_libsecp256k1.cpython-312-x86_64-linux-gnu.so",
+      "sha256": "7bf7d7cec3a072f2a21e8464e42537da1fa56fd7476ad7336baa02c8e1b5ef71"
+    }
+  ],
+  "ctypes_native": {
+    "origin": "built-in",
+    "standalone_module_file": null,
+    "interpreter": "/home/tux/nsealr/.restart-tools/goal/r00/tools/baseline/.work/final/.tools/python/bin/python3",
+    "interpreter_sha256": "eaaa308032c4aa063df5880c4c293cd458b4629d503fbc2c03ec163d71f7f790"
+  }
+}

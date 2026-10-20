@@ -1,0 +1,29 @@
+[
+  {
+    "label": "affected-docs",
+    "argv": [
+      "make",
+      "docs"
+    ],
+    "cwd": "/home/tux/nsealr/.restart-tools/goal/qp01-engine-boundary",
+    "started": "2026-10-20T19:21:46.627451+00:00",
+    "log": "00-affected-docs.log",
+    "ended": "2026-10-20T19:21:46.656683+00:00",
+    "exit_code": 0,
+    "sha256": "c9a0b2a0ed17a63a6cecbb2cee3b0ab4e8b51165b2b1d93e2f054a0fbff6368e"
+  },
+  {
+    "label": "existing-native-reference-ABI",
+    "argv": [
+      "python3",
+      "-c",
+      "import sys,json,hashlib,pathlib,ctypes,_ctypes,secp256k1; modules={name:module.__file__ for name,module in sys.modules.items() if name.startswith(\"secp256k1\") and str(getattr(module,\"__file__\",\"\")).endswith(\".so\")}; assert len(modules)==1,modules; print(json.dumps({\"secp256k1_native\":[{\"module\":name,\"path\":path,\"sha256\":hashlib.sha256(pathlib.Path(path).read_bytes()).hexdigest()} for name,path in modules.items()],\"ctypes_native\":{\"path\":_ctypes.__file__,\"sha256\":hashlib.sha256(pathlib.Path(_ctypes.__file__).read_bytes()).hexdigest()}},indent=2))"
+    ],
+    "cwd": "/home/tux/nsealr/.restart-tools/goal/qp01-engine-boundary",
+    "started": "2026-10-20T19:21:46.657036+00:00",
+    "log": "01-existing-native-reference-ABI.log",
+    "ended": "2026-10-20T19:21:46.677482+00:00",
+    "exit_code": 1,
+    "sha256": "05e40ee470e72672952dd7c3c20b94739e3ba086a523ad36267abbdaa39f21d6"
+  }
+]

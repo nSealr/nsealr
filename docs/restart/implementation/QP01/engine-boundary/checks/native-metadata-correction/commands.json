@@ -1,0 +1,34 @@
+[
+  {
+    "label": "actual-native-reference-ABI",
+    "argv": [
+      "python3",
+      "-c",
+      "import sys,json,hashlib,pathlib,ctypes,_ctypes,secp256k1; modules={name:module.__file__ for name,module in sys.modules.items() if name.startswith(\"secp256k1\") and str(getattr(module,\"__file__\",\"\")).endswith(\".so\")}; assert len(modules)==1,modules; print(json.dumps({\"secp256k1_native\":[{\"module\":name,\"path\":path,\"sha256\":hashlib.sha256(pathlib.Path(path).read_bytes()).hexdigest()} for name,path in modules.items()],\"ctypes_native\":{\"origin\":_ctypes.__spec__.origin,\"standalone_module_file\":getattr(_ctypes,\"__file__\",None),\"interpreter\":sys.executable,\"interpreter_sha256\":hashlib.sha256(pathlib.Path(sys.executable).read_bytes()).hexdigest()}},indent=2))"
+    ],
+    "cwd": "/home/tux/nsealr/.restart-tools/goal/qp01-engine-boundary",
+    "started": "2026-10-20T19:22:13.290435+00:00",
+    "log": "00-actual-native-reference-ABI.log",
+    "ended": "2026-10-20T19:22:13.335974+00:00",
+    "exit_code": 0,
+    "sha256": "58b8c989a2eb7dc06a382f765303ed3e075cff56e229813a8616221b66ffebee"
+  },
+  {
+    "label": "outside-scope-unchanged",
+    "argv": [
+      "git",
+      "diff",
+      "--exit-code",
+      "5d047b5d3150d58a1a45caf00c8946b7f18364bb",
+      "--",
+      ".",
+      ":(exclude)docs/restart/implementation/QP01/engine-boundary"
+    ],
+    "cwd": "/home/tux/nsealr/.restart-tools/goal/qp01-engine-boundary",
+    "started": "2026-10-20T19:22:13.336367+00:00",
+    "log": "01-outside-scope-unchanged.log",
+    "ended": "2026-10-20T19:22:13.340427+00:00",
+    "exit_code": 0,
+    "sha256": "6378f2afd3ed1060959376f111892b773afed878298962ff0c75fbd4c76bac14"
+  }
+]
