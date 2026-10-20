@@ -1,0 +1,861 @@
+{
+  "format": "nsealr.profile-capabilities.cases.v1",
+  "scope": "conformance_only",
+  "authority": "Requirement-derived fixed independent inputs authored before T01 runtime changes; no production output used. Component model checks do not claim actual transport/hardware execution.",
+  "source_preparation": "03c2616518d6d9a32fe5cc9a945624a72cd32ac0",
+  "cases": [
+    {
+      "id": "A-01",
+      "original_action": "For one feature vary support/configuration/availability/verification independently, including supported but unconfigured and configured but unavailable.",
+      "original_expected_result": "Preserve distinctions; configured does not mean verified/available; no universal signing_enabled field.",
+      "input": {
+        "states": [
+          [
+            "supported",
+            "configured",
+            "available"
+          ],
+          [
+            "supported",
+            "unconfigured",
+            "unavailable"
+          ],
+          [
+            "supported",
+            "configured",
+            "unavailable"
+          ],
+          [
+            "unknown",
+            "unknown",
+            "unknown"
+          ]
+        ]
+      },
+      "expected": {
+        "distinct_states": 4,
+        "universal_enabled_field": false
+      }
+    },
+    {
+      "id": "A-02",
+      "original_action": "Provide unknown or absent required runtime observation/evidence, and contradictory configured+unsupported values.",
+      "original_expected_result": "Unknown blocks the relevant requirement; contradictions reject; no default true or development waiver.",
+      "input": {
+        "missing_group": "R-ID",
+        "contradiction": {
+          "support": "unavailable",
+          "configuration": "configured",
+          "availability": "available"
+        }
+      },
+      "expected": {
+        "missing_blocker": "R-ID",
+        "contradiction": "reject"
+      }
+    },
+    {
+      "id": "A-03",
+      "original_action": "Feed wire verified/approved/signing_enabled/missing_gates/development_accepted_gates/security_rank, evidence URL/hash and physically_approved assertions at every nested position.",
+      "original_expected_result": "Strict descriptor rejection; zero trusted observations, zero local consent/authorization and zero crypto calls.",
+      "input": {
+        "forbidden_fields": [
+          "verified",
+          "approved",
+          "signing_enabled",
+          "missing_gates",
+          "development_accepted_gates",
+          "security_rank",
+          "evidence_url",
+          "physically_approved"
+        ],
+        "positions": [
+          "root",
+          "method",
+          "transport",
+          "messages",
+          "device"
+        ]
+      },
+      "expected": {
+        "outcome": "reject",
+        "trusted_observations": 0,
+        "authorizations": 0,
+        "crypto_calls": 0
+      }
+    },
+    {
+      "id": "A-04",
+      "original_action": "Supply a valid-looking descriptor public key without custody proof, including different actual selected key.",
+      "original_expected_result": "No local identity proof created; existing expected-key checks reject mismatches; descriptor consistency is not attestation.",
+      "input": {
+        "descriptor_key": "4f355bdcb7cc0af728ef3cceb9615d90684bb5b2ca5f859ab0f0b704075871aa",
+        "selected_key": "79be667ef9dcbbac55a06295ce870b07029bfcdb2dce28d959f2815b16f81798"
+      },
+      "expected": {
+        "outcome": "reject",
+        "reason": "identity_mismatch",
+        "writes": 0
+      }
+    },
+    {
+      "id": "A-05",
+      "original_action": "Change a trusted provider from available to unavailable after assessment and before dispatch/execution.",
+      "original_expected_result": "Fresh observation blocks use; cached diagnostic is not execution authority; S03 owner unchanged.",
+      "input": {
+        "availability_at_selection": "available",
+        "availability_at_dispatch": "unavailable"
+      },
+      "expected": {
+        "outcome": "reject",
+        "reason": "runtime_unavailable",
+        "writes": 0,
+        "authority_created": false
+      }
+    },
+    {
+      "id": "A-06",
+      "original_action": "Use matching descriptor and release digest but absent/wrong actual implementation or attached hardware evidence.",
+      "original_expected_result": "Can establish only descriptor/manifest consistency; no attached-hardware authenticity label or release assertion.",
+      "input": {
+        "matching_descriptor_and_manifest": true,
+        "attached_hardware_evidence": null
+      },
+      "expected": {
+        "manifest_consistency": true,
+        "hardware_authenticated": false,
+        "release_admitted": false
+      }
+    },
+    {
+      "id": "P-01",
+      "original_action": "Truth-table fixture for each of esp32_no_se, pi_qr, p4_qr and custom_board with its complete typed conformance inputs.",
+      "original_expected_result": "Exactly its own requirement set is selected; synthetic inputs are visibly conformance_only and never admit a product release.",
+      "input": {
+        "profiles": [
+          "esp32_no_se",
+          "pi_qr",
+          "p4_qr",
+          "custom_board"
+        ],
+        "evidence_context": "conformance_only"
+      },
+      "expected": {
+        "requirements_are_profile_specific": true,
+        "release_admitted": false
+      }
+    },
+    {
+      "id": "P-02",
+      "original_action": "For each profile remove each required group R-ID/R-AUTH/R-CATALOG/R-SECRET/R-BOUNDS/R-RECOVERY/R-LIFECYCLE/R-RELEASE and R-MSG where applicable.",
+      "original_expected_result": "The expected specific blocker appears; missing unrelated profile evidence produces no blocker.",
+      "input": {
+        "remove_groups": [
+          "R-ID",
+          "R-AUTH",
+          "R-CATALOG",
+          "R-SECRET",
+          "R-BOUNDS",
+          "R-RECOVERY",
+          "R-LIFECYCLE",
+          "R-RELEASE",
+          "R-MSG"
+        ],
+        "message_required_profiles": [
+          "esp32_no_se",
+          "custom_board"
+        ]
+      },
+      "expected": {
+        "blocker_equals_removed_required_group": true,
+        "unrelated_profile_blocker": false
+      }
+    },
+    {
+      "id": "P-03",
+      "original_action": "Pi reports boot enforcement unavailable with accepted synthetic evidence of that limitation and the required image/substitution controls; separately omit that evidence or claim secure boot.",
+      "original_expected_result": "The scoped limitation does not require a fabricated secure_boot=true. Missing limitation evidence blocks R-LIFECYCLE; unsupported secure-boot claim rejects.",
+      "input": {
+        "profile": "pi_qr",
+        "boot_enforcement": "unavailable",
+        "limitation_evidence_states": [
+          "verified",
+          "unknown"
+        ],
+        "unsupported_secure_boot_claim": true
+      },
+      "expected": {
+        "verified_limitation_accepted_as_limitation": true,
+        "unknown_limitation_blocker": "R-LIFECYCLE",
+        "secure_boot_claim": "reject"
+      }
+    },
+    {
+      "id": "P-04",
+      "original_action": "No-SE ESP32 uses absent SE plus mcu_wrapped_persistent and its own runtime controls; separately select volatile demonstration mode.",
+      "original_expected_result": "No custom-SE requirement is imported. Volatile engineering mode cannot satisfy persistent first-release requirements.",
+      "input": {
+        "profile": "esp32_no_se",
+        "secure_element": "absent",
+        "custodies": [
+          "mcu_wrapped_persistent",
+          "volatile_session"
+        ]
+      },
+      "expected": {
+        "persistent_design_requires_no_se": true,
+        "volatile_mode_satisfies_first_persistent_release": false
+      }
+    },
+    {
+      "id": "P-05",
+      "original_action": "Custom profile lacks a required SE, has unknown config, wrong part/config revision or failed provider.",
+      "original_expected_result": "Required-component/custody blocker; never select no-SE/MCU custody or another method.",
+      "input": {
+        "profile": "custom_board",
+        "required_component_cases": [
+          "missing",
+          "unknown_configuration",
+          "wrong_part",
+          "wrong_configuration",
+          "provider_failed"
+        ]
+      },
+      "expected": {
+        "outcome": "reject",
+        "reason": "required_component_unavailable",
+        "fallback": false
+      }
+    },
+    {
+      "id": "P-06",
+      "original_action": "Pi and P4 use session-only custody and manual consent; attempt persistent identity storage, grants, USB operation, DM, 10050 or 22242.",
+      "original_expected_result": "Reject each initial-profile mismatch; no requirement on connected C02/custom-board evidence.",
+      "input": {
+        "profiles": [
+          "pi_qr",
+          "p4_qr"
+        ],
+        "custody": "volatile_session",
+        "forbidden": [
+          "persistent_identity",
+          "persistent_grants",
+          "usb",
+          "nip44",
+          "nip17_59",
+          "kind10050",
+          "kind22242"
+        ]
+      },
+      "expected": {
+        "each_forbidden": "reject",
+        "connected_evidence_required": false
+      }
+    },
+    {
+      "id": "P-07",
+      "original_action": "Connected ESP32/custom route uses manual_only and no persistent grants; separately attempt automation.",
+      "original_expected_result": "Manual route is compatible given other inputs. Initial automation rejects; F01 absence never blocks the manual route.",
+      "input": {
+        "profiles": [
+          "esp32_no_se",
+          "custom_board"
+        ],
+        "consent": "manual_local",
+        "persistent_grants": false,
+        "attempt_automation": true
+      },
+      "expected": {
+        "manual_compatibility": true,
+        "automation": "reject",
+        "F01_required_for_manual": false
+      }
+    },
+    {
+      "id": "P-08",
+      "original_action": "Attempt to load synthetic test evidence, mismatched firmware/bootloader/board/SDK/config/limits, missing procedure results or an evidence path supplied by device.",
+      "original_expected_result": "Production release checker rejects; hash equality alone never satisfies physical procedure evidence.",
+      "input": {
+        "bad_evidence": [
+          "conformance_only",
+          "wrong_firmware",
+          "wrong_bootloader",
+          "wrong_board",
+          "wrong_sdk",
+          "wrong_configuration",
+          "wrong_limits",
+          "missing_procedure",
+          "wire_evidence_path"
+        ]
+      },
+      "expected": {
+        "production_release_load": "reject",
+        "hash_alone_qualifies": false
+      }
+    },
+    {
+      "id": "P-09",
+      "original_action": "Pass board_sdk or an external NIP-46 route as a nSealr signer profile.",
+      "original_expected_result": "Board SDK is outside Nostr routing; external signer cannot inherit nSealr physical/custody claims. No build dependency on board-sdk is introduced.",
+      "input": {
+        "not_signer_profiles": [
+          "board_sdk",
+          "external_nip46"
+        ]
+      },
+      "expected": {
+        "nsealr_profile_route": "reject",
+        "board_sdk_dependency": false
+      }
+    },
+    {
+      "id": "S-01",
+      "original_action": "Valid full descriptor and compact manifest-reference descriptor resolve the same representable runtime state through the exact trusted local manifest and complete bounded deltas.",
+      "original_expected_result": "Identical semantic capability result; labels remain untrusted; no arbitrary reference retrieval.",
+      "input": {
+        "representable_state": "configured_but_locked",
+        "forms": [
+          "full",
+          "reference"
+        ],
+        "local_manifest": "known_exact_digest"
+      },
+      "expected": {
+        "resolved_semantics_equal": true,
+        "authority_created": false
+      }
+    },
+    {
+      "id": "S-02",
+      "original_action": "Use unknown/wrong hash manifest, changed immutable field through compact delta, extra nested field, duplicate IDs/array entries or wrong enum.",
+      "original_expected_result": "Reject with deterministic reason before routing; no permissive normalization or fallback.",
+      "input": {
+        "bad_descriptor": [
+          "unknown_manifest",
+          "wrong_digest",
+          "immutable_delta",
+          "unknown_nested_key",
+          "duplicate_method",
+          "duplicate_algorithm",
+          "wrong_enum"
+        ]
+      },
+      "expected": {
+        "outcome": "reject",
+        "writes": 0,
+        "fallback": false
+      }
+    },
+    {
+      "id": "S-03",
+      "original_action": "Raw duplicate member (including escaped spelling), trailing object, BOM, invalid UTF-8/surrogate, wrong type, oversized token/label/depth/descriptor.",
+      "original_expected_result": "Reject from original bytes within discovery budget; JSON Schema is not treated as duplicate detector.",
+      "input": {
+        "raw_cases": [
+          "decoded_duplicate",
+          "escaped_duplicate",
+          "trailing_object",
+          "BOM",
+          "invalid_UTF8",
+          "unpaired_surrogate",
+          "wrong_type",
+          "oversized_token",
+          "oversized_label",
+          "depth9",
+          "descriptor8193"
+        ]
+      },
+      "expected": {
+        "outcome": "reject",
+        "before_routing": true
+      }
+    },
+    {
+      "id": "S-04",
+      "original_action": "Use version 1 request, old account/route format, get_signing_status, unknown version or method revision.",
+      "original_expected_result": "Explicit unsupported contract/method; no old handler or automatic retry. Valid version 2 discovery/control request succeeds within its declared bounds.",
+      "input": {
+        "reject": [
+          "numeric1",
+          "account_v0",
+          "route_v0",
+          "get_signing_status",
+          "unknown_version",
+          "unknown_method_revision"
+        ],
+        "accept": {
+          "numeric_version": 2,
+          "method": "get_capabilities"
+        }
+      },
+      "expected": {
+        "legacy": "unsupported",
+        "retry_or_fallback": false,
+        "bounded_discovery": "accept"
+      }
+    },
+    {
+      "id": "S-05",
+      "original_action": "Migrate common fixture loaders; mutate one authoritative file, add unclassified file, point a consumer at stale snapshot or generate expected answers automatically.",
+      "original_expected_result": "Provenance/coverage check fails; independent fixture hash remains authoritative; restoring exact source passes.",
+      "input": {
+        "tamper": [
+          "artifact_byte",
+          "unclassified_file",
+          "hidden_file",
+          "mode",
+          "consumer_scope",
+          "stale_snapshot",
+          "manifest_self_baseline",
+          "wrong_tree",
+          "missing_tree",
+          "rewritten_author_commit"
+        ],
+        "restore_exact_source": true
+      },
+      "expected": {
+        "tamper": "reject",
+        "normal_rebase_content_tree_stable": true,
+        "restored": "accept"
+      }
+    },
+    {
+      "id": "S-06",
+      "original_action": "Inspect exported SDK/browser/Node types, CLI/service examples and Python reference responses after cutover.",
+      "original_expected_result": "Only new active capability/account/route contracts exposed; unchanged external Nostr methods/events remain valid. Frozen historical evidence is preserved byte-for-byte.",
+      "input": {
+        "consumers": [
+          "SDK_root",
+          "SDK_browser",
+          "SDK_node",
+          "browser_provider",
+          "CLI",
+          "service",
+          "Pi_reference"
+        ],
+        "active_formats": [
+          "nsealr.capabilities.v1",
+          "nsealr.account.v1",
+          "nsealr.route-selection.v1"
+        ],
+        "device_contract": "nsealr.signing.v2"
+      },
+      "expected": {
+        "old_active_contract_exposed": false,
+        "external_Nostr_meaning_changed": false,
+        "frozen_evidence_changed": false
+      }
+    },
+    {
+      "id": "S-07",
+      "original_action": "Start with a compatible compact descriptor, then change runtime state either outside its permitted delta fields or so the complete necessary deltas exceed the constrained transport cap. Attempt discovery and dispatch using the previous route.",
+      "original_expected_result": "Invalidate the previous route; discovery and operation are unavailable on that constrained transport, with a bounded unavailable response where possible and zero operation writes. Never omit a necessary change, preserve stale availability, infer an available static default or raise the cap. A representable state still resolves identically to the full form under S-01.",
+      "input": {
+        "previous_route": "compatible_reference",
+        "changes": [
+          "immutable_field_needed",
+          "complete_deltas_exceed_transport"
+        ],
+        "transport_cap_enlarged": false
+      },
+      "expected": {
+        "previous_route_invalidated": true,
+        "discovery_and_operation": "unavailable",
+        "writes": 0,
+        "necessary_delta_omitted": false
+      }
+    },
+    {
+      "id": "R-01",
+      "original_action": "Service dispatch through selected account to recording USB adapter using matching method/catalog/algorithm/custody/profile/transport/limits.",
+      "original_expected_result": "Exactly one bounded request written with original operation and request/identity binding; route does not confer consent.",
+      "input": {
+        "path": "service_selected_account_recording_usb",
+        "all_dimensions_match": true,
+        "original_operation": "sign_event"
+      },
+      "expected": {
+        "writes": 1,
+        "operation_changed": false,
+        "consent_created": false
+      }
+    },
+    {
+      "id": "R-02",
+      "original_action": "Equivalent semantic request through a valid QR adapter with different declared finite deadline/capacity and volatile custody.",
+      "original_expected_result": "Same public operation contract and expected event output semantics; differences remain explicit. No custom-board dependency.",
+      "input": {
+        "path": "service_selected_account_recording_qr",
+        "custody": "volatile_session",
+        "different_finite_deadline": true
+      },
+      "expected": {
+        "same_operation_semantics": true,
+        "limits_explicit": true,
+        "custom_board_dependency": false
+      }
+    },
+    {
+      "id": "R-03",
+      "original_action": "Individually vary requested account/profile/manifest/contract/method revision/catalog/algorithm/custody/transport/codec.",
+      "original_expected_result": "Deterministic mismatch rejection and zero transport writes. Never choose another account, custody, algorithm, weaker version or transport.",
+      "input": {
+        "vary_one": [
+          "account",
+          "profile",
+          "manifest",
+          "contract",
+          "method_revision",
+          "catalog",
+          "algorithm",
+          "custody",
+          "transport",
+          "codec"
+        ]
+      },
+      "expected": {
+        "each_mismatch": "reject",
+        "writes": 0,
+        "downgrade_or_account_switch": false
+      }
+    },
+    {
+      "id": "R-04",
+      "original_action": "Rogue descriptor claims every feature available and huge limits while local adapter/manifest supports less.",
+      "original_expected_result": "Intersection remains bounded by local implementation; unsupported method rejected. No release label or local authorization inferred.",
+      "input": {
+        "device_claim": "all_available",
+        "device_limit": 9007199254740991,
+        "local_method_support": "unavailable",
+        "local_cap": 704
+      },
+      "expected": {
+        "outcome": "reject",
+        "effective_cap_at_most": 704,
+        "authority_or_release_created": false
+      }
+    },
+    {
+      "id": "R-05",
+      "original_action": "Change capabilities, account, connection or limits between selection and dispatch; replay old route snapshot.",
+      "original_expected_result": "Pending host work invalidates and old snapshot rejects. Reconnect requires rebinding and cannot preserve approval.",
+      "input": {
+        "after_selection_changes": [
+          "capabilities",
+          "account",
+          "connection",
+          "limits"
+        ],
+        "replay_previous_route": true
+      },
+      "expected": {
+        "old_route": "reject",
+        "pending_work_invalidated": true,
+        "reconnect_rebind_required": true
+      }
+    },
+    {
+      "id": "R-06",
+      "original_action": "Transport responds with wrong request, expected user, canonical ID or signature while claiming readiness.",
+      "original_expected_result": "S01 verification rejects; no publication success, retries or authority inferred from readiness. Positive independently valid fixture retained.",
+      "input": {
+        "responses": [
+          "wrong_request",
+          "wrong_user",
+          "wrong_event_id",
+          "wrong_signature",
+          "independently_valid"
+        ]
+      },
+      "expected": {
+        "first_four": "reject",
+        "last": "accept",
+        "publication_inferred_from_claim": false
+      }
+    },
+    {
+      "id": "L-01",
+      "original_action": "For every declared numerical dimension use limit-1, exact limit and limit+1, including UTF-8 multibyte strings and original JSON whitespace expansion.",
+      "original_expected_result": "At/below accepts when other dimensions fit; above rejects before retention/expensive processing. Compact JSON length cannot hide oversized ingress.",
+      "input": {
+        "boundary_offsets": [
+          -1,
+          0,
+          1
+        ],
+        "dimensions": [
+          "ingress_bytes",
+          "response_bytes",
+          "content_bytes",
+          "tags",
+          "tag_fields",
+          "tag_field_bytes",
+          "aggregate_tag_bytes",
+          "frame_bytes",
+          "frame_count",
+          "reassembly_bytes",
+          "parse_work",
+          "retained_bytes"
+        ],
+        "multibyte": true,
+        "whitespace_expansion": true
+      },
+      "expected": {
+        "within": "accept_if_other_dimensions_fit",
+        "above": "reject_before_retention",
+        "compact_length_hides_ingress": false
+      }
+    },
+    {
+      "id": "L-02",
+      "original_action": "Supply absent/null/unlimited/negative/fractional/unsafe integer, unknown units, contradictory aggregate caps or zero in required positive dimensions.",
+      "original_expected_result": "Manifest/descriptor rejects; zero allowed only for disabled queues/caches with no corresponding retained data.",
+      "input": {
+        "bad_limits": [
+          "absent",
+          "null",
+          "unlimited",
+          "negative",
+          "fractional",
+          "unsafe_integer",
+          "unknown_unit",
+          "aggregate_contradiction",
+          "zero_required"
+        ],
+        "zero_disabled_queue": true
+      },
+      "expected": {
+        "bad": "reject",
+        "zero_queue_retention": 0
+      }
+    },
+    {
+      "id": "L-03",
+      "original_action": "Use checked base64/JSON/padding arithmetic near safe-integer overflow and synthetic NIP-44 lengths 65535/65536 with actual lower local caps.",
+      "original_expected_result": "No wrap/truncation/allocation; fail early on overflow or smaller cap. This proves limit handling, not crypto correctness at those lengths.",
+      "input": {
+        "lengths": [
+          65535,
+          65536
+        ],
+        "near_safe_integer": 9007199254740991,
+        "actual_local_cap": 704
+      },
+      "expected": {
+        "overflow_or_smaller_cap": "reject_before_allocation",
+        "cryptographic_correctness_claim": false
+      }
+    },
+    {
+      "id": "L-04",
+      "original_action": "Flood many tiny frames, pending discovery/operations, repeated scans, malformed reassembly, delayed consumer and disconnect/cancel.",
+      "original_expected_result": "Cumulative retained byte/count/work cap never exceeded; reservations released on terminal paths; one pending discovery and zero conformance queue/cache enforced.",
+      "input": {
+        "attacks": [
+          "tiny_frame_flood",
+          "pending_discovery_flood",
+          "malformed_reassembly",
+          "delayed_consumer",
+          "disconnect",
+          "cancel"
+        ],
+        "pending_discovery_cap": 1,
+        "queue_cap": 0,
+        "cache_cap": 0
+      },
+      "expected": {
+        "cumulative_budget_exceeded": false,
+        "terminal_reservations_released": true
+      }
+    },
+    {
+      "id": "L-05",
+      "original_action": "Full descriptor exceeds current serial response capacity; equivalent compact reference fits; unknown compact reference supplied.",
+      "original_expected_result": "Full form unavailable on that transport without capacity inflation; known compact form resolves correctly and fits actual frame; unknown form rejects.",
+      "input": {
+        "serial_frame_cap": 1024,
+        "legacy_request_cap": 704,
+        "full_descriptor_bytes": 1500,
+        "known_reference_fits": true,
+        "unknown_reference": true
+      },
+      "expected": {
+        "full_on_serial": "unavailable",
+        "known_reference": "accept_if_complete",
+        "unknown_reference": "reject",
+        "cap_enlarged": false
+      }
+    },
+    {
+      "id": "L-06",
+      "original_action": "Clock at just before/equal/after deadline, rollback/overflow/unavailable local clock, peer-requested longer timeout.",
+      "original_expected_result": "Declared clock ownership respected; exact expiry rejects and pending state clears; peer cannot extend S03 lifetime.",
+      "input": {
+        "deadline": 100,
+        "clock_values": [
+          99,
+          100,
+          101
+        ],
+        "bad_clocks": [
+          "rollback",
+          "overflow",
+          "unavailable"
+        ],
+        "peer_extension": 1000
+      },
+      "expected": {
+        "99": "valid_if_other_inputs_fit",
+        "100": "expired",
+        "101": "expired",
+        "bad_clock": "reject",
+        "peer_extends_S03_lifetime": false
+      }
+    },
+    {
+      "id": "L-07",
+      "original_action": "Record size_of profile/descriptor/parser output and measure bounded retained allocations in host harness; preserve S03 owner budgets.",
+      "original_expected_result": "Within declared conformance bounds; all scratch/caller buffers accounted separately. No measurement is labeled MCU stack/RAM/latency evidence.",
+      "input": {
+        "measure": [
+          "typed_profile_size",
+          "typed_descriptor_size",
+          "parser_scratch",
+          "retained_allocations"
+        ],
+        "S03_budgets_unchanged": true
+      },
+      "expected": {
+        "conformance_bounds_enforced": true,
+        "MCU_stack_RAM_latency_claim": false
+      }
+    },
+    {
+      "id": "D-01",
+      "original_action": "Host NIP-46 relay encryption exists but user device exposes no NIP-44 feature.",
+      "original_expected_result": "No user-message primitive or workflow capability inferred from RPC crypto.",
+      "input": {
+        "host_relay_RPC_nip44": true,
+        "device_user_message_primitive": "unavailable"
+      },
+      "expected": {
+        "inferred_device_primitive": false,
+        "inferred_workflow": false
+      }
+    },
+    {
+      "id": "D-02",
+      "original_action": "Only nip44_v2_primitive is supported, with bare pubkey/payload input and no signed outer event.",
+      "original_expected_result": "Primitive route may pass its explicit permission/bounds, but verified-context and usable-workflow routes reject; no unseen signature marked checked.",
+      "input": {
+        "primitive": "supported",
+        "verified_context": "unavailable",
+        "workflow": "unavailable",
+        "input": "bare_pubkey_payload"
+      },
+      "expected": {
+        "explicit_bounded_primitive_permission": "may_match_test_route",
+        "context_or_workflow": "reject",
+        "unseen_signature_verified": false
+      }
+    },
+    {
+      "id": "D-03",
+      "original_action": "Primitive and verified context supported but no admitted named client sequence, or workflow claims absent subordinate features.",
+      "original_expected_result": "Workflow route rejects; contradictory claimed workflow descriptor rejects.",
+      "input": {
+        "states": [
+          {
+            "primitive": "supported",
+            "context": "supported",
+            "workflow": "unavailable"
+          },
+          {
+            "primitive": "unavailable",
+            "context": "supported",
+            "workflow": "supported"
+          }
+        ]
+      },
+      "expected": {
+        "workflow_route": "reject",
+        "contradictory_claim": "reject"
+      }
+    },
+    {
+      "id": "D-04",
+      "original_action": "Synthetic admitted one-to-one text workflow has peer/sender copies, required 10050 setup and named conditional 22242 flow; all local constraints match.",
+      "original_expected_result": "Positive test route selects exact workflow only. Real manifest remains unavailable pending C02/target/client evidence.",
+      "input": {
+        "context": "conformance_only",
+        "workflow": "nip17_59_one_to_one_text_v1",
+        "named_sequence": "synthetic_admitted_sequence",
+        "peer_and_sender_copies": true,
+        "kind10050_setup": true,
+        "conditional_kind22242": true
+      },
+      "expected": {
+        "test_route": "exact_workflow_only",
+        "real_workflow": "unavailable_until_C02_and_device_client_evidence"
+      }
+    },
+    {
+      "id": "D-05",
+      "original_action": "Substitute recipient/plaintext/ciphertext/seal context, request opaque seal signing, cancel/replay compound context or present stale relay challenge.",
+      "original_expected_result": "T01 routing refuses unadmitted/insufficient-context operations; no blind-sign route added. C02 must later prove actual cryptographic/context binding.",
+      "input": {
+        "attacks": [
+          "recipient_substitution",
+          "plaintext_substitution",
+          "ciphertext_substitution",
+          "seal_context_substitution",
+          "opaque_seal_sign",
+          "cancel_replay",
+          "stale_relay_challenge"
+        ]
+      },
+      "expected": {
+        "unadmitted_or_insufficient_context": "reject",
+        "blind_sign_route_added": false,
+        "actual_crypto_binding_qualified": false
+      }
+    },
+    {
+      "id": "D-06",
+      "original_action": "Select relay requiring AUTH without qualified 22242 workflow, or recipient has no valid 10050 advertisement.",
+      "original_expected_result": "Workflow unavailable; no arbitrary-relay/unprotected-mailbox fallback or treating signed setup as published.",
+      "input": {
+        "relay_requires_auth": true,
+        "qualified_22242": false,
+        "recipient_10050": "missing_or_invalid"
+      },
+      "expected": {
+        "workflow": "unavailable",
+        "arbitrary_relay_fallback": false,
+        "setup_signed_equals_published": false
+      }
+    },
+    {
+      "id": "D-07",
+      "original_action": "Request NIP-04, group/file/ephemeral wrap, conversation-key export, offline DM/10050/22242 or a different call order.",
+      "original_expected_result": "Explicit unsupported; no fallback or automatic promotion from sign_event or generic ECC.",
+      "input": {
+        "unsupported": [
+          "nip04",
+          "group",
+          "file",
+          "ephemeral_wrap",
+          "conversation_key_export",
+          "offline_DM",
+          "offline10050",
+          "offline22242",
+          "different_call_order"
+        ]
+      },
+      "expected": {
+        "outcome": "unsupported",
+        "fallback_or_generic_ECC_promotion": false
+      }
+    }
+  ]
+}
