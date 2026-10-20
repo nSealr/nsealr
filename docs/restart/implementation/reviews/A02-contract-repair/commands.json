@@ -1,0 +1,58 @@
+{
+  "recorded_utc": "2026-10-20T11:04:15.051141+00:00",
+  "source": "Executed directly by independent reviewer in this new worktree; exit statuses and original output retained. No reconstructed start/end timestamps.",
+  "cwd": "/home/tux/nsealr/.restart-tools/goal/a02-contract-review",
+  "python": "Python 3.13.5",
+  "git": "git version 2.47.3",
+  "commands": [
+    {
+      "command": [
+        "python3",
+        "-B",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "scripts",
+        "-p",
+        "test_contracts.py",
+        "-v"
+      ],
+      "environment": {
+        "PYTHONDONTWRITEBYTECODE": "1"
+      },
+      "exit_code": 0,
+      "log": "artifact-tests.log",
+      "sha256": "0a787989fb5b8fd4c694ce0228d1841c5b9e8ec9f85998a569087930542de6a1",
+      "actual_result": "24 tests; OK"
+    },
+    {
+      "command": [
+        "make",
+        "docs",
+        "test"
+      ],
+      "environment": {
+        "PYTHONDONTWRITEBYTECODE": "1"
+      },
+      "exit_code": 0,
+      "log": "affected-docs-test.log",
+      "sha256": "2b88e02a86e44e9b11191d0b178f6fb6e3b7add56e06532ad30ff5d57b9814ad",
+      "actual_result": "24+14+18+5+8 = 69 tests; all OK; structure/profile/plan/evidence/contracts PASS"
+    },
+    {
+      "command": [
+        "python3",
+        "-B",
+        "docs/restart/implementation/reviews/A02-contract-repair/probe.py"
+      ],
+      "environment": {
+        "PYTHONDONTWRITEBYTECODE": "1"
+      },
+      "exit_code": 0,
+      "log": "probe.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "actual_result": "PASS; see probe-result.json and cold-commands.json"
+    }
+  ]
+}
