@@ -1,0 +1,72 @@
+{
+  "schema_version": 1,
+  "product_checkpoint": "7eee22fbc269033756e53020b1370fc6671da3ab",
+  "product_input": "b1c90139a651895284b2624da7d12903cf16bc9d",
+  "full_tested_checkpoint": "dda66f3e4d0d25f2fa3f3ee2b5cb5aacfdd122d3",
+  "source_postimage_sha256": {
+    "Cargo.lock": "9d20d9ab99625c9dc2c8ea5a2dccb43a84cb2daa9a57c57565c3e8fbb426cd88",
+    "apps/desktop-simulator/src/replay/review.rs": "1dcdb0121ce8fa5417039e76b5f5f4a63a95af4b354927a794f2b0731a194d83",
+    "crates/nsealr-core/Cargo.toml": "663d098eaba6a56eb465890da8352b9ca80f53d147f0bec0045de0847297b280",
+    "crates/nsealr-core/src/authorization.rs": "d17e1e893fd403da3eba9c0de69decf014e123d0f1524c310d526b37b05f1ab1",
+    "crates/nsealr-core/src/authorization/tests.rs": "e8947d774b79a3d93e9724d4732b1a485b6307bd74651564ee9996e0313d1bd9",
+    "crates/nsealr-core/src/board_profile_tests.rs": "93dd7a3b17ef6d2fba22ae5770b68a543ae6b432e513e7dce5be69d51bef1ac8",
+    "crates/nsealr-core/src/event.rs": "8ef028b817652721e096352e85b23e01e23cd3a726acca9ebea723226fbb024d",
+    "crates/nsealr-core/src/lib.rs": "bc686fd2c95d0d9fecad7dc8e3e4c8208ddd0200e4383dba4d51912e5ce0f735",
+    "crates/nsealr-core/src/policy/approval_gate.rs": "398df4e65b80378d75f2d3e83700869e2002fdb5306456ed514791ea5fdcf483",
+    "crates/nsealr-core/src/policy/policy_change_review.rs": "2257161c2b9264ce7a0f43d11ea135ec96353bedc96433a3135e0d0a545c5752",
+    "crates/nsealr-core/src/protocol.rs": "3f8ca92447e11714dcd99e7629e5cfd65e31e4ce3267146b66ab169f53d9adc2",
+    "crates/nsealr-core/src/qr/envelope.rs": "2d59b8379793cb7aa4fa05027b3280e56c82842e1d3af6081dc18e5038f27296",
+    "crates/nsealr-core/src/review/display.rs": "21e5306304b54c397c023e8e4b11205f3dbfd7f81daa324e8fc8d168c9d3c0cf",
+    "crates/nsealr-core/src/review/event.rs": "4aa72a550b37fc2387bc8bd9c4050e18c5bd32568dd8f68583b343fe7d1eb734",
+    "crates/nsealr-core/src/review/mod.rs": "10101fa09ff8048e2da7c927527f8ea66e4f8c5d057ebd66aa2780ae1406e3c4",
+    "crates/nsealr-core/src/review/qr.rs": "ef1ac5e35bd4540aad2937ae07a8409dbfcd4341e4e96d5cda1f55d1c36cc849",
+    "crates/nsealr-core/src/review/qr_flow.rs": "951324fdd0dcd43e4478e5441ba5e208b3ccc708a2e3c2a3194f65fae57f1d09",
+    "crates/nsealr-core/src/review/serial.rs": "dd6137408087bab5ab521ff50e77f562d98a100a05609cccf75c9c918a6c8763",
+    "crates/nsealr-core/src/review/trusted.rs": "fd44a40f204c16abd2a3b96e374643f5ea5612c9b8702cf4518aeb47c9d1e4bf",
+    "crates/nsealr-core/src/review/types.rs": "8e853c841e6e6af17c22e05fcc6ec252ce3e74bfc757b371233a041aea26473d",
+    "crates/nsealr-core/src/session/source_backup.rs": "37e06e0c976b07d72f1e98d6efbded6a71956e04c0b82077bf41b3d98836d454",
+    "apps/desktop-simulator/Cargo.lock": "700ec5a1e8cdc94324028d7540c1d6c1dee28fd76228a08feaf589cc5ca46eb9",
+    "ci/project_core_fixtures.py": "84dea63edee8298df21db7a3804690a56447755ce330f7046b94c01479288a5f",
+    "crates/nsealr-core/build.rs": "5efbd141ef28bec52be5bd022af741c6a01d5a6ad2c0931abde34768732162e2",
+    "ci/core-test-projections.json": "49cce9eae7ec8dde6ecac0a69cdd39ec4cfcb271373b36d0a65c98a22504fd32",
+    "crates/nsealr-core/src/review/test_fixtures.rs": "c684be4396a821a61ccbc8ba0e8d84ab64ec5199be5cfd8f25226d803376ab77"
+  },
+  "only_product_change_after_full_run": [
+    "crates/nsealr-core/src/review/serial.rs"
+  ],
+  "change_classification": {
+    "schema_version": 1,
+    "task": "S03",
+    "finding_source": "Distinct/root/b01_final_review pre-read relayed by/root during full make ci; final exact review remains pending.",
+    "severity": "LOW",
+    "finding": "Serial review_approved method/result comments still described diagnostic preview as approval for signing; method comment also incorrectly renamed historical C++ identifier. No execution bypass found.",
+    "path": "crates/nsealr-core/src/review/serial.rs",
+    "before_commit": "dda66f3e4d0d25f2fa3f3ee2b5cb5aacfdd122d3",
+    "before_sha256": "b21b3bd57f5d3b05b91d0bfc20624372b46a82929428dd34ddef90978bffcb56",
+    "after_sha256": "dd6137408087bab5ab521ff50e77f562d98a100a05609cccf75c9c918a6c8763",
+    "actual_change": "Two Rustdoc comment blocks only: explicit diagnostic/no signing authority; retain historical C++ approved_for_signing name.",
+    "all_non_Rustdoc_lines_byte_identical": true,
+    "actual_full_make_ci_preserved": "commands/combined-make-ci/command.json",
+    "full_make_ci_exit": 0,
+    "affected_followup": "Core Rustfmt/doctests,docs/test,scope checks and release reproducibility because Rustdoc metadata can affect artifact hashes. No unchanged behavioral suite/fullCI repetition.",
+    "final_independent_verdict": "PENDING",
+    "actual_affected_checks": {
+      "rustfmt": "PASS",
+      "core_doctests": "PASS",
+      "same_tree_and_cross_path_release_reproduction": "PASS"
+    },
+    "affected_receipts": [
+      "commands/serial-comments-fmt/command.json",
+      "commands/serial-comments-doc/command.json",
+      "commands/serial-comments-repro/command.json"
+    ],
+    "new_device_release_rlib_sha256": "590e38bc45a96e78ff81b83b130e4dac31576b4d8e5c58705c5734b96cca2ee5",
+    "host_same_tree_release_sha256": "cba96019e6b57869ab3c59a3f3b1fde1127f712dafbf7c25e7d2a57a7d1d68fe"
+  },
+  "actual_remote_main_observation": {
+    "recorded_utc": "2026-10-20T12:09:14.515822+00:00",
+    "head": "b1c90139a651895284b2624da7d12903cf16bc9d",
+    "accepted_source_not_silently_substituted": true
+  },
+  "subsequent_delivery_changes": "Scoped proof only; compare these exact product hashes against final candidate."
+}

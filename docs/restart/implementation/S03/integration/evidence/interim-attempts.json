@@ -34,6 +34,12 @@
         "commands/port-scope/stderr.log",
         "commands/port-scope-02/command.json"
       ]
+    },
+    {
+      "name": "final manifest permission probe",
+      "outcome": "exit1 AssertionError after all211 content hashes were generated; checker incorrectly compared new local0664 POSIX permissions to0644 rather than Git100644 mode.",
+      "resolution": "Verify manifest Git mode by executable bit, as Git stores it. All87 exact source copies still separately match their requested0644/0755 permissions; no product or copied source mode changed. All211 hashes and Git modes independently verified.",
+      "standalone_raw_log": "One-off terminal diagnostic; no standalone log was created."
     }
   ],
   "actual_product_tests_failed_so_far": 0,

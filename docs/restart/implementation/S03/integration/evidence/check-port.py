@@ -4,6 +4,7 @@ import hashlib
 import json
 from pathlib import Path
 import subprocess
+import sys
 
 HERE = Path(__file__).resolve().parent
 ROOT = HERE.parents[5]
@@ -74,7 +75,9 @@ def main():
                   closed7_and_frozen1508_index_unchanged=True,
                   read_only_checker_gates_runner_v1_and_floors_unchanged=True,
                   changed_paths=changed, untracked_paths=untracked)
-    (HERE / "port-reconciliation.json").write_text(json.dumps(result, indent=2)+"\n")
+    output = sys.argv[1] if len(sys.argv) > 1 else "port-reconciliation.json"
+    assert Path(output).name == output and output.endswith(".json")
+    (HERE / output).write_text(json.dumps(result, indent=2)+"\n")
     print(json.dumps(dict(status=result["status"], product_files=len(files), additional_interfaces=result["additional_interfaces"])))
 
 if __name__ == "__main__":
