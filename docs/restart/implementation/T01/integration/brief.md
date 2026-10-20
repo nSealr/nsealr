@@ -74,19 +74,49 @@ fallback. JSON Schema supplements bounded raw-byte duplicate/Unicode/grammar
 checks; parsing JSON into an object first cannot preserve duplicate evidence.
 
 All 170 A02 projection obligations and their original hashes/pointers/preimages
-are recorded. Thirty-eight rows contain potentially affected version/status
-material. Retaining their obligations does not imply a numeric 1 positive request
-can remain an accepted numeric 2 fixture. The source JSON now gives each of the
-38 rows a semantic disposition derived from the original T01 cases: migrate
-valid envelopes to numeric 2, preserve each malformed field's rejection under
-numeric 2, replace the discovery example with the strict conformance descriptor,
-or retain retired status data solely as historical rejection input. Define those
-independent semantic expectations before the corresponding runtime changes.
-Final serialized bytes/hashes follow when the artifact is stable; they are not
-prerequisites to begin the admitted implementation. Preserve all original
-preimages and projection obligations; no silent row/pointer removal, expected
-answer generation from runtime output or second active snapshot. Unaffected
-values remain unchanged. The three generated helpers remain data projections.
+are recorded. Distinct review
+[`36a98263`](https://github.com/nSealr/nsealr/blob/36a982639b33a393cb5e9ab28080d03cbabd3773/docs/restart/implementation/reviews/T01-current-spec/review.json)
+requested changes on `6324aaa9`: its 38 textual version/status classifications
+missed encoded wire1 positives and their dependent values. This correction is
+pending the same reviewer's delta review; the old result remains historical.
+
+The source JSON now assigns an explicit semantic group/value action to **every
+one of the 170 rows**. There are 119 affected values or containing-source/paired
+contexts, including the original 38, and 51 explicitly independent unchanged
+values. This does not mean all 119 projected bytes change. Stable request IDs,
+case names, event fields and display lines retain their bytes while the paired
+request, diagnostic digest or descriptor format changes. The three reported
+fields `field-7bc474...`, `field-b69c96...` and `field-275b00...` explicitly receive
+wire2 positive payload/envelope/frame replacements preserving the same operation.
+Frozen wire1 bytes remain historical rejection input, never a substitute for a
+wire2 positive. The finite family closure includes four transports, three
+transcripts, two screens, four detail-helper inputs, their five source reviews
+and one display-frame source.
+
+Update each encoded/raw pair together: UTF8 request/response, unpadded Base64URL,
+static envelope or serial frame, animated payload digest/chunks/frame checksums,
+and matching transcript request/envelope/diagnostic digest. The existing codecs
+use SHA256 and truncated SHA256 checksums, not CRC. The review diagnostic digest
+explicitly includes `request.version`; its value changes under wire2 even when
+all event fields and displayed pages stay fixed. Preserve the independent
+canonical event bytes, IDs, signatures, key/import/backup oracles and their own
+domains; do not confuse them with outer-request or diagnostic digests. Keep each
+framing negative isolated: valid wire2/checksum around a bad request ID, a
+deliberately wrong checksum around fixed wire2 input, padding rejection, and the
+unchanged malformed-payload/unsupported-frame-type failures. Numeric10 remains
+an unsupported-version input; numeric1 rejection and numeric2 success remain
+explicit obligations.
+
+Define independent semantic inputs/dispositions before the corresponding runtime
+changes. Deterministic framing/Base64/SHA256 transformations may define future
+expected transport and diagnostic bytes from those fixed independent inputs;
+never take expected values from production parser/renderer/signer output. Final
+serialized bytes/hashes follow when the artifact is stable, before adoption.
+No original preimage, projection obligation or positive/negative family is
+dropped. All three generated helpers remain data projections: their source
+requests/digests and pages stay paired, with no expected-answer calculation in
+the projector, build or runtime tests. Separate policy/NIP46/key-import/backup
+domains are explicitly unchanged; legacy status fields remain rejection-only.
 
 The eight independent S03 vectors contain event templates/canonical bytes/IDs/
 signatures, not the outer wire envelope. Their bytes, oracle, BIP340 reference,
@@ -150,7 +180,7 @@ missing/extra/stale consumer coverage. No second active artifact is introduced.
 
 The normal sequence is approval of these four documents and the actual S03 input
 tuple, then implementation under that scope with requirement-derived semantic
-expectations and the 38 dispositions established before affected runtime edits.
+expectations and all semantic dispositions established before affected runtime edits.
 Once the artifact/candidate is stable, bind its actual postimage modes/hashes,
 complete consumers and literal subtree OID; distinct final review approves those
 real bytes and the candidate before protected adoption. Routine edits inside the
