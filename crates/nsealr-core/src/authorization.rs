@@ -1,17 +1,18 @@
 //! One owned key, one immutable operation, and one consuming local consent.
 //!
 //! Host protocols cannot create local input or sign through this module.
-//! Production execution consumes consent and returns `SigningUnavailable`.
-//! Actual signing/output, entropy and target qualification remain K01 gates.
+//! Explicit engine signing requires one-use local consent and an injected,
+//! fallible auxiliary source. Transport/device qualification is separate.
 use crate::{
     event::{EventError, OperationLimits, ParsedRequest, RequestMethod},
     hash::Sha256,
     nip19::SecretKey,
     review::event::{
-        validate_kind1, InspectionError, InspectionFrame, InspectionGeometry, ReviewDocument,
+        validate_catalog, InspectionError, InspectionFrame, InspectionGeometry, ReviewDocument,
     },
 };
-use k256::schnorr::{Signature, SigningKey};
+use k256::schnorr::{Signature, SigningKey, VerifyingKey};
+use zeroize::{Zeroize, Zeroizing};
 
 /// Fixed portable-test lifetime in trusted monotonic ticks, not wall-clock time.
 pub const REVIEW_LIFETIME: u64 = 100;
@@ -60,6 +61,45 @@ pub enum AuthorizationError {
     SigningUnavailable,
     /// The backend failed or returned a signature for other bytes/identity.
     Backend,
+    /// Auxiliary input was unavailable, unhealthy, interrupted or not exactly 32 bytes.
+    Auxiliary,
+    /// The caller's public result buffer cannot hold the complete signed event.
+    Output,
+}
+/// Maximum private public-result staging area; independent of retained consent.
+pub const SIGNED_EVENT_BYTES: usize = 9216;
+/// Fallible auxiliary-source failure; there is no deterministic fallback/retry.
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum AuxiliaryError {
+    /// No qualified source is available.
+    Unavailable,
+    /// Collection was interrupted.
+    Interrupted,
+    /// The source's own health check failed.
+    Health,
+    /// Other provider failure.
+    Provider,
+}
+/// Synchronous provider for exactly 32 auxiliary bytes per signing attempt.
+///
+/// Return the number of bytes supplied, or a failure. The engine wipes its entire
+/// destination on every path and refuses short/oversized reports. The provider
+/// must stop all writes before returning; ongoing DMA, terminal recovery, source
+/// entropy quality and physical qualification are adapter responsibilities.
+pub trait AuxiliarySource {
+    /// Fill only this destination, cease writes, then report the exact count.
+    fn fill(&mut self, destination: &mut [u8; 32]) -> Result<usize, AuxiliaryError>;
+}
+fn fill_auxiliary(
+    provider: &mut impl AuxiliarySource,
+    destination: &mut [u8; 32],
+) -> Result<(), AuthorizationError> {
+    destination.zeroize();
+    if provider.fill(destination) != Ok(32) {
+        destination.zeroize();
+        return Err(AuthorizationError::Auxiliary);
+    }
+    Ok(())
 }
 impl From<EventError> for AuthorizationError {
     fn from(e: EventError) -> Self {
@@ -153,7 +193,8 @@ struct Execution<'a> {
 /// use nsealr_core::policy::approval_gate::ApprovalGate;
 /// ```
 pub struct AuthorizationSession {
-    key: Option<SigningKey>,
+    key: Option<SecretKey>,
+    public_key: Option<[u8; 32]>,
     pending: Option<Pending>,
     state: AuthorizationState,
     session: u64,
@@ -177,6 +218,7 @@ impl AuthorizationSession {
         geometry.validate()?;
         Ok(Self {
             key: None,
+            public_key: None,
             pending: None,
             state: AuthorizationState::Locked,
             session: 0,
@@ -197,9 +239,7 @@ impl AuthorizationSession {
     }
     /// Public key derived from actual consumed custody, never a descriptor.
     pub fn public_key(&self) -> Option<[u8; 32]> {
-        self.key
-            .as_ref()
-            .map(|key| key.verifying_key().to_bytes().into())
+        self.public_key
     }
     fn invalidate(&mut self) {
         self.pending = None;
@@ -219,24 +259,28 @@ impl AuthorizationSession {
         } else {
             self.exhausted = true;
             self.key = None;
+            self.public_key = None;
             self.invalidate();
             Err(AuthorizationError::Exhausted)
         }
     }
-    /// Consumes an S02 secret and invalidates any prior account's operation.
-    /// k256 normalizes odd-Y input to n-d and retains that backend scalar. The
-    /// original nsec bytes are dropped, so this session owner is not a backup
-    /// source. Future recovery custody must preserve original import bytes before
-    /// this conversion; no import/export normalization policy is established here.
-    /// Backend-owned key bytes are dropped with the backend's zeroizing type;
-    /// library temporaries/moves are not a proven target scratch-wipe guarantee.
+    /// Retains the original S02 scalar as the sole long-lived secret owner.
+    /// Only the derived x-only public key is cached. Odd-Y normalization occurs
+    /// in a scoped backend conversion here and once per actual signing attempt;
+    /// the original recovery representation is never replaced by n-d. Backend
+    /// scratch/move wiping is not a universal target-memory guarantee.
     pub fn select_key(&mut self, secret: SecretKey) -> Result<(), AuthorizationError> {
         self.key = None;
+        self.public_key = None;
         self.invalidate();
         self.advance(|s| &mut s.account)?;
-        let key = SigningKey::from_slice(secret.as_bytes()).map_err(|_| AuthorizationError::Key)?;
-        drop(secret);
-        self.key = Some(key);
+        let public_key = {
+            let backend =
+                SigningKey::from_slice(secret.as_bytes()).map_err(|_| AuthorizationError::Key)?;
+            backend.verifying_key().to_bytes().into()
+        };
+        self.key = Some(secret);
+        self.public_key = Some(public_key);
         self.state = AuthorizationState::Idle;
         Ok(())
     }
@@ -247,6 +291,7 @@ impl AuthorizationSession {
     /// Drops selected key and invalidates all old session callbacks.
     pub fn lock(&mut self) -> Result<(), AuthorizationError> {
         self.key = None;
+        self.public_key = None;
         self.invalidate();
         self.advance(|s| &mut s.session)
     }
@@ -312,7 +357,7 @@ impl AuthorizationSession {
             self.limits.review_pages as u64,
             self.geometry.columns as u64,
             self.geometry.lines as u64,
-            1,
+            2,
             1,
             REVIEW_LIFETIME,
         ]
@@ -330,6 +375,7 @@ impl AuthorizationSession {
             context: &p.context,
             geometry: self.geometry,
             max_pages: self.limits.review_pages,
+            limits: self.limits,
         }
     }
     fn binding(p: &Pending) -> [u8; 32] {
@@ -378,7 +424,7 @@ impl AuthorizationSession {
             return Err(AuthorizationError::InvalidState);
         }
         let event = request.event.as_ref().ok_or(AuthorizationError::Binding)?;
-        validate_kind1(event)?;
+        validate_catalog(event, &key, self.limits)?;
         let event_id = event.event_id(&key)?;
         let deadline = now
             .checked_add(REVIEW_LIFETIME)
@@ -461,17 +507,28 @@ impl AuthorizationSession {
         }
         Ok(())
     }
-    fn start_execution(
-        &mut self,
-        request_id: &str,
-        now: Option<u64>,
-    ) -> Result<Execution<'_>, AuthorizationError> {
-        // The consuming linearization point precedes every caller/context check.
+    fn consume_approval(&mut self) -> Result<(), AuthorizationError> {
+        // The consuming linearization point precedes even the fresh clock call.
         let previous = core::mem::replace(&mut self.state, AuthorizationState::Spent);
         if previous != AuthorizationState::Approved {
             self.invalidate();
             return Err(AuthorizationError::InvalidState);
         }
+        Ok(())
+    }
+    fn start_execution(
+        &mut self,
+        request_id: &str,
+        now: Option<u64>,
+    ) -> Result<Execution<'_>, AuthorizationError> {
+        self.consume_approval()?;
+        self.start_consumed_execution(request_id, now)
+    }
+    fn start_consumed_execution(
+        &mut self,
+        request_id: &str,
+        now: Option<u64>,
+    ) -> Result<Execution<'_>, AuthorizationError> {
         let result = (|| {
             self.time(now)?;
             let p = self.pending.as_ref().ok_or(AuthorizationError::Binding)?;
@@ -521,11 +578,8 @@ impl AuthorizationSession {
                 return Err(AuthorizationError::Binding);
             }
             let signature = result?;
-            let key = owner
-                .key
-                .as_ref()
-                .ok_or(AuthorizationError::Locked)?
-                .verifying_key();
+            let key = VerifyingKey::from_slice(&execution.public_key)
+                .map_err(|_| AuthorizationError::Backend)?;
             let sig = Signature::try_from(signature.as_slice())
                 .map_err(|_| AuthorizationError::Backend)?;
             key.verify_raw(&execution.event_id, &sig)
@@ -542,15 +596,91 @@ impl AuthorizationSession {
         backend: impl FnOnce(&SigningKey, &[u8; 32]) -> Result<[u8; 64], AuthorizationError>,
     ) -> Result<[u8; 64], AuthorizationError> {
         let execution = self.start_execution(request_id, now)?;
-        let result = backend(
-            execution
-                .owner
-                .key
-                .as_ref()
-                .expect("execution owns selected key"),
-            &execution.event_id,
-        );
+        let result = (|| {
+            let key = SigningKey::from_slice(
+                execution
+                    .owner
+                    .key
+                    .as_ref()
+                    .ok_or(AuthorizationError::Locked)?
+                    .as_bytes(),
+            )
+            .map_err(|_| AuthorizationError::Key)?;
+            if key.verifying_key().to_bytes().as_slice() != execution.public_key {
+                return Err(AuthorizationError::Binding);
+            }
+            backend(&key, &execution.event_id)
+        })();
         Self::finish_execution(execution, result, now)
+    }
+    /// Signs one completely reviewed operation with explicit local providers.
+    ///
+    /// Consent is spent before invoking `clock`, checking caller correlation or
+    /// touching the auxiliary source/backend. The callback must supply fresh
+    /// trusted monotonic ticks both before execution and before release. All
+    /// errors leave the whole caller output zeroed and require a fresh review.
+    /// A signature is raw-ID verified, serialized privately, then released only
+    /// after the fresh completion/context checks. This API enables no transport,
+    /// hardware isolation, production key or provider qualification.
+    pub fn sign_approved(
+        &mut self,
+        request_id: &str,
+        clock: &mut impl FnMut() -> Option<u64>,
+        auxiliary: &mut impl AuxiliarySource,
+        output: &mut [u8],
+    ) -> Result<usize, AuthorizationError> {
+        let consumed = self.consume_approval();
+        output.fill(0);
+        consumed?;
+        let execution = self.start_consumed_execution(request_id, clock())?;
+        let mut staged = [0u8; SIGNED_EVENT_BYTES];
+        let mut length = 0;
+        let result = (|| {
+            let mut aux = Zeroizing::new([0u8; 32]);
+            fill_auxiliary(auxiliary, &mut aux)?;
+            let signature = {
+                let key = SigningKey::from_slice(
+                    execution
+                        .owner
+                        .key
+                        .as_ref()
+                        .ok_or(AuthorizationError::Locked)?
+                        .as_bytes(),
+                )
+                .map_err(|_| AuthorizationError::Key)?;
+                if key.verifying_key().to_bytes().as_slice() != execution.public_key {
+                    return Err(AuthorizationError::Binding);
+                }
+                #[cfg(test)]
+                tests::observe_backend_attempt();
+                key.sign_raw(&execution.event_id, &aux)
+                    .map_err(|_| AuthorizationError::Backend)?
+                    .to_bytes()
+            };
+            let p = execution
+                .owner
+                .pending
+                .as_ref()
+                .ok_or(AuthorizationError::Binding)?;
+            length = p
+                .request
+                .event
+                .as_ref()
+                .ok_or(AuthorizationError::Binding)?
+                .write_signed(
+                    &execution.public_key,
+                    &execution.event_id,
+                    &signature,
+                    &mut staged,
+                )?;
+            if length > output.len() {
+                return Err(AuthorizationError::Output);
+            }
+            Ok(signature)
+        })();
+        Self::finish_execution(execution, result, clock())?;
+        output[..length].copy_from_slice(&staged[..length]);
+        Ok(length)
     }
     /// Consumes the first attempt and reports disabled production signing.
     /// Failure, including a wrong request ID, never preserves retry authority.
