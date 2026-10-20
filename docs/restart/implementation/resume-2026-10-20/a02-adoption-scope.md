@@ -10,9 +10,9 @@ The canonical source main remains frozen at `f2ef70f522af4977e15f81554a8c6eadcdb
 - Reviewed source candidate to be accepted: isolated product
   `daf8ba03a9eb820f99b0f1bf5c4f553a7961e008`, tree
   `db0687a5ec15228e944360e00e391a4fff863f5d`; 39 declared transformations.
-- Author reports/tooling: `f9a09ba2e9b0212f7dafa53b086c5f1c366d9288` on
+- Author reports/tooling: `c9958ec9cf2a6f04ee210d40de4c8f84bb57ef64` on
   `restart/a02-rehearsal`. Content-manifest SHA256:
-  `f44c18838428d4b72ebf52c63fce62687b01cfa65683f2b18713d7938ff55318`.
+  `a4b7c58f42768faa13d3496722d8ab48e2ab1665ccbe141533f2a16a481bbd8c`.
 - Actual restored candidate bundle:
   `a02/tools/migration/.runtime/rehearsal-04/candidate-recovery/candidate.bundle`
   under the local goal directory; SHA256
@@ -101,3 +101,13 @@ Recovery uses ordinary Git: source main and the restored candidate remain intact
 before merge; failed publication branches/evidence remain inspectable. After any
 merge, use a reviewed forward repair/revert that preserves history and current
 task/evidence validity. Do not delete/reset history or discard the failed proof.
+
+## Affected source correction before scope acceptance
+
+The original full substantive review anchor is author `f9a09ba`; final exact author
+`c9958ec` corrects only a stale paragraph saying the completed failure/removal
+ledger was pending and its content-manifest binding. The isolated product and
+all other payload bytes/modes remain unchanged. The final rehearsal reviewer
+checks this exact two-file delta and binds the corrected author; the scope
+reviewer checks the corresponding prospective-map binding update. No unrelated
+suite/replay or historical evidence is rewritten for the prose correction.
