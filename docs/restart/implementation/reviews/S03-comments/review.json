@@ -1,0 +1,152 @@
+{
+  "schema_version": 1,
+  "task": "S03",
+  "review_kind": "affected documentary correction only",
+  "reviewer": "/root/b01_final_review",
+  "candidate_author": "/root",
+  "distinct_from_author": true,
+  "verdict": "PASS_comments_only",
+  "recorded_utc": "2026-10-20T09:48:08.207372+00:00",
+  "candidate_commit": "95cd3fc79d885c58bdabe71498d2509b6ff4370e",
+  "parent_commit": "2d7d465a291c4d4a1324d90595fc45a2fdbefca5",
+  "owned_branch": "review/s03-comments",
+  "write_scope": "docs/restart/implementation/reviews/S03-comments/{report.md,review.json}",
+  "review_record_binding": "Enclosing review commit binds this JSON; no self-hash or merged source is claimed.",
+  "candidate_bindings": [
+    {
+      "commit": "95cd3fc79d885c58bdabe71498d2509b6ff4370e",
+      "path": "crates/nsealr-core/src/review/qr_flow.rs",
+      "mode": "100644",
+      "blob": "42d2250055cae183e7d0b757b4a97716cab5ea99",
+      "bytes": 48911,
+      "sha256": "21dca232f338950479b4a40dbfebfe287c6ff74d741a6af2597704bd43d94aa1"
+    },
+    {
+      "commit": "95cd3fc79d885c58bdabe71498d2509b6ff4370e",
+      "path": "docs/restart/implementation/S03/integration-comment-correction.json",
+      "mode": "100644",
+      "blob": "8132b91ae9f8ac09543479b695ba563aa1524f26",
+      "bytes": 1320,
+      "sha256": "08a5c2425ccfde3bec14ba76db2d6322cb7943092dde721d5b728e9f87874cfb"
+    }
+  ],
+  "before_file_binding": {
+    "commit": "2d7d465a291c4d4a1324d90595fc45a2fdbefca5",
+    "path": "crates/nsealr-core/src/review/qr_flow.rs",
+    "mode": "100644",
+    "blob": "75a03f2dd2f32c73494b9a061d70b31bdcffbe68",
+    "bytes": 48860,
+    "sha256": "ac8a6682b70ed624cfae920f534771f93cf7a923fa52025f6fc4c4ff24981487"
+  },
+  "semantic_source_bindings": [
+    {
+      "commit": "95cd3fc79d885c58bdabe71498d2509b6ff4370e",
+      "path": "crates/nsealr-core/src/review/trusted.rs",
+      "mode": "100644",
+      "blob": "0fea8bed2b6c7d07d830adbe1bd9cd97404a8f9e",
+      "bytes": 21161,
+      "sha256": "a3af479a264e0f780e6dccefefac9f40c8bec883419ff68c15b13bf829611d9b"
+    },
+    {
+      "commit": "95cd3fc79d885c58bdabe71498d2509b6ff4370e",
+      "path": "crates/nsealr-core/src/authorization.rs",
+      "mode": "100644",
+      "blob": "92dc668eeddc7b25df6758464aab2f3e898d8e0b",
+      "bytes": 21067,
+      "sha256": "d17e1e893fd403da3eba9c0de69decf014e123d0f1524c310d526b37b05f1ab1"
+    }
+  ],
+  "original_review": {
+    "commit": "b03475ccf4a057c7771065126002f2e4e056d28d",
+    "report_binding": {
+      "commit": "b03475ccf4a057c7771065126002f2e4e056d28d",
+      "path": "docs/restart/implementation/reviews/S03-security/report.json",
+      "mode": "100644",
+      "blob": "5bca8b0af84384ebc253f1c8d12ce7f362377b4b",
+      "bytes": 15695,
+      "sha256": "5dc0ecc5e1ad92f3274c6e2bbefdd7ccad4e3262d28bc751f2ddf7399d52b683"
+    },
+    "reviewed_candidate": "2d7d465a291c4d4a1324d90595fc45a2fdbefca5",
+    "final_source_commit": "271bb88cf8a3efef71a01f2130897ab098e537a5",
+    "behavior_commit": "e6747615f13734f8fce3724bc03c7c5b98c90f07",
+    "historical_verdict": "PASS_bounded_S03_security_candidate",
+    "original_review_files": 41,
+    "relationship": "Separate review child of same original source checkpoint; original review files are not present in author branch and were not removed by the correction.",
+    "rebound_to_changed_candidate": false,
+    "historical_2104_cases_freshly_run": false
+  },
+  "report_binding": {
+    "path": "docs/restart/implementation/reviews/S03-comments/report.md",
+    "bytes": 4430,
+    "sha256": "51b90c1497ce9e05d70306405469648aeebe7ce7d38cced4207da0f60103b769"
+  },
+  "checks": {
+    "python": "3.13.5",
+    "exact_candidate_parent": true,
+    "exact_delta": [
+      "M crates/nsealr-core/src/review/qr_flow.rs",
+      "A docs/restart/implementation/S03/integration-comment-correction.json"
+    ],
+    "comment_replacements": [
+      {
+        "line": 124,
+        "old_comment_lines": 1,
+        "new_comment_lines": 1
+      },
+      {
+        "line": 200,
+        "old_comment_lines": 1,
+        "new_comment_lines": 1
+      },
+      {
+        "line": 334,
+        "old_comment_lines": 2,
+        "new_comment_lines": 2
+      }
+    ],
+    "all_non_doc_comment_rust_lines_identical": true,
+    "original_final_source_qr_equals_parent": true,
+    "trusted_and_authorization_identical_across_original_source_parent_candidate": true,
+    "receipt_hashes_and_review_anchors_match": true,
+    "candidate_diff_check": {
+      "command": "git diff --check 2d7d465a291c4d4a1324d90595fc45a2fdbefca5 95cd3fc79d885c58bdabe71498d2509b6ff4370e",
+      "exit_code": 0
+    },
+    "method": "Read-only Python3 subprocess Git-object reads, hashlib SHA256 and difflib exact replacement inspection; manual API/source semantics review. No products or tests executed.",
+    "corrected_probe_assumption": "Initial check assumed historical review files had been copied into author branch; it failed. Corrected comparison reads those files at the separate original review commit, verifies its shared parent and original report candidate/source anchors. No product failure."
+  },
+  "semantic_assessment": [
+    {
+      "source": "qr_flow.rs:124,200,210-213,292-303,334-338,387,399",
+      "conclusion": "Copied transcript/result booleans and forwarding method observe preview state and confer no custody or execution authority."
+    },
+    {
+      "source": "review/trusted.rs:1-2,214-221",
+      "conclusion": "Legacy diagnostic review observes its request/digest decision; it is never accepted as AuthorizationSession authority."
+    },
+    {
+      "source": "authorization.rs:124-169,171-192,407-442,464-499,555-565",
+      "conclusion": "Private non-cloneable owner constructs and consumes its own pending authorization. No public approved-flag or transcript conversion exists; production attempt uses private consuming path and returns SigningUnavailable."
+    }
+  ],
+  "findings": [],
+  "historical_finding_disposition": {
+    "id": "S03-SEC-01",
+    "status": "three_comment_wording_correction_passes_affected_review",
+    "scope": "No renewal or replacement of full original S03 security review."
+  },
+  "pending": [
+    "Actual A02 workspace, fixture and artifact path adoption/reconciliation",
+    "Affected S03 integrated-tree acceptance and any source-dependent tests after actual adoption",
+    "Original K01/T01/device/release obligations; no S03 full task closure"
+  ],
+  "not_performed": [
+    "No fresh 2104-case run or product suite",
+    "No compile, binary equivalence check or new behavioral/API/fixture acceptance",
+    "No physical consent/security qualification or hardware action",
+    "No authored source edits, source-main merge or other-worktree writes"
+  ],
+  "parent_task_complete": false,
+  "integration_status": "held_pending_A02_actual_layout_and_affected_acceptance",
+  "model_policy": "Latest maintainer Sol default supersedes historical source Astra rule; no escalation or subagents."
+}

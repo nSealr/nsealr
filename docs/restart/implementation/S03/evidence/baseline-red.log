@@ -1,0 +1,53 @@
+
+running 6 tests
+test s03_red_approval_must_not_be_reusable ... FAILED
+test s03_red_duplicate_kind_must_reject ... FAILED
+test s03_red_nostr_kind_bound_must_reject ... FAILED
+test s03_red_leading_zero_time_must_reject ... FAILED
+test s03_red_truncating_renderer_must_not_report_complete_review ... FAILED
+test s03_red_unshown_constructed_review_must_not_authorize ... FAILED
+
+failures:
+
+failures:
+    s03_red_approval_must_not_be_reusable
+    s03_red_duplicate_kind_must_reject
+    s03_red_leading_zero_time_must_reject
+    s03_red_nostr_kind_bound_must_reject
+    s03_red_truncating_renderer_must_not_report_complete_review
+    s03_red_unshown_constructed_review_must_not_authorize
+
+test result: FAILED. 0 passed; 6 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+   Compiling typenum v1.20.1
+   Compiling zeroize v1.9.1
+   Compiling cfg-if v1.0.5
+   Compiling cpufeatures v0.3.1
+   Compiling hybrid-array v0.4.15
+   Compiling crypto-common v0.2.2
+   Compiling block-buffer v0.12.1
+   Compiling digest v0.11.3
+   Compiling sha2 v0.11.0
+   Compiling nsealr-core v0.0.0 (/home/tux/nsealr/.restart-tools/goal/s03/crates/nsealr-core)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 1.53s
+     Running tests/s03_baseline_reproductions.rs (target/debug/deps/s03_baseline_reproductions-9274a5efcb12b07b)
+
+thread 's03_red_approval_must_not_be_reusable' (1358473) panicked at crates/nsealr-core/tests/s03_baseline_reproductions.rs:32:5:
+authority remains reusable after its first check
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+
+thread 's03_red_duplicate_kind_must_reject' (1358474) panicked at crates/nsealr-core/tests/s03_baseline_reproductions.rs:15:5:
+duplicate decoded member was accepted
+
+thread 's03_red_nostr_kind_bound_must_reject' (1358476) panicked at crates/nsealr-core/tests/s03_baseline_reproductions.rs:20:5:
+kind above NIP01 bound accepted
+
+thread 's03_red_leading_zero_time_must_reject' (1358475) panicked at crates/nsealr-core/tests/s03_baseline_reproductions.rs:25:5:
+noncanonical integer accepted
+
+thread 's03_red_truncating_renderer_must_not_report_complete_review' (1358477) panicked at crates/nsealr-core/tests/s03_baseline_reproductions.rs:47:5:
+renderer silently returned an ellipsis as success
+
+thread 's03_red_unshown_constructed_review_must_not_authorize' (1358478) panicked at crates/nsealr-core/tests/s03_baseline_reproductions.rs:40:5:
+constructed review authorized without display
+error: test failed, to rerun pass `-p nsealr-core --test s03_baseline_reproductions`
