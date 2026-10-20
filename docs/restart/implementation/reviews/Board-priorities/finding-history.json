@@ -1,0 +1,42 @@
+{
+  "findings": [
+    {
+      "id": "BOARD-PRIORITIES-01",
+      "severity": "medium",
+      "classification": "Contradictory current documentary direction; no product-code defect",
+      "candidate": "ae4c85a33379d999f7929b702b9d16301395ac79",
+      "path": "docs/restart/pcb-development.md",
+      "line": 105,
+      "source_excerpt": "| Secure element | One SE first; SE051C2, Trust M or TROPIC only if the required operations, lifecycle and threat fit |",
+      "requirement_source": {
+        "maintainer_memo_sha256": "5f433b92ec828b7ba438d31a8489f894623f5cbf3b4ce559479adac95392f872",
+        "sections": [
+          "3. Secure element",
+          "existing plan and bounded pre-freeze comparison"
+        ],
+        "candidate_requirements": [
+          "BOARD-03",
+          "S04 acceptance 1",
+          "H04 acceptance 6"
+        ]
+      },
+      "impact": "The live Working shortlist/direction table can still instruct a one-SE-first product default, contradicting the new concrete two-SE study versus one-SE control. Individual-chip qualification remains useful but is not identified as that limited historical/comparative role here.",
+      "requested_correction": "Label one-SE as the control and the existing individual-chip studies as comparative inputs; retain all documentation/API/bench/advisory gates and do not select a pair.",
+      "observations": [
+        {
+          "candidate": "ae4c85a33379d999f7929b702b9d16301395ac79",
+          "status": "open",
+          "coordinator_response": "Acknowledged; bounded row correction promised. A future unobserved correction is not accepted."
+        },
+        {
+          "candidate": "54093a72d40925f6f65170dd4a5bcedd965975c6",
+          "status": "resolved",
+          "path": "docs/restart/pcb-development.md",
+          "line": 105,
+          "resolution": "The observed one-row delta explicitly studies two SEs against a one-SE control, retains individual SE051C2/Trust M/TROPIC investigations only as comparative inputs, selects no pair, and preserves exact command/security/update docs, bench and advisory gates plus either-chip/host analysis and distinct third-SE benefit."
+        }
+      ],
+      "final_status": "resolved"
+    }
+  ]
+}

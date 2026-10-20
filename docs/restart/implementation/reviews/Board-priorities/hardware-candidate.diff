@@ -1,0 +1,107 @@
+diff --git a/README.md b/README.md
+index a501281..75bfd7c 100644
+--- a/README.md
++++ b/README.md
+@@ -1,30 +1,42 @@
+ # nSealr Hardware
+ 
+ Open hardware reference designs, BOMs, validation contracts, and production
+-notes for nSealr signer and secure-device hardware.
++notes for the programmable nSealr Board and independently qualified Signer kits.
+ 
+-Feature targets and current status are defined in `nSealr/specs`
+-`vectors/features/signer-feature-matrix-v0.json`. This repository provides
+-hardware artifacts for those families; it must not create separate signer-family
+-behavior outside the shared specs contract model.
++The current [product contract](https://github.com/nSealr/nsealr/blob/main/docs/product/contract.md),
++[Board realization requirements](https://github.com/nSealr/nsealr/blob/main/docs/restart/pcb-development.md#product-choice-before-h04)
++and [task graph](https://github.com/nSealr/nsealr/blob/main/plan/work-items.json)
++define direction and actual acceptance. The Board has standalone developer value;
++Nostr Signer is one application. Its [Board SDK](https://github.com/nSealr/board-sdk)
++is independent of Nostr. Historical specs and reference files below do not
++announce supported hardware or override the current contract.
+ 
+-## Current Hardware Lines
++## Reference artifacts
+ 
+ - ESP32-S3 USB/NIP-46 signer reference requirements.
+-- ESP32-S3 stateless QR vault requirements and accepted display/camera devkit
+-  targets.
++- Historical ESP32-S3 stateless QR vault requirements and display/camera leads;
++  these are not admission of a current offline profile.
+ - Raspberry/Pi stateless QR vault kit requirements, OS profile, BOM, and smoke
+   report templates.
+ 
+-## Archived Hardware
++## Programmable Board and historical hardware
++
++There is no frozen replacement PCB or physically qualified Board in this
++repository. Compare a quality touchscreen and concrete two-SE configurations
++against documented developer and Signer workloads before choosing parts. A
++dedicated physical confirmation option needs actual display/input/operation
++binding; neither touch nor a button alone establishes security. A third SE needs
++a distinct verified benefit. Exact APIs, compromise cases, power/pin/resource
++budgets, owner firmware/update/recovery and physical tests remain freeze gates.
+ 
+ The legacy TROPIC01 Universal Secure Device board has been retired from this
+ repository. Its complete design — KiCad project, BOM, production contracts,
+ docs, and board-specific scripts — was archived with full git history to the
+ private, read-only repository `nSealr/hardware-legacy-tropic01-universal`. It is
+-superseded by the minimal custom hardware wallet direction recorded in the
+-`nSealr/specs` five-solution device-matrix decision; the replacement board will
+-be introduced in a later program phase.
++historical material rather than a selected replacement design. The current
++direction is the programmable Board above, with one trusted firmware image
++initially and no isolation claim for mutually hostile applications. Pi, P4 and
++commercial ESP32 qualification remain independent of the custom PCB.
+ 
+ ## Quality Baseline
+ 
+diff --git a/docs/architecture.md b/docs/architecture.md
+index 1198816..238b976 100644
+--- a/docs/architecture.md
++++ b/docs/architecture.md
+@@ -5,12 +5,14 @@ KiCad sources, kit profiles, validation reports, and production notes.
+ 
+ ## Boundaries
+ 
+-Hardware requirements can state which boards, displays, cameras, controls,
+-secure elements, provisioning paths, and debug policies are needed to satisfy
+-the shared `nSealr/specs` feature targets. They must not create new feature
+-behavior or signer taxonomy outside the shared specs contract model.
++Hardware owns exact electrical/mechanical artifacts, parts, pinout, expansion,
++power and production tests. The [current product contract](https://github.com/nSealr/nsealr/blob/main/docs/product/contract.md)
++owns Signer semantics; the [Board realization requirements](https://github.com/nSealr/nsealr/blob/main/docs/restart/pcb-development.md#product-choice-before-h04)
++and canonical task graph own the programmable platform's hardware gates.
++Board SDK supplies reusable device services without importing Nostr. Historical
++specs/reference requirements do not define another current product taxonomy.
+ 
+-## Supported Hardware Lines
++## Existing reference requirements, not support claims
+ 
+ - `pcb/reference-esp32-s3-signer/requirements.json`: ESP32 USB/NIP-46 signer
+   reference requirements.
+@@ -27,11 +29,18 @@ This repository currently has no active custom PCB. The legacy TROPIC01
+ Universal Secure Device board was archived, with full git history, to the
+ private read-only repository `nSealr/hardware-legacy-tropic01-universal`.
+ 
+-The next custom hardware direction — a minimal custom hardware wallet — is
+-defined by the `nSealr/specs` five-solution device-matrix decision and will be
+-introduced in a later program phase. Until that board lands, the reference
+-requirements, kits, BOMs, reports, and templates above are the maintained
+-contracts here.
++The next custom hardware is a programmable security-oriented Board with
++independent developer value. The Signer, a display/input/expansion diagnostic
++and a generic key-operation example are bounded representative consumers.
++Compare a quality touchscreen with the current controls/panel and study a
++concrete two-SE architecture; no host, panel or chip pair is selected here.
++Before freeze compare a few complete configurations with benefits, limits,
++resource/development margin, indicative dated costs/uncertainty and missing
++proof. Current API/manual, independent-review and physical gates remain hard
++requirements. Owner firmware, debug, update/recovery and secret reset have
++explicit lifecycle boundaries; the first image model does not isolate hostile
++applications. Reference requirements, kits and templates remain useful inputs,
++without transferring their old names or assumed guarantees to the new Board.
+ 
+ ## Validation
+ 

@@ -1,0 +1,165 @@
+diff --git a/docs/restart/README.md b/docs/restart/README.md
+index be274446..2bbc7023 100644
+--- a/docs/restart/README.md
++++ b/docs/restart/README.md
+@@ -15,7 +15,7 @@ The objective is a useful Nostr signer ecosystem with accessible connected hardw
+ 7. [Client and optical qualification plan](../product/compatibility-plan.md)
+ 8. [Specification-first development and initial work packages](development.md)
+ 9. [Product contract, feature matrix and user journeys](../product/contract.md)
+-10. [PCB pipeline, tool capabilities and reference designs](pcb-development.md)
++10. [PCB pipeline, tool capabilities and reference designs](pcb-development.md); [current programmable-Board realization requirements](pcb-development.md#product-choice-before-h04).
+ 
+ The graph records **47 implementation tasks**, their dependencies, scope, acceptance and required resources. A research result or administrative rename does not close an implementation gate. Ready tasks still require source reconciliation and an accepted brief before implementation. No device release is qualified.
+ 
+diff --git a/docs/restart/pcb-development.md b/docs/restart/pcb-development.md
+index a0e7abec..7b51a79f 100644
+--- a/docs/restart/pcb-development.md
++++ b/docs/restart/pcb-development.md
+@@ -31,6 +31,35 @@ flowchart LR
+ 
+ EVT, DVT and production validation are purposes, not a demand for three different revisions if one revision passes all applicable evidence. A design change reopens its affected tests. An agent can prepare designs, procedures and analyze instrument data; an identified person or genuinely connected bench must perform wiring, inspection and physical measurements. A specialist AI review does not replace required independent electrical/security expertise.
+ 
++## Product choice before H04
++
++The maintainer clarified the physical realization of [PROD-11/12](../product/requirements.md)
++on 20 October 2026. These are current Board implementation requirements; they
++are not attributed to the historical P01 review or evidence. The Board has
++independent developer value alongside its Nostr application.
++
++| Physical realization requirement | Observable obligation | Task owner |
++| --- | --- | --- |
++| BOARD-01 | The programmable Board has independent developer value. Compare CPU, memory, graphics, interfaces, expansion and power on the Nostr review flow plus two bounded non-Nostr consumers: a display/input/expansion diagnostic and a generic key-operation demonstration. Preserve reasonable measured development margin; justify omissions by cost, power, size, reliability or security rather than implementation convenience alone. | H01/H02/H03/H04; B01/B02/B03 |
++| BOARD-02 | A readable, responsive, usable touchscreen is the preferred custom-Board interaction. Compare the current panel/control baseline on navigation, local data entry, recovery and complete operation review; evaluate a dedicated physical sensitive-confirmation control. Establish display/input ownership and the binding between the actual visible operation and consent. Neither touch nor a button alone proves trusted presentation or authorization. | H01/H02/H03/H04; S03 and actual generic/Signer UI qualification |
++| BOARD-03 | Evaluate a concrete two-SE architecture against a one-SE control. For each exact component identify its contribution, cooperation, common failure domains and what remains protected after either SE or the host is compromised. Separate PIN/key-at-rest protection from exposure during signing/use. Include document/API/update access, ownership, recovery, faults and maintenance. A third SE requires a distinct verified benefit; no component or multi-SE guarantee is selected by this requirement. | H01/S04/H02S/H04; B02/B03 and V02/V03 actual lifecycle/security proof |
++
++The two non-Nostr demonstrations bound the first SDK release. They do not
++introduce complete SSH, FIDO, TOTP or wallet products, or an application
++marketplace. New owner firmware has its own application guarantees. Installation,
++debug, signed update, recovery, secret reset and ownership transitions remain
++explicit; one trusted image does not isolate mutually hostile applications.
++
++The pre-freeze comparison contains at most three complete configurations, with
++exact candidates, indicative dated cost ranges and uncertainty, measured versus
++assumed budgets, developer/debug/owner lifecycle, outstanding proof and a
++recommendation. It includes a concrete two-SE study against a one-SE control:
++separate PIN/at-rest protection, active-use exposure and the effect of either
++chip or the host being compromised. A third SE needs a distinct verified benefit.
++No touch controller, host, chip pair or isolation guarantee is selected here.
++The existing source reviews remain useful comparative work; all selected-part
++manual, bench, independent-review and assembled-board gates still apply.
++
+ ## What the AI tooling has actually demonstrated
+ 
+ The clean October 18 tuple is KiCad 10.0.7, official `kicad-python 0.8.0`, protobuf 5.29.6, MCP 1.30.0 and KiPilot commit `303e62010172bf99c2aa41c10237c18bcabcca7a`. Installation resolved normally and the installed binding matched the official wheel. A three-component resistor-divider board is the tool test fixture; it is not the nSealr design.
+diff --git a/docs/restart/validation.md b/docs/restart/validation.md
+index 42e13857..c35599ec 100644
+--- a/docs/restart/validation.md
++++ b/docs/restart/validation.md
+@@ -10,7 +10,7 @@ This revision challenges the restart direction against source, current primary s
+ | Keep ESP32 no-SE, Pi QR, P4 QR and custom Board | They solve different access, interaction and custody needs. An SE is not the definition of the product. | Each exact kit earns its own guarantees; no claim that every ESP32 or Pi is supported. Source sharing does not transfer physical assurance. |
+ | Five destination repositories | Main product integration belongs together; generic hardware and firmware-development consumers can release independently. | Migration rehearsal, clean consumer builds, provenance and actual release ownership. Keep transitional source repos until verified disposition. |
+ | Keep `board-sdk` | It identifies firmware development for the programmable board. The TypeScript integration SDK already has a different audience and belongs in `nsealr/packages/`. | A concise name is a preference, not a provable engineering optimum. Reconsider only if the consumer boundary changes; a rename alone would improve no capability. |
+-| Bench STM32U5 and an SE before freezing the custom design | Trusted review needs control over execution, input/display, memory and peripherals. A security-oriented MCU plus an SE is a candidate architecture, not a guarantee. | Exact commands, documentation access, pin mux, recovery and adversarial tests. S3 remains a comparator; extra SEs, NFC and cameras must earn their cost and attack surface. |
++| Compare programmable-Board configurations before freeze | Trusted review and useful standalone firmware need control over execution, display/input, memory, power and expansion. The maintainer's 20 October preference is a quality touchscreen and a serious two-SE study. | Compare at most three complete configurations against the current baseline, representative consumers, exact APIs, compromise cases, recovery, costs and missing bench proof. S3 remains a comparator; a third SE or other addition needs a distinct benefit. No chip pair is selected. |
+ | Stable KiCad with qualified operations | Native sources, CLI checks and exports work independently of how agents issue edits. A nonempty canary and six real MCP operations now also pass with a clean dependency tuple. | Each additional needed operation must earn qualification. Text-edit/save proof is not routing, visual review or a PCB design test. |
+ 
+ ## Corrections made by this review
+@@ -31,7 +31,7 @@ These results support feasibility, not a final backend choice. Linked section si
+ 
+ ## Hardware decisions that remain conditional
+ 
+-Start a bounded STM32U5 MCU probe and an independent single-SE qualification. **U585VI and SE051C2 are candidates, not a mandatory coupled pair or approved purchase/BOM.** Compare against documented requirements and the S3/alternative-SE probes; use H573 only for a demonstrated lifecycle need. Admit [U5A5VJ](https://www.st.com/en/microcontrollers-microprocessors/stm32u5a5vj.html) as a conditional internal-memory alternative if U585's measured budget fails, not a mandatory third port. Exact package variants and actual SE ordering/configuration identifiers matter. An evaluation board with a different package or supply option does not prove the final pinout.
++Retain the bounded STM32U5/S3 host investigations and independent SE command qualification as comparative inputs. The first custom Board must now be evaluated against [the clarified platform, touchscreen and two-SE requirements](pcb-development.md#product-choice-before-h04), rather than inherited as a minimal wallet. **U585VI and SE051C2 are candidates, not a mandatory coupled pair or approved purchase/BOM.** Two-SE cooperation and either-chip compromise need an explicit protocol and proof, not the addition of a second footprint. Use H573 only for a demonstrated lifecycle need. Consider [U5A5VJ](https://www.st.com/en/microcontrollers-microprocessors/stm32u5a5vj.html) if measured memory/graphics needs reject U585, not as a mandatory third port. Exact package variants and actual SE ordering/configuration identifiers matter. An evaluation board with a different package or supply option does not prove the final pinout.
+ 
+ For Nostr, do not promise a non-exportable identity merely because an SE supports ECC, ECDSA or Ed25519. BIP-340 requires its exact secp256k1 Schnorr operation; if the scalar must be unwrapped into MCU RAM for that operation, this exposure belongs in the threat model and physical test plan. Adding another chip does not automatically remove it. Trusted display/input also requires firmware, peripheral and DMA ownership; the SE cannot validate what a hostile screen shows.
+ 
+diff --git a/plan/work-items.json b/plan/work-items.json
+index 1f5961f1..b2174521 100644
+--- a/plan/work-items.json
++++ b/plan/work-items.json
+@@ -4979,7 +4979,7 @@
+         "provisioning"
+       ],
+       "acceptance": [
+-        "Compare candidate SE architectures against exact APIs and advisory applicability; prove the security contribution of each chip.",
++        "Compare a concrete two-SE custody architecture against a one-SE control using exact APIs/advisories. Define each chip's contribution/cooperation, PIN and at-rest versus active-signing exposure, common failure domains, recovery/maintenance and what survives either-chip or host compromise. A third SE needs a distinct verified benefit; no pair is preselected.",
+         "Specify every stored object, authenticated ciphertext, host-binding secret, KDF context, pairing key and firmware-signing root.",
+         "Cover PIN creation/change/exhaustion, brownout, rollback, recovery, destructive reset and update ownership; model persistent-state transitions.",
+         "Preserve NIP-06 compatibility without treating currently unrecommended derivation as the default; prove expected-public-key recovery.",
+@@ -5061,7 +5061,7 @@
+       ],
+       "acceptance": [
+         "For every candidate record exact part/package/silicon, official document ID/revision/date/URL/hash and relevant errata.",
+-        "Triage viable alternatives. Read and sign off the sections required for each admitted MCU feasibility probe; record selected-design review work that must close before H04.",
++        "Triage a few coherent platform alternatives against Signer, standalone display/input/expansion and generic key-operation workloads, the touchscreen preference and a concrete two-SE study. Read and sign off the sections required for each admitted MCU feasibility probe; record selected-design review work that must close before H04. Preserve useful existing source work without calling it a product selection.",
+         "Identify unavailable/restricted documentation and unsupported features before freezing a part.",
+         "No full-manual-review claim is made from a link inventory.",
+         "Treat openness and reproducible developer access to exact API/errata/update terms as selection criteria. An inaccessible SE manual is an unresolved gate for selecting that SE, not a reason to block unrelated MCU/USB/display research.",
+@@ -5142,10 +5142,10 @@
+         "shared feasibility harness"
+       ],
+       "acceptance": [
+-        "Run comparable USB/display/physical-input/crypto probes on identified candidate MCU boards; this host milestone does not wait for an SE driver or restricted SE API.",
++        "Run comparable USB/display/touch-or-control/physical-confirmation/crypto probes on identified candidate MCU boards; this host milestone does not wait for an SE driver or restricted SE API. Measure navigation, entry, recovery and complete review workloads; input type alone is not trusted consent.",
+         "Prove secure boot and recoverable signed-update feasibility after provisioning on sacrificial samples.",
+         "Measure resource/pin/power envelope and document toolchain gaps; do not build two full product ports.",
+-        "Select one host from requirements and measurements; defer complete lifecycle qualification to V02/H08.",
++        "Select one host from requirements and measured graphics, memory, peripheral, expansion and power margins for the Signer plus two bounded non-Nostr consumers; revisit a host that cannot meet the preferred touchscreen experience. Defer complete lifecycle qualification to V02/H08.",
+         "Keep the host comparison bounded; SE-specific command/custody feasibility closes separately in H02S before H04 architecture freeze."
+       ],
+       "required_evidence": [
+@@ -5229,7 +5229,7 @@
+         "Obtain exact panel/connector drawings and validate pinout/contact orientation against actual samples.",
+         "Calculate state-based worst-case power, thermal, USB entitlement, charging and full usable cell-range behavior.",
+         "Define battery chemistry/protection/temperature, reverse/backfeed behavior and absent-battery operation.",
+-        "Choose one mechanical reference with readable review screens and accessible test points."
++        "Choose one mechanical reference after comparing the current panel/control baseline with a readable, responsive touchscreen for navigation, entry, recovery and full review. Evaluate dedicated physical sensitive confirmation, prove display/input ownership and operation binding, and retain accessible test points; neither touch nor buttons alone establishes security."
+       ],
+       "required_evidence": [
+         "power budget",
+@@ -9003,7 +9003,8 @@
+         "Keep security buses private; substantiate interface/mode isolation and power-off/backfeed design with cited electrical limits, calculations and representative bench tests. Repeat on assembled PCB in H08/H09; pre-layout evidence is not assembled-board proof.",
+         "Freeze pin/resource/mechanical budgets and manufacturing provisioning/test requirements.",
+         "No unresolved blocker is relabeled as an accepted compromise.",
+-        "Resolve exact package/variant pin mux, DMA/peripheral ownership, internal secret-memory placement and display/camera coexistence. Do not infer peripheral availability from GPIO count or a different evaluation-board package."
++        "Resolve exact package/variant pin mux, DMA/peripheral ownership, internal secret-memory placement and display/camera coexistence. Do not infer peripheral availability from GPIO count or a different evaluation-board package.",
++        "Before freeze publish at most three coherent platform configurations, including the preferred touchscreen and serious two-SE study against a one-SE control: exact candidates, representative workloads and development margin, expansion/debug/owner lifecycle, benefits/limits, dated indicative costs with uncertainty, missing proof and a reasoned recommendation. A third SE or added host requires a distinct unmet need. Retain every selected-part security/electrical/physical gate."
+       ],
+       "required_evidence": [
+         "architecture decision",
+@@ -9883,7 +9884,7 @@
+         "lifecycle"
+       ],
+       "acceptance": [
+-        "Board SDK exposes buses/power/entropy/key handles/algorithms/storage/display/input/lifecycle without Nostr schemas or policy.",
++        "Board SDK exposes documented buses/pinout/expansion/power/entropy/key handles/algorithms/storage/display/input/programming/debug/lifecycle without Nostr schemas or policy. Maintained drivers and independently reproducible non-Nostr consumers establish standalone developer value.",
+         "Start with libraries in one trusted firmware image; document absence of inter-application security isolation.",
+         "Pin electrical contracts from hardware and design version compatibility without circular or sibling-path dependencies.",
+         "Development, owner-secured and product-qualified states have explicit transition limits and secret-reset requirements."
+@@ -9975,7 +9976,7 @@
+       ],
+       "acceptance": [
+         "Bring up chosen components on evaluation/reference hardware using maintained upstream drivers where appropriate.",
+-        "Run an independently buildable non-Nostr example that exercises consent and a supported crypto/key operation without importing nsealr.",
++        "Run two independently buildable non-Nostr examples: a display/input/expansion diagnostic and a generic demonstration exercising consent and a supported crypto/key operation. Neither imports nsealr; record exact interfaces, tools, binaries, physical results and limits.",
+         "Keep demonstration protocols labelled as examples; P256/Ed25519 primitives are not claims of complete SSH/FIDO products.",
+         "Document custody location, unsupported operations and developer/provisioned recovery behavior.",
+         "Trace the generic SDK entropy service from approved source through the linked/runtime provider to actual evaluation-hardware invocation; exercise failure/stuck-source handling and reject unintended deterministic output or an unqualified fallback. A qualified OS CSPRNG/DRBG is permitted; no Nostr dependency is introduced."
+@@ -10060,7 +10061,7 @@
+       ],
+       "acceptance": [
+         "Apply relevant release_gate_template conditions to the platform without claiming application-level Nostr/FIDO/wallet assurance.",
+-        "Independent developer builds the non-Nostr example without nsealr and reproduces board bring-up and allowed firmware ownership transitions.",
++        "An independent developer builds both non-Nostr examples without nsealr and reproduces display/input/expansion and key-operation bring-up, programming/debug and allowed firmware ownership transitions on the identified board.",
+         "Publish exact schematic/BOM/SDK/bootloader compatibility, production test evidence and lifecycle limitations.",
+         "Close independent findings for generic security services before advertising their guarantees; no custom Board signer/client-pilot dependency.",
+         "Independently qualify generic-board small-lot production/test yield, authorized provisioning, firmware-signing/update/recovery and shipping state before a platform release. This evidence belongs here and cannot be borrowed from downstream Nostr production R01.",
+@@ -10160,7 +10161,7 @@
+       "requires_physical_evidence": true
+     }
+   ],
+-  "revision": 17,
++  "revision": 18,
+   "scope_document": "repositories.md",
+   "active_profiles": [
+     "esp32_no_se",
