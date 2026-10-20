@@ -1,0 +1,106 @@
+{
+  "source_head": "bf51d414f9dfc5f23c863dff51c3128dffa2dcad",
+  "source_tree": "ecbb37e62c6eb9f4fcece5e8fb82d811a124d069",
+  "environment_sha256": "5b0f773e07fc90aa4a2b7d62c102bbc7b824b6bab135002ee0a01ad90a0ef001",
+  "overrides": {
+    "CARGO_TARGET_DIR": "/home/tux/nsealr/.restart-tools/goal/k01-current-implementation/target/k01-final-label"
+  },
+  "commands": [
+    {
+      "argv": [
+        "cargo",
+        "rustc",
+        "--manifest-path",
+        "docs/restart/implementation/K01/probes/final-link/Cargo.toml",
+        "--locked",
+        "--offline",
+        "--release",
+        "--target",
+        "riscv32imafc-unknown-none-elf",
+        "--",
+        "-C",
+        "link-arg=--entry=_start",
+        "-C",
+        "link-arg=-Map=/home/tux/nsealr/.restart-tools/goal/k01-current-implementation/target/k01-final-label/k01-engine.map"
+      ],
+      "exit": 0,
+      "expected_exit": 0,
+      "elapsed_seconds": 3.703,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "99b7b1299cc77b2072c0855887e3b92bd0dbbf5ffbb468e8f4bf97ad3f1c63ab"
+    },
+    {
+      "argv": [
+        "readelf",
+        "-W",
+        "-h",
+        "-S",
+        "-s",
+        "/home/tux/nsealr/.restart-tools/goal/k01-current-implementation/target/k01-final-label/riscv32imafc-unknown-none-elf/release/k01-engine-final-link"
+      ],
+      "exit": 0,
+      "expected_exit": 0,
+      "elapsed_seconds": 0.001,
+      "stdout_sha256": "67c019465f4cea506b132dc92141e3b87a301e4636b0e3139c10256a0342c74f",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "argv": [
+        "nm",
+        "-u",
+        "/home/tux/nsealr/.restart-tools/goal/k01-current-implementation/target/k01-final-label/riscv32imafc-unknown-none-elf/release/k01-engine-final-link"
+      ],
+      "exit": 0,
+      "expected_exit": 0,
+      "elapsed_seconds": 0.012,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "argv": [
+        "size",
+        "-A",
+        "/home/tux/nsealr/.restart-tools/goal/k01-current-implementation/target/k01-final-label/riscv32imafc-unknown-none-elf/release/k01-engine-final-link"
+      ],
+      "exit": 0,
+      "expected_exit": 0,
+      "elapsed_seconds": 0.001,
+      "stdout_sha256": "5d33ff57f80eac02d20e22d5bf3e66c5c9b8e3cb80983b2ef22e4a67f6f46256",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "argv": [
+        "cargo",
+        "rustc",
+        "--manifest-path",
+        "docs/restart/implementation/K01/probes/final-link/Cargo.toml",
+        "--locked",
+        "--offline",
+        "--release",
+        "--target",
+        "riscv32imafc-unknown-none-elf",
+        "--",
+        "--cfg",
+        "k01_missing_provider",
+        "-C",
+        "link-arg=--entry=_start"
+      ],
+      "exit": 101,
+      "expected_exit": 101,
+      "elapsed_seconds": 0.066,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "840f804ae16ca6f3f4b5070d5b8af71ac232671f10ed3c77ea71170a740b6633"
+    }
+  ],
+  "elf_sha256": "9453dc280c97132455fcde4e1bf3f830eb572dca1238e04166a8aad772fbf9fd",
+  "elf_bytes": 155416,
+  "map_sha256": "1bc02aeb73ba690bed6bea10959c77cb2471075bcdb18daa3c962d8672ac0e52",
+  "actual_elf32_retained_type_sizes": {
+    "AuthorizationSession": 5872,
+    "EventTemplate": 5224,
+    "InspectionFrame": 472,
+    "SIGNED_EVENT_BYTES": 9216
+  },
+  "limitations": "Actual no_std target compile/link/inspection only; ELF never executed/flashed, no startup/memory-map/stack/latency/device/entropy qualification. Missing provider actual target compile must refuse; host runtime refusal separately executed.",
+  "affected_delta": "Fresh link of exact bf51 role-corrected source. Earlier target-final remains historical exact1bcc evidence."
+}

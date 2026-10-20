@@ -1,0 +1,95 @@
+{
+  "test_source": "4bab1c86c0145a44bc5fefdd2f38d80e3336bcfb",
+  "runtime_source": "bf51d414f9dfc5f23c863dff51c3128dffa2dcad",
+  "environment_sha256": "5b0f773e07fc90aa4a2b7d62c102bbc7b824b6bab135002ee0a01ad90a0ef001",
+  "overrides": {
+    "CARGO_TARGET_DIR": "/home/tux/nsealr/.restart-tools/goal/k01-current-implementation/target/k01-development",
+    "S03_OBSERVED": "/home/tux/nsealr/.restart-tools/goal/k01-current-implementation/docs/restart/implementation/K01/evidence/s03-observed-events.json",
+    "K01_OBSERVED": "/home/tux/nsealr/.restart-tools/goal/k01-current-implementation/docs/restart/implementation/K01/evidence/observed-events.json",
+    "K01_IDENTITIES": "/home/tux/nsealr/.restart-tools/goal/k01-current-implementation/docs/restart/implementation/K01/evidence/observed-identities.json",
+    "K01_REJECTIONS": "/home/tux/nsealr/.restart-tools/goal/k01-current-implementation/docs/restart/implementation/K01/evidence/observed-rejections.json",
+    "K01_MATRIX_OBSERVED": "/home/tux/nsealr/.restart-tools/goal/k01-current-implementation/docs/restart/implementation/K01/evidence/semantic-matrix-observed.json",
+    "K01_IDENTITY_OPERATIONS": "/home/tux/nsealr/.restart-tools/goal/k01-current-implementation/docs/restart/implementation/K01/evidence/identity-operation-observed.json",
+    "K01_PREFIX_OBSERVED": "/home/tux/nsealr/.restart-tools/goal/k01-current-implementation/docs/restart/implementation/K01/evidence/auxiliary-prefix-observed.json"
+  },
+  "commands": [
+    {
+      "argv": [
+        "cargo",
+        "test",
+        "--locked",
+        "--offline",
+        "-p",
+        "nsealr-core"
+      ],
+      "exit": 0,
+      "elapsed_seconds": 0.495,
+      "stdout_sha256": "5da35a5e0a3ef9ad4fe3e99ba1914affb91903ef9e0ab68cfec8d0da80db2015",
+      "stderr_sha256": "516358dc0bea74575fc18a3ca4ab5860281610f7c12b3b33932d4fbc2c729ecf"
+    },
+    {
+      "argv": [
+        "cargo",
+        "test",
+        "--locked",
+        "--offline",
+        "-p",
+        "nsealr-core",
+        "--all-features"
+      ],
+      "exit": 0,
+      "elapsed_seconds": 1.384,
+      "stdout_sha256": "51c9e9acecf86e9a8fd9447f1563588c929bcca3480e936be74e5cccd4fb7003",
+      "stderr_sha256": "09e03cd0a41ed1b02d40b1d9d6d13540dadaf517463145594814ab96fd7da63b"
+    },
+    {
+      "argv": [
+        "cargo",
+        "clippy",
+        "--locked",
+        "--offline",
+        "--all-targets",
+        "--all-features",
+        "--",
+        "-D",
+        "warnings",
+        "-D",
+        "dead_code"
+      ],
+      "exit": 0,
+      "elapsed_seconds": 1.156,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "5ea5f83f6a162a1f976c08f04dc2ea51263998ee352a22fffa912f40f77cbe4e"
+    },
+    {
+      "argv": [
+        "cargo",
+        "llvm-cov",
+        "--workspace",
+        "--all-features",
+        "--summary-only",
+        "--json",
+        "--output-path",
+        "build/k01-proof-final-coverage.json"
+      ],
+      "exit": 0,
+      "elapsed_seconds": 2.958,
+      "stdout_sha256": "fb3ccb10e18ed8ad1cc9aa6fe0fe20cfb473eb1dc79d92505debfcb49139e280",
+      "stderr_sha256": "e3ca011d24badbc55f094b7b33a7a2377892989ea921ef402c93bc11f466288e"
+    },
+    {
+      "argv": [
+        "python3",
+        "ci/check_coverage_ratchet.py",
+        "build/k01-proof-final-coverage.json",
+        "ci/ratchet.json",
+        "build/rust-host-coverage.json"
+      ],
+      "exit": 0,
+      "elapsed_seconds": 0.065,
+      "stdout_sha256": "7d1973d0160a5d0a70fd51f0242c0c429fa036b5bd61ecc7b4262dcda6fc35bb",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ],
+  "scope": "Affected test-only proof additions after exact bf51 fullCI and target PASS; no duplicate unchanged whole product/client campaign or future PR/main acceptance."
+}
