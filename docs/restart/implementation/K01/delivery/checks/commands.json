@@ -1,0 +1,97 @@
+{
+  "scope": "Affected delivery docs/plan/frozen/contracts and real missing-underlying-proof refusal/restoration only; no product/full-CI rerun or hosted observation",
+  "source_head": "46da42ef433995bb21e5c41218f4e31edefa54aa",
+  "source_tree": "1eac49329cd24037d8aa828360e315b258262a92",
+  "environment_original_path": "/home/tux/nsealr/.restart-tools/goal/r00/tools/baseline/.work/final/environment.json",
+  "environment_durable_path": "docs/restart/implementation/R00/evidence/final/environment.json",
+  "environment_sha256": "5b0f773e07fc90aa4a2b7d62c102bbc7b824b6bab135002ee0a01ad90a0ef001",
+  "commands": [
+    {
+      "name": "docs",
+      "argv": [
+        "make",
+        "docs"
+      ],
+      "exit": 0,
+      "expected_exit": 0,
+      "stdout_sha256": "3b56280069c11e033b4797835a8b01cf075aff51ec898aa5b4bdf7c75233bad2",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "execution": "Actual immediately preceding same-source invocation; receipt completion follows helper correction, no repeated gate invocation"
+    },
+    {
+      "name": "plan-positive",
+      "argv": [
+        "python3",
+        "scripts/validate_restart_plan.py"
+      ],
+      "exit": 0,
+      "expected_exit": 0,
+      "stdout_sha256": "5980d15f4ebd04675b98682ab9d1335eebe5835ac675e152b1261db501d9d3e4",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "execution": "Actual immediately preceding same-source invocation; receipt completion follows helper correction, no repeated gate invocation"
+    },
+    {
+      "name": "frozen-evidence",
+      "argv": [
+        "python3",
+        "scripts/verify_evidence.py"
+      ],
+      "exit": 0,
+      "expected_exit": 0,
+      "stdout_sha256": "138790849cdcf7f3e23898c363e56fd327728e56d6e357aa838c9a78472114c5",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "execution": "Actual immediately preceding same-source invocation; receipt completion follows helper correction, no repeated gate invocation"
+    },
+    {
+      "name": "contracts",
+      "argv": [
+        "python3",
+        "scripts/verify_contracts.py"
+      ],
+      "exit": 0,
+      "expected_exit": 0,
+      "stdout_sha256": "ebee34db24d57ed8c081c3b704a0f84f912e319a5a3397e4ebd487661dc0347d",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "execution": "Actual immediately preceding same-source invocation; receipt completion follows helper correction, no repeated gate invocation"
+    },
+    {
+      "name": "missing-underlying-proof",
+      "argv": [
+        "python3",
+        "scripts/validate_restart_plan.py"
+      ],
+      "started_utc": "2026-10-20T18:47:03.842165+00:00",
+      "elapsed_seconds": 0.291,
+      "exit": 1,
+      "expected_exit": 1,
+      "stdout_sha256": "8f54dee6d9a339d7c89fc9eeefc58b9b2ab0eb0aae95aa1ca53038e436d1a0e1",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "restored-underlying-proof",
+      "argv": [
+        "python3",
+        "scripts/validate_restart_plan.py"
+      ],
+      "started_utc": "2026-10-20T18:47:04.133747+00:00",
+      "elapsed_seconds": 0.3,
+      "exit": 0,
+      "expected_exit": 0,
+      "stdout_sha256": "5980d15f4ebd04675b98682ab9d1335eebe5835ac675e152b1261db501d9d3e4",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ],
+  "negative_control": {
+    "removed_path": "docs/restart/implementation/K01/evidence/proof-final-core/commands.json",
+    "original_sha256": "77130628fa18b0e449859f631635ae0b0498088b74e7eaaf0af46b860f76a69d",
+    "all_six_acceptance_rows_rejected": true,
+    "restored_exact_bytes_and_mode": true
+  },
+  "initial_helper_failure": {
+    "exit": 1,
+    "raw_stderr": "negative-harness-initial.stderr.log",
+    "error": "Cross-filesystem rename to /tmp refused before source removal; no negative gate was executed.",
+    "correction": "Use a temporary directory in the existing goal parent filesystem, outside the source repository; same remove/restore obligation, no product/verifier change."
+  },
+  "later_delta": "These receipts are proof appendices; source/runtime/test/review copies and metadata semantics remain exact."
+}
