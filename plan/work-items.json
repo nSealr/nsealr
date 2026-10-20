@@ -3905,7 +3905,7 @@
       "id": "S03",
       "title": "Make authorization bind exactly one canonical operation",
       "stage": "R2",
-      "status": "running",
+      "status": "integrated",
       "owner_role": "device_security",
       "depends_on": [
         "P01",
@@ -3929,70 +3929,1039 @@
         "negative test logs"
       ],
       "required_resources": [],
-      "assignee": "/root/s03_author",
+      "assignee": "/root/a02_sol",
       "candidate_commits": {
-        "nSealr/nsealr": "03216fba02d229bcdb5c81d0573bbe26c6f35abc"
+        "nSealr/nsealr": "c358229777d2582964a4f326ce8d15709841a395"
       },
-      "reviewer": null,
-      "review_verdict": null,
-      "result_artifacts": [],
+      "reviewer": "/root/b01_final_review",
+      "review_verdict": "pass",
+      "result_artifacts": [
+        {
+          "path": "docs/restart/implementation/S03/acceptance-plan.json",
+          "sha256": "f33e2f7535024f722c1250f1a40c09d542e886259199b8dfe754b1b1829e636f"
+        },
+        {
+          "path": "docs/restart/implementation/S03/acceptance-result.json",
+          "sha256": "dec14e411033e6dd892ba56e4e4974fa0b7ca78318bdec46aef1c359534adadd"
+        },
+        {
+          "path": "docs/restart/implementation/S03/baseline-reproduction.rs",
+          "sha256": "53a16fa58ff262c56ecd5b7ba51c5a4fc0bcd3c7052f37fc9c5787033501aa22"
+        },
+        {
+          "path": "docs/restart/implementation/S03/brief.md",
+          "sha256": "629a7ac57a766c477fccd48f353ad85443aa9f4c686ca8037bb88c4d6726e48e"
+        },
+        {
+          "path": "docs/restart/implementation/S03/delivery/README.md",
+          "sha256": "9c9c5c1cd9196f4ba4345bbc718feb998f5b358051719bee4d3d3bba22efc826"
+        },
+        {
+          "path": "docs/restart/implementation/S03/delivery/checks/commands.json",
+          "sha256": "92e2a95e384a7a5f3d10ed31a2f5da3c2955929d8c8138d522776e4f94aec4c6"
+        },
+        {
+          "path": "docs/restart/implementation/S03/delivery/checks/contracts.log",
+          "sha256": "5a55b9297524922045d80ae336a70c873b1def09daa7e38fe09572142b4911e3"
+        },
+        {
+          "path": "docs/restart/implementation/S03/delivery/checks/docs.log",
+          "sha256": "3b56280069c11e033b4797835a8b01cf075aff51ec898aa5b4bdf7c75233bad2"
+        },
+        {
+          "path": "docs/restart/implementation/S03/delivery/checks/evidence.log",
+          "sha256": "138790849cdcf7f3e23898c363e56fd327728e56d6e357aa838c9a78472114c5"
+        },
+        {
+          "path": "docs/restart/implementation/S03/delivery/checks/plan.log",
+          "sha256": "5980d15f4ebd04675b98682ab9d1335eebe5835ac675e152b1261db501d9d3e4"
+        },
+        {
+          "path": "docs/restart/implementation/S03/delivery/prior-task.json",
+          "sha256": "3549b181bcd09ce774e55206210ec507eb0b984b6c1aeccc2caff4d48c47ff90"
+        },
+        {
+          "path": "docs/restart/implementation/S03/delivery/result.json",
+          "sha256": "987619b7306fa0a9dd070250df8a7b59db20cd3e7e445cfdc275c9368780bb91"
+        },
+        {
+          "path": "docs/restart/implementation/S03/delivery/review-copy-map.json",
+          "sha256": "93fa7ce8c3f8ca9f1a5a0e550566dfe7f8f03b94f1835c91fa43e76685c1f3e4"
+        },
+        {
+          "path": "docs/restart/implementation/S03/delivery/review/.gitignore",
+          "sha256": "020c2606e8ed484089c2083e0be438b9d0736bee1558a6b76af0d58bd23f69cf"
+        },
+        {
+          "path": "docs/restart/implementation/S03/delivery/review/adversarial.py",
+          "sha256": "a973c60ec3ddc5ccd9bb82bd07e0e314b760f2da8968d20a7ca6739451ec449d"
+        },
+        {
+          "path": "docs/restart/implementation/S03/delivery/review/candidate-raw-whitespace.log",
+          "sha256": "77433ffbeff8519e110773c35803a9b7ded7d105f7470762134f9c48c7baae54"
+        },
+        {
+          "path": "docs/restart/implementation/S03/delivery/review/commands.json",
+          "sha256": "490f7ac8d5b6d836d689fc7854264809e6b5b970501e0cff978e238379d685d6"
+        },
+        {
+          "path": "docs/restart/implementation/S03/delivery/review/current-boundaries.log",
+          "sha256": "120382db342e9c6ff12195932f9168da599a3a50ab1179031f9855aa15ecff70"
+        },
+        {
+          "path": "docs/restart/implementation/S03/delivery/review/evidence/adversarial-inputs.jsonl",
+          "sha256": "5bb65f63ad3dba4cd044192522db62a6eab0dd0c11e4b7295a1787fb1c8f3b87"
+        },
+        {
+          "path": "docs/restart/implementation/S03/delivery/review/evidence/adversarial-output.jsonl",
+          "sha256": "7f1127e11f681fc7fde1d929c54eca5159aade7ad7252cf8610c650ab173c941"
+        },
+        {
+          "path": "docs/restart/implementation/S03/delivery/review/evidence/adversarial-stderr.log",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "path": "docs/restart/implementation/S03/delivery/review/evidence/adversarial-summary.json",
+          "sha256": "4346029265490704c0fd84479b628e7742fdcedcf7bde1465578278073c57773"
+        },
+        {
+          "path": "docs/restart/implementation/S03/delivery/review/frozen-evidence.log",
+          "sha256": "138790849cdcf7f3e23898c363e56fd327728e56d6e357aa838c9a78472114c5"
+        },
+        {
+          "path": "docs/restart/implementation/S03/delivery/review/independent-adversarial.log",
+          "sha256": "f9cfa8ad6eba58484e83f1aa3b6f412f91e4ea71adb45f012913816a2ef22dee"
+        },
+        {
+          "path": "docs/restart/implementation/S03/delivery/review/independent-build.log",
+          "sha256": "776020a55427cf22a7f674551aae7ea886ebf7803ec234f08a6c79e1ce67cbe8"
+        },
+        {
+          "path": "docs/restart/implementation/S03/delivery/review/independent-lifecycle.log",
+          "sha256": "0662c8865bfcb81fbc6592f527bafe75047218c6b9d1385ae94a2100068af894"
+        },
+        {
+          "path": "docs/restart/implementation/S03/delivery/review/independent-oracle.log",
+          "sha256": "7d2fbf1d29aa16aec133ef9014af9c6b0dffd5766d7016ba8949d503fa884ad2"
+        },
+        {
+          "path": "docs/restart/implementation/S03/delivery/review/inspection-attempts.json",
+          "sha256": "886bb0bedc18c468e0572e66ff28733dc66d1721b9a8809bf45d7c04d2db9685"
+        },
+        {
+          "path": "docs/restart/implementation/S03/delivery/review/inventory-attempt-01.log",
+          "sha256": "fbf9b20fd613e0da4081dc19f12be27218a43d5523594a3effffcdb69baaa668"
+        },
+        {
+          "path": "docs/restart/implementation/S03/delivery/review/inventory-attempt-02.log",
+          "sha256": "4b24d7da6aa991cfc207d82a4dc893e277e9fbd90bde23c58b8d9e7c56038921"
+        },
+        {
+          "path": "docs/restart/implementation/S03/delivery/review/inventory-result.json",
+          "sha256": "178da62940afb8ac0b3efe191ea21df19f4e3a2db5048b7b117238dccfa458d3"
+        },
+        {
+          "path": "docs/restart/implementation/S03/delivery/review/inventory.log",
+          "sha256": "326c1043902fa5d75fb27005187f9f9a0c4b4e97d4c033bff867da8e0bb08933"
+        },
+        {
+          "path": "docs/restart/implementation/S03/delivery/review/inventory.py",
+          "sha256": "6acfc742e857bbc1fb933496c9a07265930802177edc2f13d1e6076a6e1de975"
+        },
+        {
+          "path": "docs/restart/implementation/S03/delivery/review/probe-lock.log",
+          "sha256": "b8756896912d736962b0131f3aac3318de4dd76ea06437cb84dd706a984c1be3"
+        },
+        {
+          "path": "docs/restart/implementation/S03/delivery/review/probe-source-bindings.json",
+          "sha256": "34a5f620f2a0acc536bad9d3d7a97263f34d1403916475d18c0ec1a4fa7b0b0a"
+        },
+        {
+          "path": "docs/restart/implementation/S03/delivery/review/probe/Cargo.lock",
+          "sha256": "48f090bf8b00556e2aafa9d8c0a083f7d5f8e85eecb551db7b789904d4197a3c"
+        },
+        {
+          "path": "docs/restart/implementation/S03/delivery/review/probe/Cargo.toml",
+          "sha256": "11cb9adb1b6b08023da1d51416bdcd4192b278b55007023c5d52218063625acb"
+        },
+        {
+          "path": "docs/restart/implementation/S03/delivery/review/probe/src/main.rs",
+          "sha256": "274e437d057a04041835bcd662704cdcd45ce9180c480df74442329b07e0d7f4"
+        },
+        {
+          "path": "docs/restart/implementation/S03/delivery/review/probe/tests/current_boundaries.rs",
+          "sha256": "0f6eecd4b5c9a2b5c758da54f12d59ab4690b742c7084bf37ac8b2ec8e5fa405"
+        },
+        {
+          "path": "docs/restart/implementation/S03/delivery/review/production-features.log",
+          "sha256": "e63da58df6065c52337a10bb36d8b548ec6267441a8a15563b0a2ce5a4bc909b"
+        },
+        {
+          "path": "docs/restart/implementation/S03/delivery/review/report.md",
+          "sha256": "4a9f23f88bc9075aaf93e0681eded2ebddca20c8d77816f1072a550e859f53b6"
+        },
+        {
+          "path": "docs/restart/implementation/S03/delivery/review/retained-contracts.log",
+          "sha256": "5a55b9297524922045d80ae336a70c873b1def09daa7e38fe09572142b4911e3"
+        },
+        {
+          "path": "docs/restart/implementation/S03/delivery/review/review.json",
+          "sha256": "518c3f76720cc2b697463de83c5fd84e93576ae1896fc1978d6f6ced28462390"
+        },
+        {
+          "path": "docs/restart/implementation/S03/delivery/review/source-observations.json",
+          "sha256": "6a1698cc47ae5e1b0efdce4c9fd3441036031795a7ae08f368b1bf44769f9bfc"
+        },
+        {
+          "path": "docs/restart/implementation/S03/delivery/whitespace.json",
+          "sha256": "4469bf0279b1d12472547bfcee0a25d61599883fc8fc2edd4304b351ebd94ba9"
+        },
+        {
+          "path": "docs/restart/implementation/S03/evidence/artifact-manifest.json",
+          "sha256": "1b023edd72f3d3abffda41e6845338c61b6ff96bd4942de17edb6654379b3732"
+        },
+        {
+          "path": "docs/restart/implementation/S03/evidence/backend-key-size.json",
+          "sha256": "363992d3c9583e498f1492f6381381c3cdcc3138d3d0494c6b286253c6dc1a3b"
+        },
+        {
+          "path": "docs/restart/implementation/S03/evidence/baseline-red.json",
+          "sha256": "0dcd3c482ec2822aa52b30e9189af48a0b3aa3bb635ad2900500cd81b8195f70"
+        },
+        {
+          "path": "docs/restart/implementation/S03/evidence/baseline-red.log",
+          "sha256": "169405319f41cf51f9e4dc239525fd5925e7aa290b0290d6f1379987d1856786"
+        },
+        {
+          "path": "docs/restart/implementation/S03/evidence/commands.json",
+          "sha256": "82837d382ab0241343d778654b67fd04529ef0f1735150bc17da7461fc5d9728"
+        },
+        {
+          "path": "docs/restart/implementation/S03/evidence/coverage-summary.json",
+          "sha256": "a00300de2fa578643986716675d94c5c9f727c11ba5d015a8af82e13a69581b7"
+        },
+        {
+          "path": "docs/restart/implementation/S03/evidence/environment.json",
+          "sha256": "326d22cabec4d50d8d18a88da9ea2bfa5f6925175957f2b69592c3b17cabaf06"
+        },
+        {
+          "path": "docs/restart/implementation/S03/evidence/interim-strict-adapter-failures.log",
+          "sha256": "b2a500fe4a755e57f2f2ebd4657dbb4afd89b1bdf8b3895f7ad97a7887ffab98"
+        },
+        {
+          "path": "docs/restart/implementation/S03/evidence/interim-unused-fixture-failure.log",
+          "sha256": "8b60a987746a782b83124cbf8b70e480014d1b5ba5f521fbbd9912ac96cfe814"
+        },
+        {
+          "path": "docs/restart/implementation/S03/evidence/key-normalization-source.json",
+          "sha256": "f13a3895fdd57fb06d203bca76e900e8700ab40f056cb2399ed820564d3814ab"
+        },
+        {
+          "path": "docs/restart/implementation/S03/evidence/make-ci-e674761.log",
+          "sha256": "715d9f5371c1383dc9574ac6894d65c0fe537c2f07c5673a69d10bc96b037479"
+        },
+        {
+          "path": "docs/restart/implementation/S03/evidence/make-ci.log",
+          "sha256": "85c9b71b3976b77135eaab4346d2f0c2cae9cbee18c6f203c8f4c907df113ce0"
+        },
+        {
+          "path": "docs/restart/implementation/S03/evidence/observation-path-failure.log",
+          "sha256": "95c434a1a34e7e38f2d49a9b4948fbd10f631b24fb036217fda5f99f0b97a61d"
+        },
+        {
+          "path": "docs/restart/implementation/S03/evidence/observed-events.json",
+          "sha256": "a169cbc5c1e16c0e6217fd6cea7b5f7a081fee32b0454cc8d7d4a1bc334e3d4d"
+        },
+        {
+          "path": "docs/restart/implementation/S03/evidence/observed-events.keys.json",
+          "sha256": "fe063dd350348def408b071f6299d8c5a4fe2432e32eea84930f2009108963ae"
+        },
+        {
+          "path": "docs/restart/implementation/S03/evidence/oracle-check.json",
+          "sha256": "695cde1ceab9a645409c617c86890dc8400e4457800a9624e617b3d75f2ee0b8"
+        },
+        {
+          "path": "docs/restart/implementation/S03/evidence/oracle-check.log",
+          "sha256": "7d2fbf1d29aa16aec133ef9014af9c6b0dffd5766d7016ba8949d503fa884ad2"
+        },
+        {
+          "path": "docs/restart/implementation/S03/evidence/oracle-generation.json",
+          "sha256": "88c336be765036b7cb00b62a016df88dabb2b9b7fc7a6d14bb10a54d4a4b0eaf"
+        },
+        {
+          "path": "docs/restart/implementation/S03/evidence/public-contract.log",
+          "sha256": "a13fa29c615dda9af4ee090ba8725814130ec4e462ac14120b1a9961fea3839a"
+        },
+        {
+          "path": "docs/restart/implementation/S03/evidence/runtime-features.log",
+          "sha256": "ea6c91156a841f9142edc0a4c89fece4ef7592b80045ee2a4d0b95909ef9583f"
+        },
+        {
+          "path": "docs/restart/implementation/S03/evidence/source-reconciliation.json",
+          "sha256": "947f555e7b059cd3b7217f7923200aff299bd51ee4dfe90cb1cfec4bad3442c9"
+        },
+        {
+          "path": "docs/restart/implementation/S03/evidence/targeted.log",
+          "sha256": "5036547adf20a5326ec21b20a7eaa253e103fcc4687646e61e15ffb6f357521a"
+        },
+        {
+          "path": "docs/restart/implementation/S03/evidence/validation.json",
+          "sha256": "1e6dcad4233ceef77a469b0c09185fabe7e809534add43dedccc6cc527ec1c0f"
+        },
+        {
+          "path": "docs/restart/implementation/S03/handoff.md",
+          "sha256": "e94040076fe91a0d1ce47bd34316fd12491cdd3be958f7e380ca90efa1efc63e"
+        },
+        {
+          "path": "docs/restart/implementation/S03/integration-comment-correction.json",
+          "sha256": "08a5c2425ccfde3bec14ba76db2d6322cb7943092dde721d5b728e9f87874cfb"
+        },
+        {
+          "path": "docs/restart/implementation/S03/integration/acceptance-plan.json",
+          "sha256": "fb38214c7736d43cc70a6de3366e23cb6682aef8f7ada1c32917549843fa47ad"
+        },
+        {
+          "path": "docs/restart/implementation/S03/integration/brief.md",
+          "sha256": "354dd5b768b7f0a992aef333f51d2a3b785608c6401eb3a16870b1025a85d603"
+        },
+        {
+          "path": "docs/restart/implementation/S03/integration/evidence/artifact-manifest.json",
+          "sha256": "2cea7e29561d5268fb214aea1bb760b76ec3a0112e78befad829e543af584964"
+        },
+        {
+          "path": "docs/restart/implementation/S03/integration/evidence/check-port.py",
+          "sha256": "c87b6b686ed30d74c4a3211f86fcedfbba59f286467051d5b065999f518f0c7c"
+        },
+        {
+          "path": "docs/restart/implementation/S03/integration/evidence/check-projections.py",
+          "sha256": "776d71314c2db3f6ce5712d3b295338e2ea8393925aa7d4910e0052c93b2c74c"
+        },
+        {
+          "path": "docs/restart/implementation/S03/integration/evidence/check-vendor.py",
+          "sha256": "d4a1716473fd5386241819e549c5fa9344a9e082dc947416dc4205b19ce99444"
+        },
+        {
+          "path": "docs/restart/implementation/S03/integration/evidence/combined-acceptance.json",
+          "sha256": "445013810d7e47fcff4c0a2ac36264cdd7cef4936aeed7d34a8073bd4285d783"
+        },
+        {
+          "path": "docs/restart/implementation/S03/integration/evidence/commands/affected-docs-test/command.json",
+          "sha256": "2635631b71c8778b0e86f352860d3484e4d9ed88781897e5ba83b4313e4a0429"
+        },
+        {
+          "path": "docs/restart/implementation/S03/integration/evidence/commands/affected-docs-test/stderr.log",
+          "sha256": "a762b4dea54e35f0df2f76a3f7889ab18d9bbc9961cef9a68cfef89f5732b2ad"
+        },
+        {
+          "path": "docs/restart/implementation/S03/integration/evidence/commands/affected-docs-test/stdout.log",
+          "sha256": "13a035fb48fd2a813736a7c0fb646128cc0a6da59478a55e5a4a0095a860a47e"
+        },
+        {
+          "path": "docs/restart/implementation/S03/integration/evidence/commands/affected-product-integration/command.json",
+          "sha256": "12a55633b3093b34a1e3080355f1d6c39f23218dd02da5d5e9a0cbe758e747b3"
+        },
+        {
+          "path": "docs/restart/implementation/S03/integration/evidence/commands/affected-product-integration/stderr.log",
+          "sha256": "c1e1b9c3e53f7f83c2a7771644318d4fb5d6d44f30115f84539df567114cf562"
+        },
+        {
+          "path": "docs/restart/implementation/S03/integration/evidence/commands/affected-product-integration/stdout.log",
+          "sha256": "4a9d027670224a7526112678d65c23a2816c6eeb7a2d70ee97f190261ab14f8e"
+        },
+        {
+          "path": "docs/restart/implementation/S03/integration/evidence/commands/combined-make-ci/command.json",
+          "sha256": "009ea57b4d780c0cbd450b1c961e7223deffc5bb7c9c29a32e8243687ee84e75"
+        },
+        {
+          "path": "docs/restart/implementation/S03/integration/evidence/commands/combined-make-ci/stderr.log",
+          "sha256": "7eca3da0de0f24f492da7b1757111eb5929409a947093393b4ef7d7b23520a29"
+        },
+        {
+          "path": "docs/restart/implementation/S03/integration/evidence/commands/combined-make-ci/stdout.log",
+          "sha256": "9466108f248aa8caeca197d1fa7fad9560a9de67af62daaf3f20583a0664ff69"
+        },
+        {
+          "path": "docs/restart/implementation/S03/integration/evidence/commands/core-lock/command.json",
+          "sha256": "4c7a663d08b584993d39602b149ba470c83c9cec59e74e842de559fb182c899c"
+        },
+        {
+          "path": "docs/restart/implementation/S03/integration/evidence/commands/core-lock/stderr.log",
+          "sha256": "525a9dc4a370e201feedffb1034adb3bc41270da1adfbbf50662b1776d48b3a3"
+        },
+        {
+          "path": "docs/restart/implementation/S03/integration/evidence/commands/core-lock/stdout.log",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "path": "docs/restart/implementation/S03/integration/evidence/commands/core-metadata/command.json",
+          "sha256": "7c851e6f729e08ef133dc5d44f81aeed0503790a1989d8f50594386da1aa4627"
+        },
+        {
+          "path": "docs/restart/implementation/S03/integration/evidence/commands/core-metadata/stderr.log",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "path": "docs/restart/implementation/S03/integration/evidence/commands/core-metadata/stdout.log",
+          "sha256": "4169c7d13fb73f2416879a97ef200686ade878844c0632328af814420c1203c1"
+        },
+        {
+          "path": "docs/restart/implementation/S03/integration/evidence/commands/core-production-features/command.json",
+          "sha256": "c6f9b657eda7d619793c1e362d0ba9b5134c01df4ce9911720403fc7e2c2d1fb"
+        },
+        {
+          "path": "docs/restart/implementation/S03/integration/evidence/commands/core-production-features/stderr.log",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "path": "docs/restart/implementation/S03/integration/evidence/commands/core-production-features/stdout.log",
+          "sha256": "e289976923b14cf7aee353b2b2b9bf7dcac0119c7e684e44888061dc3619a07d"
+        },
+        {
+          "path": "docs/restart/implementation/S03/integration/evidence/commands/final-docs-test/command.json",
+          "sha256": "9cb75387f5a48ffebc68f45fab616df8102b2b7ad28bc6a8c2d99175eb60b4a8"
+        },
+        {
+          "path": "docs/restart/implementation/S03/integration/evidence/commands/final-docs-test/stderr.log",
+          "sha256": "0fe83f47c1490b6e8cf0b7ad770047786df8156a2b3806293b3cd65b664c6cac"
+        },
+        {
+          "path": "docs/restart/implementation/S03/integration/evidence/commands/final-docs-test/stdout.log",
+          "sha256": "f158880990d8278e4f18a7f3abc2b56084676813949af69c2bf8e4c8212f8904"
+        },
+        {
+          "path": "docs/restart/implementation/S03/integration/evidence/commands/final-package-docs-test/command.json",
+          "sha256": "10892946c7e4a23d4dc31b41253e6464a44d9449ed5bbda6fedd95bb660c28c8"
+        },
+        {
+          "path": "docs/restart/implementation/S03/integration/evidence/commands/final-package-docs-test/stderr.log",
+          "sha256": "87977d2a921d5c85f854988d1b0776a2417b47a4d71b95cae8bfaa486122d179"
+        },
+        {
+          "path": "docs/restart/implementation/S03/integration/evidence/commands/final-package-docs-test/stdout.log",
+          "sha256": "7a54636aa45913ddd2d612926537ca1dfb5b3eafcc8a0e0c2f05a6c0615fbeee"
+        },
+        {
+          "path": "docs/restart/implementation/S03/integration/evidence/commands/final-package-scope/command.json",
+          "sha256": "9ca3f8bc020000a2cfc1bb64d816c2a5d08466ac70f64d7930254356b373b458"
+        },
+        {
+          "path": "docs/restart/implementation/S03/integration/evidence/commands/final-package-scope/stderr.log",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "path": "docs/restart/implementation/S03/integration/evidence/commands/final-package-scope/stdout.log",
+          "sha256": "5cc69ebc0a7e7b9abce9687f30c43d6756bb4495cd43d4cd7c1328b02188f57d"
+        },
+        {
+          "path": "docs/restart/implementation/S03/integration/evidence/commands/final-port-scope/command.json",
+          "sha256": "c860968bb4042ce37c1b155b46f1ff3b3c736fae6a28eab095a644b0d62e20d6"
+        },
+        {
+          "path": "docs/restart/implementation/S03/integration/evidence/commands/final-port-scope/stderr.log",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "path": "docs/restart/implementation/S03/integration/evidence/commands/final-port-scope/stdout.log",
+          "sha256": "5cc69ebc0a7e7b9abce9687f30c43d6756bb4495cd43d4cd7c1328b02188f57d"
+        },
+        {
+          "path": "docs/restart/implementation/S03/integration/evidence/commands/fmt/command.json",
+          "sha256": "c19c5e55989b12e3e748c4b8b9180cc92bbcd3a18cbd1f8001a2a6ea9f301738"
+        },
+        {
+          "path": "docs/restart/implementation/S03/integration/evidence/commands/fmt/stderr.log",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "path": "docs/restart/implementation/S03/integration/evidence/commands/fmt/stdout.log",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "path": "docs/restart/implementation/S03/integration/evidence/commands/host-features/command.json",
+          "sha256": "7f71a4447cb37f0e7c07eab4babf3ce3436cd646c09e2f0534165e07aa9d037e"
+        },
+        {
+          "path": "docs/restart/implementation/S03/integration/evidence/commands/host-features/stderr.log",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "path": "docs/restart/implementation/S03/integration/evidence/commands/host-features/stdout.log",
+          "sha256": "f13c5308cc7f4f0ace5a7e102adc8270b4f5bc0c5551a6f28bb2f5afac2f859d"
+        },
+        {
+          "path": "docs/restart/implementation/S03/integration/evidence/commands/host-lock/command.json",
+          "sha256": "337f623133eb27eb2b1f3ed235533e2213b983475719e707abc6cf3015b97529"
+        },
+        {
+          "path": "docs/restart/implementation/S03/integration/evidence/commands/host-lock/stderr.log",
+          "sha256": "bbafc1e3f3281662b77cd804de1ec8b814645b366c91cfd48c8bc1b2be520a72"
+        },
+        {
+          "path": "docs/restart/implementation/S03/integration/evidence/commands/host-lock/stdout.log",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "path": "docs/restart/implementation/S03/integration/evidence/commands/host-metadata/command.json",
+          "sha256": "2b1771f26f8c6f86a45b4f64082cf9b9fa0e0546aa40bfceef883a50e1a04c04"
+        },
+        {
+          "path": "docs/restart/implementation/S03/integration/evidence/commands/host-metadata/stderr.log",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "path": "docs/restart/implementation/S03/integration/evidence/commands/host-metadata/stdout.log",
+          "sha256": "98b9fecbce392a715729836658c07327f13d2e1e1860c85b47bfd7401ecdbd92"
+        },
+        {
+          "path": "docs/restart/implementation/S03/integration/evidence/commands/initial-core-tests/command.json",
+          "sha256": "7829dbdba701649e64ea54aaddb73b968a751b0a4a9ed565e051905d55faee34"
+        },
+        {
+          "path": "docs/restart/implementation/S03/integration/evidence/commands/initial-core-tests/stderr.log",
+          "sha256": "deb9f94376bb260e01fde5af0f6702a52d847c7acc6e247298da7d3554fdd4b2"
+        },
+        {
+          "path": "docs/restart/implementation/S03/integration/evidence/commands/initial-core-tests/stdout.log",
+          "sha256": "0a0f74afe451f7816e8de9e5278762064bfcceb95de38434a0496238d500a6e1"
+        },
+        {
+          "path": "docs/restart/implementation/S03/integration/evidence/commands/initial-host-tests/command.json",
+          "sha256": "ef2b81388cb524f89e2423fd1edb06e46abd6e1349935cfd84c1ceea6f9ff9ab"
+        },
+        {
+          "path": "docs/restart/implementation/S03/integration/evidence/commands/initial-host-tests/stderr.log",
+          "sha256": "fd140a28e0a28fec8d43b706813b0f9d2eb2db1c521b98537f48437be8817822"
+        },
+        {
+          "path": "docs/restart/implementation/S03/integration/evidence/commands/initial-host-tests/stdout.log",
+          "sha256": "561f9f839c47bd6060e0fc65d18d9c774909d580a49cf95c4e68941f7bed24d8"
+        },
+        {
+          "path": "docs/restart/implementation/S03/integration/evidence/commands/oracle/command.json",
+          "sha256": "bc3e58657b080211878755562149e6803557e5496e84d4e9703e2592a63566ed"
+        },
+        {
+          "path": "docs/restart/implementation/S03/integration/evidence/commands/oracle/stderr.log",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "path": "docs/restart/implementation/S03/integration/evidence/commands/oracle/stdout.log",
+          "sha256": "7d2fbf1d29aa16aec133ef9014af9c6b0dffd5766d7016ba8949d503fa884ad2"
+        },
+        {
+          "path": "docs/restart/implementation/S03/integration/evidence/commands/port-scope-02/command.json",
+          "sha256": "dcbed4db5cd1b8637090c774d9049e0f7c5b357511b75d9221b098e393b68299"
+        },
+        {
+          "path": "docs/restart/implementation/S03/integration/evidence/commands/port-scope-02/stderr.log",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "path": "docs/restart/implementation/S03/integration/evidence/commands/port-scope-02/stdout.log",
+          "sha256": "5cc69ebc0a7e7b9abce9687f30c43d6756bb4495cd43d4cd7c1328b02188f57d"
+        },
+        {
+          "path": "docs/restart/implementation/S03/integration/evidence/commands/port-scope-03/command.json",
+          "sha256": "dc79d40508e4e51d344ff8217ea69a2db57a114b0e40513f7dc6b7b2ce1200a4"
+        },
+        {
+          "path": "docs/restart/implementation/S03/integration/evidence/commands/port-scope-03/stderr.log",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "path": "docs/restart/implementation/S03/integration/evidence/commands/port-scope-03/stdout.log",
+          "sha256": "5cc69ebc0a7e7b9abce9687f30c43d6756bb4495cd43d4cd7c1328b02188f57d"
+        },
+        {
+          "path": "docs/restart/implementation/S03/integration/evidence/commands/port-scope/command.json",
+          "sha256": "951a7497b9cc300e75cb198216fb0f088f6c8327bf02371957f8ee7b5ba69afb"
+        },
+        {
+          "path": "docs/restart/implementation/S03/integration/evidence/commands/port-scope/stderr.log",
+          "sha256": "8a5a0b5157070de0c01a40d0cd8db888a42110c01bd2d3f610e2666ba9eaa53e"
+        },
+        {
+          "path": "docs/restart/implementation/S03/integration/evidence/commands/port-scope/stdout.log",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "path": "docs/restart/implementation/S03/integration/evidence/commands/projection-controls-02/command.json",
+          "sha256": "265573a00be54c4955b198d8f0063b334dd2ae0140fde501b4d70d33f96be49f"
+        },
+        {
+          "path": "docs/restart/implementation/S03/integration/evidence/commands/projection-controls-02/stderr.log",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "path": "docs/restart/implementation/S03/integration/evidence/commands/projection-controls-02/stdout.log",
+          "sha256": "b2001b00973d43fb5e9a6062b3a39a495e7d25131ce684d2862d8721b038d8ee"
+        },
+        {
+          "path": "docs/restart/implementation/S03/integration/evidence/commands/projection-controls/command.json",
+          "sha256": "d7d57bd1191db3938367b2fa1cc8ef8845ad41ee656fd9bb8342459d73ef8fe9"
+        },
+        {
+          "path": "docs/restart/implementation/S03/integration/evidence/commands/projection-controls/stderr.log",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "path": "docs/restart/implementation/S03/integration/evidence/commands/projection-controls/stdout.log",
+          "sha256": "b2001b00973d43fb5e9a6062b3a39a495e7d25131ce684d2862d8721b038d8ee"
+        },
+        {
+          "path": "docs/restart/implementation/S03/integration/evidence/commands/serial-comments-doc/command.json",
+          "sha256": "e5c531a60ca9bbb07d519ae2e6cd39a7b938aad8f6a7b2cfac6bd45501b3f55a"
+        },
+        {
+          "path": "docs/restart/implementation/S03/integration/evidence/commands/serial-comments-doc/stderr.log",
+          "sha256": "9ea59e0f8762cf2fbf1964a0db45a113be248d5281e2961bc580432e65ede50b"
+        },
+        {
+          "path": "docs/restart/implementation/S03/integration/evidence/commands/serial-comments-doc/stdout.log",
+          "sha256": "a15cdd5d9192cc95eac1deffeb2c3f806c6bc5ee32f4f38652a540a544029ad8"
+        },
+        {
+          "path": "docs/restart/implementation/S03/integration/evidence/commands/serial-comments-fmt/command.json",
+          "sha256": "27a12172246a3f61c191d152dfd06fad459eb00aefb395ede5424afe957d3559"
+        },
+        {
+          "path": "docs/restart/implementation/S03/integration/evidence/commands/serial-comments-fmt/stderr.log",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "path": "docs/restart/implementation/S03/integration/evidence/commands/serial-comments-fmt/stdout.log",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "path": "docs/restart/implementation/S03/integration/evidence/commands/serial-comments-repro/command.json",
+          "sha256": "3b0be150404ee71ba6f529e1f6b6eefa61e3d90e76e0ca749cacc057a1c1cf7f"
+        },
+        {
+          "path": "docs/restart/implementation/S03/integration/evidence/commands/serial-comments-repro/stderr.log",
+          "sha256": "ce8942b7fce0d92fe171d7e530a39b26009fd8dd68f907fec590d3e95f194cc1"
+        },
+        {
+          "path": "docs/restart/implementation/S03/integration/evidence/commands/serial-comments-repro/stdout.log",
+          "sha256": "aecbceb04b055e57385ff57750e8574878216a70aab8368b9206be37bf0f01f0"
+        },
+        {
+          "path": "docs/restart/implementation/S03/integration/evidence/commands/vendor-check/command.json",
+          "sha256": "3e1b0b0d323c8783a6bdde062185a92c95c360e86e538f1a6274e218d48e2102"
+        },
+        {
+          "path": "docs/restart/implementation/S03/integration/evidence/commands/vendor-check/stderr.log",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "path": "docs/restart/implementation/S03/integration/evidence/commands/vendor-check/stdout.log",
+          "sha256": "7cf00973cdfd0b07dfa33e8ee34861958260697c936736096d9864a04f3e98e8"
+        },
+        {
+          "path": "docs/restart/implementation/S03/integration/evidence/commands/vendor-union/command.json",
+          "sha256": "17934be5d2e83557d1cb72b93b17aba682c4faa353e5235f03f1937fa8d1d07c"
+        },
+        {
+          "path": "docs/restart/implementation/S03/integration/evidence/commands/vendor-union/stderr.log",
+          "sha256": "1fb0a45a9876bbd618aa9de63d37a1e6ab880b97af8be76db52947c88d220ee9"
+        },
+        {
+          "path": "docs/restart/implementation/S03/integration/evidence/commands/vendor-union/stdout.log",
+          "sha256": "fb11a582d93f36979bcca6263c39c383e53388372fd00b3146c6fb3a895f4b88"
+        },
+        {
+          "path": "docs/restart/implementation/S03/integration/evidence/consumer-reconciliation.json",
+          "sha256": "8587dca1ee339f0ca0942155465a99c5517b346d004789dabb6141d2aba83f23"
+        },
+        {
+          "path": "docs/restart/implementation/S03/integration/evidence/coverage/copy-inventory.json",
+          "sha256": "a2210362e8290fb879708f4e27f851a338f13845cd0854aa6ea2b8cf44327a28"
+        },
+        {
+          "path": "docs/restart/implementation/S03/integration/evidence/coverage/core.json",
+          "sha256": "86fd2d5e1939249d66e48ca9d72a4e7d8a8c6ec535e1df931b891fbed26bfd88"
+        },
+        {
+          "path": "docs/restart/implementation/S03/integration/evidence/coverage/host.json",
+          "sha256": "aa79ac4105a3cb7528d9543a99a59225ec37fc3d44099a07eab68f87cae80522"
+        },
+        {
+          "path": "docs/restart/implementation/S03/integration/evidence/final-checks/complete-raw-diff-whitespace.stderr.log",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "path": "docs/restart/implementation/S03/integration/evidence/final-checks/complete-raw-diff-whitespace.stdout.log",
+          "sha256": "9a56627d16ec711e3199270a1550bf4d4f63d6dc6d5f5aeeb148f32c1101e59c"
+        },
+        {
+          "path": "docs/restart/implementation/S03/integration/evidence/final-checks/current-product-whitespace.stderr.log",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "path": "docs/restart/implementation/S03/integration/evidence/final-checks/current-product-whitespace.stdout.log",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "path": "docs/restart/implementation/S03/integration/evidence/final-checks/current-proof-whitespace.stderr.log",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "path": "docs/restart/implementation/S03/integration/evidence/final-checks/current-proof-whitespace.stdout.log",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "path": "docs/restart/implementation/S03/integration/evidence/final-checks/summary.json",
+          "sha256": "03c77436dc8e4c3b2e39afb48c40b0e1a7a3ad767fc292d3fcf145c9123b9a35"
+        },
+        {
+          "path": "docs/restart/implementation/S03/integration/evidence/final-package-scope.json",
+          "sha256": "3520b61e792fbcb9838aae200782efc52bf17879a5e6025768e61a31a8165edf"
+        },
+        {
+          "path": "docs/restart/implementation/S03/integration/evidence/final-port-reconciliation.json",
+          "sha256": "b6ee19f19fa09ac9341bd6c9c7ae37274f80a3b04732e97ab8b6fd7bd693676d"
+        },
+        {
+          "path": "docs/restart/implementation/S03/integration/evidence/final-product-source.json",
+          "sha256": "8d99263ad6d5c1c783752df8b893a291b6936077ebfc99dec3374e8df81c3f62"
+        },
+        {
+          "path": "docs/restart/implementation/S03/integration/evidence/handoff.md",
+          "sha256": "ab9552463977a7681097d3c3af5e1603fbe57522cccb794c5e46c21ca2ea4150"
+        },
+        {
+          "path": "docs/restart/implementation/S03/integration/evidence/implementation-admission.json",
+          "sha256": "c4549b268e1d1fea32ab49c9cc4ca5f9e1429e7c542004d33642259436b1f1e6"
+        },
+        {
+          "path": "docs/restart/implementation/S03/integration/evidence/initial-port.json",
+          "sha256": "1fcb829e530ab78b01b0069b40bcc1534e5f8151440d2c8958be6ad787dc2e6f"
+        },
+        {
+          "path": "docs/restart/implementation/S03/integration/evidence/input-copy-checks.json",
+          "sha256": "e5a55a28b30ad67ed2a226e99fbf17948f355b69c7ad8ffc94ed1dc72f516c78"
+        },
+        {
+          "path": "docs/restart/implementation/S03/integration/evidence/input-copy-inventory.json",
+          "sha256": "77234e0ed0cd4f6c71976eb316f922df490a4b53905e193e9c16eed73aa98566"
+        },
+        {
+          "path": "docs/restart/implementation/S03/integration/evidence/interim-attempts.json",
+          "sha256": "10b347d632f3944af278cb5b55dc1c2b90649f78d535734d00eed8a28f318d32"
+        },
+        {
+          "path": "docs/restart/implementation/S03/integration/evidence/later-main-metadata-observation.json",
+          "sha256": "93d04967c9e08a66a90914c726af8c4c94709f5fca4fc5ea40299b25656e1a7e"
+        },
+        {
+          "path": "docs/restart/implementation/S03/integration/evidence/lock-resolution.json",
+          "sha256": "49e8adc4a71663404c423c8ffd426e589a5e4bb6e6ecbddd28d86894d9961e69"
+        },
+        {
+          "path": "docs/restart/implementation/S03/integration/evidence/observed-events.json",
+          "sha256": "a169cbc5c1e16c0e6217fd6cea7b5f7a081fee32b0454cc8d7d4a1bc334e3d4d"
+        },
+        {
+          "path": "docs/restart/implementation/S03/integration/evidence/observed-events.keys.json",
+          "sha256": "fe063dd350348def408b071f6299d8c5a4fe2432e32eea84930f2009108963ae"
+        },
+        {
+          "path": "docs/restart/implementation/S03/integration/evidence/port-reconciliation.json",
+          "sha256": "9fce834974c19a8f8812b1744b1cb117ee433a0c530802f5265fc2cdc6427018"
+        },
+        {
+          "path": "docs/restart/implementation/S03/integration/evidence/prepare-inputs.py",
+          "sha256": "c3c18a1d5ad290a20be40ace9cde6c54f544d2f52c7252a8617e0887acd2c969"
+        },
+        {
+          "path": "docs/restart/implementation/S03/integration/evidence/privacy-check.json",
+          "sha256": "9407a6c183d483f0cdbeb64dac1300bd8101b12466a9838cc2e5db6e6ca02989"
+        },
+        {
+          "path": "docs/restart/implementation/S03/integration/evidence/product-source-binding.json",
+          "sha256": "eef9144a31f9af0113eeea406f255acccc3d232da59062e5e02b386a2dc8489c"
+        },
+        {
+          "path": "docs/restart/implementation/S03/integration/evidence/projection-checks.json",
+          "sha256": "14db9ac65bd8b4a5c00d3ea63d950acfef5b7d4e33c49661005eb7e58ae473dd"
+        },
+        {
+          "path": "docs/restart/implementation/S03/integration/evidence/result.json",
+          "sha256": "7d997d3f737b7ff3df2ca0f7af9b48b351ff26819f6f6927d232615ac9e05d5c"
+        },
+        {
+          "path": "docs/restart/implementation/S03/integration/evidence/run-command.py",
+          "sha256": "4386b2b1b72974aef8ffd724747487b2662ae3ea4b51e157bd1c87430c96cf58"
+        },
+        {
+          "path": "docs/restart/implementation/S03/integration/evidence/serial-preview-comment-correction.json",
+          "sha256": "449e34c1274af281118cc58781a6504bdd118070063d65f3ba4880e79189bdae"
+        },
+        {
+          "path": "docs/restart/implementation/S03/integration/evidence/spec-review/commands.json",
+          "sha256": "7822b23183698fbff7611d669502ea1e3fd4f8f157b2ca81e700e0f1a3df213c"
+        },
+        {
+          "path": "docs/restart/implementation/S03/integration/evidence/spec-review/probe-result.json",
+          "sha256": "dd3e7bdcc242385b9ccbb51f7af15144b95aa10ed88354f8cb6f9038cd961907"
+        },
+        {
+          "path": "docs/restart/implementation/S03/integration/evidence/spec-review/probe.log",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "path": "docs/restart/implementation/S03/integration/evidence/spec-review/probe.py",
+          "sha256": "9ceff53709224770a8c32fa5bfc01d30d4dc0ef919d1be38c1383c5cfe13d89e"
+        },
+        {
+          "path": "docs/restart/implementation/S03/integration/evidence/spec-review/report.md",
+          "sha256": "2d41ef2b5c9d2af77c3b577eb33f67056611ae0f501b3f5c4ffedd0fdc747195"
+        },
+        {
+          "path": "docs/restart/implementation/S03/integration/evidence/spec-review/review.json",
+          "sha256": "122e59b6d6e30038c965652c697e2378a0b2353a18e8ad5123c8b968b5359d58"
+        },
+        {
+          "path": "docs/restart/implementation/S03/integration/evidence/targeted-acceptance.json",
+          "sha256": "49db7d10ac83ff14575257ab2afdedee067f35cd84de8dc8b667e7752fea2a9f"
+        },
+        {
+          "path": "docs/restart/implementation/S03/integration/evidence/vendor-input-copy.json",
+          "sha256": "21ca275fcac436d5a884f59fa573d79e0d987bff31d262e02fcaa09e4ef6c33c"
+        },
+        {
+          "path": "docs/restart/implementation/S03/integration/evidence/vendor-union-check.json",
+          "sha256": "6f8f757006444a43b81a42d68695621e1059b51dca5597adb937b5505313d255"
+        },
+        {
+          "path": "docs/restart/implementation/S03/integration/nip-reconciliation.json",
+          "sha256": "7aa8939f4eaa06dec955e5165340a44e8f55a70c9ea4ce113981166749199050"
+        },
+        {
+          "path": "docs/restart/implementation/S03/integration/source-pin-addendum.json",
+          "sha256": "8c69652f9034c6c2a899e34f9d6036e7832da1d3c5828160bcfecd5b3690b1c9"
+        },
+        {
+          "path": "docs/restart/implementation/S03/integration/source-reconciliation.json",
+          "sha256": "f535292cbdba9f516e4e8aa6e1f984a8f4b844c0fc275f2576321c2d4199b432"
+        },
+        {
+          "path": "docs/restart/implementation/S03/oracle-source/LICENSE-NOTICE.txt",
+          "sha256": "b5fe3badc3e95fc696f89c4d9ada474ac4231ab08d34ec1aa8170105ab8838f7"
+        },
+        {
+          "path": "docs/restart/implementation/S03/oracle-source/bip340_reference.py",
+          "sha256": "4b1d4ad9e60820df4a6d239733d52b014bc03e4c47afd757a2fe4d3b586d892c"
+        },
+        {
+          "path": "docs/restart/implementation/S03/oracle-source/provenance.json",
+          "sha256": "cac4f93d9dd399f6f010cf5f4db6d53bd9668af9da0499620db48a5cb9360f0d"
+        },
+        {
+          "path": "docs/restart/implementation/S03/oracle-source/selected-official-vectors.json",
+          "sha256": "c1bc3ae364cacb0981c8abe7cad681250cdbedf7460946bedda09488fd9aa6b0"
+        },
+        {
+          "path": "docs/restart/implementation/S03/oracle.py",
+          "sha256": "f69bd3446fd4dce92106d29a0dfb13bf9fbdf447cbfdcae1b2dcf9e6c0f1cda5"
+        },
+        {
+          "path": "docs/restart/implementation/S03/source-audit.json",
+          "sha256": "c301395b380fdfa852f1f4eb6a692eee703a59f204f16ca20051ee1b5a906477"
+        },
+        {
+          "path": "docs/restart/implementation/S03/vectors.json",
+          "sha256": "f84f8c2e288c1f9a5d8fa553d38115791d12d1ad877fd967bd7e383d870d3487"
+        },
+        {
+          "path": "docs/restart/implementation/reviews/S03-comments/report.md",
+          "sha256": "51b90c1497ce9e05d70306405469648aeebe7ce7d38cced4207da0f60103b769"
+        },
+        {
+          "path": "docs/restart/implementation/reviews/S03-comments/review.json",
+          "sha256": "a181a7db4b2b10041d793194bb7e019fb17cb3e60b2c47ac956be3e388ba0b46"
+        },
+        {
+          "path": "docs/restart/implementation/reviews/S03-security/.gitignore",
+          "sha256": "0cf256cc9234b415f912f5b0e9f8c9364688466041611047cd3f599c35f4efa6"
+        },
+        {
+          "path": "docs/restart/implementation/reviews/S03-security/adversarial.py",
+          "sha256": "a973c60ec3ddc5ccd9bb82bd07e0e314b760f2da8968d20a7ca6739451ec449d"
+        },
+        {
+          "path": "docs/restart/implementation/reviews/S03-security/artifact-manifest.json",
+          "sha256": "b5e6f494789c9a0a2f98a9b85d4b575adb291edeb8960d0dc5af77e22c3d3c56"
+        },
+        {
+          "path": "docs/restart/implementation/reviews/S03-security/audit_inputs.py",
+          "sha256": "dc4f8d642ea05f62f7fea78e6e1f527342d05f4f18c8ba89a64f3f681189f11a"
+        },
+        {
+          "path": "docs/restart/implementation/reviews/S03-security/audit_shipping.py",
+          "sha256": "5da8afccf27c6303062362d846e6307750faccf97552570b5e1a2cbe68eab336"
+        },
+        {
+          "path": "docs/restart/implementation/reviews/S03-security/evidence/adversarial-inputs.jsonl",
+          "sha256": "5bb65f63ad3dba4cd044192522db62a6eab0dd0c11e4b7295a1787fb1c8f3b87"
+        },
+        {
+          "path": "docs/restart/implementation/reviews/S03-security/evidence/adversarial-output.jsonl",
+          "sha256": "7f1127e11f681fc7fde1d929c54eca5159aade7ad7252cf8610c650ab173c941"
+        },
+        {
+          "path": "docs/restart/implementation/reviews/S03-security/evidence/adversarial-stderr.log",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "path": "docs/restart/implementation/reviews/S03-security/evidence/adversarial-summary.json",
+          "sha256": "4346029265490704c0fd84479b628e7742fdcedcf7bde1465578278073c57773"
+        },
+        {
+          "path": "docs/restart/implementation/reviews/S03-security/evidence/author-affected.log",
+          "sha256": "40de03ba9ce90df18eabaafd9cb124cbabdfa8b7e1f1b36bc4f0b09782fd1fbb"
+        },
+        {
+          "path": "docs/restart/implementation/reviews/S03-security/evidence/author-public-contract.log",
+          "sha256": "2e1df05f10cc9db40dcd588b4ac6a1c78b47358a0a7d0fae7bfabcddbffcbeac"
+        },
+        {
+          "path": "docs/restart/implementation/reviews/S03-security/evidence/commands.json",
+          "sha256": "77f132bbb5ea9f5985b43bac64464fb3570a653ccb87d2ceb434f3b139718ed7"
+        },
+        {
+          "path": "docs/restart/implementation/reviews/S03-security/evidence/diff-check-raw-logs.log",
+          "sha256": "abaf7fcb66f0e46159a59100830b9cd03b712ca03b430a778f4600eb381b0ece"
+        },
+        {
+          "path": "docs/restart/implementation/reviews/S03-security/evidence/diff-check.json",
+          "sha256": "ea111ee8a56ccd09736dcfda16a825346a6c81ce21103c99f6a1e3bb54ad685b"
+        },
+        {
+          "path": "docs/restart/implementation/reviews/S03-security/evidence/environment.json",
+          "sha256": "42eebee628208b45b62b1af560325ce515a4318ae20255bdfaf9ffa0a4d07e6f"
+        },
+        {
+          "path": "docs/restart/implementation/reviews/S03-security/evidence/environment.log",
+          "sha256": "4fdff2578428e9c5c08ddd7a0d3079c1a106b1cdaa46e73e46f7cd32b0fb9cad"
+        },
+        {
+          "path": "docs/restart/implementation/reviews/S03-security/evidence/independent-adversarial-final.log",
+          "sha256": "f9cfa8ad6eba58484e83f1aa3b6f412f91e4ea71adb45f012913816a2ef22dee"
+        },
+        {
+          "path": "docs/restart/implementation/reviews/S03-security/evidence/independent-adversarial.log",
+          "sha256": "f9cfa8ad6eba58484e83f1aa3b6f412f91e4ea71adb45f012913816a2ef22dee"
+        },
+        {
+          "path": "docs/restart/implementation/reviews/S03-security/evidence/independent-build.log",
+          "sha256": "3d1d342220f4f741165ba8f6c6d9326a6ce54b1e02f90917c039458b7f54cf52"
+        },
+        {
+          "path": "docs/restart/implementation/reviews/S03-security/evidence/independent-lifecycle-final.log",
+          "sha256": "9e7bdedb96ab6deae8a5e5c2e2353a1db0080c1ae87338f8285792f36ce326c0"
+        },
+        {
+          "path": "docs/restart/implementation/reviews/S03-security/evidence/independent-lifecycle.log",
+          "sha256": "b64ecc456e80548d3baa2505edf37cc99bd81c138822830aa73513ea454a322c"
+        },
+        {
+          "path": "docs/restart/implementation/reviews/S03-security/evidence/input-main-reconciliation.log",
+          "sha256": "0a654cb4788fe2489edcf66b83b5e29dd4d6bb0bf196d18e6bd80ff9ad59186b"
+        },
+        {
+          "path": "docs/restart/implementation/reviews/S03-security/evidence/integrity.json",
+          "sha256": "cd0a1b0d8c88a309c33fc0801ac3dde94570363c720c2f1405085d03a3fff1f7"
+        },
+        {
+          "path": "docs/restart/implementation/reviews/S03-security/evidence/main-reconciliation.json",
+          "sha256": "8d36663e0190814358de088cfcd86e290e344a7f96c7bcb0754b1f10617c4e7a"
+        },
+        {
+          "path": "docs/restart/implementation/reviews/S03-security/evidence/no-std-target.log",
+          "sha256": "60d69773d9af6f24ce6ddccf615201f9d70c3b6327a41372436c84bd82f75f0d"
+        },
+        {
+          "path": "docs/restart/implementation/reviews/S03-security/evidence/observed-events.json",
+          "sha256": "a169cbc5c1e16c0e6217fd6cea7b5f7a081fee32b0454cc8d7d4a1bc334e3d4d"
+        },
+        {
+          "path": "docs/restart/implementation/reviews/S03-security/evidence/observed-events.keys.json",
+          "sha256": "fe063dd350348def408b071f6299d8c5a4fe2432e32eea84930f2009108963ae"
+        },
+        {
+          "path": "docs/restart/implementation/reviews/S03-security/evidence/oracle-actual-rerun.log",
+          "sha256": "7d2fbf1d29aa16aec133ef9014af9c6b0dffd5766d7016ba8949d503fa884ad2"
+        },
+        {
+          "path": "docs/restart/implementation/reviews/S03-security/evidence/probe-field-filter-failure.json",
+          "sha256": "b4305febb05b6af448bf17a8dad5859cdb28ee7b7713ca7f9a430197cd9fd174"
+        },
+        {
+          "path": "docs/restart/implementation/reviews/S03-security/evidence/probe-field-filter-failure.log",
+          "sha256": "9b65904692916ca0849021c983cd5cbdfa69898d336b2370128273c3fd027a10"
+        },
+        {
+          "path": "docs/restart/implementation/reviews/S03-security/evidence/probe-lock.log",
+          "sha256": "b8756896912d736962b0131f3aac3318de4dd76ea06437cb84dd706a984c1be3"
+        },
+        {
+          "path": "docs/restart/implementation/reviews/S03-security/evidence/probe-uppercase-control-failure.json",
+          "sha256": "bc4b5576797da1405e19ac4e4be5c11fd94a42b416f589ce727d3f2fd3236943"
+        },
+        {
+          "path": "docs/restart/implementation/reviews/S03-security/evidence/probe-uppercase-control-failure.log",
+          "sha256": "2adcbe1369031609530c316f98d0b59d3457d70f6064df52782652c1b8006903"
+        },
+        {
+          "path": "docs/restart/implementation/reviews/S03-security/evidence/runtime-features.log",
+          "sha256": "dfbdf934d32b95b05786445735c7fabf33813c5c6a562c65321f4fa8f479ed35"
+        },
+        {
+          "path": "docs/restart/implementation/reviews/S03-security/evidence/shipping-surface-final.log",
+          "sha256": "70bcb536d5b4e592e3371d3ad06b22f3e305d83e64d08a0a1386472113ed3f51"
+        },
+        {
+          "path": "docs/restart/implementation/reviews/S03-security/evidence/shipping-surface.log",
+          "sha256": "70bdb7dad276bb235660a778744de8546ea3609a00eb6346be1ef6ec50f91027"
+        },
+        {
+          "path": "docs/restart/implementation/reviews/S03-security/probe/Cargo.lock",
+          "sha256": "48f090bf8b00556e2aafa9d8c0a083f7d5f8e85eecb551db7b789904d4197a3c"
+        },
+        {
+          "path": "docs/restart/implementation/reviews/S03-security/probe/Cargo.toml",
+          "sha256": "11cb9adb1b6b08023da1d51416bdcd4192b278b55007023c5d52218063625acb"
+        },
+        {
+          "path": "docs/restart/implementation/reviews/S03-security/probe/src/main.rs",
+          "sha256": "274e437d057a04041835bcd662704cdcd45ce9180c480df74442329b07e0d7f4"
+        },
+        {
+          "path": "docs/restart/implementation/reviews/S03-security/report.json",
+          "sha256": "5dc0ecc5e1ad92f3274c6e2bbefdd7ccad4e3262d28bc751f2ddf7399d52b683"
+        },
+        {
+          "path": "docs/restart/implementation/reviews/S03-security/run_review.py",
+          "sha256": "50e42df7046afb9423f0d1b7abf8ca9f51b53c79bd64824e6fff31783596527e"
+        },
+        {
+          "path": "docs/restart/implementation/reviews/S03-spec.json",
+          "sha256": "864d9a372274ea5d7304d62e84d26e8696aaa398a17de402e788f9dbf15895ff"
+        }
+      ],
       "requires_physical_evidence": false,
       "input_commits": {
-        "nSealr/nsealr": "3cbd818a0bcd4016eb8983dad7605cb57280d913"
+        "nSealr/nsealr": "b1c90139a651895284b2624da7d12903cf16bc9d"
       },
       "assignment_record": "https://github.com/nSealr/nsealr/issues/17",
       "github_issue": "https://github.com/nSealr/nsealr/issues/17",
-      "current_checkpoint": {
-        "artifacts": [
-          {
-            "blob": "8132b91ae9f8ac09543479b695ba563aa1524f26",
-            "commit": "03216fba02d229bcdb5c81d0573bbe26c6f35abc",
-            "mode": "100644",
-            "path": "docs/restart/implementation/S03/integration-comment-correction.json",
-            "repository": "nSealr/nsealr",
-            "sha256": "08a5c2425ccfde3bec14ba76db2d6322cb7943092dde721d5b728e9f87874cfb",
-            "url": "https://github.com/nSealr/nsealr/blob/03216fba02d229bcdb5c81d0573bbe26c6f35abc/docs/restart/implementation/S03/integration-comment-correction.json"
-          },
-          {
-            "blob": "6057edef53f3603372a032e4930f768f8d362914",
-            "commit": "8df9f5bb3231eac4d33cc9837851ad3ab9bad537",
-            "mode": "100644",
-            "path": "docs/restart/implementation/reviews/S03-comments/review.json",
-            "repository": "nSealr/nsealr",
-            "sha256": "a181a7db4b2b10041d793194bb7e019fb17cb3e60b2c47ac956be3e388ba0b46",
-            "url": "https://github.com/nSealr/nsealr/blob/8df9f5bb3231eac4d33cc9837851ad3ab9bad537/docs/restart/implementation/reviews/S03-comments/review.json"
-          },
-          {
-            "blob": "5bca8b0af84384ebc253f1c8d12ce7f362377b4b",
-            "commit": "b03475ccf4a057c7771065126002f2e4e056d28d",
-            "mode": "100644",
-            "path": "docs/restart/implementation/reviews/S03-security/report.json",
-            "repository": "nSealr/nsealr",
-            "sha256": "5dc0ecc5e1ad92f3274c6e2bbefdd7ccad4e3262d28bc751f2ddf7399d52b683",
-            "url": "https://github.com/nSealr/nsealr/blob/b03475ccf4a057c7771065126002f2e4e056d28d/docs/restart/implementation/reviews/S03-security/report.json"
-          }
-        ],
-        "branch": "restart/s03-authorization",
-        "comment_review": {
-          "candidate": "95cd3fc79d885c58bdabe71498d2509b6ff4370e",
-          "commit": "8df9f5bb3231eac4d33cc9837851ad3ab9bad537",
-          "verdict": "PASS_comments_only"
-        },
-        "delivery_commit": "03216fba02d229bcdb5c81d0573bbe26c6f35abc",
-        "execution": "Assigned incomplete work; this status does not claim an active process or accepted integration.",
-        "observed_utc": "2026-10-20T10:09:37.336221+00:00",
-        "original_implementation_review": {
-          "candidate": "2d7d465a291c4d4a1324d90595fc45a2fdbefca5",
-          "commit": "b03475ccf4a057c7771065126002f2e4e056d28d",
-          "no_rebinding_to_later_source": true,
-          "verdict": "PASS_bounded_S03_security_candidate"
-        },
-        "pr": 23,
-        "product_source_imported": false,
-        "repository": "nSealr/nsealr",
-        "source_candidate": "95cd3fc79d885c58bdabe71498d2509b6ff4370e",
-        "stage": "Reviewed portable authorization source and separately reviewed three-comment correction delivered; actual A02 layout integration and affected integration review/CI remain pending."
-      }
+      "reviewed_candidate_commits": {
+        "nSealr/nsealr": "c358229777d2582964a4f326ce8d15709841a395"
+      },
+      "reviewed_input_commits": {
+        "nSealr/nsealr": "b1c90139a651895284b2624da7d12903cf16bc9d"
+      },
+      "result_manifest": "docs/restart/implementation/S03/delivery/result.json"
     },
     {
       "id": "S04",
@@ -9191,7 +10160,7 @@
       "requires_physical_evidence": true
     }
   ],
-  "revision": 16,
+  "revision": 17,
   "scope_document": "repositories.md",
   "active_profiles": [
     "esp32_no_se",
@@ -9297,17 +10266,35 @@
     "accessible_kit": {
       "status": "unknown",
       "owner_role": "hardware_operator",
-      "next_action": "Identify and obtain the selected no-SE MCU board, direct display and physical input; record revision and availability."
+      "next_action": "Identify the reported ESP32-S3 model/revision and display/input, then schedule actual access with an operator; no MCU or persistent-custody guarantee inferred.",
+      "maintainer_report": {
+        "date": "2026-10-20",
+        "source": "Explicit maintainer message in the active project session",
+        "observation": "Maintainer reports an ESP32-S3 with two non-touch buttons; exact board/revision, display, memory and physical access not yet identified.",
+        "actual_sample_or_operation_verified": false
+      }
     },
     "pi_kit": {
       "status": "unknown",
       "owner_role": "hardware_operator",
-      "next_action": "Identify and obtain the exact Pi, camera, display/input and boot media; record radio/channel inspection."
+      "next_action": "Identify the reported Zero variant and kit components, inspect radios/channels and schedule actual access. This is the proposed first QR prototype, not a qualified image or inherited SeedSigner compatibility.",
+      "maintainer_report": {
+        "date": "2026-10-20",
+        "source": "Explicit maintainer message in the active project session",
+        "observation": "Maintainer reports Raspberry Pi Zero with a240x240 display, three buttons, directional control and camera, described as a SeedSigner kit. Exact Zero variant, panel/camera/boot-media and actual access remain unverified.",
+        "actual_sample_or_operation_verified": false
+      }
     },
     "p4_kit": {
       "status": "unknown",
       "owner_role": "hardware_operator",
-      "next_action": "Identify and obtain the exact P4 kit, camera/display and companion-radio configuration."
+      "next_action": "Identify the reported Waveshare P4 SKU/revision, camera/display and radio topology, then arrange actual access; do not inherit support from another product.",
+      "maintainer_report": {
+        "date": "2026-10-20",
+        "source": "Explicit maintainer message in the active project session",
+        "observation": "Maintainer reports a Waveshare ESP32-P4 kit with camera, battery and touch display. Exact SKU/revision/companion-radio and actual access remain unverified.",
+        "actual_sample_or_operation_verified": false
+      }
     },
     "host_bench": {
       "status": "unknown",
@@ -9317,7 +10304,13 @@
     "se_bench": {
       "status": "unknown",
       "owner_role": "hardware_operator",
-      "next_action": "Resolve selected SE API/errata access and obtain exact configured evaluation hardware."
+      "next_action": "Identify exact reported Tropic evaluation boards and configuration, resolve mandatory API/errata/developer terms and operator/bench requirements before commands. No selection or custody capability inferred.",
+      "maintainer_report": {
+        "date": "2026-10-20",
+        "source": "Explicit maintainer message in the active project session",
+        "observation": "Maintainer reports all Tropic Square development boards and willingness to obtain other support hardware. Exact part/board/silicon configurations, lawful manual access and bench access remain unresolved.",
+        "actual_sample_or_operation_verified": false
+      }
     },
     "bench_instruments": {
       "status": "unknown",

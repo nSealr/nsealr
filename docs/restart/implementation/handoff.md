@@ -2,28 +2,38 @@
 
 Date: 2026-10-20. This handoff gives navigation and recovery procedures, not a second task-status ledger. Read the current graph before choosing work.
 
-## Current A02 source acceptance and closure
+## Current software foundations and next dependency
 
-Actual repaired main `b1c90139a651895284b2624da7d12903cf16bc9d` passed full
-corrected-main CI39412818666. Distinct source review `d280bfdc` accepts all five
-unchanged A02 criteria against the original five-repository import inputs. The
-[closure handoff](A02/closure/handoff.md) and [result](A02/closure/result.json)
-bind that source acceptance, actual CI/normal-rebase chain, complete review
-copies, cold-main proof and remaining metadata integration gates.
+A02 source adoption, bounded anchor repair and closure passed normal protected
+integration and actual main CI. Its [handoff](A02/closure/handoff.md) and
+[result](A02/closure/result.json) preserve the original input/source roles and
+failed d931 main run. The f2/1,508-file historical index remains unchanged.
+P02's [compatibility plan](../../product/compatibility-plan.md),
+[opt-in procedures](../../product/research-protocols.md) and
+[closure proof](P02/closure/result.json) remain documentary planning only.
 
-The original adopted `d931277` main run failed; its exact capture and the bounded
-repair remain historical evidence. No failed observation or dated report is
-rewritten. The original f2/1,508-file index and seven prior closed records remain
-unchanged. New A02 evidence belongs to its graph-bound result artifacts, with no
-extension of the historical index.
+S03 sourcec358 passed distinct review23d76 for all five portable criteria. The
+[combined delivery](S03/delivery/README.md) preserves complete source/review
+evidence and binds the consuming authorization/parser behavior without enabling
+production signing. The graph and actual protected PR/main checks determine
+integration status; dated pending fields in old evidence are not live trackers.
+No device UI/input, entropy, isolation, timing, erasure or release is qualified.
+
+Next: finish the reviewed T01 capability/routing cutover against the adopted S03
+API, then K01's actual portable signing engine. T01 preparation must fix the
+decoded QR/serial projections as well as visible wire-version fields; preserve
+independent event vectors and all retained rejection obligations. Custom-PCB
+research stays independent. The maintainer reports three test kits and Tropic
+development boards in the existing resource records; exact variants, components,
+operator/access and bench tools are not established by that report. The Pi QR
+kit is the proposed first complete physical prototype, without closing other
+profiles or inheriting another project's qualification.
 
 The sole task authority is [plan/work-items.json](../../../plan/work-items.json).
-Closure metadata still follows distinct root exact-diff review, full protected
-PR checks, normal merge and actual resulting-main CI. Dependent implementations
-need their own accepted source/specification and actual validation; no dependent
-task closes through A02. Source notices, archival, registry publication and
-physical qualification remain separate work. The historical pause proposal is
-not another tracker.
+Use existing commands, targeted source reads, one CI observer and applicable
+prior proof as specified in AGENTS.md. Source notices, archival, registry
+publication and physical qualification remain separate work. Historical pause
+proposals are not active instructions or another task tracker.
 
 ## Recover the actual state
 
