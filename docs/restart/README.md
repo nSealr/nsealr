@@ -15,7 +15,7 @@ The objective is a useful Nostr signer ecosystem with accessible connected hardw
 7. [Client and optical qualification plan](../product/compatibility-plan.md)
 8. [Specification-first development and initial work packages](development.md)
 9. [Product contract, feature matrix and user journeys](../product/contract.md)
-10. [PCB pipeline, tool capabilities and reference designs](pcb-development.md)
+10. [PCB pipeline, tool capabilities and reference designs](pcb-development.md); [current programmable-Board realization requirements](pcb-development.md#product-choice-before-h04).
 
 The graph records **47 implementation tasks**, their dependencies, scope, acceptance and required resources. A research result or administrative rename does not close an implementation gate. Ready tasks still require source reconciliation and an accepted brief before implementation. No device release is qualified.
 
