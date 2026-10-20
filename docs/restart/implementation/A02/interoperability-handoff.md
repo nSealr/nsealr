@@ -1,7 +1,7 @@
 # External Nostr interoperability handoff
 
 This handoff belongs to A02 candidate
-`e01469c038d0fbf6823ef3c9f68af2a1141a3b3d`. It carries existing requirements
+`daf8ba03a9eb820f99b0f1bf5c4f553a7961e008`. It carries existing requirements
 and source-bound local evidence into the consolidated layout. It is not a new
 protocol specification, named-client qualification or hardware-signing claim.
 

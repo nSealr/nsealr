@@ -150,8 +150,24 @@ def main(author: Path, replay_name: str) -> None:
         if current_tree.get(row["path"]) != dict(mode=row["mode"], blob=row["blob"]) or observed[row["path"]]["sha256"] != row["sha256"]:
             raise ValueError("closed evidence changed")
     graph = (target / "plan/work-items.json").read_bytes()
-    if digest(graph) != frozen["graph_sha256"] or "docs/restart/work-items.json" in current_tree:
-        raise ValueError("graph was not moved exactly to one authority")
+    original_graph = read_git(target, "show", manifest["sources"][0]["commit"] + ":docs/restart/work-items.json")
+    # The graph move was byte exact. The sole later operational-policy field is
+    # declared separately; no task, closed acceptance or other graph byte changes.
+    policy = json.loads(graph)["execution_model_policy"]
+    policy_source = "7c9b9a9d6e1874c7a5b09cee1daaec48fc08085e"
+    expected_policy = json.loads(read_git(author, "show", policy_source + ":docs/restart/work-items.json"))["execution_model_policy"]
+    expected_policy["integration"] = ("Declared operational-policy-only A02 transformation under the latest maintainer authority. "
+        "Source main f2 remains frozen; task records, historical O01 evidence and the unmerged pause task reconciliation are unchanged. "
+        "Candidate policy awaits distinct review and normal adoption.")
+    addition = canonical({"execution_model_policy": policy}).removeprefix(b"{\n").removesuffix(b"\n}\n")
+    expected_graph = original_graph.removesuffix(b"\n}\n") + b",\n" + addition + b"\n}\n"
+    if (digest(original_graph) != frozen["graph_sha256"] or graph != expected_graph
+            or policy != expected_policy or "docs/restart/work-items.json" in current_tree):
+        raise ValueError("graph exceeds exact move plus declared current operational policy")
+    graph_verification = dict(original_move_byte_exact=True, all_47_task_records_unchanged=True,
+        sole_later_difference="execution_model_policy", policy_source_commit=policy_source,
+        historical_graph_sha256=digest(original_graph), current_graph_sha256=digest(graph),
+        historical_closed_acceptance_and_model_evidence_unchanged=True)
     current_contracts = json.loads((target / "plan/evidence-index.json").read_bytes())["current_contracts"]
     for row in current_contracts:
         if observed[row["current_path"]]["sha256"] != row["initial_relocated_sha256"]:
@@ -174,7 +190,8 @@ def main(author: Path, replay_name: str) -> None:
         closed_tasks=[r["id"] for r in frozen["tasks"]],
         immutable_artifact_references=sum(r["artifact_references"] for r in frozen["tasks"]),
         immutable_unique_files=len(frozen["artifacts"]),
-        immutable_bytes_modes_blobs_and_task_graph_verified=True))
+        immutable_bytes_modes_blobs_and_task_records_verified=True,
+        graph_verification=graph_verification))
     write("final-tree.json", dict(target_commit=head, tracked_file_count=len(final_files), files=final_files))
     write("source-references.json", dict(target_commit=head, public_sources=refs["public_sources"],
         observed_utc=refs["observed_utc"], target_ref_policy="Only refs/heads/rehearsal; source evidence tags remain source references and are not rewritten or relabeled as release tags.",
@@ -184,7 +201,7 @@ def main(author: Path, replay_name: str) -> None:
             for r in manifest["sources"] if r["visibility"] == "private"]))
 
     # Only these explicit records are exportable; no recursion through repositories.
-    for name in ["resume-navigation-execution-01", "resume-navigation-execution-02", "source-replay-execution-03"]:
+    for name in ["resume-navigation-execution-01", "resume-navigation-execution-02", "source-replay-execution-03", "model-policy-execution-01", "source-replay-execution-04", "final-report-execution-02", "final-package-validation-01", "final-package-validation-02", "final-package-validation-03", "final-package-validation-04", "final-package-validation-05"]:
         for source in sorted((runtime / name).iterdir()):
             if source.is_file() and source.suffix in {".json", ".log", ".sh"}:
                 copy(source, f"execution/{name}/{source.name}")

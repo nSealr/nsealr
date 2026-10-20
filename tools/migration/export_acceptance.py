@@ -39,7 +39,7 @@ def export(author,replay):
    files=[path] if path.is_file() else list(path.iterdir()) if path.is_dir() else []
    for file in files:
     if file.is_file() and file.suffix in ['.json','.log']:copy(file,Path(name)/file.relative_to(base))
- for relative in ['final-navigation','final-navigation/recovery','final-controls','script-entrypoint','repro-navigation','s01-overlays']:
+ for relative in ['final-navigation','final-navigation/recovery','final-controls','script-entrypoint','repro-navigation','model-policy','s01-overlays']:
   base=runtime/'rehearsal-01'/relative
   if base.exists():
    for file in base.iterdir():

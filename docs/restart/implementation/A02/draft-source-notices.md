@@ -1,5 +1,9 @@
 # Draft source notices — not published
 
+These drafts bind local candidate `daf8ba03a9eb820f99b0f1bf5c4f553a7961e008`
+and its [complete original/current path and rights map](final-source-map.json).
+Every named destination below exists in that candidate.
+
 These notices are prepared for the coordinator after reviewed migration adoption
 and actual main CI. Before applying one, verify every destination against adopted
 main, add its exact migration commit and final map link, and refresh recovery of
