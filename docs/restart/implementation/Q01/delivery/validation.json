@@ -1,0 +1,137 @@
+{
+  "schema_version": 1,
+  "state": "DOCUMENTARY_CANDIDATE_NOT_TASK_CLOSURE",
+  "source_candidate_before_proof_only_tail": "c98e050e2b4bd44ecbe086c6216c6b1731757bae",
+  "source_candidate_tree": "7cb270a01d03f49fc3aae0ec0a4514ae255a69a8",
+  "actual_main_base": "7f00138902526a63dc590ad4cd09dc40ab9b9700",
+  "one_time_normal_rebase": {
+    "old_commit": "a8910feae532b7d73c9e771edf5ac133143dd792",
+    "new_commit": "c98e050e2b4bd44ecbe086c6216c6b1731757bae",
+    "whole_candidate_tree_identical": "7cb270a01d03f49fc3aae0ec0a4514ae255a69a8",
+    "replayed_commits": 1,
+    "actual_parent": "7f00138902526a63dc590ad4cd09dc40ab9b9700",
+    "publication_before_rebase": false,
+    "force_or_main_change": false
+  },
+  "copies_exact": 4,
+  "original_source_bindings_current_exact": 7,
+  "other46_fulltaskrecords_unchanged": true,
+  "all47_acceptance_dependency_sets_unchanged": true,
+  "resources_release_paths_unchanged": true,
+  "Q01_review_only_no_passing_task_verdict": true,
+  "original1508_frozen_evidence_check": "PASS in original rootchecks and affected actual-base evidence gate",
+  "immutable_P01_code_contracts_capabilities_gates": "No diff from actual7f",
+  "current_links_and_graph_result_hashes_valid": true,
+  "credential_markers_found": [],
+  "private_material_imported": false,
+  "commands": [
+    {
+      "path": "docs/restart/implementation/Q01/delivery/checks/commands.json",
+      "sha256": "3d68c99cdf444eace067189ac0bdace8a32d30e7d3ea6fc7d47c297eaac501e2",
+      "results": [
+        {
+          "label": "q01-docs-root-checks",
+          "argv": [
+            "make",
+            "docs",
+            "test"
+          ],
+          "cwd": "/home/tux/nsealr/.restart-tools/goal/q01-current-delivery",
+          "started": "2026-10-20T17:08:59.892773+00:00",
+          "log": "00-q01-docs-root-checks.log",
+          "ended": "2026-10-20T17:09:05.920593+00:00",
+          "exit_code": 0,
+          "sha256": "7e018e1df36355c618ace669eec40591c5bec42343bc584dfd353d6f1fb3f709"
+        }
+      ]
+    },
+    {
+      "path": "docs/restart/implementation/Q01/delivery/checks-reconciled/commands.json",
+      "sha256": "c380d59df99fc1de2967df19f256d6cb71c019a1a7ecae0f52d3b272f06ae590",
+      "results": [
+        {
+          "label": "q01-reconciled-docs",
+          "argv": [
+            "make",
+            "docs"
+          ],
+          "cwd": "/home/tux/nsealr/.restart-tools/goal/q01-current-delivery",
+          "started": "2026-10-20T17:11:51.504237+00:00",
+          "log": "00-q01-reconciled-docs.log",
+          "ended": "2026-10-20T17:11:51.532123+00:00",
+          "exit_code": 0,
+          "sha256": "889ff61d789f158b6c9b8bc98058eb40d323ab15a57fecde4e7d0f380bee1ad0"
+        },
+        {
+          "label": "q01-reconciled-plan",
+          "argv": [
+            "python3",
+            "scripts/validate_restart_plan.py"
+          ],
+          "cwd": "/home/tux/nsealr/.restart-tools/goal/q01-current-delivery",
+          "started": "2026-10-20T17:11:51.532443+00:00",
+          "log": "01-q01-reconciled-plan.log",
+          "ended": "2026-10-20T17:11:51.784686+00:00",
+          "exit_code": 0,
+          "sha256": "21adfe4ea073c5a208ed9510ca871239a593aad95c7cdda92dbb7903b140bfc5"
+        },
+        {
+          "label": "q01-reconciled-frozen-evidence",
+          "argv": [
+            "python3",
+            "scripts/verify_evidence.py"
+          ],
+          "cwd": "/home/tux/nsealr/.restart-tools/goal/q01-current-delivery",
+          "started": "2026-10-20T17:11:51.785066+00:00",
+          "log": "02-q01-reconciled-frozen-evidence.log",
+          "ended": "2026-10-20T17:11:51.934601+00:00",
+          "exit_code": 0,
+          "sha256": "c4dad79f5c61ca9f1c30e50c1372b1c8093752cc29a64aaca839ce6384eb49b9"
+        }
+      ]
+    },
+    {
+      "path": "docs/restart/implementation/Q01/delivery/checks-whitespace/commands.json",
+      "sha256": "61f7ad6506e0aabe41fb898f8e6659b0246bccfdafc8a7edb433c5aa1f2a6162",
+      "results": [
+        {
+          "label": "full-raw-diff",
+          "argv": [
+            "git",
+            "diff",
+            "--check",
+            "7f00138902526a63dc590ad4cd09dc40ab9b9700",
+            "HEAD"
+          ],
+          "cwd": "/home/tux/nsealr/.restart-tools/goal/q01-current-delivery",
+          "started": "2026-10-20T17:13:30.918448+00:00",
+          "log": "00-full-raw-diff.log",
+          "ended": "2026-10-20T17:13:30.924044+00:00",
+          "exit_code": 2,
+          "sha256": "27d2c2d8cfab5877b74e420776b62ec312b733ef2eeef7f4f1667249c2967cee"
+        },
+        {
+          "label": "metadata-excluding-rawlogs",
+          "argv": [
+            "git",
+            "diff",
+            "--check",
+            "7f00138902526a63dc590ad4cd09dc40ab9b9700",
+            "HEAD",
+            "--",
+            ".",
+            ":(exclude)docs/restart/implementation/Q01/delivery/checks/*.log",
+            ":(exclude)docs/restart/implementation/Q01/delivery/checks-reconciled/*.log"
+          ],
+          "cwd": "/home/tux/nsealr/.restart-tools/goal/q01-current-delivery",
+          "started": "2026-10-20T17:13:30.924408+00:00",
+          "log": "01-metadata-excluding-rawlogs.log",
+          "ended": "2026-10-20T17:13:30.930391+00:00",
+          "exit_code": 0,
+          "sha256": "8e8856e77a02780b4e83038849bb12bcb2e7f88fc4d3191208d308266f980443"
+        }
+      ]
+    }
+  ],
+  "limits": "Original rootmake docs test observation remains1e6 with actual recorded dirtydiff on identical base tree; source IDs reconciled once to7f and affected docs/plan/evidence pass. Raw whitespace failures remain if observed; no log normalized. Actual-mainCI/source acceptance and distinct final metadata review pending; no runtime/physical/adoption/closure claim."
+}
