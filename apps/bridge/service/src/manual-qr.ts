@@ -157,9 +157,12 @@ export function createManualQrRouteDispatcher(options: {
             if (!failed) throw new SignerTransportError("signer_transport_close_failed", "manual QR cleanup did not establish reuse");
           }
         }
+        // Recheck completion while this factory is still reserved: this hook
+        // also invokes the external provider. Successful close permits reuse
+        // even if the current operation has meanwhile become ineligible.
+        if (!failed) current();
       } finally { busy = !reusable; }
     }
-    current();
     return response;
   };
   return createRouteDispatcher([{
