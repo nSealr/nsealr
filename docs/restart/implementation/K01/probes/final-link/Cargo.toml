@@ -1,0 +1,19 @@
+[package]
+name = "k01-engine-final-link"
+version = "0.0.0"
+edition = "2021"
+publish = false
+
+[workspace]
+
+[dependencies]
+nsealr-core = { path = "../../../../../../crates/nsealr-core", default-features = false }
+
+[profile.release]
+opt-level = "s"
+lto = true
+codegen-units = 1
+panic = "abort"
+
+[lints.rust]
+unexpected_cfgs = { level = "deny", check-cfg = ['cfg(k01_missing_provider)'] }

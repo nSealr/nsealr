@@ -203,7 +203,8 @@ pub(crate) fn validate_catalog(
         return validate_kind1(event);
     }
     if event.kind() == 0 {
-        inspect_metadata(event.content(), |_| Ok(())).map_err(|_| InspectionError::InvalidTag)?;
+        inspect_metadata(event.content(), &mut |_| Ok(()))
+            .map_err(|_| InspectionError::InvalidTag)?;
         return Ok(());
     }
     if !matches!(event.kind(), 3 | 5 | 6 | 7 | 10002) {
@@ -230,7 +231,7 @@ pub(crate) fn validate_catalog(
                 }
                 // Kind3's optional petname and every suffix remain unverified data.
             }
-            (5 | 6 | 7, "e") => {
+            (5..=7, "e") => {
                 target = Some(decode_hex(
                     fields.next().ok_or(InspectionError::InvalidTag)?,
                 )?);
@@ -600,6 +601,13 @@ impl ReviewDocument<'_> {
             value(label, ascii(decimal(n, &mut buf)))?;
         }
         value("Signed content (plain text)", self.event.content())?;
+        let last_named = |name| {
+            (0..self.event.tag_count())
+                .rev()
+                .find(|index| self.event.tag(*index).and_then(|mut f| f.next()) == Some(name))
+        };
+        let last_event = last_named("e");
+        let last_person = last_named("p");
         for tag in 0..self.event.tag_count() {
             let fields = self.event.tag(tag).ok_or(InspectionError::InvalidTag)?;
             let name = self
@@ -626,8 +634,10 @@ impl ReviewDocument<'_> {
                     (6, "e", 2) => "required original relay (unverified)",
                     (6, "p", 1) => "original author hint (checked if original supplied)",
                     (6, "p", 2) => "unverified original author relay hint",
-                    (7, "e", 1) => "reaction event ID; LAST e is target, earlier are context",
-                    (7, "p", 1) => "author hint; LAST p is target author",
+                    (7, "e", 1) if last_event == Some(tag) => "reaction TARGET event ID (last e)",
+                    (7, "e", 1) => "earlier reaction context event ID",
+                    (7, "p", 1) if last_person == Some(tag) => "TARGET author hint (last p)",
+                    (7, "p", 1) => "earlier context author hint",
                     (7, "e" | "p" | "a", 2) => "unverified relay hint",
                     (7, "e" | "a", 3) => "supplied target author (not real-world identity)",
                     (7, "a", 1) => "coherent target coordinate (unverified)",
@@ -645,9 +655,40 @@ impl ReviewDocument<'_> {
                 push(&mut label, role)?;
                 value(label.as_str(), text)?;
             }
+            if matches!(self.event.kind(), 5 | 7) && name == "a" {
+                let address = self
+                    .event
+                    .tag(tag)
+                    .and_then(|mut fields| fields.nth(1))
+                    .ok_or(InspectionError::InvalidTag)?;
+                for (part, text) in address.splitn(3, ':').enumerate() {
+                    let mut label = FixedStr::<160>::new();
+                    push(&mut label, "Signed address tag ")?;
+                    number(&mut label, tag)?;
+                    let role = match part {
+                        0 => " kind",
+                        1 => " public key",
+                        _ => " complete identifier (colons preserved)",
+                    };
+                    push(&mut label, role)?;
+                    value(label.as_str(), text)?;
+                }
+            }
+            if self.event.kind() == 10002 && name == "r" {
+                let role = self
+                    .event
+                    .tag(tag)
+                    .and_then(|mut fields| fields.nth(2))
+                    .unwrap_or("read and write");
+                let mut label = FixedStr::<160>::new();
+                push(&mut label, "Signed relay tag ")?;
+                number(&mut label, tag)?;
+                push(&mut label, " effective use")?;
+                value(label.as_str(), role)?;
+            }
         }
         if self.event.kind() == 0 {
-            inspect_metadata(self.event.content(), |item| {
+            inspect_metadata(self.event.content(), &mut |item| {
                 let mut label = FixedStr::<160>::new();
                 push(&mut label, "Profile node ").map_err(|_| crate::event::EventError::Limit)?;
                 number(&mut label, item.node).map_err(|_| crate::event::EventError::Limit)?;
@@ -689,13 +730,13 @@ impl ReviewDocument<'_> {
                 ascii(decimal(u64::from(original.kind), &mut buf)),
             )?;
             original
-                .visit_content(|text| {
+                .visit_content(&mut |text| {
                     value("Original signed content", text)
                         .map_err(|_| crate::event::EventError::Limit)
                 })
                 .map_err(|_| InspectionError::Limit)?;
             original
-                .visit_tags(|tag, index, text| {
+                .visit_tags(&mut |tag, index, text| {
                     let mut label = FixedStr::<160>::new();
                     push(&mut label, "Original signed tag ")
                         .map_err(|_| crate::event::EventError::Limit)?;

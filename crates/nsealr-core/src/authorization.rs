@@ -91,7 +91,7 @@ pub trait AuxiliarySource {
     fn fill(&mut self, destination: &mut [u8; 32]) -> Result<usize, AuxiliaryError>;
 }
 fn fill_auxiliary(
-    provider: &mut impl AuxiliarySource,
+    provider: &mut dyn AuxiliarySource,
     destination: &mut [u8; 32],
 ) -> Result<(), AuthorizationError> {
     destination.zeroize();
@@ -589,6 +589,19 @@ impl AuthorizationSession {
         owner.invalidate();
         output
     }
+    fn backend_key(&self, expected: &[u8; 32]) -> Result<SigningKey, AuthorizationError> {
+        let key = SigningKey::from_slice(
+            self.key
+                .as_ref()
+                .ok_or(AuthorizationError::Locked)?
+                .as_bytes(),
+        )
+        .map_err(|_| AuthorizationError::Key)?;
+        if key.verifying_key().to_bytes().as_slice() != expected {
+            return Err(AuthorizationError::Binding);
+        }
+        Ok(key)
+    }
     fn execute(
         &mut self,
         request_id: &str,
@@ -597,18 +610,7 @@ impl AuthorizationSession {
     ) -> Result<[u8; 64], AuthorizationError> {
         let execution = self.start_execution(request_id, now)?;
         let result = (|| {
-            let key = SigningKey::from_slice(
-                execution
-                    .owner
-                    .key
-                    .as_ref()
-                    .ok_or(AuthorizationError::Locked)?
-                    .as_bytes(),
-            )
-            .map_err(|_| AuthorizationError::Key)?;
-            if key.verifying_key().to_bytes().as_slice() != execution.public_key {
-                return Err(AuthorizationError::Binding);
-            }
+            let key = execution.owner.backend_key(&execution.public_key)?;
             backend(&key, &execution.event_id)
         })();
         Self::finish_execution(execution, result, now)
@@ -619,14 +621,14 @@ impl AuthorizationSession {
     /// touching the auxiliary source/backend. The callback must supply fresh
     /// trusted monotonic ticks both before execution and before release. All
     /// errors leave the whole caller output zeroed and require a fresh review.
-    /// A signature is raw-ID verified, serialized privately, then released only
-    /// after the fresh completion/context checks. This API enables no transport,
+    /// The signature and privately staged serialization are released only after
+    /// raw-ID verification and fresh completion/context checks. This API enables no transport,
     /// hardware isolation, production key or provider qualification.
     pub fn sign_approved(
         &mut self,
         request_id: &str,
-        clock: &mut impl FnMut() -> Option<u64>,
-        auxiliary: &mut impl AuxiliarySource,
+        clock: &mut dyn FnMut() -> Option<u64>,
+        auxiliary: &mut dyn AuxiliarySource,
         output: &mut [u8],
     ) -> Result<usize, AuthorizationError> {
         let consumed = self.consume_approval();
@@ -639,18 +641,7 @@ impl AuthorizationSession {
             let mut aux = Zeroizing::new([0u8; 32]);
             fill_auxiliary(auxiliary, &mut aux)?;
             let signature = {
-                let key = SigningKey::from_slice(
-                    execution
-                        .owner
-                        .key
-                        .as_ref()
-                        .ok_or(AuthorizationError::Locked)?
-                        .as_bytes(),
-                )
-                .map_err(|_| AuthorizationError::Key)?;
-                if key.verifying_key().to_bytes().as_slice() != execution.public_key {
-                    return Err(AuthorizationError::Binding);
-                }
+                let key = execution.owner.backend_key(&execution.public_key)?;
                 #[cfg(test)]
                 tests::observe_backend_attempt();
                 key.sign_raw(&execution.event_id, &aux)
@@ -662,7 +653,7 @@ impl AuthorizationSession {
                 .pending
                 .as_ref()
                 .ok_or(AuthorizationError::Binding)?;
-            length = p
+            let serialized = p
                 .request
                 .event
                 .as_ref()
@@ -672,7 +663,8 @@ impl AuthorizationSession {
                     &execution.event_id,
                     &signature,
                     &mut staged,
-                )?;
+                );
+            length = serialized?;
             if length > output.len() {
                 return Err(AuthorizationError::Output);
             }
