@@ -71,36 +71,38 @@ export function createManualQrRouteDispatcher(options: {
       if (signal.aborted) throw new SignerTransportError("signer_transport_failed", "manual QR operation is no longer active");
       beforeWrite();
     };
-    current();
-    const validRequest = validateRequest(dispatch.request);
-    if (!validRequest.ok || (dispatch.request as { method: unknown }).method !== route.method) {
-      protocolFailure("manual QR request does not match the selected method");
-    }
-    const request = dispatch.request as { request_id: string };
-    const requestBytes = Buffer.byteLength(JSON.stringify(request), "utf8");
-    const encodedRequestBytes = frameBytes(requestBytes);
-    const { method, transport } = limits;
-    const work = Math.min(method.parse_work, transport.parse_work);
-    const maximumJson = Math.min(NSEALR_V0_LIMITS.max_static_qr_decoded_json_bytes,
-      method.response_json_bytes, transport.static_decoded_json_bytes!, transport.reassembly_bytes);
-    const maximumFrame = Math.min(transport.frame_bytes, frameBytes(maximumJson), work - encodedRequestBytes);
-    if (requestBytes > method.request_json_bytes || requestBytes > transport.reassembly_bytes ||
-      requestBytes > transport.static_decoded_json_bytes! || encodedRequestBytes > transport.frame_bytes ||
-      encodedRequestBytes > work || maximumFrame <= QR_ENVELOPE_PREFIX.length || maximumJson < 1) {
-      protocolFailure("manual QR exchange exceeds effective request/frame/work capacity");
-    }
-    // Logical public payload accounting, not a measurement of JS/native heap.
-    // Reserve the largest permitted incoming payload BEFORE opening/encoding.
-    const retained = requestBytes + encodedRequestBytes + maximumJson + maximumFrame;
-    if (!Number.isSafeInteger(retained) || retained > method.retained_bytes || retained > transport.retained_bytes) {
-      protocolFailure("manual QR exchange exceeds effective retained payload capacity");
-    }
-
+    // Reserve before currentness invokes the external compatibility provider.
+    // A nested actual client call in another context still shares this owner.
     busy = true;
     let reusable = true, presenting = false, failed = false;
     let port: ManualQrPort | undefined;
     let response: unknown;
     try {
+      current();
+      const validRequest = validateRequest(dispatch.request);
+      if (!validRequest.ok || (dispatch.request as { method: unknown }).method !== route.method) {
+        protocolFailure("manual QR request does not match the selected method");
+      }
+      const request = dispatch.request as { request_id: string };
+      const requestBytes = Buffer.byteLength(JSON.stringify(request), "utf8");
+      const encodedRequestBytes = frameBytes(requestBytes);
+      const { method, transport } = limits;
+      const work = Math.min(method.parse_work, transport.parse_work);
+      const maximumJson = Math.min(NSEALR_V0_LIMITS.max_static_qr_decoded_json_bytes,
+        method.response_json_bytes, transport.static_decoded_json_bytes!, transport.reassembly_bytes);
+      const maximumFrame = Math.min(transport.frame_bytes, frameBytes(maximumJson), work - encodedRequestBytes);
+      if (requestBytes > method.request_json_bytes || requestBytes > transport.reassembly_bytes ||
+        requestBytes > transport.static_decoded_json_bytes! || encodedRequestBytes > transport.frame_bytes ||
+        encodedRequestBytes > work || maximumFrame <= QR_ENVELOPE_PREFIX.length || maximumJson < 1) {
+        protocolFailure("manual QR exchange exceeds effective request/frame/work capacity");
+      }
+      // Logical public payload accounting, not a measurement of JS/native heap.
+      // Reserve the largest permitted incoming payload BEFORE opening/encoding.
+      const retained = requestBytes + encodedRequestBytes + maximumJson + maximumFrame;
+      if (!Number.isSafeInteger(retained) || retained > method.retained_bytes || retained > transport.retained_bytes) {
+        protocolFailure("manual QR exchange exceeds effective retained payload capacity");
+      }
+
       current();
       const envelope = encodeQrEnvelope(request);
       const control: ManualQrPortControl = {
