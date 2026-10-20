@@ -30,7 +30,14 @@ def main():
     verifier = importlib.util.module_from_spec(module)
     module.loader.exec_module(verifier)
     config = committed(BASE, CONFIG)
-    vectors = committed(SOURCE, VECTOR)
+    # The admitted public source copy is durable in the current tree. Preserve
+    # its original commit/hash identity without requiring an old author branch
+    # object to be fetched into a cold consolidated checkout.
+    source_rows = json.loads((HERE.parent / "source-pin-addendum.json").read_bytes())["historical_public_copy_manifest"]["files"]
+    vector_source = next(r for r in source_rows if r["path"] == VECTOR)
+    assert vector_source["commit"] == SOURCE
+    vectors = (ROOT / VECTOR).read_bytes()
+    assert len(vectors) == vector_source["bytes"] and sha(vectors) == vector_source["sha256"]
     rows = json.loads(config)
     assert len(rows) == 170 and len({r["output"] for r in rows}) == 170
     controls = []
