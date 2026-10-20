@@ -1,0 +1,289 @@
+{
+  "schema_version": 1,
+  "task": "Q01",
+  "phase": "PREIMPLEMENTATION_REQUIREMENTS_PROPOSAL_NOT_ACCEPTED",
+  "author": "/root",
+  "source_base": {
+    "repository": "nSealr/nsealr",
+    "commit": "1620ab19d3fbcaf3438a76a5817d266babe30511",
+    "runtime_equivalent_to_accepted_S03": "dbad656997ad8cf9024ca1489291f5f1d4d3094a",
+    "status_at_preparation": "Actual main; latest hardware-priority documentary delta mainCI is a separate pending gate, not claimed here"
+  },
+  "unchanged_task_criteria": [
+    "Define optical input/output limits, separate seed import/export, power/update states and permitted data channels.",
+    "Define how exact Pi and P4 hardware records prove radio absence/isolation, boot properties and no secret persistence.",
+    "Keep hardware feasibility and release status independent between Pi and P4; neither target must pass to work on the other."
+  ],
+  "original_dependencies": [
+    "P01",
+    "T01"
+  ],
+  "source_bindings": [
+    {
+      "repository": "nSealr/nsealr",
+      "commit": "1620ab19d3fbcaf3438a76a5817d266babe30511",
+      "path": "docs/product/requirements.md",
+      "mode": "100644",
+      "blob": "e35aa354a546f38422c1f17f1a32e4fc0c2b7fec",
+      "sha256": "f8635e2941895b7d4043e769c9b73e2064036b1358e5f4266854b074a9b81326"
+    },
+    {
+      "repository": "nSealr/nsealr",
+      "commit": "1620ab19d3fbcaf3438a76a5817d266babe30511",
+      "path": "docs/product/event-review-contract.md",
+      "mode": "100644",
+      "blob": "455909d1941fd183d970bcb749f5e89f537f017b",
+      "sha256": "acaec734d7f5317097dde97eb071c59132ee3a1ed6af1fdb3f6289d1a0950043"
+    },
+    {
+      "repository": "nSealr/nsealr",
+      "commit": "1620ab19d3fbcaf3438a76a5817d266babe30511",
+      "path": "docs/product/threat-models.md",
+      "mode": "100644",
+      "blob": "3c8f03982ca59fd43eec83bc4cd347e0b6f243b7",
+      "sha256": "ebf8d5a821eb4843d7b961840a4b21cc74a2997dfa5b9e15f0cc6907586ffee0"
+    },
+    {
+      "repository": "nSealr/nsealr",
+      "commit": "1620ab19d3fbcaf3438a76a5817d266babe30511",
+      "path": "docs/restart/implementation/S02/entropy-contract.md",
+      "mode": "100644",
+      "blob": "8e4383bb3c9dff8f9d81776e7b761260fe6dd3c4",
+      "sha256": "a0883cbd920b85ab1db71e619b2c503d7a84137761ab60d8913e5353c9ce0916"
+    },
+    {
+      "repository": "nSealr/nsealr",
+      "commit": "1620ab19d3fbcaf3438a76a5817d266babe30511",
+      "path": "crates/nsealr-core/src/authorization.rs",
+      "mode": "100644",
+      "blob": "92dc668eeddc7b25df6758464aab2f3e898d8e0b",
+      "sha256": "d17e1e893fd403da3eba9c0de69decf014e123d0f1524c310d526b37b05f1ab1"
+    },
+    {
+      "repository": "nSealr/nsealr",
+      "commit": "1620ab19d3fbcaf3438a76a5817d266babe30511",
+      "path": "apps/pi/app/nsealr_vault/session_source_qr_import_flow.py",
+      "mode": "100644",
+      "blob": "512c3a673c5ab1533a260b8d1219f2ee8c9b5b31",
+      "sha256": "143aa3a464bc79a9b9412a3badb0f273b14666d9318546f9f620c4c905f8be62"
+    },
+    {
+      "repository": "nSealr/nsealr",
+      "commit": "1620ab19d3fbcaf3438a76a5817d266babe30511",
+      "path": "apps/pi/app/nsealr_vault/seed_signer_hardware.py",
+      "mode": "100644",
+      "blob": "45d74c786d36e3e8bd9a02c3093ef278bc1b3cb5",
+      "sha256": "c9d2fb3f4c5b17d1e12083b759bed02e22d2676e04041edba15dbb02c64001d3"
+    }
+  ],
+  "reviewed_T01_input": {
+    "candidate": "cb39bb026d4008b7f3d7abf358b604c79e3b699d",
+    "distinct_review": "ec97ed294529a9947ee432a0878a99109448012c",
+    "state": "Implementation underway elsewhere; actual adopted source/API reconciled once before downstream admission"
+  },
+  "decisions": {
+    "initial_profiles": [
+      "pi_qr",
+      "p4_qr"
+    ],
+    "custody": "One session identity; native original nsec recovery locally; no persistent or automatic grants",
+    "QR_seed_formats": "Qualified native nsec only in separate recovery context; no inherited SeedQR/CompactSeedQR compatibility",
+    "operation_contract": "Common T01 numeric2 contract; actual adoption still required",
+    "framing": "QH01 actual comparison of bounded single-frame and maintained multipart UR before freeze; existing adapters are candidates only",
+    "physical_guarantees": "Each exact target supplies its own evidence; no SE nonexportability or instant RAM-erasure claim",
+    "fixed_numeric_limits": "None invented here; actual finite configuration before running the affected operation, measured in its device/client task"
+  },
+  "existing_profile_result_record_contract": {
+    "location": "Inside existing task result/evidence artifacts, never a new live tracker or a wire descriptor",
+    "required_fields": {
+      "profile": "pi_qr or p4_qr, exact supported operations/custody and declared threat assumptions",
+      "sample": "Identified board/silicon/revision, camera, panel/input/pins, boot media, radios/companions and relevant source/manual hashes",
+      "image": "Exact source/binary/image/toolchain/provider hashes and startup/update/debug state; distinguish enforcement from manual verification",
+      "channels": "Every actual power/data/radio/debug/update path and evidence of its permitted state/isolation",
+      "bounds": "Configured finite units and observed maxima for images, native decoder, buffers/frames/reassembly, parse/crypto/UI/cleanup, pending and output",
+      "custody": "Original recovery representation, engine/interpreter/native/camera/display copies, cleanup, persistence and OS/image-tool observations",
+      "observations": "Property-specific claim, source or physical procedure, exact sample/binary, applicable conditions, operator/instrument identifiers, raw artifact hashes, outcome and limitations",
+      "unresolved": "Unknown/unavailable/unsupported property and its effect on the exact profile claim; never default verified",
+      "review": "Distinct exact-candidate review and actual per-profile integration/release checks"
+    },
+    "privacy": "Use public test identities for instrumented prototypes; keep credentials, private manuals and personally identifying operator/sample data out of public artifacts as required. Preserve original evidence privately when needed."
+  },
+  "review_scenarios": [
+    {
+      "id": "QO-01",
+      "criteria_indices": [
+        0
+      ],
+      "implementation_or_proof_owners": [
+        "QH01",
+        "Q02",
+        "Q03"
+      ],
+      "input_or_action": "Use one public test identity in the separate local recovery flow, then a retained client request, complete review, physical approval and response QR. Independently verify expected key, canonical ID and signature; report publication separately.",
+      "independent_expected_result": "Exactly one operation attempt; no secret reaches Bridge; actual kit result belongs only to its own profile.",
+      "execution": "FUTURE_OWNER_GATE_NOT_EXECUTED_BY_THIS_SPECIFICATION"
+    },
+    {
+      "id": "QO-02",
+      "criteria_indices": [
+        0
+      ],
+      "implementation_or_proof_owners": [
+        "Q01",
+        "Q02",
+        "Q03"
+      ],
+      "input_or_action": "Present a native recovery QR during operation intake, a request or nostrconnect QR during recovery, malformed checksum/scalar and unsupported legacy seed format.",
+      "independent_expected_result": "Reject the wrong context without import/signing/mode switch. Native nsec recovery remains separate and checks the actual original identity.",
+      "execution": "FUTURE_OWNER_GATE_NOT_EXECUTED_BY_THIS_SPECIFICATION"
+    },
+    {
+      "id": "QO-03",
+      "criteria_indices": [
+        0
+      ],
+      "implementation_or_proof_owners": [
+        "QH01",
+        "QP01",
+        "QP02",
+        "Q02",
+        "Q03"
+      ],
+      "input_or_action": "Mix repeated/out-of-order/foreign/expired/malformed/oversized frames, hostile image geometry, native decoder stalls and reassembly floods.",
+      "independent_expected_result": "Enforce actual configured finite image/decoder/frame/aggregate/work/cleanup limits before expansion or effects. Isolate each framing fault; checksums do not authenticate sender.",
+      "execution": "FUTURE_OWNER_GATE_NOT_EXECUTED_BY_THIS_SPECIFICATION"
+    },
+    {
+      "id": "QO-04",
+      "criteria_indices": [
+        0
+      ],
+      "implementation_or_proof_owners": [
+        "K01",
+        "Q02",
+        "Q03"
+      ],
+      "input_or_action": "Mutate identity/request/field/deadline after review, fail display transfer, replay local events or present consent from another presentation epoch.",
+      "independent_expected_result": "No eligible signature/result. First execution attempt is consumed before fallible clock/entropy/backend work; fault invalidates presentation and consent.",
+      "execution": "FUTURE_OWNER_GATE_NOT_EXECUTED_BY_THIS_SPECIFICATION"
+    },
+    {
+      "id": "QO-05",
+      "criteria_indices": [
+        0,
+        1
+      ],
+      "implementation_or_proof_owners": [
+        "QH01",
+        "Q02",
+        "Q03"
+      ],
+      "input_or_action": "Cancel, lock, reset, power-cycle, change identity or disconnect during intake/review/signing/output; rescan an old request or cached response.",
+      "independent_expected_result": "No resurrected authority or second signing. Any permitted retransmission is only the exact bounded verified response under the original live binding; new import/session invalidates it.",
+      "execution": "FUTURE_OWNER_GATE_NOT_EXECUTED_BY_THIS_SPECIFICATION"
+    },
+    {
+      "id": "QO-06",
+      "criteria_indices": [
+        1
+      ],
+      "implementation_or_proof_owners": [
+        "QP01",
+        "QP02",
+        "Q02",
+        "Q03"
+      ],
+      "input_or_action": "Inspect exact image/driver/interpreter/camera/FFI secret copies and normal/fault writes, swap, journals, dumps, thumbnails and image/backup tools. Exercise the persistence detector with a deliberate public-fixture write in an isolated control.",
+      "independent_expected_result": "Detect the positive control; actual session-only candidate produces no forbidden persistent secret copy. Record cleanup limits and remaining physical RAM assumptions; no proof from Drop/power-off alone.",
+      "execution": "FUTURE_OWNER_GATE_NOT_EXECUTED_BY_THIS_SPECIFICATION"
+    },
+    {
+      "id": "QO-07",
+      "criteria_indices": [
+        1
+      ],
+      "implementation_or_proof_owners": [
+        "QP01",
+        "QP02",
+        "Q02",
+        "Q03"
+      ],
+      "input_or_action": "Substitute image/boot media/peripheral, change USB/data/debug/power mode and inspect every radio/companion connection on the identified sample.",
+      "independent_expected_result": "State actual enforcement versus manual image checks and physical-substitution limits. Disabled networking is not absent radio; unknown isolation fails the relevant claim. Update/debug requires locked empty state and qualified return.",
+      "execution": "FUTURE_OWNER_GATE_NOT_EXECUTED_BY_THIS_SPECIFICATION"
+    },
+    {
+      "id": "QO-08",
+      "criteria_indices": [
+        0,
+        1
+      ],
+      "implementation_or_proof_owners": [
+        "S02",
+        "K01",
+        "Q02",
+        "Q03"
+      ],
+      "input_or_action": "Trace actual linked/runtime entropy invocation and inject unavailable/initialization/failure/stuck-source conditions during identity generation or signing.",
+      "independent_expected_result": "No weak/deterministic fallback or eligible partial result. Complete owned-destination cleanup on error; qualify the source/provider, not its statistics. OS CSPRNG/DRBG remains allowed when qualified.",
+      "execution": "FUTURE_OWNER_GATE_NOT_EXECUTED_BY_THIS_SPECIFICATION"
+    },
+    {
+      "id": "QO-09",
+      "criteria_indices": [
+        0
+      ],
+      "implementation_or_proof_owners": [
+        "K01",
+        "QH01",
+        "Q02",
+        "Q03"
+      ],
+      "input_or_action": "Exercise the admitted public catalog and discovery with unsupported DM/automation/authentication methods, unreviewed fields and untrusted origin/time/evidence assertions.",
+      "independent_expected_result": "Support only separately implemented/reviewable operations; no blind signing, silent downgrade or wire-manufactured trust. C02 workflows remain outside initial offline scope.",
+      "execution": "FUTURE_OWNER_GATE_NOT_EXECUTED_BY_THIS_SPECIFICATION"
+    },
+    {
+      "id": "QO-10",
+      "criteria_indices": [
+        0,
+        1
+      ],
+      "implementation_or_proof_owners": [
+        "K01",
+        "Q02",
+        "Q03",
+        "Q04",
+        "Q05"
+      ],
+      "input_or_action": "Perform local text and qualified optical recovery, original nsec export under separate intent, lock/reload and expected-public-key drill.",
+      "independent_expected_result": "No Bridge-assisted plaintext recovery. Preserve original imported scalar despite signing normalization. Impractical or unsupported recovery fails the profile; old SeedSigner formats are not inherited.",
+      "execution": "FUTURE_OWNER_GATE_NOT_EXECUTED_BY_THIS_SPECIFICATION"
+    },
+    {
+      "id": "QO-11",
+      "criteria_indices": [
+        2
+      ],
+      "implementation_or_proof_owners": [
+        "QP01",
+        "Q02",
+        "Q04",
+        "QP02",
+        "Q03",
+        "Q05"
+      ],
+      "input_or_action": "Accept or reject one exact Pi kit while the P4 kit or custom PCB remains unavailable, and vice versa. Inspect graph/release prerequisites and each result sample/binary/evidence binding.",
+      "independent_expected_result": "Independent qualification and release remain possible; no transfer of physical proof, no new cross-profile/custom-board ancestor and no descriptor treated as hardware attestation.",
+      "execution": "FUTURE_OWNER_GATE_NOT_EXECUTED_BY_THIS_SPECIFICATION"
+    }
+  ],
+  "preparation_acceptance": "Distinct substantive review of all3 decisions/record requirements and scenario sufficiency against pinned sources; existing docs/graph/provenance/whitespace checks. No test for prose phrases and no broad runtime suite for this documentation-only preparation.",
+  "closure_gates": [
+    "Actual T01 adoption/source reconciliation",
+    "Distinct exact requirements review",
+    "Normal protected delivery and actual resulting-main checks"
+  ],
+  "downstream_gates": "QP01/QP02, Q02/Q03, QH01 and Q04/Q05 remain their existing measured implementation/release gates; this document closes none.",
+  "self_binding": "Exact enclosing Git candidate is supplied externally; no prospective self hash."
+}

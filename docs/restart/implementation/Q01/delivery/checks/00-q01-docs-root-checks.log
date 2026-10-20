@@ -1,0 +1,71 @@
+{"label": "q01-docs-root-checks", "argv": ["make", "docs", "test"], "cwd": "/home/tux/nsealr/.restart-tools/goal/q01-current-delivery", "started": "2026-10-20T17:08:59.892773+00:00", "log": "00-q01-docs-root-checks.log"}
+python3 scripts/verify_repo.py
+nSealr consolidated product structure passed
+python3 scripts/validate_firmware.py
+nSealr firmware board-profile validation passed
+python3 scripts/verify_repo.py
+nSealr consolidated product structure passed
+python3 scripts/validate_restart_plan.py
+Restart plan valid: 47 tasks; ready: 
+Structural check only; hardware, review quality and security remain evidence gates.
+python3 scripts/verify_evidence.py
+{"closed_files": 1508, "current_contracts": 5, "current_navigation_files": 18, "frozen_source": "f2ef70f522af4977e15f81554a8c6eadcdbe8097"}
+python3 scripts/verify_contracts.py
+{"artifact": "nsealr-contracts-v1", "artifact_format": 2, "artifact_tree": "b629e75d18190ded2403ffabe965b595a9bcf6a6", "consumers": ["bridge", "engine", "pi"], "files": 255, "records": 266, "retired": 11, "source_commit": "45f8b6ff1123f3f55be4ce457fd1008e91043cc2"}
+python3 -m unittest discover -s scripts -p 'test_contracts.py'
+......................................
+----------------------------------------------------------------------
+Ran 38 tests in 4.412s
+
+OK
+{"actual_git_index_mode": "100644", "approved_git_mode": "100755", "control": "owner_execution_mode", "expected_accept": false, "observed_POSIX_permissions": "0o645"}
+{"actual_git_index_mode": "100644", "approved_git_mode": "100755", "control": "owner_execution_mode", "expected_accept": false, "observed_POSIX_permissions": "0o654"}
+{"actual_git_index_mode": "100644", "approved_git_mode": "100755", "control": "owner_execution_mode", "expected_accept": false, "observed_POSIX_permissions": "0o644"}
+{"actual_git_index_mode": "100755", "approved_git_mode": "100755", "control": "owner_execution_mode", "expected_accept": true, "observed_POSIX_permissions": "0o744"}
+{"actual_git_index_mode": "100755", "approved_git_mode": "100755", "control": "owner_execution_mode", "expected_accept": true, "observed_POSIX_permissions": "0o760"}
+{"actual_git_index_mode": "100644", "approved_git_mode": "100644", "control": "nonowner_permissions_not_git_mode", "expected_accept": true, "observed_POSIX_permissions": "0o645"}
+{"actual_git_index_mode": "100644", "approved_git_mode": "100644", "control": "nonowner_permissions_not_git_mode", "expected_accept": true, "observed_POSIX_permissions": "0o654"}
+{"actual_git_index_mode": "100644", "approved_git_mode": "100644", "control": "nonowner_permissions_not_git_mode", "expected_accept": true, "observed_POSIX_permissions": "0o600"}
+{"actual_git_index_mode": "100644", "approved_git_mode": "100644", "control": "nonowner_permissions_not_git_mode", "expected_accept": true, "observed_POSIX_permissions": "0o664"}
+{"actual_git_index_mode": "100644", "approved_git_mode": "100644", "control": "nonowner_permissions_not_git_mode", "expected_accept": true, "observed_POSIX_permissions": "0o644"}
+{"adopted_baseline": "4fd5403a43090798923cda3664952af9c6bbf237", "adopted_source": "29c1a822b45cc190ac8a9ad8b9807ef72f42ca52", "all_four_old_commit_cat_file_exits": 128, "approved_subtree": "a0fa2364840513eb76e667baf02c17a9fe5ca577", "control": "actual_rebase_cold_main_only", "extra_remote_alternate_shallow_or_graft": false, "old_author": "2efc0a06763a092bae01df2c9acb60fc0b075942", "old_baseline": "13afad0a14a9bd791979c231b82d95b6b6a7b768", "old_candidate": "5fdc74a8aa08dac76a7e6592b5d57bae102d59ac", "old_import_metadata": "e409cef9601b3773f16971dfd49dfe4cf4aec686", "only_ref": "refs/heads/main", "original_and_baseline_whole_trees_equal": true, "rebased_main": "dac74ff75adbb4ce27102b17d5acfdf02bcd287d", "subtree_equal_before_after_actual_rebase": true, "subtree_reachable_from_main": true, "valid_then_tamper_then_restore": [5, "REJECT", 5]}
+python3 -m unittest discover -s scripts -p 'test_evidence.py'
+..............
+----------------------------------------------------------------------
+Ran 14 tests in 0.285s
+
+OK
+python3 -m unittest discover -s scripts -p 'test_validate_restart_plan.py'
+..................
+----------------------------------------------------------------------
+Ran 18 tests in 0.005s
+
+OK
+python3 -m unittest discover -s scripts -p 'test_verify_repo.py'
+.....
+----------------------------------------------------------------------
+Ran 5 tests in 0.005s
+
+OK
+python3 -m unittest discover -s tools/baseline -p 'test_*.py'
+negative: ['/home/tux/nsealr/.restart-tools/goal/r00/tools/baseline/.work/final/.tools/python/bin/python3', '-c', 'import sys; print("out"); print("diagnostic", file=sys.stderr); sys.exit(7)']
+diagnostic
+out
+.download file:///tmp/nsealr-q01-current-delivery/tmpe276o1mj/source
+...nsealr-init: ['git', 'init', '/tmp/nsealr-q01-current-delivery/tmpgyatn8c9/nsealr']
+Initialized empty Git repository in /tmp/nsealr-q01-current-delivery/tmpgyatn8c9/nsealr/.git/
+nsealr-fetch: ['git', 'fetch', '--no-tags', '/tmp/nsealr-q01-current-delivery/tmpgyatn8c9/source', '3e1d10b0958b3041efdb2efc34bd85c97af7c3fb']
+From /tmp/nsealr-q01-current-delivery/tmpgyatn8c9/source
+ * branch            3e1d10b0958b3041efdb2efc34bd85c97af7c3fb -> FETCH_HEAD
+nsealr-checkout: ['git', 'checkout', '--detach', 'FETCH_HEAD']
+HEAD is now at 3e1d10b public
+.nsealr-init: ['git', 'init', '/tmp/nsealr-q01-current-delivery/tmp7_l9sc6y/nsealr']
+Initialized empty Git repository in /tmp/nsealr-q01-current-delivery/tmp7_l9sc6y/nsealr/.git/
+nsealr-fetch: ['git', 'fetch', '--no-tags', '/tmp/nsealr-q01-current-delivery/tmp7_l9sc6y/source', '0000000000000000000000000000000000000000']
+fatal: git upload-pack: not our ref 0000000000000000000000000000000000000000
+fatal: remote error: upload-pack: not our ref 0000000000000000000000000000000000000000
+...
+----------------------------------------------------------------------
+Ran 8 tests in 0.164s
+
+OK

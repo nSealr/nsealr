@@ -41,6 +41,8 @@ proposals are not active instructions or another task tracker.
 
 ## Recover the actual state
 
+Q01's [documentary delivery](Q01/delivery/brief.md) pairs the unchanged offline requirements with their distinct specification review. Its Q01 checkpoint is review-only; it does not complete Q01, admit runtime, select framing or qualify either Pi/P4 kit. Its source is reconciled once to actual T01 merge7f; wait for root's actual resulting-main/source PASS before downstream admission.
+
 1. Read the repository `AGENTS.md`, `docs/restart/README.md`, `execution.md` and the task in `plan/work-items.json`.
 2. Run `git status --short`, `git log -5 --oneline`, `git worktree list` and `python3 scripts/validate_restart_plan.py`. Check remote branch and PR heads before assuming a local candidate is current.
 3. For running/review tasks, follow the current graph's assignment and owning brief. For integrated tasks, follow their result manifest, immutable review/evidence and integration record. The first-tranche table in `implementation/README.md` is historical navigation, not a current assignment list. Compare actual worktrees and PRs with the graph; report publication lag instead of assuming an unmerged update is authoritative. Do not duplicate an active author. Read exact input commits, writable paths, known failures and required resources.
