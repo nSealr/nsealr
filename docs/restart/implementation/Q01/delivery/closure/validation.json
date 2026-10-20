@@ -14,7 +14,7 @@
   "all47_criteria_dependency_sets_exact": true,
   "other45_full_task_records_exact_to_both_reviewed_source_and_actual_main": true,
   "all_other_graph_fields_except_revision_exact": true,
-  "current_graph_sha256": "ba93e94cd60557fb7d749fc56af9956fd5fc953f5c4d1d6c58f03ee8604b03eb",
+  "current_graph_sha256": "9fd69f59036b13189a999b8fafa6d30eb42bc1aff7d6943dfa6e59ee0053dba1",
   "Q01_all3_documentary_underlying_evidence_hashes_bound": true,
   "Q01_actual_missing_underlying_review_rejects_all3": true,
   "Q01_exact_proof_restoration_passes": true,
@@ -193,6 +193,43 @@
           "sha256": "f28067af2e258a910528e393731c0f94613e284e105ee671ec702b4501ea3e20"
         }
       ]
+    },
+    {
+      "path": "docs/restart/implementation/Q01/delivery/closure/checks-current-limit/commands.json",
+      "sha256": "c5d83ba733ec358dff521266a88f0656eaf5ec882bae1b7010e6c1ed6f7a02a9",
+      "results": [
+        {
+          "label": "q01-current-limit-plan",
+          "argv": [
+            "python3",
+            "scripts/validate_restart_plan.py"
+          ],
+          "cwd": "/home/tux/nsealr/.restart-tools/goal/q01-current-delivery",
+          "started": "2026-10-20T17:34:53.494577+00:00",
+          "log": "00-q01-current-limit-plan.log",
+          "ended": "2026-10-20T17:34:53.747610+00:00",
+          "exit_code": 0,
+          "sha256": "bbb41697d6b4c4806aedb3f508ee7e0a8a2968ca8ced7efab5acd37ec546a3ab"
+        },
+        {
+          "label": "q01-current-limit-metadata-whitespace",
+          "argv": [
+            "git",
+            "diff",
+            "--check",
+            "3e63e283b07d1261cb91a885288cf220cd512d39",
+            "--",
+            ".",
+            ":(exclude,glob)docs/restart/implementation/Q01/delivery/**/*.log"
+          ],
+          "cwd": "/home/tux/nsealr/.restart-tools/goal/q01-current-delivery",
+          "started": "2026-10-20T17:34:53.747861+00:00",
+          "log": "01-q01-current-limit-metadata-whitespace.log",
+          "ended": "2026-10-20T17:34:53.755952+00:00",
+          "exit_code": 0,
+          "sha256": "f2c93f3d58b42e2c14f432ae21b59497358a564ce686047fb5bda28c24e9d96a"
+        }
+      ]
     }
   ],
   "raw_whitespace": "Full raw-diff observation exit2 is preserved; every reported path is a Q01 raw log. Existing and newly captured trailing spaces remain exact, metadata excluding raw logs exit0. This is not a source/product failure or a waiver of metadata checks.",
@@ -201,5 +238,22 @@
     "Normal protected Q01 PR and actual tested-source checks",
     "Actual protected merge and clean resulting-main correspondence/affected gates"
   ],
-  "limits": "No Q01 actual adoption, runtime admission, physical procedure or device/release qualification claimed. Integrated is a branch proposal. K01 assignment comes solely from its separate explicit root admission; it is not Q01 acceptance or a second task tracker."
+  "limits": "No Q01 actual adoption, runtime admission, physical procedure or device/release qualification claimed. Integrated is a branch proposal. K01 assignment comes solely from its separate explicit root admission; it is not Q01 acceptance or a second task tracker.",
+  "current_limit_correction": {
+    "input_candidate": "3e63e283b07d1261cb91a885288cf220cd512d39",
+    "finding_source": "Root exact current-state metadata review on3e, 2026-10-20",
+    "field": "acceptance_results[0].limits",
+    "before": "Actual adopted T01 API/source reconciliation and owner admission, measured framing/limits and K01/device/Bridge implementation proofs remain future gates.",
+    "after": "Actual T01 source/API reconciliation is complete on accepted main7f; K01 has its separate recorded implementation admission. Measured framing/limits and K01/device/Bridge implementation proofs, plus applicable further downstream admission, remain future gates.",
+    "result_sha256": "c5f307d055d0375527a9a45c08bc146dd6df943221b72c1da277fde3edb1d9c8",
+    "only_result_semantic_change": true,
+    "only_graph_change_from3e": "Corresponding Q01 result artifact SHA256",
+    "original05a_proof23_and_exact_copies14_unchanged": true,
+    "affected_plan_and_metadata_whitespace_exit_codes": [
+      0,
+      0
+    ],
+    "affected_final_approval": "PENDING_ROOT_REVIEW",
+    "no_source_reconciliation_repeated_or_suite": true
+  }
 }
