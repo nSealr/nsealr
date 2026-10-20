@@ -353,7 +353,12 @@ describe("service manual QR port through the existing client lifecycle", () => {
       return actualDispatch(rejectCurrentness ? { ...dispatch,
         before_write: () => { throw new Error("synthetic host currentness failure"); } } : dispatch);
     };
-    if (failure === "retention") state.snapshot.adapter_limits.methods[1].retained_bytes = 1;
+    if (failure === "retention") {
+      // Valid manifest, but one byte below the independent logical reservation:
+      // original request JSON + independently encoded frame +704JSON +947frame.
+      const needed = JSON.stringify(state.request).length + rawQr(state.request).length + 704 + 947;
+      state.snapshot.adapter_limits.methods[1].retained_bytes = needed - 1;
+    }
     expect((await run(state)).ok).toBe(false); expect(entries).toBe(1); expect(state.counts.opens).toBe(0);
     rejectCurrentness = false;
     state.snapshot.adapter_limits.methods[1].retained_bytes = retained;
