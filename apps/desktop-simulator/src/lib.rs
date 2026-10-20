@@ -78,12 +78,12 @@ pub const IN_SCOPE_CATEGORIES: &[&str] = &[
 /// classified, never silently skipped.
 pub const EXCLUDED_CATEGORIES: &[&str] = &[
     "profile-capabilities", // T01 typed profile core tests + Bridge/Pi raw metadata/routing suites; no second simulator model.
-    "access-surfaces", // browser NIP-07 access-surface contract (companion).
-    "custody",         // persistent-custody declarations (companion/hardware).
-    "events",          // event-template fixtures (companion/specs suites).
-    "features",        // signer-feature-matrix registry (verify_specs.py).
-    "grants",          // persistent-grant surface, not in host_core (Phase 05/07).
-    "nip46",           // companion-side NIP-46 surface; host_core never implemented it.
+    "access-surfaces",      // browser NIP-07 access-surface contract (companion).
+    "custody",              // persistent-custody declarations (companion/hardware).
+    "events",               // event-template fixtures (companion/specs suites).
+    "features",             // signer-feature-matrix registry (verify_specs.py).
+    "grants",               // persistent-grant surface, not in host_core (Phase 05/07).
+    "nip46",                // companion-side NIP-46 surface; host_core never implemented it.
     "nip46-auth-challenges",
     "nip46-connection-token-responses",
     "nip46-connection-uris",

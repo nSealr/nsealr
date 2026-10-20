@@ -504,7 +504,6 @@ pub struct ProfileAssessment {
 
 impl ProfileAssessment {
     /// Actual blockers only; unused bounded capacity is not exposed as evidence.
-    #[must_use]
     pub fn blockers(&self) -> impl Iterator<Item = &Blocker> {
         self.blockers[..self.len].iter().flatten()
     }
