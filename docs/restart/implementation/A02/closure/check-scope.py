@@ -86,6 +86,17 @@ def main():
     assert git('diff', BASE, '--', 'protocols/contracts/v1', 'Cargo.lock', 'ci', '.github') == b''
     for path in (ROOT / SCOPE).rglob('*'):
         assert not path.is_symlink()
+    reuse = json.loads((ROOT / SCOPE / 'copy-inventory.json').read_bytes())[
+        'historical_current_source_dependencies']
+    verified_reuse = []
+    for row in reuse:
+        source_bytes = git('show', row['source_commit'] + ':' + row['source_path'])
+        assert sha(source_bytes) == row['sha256']
+        if row['reuse_current_path'] is not None:
+            current_path = ROOT / row['reuse_current_path']
+            assert current_path.is_file() and not current_path.is_symlink()
+            assert sha(current_path.read_bytes()) == row['sha256'], row['reuse_current_path']
+            verified_reuse.append(row['reuse_current_path'])
     if args.expect_closed:
         assert a02['status'] == 'integrated'
         assert a02['candidate_commits'] == a02['reviewed_candidate_commits'] == {'nSealr/nsealr': BASE}
@@ -96,6 +107,7 @@ def main():
                       'other46_serialized_records_unchanged': True, 'original_closed7': closed,
                       'frozen1508_hashes_modes_and_index_preserved': True,
                       'resources': len(current['resources']), 'release_paths': len(current['release_paths']),
+                      'all_nonnull_current_reuse_paths_hash_verified': verified_reuse,
                       'expected_closed_A02': args.expect_closed, 'historical_index_sha256': sha(index_path.read_bytes())},
                      sort_keys=True))
 
