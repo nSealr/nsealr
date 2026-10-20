@@ -29,6 +29,8 @@ The portable core includes S03's strict event parser, canonicalization, complete
 
 ## Delivery order
 
+Q01's [offline requirements delivery](implementation/Q01/delivery/brief.md) preserves the reviewed common Pi/P4 custody, optical and source-linked verification procedures. It remains documentary: its source is reconciled to the observed T01 merge, with actual resulting-main/source checks and each independent device/client/release gate still required.
+
 The first software milestone is a real request → device review → one-use authorization → valid response on an accessible board, with the expected key identity verified end to end. Offline Pi/P4 feasibility and board electronics research run alongside it. No date is promised before measured throughput and physical lead times exist.
 
 The first public release is whichever retained profile satisfies its own safety and usability gates. General Board/SDK delivery has its own non-Nostr acceptance and does not wait for a complete wallet, SSH or FIDO application.
