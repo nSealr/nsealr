@@ -1,9 +1,9 @@
-//! Complete, injective inspection of the admitted kind-1 subset.
+//! Complete, injective inspection of the fixed seven-kind public catalog.
 //!
 //! This ASCII inspection baseline does not qualify device Unicode usability.
 //! Only the authorization owner can turn completed local inspection into consent.
 use crate::{
-    event::{decimal, hex, EventTemplate},
+    event::{decimal, hex, inspect_metadata, EventTemplate, OperationLimits, SignedOriginal},
     hash::Sha256,
     text::FixedStr,
 };
@@ -154,14 +154,176 @@ fn relay(text: &str) -> Result<(), InspectionError> {
     let mut bytes = path.bytes();
     while let Some(b) = bytes.next() {
         if b == b'%' {
-            if !bytes.next().is_some_and(|b| b.is_ascii_hexdigit())
-                || !bytes.next().is_some_and(|b| b.is_ascii_hexdigit())
-            {
+            let nibble = |b: u8| {
+                (b as char)
+                    .to_digit(16)
+                    .map(|n| n as u8)
+                    .ok_or(InspectionError::InvalidTag)
+            };
+            let first = nibble(bytes.next().ok_or(InspectionError::InvalidTag)?)?;
+            let second = nibble(bytes.next().ok_or(InspectionError::InvalidTag)?)?;
+            let decoded = first * 16 + second;
+            if decoded < 32 || matches!(decoded, 127 | b'\\') {
                 return Err(InspectionError::InvalidTag);
             }
         } else if !(b.is_ascii_alphanumeric() || b"-._~!$&'()*+,;=:@/".contains(&b)) {
             return Err(InspectionError::InvalidTag);
         }
+    }
+    Ok(())
+}
+
+fn coordinate(text: &str) -> Result<(u32, [u8; 32]), InspectionError> {
+    let mut parts = text.splitn(3, ':');
+    let kind = unsigned(parts.next().ok_or(InspectionError::InvalidTag)?, 65535)?;
+    let key = public_key(parts.next().ok_or(InspectionError::InvalidTag)?)?;
+    let id = parts.next().ok_or(InspectionError::InvalidTag)?;
+    if !(matches!(kind, 0 | 3 | 10000..=19999) && id.is_empty() || (30000..=39999).contains(&kind))
+    {
+        return Err(InspectionError::InvalidTag);
+    }
+    Ok((kind, key))
+}
+
+fn required_relay(text: &str) -> Result<(), InspectionError> {
+    if text.is_empty() {
+        return Err(InspectionError::InvalidTag);
+    }
+    relay(text)
+}
+
+/// Validate semantics under the selected identity before any local consent.
+/// Signed originals are verified from borrowed spans, never caller trust flags.
+pub(crate) fn validate_catalog(
+    event: &EventTemplate,
+    selected: &[u8; 32],
+    limits: OperationLimits,
+) -> Result<(), InspectionError> {
+    if event.kind() == 1 {
+        return validate_kind1(event);
+    }
+    if event.kind() == 0 {
+        inspect_metadata(event.content(), |_| Ok(())).map_err(|_| InspectionError::InvalidTag)?;
+        return Ok(());
+    }
+    if !matches!(event.kind(), 3 | 5 | 6 | 7 | 10002) {
+        return Err(InspectionError::Unsupported);
+    }
+    let mut target = None;
+    let mut target_author = None;
+    let mut last_person = None;
+    let mut address = None;
+    let mut kind_hint = None;
+    let mut targets = 0;
+    let mut people = 0;
+    for index in 0..event.tag_count() {
+        let mut fields = event.tag(index).ok_or(InspectionError::InvalidTag)?;
+        let name = fields.next().ok_or(InspectionError::InvalidTag)?;
+        match (event.kind(), name) {
+            (3 | 6 | 7, "p") => {
+                last_person = Some(public_key(
+                    fields.next().ok_or(InspectionError::InvalidTag)?,
+                )?);
+                people += 1;
+                if let Some(hint) = fields.next() {
+                    relay(hint)?;
+                }
+                // Kind3's optional petname and every suffix remain unverified data.
+            }
+            (5 | 6 | 7, "e") => {
+                target = Some(decode_hex(
+                    fields.next().ok_or(InspectionError::InvalidTag)?,
+                )?);
+                targets += 1;
+                if event.kind() == 6 {
+                    required_relay(fields.next().ok_or(InspectionError::InvalidTag)?)?;
+                }
+                if event.kind() == 7 {
+                    if let Some(hint) = fields.next() {
+                        relay(hint)?;
+                    }
+                    target_author = fields.next().map(public_key).transpose()?;
+                }
+            }
+            (5 | 7, "a") => {
+                let value = coordinate(fields.next().ok_or(InspectionError::InvalidTag)?)?;
+                if event.kind() == 5 {
+                    if value.1 != *selected {
+                        return Err(InspectionError::InvalidTag);
+                    }
+                    targets += 1;
+                } else {
+                    if address.replace(value).is_some() {
+                        return Err(InspectionError::InvalidTag);
+                    }
+                    if let Some(hint) = fields.next() {
+                        relay(hint)?;
+                    }
+                    if let Some(author) = fields.next() {
+                        if public_key(author)? != value.1 {
+                            return Err(InspectionError::InvalidTag);
+                        }
+                    }
+                }
+            }
+            (5 | 7, "k") => {
+                let value = unsigned(fields.next().ok_or(InspectionError::InvalidTag)?, 65535)?;
+                if event.kind() == 7 && kind_hint.replace(value).is_some() {
+                    return Err(InspectionError::InvalidTag);
+                }
+            }
+            (7, "emoji") => return Err(InspectionError::Unsupported),
+            (10002, "r") => {
+                required_relay(fields.next().ok_or(InspectionError::InvalidTag)?)?;
+                if let Some(role) = fields.next() {
+                    if !matches!(role, "read" | "write") {
+                        return Err(InspectionError::InvalidTag);
+                    }
+                }
+            }
+            _ => {}
+        }
+    }
+    match event.kind() {
+        5 if targets == 0 => return Err(InspectionError::InvalidTag),
+        6 => {
+            if targets != 1 || people > 1 {
+                return Err(InspectionError::InvalidTag);
+            }
+            if !event.content().is_empty() {
+                let original = SignedOriginal::parse(event.content(), limits)
+                    .map_err(|_| InspectionError::InvalidTag)?;
+                original.verify().map_err(|_| InspectionError::InvalidTag)?;
+                if Some(original.id) != target
+                    || last_person.is_some_and(|p| p != original.public_key)
+                {
+                    return Err(InspectionError::InvalidTag);
+                }
+            }
+        }
+        7 => {
+            if targets == 0 {
+                return Err(InspectionError::InvalidTag);
+            }
+            if target_author.zip(last_person).is_some_and(|(a, b)| a != b)
+                || address.is_some_and(|(kind, key)| {
+                    kind_hint.is_some_and(|k| k != kind)
+                        || last_person.is_some_and(|p| p != key)
+                        || target_author.is_some_and(|p| p != key)
+                })
+            {
+                return Err(InspectionError::InvalidTag);
+            }
+            let content = event.content();
+            if content.starts_with(':')
+                && content.ends_with(':')
+                && content.len() > 2
+                && !content[1..content.len() - 1].contains(':')
+            {
+                return Err(InspectionError::Unsupported);
+            }
+        }
+        _ => {}
     }
     Ok(())
 }
@@ -254,6 +416,7 @@ pub(crate) struct ReviewDocument<'a> {
     pub context: &'a [u64],
     pub geometry: InspectionGeometry,
     pub max_pages: usize,
+    pub limits: OperationLimits,
 }
 // Used only for bytes produced by the local decimal/hex/ASCII-label formatters.
 fn ascii(bytes: &[u8]) -> &str {
@@ -379,7 +542,19 @@ impl ReviewDocument<'_> {
             token("\"")?;
             flush(&mut body)
         };
-        value("Review contract","nsealr.authorization.v1 / exact ASCII inspection v1; kind 1 text note; references and quotations are unverified")?;
+        value("Review contract", "nsealr.authorization.v1 / exact ASCII inspection catalog v2; signed values are complete; external claims are unverified")?;
+        let operation = match self.event.kind() {
+            0 => "Replace the whole public profile. Empty object clears profile fields. Nested values/types are shown; identity/profile claims are not verified.",
+            1 => "Publish a kind 1 text note. References and quotations are unverified. Unmarked context is ambiguous; root/reply markers describe reply structure only.",
+            3 => "Replace the entire public follow list. Empty p-list unfollows everyone. Repeated entries/order remain signed; relay hints and petnames are unverified.",
+            5 => "Publish a deletion request for every e/a target. k values are unpaired hints. Coordinate deletion covers historical versions through created_at. Erasure is not guaranteed; deleting a deletion cannot undo it.",
+            6 if self.event.content().is_empty() => "Repost one kind 1 event reference. Original content/signature were not supplied and are unverified. Relay and author hints do not prove real-world identity.",
+            6 => "Repost one kind 1 event with checked original ID/signature. The complete original follows. Cryptographic validity does not establish real-world identity or truth.",
+            7 => "React to the LAST e target, with LAST p author hint. Earlier references are context. Supplied author/coordinate/k hints agree but external target meaning is unverified. Empty/+ means like; - means dislike; other content is literal.",
+            10002 => "Replace the whole public relay list. Empty r-list withdraws all relays. Missing role means read and write. Preserve repeated entries/order. This is not the private-message relay list kind 10050.",
+            _ => return Err(InspectionError::Unsupported),
+        };
+        value("Operation and consequences", operation)?;
         value("Request ID (host correlation only)", self.request_id)?;
         let key = hex::<32, 64>(self.public_key);
         value("Selected actual signing identity", ascii(&key))?;
@@ -433,14 +608,32 @@ impl ReviewDocument<'_> {
                 .and_then(|mut f| f.next())
                 .ok_or(InspectionError::InvalidTag)?;
             for (index, text) in fields.enumerate() {
-                let role = match (name, index) {
-                    ("e" | "p" | "q", 0) => "tag identifier",
-                    ("e", 1) => "unverified event reference; unmarked context is ambiguous",
-                    ("e" | "p" | "q", 2) => "relay hint (not authenticated)",
-                    ("e", 3) => "reply-context marker (empty is ambiguous)",
-                    ("e", 4) | ("q", 3) => "claimed author (not verified)",
-                    ("p", 1) => "referenced public key",
-                    ("q", 1) => "unverified quotation target",
+                let role = match (self.event.kind(), name, index) {
+                    (_, _, 0) => "tag identifier",
+                    (1, "e", 1) => "unverified event reference; unmarked context is ambiguous",
+                    (1, "e" | "p" | "q", 2) => "relay hint (not authenticated)",
+                    (1, "e", 3) => "reply-context marker (empty is ambiguous)",
+                    (1, "e", 4) | (1, "q", 3) => "claimed author (not verified)",
+                    (1, "p", 1) => "referenced public key",
+                    (1, "q", 1) => "unverified quotation target",
+                    (3, "p", 1) => "followed public key (list entry)",
+                    (3, "p", 2) => "unverified relay hint",
+                    (3, "p", 3) => "unverified petname",
+                    (5, "e", 1) => "deletion event ID target",
+                    (5, "a", 1) => "deletion coordinate owned by selected key",
+                    (5, "k", 1) => "unpaired deletion kind hint",
+                    (6, "e", 1) => "sole repost event ID target",
+                    (6, "e", 2) => "required original relay (unverified)",
+                    (6, "p", 1) => "original author hint (checked if original supplied)",
+                    (6, "p", 2) => "unverified original author relay hint",
+                    (7, "e", 1) => "reaction event ID; LAST e is target, earlier are context",
+                    (7, "p", 1) => "author hint; LAST p is target author",
+                    (7, "e" | "p" | "a", 2) => "unverified relay hint",
+                    (7, "e" | "a", 3) => "supplied target author (not real-world identity)",
+                    (7, "a", 1) => "coherent target coordinate (unverified)",
+                    (7, "k", 1) => "coherent target kind hint (unverified)",
+                    (10002, "r", 1) => "public relay URL (unverified)",
+                    (10002, "r", 2) => "relay role; read or write; absent means both",
                     _ => "additional signed data - meaning not verified",
                 };
                 let mut label = FixedStr::<160>::new();
@@ -453,6 +646,68 @@ impl ReviewDocument<'_> {
                 value(label.as_str(), text)?;
             }
         }
+        if self.event.kind() == 0 {
+            inspect_metadata(self.event.content(), |item| {
+                let mut label = FixedStr::<160>::new();
+                push(&mut label, "Profile node ").map_err(|_| crate::event::EventError::Limit)?;
+                number(&mut label, item.node).map_err(|_| crate::event::EventError::Limit)?;
+                push(&mut label, " parent ").map_err(|_| crate::event::EventError::Limit)?;
+                number(&mut label, item.parent).map_err(|_| crate::event::EventError::Limit)?;
+                push(&mut label, " index/count ").map_err(|_| crate::event::EventError::Limit)?;
+                number(&mut label, item.index).map_err(|_| crate::event::EventError::Limit)?;
+                push(&mut label, ": ").map_err(|_| crate::event::EventError::Limit)?;
+                push(&mut label, item.kind).map_err(|_| crate::event::EventError::Limit)?;
+                value(label.as_str(), item.text).map_err(|_| crate::event::EventError::Limit)
+            })
+            .map_err(|_| InspectionError::Limit)?;
+        }
+        if self.event.kind() == 6 && !self.event.content().is_empty() {
+            // Borrow source spans and decode one bounded field at a time. Intake
+            // already verified this immutable original; rendering adds no key
+            // conversions, second event arena, or repeated signature checks.
+            let original = SignedOriginal::parse(self.event.content(), self.limits)
+                .map_err(|_| InspectionError::InvalidTag)?;
+            value(
+                "Checked original public key (not real-world identity)",
+                ascii(&hex::<32, 64>(&original.public_key)),
+            )?;
+            value(
+                "Checked original event ID",
+                ascii(&hex::<32, 64>(&original.id)),
+            )?;
+            value(
+                "Checked original raw signature",
+                ascii(&hex::<64, 128>(&original.signature)),
+            )?;
+            let mut buf = [0; 20];
+            value(
+                "Original signed created_at (untrusted)",
+                ascii(decimal(original.created_at, &mut buf)),
+            )?;
+            value(
+                "Original signed kind",
+                ascii(decimal(u64::from(original.kind), &mut buf)),
+            )?;
+            original
+                .visit_content(|text| {
+                    value("Original signed content", text)
+                        .map_err(|_| crate::event::EventError::Limit)
+                })
+                .map_err(|_| InspectionError::Limit)?;
+            original
+                .visit_tags(|tag, index, text| {
+                    let mut label = FixedStr::<160>::new();
+                    push(&mut label, "Original signed tag ")
+                        .map_err(|_| crate::event::EventError::Limit)?;
+                    number(&mut label, tag).map_err(|_| crate::event::EventError::Limit)?;
+                    push(&mut label, " field ").map_err(|_| crate::event::EventError::Limit)?;
+                    number(&mut label, index).map_err(|_| crate::event::EventError::Limit)?;
+                    push(&mut label, ": original signed data, meaning not verified")
+                        .map_err(|_| crate::event::EventError::Limit)?;
+                    value(label.as_str(), text).map_err(|_| crate::event::EventError::Limit)
+                })
+                .map_err(|_| InspectionError::Limit)?;
+        }
         // At most ten cells with quotes: always one fragment in any admitted
         // value area. Its label, prompt and position are preflighted too.
         value("Decision", "Approve?")?;
@@ -460,7 +715,7 @@ impl ReviewDocument<'_> {
     }
     pub fn commitment(&self) -> Result<([u8; 32], usize), InspectionError> {
         let mut hash = Sha256::new();
-        field(&mut hash, b"nsealr.review.v1");
+        field(&mut hash, b"nsealr.review.catalog.v2");
         let count = self.pages(|frame| {
             field(&mut hash, frame.label().as_bytes());
             field(&mut hash, frame.body().as_bytes());
