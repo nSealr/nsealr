@@ -5,8 +5,11 @@ product patch, dependency resolution, backend change, fixture generation or
 product execution. The preparation worktree is based on A02 adoption candidate
 `a5f7b9f2e087c9538495a16706644f3390e6b01c`, tree
 `e67b1337eaea5cfe3242fe4d83845881764ea5f0`. That candidate remains immutable.
-Actual integrated A02 main and its successful exact-main CI are **not supplied**.
-This preparation does not admit implementation or close S03.
+The coordinator subsequently reported normally integrated A02 main
+`d931277bebbc5f43514b0e8438d65fb60603fa35`; read-only Git inspection confirms its
+tree equals the preparation base. Exact push CI [39408038674](https://github.com/nSealr/nsealr/actions/runs/39408038674)
+was observed `in_progress`, with no successful conclusion. This observation
+does not admit S03 implementation or close its source-pin/specification gate.
 
 The [source reconciliation](source-reconciliation.json) binds every one of the
 746 changes between original S03 input `3cbd818a0bcd4016eb8983dad7605cb57280d913`
@@ -27,8 +30,9 @@ Do not restart the old S03 substantive review from scratch.
 
 ## Admission gate and requirement authority
 
-Before code, the coordinator must append the actual normally integrated A02
-main commit/tree, exact successful main-CI run and reviewed integration identity.
+Before code, the coordinator must bind the observed normally integrated A02
+main commit/tree to an actual successful exact-main CI run and reviewed
+integration identity. The pending run above does not satisfy this requirement.
 Reconcile this preparation's 30 requirement/context bindings, all 21 source
 paths, both lockfiles, vendor inventory and contract artifact against that actual
 main. Classify every difference; do not silently substitute latest main or
