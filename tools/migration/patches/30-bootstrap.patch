@@ -1,0 +1,1159 @@
+diff --git a/tools/baseline/README.md b/tools/baseline/README.md
+index 09f8604c1b037667ec4e1b45d3ab96b2b1974763..cf7c015f3036014a0035d53821bcdec610b41092 100644
+--- a/tools/baseline/README.md
++++ b/tools/baseline/README.md
+@@ -1,122 +1,23 @@
+-# Pinned software baseline
++# Pinned product bootstrap
+ 
+-From a clean committed checkout of `nSealr/nsealr` on Linux x86_64/glibc:
++From a clean committed nsealr checkout on Linux x86_64/glibc:
+ 
+ ```sh
+-python3 tools/baseline/bootstrap.py /absolute/new/baseline
+-python3 /absolute/new/baseline/firmware/tools/baseline/run.py /absolute/new/baseline
++python3 tools/baseline/bootstrap.py /absolute/absent/runtime
++python3 /absolute/absent/runtime/nsealr/tools/baseline/run.py /absolute/absent/runtime
+ ```
+ 
+-`bootstrap.py` is the single installation entry point. The destination must not
+-exist. It fetches the current committed core candidate and the exact companion,
+-Raspberry, specs, lab, hardware, smartcard and website commits in `inputs.json`.
+-Some legacy migration sources require authorized GitHub access. Supply
+-`--mirrors /path/to/authorized/sibling/repos` to use existing Git repositories
+-**only as source transport** (relative paths resolve against the invocation directory); each is freshly fetched with its commit verified.
+-No existing dependency cache, working tree content or tool installation is
+-copied. No private source history is imported into the public core repository.
+-
+-For public core reproduction without migration-source access, add `--core-only`.
+-It still installs all pinned runtimes and runs the complete core `make ci`, but
+-cannot claim multi-repository integration. The caller's committed nsealr tree is
+-the source; fetch/checkout the intended candidate before invoking this command.
+-Uncommitted tracked changes are rejected. Each run needs a new destination.
+-
+-The directory layout is intentionally **siblings inside one isolated root**:
+-
+-```text
+-baseline/
+-  firmware/   # nSealr/nsealr; legacy name required by integration consumers
+-  companion/ raspberry/ specs/ lab/ hardware/ smartcard/ website/
+-  .tools/     # runtimes, wheelhouse, caches, config, temporary outputs
+-  evidence/   # commands, UTC timestamps, logs, status and SHA-256
+-```
+-
+-This supersedes the old private `workspace/scripts/bootstrap.py` behavior that
+-created nested repositories under its own checkout while its consumers assumed
+-siblings. It does not reorganize the maintainer's current checkout or decide
+-future A01/A02 source disposition.
+-
+-Host prerequisites: Python 3.12+ for this driver, Git, make, rsync, a C compiler,
+-Linux x86_64/glibc, trusted TLS roots and network access to GitHub, Node, Rust,
+-PyPI and npm. No sudo is required. The kernel, libc, C compiler, TLS trust roots
+-and system utilities remain host inputs, recorded in the environment manifest.
+-This is a cold user-space bootstrap, not a container or hermetic OS build.
+-Source retrieval uses the caller's authorized Git credential configuration;
+-subsequent commands use a minimal recorded environment. HOME is unchanged;
+-package caches/config and Python user installations point under `.tools/`.
+-
+-Runtime pins: Python 3.12.15 (standalone build 20261013), Node 24.22.0 (bundled
+-npm 11.19.1), pnpm 10.33.4, rustup 1.29.1 and Rust 1.95.0 with rustfmt, clippy,
+-llvm-tools-preview and `riscv32imafc-unknown-none-elf`. cargo-deny 0.20.2 and
+-cargo-llvm-cov 0.9.1 use **prebuilt official release binaries**, with URLs and
+-SHA-256 in the manifest. Rustup verifies its downloaded component checksums.
+-Python wheels, runtime archives and pnpm archive are hash checked before use;
+-Node workspaces use their existing frozen lockfiles. Repeated Python Makefile
+-setup uses an offline wheelhouse and exact constraints, including build tools.
+-The core's actual Rust CI still compiles and tests source.
+-
+-Python 3.12.15 is the September 30, 2026 security release, selected after checking
+-[Python's release page](https://www.python.org/downloads/release/python-31215/).
+-Its standalone archive hash comes from the
+-[20261013 upstream release](https://github.com/astral-sh/python-build-standalone/releases/tag/20261013).
+-Other hash authorities are [Node checksums](https://nodejs.org/dist/v24.22.0/SHASUMS256.txt),
+-[npm package metadata](https://registry.npmjs.org/pnpm/10.33.4),
+-[rustup checksum](https://static.rust-lang.org/rustup/archive/1.29.1/x86_64-unknown-linux-gnu/rustup-init.sha256),
+-[cargo-deny release](https://github.com/EmbarkStudios/cargo-deny/releases/tag/0.20.2),
+-[cargo-llvm-cov release](https://github.com/taiki-e/cargo-llvm-cov/releases/tag/v0.9.1)
+-and each pinned wheel's PyPI version metadata. Pinning does not certify these
+-tools or legacy dependencies safe; audits and new patches still need review.
+-
+-`run.py` uses `make -k ci` to retain independent later gate results when an earlier
+-gate fails. The exit remains nonzero. Full integration runs the unchanged lab
+-`make integration` recipe in one invocation. It does not pass command-line
+-PYTHON/VENV overrides (which would leak through recursive make into Raspberry
+-setup). npm launcher logging is set to `error`; application stderr is neither
+-filtered nor discarded. All existing quiet-input/error assertions remain active.
+-
+-The current default tuple pins specs `45f8b6ff1123f3f55be4ce457fd1008e91043cc2`
+-and companion `678796900e462f5504e47fe934e2e5f23d85824f` for the metadata-v1 core
+-snapshot. All remaining source/runtime pins are unchanged from R00. No input
+-silently follows a moving branch. The historical companion generated API failure
+-remains in R00 evidence; current API freshness and review assertions stay active.
+-Live relay tests are disabled;
+-real browser sessions and physical devices require separate acceptance. Safe
+-hardware-probe and simulator tests do not establish real hardware operation.
+-The runner writes these explicit skips even if all executed software gates pass.
+-
+-For an independent replay, checkout the same tooling candidate into a new Git
+-clone and run bootstrap into another absent destination. Use `run.py --smoke`
+-for the second installation's version/layout/core/fixture smoke only; it cannot
+-substitute for the first complete suite run. Inspect `commands.json` and
+-`environment-manifest.json`, preserve logs and hashes, and obtain an independent
+-review of the exact candidate before closing R00. No previous CI run counts.
+-
+-Tool boundary checks: `python3 -m unittest discover -s tools/baseline -p 'test_*.py'`.
+-
+-The isolated lab checkout receives three selected CC0 overlays in order:
+-
+-1. Original `overlays/lab-provenance.patch`, preserved unchanged.
+-2. `docs/restart/implementation/S01/lab-metadata-v1.patch`, selecting and requiring
+-   all three v1 auth-negative integration cases.
+-3. `overlays/lab-provenance-followup.patch`, requiring core metadata independently
+-   of file discovery and comparing the complete tracked vector inventory and
+-   source/snapshot bytes against the claimed Git commit, including dotfiles.
+-
+-The first patch alone has known manifest-absence and forged-dotfile bypasses;
+-current defaults always apply the follow-up. Partial consumers retain their
+-existing required-glob checks. Bootstrap verifies source, patch, preimage and
+-output hashes and writes three distinct overlay records. The runner rejects
+-undeclared source changes. A02 must review/import the corrected selected tooling
+-before replacing this transitional sibling layout. Original failed logs remain
+-evidence; successful integration applies only to its recorded source/overlay tuple.
+-
+-For historical R00 reproduction, use the stable remote refs
+-`evidence/r00-full-20261018` (`f853757a5080003036aacb797999410398816f16`) or
+-`evidence/r00-reviewed-20261018` (`303b4c9d9386147220abaf2cf754c5c47e458dff`). Their
+-original inputs SHA-256 is `546067e92916c93d58ac7e063f79ba7b279eca7f73be9d7f86baec97e6642e59`.
+-Those refs preserve old specs `8bb8cca71355bcf8d81a093bcee9f3fe6915b121`, tooling,
+-failures and provenance limitations. Do not apply the v1 consumer to that old
+-snapshot. The new follow-up is separately tested after original R00 provenance
+-alone against the historical core/specs pair; this does not rewrite historical
+-acceptance or claim that its original checker rejected the newly exposed bypasses.
++The existing installer pins downloadable Python, Node, pnpm, cargo tools and
++wheels by version and SHA-256. Rustup installs the declared Rust version and
++targets. It fetches only the exact current product commit, with its reachable
++history for immutable contract/evidence checks. No sibling or private repository
++is fetched. The caller's HOME remains unchanged; caches/configuration belong to
++the new runtime. Destination reuse, archive hash failures, dirty source and
++source drift are rejected. The full run records commands, outputs and failures.
++
++The host OS, libc, compiler, Git, make, rsync and hosted runner are not hermetic.
++Downloaded Rust toolchain manifests use the existing rustup trust boundary.
++Actual installed browser, live relay, attached hardware and physical security
++qualification require separate evidence. Historical R00/S01 multi-repository
++inputs and overlay tools are preserved in original Git history and reviewed
++restart evidence; they are no longer the active product bootstrap.
+diff --git a/tools/baseline/bootstrap.py b/tools/baseline/bootstrap.py
+index dac8396d3d3c2527f67300536c7603a885cf3663..4c52514fe4ba4608d5f3931069f74ce044d33c31 100644
+--- a/tools/baseline/bootstrap.py
++++ b/tools/baseline/bootstrap.py
+@@ -1,5 +1,5 @@
+ #!/usr/bin/env python3
+-"""Create a cold, pinned Linux x86_64 software baseline; never reuse a destination."""
++"""Create a cold, pinned Linux x86_64 product bootstrap; never reuse a destination."""
+ from __future__ import annotations
+ 
+ import argparse
+@@ -92,7 +92,7 @@ def extract(path: Path, destination: Path) -> None:
+ def fetch(recorder: Recorder, name: str, origin: str, commit: str, root: Path) -> None:
+     path = root / name
+     recorder.run(f'{name}-init', ['git', 'init', str(path)], root)
+-    recorder.run(f'{name}-fetch', ['git', 'fetch', '--depth=1', origin, commit], path)
++    recorder.run(f'{name}-fetch', ['git', 'fetch', '--no-tags', origin, commit], path)
+     recorder.run(f'{name}-checkout', ['git', 'checkout', '--detach', 'FETCH_HEAD'], path)
+     actual = subprocess.check_output(['git', 'rev-parse', 'HEAD'], cwd=path, text=True).strip()
+     dirty = subprocess.check_output(['git', 'status', '--porcelain'], cwd=path, text=True).strip()
+@@ -100,42 +100,11 @@ def fetch(recorder: Recorder, name: str, origin: str, commit: str, root: Path) -
+         raise ValueError(f'{name}: expected clean checkout of {commit}, got {actual} {dirty}')
+ 
+ 
+-def apply_lab_overlay(recorder: Recorder, root: Path, commit: str, manifest: Path, record: str) -> None:
+-    """Apply one selected patch only to its verified source and preimage."""
+-    overlay = json.loads(manifest.read_text())
+-    patch = manifest.with_suffix('.patch')
+-    actual = subprocess.check_output(['git', 'rev-parse', 'HEAD'], cwd=root/'lab', text=True).strip()
+-    if sha256(patch) != overlay['patch_sha256'] or commit != overlay['commit'] or actual != commit:
+-        raise ValueError('overlay source/patch pin mismatch')
+-    for name, hashes in overlay['files'].items():
+-        if sha256(root/'lab'/name) != hashes['before_sha256']:
+-            raise ValueError(f'overlay preimage mismatch: {name}')
+-    recorder.run(record+'-check', ['git', 'apply', '--check', str(patch)], root/'lab')
+-    recorder.run(record+'-apply', ['git', 'apply', str(patch)], root/'lab')
+-    for name, hashes in overlay['files'].items():
+-        if sha256(root/'lab'/name) != hashes['after_sha256']:
+-            raise ValueError(f'overlay output mismatch: {name}')
+-    write_json(root/'evidence'/f'{record}.json', overlay)
+-
+-
+-def apply_lab_overlays(recorder: Recorder, root: Path, commit: str) -> None:
+-    # Explicit current tuple; historical R00 refs retain their own inputs/runner.
+-    for manifest, record in (
+-        (HERE/'overlays/lab-provenance.json', 'overlay'),
+-        (SOURCE/'docs/restart/implementation/S01/lab-metadata-v1.json', 'metadata-v1-overlay'),
+-        (HERE/'overlays/lab-provenance-followup.json', 'provenance-followup-overlay'),
+-    ):
+-        apply_lab_overlay(recorder, root, commit, manifest, record)
+-
+-
+ def main() -> int:
+     parser = argparse.ArgumentParser(description=__doc__)
+     parser.add_argument('destination', type=Path, help='must not already exist')
+-    parser.add_argument('--mirrors', type=Path, help='authorized sibling Git repositories; transport only, pins still verified')
+-    parser.add_argument('--core-only', action='store_true', help='public core only; no private integration sources')
+     args = parser.parse_args()
+     root = args.destination.absolute()
+-    mirrors = args.mirrors.resolve() if args.mirrors else None
+     if root.exists() or root.is_symlink():
+         parser.error(f'destination already exists: {root}')
+     if platform.system() != 'Linux' or platform.machine() != 'x86_64' or platform.libc_ver()[0] != 'glibc':
+@@ -160,16 +129,9 @@ def main() -> int:
+     # Git source retrieval may use the caller's authorized credential setup;
+     # execution uses the separate, minimal runtime environment recorded above.
+     clones = Recorder(root/'evidence/clones', dict(os.environ))
+-    fetch(clones, 'firmware', str(SOURCE), candidate, root)
++    fetch(clones, 'nsealr', str(SOURCE), candidate, root)
+     inputs = {'nsealr': candidate}
+-    if not args.core_only:
+-        for name, entry in lock['repositories'].items():
+-            origin = str(mirrors/name) if mirrors else entry['url']
+-            fetch(clones, name, origin, entry['commit'], root)
+-            inputs[name] = entry['commit']
+     write_json(root/'source-commits.json', inputs)
+-    if 'lab' in inputs:
+-        apply_lab_overlays(clones, root, inputs['lab'])
+     recorder = Recorder(root/'evidence/bootstrap', env)
+     for name, entry in lock['tools'].items():
+         asset = t/'downloads'/entry['filename']
+@@ -204,12 +166,8 @@ def main() -> int:
+     recorder.run('rustup-disable-self-update', ['rustup', 'set', 'auto-self-update', 'disable'], root)
+     recorder.run('rust-toolchain', ['rustup', 'toolchain', 'install', lock['rust_version'], '--profile', 'minimal', '--component', 'rustfmt,clippy,llvm-tools-preview', '--target', 'riscv32imafc-unknown-none-elf'], root)
+     recorder.run('rust-default', ['rustup', 'default', lock['rust_version']], root)
+-    for name in ('companion', 'website'):
+-        if (root/name).exists():
+-            recorder.run(f'{name}-frozen-install', ['pnpm', 'install', '--frozen-lockfile'], root/name)
+-    for name in ('lab', 'raspberry', 'smartcard'):
+-        if (root/name).exists():
+-            recorder.run(f'{name}-setup', ['make', 'setup'], root/name)
++    recorder.run('product-frozen-install', ['pnpm', 'install', '--frozen-lockfile'], root/'nsealr')
++    recorder.run('pi-setup', ['make', 'setup'], root/'nsealr/apps/pi')
+     versions = {}
+     for name, command in {'python':['python3','--version'], 'pip':['python3','-m','pip','--version'], 'node':['node','--version'], 'npm':['npm','--version'], 'pnpm':['pnpm','--version'], 'rust':['rustc','--version'], 'cargo':['cargo','--version'], 'rustup':['rustup','--version'], 'cargo-deny':['cargo','deny','--version'], 'cargo-llvm-cov':['cargo','llvm-cov','--version'], 'cc':['cc','--version'], 'make':['make','--version'], 'git':['git','--version'], 'libc':['ldd','--version']}.items():
+         versions[name] = subprocess.check_output(command, cwd=root, env=env, text=True, stderr=subprocess.STDOUT).splitlines()[0]
+@@ -219,11 +177,11 @@ def main() -> int:
+             raise ValueError(f'{name}: expected {expected}, got {versions[name]}')
+     source_state = {}
+     for name in inputs:
+-        source = root/('firmware' if name == 'nsealr' else name)
++        source = root/name
+         source_state[name] = {'status':subprocess.check_output(['git','status','--porcelain'],cwd=source,text=True), 'diff_sha256':hashlib.sha256(subprocess.check_output(['git','diff','--binary'],cwd=source)).hexdigest()}
+     write_json(root/'source-state.json', source_state)
+-    write_json(root/'evidence/environment-manifest.json', dict(candidate=candidate, created=utc(), versions=versions, kernel=platform.platform(), os_release=Path('/etc/os-release').read_text(), bootstrap_sha256=sha256(HERE/'bootstrap.py'), inputs_sha256=sha256(HERE/'inputs.json'), cold_destination=True, core_only=args.core_only))
+-    print(f'Bootstrap complete. Run: python3 {root}/firmware/tools/baseline/run.py {root}', flush=True)
++    write_json(root/'evidence/environment-manifest.json', dict(candidate=candidate, created=utc(), versions=versions, kernel=platform.platform(), os_release=Path('/etc/os-release').read_text(), bootstrap_sha256=sha256(HERE/'bootstrap.py'), inputs_sha256=sha256(HERE/'inputs.json'), cold_destination=True, scope="single public product checkout; hardware and optional physical resources are separate", os_hermetic=False))
++    print(f'Bootstrap complete. Run: python3 {root}/nsealr/tools/baseline/run.py {root}', flush=True)
+     return 0
+ 
+ 
+diff --git a/tools/baseline/inputs.json b/tools/baseline/inputs.json
+index e480a58f2d7e55fd84eb8749760c2b7d84a585cc..81b8b7d660f2ad4db811ac6a3457adfce1007e68 100644
+--- a/tools/baseline/inputs.json
++++ b/tools/baseline/inputs.json
+@@ -1,145 +1,108 @@
+ {
+   "format": 1,
+   "platform": "x86_64-unknown-linux-gnu",
+-  "rust_version": "1.95.0",
+-  "tools": {
+-    "python": {
+-      "version": "3.12.15",
+-      "filename": "python.tar.gz",
+-      "url": "https://github.com/astral-sh/python-build-standalone/releases/download/20261013/cpython-3.12.15%2B20261013-x86_64-unknown-linux-gnu-install_only_stripped.tar.gz",
+-      "sha256": "178d3d83b6e8e99285a65d3fce9c16b87952cc5efdb4d1a0e3ff3be18ff0fc9c"
+-    },
+-    "node": {
+-      "version": "24.22.0",
+-      "filename": "node.tar.xz",
+-      "url": "https://nodejs.org/dist/v24.22.0/node-v24.22.0-linux-x64.tar.xz",
+-      "sha256": "cc2f601cee82d9a5a233302fe307abc600727035fd7d2c3a3571755989e95008"
+-    },
+-    "pnpm": {
+-      "version": "10.33.4",
+-      "filename": "pnpm.tgz",
+-      "url": "https://registry.npmjs.org/pnpm/-/pnpm-10.33.4.tgz",
+-      "sha256": "8e70ddc6649b18bc3d895cf3a908c0291ea4c38039ad8722c47e018daf1e9cfc"
+-    },
+-    "rustup": {
+-      "version": "1.29.1",
+-      "filename": "rustup-init",
+-      "url": "https://static.rust-lang.org/rustup/archive/1.29.1/x86_64-unknown-linux-gnu/rustup-init",
+-      "sha256": "dda7234360b7f578ca8b0ddcb80145646fa61a67c1720a5abc7051b35c9fcb71"
+-    },
+-    "cargo-deny": {
+-      "version": "0.20.2",
+-      "filename": "cargo-deny.tar.gz",
+-      "url": "https://github.com/EmbarkStudios/cargo-deny/releases/download/0.20.2/cargo-deny-0.20.2-x86_64-unknown-linux-musl.tar.gz",
+-      "sha256": "9f12ed4c49936e09b48bf862b595cde2fe64fcbd9d74dfacac6131ca824c8d5f"
+-    },
+-    "cargo-llvm-cov": {
+-      "version": "0.9.1",
+-      "filename": "cargo-llvm-cov.tar.gz",
+-      "url": "https://github.com/taiki-e/cargo-llvm-cov/releases/download/v0.9.1/cargo-llvm-cov-x86_64-unknown-linux-gnu.tar.gz",
+-      "sha256": "b3f68e625481fed9b16444174f3fa5ebcdbde4a1878803a35eabe2dcefcdc41a"
+-    }
+-  },
+   "python_packages": [
+     {
+-      "name": "pip",
+-      "version": "25.3",
+       "filename": "pip-25.3-py3-none-any.whl",
++      "name": "pip",
++      "sha256": "9655943313a94722b7774661c21049070f6bbb0a1516bf02f7c8d5d9201514cd",
+       "url": "https://files.pythonhosted.org/packages/44/3c/d717024885424591d5376220b5e836c2d5293ce2011523c9de23ff7bf068/pip-25.3-py3-none-any.whl",
+-      "sha256": "9655943313a94722b7774661c21049070f6bbb0a1516bf02f7c8d5d9201514cd"
++      "version": "25.3"
+     },
+     {
+-      "name": "setuptools",
+-      "version": "80.9.0",
+       "filename": "setuptools-80.9.0-py3-none-any.whl",
++      "name": "setuptools",
++      "sha256": "062d34222ad13e0cc312a4c02d73f059e86a4acbfbdea8f8f76b28c99f306922",
+       "url": "https://files.pythonhosted.org/packages/a3/dc/17031897dae0efacfea57dfd3a82fdd2a2aeb58e0ff71b77b87e44edc772/setuptools-80.9.0-py3-none-any.whl",
+-      "sha256": "062d34222ad13e0cc312a4c02d73f059e86a4acbfbdea8f8f76b28c99f306922"
++      "version": "80.9.0"
+     },
+     {
+-      "name": "wheel",
+-      "version": "0.45.1",
+       "filename": "wheel-0.45.1-py3-none-any.whl",
++      "name": "wheel",
++      "sha256": "708e7481cc80179af0e556bbf0cc00b8444c7321e2700b8d8580231d13017248",
+       "url": "https://files.pythonhosted.org/packages/0b/2c/87f3254fd8ffd29e4c02732eee68a83a1d3c346ae39bc6822dcbcb697f2b/wheel-0.45.1-py3-none-any.whl",
+-      "sha256": "708e7481cc80179af0e556bbf0cc00b8444c7321e2700b8d8580231d13017248"
++      "version": "0.45.1"
+     },
+     {
+-      "name": "packaging",
+-      "version": "25.0",
+       "filename": "packaging-25.0-py3-none-any.whl",
++      "name": "packaging",
++      "sha256": "29572ef2b1f17581046b3a2227d5c611fb25ec70ca1ba8554b24b0e69331a484",
+       "url": "https://files.pythonhosted.org/packages/20/12/38679034af332785aac8774540895e234f4d07f7545804097de4b666afd8/packaging-25.0-py3-none-any.whl",
+-      "sha256": "29572ef2b1f17581046b3a2227d5c611fb25ec70ca1ba8554b24b0e69331a484"
++      "version": "25.0"
+     },
+     {
+-      "name": "PyYAML",
+-      "version": "6.0.3",
+       "filename": "pyyaml-6.0.3-cp312-cp312-manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_28_x86_64.whl",
++      "name": "PyYAML",
++      "sha256": "ba1cc08a7ccde2d2ec775841541641e4548226580ab850948cbfda66a1befcdc",
+       "url": "https://files.pythonhosted.org/packages/8b/9d/b3589d3877982d4f2329302ef98a8026e7f4443c765c46cfecc8858c6b4b/pyyaml-6.0.3-cp312-cp312-manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_28_x86_64.whl",
+-      "sha256": "ba1cc08a7ccde2d2ec775841541641e4548226580ab850948cbfda66a1befcdc"
++      "version": "6.0.3"
+     },
+     {
+-      "name": "mnemonic",
+-      "version": "0.21",
+       "filename": "mnemonic-0.21-py3-none-any.whl",
++      "name": "mnemonic",
++      "sha256": "72dc9de16ec5ef47287237b9b6943da11647a03fe7cf1f139fc3d7c4a7439288",
+       "url": "https://files.pythonhosted.org/packages/57/48/5abb16ce7f9d97b728e6b97c704ceaa614362e0847651f379ed0511942a0/mnemonic-0.21-py3-none-any.whl",
+-      "sha256": "72dc9de16ec5ef47287237b9b6943da11647a03fe7cf1f139fc3d7c4a7439288"
++      "version": "0.21"
+     },
+     {
+-      "name": "secp256k1",
+-      "version": "0.14.0",
+       "filename": "secp256k1-0.14.0-cp312-cp312-manylinux_2_17_x86_64.manylinux2014_x86_64.whl",
++      "name": "secp256k1",
++      "sha256": "1041694e429eb465123cb742911d2aad5cbd9e0cf2891aaaf794a887938647d1",
+       "url": "https://files.pythonhosted.org/packages/9c/6c/e63892de8d7582ab30602ccc1cf0ecd88a30b1a09424eb847c863fd46d9f/secp256k1-0.14.0-cp312-cp312-manylinux_2_17_x86_64.manylinux2014_x86_64.whl",
+-      "sha256": "1041694e429eb465123cb742911d2aad5cbd9e0cf2891aaaf794a887938647d1"
++      "version": "0.14.0"
+     },
+     {
+-      "name": "cffi",
+-      "version": "2.1.1",
+       "filename": "cffi-2.1.1-cp312-cp312-manylinux2014_x86_64.manylinux_2_17_x86_64.whl",
++      "name": "cffi",
++      "sha256": "c1453022f490d2459a11819d83ad1d586e9ff65a12ac3e705ffebd46d3685dcf",
+       "url": "https://files.pythonhosted.org/packages/b1/db/dceb9dd5b231e1da801793f8acc9f3c52a7e1afe40bb1aae37e02b0faad5/cffi-2.1.1-cp312-cp312-manylinux2014_x86_64.manylinux_2_17_x86_64.whl",
+-      "sha256": "c1453022f490d2459a11819d83ad1d586e9ff65a12ac3e705ffebd46d3685dcf"
++      "version": "2.1.1"
+     },
+     {
+-      "name": "pycparser",
+-      "version": "3.11",
+       "filename": "pycparser-3.11-py3-none-any.whl",
++      "name": "pycparser",
++      "sha256": "51d5a8ba2be0bbe440b99d2112604c95bbbc3c2748a64260186c541e1729cd80",
+       "url": "https://files.pythonhosted.org/packages/90/11/0e6f11117525ff0eec40ebac3d313376f102df93ca44ad9e893ee85e4f89/pycparser-3.11-py3-none-any.whl",
+-      "sha256": "51d5a8ba2be0bbe440b99d2112604c95bbbc3c2748a64260186c541e1729cd80"
++      "version": "3.11"
+     }
+   ],
+-  "repositories": {
+-    "companion": {
+-      "commit": "678796900e462f5504e47fe934e2e5f23d85824f",
+-      "url": "https://github.com/nSealr/companion.git",
+-      "access": "authorized migration source; may require authentication"
+-    },
+-    "raspberry": {
+-      "commit": "d1534d9dcfba8fe4a35cea2ed3529e32a5003dc6",
+-      "url": "https://github.com/nSealr/raspberry.git",
+-      "access": "authorized migration source; may require authentication"
++  "rust_version": "1.95.0",
++  "tools": {
++    "cargo-deny": {
++      "filename": "cargo-deny.tar.gz",
++      "sha256": "9f12ed4c49936e09b48bf862b595cde2fe64fcbd9d74dfacac6131ca824c8d5f",
++      "url": "https://github.com/EmbarkStudios/cargo-deny/releases/download/0.20.2/cargo-deny-0.20.2-x86_64-unknown-linux-musl.tar.gz",
++      "version": "0.20.2"
+     },
+-    "specs": {
+-      "commit": "45f8b6ff1123f3f55be4ce457fd1008e91043cc2",
+-      "url": "https://github.com/nSealr/specs.git",
+-      "access": "authorized migration source; may require authentication"
++    "cargo-llvm-cov": {
++      "filename": "cargo-llvm-cov.tar.gz",
++      "sha256": "b3f68e625481fed9b16444174f3fa5ebcdbde4a1878803a35eabe2dcefcdc41a",
++      "url": "https://github.com/taiki-e/cargo-llvm-cov/releases/download/v0.9.1/cargo-llvm-cov-x86_64-unknown-linux-gnu.tar.gz",
++      "version": "0.9.1"
+     },
+-    "lab": {
+-      "commit": "3303ab17a28ed32419576627d5abb93db3999635",
+-      "url": "https://github.com/nSealr/lab.git",
+-      "access": "authorized migration source; may require authentication"
++    "node": {
++      "filename": "node.tar.xz",
++      "sha256": "cc2f601cee82d9a5a233302fe307abc600727035fd7d2c3a3571755989e95008",
++      "url": "https://nodejs.org/dist/v24.22.0/node-v24.22.0-linux-x64.tar.xz",
++      "version": "24.22.0"
+     },
+-    "hardware": {
+-      "commit": "340697d6713a671e9e01b0dc874ec999ab071601",
+-      "url": "https://github.com/nSealr/hardware.git",
+-      "access": "authorized migration source; may require authentication"
++    "pnpm": {
++      "filename": "pnpm.tgz",
++      "sha256": "8e70ddc6649b18bc3d895cf3a908c0291ea4c38039ad8722c47e018daf1e9cfc",
++      "url": "https://registry.npmjs.org/pnpm/-/pnpm-10.33.4.tgz",
++      "version": "10.33.4"
+     },
+-    "smartcard": {
+-      "commit": "ec5da94a05882122e8a794f55f1af3f96a95c696",
+-      "url": "https://github.com/nSealr/smartcard.git",
+-      "access": "public"
++    "python": {
++      "filename": "python.tar.gz",
++      "sha256": "178d3d83b6e8e99285a65d3fce9c16b87952cc5efdb4d1a0e3ff3be18ff0fc9c",
++      "url": "https://github.com/astral-sh/python-build-standalone/releases/download/20261013/cpython-3.12.15%2B20261013-x86_64-unknown-linux-gnu-install_only_stripped.tar.gz",
++      "version": "3.12.15"
+     },
+-    "website": {
+-      "commit": "9cec39a89d6a2d2cc5747b8aae9d4b47a52eb7cd",
+-      "url": "https://github.com/nSealr/website.git",
+-      "access": "public"
++    "rustup": {
++      "filename": "rustup-init",
++      "sha256": "dda7234360b7f578ca8b0ddcb80145646fa61a67c1720a5abc7051b35c9fcb71",
++      "url": "https://static.rust-lang.org/rustup/archive/1.29.1/x86_64-unknown-linux-gnu/rustup-init",
++      "version": "1.29.1"
+     }
+   }
+ }
+diff --git a/tools/baseline/overlays/lab-provenance-followup.json b/tools/baseline/overlays/lab-provenance-followup.json
+deleted file mode 100644
+index aa8878de9182ea8d34b95f30a0b9fc6f42e78a07..0000000000000000000000000000000000000000
+--- a/tools/baseline/overlays/lab-provenance-followup.json
++++ /dev/null
+@@ -1,24 +0,0 @@
+-{
+-  "repository": "nSealr/lab",
+-  "commit": "3303ab17a28ed32419576627d5abb93db3999635",
+-  "license": "CC0-1.0; selected source root LICENSE",
+-  "license_sha256": "e0456cbab4f7b5e7203e678faff37eadbdfef02e822db3b7a52a1dd9d3dc514a",
+-  "scope": "Selected complete snapshot provenance checker and direct tests only; no private history imported",
+-  "apply_after": {
+-    "patch": "tools/baseline/overlays/lab-provenance.patch",
+-    "sha256": "da2f2e821a6c484f22aaeeeb78fad42949c9870b6d54135de292bcde6c5e4bc8"
+-  },
+-  "metadata_v1_independent": true,
+-  "patch_sha256": "a3c39719523a6dcfc7695da045bf00233453aa65e8c70ace97d16388733251d5",
+-  "files": {
+-    "scripts/check_fixture_snapshots.py": {
+-      "before_sha256": "f0fd3a24d1ce0ea7c570df08f39f16ff20fdd2848ca821bff738b61dc5fa3fd2",
+-      "after_sha256": "cb8286e0b91410400dd6f039a4c6dbfce961c8a2b9160250927ef7d0b5d953df"
+-    },
+-    "tests/test_fixture_snapshots.py": {
+-      "before_sha256": "736ab77a97b5b6b38a0cfbb108de348f96af0509c9e7ecd52a347a931a7ad21c",
+-      "after_sha256": "db8186c61ad27267e93bc0e2d69be9cad36a2029850f921bad5c544e3c827e7b"
+-    }
+-  },
+-  "future_disposition": "A02 must select/review this corrected CC0 tooling tuple before replacing the transitional overlays."
+-}
+diff --git a/tools/baseline/overlays/lab-provenance-followup.patch b/tools/baseline/overlays/lab-provenance-followup.patch
+deleted file mode 100644
+index 1d16fb2eb6018099daec52325f0bca0f7fe049ff..0000000000000000000000000000000000000000
+--- a/tools/baseline/overlays/lab-provenance-followup.patch
++++ /dev/null
+@@ -1,346 +0,0 @@
+-diff --git a/scripts/check_fixture_snapshots.py b/scripts/check_fixture_snapshots.py
+-index 4656f46..2c240ef 100644
+---- a/scripts/check_fixture_snapshots.py
+-+++ b/scripts/check_fixture_snapshots.py
+-@@ -118,23 +118,61 @@ class FixtureSnapshotError(AssertionError):
+- 
+- 
+- def iter_snapshot_files(root: Path) -> Iterable[Path]:
+--    return sorted(path for path in root.rglob("*") if path.is_file() and not path.name.startswith("."))
+-+    return sorted(path for path in root.rglob("*") if path.is_file())
+-+
+-+
+-+def vector_files(root: Path) -> set[str]:
+-+    vector_root = root / "vectors"
+-+    if not vector_root.is_dir() or vector_root.is_symlink():
+-+        raise FixtureSnapshotError(f"missing or nonregular vectors directory: {vector_root}")
+-+    paths = set()
+-+    for path in vector_root.rglob("*"):
+-+        if path.is_symlink() or not (path.is_dir() or path.is_file()):
+-+            raise FixtureSnapshotError(f"nonregular vector entry: {path}")
+-+        if path.is_file():
+-+            paths.add(path.relative_to(root).as_posix())
+-+    return paths
+- 
+- 
+- def validate_provenance(snapshot_root: Path, specs: Path) -> None:
+--    """Validate local import metadata; it is not a copied upstream fixture."""
+--    metadata = json.loads((snapshot_root / "SOURCE.json").read_text())
+-+    """Require a complete snapshot of the claimed committed upstream bytes."""
+-+    metadata_path = snapshot_root / "SOURCE.json"
+-+    if not metadata_path.is_file() or metadata_path.is_symlink():
+-+        raise FixtureSnapshotError(f"missing or nonregular SOURCE.json: {snapshot_root}")
+-+    try:
+-+        metadata = json.loads(metadata_path.read_text())
+-+    except (OSError, UnicodeError, ValueError) as exc:
+-+        raise FixtureSnapshotError(f"invalid SOURCE.json: {exc}") from exc
+-+    if not isinstance(metadata, dict):
+-+        raise FixtureSnapshotError("SOURCE.json must be an object")
+-     commit = subprocess.check_output(["git", "rev-parse", "HEAD"], cwd=specs, text=True).strip()
+-     if metadata.get("repository") != "https://github.com/nSealr/specs" or metadata.get("commit") != commit:
+-         raise FixtureSnapshotError("SOURCE.json upstream repository/commit mismatch")
+--    source_paths = {p.relative_to(specs).as_posix() for p in (specs / "vectors").rglob("*") if p.is_file()}
+--    snapshot_paths = {p.relative_to(snapshot_root).as_posix() for p in (snapshot_root / "vectors").rglob("*") if p.is_file()}
+-+    tree = subprocess.check_output(
+-+        ["git", "ls-tree", "-rz", "--full-tree", commit, "--", "vectors/"], cwd=specs,
+-+    )
+-+    blobs = {}
+-+    for entry in tree.split(b"\0"):
+-+        if not entry:
+-+            continue
+-+        header, relative = entry.split(b"\t", 1)
+-+        mode, kind, oid = header.decode().split()
+-+        if kind != "blob" or mode not in ("100644", "100755"):
+-+            raise FixtureSnapshotError(f"nonregular committed vector: {relative!r}")
+-+        blobs[relative.decode()] = oid
+-     recorded = metadata.get("files")
+--    if not isinstance(recorded, dict) or not source_paths or set(recorded) != source_paths or set(recorded) != snapshot_paths:
+-+    if (not isinstance(recorded, dict) or not blobs or set(recorded) != set(blobs)
+-+            or set(blobs) != vector_files(specs) or set(blobs) != vector_files(snapshot_root)):
+-         raise FixtureSnapshotError("SOURCE.json vector inventory mismatch")
+--    for relative, expected in recorded.items():
+--        actual = hashlib.sha256((snapshot_root / relative).read_bytes()).hexdigest()
+--        if actual != expected:
+-+    for relative, oid in blobs.items():
+-+        source = (specs / relative).read_bytes()
+-+        committed = subprocess.check_output(["git", "cat-file", "blob", oid], cwd=specs)
+-+        snapshot = (snapshot_root / relative).read_bytes()
+-+        if source != committed:
+-+            raise FixtureSnapshotError(f"upstream vector differs from claimed commit: {relative}")
+-+        if snapshot != source:
+-+            raise FixtureSnapshotError(f"snapshot vector differs from specs: {relative}")
+-+        if hashlib.sha256(source).hexdigest() != recorded[relative]:
+-             raise FixtureSnapshotError(f"SOURCE.json hash mismatch: {relative}")
+- 
+- 
+-@@ -156,6 +194,12 @@ def compare_fixture_snapshots(
+-         if not snapshot_root.exists():
+-             raise FixtureSnapshotError(f"{repository}: missing fixture snapshot root: {snapshot_root}")
+- 
+-+        # Core owns a complete import. Partial consumers keep their own glob contract.
+-+        # Require metadata independently of iteration, even with empty required globs.
+-+        if (repository == "firmware" or (snapshot_root / "SOURCE.json").exists()
+-+                or (snapshot_root / "SOURCE.json").is_symlink()):
+-+            validate_provenance(snapshot_root, specs)
+-+
+-         for pattern in required_globs.get(repository, ()):
+-             for source in sorted(path for path in specs.glob(pattern) if path.is_file()):
+-                 relative = source.relative_to(specs)
+-@@ -165,7 +209,6 @@ def compare_fixture_snapshots(
+-         for snapshot in iter_snapshot_files(snapshot_root):
+-             relative = snapshot.relative_to(snapshot_root)
+-             if relative == Path("SOURCE.json"):
+--                validate_provenance(snapshot_root, specs)
+-                 continue
+-             source = specs / relative
+-             if not source.exists():
+-diff --git a/tests/test_fixture_snapshots.py b/tests/test_fixture_snapshots.py
+-index e052a2f..a42ef60 100644
+---- a/tests/test_fixture_snapshots.py
+-+++ b/tests/test_fixture_snapshots.py
+-@@ -136,17 +136,17 @@ class FixtureSnapshotTests(unittest.TestCase):
+-         with TemporaryDirectory() as tmp:
+-             org = Path(tmp)
+-             (org / "specs" / "vectors" / "devices").mkdir(parents=True)
+--            (org / "firmware" / "tests" / "fixtures" / "specs" / "vectors" / "devices").mkdir(parents=True)
+-+            (org / "companion" / "tests" / "fixtures" / "specs" / "vectors" / "devices").mkdir(parents=True)
+-             (org / "specs" / "vectors" / "devices" / "status.json").write_text(
+-                 '{"status":"ok"}\n',
+-                 encoding="utf-8",
+-             )
+--            (org / "firmware" / "tests" / "fixtures" / "specs" / "vectors" / "devices" / "status.json").write_text(
+-+            (org / "companion" / "tests" / "fixtures" / "specs" / "vectors" / "devices" / "status.json").write_text(
+-                 '{"status":"ok"}\n',
+-                 encoding="utf-8",
+-             )
+- 
+--            compare_fixture_snapshots(org=org, repositories=("firmware",))
+-+            compare_fixture_snapshots(org=org, repositories=("companion",))
+- 
+-     def test_mismatched_snapshot_reports_repo_and_path(self) -> None:
+-         with TemporaryDirectory() as tmp:
+-@@ -214,43 +214,187 @@ class FixtureSnapshotTests(unittest.TestCase):
+-                 )
+- 
+- 
+--if __name__ == "__main__":
+--    unittest.main()
+--
+--
+- class ProvenanceSnapshotTests(unittest.TestCase):
+--    def test_provenance_and_fixture_failures(self):
+-+    def setUp(self):
+-         import hashlib
+-         import json
+--        from unittest.mock import patch
+--
+--        with TemporaryDirectory() as temp:
+--            org = Path(temp)
+--            specs = org / "specs"
+--            snapshot = org / "firmware/tests/fixtures/specs"
+--            for root in (specs, snapshot):
+--                (root / "vectors").mkdir(parents=True)
+--                (root / "vectors/example.json").write_text('{"valid":true}\n')
+--            digest = hashlib.sha256((specs / "vectors/example.json").read_bytes()).hexdigest()
+--            valid = {"repository":"https://github.com/nSealr/specs", "commit":"a"*40,
+--                     "files":{"vectors/example.json":digest}}
+--            metadata = snapshot / "SOURCE.json"
+--
+--            def check(value):
+--                metadata.write_text(json.dumps(value))
+--                return compare_fixture_snapshots(org=org, repositories=("firmware",), required_snapshot_globs={})
+--
+--            with patch("subprocess.check_output", return_value="a"*40):
+--                self.assertEqual(check(valid), 1)
+--                for field, value in (("commit","b"*40), ("repository","https://invalid.example/specs"),
+--                                     ("files",{}), ("files",{"vectors/example.json":"0"*64}),
+--                                     ("files",{**valid["files"],"vectors/extra.json":"0"*64})):
+--                    with self.subTest(field=field, value=value), self.assertRaises(FixtureSnapshotError):
+--                        check({**valid, field:value})
+--                (snapshot / "vectors/example.json").write_text('{"valid":false}\n')
+--                changed = hashlib.sha256((snapshot / "vectors/example.json").read_bytes()).hexdigest()
+--                with self.assertRaises(FixtureSnapshotError):
+--                    check({**valid, "files":{"vectors/example.json":changed}})
+--                (snapshot / "vectors/example.json").unlink()
+--                with self.assertRaises(FixtureSnapshotError):
+--                    check(valid)
+-+        import subprocess
+-+        self.temporary = TemporaryDirectory()
+-+        self.addCleanup(self.temporary.cleanup)
+-+        self.org = Path(self.temporary.name)
+-+        self.specs = self.org / "specs"
+-+        self.snapshot = self.org / "firmware/tests/fixtures/specs"
+-+        self.metadata_path = self.snapshot / "SOURCE.json"
+-+        self.vector = "vectors/nip46-relay-steps/sign-event-response-step.json"
+-+        self.hidden = "vectors/hidden/.gitkeep"
+-+        for root in (self.specs, self.snapshot):
+-+            for relative, content in ((self.vector, b'{"valid":true}\n'), (self.hidden, b"")):
+-+                target = root / relative
+-+                target.parent.mkdir(parents=True, exist_ok=True)
+-+                target.write_bytes(content)
+-+        self.git("init", "-q")
+-+        self.git("add", "vectors")
+-+        self.git("-c", "user.name=Fixture test", "-c", "user.email=test@invalid.example",
+-+                 "commit", "-qm", "Independent committed bytes")
+-+        self.metadata = {
+-+            "repository": "https://github.com/nSealr/specs", "commit": self.git("rev-parse", "HEAD").decode().strip(),
+-+            "files": {relative: hashlib.sha256((self.specs / relative).read_bytes()).hexdigest()
+-+                      for relative in (self.vector, self.hidden)},
+-+        }
+-+        self.write_metadata()
+-+
+-+    def git(self, *args):
+-+        import subprocess
+-+        return subprocess.check_output(["git", *args], cwd=self.specs, stderr=subprocess.STDOUT)
+-+
+-+    def write_metadata(self):
+-+        import json
+-+        self.metadata_path.write_text(json.dumps(self.metadata))
+-+
+-+    def check(self):
+-+        return compare_fixture_snapshots(org=self.org, repositories=("firmware",), required_snapshot_globs={})
+-+
+-+    def forge(self, relative):
+-+        import hashlib
+-+        path = self.snapshot / relative
+-+        if path.exists():
+-+            self.metadata["files"][relative] = hashlib.sha256(path.read_bytes()).hexdigest()
+-+        else:
+-+            self.metadata["files"].pop(relative, None)
+-+        self.write_metadata()
+-+
+-+    def test_complete_snapshot_counts_hidden_vector(self):
+-+        self.assertEqual(self.check(), 2)
+-+
+-+    def test_missing_manifest_rejects_before_iteration(self):
+-+        self.metadata_path.unlink()
+-+        with self.assertRaisesRegex(FixtureSnapshotError, "SOURCE.json"):
+-+            self.check()
+-+
+-+    def test_missing_manifest_and_v1_vector_rejects(self):
+-+        self.metadata_path.unlink()
+-+        (self.snapshot / self.vector).unlink()
+-+        with self.assertRaisesRegex(FixtureSnapshotError, "SOURCE.json"):
+-+            self.check()
+-+
+-+    def test_missing_vectors_with_retained_or_forged_inventory_reject(self):
+-+        for relative in (self.vector, self.hidden):
+-+            path = self.snapshot / relative
+-+            original = path.read_bytes()
+-+            path.unlink()
+-+            with self.subTest(relative=relative, forged=False), self.assertRaises(FixtureSnapshotError):
+-+                self.check()
+-+            self.forge(relative)
+-+            with self.subTest(relative=relative, forged=True), self.assertRaises(FixtureSnapshotError):
+-+                self.check()
+-+            path.write_bytes(original)
+-+            self.forge(relative)
+-+        self.assertEqual(self.check(), 2)
+-+
+-+    def test_extra_normal_and_hidden_vectors_reject_even_with_forged_inventory(self):
+-+        for relative in ("vectors/extra.json", "vectors/.extra"):
+-+            path = self.snapshot / relative
+-+            path.write_bytes(b"{}")
+-+            self.forge(relative)
+-+            with self.subTest(relative=relative), self.assertRaises(FixtureSnapshotError):
+-+                self.check()
+-+            path.unlink()
+-+            self.forge(relative)
+-+
+-+    def test_tampered_normal_and_hidden_vectors_reject_forged_digest(self):
+-+        for relative in (self.vector, self.hidden):
+-+            path = self.snapshot / relative
+-+            original = path.read_bytes()
+-+            path.write_bytes(b"forged")
+-+            self.forge(relative)
+-+            with self.subTest(relative=relative), self.assertRaisesRegex(FixtureSnapshotError, "differs from specs"):
+-+                self.check()
+-+            path.write_bytes(original)
+-+            self.forge(relative)
+-+
+-+    def test_dirty_upstream_and_snapshot_with_forged_digest_reject(self):
+-+        for relative in (self.vector, self.hidden):
+-+            source, snapshot = self.specs / relative, self.snapshot / relative
+-+            original = source.read_bytes()
+-+            source.write_bytes(b"forged")
+-+            snapshot.write_bytes(b"forged")
+-+            self.forge(relative)
+-+            with self.subTest(relative=relative), self.assertRaisesRegex(FixtureSnapshotError, "claimed commit"):
+-+                self.check()
+-+            source.write_bytes(original)
+-+            snapshot.write_bytes(original)
+-+            self.forge(relative)
+-+
+-+    def test_wrong_provenance_or_hash_rejects(self):
+-+        import copy
+-+        valid = copy.deepcopy(self.metadata)
+-+        for key, value in (("commit", "0" * 40), ("repository", "https://example.invalid/specs"),
+-+                           ("files", {}), ("files", {**valid["files"], self.hidden: "0" * 64})):
+-+            self.metadata = {**valid, key: value}
+-+            self.write_metadata()
+-+            with self.subTest(key=key, value=value), self.assertRaises(FixtureSnapshotError):
+-+                self.check()
+-+
+-+    def test_malformed_or_nonobject_manifest_rejects(self):
+-+        for text in ("{", "[]", "null"):
+-+            self.metadata_path.write_text(text)
+-+            with self.subTest(text=text), self.assertRaises(FixtureSnapshotError):
+-+                self.check()
+-+
+-+    def test_source_worktree_inventory_drift_rejects(self):
+-+        path = self.specs / self.hidden
+-+        path.unlink()
+-+        with self.assertRaises(FixtureSnapshotError):
+-+            self.check()
+-+        path.write_bytes(b"")
+-+        extra = self.specs / "vectors/.extra"
+-+        extra.write_bytes(b"")
+-+        with self.assertRaises(FixtureSnapshotError):
+-+            self.check()
+-+
+-+    def test_nonregular_source_snapshot_and_manifest_reject(self):
+-+        for root in (self.specs, self.snapshot):
+-+            path = root / self.hidden
+-+            path.unlink()
+-+            path.symlink_to(root / self.vector)
+-+            with self.subTest(root=root), self.assertRaises(FixtureSnapshotError):
+-+                self.check()
+-+            path.unlink()
+-+            path.write_bytes(b"")
+-+        data = self.metadata_path.read_bytes()
+-+        other = self.snapshot / "metadata"
+-+        other.write_bytes(data)
+-+        self.metadata_path.unlink()
+-+        self.metadata_path.symlink_to(other)
+-+        with self.assertRaises(FixtureSnapshotError):
+-+            self.check()
+-+
+-+    def test_committed_nonregular_vector_rejects(self):
+-+        path = self.specs / self.hidden
+-+        path.unlink()
+-+        path.symlink_to(self.specs / self.vector)
+-+        self.git("add", "vectors")
+-+        self.git("-c", "user.name=Fixture test", "-c", "user.email=test@invalid.example",
+-+                 "commit", "-qm", "Unsupported symlink")
+-+        self.metadata["commit"] = self.git("rev-parse", "HEAD").decode().strip()
+-+        self.write_metadata()
+-+        with self.assertRaisesRegex(FixtureSnapshotError, "nonregular committed"):
+-+            self.check()
+-+
+-+    def test_partial_consumer_manifest_is_validated_when_present(self):
+-+        destination = self.org / "companion/tests/fixtures/specs"
+-+        destination.parent.mkdir(parents=True)
+-+        self.snapshot.rename(destination)
+-+        (destination / "SOURCE.json").unlink()
+-+        self.assertEqual(compare_fixture_snapshots(org=self.org, repositories=("companion",), required_snapshot_globs={}), 2)
+-+        (destination / "SOURCE.json").symlink_to(destination / "missing")
+-+        with self.assertRaises(FixtureSnapshotError):
+-+            compare_fixture_snapshots(org=self.org, repositories=("companion",), required_snapshot_globs={})
+-+        (destination / "SOURCE.json").unlink()
+-+        (destination / "SOURCE.json").write_text("{}")
+-+        with self.assertRaises(FixtureSnapshotError):
+-+            compare_fixture_snapshots(org=self.org, repositories=("companion",), required_snapshot_globs={})
+-+
+-+
+-+if __name__ == "__main__":
+-+    unittest.main()
+diff --git a/tools/baseline/overlays/lab-provenance.json b/tools/baseline/overlays/lab-provenance.json
+deleted file mode 100644
+index ce811ca18ba61e8299cfab8074f77fb106d26416..0000000000000000000000000000000000000000
+--- a/tools/baseline/overlays/lab-provenance.json
++++ /dev/null
+@@ -1,17 +0,0 @@
+-{
+-  "repository": "nSealr/lab",
+-  "commit": "3303ab17a28ed32419576627d5abb93db3999635",
+-  "license": "CC0-1.0 (source LICENSE)",
+-  "scope": "Selected snapshot checker/test changes only; no private history or fixture bytes imported",
+-  "patch_sha256": "da2f2e821a6c484f22aaeeeb78fad42949c9870b6d54135de292bcde6c5e4bc8",
+-  "files": {
+-    "scripts/check_fixture_snapshots.py": {
+-      "before_sha256": "57c0ba011ef76030e2966162c419a4d2311559b3ef9cd0e260c9fbec84f6014d",
+-      "after_sha256": "f0fd3a24d1ce0ea7c570df08f39f16ff20fdd2848ca821bff738b61dc5fa3fd2"
+-    },
+-    "tests/test_fixture_snapshots.py": {
+-      "before_sha256": "3e46bc4cdfd18a3c74e98c89013301075fb0cee56bd1dddc16939a6b99f529c5",
+-      "after_sha256": "736ab77a97b5b6b38a0cfbb108de348f96af0509c9e7ecd52a347a931a7ad21c"
+-    }
+-  }
+-}
+diff --git a/tools/baseline/overlays/lab-provenance.patch b/tools/baseline/overlays/lab-provenance.patch
+deleted file mode 100644
+index 8acd30d236f7f3a51a2927a593861a1f1a494fe7..0000000000000000000000000000000000000000
+--- a/tools/baseline/overlays/lab-provenance.patch
++++ /dev/null
+@@ -1,91 +0,0 @@
+---- a/scripts/check_fixture_snapshots.py
+-+++ b/scripts/check_fixture_snapshots.py
+-@@ -2,6 +2,10 @@
+- """Check sibling repository specs fixture snapshots against live specs."""
+- 
+- from __future__ import annotations
+-+
+-+import hashlib
+-+import json
+-+import subprocess
+- 
+- from collections.abc import Mapping, Sequence
+- from pathlib import Path
+-@@ -117,6 +121,23 @@
+-     return sorted(path for path in root.rglob("*") if path.is_file() and not path.name.startswith("."))
+- 
+- 
+-+def validate_provenance(snapshot_root: Path, specs: Path) -> None:
+-+    """Validate local import metadata; it is not a copied upstream fixture."""
+-+    metadata = json.loads((snapshot_root / "SOURCE.json").read_text())
+-+    commit = subprocess.check_output(["git", "rev-parse", "HEAD"], cwd=specs, text=True).strip()
+-+    if metadata.get("repository") != "https://github.com/nSealr/specs" or metadata.get("commit") != commit:
+-+        raise FixtureSnapshotError("SOURCE.json upstream repository/commit mismatch")
+-+    source_paths = {p.relative_to(specs).as_posix() for p in (specs / "vectors").rglob("*") if p.is_file()}
+-+    snapshot_paths = {p.relative_to(snapshot_root).as_posix() for p in (snapshot_root / "vectors").rglob("*") if p.is_file()}
+-+    recorded = metadata.get("files")
+-+    if not isinstance(recorded, dict) or not source_paths or set(recorded) != source_paths or set(recorded) != snapshot_paths:
+-+        raise FixtureSnapshotError("SOURCE.json vector inventory mismatch")
+-+    for relative, expected in recorded.items():
+-+        actual = hashlib.sha256((snapshot_root / relative).read_bytes()).hexdigest()
+-+        if actual != expected:
+-+            raise FixtureSnapshotError(f"SOURCE.json hash mismatch: {relative}")
+-+
+-+
+- def compare_fixture_snapshots(
+-     *,
+-     org: Path = ORG,
+-@@ -143,6 +164,9 @@
+- 
+-         for snapshot in iter_snapshot_files(snapshot_root):
+-             relative = snapshot.relative_to(snapshot_root)
+-+            if relative == Path("SOURCE.json"):
+-+                validate_provenance(snapshot_root, specs)
+-+                continue
+-             source = specs / relative
+-             if not source.exists():
+-                 failures.append(f"{repository}: {relative} is missing from specs")
+---- a/tests/test_fixture_snapshots.py
+-+++ b/tests/test_fixture_snapshots.py
+-@@ -216,3 +216,41 @@
+- 
+- if __name__ == "__main__":
+-     unittest.main()
+-+
+-+
+-+class ProvenanceSnapshotTests(unittest.TestCase):
+-+    def test_provenance_and_fixture_failures(self):
+-+        import hashlib
+-+        import json
+-+        from unittest.mock import patch
+-+
+-+        with TemporaryDirectory() as temp:
+-+            org = Path(temp)
+-+            specs = org / "specs"
+-+            snapshot = org / "firmware/tests/fixtures/specs"
+-+            for root in (specs, snapshot):
+-+                (root / "vectors").mkdir(parents=True)
+-+                (root / "vectors/example.json").write_text('{"valid":true}\n')
+-+            digest = hashlib.sha256((specs / "vectors/example.json").read_bytes()).hexdigest()
+-+            valid = {"repository":"https://github.com/nSealr/specs", "commit":"a"*40,
+-+                     "files":{"vectors/example.json":digest}}
+-+            metadata = snapshot / "SOURCE.json"
+-+
+-+            def check(value):
+-+                metadata.write_text(json.dumps(value))
+-+                return compare_fixture_snapshots(org=org, repositories=("firmware",), required_snapshot_globs={})
+-+
+-+            with patch("subprocess.check_output", return_value="a"*40):
+-+                self.assertEqual(check(valid), 1)
+-+                for field, value in (("commit","b"*40), ("repository","https://invalid.example/specs"),
+-+                                     ("files",{}), ("files",{"vectors/example.json":"0"*64}),
+-+                                     ("files",{**valid["files"],"vectors/extra.json":"0"*64})):
+-+                    with self.subTest(field=field, value=value), self.assertRaises(FixtureSnapshotError):
+-+                        check({**valid, field:value})
+-+                (snapshot / "vectors/example.json").write_text('{"valid":false}\n')
+-+                changed = hashlib.sha256((snapshot / "vectors/example.json").read_bytes()).hexdigest()
+-+                with self.assertRaises(FixtureSnapshotError):
+-+                    check({**valid, "files":{"vectors/example.json":changed}})
+-+                (snapshot / "vectors/example.json").unlink()
+-+                with self.assertRaises(FixtureSnapshotError):
+-+                    check(valid)
+diff --git a/tools/baseline/run.py b/tools/baseline/run.py
+index 9a30b2578cc2388c3cced89a2e3e6ebeb8195379..31404f74b5e3cd82062b3c6515bad5ecf56cb761 100644
+--- a/tools/baseline/run.py
++++ b/tools/baseline/run.py
+@@ -12,7 +12,7 @@ from bootstrap import Recorder, sha256, write_json
+ 
+ 
+ def statuses(root: Path, inputs: dict) -> dict:
+-    return {name: subprocess.check_output(['git', 'status', '--porcelain'], cwd=root/('firmware' if name == 'nsealr' else name), text=True) for name in inputs}
++    return {name: subprocess.check_output(['git', 'status', '--porcelain'], cwd=root/name, text=True) for name in inputs}
+ 
+ 
+ def main() -> int:
+@@ -24,7 +24,7 @@ def main() -> int:
+     env = json.loads((root/'environment.json').read_text())
+     inputs = json.loads((root/'source-commits.json').read_text())
+     for name, expected in inputs.items():
+-        source = root/('firmware' if name == 'nsealr' else name)
++        source = root/name
+         actual = subprocess.check_output(['git', 'rev-parse', 'HEAD'], cwd=source, text=True).strip()
+         if actual != expected:
+             raise ValueError(f'{name}: source pin drift: {actual} != {expected}')
+@@ -33,32 +33,22 @@ def main() -> int:
+     before = statuses(root, inputs)
+     expected = json.loads((root/'source-state.json').read_text())
+     for name in inputs:
+-        source = root/('firmware' if name == 'nsealr' else name)
++        source = root/name
+         diff = hashlib.sha256(subprocess.check_output(['git','diff','--binary'],cwd=source)).hexdigest()
+         if before[name] != expected[name]['status'] or diff != expected[name]['diff_sha256']:
+             raise ValueError(f'{name}: undeclared source delta before baseline')
+     write_json(directory/'source-before.json', before)
+     if args.smoke:
+-        recorder.run('core-smoke', ['make', 'test', 'cargo-test'], root/'firmware', required=False)
+-        if 'lab' in inputs:
+-            recorder.run('fixture-snapshots', ['python3', 'scripts/check_fixture_snapshots.py'], root/'lab', required=False)
+-            recorder.run('integration-helper-tests', ['python3', '-m', 'unittest', 'discover', '-s', 'tests', '-p', 'test_integration_support.py'], root/'lab', required=False)
++        recorder.run('product-smoke', ['make', 'test', 'cargo-test'], root/'nsealr', required=False)
+     else:
+-        # -k executes remaining independent targets after a failure while
+-        # retaining make's failing status, including stale API checks.
+-        for name in ('firmware', 'specs', 'companion', 'raspberry', 'smartcard', 'hardware', 'website', 'lab'):
+-            if (root/name).exists():
+-                recorder.run(f'{name}-ci', ['make', '-k', 'ci'], root/name, required=False)
+-        if 'lab' in inputs:
+-            # One uninterrupted invocation of the complete existing recipe.
+-            # No command-line PYTHON/VENV overrides leak through recursive make.
+-            recorder.run('full-integration', ['make', 'integration'], root/'lab', required=False)
++        # One complete product entrypoint; -k preserves independent failures.
++        recorder.run('product-ci', ['make', '-k', 'ci'], root/'nsealr', required=False)
+     write_json(directory/'source-after.json', statuses(root, inputs))
+     skipped = [
+         {'gate': 'NSEALR_LIVE_E2E relay test', 'reason': 'not enabled in this offline software baseline; Docker/relay run requires separate evidence'},
+         {'gate': 'interactive Chromium/Firefox session', 'reason': 'package/DOM/native-messaging checks do not exercise an installed browser session'},
+-        {'gate': 'real hardware approval/signing, GPIO/camera/display and card/USB', 'reason': 'no identified sample/operator; simulator and safe probe are software evidence only'},
+-        {'gate': 'manufacturing, provisioning, secure-element custody and physical entropy', 'reason': 'outside R00 software baseline; no production keys or irreversible operations'},
++        {'gate': 'real hardware approval/signing, GPIO/camera/display and USB', 'reason': 'no identified sample/operator; simulator and safe probe are software evidence only'},
++        {'gate': 'manufacturing, provisioning, secure-element custody and physical entropy', 'reason': 'outside software acceptance; no production keys or irreversible operations'},
+     ]
+     write_json(directory/'skips.json', skipped)
+     failed = [r['label'] for r in recorder.results if r['exit_code']]
+diff --git a/tools/baseline/test_bootstrap.py b/tools/baseline/test_bootstrap.py
+index f8a553d822c354192ca5d83e60ef7622a346f640..d390508e0d31dcf7b81db24285b93e002c7f6f1f 100644
+--- a/tools/baseline/test_bootstrap.py
++++ b/tools/baseline/test_bootstrap.py
+@@ -8,7 +8,7 @@ import tempfile
+ import unittest
+ from unittest.mock import patch
+ 
+-from bootstrap import Recorder, apply_lab_overlay, apply_lab_overlays, download, environment, sha256
++from bootstrap import Recorder, download, environment, fetch, sha256
+ 
+ 
+ class BootstrapTests(unittest.TestCase):
+@@ -53,95 +53,28 @@ class BootstrapTests(unittest.TestCase):
+             self.assertIn('out', output)
+ 
+ 
+-class OverlayBoundaryTests(unittest.TestCase):
+-    """Real Git patches verify ordering and rejection without private sources."""
+-
+-    def setUp(self):
+-        self.temporary = tempfile.TemporaryDirectory()
+-        self.addCleanup(self.temporary.cleanup)
+-        self.root = Path(self.temporary.name)
+-        self.lab = self.root/'lab'
+-        self.lab.mkdir()
+-        self.target = self.lab/'selected.txt'
+-        self.target.write_text('zero\n')
+-        self.git('init', '-q')
+-        self.git('add', 'selected.txt')
+-        self.git('-c', 'user.name=Overlay test', '-c', 'user.email=test@invalid.example',
+-                 'commit', '-qm', 'Independent patch preimage')
+-        self.commit = self.git('rev-parse', 'HEAD').decode().strip()
+-        self.here = self.root/'tools/baseline'
+-        self.manifests = [self.here/'overlays/lab-provenance.json',
+-                          self.root/'docs/restart/implementation/S01/lab-metadata-v1.json',
+-                          self.here/'overlays/lab-provenance-followup.json']
+-        before = 'zero\n'
+-        for manifest, after in zip(self.manifests, ('one\n', 'two\n', 'three\n')):
+-            manifest.parent.mkdir(parents=True, exist_ok=True)
+-            patch_file = manifest.with_suffix('.patch')
+-            patch_file.write_text(f'diff --git a/selected.txt b/selected.txt\n'
+-                                  f'--- a/selected.txt\n+++ b/selected.txt\n@@ -1 +1 @@\n-{before}+{after}')
+-            import hashlib
+-            manifest.write_text(json.dumps({'commit': self.commit, 'patch_sha256': sha256(patch_file),
+-                'files': {'selected.txt': {'before_sha256': hashlib.sha256(before.encode()).hexdigest(),
+-                                           'after_sha256': hashlib.sha256(after.encode()).hexdigest()}}}))
+-            before = after
+-        self.recorder = Recorder(self.root/'evidence/commands', dict(os.environ))
+-
+-    def git(self, *args):
+-        return subprocess.check_output(['git', *args], cwd=self.lab, stderr=subprocess.STDOUT)
+-
+-    def apply_one(self, commit=None):
+-        apply_lab_overlay(self.recorder, self.root, commit or self.commit, self.manifests[0], 'overlay')
+-
+-    def apply_defaults(self):
+-        with patch('bootstrap.HERE', self.here), patch('bootstrap.SOURCE', self.root):
+-            apply_lab_overlays(self.recorder, self.root, self.commit)
+-
+-    def test_default_applies_all_three_in_order_and_records_each(self):
+-        self.apply_defaults()
+-        self.assertEqual(self.target.read_text(), 'three\n')
+-        for name, manifest in zip(('overlay', 'metadata-v1-overlay', 'provenance-followup-overlay'), self.manifests):
+-            self.assertEqual(json.loads((self.root/f'evidence/{name}.json').read_text()),
+-                             json.loads(manifest.read_text()))
+-
+-    def test_wrong_declared_commit_is_rejected_before_mutation(self):
+-        with self.assertRaisesRegex(ValueError, 'source/patch pin'):
+-            self.apply_one('0'*40)
+-        self.assertEqual(self.target.read_text(), 'zero\n')
+-        self.assertEqual(self.recorder.results, [])
+-
+-    def test_wrong_actual_commit_is_rejected_before_mutation(self):
+-        self.git('-c', 'user.name=Overlay test', '-c', 'user.email=test@invalid.example',
+-                 'commit', '--allow-empty', '-qm', 'Different source')
+-        with self.assertRaisesRegex(ValueError, 'source/patch pin'):
+-            self.apply_one()
+-        self.assertEqual(self.target.read_text(), 'zero\n')
+-
+-    def test_modified_patch_is_rejected_before_mutation(self):
+-        self.manifests[0].with_suffix('.patch').write_text('tampered\n')
+-        with self.assertRaisesRegex(ValueError, 'source/patch pin'):
+-            self.apply_one()
+-        self.assertEqual(self.target.read_text(), 'zero\n')
+-
+-    def test_modified_preimage_is_rejected_before_patch(self):
+-        self.target.write_text('changed\n')
+-        with self.assertRaisesRegex(ValueError, 'preimage mismatch'):
+-            self.apply_one()
+-        self.assertEqual(self.target.read_text(), 'changed\n')
+-        self.assertEqual(self.recorder.results, [])
+-
+-    def test_wrong_output_hash_is_rejected_and_not_recorded_as_pass(self):
+-        manifest = json.loads(self.manifests[0].read_text())
+-        manifest['files']['selected.txt']['after_sha256'] = '0'*64
+-        self.manifests[0].write_text(json.dumps(manifest))
+-        with self.assertRaisesRegex(ValueError, 'output mismatch'):
+-            self.apply_one()
+-        self.assertFalse((self.root/'evidence/overlay.json').exists())
+-
+-    def test_missing_followup_is_not_silently_skipped(self):
+-        self.manifests[2].unlink()
+-        with self.assertRaises(FileNotFoundError):
+-            self.apply_defaults()
+-        self.assertFalse((self.root/'evidence/provenance-followup-overlay.json').exists())
++class ProductSourceTests(unittest.TestCase):
++    def test_exact_selected_history_available_without_unselected_branch(self):
++        with tempfile.TemporaryDirectory() as tmp:
++            root=Path(tmp);source=root/'source';source.mkdir()
++            def git(*args):return subprocess.check_output(['git','-C',str(source),*args],stderr=subprocess.STDOUT).strip().decode()
++            git('init','-q');(source/'public.txt').write_text('public source\n');git('add','public.txt');git('-c','user.name=Test','-c','user.email=test@invalid.example','commit','-qm','public');selected=git('rev-parse','HEAD')
++            git('checkout','-qb','unselected');(source/'excluded.txt').write_text('synthetic excluded source\n');git('add','excluded.txt');git('-c','user.name=Test','-c','user.email=test@invalid.example','commit','-qm','unselected');excluded=git('rev-parse','HEAD')
++            git('checkout','--detach',selected)
++            rec=Recorder(root/'evidence',dict(os.environ));fetch(rec,'nsealr',str(source),selected,root)
++            self.assertEqual(subprocess.check_output(['git','-C',str(root/'nsealr'),'rev-parse','HEAD'],text=True).strip(),selected)
++            result=subprocess.run(['git','-C',str(root/'nsealr'),'cat-file','-e',excluded],capture_output=True)
++            self.assertNotEqual(result.returncode,0)
++            self.assertFalse((root/'nsealr/excluded.txt').exists())
++
++    def test_missing_selected_commit_preserves_fetch_failure(self):
++        with tempfile.TemporaryDirectory() as tmp:
++            root=Path(tmp);source=root/'source';subprocess.run(['git','init','-q',str(source)],check=True)
++            recorder=Recorder(root/'evidence',dict(os.environ))
++            with self.assertRaisesRegex(RuntimeError,'fetch exited'):
++                fetch(recorder,'nsealr',str(source),'0'*40,root)
++            self.assertNotEqual(recorder.results[-1]['exit_code'],0)
++            self.assertEqual(recorder.results[-1]['label'],'nsealr-fetch')
+ 
+ 
+ if __name__ == '__main__':

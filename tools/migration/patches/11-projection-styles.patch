@@ -1,0 +1,2801 @@
+diff --git a/ci/project_core_fixtures.py b/ci/project_core_fixtures.py
+index 13cdabf74091db41f7ce75ea6d7a2098d72937b6..4befbdcc5c3ac39f16acdb04dbf7703f3b838cbd 100644
+--- a/ci/project_core_fixtures.py
++++ b/ci/project_core_fixtures.py
+@@ -39,7 +39,7 @@ def project(output):
+         for p in data['pages']:
+             fields=[key+':'+quote(p[key]) for key in ['title','page_indicator','logical_page_id']]
+             fields+=['action:'+action(p['action']),'lines:vec!'+strings(p['lines']),
+-                     'body_line_styles:vec!['+','.join({'meta':'ReviewBodyLineStyle::Meta','value':'ReviewBodyLineStyle::Value'}[s] for s in p['body_line_styles'])+']']
++                     'body_line_styles:vec!['+','.join({'meta':'ReviewBodyLineStyle::Meta','value':'ReviewBodyLineStyle::Value','normal':'ReviewBodyLineStyle::Normal'}[s] for s in p['body_line_styles'])+']']
+             expected.append('ExpectedDetailPage {'+','.join(fields)+'}')
+         details.append('ReviewDetailPageVector {name:'+quote(data['name'])+',request_json:'+quote(json.dumps(request,ensure_ascii=False,separators=(',',':')))+',approval_digest:'+quote(data['approval_digest'])+',limits:'+limits(data['limits'])+',pages:vec!['+','.join(expected)+']}')
+     (output/'detail-fixtures.rs').write_text('fn review_detail_page_vectors() -> Vec<ReviewDetailPageVector> { vec!['+','.join(details)+'] }')
+diff --git a/crates/nsealr-core/build.rs b/crates/nsealr-core/build.rs
+index f438ccafb894604d0c7fc7fef99e1102a4cad83a..7d7e76fd514313d9cffd8ec73fadc5c9e319ede1 100644
+--- a/crates/nsealr-core/build.rs
++++ b/crates/nsealr-core/build.rs
+@@ -4,9 +4,18 @@ fn main() {
+     let root = PathBuf::from(env::var_os("CARGO_MANIFEST_DIR").unwrap()).join("../..");
+     let script = root.join("ci/project_core_fixtures.py");
+     println!("cargo:rerun-if-changed={}", script.display());
+-    println!("cargo:rerun-if-changed={}", root.join("ci/core-test-projections.json").display());
+-    println!("cargo:rerun-if-changed={}", root.join("protocols/contracts/v1").display());
+-    let status = Command::new("python3").arg(script).arg(env::var_os("OUT_DIR").unwrap())
+-        .status().expect("pinned Python is required for test-data projection");
++    println!(
++        "cargo:rerun-if-changed={}",
++        root.join("ci/core-test-projections.json").display()
++    );
++    println!(
++        "cargo:rerun-if-changed={}",
++        root.join("protocols/contracts/v1").display()
++    );
++    let status = Command::new("python3")
++        .arg(script)
++        .arg(env::var_os("OUT_DIR").unwrap())
++        .status()
++        .expect("pinned Python is required for test-data projection");
+     assert!(status.success(), "contract test-data projection failed");
+ }
+diff --git a/crates/nsealr-core/src/base64url.rs b/crates/nsealr-core/src/base64url.rs
+index fb7ad4cc81400842d228d3f7f132d7fcca9af5c3..4ebe7336b1262add3b7d2f47c6e359d488d92374 100644
+--- a/crates/nsealr-core/src/base64url.rs
++++ b/crates/nsealr-core/src/base64url.rs
+@@ -263,7 +263,10 @@ mod tests {
+     // (`payload_base64url`). Proves canonical, unpadded encode/decode parity.
+     #[test]
+     fn specs_vector_basic_envelope_canonical_round_trip() {
+-        const PAYLOAD: &[u8] = include_bytes!(concat!(env!("OUT_DIR"), "/field-7bc474eb9fd65cd1f1cdfd09.txt"));
++        const PAYLOAD: &[u8] = include_bytes!(concat!(
++            env!("OUT_DIR"),
++            "/field-7bc474eb9fd65cd1f1cdfd09.txt"
++        ));
+         let mut raw = [0u8; 256];
+         let decoded = decode_base64url(PAYLOAD, &mut raw).expect("decode fits");
+         assert!(decoded.starts_with(br#"{"version":1,"#));
+diff --git a/crates/nsealr-core/src/policy/approval_gate.rs b/crates/nsealr-core/src/policy/approval_gate.rs
+index 3da67de5332a79aed1464997c03d67eee3f759d9..b3a9c599a99c3ee994779028124dc6367e4351af 100644
+--- a/crates/nsealr-core/src/policy/approval_gate.rs
++++ b/crates/nsealr-core/src/policy/approval_gate.rs
+@@ -139,42 +139,100 @@ mod tests {
+     // kind-1-basic.json and kind-1-tags.json (`screen_review.approval_digest`);
+     // the C++ test consumed them as `kBasicReviewScreenApprovalDigest` /
+     // `kTaggedReviewScreenApprovalDigest` from the generated vector header.
+-    const BASIC_REVIEW_SCREEN_APPROVAL_DIGEST: &str =
+-        include_str!(concat!(env!("OUT_DIR"), "/field-a9dbf5d6f075ebea8a12c272.txt"));
+-    const TAGGED_REVIEW_SCREEN_APPROVAL_DIGEST: &str =
+-        include_str!(concat!(env!("OUT_DIR"), "/field-7c553abbee46c2de6c223a2b.txt"));
++    const BASIC_REVIEW_SCREEN_APPROVAL_DIGEST: &str = include_str!(concat!(
++        env!("OUT_DIR"),
++        "/field-a9dbf5d6f075ebea8a12c272.txt"
++    ));
++    const TAGGED_REVIEW_SCREEN_APPROVAL_DIGEST: &str = include_str!(concat!(
++        env!("OUT_DIR"),
++        "/field-7c553abbee46c2de6c223a2b.txt"
++    ));
+ 
+     // Port of the C++ `test_approval_gate_requires_matching_approval`.
+     #[test]
+     fn requires_matching_approval() {
+         let mut gate = ApprovalGate::new();
+-        gate.begin_review(include_str!(concat!(env!("OUT_DIR"), "/field-ef8f1cdc03d2b7514fa6d71d.txt")), BASIC_REVIEW_SCREEN_APPROVAL_DIGEST);
++        gate.begin_review(
++            include_str!(concat!(
++                env!("OUT_DIR"),
++                "/field-ef8f1cdc03d2b7514fa6d71d.txt"
++            )),
++            BASIC_REVIEW_SCREEN_APPROVAL_DIGEST,
++        );
+ 
+         // begin_review binds the active pair and resets to Pending.
+         assert_eq!(gate.decision(), ApprovalDecision::Pending);
+-        assert_eq!(gate.active_request_id(), include_str!(concat!(env!("OUT_DIR"), "/field-ef8f1cdc03d2b7514fa6d71d.txt")));
++        assert_eq!(
++            gate.active_request_id(),
++            include_str!(concat!(
++                env!("OUT_DIR"),
++                "/field-ef8f1cdc03d2b7514fa6d71d.txt"
++            ))
++        );
+         assert_eq!(
+             gate.active_approval_digest(),
+             BASIC_REVIEW_SCREEN_APPROVAL_DIGEST,
+         );
+ 
+         // Pending never permits signing, even for the exact bound pair.
+-        assert!(!gate.can_sign(include_str!(concat!(env!("OUT_DIR"), "/field-ef8f1cdc03d2b7514fa6d71d.txt")), BASIC_REVIEW_SCREEN_APPROVAL_DIGEST));
++        assert!(!gate.can_sign(
++            include_str!(concat!(
++                env!("OUT_DIR"),
++                "/field-ef8f1cdc03d2b7514fa6d71d.txt"
++            )),
++            BASIC_REVIEW_SCREEN_APPROVAL_DIGEST
++        ));
+         assert!(!gate.can_sign("different", BASIC_REVIEW_SCREEN_APPROVAL_DIGEST));
+ 
+         // Approving a mismatched digest does not record an approval.
+-        gate.approve(include_str!(concat!(env!("OUT_DIR"), "/field-ef8f1cdc03d2b7514fa6d71d.txt")), "00");
+-        assert!(!gate.can_sign(include_str!(concat!(env!("OUT_DIR"), "/field-ef8f1cdc03d2b7514fa6d71d.txt")), BASIC_REVIEW_SCREEN_APPROVAL_DIGEST));
++        gate.approve(
++            include_str!(concat!(
++                env!("OUT_DIR"),
++                "/field-ef8f1cdc03d2b7514fa6d71d.txt"
++            )),
++            "00",
++        );
++        assert!(!gate.can_sign(
++            include_str!(concat!(
++                env!("OUT_DIR"),
++                "/field-ef8f1cdc03d2b7514fa6d71d.txt"
++            )),
++            BASIC_REVIEW_SCREEN_APPROVAL_DIGEST
++        ));
+ 
+         // Approving a mismatched request id does not record an approval.
+         gate.approve("different", BASIC_REVIEW_SCREEN_APPROVAL_DIGEST);
+-        assert!(!gate.can_sign(include_str!(concat!(env!("OUT_DIR"), "/field-ef8f1cdc03d2b7514fa6d71d.txt")), BASIC_REVIEW_SCREEN_APPROVAL_DIGEST));
++        assert!(!gate.can_sign(
++            include_str!(concat!(
++                env!("OUT_DIR"),
++                "/field-ef8f1cdc03d2b7514fa6d71d.txt"
++            )),
++            BASIC_REVIEW_SCREEN_APPROVAL_DIGEST
++        ));
+ 
+         // Approving the exact bound pair permits signing that pair only.
+-        gate.approve(include_str!(concat!(env!("OUT_DIR"), "/field-ef8f1cdc03d2b7514fa6d71d.txt")), BASIC_REVIEW_SCREEN_APPROVAL_DIGEST);
++        gate.approve(
++            include_str!(concat!(
++                env!("OUT_DIR"),
++                "/field-ef8f1cdc03d2b7514fa6d71d.txt"
++            )),
++            BASIC_REVIEW_SCREEN_APPROVAL_DIGEST,
++        );
+         assert_eq!(gate.decision(), ApprovalDecision::Approved);
+-        assert!(gate.can_sign(include_str!(concat!(env!("OUT_DIR"), "/field-ef8f1cdc03d2b7514fa6d71d.txt")), BASIC_REVIEW_SCREEN_APPROVAL_DIGEST));
+-        assert!(!gate.can_sign(include_str!(concat!(env!("OUT_DIR"), "/field-ef8f1cdc03d2b7514fa6d71d.txt")), TAGGED_REVIEW_SCREEN_APPROVAL_DIGEST));
++        assert!(gate.can_sign(
++            include_str!(concat!(
++                env!("OUT_DIR"),
++                "/field-ef8f1cdc03d2b7514fa6d71d.txt"
++            )),
++            BASIC_REVIEW_SCREEN_APPROVAL_DIGEST
++        ));
++        assert!(!gate.can_sign(
++            include_str!(concat!(
++                env!("OUT_DIR"),
++                "/field-ef8f1cdc03d2b7514fa6d71d.txt"
++            )),
++            TAGGED_REVIEW_SCREEN_APPROVAL_DIGEST
++        ));
+ 
+         // Rejecting the new review is terminal and blocks signing.
+         gate.begin_review("req-kind-1-tags", TAGGED_REVIEW_SCREEN_APPROVAL_DIGEST);
+diff --git a/crates/nsealr-core/src/policy/policy_change_review.rs b/crates/nsealr-core/src/policy/policy_change_review.rs
+index 77899654fa62330f21fbbaa25541797a8c3a3e3a..69e0e14cff5692a4ded8c86e856081a3bd385677 100644
+--- a/crates/nsealr-core/src/policy/policy_change_review.rs
++++ b/crates/nsealr-core/src/policy/policy_change_review.rs
+@@ -902,15 +902,12 @@ mod tests {
+ 
+     include!(concat!(env!("OUT_DIR"), "/policy-fixtures.rs"));
+ 
+-
+     // Proposal + expected review copied from the READ-ONLY
+     // specs/vectors/policy-changes/esp32-usb-enable-kind-1-automation.json.
+ 
+-
+     // Proposal + expected review copied from the READ-ONLY specs/vectors/
+     // policy-changes/custom-hardware-wallet-enable-kind-1-automation.json.
+ 
+-
+     /// The Rust analogue of the C++ `assert_trusted_review_pages` (title, lines,
+     /// action; the policy-change builder leaves indicator/styles/logical id
+     /// empty, as the C++ did).
+@@ -962,15 +959,24 @@ mod tests {
+         let review = build_policy_change_review(&fixture.proposal).unwrap();
+         assert!(pages_contain_text(
+             review.pages.as_slice(),
+-            include_str!(concat!(env!("OUT_DIR"), "/field-dfdf25ff15dd94cd69f2d9db.txt"))
++            include_str!(concat!(
++                env!("OUT_DIR"),
++                "/field-dfdf25ff15dd94cd69f2d9db.txt"
++            ))
+         ));
+         assert!(pages_contain_text(
+             review.pages.as_slice(),
+-            include_str!(concat!(env!("OUT_DIR"), "/field-c7922db5f8394d251c8774e5.txt")),
++            include_str!(concat!(
++                env!("OUT_DIR"),
++                "/field-c7922db5f8394d251c8774e5.txt"
++            )),
+         ));
+         assert!(pages_contain_text(
+             review.pages.as_slice(),
+-            include_str!(concat!(env!("OUT_DIR"), "/field-26fcd1fa0e66fcf7b2e4ac8b.txt")),
++            include_str!(concat!(
++                env!("OUT_DIR"),
++                "/field-26fcd1fa0e66fcf7b2e4ac8b.txt"
++            )),
+         ));
+     }
+ 
+@@ -1232,8 +1238,14 @@ mod tests {
+         assert_eq!(
+             requester_lines,
+             [
+-                include_str!(concat!(env!("OUT_DIR"), "/field-b1571212e7117a363e3c164f.txt")),
+-                include_str!(concat!(env!("OUT_DIR"), "/field-026314cb947f57cec32c723b.txt")),
++                include_str!(concat!(
++                    env!("OUT_DIR"),
++                    "/field-b1571212e7117a363e3c164f.txt"
++                )),
++                include_str!(concat!(
++                    env!("OUT_DIR"),
++                    "/field-026314cb947f57cec32c723b.txt"
++                )),
+             ],
+         );
+         assert_ne!(review.approval_digest, esp32_usb_fixture().approval_digest,);
+@@ -1442,8 +1454,14 @@ mod tests {
+         assert_eq!(
+             policy_lines,
+             [
+-                include_str!(concat!(env!("OUT_DIR"), "/field-08a0fee686fad4cf25223d77.txt")),
+-                include_str!(concat!(env!("OUT_DIR"), "/field-2c85fc0acfaa83e3d184462d.txt")),
++                include_str!(concat!(
++                    env!("OUT_DIR"),
++                    "/field-08a0fee686fad4cf25223d77.txt"
++                )),
++                include_str!(concat!(
++                    env!("OUT_DIR"),
++                    "/field-2c85fc0acfaa83e3d184462d.txt"
++                )),
+                 "Grants: 4",
+                 "Grant: grant-0",
+                 "Grant: grant-1",
+diff --git a/crates/nsealr-core/src/policy/signing_policy.rs b/crates/nsealr-core/src/policy/signing_policy.rs
+index aae788bcafb535d178c5514e82e56562d712164a..b50a1e3a58ba6eeff2b8d6f94e94cb180037fd5f 100644
+--- a/crates/nsealr-core/src/policy/signing_policy.rs
++++ b/crates/nsealr-core/src/policy/signing_policy.rs
+@@ -222,27 +222,63 @@ mod tests {
+         assert_eq!(
+             as_strs(&default_status.missing_gates),
+             [
+-                include_str!(concat!(env!("OUT_DIR"), "/field-f706f4392154dcd7560cd36b.txt")),
++                include_str!(concat!(
++                    env!("OUT_DIR"),
++                    "/field-f706f4392154dcd7560cd36b.txt"
++                )),
+                 "parser_limits",
+-                include_str!(concat!(env!("OUT_DIR"), "/field-9550a14f72fc08baf2aa14f3.txt")),
+-                include_str!(concat!(env!("OUT_DIR"), "/field-214939ecb151b6a8878c69c5.txt")),
+-                include_str!(concat!(env!("OUT_DIR"), "/field-9c587a8402b2f580ca422d36.txt")),
+-                include_str!(concat!(env!("OUT_DIR"), "/field-e455bbf2dbf9036f9e8b55c3.txt")),
+-                include_str!(concat!(env!("OUT_DIR"), "/field-543aa73676256058e56124d9.txt")),
+-                include_str!(concat!(env!("OUT_DIR"), "/field-b0db970c9c0a12565d003468.txt")),
++                include_str!(concat!(
++                    env!("OUT_DIR"),
++                    "/field-9550a14f72fc08baf2aa14f3.txt"
++                )),
++                include_str!(concat!(
++                    env!("OUT_DIR"),
++                    "/field-214939ecb151b6a8878c69c5.txt"
++                )),
++                include_str!(concat!(
++                    env!("OUT_DIR"),
++                    "/field-9c587a8402b2f580ca422d36.txt"
++                )),
++                include_str!(concat!(
++                    env!("OUT_DIR"),
++                    "/field-e455bbf2dbf9036f9e8b55c3.txt"
++                )),
++                include_str!(concat!(
++                    env!("OUT_DIR"),
++                    "/field-543aa73676256058e56124d9.txt"
++                )),
++                include_str!(concat!(
++                    env!("OUT_DIR"),
++                    "/field-b0db970c9c0a12565d003468.txt"
++                )),
+                 "secure_boot",
+-                include_str!(concat!(env!("OUT_DIR"), "/field-9c9ae63fa388c9c119c9ea5d.txt")),
++                include_str!(concat!(
++                    env!("OUT_DIR"),
++                    "/field-9c9ae63fa388c9c119c9ea5d.txt"
++                )),
+                 "debug_lock",
+-                include_str!(concat!(env!("OUT_DIR"), "/field-8e88a54ab6b27c5030181301.txt")),
++                include_str!(concat!(
++                    env!("OUT_DIR"),
++                    "/field-8e88a54ab6b27c5030181301.txt"
++                )),
+             ],
+         );
+ 
+         let mut development_accepted_gates = SigningGateNames::new();
+         for gate in [
+             "parser_limits",
+-            include_str!(concat!(env!("OUT_DIR"), "/field-9550a14f72fc08baf2aa14f3.txt")),
+-            include_str!(concat!(env!("OUT_DIR"), "/field-214939ecb151b6a8878c69c5.txt")),
+-            include_str!(concat!(env!("OUT_DIR"), "/field-9c587a8402b2f580ca422d36.txt")),
++            include_str!(concat!(
++                env!("OUT_DIR"),
++                "/field-9550a14f72fc08baf2aa14f3.txt"
++            )),
++            include_str!(concat!(
++                env!("OUT_DIR"),
++                "/field-214939ecb151b6a8878c69c5.txt"
++            )),
++            include_str!(concat!(
++                env!("OUT_DIR"),
++                "/field-9c587a8402b2f580ca422d36.txt"
++            )),
+         ] {
+             development_accepted_gates.try_push(gate).unwrap();
+         }
+@@ -266,15 +302,27 @@ mod tests {
+         assert!(!safety_status.signing_enabled);
+         assert_eq!(
+             as_strs(&safety_status.missing_gates),
+-            [include_str!(concat!(env!("OUT_DIR"), "/field-f706f4392154dcd7560cd36b.txt"))],
++            [include_str!(concat!(
++                env!("OUT_DIR"),
++                "/field-f706f4392154dcd7560cd36b.txt"
++            ))],
+         );
+         assert_eq!(
+             as_strs(&safety_status.development_accepted_gates),
+             [
+                 "parser_limits",
+-                include_str!(concat!(env!("OUT_DIR"), "/field-9550a14f72fc08baf2aa14f3.txt")),
+-                include_str!(concat!(env!("OUT_DIR"), "/field-214939ecb151b6a8878c69c5.txt")),
+-                include_str!(concat!(env!("OUT_DIR"), "/field-9c587a8402b2f580ca422d36.txt")),
++                include_str!(concat!(
++                    env!("OUT_DIR"),
++                    "/field-9550a14f72fc08baf2aa14f3.txt"
++                )),
++                include_str!(concat!(
++                    env!("OUT_DIR"),
++                    "/field-214939ecb151b6a8878c69c5.txt"
++                )),
++                include_str!(concat!(
++                    env!("OUT_DIR"),
++                    "/field-9c587a8402b2f580ca422d36.txt"
++                )),
+             ],
+         );
+ 
+diff --git a/crates/nsealr-core/src/protocol.rs b/crates/nsealr-core/src/protocol.rs
+index acd40ba5570b4cf9f005b2eaac564ce9626f6218..bfc76a77dc3332ca129ea607914e6c085904e00f 100644
+--- a/crates/nsealr-core/src/protocol.rs
++++ b/crates/nsealr-core/src/protocol.rs
+@@ -688,24 +688,47 @@ mod tests {
+     /// Request/response JSON copied from the READ-ONLY
+     /// specs/vectors/devices/esp32-s3-capabilities-scaffold.json (the C++
+     /// consumed them as kCapabilityRequestFrame/kCapabilityResponseFrame).
+-    const CAPABILITY_REQUEST_JSON: &str = include_str!(concat!(env!("OUT_DIR"), "/field-f2bcc223a89cff161836df95.txt"));
+-    const CAPABILITY_RESPONSE_JSON: &str = include_str!(concat!(env!("OUT_DIR"), "/field-96b606e48d5a2e92c7cd10ee.txt"));
++    const CAPABILITY_REQUEST_JSON: &str = include_str!(concat!(
++        env!("OUT_DIR"),
++        "/field-f2bcc223a89cff161836df95.txt"
++    ));
++    const CAPABILITY_RESPONSE_JSON: &str = include_str!(concat!(
++        env!("OUT_DIR"),
++        "/field-96b606e48d5a2e92c7cd10ee.txt"
++    ));
+ 
+     /// Request/response JSON copied from the READ-ONLY
+     /// specs/vectors/devices/esp32-s3-sign-event-disabled.json.
+-    const SIGN_EVENT_REQUEST_JSON: &str = include_str!(concat!(env!("OUT_DIR"), "/field-c76b5ce6a9db422700c91fcc.txt"));
+-    const SIGN_EVENT_DISABLED_RESPONSE_JSON: &str = include_str!(concat!(env!("OUT_DIR"), "/field-e966d0a12551130182433344.txt"));
++    const SIGN_EVENT_REQUEST_JSON: &str = include_str!(concat!(
++        env!("OUT_DIR"),
++        "/field-c76b5ce6a9db422700c91fcc.txt"
++    ));
++    const SIGN_EVENT_DISABLED_RESPONSE_JSON: &str = include_str!(concat!(
++        env!("OUT_DIR"),
++        "/field-e966d0a12551130182433344.txt"
++    ));
+ 
+     /// Request/response JSON copied from the READ-ONLY
+     /// specs/vectors/devices/esp32-s3-signing-status-disabled.json.
+-    const SIGNING_STATUS_REQUEST_JSON: &str = include_str!(concat!(env!("OUT_DIR"), "/field-04ab3357b128c04ccdf7def2.txt"));
+-    const SIGNING_STATUS_RESPONSE_JSON: &str = include_str!(concat!(env!("OUT_DIR"), "/field-bdf442c8c61fc8e38c735491.txt"));
++    const SIGNING_STATUS_REQUEST_JSON: &str = include_str!(concat!(
++        env!("OUT_DIR"),
++        "/field-04ab3357b128c04ccdf7def2.txt"
++    ));
++    const SIGNING_STATUS_RESPONSE_JSON: &str = include_str!(concat!(
++        env!("OUT_DIR"),
++        "/field-bdf442c8c61fc8e38c735491.txt"
++    ));
+ 
+     /// Request/response JSON copied from the READ-ONLY
+     /// specs/vectors/devices/esp32-s3-get-public-key-dev.json.
+-    const PUBLIC_KEY_REQUEST_JSON: &str =
+-        include_str!(concat!(env!("OUT_DIR"), "/field-19056d098b7abb687f36ea88.txt"));
+-    const PUBLIC_KEY_RESPONSE_JSON: &str = include_str!(concat!(env!("OUT_DIR"), "/field-401e9037d4751ec63c8c6c94.txt"));
++    const PUBLIC_KEY_REQUEST_JSON: &str = include_str!(concat!(
++        env!("OUT_DIR"),
++        "/field-19056d098b7abb687f36ea88.txt"
++    ));
++    const PUBLIC_KEY_RESPONSE_JSON: &str = include_str!(concat!(
++        env!("OUT_DIR"),
++        "/field-401e9037d4751ec63c8c6c94.txt"
++    ));
+ 
+     const UNSUPPORTED_RESPONSE_JSON: &str = r#"{"error":"unsupported_request"}"#;
+ 
+@@ -823,7 +846,10 @@ mod tests {
+     // Port of the C++ `test_device_protocol_binds_configured_signer_identity`.
+     #[test]
+     fn binds_configured_signer_identity() {
+-        let alternate_pubkey = include_str!(concat!(env!("OUT_DIR"), "/field-239d59b65f08623efcc71a22.txt"));
++        let alternate_pubkey = include_str!(concat!(
++            env!("OUT_DIR"),
++            "/field-239d59b65f08623efcc71a22.txt"
++        ));
+         let context = DeviceProtocolContext {
+             signer_identity: SignerIdentity {
+                 public_key: alternate_pubkey,
+@@ -990,8 +1016,14 @@ mod tests {
+         // Byte-for-byte frames copied from the READ-ONLY
+         // specs/vectors/invalid/serial-frame-request-invalid-version.json and
+         // serial-frame-request-invalid-request-id.json (`frame`).
+-        const INVALID_VERSION_FRAME: &[u8] = include_bytes!(concat!(env!("OUT_DIR"), "/field-152ca5b9fb9f6603dc2dc124.txt"));
+-        const INVALID_REQUEST_ID_FRAME: &[u8] = include_bytes!(concat!(env!("OUT_DIR"), "/field-f687398dd9028828e538da0c.txt"));
++        const INVALID_VERSION_FRAME: &[u8] = include_bytes!(concat!(
++            env!("OUT_DIR"),
++            "/field-152ca5b9fb9f6603dc2dc124.txt"
++        ));
++        const INVALID_REQUEST_ID_FRAME: &[u8] = include_bytes!(concat!(
++            env!("OUT_DIR"),
++            "/field-f687398dd9028828e538da0c.txt"
++        ));
+         for frame in [INVALID_VERSION_FRAME, INVALID_REQUEST_ID_FRAME] {
+             assert_eq!(
+                 handle_serial_frame(frame, &dev()).unwrap().as_bytes(),
+@@ -1005,9 +1037,10 @@ mod tests {
+     fn rejects_unknown_top_level_request_fields() {
+         assert_eq!(
+             handle_serial_frame(
+-                &request_frame_for_test(
+-                    include_str!(concat!(env!("OUT_DIR"), "/field-bfe77a9543df538a8b0265f4.txt")),
+-                ),
++                &request_frame_for_test(include_str!(concat!(
++                    env!("OUT_DIR"),
++                    "/field-bfe77a9543df538a8b0265f4.txt"
++                )),),
+                 &dev(),
+             )
+             .unwrap()
+@@ -1020,8 +1053,14 @@ mod tests {
+     #[test]
+     fn rejects_params_for_parameterless_methods() {
+         for request_json in [
+-            include_str!(concat!(env!("OUT_DIR"), "/field-f1b6d702634ac412d6ac89ce.txt")),
+-            include_str!(concat!(env!("OUT_DIR"), "/field-bfb321d6d7c2a5aa3703dd9c.txt")),
++            include_str!(concat!(
++                env!("OUT_DIR"),
++                "/field-f1b6d702634ac412d6ac89ce.txt"
++            )),
++            include_str!(concat!(
++                env!("OUT_DIR"),
++                "/field-bfb321d6d7c2a5aa3703dd9c.txt"
++            )),
+             r#"{"version":1,"request_id":"invalid-signing-status-params","method":"get_signing_status","params":{}}"#,
+         ] {
+             assert_eq!(
+@@ -1038,9 +1077,10 @@ mod tests {
+     fn rejects_invalid_sign_event_request_shape() {
+         assert_eq!(
+             handle_serial_frame(
+-                &request_frame_for_test(
+-                    include_str!(concat!(env!("OUT_DIR"), "/field-245bbf0348274249096379c6.txt")),
+-                ),
++                &request_frame_for_test(include_str!(concat!(
++                    env!("OUT_DIR"),
++                    "/field-245bbf0348274249096379c6.txt"
++                )),),
+                 &dev(),
+             )
+             .unwrap()
+diff --git a/crates/nsealr-core/src/qr/envelope.rs b/crates/nsealr-core/src/qr/envelope.rs
+index 7b3fb87b4f5a3397f3394a0367b5fc7f3f056a15..790964bd7b6cbc6520f042d3f0e2d36cdf081833 100644
+--- a/crates/nsealr-core/src/qr/envelope.rs
++++ b/crates/nsealr-core/src/qr/envelope.rs
+@@ -1284,29 +1284,56 @@ pub(crate) mod tests {
+     // Byte-for-byte fixtures copied from
+     // specs/vectors/transports/qr-envelope-kind-1-basic.json (`envelope`,
+     // `payload_base64url`).
+-    pub(crate) const KIND1_BASIC_ENVELOPE: &[u8] = include_bytes!(concat!(env!("OUT_DIR"), "/field-b69c96b873204e5c324385c0.txt"));
+-    const KIND1_BASIC_PAYLOAD: &[u8] = include_bytes!(concat!(env!("OUT_DIR"), "/field-7bc474eb9fd65cd1f1cdfd09.txt"));
++    pub(crate) const KIND1_BASIC_ENVELOPE: &[u8] = include_bytes!(concat!(
++        env!("OUT_DIR"),
++        "/field-b69c96b873204e5c324385c0.txt"
++    ));
++    const KIND1_BASIC_PAYLOAD: &[u8] = include_bytes!(concat!(
++        env!("OUT_DIR"),
++        "/field-7bc474eb9fd65cd1f1cdfd09.txt"
++    ));
+ 
+     // Byte-for-byte fixture copied from
+     // specs/vectors/transports/qr-envelope-kind-1-long-events-many-tags.json
+     // (`envelope`): a maximal valid request (nine tags, 281-byte content).
+-    const KIND1_LONG_MANY_TAGS_ENVELOPE: &[u8] = include_bytes!(concat!(env!("OUT_DIR"), "/field-fd77c72125a90d057af49e71.txt"));
++    const KIND1_LONG_MANY_TAGS_ENVELOPE: &[u8] = include_bytes!(concat!(
++        env!("OUT_DIR"),
++        "/field-fd77c72125a90d057af49e71.txt"
++    ));
+ 
+     // Animated fixture copied from
+     // specs/vectors/transports/qr-animated-response-kind-1-basic.json (`frames`,
+     // `payload_base64url`; ANIMATED_JSON is the same fixture's `decoded` in the
+     // canonical serialization pinned by the C++ kAnimatedQrResponseKind1BasicJson).
+-    pub(crate) const ANIMATED_FRAME_1: &[u8] = include_bytes!(concat!(env!("OUT_DIR"), "/field-cb806983fcebd0885ee3bd03.txt"));
+-    pub(crate) const ANIMATED_FRAME_2: &[u8] = include_bytes!(concat!(env!("OUT_DIR"), "/field-be6cb4d91daa59ce1e0697cb.txt"));
+-    pub(crate) const ANIMATED_FRAME_3: &[u8] = include_bytes!(concat!(env!("OUT_DIR"), "/field-f119cf383068a629770f4634.txt"));
+-    pub(crate) const ANIMATED_PAYLOAD: &[u8] = include_bytes!(concat!(env!("OUT_DIR"), "/field-a6eb1c7c7419fbd99df6825c.txt"));
+-    pub(crate) const ANIMATED_JSON: &[u8] = include_bytes!(concat!(env!("OUT_DIR"), "/field-155b661f07a03facadcc50eb.txt"));
++    pub(crate) const ANIMATED_FRAME_1: &[u8] = include_bytes!(concat!(
++        env!("OUT_DIR"),
++        "/field-cb806983fcebd0885ee3bd03.txt"
++    ));
++    pub(crate) const ANIMATED_FRAME_2: &[u8] = include_bytes!(concat!(
++        env!("OUT_DIR"),
++        "/field-be6cb4d91daa59ce1e0697cb.txt"
++    ));
++    pub(crate) const ANIMATED_FRAME_3: &[u8] = include_bytes!(concat!(
++        env!("OUT_DIR"),
++        "/field-f119cf383068a629770f4634.txt"
++    ));
++    pub(crate) const ANIMATED_PAYLOAD: &[u8] = include_bytes!(concat!(
++        env!("OUT_DIR"),
++        "/field-a6eb1c7c7419fbd99df6825c.txt"
++    ));
++    pub(crate) const ANIMATED_JSON: &[u8] = include_bytes!(concat!(
++        env!("OUT_DIR"),
++        "/field-155b661f07a03facadcc50eb.txt"
++    ));
+ 
+     // Shared-invalid QR-envelope fixtures copied from specs/vectors/invalid/
+     // qr-envelope-{padded,malformed,invalid-utf8}.json (`envelope`); the oversized
+     // fixture (qr-envelope-oversized.json) is `nsealr1:` + 940 'A's (948 bytes),
+     // rebuilt programmatically below, byte-identical to the fixture.
+-    const INVALID_PADDED: &[u8] = include_bytes!(concat!(env!("OUT_DIR"), "/field-bcf1804c40fb794ae802d43c.txt"));
++    const INVALID_PADDED: &[u8] = include_bytes!(concat!(
++        env!("OUT_DIR"),
++        "/field-bcf1804c40fb794ae802d43c.txt"
++    ));
+     const INVALID_MALFORMED: &[u8] = b"nsealr:abc";
+     const INVALID_UTF8: &[u8] = b"nsealr1:_w";
+ 
+@@ -1419,7 +1446,13 @@ pub(crate) mod tests {
+         let (_, json) = decode_static(KIND1_BASIC_ENVELOPE).unwrap();
+         let request = parse_qr_signing_request(&json).unwrap();
+         assert_eq!(request.version, 1);
+-        assert_eq!(request.request_id(), include_bytes!(concat!(env!("OUT_DIR"), "/field-ef8f1cdc03d2b7514fa6d71d.txt")));
++        assert_eq!(
++            request.request_id(),
++            include_bytes!(concat!(
++                env!("OUT_DIR"),
++                "/field-ef8f1cdc03d2b7514fa6d71d.txt"
++            ))
++        );
+         assert_eq!(request.method(), "sign_event");
+         assert!(request.has_params);
+     }
+@@ -1446,7 +1479,13 @@ pub(crate) mod tests {
+         let request = parse_qr_signing_request(&json).unwrap();
+         assert_eq!(request.event_template.created_at, 1_710_000_000);
+         assert_eq!(request.event_template.kind, 1);
+-        assert_eq!(request.content(), include_bytes!(concat!(env!("OUT_DIR"), "/field-1b208157932014fa782660ac.txt")));
++        assert_eq!(
++            request.content(),
++            include_bytes!(concat!(
++                env!("OUT_DIR"),
++                "/field-1b208157932014fa782660ac.txt"
++            ))
++        );
+         let (start, end) = request.event_template.tags_json;
+         assert_eq!(&json[start..end], b"[]");
+     }
+@@ -1709,31 +1748,256 @@ pub(crate) mod tests {
+     #[test]
+     fn qr_signing_request_rejects_shared_invalid_request_vectors() {
+         let vectors: &[(&str, &[u8])] = &[
+-            (include_str!(concat!(env!("OUT_DIR"), "/field-24c565533b2c031cce3404d6.txt")), include_bytes!(concat!(env!("OUT_DIR"), "/field-88270f2336c3bec26b9b8102.txt"))),
+-            (include_str!(concat!(env!("OUT_DIR"), "/field-343dfba9674203b8ae5e049f.txt")), include_bytes!(concat!(env!("OUT_DIR"), "/field-692fd02b9af23295ea9e3f54.txt"))),
+-            (include_str!(concat!(env!("OUT_DIR"), "/field-a9f28b492e9d40dcbb54c161.txt")), include_bytes!(concat!(env!("OUT_DIR"), "/field-392edda1d20e90455b184512.txt"))),
+-            (include_str!(concat!(env!("OUT_DIR"), "/field-a33c1ff0bff84fd58102c97e.txt")), include_bytes!(concat!(env!("OUT_DIR"), "/field-8035bcb7ff6c7b69d10d9005.txt"))),
+-            (include_str!(concat!(env!("OUT_DIR"), "/field-d01a036c56103bac5db2833c.txt")), include_bytes!(concat!(env!("OUT_DIR"), "/field-e2d8d202b6a418eb3e27a8e4.txt"))),
+-            (include_str!(concat!(env!("OUT_DIR"), "/field-a13fcba3d0d0645295d4b83e.txt")), include_bytes!(concat!(env!("OUT_DIR"), "/field-6d36b8ad33903e0c72537245.txt"))),
+-            (include_str!(concat!(env!("OUT_DIR"), "/field-0187d5ed5d3b8b77e48ef519.txt")), include_bytes!(concat!(env!("OUT_DIR"), "/field-567d875b28f2f1c9dcd84c4c.txt"))),
+-            (include_str!(concat!(env!("OUT_DIR"), "/field-fc6215b9edc02850921efd59.txt")), include_bytes!(concat!(env!("OUT_DIR"), "/field-a639ba28eef6d1ce4f06e1bd.txt"))),
+-            (include_str!(concat!(env!("OUT_DIR"), "/field-01183b580c2afd82aee32f20.txt")), include_bytes!(concat!(env!("OUT_DIR"), "/field-245bbf0348274249096379c6.txt"))),
+-            (include_str!(concat!(env!("OUT_DIR"), "/field-f3f5f97a7f0c05599c615490.txt")), include_bytes!(concat!(env!("OUT_DIR"), "/field-4b05e434cfd67cd9a75ecb4b.txt"))),
+-            (include_str!(concat!(env!("OUT_DIR"), "/field-5936ea3644e2c886e6c18700.txt")), include_bytes!(concat!(env!("OUT_DIR"), "/field-f1b6d702634ac412d6ac89ce.txt"))),
+-            (include_str!(concat!(env!("OUT_DIR"), "/field-88730efa77091611955c71b7.txt")), include_bytes!(concat!(env!("OUT_DIR"), "/field-bfb321d6d7c2a5aa3703dd9c.txt"))),
+-            (include_str!(concat!(env!("OUT_DIR"), "/field-85a8b70c362257648b261d39.txt")), include_bytes!(concat!(env!("OUT_DIR"), "/field-0af857de4a48d6ec2d683150.txt"))),
+-            (include_str!(concat!(env!("OUT_DIR"), "/field-47633ca2891092f5a178a3cf.txt")), include_bytes!(concat!(env!("OUT_DIR"), "/field-4e2e8353b45bb26b551944be.txt"))),
+-            (include_str!(concat!(env!("OUT_DIR"), "/field-a8e4d74626214bd56a3873ba.txt")), include_bytes!(concat!(env!("OUT_DIR"), "/field-a0ead41b24fcf49b107f5ee6.txt"))),
+-            (include_str!(concat!(env!("OUT_DIR"), "/field-e5248f375a7cdce2c8aa721d.txt")), include_bytes!(concat!(env!("OUT_DIR"), "/field-15a804309e663e5eb2bc4791.txt"))),
+-            (include_str!(concat!(env!("OUT_DIR"), "/field-8c23f2b7b75b9f3fdf57fc8e.txt")), include_bytes!(concat!(env!("OUT_DIR"), "/field-0a36357aaf25b74bcc5a133d.txt"))),
+-            (include_str!(concat!(env!("OUT_DIR"), "/field-8db3104d26d8106b5f55d616.txt")), include_bytes!(concat!(env!("OUT_DIR"), "/field-2cef7d540519e1d0667de472.txt"))),
+-            (include_str!(concat!(env!("OUT_DIR"), "/field-3c7557ad4529bd78fe06da9a.txt")), include_bytes!(concat!(env!("OUT_DIR"), "/field-6b33788fa062b8aa8c163525.txt"))),
+-            (include_str!(concat!(env!("OUT_DIR"), "/field-bd723d16fe4c12661fa410af.txt")), include_bytes!(concat!(env!("OUT_DIR"), "/field-9f12fcb31538612f9548d6c4.txt"))),
+-            (include_str!(concat!(env!("OUT_DIR"), "/field-c557f62900487f92ed686095.txt")), include_bytes!(concat!(env!("OUT_DIR"), "/field-694f49d5b74d9e18fb5d344e.txt"))),
+-            (include_str!(concat!(env!("OUT_DIR"), "/field-96b3432119f33bc1e3678da0.txt")), include_bytes!(concat!(env!("OUT_DIR"), "/field-85d66b86eaf4b9800deff84a.txt"))),
+-            (include_str!(concat!(env!("OUT_DIR"), "/field-a39b76315e5cc2d5abf10106.txt")), include_bytes!(concat!(env!("OUT_DIR"), "/field-91956a747800a262375e2b7e.txt"))),
+-            (include_str!(concat!(env!("OUT_DIR"), "/field-0c791d113112c983e86db3ba.txt")), include_bytes!(concat!(env!("OUT_DIR"), "/field-d398a64ecb2d39f66153a5b1.txt"))),
+-            (include_str!(concat!(env!("OUT_DIR"), "/field-f87a96b2d9df38ed94b99fe4.txt")), include_bytes!(concat!(env!("OUT_DIR"), "/field-bfe77a9543df538a8b0265f4.txt"))),
++            (
++                include_str!(concat!(
++                    env!("OUT_DIR"),
++                    "/field-24c565533b2c031cce3404d6.txt"
++                )),
++                include_bytes!(concat!(
++                    env!("OUT_DIR"),
++                    "/field-88270f2336c3bec26b9b8102.txt"
++                )),
++            ),
++            (
++                include_str!(concat!(
++                    env!("OUT_DIR"),
++                    "/field-343dfba9674203b8ae5e049f.txt"
++                )),
++                include_bytes!(concat!(
++                    env!("OUT_DIR"),
++                    "/field-692fd02b9af23295ea9e3f54.txt"
++                )),
++            ),
++            (
++                include_str!(concat!(
++                    env!("OUT_DIR"),
++                    "/field-a9f28b492e9d40dcbb54c161.txt"
++                )),
++                include_bytes!(concat!(
++                    env!("OUT_DIR"),
++                    "/field-392edda1d20e90455b184512.txt"
++                )),
++            ),
++            (
++                include_str!(concat!(
++                    env!("OUT_DIR"),
++                    "/field-a33c1ff0bff84fd58102c97e.txt"
++                )),
++                include_bytes!(concat!(
++                    env!("OUT_DIR"),
++                    "/field-8035bcb7ff6c7b69d10d9005.txt"
++                )),
++            ),
++            (
++                include_str!(concat!(
++                    env!("OUT_DIR"),
++                    "/field-d01a036c56103bac5db2833c.txt"
++                )),
++                include_bytes!(concat!(
++                    env!("OUT_DIR"),
++                    "/field-e2d8d202b6a418eb3e27a8e4.txt"
++                )),
++            ),
++            (
++                include_str!(concat!(
++                    env!("OUT_DIR"),
++                    "/field-a13fcba3d0d0645295d4b83e.txt"
++                )),
++                include_bytes!(concat!(
++                    env!("OUT_DIR"),
++                    "/field-6d36b8ad33903e0c72537245.txt"
++                )),
++            ),
++            (
++                include_str!(concat!(
++                    env!("OUT_DIR"),
++                    "/field-0187d5ed5d3b8b77e48ef519.txt"
++                )),
++                include_bytes!(concat!(
++                    env!("OUT_DIR"),
++                    "/field-567d875b28f2f1c9dcd84c4c.txt"
++                )),
++            ),
++            (
++                include_str!(concat!(
++                    env!("OUT_DIR"),
++                    "/field-fc6215b9edc02850921efd59.txt"
++                )),
++                include_bytes!(concat!(
++                    env!("OUT_DIR"),
++                    "/field-a639ba28eef6d1ce4f06e1bd.txt"
++                )),
++            ),
++            (
++                include_str!(concat!(
++                    env!("OUT_DIR"),
++                    "/field-01183b580c2afd82aee32f20.txt"
++                )),
++                include_bytes!(concat!(
++                    env!("OUT_DIR"),
++                    "/field-245bbf0348274249096379c6.txt"
++                )),
++            ),
++            (
++                include_str!(concat!(
++                    env!("OUT_DIR"),
++                    "/field-f3f5f97a7f0c05599c615490.txt"
++                )),
++                include_bytes!(concat!(
++                    env!("OUT_DIR"),
++                    "/field-4b05e434cfd67cd9a75ecb4b.txt"
++                )),
++            ),
++            (
++                include_str!(concat!(
++                    env!("OUT_DIR"),
++                    "/field-5936ea3644e2c886e6c18700.txt"
++                )),
++                include_bytes!(concat!(
++                    env!("OUT_DIR"),
++                    "/field-f1b6d702634ac412d6ac89ce.txt"
++                )),
++            ),
++            (
++                include_str!(concat!(
++                    env!("OUT_DIR"),
++                    "/field-88730efa77091611955c71b7.txt"
++                )),
++                include_bytes!(concat!(
++                    env!("OUT_DIR"),
++                    "/field-bfb321d6d7c2a5aa3703dd9c.txt"
++                )),
++            ),
++            (
++                include_str!(concat!(
++                    env!("OUT_DIR"),
++                    "/field-85a8b70c362257648b261d39.txt"
++                )),
++                include_bytes!(concat!(
++                    env!("OUT_DIR"),
++                    "/field-0af857de4a48d6ec2d683150.txt"
++                )),
++            ),
++            (
++                include_str!(concat!(
++                    env!("OUT_DIR"),
++                    "/field-47633ca2891092f5a178a3cf.txt"
++                )),
++                include_bytes!(concat!(
++                    env!("OUT_DIR"),
++                    "/field-4e2e8353b45bb26b551944be.txt"
++                )),
++            ),
++            (
++                include_str!(concat!(
++                    env!("OUT_DIR"),
++                    "/field-a8e4d74626214bd56a3873ba.txt"
++                )),
++                include_bytes!(concat!(
++                    env!("OUT_DIR"),
++                    "/field-a0ead41b24fcf49b107f5ee6.txt"
++                )),
++            ),
++            (
++                include_str!(concat!(
++                    env!("OUT_DIR"),
++                    "/field-e5248f375a7cdce2c8aa721d.txt"
++                )),
++                include_bytes!(concat!(
++                    env!("OUT_DIR"),
++                    "/field-15a804309e663e5eb2bc4791.txt"
++                )),
++            ),
++            (
++                include_str!(concat!(
++                    env!("OUT_DIR"),
++                    "/field-8c23f2b7b75b9f3fdf57fc8e.txt"
++                )),
++                include_bytes!(concat!(
++                    env!("OUT_DIR"),
++                    "/field-0a36357aaf25b74bcc5a133d.txt"
++                )),
++            ),
++            (
++                include_str!(concat!(
++                    env!("OUT_DIR"),
++                    "/field-8db3104d26d8106b5f55d616.txt"
++                )),
++                include_bytes!(concat!(
++                    env!("OUT_DIR"),
++                    "/field-2cef7d540519e1d0667de472.txt"
++                )),
++            ),
++            (
++                include_str!(concat!(
++                    env!("OUT_DIR"),
++                    "/field-3c7557ad4529bd78fe06da9a.txt"
++                )),
++                include_bytes!(concat!(
++                    env!("OUT_DIR"),
++                    "/field-6b33788fa062b8aa8c163525.txt"
++                )),
++            ),
++            (
++                include_str!(concat!(
++                    env!("OUT_DIR"),
++                    "/field-bd723d16fe4c12661fa410af.txt"
++                )),
++                include_bytes!(concat!(
++                    env!("OUT_DIR"),
++                    "/field-9f12fcb31538612f9548d6c4.txt"
++                )),
++            ),
++            (
++                include_str!(concat!(
++                    env!("OUT_DIR"),
++                    "/field-c557f62900487f92ed686095.txt"
++                )),
++                include_bytes!(concat!(
++                    env!("OUT_DIR"),
++                    "/field-694f49d5b74d9e18fb5d344e.txt"
++                )),
++            ),
++            (
++                include_str!(concat!(
++                    env!("OUT_DIR"),
++                    "/field-96b3432119f33bc1e3678da0.txt"
++                )),
++                include_bytes!(concat!(
++                    env!("OUT_DIR"),
++                    "/field-85d66b86eaf4b9800deff84a.txt"
++                )),
++            ),
++            (
++                include_str!(concat!(
++                    env!("OUT_DIR"),
++                    "/field-a39b76315e5cc2d5abf10106.txt"
++                )),
++                include_bytes!(concat!(
++                    env!("OUT_DIR"),
++                    "/field-91956a747800a262375e2b7e.txt"
++                )),
++            ),
++            (
++                include_str!(concat!(
++                    env!("OUT_DIR"),
++                    "/field-0c791d113112c983e86db3ba.txt"
++                )),
++                include_bytes!(concat!(
++                    env!("OUT_DIR"),
++                    "/field-d398a64ecb2d39f66153a5b1.txt"
++                )),
++            ),
++            (
++                include_str!(concat!(
++                    env!("OUT_DIR"),
++                    "/field-f87a96b2d9df38ed94b99fe4.txt"
++                )),
++                include_bytes!(concat!(
++                    env!("OUT_DIR"),
++                    "/field-bfe77a9543df538a8b0265f4.txt"
++                )),
++            ),
+         ];
+         for (name, json) in vectors {
+             assert!(
+@@ -1751,7 +2015,13 @@ pub(crate) mod tests {
+     fn long_events_many_tags_shared_vector_parses() {
+         let (_, json) = decode_static(KIND1_LONG_MANY_TAGS_ENVELOPE).unwrap();
+         let request = parse_qr_signing_request(&json).unwrap();
+-        assert_eq!(request.request_id(), include_bytes!(concat!(env!("OUT_DIR"), "/field-1371212056e9e66ac9642836.txt")));
++        assert_eq!(
++            request.request_id(),
++            include_bytes!(concat!(
++                env!("OUT_DIR"),
++                "/field-1371212056e9e66ac9642836.txt"
++            ))
++        );
+         assert_eq!(request.event_template.created_at, 1_710_000_120);
+         assert_eq!(request.event_template.tag_count, 9);
+         let tag0: Vec<&[u8]> = request.tag(0).collect();
+diff --git a/crates/nsealr-core/src/qr/response_display.rs b/crates/nsealr-core/src/qr/response_display.rs
+index 3044ac89ee0e96aada1a8b7157f2553a8b19155e..86ae49859446e2d7df96fa05be852403d6eef8e7 100644
+--- a/crates/nsealr-core/src/qr/response_display.rs
++++ b/crates/nsealr-core/src/qr/response_display.rs
+@@ -775,9 +775,36 @@ mod tests {
+     #[test]
+     fn rejects_shared_top_level_invalid_response_vectors() {
+         let vectors: &[(&str, &[u8])] = &[
+-            (include_str!(concat!(env!("OUT_DIR"), "/field-8893afc4ccc24b73dbc3eacd.txt")), include_bytes!(concat!(env!("OUT_DIR"), "/field-17b064543efbf513eb311440.txt"))),
+-            (include_str!(concat!(env!("OUT_DIR"), "/field-3fb630cd6e6cc56e76380bac.txt")), include_bytes!(concat!(env!("OUT_DIR"), "/field-987661365b5911b05489d629.txt"))),
+-            (include_str!(concat!(env!("OUT_DIR"), "/field-f541c3e32b61e25a40070959.txt")), include_bytes!(concat!(env!("OUT_DIR"), "/field-0fe013b9ad698c450cfb85a6.txt"))),
++            (
++                include_str!(concat!(
++                    env!("OUT_DIR"),
++                    "/field-8893afc4ccc24b73dbc3eacd.txt"
++                )),
++                include_bytes!(concat!(
++                    env!("OUT_DIR"),
++                    "/field-17b064543efbf513eb311440.txt"
++                )),
++            ),
++            (
++                include_str!(concat!(
++                    env!("OUT_DIR"),
++                    "/field-3fb630cd6e6cc56e76380bac.txt"
++                )),
++                include_bytes!(concat!(
++                    env!("OUT_DIR"),
++                    "/field-987661365b5911b05489d629.txt"
++                )),
++            ),
++            (
++                include_str!(concat!(
++                    env!("OUT_DIR"),
++                    "/field-f541c3e32b61e25a40070959.txt"
++                )),
++                include_bytes!(concat!(
++                    env!("OUT_DIR"),
++                    "/field-0fe013b9ad698c450cfb85a6.txt"
++                )),
++            ),
+         ];
+         for (name, response_json) in vectors {
+             assert!(
+diff --git a/crates/nsealr-core/src/review/display.rs b/crates/nsealr-core/src/review/display.rs
+index 914ba5975cf21d9fd578f5db10969f2991e46336..81e861303ef2e709f15f68e36bfd03aa6fc4b50f 100644
+--- a/crates/nsealr-core/src/review/display.rs
++++ b/crates/nsealr-core/src/review/display.rs
+@@ -436,7 +436,14 @@ mod tests {
+     // Port of the C++ `test_review_display_renders_navigation_frame`.
+     #[test]
+     fn renders_navigation_frame() {
+-        let lines = lines_of(&["Kind 1", include_str!(concat!(env!("OUT_DIR"), "/field-364fd76c641480c443677c25.txt")), "Author"]);
++        let lines = lines_of(&[
++            "Kind 1",
++            include_str!(concat!(
++                env!("OUT_DIR"),
++                "/field-364fd76c641480c443677c25.txt"
++            )),
++            "Author",
++        ]);
+         let frame = render_review_page(
+             &page("Event", &lines, ReviewPageAction::Next),
+             0,
+@@ -449,7 +456,14 @@ mod tests {
+         assert_eq!(frame.page_indicator, "Page 1/4");
+         assert_eq!(
+             body_strs(&frame),
+-            ["Kind 1", include_str!(concat!(env!("OUT_DIR"), "/field-364fd76c641480c443677c25.txt")), "Author"]
++            [
++                "Kind 1",
++                include_str!(concat!(
++                    env!("OUT_DIR"),
++                    "/field-364fd76c641480c443677c25.txt"
++                )),
++                "Author"
++            ]
+         );
+         assert_eq!(frame.action_hint, "Next");
+     }
+@@ -490,7 +504,10 @@ mod tests {
+     // Port of the C++ `test_review_display_renders_decision_frame`.
+     #[test]
+     fn renders_decision_frame() {
+-        let lines = lines_of(&[include_str!(concat!(env!("OUT_DIR"), "/field-2e727214870520e091c3f4b4.txt"))]);
++        let lines = lines_of(&[include_str!(concat!(
++            env!("OUT_DIR"),
++            "/field-2e727214870520e091c3f4b4.txt"
++        ))]);
+         let frame = render_review_page(
+             &page("Decision", &lines, ReviewPageAction::ApproveOrReject),
+             3,
+@@ -503,9 +520,18 @@ mod tests {
+         assert_eq!(frame.page_indicator, "Page 4/4");
+         assert_eq!(
+             body_strs(&frame),
+-            [include_str!(concat!(env!("OUT_DIR"), "/field-2e727214870520e091c3f4b4.txt"))]
++            [include_str!(concat!(
++                env!("OUT_DIR"),
++                "/field-2e727214870520e091c3f4b4.txt"
++            ))]
++        );
++        assert_eq!(
++            frame.action_hint,
++            include_str!(concat!(
++                env!("OUT_DIR"),
++                "/field-26b3d3b407ad92a687368648.txt"
++            ))
+         );
+-        assert_eq!(frame.action_hint, include_str!(concat!(env!("OUT_DIR"), "/field-26b3d3b407ad92a687368648.txt")));
+     }
+ 
+     // Port of the C++ `test_review_display_wraps_and_truncates_long_body_lines`.
+@@ -593,9 +619,18 @@ mod tests {
+         assert_eq!(
+             body_strs(&frame),
+             [
+-                include_str!(concat!(env!("OUT_DIR"), "/field-972fe49049a21f8fdbc81c7f.txt")),
+-                include_str!(concat!(env!("OUT_DIR"), "/field-972fe49049a21f8fdbc81c7f.txt")),
+-                include_str!(concat!(env!("OUT_DIR"), "/field-795abe77c992dc49fe9bf699.txt")),
++                include_str!(concat!(
++                    env!("OUT_DIR"),
++                    "/field-972fe49049a21f8fdbc81c7f.txt"
++                )),
++                include_str!(concat!(
++                    env!("OUT_DIR"),
++                    "/field-972fe49049a21f8fdbc81c7f.txt"
++                )),
++                include_str!(concat!(
++                    env!("OUT_DIR"),
++                    "/field-795abe77c992dc49fe9bf699.txt"
++                )),
+             ],
+         );
+         assert_eq!(frame.action_hint, "Next");
+diff --git a/crates/nsealr-core/src/review/qr.rs b/crates/nsealr-core/src/review/qr.rs
+index 443e09e698fa8101ac4296d282f56106af932276..f7de55ffe6322cec390411177161507993a4af35 100644
+--- a/crates/nsealr-core/src/review/qr.rs
++++ b/crates/nsealr-core/src/review/qr.rs
+@@ -915,7 +915,10 @@ mod tests {
+ 
+     /// The tagged request JSON the C++ tests embed inline (matching the
+     /// READ-ONLY specs/vectors/review-screens/kind-1-tags.json request).
+-    const TAGGED_REQUEST_JSON: &str = include_str!(concat!(env!("OUT_DIR"), "/field-27fffd6dbc839c2f04dc554a.txt"));
++    const TAGGED_REQUEST_JSON: &str = include_str!(concat!(
++        env!("OUT_DIR"),
++        "/field-27fffd6dbc839c2f04dc554a.txt"
++    ));
+ 
+     // Port of the C++ `test_qr_review_pages_match_shared_tagged_vector`.
+     #[test]
+@@ -940,7 +943,10 @@ mod tests {
+     // Port of the C++ `test_qr_review_binds_configured_signer_identity`.
+     #[test]
+     fn review_binds_configured_signer_identity() {
+-        let alternate_pubkey = include_str!(concat!(env!("OUT_DIR"), "/field-ee1c3ae16e811a2b5ee33b50.txt"));
++        let alternate_pubkey = include_str!(concat!(
++            env!("OUT_DIR"),
++            "/field-ee1c3ae16e811a2b5ee33b50.txt"
++        ));
+         let alternate_identity = SignerIdentity {
+             public_key: alternate_pubkey,
+         };
+@@ -996,7 +1002,10 @@ mod tests {
+     // Port of the C++ `test_qr_display_review_pages_show_full_tag_values_without_ellipsis`.
+     #[test]
+     fn display_pages_show_full_tag_values_without_ellipsis() {
+-        let pubkey = include_str!(concat!(env!("OUT_DIR"), "/field-17dba53b6e43a56b50d99b65.txt"));
++        let pubkey = include_str!(concat!(
++            env!("OUT_DIR"),
++            "/field-17dba53b6e43a56b50d99b65.txt"
++        ));
+         let request = parse(TAGGED_REQUEST_JSON);
+ 
+         let pages =
+@@ -1025,7 +1034,10 @@ mod tests {
+     // Port of the C++ `test_qr_display_review_pages_group_logical_sections_with_compact_styles`.
+     #[test]
+     fn display_pages_group_logical_sections_with_compact_styles() {
+-        let pubkey = include_str!(concat!(env!("OUT_DIR"), "/field-17dba53b6e43a56b50d99b65.txt"));
++        let pubkey = include_str!(concat!(
++            env!("OUT_DIR"),
++            "/field-17dba53b6e43a56b50d99b65.txt"
++        ));
+         let request = parse(TAGGED_REQUEST_JSON);
+ 
+         let pages =
+@@ -1045,10 +1057,19 @@ mod tests {
+             event_lines,
+             [
+                 "Kind 1",
+-                include_str!(concat!(env!("OUT_DIR"), "/field-de5dc97fe8e83c61da1d9b16.txt")),
++                include_str!(concat!(
++                    env!("OUT_DIR"),
++                    "/field-de5dc97fe8e83c61da1d9b16.txt"
++                )),
+                 "Author",
+-                include_str!(concat!(env!("OUT_DIR"), "/field-6bf991dc8fdc21ec4310ae7c.txt")),
+-                include_str!(concat!(env!("OUT_DIR"), "/field-21ed81ed30ea4c9d8722ade8.txt")),
++                include_str!(concat!(
++                    env!("OUT_DIR"),
++                    "/field-6bf991dc8fdc21ec4310ae7c.txt"
++                )),
++                include_str!(concat!(
++                    env!("OUT_DIR"),
++                    "/field-21ed81ed30ea4c9d8722ade8.txt"
++                )),
+             ],
+         );
+         assert_eq!(pages[0].body_line_styles.len(), pages[0].lines.len());
+@@ -1084,8 +1105,14 @@ mod tests {
+             [
+                 "Tag 1/2",
+                 "p",
+-                include_str!(concat!(env!("OUT_DIR"), "/field-6bf991dc8fdc21ec4310ae7c.txt")),
+-                include_str!(concat!(env!("OUT_DIR"), "/field-21ed81ed30ea4c9d8722ade8.txt")),
++                include_str!(concat!(
++                    env!("OUT_DIR"),
++                    "/field-6bf991dc8fdc21ec4310ae7c.txt"
++                )),
++                include_str!(concat!(
++                    env!("OUT_DIR"),
++                    "/field-21ed81ed30ea4c9d8722ade8.txt"
++                )),
+                 "mention",
+                 "Tag 2/2",
+                 "t",
+@@ -1210,7 +1237,10 @@ mod tests {
+         assert!(content_text.contains("\\f"));
+         assert!(tag_text.contains("line\\nbreak"));
+         assert!(tag_text.contains("tab\\tvalue"));
+-        assert!(tag_text.contains(include_str!(concat!(env!("OUT_DIR"), "/field-4fc8c35325b29d3a13a5d82e.txt"))));
++        assert!(tag_text.contains(include_str!(concat!(
++            env!("OUT_DIR"),
++            "/field-4fc8c35325b29d3a13a5d82e.txt"
++        ))));
+         assert!(!content_text.contains("U+000A"));
+         assert!(!tag_text.contains("U+0009"));
+     }
+@@ -1392,7 +1422,6 @@ mod tests {
+ 
+     include!(concat!(env!("OUT_DIR"), "/detail-fixtures.rs"));
+ 
+-
+     // Beyond the named C++ cases: error messages/Display, the limits
+     // validation and capacity guards, empty-tag and empty-content rendering,
+     // the canonical-digest escaping branches, narrow-width continuation, the
+diff --git a/crates/nsealr-core/src/review/qr_flow.rs b/crates/nsealr-core/src/review/qr_flow.rs
+index a9f53246d51be784bf3a36315d2946e9a92884a7..96f72cb75d89aa6dbbf61686bb39fd7ea6d0195d 100644
+--- a/crates/nsealr-core/src/review/qr_flow.rs
++++ b/crates/nsealr-core/src/review/qr_flow.rs
+@@ -456,7 +456,10 @@ mod tests {
+     /// Static QR envelope copied from the READ-ONLY
+     /// specs/vectors/transports/qr-envelope-kind-1-long-events-many-tags.json
+     /// (`envelope`).
+-    const QR_ENVELOPE_KIND_1_LONG_EVENTS_MANY_TAGS: &str = include_str!(concat!(env!("OUT_DIR"), "/field-fd77c72125a90d057af49e71.txt"));
++    const QR_ENVELOPE_KIND_1_LONG_EVENTS_MANY_TAGS: &str = include_str!(concat!(
++        env!("OUT_DIR"),
++        "/field-fd77c72125a90d057af49e71.txt"
++    ));
+ 
+     fn dev() -> SignerIdentity<'static> {
+         SignerIdentity::development_fixture()
+@@ -578,14 +581,26 @@ mod tests {
+ 
+         let flow =
+             QrReviewFlow::new(&animated_request, dev(), ReviewDisplayLimits::default()).unwrap();
+-        assert_eq!(flow.request_id(), include_str!(concat!(env!("OUT_DIR"), "/field-ef8f1cdc03d2b7514fa6d71d.txt")));
++        assert_eq!(
++            flow.request_id(),
++            include_str!(concat!(
++                env!("OUT_DIR"),
++                "/field-ef8f1cdc03d2b7514fa6d71d.txt"
++            ))
++        );
+         assert_eq!(flow.approval_digest(), BASIC_REVIEW_SCREEN_APPROVAL_DIGEST);
+         assert_eq!(flow.current_frame().unwrap().title, "Event");
+ 
+         let mut io = RecordingQrReviewIo::new(&APPROVE_BUTTONS, &animated_request);
+         let result =
+             run_qr_review_io_flow(&mut io, dev(), ReviewDisplayLimits::default(), 32).unwrap();
+-        assert_eq!(result.request_id, include_str!(concat!(env!("OUT_DIR"), "/field-ef8f1cdc03d2b7514fa6d71d.txt")));
++        assert_eq!(
++            result.request_id,
++            include_str!(concat!(
++                env!("OUT_DIR"),
++                "/field-ef8f1cdc03d2b7514fa6d71d.txt"
++            ))
++        );
+         assert!(result.approved_for_signing);
+         assert_eq!(io.frames.len(), 4);
+     }
+@@ -611,13 +626,21 @@ mod tests {
+     fn flow_binds_selected_session_account_identity() {
+         // NIP-06 fixture copied from the READ-ONLY
+         // specs/vectors/keys/nip06-account-0-leader.json.
+-        let mnemonic =
+-            include_str!(concat!(env!("OUT_DIR"), "/field-674779247edd20ec33c77f12.txt"));
+-        let nip06_public_key = include_str!(concat!(env!("OUT_DIR"), "/field-017a5b0dc1323f5d5b24c239.txt"));
++        let mnemonic = include_str!(concat!(
++            env!("OUT_DIR"),
++            "/field-674779247edd20ec33c77f12.txt"
++        ));
++        let nip06_public_key = include_str!(concat!(
++            env!("OUT_DIR"),
++            "/field-017a5b0dc1323f5d5b24c239.txt"
++        ));
+         let mut keyring = StatelessSessionKeyring::new();
+         keyring
+             .add_bip39_seed(
+-                include_str!(concat!(env!("OUT_DIR"), "/field-a075e44ca789a3eaed354231.txt")),
++                include_str!(concat!(
++                    env!("OUT_DIR"),
++                    "/field-a075e44ca789a3eaed354231.txt"
++                )),
+                 crate::bip39::WordIndexes::from_slice(
+                     bip39::parse_mnemonic_indexes(mnemonic).unwrap().as_slice(),
+                 )
+@@ -627,13 +650,22 @@ mod tests {
+         // Descriptor copied from the READ-ONLY
+         // specs/vectors/accounts/esp32-qr-nip06-account-0.json.
+         let descriptor = SessionAccountDescriptor {
+-            account_id: include_str!(concat!(env!("OUT_DIR"), "/field-7f69eeeda752dba7d0b40d52.txt")),
++            account_id: include_str!(concat!(
++                env!("OUT_DIR"),
++                "/field-7f69eeeda752dba7d0b40d52.txt"
++            )),
+             route_type: "esp32_qr_vault",
+             public_key: nip06_public_key,
+             source_index: 0,
+-            source_fingerprint: include_str!(concat!(env!("OUT_DIR"), "/field-8e86cbbca24ca3c385e2aa97.txt")),
++            source_fingerprint: include_str!(concat!(
++                env!("OUT_DIR"),
++                "/field-8e86cbbca24ca3c385e2aa97.txt"
++            )),
+             recovery_kind: SessionAccountRecoveryKind::Nip06,
+-            derivation_path: include_str!(concat!(env!("OUT_DIR"), "/field-68f5ca55923a448625caf1ff.txt")),
++            derivation_path: include_str!(concat!(
++                env!("OUT_DIR"),
++                "/field-68f5ca55923a448625caf1ff.txt"
++            )),
+             account_index: 0,
+         };
+         let selected = select_session_account(&keyring, &descriptor).unwrap();
+@@ -776,10 +808,19 @@ mod tests {
+             event_body,
+             [
+                 "Kind 1",
+-                include_str!(concat!(env!("OUT_DIR"), "/field-364fd76c641480c443677c25.txt")),
++                include_str!(concat!(
++                    env!("OUT_DIR"),
++                    "/field-364fd76c641480c443677c25.txt"
++                )),
+                 "Author",
+-                include_str!(concat!(env!("OUT_DIR"), "/field-6bf991dc8fdc21ec4310ae7c.txt")),
+-                include_str!(concat!(env!("OUT_DIR"), "/field-21ed81ed30ea4c9d8722ade8.txt")),
++                include_str!(concat!(
++                    env!("OUT_DIR"),
++                    "/field-6bf991dc8fdc21ec4310ae7c.txt"
++                )),
++                include_str!(concat!(
++                    env!("OUT_DIR"),
++                    "/field-21ed81ed30ea4c9d8722ade8.txt"
++                )),
+             ],
+         );
+         assert_eq!(transcript.step(1).frame.title, "Content");
+@@ -804,7 +845,13 @@ mod tests {
+             .collect();
+         assert_eq!(tags_body, ["No tags"]);
+         assert_eq!(transcript.step(3).frame.title, "Decision");
+-        assert_eq!(transcript.step(3).frame.action_hint, include_str!(concat!(env!("OUT_DIR"), "/field-26b3d3b407ad92a687368648.txt")));
++        assert_eq!(
++            transcript.step(3).frame.action_hint,
++            include_str!(concat!(
++                env!("OUT_DIR"),
++                "/field-26b3d3b407ad92a687368648.txt"
++            ))
++        );
+         assert_eq!(transcript.step(3).decision, Some(true));
+         assert!(transcript.step(3).approved_for_signing);
+     }
+@@ -858,7 +905,13 @@ mod tests {
+         let result =
+             run_qr_review_io_flow(&mut io, dev(), ReviewDisplayLimits::default(), 32).unwrap();
+ 
+-        assert_eq!(result.request_id, include_str!(concat!(env!("OUT_DIR"), "/field-ef8f1cdc03d2b7514fa6d71d.txt")));
++        assert_eq!(
++            result.request_id,
++            include_str!(concat!(
++                env!("OUT_DIR"),
++                "/field-ef8f1cdc03d2b7514fa6d71d.txt"
++            ))
++        );
+         assert_eq!(result.approval_digest, BASIC_REVIEW_SCREEN_APPROVAL_DIGEST);
+         assert_eq!(result.decision, Some(true));
+         assert!(result.approved_for_signing);
+@@ -879,7 +932,13 @@ mod tests {
+         assert_eq!(io.frames[0].title, "Event");
+         assert_eq!(io.frames[0].page_indicator, "Page 1/4");
+         assert_eq!(io.frames[3].title, "Decision");
+-        assert_eq!(io.frames[3].action_hint, include_str!(concat!(env!("OUT_DIR"), "/field-26b3d3b407ad92a687368648.txt")));
++        assert_eq!(
++            io.frames[3].action_hint,
++            include_str!(concat!(
++                env!("OUT_DIR"),
++                "/field-26b3d3b407ad92a687368648.txt"
++            ))
++        );
+     }
+ 
+     // Port of the C++ `test_qr_review_io_flow_rejects_non_terminal_button_stream`.
+@@ -941,7 +1000,13 @@ mod tests {
+         padded.push_str(QR_ENVELOPE_KIND_1_BASIC);
+         padded.push_str("\t\n");
+         let flow = QrReviewFlow::new(&padded, dev(), ReviewDisplayLimits::default()).unwrap();
+-        assert_eq!(flow.request_id(), include_str!(concat!(env!("OUT_DIR"), "/field-ef8f1cdc03d2b7514fa6d71d.txt")));
++        assert_eq!(
++            flow.request_id(),
++            include_str!(concat!(
++                env!("OUT_DIR"),
++                "/field-ef8f1cdc03d2b7514fa6d71d.txt"
++            ))
++        );
+         // Transcript container plumbing.
+         let empty = QrReviewTranscript::new();
+         assert!(empty.is_empty());
+@@ -961,9 +1026,15 @@ mod tests {
+                 page_indicator: "Page 1/4",
+                 body_lines: vec![
+                     "Kind 1",
+-                    include_str!(concat!(env!("OUT_DIR"), "/field-364fd76c641480c443677c25.txt")),
++                    include_str!(concat!(
++                        env!("OUT_DIR"),
++                        "/field-364fd76c641480c443677c25.txt"
++                    )),
+                     "Author",
+-                    include_str!(concat!(env!("OUT_DIR"), "/field-17dba53b6e43a56b50d99b65.txt")),
++                    include_str!(concat!(
++                        env!("OUT_DIR"),
++                        "/field-17dba53b6e43a56b50d99b65.txt"
++                    )),
+                 ],
+                 action_hint: "Next",
+                 body_line_styles: vec![],
+@@ -974,7 +1045,10 @@ mod tests {
+             TranscriptStepFixture {
+                 title: "Content",
+                 page_indicator: "Page 2/4",
+-                body_lines: vec![include_str!(concat!(env!("OUT_DIR"), "/field-1b208157932014fa782660ac.txt"))],
++                body_lines: vec![include_str!(concat!(
++                    env!("OUT_DIR"),
++                    "/field-1b208157932014fa782660ac.txt"
++                ))],
+                 action_hint: "Next",
+                 body_line_styles: vec![],
+                 button: ReviewButton::Next,
+@@ -994,8 +1068,14 @@ mod tests {
+             TranscriptStepFixture {
+                 title: "Decision",
+                 page_indicator: "Page 4/4",
+-                body_lines: vec![include_str!(concat!(env!("OUT_DIR"), "/field-2e727214870520e091c3f4b4.txt"))],
+-                action_hint: include_str!(concat!(env!("OUT_DIR"), "/field-26b3d3b407ad92a687368648.txt")),
++                body_lines: vec![include_str!(concat!(
++                    env!("OUT_DIR"),
++                    "/field-2e727214870520e091c3f4b4.txt"
++                ))],
++                action_hint: include_str!(concat!(
++                    env!("OUT_DIR"),
++                    "/field-26b3d3b407ad92a687368648.txt"
++                )),
+                 body_line_styles: vec![],
+                 button: ReviewButton::Approve,
+                 decision: Some(true),
+@@ -1013,10 +1093,19 @@ mod tests {
+                 page_indicator: "Page 1/4",
+                 body_lines: vec![
+                     "Kind 1",
+-                    include_str!(concat!(env!("OUT_DIR"), "/field-1c9ed875d7ac69f5700cd6d3.txt")),
++                    include_str!(concat!(
++                        env!("OUT_DIR"),
++                        "/field-1c9ed875d7ac69f5700cd6d3.txt"
++                    )),
+                     "Author",
+-                    include_str!(concat!(env!("OUT_DIR"), "/field-6bf991dc8fdc21ec4310ae7c.txt")),
+-                    include_str!(concat!(env!("OUT_DIR"), "/field-21ed81ed30ea4c9d8722ade8.txt")),
++                    include_str!(concat!(
++                        env!("OUT_DIR"),
++                        "/field-6bf991dc8fdc21ec4310ae7c.txt"
++                    )),
++                    include_str!(concat!(
++                        env!("OUT_DIR"),
++                        "/field-21ed81ed30ea4c9d8722ade8.txt"
++                    )),
+                 ],
+                 action_hint: "Next",
+                 body_line_styles: vec![
+@@ -1035,12 +1124,30 @@ mod tests {
+                 page_indicator: "Page 2/4",
+                 body_lines: vec![
+                     "bytes: 281",
+-                    include_str!(concat!(env!("OUT_DIR"), "/field-878ac9c29a4a2c94ab5a972f.txt")),
+-                    include_str!(concat!(env!("OUT_DIR"), "/field-878ac9c29a4a2c94ab5a972f.txt")),
+-                    include_str!(concat!(env!("OUT_DIR"), "/field-878ac9c29a4a2c94ab5a972f.txt")),
+-                    include_str!(concat!(env!("OUT_DIR"), "/field-878ac9c29a4a2c94ab5a972f.txt")),
+-                    include_str!(concat!(env!("OUT_DIR"), "/field-878ac9c29a4a2c94ab5a972f.txt")),
+-                    include_str!(concat!(env!("OUT_DIR"), "/field-e01c532c1b89cefdfe6bab69.txt")),
++                    include_str!(concat!(
++                        env!("OUT_DIR"),
++                        "/field-878ac9c29a4a2c94ab5a972f.txt"
++                    )),
++                    include_str!(concat!(
++                        env!("OUT_DIR"),
++                        "/field-878ac9c29a4a2c94ab5a972f.txt"
++                    )),
++                    include_str!(concat!(
++                        env!("OUT_DIR"),
++                        "/field-878ac9c29a4a2c94ab5a972f.txt"
++                    )),
++                    include_str!(concat!(
++                        env!("OUT_DIR"),
++                        "/field-878ac9c29a4a2c94ab5a972f.txt"
++                    )),
++                    include_str!(concat!(
++                        env!("OUT_DIR"),
++                        "/field-878ac9c29a4a2c94ab5a972f.txt"
++                    )),
++                    include_str!(concat!(
++                        env!("OUT_DIR"),
++                        "/field-e01c532c1b89cefdfe6bab69.txt"
++                    )),
+                 ],
+                 action_hint: "Next",
+                 body_line_styles: vec![
+@@ -1058,12 +1165,21 @@ mod tests {
+             },
+             TranscriptStepFixture {
+                 title: "Tags",
+-                page_indicator: include_str!(concat!(env!("OUT_DIR"), "/field-f4ddb21ad4cd79ff8aba70c4.txt")),
++                page_indicator: include_str!(concat!(
++                    env!("OUT_DIR"),
++                    "/field-f4ddb21ad4cd79ff8aba70c4.txt"
++                )),
+                 body_lines: vec![
+                     "Tag 1/9",
+                     "e",
+-                    include_str!(concat!(env!("OUT_DIR"), "/field-9c4d4b8e116ef327d4008e37.txt")),
+-                    include_str!(concat!(env!("OUT_DIR"), "/field-2d8a93e8e201ac00e095b211.txt")),
++                    include_str!(concat!(
++                        env!("OUT_DIR"),
++                        "/field-9c4d4b8e116ef327d4008e37.txt"
++                    )),
++                    include_str!(concat!(
++                        env!("OUT_DIR"),
++                        "/field-2d8a93e8e201ac00e095b211.txt"
++                    )),
+                     "root",
+                     "Tag 2/9",
+                     "t",
+@@ -1088,7 +1204,10 @@ mod tests {
+             },
+             TranscriptStepFixture {
+                 title: "Tags",
+-                page_indicator: include_str!(concat!(env!("OUT_DIR"), "/field-f699569adfd6d095b798a536.txt")),
++                page_indicator: include_str!(concat!(
++                    env!("OUT_DIR"),
++                    "/field-f699569adfd6d095b798a536.txt"
++                )),
+                 body_lines: vec![
+                     "t", "hardware", "Tag 4/9", "t", "review", "Tag 5/9", "t", "security",
+                     "Tag 6/9",
+@@ -1111,7 +1230,10 @@ mod tests {
+             },
+             TranscriptStepFixture {
+                 title: "Tags",
+-                page_indicator: include_str!(concat!(env!("OUT_DIR"), "/field-a709f37fc164c9c89166500c.txt")),
++                page_indicator: include_str!(concat!(
++                    env!("OUT_DIR"),
++                    "/field-a709f37fc164c9c89166500c.txt"
++                )),
+                 body_lines: vec![
+                     "t",
+                     "qr",
+@@ -1141,7 +1263,10 @@ mod tests {
+             },
+             TranscriptStepFixture {
+                 title: "Tags",
+-                page_indicator: include_str!(concat!(env!("OUT_DIR"), "/field-f7eba6c04176df68c41498c4.txt")),
++                page_indicator: include_str!(concat!(
++                    env!("OUT_DIR"),
++                    "/field-f7eba6c04176df68c41498c4.txt"
++                )),
+                 body_lines: vec!["t", "test"],
+                 action_hint: "Next/Scroll",
+                 body_line_styles: vec![ReviewBodyLineStyle::Value, ReviewBodyLineStyle::Value],
+@@ -1152,8 +1277,17 @@ mod tests {
+             TranscriptStepFixture {
+                 title: "Decision",
+                 page_indicator: "Page 4/4",
+-                body_lines: vec![include_str!(concat!(env!("OUT_DIR"), "/field-6f7c4389fe02d59d34530bc8.txt")), "l pages match."],
+-                action_hint: include_str!(concat!(env!("OUT_DIR"), "/field-26b3d3b407ad92a687368648.txt")),
++                body_lines: vec![
++                    include_str!(concat!(
++                        env!("OUT_DIR"),
++                        "/field-6f7c4389fe02d59d34530bc8.txt"
++                    )),
++                    "l pages match.",
++                ],
++                action_hint: include_str!(concat!(
++                    env!("OUT_DIR"),
++                    "/field-26b3d3b407ad92a687368648.txt"
++                )),
+                 body_line_styles: vec![ReviewBodyLineStyle::Normal, ReviewBodyLineStyle::Normal],
+                 button: ReviewButton::Approve,
+                 decision: Some(true),
+diff --git a/crates/nsealr-core/src/review/serial.rs b/crates/nsealr-core/src/review/serial.rs
+index b969bc9ba9c61920b1a3def11be1ef4b6b3edc6b..17d97e2d4637989029b90d349020a7bc4795e6c5 100644
+--- a/crates/nsealr-core/src/review/serial.rs
++++ b/crates/nsealr-core/src/review/serial.rs
+@@ -290,11 +290,17 @@ mod tests {
+ 
+     /// The basic sign-event request JSON (matches the READ-ONLY
+     /// specs/vectors/review-screens/kind-1-basic.json request).
+-    const BASIC_REQUEST_JSON: &str = include_str!(concat!(env!("OUT_DIR"), "/field-c76b5ce6a9db422700c91fcc.txt"));
++    const BASIC_REQUEST_JSON: &str = include_str!(concat!(
++        env!("OUT_DIR"),
++        "/field-c76b5ce6a9db422700c91fcc.txt"
++    ));
+ 
+     /// The tagged sign-event request JSON (matches the READ-ONLY
+     /// specs/vectors/review-screens/kind-1-tags.json request).
+-    const TAGGED_REQUEST_JSON: &str = include_str!(concat!(env!("OUT_DIR"), "/field-27fffd6dbc839c2f04dc554a.txt"));
++    const TAGGED_REQUEST_JSON: &str = include_str!(concat!(
++        env!("OUT_DIR"),
++        "/field-27fffd6dbc839c2f04dc554a.txt"
++    ));
+ 
+     fn dev() -> SignerIdentity<'static> {
+         SignerIdentity::development_fixture()
+@@ -353,7 +359,10 @@ mod tests {
+     // Port of the C++ `test_serial_review_session_uses_full_scroll_display_pages`.
+     #[test]
+     fn review_session_uses_full_scroll_display_pages() {
+-        let pubkey = include_str!(concat!(env!("OUT_DIR"), "/field-17dba53b6e43a56b50d99b65.txt"));
++        let pubkey = include_str!(concat!(
++            env!("OUT_DIR"),
++            "/field-17dba53b6e43a56b50d99b65.txt"
++        ));
+         let mut session = begin_serial_sign_event_trusted_review(
+             TAGGED_REQUEST_JSON,
+             dev(),
+@@ -396,7 +405,10 @@ mod tests {
+     // Port of the C++ `test_serial_review_binds_configured_signer_identity`.
+     #[test]
+     fn review_binds_configured_signer_identity() {
+-        let alternate_pubkey = include_str!(concat!(env!("OUT_DIR"), "/field-8a01192bfbc17b46a367e81b.txt"));
++        let alternate_pubkey = include_str!(concat!(
++            env!("OUT_DIR"),
++            "/field-8a01192bfbc17b46a367e81b.txt"
++        ));
+         let alternate_identity = SignerIdentity {
+             public_key: alternate_pubkey,
+         };
+@@ -533,7 +545,13 @@ mod tests {
+         let result =
+             run_serial_review_io_flow(&mut io, dev(), ReviewDisplayLimits::default(), 32).unwrap();
+ 
+-        assert_eq!(result.request_id, include_str!(concat!(env!("OUT_DIR"), "/field-ef8f1cdc03d2b7514fa6d71d.txt")));
++        assert_eq!(
++            result.request_id,
++            include_str!(concat!(
++                env!("OUT_DIR"),
++                "/field-ef8f1cdc03d2b7514fa6d71d.txt"
++            ))
++        );
+         assert_eq!(result.approval_digest, BASIC_REVIEW_SCREEN_APPROVAL_DIGEST);
+         assert_eq!(result.decision, Some(true));
+         assert!(result.approved_for_signing);
+@@ -546,7 +564,13 @@ mod tests {
+         assert_eq!(result.transcript.step(3).decision, Some(true));
+         assert_eq!(io.frames.len(), 4);
+         assert_eq!(io.frames[0].title, "Event");
+-        assert_eq!(io.frames[3].action_hint, include_str!(concat!(env!("OUT_DIR"), "/field-26b3d3b407ad92a687368648.txt")));
++        assert_eq!(
++            io.frames[3].action_hint,
++            include_str!(concat!(
++                env!("OUT_DIR"),
++                "/field-26b3d3b407ad92a687368648.txt"
++            ))
++        );
+     }
+ 
+     // Beyond the named C++ cases: the zero-step and non-terminal IO branches
+@@ -625,7 +649,13 @@ mod tests {
+         let mut flow =
+             SerialReviewFlow::new(BASIC_REQUEST_JSON, dev(), ReviewDisplayLimits::default())
+                 .unwrap();
+-        assert_eq!(flow.request_id(), include_str!(concat!(env!("OUT_DIR"), "/field-ef8f1cdc03d2b7514fa6d71d.txt")));
++        assert_eq!(
++            flow.request_id(),
++            include_str!(concat!(
++                env!("OUT_DIR"),
++                "/field-ef8f1cdc03d2b7514fa6d71d.txt"
++            ))
++        );
+         assert_eq!(flow.approval_digest(), BASIC_REVIEW_SCREEN_APPROVAL_DIGEST);
+         assert_eq!(flow.decision(), ApprovalDecision::Pending);
+         assert!(!flow.approved_for_signing());
+diff --git a/crates/nsealr-core/src/review/signer_identity.rs b/crates/nsealr-core/src/review/signer_identity.rs
+index 905e42cd816292798f63e79f0531dffec710227b..f5d7d498b8629ff8f392ca087976e45300150f42 100644
+--- a/crates/nsealr-core/src/review/signer_identity.rs
++++ b/crates/nsealr-core/src/review/signer_identity.rs
+@@ -100,9 +100,10 @@ mod tests {
+     fn validates_lowercase_hex_public_key() {
+         assert!(is_valid_nostr_public_key(DEVELOPMENT_FIXTURE_PUBLIC_KEY));
+         // 64 lowercase hex.
+-        assert!(is_valid_nostr_public_key(
+-            include_str!(concat!(env!("OUT_DIR"), "/field-ee1c3ae16e811a2b5ee33b50.txt"))
+-        ));
++        assert!(is_valid_nostr_public_key(include_str!(concat!(
++            env!("OUT_DIR"),
++            "/field-ee1c3ae16e811a2b5ee33b50.txt"
++        ))));
+         // Wrong length (63 / 65).
+         assert!(!is_valid_nostr_public_key(
+             "4f355bdcb7cc0af728ef3cceb9615d90684bb5b2ca5f859ab0f0b704075871a"
+diff --git a/crates/nsealr-core/src/review/test_fixtures.rs b/crates/nsealr-core/src/review/test_fixtures.rs
+index 8db963b7bcab1931734f1b671f035f36885ec987..ee84982881d4397b767b53b77ca13b724f7a5d0a 100644
+--- a/crates/nsealr-core/src/review/test_fixtures.rs
++++ b/crates/nsealr-core/src/review/test_fixtures.rs
+@@ -13,18 +13,24 @@ use crate::review::types::{
+ 
+ /// Approval digest copied from the READ-ONLY
+ /// specs/vectors/review-screens/kind-1-basic.json (`screen_review.approval_digest`).
+-pub const BASIC_REVIEW_SCREEN_APPROVAL_DIGEST: &str =
+-    include_str!(concat!(env!("OUT_DIR"), "/field-a9dbf5d6f075ebea8a12c272.txt"));
++pub const BASIC_REVIEW_SCREEN_APPROVAL_DIGEST: &str = include_str!(concat!(
++    env!("OUT_DIR"),
++    "/field-a9dbf5d6f075ebea8a12c272.txt"
++));
+ 
+ /// Approval digest copied from the READ-ONLY
+ /// specs/vectors/review-screens/kind-1-tags.json (`screen_review.approval_digest`).
+-pub const TAGGED_REVIEW_SCREEN_APPROVAL_DIGEST: &str =
+-    include_str!(concat!(env!("OUT_DIR"), "/field-7c553abbee46c2de6c223a2b.txt"));
++pub const TAGGED_REVIEW_SCREEN_APPROVAL_DIGEST: &str = include_str!(concat!(
++    env!("OUT_DIR"),
++    "/field-7c553abbee46c2de6c223a2b.txt"
++));
+ 
+ /// Static QR envelope copied from the READ-ONLY
+ /// specs/vectors/transports/qr-envelope-kind-1-basic.json (`envelope`).
+-pub const QR_ENVELOPE_KIND_1_BASIC: &str =
+-    include_str!(concat!(env!("OUT_DIR"), "/field-b69c96b873204e5c324385c0.txt"));
++pub const QR_ENVELOPE_KIND_1_BASIC: &str = include_str!(concat!(
++    env!("OUT_DIR"),
++    "/field-b69c96b873204e5c324385c0.txt"
++));
+ 
+ /// Builds one review page from plain literals.
+ pub fn review_page(
+@@ -73,21 +79,18 @@ pub fn trusted_review_request(
+ /// (`screen_review`). The C++ consumed it as
+ /// `test_vectors::basic_trusted_review_request()`.
+ 
+-    include!(concat!(env!("OUT_DIR"), "/review-fixtures.rs"));
+-
++include!(concat!(env!("OUT_DIR"), "/review-fixtures.rs"));
+ 
+ /// The tagged trusted-review request; request id, digest and all four pages
+ /// copied from the READ-ONLY specs/vectors/review-screens/kind-1-tags.json
+ /// (`screen_review`). The C++ consumed it as
+ /// `test_vectors::tagged_trusted_review_request()`.
+ 
+-
+ /// The shared t-display-s3 review display limits. Mirrors the C++
+ /// `nsealr_esp32::t_display_s3_review_limits()`
+ /// (`esp32_s3_usb_signer/main/t_display_s3_raster.cpp`), which matches the
+ /// `limits` field of every READ-ONLY specs/vectors/review-detail-pages fixture.
+ 
+-
+ /// True if any frame body line contains `needle` (the C++ `lines_contain`).
+ pub fn frame_lines_contain(frame: &ReviewDisplayFrame, needle: &str) -> bool {
+     frame
+diff --git a/crates/nsealr-core/src/review/trusted.rs b/crates/nsealr-core/src/review/trusted.rs
+index cece3ef587054b120ab70511b5d8d8c0689b35e9..6a0d816db0c64f7fa33f3f63812ac8f647b108a2 100644
+--- a/crates/nsealr-core/src/review/trusted.rs
++++ b/crates/nsealr-core/src/review/trusted.rs
+@@ -357,7 +357,13 @@ mod tests {
+         let decision_frame = session.current_frame().unwrap();
+         assert_eq!(decision_frame.title, "Decision");
+         assert_eq!(decision_frame.page_indicator, "Page 4/4");
+-        assert_eq!(decision_frame.action_hint, include_str!(concat!(env!("OUT_DIR"), "/field-26b3d3b407ad92a687368648.txt")));
++        assert_eq!(
++            decision_frame.action_hint,
++            include_str!(concat!(
++                env!("OUT_DIR"),
++                "/field-26b3d3b407ad92a687368648.txt"
++            ))
++        );
+         assert!(!session.can_sign());
+ 
+         let approval = session.handle_button(ReviewButton::Approve);
+@@ -391,7 +397,10 @@ mod tests {
+         assert_eq!(decision_frame.body_lines.len(), 1);
+         assert_eq!(
+             decision_frame.body_lines.as_slice()[0],
+-            include_str!(concat!(env!("OUT_DIR"), "/field-2e727214870520e091c3f4b4.txt")),
++            include_str!(concat!(
++                env!("OUT_DIR"),
++                "/field-2e727214870520e091c3f4b4.txt"
++            )),
+         );
+ 
+         let rejection = session.handle_button(ReviewButton::Reject);
+@@ -498,7 +507,10 @@ mod tests {
+         // A page title wider than the limits propagates the render error.
+         let long_title_request = crate::review::test_fixtures::trusted_review_request(
+             "req-render-error",
+-            include_str!(concat!(env!("OUT_DIR"), "/field-a9dbf5d6f075ebea8a12c272.txt")),
++            include_str!(concat!(
++                env!("OUT_DIR"),
++                "/field-a9dbf5d6f075ebea8a12c272.txt"
++            )),
+             &[(
+                 "A title wider than 24 chars",
+                 &["line"],
+diff --git a/crates/nsealr-core/src/review/types.rs b/crates/nsealr-core/src/review/types.rs
+index d816deb3685c90510950bc003f38ee9fdf71260f..3f9f8d64e3caf8cfaf3bdc25e891bece2f992f1a 100644
+--- a/crates/nsealr-core/src/review/types.rs
++++ b/crates/nsealr-core/src/review/types.rs
+@@ -374,12 +374,34 @@ mod tests {
+         assert_eq!(lines.len(), 0);
+         assert_eq!(lines, ReviewPageLines::default());
+ 
+-        lines.try_push(include_str!(concat!(env!("OUT_DIR"), "/field-16d631e27f0baf3d3424d042.txt"))).unwrap();
+-        lines.try_push(include_str!(concat!(env!("OUT_DIR"), "/field-de4a1599a44e5f90a8fe577d.txt"))).unwrap();
++        lines
++            .try_push(include_str!(concat!(
++                env!("OUT_DIR"),
++                "/field-16d631e27f0baf3d3424d042.txt"
++            )))
++            .unwrap();
++        lines
++            .try_push(include_str!(concat!(
++                env!("OUT_DIR"),
++                "/field-de4a1599a44e5f90a8fe577d.txt"
++            )))
++            .unwrap();
+         assert_eq!(lines.len(), 2);
+         assert!(!lines.is_empty());
+-        assert_eq!(lines.as_slice()[0], include_str!(concat!(env!("OUT_DIR"), "/field-16d631e27f0baf3d3424d042.txt")));
+-        assert_eq!(lines.as_slice()[1], include_str!(concat!(env!("OUT_DIR"), "/field-de4a1599a44e5f90a8fe577d.txt")));
++        assert_eq!(
++            lines.as_slice()[0],
++            include_str!(concat!(
++                env!("OUT_DIR"),
++                "/field-16d631e27f0baf3d3424d042.txt"
++            ))
++        );
++        assert_eq!(
++            lines.as_slice()[1],
++            include_str!(concat!(
++                env!("OUT_DIR"),
++                "/field-de4a1599a44e5f90a8fe577d.txt"
++            ))
++        );
+         assert_eq!(lines.clone(), lines);
+ 
+         let long_line = core::str::from_utf8(&[b'x'; MAX_REVIEW_PAGE_LINE_CHARS + 1]).unwrap();
+diff --git a/crates/nsealr-core/src/serial/frame.rs b/crates/nsealr-core/src/serial/frame.rs
+index bb49d0eb6e2dd8a3964f91dc1d8c27704175eda3..e5122b328955b24340c4c690fbefe92af49f5a00 100644
+--- a/crates/nsealr-core/src/serial/frame.rs
++++ b/crates/nsealr-core/src/serial/frame.rs
+@@ -227,17 +227,30 @@ mod tests {
+     // Byte-for-byte fixtures copied from
+     // specs/vectors/transports/serial-frame-request-kind-1-basic.json
+     // (`payload_base64url` and `frame`).
+-    const PAYLOAD: &[u8] = include_bytes!(concat!(env!("OUT_DIR"), "/field-7bc474eb9fd65cd1f1cdfd09.txt"));
+-    const FRAME: &[u8] = include_bytes!(concat!(env!("OUT_DIR"), "/field-275b00adc2cdd30c17c95c67.txt"));
++    const PAYLOAD: &[u8] = include_bytes!(concat!(
++        env!("OUT_DIR"),
++        "/field-7bc474eb9fd65cd1f1cdfd09.txt"
++    ));
++    const FRAME: &[u8] = include_bytes!(concat!(
++        env!("OUT_DIR"),
++        "/field-275b00adc2cdd30c17c95c67.txt"
++    ));
+ 
+     // Shared-invalid serial-frame fixtures copied from specs/vectors/invalid/
+     // serial-frame-{checksum-mismatch,malformed-payload,unsupported-type}.json
+     // (`frame`); the oversized fixture is rebuilt byte-identically below.
+-    const INVALID_CHECKSUM_MISMATCH: &[u8] = include_bytes!(concat!(env!("OUT_DIR"), "/field-e0d0a83f41b5e91f7fa970f3.txt"));
+-    const INVALID_MALFORMED_PAYLOAD: &[u8] =
+-        include_bytes!(concat!(env!("OUT_DIR"), "/field-413fb7a5114a44f4a3116270.txt"));
+-    const INVALID_UNSUPPORTED_TYPE: &[u8] =
+-        include_bytes!(concat!(env!("OUT_DIR"), "/field-7f2f44571178f3ab692d1043.txt"));
++    const INVALID_CHECKSUM_MISMATCH: &[u8] = include_bytes!(concat!(
++        env!("OUT_DIR"),
++        "/field-e0d0a83f41b5e91f7fa970f3.txt"
++    ));
++    const INVALID_MALFORMED_PAYLOAD: &[u8] = include_bytes!(concat!(
++        env!("OUT_DIR"),
++        "/field-413fb7a5114a44f4a3116270.txt"
++    ));
++    const INVALID_UNSUPPORTED_TYPE: &[u8] = include_bytes!(concat!(
++        env!("OUT_DIR"),
++        "/field-7f2f44571178f3ab692d1043.txt"
++    ));
+ 
+     /// The oversized fixture from specs/vectors/invalid/serial-frame-oversized.json
+     /// (`frame`): `nsealr1f:` + 1100 'x' characters (1109 bytes), rebuilt
+diff --git a/crates/nsealr-core/src/session/account.rs b/crates/nsealr-core/src/session/account.rs
+index da7d8965c664dab9cbd1a1299907962abdb31b93..a9954a704f3e26ffee27f0d5f10f3f326c472010 100644
+--- a/crates/nsealr-core/src/session/account.rs
++++ b/crates/nsealr-core/src/session/account.rs
+@@ -293,17 +293,26 @@ mod tests {
+ 
+     // NIP-06 fixture copied from the READ-ONLY
+     // specs/vectors/keys/nip06-account-0-leader.json (`mnemonic`, `public_key`).
+-    const NIP06_ACCOUNT_0_MNEMONIC: &str =
+-        include_str!(concat!(env!("OUT_DIR"), "/field-674779247edd20ec33c77f12.txt"));
+-    const NIP06_ACCOUNT_0_PUBLIC_KEY: &str =
+-        include_str!(concat!(env!("OUT_DIR"), "/field-017a5b0dc1323f5d5b24c239.txt"));
++    const NIP06_ACCOUNT_0_MNEMONIC: &str = include_str!(concat!(
++        env!("OUT_DIR"),
++        "/field-674779247edd20ec33c77f12.txt"
++    ));
++    const NIP06_ACCOUNT_0_PUBLIC_KEY: &str = include_str!(concat!(
++        env!("OUT_DIR"),
++        "/field-017a5b0dc1323f5d5b24c239.txt"
++    ));
+     // NIP-19 fixture copied from the READ-ONLY
+     // specs/vectors/nip19/nsec-test-key-1.json (`public_key`).
+-    const NSEC_TEST_KEY_1_PUBLIC_KEY: &str =
+-        include_str!(concat!(env!("OUT_DIR"), "/field-17dba53b6e43a56b50d99b65.txt"));
++    const NSEC_TEST_KEY_1_PUBLIC_KEY: &str = include_str!(concat!(
++        env!("OUT_DIR"),
++        "/field-17dba53b6e43a56b50d99b65.txt"
++    ));
+     // Fingerprint copied from the READ-ONLY
+     // specs/vectors/session-import-reviews/nsec-test-key-1.json (`fingerprint`).
+-    const NSEC_TEST_KEY_1_FINGERPRINT: &str = include_str!(concat!(env!("OUT_DIR"), "/field-29f4e64e397d69751482cd54.txt"));
++    const NSEC_TEST_KEY_1_FINGERPRINT: &str = include_str!(concat!(
++        env!("OUT_DIR"),
++        "/field-29f4e64e397d69751482cd54.txt"
++    ));
+ 
+     /// The C++ generated `esp32_qr_nip06_account_0_descriptor()`; fields copied
+     /// from the READ-ONLY specs/vectors/accounts/esp32-qr-nip06-account-0.json
+@@ -311,13 +320,22 @@ mod tests {
+     /// `recovery.{source_fingerprint,type,path,account}`).
+     fn esp32_qr_nip06_account_0_descriptor() -> SessionAccountDescriptor<'static> {
+         SessionAccountDescriptor {
+-            account_id: include_str!(concat!(env!("OUT_DIR"), "/field-7f69eeeda752dba7d0b40d52.txt")),
++            account_id: include_str!(concat!(
++                env!("OUT_DIR"),
++                "/field-7f69eeeda752dba7d0b40d52.txt"
++            )),
+             route_type: "esp32_qr_vault",
+             public_key: NIP06_ACCOUNT_0_PUBLIC_KEY,
+             source_index: 0,
+-            source_fingerprint: include_str!(concat!(env!("OUT_DIR"), "/field-8e86cbbca24ca3c385e2aa97.txt")),
++            source_fingerprint: include_str!(concat!(
++                env!("OUT_DIR"),
++                "/field-8e86cbbca24ca3c385e2aa97.txt"
++            )),
+             recovery_kind: SessionAccountRecoveryKind::Nip06,
+-            derivation_path: include_str!(concat!(env!("OUT_DIR"), "/field-68f5ca55923a448625caf1ff.txt")),
++            derivation_path: include_str!(concat!(
++                env!("OUT_DIR"),
++                "/field-68f5ca55923a448625caf1ff.txt"
++            )),
+             account_index: 0,
+         }
+     }
+@@ -326,7 +344,10 @@ mod tests {
+         let mut keyring = StatelessSessionKeyring::new();
+         keyring
+             .add_bip39_seed(
+-                include_str!(concat!(env!("OUT_DIR"), "/field-a075e44ca789a3eaed354231.txt")),
++                include_str!(concat!(
++                    env!("OUT_DIR"),
++                    "/field-a075e44ca789a3eaed354231.txt"
++                )),
+                 crate::bip39::WordIndexes::from_slice(
+                     bip39::parse_mnemonic_indexes(NIP06_ACCOUNT_0_MNEMONIC)
+                         .unwrap()
+@@ -370,7 +391,13 @@ mod tests {
+         assert_eq!(selected.source_index, 0);
+         assert_eq!(selected.source_fingerprint, descriptor.source_fingerprint);
+         assert_eq!(selected.source_kind, SessionKeySourceKind::Bip39WordIndexes);
+-        assert_eq!(selected.source_label, include_str!(concat!(env!("OUT_DIR"), "/field-a075e44ca789a3eaed354231.txt")));
++        assert_eq!(
++            selected.source_label,
++            include_str!(concat!(
++                env!("OUT_DIR"),
++                "/field-a075e44ca789a3eaed354231.txt"
++            ))
++        );
+         assert!(!selected.source_public_key_proof_verified);
+         assert_eq!(
+             selected.signer_identity.public_key,
+@@ -442,7 +469,10 @@ mod tests {
+         assert_eq!(status.missing_gates.len(), 1);
+         assert_eq!(
+             status.missing_gates.as_slice()[0],
+-            include_str!(concat!(env!("OUT_DIR"), "/field-b0db970c9c0a12565d003468.txt"))
++            include_str!(concat!(
++                env!("OUT_DIR"),
++                "/field-b0db970c9c0a12565d003468.txt"
++            ))
+         );
+     }
+ 
+@@ -533,7 +563,10 @@ mod tests {
+         );
+         // must not carry a derivation path
+         let mut invalid = standalone;
+-        invalid.derivation_path = include_str!(concat!(env!("OUT_DIR"), "/field-68f5ca55923a448625caf1ff.txt"));
++        invalid.derivation_path = include_str!(concat!(
++            env!("OUT_DIR"),
++            "/field-68f5ca55923a448625caf1ff.txt"
++        ));
+         assert_eq!(
+             select_session_account(&keyring, &invalid),
+             Err(SessionAccountError::UnexpectedDerivationPath),
+@@ -550,7 +583,10 @@ mod tests {
+         // Extra branch coverage beyond the C++ case (recorded deviation): a
+         // standalone-nsec descriptor over a BIP-39 source.
+         let mut invalid = standalone_descriptor();
+-        invalid.source_fingerprint = include_str!(concat!(env!("OUT_DIR"), "/field-8e86cbbca24ca3c385e2aa97.txt"));
++        invalid.source_fingerprint = include_str!(concat!(
++            env!("OUT_DIR"),
++            "/field-8e86cbbca24ca3c385e2aa97.txt"
++        ));
+         assert_eq!(
+             select_session_account(&mnemonic_keyring, &invalid),
+             Err(SessionAccountError::RequiresNsecSource),
+@@ -577,12 +613,21 @@ mod tests {
+         let nip06_proof = ProofVector {
+             proof_type: "nip06",
+             source_type: "bip39_seed",
+-            source_fingerprint: include_str!(concat!(env!("OUT_DIR"), "/field-8e86cbbca24ca3c385e2aa97.txt")),
++            source_fingerprint: include_str!(concat!(
++                env!("OUT_DIR"),
++                "/field-8e86cbbca24ca3c385e2aa97.txt"
++            )),
+             account: Some(0),
+-            path: include_str!(concat!(env!("OUT_DIR"), "/field-68f5ca55923a448625caf1ff.txt")),
++            path: include_str!(concat!(
++                env!("OUT_DIR"),
++                "/field-68f5ca55923a448625caf1ff.txt"
++            )),
+             passphrase: "",
+             expected_public_key: NIP06_ACCOUNT_0_PUBLIC_KEY,
+-            security_scope: include_str!(concat!(env!("OUT_DIR"), "/field-40c355f0fe3f24d85d303868.txt")),
++            security_scope: include_str!(concat!(
++                env!("OUT_DIR"),
++                "/field-40c355f0fe3f24d85d303868.txt"
++            )),
+         };
+         let nsec_proof = ProofVector {
+             proof_type: "nip19_nsec",
+@@ -592,13 +637,22 @@ mod tests {
+             path: "",
+             passphrase: "",
+             expected_public_key: NSEC_TEST_KEY_1_PUBLIC_KEY,
+-            security_scope: include_str!(concat!(env!("OUT_DIR"), "/field-75dff0fb7be12747c9663baa.txt")),
++            security_scope: include_str!(concat!(
++                env!("OUT_DIR"),
++                "/field-75dff0fb7be12747c9663baa.txt"
++            )),
+         };
+ 
+         assert_eq!(nip06_proof.proof_type, "nip06");
+         assert_eq!(nip06_proof.source_type, "bip39_seed");
+         assert_eq!(nip06_proof.account, Some(0));
+-        assert_eq!(nip06_proof.path, include_str!(concat!(env!("OUT_DIR"), "/field-68f5ca55923a448625caf1ff.txt")));
++        assert_eq!(
++            nip06_proof.path,
++            include_str!(concat!(
++                env!("OUT_DIR"),
++                "/field-68f5ca55923a448625caf1ff.txt"
++            ))
++        );
+         assert!(nip06_proof.passphrase.is_empty());
+         assert!(nip06_proof.security_scope.contains("before signing"));
+ 
+@@ -630,7 +684,10 @@ mod tests {
+         let mut nsec_keyring = StatelessSessionKeyring::new();
+         nsec_keyring
+             .add_nsec(
+-                include_str!(concat!(env!("OUT_DIR"), "/field-43257d08c218769553577c83.txt")),
++                include_str!(concat!(
++                    env!("OUT_DIR"),
++                    "/field-43257d08c218769553577c83.txt"
++                )),
+                 nip19::decode_nsec(NSEC_TEST_KEY_1).unwrap(),
+             )
+             .unwrap();
+diff --git a/crates/nsealr-core/src/session/import_flow.rs b/crates/nsealr-core/src/session/import_flow.rs
+index 3e9a362ab555010db87b41488dbea58869ed261f..84f066225f8bf444225240c34ffeb275378017ad 100644
+--- a/crates/nsealr-core/src/session/import_flow.rs
++++ b/crates/nsealr-core/src/session/import_flow.rs
+@@ -202,8 +202,14 @@ mod tests {
+     use crate::nip19;
+     use crate::session::keyring::tests::{NSEC_TEST_KEY_1, SEEDQR_VECTOR_1_INDEXES};
+     fn fixture_source() -> SessionKeySource {
+-        crate::session::source_qr::parse_session_source_qr_text(include_str!(concat!(env!("OUT_DIR"), "/field-43257d08c218769553577c83.txt")), NSEC_TEST_KEY_1)
+-            .unwrap()
++        crate::session::source_qr::parse_session_source_qr_text(
++            include_str!(concat!(
++                env!("OUT_DIR"),
++                "/field-43257d08c218769553577c83.txt"
++            )),
++            NSEC_TEST_KEY_1,
++        )
++        .unwrap()
+     }
+ 
+     // Port of the C++ `test_session_import_flow_requires_local_approval_before_loading_keyring`.
+@@ -215,7 +221,10 @@ mod tests {
+         let mut session_keyring = StatelessSessionKeyring::new();
+         pending_sources
+             .add_nsec(
+-                include_str!(concat!(env!("OUT_DIR"), "/field-43257d08c218769553577c83.txt")),
++                include_str!(concat!(
++                    env!("OUT_DIR"),
++                    "/field-43257d08c218769553577c83.txt"
++                )),
+                 nip19::decode_nsec(NSEC_TEST_KEY_1).unwrap(),
+             )
+             .unwrap();
+@@ -230,7 +239,13 @@ mod tests {
+ 
+         assert!(result.approved);
+         assert!(result.loaded);
+-        assert_eq!(result.review.review_id, include_str!(concat!(env!("OUT_DIR"), "/field-2d4d3d3dc78fd3f8fd1e0b12.txt")));
++        assert_eq!(
++            result.review.review_id,
++            include_str!(concat!(
++                env!("OUT_DIR"),
++                "/field-2d4d3d3dc78fd3f8fd1e0b12.txt"
++            ))
++        );
+         assert_eq!(result.transcript.len(), 2);
+         assert_eq!(result.transcript.step(0).page_index, 0);
+         assert_eq!(result.transcript.step(0).button, ReviewButton::Next);
+@@ -243,7 +258,10 @@ mod tests {
+         assert_eq!(session_keyring.len(), 1);
+         assert_eq!(
+             session_keyring.source_at(0).unwrap().label,
+-            include_str!(concat!(env!("OUT_DIR"), "/field-43257d08c218769553577c83.txt"))
++            include_str!(concat!(
++                env!("OUT_DIR"),
++                "/field-43257d08c218769553577c83.txt"
++            ))
+         );
+         assert_eq!(
+             session_keyring.source_at(0).unwrap().nsec_secret_key,
+@@ -327,7 +345,10 @@ mod tests {
+         let mut pending_sources = StatelessSessionKeyring::new();
+         pending_sources
+             .add_nsec(
+-                include_str!(concat!(env!("OUT_DIR"), "/field-43257d08c218769553577c83.txt")),
++                include_str!(concat!(
++                    env!("OUT_DIR"),
++                    "/field-43257d08c218769553577c83.txt"
++                )),
+                 nip19::decode_nsec(NSEC_TEST_KEY_1).unwrap(),
+             )
+             .unwrap();
+diff --git a/crates/nsealr-core/src/session/import_review.rs b/crates/nsealr-core/src/session/import_review.rs
+index 225e16523357867374ca75c9996bc7d1a80c77fe..8997b2ec92bd9eba4d1230dff054b35c7a65c046 100644
+--- a/crates/nsealr-core/src/session/import_review.rs
++++ b/crates/nsealr-core/src/session/import_review.rs
+@@ -246,8 +246,10 @@ pub(crate) mod tests {
+ 
+     // Secret-key hex copied from the READ-ONLY
+     // specs/vectors/nip19/nsec-test-key-1.json (`secret_key`).
+-    pub(crate) const NSEC_TEST_KEY_1_SECRET_HEX: &str =
+-        include_str!(concat!(env!("OUT_DIR"), "/field-00a983250903242d0fac6fbe.txt"));
++    pub(crate) const NSEC_TEST_KEY_1_SECRET_HEX: &str = include_str!(concat!(
++        env!("OUT_DIR"),
++        "/field-00a983250903242d0fac6fbe.txt"
++    ));
+ 
+     /// Builds an expected page from fixture literals (the Rust analogue of the
+     /// C++ generated `TrustedReviewPage` vector initialisers).
+@@ -294,7 +296,10 @@ pub(crate) mod tests {
+         let mut keyring = StatelessSessionKeyring::new();
+         keyring
+             .add_nsec(
+-                include_str!(concat!(env!("OUT_DIR"), "/field-43257d08c218769553577c83.txt")),
++                include_str!(concat!(
++                    env!("OUT_DIR"),
++                    "/field-43257d08c218769553577c83.txt"
++                )),
+                 nip19::decode_nsec(NSEC_TEST_KEY_1).unwrap(),
+             )
+             .unwrap();
+@@ -308,14 +313,26 @@ pub(crate) mod tests {
+         let nsec_review = build_session_import_review(keyring.source_at(0).unwrap());
+         let seed_review = build_session_import_review(keyring.source_at(1).unwrap());
+ 
+-        assert_eq!(nsec_review.review_id, include_str!(concat!(env!("OUT_DIR"), "/field-2d4d3d3dc78fd3f8fd1e0b12.txt")));
++        assert_eq!(
++            nsec_review.review_id,
++            include_str!(concat!(
++                env!("OUT_DIR"),
++                "/field-2d4d3d3dc78fd3f8fd1e0b12.txt"
++            ))
++        );
+         assert_eq!(
+             nsec_review.approval_digest,
+-            include_str!(concat!(env!("OUT_DIR"), "/field-c11303196c42435ee677fcd7.txt")),
++            include_str!(concat!(
++                env!("OUT_DIR"),
++                "/field-c11303196c42435ee677fcd7.txt"
++            )),
+         );
+         assert_eq!(
+             session_key_source_fingerprint(keyring.source_at(0).unwrap()),
+-            include_str!(concat!(env!("OUT_DIR"), "/field-29f4e64e397d69751482cd54.txt")),
++            include_str!(concat!(
++                env!("OUT_DIR"),
++                "/field-29f4e64e397d69751482cd54.txt"
++            )),
+         );
+         assert_eq!(
+             nsec_review.pages,
+@@ -323,25 +340,56 @@ pub(crate) mod tests {
+                 fixture_page(
+                     "Import source",
+                     &[
+-                        include_str!(concat!(env!("OUT_DIR"), "/field-6dd4dc156f010143ffdc9c63.txt")),
+-                        include_str!(concat!(env!("OUT_DIR"), "/field-8c586f5424f1c5a7c760787c.txt")),
+-                        include_str!(concat!(env!("OUT_DIR"), "/field-23493328bbc0b80ce19da7cf.txt")),
++                        include_str!(concat!(
++                            env!("OUT_DIR"),
++                            "/field-6dd4dc156f010143ffdc9c63.txt"
++                        )),
++                        include_str!(concat!(
++                            env!("OUT_DIR"),
++                            "/field-8c586f5424f1c5a7c760787c.txt"
++                        )),
++                        include_str!(concat!(
++                            env!("OUT_DIR"),
++                            "/field-23493328bbc0b80ce19da7cf.txt"
++                        )),
+                         "Secret: hidden",
+                     ],
+                     ReviewPageAction::Next,
+                     "Page 1/2",
+-                    include_str!(concat!(env!("OUT_DIR"), "/field-2f5ab9da98202f6323eca880.txt")),
++                    include_str!(concat!(
++                        env!("OUT_DIR"),
++                        "/field-2f5ab9da98202f6323eca880.txt"
++                    )),
+                 ),
+                 fixture_page(
+                     "Import?",
+-                    &[include_str!(concat!(env!("OUT_DIR"), "/field-de4a1599a44e5f90a8fe577d.txt")), include_str!(concat!(env!("OUT_DIR"), "/field-661d9099db5dc29def4b229d.txt")), "Approve to load"],
++                    &[
++                        include_str!(concat!(
++                            env!("OUT_DIR"),
++                            "/field-de4a1599a44e5f90a8fe577d.txt"
++                        )),
++                        include_str!(concat!(
++                            env!("OUT_DIR"),
++                            "/field-661d9099db5dc29def4b229d.txt"
++                        )),
++                        "Approve to load"
++                    ],
+                     ReviewPageAction::ApproveOrReject,
+                     "Page 2/2",
+-                    include_str!(concat!(env!("OUT_DIR"), "/field-f041f5111e68e53efea04f26.txt")),
++                    include_str!(concat!(
++                        env!("OUT_DIR"),
++                        "/field-f041f5111e68e53efea04f26.txt"
++                    )),
+                 ),
+             ],
+         );
+-        assert!(pages_contain_text(&nsec_review.pages, include_str!(concat!(env!("OUT_DIR"), "/field-6dd4dc156f010143ffdc9c63.txt"))));
++        assert!(pages_contain_text(
++            &nsec_review.pages,
++            include_str!(concat!(
++                env!("OUT_DIR"),
++                "/field-6dd4dc156f010143ffdc9c63.txt"
++            ))
++        ));
+         assert!(pages_contain_text(&nsec_review.pages, "Secret: hidden"));
+         assert!(!pages_contain_text(
+             &nsec_review.pages,
+@@ -350,14 +398,26 @@ pub(crate) mod tests {
+ 
+         assert_ne!(seed_review.review_id, nsec_review.review_id);
+         assert_ne!(seed_review.approval_digest, nsec_review.approval_digest);
+-        assert_eq!(seed_review.review_id, include_str!(concat!(env!("OUT_DIR"), "/field-b18b167e9736d988f540e1a9.txt")));
++        assert_eq!(
++            seed_review.review_id,
++            include_str!(concat!(
++                env!("OUT_DIR"),
++                "/field-b18b167e9736d988f540e1a9.txt"
++            ))
++        );
+         assert_eq!(
+             seed_review.approval_digest,
+-            include_str!(concat!(env!("OUT_DIR"), "/field-4cf00376a14fdfab84c989cf.txt")),
++            include_str!(concat!(
++                env!("OUT_DIR"),
++                "/field-4cf00376a14fdfab84c989cf.txt"
++            )),
+         );
+         assert_eq!(
+             session_key_source_fingerprint(keyring.source_at(1).unwrap()),
+-            include_str!(concat!(env!("OUT_DIR"), "/field-b7001c6d270a7901642d6c97.txt")),
++            include_str!(concat!(
++                env!("OUT_DIR"),
++                "/field-b7001c6d270a7901642d6c97.txt"
++            )),
+         );
+         assert_eq!(
+             seed_review.pages,
+@@ -365,26 +425,57 @@ pub(crate) mod tests {
+                 fixture_page(
+                     "Import source",
+                     &[
+-                        include_str!(concat!(env!("OUT_DIR"), "/field-8e2965e1c0002b0ed4c5c1d6.txt")),
+-                        include_str!(concat!(env!("OUT_DIR"), "/field-0fc85cec22a551367a37bfde.txt")),
+-                        include_str!(concat!(env!("OUT_DIR"), "/field-5d9168bfcaf1443d3925ac13.txt")),
++                        include_str!(concat!(
++                            env!("OUT_DIR"),
++                            "/field-8e2965e1c0002b0ed4c5c1d6.txt"
++                        )),
++                        include_str!(concat!(
++                            env!("OUT_DIR"),
++                            "/field-0fc85cec22a551367a37bfde.txt"
++                        )),
++                        include_str!(concat!(
++                            env!("OUT_DIR"),
++                            "/field-5d9168bfcaf1443d3925ac13.txt"
++                        )),
+                         "Words: 24",
+                         "Secret: hidden",
+                     ],
+                     ReviewPageAction::Next,
+                     "Page 1/2",
+-                    include_str!(concat!(env!("OUT_DIR"), "/field-2f5ab9da98202f6323eca880.txt")),
++                    include_str!(concat!(
++                        env!("OUT_DIR"),
++                        "/field-2f5ab9da98202f6323eca880.txt"
++                    )),
+                 ),
+                 fixture_page(
+                     "Import?",
+-                    &[include_str!(concat!(env!("OUT_DIR"), "/field-de4a1599a44e5f90a8fe577d.txt")), include_str!(concat!(env!("OUT_DIR"), "/field-661d9099db5dc29def4b229d.txt")), "Approve to load"],
++                    &[
++                        include_str!(concat!(
++                            env!("OUT_DIR"),
++                            "/field-de4a1599a44e5f90a8fe577d.txt"
++                        )),
++                        include_str!(concat!(
++                            env!("OUT_DIR"),
++                            "/field-661d9099db5dc29def4b229d.txt"
++                        )),
++                        "Approve to load"
++                    ],
+                     ReviewPageAction::ApproveOrReject,
+                     "Page 2/2",
+-                    include_str!(concat!(env!("OUT_DIR"), "/field-f041f5111e68e53efea04f26.txt")),
++                    include_str!(concat!(
++                        env!("OUT_DIR"),
++                        "/field-f041f5111e68e53efea04f26.txt"
++                    )),
+                 ),
+             ],
+         );
+-        assert!(pages_contain_text(&seed_review.pages, include_str!(concat!(env!("OUT_DIR"), "/field-8e2965e1c0002b0ed4c5c1d6.txt"))));
++        assert!(pages_contain_text(
++            &seed_review.pages,
++            include_str!(concat!(
++                env!("OUT_DIR"),
++                "/field-8e2965e1c0002b0ed4c5c1d6.txt"
++            ))
++        ));
+         assert!(pages_contain_text(&seed_review.pages, "Words: 24"));
+         assert!(pages_contain_text(&seed_review.pages, "Secret: hidden"));
+         assert!(!pages_contain_text(&seed_review.pages, "attack"));
+@@ -413,18 +504,36 @@ pub(crate) mod tests {
+         let mut keyring = StatelessSessionKeyring::new();
+         keyring
+             .add_bip39_seed(
+-                include_str!(concat!(env!("OUT_DIR"), "/field-a075e44ca789a3eaed354231.txt")),
++                include_str!(concat!(
++                    env!("OUT_DIR"),
++                    "/field-a075e44ca789a3eaed354231.txt"
++                )),
+                 crate::bip39::WordIndexes::from_slice(&NIP06_INDEXES).unwrap(),
+             )
+             .unwrap();
+         let source = keyring.source_at(0).unwrap();
+ 
+-        assert_eq!(session_key_source_fingerprint(source), include_str!(concat!(env!("OUT_DIR"), "/field-8e86cbbca24ca3c385e2aa97.txt")));
++        assert_eq!(
++            session_key_source_fingerprint(source),
++            include_str!(concat!(
++                env!("OUT_DIR"),
++                "/field-8e86cbbca24ca3c385e2aa97.txt"
++            ))
++        );
+         let review = build_session_import_review(source);
+-        assert_eq!(review.review_id, include_str!(concat!(env!("OUT_DIR"), "/field-5aa5a49b704a22f1d76a1014.txt")));
++        assert_eq!(
++            review.review_id,
++            include_str!(concat!(
++                env!("OUT_DIR"),
++                "/field-5aa5a49b704a22f1d76a1014.txt"
++            ))
++        );
+         assert_eq!(
+             review.approval_digest,
+-            include_str!(concat!(env!("OUT_DIR"), "/field-20b467526a956b621936fc7c.txt")),
++            include_str!(concat!(
++                env!("OUT_DIR"),
++                "/field-20b467526a956b621936fc7c.txt"
++            )),
+         );
+         assert_eq!(
+             review.pages,
+@@ -432,22 +541,47 @@ pub(crate) mod tests {
+                 fixture_page(
+                     "Import source",
+                     &[
+-                        include_str!(concat!(env!("OUT_DIR"), "/field-8e2965e1c0002b0ed4c5c1d6.txt")),
+-                        include_str!(concat!(env!("OUT_DIR"), "/field-2b83a71001ef5129649c7737.txt")),
+-                        include_str!(concat!(env!("OUT_DIR"), "/field-dc910ee0a02bd86991eae40b.txt")),
++                        include_str!(concat!(
++                            env!("OUT_DIR"),
++                            "/field-8e2965e1c0002b0ed4c5c1d6.txt"
++                        )),
++                        include_str!(concat!(
++                            env!("OUT_DIR"),
++                            "/field-2b83a71001ef5129649c7737.txt"
++                        )),
++                        include_str!(concat!(
++                            env!("OUT_DIR"),
++                            "/field-dc910ee0a02bd86991eae40b.txt"
++                        )),
+                         "Words: 12",
+                         "Secret: hidden",
+                     ],
+                     ReviewPageAction::Next,
+                     "Page 1/2",
+-                    include_str!(concat!(env!("OUT_DIR"), "/field-2f5ab9da98202f6323eca880.txt")),
++                    include_str!(concat!(
++                        env!("OUT_DIR"),
++                        "/field-2f5ab9da98202f6323eca880.txt"
++                    )),
+                 ),
+                 fixture_page(
+                     "Import?",
+-                    &[include_str!(concat!(env!("OUT_DIR"), "/field-de4a1599a44e5f90a8fe577d.txt")), include_str!(concat!(env!("OUT_DIR"), "/field-661d9099db5dc29def4b229d.txt")), "Approve to load"],
++                    &[
++                        include_str!(concat!(
++                            env!("OUT_DIR"),
++                            "/field-de4a1599a44e5f90a8fe577d.txt"
++                        )),
++                        include_str!(concat!(
++                            env!("OUT_DIR"),
++                            "/field-661d9099db5dc29def4b229d.txt"
++                        )),
++                        "Approve to load"
++                    ],
+                     ReviewPageAction::ApproveOrReject,
+                     "Page 2/2",
+-                    include_str!(concat!(env!("OUT_DIR"), "/field-f041f5111e68e53efea04f26.txt")),
++                    include_str!(concat!(
++                        env!("OUT_DIR"),
++                        "/field-f041f5111e68e53efea04f26.txt"
++                    )),
+                 ),
+             ],
+         );
+diff --git a/crates/nsealr-core/src/session/keyring.rs b/crates/nsealr-core/src/session/keyring.rs
+index c607f95fd373b7e0ef505210ed09415396336170..34c0358df9f16cdf9e7669ca3516f902d570b170 100644
+--- a/crates/nsealr-core/src/session/keyring.rs
++++ b/crates/nsealr-core/src/session/keyring.rs
+@@ -404,8 +404,10 @@ pub(crate) mod tests {
+ 
+     // NIP-19 fixture copied from the READ-ONLY
+     // specs/vectors/nip19/nsec-test-key-1.json (`nsec`).
+-    pub(crate) const NSEC_TEST_KEY_1: &str =
+-        include_str!(concat!(env!("OUT_DIR"), "/field-0ba18333d64bc1b3cabb124c.txt"));
++    pub(crate) const NSEC_TEST_KEY_1: &str = include_str!(concat!(
++        env!("OUT_DIR"),
++        "/field-0ba18333d64bc1b3cabb124c.txt"
++    ));
+ 
+     // SeedQR fixture copied from the READ-ONLY
+     // specs/vectors/seedqr/seedsigner-vector-1.json (`standard_word_indexes`).
+@@ -437,7 +439,10 @@ pub(crate) mod tests {
+         );
+         keyring
+             .add_nsec(
+-                include_str!(concat!(env!("OUT_DIR"), "/field-43257d08c218769553577c83.txt")),
++                include_str!(concat!(
++                    env!("OUT_DIR"),
++                    "/field-43257d08c218769553577c83.txt"
++                )),
+                 nip19::decode_nsec(NSEC_TEST_KEY_1).unwrap(),
+             )
+             .unwrap();
+@@ -451,7 +456,13 @@ pub(crate) mod tests {
+         assert_eq!(keyring.len(), 2);
+         let nsec_source = keyring.source_at(0).unwrap();
+         assert_eq!(nsec_source.kind, SessionKeySourceKind::NsecSecretKey);
+-        assert_eq!(nsec_source.label, include_str!(concat!(env!("OUT_DIR"), "/field-43257d08c218769553577c83.txt")));
++        assert_eq!(
++            nsec_source.label,
++            include_str!(concat!(
++                env!("OUT_DIR"),
++                "/field-43257d08c218769553577c83.txt"
++            ))
++        );
+         assert_eq!(nsec_source.nsec_secret_key, secret);
+         assert_eq!(nsec_source.bip39_word_indexes.count, 0);
+         let seed_source = keyring.source_at(1).unwrap();
+@@ -480,7 +491,10 @@ pub(crate) mod tests {
+ 
+         keyring
+             .add_nsec(
+-                include_str!(concat!(env!("OUT_DIR"), "/field-43257d08c218769553577c83.txt")),
++                include_str!(concat!(
++                    env!("OUT_DIR"),
++                    "/field-43257d08c218769553577c83.txt"
++                )),
+                 nip19::decode_nsec(NSEC_TEST_KEY_1).unwrap(),
+             )
+             .unwrap();
+@@ -617,7 +631,10 @@ pub(crate) mod tests {
+         let secret = nip19::decode_nsec(NSEC_TEST_KEY_1).unwrap();
+         keyring
+             .add_nsec(
+-                include_str!(concat!(env!("OUT_DIR"), "/field-43257d08c218769553577c83.txt")),
++                include_str!(concat!(
++                    env!("OUT_DIR"),
++                    "/field-43257d08c218769553577c83.txt"
++                )),
+                 nip19::decode_nsec(NSEC_TEST_KEY_1).unwrap(),
+             )
+             .unwrap();
+diff --git a/crates/nsealr-core/src/session/source_backup.rs b/crates/nsealr-core/src/session/source_backup.rs
+index 8de2991c53e3b3c67b56ba4bfbff8f8c8a365ae7..d8f4b1f00e4646cb19e9a3214dfe28a77776a91b 100644
+--- a/crates/nsealr-core/src/session/source_backup.rs
++++ b/crates/nsealr-core/src/session/source_backup.rs
+@@ -648,8 +648,10 @@ mod tests {
+ 
+     // Secret-key hex copied from the READ-ONLY
+     // specs/vectors/nip19/nsec-test-key-1.json (`secret_key`).
+-    const NSEC_TEST_KEY_1_SECRET_HEX: &str =
+-        include_str!(concat!(env!("OUT_DIR"), "/field-00a983250903242d0fac6fbe.txt"));
++    const NSEC_TEST_KEY_1_SECRET_HEX: &str = include_str!(concat!(
++        env!("OUT_DIR"),
++        "/field-00a983250903242d0fac6fbe.txt"
++    ));
+ 
+     fn fixture_keyring() -> StatelessSessionKeyring {
+         let mut keyring = StatelessSessionKeyring::new();
+@@ -661,7 +663,10 @@ mod tests {
+             .unwrap();
+         keyring
+             .add_nsec(
+-                include_str!(concat!(env!("OUT_DIR"), "/field-43257d08c218769553577c83.txt")),
++                include_str!(concat!(
++                    env!("OUT_DIR"),
++                    "/field-43257d08c218769553577c83.txt"
++                )),
+                 nip19::decode_nsec(NSEC_TEST_KEY_1).unwrap(),
+             )
+             .unwrap();
+@@ -681,10 +686,19 @@ mod tests {
+         let seed_review = build_session_source_backup_review(keyring.source_at(0).unwrap());
+         let nsec_review = build_session_source_backup_review(keyring.source_at(1).unwrap());
+ 
+-        assert_eq!(seed_review.review_id, include_str!(concat!(env!("OUT_DIR"), "/field-7165496758e0bfb765981111.txt")));
++        assert_eq!(
++            seed_review.review_id,
++            include_str!(concat!(
++                env!("OUT_DIR"),
++                "/field-7165496758e0bfb765981111.txt"
++            ))
++        );
+         assert_eq!(
+             seed_review.approval_digest,
+-            include_str!(concat!(env!("OUT_DIR"), "/field-9e0a403217a3b26ce2dc5ddc.txt")),
++            include_str!(concat!(
++                env!("OUT_DIR"),
++                "/field-9e0a403217a3b26ce2dc5ddc.txt"
++            )),
+         );
+         assert_eq!(
+             seed_review.pages,
+@@ -692,34 +706,73 @@ mod tests {
+                 fixture_page(
+                     "Backup source",
+                     &[
+-                        include_str!(concat!(env!("OUT_DIR"), "/field-16d631e27f0baf3d3424d042.txt")),
+-                        include_str!(concat!(env!("OUT_DIR"), "/field-8e2965e1c0002b0ed4c5c1d6.txt")),
+-                        include_str!(concat!(env!("OUT_DIR"), "/field-0fc85cec22a551367a37bfde.txt")),
+-                        include_str!(concat!(env!("OUT_DIR"), "/field-5d9168bfcaf1443d3925ac13.txt")),
+-                        include_str!(concat!(env!("OUT_DIR"), "/field-6ec9d632dd551e8e7f88554c.txt")),
+-                        include_str!(concat!(env!("OUT_DIR"), "/field-de4a1599a44e5f90a8fe577d.txt")),
++                        include_str!(concat!(
++                            env!("OUT_DIR"),
++                            "/field-16d631e27f0baf3d3424d042.txt"
++                        )),
++                        include_str!(concat!(
++                            env!("OUT_DIR"),
++                            "/field-8e2965e1c0002b0ed4c5c1d6.txt"
++                        )),
++                        include_str!(concat!(
++                            env!("OUT_DIR"),
++                            "/field-0fc85cec22a551367a37bfde.txt"
++                        )),
++                        include_str!(concat!(
++                            env!("OUT_DIR"),
++                            "/field-5d9168bfcaf1443d3925ac13.txt"
++                        )),
++                        include_str!(concat!(
++                            env!("OUT_DIR"),
++                            "/field-6ec9d632dd551e8e7f88554c.txt"
++                        )),
++                        include_str!(concat!(
++                            env!("OUT_DIR"),
++                            "/field-de4a1599a44e5f90a8fe577d.txt"
++                        )),
+                     ],
+                     ReviewPageAction::Next,
+                     "Page 1/2",
+-                    include_str!(concat!(env!("OUT_DIR"), "/field-9df51caaff2eadc815c008bd.txt")),
++                    include_str!(concat!(
++                        env!("OUT_DIR"),
++                        "/field-9df51caaff2eadc815c008bd.txt"
++                    )),
+                 ),
+                 fixture_page(
+                     "Show secret?",
+                     &[
+                         "Anyone can sign",
+-                        include_str!(concat!(env!("OUT_DIR"), "/field-357ceabd6d24fad4485fb1fd.txt")),
+-                        include_str!(concat!(env!("OUT_DIR"), "/field-a0b000199898e081af0f8038.txt"))
++                        include_str!(concat!(
++                            env!("OUT_DIR"),
++                            "/field-357ceabd6d24fad4485fb1fd.txt"
++                        )),
++                        include_str!(concat!(
++                            env!("OUT_DIR"),
++                            "/field-a0b000199898e081af0f8038.txt"
++                        ))
+                     ],
+                     ReviewPageAction::ApproveOrReject,
+                     "Page 2/2",
+-                    include_str!(concat!(env!("OUT_DIR"), "/field-4048a69eca4093fa5e7dae60.txt")),
++                    include_str!(concat!(
++                        env!("OUT_DIR"),
++                        "/field-4048a69eca4093fa5e7dae60.txt"
++                    )),
+                 ),
+             ],
+         );
+-        assert_eq!(nsec_review.review_id, include_str!(concat!(env!("OUT_DIR"), "/field-4d8d98eb5b0140135888c3eb.txt")));
++        assert_eq!(
++            nsec_review.review_id,
++            include_str!(concat!(
++                env!("OUT_DIR"),
++                "/field-4d8d98eb5b0140135888c3eb.txt"
++            ))
++        );
+         assert_eq!(
+             nsec_review.approval_digest,
+-            include_str!(concat!(env!("OUT_DIR"), "/field-4eaac09186a4da6fb4d8e84b.txt")),
++            include_str!(concat!(
++                env!("OUT_DIR"),
++                "/field-4eaac09186a4da6fb4d8e84b.txt"
++            )),
+         );
+         assert_eq!(
+             nsec_review.pages,
+@@ -727,36 +780,75 @@ mod tests {
+                 fixture_page(
+                     "Backup source",
+                     &[
+-                        include_str!(concat!(env!("OUT_DIR"), "/field-16d631e27f0baf3d3424d042.txt")),
+-                        include_str!(concat!(env!("OUT_DIR"), "/field-6dd4dc156f010143ffdc9c63.txt")),
+-                        include_str!(concat!(env!("OUT_DIR"), "/field-8c586f5424f1c5a7c760787c.txt")),
+-                        include_str!(concat!(env!("OUT_DIR"), "/field-23493328bbc0b80ce19da7cf.txt")),
+-                        include_str!(concat!(env!("OUT_DIR"), "/field-9d85dfa476dca265cea2a87c.txt")),
+-                        include_str!(concat!(env!("OUT_DIR"), "/field-de4a1599a44e5f90a8fe577d.txt")),
++                        include_str!(concat!(
++                            env!("OUT_DIR"),
++                            "/field-16d631e27f0baf3d3424d042.txt"
++                        )),
++                        include_str!(concat!(
++                            env!("OUT_DIR"),
++                            "/field-6dd4dc156f010143ffdc9c63.txt"
++                        )),
++                        include_str!(concat!(
++                            env!("OUT_DIR"),
++                            "/field-8c586f5424f1c5a7c760787c.txt"
++                        )),
++                        include_str!(concat!(
++                            env!("OUT_DIR"),
++                            "/field-23493328bbc0b80ce19da7cf.txt"
++                        )),
++                        include_str!(concat!(
++                            env!("OUT_DIR"),
++                            "/field-9d85dfa476dca265cea2a87c.txt"
++                        )),
++                        include_str!(concat!(
++                            env!("OUT_DIR"),
++                            "/field-de4a1599a44e5f90a8fe577d.txt"
++                        )),
+                     ],
+                     ReviewPageAction::Next,
+                     "Page 1/2",
+-                    include_str!(concat!(env!("OUT_DIR"), "/field-9df51caaff2eadc815c008bd.txt")),
++                    include_str!(concat!(
++                        env!("OUT_DIR"),
++                        "/field-9df51caaff2eadc815c008bd.txt"
++                    )),
+                 ),
+                 fixture_page(
+                     "Show secret?",
+                     &[
+                         "Anyone can sign",
+-                        include_str!(concat!(env!("OUT_DIR"), "/field-357ceabd6d24fad4485fb1fd.txt")),
+-                        include_str!(concat!(env!("OUT_DIR"), "/field-a0b000199898e081af0f8038.txt"))
++                        include_str!(concat!(
++                            env!("OUT_DIR"),
++                            "/field-357ceabd6d24fad4485fb1fd.txt"
++                        )),
++                        include_str!(concat!(
++                            env!("OUT_DIR"),
++                            "/field-a0b000199898e081af0f8038.txt"
++                        ))
+                     ],
+                     ReviewPageAction::ApproveOrReject,
+                     "Page 2/2",
+-                    include_str!(concat!(env!("OUT_DIR"), "/field-4048a69eca4093fa5e7dae60.txt")),
++                    include_str!(concat!(
++                        env!("OUT_DIR"),
++                        "/field-4048a69eca4093fa5e7dae60.txt"
++                    )),
+                 ),
+             ],
+         );
+ 
+         assert!(pages_contain_text(
+             &seed_review.pages,
+-            include_str!(concat!(env!("OUT_DIR"), "/field-16d631e27f0baf3d3424d042.txt"))
++            include_str!(concat!(
++                env!("OUT_DIR"),
++                "/field-16d631e27f0baf3d3424d042.txt"
++            ))
++        ));
++        assert!(pages_contain_text(
++            &seed_review.pages,
++            include_str!(concat!(
++                env!("OUT_DIR"),
++                "/field-a0b000199898e081af0f8038.txt"
++            ))
+         ));
+-        assert!(pages_contain_text(&seed_review.pages, include_str!(concat!(env!("OUT_DIR"), "/field-a0b000199898e081af0f8038.txt"))));
+         assert!(!pages_contain_text(&seed_review.pages, "attack"));
+         assert!(!pages_contain_text(&seed_review.pages, "expire"));
+         assert!(!pages_contain_text(&nsec_review.pages, NSEC_TEST_KEY_1));
+@@ -777,18 +869,33 @@ mod tests {
+         let seed_payload = session_source_backup_payload(keyring.source_at(0).unwrap()).unwrap();
+         let nsec_payload = session_source_backup_payload(keyring.source_at(1).unwrap()).unwrap();
+ 
+-        assert_eq!(seed_payload.backup_format, include_str!(concat!(env!("OUT_DIR"), "/field-a47f26d423875df383373be2.txt")));
++        assert_eq!(
++            seed_payload.backup_format,
++            include_str!(concat!(
++                env!("OUT_DIR"),
++                "/field-a47f26d423875df383373be2.txt"
++            ))
++        );
+         assert_eq!(
+             seed_payload.mnemonic,
+-            include_str!(concat!(env!("OUT_DIR"), "/field-94f83171351503a9b6fa3349.txt")),
++            include_str!(concat!(
++                env!("OUT_DIR"),
++                "/field-94f83171351503a9b6fa3349.txt"
++            )),
+         );
+         assert_eq!(
+             seed_payload.standard_seedqr_digits,
+-            include_str!(concat!(env!("OUT_DIR"), "/field-de90d1677498ead6f9e1bb73.txt")),
++            include_str!(concat!(
++                env!("OUT_DIR"),
++                "/field-de90d1677498ead6f9e1bb73.txt"
++            )),
+         );
+         assert_eq!(
+             seed_payload.compact_seedqr_hex,
+-            include_str!(concat!(env!("OUT_DIR"), "/field-99551ec9c0d3a519ee1eefe8.txt")),
++            include_str!(concat!(
++                env!("OUT_DIR"),
++                "/field-99551ec9c0d3a519ee1eefe8.txt"
++            )),
+         );
+         assert!(seed_payload.nsec.is_empty());
+         assert_eq!(nsec_payload.backup_format, "nip19_nsec");
+@@ -839,7 +946,10 @@ mod tests {
+         let mut keyring = StatelessSessionKeyring::new();
+         keyring
+             .add_nsec(
+-                include_str!(concat!(env!("OUT_DIR"), "/field-43257d08c218769553577c83.txt")),
++                include_str!(concat!(
++                    env!("OUT_DIR"),
++                    "/field-43257d08c218769553577c83.txt"
++                )),
+                 nip19::decode_nsec(NSEC_TEST_KEY_1).unwrap(),
+             )
+             .unwrap();
+@@ -964,7 +1074,13 @@ mod tests {
+         assert_eq!(io.frames.len(), 2);
+         assert_eq!(io.frames[0].title, "Backup source");
+         assert_eq!(io.frames[0].page_indicator, "Page 1/2");
+-        assert!(frame_lines_contain(&io.frames[0], include_str!(concat!(env!("OUT_DIR"), "/field-16d631e27f0baf3d3424d042.txt"))));
++        assert!(frame_lines_contain(
++            &io.frames[0],
++            include_str!(concat!(
++                env!("OUT_DIR"),
++                "/field-16d631e27f0baf3d3424d042.txt"
++            ))
++        ));
+         assert!(!frame_lines_contain(&io.frames[0], NSEC_TEST_KEY_1));
+         assert!(!frame_lines_contain(
+             &io.frames[0],
+diff --git a/crates/nsealr-core/src/session/source_qr.rs b/crates/nsealr-core/src/session/source_qr.rs
+index be690f3b13eee7a5e35518aad85ab9bafa2109d0..2b958165f185a24c1b1178ec9a01270f125a8b71 100644
+--- a/crates/nsealr-core/src/session/source_qr.rs
++++ b/crates/nsealr-core/src/session/source_qr.rs
+@@ -208,13 +208,17 @@ mod tests {
+ 
+     // Mnemonic copied from the READ-ONLY
+     // specs/vectors/keys/nip06-account-0-leader.json (`mnemonic`).
+-    const NIP06_ACCOUNT_0_MNEMONIC: &str =
+-        include_str!(concat!(env!("OUT_DIR"), "/field-674779247edd20ec33c77f12.txt"));
++    const NIP06_ACCOUNT_0_MNEMONIC: &str = include_str!(concat!(
++        env!("OUT_DIR"),
++        "/field-674779247edd20ec33c77f12.txt"
++    ));
+     // Standard digits + compact hex copied from the READ-ONLY
+     // specs/vectors/seedqr/seedsigner-vector-1.json (`standard_seedqr_digits`,
+     // `compact_seedqr_hex`).
+-    const SEEDQR_VECTOR_1_DIGITS: &str =
+-        include_str!(concat!(env!("OUT_DIR"), "/field-de90d1677498ead6f9e1bb73.txt"));
++    const SEEDQR_VECTOR_1_DIGITS: &str = include_str!(concat!(
++        env!("OUT_DIR"),
++        "/field-de90d1677498ead6f9e1bb73.txt"
++    ));
+     pub(crate) const SEEDQR_VECTOR_1_COMPACT: [u8; 32] = [
+         0x0e, 0x74, 0xb6, 0x41, 0x07, 0xf9, 0x4c, 0xc0, 0xcc, 0xfa, 0xe6, 0xa1, 0x3d, 0xcb, 0xec,
+         0x36, 0x62, 0x15, 0x4f, 0xec, 0x67, 0xe0, 0xe0, 0x09, 0x99, 0xc0, 0x78, 0x92, 0x59, 0x7d,
+@@ -339,7 +343,13 @@ mod tests {
+ 
+         assert!(result.approved);
+         assert!(result.loaded);
+-        assert_eq!(result.review.review_id, include_str!(concat!(env!("OUT_DIR"), "/field-2d4d3d3dc78fd3f8fd1e0b12.txt")));
++        assert_eq!(
++            result.review.review_id,
++            include_str!(concat!(
++                env!("OUT_DIR"),
++                "/field-2d4d3d3dc78fd3f8fd1e0b12.txt"
++            ))
++        );
+         assert_eq!(result.transcript.len(), 2);
+         assert!(!result.transcript.step(0).loaded);
+         assert!(result.transcript.step(1).loaded);
+diff --git a/crates/nsealr-core/tests/secret_boundary.rs b/crates/nsealr-core/tests/secret_boundary.rs
+index d6adb13ed290b24ece219f2c8e58a81da61b7cc5..0290bab0920c4b68d80c962823067e9e113812cf 100644
+--- a/crates/nsealr-core/tests/secret_boundary.rs
++++ b/crates/nsealr-core/tests/secret_boundary.rs
+@@ -11,7 +11,10 @@ use nsealr_core::{
+     },
+ };
+ 
+-const NSEC: &str = include_str!(concat!(env!("OUT_DIR"), "/field-0ba18333d64bc1b3cabb124c.txt"));
++const NSEC: &str = include_str!(concat!(
++    env!("OUT_DIR"),
++    "/field-0ba18333d64bc1b3cabb124c.txt"
++));
+ const MNEMONIC: &str =
+     "abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon about";
+ 

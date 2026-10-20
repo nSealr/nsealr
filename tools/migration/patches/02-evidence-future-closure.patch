@@ -1,0 +1,52 @@
+diff --git a/scripts/test_evidence.py b/scripts/test_evidence.py
+index c8caf6cd523b378fc01b02ecf082e5bbe51f5893..e41796dbc41cab16ba7160e932256dd42f6df5e0 100644
+--- a/scripts/test_evidence.py
++++ b/scripts/test_evidence.py
+@@ -13,8 +13,10 @@ class EvidenceTests(unittest.TestCase):
+         self.temp=tempfile.TemporaryDirectory();self.addCleanup(self.temp.cleanup);self.root=Path(self.temp.name)
+         self.git('init','-q');self.git('config','user.name','Synthetic proof');self.git('config','user.email','proof@example.invalid')
+         for path in ['proof.txt',*CONTRACTS]:self.put(path,b'Purpose-written source fixture.\n')
++        initial_bound=[{'path':path,'sha256':sha((self.root/path).read_bytes())} for path in ['proof.txt',*CONTRACTS]]
++        self.put('docs/restart/work-items.json',json.dumps({'tasks':[{'status':'integrated','result_artifacts':initial_bound}]}).encode())
+         self.git('add','.');self.git('-c','commit.gpgsign=false','commit','-qm','historical source');self.source=self.git('rev-parse','HEAD').decode().strip()
+-        rows=objects(self.root,self.source)
++        rows=objects(self.root,self.source);rows.pop('docs/restart/work-items.json');(self.root/'docs/restart/work-items.json').unlink()
+         self.index={'source_commit':self.source,'source_identity':{'commit':self.source,'tree':self.git('rev-parse','HEAD^{tree}').decode().strip()},
+             'relocations':RELOCATIONS,'artifacts':[],'current_contracts':[],'current_navigation':list(CONTRACTS.values())}
+         bound=[]
+@@ -49,6 +51,10 @@ class EvidenceTests(unittest.TestCase):
+         self.put('docs/product/contract.md',b'Changed requirement');self.fails('falsely attributed')
+     def test_changed_current_contract_needs_distinct_closed_evidence(self):
+         self.put('docs/product/contract.md',b'Changed requirement');self.index['current_contracts'][0]['equivalent_under_link_relocation']=False;self.save();self.fails('own closed')
++    def test_new_closed_task_does_not_rewrite_historical_closure(self):
++        plan=json.loads((self.root/'plan/work-items.json').read_bytes());self.put('new-proof.txt',b'new independently reviewed task evidence');plan['tasks'].append({'status':'integrated','result_artifacts':[{'path':'new-proof.txt','sha256':sha((self.root/'new-proof.txt').read_bytes())}]});self.put('plan/work-items.json',json.dumps(plan).encode());self.check()
++    def test_current_contract_substantive_edit_needs_own_evidence(self):
++        path='docs/product/contract.md';self.put(path,b'New reviewed requirement');plan=json.loads((self.root/'plan/work-items.json').read_bytes());plan['tasks'].append({'status':'integrated','result_artifacts':[{'path':path,'sha256':sha((self.root/path).read_bytes())}]});self.put('plan/work-items.json',json.dumps(plan).encode());self.index['current_contracts'][0]['equivalent_under_link_relocation']=False;self.save();self.check()
+     def test_current_contract_alias_rejected(self):self.index['current_contracts'][0]['current_path']='../escape';self.save();self.fails('contract owner')
+ 
+ 
+diff --git a/scripts/verify_evidence.py b/scripts/verify_evidence.py
+index d8c8b524ea416672fa956f18d69e81fe75002ce6..b5f5fc060ee720ccf2897012b03689bdf34726e0 100644
+--- a/scripts/verify_evidence.py
++++ b/scripts/verify_evidence.py
+@@ -58,14 +58,19 @@ def validate(root=ROOT,expected_source=SOURCE):
+     if index['relocations']!=RELOCATIONS:raise ValueError('unreviewed relocation aliases')
+     original=objects(root,expected_source);current=objects(root,'HEAD')
+     if git(root,'rev-parse',expected_source+'^{tree}').decode().strip()!=index['source_identity']['tree']:raise ValueError('historical tree mismatch')
++    original_plan=json.loads(git(root,'show',expected_source+':docs/restart/work-items.json'))
++    historical_bound={row['path']:row['sha256'] for task in original_plan['tasks'] if task.get('status') in {'verified','integrated'} for row in task['result_artifacts']}
+     bound={}
+     for task in plan['tasks']:
+         if task.get('status') in {'verified','integrated'}:
+             for row in task['result_artifacts']:
+                 if row['path'] in bound and bound[row['path']]!=row['sha256']:raise ValueError('contradictory graph evidence')
+                 bound[row['path']]=row['sha256']
++    if any(bound.get(path)!=value for path,value in historical_bound.items()):raise ValueError('historical graph evidence changed')
+     artifacts=index['artifacts'];names=[r['path'] for r in artifacts]
+-    if len(names)!=len(set(names)) or set(names)!=set(bound):raise ValueError('missing/duplicate closed evidence closure entry')
++    if len(names)!=len(set(names)) or set(names)!=set(historical_bound):raise ValueError('missing/duplicate closed evidence closure entry')
++    # Later closed tasks remain governed by the full canonical validator. This
++    # migration index preserves its original closure; it is not a second ledger.
+     batch=subprocess.Popen(['git','-C',str(root),'cat-file','--batch'],stdin=subprocess.PIPE,stdout=subprocess.PIPE)
+     cache={}
+     def blob(oid):

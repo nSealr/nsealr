@@ -1,0 +1,146 @@
+diff --git a/packages/sdk/README.md b/packages/sdk/README.md
+index cdb967777ecba758e0e11552c1699c75fa562fe3..e8c292ff271fc7118576c9f3141002cf7d74f2dd 100644
+--- a/packages/sdk/README.md
++++ b/packages/sdk/README.md
+@@ -1,22 +1,17 @@
+ # @nsealr/sdk
+ 
+-Platform-neutral facade over curated nSealr companion packages.
++The sole public nSealr TypeScript package. The root and `@nsealr/sdk/browser`
++expose browser-safe provider, local-service client and core/policy/protocol/QR/
++review namespaces. `@nsealr/sdk/node` additionally exposes the host client,
++framing and NIP-46 namespaces. Owned runtime and declarations are included in
++this package; consumers do not install internal workspace packages.
+ 
+-Browser runtime code should import `@nsealr/sdk/browser`, which exposes only
+-the browser-safe provider, local-service client, and pure core/policy/protocol/
+-QR/review helpers.
+-
+-## Boundary
+-
+-- Export curated package namespaces for app, browser-extension, and companion
+-  integrations.
+-- Export a browser-safe `./browser` subpath so extension and web callers do not
+-  import the broader SDK root by accident.
+-- Keep `@nsealr/dev-signer` out of the public SDK surface.
+-- Keep Node-only fixture loading and host transport adapters in their own
+-  packages instead of importing them through this facade.
+-- Store no production keys, mnemonics, passphrases, grants, or browser-side
+-  signing material.
++The SDK stores no user identity/signing keys. Device review and approval remain
++signer responsibilities. The Node NIP-46 runtime owns a bounded, in-memory
++client transport key; it does not persist that key or confer signing approval.
++Smartcard APIs are retired. `@nsealr/dev-signer` and fixture loaders stay private
++and outside the packed production graph. Real browser, relay and attached-device
++qualification remains separate from deterministic package tests.
+ 
+ ```ts nsealr-readme-example
+ import assert from "node:assert/strict";
+diff --git a/tools/bridge/check_api_docs.mjs b/tools/bridge/check_api_docs.mjs
+index ff8d4ff6205dd8f5c2c55d3150a5668c69b72ec8..a09240904ca482804de90d13d04721cd732fa69c 100644
+--- a/tools/bridge/check_api_docs.mjs
++++ b/tools/bridge/check_api_docs.mjs
+@@ -50,12 +50,31 @@ function collectExports(entryPath, seen = new Set()) {
+ 
+   const source = readSource(entryPath);
+   const symbols = new Set();
++  const namespaces = new Map();
++  for (const statement of source.statements) {
++    if (ts.isImportDeclaration(statement) && ts.isStringLiteral(statement.moduleSpecifier) &&
++        statement.importClause?.namedBindings && ts.isNamespaceImport(statement.importClause.namedBindings)) {
++      const specifier = statement.moduleSpecifier.text;
++      if (specifier.startsWith("@nsealr/")) {
++        const parts = specifier.split("/");
++        const packageName = parts.slice(0, 2).join("/");
++        const subpath = parts.length > 2 ? `./${parts.slice(2).join("/")}` : ".";
++        const target = sourceManifest(packageName).exports[subpath];
++        if (!target?.import) throw new Error(`unmapped namespace ${specifier}`);
++        namespaces.set(statement.importClause.namedBindings.name.text,
++          sourcePathForDistImport(packageName, target.import));
++      }
++    }
++  }
+ 
+   for (const statement of source.statements) {
+     if (ts.isExportDeclaration(statement)) {
+       if (statement.exportClause && ts.isNamedExports(statement.exportClause)) {
+         for (const element of statement.exportClause.elements) {
+-          symbols.add(element.name.text);
++          const name = element.name.text;
++          symbols.add(name);
++          const namespace = namespaces.get(element.propertyName?.text ?? name);
++          if (namespace) for (const symbol of collectExports(namespace, new Set())) symbols.add(`${name}.${symbol}`);
+         }
+       } else if (statement.moduleSpecifier && ts.isStringLiteral(statement.moduleSpecifier)) {
+         const resolvedPath = resolveSourceModule(entryPath, statement.moduleSpecifier.text);
+@@ -138,14 +157,14 @@ function renderApiDocs() {
+     "# Public API Surface",
+     "",
+     "This file is generated from the public package entrypoints by",
+-    "`scripts/check_api_docs.mjs`. It documents the pre-release package surface",
++    "`tools/bridge/check_api_docs.mjs`. It documents the pre-release package surface",
+     "that consumers may import after the package gates pass.",
+     "",
+     "Regenerate and verify it with:",
+     "",
+     "```sh",
+-    "make api-docs-update",
+-    "make api-docs",
++    "pnpm api-docs:update",
++    "pnpm api-docs:check",
+     "```",
+     "",
+     "The packages are still pre-release. Breaking changes are allowed before the",
+@@ -192,13 +211,15 @@ function renderApiDocs() {
+ function main() {
+   const args = process.argv.slice(2);
+   const shouldWrite = args.includes("--write");
+-  const unknownArgs = args.filter((arg) => arg !== "--write");
++  const stdout = args.includes("--stdout");
++  const unknownArgs = args.filter((arg) => arg !== "--write" && arg !== "--stdout");
+   if (unknownArgs.length > 0) {
+     console.error(usage());
+     process.exit(2);
+   }
+ 
+   const expected = renderApiDocs();
++  if (stdout) { process.stdout.write(expected); return; }
+   if (shouldWrite) {
+     writeFileSync(docPath, expected);
+     console.log(`wrote ${docPath}`);
+@@ -206,13 +227,13 @@ function main() {
+   }
+ 
+   if (!existsSync(docPath)) {
+-    console.error("docs/api.md is missing; run make api-docs-update");
++    console.error("docs/api.md is missing; run pnpm api-docs:update");
+     process.exit(1);
+   }
+ 
+   const actual = readFileSync(docPath, "utf-8");
+   if (actual !== expected) {
+-    console.error("docs/api.md is out of date; run make api-docs-update");
++    console.error("docs/api.md is out of date; run pnpm api-docs:update");
+     process.exit(1);
+   }
+ 
+diff --git a/tools/bridge/check_api_review.mjs b/tools/bridge/check_api_review.mjs
+index 6930fdb390bf7e5ce956a7bddd37a957e47710b3..400cd0f8b53d68327b5e6ca60afa4440d238ac10 100644
+--- a/tools/bridge/check_api_review.mjs
++++ b/tools/bridge/check_api_review.mjs
+@@ -34,10 +34,12 @@ assert(
+   "docs/api.md must not expose the test-only smartcard simulator through a public package"
+ );
+ assert(
+-  normalizedReview.includes("Test-only APDU simulation lives in the private") &&
+-    normalizedReview.includes("does not expose software signing helpers"),
+-  "docs/api-review.md must record that smartcard simulation is private test-only code"
++  normalizedReview.includes("Smartcard APIs are retired") &&
++    normalizedReview.includes("does not expose software signing helpers") &&
++    review.includes("@nsealr/sdk/browser") && review.includes("@nsealr/sdk/node"),
++  "API review must state the SDK entrypoints and retirement of card signing"
+ );
++
+ assert(
+   normalizedReview.includes("parses relay event envelopes") &&
+     normalizedReview.includes("evaluates relay request and response steps") &&

@@ -1,0 +1,43 @@
+cargo fmt --all --check
+cargo fmt --manifest-path apps/desktop-simulator/Cargo.toml --all --check
+cargo clippy --all-targets -- -D warnings -D dead_code
+    Checking typenum v1.20.1
+    Checking zeroize v1.9.1
+    Checking cfg-if v1.0.5
+   Compiling nsealr-core v0.0.0 (/home/tux/nsealr/.restart-tools/goal/a02/tools/migration/.runtime/rehearsal-01/repository/crates/nsealr-core)
+    Checking cpufeatures v0.3.1
+    Checking hybrid-array v0.4.15
+    Checking crypto-common v0.2.2
+    Checking block-buffer v0.12.1
+    Checking digest v0.11.3
+    Checking sha2 v0.11.0
+error: for loop over a single element
+ --> /home/tux/nsealr/.restart-tools/goal/a02/tools/migration/.runtime/rehearsal-01/repository/target/debug/build/nsealr-core-c32ec96a7884dd0f/out/policy-fixtures.rs:1:105
+  |
+1 | ...ds::new(); for id in [r########"grant-esp32-usb-kind-1-session"########] { proposed_grant_ids.try_push(id).unwrap(); } PolicyChang...
+  |               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  |
+  = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.95.0/index.html#single_element_loop
+  = note: `-D clippy::single-element-loop` implied by `-D warnings`
+  = help: to override `-D warnings` add `#[allow(clippy::single_element_loop)]`
+help: try
+  |
+1 ~ fn esp32_usb_fixture() -> PolicyChangeFixture { let mut proposed_grant_ids=PolicyChangeGrantIds::new(); {
+2 ~ let id = r########"grant-esp32-usb-kind-1-session"########; proposed_grant_ids.try_push(id).unwrap(); } PolicyChangeFixture { proposal:PolicyChangeProposal {proposal_id:r########"proposal-esp32-usb-enable-kind-1-automation"########.parse().unwrap(),account_id:r########"acct-esp32-usb-slot-0"########.parse().unwrap(),route_type:r########"esp32_usb_nip46"########.parse().unwrap(),action:r########"set_policy"########.parse().unwrap(),current_policy_id:r########"policy-manual-only-persistent-device"########.parse().unwrap(),proposed_policy_id:r########"policy-scoped-automation-daily-use"########.parse().unwrap(),proposed_grant_ids,requested_by:PolicyChangeRequester {surface:r########"browser_extension"########.parse().unwrap(),client_pubkey:r########"4f355bdcb7cc0af728ef3cceb9615d90684bb5b2ca5f859ab0f0b704075871aa"########.parse().unwrap(),label:Some(r########"local companion test client"########.parse().unwrap())},created_at:1710000200,device_review_required:true,physical_approval_required:true,companion_authoritative:false,contains_secret_material:false},proposal_id:r########"proposal-esp32-usb-enable-kind-1-automation"########,approval_digest:r########"74859ddf5324181cce3602869f9d91c5d4565d9088c5c672526b1d7b04137aa6"########,pages:[(r########"Policy change"########,&[r########"Action: set_policy"########,r########"Account: acct-esp32-usb-slot-0"########,r########"Route: esp32_usb_nip46"########],ReviewPageAction::Next),(r########"Requester"########,&[r########"Surface: browser_extension"########,r########"Client: 4f355bdcb7cc0af728ef3cceb9615d90684bb5b2ca5f859ab0f0b704075871aa"########,r########"Label: local companion test client"########],ReviewPageAction::Next),(r########"Policy"########,&[r########"From: policy-manual-only-persistent-device"########,r########"To: policy-scoped-automation-daily-use"########,r########"Grants: 1"########,r########"Grant: grant-esp32-usb-kind-1-session"########],ReviewPageAction::Next),(r########"Decision"########,&[r########"Review on device"########,r########"Physical approval required"########,r########"Companion cannot approve alone"########],ReviewPageAction::ApproveOrReject)]} }
+  |
+
+error: for loop over a single element
+ --> /home/tux/nsealr/.restart-tools/goal/a02/tools/migration/.runtime/rehearsal-01/repository/target/debug/build/nsealr-core-c32ec96a7884dd0f/out/policy-fixtures.rs:2:118
+  |
+2 | ...w(); for id in [r########"grant-custom-hardware-wallet-kind-1-session"########] { proposed_grant_ids.try_push(id).unwrap(); } Poli...
+  |         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  |
+  = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.95.0/index.html#single_element_loop
+help: try
+  |
+2 ~ fn custom_hardware_wallet_fixture() -> PolicyChangeFixture { let mut proposed_grant_ids=PolicyChangeGrantIds::new(); {
+3 ~ let id = r########"grant-custom-hardware-wallet-kind-1-session"########; proposed_grant_ids.try_push(id).unwrap(); } PolicyChangeFixture { proposal:PolicyChangeProposal {proposal_id:r########"proposal-custom-hardware-wallet-enable-kind-1-automation"########.parse().unwrap(),account_id:r########"acct-custom-hardware-wallet-slot-0"########.parse().unwrap(),route_type:r########"custom_hardware_wallet"########.parse().unwrap(),action:r########"set_policy"########.parse().unwrap(),current_policy_id:r########"policy-manual-only-persistent-device"########.parse().unwrap(),proposed_policy_id:r########"policy-scoped-automation-daily-use"########.parse().unwrap(),proposed_grant_ids,requested_by:PolicyChangeRequester {surface:r########"desktop_app"########.parse().unwrap(),client_pubkey:r########"4f355bdcb7cc0af728ef3cceb9615d90684bb5b2ca5f859ab0f0b704075871aa"########.parse().unwrap(),label:Some(r########"local companion test client"########.parse().unwrap())},created_at:1710000300,device_review_required:true,physical_approval_required:true,companion_authoritative:false,contains_secret_material:false},proposal_id:r########"proposal-custom-hardware-wallet-enable-kind-1-automation"########,approval_digest:r########"cc06e69fa24fdf2fb5509dc6af208baad7d99bcc1e2798e868eca152e3908bb9"########,pages:[(r########"Policy change"########,&[r########"Action: set_policy"########,r########"Account: acct-custom-hardware-wallet-slot-0"########,r########"Route: custom_hardware_wallet"########],ReviewPageAction::Next),(r########"Requester"########,&[r########"Surface: desktop_app"########,r########"Client: 4f355bdcb7cc0af728ef3cceb9615d90684bb5b2ca5f859ab0f0b704075871aa"########,r########"Label: local companion test client"########],ReviewPageAction::Next),(r########"Policy"########,&[r########"From: policy-manual-only-persistent-device"########,r########"To: policy-scoped-automation-daily-use"########,r########"Grants: 1"########,r########"Grant: grant-custom-hardware-wallet-kind-1-session"########],ReviewPageAction::Next),(r########"Decision"########,&[r########"Review on device"########,r########"Physical approval required"########,r########"Companion cannot approve alone"########],ReviewPageAction::ApproveOrReject)]} }
+  |
+
+error: could not compile `nsealr-core` (lib test) due to 2 previous errors
+make: *** [Makefile:44: cargo-clippy] Error 101

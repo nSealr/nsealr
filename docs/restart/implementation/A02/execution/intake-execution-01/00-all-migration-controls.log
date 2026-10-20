@@ -1,0 +1,126 @@
+test_canonical_source_destination_refused (test_admission.RecoveryTests.test_canonical_source_destination_refused) ... ok
+test_case_collection_refuses_changed_runtime_source_before_loading (test_admission.RecoveryTests.test_case_collection_refuses_changed_runtime_source_before_loading) ... ok
+test_existing_destination_refused_without_mutation (test_admission.RecoveryTests.test_existing_destination_refused_without_mutation) ... ok
+test_incorrect_source_tree_cannot_create_bundle (test_admission.RecoveryTests.test_incorrect_source_tree_cannot_create_bundle) ... ok
+test_overlay_cannot_select_private_excluded_file (test_admission.RecoveryTests.test_overlay_cannot_select_private_excluded_file) ... ok
+test_overlay_digest_tampering_fails (test_admission.RecoveryTests.test_overlay_digest_tampering_fails) ... ok
+test_overlay_hash_chain_verified_without_assembly (test_admission.RecoveryTests.test_overlay_hash_chain_verified_without_assembly) ... ok
+test_private_sources_are_never_queried_remotely (test_admission.RecoveryTests.test_private_sources_are_never_queried_remotely) ... ok
+test_public_evidence_ref_mismatch_rejected (test_admission.RecoveryTests.test_public_evidence_ref_mismatch_rejected) ... ok
+test_remote_main_advance_rejected_even_when_selected_is_ancestor (test_admission.RecoveryTests.test_remote_main_advance_rejected_even_when_selected_is_ancestor) ... ok
+test_restore_all_refs_including_annotated_tags_without_changing_source (test_admission.RecoveryTests.test_restore_all_refs_including_annotated_tags_without_changing_source) ... ok
+test_restore_detects_corrupted_bundle_and_keeps_failure_log (test_admission.RecoveryTests.test_restore_detects_corrupted_bundle_and_keeps_failure_log) ... ok
+test_symlink_parent_refused (test_admission.RecoveryTests.test_symlink_parent_refused) ... ok
+test_existing_destination_is_rejected (test_assemble.RestrictedIntakeTests.test_existing_destination_is_rejected) ... ERROR
+test_object_hardlink_is_rejected (test_assemble.RestrictedIntakeTests.test_object_hardlink_is_rejected) ... ERROR
+test_only_selected_public_objects_arrive (test_assemble.RestrictedIntakeTests.test_only_selected_public_objects_arrive) ... ERROR
+test_push_configuration_is_rejected (test_assemble.RestrictedIntakeTests.test_push_configuration_is_rejected) ... ERROR
+test_unreachable_private_object_is_rejected_without_any_ref (test_assemble.RestrictedIntakeTests.test_unreachable_private_object_is_rejected_without_any_ref) ... ERROR
+test_unselected_branch_is_rejected (test_assemble.RestrictedIntakeTests.test_unselected_branch_is_rejected) ... ERROR
+test_blanket_retirement_rejected (test_records.PrivateCaseObligationTests.test_blanket_retirement_rejected) ... ok
+test_changed_source_rejected (test_records.PrivateCaseObligationTests.test_changed_source_rejected) ... ok
+test_duplicate_cannot_hide_missing_case (test_records.PrivateCaseObligationTests.test_duplicate_cannot_hide_missing_case) ... ok
+test_explicit_positive_and_negative_obligation_accepted (test_records.PrivateCaseObligationTests.test_explicit_positive_and_negative_obligation_accepted) ... ok
+test_replacement_without_positive_control_rejected (test_records.PrivateCaseObligationTests.test_replacement_without_positive_control_rejected) ... ok
+test_changed_manifest_not_accepted_as_old_inventory (test_rehearse.PreflightTests.test_changed_manifest_not_accepted_as_old_inventory) ... ok
+test_deleted_frozen_artifact_fails (test_rehearse.PreflightTests.test_deleted_frozen_artifact_fails) ... ok
+test_destination_collision_is_an_explicit_blocker (test_rehearse.PreflightTests.test_destination_collision_is_an_explicit_blocker) ... ok
+test_dirty_worktree_never_supplies_source_bytes (test_rehearse.PreflightTests.test_dirty_worktree_never_supplies_source_bytes) ... ok
+test_duplicate_artifact_alias_fails (test_rehearse.PreflightTests.test_duplicate_artifact_alias_fails) ... ok
+test_duplicate_json_members_rejected (test_rehearse.PreflightTests.test_duplicate_json_members_rejected) ... ok
+test_excluded_private_blob_is_not_read (test_rehearse.PreflightTests.test_excluded_private_blob_is_not_read) ... ok
+test_hidden_files_and_current_evidence_are_inventoried (test_rehearse.PreflightTests.test_hidden_files_and_current_evidence_are_inventoried) ... ok
+test_historical_directory_link_resolves_to_committed_descendants (test_rehearse.PreflightTests.test_historical_directory_link_resolves_to_committed_descendants) ... ok
+test_inventory_tamper_rejected_on_recheck (test_rehearse.PreflightTests.test_inventory_tamper_rejected_on_recheck) ... ok
+test_prepare_creates_only_private_inventory_not_git_or_bundles (test_rehearse.PreflightTests.test_prepare_creates_only_private_inventory_not_git_or_bundles) ... ok
+test_private_catchall_selection_fails (test_rehearse.PreflightTests.test_private_catchall_selection_fails) ... ok
+test_result_manifest_must_be_in_hash_closure (test_rehearse.PreflightTests.test_result_manifest_must_be_in_hash_closure) ... ok
+test_selected_symlink_fails (test_rehearse.PreflightTests.test_selected_symlink_fails) ... ok
+test_source_destination_is_rejected_before_writing (test_rehearse.PreflightTests.test_source_destination_is_rejected_before_writing) ... ok
+test_tampered_frozen_artifact_fails (test_rehearse.PreflightTests.test_tampered_frozen_artifact_fails) ... ok
+test_tree_and_license_pins_enforced (test_rehearse.PreflightTests.test_tree_and_license_pins_enforced) ... ok
+test_unsafe_paths_rejected (test_rehearse.PreflightTests.test_unsafe_paths_rejected) ... ok
+test_wrong_reviewed_commit_fails (test_rehearse.PreflightTests.test_wrong_reviewed_commit_fails) ... ok
+
+======================================================================
+ERROR: test_existing_destination_is_rejected (test_assemble.RestrictedIntakeTests.test_existing_destination_is_rejected)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/tux/nsealr/.restart-tools/goal/a02/tools/migration/test_assemble.py", line 32, in setUp
+    self.objects, self.commits = intake(self.source, self.public, self.target, self.recorder)
+                                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/tux/nsealr/.restart-tools/goal/a02/tools/migration/assemble.py", line 93, in intake
+    recorder.run('exact-public-ancestry-fetch', ['git', '-C', str(target), 'fetch', '--no-tags', '--no-write-fetch-head',
+  File "/home/tux/nsealr/.restart-tools/goal/a02/tools/migration/admission.py", line 53, in run
+    raise PreflightError(f"{label} failed ({process.returncode}); protected log retained")
+rehearse.PreflightError: exact-public-ancestry-fetch failed (128); protected log retained
+
+======================================================================
+ERROR: test_object_hardlink_is_rejected (test_assemble.RestrictedIntakeTests.test_object_hardlink_is_rejected)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/tux/nsealr/.restart-tools/goal/a02/tools/migration/test_assemble.py", line 32, in setUp
+    self.objects, self.commits = intake(self.source, self.public, self.target, self.recorder)
+                                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/tux/nsealr/.restart-tools/goal/a02/tools/migration/assemble.py", line 93, in intake
+    recorder.run('exact-public-ancestry-fetch', ['git', '-C', str(target), 'fetch', '--no-tags', '--no-write-fetch-head',
+  File "/home/tux/nsealr/.restart-tools/goal/a02/tools/migration/admission.py", line 53, in run
+    raise PreflightError(f"{label} failed ({process.returncode}); protected log retained")
+rehearse.PreflightError: exact-public-ancestry-fetch failed (128); protected log retained
+
+======================================================================
+ERROR: test_only_selected_public_objects_arrive (test_assemble.RestrictedIntakeTests.test_only_selected_public_objects_arrive)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/tux/nsealr/.restart-tools/goal/a02/tools/migration/test_assemble.py", line 32, in setUp
+    self.objects, self.commits = intake(self.source, self.public, self.target, self.recorder)
+                                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/tux/nsealr/.restart-tools/goal/a02/tools/migration/assemble.py", line 93, in intake
+    recorder.run('exact-public-ancestry-fetch', ['git', '-C', str(target), 'fetch', '--no-tags', '--no-write-fetch-head',
+  File "/home/tux/nsealr/.restart-tools/goal/a02/tools/migration/admission.py", line 53, in run
+    raise PreflightError(f"{label} failed ({process.returncode}); protected log retained")
+rehearse.PreflightError: exact-public-ancestry-fetch failed (128); protected log retained
+
+======================================================================
+ERROR: test_push_configuration_is_rejected (test_assemble.RestrictedIntakeTests.test_push_configuration_is_rejected)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/tux/nsealr/.restart-tools/goal/a02/tools/migration/test_assemble.py", line 32, in setUp
+    self.objects, self.commits = intake(self.source, self.public, self.target, self.recorder)
+                                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/tux/nsealr/.restart-tools/goal/a02/tools/migration/assemble.py", line 93, in intake
+    recorder.run('exact-public-ancestry-fetch', ['git', '-C', str(target), 'fetch', '--no-tags', '--no-write-fetch-head',
+  File "/home/tux/nsealr/.restart-tools/goal/a02/tools/migration/admission.py", line 53, in run
+    raise PreflightError(f"{label} failed ({process.returncode}); protected log retained")
+rehearse.PreflightError: exact-public-ancestry-fetch failed (128); protected log retained
+
+======================================================================
+ERROR: test_unreachable_private_object_is_rejected_without_any_ref (test_assemble.RestrictedIntakeTests.test_unreachable_private_object_is_rejected_without_any_ref)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/tux/nsealr/.restart-tools/goal/a02/tools/migration/test_assemble.py", line 32, in setUp
+    self.objects, self.commits = intake(self.source, self.public, self.target, self.recorder)
+                                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/tux/nsealr/.restart-tools/goal/a02/tools/migration/assemble.py", line 93, in intake
+    recorder.run('exact-public-ancestry-fetch', ['git', '-C', str(target), 'fetch', '--no-tags', '--no-write-fetch-head',
+  File "/home/tux/nsealr/.restart-tools/goal/a02/tools/migration/admission.py", line 53, in run
+    raise PreflightError(f"{label} failed ({process.returncode}); protected log retained")
+rehearse.PreflightError: exact-public-ancestry-fetch failed (128); protected log retained
+
+======================================================================
+ERROR: test_unselected_branch_is_rejected (test_assemble.RestrictedIntakeTests.test_unselected_branch_is_rejected)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/tux/nsealr/.restart-tools/goal/a02/tools/migration/test_assemble.py", line 32, in setUp
+    self.objects, self.commits = intake(self.source, self.public, self.target, self.recorder)
+                                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/tux/nsealr/.restart-tools/goal/a02/tools/migration/assemble.py", line 93, in intake
+    recorder.run('exact-public-ancestry-fetch', ['git', '-C', str(target), 'fetch', '--no-tags', '--no-write-fetch-head',
+  File "/home/tux/nsealr/.restart-tools/goal/a02/tools/migration/admission.py", line 53, in run
+    raise PreflightError(f"{label} failed ({process.returncode}); protected log retained")
+rehearse.PreflightError: exact-public-ancestry-fetch failed (128); protected log retained
+
+----------------------------------------------------------------------
+Ran 43 tests in 0.956s
+
+FAILED (errors=6)

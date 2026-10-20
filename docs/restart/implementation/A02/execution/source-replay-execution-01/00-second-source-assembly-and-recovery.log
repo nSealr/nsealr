@@ -1,0 +1,12 @@
+Traceback (most recent call last):
+  File "/home/tux/nsealr/.restart-tools/goal/a02/tools/migration/replay.py", line 65, in <module>
+    if __name__=='__main__':main()
+                            ^^^^^^
+  File "/home/tux/nsealr/.restart-tools/goal/a02/tools/migration/replay.py", line 61, in main
+    recovery=restore(target,imported['source_core'],[imported['initial_commit']]+result['commits'],root/'candidate-recovery')
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/tux/nsealr/.restart-tools/goal/a02/tools/migration/replay.py", line 45, in restore
+    rec.run('restore-selected-branch',['git','-C',str(restored),'fetch','--no-tags','--no-write-fetch-head',str(bundle),'refs/heads/rehearsal:refs/heads/rehearsal'],output,env=env)
+  File "/home/tux/nsealr/.restart-tools/goal/a02/tools/migration/admission.py", line 53, in run
+    raise PreflightError(f"{label} failed ({process.returncode}); protected log retained")
+rehearse.PreflightError: restore-selected-branch failed (128); protected log retained

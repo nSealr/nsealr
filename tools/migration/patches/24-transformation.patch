@@ -1,0 +1,42 @@
+diff --git a/packages/sdk/package.json b/packages/sdk/package.json
+index 86b2cfb68967c2773aa1af9f17635f7054a1aa46..3d67059fa09033724407d1c82243caefa4aa5bd7 100644
+--- a/packages/sdk/package.json
++++ b/packages/sdk/package.json
+@@ -3,6 +3,7 @@
+     "url": "https://github.com/nSealr/nsealr/issues"
+   },
+   "dependencies": {
++    "@noble/ciphers": "2.1.1",
+     "@noble/curves": "2.2.0",
+     "@noble/hashes": "2.2.0",
+     "nostr-tools": "2.23.3"
+diff --git a/pnpm-lock.yaml b/pnpm-lock.yaml
+index a5137a906857044d977db74347e2fabea1de9a89..ac34861018d62256ce76c6a53020b835a3c809db 100644
+--- a/pnpm-lock.yaml
++++ b/pnpm-lock.yaml
+@@ -383,6 +383,9 @@ importers:
+ 
+   packages/sdk:
+     dependencies:
++      '@noble/ciphers':
++        specifier: 2.1.1
++        version: 2.1.1
+       '@noble/curves':
+         specifier: 2.2.0
+         version: 2.2.0
+diff --git a/tools/bridge/bundle_sdk.mjs b/tools/bridge/bundle_sdk.mjs
+index cb2fc867ffd1b91cd327e82132bd602b9175d3a9..5a7174e74610bebb926e231af97a45cc42e7a3e4 100644
+--- a/tools/bridge/bundle_sdk.mjs
++++ b/tools/bridge/bundle_sdk.mjs
+@@ -21,6 +21,11 @@ for (const [entry, platform] of [["index", "browser"], ["browser", "browser"], [
+     assert(!file.endsWith(".test.ts"), `test in SDK: ${file}`);
+   }
+   for (const artifact of Object.values(result.metafile.outputs)) {
++    for (const item of artifact.imports.filter((value) => value.external)) {
++      if (item.path.startsWith("node:")) { assert.equal(platform, "node", "browser SDK cannot import Node builtins"); continue; }
++      const name = item.path.startsWith("@") ? item.path.split("/").slice(0,2).join("/") : item.path.split("/")[0];
++      assert(sourceManifest("@nsealr/sdk").dependencies[name], `undeclared packed runtime dependency: ${item.path}`);
++    }
+     assert(!artifact.imports.some((entry) => entry.path.startsWith("@nsealr/")), "packed SDK must contain its owned runtime");
+   }
+   reports.push({ entry, platform, ...result.metafile });

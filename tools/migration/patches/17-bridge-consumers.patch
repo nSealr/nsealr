@@ -1,0 +1,239 @@
+diff --git a/apps/bridge/browser-extension/src/background-browser.test.ts b/apps/bridge/browser-extension/src/background-browser.test.ts
+index 30a34f3a7e559aeb49bd99a3a610444a231da607..56c2a48c417338042b06b2eadc724fb3eaeb27b6 100644
+--- a/apps/bridge/browser-extension/src/background-browser.test.ts
++++ b/apps/bridge/browser-extension/src/background-browser.test.ts
+@@ -165,7 +165,7 @@ function routeSelectionResponse(request: LocalServiceRequest): unknown {
+         account_id: routeRequest.account_id,
+         public_key: publicKey,
+         route_type: "esp32_usb_nip46",
+-        repository: "firmware",
++        repository: "nsealr",
+         transport: "usb",
+         custody: "device_persistent",
+         trusted_review: "device_display",
+diff --git a/apps/bridge/browser-extension/src/background.test.ts b/apps/bridge/browser-extension/src/background.test.ts
+index cc6fbca90cf1eea5849f6926640c68ed3205bf8d..78e2a6ae14ed7347dbbd45631d565fe2fe01ef3d 100644
+--- a/apps/bridge/browser-extension/src/background.test.ts
++++ b/apps/bridge/browser-extension/src/background.test.ts
+@@ -56,7 +56,7 @@ function routeSelectionResponse(request: LocalServiceRequest): unknown {
+         account_id: routeRequest.account_id,
+         public_key: publicKey,
+         route_type: "esp32_usb_nip46",
+-        repository: "firmware",
++        repository: "nsealr",
+         transport: "usb",
+         custody: "device_persistent",
+         trusted_review: "device_display",
+diff --git a/apps/bridge/browser-extension/src/content-script.test.ts b/apps/bridge/browser-extension/src/content-script.test.ts
+index 0002d44e70a13949d9dbd59bec9307042041f52b..8d69db5d6582befca40550d84501465cab232072 100644
+--- a/apps/bridge/browser-extension/src/content-script.test.ts
++++ b/apps/bridge/browser-extension/src/content-script.test.ts
+@@ -31,7 +31,7 @@ function routeSelectionResponse(request: LocalServiceRequest): unknown {
+         account_id: routeRequest.account_id,
+         public_key: publicKey,
+         route_type: "esp32_usb_nip46",
+-        repository: "firmware",
++        repository: "nsealr",
+         transport: "usb",
+         custody: "device_persistent",
+         trusted_review: "device_display",
+diff --git a/apps/bridge/browser-extension/src/content-window.test.ts b/apps/bridge/browser-extension/src/content-window.test.ts
+index 800510f910811e099e0317ab8b0ecb9666654a71..01683f53f863c7f3779f80c3c84204746c61adbf 100644
+--- a/apps/bridge/browser-extension/src/content-window.test.ts
++++ b/apps/bridge/browser-extension/src/content-window.test.ts
+@@ -37,7 +37,7 @@ function routeSelectionResponse(request: LocalServiceRequest): unknown {
+         account_id: routeRequest.account_id,
+         public_key: publicKey,
+         route_type: "esp32_usb_nip46",
+-        repository: "firmware",
++        repository: "nsealr",
+         transport: "usb",
+         custody: "device_persistent",
+         trusted_review: "device_display",
+diff --git a/apps/bridge/browser-extension/src/local-service.test.ts b/apps/bridge/browser-extension/src/local-service.test.ts
+index da313df98bb73280e28e9a9b67149d0901a890bb..3bb2cd744a9c4f5af091cfc60ebc9f451d6ffb37 100644
+--- a/apps/bridge/browser-extension/src/local-service.test.ts
++++ b/apps/bridge/browser-extension/src/local-service.test.ts
+@@ -38,7 +38,7 @@ function routeSelectionResponse(request: LocalServiceRequest): unknown {
+         account_id: routeRequest.account_id,
+         public_key: publicKey,
+         route_type: "esp32_usb_nip46",
+-        repository: "firmware",
++        repository: "nsealr",
+         transport: "usb",
+         custody: "device_persistent",
+         trusted_review: "device_display",
+diff --git a/apps/bridge/browser-extension/src/nsealr-entrypoints.test.ts b/apps/bridge/browser-extension/src/nsealr-entrypoints.test.ts
+index 4bf3aa90369003012f6f4320fb746421211a9607..c17d88101f58ac54a9dc7c61d78293ffccffbbae 100644
+--- a/apps/bridge/browser-extension/src/nsealr-entrypoints.test.ts
++++ b/apps/bridge/browser-extension/src/nsealr-entrypoints.test.ts
+@@ -111,7 +111,7 @@ function routeSelectionResponse(request: LocalServiceRequest): unknown {
+         account_id: routeRequest.account_id,
+         public_key: publicKey,
+         route_type: routeRequest.route_type,
+-        repository: "firmware",
++        repository: "nsealr",
+         transport: "usb",
+         custody: "device_persistent",
+         trusted_review: "device_display",
+diff --git a/apps/bridge/browser-extension/src/package-build.test.ts b/apps/bridge/browser-extension/src/package-build.test.ts
+index 327693da40cff0323362e57dc4d6498e7a298c9c..8a5d7ee1ffe378493f31c82411cd7a1b829a7c5b 100644
+--- a/apps/bridge/browser-extension/src/package-build.test.ts
++++ b/apps/bridge/browser-extension/src/package-build.test.ts
+@@ -46,7 +46,7 @@ function tempOutDir(): { root: string; outDir: string; cleanup(): void } {
+   };
+ }
+ 
+-const companionRoot = fileURLToPath(new URL("../../..", import.meta.url));
++const companionRoot = fileURLToPath(new URL("../../../..", import.meta.url));
+ 
+ const routeConfig = {
+   format: BROWSER_EXTENSION_ROUTE_CONFIG_FORMAT,
+diff --git a/apps/bridge/browser-extension/src/package-build.ts b/apps/bridge/browser-extension/src/package-build.ts
+index 694ecfc11c769980a9c00ed46e13ded1202fc817..a738a65f6761fcbbafa78954e160d90f8b9de9a0 100644
+--- a/apps/bridge/browser-extension/src/package-build.ts
++++ b/apps/bridge/browser-extension/src/package-build.ts
+@@ -94,7 +94,7 @@ export type BrowserExtensionPackageVerifyOptions = {
+ };
+ 
+ const PACKAGE_OUTPUT_DIR = "browser-extension-package";
+-const COMPANION_ROOT = fileURLToPath(new URL("../../..", import.meta.url));
++const COMPANION_ROOT = fileURLToPath(new URL("../../../..", import.meta.url));
+ const REVIEWED_REPO_OUTPUT_ROOT = resolve(COMPANION_ROOT, "release-artifacts/browser-extension");
+ const PACKAGE_DIGEST_INPUT_FORMAT = "nsealr-browser-extension-package-digest-v0";
+ const nodeBufferReference = /(?:\bBuffer\s*(?:\.|\[)|new\s+Buffer\b|typeof\s+Buffer|globalThis\.Buffer)/u;
+@@ -496,9 +496,9 @@ function virtualEntrypointPlugin(
+         resolveDir: COMPANION_ROOT,
+         contents: usesExtensionOriginPermissionStorage
+           ? `
+-            import { installNsealrBackgroundEntrypoint } from "./apps/browser-extension/src/nsealr-background-entrypoint.ts";
+-            import { requireBrowserExtensionOriginPermissionStorageGlobal } from "./apps/browser-extension/src/browser-globals.ts";
+-            import { readBrowserExtensionOriginPermissionStoreFromStorage } from "./apps/browser-extension/src/origin-permission-storage.ts";
++            import { installNsealrBackgroundEntrypoint } from "./apps/bridge/browser-extension/src/nsealr-background-entrypoint.ts";
++            import { requireBrowserExtensionOriginPermissionStorageGlobal } from "./apps/bridge/browser-extension/src/browser-globals.ts";
++            import { readBrowserExtensionOriginPermissionStoreFromStorage } from "./apps/bridge/browser-extension/src/origin-permission-storage.ts";
+             const originPermissionStorage = requireBrowserExtensionOriginPermissionStorageGlobal(globalThis);
+             installNsealrBackgroundEntrypoint({
+               globalScope: globalThis,
+@@ -511,7 +511,7 @@ function virtualEntrypointPlugin(
+             });
+           `
+           : `
+-            import { installNsealrBackgroundEntrypoint } from "./apps/browser-extension/src/nsealr-background-entrypoint.ts";
++            import { installNsealrBackgroundEntrypoint } from "./apps/bridge/browser-extension/src/nsealr-background-entrypoint.ts";
+             installNsealrBackgroundEntrypoint({
+               globalScope: globalThis,
+               ...${backgroundOptionsJson}
+@@ -522,7 +522,7 @@ function virtualEntrypointPlugin(
+         loader: "ts",
+         resolveDir: COMPANION_ROOT,
+         contents: `
+-          import { installNsealrContentScriptEntrypoint } from "./apps/browser-extension/src/nsealr-content-script-entrypoint.ts";
++          import { installNsealrContentScriptEntrypoint } from "./apps/bridge/browser-extension/src/nsealr-content-script-entrypoint.ts";
+           installNsealrContentScriptEntrypoint({
+             globalScope: globalThis
+           });
+@@ -532,7 +532,7 @@ function virtualEntrypointPlugin(
+         loader: "ts",
+         resolveDir: COMPANION_ROOT,
+         contents: `
+-          import { installNsealrPageScriptEntrypoint } from "./apps/browser-extension/src/nsealr-page-script-entrypoint.ts";
++          import { installNsealrPageScriptEntrypoint } from "./apps/bridge/browser-extension/src/nsealr-page-script-entrypoint.ts";
+           installNsealrPageScriptEntrypoint({
+             globalScope: globalThis
+           });
+@@ -543,13 +543,13 @@ function virtualEntrypointPlugin(
+         resolveDir: COMPANION_ROOT,
+         contents: usesExtensionOriginPermissionStorage
+           ? `
+-            import { installNsealrPopupOriginPermissionEntrypoint } from "./apps/browser-extension/src/nsealr-popup-entrypoint.ts";
++            import { installNsealrPopupOriginPermissionEntrypoint } from "./apps/bridge/browser-extension/src/nsealr-popup-entrypoint.ts";
+             installNsealrPopupOriginPermissionEntrypoint({
+               globalScope: globalThis
+             });
+           `
+           : `
+-            import { installNsealrPopupEntrypoint } from "./apps/browser-extension/src/nsealr-popup-entrypoint.ts";
++            import { installNsealrPopupEntrypoint } from "./apps/bridge/browser-extension/src/nsealr-popup-entrypoint.ts";
+             installNsealrPopupEntrypoint({
+               globalScope: globalThis
+             });
+diff --git a/apps/bridge/browser-extension/src/package-plan.test.ts b/apps/bridge/browser-extension/src/package-plan.test.ts
+index 78bc3e3db0b6a68c22dd742857773acdd33a7778..379a98f9054c56976660d9ddcb8e79f6f1708fc5 100644
+--- a/apps/bridge/browser-extension/src/package-plan.test.ts
++++ b/apps/bridge/browser-extension/src/package-plan.test.ts
+@@ -206,7 +206,7 @@ describe("browser extension package plan", () => {
+         plan.entrypoints[1],
+         {
+           ...plan.entrypoints[2],
+-          source: "apps/browser-extension/src/page-script.ts"
++          source: "apps/bridge/browser-extension/src/page-script.ts"
+         },
+         plan.entrypoints[3]
+       ]
+diff --git a/apps/bridge/browser-extension/src/package-plan.ts b/apps/bridge/browser-extension/src/package-plan.ts
+index 1b3cf72263c3bdabbdd61a9af3775cc4637931a1..3db49395877bb0202c3ca2dc9e88a612ff822334 100644
+--- a/apps/bridge/browser-extension/src/package-plan.ts
++++ b/apps/bridge/browser-extension/src/package-plan.ts
+@@ -20,13 +20,13 @@ export const BROWSER_EXTENSION_PACKAGE_PLAN_DIGEST_INPUT_FORMAT =
+ export const BROWSER_EXTENSION_PACKAGE_PLAN_REVIEW_FORMAT =
+   "nsealr-browser-extension-package-plan-review-v0";
+ export const BROWSER_EXTENSION_BACKGROUND_ENTRYPOINT_SOURCE =
+-  "apps/browser-extension/src/nsealr-background-entrypoint.ts";
++  "apps/bridge/browser-extension/src/nsealr-background-entrypoint.ts";
+ export const BROWSER_EXTENSION_CONTENT_SCRIPT_ENTRYPOINT_SOURCE =
+-  "apps/browser-extension/src/nsealr-content-script-entrypoint.ts";
++  "apps/bridge/browser-extension/src/nsealr-content-script-entrypoint.ts";
+ export const BROWSER_EXTENSION_PAGE_SCRIPT_ENTRYPOINT_SOURCE =
+-  "apps/browser-extension/src/nsealr-page-script-entrypoint.ts";
++  "apps/bridge/browser-extension/src/nsealr-page-script-entrypoint.ts";
+ export const BROWSER_EXTENSION_POPUP_ENTRYPOINT_SOURCE =
+-  "apps/browser-extension/src/nsealr-popup-entrypoint.ts";
++  "apps/bridge/browser-extension/src/nsealr-popup-entrypoint.ts";
+ 
+ export type BrowserExtensionPackageEntrypointRole =
+   "background_service_worker" |
+diff --git a/apps/bridge/browser-extension/src/page-window.test.ts b/apps/bridge/browser-extension/src/page-window.test.ts
+index fedfea35fe0613acec820ff03ed5a83ac5937458..a9922ba7762183f5dcb134fff1b6fa80c1d8ca5f 100644
+--- a/apps/bridge/browser-extension/src/page-window.test.ts
++++ b/apps/bridge/browser-extension/src/page-window.test.ts
+@@ -38,7 +38,7 @@ function routeSelectionResponse(request: LocalServiceRequest): unknown {
+         account_id: routeRequest.account_id,
+         public_key: publicKey,
+         route_type: "esp32_usb_nip46",
+-        repository: "firmware",
++        repository: "nsealr",
+         transport: "usb",
+         custody: "device_persistent",
+         trusted_review: "device_display",
+diff --git a/apps/bridge/browser-extension/src/runtime-message.test.ts b/apps/bridge/browser-extension/src/runtime-message.test.ts
+index 7de953ea9b0fa78f1b3c13f272bf65a5fb86f265..af030f57328e235340538ff758b21424e855b89b 100644
+--- a/apps/bridge/browser-extension/src/runtime-message.test.ts
++++ b/apps/bridge/browser-extension/src/runtime-message.test.ts
+@@ -31,7 +31,7 @@ function routeSelectionResponse(request: LocalServiceRequest): unknown {
+         account_id: routeRequest.account_id,
+         public_key: publicKey,
+         route_type: "esp32_usb_nip46",
+-        repository: "firmware",
++        repository: "nsealr",
+         transport: "usb",
+         custody: "device_persistent",
+         trusted_review: "device_display",
+diff --git a/packages/fixtures/src/fixtures.ts b/packages/fixtures/src/fixtures.ts
+index bbb79c9d3b64816c94113da64e1c2be640f89b04..b699805b7296df5b37708a616d82f092e69a727d 100644
+--- a/packages/fixtures/src/fixtures.ts
++++ b/packages/fixtures/src/fixtures.ts
+@@ -1,3 +1,4 @@
++import { isDeepStrictEqual } from "node:util";
+ import { readFileSync, readdirSync } from "node:fs";
+ import { resolve } from "node:path";
+ import {
+@@ -964,7 +965,7 @@ export function validateRouteRefusalContractFixture(name: string, fixture: unkno
+       throw new Error(`invalid route-refusal contract ${name}: case ${index} acknowledgement mode is unsupported`);
+     }
+   }
+-  if (JSON.stringify(fixture.safety) !== JSON.stringify(ROUTE_REFUSAL_SAFETY)) {
++  if (!isDeepStrictEqual(fixture.safety, ROUTE_REFUSAL_SAFETY)) {
+     throw new Error(`invalid route-refusal contract ${name}: safety boundary drift`);
+   }
+   if (

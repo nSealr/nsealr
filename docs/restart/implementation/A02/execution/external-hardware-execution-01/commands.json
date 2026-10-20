@@ -1,0 +1,93 @@
+[
+  {
+    "command": [
+      "git",
+      "-c",
+      "init.templateDir=",
+      "init",
+      "--initial-branch=intake",
+      "/home/tux/nsealr/.restart-tools/goal/a02/tools/migration/.runtime/external-hardware-execution-01/hardware"
+    ],
+    "cwd": "/home/tux/nsealr/.restart-tools/goal/a02/tools/migration/.runtime/external-hardware-execution-01",
+    "ended_utc": "2026-10-18T20:03:56.129299+00:00",
+    "environment_sha256": "1329698bcbfb60c23fcd6617913d050c6e9d7e2f46108c49c01bb2a19625fae5",
+    "exit_code": 0,
+    "explicit_environment_sha256": "2aa2b4ca27c840289b48388e671206146d4f5ad1bc772cb01b240130c664d50c",
+    "label": "empty-target-init",
+    "log": "00-empty-target-init.log",
+    "sha256": "bcb0d771946aa09df35f2dd0adec788dd011e281cfcad5aa39f35334f3b4806d",
+    "started_utc": "2026-10-18T20:03:56.127533+00:00"
+  },
+  {
+    "command": [
+      "git",
+      "-C",
+      "/home/tux/nsealr/.restart-tools/goal/a02/tools/migration/.runtime/external-hardware-execution-01/hardware",
+      "fetch",
+      "--no-tags",
+      "--no-write-fetch-head",
+      "/home/tux/nsealr/hardware",
+      "340697d6713a671e9e01b0dc874ec999ab071601:refs/heads/rehearsal"
+    ],
+    "cwd": "/home/tux/nsealr/.restart-tools/goal/a02/tools/migration/.runtime/external-hardware-execution-01",
+    "ended_utc": "2026-10-18T20:03:56.199169+00:00",
+    "environment_sha256": "1329698bcbfb60c23fcd6617913d050c6e9d7e2f46108c49c01bb2a19625fae5",
+    "exit_code": 0,
+    "explicit_environment_sha256": "2aa2b4ca27c840289b48388e671206146d4f5ad1bc772cb01b240130c664d50c",
+    "label": "exact-public-ancestry-fetch",
+    "log": "01-exact-public-ancestry-fetch.log",
+    "sha256": "00cfd257d90bb310b30b59cd20ad4df3db6bc27e8e664e6594cb6f35500236ac",
+    "started_utc": "2026-10-18T20:03:56.129484+00:00"
+  },
+  {
+    "command": [
+      "git",
+      "-C",
+      "/home/tux/nsealr/.restart-tools/goal/a02/tools/migration/.runtime/external-hardware-execution-01/hardware",
+      "checkout",
+      "--force",
+      "rehearsal"
+    ],
+    "cwd": "/home/tux/nsealr/.restart-tools/goal/a02/tools/migration/.runtime/external-hardware-execution-01",
+    "ended_utc": "2026-10-18T20:03:56.203652+00:00",
+    "environment_sha256": "1329698bcbfb60c23fcd6617913d050c6e9d7e2f46108c49c01bb2a19625fae5",
+    "exit_code": 0,
+    "explicit_environment_sha256": "2aa2b4ca27c840289b48388e671206146d4f5ad1bc772cb01b240130c664d50c",
+    "label": "checkout-public-source",
+    "log": "02-checkout-public-source.log",
+    "sha256": "e68bb7039692f3a792e02a588dec992febf3503dc76698f34d8ca1cf56ff653e",
+    "started_utc": "2026-10-18T20:03:56.199319+00:00"
+  },
+  {
+    "command": [
+      "make",
+      "ci"
+    ],
+    "cwd": "/home/tux/nsealr/.restart-tools/goal/a02/tools/migration/.runtime/external-hardware-execution-01/hardware",
+    "ended_utc": "2026-10-18T20:03:56.800666+00:00",
+    "environment_sha256": "1329698bcbfb60c23fcd6617913d050c6e9d7e2f46108c49c01bb2a19625fae5",
+    "exit_code": 0,
+    "explicit_environment_sha256": "c19e86675d3a28491eb17379071a07c8574a1065c8b5bb9c4baedb2bdca61692",
+    "label": "selected-hardware-complete-ci",
+    "log": "03-selected-hardware-complete-ci.log",
+    "sha256": "4d44b1457282f81976f630f9b812c8b474541b557c84dc3329c9332b02de3342",
+    "started_utc": "2026-10-18T20:03:56.214463+00:00"
+  },
+  {
+    "command": [
+      "python3",
+      "-B",
+      "-m",
+      "tests.integration.external.integration_hardware_validation"
+    ],
+    "cwd": "/home/tux/nsealr/.restart-tools/goal/a02/tools/migration/.runtime/rehearsal-01/repository",
+    "ended_utc": "2026-10-18T20:03:56.992533+00:00",
+    "environment_sha256": "1329698bcbfb60c23fcd6617913d050c6e9d7e2f46108c49c01bb2a19625fae5",
+    "exit_code": 0,
+    "explicit_environment_sha256": "c19e86675d3a28491eb17379071a07c8574a1065c8b5bb9c4baedb2bdca61692",
+    "label": "separate-hardware-product-alignment",
+    "log": "04-separate-hardware-product-alignment.log",
+    "sha256": "7ae3e93409870f8d6d3a5ba79975bb20563f9b470576286c466d22b6d91a4a00",
+    "started_utc": "2026-10-18T20:03:56.801025+00:00"
+  }
+]

@@ -1,0 +1,39 @@
+python3 scripts/verify_repo.py
+nSealr nsealr baseline verification passed
+python3 scripts/validate_restart_plan.py
+Restart plan valid: 47 tasks; ready: P02, S04, B01
+Structural check only; hardware, review quality and security remain evidence gates.
+python3 scripts/verify_evidence.py
+{"closed_files": 1508, "current_contracts": 5, "current_navigation_files": 18, "frozen_source": "f2ef70f522af4977e15f81554a8c6eadcdbe8097"}
+python3 -m unittest discover -s scripts -p 'test_evidence.py'
+python3 -m unittest discover -s scripts -p 'test_validate_restart_plan.py'
+python3 -m unittest discover -s tools/baseline -p 'test_*.py'
+negative: ['/home/tux/nsealr/.restart-tools/goal/s01-integration/docs/restart/implementation/S01/.work/current-default/.tools/python/bin/python3', '-c', 'import sys; print("out"); print("diagnostic", file=sys.stderr); sys.exit(7)']
+download file:///home/tux/nsealr/.restart-tools/goal/s01-integration/docs/restart/implementation/S01/.work/current-default/.tools/tmp/tmpnue7wjed/source
+overlay-check: ['git', 'apply', '--check', '/home/tux/nsealr/.restart-tools/goal/s01-integration/docs/restart/implementation/S01/.work/current-default/.tools/tmp/tmpvh_e4mr9/tools/baseline/overlays/lab-provenance.patch']
+overlay-apply: ['git', 'apply', '/home/tux/nsealr/.restart-tools/goal/s01-integration/docs/restart/implementation/S01/.work/current-default/.tools/tmp/tmpvh_e4mr9/tools/baseline/overlays/lab-provenance.patch']
+metadata-v1-overlay-check: ['git', 'apply', '--check', '/home/tux/nsealr/.restart-tools/goal/s01-integration/docs/restart/implementation/S01/.work/current-default/.tools/tmp/tmpvh_e4mr9/docs/restart/implementation/S01/lab-metadata-v1.patch']
+metadata-v1-overlay-apply: ['git', 'apply', '/home/tux/nsealr/.restart-tools/goal/s01-integration/docs/restart/implementation/S01/.work/current-default/.tools/tmp/tmpvh_e4mr9/docs/restart/implementation/S01/lab-metadata-v1.patch']
+provenance-followup-overlay-check: ['git', 'apply', '--check', '/home/tux/nsealr/.restart-tools/goal/s01-integration/docs/restart/implementation/S01/.work/current-default/.tools/tmp/tmpvh_e4mr9/tools/baseline/overlays/lab-provenance-followup.patch']
+provenance-followup-overlay-apply: ['git', 'apply', '/home/tux/nsealr/.restart-tools/goal/s01-integration/docs/restart/implementation/S01/.work/current-default/.tools/tmp/tmpvh_e4mr9/tools/baseline/overlays/lab-provenance-followup.patch']
+overlay-check: ['git', 'apply', '--check', '/home/tux/nsealr/.restart-tools/goal/s01-integration/docs/restart/implementation/S01/.work/current-default/.tools/tmp/tmp48xs29rn/tools/baseline/overlays/lab-provenance.patch']
+overlay-apply: ['git', 'apply', '/home/tux/nsealr/.restart-tools/goal/s01-integration/docs/restart/implementation/S01/.work/current-default/.tools/tmp/tmp48xs29rn/tools/baseline/overlays/lab-provenance.patch']
+metadata-v1-overlay-check: ['git', 'apply', '--check', '/home/tux/nsealr/.restart-tools/goal/s01-integration/docs/restart/implementation/S01/.work/current-default/.tools/tmp/tmp48xs29rn/docs/restart/implementation/S01/lab-metadata-v1.patch']
+metadata-v1-overlay-apply: ['git', 'apply', '/home/tux/nsealr/.restart-tools/goal/s01-integration/docs/restart/implementation/S01/.work/current-default/.tools/tmp/tmp48xs29rn/docs/restart/implementation/S01/lab-metadata-v1.patch']
+overlay-check: ['git', 'apply', '--check', '/home/tux/nsealr/.restart-tools/goal/s01-integration/docs/restart/implementation/S01/.work/current-default/.tools/tmp/tmptvlhe2qa/tools/baseline/overlays/lab-provenance.patch']
+overlay-apply: ['git', 'apply', '/home/tux/nsealr/.restart-tools/goal/s01-integration/docs/restart/implementation/S01/.work/current-default/.tools/tmp/tmptvlhe2qa/tools/baseline/overlays/lab-provenance.patch']
+............
+----------------------------------------------------------------------
+Ran 12 tests in 0.287s
+
+OK
+..................
+----------------------------------------------------------------------
+Ran 18 tests in 0.010s
+
+OK
+...........
+----------------------------------------------------------------------
+Ran 11 tests in 0.245s
+
+OK

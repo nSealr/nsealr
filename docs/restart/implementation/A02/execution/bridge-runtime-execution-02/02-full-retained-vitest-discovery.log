@@ -1,0 +1,479 @@
+
+> @nsealr/bridge-workspace@0.1.0 test /home/tux/nsealr/.restart-tools/goal/a02/tools/migration/.runtime/rehearsal-01/repository
+> vitest run --maxWorkers=4
+
+
+[1m[30m[46m RUN [49m[39m[22m [36mv4.1.5 [39m[90m/home/tux/nsealr/.restart-tools/goal/a02/tools/migration/.runtime/rehearsal-01/repository[39m
+
+ [31m❯[39m packages/fixtures/src/fixtures.test.ts [2m([22m[2m28 tests[22m[2m | [22m[31m5 failed[39m[2m)[22m[32m 85[2mms[22m[39m
+     [32m✓[39m loads deterministic event vectors from the specs repository[32m 8[2mms[22m[39m
+     [32m✓[39m loads trusted review vectors from the specs repository[32m 4[2mms[22m[39m
+     [32m✓[39m loads QR review transcript vectors from the specs repository[32m 4[2mms[22m[39m
+     [32m✓[39m validates QR review transcript fixtures in package code[32m 4[2mms[22m[39m
+     [32m✓[39m loads trusted review-screen vectors from the specs repository[32m 3[2mms[22m[39m
+     [32m✓[39m loads review display-frame vectors from the specs repository[32m 3[2mms[22m[39m
+     [32m✓[39m loads complete review detail-page vectors from the specs repository[32m 3[2mms[22m[39m
+     [32m✓[39m loads NIP-46 decrypted payload bridge vectors from the specs repository[32m 3[2mms[22m[39m
+     [32m✓[39m loads NIP-46 policy-file vectors from the specs repository[32m 2[2mms[22m[39m
+     [32m✓[39m loads NIP-46 connection URI vectors from the specs repository[32m 2[2mms[22m[39m
+     [32m✓[39m loads NIP-46 connection token response vectors from the specs repository[32m 2[2mms[22m[39m
+     [32m✓[39m loads NIP-46 relay event envelope vectors from the specs repository[32m 2[2mms[22m[39m
+     [32m✓[39m loads NIP-46 relay step vectors from the specs repository[32m 3[2mms[22m[39m
+     [32m✓[39m loads NIP-46 session lifecycle checkpoint vectors from the specs repository[32m 2[2mms[22m[39m
+     [32m✓[39m loads NIP-46 pending-session request gate vectors from the specs repository[32m 2[2mms[22m[39m
+[31m     [31m×[31m loads identity, policy, and grant descriptors from the specs repository[39m[32m 6[2mms[22m[39m
+     [32m✓[39m loads policy change review vectors from the specs repository[32m 3[2mms[22m[39m
+     [32m✓[39m loads policy decision vectors from the specs repository[32m 2[2mms[22m[39m
+[31m     [31m×[31m loads route selection vectors from the specs repository[39m[32m 3[2mms[22m[39m
+     [32m✓[39m loads source public-key proof vectors from the specs repository[32m 2[2mms[22m[39m
+     [32m✓[39m rejects source public-key proof fixtures that carry source secrets[32m 2[2mms[22m[39m
+     [32m✓[39m loads access-surface vectors from the specs repository[32m 3[2mms[22m[39m
+[31m     [31m×[31m loads route-refusal contract vectors from the specs repository[39m[32m 2[2mms[22m[39m
+[31m     [31m×[31m loads and validates signer feature matrix vectors from the specs repository[39m[32m 3[2mms[22m[39m
+     [32m✓[39m rejects feature matrix shared contract drift in package code[32m 3[2mms[22m[39m
+[31m     [31m×[31m loads and validates persistent-secret custody contracts from the specs repository[39m[32m 3[2mms[22m[39m
+     [32m✓[39m rejects persistent-secret custody contract drift in package code[32m 2[2mms[22m[39m
+     [32m✓[39m loads implementation limits and invalid hardening vectors from the specs repository[32m 2[2mms[22m[39m
+ [32m✓[39m packages/nip46/src/nip46.test.ts [2m([22m[2m31 tests[22m[2m)[22m[32m 108[2mms[22m[39m
+[90mstdout[2m | apps/bridge/cli/src/index.test.ts[2m > [22m[2mnsealr CLI[2m > [22m[2mruns request -> dev-sign -> verify-response for a shared fixture template
+[22m[39mresponse verified
+
+[90mstdout[2m | apps/bridge/cli/src/index.test.ts[2m > [22m[2mnsealr CLI[2m > [22m[2mruns request -> dev-sign -> verify-response through QR envelopes
+[22m[39mresponse verified
+
+[90mstdout[2m | apps/bridge/cli/src/index.test.ts[2m > [22m[2mnsealr CLI[2m > [22m[2mruns request -> dev-sign -> verify-response through animated QR frame files
+[22m[39mresponse verified
+
+ [32m✓[39m apps/bridge/browser-extension/src/runtime-message.test.ts [2m([22m[2m16 tests[22m[2m)[22m[32m 18[2mms[22m[39m
+ [32m✓[39m apps/bridge/browser-extension/src/package-build-cli.test.ts [2m([22m[2m7 tests[22m[2m)[22m[32m 144[2mms[22m[39m
+ [32m✓[39m apps/bridge/browser-extension/src/nsealr-entrypoints.test.ts [2m([22m[2m9 tests[22m[2m)[22m[32m 19[2mms[22m[39m
+ [32m✓[39m apps/bridge/browser-extension/src/background-browser.test.ts [2m([22m[2m9 tests[22m[2m)[22m[32m 16[2mms[22m[39m
+ [32m✓[39m apps/bridge/browser-extension/src/package-build.test.ts [2m([22m[2m14 tests[22m[2m)[22m[33m 384[2mms[22m[39m
+ [31m❯[39m packages/policy/src/policy.test.ts [2m([22m[2m18 tests[22m[2m | [22m[31m2 failed[39m[2m)[22m[32m 17[2mms[22m[39m
+[31m     [31m×[31m parses shared account, policy, and grant descriptors[39m[32m 3[2mms[22m[39m
+     [32m✓[39m rejects account descriptors that embed recoverable secret material[32m 1[2mms[22m[39m
+     [32m✓[39m rejects unsupported descriptor fields before policy or route use[32m 2[2mms[22m[39m
+     [32m✓[39m rejects malformed NIP-06 recovery source fingerprints[32m 0[2mms[22m[39m
+     [32m✓[39m rejects QR vault policy automation[32m 0[2mms[22m[39m
+[31m     [31m×[31m rejects display-less smartcard policy automation and trusted-review claims[39m[32m 0[2mms[22m[39m
+     [32m✓[39m rejects external NIP-46 policy automation[32m 0[2mms[22m[39m
+     [32m✓[39m rejects external NIP-46 descriptors that claim nSealr persistent grants[32m 0[2mms[22m[39m
+     [32m✓[39m rejects wildcard grants and non-persistent policy-route grant targets[32m 0[2mms[22m[39m
+     [32m✓[39m rejects decrypt grants because decrypt operations require manual review[32m 0[2mms[22m[39m
+     [32m✓[39m rejects grant automation outside the v0 kind 1 sign_event menu[32m 0[2mms[22m[39m
+     [32m✓[39m matches shared policy decision vectors without a persistent grant store[32m 2[2mms[22m[39m
+     [32m✓[39m parses policy decision requests before evaluation[32m 1[2mms[22m[39m
+     [32m✓[39m matches shared policy change review vectors[32m 3[2mms[22m[39m
+     [32m✓[39m rejects policy change proposals that do not match account, policy, and grant context[32m 1[2mms[22m[39m
+     [32m✓[39m rejects policy change proposals that make the companion authoritative[32m 0[2mms[22m[39m
+     [32m✓[39m matches shared route-selection vectors without signer dispatch[32m 1[2mms[22m[39m
+     [32m✓[39m rejects ambiguous or unsupported route selections before signer IO[32m 1[2mms[22m[39m
+ [32m✓[39m apps/bridge/browser-extension/src/content-window.test.ts [2m([22m[2m12 tests[22m[2m)[22m[32m 12[2mms[22m[39m
+ [32m✓[39m apps/bridge/browser-extension/src/background.test.ts [2m([22m[2m9 tests[22m[2m)[22m[32m 12[2mms[22m[39m
+ [32m✓[39m packages/protocol/src/protocol.test.ts [2m([22m[2m9 tests[22m[2m)[22m[32m 17[2mms[22m[39m
+ [32m✓[39m apps/bridge/browser-extension/src/page-window.test.ts [2m([22m[2m6 tests[22m[2m)[22m[32m 7[2mms[22m[39m
+ [32m✓[39m apps/bridge/browser-extension/src/content-script.test.ts [2m([22m[2m8 tests[22m[2m)[22m[32m 6[2mms[22m[39m
+[90mstdout[2m | apps/bridge/cli/src/index.test.ts[2m > [22m[2mnsealr CLI[2m > [22m[2mverifies shared get_public_key responses and rejects mismatched request ids
+[22m[39mresponse verified
+
+ [32m✓[39m apps/bridge/browser-extension/src/local-service.test.ts [2m([22m[2m3 tests[22m[2m)[22m[32m 5[2mms[22m[39m
+ [31m❯[39m apps/bridge/cli/src/index.test.ts [2m([22m[2m61 tests[22m[2m | [22m[31m9 failed[39m[2m)[22m[33m 682[2mms[22m[39m
+     [32m✓[39m creates parameterless device requests with caller supplied request ids[32m 5[2mms[22m[39m
+     [32m✓[39m rejects invalid caller supplied request ids before writing device requests[32m 1[2mms[22m[39m
+     [32m✓[39m runs request -> dev-sign -> verify-response for a shared fixture template[32m 26[2mms[22m[39m
+     [32m✓[39m runs request -> dev-sign -> verify-response through QR envelopes[32m 6[2mms[22m[39m
+     [32m✓[39m runs request -> dev-sign -> verify-response through animated QR frame files[32m 6[2mms[22m[39m
+[31m     [31m×[31m verifies all event fixtures from the specs repository[39m[32m 16[2mms[22m[39m
+[31m     [31m×[31m verifies event and trusted-review fixtures from the specs repository[39m[32m 14[2mms[22m[39m
+[31m     [31m×[31m S01 metadata fixture comparison ignores object key order[39m[32m 52[2mms[22m[39m
+[31m     [31m×[31m S01 metadata fixture comparison rejects changed value[39m[32m 49[2mms[22m[39m
+[31m     [31m×[31m S01 metadata fixture comparison rejects changed type[39m[32m 48[2mms[22m[39m
+[31m     [31m×[31m S01 metadata fixture comparison rejects changed extra[39m[32m 45[2mms[22m[39m
+[31m     [31m×[31m S01 metadata fixture comparison rejects changed missing[39m[32m 46[2mms[22m[39m
+[31m     [31m×[31m S01 metadata fixture comparison rejects changed array order[39m[32m 46[2mms[22m[39m
+     [32m✓[39m rejects policy decision fixture drift[32m 42[2mms[22m[39m
+     [32m✓[39m renders policy-change review proposals without approving device policy[32m 1[2mms[22m[39m
+     [32m✓[39m rejects companion-authoritative policy changes before writing reviews[32m 1[2mms[22m[39m
+     [32m✓[39m rejects NIP-46 permission policy fixture drift[32m 42[2mms[22m[39m
+     [32m✓[39m rejects NIP-46 bridge decision fixture drift[32m 42[2mms[22m[39m
+     [32m✓[39m rejects review detail-page body style drift[32m 42[2mms[22m[39m
+     [32m✓[39m rejects review detail-page continuation style drift[32m 42[2mms[22m[39m
+     [32m✓[39m rejects NIP-46 policy-file fixture drift[32m 46[2mms[22m[39m
+     [32m✓[39m writes NIP-46 bridge decisions without opening relay or signer transports[32m 16[2mms[22m[39m
+     [32m✓[39m writes NIP-46 connection URI descriptors without echoing secrets[32m 3[2mms[22m[39m
+     [32m✓[39m rejects invalid NIP-46 connection URIs before writing output[32m 3[2mms[22m[39m
+     [32m✓[39m can read NIP-46 approved permissions from an explicit policy file[32m 0[2mms[22m[39m
+     [32m✓[39m rejects ambiguous NIP-46 permission sources[32m 0[2mms[22m[39m
+     [32m✓[39m rejects invalid NIP-46 decisions before writing output[32m 0[2mms[22m[39m
+     [32m✓[39m rejects broad approved NIP-46 sign_event permissions before writing output[32m 1[2mms[22m[39m
+     [32m✓[39m rejects malformed event-template JSON before writing a request[32m 0[2mms[22m[39m
+     [32m✓[39m rejects unsupported request methods before writing output[32m 0[2mms[22m[39m
+     [32m✓[39m verifies shared get_public_key responses and rejects mismatched request ids[32m 1[2mms[22m[39m
+     [32m✓[39m rejects invalid original requests before verifying responses[32m 0[2mms[22m[39m
+     [32m✓[39m wraps requests and unwraps responses as serial frames[32m 1[2mms[22m[39m
+     [32m✓[39m rejects serial-frame responses for a different request before writing output[32m 1[2mms[22m[39m
+     [32m✓[39m exchanges a request over an injected serial line port[32m 1[2mms[22m[39m
+     [32m✓[39m rejects invalid serial line requests before opening a port or writing output[32m 0[2mms[22m[39m
+     [32m✓[39m does not write serial line output when the device returns an error frame[32m 1[2mms[22m[39m
+     [32m✓[39m renders an untrusted review preview from a QR signing request[32m 1[2mms[22m[39m
+     [32m✓[39m renders review previews bound to a caller-provided signer author pubkey[32m 1[2mms[22m[39m
+     [32m✓[39m renders screen-review pages with approval digest from a QR signing request[32m 1[2mms[22m[39m
+     [32m✓[39m renders local-service pairing review metadata without approving the client[32m 1[2mms[22m[39m
+     [32m✓[39m rejects tampered local-service pairing intents before writing review metadata[32m 0[2mms[22m[39m
+     [32m✓[39m creates local-service pairing approval artifacts only after explicit digest confirmation[32m 1[2mms[22m[39m
+     [32m✓[39m rejects local-service pairing approval when the reviewed digest does not match[32m 1[2mms[22m[39m
+     [32m✓[39m renders local-service storage review metadata without creating storage files[32m 1[2mms[22m[39m
+     [32m✓[39m rejects ambiguous local-service storage paths before writing review metadata[32m 1[2mms[22m[39m
+     [32m✓[39m prints executable validation errors without stack traces or review output[32m 0[2mms[22m[39m
+     [32m✓[39m creates local-service storage approval artifacts only after explicit digest confirmation[32m 1[2mms[22m[39m
+     [32m✓[39m rejects local-service storage approval when the reviewed digest does not match[32m 1[2mms[22m[39m
+     [32m✓[39m creates browser native-host onboarding artifacts through the public local CLI[32m 4[2mms[22m[39m
+     [32m✓[39m rejects browser native-host approval or execution before writing artifacts[32m 2[2mms[22m[39m
+     [32m✓[39m creates explicit local grant-store artifacts from pairing approvals[32m 1[2mms[22m[39m
+     [32m✓[39m extends explicit local grant-store inputs without mutating them[32m 3[2mms[22m[39m
+     [32m✓[39m rejects malformed pairing approval artifacts before writing grant stores[32m 1[2mms[22m[39m
+     [32m✓[39m rejects grant-store writes when storage approval does not cover the output path[32m 1[2mms[22m[39m
+     [32m✓[39m rejects grant-store writes before replacing an existing output path[32m 1[2mms[22m[39m
+     [32m✓[39m appends explicit local grant-store revocations without mutating inputs[32m 1[2mms[22m[39m
+     [32m✓[39m rejects local grant-store revocations when no matching grant exists[32m 1[2mms[22m[39m
+     [32m✓[39m renders review detail pages from a QR signing request[32m 3[2mms[22m[39m
+     [32m✓[39m renders review detail pages with caller supplied display limits[32m 3[2mms[22m[39m
+[31m     [31m×[31m runs request -> smartcard-sim-sign -> verify-response after explicit review acknowledgement[39m[32m 2[2mms[22m[39m
+ [31m❯[39m packages/client/src/local-service-client.test.ts [2m([22m[2m0 test[22m[2m)[22m
+ [32m✓[39m packages/browser-provider/src/provider.test.ts [2m([22m[2m14 tests[22m[2m)[22m[32m 32[2mms[22m[39m
+ [31m❯[39m packages/client/src/service.test.ts [2m([22m[2m0 test[22m[2m)[22m
+ [32m✓[39m apps/bridge/service/src/index.test.ts [2m([22m[2m10 tests[22m[2m)[22m[32m 25[2mms[22m[39m
+ [32m✓[39m packages/core/src/nip44.test.ts [2m([22m[2m5 tests[22m[2m)[22m[32m 155[2mms[22m[39m
+ [32m✓[39m packages/transport/src/transport.test.ts [2m([22m[2m29 tests[22m[2m)[22m[32m 138[2mms[22m[39m
+ [32m✓[39m packages/nip46/src/session-manager.test.ts [2m([22m[2m3 tests[22m[2m)[22m[32m 106[2mms[22m[39m
+ [32m✓[39m packages/nip46/src/session-protocol.test.ts [2m([22m[2m7 tests[22m[2m)[22m[32m 47[2mms[22m[39m
+ [32m✓[39m packages/core/src/nostr.test.ts [2m([22m[2m7 tests[22m[2m)[22m[32m 39[2mms[22m[39m
+ [32m✓[39m apps/bridge/service/src/context.test.ts [2m([22m[2m9 tests[22m[2m)[22m[32m 34[2mms[22m[39m
+ [32m✓[39m apps/bridge/service/src/drivers.test.ts [2m([22m[2m6 tests[22m[2m)[22m[32m 34[2mms[22m[39m
+ [32m✓[39m packages/dev-signer/src/dev-signer.test.ts [2m([22m[2m2 tests[22m[2m)[22m[32m 30[2mms[22m[39m
+ [32m✓[39m apps/bridge/browser-extension/src/page-script.test.ts [2m([22m[2m5 tests[22m[2m)[22m[32m 25[2mms[22m[39m
+ [32m✓[39m apps/bridge/browser-extension/src/page-provider.test.ts [2m([22m[2m6 tests[22m[2m)[22m[32m 25[2mms[22m[39m
+ [32m✓[39m apps/bridge/browser-extension/src/page-bridge.test.ts [2m([22m[2m9 tests[22m[2m)[22m[32m 25[2mms[22m[39m
+ [32m✓[39m apps/bridge/browser-extension/src/handler.test.ts [2m([22m[2m10 tests[22m[2m)[22m[32m 26[2mms[22m[39m
+ [32m✓[39m packages/transport/src/stream-security.test.ts [2m([22m[2m43 tests[22m[2m)[22m[32m 19[2mms[22m[39m
+ [32m✓[39m apps/bridge/browser-extension/src/origin-permission-store.test.ts [2m([22m[2m8 tests[22m[2m)[22m[32m 10[2mms[22m[39m
+ [32m✓[39m apps/bridge/browser-extension/src/origin-permission-storage.test.ts [2m([22m[2m6 tests[22m[2m)[22m[32m 9[2mms[22m[39m
+ [32m✓[39m apps/bridge/browser-extension/src/popup-view.test.ts [2m([22m[2m3 tests[22m[2m)[22m[32m 9[2mms[22m[39m
+ [32m✓[39m apps/bridge/browser-extension/src/popup-origin-permission-view.test.ts [2m([22m[2m3 tests[22m[2m)[22m[32m 9[2mms[22m[39m
+ [32m✓[39m apps/bridge/browser-extension/src/pairing.test.ts [2m([22m[2m10 tests[22m[2m)[22m[32m 8[2mms[22m[39m
+ [32m✓[39m packages/qr/src/qr.test.ts [2m([22m[2m8 tests[22m[2m)[22m[32m 6[2mms[22m[39m
+ [32m✓[39m apps/bridge/service/src/manifest.test.ts [2m([22m[2m6 tests[22m[2m)[22m[32m 8[2mms[22m[39m
+ [32m✓[39m packages/client/src/native-host-manifest.test.ts [2m([22m[2m9 tests[22m[2m)[22m[32m 7[2mms[22m[39m
+ [32m✓[39m apps/bridge/browser-extension/src/origin-permission-view.test.ts [2m([22m[2m5 tests[22m[2m)[22m[32m 8[2mms[22m[39m
+ [32m✓[39m apps/bridge/browser-extension/src/pending-control.test.ts [2m([22m[2m9 tests[22m[2m)[22m[32m 7[2mms[22m[39m
+ [32m✓[39m packages/client/src/grant-store.test.ts [2m([22m[2m7 tests[22m[2m)[22m[32m 7[2mms[22m[39m
+ [32m✓[39m apps/bridge/browser-extension/src/content-bootstrap.test.ts [2m([22m[2m3 tests[22m[2m)[22m[32m 7[2mms[22m[39m
+ [32m✓[39m apps/bridge/browser-extension/src/origin-permission-cli.test.ts [2m([22m[2m3 tests[22m[2m)[22m[32m 6[2mms[22m[39m
+ [32m✓[39m apps/bridge/browser-extension/src/package-plan.test.ts [2m([22m[2m7 tests[22m[2m)[22m[32m 6[2mms[22m[39m
+ [32m✓[39m packages/review/src/review.test.ts [2m([22m[2m5 tests[22m[2m)[22m[32m 6[2mms[22m[39m
+ [32m✓[39m apps/bridge/browser-extension/src/package-plan-cli.test.ts [2m([22m[2m6 tests[22m[2m)[22m[32m 5[2mms[22m[39m
+ [32m✓[39m packages/client/src/storage-review.test.ts [2m([22m[2m5 tests[22m[2m)[22m[32m 8[2mms[22m[39m
+ [32m✓[39m apps/bridge/browser-extension/src/content-entrypoint.test.ts [2m([22m[2m3 tests[22m[2m)[22m[32m 5[2mms[22m[39m
+ [32m✓[39m apps/bridge/browser-extension/src/pending-request.test.ts [2m([22m[2m7 tests[22m[2m)[22m[32m 5[2mms[22m[39m
+ [32m✓[39m apps/bridge/browser-extension/src/popup-control.test.ts [2m([22m[2m6 tests[22m[2m)[22m[32m 5[2mms[22m[39m
+ [32m✓[39m packages/framing/src/serial.test.ts [2m([22m[2m7 tests[22m[2m)[22m[32m 5[2mms[22m[39m
+ [32m✓[39m packages/nip46/src/session-security.test.ts [2m([22m[2m39 tests[22m[2m)[22m[33m 1435[2mms[22m[39m
+ [32m✓[39m apps/bridge/browser-extension/src/content-browser.test.ts [2m([22m[2m2 tests[22m[2m)[22m[32m 5[2mms[22m[39m
+ [32m✓[39m packages/client/src/pairing-review.test.ts [2m([22m[2m4 tests[22m[2m)[22m[32m 5[2mms[22m[39m
+ [32m✓[39m packages/protocol/src/encoding.test.ts [2m([22m[2m15 tests[22m[2m)[22m[32m 4[2mms[22m[39m
+ [32m✓[39m apps/bridge/browser-extension/src/route-config.test.ts [2m([22m[2m3 tests[22m[2m)[22m[32m 4[2mms[22m[39m
+ [32m✓[39m apps/bridge/browser-extension/src/popup-origin-permission.test.ts [2m([22m[2m6 tests[22m[2m)[22m[32m 4[2mms[22m[39m
+ [32m✓[39m apps/bridge/browser-extension/src/manifest.test.ts [2m([22m[2m6 tests[22m[2m)[22m[32m 4[2mms[22m[39m
+ [32m✓[39m apps/bridge/browser-extension/src/route-config-cli.test.ts [2m([22m[2m2 tests[22m[2m)[22m[32m 4[2mms[22m[39m
+ [32m✓[39m packages/nip46/src/session-store.test.ts [2m([22m[2m4 tests[22m[2m)[22m[32m 4[2mms[22m[39m
+ [32m✓[39m apps/bridge/browser-extension/src/content-runtime.test.ts [2m([22m[2m5 tests[22m[2m)[22m[32m 4[2mms[22m[39m
+ [32m✓[39m packages/framing/src/serial-security.test.ts [2m([22m[2m5 tests[22m[2m)[22m[32m 4[2mms[22m[39m
+ [32m✓[39m packages/nip46/src/relay-pool-adapter.test.ts [2m([22m[2m3 tests[22m[2m)[22m[32m 4[2mms[22m[39m
+ [32m✓[39m apps/bridge/browser-extension/src/page-injection.test.ts [2m([22m[2m4 tests[22m[2m)[22m[32m 3[2mms[22m[39m
+ [32m✓[39m apps/bridge/browser-extension/src/popup-tab.test.ts [2m([22m[2m3 tests[22m[2m)[22m[32m 4[2mms[22m[39m
+ [32m✓[39m packages/nip46/src/relay-transport.test.ts [2m([22m[2m6 tests[22m[2m)[22m[32m 3[2mms[22m[39m
+ [32m✓[39m apps/bridge/browser-extension/src/page-browser.test.ts [2m([22m[2m2 tests[22m[2m)[22m[32m 3[2mms[22m[39m
+ [32m✓[39m apps/bridge/browser-extension/src/messages.test.ts [2m([22m[2m4 tests[22m[2m)[22m[32m 3[2mms[22m[39m
+ [32m✓[39m apps/bridge/browser-extension/src/sender.test.ts [2m([22m[2m4 tests[22m[2m)[22m[32m 3[2mms[22m[39m
+ [32m✓[39m apps/bridge/browser-extension/src/page-origin.test.ts [2m([22m[2m3 tests[22m[2m)[22m[32m 2[2mms[22m[39m
+ [32m✓[39m packages/client/src/native-messaging.test.ts [2m([22m[2m3 tests[22m[2m)[22m[32m 3[2mms[22m[39m
+ [32m✓[39m apps/bridge/browser-extension/src/entrypoints.test.ts [2m([22m[2m1 test[22m[2m)[22m[32m 2[2mms[22m[39m
+ [32m✓[39m apps/bridge/browser-extension/src/popup-html.test.ts [2m([22m[2m1 test[22m[2m)[22m[32m 2[2mms[22m[39m
+ [2m[90m↓[39m[22m packages/nip46/src/session-live.e2e.test.ts [2m([22m[2m1 test[22m[2m | [22m[33m1 skipped[39m[2m)[22m
+
+[2m Test Files [22m [1m[31m5 failed[39m[22m[2m | [22m[1m[32m70 passed[39m[22m[2m | [22m[33m1 skipped[39m[90m (76)[39m
+[2m      Tests [22m [1m[31m16 failed[39m[22m[2m | [22m[1m[32m640 passed[39m[22m[2m | [22m[33m1 skipped[39m[90m (657)[39m
+[2m   Start at [22m 19:29:40
+[2m   Duration [22m 3.22s[2m (transform 969ms, setup 0ms, import 3.07s, tests 3.95s, environment 4ms)[22m
+
+ ELIFECYCLE  Test failed. See above for more details.
+error: unknown command 'smartcard-sim-sign'
+
+[31m⎯⎯⎯⎯⎯⎯[39m[1m[41m Failed Suites 2 [49m[22m[31m⎯⎯⎯⎯⎯⎯⎯[39m
+
+[41m[1m FAIL [22m[49m packages/client/src/local-service-client.test.ts[2m [ packages/client/src/local-service-client.test.ts ][22m
+[31m[1mError[22m: smartcard route selection fixture is missing[39m
+[36m [2m❯[22m packages/client/src/local-service-client.test.ts:[2m29:34[22m[39m
+    [90m 27|[39m if (!routeVector) throw new Error("route selection fixture is missing"…
+    [90m 28|[39m const smartcardRouteVector = fixtures.routeSelections.find((selection)…
+    [90m 29|[39m if (!smartcardRouteVector) throw new Error("smartcard route selection …
+    [90m   |[39m                                  [31m^[39m
+    [90m 30|[39m [35mconst[39m client[33m:[39m [33mLocalClientIdentity[39m [33m=[39m {
+    [90m 31|[39m   surface[33m:[39m [32m"browser_extension"[39m[33m,[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/18]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m packages/client/src/service.test.ts[2m [ packages/client/src/service.test.ts ][22m
+[31m[1mError[22m: smartcard route selection fixture is missing[39m
+[36m [2m❯[22m packages/client/src/service.test.ts:[2m33:34[22m[39m
+    [90m 31|[39m if (!externalNip46RouteVector) throw new Error("external NIP-46 route …
+    [90m 32|[39m const smartcardRouteVector = fixtures.routeSelections.find((selection)…
+    [90m 33|[39m if (!smartcardRouteVector) throw new Error("smartcard route selection …
+    [90m   |[39m                                  [31m^[39m
+    [90m 34|[39m const routeRefusalContract = fixtures.routeRefusals.find((contract) =>…
+    [90m 35|[39m if (!routeRefusalContract) throw new Error("route-refusal contract fix…
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/18]⎯[22m[39m
+
+
+[31m⎯⎯⎯⎯⎯⎯[39m[1m[41m Failed Tests 16 [49m[22m[31m⎯⎯⎯⎯⎯⎯⎯[39m
+
+[41m[1m FAIL [22m[49m packages/fixtures/src/fixtures.test.ts[2m > [22mfixture loading[2m > [22mloads identity, policy, and grant descriptors from the specs repository
+[31m[1mAssertionError[22m: expected [ …(5) ] to deeply equal ArrayContaining{…}[39m
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[32m- ArrayContaining [[39m
+[31m+ [[39m
+[2m    "acct-custom-hardware-wallet-slot-0",[22m
+[2m    "acct-esp32-qr-nip06-account-0",[22m
+[2m    "acct-esp32-usb-slot-0",[22m
+[2m    "acct-external-nip46-bunker",[22m
+[2m    "acct-raspberry-qr-nip06-account-0",[22m
+[32m-   "acct-smartcard-slot-0",[39m
+[2m  ][22m
+
+[36m [2m❯[22m packages/fixtures/src/fixtures.test.ts:[2m245:68[22m[39m
+    [90m243|[39m     [35mconst[39m fixtures [33m=[39m [34mloadSpecsFixtures[39m([34mresolveSpecsRoot[39m())[33m;[39m
+    [90m244|[39m
+    [90m245|[39m     expect(fixtures.accounts.map((account) => account.account_id)).toE…
+    [90m   |[39m                                                                    [31m^[39m
+    [90m246|[39m       [32m"acct-custom-hardware-wallet-slot-0"[39m[33m,[39m
+    [90m247|[39m       [32m"acct-esp32-qr-nip06-account-0"[39m[33m,[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/18]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m packages/fixtures/src/fixtures.test.ts[2m > [22mfixture loading[2m > [22mloads route selection vectors from the specs repository
+[31m[1mAssertionError[22m: expected [ …(5) ] to deeply equal [ …(6) ][39m
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[33m@@ -2,7 +2,6 @@[39m
+[2m    "custom-hardware-wallet-sign-event-slot-0",[22m
+[2m    "esp32-qr-sign-event-account-0",[22m
+[2m    "esp32-usb-sign-event-slot-0",[22m
+[2m    "external-nip46-sign-event-bunker",[22m
+[2m    "raspberry-qr-sign-event-account-0",[22m
+[32m-   "smartcard-sign-event-slot-0",[39m
+[2m  ][22m
+
+[36m [2m❯[22m packages/fixtures/src/fixtures.test.ts:[2m298:73[22m[39m
+    [90m296|[39m     [35mconst[39m fixtures [33m=[39m [34mloadSpecsFixtures[39m([34mresolveSpecsRoot[39m())[33m;[39m
+    [90m297|[39m
+    [90m298|[39m     expect(fixtures.routeSelections.map((selection) => selection.name)…
+    [90m   |[39m                                                                         [31m^[39m
+    [90m299|[39m       [32m"custom-hardware-wallet-sign-event-slot-0"[39m[33m,[39m
+    [90m300|[39m       [32m"esp32-qr-sign-event-account-0"[39m[33m,[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/18]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m packages/fixtures/src/fixtures.test.ts[2m > [22mfixture loading[2m > [22mloads route-refusal contract vectors from the specs repository
+[31m[1mAssertionError[22m: expected undefined to be 'required' // Object.is equality[39m
+
+[32m- Expected:[39m
+"required"
+
+[31m+ Received:[39m
+undefined
+
+[36m [2m❯[22m packages/fixtures/src/fixtures.test.ts:[2m356:8[22m[39m
+    [90m354|[39m     )[33m;[39m
+    [90m355|[39m     expect(contract.cases.find((routeCase) => routeCase.route_type ===…
+    [90m356|[39m       [33m.[39m[34mtoBe[39m([32m"required"[39m)[33m;[39m
+    [90m   |[39m        [31m^[39m
+    [90m357|[39m     expect(contract.cases.find((routeCase) => routeCase.route_type ===…
+    [90m358|[39m       [33m.[39m[34mtoBe[39m([32m"unsupported"[39m)[33m;[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[5/18]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m packages/fixtures/src/fixtures.test.ts[2m > [22mfixture loading[2m > [22mloads and validates signer feature matrix vectors from the specs repository
+[31m[1mAssertionError[22m: expected [ 'custom_hardware_wallet', …(3) ] to deeply equal [ 'custom_hardware_wallet', …(4) ][39m
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[2m  [[22m
+[2m    "custom_hardware_wallet",[22m
+[2m    "esp32_qr_vault",[22m
+[2m    "esp32_usb_nip46",[22m
+[2m    "raspberry_qr_vault",[22m
+[32m-   "smartcard",[39m
+[2m  ][22m
+
+[36m [2m❯[22m packages/fixtures/src/fixtures.test.ts:[2m367:57[22m[39m
+    [90m365|[39m
+    [90m366|[39m     [34mexpect[39m(matrix[33m?.[39mformat)[33m.[39m[34mtoBe[39m([32m"nsealr-signer-feature-matrix-v0"[39m)[33m;[39m
+    [90m367|[39m     [34mexpect[39m([33mObject[39m[33m.[39m[34mkeys[39m(matrix[33m?.[39msolutions [33m??[39m {})[33m.[39m[34msort[39m())[33m.[39m[34mtoEqual[39m([
+    [90m   |[39m                                                         [31m^[39m
+    [90m368|[39m       [32m"custom_hardware_wallet"[39m[33m,[39m
+    [90m369|[39m       [32m"esp32_qr_vault"[39m[33m,[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[6/18]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m packages/fixtures/src/fixtures.test.ts[2m > [22mfixture loading[2m > [22mloads and validates persistent-secret custody contracts from the specs repository
+[31m[1mAssertionError[22m: expected 'nsealr' to be 'hardware' // Object.is equality[39m
+
+Expected: [32m"hardware"[39m
+Received: [31m"nsealr"[39m
+
+[36m [2m❯[22m packages/fixtures/src/fixtures.test.ts:[2m402:53[22m[39m
+    [90m400|[39m     expect(fixtures.custodyContracts.map((contract) => contract.name))…
+    [90m401|[39m     expect(fixtures.custodyContracts[0].contract_id).toBe("persistent-…
+    [90m402|[39m     [34mexpect[39m(fixtures[33m.[39mcustodyContracts[[34m0[39m][33m.[39mrepository)[33m.[39m[34mtoBe[39m([32m"hardware"[39m)[33m;[39m
+    [90m   |[39m                                                     [31m^[39m
+    [90m403|[39m     expect(fixtures.custodyContracts[0].requirements.secret_at_rest.pl…
+    [90m404|[39m     expect(fixtures.custodyContracts[0].non_claims.join("\n")).toConta…
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[7/18]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m packages/policy/src/policy.test.ts[2m > [22midentity, recovery, and policy contracts[2m > [22mparses shared account, policy, and grant descriptors
+[31m[1mError[22m: ENOENT: no such file or directory, open '/home/tux/nsealr/.restart-tools/goal/a02/tools/migration/.runtime/rehearsal-01/repository/protocols/contracts/v1/vectors/accounts/smartcard-slot-0.json'[39m
+[36m [2m❯[22m loadJson packages/policy/src/policy.test.ts:[2m23:21[22m[39m
+    [90m 21|[39m
+    [90m 22|[39m [35mfunction[39m [34mloadJson[39m(path[33m:[39m string)[33m:[39m unknown {
+    [90m 23|[39m   [35mreturn[39m [33mJSON[39m[33m.[39m[34mparse[39m([34mreadFileSync[39m(path[33m,[39m [32m"utf8"[39m))[33m;[39m
+    [90m   |[39m                     [31m^[39m
+    [90m 24|[39m }
+    [90m 25|[39m
+[90m [2m❯[22m packages/policy/src/policy.test.ts:[2m53:7[22m[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[8/18]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m packages/policy/src/policy.test.ts[2m > [22midentity, recovery, and policy contracts[2m > [22mrejects display-less smartcard policy automation and trusted-review claims
+[31m[1mError[22m: ENOENT: no such file or directory, open '/home/tux/nsealr/.restart-tools/goal/a02/tools/migration/.runtime/rehearsal-01/repository/protocols/contracts/v1/vectors/policies/manual-only-displayless-smartcard.json'[39m
+[36m [2m❯[22m loadJson packages/policy/src/policy.test.ts:[2m23:21[22m[39m
+    [90m 21|[39m
+    [90m 22|[39m [35mfunction[39m [34mloadJson[39m(path[33m:[39m string)[33m:[39m unknown {
+    [90m 23|[39m   [35mreturn[39m [33mJSON[39m[33m.[39m[34mparse[39m([34mreadFileSync[39m(path[33m,[39m [32m"utf8"[39m))[33m;[39m
+    [90m   |[39m                     [31m^[39m
+    [90m 24|[39m }
+    [90m 25|[39m
+[90m [2m❯[22m packages/policy/src/policy.test.ts:[2m250:20[22m[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[9/18]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m apps/bridge/cli/src/index.test.ts[2m > [22mnsealr CLI[2m > [22mverifies all event fixtures from the specs repository
+[31m[1mError[22m: invalid policy decision fixture policy-route-mismatch-manual-review: policy decision mismatch[39m
+[36m [2m❯[22m Command.<anonymous> apps/bridge/cli/src/index.ts:[2m792:17[22m[39m
+    [90m790|[39m         })[33m;[39m
+    [90m791|[39m         if (JSON.stringify(actual) !== JSON.stringify(policyDecision.d…
+    [90m792|[39m           throw new Error(`invalid policy decision fixture ${policyDec…
+    [90m   |[39m                 [31m^[39m
+    [90m793|[39m         }
+    [90m794|[39m       }
+[90m [2m❯[22m Command.listener [as _actionHandler] node_modules/.pnpm/commander@14.0.2/node_modules/commander/lib/command.js:[2m568:17[22m[39m
+[90m [2m❯[22m node_modules/.pnpm/commander@14.0.2/node_modules/commander/lib/command.js:[2m1604:14[22m[39m
+[90m [2m❯[22m Command._chainOrCall node_modules/.pnpm/commander@14.0.2/node_modules/commander/lib/command.js:[2m1488:12[22m[39m
+[90m [2m❯[22m Command._parseCommand node_modules/.pnpm/commander@14.0.2/node_modules/commander/lib/command.js:[2m1603:27[22m[39m
+[90m [2m❯[22m node_modules/.pnpm/commander@14.0.2/node_modules/commander/lib/command.js:[2m1367:27[22m[39m
+[90m [2m❯[22m Command._chainOrCall node_modules/.pnpm/commander@14.0.2/node_modules/commander/lib/command.js:[2m1488:12[22m[39m
+[90m [2m❯[22m Command._dispatchSubcommand node_modules/.pnpm/commander@14.0.2/node_modules/commander/lib/command.js:[2m1363:25[22m[39m
+[90m [2m❯[22m Command._parseCommand node_modules/.pnpm/commander@14.0.2/node_modules/commander/lib/command.js:[2m1559:19[22m[39m
+[90m [2m❯[22m Command.parseAsync node_modules/.pnpm/commander@14.0.2/node_modules/commander/lib/command.js:[2m1122:16[22m[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[10/18]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m apps/bridge/cli/src/index.test.ts[2m > [22mnsealr CLI[2m > [22mverifies event and trusted-review fixtures from the specs repository
+[31m[1mAssertionError[22m: promise rejected "Error: invalid policy decision fixture po…" instead of resolving[39m
+[36m [2m❯[22m apps/bridge/cli/src/index.test.ts:[2m238:80[22m[39m
+
+
+[31m[1mCaused by: Error[22m: invalid policy decision fixture policy-route-mismatch-manual-review: policy decision mismatch[39m
+[36m [2m❯[22m Command.<anonymous> apps/bridge/cli/src/index.ts:[2m792:17[22m[39m
+[90m [2m❯[22m Command.listener [as _actionHandler] node_modules/.pnpm/commander@14.0.2/node_modules/commander/lib/command.js:[2m568:17[22m[39m
+[90m [2m❯[22m node_modules/.pnpm/commander@14.0.2/node_modules/commander/lib/command.js:[2m1604:14[22m[39m
+[90m [2m❯[22m Command._chainOrCall node_modules/.pnpm/commander@14.0.2/node_modules/commander/lib/command.js:[2m1488:12[22m[39m
+[90m [2m❯[22m Command._parseCommand node_modules/.pnpm/commander@14.0.2/node_modules/commander/lib/command.js:[2m1603:27[22m[39m
+[90m [2m❯[22m node_modules/.pnpm/commander@14.0.2/node_modules/commander/lib/command.js:[2m1367:27[22m[39m
+[90m [2m❯[22m Command._chainOrCall node_modules/.pnpm/commander@14.0.2/node_modules/commander/lib/command.js:[2m1488:12[22m[39m
+[90m [2m❯[22m Command._dispatchSubcommand node_modules/.pnpm/commander@14.0.2/node_modules/commander/lib/command.js:[2m1363:25[22m[39m
+[90m [2m❯[22m Command._parseCommand node_modules/.pnpm/commander@14.0.2/node_modules/commander/lib/command.js:[2m1559:19[22m[39m
+[90m [2m❯[22m Command.parseAsync node_modules/.pnpm/commander@14.0.2/node_modules/commander/lib/command.js:[2m1122:16[22m[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[11/18]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m apps/bridge/cli/src/index.test.ts[2m > [22mnsealr CLI[2m > [22mS01 metadata fixture comparison ignores object key order
+[31m[1mAssertionError[22m: promise rejected "Error: invalid policy decision fixture po…" instead of resolving[39m
+[36m [2m❯[22m apps/bridge/cli/src/index.test.ts:[2m255:74[22m[39m
+    [90m253|[39m     vector.expected_step = reverseKeys(vector.expected_step) as Record…
+    [90m254|[39m     [34mwriteFileSync[39m(path[33m,[39m [33mJSON[39m[33m.[39m[34mstringify[39m(vector))[33m;[39m
+    [90m255|[39m     await expect(runCli(["fixture", "verify", "--specs", tempSpecsRoot…
+    [90m   |[39m                                                                          [31m^[39m
+    [90m256|[39m   })[33m;[39m
+    [90m257|[39m
+
+[31m[1mCaused by: Error[22m: invalid policy decision fixture policy-route-mismatch-manual-review: policy decision mismatch[39m
+[36m [2m❯[22m Command.<anonymous> apps/bridge/cli/src/index.ts:[2m792:17[22m[39m
+[90m [2m❯[22m Command.listener [as _actionHandler] node_modules/.pnpm/commander@14.0.2/node_modules/commander/lib/command.js:[2m568:17[22m[39m
+[90m [2m❯[22m node_modules/.pnpm/commander@14.0.2/node_modules/commander/lib/command.js:[2m1604:14[22m[39m
+[90m [2m❯[22m Command._chainOrCall node_modules/.pnpm/commander@14.0.2/node_modules/commander/lib/command.js:[2m1488:12[22m[39m
+[90m [2m❯[22m Command._parseCommand node_modules/.pnpm/commander@14.0.2/node_modules/commander/lib/command.js:[2m1603:27[22m[39m
+[90m [2m❯[22m node_modules/.pnpm/commander@14.0.2/node_modules/commander/lib/command.js:[2m1367:27[22m[39m
+[90m [2m❯[22m Command._chainOrCall node_modules/.pnpm/commander@14.0.2/node_modules/commander/lib/command.js:[2m1488:12[22m[39m
+[90m [2m❯[22m Command._dispatchSubcommand node_modules/.pnpm/commander@14.0.2/node_modules/commander/lib/command.js:[2m1363:25[22m[39m
+[90m [2m❯[22m Command._parseCommand node_modules/.pnpm/commander@14.0.2/node_modules/commander/lib/command.js:[2m1559:19[22m[39m
+[90m [2m❯[22m Command.parseAsync node_modules/.pnpm/commander@14.0.2/node_modules/commander/lib/command.js:[2m1122:16[22m[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[12/18]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m apps/bridge/cli/src/index.test.ts[2m > [22mnsealr CLI[2m > [22mS01 metadata fixture comparison rejects changed value
+[41m[1m FAIL [22m[49m apps/bridge/cli/src/index.test.ts[2m > [22mnsealr CLI[2m > [22mS01 metadata fixture comparison rejects changed type
+[41m[1m FAIL [22m[49m apps/bridge/cli/src/index.test.ts[2m > [22mnsealr CLI[2m > [22mS01 metadata fixture comparison rejects changed extra
+[41m[1m FAIL [22m[49m apps/bridge/cli/src/index.test.ts[2m > [22mnsealr CLI[2m > [22mS01 metadata fixture comparison rejects changed missing
+[41m[1m FAIL [22m[49m apps/bridge/cli/src/index.test.ts[2m > [22mnsealr CLI[2m > [22mS01 metadata fixture comparison rejects changed array order
+[31m[1mAssertionError[22m: expected [Function] to throw error matching /relay step fixture.*step mismatch/ but got 'invalid policy decision fixture polic…'[39m
+
+[32m- Expected:[39m
+/relay step fixture.*step mismatch/
+
+[31m+ Received:[39m
+"invalid policy decision fixture policy-route-mismatch-manual-review: policy decision mismatch"
+
+[36m [2m❯[22m apps/bridge/cli/src/index.test.ts:[2m270:74[22m[39m
+    [90m268|[39m     if (mutation === "array order") (expected.relay_urls as string[]).…
+    [90m269|[39m     [34mwriteFileSync[39m(path[33m,[39m [33mJSON[39m[33m.[39m[34mstringify[39m(vector))[33m;[39m
+    [90m270|[39m     await expect(runCli(["fixture", "verify", "--specs", tempSpecsRoot…
+    [90m   |[39m                                                                          [31m^[39m
+    [90m271|[39m   })[33m;[39m
+    [90m272|[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[13/18]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m apps/bridge/cli/src/index.test.ts[2m > [22mnsealr CLI[2m > [22mruns request -> smartcard-sim-sign -> verify-response after explicit review acknowledgement
+[31m[1mAssertionError[22m: expected [Function] to throw error including 'smartcard signing requires explicit r…' but got 'error: unknown command \'smartcard-si…'[39m
+
+Expected: [32m"smartcard[7m [27msi[7mgning requires explicit review acknowledgement[27m"[39m
+Received: [31m"[7merror: unknown command '[27msmartcard[7m-[27msi[7mm-sign'[27m"[39m
+
+[36m [2m❯[22m apps/bridge/cli/src/index.test.ts:[2m2137:6[22m[39m
+    [90m2135|[39m     [35mawait[39m [34mexpect[39m(
+    [90m2136|[39m       runCli(["smartcard-sim-sign", "--secret-key", key.secret_key, "-…
+    [90m2137|[39m     ).rejects.toThrow("smartcard signing requires explicit review ackn…
+    [90m   |[39m      [31m^[39m
+    [90m2138|[39m
+    [90m2139|[39m     [35mawait[39m [34mexpect[39m(
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[14/18]⎯[22m[39m
+

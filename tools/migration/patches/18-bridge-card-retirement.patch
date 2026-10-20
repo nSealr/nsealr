@@ -1,0 +1,588 @@
+diff --git a/apps/bridge/cli/src/index.test.ts b/apps/bridge/cli/src/index.test.ts
+index ccb90d68025b2d679c183357eb5b94e6b34cc8a1..041a13b284415064f8bb0f4d0111c0ded7e9cb41 100644
+--- a/apps/bridge/cli/src/index.test.ts
++++ b/apps/bridge/cli/src/index.test.ts
+@@ -2119,67 +2119,11 @@ describe("nsealr CLI", () => {
+     expect(loadJson(reviewPath)).toEqual(renderReviewDetailPages(reviewEventTemplate(request.params.event_template), limits));
+   });
+ 
+-  it("runs request -> smartcard-sim-sign -> verify-response after explicit review acknowledgement", async () => {
+-    const tempRoot = mkdtempSync(join(tmpdir(), "nsealr-cli-smartcard-"));
+-    const key = loadJson(resolve(specsRoot, "vectors/keys/test-key-1.json")) as { secret_key: string };
+-    const request = loadJson(resolve(specsRoot, "examples/request-kind-1-basic.json"));
+-    const screenReview = loadJson(resolve(specsRoot, "vectors/review-screens/kind-1-basic.json")) as {
+-      screen_review: { approval_digest: string };
+-    };
+-    const requestPath = join(tempRoot, "request.json");
++  it("rejects the retired smartcard command without creating signer output", async () => {
++    const tempRoot = mkdtempSync(join(tmpdir(), "nsealr-cli-retired-command-"));
+     const responsePath = join(tempRoot, "response.json");
+-    const mismatchResponsePath = join(tempRoot, "mismatch-response.json");
+-
+-    writeFileSync(requestPath, `${JSON.stringify(request, null, 2)}\n`, "utf8");
+-
+-    await expect(
+-      runCli(["smartcard-sim-sign", "--secret-key", key.secret_key, "--request", requestPath, "--out", responsePath])
+-    ).rejects.toThrow("smartcard signing requires explicit review acknowledgement");
+-
+-    await expect(
+-      runCli([
+-        "smartcard-sim-sign",
+-        "--secret-key",
+-        key.secret_key,
+-        "--request",
+-        requestPath,
+-        "--review-acknowledged",
+-        "--out",
+-        responsePath
+-      ])
+-    ).rejects.toThrow("approval_digest is required for display-less smartcard signing");
++    await expect(runCli(["smartcard-sim-sign", "--out", responsePath]))
++      .rejects.toThrow(/unknown command/u);
+     expect(existsSync(responsePath)).toBe(false);
+-
+-    await expect(
+-      runCli([
+-        "smartcard-sim-sign",
+-        "--secret-key",
+-        key.secret_key,
+-        "--request",
+-        requestPath,
+-        "--review-acknowledged",
+-        "--approval-digest",
+-        "00".repeat(32),
+-        "--out",
+-        mismatchResponsePath
+-      ])
+-    ).rejects.toThrow("approval_digest_mismatch");
+-    expect(existsSync(mismatchResponsePath)).toBe(false);
+-
+-    await runCli([
+-      "smartcard-sim-sign",
+-      "--secret-key",
+-      key.secret_key,
+-      "--request",
+-      requestPath,
+-      "--review-acknowledged",
+-      "--approval-digest",
+-      screenReview.screen_review.approval_digest,
+-      "--out",
+-      responsePath
+-    ]);
+-    await runCli(["verify-response", "--request", requestPath, "--response", responsePath]);
+-
+-    expect(validateResponse(loadJson(responsePath)).ok).toBe(true);
+   });
+ });
+diff --git a/packages/client/src/local-service-client.test.ts b/packages/client/src/local-service-client.test.ts
+index f28b18b3a0ad7cdc40fa9ce8f31a1e7c0826b64b..c03f3ec423d5cc79f690a35bbdff088f472c2ece 100644
+--- a/packages/client/src/local-service-client.test.ts
++++ b/packages/client/src/local-service-client.test.ts
+@@ -25,8 +25,6 @@ const request = JSON.parse(readFileSync(resolve(specsRoot, "examples/request-kin
+ const response = JSON.parse(readFileSync(resolve(specsRoot, "examples/response-kind-1-basic.json"), "utf8"));
+ const routeVector = fixtures.routeSelections.find((selection) => selection.name === "esp32-usb-sign-event-slot-0");
+ if (!routeVector) throw new Error("route selection fixture is missing");
+-const smartcardRouteVector = fixtures.routeSelections.find((selection) => selection.name === "smartcard-sign-event-slot-0");
+-if (!smartcardRouteVector) throw new Error("smartcard route selection fixture is missing");
+ const client: LocalClientIdentity = {
+   surface: "browser_extension",
+   origin: "https://example.com",
+@@ -143,38 +141,19 @@ describe("local service client", () => {
+     });
+   });
+ 
+-  it("passes external review acknowledgement through dispatch options for display-less routes", async () => {
+-    const acknowledgement = externalReviewAcknowledgement();
+-    const dispatched: unknown[] = [];
+-    const service = new LocalServiceClient({
+-      exchange: (message) => handleLocalServiceRequest(message, {
+-        accounts: fixtures.accounts,
+-        grants: [grant],
+-        now: 1_900_000_000,
+-        signerDispatcher: (dispatchRequest) => {
+-          dispatched.push(dispatchRequest);
+-          return response;
+-        }
+-      })
+-    });
+-
+-    await expect(service.dispatchSignerRequest(client, smartcardRouteVector.request, request, {
+-      requestId: "client-smartcard-dispatch",
+-      externalReviewAcknowledgement: acknowledgement
+-    })).resolves.toEqual({
+-      version: 1,
+-      request_id: "client-smartcard-dispatch",
+-      ok: true,
+-      result: {
+-        signer_response: response
+-      }
+-    });
+-    expect(dispatched).toEqual([{
+-      client,
+-      route_selection: smartcardRouteVector.selection,
+-      request,
+-      external_review_acknowledgement: acknowledgement
+-    }]);
++  it("rejects host acknowledgement options before active signer dispatch", async () => {
++    let calls = 0;
++    const service = new LocalServiceClient({ exchange: (message) => handleLocalServiceRequest(message, {
++      accounts: fixtures.accounts, grants: [grant], now: 1_900_000_000,
++      signerDispatcher: () => { calls += 1; return response; }
++    }) });
++    await expect(service.dispatchSignerRequest(client, routeVector.request, request, {
++      requestId: "client-host-acknowledgement", externalReviewAcknowledgement: externalReviewAcknowledgement()
++    })).resolves.toMatchObject({ ok: false, error: { code: "external_review_acknowledgement_unsupported" } });
++    expect(calls).toBe(0);
++    await expect(service.dispatchSignerRequest(client, routeVector.request, request))
++      .resolves.toMatchObject({ ok: true, result: { signer_response: response } });
++    expect(calls).toBe(1);
+   });
+ 
+   it("rejects malformed or mismatched service responses before callers trust them", async () => {
+diff --git a/packages/client/src/service.test.ts b/packages/client/src/service.test.ts
+index ab03c268e15ca0c67052454b2bd126988c5a13f3..7432b45fb32d075bdc14c855bcadc73ffbb0e4c4 100644
+--- a/packages/client/src/service.test.ts
++++ b/packages/client/src/service.test.ts
+@@ -29,8 +29,6 @@ const externalNip46RouteVector = fixtures.routeSelections.find(
+   (selection) => selection.name === "external-nip46-sign-event-bunker"
+ );
+ if (!externalNip46RouteVector) throw new Error("external NIP-46 route selection fixture is missing");
+-const smartcardRouteVector = fixtures.routeSelections.find((selection) => selection.name === "smartcard-sign-event-slot-0");
+-if (!smartcardRouteVector) throw new Error("smartcard route selection fixture is missing");
+ const routeRefusalContract = fixtures.routeRefusals.find((contract) => contract.name === "signer-route-refusals-v0");
+ if (!routeRefusalContract) throw new Error("route-refusal contract fixture is missing");
+ const client: LocalClientIdentity = {
+@@ -522,98 +520,32 @@ describe("local service boundary", () => {
+     }]);
+   });
+ 
+-  it("requires explicit external review acknowledgement for display-less smartcard dispatch", () => {
++  it("rejects retired routes before invoking any signer dispatcher", () => {
+     let called = false;
+-    expect(handleLocalServiceRequest({
+-      version: 1,
+-      request_id: "svc-smartcard-dispatch-no-review",
+-      operation: "dispatch_signer_request",
+-      params: {
+-        client,
+-        route_request: smartcardRouteVector.request,
+-        request
+-      }
+-    }, {
+-      accounts: fixtures.accounts,
+-      grants: [grant],
+-      now: 1_900_000_000,
+-      signerDispatcher: () => {
+-        called = true;
+-        return response;
+-      }
+-    })).toMatchObject({
+-      ok: false,
+-      error: {
+-        code: "external_review_acknowledgement_required",
+-        message: "display-less signer dispatch requires external review acknowledgement"
+-      }
+-    });
+-    expect(called).toBe(false);
+-
+-    expect(handleLocalServiceRequest({
+-      version: 1,
+-      request_id: "svc-smartcard-dispatch-wrong-review",
+-      operation: "dispatch_signer_request",
+-      params: {
+-        client,
+-        route_request: smartcardRouteVector.request,
+-        request,
+-        external_review_acknowledgement: externalReviewAcknowledgement("0".repeat(64))
+-      }
+-    }, {
+-      accounts: fixtures.accounts,
+-      grants: [grant],
+-      now: 1_900_000_000,
+-      signerDispatcher: () => {
+-        called = true;
+-        return response;
+-      }
+-    })).toMatchObject({
+-      ok: false,
+-      error: {
+-        code: "external_review_acknowledgement_mismatch",
+-        message: "external review approval_digest does not match signer request"
+-      }
+-    });
+-    expect(called).toBe(false);
++    for (const acknowledgement of [undefined, externalReviewAcknowledgement()]) {
++      const result = handleLocalServiceRequest({
++        version: 1, request_id: "retired-card-route", operation: "dispatch_signer_request",
++        params: { client, route_request: { ...routeVector.request, route_type: "smartcard" }, request,
++          ...(acknowledgement === undefined ? {} : { external_review_acknowledgement: acknowledgement }) }
++      }, { accounts: fixtures.accounts, grants: [grant], now: 1_900_000_000,
++        signerDispatcher: () => { called = true; return response; } });
++      expect(result).toMatchObject({ ok: false, error: { code: "invalid_service_request" } });
++      expect(called).toBe(false);
++    }
+   });
+ 
+-  it("passes acknowledged display-less smartcard requests through the injected dispatcher", () => {
+-    const acknowledgement = externalReviewAcknowledgement();
+-    const dispatched: unknown[] = [];
+-
+-    expect(handleLocalServiceRequest({
+-      version: 1,
+-      request_id: "svc-smartcard-dispatch-reviewed",
+-      operation: "dispatch_signer_request",
+-      params: {
+-        client,
+-        route_request: smartcardRouteVector.request,
+-        request,
+-        external_review_acknowledgement: acknowledgement
+-      }
+-    }, {
+-      accounts: fixtures.accounts,
+-      grants: [grant],
+-      now: 1_900_000_000,
+-      signerDispatcher: (dispatchRequest) => {
+-        dispatched.push(dispatchRequest);
+-        return response;
+-      }
+-    })).toEqual({
+-      version: 1,
+-      request_id: "svc-smartcard-dispatch-reviewed",
+-      ok: true,
+-      result: {
+-        signer_response: response
+-      }
+-    });
+-    expect(dispatched).toEqual([{
+-      client,
+-      route_selection: smartcardRouteVector.selection,
+-      request,
+-      external_review_acknowledgement: acknowledgement
+-    }]);
++  it("refuses host acknowledgement bypass while preserving active dispatch", () => {
++    let calls = 0;
++    const context = { accounts: fixtures.accounts, grants: [grant], now: 1_900_000_000,
++      signerDispatcher: () => { calls += 1; return response; } };
++    const base = { version: 1, request_id: "active-route-control", operation: "dispatch_signer_request",
++      params: { client, route_request: routeVector.request, request } };
++    expect(handleLocalServiceRequest({ ...base, params: { ...base.params,
++      external_review_acknowledgement: externalReviewAcknowledgement() } }, context))
++      .toMatchObject({ ok: false, error: { code: "external_review_acknowledgement_unsupported" } });
++    expect(calls).toBe(0);
++    expect(handleLocalServiceRequest(base, context)).toMatchObject({ ok: true, result: { signer_response: response } });
++    expect(calls).toBe(1);
+   });
+ 
+   it("rejects external review acknowledgement on non-display-less dispatch routes", () => {
+@@ -754,7 +686,7 @@ describe("local service boundary", () => {
+       operation: "dispatch_signer_request",
+       params: {
+         client,
+-        route_request: smartcardRouteVector.request,
++        route_request: routeVector.request,
+         request,
+         external_review_acknowledgement: {
+           ...externalReviewAcknowledgement(),
+diff --git a/packages/client/src/service.ts b/packages/client/src/service.ts
+index 40783be90b98c937791138793c05254606f6ae59..58d21926700f93306a08735b3f1983d28d929dc6 100644
+--- a/packages/client/src/service.ts
++++ b/packages/client/src/service.ts
+@@ -7,7 +7,6 @@ import {
+   type RouteSelectionRequest
+ } from "@nsealr/policy";
+ import { compactJsonUtf8ByteLength, NSEALR_V0_LIMITS, validateRequest, validateResponse } from "@nsealr/protocol";
+-import { approvalDigestForRequest } from "@nsealr/review";
+ import {
+   parseLocalClientIdentity,
+   type LocalClientIdentity,
+@@ -893,29 +892,7 @@ function prepareSignerDispatch(
+   }
+ 
+   const acknowledgement = request.params.external_review_acknowledgement;
+-  const displayLessSignEvent = routeSelection.trusted_review === "display_less" && routeRequest.method === "sign_event";
+-  if (displayLessSignEvent) {
+-    if (acknowledgement === undefined) {
+-      return {
+-        ok: false,
+-        response: errorResponse(
+-          request,
+-          "external_review_acknowledgement_required",
+-          "display-less signer dispatch requires external review acknowledgement"
+-        )
+-      };
+-    }
+-    if (acknowledgement.approval_digest !== approvalDigestForRequest(request.params.request)) {
+-      return {
+-        ok: false,
+-        response: errorResponse(
+-          request,
+-          "external_review_acknowledgement_mismatch",
+-          "external review approval_digest does not match signer request"
+-        )
+-      };
+-    }
+-  } else if (acknowledgement !== undefined) {
++  if (acknowledgement !== undefined) {
+     return {
+       ok: false,
+       response: errorResponse(
+@@ -939,8 +916,7 @@ function prepareSignerDispatch(
+     dispatchRequest: {
+       client: request.params.client,
+       route_selection: routeSelection,
+-      request: request.params.request,
+-      ...(acknowledgement !== undefined ? { external_review_acknowledgement: acknowledgement } : {})
++      request: request.params.request
+     }
+   };
+ }
+diff --git a/packages/fixtures/src/fixtures.test.ts b/packages/fixtures/src/fixtures.test.ts
+index 8f5a2e5032c0a873c2d0934c17f1290e35bd386f..e551f9014cd410faba550b34961f69f7de66c1a7 100644
+--- a/packages/fixtures/src/fixtures.test.ts
++++ b/packages/fixtures/src/fixtures.test.ts
+@@ -247,11 +247,9 @@ describe("fixture loading", () => {
+       "acct-esp32-qr-nip06-account-0",
+       "acct-esp32-usb-slot-0",
+       "acct-external-nip46-bunker",
+-      "acct-raspberry-qr-nip06-account-0",
+-      "acct-smartcard-slot-0"
++      "acct-raspberry-qr-nip06-account-0"
+     ]));
+     expect(fixtures.policyProfiles.map((policy) => policy.policy_id)).toEqual(expect.arrayContaining([
+-      "policy-manual-only-displayless-smartcard",
+       "policy-manual-only-persistent-device",
+       "policy-manual-only-qr-vault",
+       "policy-scoped-automation-daily-use"
+@@ -300,8 +298,7 @@ describe("fixture loading", () => {
+       "esp32-qr-sign-event-account-0",
+       "esp32-usb-sign-event-slot-0",
+       "external-nip46-sign-event-bunker",
+-      "raspberry-qr-sign-event-account-0",
+-      "smartcard-sign-event-slot-0"
++      "raspberry-qr-sign-event-account-0"
+     ]);
+     expect(fixtures.routeSelections[0].format).toBe("nsealr-route-selection-vector-v0");
+     expect(fixtures.routeSelections[0].selection.contains_secret_material).toBe(false);
+@@ -352,8 +349,7 @@ describe("fixture loading", () => {
+     expect(contract.cases.map((routeCase) => routeCase.route_selection_vector).sort()).toEqual(
+       fixtures.routeSelections.map((selection) => selection.name).sort()
+     );
+-    expect(contract.cases.find((routeCase) => routeCase.route_type === "smartcard")?.external_review_acknowledgement.mode)
+-      .toBe("required");
++    expect(contract.cases.find((routeCase) => String(routeCase.route_type) === "smartcard")).toBeUndefined();
+     expect(contract.cases.find((routeCase) => routeCase.route_type === "esp32_usb_nip46")?.external_review_acknowledgement.mode)
+       .toBe("unsupported");
+     expect(() => validateRouteRefusalContractFixture(contract.name, contract)).not.toThrow();
+@@ -368,8 +364,7 @@ describe("fixture loading", () => {
+       "custom_hardware_wallet",
+       "esp32_qr_vault",
+       "esp32_usb_nip46",
+-      "raspberry_qr_vault",
+-      "smartcard"
++      "raspberry_qr_vault"
+     ]);
+     expect(matrix?.solutions.raspberry_qr_vault.features.qr_response.target).toBe(
+       matrix?.solutions.esp32_qr_vault.features.qr_response.target
+@@ -399,7 +394,7 @@ describe("fixture loading", () => {
+ 
+     expect(fixtures.custodyContracts.map((contract) => contract.name)).toEqual(expectedNames);
+     expect(fixtures.custodyContracts[0].contract_id).toBe("persistent-secret-custody-v0");
+-    expect(fixtures.custodyContracts[0].repository).toBe("hardware");
++    expect(fixtures.custodyContracts[0].repository).toBe("nsealr");
+     expect(fixtures.custodyContracts[0].requirements.secret_at_rest.plaintext_allowed).toBe(false);
+     expect(fixtures.custodyContracts[0].non_claims.join("\n")).toContain("stateless QR vault");
+     expect(() =>
+diff --git a/packages/policy/src/policy.test.ts b/packages/policy/src/policy.test.ts
+index 60ac4a912401f9f7c7da24107514f2146c333707..8423791213aafed39f23c033f3611585ca5c2ea7 100644
+--- a/packages/policy/src/policy.test.ts
++++ b/packages/policy/src/policy.test.ts
+@@ -49,16 +49,10 @@ describe("identity, recovery, and policy contracts", () => {
+     const esp32QrAccount = parseAccountDescriptor(
+       loadJson(resolve(specsRoot, "vectors/accounts/esp32-qr-nip06-account-0.json"))
+     );
+-    const smartcardAccount = parseAccountDescriptor(
+-      loadJson(resolve(specsRoot, "vectors/accounts/smartcard-slot-0.json"))
+-    );
+     const customHardwareWalletAccount = parseAccountDescriptor(
+       loadJson(resolve(specsRoot, "vectors/accounts/custom-hardware-wallet-slot-0.json"))
+     );
+     const policy = parsePolicyProfile(loadJson(resolve(specsRoot, "vectors/policies/manual-only-qr-vault.json")));
+-    const smartcardPolicy = parsePolicyProfile(
+-      loadJson(resolve(specsRoot, "vectors/policies/manual-only-displayless-smartcard.json"))
+-    );
+     const persistentManualPolicy = parsePolicyProfile(
+       loadJson(resolve(specsRoot, "vectors/policies/manual-only-persistent-device.json"))
+     );
+@@ -70,15 +64,10 @@ describe("identity, recovery, and policy contracts", () => {
+     expect(esp32QrAccount.signer_route.type).toBe("esp32_qr_vault");
+     expect(esp32QrAccount.capabilities.persistent_grants).toBe(false);
+     expect(esp32QrAccount.recovery.source_fingerprint).toBe("cd64b58daca009b9");
+-    expect(smartcardAccount.recovery.type).toBe("card_slot");
+-    expect(smartcardAccount.signer_route.trusted_review).toBe("display_less");
+-    expect(smartcardAccount.capabilities.persistent_grants).toBe(false);
+     expect(customHardwareWalletAccount.recovery.type).toBe("hardware_wallet_slot");
+     expect(customHardwareWalletAccount.capabilities.persistent_grants).toBe(true);
+     expect(policy.mode).toBe("manual_only");
+     expect(policy.grants_allowed).toBe(false);
+-    expect(smartcardPolicy.mode).toBe("manual_only");
+-    expect(smartcardPolicy.grants_allowed).toBe(false);
+     expect(persistentManualPolicy.mode).toBe("manual_only");
+     expect(persistentManualPolicy.route_types).toEqual(["esp32_usb_nip46", "custom_hardware_wallet"]);
+     expect(customHardwareWalletAccount.policy_profile_id).toBe("policy-manual-only-persistent-device");
+@@ -246,26 +235,17 @@ describe("identity, recovery, and policy contracts", () => {
+     expect(() => parsePolicyProfile(policy)).toThrow(/QR vault routes must remain manual_only/u);
+   });
+ 
+-  it("rejects display-less smartcard policy automation and trusted-review claims", () => {
+-    const policy = loadJson(resolve(specsRoot, "vectors/policies/manual-only-displayless-smartcard.json")) as Record<
+-      string,
+-      unknown
+-    >;
++  it("rejects retired card policies and account routes before trusting capability claims", () => {
++    const policy = loadJson(resolve(specsRoot, "vectors/policies/manual-only-qr-vault.json")) as Record<string, unknown>;
++    expect(() => parsePolicyProfile(policy)).not.toThrow();
++    policy.route_types = ["smartcard"];
+     policy.mode = "scoped_automation";
+     policy.grants_allowed = true;
+-
+-    expect(() => parsePolicyProfile(policy)).toThrow(/display-less smartcard routes must remain manual_only/u);
+-
+-    const account = loadJson(resolve(specsRoot, "vectors/accounts/smartcard-slot-0.json")) as {
+-      signer_route: Record<string, unknown>;
+-      capabilities: Record<string, unknown>;
+-    };
+-    account.signer_route.trusted_review = "device_display";
+-    account.signer_route.policy_support = "scoped_automation";
+-    account.capabilities.physical_review = true;
+-    account.capabilities.persistent_grants = true;
+-
+-    expect(() => parseAccountDescriptor(account)).toThrow(/smartcard routes must remain display_less/u);
++    expect(() => parsePolicyProfile(policy)).toThrow(/route_type/u);
++    const account = loadJson(resolve(specsRoot, "vectors/accounts/esp32-usb-device-slot-0.json")) as { signer_route: Record<string, unknown> };
++    expect(() => parseAccountDescriptor(account)).not.toThrow();
++    account.signer_route.type = "smartcard";
++    expect(() => parseAccountDescriptor(account)).toThrow(/route type/u);
+   });
+ 
+   it("rejects external NIP-46 policy automation", () => {
+@@ -309,7 +289,7 @@ describe("identity, recovery, and policy contracts", () => {
+       ...grant,
+       route_type: "smartcard",
+       permission: { method: "sign_event", parameter: "1", event_kind: 1 }
+-    })).toThrow(/nSealr persistent policy route/u);
++    })).toThrow(/route_type/u);
+     expect(() => parseGrantDescriptor({
+       ...grant,
+       route_type: "external_nip46",
+diff --git a/packages/policy/src/policy.ts b/packages/policy/src/policy.ts
+index ccac634d7f82e95814f3a8c258e3718826983994..613a62f2334fd2ac6bb80fd30dbb895d48c425e8 100644
+--- a/packages/policy/src/policy.ts
++++ b/packages/policy/src/policy.ts
+@@ -5,23 +5,21 @@ export type RouteType =
+   | "raspberry_qr_vault"
+   | "esp32_qr_vault"
+   | "esp32_usb_nip46"
+-  | "smartcard"
+   | "custom_hardware_wallet"
+   | "external_nip46";
+ 
+ export type RouteCustody =
+   | "stateless_session"
+   | "device_persistent"
+-  | "card_persistent"
+   | "custom_hardware_persistent"
+   | "external_signer";
+ 
+ export type SignerRoute = {
+   type: RouteType;
+   repository?: "nsealr";
+-  transport: "qr" | "usb" | "smartcard" | "nfc" | "nip46_relay" | "embedded";
++  transport: "qr" | "usb" | "nip46_relay" | "embedded";
+   custody: RouteCustody;
+-  trusted_review: "device_display" | "external_review" | "external_policy" | "display_less";
++  trusted_review: "device_display" | "external_review" | "external_policy";
+   policy_support: "manual_only" | "scoped_automation" | "external";
+ };
+ 
+@@ -198,7 +196,6 @@ const ROUTE_TYPES = new Set<RouteType>([
+   "raspberry_qr_vault",
+   "esp32_qr_vault",
+   "esp32_usb_nip46",
+-  "smartcard",
+   "custom_hardware_wallet",
+   "external_nip46"
+ ]);
+@@ -207,18 +204,16 @@ const ROUTE_REPOSITORIES = new Map<RouteType, string>([
+   ["raspberry_qr_vault", "nsealr"],
+   ["esp32_qr_vault", "nsealr"],
+   ["esp32_usb_nip46", "nsealr"],
+-  ["smartcard", "nsealr"],
+   ["custom_hardware_wallet", "nsealr"]
+ ]);
+-const ROUTE_TRANSPORTS = new Set(["qr", "usb", "smartcard", "nfc", "nip46_relay", "embedded"]);
++const ROUTE_TRANSPORTS = new Set(["qr", "usb", "nip46_relay", "embedded"]);
+ const CUSTODY_MODES = new Set([
+   "stateless_session",
+   "device_persistent",
+-  "card_persistent",
+   "custom_hardware_persistent",
+   "external_signer"
+ ]);
+-const REVIEW_MODES = new Set(["device_display", "external_review", "external_policy", "display_less"]);
++const REVIEW_MODES = new Set(["device_display", "external_review", "external_policy"]);
+ const POLICY_SUPPORT_MODES = new Set(["manual_only", "scoped_automation", "external"]);
+ const POLICY_REVIEW_REQUIREMENTS = new Set([
+   "connect",
+@@ -244,7 +239,6 @@ const DEVICE_METHODS = new Set(["get_capabilities", "get_signing_status", "get_p
+ const DECRYPT_METHODS = new Set(["nip04_decrypt", "nip44_decrypt"]);
+ const POLICY_DECISION_ROUTE_TYPES = new Set<RouteType>([
+   "esp32_usb_nip46",
+-  "smartcard",
+   "custom_hardware_wallet",
+   "external_nip46"
+ ]);
+@@ -429,13 +423,6 @@ function validateRecovery(recovery: unknown): Record<string, unknown> {
+     requireBoolean(recovery.backup_required, "device_slot recovery backup_required");
+     return recovery;
+   }
+-  if (recovery.type === "card_slot") {
+-    assertOnlyKeys(recovery, ["type", "card_id", "slot_id", "backup_required"], "card_slot recovery");
+-    requireString(recovery.card_id, "card_slot recovery card_id");
+-    requireString(recovery.slot_id, "card_slot recovery slot_id");
+-    requireBoolean(recovery.backup_required, "card_slot recovery backup_required");
+-    return recovery;
+-  }
+   if (recovery.type === "hardware_wallet_slot") {
+     assertOnlyKeys(recovery, ["type", "device_id", "slot_id", "backup_required"], "hardware_wallet_slot recovery");
+     requireString(recovery.device_id, "hardware_wallet_slot recovery device_id");
+@@ -490,20 +477,6 @@ function validateRouteSemantics(
+     return;
+   }
+ 
+-  if (route.type === "smartcard") {
+-    if (route.transport !== "smartcard") throw new Error("smartcard routes must use smartcard transport");
+-    if (route.custody !== "card_persistent") throw new Error("smartcard routes must use card_persistent custody");
+-    if (route.trusted_review !== "display_less") throw new Error("smartcard routes must remain display_less");
+-    if (route.policy_support !== "manual_only") {
+-      throw new Error("display-less smartcard routes must use manual_only policy support");
+-    }
+-    if (capabilities.physical_review || capabilities.physical_approval) {
+-      throw new Error("display-less smartcard routes must not claim physical review or approval");
+-    }
+-    if (capabilities.persistent_grants) throw new Error("display-less smartcard routes must not support persistent grants");
+-    return;
+-  }
+-
+   if (route.type === "custom_hardware_wallet") {
+     if (route.transport !== "usb") throw new Error("custom hardware-wallet routes must use usb transport in v0");
+     if (route.custody !== "custom_hardware_persistent") {
+@@ -614,9 +587,6 @@ export function parsePolicyProfile(value: unknown): PolicyProfile {
+   if (routeTypes.some((route) => QR_ROUTE_TYPES.has(route)) && (mode !== "manual_only" || grantsAllowed !== false)) {
+     throw new Error("QR vault routes must remain manual_only with grants_allowed false");
+   }
+-  if (routeTypes.includes("smartcard") && (mode !== "manual_only" || grantsAllowed !== false)) {
+-    throw new Error("display-less smartcard routes must remain manual_only with grants_allowed false");
+-  }
+   if (routeTypes.includes("external_nip46") && (mode !== "manual_only" || grantsAllowed !== false)) {
+     throw new Error("external NIP-46 routes must remain external-policy manual without nSealr grants");
+   }

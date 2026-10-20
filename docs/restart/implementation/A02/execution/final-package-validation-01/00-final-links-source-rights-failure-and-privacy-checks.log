@@ -1,0 +1,15 @@
+Traceback (most recent call last):
+  File "/home/tux/nsealr/.restart-tools/goal/a02/tools/migration/validate_final_package.py", line 109, in <module>
+    validate(args.author_repo, args.output)
+  File "/home/tux/nsealr/.restart-tools/goal/a02/tools/migration/validate_final_package.py", line 53, in validate
+    check(after['path'], after['sha256'])
+  File "/home/tux/nsealr/.restart-tools/goal/a02/tools/migration/validate_final_package.py", line 47, in check
+    assert digest((target / path).read_bytes()) == sha, 'case source changed since named execution'
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/tux/nsealr/.restart-tools/goal/r00/tools/baseline/.work/final/.tools/python/lib/python3.12/pathlib.py", line 1019, in read_bytes
+    with self.open(mode='rb') as f:
+         ^^^^^^^^^^^^^^^^^^^^
+  File "/home/tux/nsealr/.restart-tools/goal/r00/tools/baseline/.work/final/.tools/python/lib/python3.12/pathlib.py", line 1013, in open
+    return io.open(self, mode, buffering, encoding, errors, newline)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+FileNotFoundError: [Errno 2] No such file or directory: '/home/tux/nsealr/.restart-tools/goal/a02/tools/migration/.runtime/rehearsal-01/repository/tests/test_seed_signer_hardware.py'

@@ -1,6 +1,30 @@
 # Execution handoff
 
-Date: 2026-10-18. This handoff gives navigation and recovery procedures, not a second task-status ledger. Read the current graph before choosing work.
+Date: 2026-10-20. This handoff gives navigation and recovery procedures, not a second task-status ledger. Read the current graph before choosing work.
+
+## Current A02 adoption candidate
+
+The [adoption handoff](A02/coordinator-adoption/handoff.md) records the exact
+reviewed source/public append, copy inventories and remaining gates for
+`restart/a02-consolidation`. The maintainer cancelled the brief interruption;
+its checkpoint notes are historical inside that adoption record only. There is
+no active pause guard or separate plan area. Continue admitted work while
+preserving the source freeze and actual review/CI gates.
+
+The sole candidate graph is [plan/work-items.json](../../../plan/work-items.json).
+Until this branch is normally integrated, main's existing graph remains the
+adopted authority. The old pause-branch graph is an unmerged proposal. The seven
+checkpoint updates preserve source-specific accepted inputs and all original
+criteria/dependencies; S04 records its terminal assignment/source gates without
+an active author or a model retry. A02 is not closed by local review or metadata.
+
+Current-source and delivery reviews differ: source `daf8ba03` / author `bb03361`
+have a distinct local-rehearsal PASS, while this materialized append and metadata
+require their own exact review and actual full protected PR CI. Normal merge and
+the resulting exact main CI must precede separately reviewed A02 closure. Held
+S03/P02/T01/S04 and independent Board SDK/hardware sources are references only;
+they have not been imported into this candidate. No source archive, registry
+publication or physical qualification is included here.
 
 ## Recover the actual state
 

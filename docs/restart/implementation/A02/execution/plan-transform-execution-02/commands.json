@@ -1,0 +1,36 @@
+[
+  {
+    "command": [
+      "/home/tux/nsealr/.restart-tools/goal/r00/tools/baseline/.work/final/.tools/python/bin/python3",
+      "-B",
+      "-c",
+      "from pathlib import Path; import sys; sys.path.insert(0,sys.argv[1]+'/tools/migration'); from transforms import Changes; root=Path(sys.argv[1]); c=Changes(Path(sys.argv[2])); [c.put('scripts/'+n,(root/'tools/migration/templates/scripts'/n).read_bytes()) for n in ['verify_evidence.py','test_evidence.py']]; print(c.apply(Path(sys.argv[3]),'Preserve historical evidence while permitting separately reviewed future task closure'))",
+      "/home/tux/nsealr/.restart-tools/goal/a02",
+      "/home/tux/nsealr/.restart-tools/goal/a02/tools/migration/.runtime/rehearsal-01/repository",
+      "/home/tux/nsealr/.restart-tools/goal/a02/tools/migration/.runtime/rehearsal-01/plan-followup"
+    ],
+    "cwd": "/home/tux/nsealr/.restart-tools/goal/a02",
+    "ended_utc": "2026-10-18T19:02:40.749806+00:00",
+    "environment_sha256": "1329698bcbfb60c23fcd6617913d050c6e9d7e2f46108c49c01bb2a19625fae5",
+    "exit_code": 0,
+    "label": "evidence-closure-independence",
+    "log": "00-evidence-closure-independence.log",
+    "sha256": "cf3f2839b05e79c1b1d7773416112c46e82a5670a7fd7e256247f2788c89f26b",
+    "started_utc": "2026-10-18T19:02:40.647544+00:00"
+  },
+  {
+    "command": [
+      "make",
+      "test"
+    ],
+    "cwd": "/home/tux/nsealr/.restart-tools/goal/a02/tools/migration/.runtime/rehearsal-01/repository",
+    "ended_utc": "2026-10-18T19:02:42.379637+00:00",
+    "environment_sha256": "1329698bcbfb60c23fcd6617913d050c6e9d7e2f46108c49c01bb2a19625fae5",
+    "exit_code": 0,
+    "explicit_environment_sha256": "6590873e2886900ffbca4488d53f92473b47a2323777416f503e526df6250cab",
+    "label": "all-plan-evidence-bootstrap-controls",
+    "log": "01-all-plan-evidence-bootstrap-controls.log",
+    "sha256": "815868ce2d48a4ec782b488c4ba5964301403d0890fc32f8017dac747e796577",
+    "started_utc": "2026-10-18T19:02:40.749982+00:00"
+  }
+]

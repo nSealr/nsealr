@@ -1,0 +1,220 @@
+diff --git a/.github/workflows/ci.yml b/.github/workflows/ci.yml
+index 4850f9beeebfa8a8e2a70a888a6249ae7957863b..792fe15462acb742e93131f712e085426c973387 100644
+--- a/.github/workflows/ci.yml
++++ b/.github/workflows/ci.yml
+@@ -2,27 +2,28 @@ name: CI
+ 
+ on:
+   push:
++    branches: [main]
+   pull_request:
+   workflow_dispatch:
+ 
++permissions:
++  contents: read
++
+ jobs:
+   verify:
+     runs-on: ubuntu-latest
+     steps:
+-      - uses: actions/checkout@v5
+-      - uses: actions/setup-python@v6
++      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5.1.0
++        with:
++          fetch-depth: 0
++          persist-credentials: false
++      - uses: actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1 # v6.3.0
+         with:
+           python-version: "3.12.15"
+-      - name: Install pinned Rust toolchain
+-        # `rustup toolchain install` reads rust-toolchain.toml and installs
+-        # the pinned channel plus its declared components (rustfmt, clippy,
+-        # llvm-tools-preview) and the riscv32imafc target. (`rustup show` as
+-        # an installer is deprecated since rustup 1.28.)
+-        run: |
+-          rustup toolchain install
+-          cargo --version
+-      - name: Install cargo-deny and cargo-llvm-cov
+-        run: |
+-          cargo install --locked cargo-deny --version 0.20.2
+-          cargo install --locked cargo-llvm-cov --version 0.9.1
+-      - run: make ci
++          check-latest: false
++      # The existing hash-pinned installer records actual toolchain and source
++      # inputs. Hosted OS/runner and service availability are not hermetic.
++      - name: Bootstrap exact public product and pinned tools
++        run: python3 tools/baseline/bootstrap.py "${RUNNER_TEMP}/nsealr-product"
++      - name: Complete product acceptance
++        run: python3 "${RUNNER_TEMP}/nsealr-product/nsealr/tools/baseline/run.py" "${RUNNER_TEMP}/nsealr-product"
+diff --git a/Makefile b/Makefile
+index 9ed8114b220c07713acd8d61414ef51af4eb44b1..9769e1646650f36d2dbd52de7d662df6dc7cc998 100644
+--- a/Makefile
++++ b/Makefile
+@@ -76,4 +76,24 @@ repro-build:
+ 
+ rust-ci: cargo-fmt cargo-clippy cargo-test vector-harness cargo-deny coverage-ratchet repro-build
+ 
+-ci: test lint audit docs rust-ci
++contract-ci:
++	$(MAKE) -C protocols/contracts/v1 ci
++
++bridge-ci:
++	pnpm ci
++
++pi-ci:
++	$(MAKE) -C apps/pi ci
++
++integration-tests:
++	python3 -B -m unittest discover -s tests/integration -p 'test_*.py' -v
++
++integration:
++	python3 -B -m tests.integration.run
++
++product-gates:
++	python3 scripts/check_product_gates.py
++	python3 -B -m unittest discover -s scripts -p 'test_product_gates.py' -v
++
++.PHONY: contract-ci bridge-ci pi-ci integration-tests integration product-gates
++ci: test lint audit docs rust-ci contract-ci bridge-ci pi-ci integration-tests product-gates integration
+diff --git a/package.json b/package.json
+index 6c539f54c8e98ea4bb5ae3be4bf90de6db04805c..43ff4a4ec10151b5fbea0d004eccc18c1df5abf2 100644
+--- a/package.json
++++ b/package.json
+@@ -44,7 +44,7 @@
+     "browser-runtime-bundle:check": "node tools/bridge/check_browser_runtime_bundle.mjs",
+     "browser-runtime-imports:check": "node tools/bridge/check_browser_runtime_imports.mjs",
+     "build": "node tools/bridge/build_packages.mjs",
+-    "ci": "pnpm build && pnpm typecheck && pnpm test && pnpm consumer-smoke && pnpm examples-smoke && pnpm readme-examples:check && pnpm api-docs:check && pnpm api-review:check && pnpm package-registry:check && pnpm browser-runtime-imports:check && pnpm browser-runtime-bundle:check && pnpm browser-extension-security:check && pnpm public-imports:check && pnpm release-plan:check && pnpm release-artifacts:safety && pnpm pack-smoke",
++    "ci": "pnpm build && pnpm typecheck && pnpm test && pnpm consumer-smoke && pnpm examples-smoke && pnpm readme-examples:check && pnpm api-docs:check && pnpm api-review:check && pnpm package-registry:check && pnpm browser-runtime-imports:check && pnpm browser-runtime-bundle:check && pnpm browser-extension-security:check && pnpm public-imports:check && pnpm release-plan:check && pnpm release-artifacts:safety && pnpm pack-smoke && pnpm product-boundaries:check && pnpm current-guides:check",
+     "consumer-smoke": "pnpm --filter @nsealr/consumer-smoke smoke",
+     "current-guides:check": "node --import tsx/esm tools/bridge/check_current_guides.mjs && node --import tsx/esm tools/bridge/test_current_guides.mjs",
+     "examples-smoke": "pnpm --filter @nsealr/sdk-examples verify",
+diff --git a/protocols/contracts/v1/Makefile b/protocols/contracts/v1/Makefile
+new file mode 100644
+index 0000000000000000000000000000000000000000..a6c2e1fb26bebdbfa761c3923414c26bb5cc26a6
+--- /dev/null
++++ b/protocols/contracts/v1/Makefile
+@@ -0,0 +1,9 @@
++.PHONY: test lint audit ci
++test:
++	python3 scripts/verify_specs.py
++	python3 -B -m unittest discover -s tests -v
++lint:
++	python3 -m compileall -q scripts tests
++audit:
++	python3 scripts/verify_repo.py
++ci: test lint audit
+diff --git a/scripts/check_product_gates.py b/scripts/check_product_gates.py
+new file mode 100644
+index 0000000000000000000000000000000000000000..fccbcd0ba232874968d0c1065e7fa05bde074e9c
+--- /dev/null
++++ b/scripts/check_product_gates.py
+@@ -0,0 +1,42 @@
++#!/usr/bin/env python3
++"""Check placement of the already-required product gates, not task status."""
++import ast
++from pathlib import Path
++import subprocess
++
++ROOT=Path(__file__).resolve().parents[1]
++REQUIRED_STEPS={1:'check_fixture_snapshots',2:'integration_feature_matrix',3:'integration_companion_fixtures',4:'integration_companion_policy_cli',5:'integration_companion_nip46_cli',6:'integration_companion_serial_frame_cli',7:'integration_companion_service_context',8:'integration_companion_route_identity',9:'integration_companion_sdk_browser',10:'integration_browser_extension_package_plan',11:'integration_browser_extension_package_build',12:'integration_browser_extension_origin_permission_cli',13:'integration_browser_extension_origin_review_control',14:'integration_browser_extension_origin_approval_control',15:'integration_browser_native_messaging_manifest',17:'integration_raspberry_hardware_probe',19:'integration_vault_companion'}
++REQUIRED_COMMANDS=('scripts/verify_contracts.py','scripts/test_contracts.py','scripts/verify_evidence.py','scripts/validate_restart_plan.py','tools/baseline','cargo fmt','cargo clippy','cargo test --workspace','cargo test -p nsealr-core --features std','riscv32imafc-unknown-none-elf','apps/desktop-simulator/Cargo.toml','cargo deny check','cargo llvm-cov','ci/check_coverage_ratchet.py','ci/repro_build.sh','pnpm ci','protocols/contracts/v1','scripts/verify_specs.py','apps/pi','tests/integration','tests.integration.run')
++
++
++def steps_from_source(text):
++    tree=ast.parse(text)
++    matches=[node for node in tree.body if isinstance(node,ast.Assign) and any(isinstance(t,ast.Name) and t.id=='PRODUCT_STEPS' for t in node.targets)]
++    if len(matches)!=1:raise ValueError('integration recipe must declare one step sequence')
++    return ast.literal_eval(matches[0].value)
++
++
++def validate_steps(steps):
++    if tuple(steps)!=tuple(REQUIRED_STEPS.items()):raise ValueError('missing, bypassed or extra product integration obligation')
++
++
++def validate_ci_commands(text):
++    for marker in REQUIRED_COMMANDS:
++        # make prints unittest discovery instead of the module path.
++        if marker=='scripts/test_contracts.py':marker="test_contracts.py"
++        if marker not in text:raise ValueError('missing product gate: '+marker)
++    if any(value in text for value in ['../','NSEALR_HARDWARE_ROOT','tests.integration.external.','tests.integration.optional.','CHROMIUM','NSEALR_LIVE_E2E=1']):
++        raise ValueError('default product acceptance depends on external/private/physical resource')
++
++
++def current_ci_plan():
++    return subprocess.check_output(['make','--no-print-directory','-n','ci'],cwd=ROOT,text=True)
++
++
++def main():
++    validate_steps(steps_from_source((ROOT/'tests/integration/run.py').read_text()))
++    validate_ci_commands(current_ci_plan())
++    print('all retained gate placements and seventeen self-contained integration obligations present')
++
++
++if __name__=='__main__':main()
+diff --git a/scripts/test_product_gates.py b/scripts/test_product_gates.py
+new file mode 100644
+index 0000000000000000000000000000000000000000..da055f63b95e9ecab52aeb482d787616fc4d23c1
+--- /dev/null
++++ b/scripts/test_product_gates.py
+@@ -0,0 +1,60 @@
++"""Positive and mutation controls for admitted integration-placement obligations."""
++import os
++from pathlib import Path
++import sys
++import tempfile
++import unittest
++from unittest.mock import patch
++from check_product_gates import ROOT,REQUIRED_STEPS,REQUIRED_COMMANDS,current_ci_plan,steps_from_source,validate_steps,validate_ci_commands
++sys.path.insert(0,str(ROOT))
++from tests.integration.integration_support import pinned_command
++
++class ProductGateControls(unittest.TestCase):
++ @classmethod
++ def setUpClass(cls):
++  cls.plan=current_ci_plan();cls.steps=steps_from_source((ROOT/'tests/integration/run.py').read_text())
++
++ def test_1ef1b23af596b9384b11915492171412b116008e2fb776efc11ff115ae29b7b5(self):
++  validate_ci_commands(self.plan)
++  for mutation in ['make -C ../private ci','NSEALR_HARDWARE_ROOT=/somewhere make audit','python3 -m tests.integration.external.integration_hardware_validation']:
++   with self.subTest(mutation=mutation),self.assertRaisesRegex(ValueError,'external/private/physical'):validate_ci_commands(self.plan+'\n'+mutation)
++
++ def assert_step(self,number):
++  validate_steps(self.steps)
++  with self.assertRaisesRegex(ValueError,'obligation'):validate_steps([r for r in self.steps if r[0]!=number])
++  with self.assertRaisesRegex(ValueError,'obligation'):validate_steps([(n,'bypassed' if n==number else name) for n,name in self.steps])
++
++ def test_2cd5cf0b745ba6b4d567e471cfebe87ce2f4494715d86bc22f23925e25027090(self):self.assert_step(15)
++ def test_5413e7d98413e95cd18caf1adef38d50182d16e899157004e1c0dd2369774d55(self):self.assert_step(10)
++ def test_9a42df470476778c0cfd4aaa1fc23a9567f7e94575b46d9626b6bb8b31a74473(self):self.assert_step(17)
++ def test_bae25d0a1c3821c9e3bb3487c97ffd2be0fec90a87642f45b90d93360ce04276(self):self.assert_step(9)
++ def test_d4c332e9b34555a73d98d4139c68349efb53465c9b80f82837e528bcbe5f3b94(self):self.assert_step(11)
++ def test_cd8aa2e857fd38ec84f82d6495d3b76bafa25f213800cde86d019df14c17056a(self):
++  self.assert_step(1);validate_ci_commands(self.plan)
++  with self.assertRaisesRegex(ValueError,'verify_contracts'):validate_ci_commands(self.plan.replace('scripts/verify_contracts.py','scripts/bypassed.py'))
++  # Actual missing/extra/forged/hidden/nonregular consumer tamper execution is
++  # retained in test_contracts.py, not emulated by a second artifact validator.
++
++ def test_c14f9f5e3399a076c3fbe828287049ce0f33b47cc3e3c4dba31c165a3663ffb4(self):
++  validate_ci_commands(self.plan);validate_steps(self.steps)
++  for marker in REQUIRED_COMMANDS:
++   marker='test_contracts.py' if marker=='scripts/test_contracts.py' else marker
++   with self.subTest(marker=marker),self.assertRaisesRegex(ValueError,'missing product gate'):validate_ci_commands(self.plan.replace(marker,'REMOVED'))
++
++ def test_ea7dbb867accab4e166758af8b0de49bd0f38b6ab72e490e91cc78f856d27d7e(self):
++  validate_ci_commands(self.plan)
++  self.assertIn('tests/integration',self.plan)
++  for command in ['python3 -m tests.integration.optional.browser_extension_chromium_smoke','CHROMIUM=/installed/browser make ci']:
++   with self.assertRaisesRegex(ValueError,'physical'):validate_ci_commands(self.plan+'\n'+command)
++
++ def test_687ec755f8234a8d0084df78aa5e9381d8e5ded2aaf0963c549e8319966ca0c2(self):
++  # The actual pinned executable is on the supplied bootstrap PATH, independent
++  # of whether the host has globally installed pnpm.
++  self.assertEqual(pinned_command(['pnpm','--version']),['pnpm','--version'])
++  with tempfile.TemporaryDirectory() as tmp:
++   with patch.dict(os.environ,{'PATH':tmp}):
++    with self.assertRaises(FileNotFoundError):pinned_command(['pnpm','--version'])
++    fake=Path(tmp)/'pnpm';fake.write_text('#!/bin/sh\nprintf "0.0.0\\n"\n');fake.chmod(0o755)
++    with self.assertRaisesRegex(RuntimeError,'pinned product toolchain'):pinned_command(['pnpm','--version'])
++
++if __name__=='__main__':unittest.main()
