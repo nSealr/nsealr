@@ -1,8 +1,9 @@
 # QP01 reviewed preparation delivery
 
 QP01 remains **planned**, with all three acceptance criteria incomplete. This
-branch bundles two reviewed preparation packets for the Pi path; it does not
-admit product implementation, a physical probe or Q02 completion. All six Q02
+branch bundles two reviewed preparation packets for the Pi path alongside one
+bounded QH01 QR-codec correction. The QP01 preparation does not admit a product
+Pi adapter, a physical probe or Q02 completion. All six Q02
 criteria remain incomplete. Exact kit/image/operator/access facts are still
 missing, and the existing follow-up stays pending.
 
@@ -37,10 +38,22 @@ tree87a54f18, following protected PR40/full PR and actual-main CI. Original sour
 runtimebf51, test-only4bab and their distinct review roles are unchanged. K01
 acceptance does not qualify target providers, real keys, transport or a device.
 
-[Delivery proof](delivery/result.json), [exact80-file copy inventory](delivery/copy-inventory.json)
+The separate [QH01 ingress component](../QH01/qr-ingress/brief.md) at557fe975 changes
+only two QR source/test files: static encoded-length refusal and animated
+whole-frame/raw-collection/exact-chunk guards run before the affected conversion
+or retained work. Existing provisional limits and framing remain unchanged.
+The [distinct review](../reviews/QH01-qr-ingress/report.md) at
+`dd7c4685e6da219707b8d567d0d16149be96a304` is
+`PASS_QR_ingress_component_only`, separate from the QP01 preparation verdicts.
+All five QH01 criteria remain incomplete. No complete client/optical session,
+camera/native decoder or screen comparison is qualified.
+
+[Combined delivery proof](delivery/result.json), [exact copy inventory](delivery/copy-inventory.json)
 and [scope](delivery/source-scope.json) bind this metadata proposal to the actual
 accepted5d base. Every original mode/blob/byte and paired relative name is kept.
 The copied source packets and reports are immutable; only this entry, current
-shared navigation and the admitted current graph fields describe the new delivery.
+shared navigation, the exact admitted QR source/test postimages and current graph
+fields describe the new delivery. Original194615 remains the immutable standalone
+QP01 metadata checkpoint; its old checks are not relabelled as combined-source checks.
 The root reviewer still must approve this exact final package; normal protected
 PR and resulting-main CI remain future gates for this preparation delivery.

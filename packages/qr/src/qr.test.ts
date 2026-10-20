@@ -1,7 +1,8 @@
 import { readFileSync } from "node:fs";
 import { createHash } from "node:crypto";
 import { resolve } from "node:path";
-import { describe, expect, it } from "vitest";
+import { describe, expect, it, vi } from "vitest";
+import * as protocol from "@nsealr/protocol";
 import { resolveSpecsRoot } from "@nsealr/fixtures";
 import { NSEALR_V0_LIMITS } from "@nsealr/protocol";
 import {
@@ -102,5 +103,172 @@ describe("QR envelope v0", () => {
       const vector = JSON.parse(readFileSync(resolve(invalidRoot, `${name}.json`), "utf8"));
       expect(() => decodeQrEnvelope(vector.envelope), name).toThrow(vector.expected_error);
     }
+  });
+});
+
+
+// Independent framing/checksum inputs use Node Buffer/crypto, not QR encoders.
+const hashQrInput = (value: string | Uint8Array) => createHash("sha256").update(value).digest("hex");
+const animatedRawFrame = (digest: string, indexTotal: string, chunk: string): string => {
+  const body = `${ANIMATED_QR_ENVELOPE_PREFIX}${digest}:${indexTotal}:${chunk}`;
+  return `${body}:${hashQrInput(body).slice(0, 16)}`;
+};
+const independentAnimatedFrames = (raw: string | Uint8Array, firstSingleChars = 0): string[] => {
+  const bytes = typeof raw === "string" ? Buffer.from(raw) : Buffer.from(raw);
+  const payload = bytes.toString("base64url");
+  const chunks = firstSingleChars > 0
+    ? [...payload.slice(0, firstSingleChars), payload.slice(firstSingleChars)]
+    : payload.match(/.{1,256}/gu)!;
+  return chunks.map((chunk, index) => animatedRawFrame(hashQrInput(bytes), `${index + 1}/${chunks.length}`, chunk));
+};
+const stringJsonBytes = (bytes: number): string => JSON.stringify("a".repeat(bytes - 2));
+const staticByteLimit = NSEALR_V0_LIMITS.max_static_qr_decoded_json_bytes;
+const animatedByteLimit = NSEALR_V0_LIMITS.max_animated_qr_decoded_json_bytes;
+const encodedAnimatedLimit = Math.ceil(animatedByteLimit * 4 / 3);
+// Fixed digest/checksum widths and existing max64 index/total: no new capacity.
+const animatedFrameOverhead = ANIMATED_QR_ENVELOPE_PREFIX.length + 64 + 16 + 4
+  + 2 * String(NSEALR_V0_LIMITS.max_animated_qr_frame_count).length;
+const wholeAnimatedFrameLimit = animatedFrameOverhead + NSEALR_V0_LIMITS.max_animated_qr_frame_payload_chars;
+
+describe("QR ingress before conversion and retained-work bounds", () => {
+  it.each([-1, 0])("accepts static decoded byte limit %+d using independent JSON/base64", (delta) => {
+    const raw = stringJsonBytes(staticByteLimit + delta);
+    expect(Buffer.byteLength(raw)).toBe(staticByteLimit + delta);
+    expect(decodeQrEnvelope(`${QR_ENVELOPE_PREFIX}${Buffer.from(raw).toString("base64url")}`)).toEqual(JSON.parse(raw));
+  });
+
+  it("rejects canonical static max+1 bytes before base64 allocation or re-encoding", () => {
+    const raw = stringJsonBytes(staticByteLimit + 1);
+    const envelope = `${QR_ENVELOPE_PREFIX}${Buffer.from(raw).toString("base64url")}`;
+    const decode = vi.spyOn(protocol, "decodeBase64Url");
+    const encode = vi.spyOn(protocol, "encodeBase64Url");
+    try {
+      expect(() => decodeQrEnvelope(envelope)).toThrow("QR decoded JSON exceeds max_static_qr_decoded_json_bytes");
+      expect(decode).not.toHaveBeenCalled();
+      expect(encode).not.toHaveBeenCalled();
+    } finally { decode.mockRestore(); encode.mockRestore(); }
+  });
+
+  it("rejects static raw max+1 characters before scanning malformed base64", () => {
+    const payload = "A".repeat(Math.ceil(staticByteLimit * 4 / 3)) + "?";
+    expect(() => decodeQrEnvelope(`${QR_ENVELOPE_PREFIX}${payload}`)).toThrow("QR decoded JSON exceeds max_static_qr_decoded_json_bytes");
+  });
+
+  it.each([-1, 0])("accepts complete64-frame input with a whole frame at limit %+d", (delta) => {
+    //63 one-character chunks plus the final255/256-character chunk. All64
+    //checksums, aggregate digest, JSON and canonical trailing bits are valid.
+    const raw = stringJsonBytes(239 + delta);
+    const frames = independentAnimatedFrames(raw, 63);
+    expect(frames).toHaveLength(64);
+    expect(frames.at(-1)!.length).toBe(wholeAnimatedFrameLimit + delta);
+    expect(decodeAnimatedQrEnvelopeFrames([...frames].reverse())).toEqual(JSON.parse(raw));
+  });
+
+  it("bounds a whole animated frame before split, lexical scan or checksum work", () => {
+    const frames = independentAnimatedFrames(stringJsonBytes(240), 63);
+    const oversized = frames.at(-1)!;
+    expect(oversized.length).toBe(wholeAnimatedFrameLimit + 1);
+    const split = vi.spyOn(String.prototype, "split");
+    let failure: unknown;
+    try {
+      try { decodeAnimatedQrEnvelopeFrames([oversized]); } catch (error) { failure = error; }
+      expect(split.mock.contexts.some((context) => String(context) === oversized)).toBe(false);
+      expect(failure).toMatchObject({ message: "animated QR frame exceeds bounded frame length" });
+    } finally { split.mockRestore(); }
+  });
+
+  it.each([-1, 0])("accepts animated decoded byte limit %+d independently framed", (delta) => {
+    const raw = stringJsonBytes(animatedByteLimit + delta);
+    expect(Buffer.byteLength(raw)).toBe(animatedByteLimit + delta);
+    expect(decodeAnimatedQrEnvelopeFrames(independentAnimatedFrames(raw))).toEqual(JSON.parse(raw));
+  });
+
+  it("bounds exact cumulative chunks before joined base64 allocation or re-encoding", () => {
+    const frames = independentAnimatedFrames(stringJsonBytes(animatedByteLimit + 1));
+    //This input deliberately fits the conservative raw-header budget, so a
+    //whole-frame or raw-collection guard cannot mask the exact chunk check.
+    expect(frames.reduce((sum, frame) => sum + frame.length, 0)).toBeLessThanOrEqual(
+      encodedAnimatedLimit + frames.length * animatedFrameOverhead);
+    const decode = vi.spyOn(protocol, "decodeBase64Url");
+    const encode = vi.spyOn(protocol, "encodeBase64Url");
+    try {
+      expect(() => decodeAnimatedQrEnvelopeFrames(frames)).toThrow("animated QR decoded JSON exceeds max_animated_qr_decoded_json_bytes");
+      expect(decode).not.toHaveBeenCalled();
+      expect(encode).not.toHaveBeenCalled();
+    } finally { decode.mockRestore(); encode.mockRestore(); }
+  });
+
+  it.each([-1, 0, 1])("checks the raw collection budget %+d before checksums/duplicate interpretation", (delta) => {
+    const count = NSEALR_V0_LIMITS.max_animated_qr_frame_count;
+    const payloadCharacters = encodedAnimatedLimit + delta;
+    const chunks = Array.from({ length: count }, (_, index) => "A".repeat(
+      index === count - 1 ? payloadCharacters - 85 * (count - 1) : 85));
+    //Each frame individually has a valid checksum and bounded chunk. Duplicate
+    //indices are the isolated later error at/below the raw collection ceiling.
+    const frames = chunks.map((chunk) => animatedRawFrame("0".repeat(64), "64/64", chunk));
+    expect(frames.reduce((sum, frame) => sum + frame.length, 0)).toBe(
+      encodedAnimatedLimit + count * animatedFrameOverhead + delta);
+    expect(frames.every((frame) => frame.length <= wholeAnimatedFrameLimit)).toBe(true);
+    const encode = vi.spyOn(TextEncoder.prototype, "encode");
+    let failure: unknown;
+    try {
+      try { decodeAnimatedQrEnvelopeFrames(frames); } catch (error) { failure = error; }
+      const checksumCalls = encode.mock.calls.filter(([value]) => value?.startsWith(ANIMATED_QR_ENVELOPE_PREFIX));
+      if (delta > 0) {
+        expect(checksumCalls).toHaveLength(0);
+        expect(failure).toMatchObject({ message: "animated QR decoded JSON exceeds max_animated_qr_decoded_json_bytes" });
+      } else {
+        expect(checksumCalls).toHaveLength(count);
+        expect(failure).toMatchObject({ message: "animated QR frames must be unique and contiguous" });
+      }
+    } finally { encode.mockRestore(); }
+  });
+
+  it.each([63, 64])("retains the existing valid caller frame count at%d", (count) => {
+    const raw = stringJsonBytes(48);
+    const frames = independentAnimatedFrames(raw, count - 1);
+    expect(frames).toHaveLength(count);
+    expect(decodeAnimatedQrEnvelopeFrames(frames)).toEqual(JSON.parse(raw));
+  });
+
+  it("retains the existing65-frame refusal before any frame parsing/checksum", () => {
+    const frames = Array.from({ length: 65 }, (_, index) => animatedRawFrame("0".repeat(64), `${index + 1}/65`, "A"));
+    const encode = vi.spyOn(TextEncoder.prototype, "encode");
+    try {
+      expect(() => decodeAnimatedQrEnvelopeFrames(frames)).toThrow("animated QR frame count exceeds max_animated_qr_frame_count");
+      expect(encode.mock.calls.filter(([value]) => value?.startsWith(ANIMATED_QR_ENVELOPE_PREFIX))).toHaveLength(0);
+    } finally { encode.mockRestore(); }
+  });
+
+  it("keeps malformed static grammar errors independently observable below byte limits", () => {
+    for (const [payload, message] of [
+      ["bnVsbA=", "unpadded base64url"], ["bnVsb?", "must be base64url"],
+      ["A", "must be base64url"], ["bnVsbB", "invalid trailing bits"],
+      [Buffer.from([255]).toString("base64url"), "valid UTF-8"],
+      [Buffer.from("{").toString("base64url"), "not valid JSON"]
+    ]) expect(() => decodeQrEnvelope(`${QR_ENVELOPE_PREFIX}${payload}`), payload).toThrow(message);
+  });
+
+  it("keeps animated malformed fields/checksum/digest/UTF8/JSON independent of early bounds", () => {
+    const digest = hashQrInput("null");
+    for (const [frame, message] of [
+      [animatedRawFrame(digest, "1/1", "bnVsbA="), "unpadded base64url"],
+      [animatedRawFrame(digest, "1/1", "bnVsb?"), "must be base64url"],
+      [animatedRawFrame(digest, "1/1", "A"), "payload must be base64url"],
+      [animatedRawFrame(digest, "1/1", "bnVsbB"), "invalid trailing bits"],
+      [animatedRawFrame("0".repeat(64), "1/1", "bnVsbA"), "decoded digest mismatch"],
+      [independentAnimatedFrames(Buffer.from([255]))[0], "valid UTF-8"],
+      [independentAnimatedFrames("{")[0], "not valid JSON"],
+      [animatedRawFrame(digest, "01/1", "bnVsbA"), "index must use index/total"],
+      [animatedRawFrame(digest, "2/1", "bnVsbA"), "frame index is out of range"]
+    ]) expect(() => decodeAnimatedQrEnvelopeFrames([frame]), message).toThrow(message);
+    const valid = animatedRawFrame(digest, "1/1", "bnVsbA");
+    const corrupt = valid.slice(0, -1) + (valid.endsWith("0") ? "1" : "0");
+    expect(() => decodeAnimatedQrEnvelopeFrames([corrupt])).toThrow("frame checksum mismatch");
+    const first = animatedRawFrame(digest, "1/2", "bnV");
+    const second = animatedRawFrame("0".repeat(64), "2/2", "sbA");
+    expect(() => decodeAnimatedQrEnvelopeFrames([first, second])).toThrow("frame set mismatch");
+    expect(() => decodeAnimatedQrEnvelopeFrames([first, first])).toThrow("unique and contiguous");
+    expect(() => decodeAnimatedQrEnvelopeFrames([first])).toThrow("unique and contiguous");
   });
 });
