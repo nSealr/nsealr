@@ -31,6 +31,35 @@ flowchart LR
 
 EVT, DVT and production validation are purposes, not a demand for three different revisions if one revision passes all applicable evidence. A design change reopens its affected tests. An agent can prepare designs, procedures and analyze instrument data; an identified person or genuinely connected bench must perform wiring, inspection and physical measurements. A specialist AI review does not replace required independent electrical/security expertise.
 
+## Product choice before H04
+
+The maintainer clarified the physical realization of [PROD-11/12](../product/requirements.md)
+on 20 October 2026. These are current Board implementation requirements; they
+are not attributed to the historical P01 review or evidence. The Board has
+independent developer value alongside its Nostr application.
+
+| Physical realization requirement | Observable obligation | Task owner |
+| --- | --- | --- |
+| BOARD-01 | The programmable Board has independent developer value. Compare CPU, memory, graphics, interfaces, expansion and power on the Nostr review flow plus two bounded non-Nostr consumers: a display/input/expansion diagnostic and a generic key-operation demonstration. Preserve reasonable measured development margin; justify omissions by cost, power, size, reliability or security rather than implementation convenience alone. | H01/H02/H03/H04; B01/B02/B03 |
+| BOARD-02 | A readable, responsive, usable touchscreen is the preferred custom-Board interaction. Compare the current panel/control baseline on navigation, local data entry, recovery and complete operation review; evaluate a dedicated physical sensitive-confirmation control. Establish display/input ownership and the binding between the actual visible operation and consent. Neither touch nor a button alone proves trusted presentation or authorization. | H01/H02/H03/H04; S03 and actual generic/Signer UI qualification |
+| BOARD-03 | Evaluate a concrete two-SE architecture against a one-SE control. For each exact component identify its contribution, cooperation, common failure domains and what remains protected after either SE or the host is compromised. Separate PIN/key-at-rest protection from exposure during signing/use. Include document/API/update access, ownership, recovery, faults and maintenance. A third SE requires a distinct verified benefit; no component or multi-SE guarantee is selected by this requirement. | H01/S04/H02S/H04; B02/B03 and V02/V03 actual lifecycle/security proof |
+
+The two non-Nostr demonstrations bound the first SDK release. They do not
+introduce complete SSH, FIDO, TOTP or wallet products, or an application
+marketplace. New owner firmware has its own application guarantees. Installation,
+debug, signed update, recovery, secret reset and ownership transitions remain
+explicit; one trusted image does not isolate mutually hostile applications.
+
+The pre-freeze comparison contains at most three complete configurations, with
+exact candidates, indicative dated cost ranges and uncertainty, measured versus
+assumed budgets, developer/debug/owner lifecycle, outstanding proof and a
+recommendation. It includes a concrete two-SE study against a one-SE control:
+separate PIN/at-rest protection, active-use exposure and the effect of either
+chip or the host being compromised. A third SE needs a distinct verified benefit.
+No touch controller, host, chip pair or isolation guarantee is selected here.
+The existing source reviews remain useful comparative work; all selected-part
+manual, bench, independent-review and assembled-board gates still apply.
+
 ## What the AI tooling has actually demonstrated
 
 The clean October 18 tuple is KiCad 10.0.7, official `kicad-python 0.8.0`, protobuf 5.29.6, MCP 1.30.0 and KiPilot commit `303e62010172bf99c2aa41c10237c18bcabcca7a`. Installation resolved normally and the installed binding matched the official wheel. A three-component resistor-divider board is the tool test fixture; it is not the nSealr design.
@@ -73,7 +102,7 @@ Graph revision 5 makes these lessons explicit: S02 defines the entropy boundary/
 | Block | Working shortlist/direction | Required decision evidence |
 | --- | --- | --- |
 | Main MCU | U585VI candidate; U5A5VJ if measured internal memory requires it; S3 comparator | Actual firmware resource and UI/driver support, lifecycle/debug, exact package/power option and current manual/errata. Safe 7's U5G9 is reference evidence, not a mandatory migration. |
-| Secure element | One SE first; SE051C2, Trust M or TROPIC only if the required operations, lifecycle and threat fit | Exact configured part and accessible complete mandatory command/security documentation, actual bench command proof and advisory closure. These are not algorithm-equivalent alternatives. Native BIP-340 is unproven. |
+| Secure element | Concrete two-SE study against a one-SE control; retain individual SE051C2, Trust M and TROPIC investigations as comparative inputs, with no pair selected | Exact configured components, each chip's contribution/cooperation and either-chip/host compromise cases; accessible mandatory command/security/update documentation, actual bench proof and advisory closure. These are not algorithm-equivalent alternatives. Native BIP-340 is unproven. A third SE needs a distinct verified benefit. |
 | Display and local input | Direct MCU-controlled display/input; exact module plus adapter | Review readability, memory/bandwidth/latency, reset and DMA ownership, connector/voltage and mechanical fit. No universal FPC assumption. |
 | Power and battery | USB-C 5 V sink baseline; charger/regulator shortlist from prior study | Current entitlement and reset defaults, cell protection/NTC, polarity, charge/thermal limits, power-cut behavior and off-state backfeed. No frozen BOM or assumed USB-PD support. |
 | Expansion/debug | Documented voltage and power, private SE buses, protected maker buses | Per-pin mux and ownership, safe startup/disconnect, lifecycle access and clear separation of trusted UI from general expansion. |

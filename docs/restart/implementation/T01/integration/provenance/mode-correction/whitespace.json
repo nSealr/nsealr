@@ -1,0 +1,36 @@
+{
+  "scope_base": "0c4c223c94fb0b4b33e3a9fd571cf5fd88cfa4f4",
+  "historical_raw_log_unchanged": true,
+  "checks": [
+    {
+      "argv": [
+        "git",
+        "diff",
+        "--check",
+        "0c4c223c94fb0b4b33e3a9fd571cf5fd88cfa4f4"
+      ],
+      "exit_code": 2,
+      "expected_exit": 2,
+      "role": "Full delta: preserved raw unittest RED log has two trailing-space observations, not a functional product failure.",
+      "stdout": "docs/restart/implementation/T01/integration/provenance/mode-correction/before-owner-bit-fix/stderr.log:1: trailing whitespace.\n+test_git_owner_execution_mode_change_rejects_even_with_other_execution_bits (test_contracts.ArtifactProvenanceTests.test_git_owner_execution_mode_change_rejects_even_with_other_execution_bits) ... \ndocs/restart/implementation/T01/integration/provenance/mode-correction/before-owner-bit-fix/stderr.log:4: trailing whitespace.\n+test_nonowner_execution_and_other_permissions_do_not_invent_git_mode_changes (test_contracts.ArtifactProvenanceTests.test_nonowner_execution_and_other_permissions_do_not_invent_git_mode_changes) ... \n",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "git",
+        "diff",
+        "--check",
+        "0c4c223c94fb0b4b33e3a9fd571cf5fd88cfa4f4",
+        "--",
+        ".",
+        ":(exclude)**/*.log"
+      ],
+      "exit_code": 0,
+      "expected_exit": 0,
+      "role": "All changed source and non-log proof whitespace.",
+      "stdout": "",
+      "stderr": ""
+    }
+  ],
+  "disposition": "Keep failed observation bytes; no log normalization, gate change or functional PASS inferred from whitespace."
+}

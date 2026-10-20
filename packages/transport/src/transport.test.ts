@@ -36,6 +36,27 @@ const publicKeyVector = JSON.parse(
 const basicEventVector = JSON.parse(readFileSync(resolve(specsRoot, "vectors/events/kind-1-basic.json"), "utf8"));
 
 describe("transport adapters", () => {
+  it("bounds actual incoming and outgoing frames by the effective local frame ceiling", async () => {
+    const request = JSON.parse(readFileSync(resolve(specsRoot, "examples/request-get-public-key.json"), "utf8"));
+    const response = JSON.parse(readFileSync(resolve(specsRoot, "examples/response-get-public-key.json"), "utf8"));
+    // Independent compact-JSON/base64url framing lengths: request 67 bytes,
+    // response 142 bytes; with the unchanged frame header/checksum: 125/226.
+    expect(encodeSerialFrame({ type: "request", payload: request }).length).toBe(125);
+    expect(encodeSerialFrame({ type: "response", payload: response }).length).toBe(226);
+    for (const ceiling of [124, 125, 225, 226, 227]) {
+      let writes = 0;
+      const transport = new SerialLineTransport({ maxFrameBytes: ceiling,
+        port: { writeLine: async () => { writes++; }, readLine: async () => encodeSerialFrame({ type: "response", payload: response }) } });
+      if (ceiling < 226) await expect(transport.exchange(request)).rejects.toThrow(/frame capacity/);
+      else await expect(transport.exchange(request)).resolves.toEqual(response);
+      expect(writes).toBe(ceiling < 125 ? 0 : 1);
+    }
+    for (const ceiling of [0, -1, 1.5, Number.NaN, 1025]) {
+      expect(() => new SerialLineTransport({ maxFrameBytes: ceiling,
+        port: { writeLine: async () => undefined, readLine: async () => null } })).toThrow(/maxFrameBytes/);
+    }
+  });
+
   it("L-04: cumulative tiny-line work is bounded and a failed connection cannot accumulate retries", async () => {
     let reads = 0, writes = 0;
     const transport = new SerialLineTransport({ maxIgnoredLines: 128, maxWorkBytes: 1024, responseTimeoutMs: 100,

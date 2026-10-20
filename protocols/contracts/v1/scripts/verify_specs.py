@@ -1160,14 +1160,6 @@ def check_account_descriptor_shape(path: str, value: object, errors: list[str]) 
             errors.append(f"{path}: device_slot recovery requires slot_id")
         if not isinstance(recovery.get("backup_required"), bool):
             errors.append(f"{path}: device_slot recovery requires backup_required boolean")
-    elif recovery_type == "card_slot":
-        check_known_fields(path, "card_slot recovery", recovery, {"type", "card_id", "slot_id", "backup_required"}, errors)
-        if not isinstance(recovery.get("card_id"), str) or not recovery["card_id"]:
-            errors.append(f"{path}: card_slot recovery requires card_id")
-        if not isinstance(recovery.get("slot_id"), str) or not recovery["slot_id"]:
-            errors.append(f"{path}: card_slot recovery requires slot_id")
-        if not isinstance(recovery.get("backup_required"), bool):
-            errors.append(f"{path}: card_slot recovery requires backup_required boolean")
     elif recovery_type == "hardware_wallet_slot":
         check_known_fields(
             path,

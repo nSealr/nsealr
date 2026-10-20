@@ -925,6 +925,10 @@ export async function handleLocalServiceRequestAsync(
   if (serviceRequest.request.operation !== "dispatch_signer_request") {
     return handleLocalServiceRequest(value, context);
   }
+  const authorization = authorizeClient(context, serviceRequest.request.params.client, serviceRequest.request.operation);
+  if (!authorization.ok) {
+    return errorResponse(serviceRequest.request, "unauthorized_client", authorization.error);
+  }
   return dispatchSignerRequestAsync(serviceRequest.request, context);
 }
 
@@ -1197,7 +1201,13 @@ function dispatchSignerRequest(
   try {
     prepared.checkCurrent();
     signerResponse = prepared.dispatcher(prepared.dispatchRequest);
-    if (isPromiseLike(signerResponse)) signerResponse = prepared.trackPending(signerResponse);
+    if (isPromiseLike(signerResponse)) {
+      const pendingResponse = prepared.trackPending(signerResponse);
+      // Observe rejection before any post-dispatch validation can return early.
+      // The finite reservation still remains held until actual settlement.
+      pendingResponse.then(undefined, () => undefined);
+      signerResponse = pendingResponse;
+    }
     prepared.checkCurrent();
     if (!isPromiseLike(signerResponse)) checkDispatchResponseCapacity(prepared.dispatchRequest, signerResponse);
   } catch (error) {
@@ -1207,7 +1217,6 @@ function dispatchSignerRequest(
   }
 
   if (isPromiseLike(signerResponse)) {
-    signerResponse.then(undefined, () => undefined);
     return errorResponse(
       request,
       "signer_dispatch_failed",

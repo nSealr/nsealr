@@ -1,0 +1,63 @@
+test_git_owner_execution_mode_change_rejects_even_with_other_execution_bits (test_contracts.ArtifactProvenanceTests.test_git_owner_execution_mode_change_rejects_even_with_other_execution_bits) ... 
+  test_git_owner_execution_mode_change_rejects_even_with_other_execution_bits (test_contracts.ArtifactProvenanceTests.test_git_owner_execution_mode_change_rejects_even_with_other_execution_bits) (permissions='0o645') ... FAIL
+  test_git_owner_execution_mode_change_rejects_even_with_other_execution_bits (test_contracts.ArtifactProvenanceTests.test_git_owner_execution_mode_change_rejects_even_with_other_execution_bits) (permissions='0o654') ... FAIL
+test_nonowner_execution_and_other_permissions_do_not_invent_git_mode_changes (test_contracts.ArtifactProvenanceTests.test_nonowner_execution_and_other_permissions_do_not_invent_git_mode_changes) ... 
+  test_nonowner_execution_and_other_permissions_do_not_invent_git_mode_changes (test_contracts.ArtifactProvenanceTests.test_nonowner_execution_and_other_permissions_do_not_invent_git_mode_changes) (permissions='0o645') ... ERROR
+  test_nonowner_execution_and_other_permissions_do_not_invent_git_mode_changes (test_contracts.ArtifactProvenanceTests.test_nonowner_execution_and_other_permissions_do_not_invent_git_mode_changes) (permissions='0o654') ... ERROR
+
+======================================================================
+ERROR: test_nonowner_execution_and_other_permissions_do_not_invent_git_mode_changes (test_contracts.ArtifactProvenanceTests.test_nonowner_execution_and_other_permissions_do_not_invent_git_mode_changes) (permissions='0o645')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/tux/nsealr/.restart-tools/goal/t01-provenance/scripts/test_contracts.py", line 381, in test_nonowner_execution_and_other_permissions_do_not_invent_git_mode_changes
+    self.assertEqual(self.check()['files'],5)
+                     ^^^^^^^^^^^^
+  File "/home/tux/nsealr/.restart-tools/goal/t01-provenance/scripts/test_contracts.py", line 67, in check
+    def check(self):return verifier.validate(self.artifact,self.repo)
+                           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/tux/nsealr/.restart-tools/goal/t01-provenance/scripts/verify_contracts.py", line 200, in validate
+    raise ValueError('contract byte/mode tamper: ' + path)
+ValueError: contract byte/mode tamper: LICENSE
+
+======================================================================
+ERROR: test_nonowner_execution_and_other_permissions_do_not_invent_git_mode_changes (test_contracts.ArtifactProvenanceTests.test_nonowner_execution_and_other_permissions_do_not_invent_git_mode_changes) (permissions='0o654')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/tux/nsealr/.restart-tools/goal/t01-provenance/scripts/test_contracts.py", line 381, in test_nonowner_execution_and_other_permissions_do_not_invent_git_mode_changes
+    self.assertEqual(self.check()['files'],5)
+                     ^^^^^^^^^^^^
+  File "/home/tux/nsealr/.restart-tools/goal/t01-provenance/scripts/test_contracts.py", line 67, in check
+    def check(self):return verifier.validate(self.artifact,self.repo)
+                           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/tux/nsealr/.restart-tools/goal/t01-provenance/scripts/verify_contracts.py", line 200, in validate
+    raise ValueError('contract byte/mode tamper: ' + path)
+ValueError: contract byte/mode tamper: LICENSE
+
+======================================================================
+FAIL: test_git_owner_execution_mode_change_rejects_even_with_other_execution_bits (test_contracts.ArtifactProvenanceTests.test_git_owner_execution_mode_change_rejects_even_with_other_execution_bits) (permissions='0o645')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/tux/nsealr/.restart-tools/goal/t01-provenance/scripts/test_contracts.py", line 366, in test_git_owner_execution_mode_change_rejects_even_with_other_execution_bits
+    else:self.reject()
+         ^^^^^^^^^^^^^
+  File "/home/tux/nsealr/.restart-tools/goal/t01-provenance/scripts/test_contracts.py", line 69, in reject
+    with self.assertRaises((ValueError,subprocess.CalledProcessError)):self.check()
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: (<class 'ValueError'>, <class 'subprocess.CalledProcessError'>) not raised
+
+======================================================================
+FAIL: test_git_owner_execution_mode_change_rejects_even_with_other_execution_bits (test_contracts.ArtifactProvenanceTests.test_git_owner_execution_mode_change_rejects_even_with_other_execution_bits) (permissions='0o654')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/tux/nsealr/.restart-tools/goal/t01-provenance/scripts/test_contracts.py", line 366, in test_git_owner_execution_mode_change_rejects_even_with_other_execution_bits
+    else:self.reject()
+         ^^^^^^^^^^^^^
+  File "/home/tux/nsealr/.restart-tools/goal/t01-provenance/scripts/test_contracts.py", line 69, in reject
+    with self.assertRaises((ValueError,subprocess.CalledProcessError)):self.check()
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: (<class 'ValueError'>, <class 'subprocess.CalledProcessError'>) not raised
+
+----------------------------------------------------------------------
+Ran 2 tests in 0.241s
+
+FAILED (failures=2, errors=2)

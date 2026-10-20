@@ -977,6 +977,35 @@ describe("local service boundary", () => {
     });
   });
 
+  it("authorizes both dispatch entrypoints before compatibility or adapter work", async () => {
+    const envelope = { version: 1, request_id: "svc-dispatch-permission", operation: "dispatch_signer_request",
+      params: { client, route_request: routeVector.request, request } };
+    const denied = [
+      { grants: [], message: "client is not paired" },
+      { grants: [{ ...grant, revoked: true }], message: "client pairing is revoked" },
+      { grants: [{ ...grant, expires_at: 1 }], message: "client pairing is expired" },
+      { grants: [{ ...grant, allowed_operations: ["validate_signer_request" as const] }], message: "client is not authorized for operation" }
+    ];
+    for (const scenario of denied) for (const asynchronous of [false, true]) {
+      let observations = 0, dispatches = 0;
+      const context = { accounts: fixtures.accounts, grants: scenario.grants, now: 100,
+        signerCompatibility: (route: {profile: string | null}) => { observations++; return conformanceSnapshot(route); },
+        monotonicNow: () => 0, signerDispatcher: () => { dispatches++; return response; } };
+      const result = asynchronous ? await handleLocalServiceRequestAsync(envelope, context) : handleLocalServiceRequest(envelope, context);
+      expect(result).toMatchObject({ ok: false, error: { code: "unauthorized_client", message: scenario.message } });
+      expect({ observations, dispatches }).toEqual({ observations: 0, dispatches: 0 });
+    }
+    for (const asynchronous of [false, true]) {
+      let dispatches = 0;
+      const context = { accounts: fixtures.accounts, grants: [grant], now: 100,
+        signerCompatibility: conformanceSnapshot, monotonicNow: () => 0,
+        signerDispatcher: () => { dispatches++; return response; } };
+      const result = asynchronous ? await handleLocalServiceRequestAsync(envelope, context) : handleLocalServiceRequest(envelope, context);
+      expect(result).toMatchObject({ ok: true, result: { signer_response: response } });
+      expect(dispatches).toBe(1);
+    }
+  });
+
   it("keeps async signer dispatchers out of the synchronous service boundary", () => {
     expect(handleLocalServiceRequest({
       version: 1,

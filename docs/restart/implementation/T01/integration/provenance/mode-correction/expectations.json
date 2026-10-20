@@ -1,0 +1,13 @@
+{
+  "recorded_utc": "2026-10-20T15:36:40.552449+00:00",
+  "role": "Independent actualGit expectations fixed before verifier correction",
+  "source_checkpoint": "0c4c223c94fb0b4b33e3a9fd571cf5fd88cfa4f4",
+  "finding": "T01-PROV-mode",
+  "expected_reference": "Real git add + git ls-files --stage with fixture core.filemode=true; compare to actual approved ls-tree mode. No new mode helper establishes expected answers.",
+  "negative": "Approved LICENSE100755, chmod0645/0654 removes owner execution while another class retains execution. Git index becomes100644; checker must reject.",
+  "positive": "Approved100644 still has Git mode100644 with chmod0645/0654/0600/0664; checker must accept unchanged Git mode. Approved100755 with0744/0760 remains100755 and must accept.",
+  "not_claimed": "Exact POSIXpermission preservation, ownership, ACL, SUID/sticky or security guarantee. Git records only regular/executable classification here.",
+  "test_source_sha256": "66142103dbbe0df458e036f4500b2dac26252a4f0c40b1f71b0f08a2aca4310c",
+  "old_verifier_sha256": "76dc31e28d4cf66296577e5a64741630cdba633378e3a7360f22f415270d7b86",
+  "historical_proof": "All prior22proof files and old36test receipts remain byteexact."
+}

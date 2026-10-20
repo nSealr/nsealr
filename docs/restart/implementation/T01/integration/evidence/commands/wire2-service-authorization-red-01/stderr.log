@@ -1,0 +1,29 @@
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  packages/client/src/service.test.ts > local service boundary > authorizes both dispatch entrypoints before compatibility or adapter work
+AssertionError: expected { version: 1, …(3) } to match object { ok: false, error: { …(2) } }
+(4 matching properties omitted from actual)
+
+- Expected
++ Received
+
+  {
+-   "error": {
+-     "code": "unauthorized_client",
+-     "message": "client is not paired",
+-   },
+-   "ok": false,
++   "ok": true,
+  }
+
+ ❯ packages/client/src/service.test.ts:995:22
+    993|         monotonicNow: () => 0, signerDispatcher: () => { dispatches++;…
+    994|       const result = asynchronous ? await handleLocalServiceRequestAsy…
+    995|       expect(result).toMatchObject({ ok: false, error: { code: "unauth…
+       |                      ^
+    996|       expect({ observations, dispatches }).toEqual({ observations: 0, …
+    997|     }
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+

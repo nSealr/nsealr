@@ -1,0 +1,1384 @@
+diff --git a/apps/bridge/service/src/context.ts b/apps/bridge/service/src/context.ts
+index dfb68a7d..1daf67cd 100644
+--- a/apps/bridge/service/src/context.ts
++++ b/apps/bridge/service/src/context.ts
+@@ -31,6 +31,10 @@ export type ServiceContextFileOptions = {
+   routeDriverStorePath?: string;
+   storageApprovalPath?: string;
+   openSerialLinePort?: SerialLinePortOpener;
++  /** An application-owned current adapter/session observation provider. Paths
++   * and a static account store alone do not establish current compatibility. */
++  signerCompatibility?: LocalServiceContext["signerCompatibility"];
++  monotonicNow?: LocalServiceContext["monotonicNow"];
+   now?: number;
+ };
+ 
+@@ -183,6 +187,8 @@ export function loadServiceContextFromFiles(options: ServiceContextFileOptions):
+     throw new Error("service route driver store requires an explicit serial-line opener");
+   }
+   return {
++    ...(options.signerCompatibility ? { signerCompatibility: options.signerCompatibility } : {}),
++    ...(options.monotonicNow ? { monotonicNow: options.monotonicNow } : {}),
+     ...(accountStore !== undefined ? { accounts: accountStore.accounts } : {}),
+     ...(grantStore !== undefined ? { grants: grantStore.grants } : {}),
+     ...(routeDriverStore !== undefined && options.openSerialLinePort !== undefined
+diff --git a/apps/bridge/service/src/drivers.test.ts b/apps/bridge/service/src/drivers.test.ts
+index 35cb436e..c87a9740 100644
+--- a/apps/bridge/service/src/drivers.test.ts
++++ b/apps/bridge/service/src/drivers.test.ts
+@@ -1,7 +1,9 @@
++import { createHash as independentPlanHash } from "node:crypto";
+ import { readFileSync } from "node:fs";
+ import { resolve } from "node:path";
+ import { describe, expect, it } from "vitest";
+-import { type SignerDispatchRequest } from "@nsealr/client";
++import { clientIdForIdentity, handleLocalServiceRequestAsync, type SignerDispatchRequest, type SignerCompatibilitySnapshot } from "@nsealr/client";
++import { parseAccountDescriptor } from "@nsealr/policy";
+ import { resolveSpecsRoot } from "@nsealr/fixtures";
+ import { encodeSerialFrame } from "@nsealr/framing";
+ import {
+@@ -21,22 +23,13 @@ const dispatchRequest: SignerDispatchRequest = {
+     origin: "app:nsealr-service-test",
+     app_name: "nSealr service test"
+   },
+-  route_selection: {
+-    format: "nsealr-route-selection-v0",
+-    account_id: "acct-esp32-usb-slot-0",
+-    public_key: "4f355bdcb7cc0af728ef3cceb9615d90684bb5b2ca5f859ab0f0b704075871aa",
+-    route_type: "esp32_usb_nip46",
+-    repository: "nsealr",
+-    transport: "usb",
+-    custody: "device_persistent",
+-    trusted_review: "device_display",
+-    policy_support: "scoped_automation",
+-    policy_profile_id: "policy-scoped-automation-daily-use",
+-    physical_review: true,
+-    physical_approval: true,
+-    persistent_grants: true,
+-    contains_secret_material: false
+-  },
++  route_selection: JSON.parse(readFileSync(resolve(specsRoot, "vectors/route-selections/esp32-usb-sign-event-slot-0.json"), "utf8")).selection,
++  before_write: () => undefined,
++  effective_limits: (() => {
++    const common = JSON.parse(readFileSync(resolve(specsRoot, "vectors/profile-capabilities/cases-v1.json"), "utf8"));
++    return { method: common.limits_manifest.methods.find((entry: {method_id: string}) => entry.method_id === "sign_event"), transport: common.limits_manifest.transports.find((entry: {transport_id: string}) => entry.transport_id === "usb") };
++  })(),
++
+   request
+ };
+ 
+@@ -202,6 +195,41 @@ describe("service route drivers", () => {
+     expect(written.at(-1)).toBe("closed");
+   });
+ 
++  it("R-01/R-05: actual service and serial driver bind the selected account before open and again before write", async () => {
++    for (const stale of ["none", "generation", "geometry", "context", "pages"]) {
++      const common = JSON.parse(readFileSync(resolve(specsRoot, "vectors/profile-capabilities/cases-v1.json"), "utf8"));
++      const implementation = JSON.parse(readFileSync(resolve(specsRoot, common.implementation_examples.esp32_no_se), "utf8"));
++      const adapter = structuredClone(implementation);
++      const { conformance_only: _, ...body } = structuredClone(implementation);
++      const reported = { ...body, format: "nsealr.capabilities.v1", form: "full" };
++      for (const source of [adapter, reported]) for (const method of source.methods) Object.assign(method, { configuration: "configured", availability: "available", reason: null });
++      const snapshot: SignerCompatibilitySnapshot = { implementation, adapter, reported, limits: structuredClone(common.limits_manifest), adapter_limits: structuredClone(common.limits_manifest), connection_id: "conformance.recording-usb", generation: 1, review_plan: { request_sha256: independentPlanHash("sha256").update(JSON.stringify(request)).digest("hex"), implementation_id: implementation.implementation_id, connection_id: "conformance.recording-usb", generation: 1, context_id: "conformance.no-authority", geometry_id: "conformance.recording.synthetic", pages: 7 } };
++      const account = parseAccountDescriptor(JSON.parse(readFileSync(resolve(specsRoot, "vectors/accounts/esp32-usb-device-slot-0.json"), "utf8")));
++      const written: string[] = []; let opens = 0; let closes = 0;
++      const dispatcher = createServiceRouteDispatcher(parseServiceRouteDriverStore(routeDriverStore()), {
++        openSerialLinePort: async () => {
++          opens++;
++          if (stale === "generation") snapshot.generation++;
++          else if (stale === "geometry") snapshot.review_plan!.geometry_id = "changed.geometry";
++          else if (stale === "context") snapshot.review_plan!.context_id = "changed.context";
++          else if (stale === "pages") snapshot.review_plan!.pages++;
++          return { writeLine: async (line) => { written.push(line); }, readLine: async () => encodeSerialFrame({ type: "response", payload: response }), close: async () => { closes++; } };
++        }
++      });
++      const result = await handleLocalServiceRequestAsync({
++        version: 1, request_id: "service.recording.usb", operation: "dispatch_signer_request",
++        params: { client: dispatchRequest.client, route_request: { account_id: account.account_id, method: "sign_event" }, request }
++      }, {
++        accounts: [account], now: 1, monotonicNow: () => 0,
++        grants: [{ client_id: clientIdForIdentity(dispatchRequest.client), origin: dispatchRequest.client.origin, surface: dispatchRequest.client.surface, allowed_operations: ["dispatch_signer_request"] }],
++        signerCompatibility: () => snapshot, signerDispatcher: dispatcher
++      });
++      expect(result).toMatchObject({ ok: stale === "none" });
++      expect(opens).toBe(1); expect(closes).toBe(1);
++      expect(written).toEqual(stale === "none" ? [encodeSerialFrame({ type: "request", payload: request })] : []);
++    }
++  });
++
+   it("maps serial-line route failures to deterministic transport error codes", async () => {
+     const store = parseServiceRouteDriverStore(routeDriverStore({
+       serial_line: {
+diff --git a/apps/bridge/service/src/drivers.ts b/apps/bridge/service/src/drivers.ts
+index 32c1fef8..b9f1524e 100644
+--- a/apps/bridge/service/src/drivers.ts
++++ b/apps/bridge/service/src/drivers.ts
+@@ -1,6 +1,8 @@
+ import {
+   createRouteDispatcher,
+   SignerTransportError,
++  SignerRouteUnavailableError,
++  type SignerDispatchRequest,
+   type RouteDispatchEntry,
+   type SignerRequestDispatcher,
+   type SignerTransportErrorCode
+@@ -223,18 +225,23 @@ async function openSerialLinePort(
+ 
+ async function dispatchSerialLineRoute(
+   route: ServiceSerialLineRouteDriver,
+-  request: unknown,
++  dispatch: SignerDispatchRequest,
+   openPort: SerialLinePortOpener
+ ): Promise<unknown> {
++  if (!dispatch.before_write || !dispatch.effective_limits) throw new SignerRouteUnavailableError("current local compatibility binding is required before opening a signer port");
++  dispatch.before_write();
+   const port = await openSerialLinePort(route, openPort);
+   let exchangeFailed = false;
+   try {
+     const transport = new SerialLineTransport({
+       port,
+       maxIgnoredLines: route.serial_line.max_ignored_lines,
+-      responseTimeoutMs: route.serial_line.response_timeout_ms
++      responseTimeoutMs: Math.min(route.serial_line.response_timeout_ms ?? 30_000, dispatch.effective_limits.method.deadline_ms, dispatch.effective_limits.transport.deadline_ms),
++      beforeWrite: dispatch.before_write,
++      abortSignal: dispatch.abort_signal,
++      maxWorkBytes: Math.min(dispatch.effective_limits.method.parse_work, dispatch.effective_limits.transport.parse_work)
+     });
+-    return await transport.exchange(request);
++    return await transport.exchange(dispatch.request);
+   } catch (error) {
+     exchangeFailed = true;
+     throw error instanceof SignerTransportError ? error : classifySerialLineExchangeError(error);
+@@ -305,7 +312,7 @@ export function createServiceRouteDispatcher(
+     account_id: route.account_id,
+     route_type: route.route_type,
+     transport: route.transport,
+-    dispatch: async (request) => dispatchSerialLineRoute(route, request.request, options.openSerialLinePort)
++    dispatch: async (request) => dispatchSerialLineRoute(route, request, options.openSerialLinePort)
+   }));
+   return createRouteDispatcher(entries);
+ }
+diff --git a/packages/client/src/profile-dispatch.test.ts b/packages/client/src/profile-dispatch.test.ts
+new file mode 100644
+index 00000000..a254f3e1
+--- /dev/null
++++ b/packages/client/src/profile-dispatch.test.ts
+@@ -0,0 +1,332 @@
++import { createHash as independentPlanHash } from "node:crypto";
++import { readFileSync } from "node:fs";
++import { resolve } from "node:path";
++import { describe, expect, it, vi } from "vitest";
++import { resolveSpecsRoot } from "@nsealr/fixtures";
++import { encodeSerialFrame } from "@nsealr/framing";
++import { encodeQrEnvelope } from "@nsealr/qr";
++import { parseAccountDescriptor, selectAccountRoute } from "@nsealr/policy";
++import { compactReportedCapabilities, parseImplementationProfile, parseLimitsManifest, parseSigningRequest, type FullCapabilities } from "@nsealr/protocol";
++import {
++  assessSignerCompatibility, clientIdForIdentity, createRouteDispatcher,
++  handleLocalServiceRequest, handleLocalServiceRequestAsync, type LocalServiceContext,
++  type SignerCompatibilitySnapshot, type SignerDispatchRequest
++} from "./service.js";
++
++const root = resolveSpecsRoot();
++const load = (path: string) => JSON.parse(readFileSync(resolve(root, path), "utf8"));
++const cases = load("vectors/profile-capabilities/cases-v1.json");
++const request = load("examples/request-kind-1-basic.json"), response = load("examples/response-kind-1-basic.json");
++const client = { surface: "cli" as const, origin: "app:t01-conformance", app_name: "T01 recording adapter" };
++function snapshot(profile = "esp32_no_se"): SignerCompatibilitySnapshot {
++  const implementation = parseImplementationProfile(load(cases.implementation_examples[profile]));
++  const adapter = structuredClone(implementation);
++  const { conformance_only: _, ...data } = structuredClone(implementation);
++  const reported: FullCapabilities = { ...data, format: "nsealr.capabilities.v1", form: "full" };
++  for (const source of [adapter, reported]) for (const method of source.methods) {
++    Object.assign(method, { configuration: "configured", availability: "available", reason: null });
++  }
++  const limits = parseLimitsManifest(structuredClone(cases.limits_manifest));
++  return { implementation, adapter, reported, limits, adapter_limits: structuredClone(limits), connection_id: "conformance.connection.1", generation: 1, review_plan: { request_sha256: independentPlanHash("sha256").update(JSON.stringify(request)).digest("hex"), implementation_id: implementation.implementation_id, connection_id: "conformance.connection.1", generation: 1, context_id: "conformance.no-authority", geometry_id: "conformance.recording.synthetic", pages: 7 } };
++}
++function setup(profile = "esp32_no_se") {
++  const account = parseAccountDescriptor(load(profile === "pi_qr" ? "vectors/accounts/raspberry-qr-nip06-account-0.json" : "vectors/accounts/esp32-usb-device-slot-0.json"));
++  // This is synthetic routing metadata for the same fixed independent signed
++  // event, not proof of NIP06 derivation/recovery or attached Pi custody.
++  if (profile === "pi_qr") account.public_key = response.result.event.pubkey;
++  let live = snapshot(profile), now = 0;
++  const writes: string[] = [];
++  let beforeWrite: ((dispatch: SignerDispatchRequest) => void | Promise<void>) | undefined;
++  let captured: SignerDispatchRequest | undefined;
++  const context: LocalServiceContext = {
++    accounts: [account],
++    grants: [{ client_id: clientIdForIdentity(client), origin: client.origin, surface: client.surface, allowed_operations: ["dispatch_signer_request"] }],
++    now: 1, monotonicNow: () => now, signerCompatibility: () => live,
++    signerDispatcher: createRouteDispatcher([{ account_id: account.account_id, dispatch: async (dispatch) => {
++      captured = dispatch;
++      await beforeWrite?.(dispatch);
++      dispatch.before_write?.();
++      writes.push(profile === "pi_qr" ? encodeQrEnvelope(dispatch.request) : encodeSerialFrame({ type: "request", payload: dispatch.request }));
++      return structuredClone(response);
++    } }])
++  };
++  const envelope = {
++    version: 1 as const, request_id: "local.t01", operation: "dispatch_signer_request" as const,
++    params: { client, route_request: { account_id: account.account_id, method: "sign_event" }, request: structuredClone(request) }
++  };
++  return { account, context, envelope, writes, get live() { return live; }, set live(value) { live = value; }, set now(value: number) { now = value; }, set beforeWrite(value: typeof beforeWrite) { beforeWrite = value; }, get captured() { return captured; } };
++}
++
++describe("actual local service to recording adapter compatibility", () => {
++  it("R-01: dispatches exact USB semantics through the service and verifies the independent signed response", async () => {
++    const state = setup();
++    const result = await handleLocalServiceRequestAsync(state.envelope, state.context);
++    expect(result).toMatchObject({ ok: true, result: { signer_response: response } });
++    expect(state.writes).toEqual([encodeSerialFrame({ type: "request", payload: request })]);
++    expect(state.captured!.effective_limits!.method.content_utf8_bytes).toBe(512);
++  });
++
++  it("R-02: equivalent QR operation uses volatile custody and its own lower finite deadline", async () => {
++    const state = setup("pi_qr");
++    state.live.adapter_limits.methods.find((method) => method.method_id === "sign_event")!.deadline_ms = 50;
++    const result = await handleLocalServiceRequestAsync(state.envelope, state.context);
++    expect(result).toMatchObject({ ok: true });
++    expect(state.writes).toEqual([encodeQrEnvelope(request)]);
++    expect(state.captured!.route_selection.custody).toBe("volatile_session");
++    expect(state.captured!.effective_limits!.method.deadline_ms).toBe(50);
++  });
++
++  it("R-03: each requested semantic mismatch rejects with zero operation writes and no fallback", async () => {
++    const mutations = {
++      account_id: "unknown", profile: "pi_qr", implementation_id: "unknown",
++      contract: "nsealr.signing.v0", method_revision: 2, operation_id: "unknown.catalog",
++      algorithm_id: "nip44.v2", custody: "volatile_session", transport: "qr",
++      codec_id: "unknown.codec", limits_id: "unknown.limits"
++    };
++    for (const [key, value] of Object.entries(mutations)) {
++      const state = setup(); Object.assign(state.envelope.params.route_request, { [key]: value });
++      expect((await handleLocalServiceRequestAsync(state.envelope, state.context)).ok).toBe(false);
++      expect(state.writes).toHaveLength(0);
++    }
++  });
++
++  it("R-04: reported availability/huge remote limits cannot raise local method or frame caps", async () => {
++    const state = setup();
++    state.live.limits.methods.find((method) => method.method_id === "sign_event")!.content_utf8_bytes = Number.MAX_SAFE_INTEGER;
++    state.live.adapter_limits.methods.find((method) => method.method_id === "sign_event")!.content_utf8_bytes = 8;
++    expect((await handleLocalServiceRequestAsync(state.envelope, state.context)).ok).toBe(false);
++    expect(state.writes).toHaveLength(0);
++    const unknown = setup(); unknown.live.reported.implementation_id = "unknown";
++    expect((await handleLocalServiceRequestAsync(unknown.envelope, unknown.context)).ok).toBe(false);
++    expect(unknown.writes).toHaveLength(0);
++  });
++
++  it("A-05/R-05: changed account, capability/provider, connection or limits between selection and write invalidate the operation", async () => {
++    for (const mutate of [
++      (state: ReturnType<typeof setup>) => { state.context.accounts![0].public_key = "79be667ef9dcbbac55a06295ce870b07029bfcdb2dce28d959f2815b16f81798"; },
++      (state: ReturnType<typeof setup>) => { Object.assign(state.live.adapter.methods[2], { availability: "unavailable", reason: "provider_missing" }); },
++      (state: ReturnType<typeof setup>) => { state.live.generation++; },
++      (state: ReturnType<typeof setup>) => { state.live.connection_id = "different.connection"; },
++      (state: ReturnType<typeof setup>) => { state.live.limits.methods[2].deadline_ms--; }
++    ]) {
++      const state = setup(); state.beforeWrite = () => mutate(state);
++      expect((await handleLocalServiceRequestAsync(state.envelope, state.context)).ok).toBe(false);
++      expect(state.writes).toHaveLength(0);
++      expect(() => state.captured?.before_write?.()).toThrow(/no longer active/);
++    }
++  });
++
++  it("A-04/R-06: expected-user/request/canonical-ID/signature verification remains mandatory", async () => {
++    for (const key of ["request_id", "pubkey", "id", "sig"]) {
++      const state = setup();
++      state.context.signerDispatcher = (dispatch) => {
++        dispatch.before_write?.();
++        const changed = structuredClone(response);
++        if (key === "request_id") changed.request_id = "different.request";
++        else changed.result.event[key] = "0".repeat(key === "sig" ? 128 : 64);
++        return changed;
++      };
++      expect((await handleLocalServiceRequestAsync(state.envelope, state.context)).ok).toBe(false);
++    }
++  });
++
++  it("L-01/L-02: missing local observations fail closed; exact input bounds do not truncate", async () => {
++    const missing = setup(); delete missing.context.signerCompatibility;
++    expect((await handleLocalServiceRequestAsync(missing.envelope, missing.context)).ok).toBe(false);
++    expect(missing.writes).toHaveLength(0);
++    for (const delta of [-1, 0, 1]) {
++      const state = setup();
++      const length = Buffer.byteLength(request.params.event_template.content, "utf8");
++      state.live.adapter_limits.methods.find((method) => method.method_id === "sign_event")!.content_utf8_bytes = length + delta;
++      const result = await handleLocalServiceRequestAsync(state.envelope, state.context);
++      expect(result.ok).toBe(delta >= 0);
++      expect(state.envelope.params.request).toEqual(request);
++      expect(state.writes.length).toBe(delta >= 0 ? 1 : 0);
++    }
++  });
++
++  it("L-01: each actual operation dimension uses independent bytes/counts at below/exact/above boundaries", () => {
++    const req = load("examples/request-kind-1-tags.json"), res = load("examples/response-kind-1-tags.json");
++    const event = req.params.event_template;
++    const jsonBytes = (value: unknown) => Buffer.byteLength(JSON.stringify(value), "utf8");
++    const input = jsonBytes(req), output = jsonBytes(res);
++    // Fixed wire grammar and independently retained Nostr canonical fixture;
++    // no runtime framing/canonical/signing output supplies expected limits.
++    const frame = (type: string, value: unknown) => Buffer.byteLength(`nsealr1f:${type}:${Buffer.from(JSON.stringify(value)).toString("base64url")}:0000000000000000\n`);
++    const incomingFrame = frame("response", res), outgoingFrame = frame("request", req);
++    const dimensions: Array<["method" | "transport", string, number]> = [
++      ["method", "request_json_bytes", input], ["method", "response_json_bytes", output],
++      ["method", "content_utf8_bytes", Buffer.byteLength(event.content)], ["method", "tag_count", event.tags.length],
++      ["method", "tag_fields", Math.max(...event.tags.map((tag: string[]) => tag.length))],
++      ["method", "tag_field_utf8_bytes", Math.max(...event.tags.flat().map((field: string) => Buffer.byteLength(field)))],
++      ["method", "aggregate_tag_utf8_bytes", event.tags.flat().reduce((sum: number, field: string) => sum + Buffer.byteLength(field), 0)],
++      ["method", "canonical_bytes", Buffer.byteLength(load("vectors/events/kind-1-tags.json").canonical_serialization)],
++      ["method", "review_pages", 7], ["method", "parse_work", incomingFrame + outgoingFrame],
++      ["transport", "frame_bytes", Math.max(incomingFrame, outgoingFrame)], ["transport", "reassembly_bytes", Math.max(input, output)],
++      ["transport", "parse_work", incomingFrame + outgoingFrame]
++    ];
++    for (const [group, field, exact] of dimensions) for (const offset of [-1, 0, 1]) {
++      const state = setup();
++      state.live.review_plan!.request_sha256 = independentPlanHash("sha256").update(JSON.stringify(req)).digest("hex");
++      const row = group === "method" ? state.live.adapter_limits.methods[2] : state.live.adapter_limits.transports[0];
++      Object.assign(row, { [field]: exact + offset });
++      const route = selectAccountRoute([state.account], { account_id: state.account.account_id, method: "sign_event" });
++      if (offset < 0) expect(() => assessSignerCompatibility(route, req, state.live), `${group}.${field}`).toThrow();
++      else expect(() => assessSignerCompatibility(route, req, state.live), `${group}.${field}`).not.toThrow();
++    }
++    const raw = JSON.stringify(request), bytes = Buffer.byteLength(raw);
++    expect(parseSigningRequest(" ".repeat(704 - bytes) + raw)).toEqual(request);
++    expect(() => parseSigningRequest(" ".repeat(705 - bytes) + raw)).toThrow();
++    const multibyte = structuredClone(request); multibyte.params.event_template.content = "é".repeat(256);
++    expect(() => parseSigningRequest(JSON.stringify(multibyte))).not.toThrow();
++    multibyte.params.event_template.content += "é";
++    expect(() => parseSigningRequest(JSON.stringify(multibyte))).toThrow();
++  });
++
++  it("L-01/L-05: public-key and exact full/reference discovery responses must fit before any I/O", async () => {
++    for (const ceiling of [1, 704]) {
++      const state = setup(); const req = load("examples/request-get-public-key.json"), res = load("examples/response-get-public-key.json");
++      state.envelope.params.request = req; state.envelope.params.route_request.method = "get_public_key";
++      state.live.adapter_limits.methods[1].response_json_bytes = ceiling;
++      state.context.signerDispatcher = (dispatch) => { dispatch.before_write!(); state.writes.push("public-key-write"); return res; };
++      expect((await handleLocalServiceRequestAsync(state.envelope, state.context)).ok).toBe(ceiling !== 1);
++      expect(state.writes.length).toBe(ceiling === 1 ? 0 : 1);
++    }
++    for (const form of ["full", "reference"]) {
++      const state = setup(); const req = load("examples/request-get-capabilities.json");
++      state.envelope.params.request = req; state.envelope.params.route_request.method = "get_capabilities";
++      if (form === "reference") state.live.reported = compactReportedCapabilities(state.live.reported as FullCapabilities, state.live.implementation, 704);
++      state.context.signerDispatcher = (dispatch) => { dispatch.before_write!(); state.writes.push("discovery-write"); return { version: 2, request_id: req.request_id, ok: true, result: { capabilities: state.live.reported } }; };
++      expect((await handleLocalServiceRequestAsync(state.envelope, state.context)).ok).toBe(form === "reference");
++      expect(state.writes.length).toBe(form === "reference" ? 1 : 0);
++    }
++  });
++
++  it("L-04/L-06: exact expiry, rollback and missing clocks refuse writes and release pending state", async () => {
++    for (const time of [99, 100, 101]) {
++      const state = setup(); state.beforeWrite = () => { state.now = time; };
++      expect(await handleLocalServiceRequestAsync(state.envelope, state.context)).toMatchObject({ ok: time < 100 });
++      expect(state.writes.length).toBe(time < 100 ? 1 : 0);
++    }
++    for (const bad of [undefined, Number.MAX_SAFE_INTEGER, -1]) {
++      const state = setup(); state.context.monotonicNow = () => bad;
++      expect((await handleLocalServiceRequestAsync(state.envelope, state.context)).ok).toBe(false);
++      expect(state.writes).toHaveLength(0);
++    }
++    const rollback = setup(); let reads = 0;
++    rollback.context.monotonicNow = () => ++reads === 1 ? 10 : 9;
++    expect((await handleLocalServiceRequestAsync(rollback.envelope, rollback.context)).ok).toBe(false);
++    expect(rollback.writes).toHaveLength(0);
++    rollback.context.monotonicNow = () => 0;
++    expect((await handleLocalServiceRequestAsync(rollback.envelope, rollback.context)).ok).toBe(true);
++  });
++
++  it("L-04: bounded pending operations reject a flood and recover after completion", async () => {
++    const state = setup(); let resume!: () => void;
++    state.beforeWrite = () => new Promise<void>((resolve) => { resume = resolve; });
++    const pending = handleLocalServiceRequestAsync(state.envelope, state.context);
++    const second = await handleLocalServiceRequestAsync(state.envelope, state.context);
++    expect(second).toMatchObject({ ok: false, error: { code: "runtime_unavailable" } });
++    expect(state.writes).toHaveLength(0);
++    resume(); expect((await pending).ok).toBe(true);
++    state.beforeWrite = undefined;
++    expect((await handleLocalServiceRequestAsync(state.envelope, state.context)).ok).toBe(true);
++  });
++
++  it("L-04/L-06: an unresolved adapter reaches the absolute local deadline and its stale write hook is revoked", async () => {
++    vi.useFakeTimers();
++    try {
++      const state = setup(); let cancelled = false;
++      state.context.signerDispatcher = (dispatch) => {
++        Object.defineProperty(state, "captured", { value: dispatch });
++        dispatch.abort_signal!.addEventListener("abort", () => { cancelled = true; });
++        return new Promise(() => undefined);
++      };
++      const operation = handleLocalServiceRequestAsync(state.envelope, state.context);
++      await vi.advanceTimersByTimeAsync(100);
++      expect(await operation).toMatchObject({ ok: false, error: { code: "signer_transport_timeout" } });
++      expect(cancelled).toBe(true);
++      expect(() => state.captured!.before_write!()).toThrow(/no longer active/);
++      expect(state.writes).toHaveLength(0);
++    } finally { vi.useRealTimers(); }
++  });
++
++  it("L-04: a timed-out unsettled adapter keeps its finite slot until actual settlement", async () => {
++    vi.useFakeTimers();
++    try {
++      const state = setup(); const finish: Array<(response: unknown) => void> = []; let calls = 0;
++      state.context.signerDispatcher = () => { calls++; return new Promise((resolve) => { finish.push(resolve); }); };
++      const pending = handleLocalServiceRequestAsync(state.envelope, state.context);
++      await vi.advanceTimersByTimeAsync(100);
++      expect(await pending).toMatchObject({ ok: false, error: { code: "signer_transport_timeout" } });
++      const retry = handleLocalServiceRequestAsync(state.envelope, state.context);
++      expect(calls).toBe(1);
++      expect(await retry).toMatchObject({ ok: false, error: { code: "runtime_unavailable" } });
++      finish[0](structuredClone(response)); await Promise.resolve(); await Promise.resolve();
++      state.context.signerDispatcher = () => structuredClone(response);
++      expect((await handleLocalServiceRequestAsync(state.envelope, state.context)).ok).toBe(true);
++    } finally { vi.useRealTimers(); }
++  });
++
++  it("L-04: sync API rejects an async dispatcher while preserving its unsettled slot and revoking writes", async () => {
++    const state = setup(); let finish!: (response: unknown) => void; let captured!: SignerDispatchRequest; let calls = 0;
++    state.context.signerDispatcher = (dispatch) => { calls++; captured = dispatch; return new Promise((resolve) => { finish = resolve; }); };
++    expect(handleLocalServiceRequest(state.envelope, state.context)).toMatchObject({ ok: false, error: { code: "signer_dispatch_failed", message: "async signer dispatcher requires handleLocalServiceRequestAsync" } });
++    expect(() => captured.before_write!()).toThrow(/no longer active/);
++    expect(handleLocalServiceRequest(state.envelope, state.context)).toMatchObject({ ok: false, error: { code: "runtime_unavailable" } });
++    expect(calls).toBe(1);
++    finish(structuredClone(response)); await Promise.resolve(); await Promise.resolve();
++    state.context.signerDispatcher = () => { throw new Error("settled throw control"); };
++    expect(handleLocalServiceRequest(state.envelope, state.context)).toMatchObject({ ok: false, error: { code: "signer_dispatch_failed" } });
++    state.context.signerDispatcher = () => structuredClone(response);
++    expect(handleLocalServiceRequest(state.envelope, state.context).ok).toBe(true);
++    expect(handleLocalServiceRequest(state.envelope, state.context).ok).toBe(true);
++  });
++
++  it("L-01/R-05: complete local review-plan observations bind request, implementation, connection, context and geometry", async () => {
++    for (const change of [undefined, { pages: 0 }, { pages: Number.NaN }, { request_sha256: "0".repeat(64) }, { implementation_id: "wrong" }, { connection_id: "wrong" }, { generation: 2 }, { geometry_id: "" }, { context_id: "" }]) {
++      const state = setup();
++      if (change === undefined) delete state.live.review_plan;
++      else Object.assign(state.live.review_plan!, change);
++      expect((await handleLocalServiceRequestAsync(state.envelope, state.context)).ok).toBe(false);
++      expect(state.writes).toHaveLength(0);
++    }
++    for (const ceiling of [6, 7, 8]) {
++      const state = setup(); state.live.adapter_limits.methods[2].review_pages = ceiling;
++      expect((await handleLocalServiceRequestAsync(state.envelope, state.context)).ok).toBe(ceiling >= 7);
++      expect(state.writes.length).toBe(ceiling >= 7 ? 1 : 0);
++    }
++    for (const change of [{ pages: 8 }, { geometry_id: "changed.geometry" }, { context_id: "changed.context" }]) {
++      const state = setup(); state.beforeWrite = () => { Object.assign(state.live.review_plan!, change); };
++      expect((await handleLocalServiceRequestAsync(state.envelope, state.context)).ok).toBe(false);
++      expect(state.writes).toHaveLength(0);
++    }
++  });
++
++  it("P-04/P-05/P-06/P-07: custody, required component and manual-only constraints stay profile-specific", () => {
++    const state = setup(), route = selectAccountRoute([state.account], { account_id: state.account.account_id, method: "sign_event" });
++    const wrong = structuredClone(state.account); wrong.signer_route.custody = "volatile_session";
++    expect(() => parseAccountDescriptor(wrong)).toThrow(/custody_mismatch/);
++    wrong.signer_route.custody = "mcu_wrapped_persistent"; wrong.signer_route.policy_support = "scoped_automation";
++    expect(() => parseAccountDescriptor(wrong)).toThrow(/manual/);
++    const custom = snapshot("custom_board");
++    const account = parseAccountDescriptor(load("vectors/accounts/custom-hardware-wallet-slot-0.json"));
++    expect(() => assessSignerCompatibility(selectAccountRoute([account], {account_id: account.account_id, method: "sign_event"}), request, custom)).toThrow(/SE configuration/);
++    const sameObject = structuredClone(state.live); sameObject.adapter = sameObject.implementation;
++    expect(() => assessSignerCompatibility(route, request, sameObject)).toThrow(/unavailable/);
++  });
++
++  it("P-06/D-05/D-06/D-07: no generic blind-sign or offline message/setup/AUTH fallback is introduced", async () => {
++    for (const profile of ["esp32_no_se", "pi_qr"]) for (const kind of [4, 13, 14, 1059, 10050, 22242]) {
++      const state = setup(profile); state.envelope.params.request.params.event_template.kind = kind;
++      expect(await handleLocalServiceRequestAsync(state.envelope, state.context)).toMatchObject({ ok: false, error: { code: "workflow_not_admitted" } });
++      expect(state.writes).toHaveLength(0);
++    }
++    for (const method of ["nip04_encrypt", "nip04_decrypt", "nip44_encrypt", "nip44_decrypt", "export_conversation_key"]) {
++      const state = setup(); Object.assign(state.envelope.params.request, {method});
++      state.envelope.params.route_request.method = method;
++      expect((await handleLocalServiceRequestAsync(state.envelope, state.context)).ok).toBe(false);
++      expect(state.writes).toHaveLength(0);
++    }
++  });
++});
+diff --git a/packages/client/src/service.test.ts b/packages/client/src/service.test.ts
+index 2958f581..44507008 100644
+--- a/packages/client/src/service.test.ts
++++ b/packages/client/src/service.test.ts
+@@ -1,3 +1,4 @@
++import { createHash as independentPlanHash } from "node:crypto";
+ import { readFileSync } from "node:fs";
+ import { resolve } from "node:path";
+ import { describe, expect, it } from "vitest";
+@@ -66,6 +67,21 @@ function accountsWithSelectedRoutePublicKey(publicKey: string) {
+     : account);
+ }
+ 
++
++// Synthetic current adapter observations for S01 boundary regression tests.
++// The common artifact is the sole data source; no physical/release proof exists.
++// The synthetic recording adapter independently declares seven complete pages; no device renderer/fit is qualified.
++function conformanceSnapshot(route: { profile: string | null }): import("@nsealr/client").SignerCompatibilitySnapshot {
++  const common = JSON.parse(readFileSync(resolve(specsRoot, "vectors/profile-capabilities/cases-v1.json"), "utf8"));
++  const implementation = JSON.parse(readFileSync(resolve(specsRoot, common.implementation_examples[route.profile!]), "utf8"));
++  const adapter = structuredClone(implementation);
++  const { conformance_only: _, ...body } = structuredClone(implementation);
++  const reported = { ...body, format: "nsealr.capabilities.v1" as const, form: "full" as const };
++  for (const source of [adapter, reported]) for (const method of source.methods) Object.assign(method, { configuration: "configured", availability: "available", reason: null });
++  const limits = structuredClone(common.limits_manifest);
++  return { implementation, adapter, reported, limits, adapter_limits: structuredClone(limits), connection_id: "conformance.host-test.1", generation: 1, review_plan: { request_sha256: independentPlanHash("sha256").update(JSON.stringify(request)).digest("hex"), implementation_id: implementation.implementation_id, connection_id: "conformance.host-test.1", generation: 1, context_id: "conformance.no-authority", geometry_id: "conformance.recording.synthetic", pages: 7 } };
++}
++
+ describe("local service boundary", () => {
+   it("parses local client identities through the shared origin boundary", () => {
+     expect(parseLocalClientIdentity(client)).toEqual(client);
+@@ -501,7 +517,7 @@ describe("local service boundary", () => {
+       accounts: fixtures.accounts,
+       grants: [grant],
+       now: 1_900_000_000,
+-      signerDispatcher: (dispatchRequest) => {
++      signerCompatibility: conformanceSnapshot, monotonicNow: () => 0, signerDispatcher: (dispatchRequest) => {
+         dispatched.push(dispatchRequest);
+         return response;
+       }
+@@ -513,11 +529,13 @@ describe("local service boundary", () => {
+         signer_response: response
+       }
+     });
+-    expect(dispatched).toEqual([{
+-      client,
+-      route_selection: routeVector.selection,
+-      request
++    expect(dispatched).toMatchObject([{
++      client, route_selection: routeVector.selection, request,
++      before_write: expect.any(Function),
++      effective_limits: { method: { request_json_bytes: 704 }, transport: { frame_bytes: 1024 } },
++      abort_signal: expect.any(AbortSignal)
+     }]);
++    expect(() => (dispatched[0] as { before_write: () => void }).before_write()).toThrow(/no longer active/u);
+   });
+ 
+   it("rejects retired routes before invoking any signer dispatcher", () => {
+@@ -528,8 +546,8 @@ describe("local service boundary", () => {
+         params: { client, route_request: { ...routeVector.request, route_type: "smartcard" }, request,
+           ...(acknowledgement === undefined ? {} : { external_review_acknowledgement: acknowledgement }) }
+       }, { accounts: fixtures.accounts, grants: [grant], now: 1_900_000_000,
+-        signerDispatcher: () => { called = true; return response; } });
+-      expect(result).toMatchObject({ ok: false, error: { code: "route_selection_failed", message: "route selection route_type is unknown" } });
++        signerCompatibility: conformanceSnapshot, monotonicNow: () => 0, signerDispatcher: () => { called = true; return response; } });
++      expect(result).toMatchObject({ ok: false, error: { code: "route_selection_failed", message: "route_type is unknown" } });
+       expect(called).toBe(false);
+     }
+   });
+@@ -537,7 +555,7 @@ describe("local service boundary", () => {
+   it("refuses host acknowledgement bypass while preserving active dispatch", () => {
+     let calls = 0;
+     const context = { accounts: fixtures.accounts, grants: [grant], now: 1_900_000_000,
+-      signerDispatcher: () => { calls += 1; return response; } };
++      signerCompatibility: conformanceSnapshot, monotonicNow: () => 0, signerDispatcher: () => { calls += 1; return response; } };
+     const base = { version: 1, request_id: "active-route-control", operation: "dispatch_signer_request",
+       params: { client, route_request: routeVector.request, request } };
+     expect(handleLocalServiceRequest({ ...base, params: { ...base.params,
+@@ -564,7 +582,7 @@ describe("local service boundary", () => {
+       accounts: fixtures.accounts,
+       grants: [grant],
+       now: 1_900_000_000,
+-      signerDispatcher: () => {
++      signerCompatibility: conformanceSnapshot, monotonicNow: () => 0, signerDispatcher: () => {
+         called = true;
+         return response;
+       }
+@@ -697,7 +715,7 @@ describe("local service boundary", () => {
+       accounts: fixtures.accounts,
+       grants: [grant],
+       now: 1_900_000_000,
+-      signerDispatcher: () => {
++      signerCompatibility: conformanceSnapshot, monotonicNow: () => 0, signerDispatcher: () => {
+         called = true;
+         return response;
+       }
+@@ -738,9 +756,6 @@ describe("local service boundary", () => {
+       custody: "external_signer",
+       trusted_review: "external_policy",
+       policy_support: "external",
+-      physical_review: false,
+-      physical_approval: false,
+-      persistent_grants: false,
+       contains_secret_material: false
+     });
+     expect("repository" in externalNip46RouteVector.selection).toBe(false);
+@@ -780,7 +795,7 @@ describe("local service boundary", () => {
+       accounts: fixtures.accounts,
+       grants: [grant],
+       now: 1_900_000_000,
+-      signerDispatcher: (dispatchRequest) => {
++      signerCompatibility: conformanceSnapshot, monotonicNow: () => 0, signerDispatcher: (dispatchRequest) => {
+         dispatched.push(dispatchRequest);
+         return response;
+       }
+@@ -790,7 +805,7 @@ describe("local service boundary", () => {
+         signer_response: response
+       }
+     });
+-    expect(dispatched).toEqual([{
++    expect(dispatched).toMatchObject([{
+       client,
+       route_selection: externalNip46RouteVector.selection,
+       request
+@@ -837,7 +852,7 @@ describe("local service boundary", () => {
+       accounts: fixtures.accounts,
+       grants: [grant],
+       now: 1_900_000_000,
+-      signerDispatcher: dispatcher
++      signerCompatibility: conformanceSnapshot, monotonicNow: () => 0, signerDispatcher: dispatcher
+     })).toMatchObject({
+       ok: true,
+       result: {
+@@ -861,7 +876,7 @@ describe("local service boundary", () => {
+       accounts: fixtures.accounts,
+       grants: [grant],
+       now: 1_900_000_000,
+-      signerDispatcher: createRouteDispatcher([{
++      signerCompatibility: conformanceSnapshot, monotonicNow: () => 0, signerDispatcher: createRouteDispatcher([{
+         route_type: "raspberry_qr_vault",
+         dispatch: () => response
+       }])
+@@ -886,7 +901,7 @@ describe("local service boundary", () => {
+       accounts: fixtures.accounts,
+       grants: [grant],
+       now: 1_900_000_000,
+-      signerDispatcher: createRouteDispatcher([
++      signerCompatibility: conformanceSnapshot, monotonicNow: () => 0, signerDispatcher: createRouteDispatcher([
+         {
+           route_type: routeVector.selection.route_type,
+           dispatch: () => response
+@@ -919,7 +934,7 @@ describe("local service boundary", () => {
+       accounts: fixtures.accounts,
+       grants: [grant],
+       now: 1_900_000_000,
+-      signerDispatcher: () => {
++      signerCompatibility: conformanceSnapshot, monotonicNow: () => 0, signerDispatcher: () => {
+         throw new SignerTransportError(
+           "signer_transport_timeout",
+           "serial line transport timed out before response after 1000ms"
+@@ -948,7 +963,7 @@ describe("local service boundary", () => {
+       accounts: fixtures.accounts,
+       grants: [grant],
+       now: 1_900_000_000,
+-      signerDispatcher: async (dispatchRequest) => {
++      signerCompatibility: conformanceSnapshot, monotonicNow: () => 0, signerDispatcher: async (dispatchRequest) => {
+         expect(dispatchRequest.route_selection.route_type).toBe("esp32_usb_nip46");
+         return response;
+       }
+@@ -976,7 +991,7 @@ describe("local service boundary", () => {
+       accounts: fixtures.accounts,
+       grants: [grant],
+       now: 1_900_000_000,
+-      signerDispatcher: async () => response
++      signerCompatibility: conformanceSnapshot, monotonicNow: () => 0, signerDispatcher: async () => response
+     })).toMatchObject({
+       ok: false,
+       error: {
+@@ -1001,7 +1016,7 @@ describe("local service boundary", () => {
+       accounts: fixtures.accounts,
+       grants: [grant],
+       now: 1_900_000_000,
+-      signerDispatcher: () => {
++      signerCompatibility: conformanceSnapshot, monotonicNow: () => 0, signerDispatcher: () => {
+         called = true;
+         return response;
+       }
+@@ -1046,7 +1061,7 @@ describe("local service boundary", () => {
+       accounts: fixtures.accounts,
+       grants: [grant],
+       now: 1_900_000_000,
+-      signerDispatcher: () => ({ ...response, request_id: "other-request" })
++      signerCompatibility: conformanceSnapshot, monotonicNow: () => 0, signerDispatcher: () => ({ ...response, request_id: "other-request" })
+     })).toMatchObject({
+       ok: false,
+       error: {
+@@ -1068,7 +1083,7 @@ describe("local service boundary", () => {
+       accounts: accountsWithSelectedRoutePublicKey("dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd"),
+       grants: [grant],
+       now: 1_900_000_000,
+-      signerDispatcher: () => response
++      signerCompatibility: conformanceSnapshot, monotonicNow: () => 0, signerDispatcher: () => response
+     })).toMatchObject({
+       ok: false,
+       error: {
+@@ -1078,7 +1093,7 @@ describe("local service boundary", () => {
+     });
+ 
+     const publicKeyRequest = {
+-      version: 1,
++      version: 2,
+       request_id: "req-route-pubkey",
+       method: "get_public_key"
+     };
+@@ -1095,8 +1110,8 @@ describe("local service boundary", () => {
+       accounts: accountsWithSelectedRoutePublicKey("eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"),
+       grants: [grant],
+       now: 1_900_000_000,
+-      signerDispatcher: () => ({
+-        version: 1,
++      signerCompatibility: conformanceSnapshot, monotonicNow: () => 0, signerDispatcher: () => ({
++        version: 2,
+         request_id: "req-route-pubkey",
+         ok: true,
+         result: {
+diff --git a/packages/client/src/service.ts b/packages/client/src/service.ts
+index 966f502f..937002e5 100644
+--- a/packages/client/src/service.ts
++++ b/packages/client/src/service.ts
+@@ -6,7 +6,13 @@ import {
+   type RouteSelection,
+   type RouteSelectionRequest
+ } from "@nsealr/policy";
+-import { compactJsonUtf8ByteLength, NSEALR_V0_LIMITS, validateRequest, validateResponse } from "@nsealr/protocol";
++import {
++  CapabilityError, checkedProduct, compactJsonUtf8ByteLength, intersectMethodLimits,
++  NSEALR_V0_LIMITS, parseImplementationProfile, parseLimitsManifest,
++  resolveReportedCapabilities, validateRequest, validateResponse,
++  type ImplementationProfile, type LimitsManifest, type MethodLimits,
++  type ReportedCapabilities, type TransportLimits
++} from "@nsealr/protocol";
+ import {
+   parseLocalClientIdentity,
+   type LocalClientIdentity,
+@@ -56,7 +62,145 @@ export type SignerDispatchRequest = {
+   route_selection: RouteSelection;
+   request: unknown;
+   external_review_acknowledgement?: ExternalReviewAcknowledgement;
++  /** Local revalidation immediately before the actual operation write. */
++  before_write?: () => void;
++  /** Diagnostic local intersection, never physical approval or device authority. */
++  effective_limits?: EffectiveSignerLimits;
++  /** Local cancellation/deadline signal; never serialized into device JSON. */
++  abort_signal?: AbortSignal;
++};
++
++/** Explicit current adapter observations, supplied locally, never from a wire
++ * descriptor or an evidence URL. These do not qualify an attached device. */
++export type SignerCompatibilitySnapshot = {
++  implementation: ImplementationProfile;
++  adapter: ImplementationProfile;
++  reported: ReportedCapabilities;
++  limits: LimitsManifest;
++  adapter_limits: LimitsManifest;
++  connection_id: string;
++  generation: number;
++  /** Locally observed complete review plan for this exact request/implementation,
++   * connection generation and relevant review context/geometry. Never wire data,
++   * a four-section preview count, consent, attestation or a physical-fit claim. */
++  review_plan?: {
++    request_sha256: string;
++    implementation_id: string;
++    connection_id: string;
++    generation: number;
++    context_id: string;
++    geometry_id: string;
++    pages: number;
++  };
+ };
++export type EffectiveSignerLimits = { method: MethodLimits; transport: TransportLimits };
++
++function compatibilityError(reason: ConstructorParameters<typeof CapabilityError>[0], message: string): never {
++  throw new CapabilityError(reason, message);
++}
++
++function encodedBytes(decoded: number): number {
++  const groups = Math.floor(decoded / 3), tail = decoded % 3;
++  const size = checkedProduct(groups, 4) + (tail ? tail + 1 : 0);
++  if (!Number.isSafeInteger(size)) compatibilityError("limit_exceeded", "encoded size overflow");
++  return size;
++}
++
++/** Intersect the exact selected semantics before any operation write. No
++ * reported support/availability is converted into trusted consent or evidence. */
++export function assessSignerCompatibility(route: RouteSelection, request: unknown, snapshot: SignerCompatibilitySnapshot): EffectiveSignerLimits {
++  if (route.contract !== "nsealr.signing.v2" || route.profile === null) compatibilityError("unsupported_contract", "nSealr compatibility requires an explicit local profile");
++  if (typeof snapshot.connection_id !== "string" || !/^[A-Za-z0-9._:-]{1,128}$/u.test(snapshot.connection_id) || !Number.isSafeInteger(snapshot.generation) || snapshot.generation < 0) compatibilityError("runtime_unavailable", "current connection observation is unavailable");
++  const local = parseImplementationProfile(snapshot.implementation);
++  const adapter = parseImplementationProfile(snapshot.adapter);
++  const reported = resolveReportedCapabilities(snapshot.reported, local);
++  for (const [role, source] of [local, adapter, reported].entries()) {
++    if (source.profile !== route.profile) compatibilityError("profile_mismatch", "selected profile differs from implementation/adapter/report");
++    if (source.implementation_id !== route.implementation_id) compatibilityError("unknown_manifest", "selected implementation differs");
++    if (source.custody.mode !== route.custody) compatibilityError("custody_mismatch", "selected custody differs; fallback is forbidden");
++    if (source.profile === "custom_board" && (source.secure_element.state !== "required" || local.secure_element.state !== "required" || source.secure_element.configuration_id !== local.secure_element.configuration_id)) compatibilityError("required_component_unavailable", "required SE configuration is not identified");
++    const method = source.methods.find((entry) => entry.id === route.method);
++    if (!method || method.support !== "supported" || method.revision !== route.method_revision || method.operation_id !== route.operation_id) compatibilityError("unsupported_method", "exact method/catalog revision is not implemented");
++    if (route.algorithm_id !== null && !method.algorithm_ids.includes(route.algorithm_id)) compatibilityError("unsupported_algorithm", "exact algorithm is not implemented");
++    if (method.limits_id !== route.limits_id || source.limits_id !== route.limits_id) compatibilityError("limits_unknown", "exact method limits are unknown");
++    // Local implementation defaults describe support. Current report and
++    // adapter state independently determine availability at this instant.
++    if (role !== 0 && (method.configuration !== "configured" || method.availability !== "available")) compatibilityError("runtime_unavailable", "method is currently unavailable");
++    const transport = source.transports.find((entry) => entry.id === route.transport);
++    if (!transport || transport.codec_id !== route.codec_id || transport.limits_id !== route.limits_id) compatibilityError("transport_mismatch", "exact transport/codec is not implemented");
++    if (transport.support !== "supported" || transport.configuration !== "configured" || transport.availability !== "available") compatibilityError("runtime_unavailable", "transport is currently unavailable");
++  }
++  const peer = parseLimitsManifest(snapshot.limits), own = parseLimitsManifest(snapshot.adapter_limits);
++  if (peer.limits_id !== route.limits_id || own.limits_id !== route.limits_id) compatibilityError("limits_unknown", "selected limits manifest differs");
++  const peerMethod = peer.methods.find((entry) => entry.method_id === route.method);
++  const localMethod = own.methods.find((entry) => entry.method_id === route.method);
++  const peerTransport = peer.transports.find((entry) => entry.transport_id === route.transport);
++  const localTransport = own.transports.find((entry) => entry.transport_id === route.transport);
++  if (!peerMethod || !localMethod || !peerTransport || !localTransport) compatibilityError("limits_unknown", "applicable limit dimensions are missing");
++  const method = intersectMethodLimits(localMethod, peerMethod);
++  // The existing transport's local 30s default remains an independent ceiling.
++  // A peer/local metadata record cannot overflow or extend the actual timer.
++  method.deadline_ms = Math.min(method.deadline_ms, 30_000);
++  method.request_json_bytes = Math.min(method.request_json_bytes, NSEALR_V0_LIMITS.max_decoded_request_json_bytes);
++  if (method.scope === "sign_event") {
++    method.content_utf8_bytes = Math.min(method.content_utf8_bytes!, NSEALR_V0_LIMITS.max_content_utf8_bytes);
++    method.tag_count = Math.min(method.tag_count!, NSEALR_V0_LIMITS.max_tag_count);
++    method.tag_fields = Math.min(method.tag_fields!, NSEALR_V0_LIMITS.max_tag_fields_per_tag);
++    method.tag_field_utf8_bytes = Math.min(method.tag_field_utf8_bytes!, NSEALR_V0_LIMITS.max_tag_field_utf8_bytes);
++    method.aggregate_tag_utf8_bytes = Math.min(method.aggregate_tag_utf8_bytes!, NSEALR_V0_LIMITS.max_total_tag_utf8_bytes);
++  }
++  const transport = { ...localTransport } as unknown as Record<string, unknown>;
++  if (Object.keys(localTransport).sort().join() !== Object.keys(peerTransport).sort().join()) compatibilityError("limits_unknown", "transport dimensions/units differ");
++  for (const key of Object.keys(localTransport)) if (typeof transport[key] === "number") transport[key] = Math.min(Number(transport[key]), Number((peerTransport as unknown as Record<string, unknown>)[key]));
++  const boundTransport = transport as unknown as TransportLimits;
++  boundTransport.deadline_ms = Math.min(boundTransport.deadline_ms, 30_000);
++  if (route.transport === "usb") boundTransport.frame_bytes = Math.min(boundTransport.frame_bytes, NSEALR_V0_LIMITS.max_serial_frame_bytes);
++  else {
++    boundTransport.reassembly_bytes = Math.min(boundTransport.reassembly_bytes, NSEALR_V0_LIMITS.max_animated_qr_decoded_json_bytes);
++    boundTransport.static_decoded_json_bytes = Math.min(boundTransport.static_decoded_json_bytes!, NSEALR_V0_LIMITS.max_static_qr_decoded_json_bytes);
++    boundTransport.chunk_payload_chars = Math.min(boundTransport.chunk_payload_chars!, NSEALR_V0_LIMITS.max_animated_qr_frame_payload_chars);
++    boundTransport.frame_count = Math.min(boundTransport.frame_count, NSEALR_V0_LIMITS.max_animated_qr_frame_count);
++  }
++  parseLimitsManifest({ format: "nsealr.limits.v1", limits_id: route.limits_id, methods: [method], transports: [boundTransport] });
++  const validation = validateRequest(request);
++  if (!validation.ok || !isRecord(request) || request.method !== route.method) compatibilityError("unsupported_method", validation.error ?? "request method differs from selected route");
++  const bytes = compactJsonUtf8ByteLength(request);
++  if (bytes > method.request_json_bytes || bytes > boundTransport.reassembly_bytes || bytes > method.parse_work || bytes > boundTransport.parse_work) compatibilityError("limit_exceeded", "request exceeds effective byte/work capacity");
++  const frameBytes = route.transport === "usb" ? "nsealr1f:request::0000000000000000\n".length + encodedBytes(bytes) : "nsealr1:".length + encodedBytes(bytes);
++  if (frameBytes > boundTransport.frame_bytes) compatibilityError("limit_exceeded", "complete encoded request exceeds frame capacity");
++  if (route.transport === "qr" && bytes > boundTransport.static_decoded_json_bytes!) compatibilityError("limit_exceeded", "static QR request exceeds actual decoded capacity");
++  let responseShape: unknown;
++  if (method.scope === "sign_event") {
++    const event = (request.params as {event_template: {created_at: number; kind: number; content: string; tags: string[][]}}).event_template;
++    if ([4, 13, 14, 1059, 10050, 22242].includes(event.kind)) compatibilityError("workflow_not_admitted", "user-message/setup/AUTH events require their separately admitted context/workflow; generic signing is not a blind-sign route");
++    const encoder = new TextEncoder(); let tags = 0;
++    if (encoder.encode(event.content).length > method.content_utf8_bytes! || event.tags.length > method.tag_count!) compatibilityError("limit_exceeded", "event exceeds effective content/tag capacity");
++    for (const tag of event.tags) {
++      if (tag.length > method.tag_fields!) compatibilityError("limit_exceeded", "tag exceeds effective field count");
++      for (const field of tag) { const size = encoder.encode(field).length; tags += size; if (size > method.tag_field_utf8_bytes!) compatibilityError("limit_exceeded", "tag field exceeds effective UTF8 capacity"); }
++    }
++    if (tags > method.aggregate_tag_utf8_bytes!) compatibilityError("limit_exceeded", "tags exceed aggregate capacity");
++    // Output sizes use the fixed wire shape and fixed-width public fields;
++    // this is capacity planning, never a computed crypto expected answer.
++    responseShape = { version: 2, request_id: request.request_id, ok: true, result: { event: { id: "0".repeat(64), pubkey: route.public_key, ...event, sig: "0".repeat(128) } } };
++    const canonicalBytes = compactJsonUtf8ByteLength([0, route.public_key, event.created_at, event.kind, event.tags, event.content]);
++    const plan = snapshot.review_plan;
++    if (!plan || !Number.isSafeInteger(plan.pages) || plan.pages < 1 ||
++      plan.request_sha256 !== sha256Utf8Hex(JSON.stringify(request)) ||
++      plan.implementation_id !== route.implementation_id || plan.connection_id !== snapshot.connection_id || plan.generation !== snapshot.generation ||
++      typeof plan.context_id !== "string" || !/^[A-Za-z0-9._:-]{1,128}$/u.test(plan.context_id) ||
++      typeof plan.geometry_id !== "string" || !/^[A-Za-z0-9._:-]{1,128}$/u.test(plan.geometry_id)) compatibilityError("runtime_unavailable", "current complete local review plan is missing or stale");
++    if (canonicalBytes > method.canonical_bytes! || plan.pages > method.review_pages!) compatibilityError("limit_exceeded", "canonical/complete-review capacity is insufficient");
++  } else {
++    responseShape = { version: 2, request_id: request.request_id, ok: true, result: request.method === "get_capabilities" ? { capabilities: snapshot.reported } : { public_key: route.public_key } };
++  }
++  const output = compactJsonUtf8ByteLength(responseShape);
++  const encodedOutput = route.transport === "usb" ? "nsealr1f:response::0000000000000000\n".length + encodedBytes(output) : "nsealr1:".length + encodedBytes(output);
++  if (output > method.response_json_bytes || output > boundTransport.reassembly_bytes || encodedOutput > boundTransport.frame_bytes) compatibilityError("limit_exceeded", "complete response cannot fit effective capacity");
++  const exchangeWork = frameBytes + encodedOutput;
++  if (!Number.isSafeInteger(exchangeWork) || exchangeWork > method.parse_work || exchangeWork > boundTransport.parse_work) compatibilityError("limit_exceeded", "complete exchange exceeds effective byte/work capacity");
++  return { method, transport: boundTransport };
++}
+ 
+ export type SignerRequestDispatcher = (request: SignerDispatchRequest) => unknown | Promise<unknown>;
+ 
+@@ -100,6 +244,10 @@ export type LocalServiceContext = {
+   grants?: LocalClientGrant[];
+   now?: number;
+   signerDispatcher?: SignerRequestDispatcher;
++  /** Current locally selected adapter state. Absence blocks local dispatch. */
++  signerCompatibility?: (route: RouteSelection, request: unknown) => SignerCompatibilitySnapshot;
++  /** Local monotonic milliseconds; peer clocks cannot extend the deadline. */
++  monotonicNow?: () => number | undefined;
+ };
+ 
+ export type PairingIntent = {
+@@ -231,12 +379,18 @@ type PreparedSignerDispatch =
+       ok: true;
+       dispatcher: SignerRequestDispatcher;
+       dispatchRequest: SignerDispatchRequest;
++      release: () => void;
++      trackPending: (operation: unknown) => Promise<unknown>;
++      checkCurrent: () => void;
++      timeout_ms?: number;
+     }
+   | {
+       ok: false;
+       response: LocalServiceResponse;
+     };
+ 
++const pendingDispatches = new WeakMap<LocalServiceContext, number>();
++
+ function isRecord(value: unknown): value is Record<string, unknown> {
+   return typeof value === "object" && value !== null && !Array.isArray(value);
+ }
+@@ -910,13 +1064,80 @@ function prepareSignerDispatch(
+     };
+   }
+ 
++  const dispatchRequest: SignerDispatchRequest = {
++    client: structuredClone(request.params.client),
++    route_selection: structuredClone(routeSelection),
++    request: structuredClone(request.params.request)
++  };
++  let active = true;
++  let unsettled = false;
++  let reservationReleased = false;
++  const releaseReservation = () => {
++    if (reservationReleased) return;
++    reservationReleased = true;
++    if (dispatchRequest.effective_limits) pendingDispatches.set(context, Math.max(0, (pendingDispatches.get(context) ?? 1) - 1));
++  };
++  const cancellation = new AbortController();
++  let timeoutMs: number | undefined;
++  let current = (): void => { if (!active) compatibilityError("runtime_unavailable", "operation is no longer active"); };
++  if (routeSelection.contract === "nsealr.signing.v2") {
++    try {
++      if (!context.signerCompatibility) compatibilityError("runtime_unavailable", "current local adapter observations are not configured");
++      const provider = context.signerCompatibility;
++      const snapshot = provider(routeSelection, dispatchRequest.request);
++      const effective = assessSignerCompatibility(routeSelection, dispatchRequest.request, snapshot);
++      const maximum = Math.min(effective.method.pending_requests, effective.transport.pending_requests);
++      if ((pendingDispatches.get(context) ?? 0) >= maximum) compatibilityError("runtime_unavailable", "pending operation capacity is exhausted");
++      const clock = context.monotonicNow ?? (() => performance.now());
++      const start = clock();
++      if (start === undefined || !Number.isFinite(start) || start < 0 || start > Number.MAX_SAFE_INTEGER) compatibilityError("runtime_unavailable", "local monotonic clock is unavailable");
++      const duration = Math.min(effective.method.deadline_ms, effective.transport.deadline_ms);
++      timeoutMs = duration;
++      const deadline = start + duration;
++      if (!Number.isFinite(deadline) || deadline > Number.MAX_SAFE_INTEGER) compatibilityError("runtime_unavailable", "local deadline overflow");
++      const selectedAccount = () => (context.accounts ?? []).find((account) => account.account_id === routeSelection.account_id);
++      const original = sha256Utf8Hex(JSON.stringify([snapshot, routeSelection, dispatchRequest.request, selectedAccount()]));
++      let last = start;
++      current = () => {
++        if (!active) compatibilityError("runtime_unavailable", "operation is no longer active");
++        const now = clock();
++        if (now === undefined || !Number.isFinite(now) || now < last || now >= deadline) compatibilityError("runtime_unavailable", "local deadline expired or clock rolled back/unavailable");
++        last = now;
++        const accountRoute = selectAccountRoute(context.accounts ?? [], routeRequest);
++        const live = provider(accountRoute, dispatchRequest.request);
++        assessSignerCompatibility(accountRoute, dispatchRequest.request, live);
++        if (sha256Utf8Hex(JSON.stringify([live, accountRoute, dispatchRequest.request, selectedAccount()])) !== original) compatibilityError("runtime_unavailable", "account, capabilities, connection or limits changed; select again");
++      };
++      dispatchRequest.before_write = current;
++      dispatchRequest.effective_limits = effective;
++      dispatchRequest.abort_signal = cancellation.signal;
++      pendingDispatches.set(context, (pendingDispatches.get(context) ?? 0) + 1);
++    } catch (error) {
++      return { ok: false, response: dispatchFailureResponse(request, error) };
++    }
++  }
++
+   return {
+     ok: true,
+     dispatcher: context.signerDispatcher,
+-    dispatchRequest: {
+-      client: request.params.client,
+-      route_selection: routeSelection,
+-      request: request.params.request
++    dispatchRequest,
++    checkCurrent: current,
++    timeout_ms: timeoutMs,
++    trackPending: (operation) => {
++      // An uncooperative adapter cannot be forcibly settled by a timeout. Keep
++      // its existing finite reservation; abort/revocation still happen now.
++      unsettled = true;
++      const settled = () => { unsettled = false; if (!active) releaseReservation(); };
++      return Promise.resolve(operation).then(
++        (value) => { settled(); return value; },
++        (error: unknown) => { settled(); throw error; }
++      );
++    },
++    release: () => {
++      if (!active) return;
++      active = false;
++      cancellation.abort();
++      if (!unsettled) releaseReservation();
+     }
+   };
+ }
+@@ -925,6 +1146,7 @@ function dispatchFailureResponse(
+   request: Extract<LocalServiceRequest, { operation: "dispatch_signer_request" }>,
+   error: unknown
+ ): LocalServiceResponse {
++  if (error instanceof CapabilityError) return errorResponse(request, error.reason, error.message);
+   if (error instanceof SignerRouteUnavailableError) {
+     return errorResponse(request, "signer_route_unavailable", error.message);
+   }
+@@ -957,6 +1179,13 @@ function dispatchSuccessResponse(
+   };
+ }
+ 
++function checkDispatchResponseCapacity(dispatch: SignerDispatchRequest, response: unknown): void {
++  const effective = dispatch.effective_limits;
++  if (!effective) return;
++  const bytes = compactJsonUtf8ByteLength(response);
++  if (bytes > effective.method.response_json_bytes || bytes > effective.transport.reassembly_bytes) compatibilityError("limit_exceeded", "response exceeds effective capacity");
++}
++
+ function dispatchSignerRequest(
+   request: Extract<LocalServiceRequest, { operation: "dispatch_signer_request" }>,
+   context: LocalServiceContext
+@@ -966,9 +1195,15 @@ function dispatchSignerRequest(
+ 
+   let signerResponse: unknown;
+   try {
++    prepared.checkCurrent();
+     signerResponse = prepared.dispatcher(prepared.dispatchRequest);
++    if (isPromiseLike(signerResponse)) signerResponse = prepared.trackPending(signerResponse);
++    prepared.checkCurrent();
++    if (!isPromiseLike(signerResponse)) checkDispatchResponseCapacity(prepared.dispatchRequest, signerResponse);
+   } catch (error) {
+     return dispatchFailureResponse(request, error);
++  } finally {
++    prepared.release();
+   }
+ 
+   if (isPromiseLike(signerResponse)) {
+@@ -990,10 +1225,23 @@ async function dispatchSignerRequestAsync(
+   if (!prepared.ok) return prepared.response;
+ 
+   let signerResponse: unknown;
++  let timer: ReturnType<typeof setTimeout> | undefined;
+   try {
+-    signerResponse = await prepared.dispatcher(prepared.dispatchRequest);
++    prepared.checkCurrent();
++    const operation = prepared.trackPending(prepared.dispatcher(prepared.dispatchRequest));
++    signerResponse = prepared.timeout_ms === undefined ? await operation : await Promise.race([
++      operation,
++      new Promise<never>((_resolve, reject) => {
++        timer = setTimeout(() => reject(new SignerTransportError("signer_transport_timeout", "local operation deadline expired")), prepared.timeout_ms);
++      })
++    ]);
++    prepared.checkCurrent();
++    checkDispatchResponseCapacity(prepared.dispatchRequest, signerResponse);
+   } catch (error) {
+     return dispatchFailureResponse(request, error);
++  } finally {
++    if (timer !== undefined) clearTimeout(timer);
++    prepared.release();
+   }
+   return dispatchSuccessResponse(request, prepared.dispatchRequest.route_selection, signerResponse);
+ }
+diff --git a/packages/transport/src/transport.test.ts b/packages/transport/src/transport.test.ts
+index 78c68bd2..59331ba6 100644
+--- a/packages/transport/src/transport.test.ts
++++ b/packages/transport/src/transport.test.ts
+@@ -36,13 +36,24 @@ const publicKeyVector = JSON.parse(
+ const basicEventVector = JSON.parse(readFileSync(resolve(specsRoot, "vectors/events/kind-1-basic.json"), "utf8"));
+ 
+ describe("transport adapters", () => {
++  it("L-04: cumulative tiny-line work is bounded and a failed connection cannot accumulate retries", async () => {
++    let reads = 0, writes = 0;
++    const transport = new SerialLineTransport({ maxIgnoredLines: 128, maxWorkBytes: 1024, responseTimeoutMs: 100,
++      port: { writeLine: async () => { writes++; }, readLine: async () => { reads++; return "x".repeat(100) + "\n"; } }
++    });
++    await expect(transport.exchange(capabilitiesRequest)).rejects.toThrow(/cumulative byte\/work/);
++    expect(reads).toBeLessThanOrEqual(11); expect(writes).toBe(1);
++    await expect(transport.exchange(capabilitiesRequest)).rejects.toThrow(/reopening/);
++    expect(writes).toBe(1);
++  });
++
+   it("moves request and response JSON through files", async () => {
+     const tempRoot = mkdtempSync(join(tmpdir(), "nsealr-file-"));
+     const requestPath = join(tempRoot, "request.json");
+     const responsePath = join(tempRoot, "response.json");
+     const transport = new JsonFileTransport({ requestPath, responsePath });
+     const expectedResponse = {
+-      version: 1,
++      version: 2,
+       request_id: signEventRequest.request_id,
+       ok: false,
+       error: {
+@@ -65,7 +76,7 @@ describe("transport adapters", () => {
+     const responsePath = join(tempRoot, "response.json");
+     const transport = new JsonFileTransport({ requestPath, responsePath });
+     writeJsonFile(responsePath, {
+-      version: 1,
++      version: 2,
+       request_id: "different-request",
+       ok: false,
+       error: {
+@@ -84,7 +95,7 @@ describe("transport adapters", () => {
+     const responsePath = join(tempRoot, "response.json");
+     const transport = new JsonFileTransport({ requestPath, responsePath });
+ 
+-    await expect(transport.writeRequest({ version: 1, request_id: "bad request id", method: "get_capabilities" })).rejects.toThrow(
++    await expect(transport.writeRequest({ version: 2, request_id: "bad request id", method: "get_capabilities" })).rejects.toThrow(
+       "transport request invalid: request_id is invalid"
+     );
+     expect(() => readFileSync(requestPath, "utf8")).toThrow();
+@@ -96,7 +107,7 @@ describe("transport adapters", () => {
+     const responsePath = join(tempRoot, "response.json");
+     const transport = new JsonFileTransport({ requestPath, responsePath });
+ 
+-    writeJsonFile(responsePath, { version: 1, request_id: signEventRequest.request_id });
++    writeJsonFile(responsePath, { version: 2, request_id: signEventRequest.request_id });
+ 
+     await expect(transport.readResponse()).rejects.toThrow("transport response invalid: ok must be true or false");
+     expect(() => readFileSync(requestPath, "utf8")).toThrow();
+@@ -113,7 +124,7 @@ describe("transport adapters", () => {
+         "rl.once('line', (line) => {",
+         "  const request = JSON.parse(line);",
+         "  process.stdout.write(JSON.stringify({",
+-        "    version: 1,",
++        "    version: 2,",
+         "    request_id: request.request_id,",
+         "    ok: false,",
+         "    error: { code: 'user_rejected', message: 'Rejected by stdio test signer', retryable: false }",
+@@ -129,7 +140,7 @@ describe("transport adapters", () => {
+     });
+ 
+     await expect(transport.exchange(signEventRequest)).resolves.toEqual({
+-      version: 1,
++      version: 2,
+       request_id: signEventRequest.request_id,
+       ok: false,
+       error: {
+@@ -150,7 +161,7 @@ describe("transport adapters", () => {
+         "const rl = createInterface({ input: process.stdin });",
+         "rl.once('line', () => {",
+         "  process.stdout.write(JSON.stringify({",
+-        "    version: 1,",
++        "    version: 2,",
+         "    request_id: 'different-request',",
+         "    ok: false,",
+         "    error: { code: 'user_rejected', message: 'Rejected by stdio test signer', retryable: false }",
+@@ -172,7 +183,7 @@ describe("transport adapters", () => {
+       command: "/definitely/missing/nsealr-stdio-signer"
+     });
+ 
+-    await expect(transport.exchange({ version: 1, request_id: "bad request id", method: "get_capabilities" })).rejects.toThrow(
++    await expect(transport.exchange({ version: 2, request_id: "bad request id", method: "get_capabilities" })).rejects.toThrow(
+       "transport request invalid: request_id is invalid"
+     );
+   });
+@@ -186,7 +197,7 @@ describe("transport adapters", () => {
+         "import { createInterface } from 'node:readline';",
+         "const rl = createInterface({ input: process.stdin });",
+         "rl.once('line', () => {",
+-        "  process.stdout.write(JSON.stringify({ version: 1, request_id: 'req-sign-event-1' }) + '\\n');",
++        "  process.stdout.write(JSON.stringify({ version: 2, request_id: 'req-sign-event-1' }) + '\\n');",
+         "});"
+       ].join("\n"),
+       "utf8"
+@@ -333,7 +344,7 @@ describe("transport adapters", () => {
+     const transport = new SerialFrameTransport({
+       exchangeFrame: async () => encodeSerialFrame({
+         type: "response",
+-        payload: { version: 1, request_id: capabilitiesRequest.request_id }
++        payload: { version: 2, request_id: capabilitiesRequest.request_id }
+       })
+     });
+ 
+@@ -349,7 +360,7 @@ describe("transport adapters", () => {
+       }
+     });
+ 
+-    await expect(transport.exchange({ version: 1, request_id: "invalid request id", method: "get_capabilities" })).rejects.toThrow(
++    await expect(transport.exchange({ version: 2, request_id: "invalid request id", method: "get_capabilities" })).rejects.toThrow(
+       "serial frame request invalid: request_id is invalid"
+     );
+     expect(exchangeCalled).toBe(false);
+@@ -522,7 +533,7 @@ describe("transport adapters", () => {
+     await expect(
+       exchangeSerialLineRequest({
+         path: "/dev/cu.usbmodem-test",
+-        request: { version: 1, request_id: "invalid request id", method: "get_capabilities" },
++        request: { version: 2, request_id: "invalid request id", method: "get_capabilities" },
+         openPort: async () => {
+           opened = true;
+           throw new Error("port should not open");
+diff --git a/packages/transport/src/transport.ts b/packages/transport/src/transport.ts
+index 92a5de09..0abc9629 100644
+--- a/packages/transport/src/transport.ts
++++ b/packages/transport/src/transport.ts
+@@ -1,9 +1,9 @@
+ import { spawn } from "node:child_process";
+-import { readFileSync, writeFileSync } from "node:fs";
++import { closeSync, fstatSync, openSync, readSync, writeFileSync } from "node:fs";
+ import { type Readable, type Writable } from "node:stream";
+ import { verifySignedEventResponse } from "@nsealr/core";
+ import { decodeSerialFrame, encodeSerialFrame } from "@nsealr/framing";
+-import { NSEALR_V0_LIMITS, utf8ByteLength, validateRequest, validateResponse } from "@nsealr/protocol";
++import { NSEALR_V0_LIMITS, parseSigningPayload, parseStrictJson, utf8ByteLength, validateRequest, validateResponse } from "@nsealr/protocol";
+ 
+ export type SignerTransport = {
+   readonly name: string;
+@@ -228,7 +228,26 @@ export class SerialLineStreamPort implements SerialLinePort {
+ }
+ 
+ export function readJsonFile(path: string): unknown {
+-  return JSON.parse(readFileSync(path, "utf8"));
++  const fd = openSync(path, "r");
++  let bytes: Uint8Array;
++  try {
++    const stat = fstatSync(fd);
++    if (!stat.isFile() || stat.size > 8192) throw new Error("JSON file is not regular or exceeds local 8192-byte ceiling");
++    // A fixed buffer plus one overflow byte bounds allocation even if the
++    // opened file grows after fstat. No peer-provided size drives allocation.
++    const buffer = Buffer.alloc(8193); let count = 0;
++    while (count < buffer.length) {
++      const read = readSync(fd, buffer, count, buffer.length - count, null);
++      if (read === 0) break;
++      count += read;
++    }
++    if (count > 8192) throw new Error("JSON file exceeds local byte ceiling");
++    bytes = buffer.subarray(0, count);
++  } finally { closeSync(fd); }
++  const text = new TextDecoder("utf-8", { fatal: true, ignoreBOM: true }).decode(bytes);
++  const value = parseStrictJson(text, 8192);
++  if (typeof value === "object" && value !== null && "request_id" in value && "version" in value && ("method" in value || "ok" in value)) return parseSigningPayload(bytes, 8192);
++  return value;
+ }
+ 
+ export function writeJsonFile(path: string, value: unknown): void {
+@@ -360,6 +379,8 @@ export class JsonLineStdioTransport implements SignerTransport {
+         stdio: ["pipe", "pipe", "pipe"]
+       });
+       let stdout = "";
++      let stdoutBytes = 0;
++      const decoder = new TextDecoder("utf-8", { fatal: true, ignoreBOM: true });
+       let stderr = "";
+       let settled = false;
+       const responseTimer = setTimeout(() => {
+@@ -388,7 +409,6 @@ export class JsonLineStdioTransport implements SignerTransport {
+         return;
+       }
+ 
+-      child.stdout.setEncoding("utf8");
+       child.stderr.setEncoding("utf8");
+       child.stderr.on("data", (chunk: string) => {
+         stderr += chunk;
+@@ -396,17 +416,19 @@ export class JsonLineStdioTransport implements SignerTransport {
+           stderr = `${truncateUtf8(stderr, this.maxStderrBytes)}...<stderr truncated>`;
+         }
+       });
+-      child.stdout.on("data", (chunk: string) => {
+-        stdout += chunk;
+-        if (utf8ByteLength(stdout) > this.maxOutputLineBytes) {
++      child.stdout.on("data", (chunk: Buffer) => {
++        stdoutBytes += chunk.byteLength;
++        if (stdoutBytes > this.maxOutputLineBytes) {
+           fail(new Error("stdio signer stdout exceeded max_output_line_bytes before newline response"));
+           return;
+         }
++        try { stdout += decoder.decode(chunk, { stream: true }); }
++        catch { fail(new Error("stdio signer response must be valid UTF8")); return; }
+         const newlineIndex = stdout.indexOf("\n");
+         if (newlineIndex === -1) return;
+         const line = stdout.slice(0, newlineIndex);
+         try {
+-          const response = JSON.parse(line);
++          const response = parseSigningPayload(line, Math.min(this.maxOutputLineBytes, 8192));
+           assertValidResponse(response);
+           assertResponseVerifiedAgainstRequest(request, response);
+           succeed(response);
+@@ -454,22 +476,47 @@ export class SerialLineTransport implements SignerTransport {
+   private readonly port: SerialLinePort;
+   private readonly maxIgnoredLines: number;
+   private readonly responseTimeoutMs: number;
+-
+-  constructor(options: { port: SerialLinePort; maxIgnoredLines?: number; responseTimeoutMs?: number }) {
++  private readonly beforeWrite?: () => void;
++  private readonly abortSignal?: AbortSignal;
++  private busy = false;
++  private failed = false;
++  private deadline = 0;
++  private lastClock = 0;
++  private workBytes = 0;
++  private readonly maxWorkBytes: number;
++
++  constructor(options: { port: SerialLinePort; maxIgnoredLines?: number; responseTimeoutMs?: number; beforeWrite?: () => void; abortSignal?: AbortSignal; maxWorkBytes?: number }) {
+     this.port = options.port;
+     this.maxIgnoredLines = options.maxIgnoredLines ?? 32;
+     this.responseTimeoutMs = options.responseTimeoutMs ?? 30_000;
++    if (!Number.isSafeInteger(this.maxIgnoredLines) || this.maxIgnoredLines < 0 || this.maxIgnoredLines > 128) throw new Error("maxIgnoredLines must be an integer in 0..128");
++    if (!Number.isSafeInteger(this.responseTimeoutMs) || this.responseTimeoutMs < 1 || this.responseTimeoutMs > 120_000) throw new Error("responseTimeoutMs must be an integer in 1..120000");
++    this.beforeWrite = options.beforeWrite;
++    this.abortSignal = options.abortSignal;
++    this.maxWorkBytes = options.maxWorkBytes ?? (this.maxIgnoredLines + 2) * NSEALR_V0_LIMITS.max_serial_frame_bytes;
++    if (!Number.isSafeInteger(this.maxWorkBytes) || this.maxWorkBytes < 1 || this.maxWorkBytes > 1_048_576) throw new Error("maxWorkBytes must be a finite integer in 1..1048576");
+   }
+ 
+   async exchange(request: unknown): Promise<unknown> {
++    if (this.busy || this.failed) throw new Error("serial operation already pending or connection requires reopening");
++    this.busy = true;
++    this.lastClock = performance.now();
++    this.deadline = this.lastClock + this.responseTimeoutMs;
++    this.workBytes = 0;
++    let channelUsed = false;
+     const transport = new SerialFrameTransport({
+       exchangeFrame: async (line) => {
++        if (this.abortSignal?.aborted) throw new Error("serial operation cancelled");
++        this.beforeWrite?.();
++        this.accountWork(line);
++        channelUsed = true;
+         await this.writeLineWithTimeout(line);
+         for (let ignored = 0; ignored <= this.maxIgnoredLines; ignored += 1) {
+           const responseLine = await this.readLineWithTimeout();
+           if (responseLine === null) {
+             throw new Error("serial line transport reached end of input before response");
+           }
++          this.accountWork(responseLine);
+           if (responseLine.startsWith("nsealr1f:")) {
+             return responseLine;
+           }
+@@ -477,10 +524,20 @@ export class SerialLineTransport implements SignerTransport {
+         throw new Error("serial line transport did not receive a protocol frame");
+       }
+     });
+-    return transport.exchange(request);
++    try { return await transport.exchange(request); }
++    catch (error) { this.failed ||= channelUsed; throw error; }
++    finally { this.busy = false; }
++  }
++
++  private accountWork(line: string): void {
++    if (line.length > NSEALR_V0_LIMITS.max_serial_frame_bytes) throw new Error("serial input line exceeds frame capacity");
++    const size = utf8ByteLength(line);
++    if (size > NSEALR_V0_LIMITS.max_serial_frame_bytes || this.workBytes + size > this.maxWorkBytes) throw new Error("serial operation exceeds cumulative byte/work capacity");
++    this.workBytes += size;
+   }
+ 
+   private async writeLineWithTimeout(line: string): Promise<void> {
++    if (this.abortSignal?.aborted) throw new Error("serial operation cancelled");
+     await this.withTimeout(
+       this.port.writeLine(line),
+       `serial line transport timed out before write completed after ${this.responseTimeoutMs}ms`
+@@ -496,16 +553,30 @@ export class SerialLineTransport implements SignerTransport {
+ 
+   private async withTimeout<T>(operation: Promise<T>, timeoutMessage: string): Promise<T> {
+     let timeout: ReturnType<typeof setTimeout> | undefined;
++    let cancelled: (() => void) | undefined;
+     try {
++      if (this.abortSignal?.aborted) throw new Error("serial operation cancelled");
++      const now = performance.now();
++      if (!Number.isFinite(now) || now < this.lastClock || now >= this.deadline) throw new Error(timeoutMessage);
++      this.lastClock = now;
++      const remaining = this.deadline - now;
+       return await Promise.race([
+         operation,
++        new Promise<never>((_resolve, reject) => {
++          cancelled = () => {
++            try { void Promise.resolve(this.port.close?.()).catch(() => undefined); } catch { /* Preserve cancellation. */ }
++            reject(new Error("serial operation cancelled"));
++          };
++          this.abortSignal?.addEventListener("abort", cancelled, { once: true });
++        }),
+         new Promise<never>((_resolve, reject) => {
+           timeout = setTimeout(() => {
+             reject(new Error(timeoutMessage));
+-          }, this.responseTimeoutMs);
++          }, remaining);
+         })
+       ]);
+     } finally {
++      if (cancelled) this.abortSignal?.removeEventListener("abort", cancelled);
+       if (timeout !== undefined) {
+         clearTimeout(timeout);
+       }
