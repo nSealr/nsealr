@@ -1,0 +1,249 @@
+{
+  "candidate": "1aa144e9410c014cf55cf0694e24ef1fcddcf729",
+  "tree": "c4e645904a7776a05ff178651feeaf0238113dc7",
+  "manifest_verified": 304,
+  "original_preparation_verified": 6,
+  "read_only_git_objects_verified": 14,
+  "product_bindings_verified": 4,
+  "total_changed_paths": 310,
+  "out_of_scope": [],
+  "final_tail_only_task_proof": true,
+  "runtime_after_bf51_only_test_change": true,
+  "same_compared_input_rows_verified": 11,
+  "environment": {
+    "path": "docs/restart/implementation/R00/evidence/final/environment.json",
+    "sha256": "5b0f773e07fc90aa4a2b7d62c102bbc7b824b6bab135002ee0a01ad90a0ef001",
+    "scope": "Existing bootstrap environment map plus command-specific overrides; not a physical resource inventory."
+  },
+  "command_log_pairs_verified": 16,
+  "commands": [
+    {
+      "receipt": "stable-ci-03/command.json",
+      "index": 0,
+      "argv": [
+        "make",
+        "ci"
+      ],
+      "exit": 0
+    },
+    {
+      "receipt": "proof-final-core/commands.json",
+      "index": 0,
+      "argv": [
+        "cargo",
+        "test",
+        "--locked",
+        "--offline",
+        "-p",
+        "nsealr-core"
+      ],
+      "exit": 0
+    },
+    {
+      "receipt": "proof-final-core/commands.json",
+      "index": 1,
+      "argv": [
+        "cargo",
+        "test",
+        "--locked",
+        "--offline",
+        "-p",
+        "nsealr-core",
+        "--all-features"
+      ],
+      "exit": 0
+    },
+    {
+      "receipt": "proof-final-core/commands.json",
+      "index": 2,
+      "argv": [
+        "cargo",
+        "clippy",
+        "--locked",
+        "--offline",
+        "--all-targets",
+        "--all-features",
+        "--",
+        "-D",
+        "warnings",
+        "-D",
+        "dead_code"
+      ],
+      "exit": 0
+    },
+    {
+      "receipt": "proof-final-core/commands.json",
+      "index": 3,
+      "argv": [
+        "cargo",
+        "llvm-cov",
+        "--workspace",
+        "--all-features",
+        "--summary-only",
+        "--json",
+        "--output-path",
+        "build/k01-proof-final-coverage.json"
+      ],
+      "exit": 0
+    },
+    {
+      "receipt": "proof-final-core/commands.json",
+      "index": 4,
+      "argv": [
+        "python3",
+        "ci/check_coverage_ratchet.py",
+        "build/k01-proof-final-coverage.json",
+        "ci/ratchet.json",
+        "build/rust-host-coverage.json"
+      ],
+      "exit": 0
+    },
+    {
+      "receipt": "independent-final/commands.json",
+      "index": 0,
+      "argv": [
+        "python3",
+        "-B",
+        "docs/restart/implementation/K01/check_observed.py",
+        "--fixtures",
+        "docs/restart/implementation/K01/independent-inputs.json",
+        "--observed",
+        "docs/restart/implementation/K01/evidence/observed-events.json",
+        "--identities",
+        "docs/restart/implementation/K01/evidence/observed-identities.json",
+        "--rejections",
+        "docs/restart/implementation/K01/evidence/observed-rejections.json"
+      ],
+      "exit": 0
+    },
+    {
+      "receipt": "independent-final/commands.json",
+      "index": 1,
+      "argv": [
+        "python3",
+        "-B",
+        "docs/restart/implementation/S03/oracle.py",
+        "--check",
+        "--fixtures",
+        "docs/restart/implementation/S03/vectors.json",
+        "--observed",
+        "docs/restart/implementation/K01/evidence/s03-observed-events.json"
+      ],
+      "exit": 0
+    },
+    {
+      "receipt": "checker-controls-01/command.json",
+      "index": 0,
+      "argv": [
+        "python3",
+        "-B",
+        "docs/restart/implementation/K01/probes/checker-negative.py",
+        "--output",
+        "/home/tux/nsealr/.restart-tools/goal/k01-current-implementation/docs/restart/implementation/K01/evidence/checker-controls-01/controls"
+      ],
+      "exit": 0
+    },
+    {
+      "receipt": "final-metadata-checks/commands.json",
+      "index": 0,
+      "argv": [
+        "make",
+        "docs"
+      ],
+      "exit": 0
+    },
+    {
+      "receipt": "final-metadata-checks/commands.json",
+      "index": 1,
+      "argv": [
+        "python3",
+        "scripts/validate_restart_plan.py"
+      ],
+      "exit": 0
+    },
+    {
+      "receipt": "final-metadata-checks/commands.json",
+      "index": 2,
+      "argv": [
+        "python3",
+        "scripts/verify_evidence.py"
+      ],
+      "exit": 0
+    },
+    {
+      "receipt": "final-metadata-checks/commands.json",
+      "index": 3,
+      "argv": [
+        "python3",
+        "scripts/verify_contracts.py"
+      ],
+      "exit": 0
+    },
+    {
+      "receipt": "final-metadata-checks/commands.json",
+      "index": 4,
+      "argv": [
+        "cargo",
+        "fmt",
+        "--all",
+        "--check"
+      ],
+      "exit": 0
+    },
+    {
+      "receipt": "review-proof-addendum-01/command.json",
+      "index": 0,
+      "argv": [
+        "cargo",
+        "test",
+        "--locked",
+        "--offline",
+        "-p",
+        "nsealr-core",
+        "k01_",
+        "--",
+        "--nocapture"
+      ],
+      "exit": 0
+    },
+    {
+      "receipt": "content-role-red/command.json",
+      "index": 0,
+      "argv": [
+        "cargo",
+        "test",
+        "--locked",
+        "--offline",
+        "-p",
+        "nsealr-core",
+        "k01_seventy_cases_have_actual_complete_review",
+        "--",
+        "--nocapture"
+      ],
+      "exit": 101
+    }
+  ],
+  "checker_control_originals_verified": 30,
+  "prefix_records_verified": 198,
+  "original_identity_operations_verified": 9,
+  "matrix_complete_review_records": 35,
+  "matrix_zero_effect_rejections": 35,
+  "coverage": {
+    "stable-ci-03/core-coverage.json": {
+      "count": 12965,
+      "covered": 12965,
+      "percent": 100
+    },
+    "stable-ci-03/host-coverage.json": {
+      "count": 1569,
+      "covered": 1219,
+      "percent": 77.69279796048438
+    },
+    "proof-final-core/core-coverage.json": {
+      "count": 12965,
+      "covered": 12965,
+      "percent": 100
+    }
+  },
+  "limits": "Read-only source/artifact/receipt correspondence; source review determines assertion meaning. No new product tests, target execution, physical qualification, final verdict or CI adoption."
+}
