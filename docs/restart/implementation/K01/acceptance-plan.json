@@ -5,7 +5,7 @@
   "author": "/root/b01_final_review",
   "reviewer": "/root",
   "base_commit": "dbad656997ad8cf9024ca1489291f5f1d4d3094a",
-  "approval_state": "distinct root specification review pending; implementation additionally waits actual adopted T01/main gates and root admission",
+  "approval_state": "Root review e598edab952b6e17df9f1286ff28c760cd0fac37 requested changes for K01-SPEC-01. This authored checking-plan correction awaits distinct affected-delta review; runtime still waits actual adopted T01/main gates and root admission.",
   "canonical_acceptance": [
     "Implement canonical signing and verify every output under the selected identity using qualified libraries.",
     "Prove one-use consent and exact-review binding with negative tests; preserve independent Python/vector verification.",
@@ -325,8 +325,8 @@
     },
     {
       "phase": "independent new-kind output",
-      "argv": "python3 -B docs/restart/implementation/S03/oracle.py --check --fixtures docs/restart/implementation/K01/independent-inputs.json --observed docs/restart/implementation/K01/evidence/observed-events.json",
-      "scope": "Existing checker supports the vector-row format. Supply its three actual public-key import witnesses in adjacent .keys.json; its legacy empty_event_signature field is a first-fixture signature witness, explicitly bound here to profile-empty. Do not copy expected fields into actual observations."
+      "argv": "python3 -B docs/restart/implementation/K01/check_observed.py --fixtures docs/restart/implementation/K01/independent-inputs.json --observed docs/restart/implementation/K01/evidence/observed-events.json --identities docs/restart/implementation/K01/evidence/observed-identities.json --rejections docs/restart/implementation/K01/evidence/observed-rejections.json",
+      "scope": "Future narrow K01 offline test checker, implemented only after actual T01 adoption and root runtime admission. Reuse pinned S03 template/canonical/reference primitives, not its sample-specific check/generate. The helper and observations do not exist/pass yet; the strict contract below retains all obligations."
     },
     {
       "phase": "initial target compile",
@@ -369,5 +369,40 @@
   },
   "no_runtime_acceptance_executed": true,
   "no_graph_or_product_changes_authorized_by_this_document": true,
-  "retained_family_rule": "For each retain_security_meaning row, preserve the original expected positive/adversarial obligation exactly at its bound source; extend cross-kind coverage where relevant. The five explicit extensions change catalog/owner/qualified-engine behavior, never the original security invariant."
+  "retained_family_rule": "For each retain_security_meaning row, preserve the original expected positive/adversarial obligation exactly at its bound source; extend cross-kind coverage where relevant. The five explicit extensions change catalog/owner/qualified-engine behavior, never the original security invariant.",
+  "new_kind_output_checker_contract": {
+    "reason": "K01-SPEC-01: mathematical vector fields were compatible, but unchanged S03 check constructs parser negatives using first-fixture kind 1/time 0/empty-content substitutions. On K01 first kind 0 they can be no-ops. Do not reuse that check function or reorder fixtures to bypass the failure.",
+    "future_file": "docs/restart/implementation/K01/check_observed.py",
+    "admission": "Only a bounded future test/evidence helper inside existing K01 scope; no product implementation now. Actual T01 adoption, one affected API reconciliation and root runtime admission remain prerequisites.",
+    "independent_primitives": "Import only the already pinned S03 template/canonical/reference loader or their declared function bindings; validate their source identity from source-inputs.json. Use Python/hashlib plus the hash-checked upstream BIP340 reference; no product/parser/renderer implementation supplies expected values. Never invoke S03 check/generate for this new set. Bind the expected data to the accepted immutable preparation/admission commit and SHA256; do not accept a self-asserted hash or HEAD as a changing baseline. A deliberate new fixture requires its reviewed semantic expectation before affected runtime edits.",
+    "strict_records": {
+      "all_files": "One complete JSON value, decoded duplicate member rejection, exact declared row fields/types and unique IDs; reject missing, extra, duplicate or mismatched case records rather than silently dropping them. Validate byte/hex lengths and finite fixture bounds. Record source-bound actual harness commands/candidate outside these data values; a flag cannot establish execution provenance.",
+      "events": "Exactly all 13 expected IDs. Each actual record has id,pubkey,canonical_hex,event_id,signature and signed_event_json. Parse the exact final serialized signed event with independent strict JSON/type/integer rules, exactly pubkey/created_at/kind/tags/content/id/sig; reconstruct the template with existing independent primitives and compare all signed values, canonical bytes, SHA256 ID, selected identity and signature. Do not copy fixture fields into the observations.",
+      "identities": "Exactly the three public import cases 1, 3, n-3, with actual original scalar, scoped normalized-backend witness and derived public key from private test instrumentation. Compare with existing identity_expectations and upstream derivation; no production secret getter is added. Original nsec retention, even for same x-only key, remains a separate actual owner test.",
+      "rejections": "Exactly every explicit negative_expectations ID (currently 27) with its actual error layer, approval/entropy/sign-call counts and output presence. Compare to the declared parser/semantic expectation; these preflight cases require zero approval/entropy/sign calls and zero output. Reject omissions/duplicates/unknown cases. New lifecycle/provider/late-output tests retain their own declared call-count expectations in their existing groups; do not pretend every failure occurs at parser intake."
+    },
+    "explicit_negative_inputs": "Use each literal negative_expectations.template (or an explicitly declared byte input for later malformed-UTF8 cases); never derive a negative by substituting text in the first positive. Existing independent template must actually reject each parser-labelled case. Semantic rejection is the P01/catalog-authored expectation, not a value learned from product output. The 27 current cases and future required per-kind matrix remain mandatory; fail if a parser control accidentally becomes valid.",
+    "crypto_obligations": [
+      "Independently recompute each expected canonical byte string, SHA256 ID, public key and raw signature from its declared public fixture scalar and exact aux_hex before comparing actual output; reject a changed expected auxiliary value even if an old signature was retained.",
+      "Compare all 13 prepared canonical/ID/signature rows, including same-ID/different auxiliary-zero versus auxiliary-one signatures; compare actual final serialized event fields too.",
+      "Use pinned official verifier controls to establish reference sanity and verify every output under the selected full public key and raw 32-byte ID.",
+      "For each output reject wrong-key and double-hashed-ID verification, every 64 signature-byte mutation and every 32 ID-byte mutation; independently mutate each canonical field and prove changed ID invalidates the original signature.",
+      "Recompute/check all three original-versus-normalized identity witnesses; do not infer original recovery bytes from normalized backend state or public-key equality."
+    ],
+    "retained_separate_S03_gate": "The existing separate oracle.py --check command on the original eight S03 fixtures remains byte-for-byte unchanged in commands_after_runtime_admission. It retains its original raw JSON/Unicode/integer negative controls and key/canonical/signature mutation obligations; new-kind checking does not replace or weaken it.",
+    "checker_negative_controls": "When this helper is implemented, demonstrate nonzero rejection for missing/duplicate/extra IDs, tampered canonical/ID/key/signature/auxiliary expectations or actual serialized fields, malformed observation JSON and a rejection record falsely showing approval/provider/sign/output effects. Preserve significant failures. Content comparison cannot authenticate a fabricated run: actual source-bound harness logs and distinct review must establish provenance.",
+    "no_acceptance_claim": "The old review reproducer uses explicitly synthetic expected witnesses only to reach the failing checker branch; those files are not actual K01 output. No future checker execution, product negative result, T01 admission or physical qualification is claimed by this specification correction."
+  },
+  "specification_correction": {
+    "finding": "K01-SPEC-01",
+    "independent_review_commit": "e598edab952b6e17df9f1286ff28c760cd0fac37",
+    "reviewed_candidate": "a783fd37033f63d04e27b6855ad064b7402ce428",
+    "classification": "Verifier integration plan defect, not product failure",
+    "former_command": {
+      "phase": "independent new-kind output",
+      "argv": "python3 -B docs/restart/implementation/S03/oracle.py --check --fixtures docs/restart/implementation/K01/independent-inputs.json --observed docs/restart/implementation/K01/evidence/observed-events.json",
+      "scope": "Existing checker supports the vector-row format. Supply its three actual public-key import witnesses in adjacent .keys.json; its legacy empty_event_signature field is a first-fixture signature witness, explicitly bound here to profile-empty. Do not copy expected fields into actual observations."
+    },
+    "author_disposition": "Replaced new-kind check instructions only; unchanged original gate/data/source bindings retained. Awaiting distinct affected-delta review."
+  }
 }

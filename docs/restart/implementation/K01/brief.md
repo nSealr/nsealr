@@ -184,3 +184,25 @@ full required gates once coherent. Distinct exact final source review, normal
 protected integration and actual resulting-main CI remain required; their future
 success is not claimed here. Actual UI, provider, target stack/RAM/latency,
 recovery and physical isolation remain each profile's release gates.
+
+## Correction from distinct specification review
+
+Review `e598edab952b6e17df9f1286ff28c760cd0fac37` found K01-SPEC-01:
+the proposed unchanged S03 `oracle.py --check` command cannot check this new
+fixture set. Its parser-negative substitutions assume the first event is kind 1,
+time 0 and empty content; K01's first kind-0 input leaves those mutations
+unchanged. The reproduced `accepted invalid input` failure is a checking-plan
+defect, not a product result. The original review, reproducer and unmodified
+failure are bound by immutable URLs/hashes in `preparation-checks.json`.
+
+Keep the original S03 oracle, eight fixtures and their separate check command
+unchanged. Do not reorder K01 vectors to evade the defect. After actual T01
+adoption and runtime admission, add only the scoped offline test checker
+`K01/check_observed.py` described in the acceptance plan. It reuses the pinned
+`template`, `canonical` and hash-checked `reference` primitives, not S03's
+sample-specific `check` or `generate`. It consumes the explicit negative inputs
+and independent expectations, with strict actual-output/identity/rejection
+records and all original cryptographic/adversarial obligations. This admits a
+necessary narrow test helper in the existing future scope, not another engine,
+registry or an already passing checker. Mathematical inputs and their order are
+unchanged; the correction awaits distinct delta review.
