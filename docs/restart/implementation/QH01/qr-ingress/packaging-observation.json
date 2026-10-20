@@ -1,0 +1,8 @@
+{
+  "scope": "One-off proof packaging helper only; no product/test/gate failure",
+  "checkpoint_preserved": "82535e28054c8b4bbea289b790e4953bd0874d5b",
+  "helper_exit": 1,
+  "raw_stderr": "Traceback (most recent call last):\n  File \"<stdin>\", line 10, in <module>\nAttributeError: 'bytes' object has no attribute 'returncode'\n",
+  "cause": "The final informational print reused a subprocess variable after the manifest loop assigned byte contents to that name. All assertions and manifest/whitespace writes completed before the print.",
+  "disposition": "Exact old manifest members independently rehashed before this addendum. Corrected only this local reporting helper variable naming; no runtime, tests, thresholds, expected outcomes or prior logs changed."
+}

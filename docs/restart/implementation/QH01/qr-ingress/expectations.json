@@ -1,0 +1,91 @@
+{
+  "task": "QH01",
+  "role": "Independent guard/order expectations fixed before affected runtime edits; Node Buffer/crypto construct raw framing and checksums, not QR encoder under test.",
+  "input": "5d047b5d3150d58a1a45caf00c8946b7f18364bb",
+  "source_bindings": [
+    {
+      "commit": "5d047b5d3150d58a1a45caf00c8946b7f18364bb",
+      "path": "packages/qr/src/qr.ts",
+      "mode": "100644",
+      "blob": "960184017154529e25ce1430243e1fb18bbe35e1",
+      "sha256": "d04a317d2ac4f22b8d2ed1d1e41958b4083f57642b346913777b92d9a8aa5c33",
+      "bytes": 8067
+    },
+    {
+      "commit": "5d047b5d3150d58a1a45caf00c8946b7f18364bb",
+      "path": "packages/qr/src/qr.test.ts",
+      "mode": "100644",
+      "blob": "5d9941d42e170376a3afe7ac531cf1233e0cdccb",
+      "sha256": "cf3757c1878f863bb3e676a2570e91beeb80de734f4b839e6f30a667bd4b44c6",
+      "bytes": 5201
+    },
+    {
+      "commit": "5d047b5d3150d58a1a45caf00c8946b7f18364bb",
+      "path": "packages/protocol/src/limits.ts",
+      "mode": "100644",
+      "blob": "c2c4866d0755ca019e3ae9d67a65bed1c953cf4d",
+      "sha256": "daa94fb32fd1cf1acc2dc005268287a12c0412b9a3e132367d3d7883f6af6224",
+      "bytes": 1050
+    },
+    {
+      "commit": "5d047b5d3150d58a1a45caf00c8946b7f18364bb",
+      "path": "packages/protocol/src/encoding.ts",
+      "mode": "100644",
+      "blob": "67d23537440f5a0bacf12ec03bf9fde8b1716161",
+      "sha256": "52646f09fbc76d6dbeb64b2f2cabe58c7389d06c4775a9960eaafdee08234116",
+      "bytes": 4511
+    },
+    {
+      "commit": "5d047b5d3150d58a1a45caf00c8946b7f18364bb",
+      "path": "docs/restart/implementation/Q01/brief.md",
+      "mode": "100644",
+      "blob": "97ec89ec30be125551703dee70ff25794a702e2e",
+      "sha256": "727c1fbca3f2695b1fea0b1fccebf5693acc7aa9b2afaf67414e35a476d174f7",
+      "bytes": 9292
+    },
+    {
+      "commit": "5d047b5d3150d58a1a45caf00c8946b7f18364bb",
+      "path": "docs/product/requirements.md",
+      "mode": "100644",
+      "blob": "e35aa354a546f38422c1f17f1a32e4fc0c2b7fec",
+      "sha256": "f8635e2941895b7d4043e769c9b73e2064036b1358e5f4266854b074a9b81326",
+      "bytes": 17199
+    },
+    {
+      "commit": "5d047b5d3150d58a1a45caf00c8946b7f18364bb",
+      "path": "plan/work-items.json",
+      "mode": "100644",
+      "blob": "87335d2c316246b1f99c85a1b803dd0cc24c7532",
+      "sha256": "aee306da2c56a684ab4a9f2632f60747df86f38badf5fc725bb736348cc7a372",
+      "bytes": 639756
+    }
+  ],
+  "existing_provisional_codec_ceilings": {
+    "static_decoded_bytes": 704,
+    "animated_decoded_bytes": 4096,
+    "animated_frame_count": 64,
+    "animated_chunk_ascii_characters": 256
+  },
+  "derived_not_new_capacities": {
+    "static_unpadded_base64_max_characters": 939,
+    "animated_unpadded_base64_max_characters": 5462,
+    "maximum_valid_animated_frame_overhead_characters": 97,
+    "whole_animated_frame_max_characters": 353,
+    "maximum64frame_raw_collection_characters": 11670
+  },
+  "expectations": [
+    "Static703/704 valid;705 canonical bytes reject before decode/re-encode, malformed raw940chars reject before lexical scan.",
+    "Valid complete64frame inputs with final frame352/353characters accept;354characters rejects before split.",
+    "Animated4095/4096 valid;4097 canonical bytes individually well-framed and inside conservative raw-header budget reject before joined decode/re-encode.",
+    "Raw64frame collections at11669/11670 pass early budget then reach isolated duplicate-index refusal;11671 refuses before any checksum work. Each frame checksum is valid and individually bounded.",
+    "Existing63/64 complete frame sets accept;65frame rejection remains before any parse/checksum. No redundant frame-count guard is proposed.",
+    "Under-limit padding/alphabet/impossible-length/trailing-bits, checksum/digest, UTF8/JSON and index/set faults have independent intended error paths."
+  ],
+  "implementation_scope": [
+    "packages/qr/src/qr.ts",
+    "packages/qr/src/qr.test.ts",
+    "docs/restart/implementation/QH01/qr-ingress/"
+  ],
+  "excluded": "No limits/protocol/locks/vendor/graph/transport/session/provider/key/signing/camera changes. These finite legacy codec ceilings do not qualify optical or native-decoder capacity.",
+  "all_QH01_acceptance_incomplete": true
+}

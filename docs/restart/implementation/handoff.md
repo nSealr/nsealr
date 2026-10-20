@@ -48,6 +48,15 @@ Its current source/copy/metadata package awaits root's exact final review and
 normal protected PR/resulting-main gates. Reuse the source-matched canary and
 K01 proof; do not repeat them merely to update navigation or timestamps.
 
+That delivery also carries B01's frozen QH01 [QR ingress component](QH01/qr-ingress/handoff.md)
+from557fe975: only `packages/qr/src/qr.ts` and its tests change outside scoped
+proof. Static and animated early length/work guards retain existing codec limits,
+integrity/parser checks and framing. Root's
+[distinct review](reviews/QH01-qr-ingress/report.md) atdd7c4685 is
+`PASS_QR_ingress_component_only`; all five QH01 criteria stay incomplete and its
+task remains planned. The shared delivery wrapper distinguishes this runtime correction from QP01 preparation;
+it does not admit a complete Bridge optical/client workflow or physical release.
+
 The sole task authority is [plan/work-items.json](../../../plan/work-items.json).
 Use existing commands, targeted source reads, one CI observer and applicable
 prior proof as specified in AGENTS.md. Source notices, archival, registry

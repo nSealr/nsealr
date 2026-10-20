@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "task": "QP01",
-  "phase": "REVIEWED_PREPARATION_DELIVERY_PROPOSAL_PHYSICAL_TASK_INCOMPLETE",
+  "phase": "COMBINED_PREPARATION_AND_BOUNDED_QR_INGRESS_DELIVERY_PROPOSAL_TASKS_INCOMPLETE",
   "author": "/root/a02_sol",
   "model_policy": "gpt-6.1-sol xhigh",
   "input_commits": {
@@ -22,7 +22,33 @@
       "executed_probe": "7c755299e27a8affb5defa42fe318dfab4e2ff1c",
       "expectations_before_code": "c9c83bf45159ac7b3fc32e4657763c2b70a2115e"
     },
-    "current_delivery": "Only exact source/proof copies and admitted surrounding metadata. Original pending statements/dates/source roles remain historical; no new canary or product execution."
+    "current_delivery": "Original QP preparations/reviews and K01 adoption proof remain exact; this single delivery additionally changes the two exact QH01 QR runtime/test paths. All other product runtime remains unchanged. Root limited QH component review passes; exact final metadata review and protected adoption gates remain pending.",
+    "QH01_QR_ingress": {
+      "candidate": "557fe9758154e622a41dabbda5c3ceca3871e43d",
+      "tree": "471f9c951f8fc68557d06f6638d5788167aa1308",
+      "input": "5d047b5d3150d58a1a45caf00c8946b7f18364bb",
+      "author": "/root/b01_final_review",
+      "runtime_and_test_source": "447dd235aab5483e88094eca881457e9c3709d8c",
+      "expectations": "4e2a732b81b3e44c30645f9d1f14768e386af24e",
+      "pre_fix_RED": "988ff6367a82a3200d8a2131579066e88daddf9c",
+      "existing_paths": [
+        "packages/qr/src/qr.ts",
+        "packages/qr/src/qr.test.ts"
+      ],
+      "new_source_proof_files": 33,
+      "component_review": {
+        "commit": "dd7c4685e6da219707b8d567d0d16149be96a304",
+        "path": "docs/restart/implementation/reviews/QH01-qr-ingress/review.json",
+        "sha256": "b5c2d27de52f220b73c7c91688f1c3be125247c12e5d14e19ac9357d1db62b4c",
+        "reviewer": "/root",
+        "candidate": "557fe9758154e622a41dabbda5c3ceca3871e43d",
+        "verdict": "PASS_QR_ingress_component_only",
+        "role": "Bounded two-file QR ingress component only; no whole-task or physical acceptance"
+      },
+      "component_review_state": "ACTUAL_DISTINCT_LIMITED_COMPONENT_PASS_TASK_INCOMPLETE",
+      "task_acceptance": "All five QH01 criteria incomplete; not a framing freeze or complete Bridge workflow",
+      "review_only_files": 13
+    }
   },
   "limited_reviews": [
     {
@@ -55,24 +81,24 @@
   ],
   "copy_inventory": {
     "path": "docs/restart/implementation/QP01/delivery/copy-inventory.json",
-    "sha256": "152346c6f57d8f5df3950f719c6c04844bf98ee808c2f94aee18a790120b8bdd"
+    "sha256": "58940cf6ae324529e836df10842152776091eb98c76dc7b119d1742c08bfd128"
   },
   "source_scope": {
     "path": "docs/restart/implementation/QP01/delivery/source-scope.json",
-    "sha256": "0869cf9b14f18e797bb265243259f18dd5c84fda89f62b61607899027f6b6121"
+    "sha256": "647686c59c161455a53111df832dade1ecb313686bc319089849c8b56a671042"
   },
   "current_navigation": [
     {
       "path": "docs/restart/implementation/QP01/README.md",
-      "sha256": "edca53f499551b470e4dc8c75a47a455d1c40c6b4643c0cd695d008acc0d8200"
+      "sha256": "48b9f352150fb0bb5e84a59bcfc9ce0a730c3d27ecc5d1d9a77ea819ac03b452"
     },
     {
       "path": "docs/restart/README.md",
-      "sha256": "fc658dc6b58ceee858b4400596e0049b550028ee3ed1b7bdcda9bfc8ad0af58e"
+      "sha256": "d1b8903cc9bd2f79e069643623e4460035c7e6276f3d811c5eaab787f5cf15a9"
     },
     {
       "path": "docs/restart/implementation/handoff.md",
-      "sha256": "41d97a91ce062314d0fed9187ef8ed9b0c14a33e2b0aa6eb9c8eb0c6ef764ba4"
+      "sha256": "31d046e52e989c33ea4776198eb408c8c0e4f43a0fb8180f4963cffec4ed9cb1"
     }
   ],
   "K01_actual_adoption": {
@@ -166,26 +192,116 @@
           "reason": "Reviewed source/host preparation supplies no actual identified kit/image/ARM/physical/custody/provider/resource qualification."
         }
       ]
+    },
+    {
+      "task": "QH01",
+      "status": "INCOMPLETE_ALL_CRITERIA",
+      "requirements": [
+        {
+          "index": 0,
+          "requirement": "Preserve identity/request binding and output verification across manual optical round trips.",
+          "outcome": "incomplete",
+          "reason": "Only bounded software QR ingress guard component; complete identity/request/output/session/replay/deadline/seed-channel/client/optical UX and framing comparison remain open."
+        },
+        {
+          "index": 1,
+          "requirement": "Enforce frame/byte/time bounds, reject mixed/replayed requests and separate seed import/export from signing output.",
+          "outcome": "incomplete",
+          "reason": "Only bounded software QR ingress guard component; complete identity/request/output/session/replay/deadline/seed-channel/client/optical UX and framing comparison remain open."
+        },
+        {
+          "index": 2,
+          "requirement": "Test actual client deadlines and repeated scans; never extend scope with cached blanket approval or exported identity keys.",
+          "outcome": "incomplete",
+          "reason": "Only bounded software QR ingress guard component; complete identity/request/output/session/replay/deadline/seed-channel/client/optical UX and framing comparison remain open."
+        },
+        {
+          "index": 3,
+          "requirement": "Expose unsupported DM/automation capabilities accurately and plan any future compound operation separately.",
+          "outcome": "incomplete",
+          "reason": "Only bounded software QR ingress guard component; complete identity/request/output/session/replay/deadline/seed-channel/client/optical UX and framing comparison remain open."
+        },
+        {
+          "index": 4,
+          "requirement": "Do not confuse nostrconnect pairing QR with an offline transaction. Compare bounded single-frame and maintained multipart UR implementations on actual screens/cameras before framing freeze; CRC/sequence checks do not authenticate a sender. Bound decoder state and work, not only completed payload size.",
+          "outcome": "incomplete",
+          "reason": "Only bounded software QR ingress guard component; complete identity/request/output/session/replay/deadline/seed-channel/client/optical UX and framing comparison remain open."
+        }
+      ]
     }
   ],
   "QP01_status": "planned",
   "task_reviewer": null,
   "task_verdict": null,
-  "product_or_physical_admission": false,
   "delivery_gates": {
     "exact_final_metadata_review": "PENDING_ROOT",
-    "protected_PR_and_actual_main": "PENDING_ROOT; no PR, CI or merge result invented for this preparation delivery"
+    "protected_PR_and_actual_main": "PENDING_ROOT; no PR, CI or merge result invented for this preparation delivery",
+    "QH01_limited_component_review": "PASS_QR_ingress_component_only; exact557fe975 reviewed by /root atdd7c4685; not task completion"
   },
   "retained_limits": [
     "Only one fixed public identity host canary; no generic user-key/request/device route or persistent import/session ABI",
     "Python/native components remain trusted; no hostile-Python isolation or universal wipe promise",
     "No ARM/image execution, actual optical camera/display/input, entropy/provider health, target peak RAM/stack/latency or secret persistence evidence",
     "Exact kit/operator/access follow-up already pending; no new resource question or availability assumption",
-    "All47 criteria/dependencies and other45 task records, resources, releases, frozen1508/P01/contracts remain unchanged"
+    "All47 criteria/dependencies and other44 task records/resources/releases/frozen1508/P01/contracts remain unchanged; all3 QP01/all6 Q02/all5 QH01 criteria remain incomplete."
   ],
   "manifest": {
     "path": "docs/restart/implementation/QP01/delivery/artifact-manifest.json",
     "binding": "Inventory may hash the final graph/result; neither stores its digest, avoiding cycles. Final immutable Git commit and separately returned digest bind the inventory."
   },
-  "self_binding": "This file is a current preparation result, not a standard passing physical-task closure. Final delivery commit binds surrounding metadata; original reports are unchanged."
+  "self_binding": "This file is a current preparation result, not a standard passing physical-task closure. Final delivery commit binds surrounding metadata; original reports are unchanged.",
+  "prior_standalone_packet": {
+    "commit": "1946154593bac6ae784e9734f85d8da46b4f53d1",
+    "tree": "405573478efd3ab92d07793c2eaa35469b886bc7",
+    "role": "Immutable completed QP-only metadata checkpoint, not root final delivery approval; its original proof/raw logs stay exact.",
+    "historical_wrapper_bindings": [
+      {
+        "commit": "1946154593bac6ae784e9734f85d8da46b4f53d1",
+        "path": "docs/restart/implementation/QP01/delivery/result.json",
+        "sha256": "8cd206b3c5995aec6ffda8220eff6ad81012e647a0df6e91e60a21be37e8eaac",
+        "source_url": "https://github.com/nSealr/nsealr/blob/1946154593bac6ae784e9734f85d8da46b4f53d1/docs/restart/implementation/QP01/delivery/result.json",
+        "reuse_current_path": null,
+        "role": "Historical standalone preparation metadata only; current wrapper extends it for bounded QR source."
+      },
+      {
+        "commit": "1946154593bac6ae784e9734f85d8da46b4f53d1",
+        "path": "docs/restart/implementation/QP01/delivery/source-scope.json",
+        "sha256": "0869cf9b14f18e797bb265243259f18dd5c84fda89f62b61607899027f6b6121",
+        "source_url": "https://github.com/nSealr/nsealr/blob/1946154593bac6ae784e9734f85d8da46b4f53d1/docs/restart/implementation/QP01/delivery/source-scope.json",
+        "reuse_current_path": null,
+        "role": "Historical standalone preparation metadata only; current wrapper extends it for bounded QR source."
+      },
+      {
+        "commit": "1946154593bac6ae784e9734f85d8da46b4f53d1",
+        "path": "docs/restart/implementation/QP01/delivery/copy-inventory.json",
+        "sha256": "152346c6f57d8f5df3950f719c6c04844bf98ee808c2f94aee18a790120b8bdd",
+        "source_url": "https://github.com/nSealr/nsealr/blob/1946154593bac6ae784e9734f85d8da46b4f53d1/docs/restart/implementation/QP01/delivery/copy-inventory.json",
+        "reuse_current_path": null,
+        "role": "Historical standalone preparation metadata only; current wrapper extends it for bounded QR source."
+      },
+      {
+        "commit": "1946154593bac6ae784e9734f85d8da46b4f53d1",
+        "path": "docs/restart/implementation/QP01/delivery/final-checks.json",
+        "sha256": "205129c33d7bdc321cdd3706dd8756766e0fb46c363592df2f5696ac68c7b2d2",
+        "source_url": "https://github.com/nSealr/nsealr/blob/1946154593bac6ae784e9734f85d8da46b4f53d1/docs/restart/implementation/QP01/delivery/final-checks.json",
+        "reuse_current_path": null,
+        "role": "Historical standalone preparation metadata only; current wrapper extends it for bounded QR source."
+      },
+      {
+        "commit": "1946154593bac6ae784e9734f85d8da46b4f53d1",
+        "path": "docs/restart/implementation/QP01/delivery/artifact-manifest.json",
+        "sha256": "ec20f610bfdfa7bc288dbbb55ba8d432e9250179cb6124f33c258b032dd43f3d",
+        "source_url": "https://github.com/nSealr/nsealr/blob/1946154593bac6ae784e9734f85d8da46b4f53d1/docs/restart/implementation/QP01/delivery/artifact-manifest.json",
+        "reuse_current_path": null,
+        "role": "Historical standalone preparation metadata only; current wrapper extends it for bounded QR source."
+      }
+    ]
+  },
+  "QP01_product_adapter_or_physical_admission": false,
+  "QH01_complete_workflow_or_framing_qualified": false,
+  "metadata_evidence_roles": {
+    "prior6399": "Historical standalone QP metadata checks, not fresh combined-source gates.",
+    "missing_K01_proof": "Reuse only unchanged existing validator, K01 task record/414 declared artifacts and exact adoption receipt. Original negative/restoration logs remain exact; no duplicate campaign.",
+    "required_fresh_combined": "Affected docs, plan, frozen evidence and contract-source checks on stable combined metadata after actual root QH limited approval; root owns full hosted gates."
+  }
 }
