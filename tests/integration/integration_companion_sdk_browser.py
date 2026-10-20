@@ -38,7 +38,7 @@ def write_sdk_browser_script(path: Path) -> None:
         import * as sdkBrowser from "@nsealr/sdk/browser";
 
         const request = {
-          version: 1,
+          version: 2,
           request_id: "lab-sdk-browser-qr",
           method: "get_public_key"
         };

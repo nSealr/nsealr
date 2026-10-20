@@ -1,0 +1,167 @@
+{
+  "schema_version": 1,
+  "task": "T01",
+  "phase": "bounded_metadata_component_preread",
+  "reviewer": "/root/b01_final_review",
+  "model": "gpt-6.1-sol xhigh",
+  "repository": "nSealr/nsealr",
+  "candidate": "75188d239827139859e7b7d0c9340f378dc1274d",
+  "tree": "1ca50fc5d7e53da230d48b1169cd8f647c1c7d62",
+  "verdict": "PREREAD_ONLY_FINDINGS_OPEN",
+  "final_T01_acceptance": false,
+  "implementation_or_integration_admission": false,
+  "criteria_acceptance": false,
+  "scope": {
+    "component_path_count": 18,
+    "exact_paths": [
+      "packages/protocol/src/capabilities.ts",
+      "packages/protocol/src/capabilities.test.ts",
+      "protocols/contracts/v1/schemas/error-v0.schema.json",
+      "protocols/contracts/v1/examples/profile-manifests/custom_board-conformance-v1.json",
+      "protocols/contracts/v1/examples/profile-manifests/esp32_no_se-conformance-v1.json",
+      "protocols/contracts/v1/examples/profile-manifests/p4_qr-conformance-v1.json",
+      "protocols/contracts/v1/examples/profile-manifests/pi_qr-conformance-v1.json",
+      "protocols/contracts/v1/schemas/account-v1.schema.json",
+      "protocols/contracts/v1/schemas/capabilities-v1.schema.json",
+      "protocols/contracts/v1/schemas/implementation-profile-v1.schema.json",
+      "protocols/contracts/v1/schemas/limits-v1.schema.json",
+      "protocols/contracts/v1/schemas/profile-requirements-v1.schema.json",
+      "protocols/contracts/v1/schemas/route-selection-v1.schema.json",
+      "protocols/contracts/v1/schemas/signing-request-v2.schema.json",
+      "protocols/contracts/v1/schemas/signing-response-v2.schema.json",
+      "protocols/contracts/v1/vectors/profile-capabilities/cases-v1.json",
+      "protocols/contracts/v1/protocols/signing-v2.md",
+      "protocols/contracts/v1/protocols/profile-capabilities-v1.md"
+    ],
+    "bindings": "source-bindings.json",
+    "excluded": "Wire/legacy/consumer cutover, full provenance checker transition, SDK/core/Bridge/Pi/cryptographic implementation audit, CI and hardware qualification. No K01 implementation."
+  },
+  "source_roles": {
+    "admitted_preparation": "cb39bb026d4008b7f3d7abf358b604c79e3b699d",
+    "preparation_review": "ec97ed294529a9947ee432a0878a99109448012c",
+    "semantic_cases_source": "bb20fe121e9c211a829c870d82ef2060c6858c40",
+    "case_count": 42,
+    "cases_exact_JSON_values_and_order_unchanged": true,
+    "implementation_admission": "docs/restart/implementation/T01/integration/evidence/admission/implementation-admission.json",
+    "historical_reviews_not_relabelled_as_review_of_this_candidate": true
+  },
+  "findings": [
+    {
+      "id": "T01-META-01",
+      "severity": "medium",
+      "status_at_candidate": "open",
+      "kind": "normative_requirements_schema",
+      "source": "protocols/contracts/v1/schemas/profile-requirements-v1.schema.json:34",
+      "requirement": "All eight common requirement groups are mandatory; R-MSG additionally mandatory for connected profiles. P-02 omission produces a specific blocker.",
+      "observation": "minItems8/maxItems9/uniqueItems on an enum of9 does not enforce those sets. Complete connected-no-R-MSG and offline-R-RECOVERY-replaced-by-R-MSG witnesses satisfy its literal constraints.",
+      "evidence": "schema-witnesses.json",
+      "execution_limit": "Direct literal constraints inspected, no general schema engine or executable route bypass claimed.",
+      "author_notified": true,
+      "coordinator_notified": true,
+      "author_confirmed": true
+    },
+    {
+      "id": "T01-META-02",
+      "severity": "medium",
+      "status_at_candidate": "open",
+      "kind": "normative_event_integer_bounds",
+      "sources": [
+        "protocols/contracts/v1/protocols/signing-v2.md:13",
+        "protocols/contracts/v1/schemas/signing-request-v2.schema.json:86",
+        "protocols/contracts/v1/schemas/signing-response-v2.schema.json:128",
+        "crates/nsealr-core/src/event.rs:174"
+      ],
+      "requirement": "Preserve S03 original strict event grammar: kind0..65535, created_at0..9007199254740991.",
+      "observation": "New prose assigns safe-integer maximum to kind too. Both new schemas have only integer/minimum0 for kind and created_at; kind65536 and timestamp9007199254740992 satisfy their scalar constraints.",
+      "evidence": "schema-witnesses.json",
+      "execution_limit": "Normative mismatch; unchanged core parser correctly retains distinct maxima. No runtime acceptance claimed.",
+      "author_notified": true,
+      "coordinator_notified": true,
+      "author_confirmed": true
+    }
+  ],
+  "author_found_known_deltas": [
+    {
+      "id": "AUTHOR-KNOWN-REQUEST-ID",
+      "source": "protocols/contracts/v1/protocols/signing-v2.md:10",
+      "status": "open_on751",
+      "observation": "Prose says64, actual unchanged ID ceiling/schema128. Independently reported by author/coordinator before completion, not reviewer discovery."
+    },
+    {
+      "id": "AUTHOR-KNOWN-DISABLED-ERROR",
+      "source": "protocols/contracts/v1/schemas/error-v0.schema.json",
+      "status": "open_on751",
+      "observation": "Enum omits retained signing_disabled production response; reported by author before completion."
+    }
+  ],
+  "unobserved_announced_change": {
+    "description": "Author intends to reuse existing parseStrictJson for lexical syntax/duplicate checking while retaining metadata-only numeric/Unicode/depth/member guards.",
+    "approval": false,
+    "affected_exact_blobs_require_delta_review": true
+  },
+  "actual_checks": {
+    "independent_probe_command": "probe-command.json",
+    "independent_probe_exit_code": 0,
+    "independent_probe_controls": 32,
+    "expected_rejections": 28,
+    "positive_controls": 4,
+    "author_input_hashes_verified": 18,
+    "author_metadata_command_log_bindings_verified": 13,
+    "author_initial_missing_dist_typecheck_exit": 2,
+    "author_required_build_then_typecheck_exit": 0,
+    "author_commands_rerun": false,
+    "all42_cases_executed": false,
+    "broad_suite_or_CI_run": false,
+    "product_source_changes": false
+  },
+  "reuse_limits": [
+    "Only identical component blobs and still-applicable evidence can reuse this reading.",
+    "Changed schemas/lexical implementation require affected review; no approval of future bytes.",
+    "Final T01 source/consumer/provenance/integration proof and existing gates remain required.",
+    "No additional administrative stage introduced; no graph/criteria/resource/release/task-closure changes.",
+    "No device consent, production signing, physical qualification or future CI success inferred."
+  ],
+  "paired_artifacts_excluding_this_JSON": [
+    {
+      "path": "probe-command.json",
+      "bytes": 1473,
+      "sha256": "1f51fdcfb19ca29595d18ce03d27c0e2158f25d6402d7296478cf3f733beda1f"
+    },
+    {
+      "path": "probe-result.json",
+      "bytes": 4365,
+      "sha256": "c9f0e51f7e9aa15c6e1ed41d269c13eacbe4589165f197261991f75fd0ea99cd"
+    },
+    {
+      "path": "probe.stderr.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "probe.stdout.log",
+      "bytes": 153,
+      "sha256": "78ac4620e6b4d8a59dad06fe0b538fcd49f08755a2099c734d29b0ba8ca76db7"
+    },
+    {
+      "path": "probe.ts",
+      "bytes": 6874,
+      "sha256": "7dce516b5d948d19544bff3b7ba917bcb5bacee6f6738a22f05a86d7d690993c"
+    },
+    {
+      "path": "report.md",
+      "bytes": 7045,
+      "sha256": "557aef49e1339e80635a3b4c551a51dfd76a333e45507f59bcb95d0375e37055"
+    },
+    {
+      "path": "schema-witnesses.json",
+      "bytes": 4817,
+      "sha256": "88d43d895641f8bd9c36348798231af7ffda9e829f7d80148117449e53fd861e"
+    },
+    {
+      "path": "source-bindings.json",
+      "bytes": 14835,
+      "sha256": "c987aa44c53a5212ec248384b4b2c4d7dff6446a86ec1e8b000ec559c8421331"
+    }
+  ],
+  "self_binding": "External review commit and review.json SHA256 bind this file; no self-hash."
+}

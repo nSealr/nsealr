@@ -1,0 +1,154 @@
+{
+  "candidate": "75188d239827139859e7b7d0c9340f378dc1274d",
+  "execution_limit": "No external/general JSON Schema engine installed or added. These are exact literal-constraint inspections and complete requirements witnesses, not a claim of an executed end-to-end consumer bypass.",
+  "requirements_schema_constraints": {
+    "type": "array",
+    "minItems": 8,
+    "maxItems": 9,
+    "uniqueItems": true,
+    "items": {
+      "enum": [
+        "R-ID",
+        "R-AUTH",
+        "R-CATALOG",
+        "R-SECRET",
+        "R-BOUNDS",
+        "R-RECOVERY",
+        "R-LIFECYCLE",
+        "R-RELEASE",
+        "R-MSG"
+      ]
+    }
+  },
+  "requirements_witnesses": [
+    {
+      "id": "connected-missing-R-MSG",
+      "input": {
+        "format": "nsealr.profile-requirements.v1",
+        "requirements_id": "nsealr.profile-requirements.esp32_no_se.v1",
+        "profile": "esp32_no_se",
+        "required_groups": [
+          "R-ID",
+          "R-AUTH",
+          "R-CATALOG",
+          "R-SECRET",
+          "R-BOUNDS",
+          "R-RECOVERY",
+          "R-LIFECYCLE",
+          "R-RELEASE"
+        ],
+        "custody_mode": "mcu_wrapped_persistent",
+        "consent": "manual_local",
+        "automation": "unavailable",
+        "secure_element": {
+          "state": "absent"
+        }
+      },
+      "literal_constraints_passed": {
+        "minItems": true,
+        "maxItems": true,
+        "uniqueItems": true,
+        "items.enum": true,
+        "record.required": true,
+        "record.additionalProperties": true
+      },
+      "other_fields": "Unmodified from the exact conformance requirements row; no if/then/allOf dependencies exist in this schema.",
+      "expected": "Reject under mandatory eight common groups plus R-MSG for connected profiles."
+    },
+    {
+      "id": "offline-missing-R-RECOVERY-replaced-by-R-MSG",
+      "input": {
+        "format": "nsealr.profile-requirements.v1",
+        "requirements_id": "nsealr.profile-requirements.pi_qr.v1",
+        "profile": "pi_qr",
+        "required_groups": [
+          "R-ID",
+          "R-AUTH",
+          "R-CATALOG",
+          "R-SECRET",
+          "R-BOUNDS",
+          "R-LIFECYCLE",
+          "R-RELEASE",
+          "R-MSG"
+        ],
+        "custody_mode": "volatile_session",
+        "consent": "manual_local",
+        "automation": "unavailable",
+        "secure_element": {
+          "state": "absent"
+        }
+      },
+      "literal_constraints_passed": {
+        "minItems": true,
+        "maxItems": true,
+        "uniqueItems": true,
+        "items.enum": true,
+        "record.required": true,
+        "record.additionalProperties": true
+      },
+      "other_fields": "Unmodified from the exact conformance requirements row; no if/then/allOf dependencies exist in this schema.",
+      "expected": "Reject under mandatory eight common groups plus R-MSG for connected profiles."
+    }
+  ],
+  "numeric_schema_witnesses": [
+    {
+      "path": "schemas/signing-request-v2.schema.json",
+      "definition": "event_template",
+      "field": "kind",
+      "actual_field_schema": {
+        "type": "integer",
+        "minimum": 0
+      },
+      "witness": 65536,
+      "expected_maximum": 65535,
+      "literal_scalar_constraints_accept": true
+    },
+    {
+      "path": "schemas/signing-request-v2.schema.json",
+      "definition": "event_template",
+      "field": "created_at",
+      "actual_field_schema": {
+        "type": "integer",
+        "minimum": 0
+      },
+      "witness": 9007199254740992,
+      "expected_maximum": 9007199254740991,
+      "literal_scalar_constraints_accept": true
+    },
+    {
+      "path": "schemas/signing-response-v2.schema.json",
+      "definition": "signed_event",
+      "field": "kind",
+      "actual_field_schema": {
+        "type": "integer",
+        "minimum": 0
+      },
+      "witness": 65536,
+      "expected_maximum": 65535,
+      "literal_scalar_constraints_accept": true
+    },
+    {
+      "path": "schemas/signing-response-v2.schema.json",
+      "definition": "signed_event",
+      "field": "created_at",
+      "actual_field_schema": {
+        "type": "integer",
+        "minimum": 0
+      },
+      "witness": 9007199254740992,
+      "expected_maximum": 9007199254740991,
+      "literal_scalar_constraints_accept": true
+    }
+  ],
+  "source_grammar": {
+    "path": "crates/nsealr-core/src/event.rs",
+    "kind_line": 175,
+    "kind_maximum": 65535,
+    "created_at_line": 174,
+    "created_at_maximum": 9007199254740991
+  },
+  "known_author_found": {
+    "request_id": "signing-v2.md:10 says1\u201364; unchanged request/response schemas and implementation ceiling128. Patch pending, not applied to751.",
+    "error_enum": "error-v0.schema.json:44-51 omits signing_disabled despite retained disabled-production result. Author reported before component review completed; patch pending."
+  }
+}

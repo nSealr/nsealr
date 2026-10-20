@@ -6,10 +6,10 @@ import { resolveSpecsRoot } from "@nsealr/fixtures";
 import { encodeSerialFrame } from "@nsealr/framing";
 import { encodeQrEnvelope } from "@nsealr/qr";
 import { parseAccountDescriptor, selectAccountRoute } from "@nsealr/policy";
-import { parseImplementationProfile, parseLimitsManifest, type FullCapabilities } from "@nsealr/protocol";
+import { compactReportedCapabilities, parseImplementationProfile, parseLimitsManifest, parseSigningRequest, type FullCapabilities } from "@nsealr/protocol";
 import {
   assessSignerCompatibility, clientIdForIdentity, createRouteDispatcher,
-  handleLocalServiceRequestAsync, type LocalServiceContext,
+  handleLocalServiceRequest, handleLocalServiceRequestAsync, type LocalServiceContext,
   type SignerCompatibilitySnapshot, type SignerDispatchRequest
 } from "./service.js";
 
@@ -145,6 +145,63 @@ describe("actual local service to recording adapter compatibility", () => {
     }
   });
 
+  it("L-01: each actual operation dimension uses independent bytes/counts at below/exact/above boundaries", () => {
+    const req = load("examples/request-kind-1-tags.json"), res = load("examples/response-kind-1-tags.json");
+    const event = req.params.event_template;
+    const jsonBytes = (value: unknown) => Buffer.byteLength(JSON.stringify(value), "utf8");
+    const input = jsonBytes(req), output = jsonBytes(res);
+    // Fixed wire grammar and independently retained Nostr canonical fixture;
+    // no runtime framing/canonical/signing output supplies expected limits.
+    const frame = (type: string, value: unknown) => Buffer.byteLength(`nsealr1f:${type}:${Buffer.from(JSON.stringify(value)).toString("base64url")}:0000000000000000\n`);
+    const incomingFrame = frame("response", res), outgoingFrame = frame("request", req);
+    const dimensions: Array<["method" | "transport", string, number]> = [
+      ["method", "request_json_bytes", input], ["method", "response_json_bytes", output],
+      ["method", "content_utf8_bytes", Buffer.byteLength(event.content)], ["method", "tag_count", event.tags.length],
+      ["method", "tag_fields", Math.max(...event.tags.map((tag: string[]) => tag.length))],
+      ["method", "tag_field_utf8_bytes", Math.max(...event.tags.flat().map((field: string) => Buffer.byteLength(field)))],
+      ["method", "aggregate_tag_utf8_bytes", event.tags.flat().reduce((sum: number, field: string) => sum + Buffer.byteLength(field), 0)],
+      ["method", "canonical_bytes", Buffer.byteLength(load("vectors/events/kind-1-tags.json").canonical_serialization)],
+      ["method", "review_pages", 7], ["method", "parse_work", incomingFrame + outgoingFrame],
+      ["transport", "frame_bytes", Math.max(incomingFrame, outgoingFrame)], ["transport", "reassembly_bytes", Math.max(input, output)],
+      ["transport", "parse_work", incomingFrame + outgoingFrame]
+    ];
+    for (const [group, field, exact] of dimensions) for (const offset of [-1, 0, 1]) {
+      const state = setup();
+      state.live.review_plan!.request_sha256 = independentPlanHash("sha256").update(JSON.stringify(req)).digest("hex");
+      const row = group === "method" ? state.live.adapter_limits.methods[2] : state.live.adapter_limits.transports[0];
+      Object.assign(row, { [field]: exact + offset });
+      const route = selectAccountRoute([state.account], { account_id: state.account.account_id, method: "sign_event" });
+      if (offset < 0) expect(() => assessSignerCompatibility(route, req, state.live), `${group}.${field}`).toThrow();
+      else expect(() => assessSignerCompatibility(route, req, state.live), `${group}.${field}`).not.toThrow();
+    }
+    const raw = JSON.stringify(request), bytes = Buffer.byteLength(raw);
+    expect(parseSigningRequest(" ".repeat(704 - bytes) + raw)).toEqual(request);
+    expect(() => parseSigningRequest(" ".repeat(705 - bytes) + raw)).toThrow();
+    const multibyte = structuredClone(request); multibyte.params.event_template.content = "é".repeat(256);
+    expect(() => parseSigningRequest(JSON.stringify(multibyte))).not.toThrow();
+    multibyte.params.event_template.content += "é";
+    expect(() => parseSigningRequest(JSON.stringify(multibyte))).toThrow();
+  });
+
+  it("L-01/L-05: public-key and exact full/reference discovery responses must fit before any I/O", async () => {
+    for (const ceiling of [1, 704]) {
+      const state = setup(); const req = load("examples/request-get-public-key.json"), res = load("examples/response-get-public-key.json");
+      state.envelope.params.request = req; state.envelope.params.route_request.method = "get_public_key";
+      state.live.adapter_limits.methods[1].response_json_bytes = ceiling;
+      state.context.signerDispatcher = (dispatch) => { dispatch.before_write!(); state.writes.push("public-key-write"); return res; };
+      expect((await handleLocalServiceRequestAsync(state.envelope, state.context)).ok).toBe(ceiling !== 1);
+      expect(state.writes.length).toBe(ceiling === 1 ? 0 : 1);
+    }
+    for (const form of ["full", "reference"]) {
+      const state = setup(); const req = load("examples/request-get-capabilities.json");
+      state.envelope.params.request = req; state.envelope.params.route_request.method = "get_capabilities";
+      if (form === "reference") state.live.reported = compactReportedCapabilities(state.live.reported as FullCapabilities, state.live.implementation, 704);
+      state.context.signerDispatcher = (dispatch) => { dispatch.before_write!(); state.writes.push("discovery-write"); return { version: 2, request_id: req.request_id, ok: true, result: { capabilities: state.live.reported } }; };
+      expect((await handleLocalServiceRequestAsync(state.envelope, state.context)).ok).toBe(form === "reference");
+      expect(state.writes.length).toBe(form === "reference" ? 1 : 0);
+    }
+  });
+
   it("L-04/L-06: exact expiry, rollback and missing clocks refuse writes and release pending state", async () => {
     for (const time of [99, 100, 101]) {
       const state = setup(); state.beforeWrite = () => { state.now = time; };
@@ -192,6 +249,38 @@ describe("actual local service to recording adapter compatibility", () => {
       expect(() => state.captured!.before_write!()).toThrow(/no longer active/);
       expect(state.writes).toHaveLength(0);
     } finally { vi.useRealTimers(); }
+  });
+
+  it("L-04: a timed-out unsettled adapter keeps its finite slot until actual settlement", async () => {
+    vi.useFakeTimers();
+    try {
+      const state = setup(); const finish: Array<(response: unknown) => void> = []; let calls = 0;
+      state.context.signerDispatcher = () => { calls++; return new Promise((resolve) => { finish.push(resolve); }); };
+      const pending = handleLocalServiceRequestAsync(state.envelope, state.context);
+      await vi.advanceTimersByTimeAsync(100);
+      expect(await pending).toMatchObject({ ok: false, error: { code: "signer_transport_timeout" } });
+      const retry = handleLocalServiceRequestAsync(state.envelope, state.context);
+      expect(calls).toBe(1);
+      expect(await retry).toMatchObject({ ok: false, error: { code: "runtime_unavailable" } });
+      finish[0](structuredClone(response)); await Promise.resolve(); await Promise.resolve();
+      state.context.signerDispatcher = () => structuredClone(response);
+      expect((await handleLocalServiceRequestAsync(state.envelope, state.context)).ok).toBe(true);
+    } finally { vi.useRealTimers(); }
+  });
+
+  it("L-04: sync API rejects an async dispatcher while preserving its unsettled slot and revoking writes", async () => {
+    const state = setup(); let finish!: (response: unknown) => void; let captured!: SignerDispatchRequest; let calls = 0;
+    state.context.signerDispatcher = (dispatch) => { calls++; captured = dispatch; return new Promise((resolve) => { finish = resolve; }); };
+    expect(handleLocalServiceRequest(state.envelope, state.context)).toMatchObject({ ok: false, error: { code: "signer_dispatch_failed", message: "async signer dispatcher requires handleLocalServiceRequestAsync" } });
+    expect(() => captured.before_write!()).toThrow(/no longer active/);
+    expect(handleLocalServiceRequest(state.envelope, state.context)).toMatchObject({ ok: false, error: { code: "runtime_unavailable" } });
+    expect(calls).toBe(1);
+    finish(structuredClone(response)); await Promise.resolve(); await Promise.resolve();
+    state.context.signerDispatcher = () => { throw new Error("settled throw control"); };
+    expect(handleLocalServiceRequest(state.envelope, state.context)).toMatchObject({ ok: false, error: { code: "signer_dispatch_failed" } });
+    state.context.signerDispatcher = () => structuredClone(response);
+    expect(handleLocalServiceRequest(state.envelope, state.context).ok).toBe(true);
+    expect(handleLocalServiceRequest(state.envelope, state.context).ok).toBe(true);
   });
 
   it("L-01/R-05: complete local review-plan observations bind request, implementation, connection, context and geometry", async () => {

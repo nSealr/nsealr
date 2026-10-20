@@ -1,0 +1,22 @@
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  packages/client/src/profile-dispatch.test.ts > actual local service to recording adapter compatibility > L-04: a timed-out unsettled adapter keeps its finite slot until actual settlement
+AssertionError: expected 2 to be 1 // Object.is equality
+
+- Expected
++ Received
+
+- 1
++ 2
+
+ ❯ packages/client/src/profile-dispatch.test.ts:206:21
+    204|       expect(await pending).toMatchObject({ ok: false, error: { code: …
+    205|       const retry = handleLocalServiceRequestAsync(state.envelope, sta…
+    206|       expect(calls).toBe(1);
+       |                     ^
+    207|       expect(await retry).toMatchObject({ ok: false, error: { code: "r…
+    208|       finish[0](structuredClone(response)); await Promise.resolve(); a…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+

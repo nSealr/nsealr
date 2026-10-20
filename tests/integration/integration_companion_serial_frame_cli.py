@@ -123,7 +123,7 @@ def main() -> int:
     response_path = SPECS / "examples/response-get-capabilities-esp32-s3-scaffold.json"
     request = load_json(request_path)
     response = load_json(response_path)
-    signing_status_response = load_json(SPECS / "examples/response-get-signing-status-esp32-s3-scaffold.json")
+
 
     install_pnpm_workspace(COMPANION)
     build_pnpm_workspace(COMPANION)
@@ -132,10 +132,10 @@ def main() -> int:
         request_frame_path = temp_root / "request.frame"
         response_frame_path = temp_root / "response.frame"
         unwrapped_response_path = temp_root / "response.json"
-        generated_status_request_path = temp_root / "signing-status-request.json"
-        generated_status_frame_path = temp_root / "signing-status-request.frame"
-        signing_status_response_frame_path = temp_root / "signing-status-response.frame"
-        unwrapped_signing_status_response_path = temp_root / "signing-status-response.json"
+        generated_discovery_request_path = temp_root / "discovery-request.json"
+        generated_discovery_frame_path = temp_root / "discovery-request.frame"
+        discovery_response_frame_path = temp_root / "discovery-response.frame"
+        unwrapped_discovery_response_path = temp_root / "discovery-response.json"
 
         wrap = build_wrap_request_command(companion=COMPANION, request=request_path, out=request_frame_path)
         run(wrap.argv, wrap.cwd)
@@ -154,49 +154,34 @@ def main() -> int:
         if load_json(unwrapped_response_path) != response:
             raise AssertionError("unwrapped serial response does not match specs response")
 
-        create_status = build_create_request_command(
-            companion=COMPANION,
-            method="get-signing-status",
-            request_id="req-lab-signing-status",
-            out=generated_status_request_path,
-        )
-        run(create_status.argv, create_status.cwd)
-        generated_status_request = load_json(generated_status_request_path)
-        expected_status_request = {
-            "version": 1,
-            "request_id": "req-lab-signing-status",
-            "method": "get_signing_status",
-        }
-        if generated_status_request != expected_status_request:
-            raise AssertionError("generated signing-status request does not match expected request")
-
-        wrap_status = build_wrap_request_command(
-            companion=COMPANION,
-            request=generated_status_request_path,
-            out=generated_status_frame_path,
-        )
-        run(wrap_status.argv, wrap_status.cwd)
-        wrapped_status_request = decode_serial_frame(generated_status_frame_path.read_text(encoding="utf-8"))
-        if wrapped_status_request != {"type": "request", "payload": expected_status_request}:
-            raise AssertionError("wrapped signing-status request does not match generated request")
-
-        dynamic_status_response = {
-            **signing_status_response,
-            "request_id": "req-lab-signing-status",
-        }
-        signing_status_response_frame_path.write_text(
-            encode_serial_frame("response", dynamic_status_response),
-            encoding="utf-8",
-        )
-        unwrap_status = build_unwrap_response_command(
-            companion=COMPANION,
-            request=generated_status_request_path,
-            response_frame=signing_status_response_frame_path,
-            out=unwrapped_signing_status_response_path,
-        )
-        run(unwrap_status.argv, unwrap_status.cwd)
-        if load_json(unwrapped_signing_status_response_path) != dynamic_status_response:
-            raise AssertionError("unwrapped signing-status response does not match expected response")
+        # Retired status is an actual negative, with bounded wire2 discovery as
+        # its replacement. No fallback from the rejected command is attempted.
+        retired = build_create_request_command(companion=COMPANION, method="get-signing-status", request_id="req-lab-retired", out=generated_discovery_request_path)
+        try:
+            run(retired.argv, retired.cwd)
+        except subprocess.CalledProcessError as error:
+            if "unsupported request method" not in (error.stderr or ""):
+                raise AssertionError("retired signing-status rejection drifted") from error
+        else:
+            raise AssertionError("retired signing-status command unexpectedly succeeded")
+        if generated_discovery_request_path.exists():
+            raise AssertionError("retired command wrote a request")
+        create_discovery = build_create_request_command(companion=COMPANION, method="get-capabilities", request_id="req-lab-discovery", out=generated_discovery_request_path)
+        run(create_discovery.argv, create_discovery.cwd)
+        generated_discovery_request = load_json(generated_discovery_request_path)
+        expected_discovery_request = {"version": 2, "request_id": "req-lab-discovery", "method": "get_capabilities"}
+        if generated_discovery_request != expected_discovery_request:
+            raise AssertionError("generated discovery request does not match expected wire2")
+        wrap_discovery = build_wrap_request_command(companion=COMPANION, request=generated_discovery_request_path, out=generated_discovery_frame_path)
+        run(wrap_discovery.argv, wrap_discovery.cwd)
+        if decode_serial_frame(generated_discovery_frame_path.read_text(encoding="utf-8")) != {"type": "request", "payload": expected_discovery_request}:
+            raise AssertionError("wrapped discovery request mismatch")
+        dynamic_response = {**response, "request_id": "req-lab-discovery"}
+        discovery_response_frame_path.write_text(encode_serial_frame("response", dynamic_response), encoding="utf-8")
+        unwrap_discovery = build_unwrap_response_command(companion=COMPANION, request=generated_discovery_request_path, response_frame=discovery_response_frame_path, out=unwrapped_discovery_response_path)
+        run(unwrap_discovery.argv, unwrap_discovery.cwd)
+        if load_json(unwrapped_discovery_response_path) != dynamic_response:
+            raise AssertionError("unwrapped wire2 discovery response mismatch")
 
     print("nSealr integrated companion serial-frame CLI verification passed")
     return 0
