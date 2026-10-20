@@ -1,0 +1,1794 @@
+python3 scripts/verify_repo.py
+nSealr consolidated product structure passed
+python3 scripts/validate_restart_plan.py
+Restart plan valid: 47 tasks; ready: 
+Structural check only; hardware, review quality and security remain evidence gates.
+python3 scripts/verify_evidence.py
+{"closed_files": 1508, "current_contracts": 5, "current_navigation_files": 18, "frozen_source": "f2ef70f522af4977e15f81554a8c6eadcdbe8097"}
+python3 scripts/verify_contracts.py
+{"artifact": "nsealr-contracts-v1", "artifact_format": 2, "artifact_tree": "b629e75d18190ded2403ffabe965b595a9bcf6a6", "consumers": ["bridge", "engine", "pi"], "files": 255, "records": 266, "retired": 11, "source_commit": "45f8b6ff1123f3f55be4ce457fd1008e91043cc2"}
+python3 -m unittest discover -s scripts -p 'test_contracts.py'
+{"actual_git_index_mode": "100644", "approved_git_mode": "100755", "control": "owner_execution_mode", "expected_accept": false, "observed_POSIX_permissions": "0o645"}
+{"actual_git_index_mode": "100644", "approved_git_mode": "100755", "control": "owner_execution_mode", "expected_accept": false, "observed_POSIX_permissions": "0o654"}
+{"actual_git_index_mode": "100644", "approved_git_mode": "100755", "control": "owner_execution_mode", "expected_accept": false, "observed_POSIX_permissions": "0o644"}
+{"actual_git_index_mode": "100755", "approved_git_mode": "100755", "control": "owner_execution_mode", "expected_accept": true, "observed_POSIX_permissions": "0o744"}
+{"actual_git_index_mode": "100755", "approved_git_mode": "100755", "control": "owner_execution_mode", "expected_accept": true, "observed_POSIX_permissions": "0o760"}
+{"actual_git_index_mode": "100644", "approved_git_mode": "100644", "control": "nonowner_permissions_not_git_mode", "expected_accept": true, "observed_POSIX_permissions": "0o645"}
+{"actual_git_index_mode": "100644", "approved_git_mode": "100644", "control": "nonowner_permissions_not_git_mode", "expected_accept": true, "observed_POSIX_permissions": "0o654"}
+{"actual_git_index_mode": "100644", "approved_git_mode": "100644", "control": "nonowner_permissions_not_git_mode", "expected_accept": true, "observed_POSIX_permissions": "0o600"}
+{"actual_git_index_mode": "100644", "approved_git_mode": "100644", "control": "nonowner_permissions_not_git_mode", "expected_accept": true, "observed_POSIX_permissions": "0o664"}
+{"actual_git_index_mode": "100644", "approved_git_mode": "100644", "control": "nonowner_permissions_not_git_mode", "expected_accept": true, "observed_POSIX_permissions": "0o644"}
+{"adopted_baseline": "da6c41d250674c670847988decc2b09f35d204a6", "adopted_source": "831b6c1f7b4bb3416b50e7e4171b619e715e686f", "all_four_old_commit_cat_file_exits": 128, "approved_subtree": "d68b5a8c5dba0759e3a7cb7756dab9a96b18e006", "control": "actual_rebase_cold_main_only", "extra_remote_alternate_shallow_or_graft": false, "old_author": "1684dae837fad0227abeb673d356d9d6264b63be", "old_baseline": "8d3c68089f5319de2d2378bc17bdfd6af224fb12", "old_candidate": "89e80cf04b3614896987b0fbfbb4183cd0c8f623", "old_import_metadata": "ff35c4eae19760d9c65eb54133ad55c33cd702c7", "only_ref": "refs/heads/main", "original_and_baseline_whole_trees_equal": true, "rebased_main": "dad7ad9f0744dfe961437011c3be0b7405604263", "subtree_equal_before_after_actual_rebase": true, "subtree_reachable_from_main": true, "valid_then_tamper_then_restore": [5, "REJECT", 5]}
+python3 -m unittest discover -s scripts -p 'test_evidence.py'
+python3 -m unittest discover -s scripts -p 'test_validate_restart_plan.py'
+python3 -m unittest discover -s scripts -p 'test_verify_repo.py'
+python3 -m unittest discover -s tools/baseline -p 'test_*.py'
+negative: ['/home/tux/nsealr/.restart-tools/goal/r00/tools/baseline/.work/final/.tools/python/bin/python3', '-c', 'import sys; print("out"); print("diagnostic", file=sys.stderr); sys.exit(7)']
+diagnostic
+out
+download file:///tmp/nsealr-t01-current-integration/tmpwc7mt838/source
+nsealr-init: ['git', 'init', '/tmp/nsealr-t01-current-integration/tmpnmczgk1_/nsealr']
+Initialized empty Git repository in /tmp/nsealr-t01-current-integration/tmpnmczgk1_/nsealr/.git/
+nsealr-fetch: ['git', 'fetch', '--no-tags', '/tmp/nsealr-t01-current-integration/tmpnmczgk1_/source', '87d6ccaf6e12ba1bd92ac1c9ffca60a19da7ff26']
+From /tmp/nsealr-t01-current-integration/tmpnmczgk1_/source
+ * branch            87d6ccaf6e12ba1bd92ac1c9ffca60a19da7ff26 -> FETCH_HEAD
+nsealr-checkout: ['git', 'checkout', '--detach', 'FETCH_HEAD']
+HEAD is now at 87d6cca public
+nsealr-init: ['git', 'init', '/tmp/nsealr-t01-current-integration/tmpvadhqoeq/nsealr']
+Initialized empty Git repository in /tmp/nsealr-t01-current-integration/tmpvadhqoeq/nsealr/.git/
+nsealr-fetch: ['git', 'fetch', '--no-tags', '/tmp/nsealr-t01-current-integration/tmpvadhqoeq/source', '0000000000000000000000000000000000000000']
+fatal: git upload-pack: not our ref 0000000000000000000000000000000000000000
+fatal: remote error: upload-pack: not our ref 0000000000000000000000000000000000000000
+python3 scripts/verify_repo.py
+nSealr consolidated product structure passed
+python3 -m compileall -q scripts
+python3 scripts/verify_repo.py
+nSealr consolidated product structure passed
+python3 scripts/validate_firmware.py
+nSealr firmware board-profile validation passed
+python3 scripts/verify_repo.py
+nSealr consolidated product structure passed
+python3 scripts/validate_firmware.py
+nSealr firmware board-profile validation passed
+cargo fmt --all --check
+cargo fmt --manifest-path apps/desktop-simulator/Cargo.toml --all --check
+Diff in /home/tux/nsealr/.restart-tools/goal/t01-current-integration/apps/desktop-simulator/src/lib.rs:78:
+ /// classified, never silently skipped.
+ pub const EXCLUDED_CATEGORIES: &[&str] = &[
+     "profile-capabilities", // T01 typed profile core tests + Bridge/Pi raw metadata/routing suites; no second simulator model.
+-    "access-surfaces", // browser NIP-07 access-surface contract (companion).
+-    "custody",         // persistent-custody declarations (companion/hardware).
+-    "events",          // event-template fixtures (companion/specs suites).
+-    "features",        // signer-feature-matrix registry (verify_specs.py).
+-    "grants",          // persistent-grant surface, not in host_core (Phase 05/07).
+-    "nip46",           // companion-side NIP-46 surface; host_core never implemented it.
++    "access-surfaces",      // browser NIP-07 access-surface contract (companion).
++    "custody",              // persistent-custody declarations (companion/hardware).
++    "events",               // event-template fixtures (companion/specs suites).
++    "features",             // signer-feature-matrix registry (verify_specs.py).
++    "grants",               // persistent-grant surface, not in host_core (Phase 05/07).
++    "nip46",                // companion-side NIP-46 surface; host_core never implemented it.
+     "nip46-auth-challenges",
+     "nip46-connection-token-responses",
+     "nip46-connection-uris",
+Diff in /home/tux/nsealr/.restart-tools/goal/t01-current-integration/apps/desktop-simulator/src/replay/devices.rs:7:
+ use serde_json::Value;
+ 
+ pub(super) fn replay(value: &Value) -> ReplayResult {
+-    let request = value.get("request").ok_or("device vector requires request")?;
+-    let expected = value.get("response").ok_or("device vector requires response")?;
++    let request = value
++        .get("request")
++        .ok_or("device vector requires request")?;
++    let expected = value
++        .get("response")
++        .ok_or("device vector requires response")?;
+     let frame = super::encode_serial_request_frame(&compact_bytes(request))?;
+     let response = handle_serial_frame(&frame, &development_device_protocol_context())
+         .map_err(|error| format!("handle_serial_frame: {error}"))?;
+cargo clippy --all-targets -- -D warnings -D dead_code
+cargo test --workspace
+
+running 244 tests
+test base64url::tests::decode_known_pairs_and_canonical_edges ... ok
+test base64url::tests::decode_rejects_invalid_characters ... ok
+test base64url::tests::encode_known_pairs ... ok
+test base64url::tests::decode_rejects_non_zero_trailing_bits ... ok
+test base64url::tests::is_payload_matches_cpp_predicate ... ok
+test base64url::tests::length_helpers_are_exact ... ok
+test base64url::tests::reports_output_too_small ... ok
+test base64url::tests::round_trips_across_all_tail_lengths ... ok
+test base64url::tests::specs_vector_basic_envelope_canonical_round_trip ... ok
+test authorization::tests::s03_every_event_mutation_changes_authorized_operation ... ok
+test base64url::tests::specs_vector_padded_payload_is_rejected ... ok
+test bip39::tests::entropy_and_mnemonic_propagate_validation_errors ... ok
+test bip39::tests::buffer_too_small_paths ... ok
+test bip39::tests::from_slice_bounds ... ok
+test bip39::tests::all_zero_twelve_words_is_valid_checksum ... ok
+test bip39::tests::is_valid_word_count_matches_cpp ... ok
+test bip39::tests::parse_rejects_empty_and_whitespace_only ... ok
+test bip39::tests::require_valid_indexes_paths ... ok
+test bip39::tests::word_at_bounds ... ok
+test bip39::tests::word_index_rejects_overlong_and_unknown ... ok
+test bip39::tests::parser_matches_shared_nip06_vector ... ok
+test board_profile_tests::t_display_s3_button_logic_classifies_debounced_short_and_long_presses ... ok
+test board_profile_tests::t_display_s3_serial_input_drains_after_overlong_frame ... ok
+test board_profile_tests::t_display_s3_status_frames_keep_non_signing_copy_stable ... ok
+test board_profile_tests::t_display_s3_raster_has_stable_boot_and_review_pixels ... ok
+test hash::tests::raw_digest_bytes ... ok
+test hash::tests::nist_known_answer_vectors ... ok
+test authorization::tests::s03_nip01_bytes_match_independent_oracle ... ok
+test authorization::tests::s03_integer_tokens_and_kinds_are_exact ... ok
+test hash::tests::block_boundary_padding_paths ... ok
+test hash::tests::specs_vector_sha256_over_decoded_base64url_payload ... ok
+test nip19::tests::is_valid_secret_key_bounds ... ok
+test nip19::tests::decode_rejects_non_canonical_and_invalid_scalar ... ok
+test policy::approval_gate::tests::requires_matching_approval ... ok
+test nip19::tests::decoder_matches_shared_vector ... ok
+test nip19::tests::decode_rejects_wrong_length ... ok
+test nip19::tests::encode_rejects_invalid_scalar_and_small_buffer ... ok
+test policy::approval_gate::tests::reject_ignores_mismatched_request_and_default_is_pending ... ok
+test nip19::tests::oversized_input_is_malformed ... ok
+test authorization::tests::s03_malformed_known_semantics_never_fall_back ... ok
+test bip39::tests::wordlist_integrity_count_order_and_digest ... ok
+test hash::tests::incremental_updates_match_one_shot ... ok
+test policy::policy_change_review::tests::error_messages_match_cpp_text ... ok
+test authorization::tests::s03_unicode_decode_is_lossless_or_rejected ... ok
+test policy::policy_change_review::tests::flow_guards_and_transcript_bounds ... ok
+test policy::policy_change_review::tests::grant_id_list_pushes_and_rejects_overflow ... ok
+test policy::policy_change_review::tests::rejects_companion_authority_or_secret_material ... ok
+test authorization::tests::s03_rejects_duplicate_and_incomplete_json ... ok
+test policy::policy_change_review::tests::rejects_each_invalid_proposal_field ... ok
+test policy::policy_change_review::tests::matches_shared_vector ... ok
+test policy::policy_change_review::tests::flow_requires_device_approval ... ok
+test protocol::tests::rejects_invalid_sign_event_request_shape ... ok
+test policy::policy_change_review::tests::replays_custom_hardware_wallet_fixture ... ok
+test protocol::tests::rejects_params_for_parameterless_methods ... ok
+test protocol::tests::rejects_unknown_top_level_request_fields ... ok
+test protocol::tests::rejects_invalid_dynamic_request_metadata ... ok
+test qr::envelope::tests::animated_encoder_rejects_too_many_frames_and_bad_payloads ... ok
+test protocol::tests::reports_development_public_key ... ok
+test protocol::tests::exposes_review_frame_before_disabled_signing_response ... ok
+test qr::envelope::tests::animated_digest_and_length_rejections ... ok
+test protocol::tests::binds_configured_signer_identity ... ok
+test protocol::tests::echoes_dynamic_request_ids ... ok
+test protocol::tests::exposes_review_session_for_manual_display_navigation ... ok
+test authorization::tests::s03_failed_or_skipped_display_cannot_approve ... ok
+test protocol::tests::rejects_signing_while_disabled ... ok
+test protocol::tests::reports_scaffold_capabilities ... ok
+test protocol::tests::retired_signing_status_is_rejected ... ok
+test qr::envelope::tests::animated_qr_envelope_decodes_shared_vector ... ok
+test qr::envelope::tests::animated_structural_rejections ... ok
+test qr::envelope::tests::content_over_limit_within_request_budget ... ok
+test protocol::tests::transport_and_metadata_rejection_branches ... ok
+test qr::envelope::tests::animated_frame_set_rejections ... ok
+test qr::envelope::tests::animated_frames_accepted_out_of_order ... ok
+test qr::envelope::tests::animated_qr_envelope_rejections ... ok
+test protocol::tests::review_preserves_json_unicode_escapes ... ok
+test authorization::tests::s03_capability_or_retired_status_never_enables_product_signing ... ok
+test qr::envelope::tests::qr_envelope_encoder_rejections ... ok
+test qr::envelope::tests::qr_envelope_rejections ... ok
+test qr::envelope::tests::qr_envelope_parses_event_template_fields ... ok
+test qr::envelope::tests::helper_contracts ... ok
+test policy::policy_change_review::tests::optional_label_and_label_escaping_shape_the_digest ... ok
+test qr::envelope::tests::qr_limits_match_shared_profile ... ok
+test qr::envelope::tests::qr_envelope_rejects_shared_invalid_qr_vectors ... ok
+test qr::envelope::tests::qr_envelope_parses_sign_event_request_metadata ... ok
+test qr::envelope::tests::qr_envelope_decodes_shared_vector ... ok
+test qr::envelope::tests::qr_envelope_encodes_signed_response_vectors_without_signing ... ok
+test qr::envelope::tests::qr_signing_request_preserves_json_unicode_escapes ... ok
+test protocol::tests::error_display_response_frame_and_scanner_grammar ... ok
+test qr::envelope::tests::long_events_many_tags_shared_vector_parses ... ok
+test qr::envelope::tests::qr_signing_request_rejections ... ok
+test qr::envelope::tests::qr_envelope_extracts_event_template_boundary ... ok
+test qr::envelope::tests::qr_signing_request_tolerates_escaped_event_content ... ok
+test qr::envelope::tests::request_limit_rejections ... ok
+test qr::envelope::tests::qr_signing_request_rejects_shared_invalid_request_vectors ... ok
+test authorization::tests::s03_review_has_complete_indexed_coverage ... ok
+test qr::response_display::tests::builds_static_frame_for_small_response ... ok
+test qr::envelope::tests::static_encoder_and_container_shapes ... ok
+test qr::envelope::tests::request_parser_grammar_rejections ... ok
+test qr::envelope::tests::tag_field_limit_uses_decoded_bytes ... ok
+test qr::response_display::tests::rejects_non_response_payload_shapes ... ok
+test qr::response_display::tests::rejects_invalid_json_and_bad_cycles ... ok
+test qr::response_display::tests::allows_nested_json_unicode_escapes ... ok
+test qr::response_display::tests::rejects_shared_top_level_invalid_response_vectors ... ok
+test qr::envelope::tests::request_parser_tolerances ... ok
+test qr::envelope::tests::undersized_output_buffers ... ok
+test qr::response_display::tests::request_id_rule_matches_shared_charset ... ok
+test qr::response_display::tests::scanner_structural_rejections ... ok
+test review::buttons::tests::unchanged_levels_produce_no_event ... ok
+test review::controls::tests::allow_backward_navigation_before_terminal_decision ... ok
+test qr::envelope::tests::animated_payload_content_rejections ... ok
+test qr::response_display::tests::io_single_cycle_animated ... ok
+test qr::response_display::tests::static_animated_threshold_boundary ... ok
+test qr::response_display::tests::shows_static_frame_once ... ok
+test review::display::tests::validation_branches_and_messages ... ok
+test review::controls::tests::allow_early_rejection ... ok
+test review::display::tests::wraps_utf8_without_splitting_codepoints ... ok
+test qr::response_display::tests::scanner_tolerances_and_rejections ... ok
+test review::controls::tests::are_terminal_after_decision ... ok
+test review::controls::tests::require_page_traversal_before_approval ... ok
+test review::controls::tests::zero_pages_rejected_and_messages_match_cpp ... ok
+test review::display::tests::matches_shared_long_content_frame_vector ... ok
+test review::display::tests::matches_shared_utf8_boundary_frame_vector ... ok
+test qr::response_display::tests::animated_response_fixture_replay ... ok
+test review::display::tests::preserves_logical_page_indicator_and_body_styles ... ok
+test review::display::tests::rejects_unsafe_frame_bounds ... ok
+test review::display::tests::renders_decision_frame ... ok
+test review::display::tests::renders_navigation_frame ... ok
+test review::display::tests::truncate_helper_direct_paths ... ok
+test review::display::tests::wraps_and_truncates_long_body_lines ... ok
+test review::qr::tests::display_pages_escape_non_ascii_for_display_safety ... ok
+test review::qr::tests::display_pages_group_logical_sections_with_compact_styles ... ok
+test review::qr::tests::display_pages_preserve_supported_ascii_punctuation ... ok
+test review::qr::tests::display_pages_render_control_escapes_visibly ... ok
+test review::qr::tests::display_pages_split_full_long_content_without_ellipsis ... ok
+test review::qr::tests::display_pages_show_full_tag_values_without_ellipsis ... ok
+test review::qr::tests::display_pages_use_scroll_line_indicators_for_long_sections ... ok
+test review::qr::tests::review_pages_match_shared_basic_vector ... ok
+test review::qr::tests::trusted_review_request_matches_shared_basic_vector ... ok
+test review::qr::tests::signing_request_unicode_escapes_render_escaped_review_pages ... ok
+test review::qr::tests::review_pages_match_shared_tagged_vector ... ok
+test review::qr::tests::review_binds_configured_signer_identity ... ok
+test review::qr::tests::trusted_review_request_matches_shared_tagged_vector ... ok
+test qr::response_display::tests::cycles_animated_frames_for_large_response ... ok
+test review::qr_flow::tests::flow_rejects_mixed_scanned_request_frames ... ok
+test review::qr_flow::tests::flow_rejects_unsafe_scanned_qr ... ok
+test review::qr::tests::display_pages_match_shared_detail_page_vectors ... ok
+test review::qr_flow::tests::io_flow_requires_nonzero_step_limit ... ok
+test review::qr_flow::tests::empty_and_foreign_scans_report_envelope_errors ... ok
+test review::qr::tests::trusted_review_session_binds_qr_digest_and_navigation ... ok
+test review::qr_flow::tests::io_flow_rejects_non_terminal_button_stream ... ok
+test review::qr_flow::tests::flow_drives_scanned_qr_without_signing_backend ... ok
+test review::qr_flow::tests::error_messages_capacity_and_frame_bounds ... ok
+test review::qr::tests::validation_capacity_and_escaping_branches ... ok
+test review::qr_flow::tests::transcript_records_display_and_approval_steps ... ok
+test review::serial::tests::review_session_uses_full_scroll_display_pages ... ok
+test review::serial::tests::review_binds_configured_signer_identity ... ok
+test review::qr_flow::tests::transcript_records_early_rejection ... ok
+test review::serial::tests::io_flow_drives_request_display_and_buttons_without_signing ... ok
+test review::serial::tests::io_flow_step_limit_branches ... ok
+test review::qr_flow::tests::io_flow_drives_scanner_display_and_buttons_without_signing ... ok
+test review::qr_flow::tests::transcript_matches_shared_detail_scroll_vector ... ok
+test review::serial::tests::error_messages_and_flow_accessors ... ok
+test review::serial::tests::review_session_uses_two_axis_navigation_for_scroll_windows ... ok
+test review::qr_flow::tests::flow_accepts_animated_scanned_request_frames ... ok
+test review::signer_identity::tests::development_fixture_is_valid_and_matches_constant ... ok
+test review::signer_identity::tests::require_valid_rejects_bad_key_with_cpp_message ... ok
+test review::types::tests::style_list_pushes_and_rejects_overflow ... ok
+test review::trusted::tests::constructor_validation_and_messages ... ok
+test seedqr::tests::compact_length_rules ... ok
+test seedqr::tests::standard_empty_and_shape_errors ... ok
+test serial::frame::tests::decode_structural_rejections ... ok
+test review::signer_identity::tests::validates_lowercase_hex_public_key ... ok
+test serial::frame::tests::decode_line_ending_variants ... ok
+test seedqr::tests::decoders_match_shared_vector ... ok
+test serial::frame::tests::encode_rejects_payload_that_overflows_checksum_scratch ... ok
+test serial::frame::tests::encode_rejects_bad_payload_and_small_buffer ... ok
+test review::types::tests::line_list_pushes_and_rejects_overflow ... ok
+test review::trusted::tests::allows_backward_review_before_approval ... ok
+test review::qr_flow::tests::flow_binds_selected_session_account_identity ... ok
+test review::trusted::tests::binds_display_navigation_and_approval ... ok
+test review::trusted::tests::accessor_render_error_and_logical_terminal_lock ... ok
+test review::trusted::tests::keeps_rejection_terminal ... ok
+test serial::frame::tests::encodes_response_and_error_frames_that_round_trip ... ok
+test serial::input::tests::rejects_invalid_max_frame_bytes ... ok
+test review::types::tests::page_list_pushes_and_rejects_overflow ... ok
+test review::serial::tests::sign_event_review_matches_shared_review_contract ... ok
+test serial::frame::tests::frame_type_tokens_round_trip_all_variants ... ok
+test serial::frame::tests::serial_frame_rejections ... ok
+test session::account::tests::consumes_shared_source_public_key_proof_metadata_without_derivation ... ok
+test serial::frame::tests::serial_frame_rejects_shared_invalid_vectors ... ok
+test session::import_flow::tests::rejection_does_not_load_keyring ... ok
+test session::account::tests::binds_qr_review_identity_without_derivation ... ok
+test serial::frame::tests::serial_frame_round_trip ... ok
+test session::import_review::tests::replays_nip06_account_0_leader_fixture ... ok
+test session::import_flow::tests::requires_local_approval_before_loading_keyring ... ok
+test session::keyring::tests::accepts_parsed_key_sources ... ok
+test session::account::tests::context_builder_rejects_hand_built_invalid_identity ... ok
+test session::import_review::tests::hides_secret_material ... ok
+test session::import_flow::tests::blocks_early_or_nonterminal_approval ... ok
+test session::keyring::tests::consumed_source_revalidates_corrupted_internal_seed ... ok
+test session::account::tests::does_not_satisfy_public_key_proof_gate ... ok
+test session::import_flow::tests::zero_steps_full_keyring_and_transcript_bounds ... ok
+test session::keyring::tests::transfer_and_live_wipe ... ok
+test session::account::tests::validates_source_route_and_recovery_shape ... ok
+test session::keyring::tests::clear_wipes_active_sources ... ok
+test session::keyring::tests::add_source_revalidates_both_kinds ... ok
+test session::keyring::tests::rejects_invalid_sources ... ok
+test session::source_backup::tests::io_rejection_or_timeout_does_not_emit_payload ... ok
+test session::source_backup::tests::io_reveals_only_after_displayed_approval ... ok
+test session::source_backup::tests::payload_rejects_unsupported_word_counts_and_bad_checksums ... ok
+test session::source_backup::tests::flow_reveals_only_after_local_approval ... ok
+test session::source_backup::tests::transcript_bounds_and_rejects_overflow ... ok
+test session::source_backup::tests::flow_guards_max_steps_and_non_terminal_streams ... ok
+test session::source_generation::tests::rejects_invalid_entropy ... ok
+test session::source_backup::tests::review_matches_shared_danger_zone_vectors ... ok
+test session::source_backup::tests::payload_matches_shared_secret_payloads ... ok
+test session::source_qr::tests::compact_seedqr_import_flow_loads_after_review_approval ... ok
+test session::source_qr::tests::import_flow_loads_only_after_review_approval ... ok
+test session::source_qr::tests::import_flow_error_wrapping_branches ... ok
+test tests::harness_runs ... ok
+test session::source_qr::tests::import_flow_rejects_without_keyring_load ... ok
+test text::tests::builds_appends_and_compares ... ok
+test text::tests::rejects_overflow_and_keeps_contents ... ok
+test session::source_generation::tests::uses_ram_only_source_boundary ... ok
+test unicode::tests::encode_utf8_widths_and_rejection ... ok
+test session::source_qr::tests::rejects_invalid_inputs ... ok
+test text::tests::wipe_zeroes_buffer_and_length ... ok
+test unicode::tests::is_valid_utf8_accepts_and_rejects ... ok
+test unicode::tests::parse_code_unit_paths ... ok
+test unicode::tests::json_escape_bmp_and_surrogate_pairs ... ok
+test unicode::tests::scalar_boundaries ... ok
+test unicode::tests::decode_next_codepoint_direct ... ok
+test session::source_qr::tests::parses_ram_only_sources ... ok
+test authorization::tests::s03_host_and_transcript_cannot_mint_authority ... ok
+test authorization::tests::s03_review_escape_spelling_is_injective ... ok
+test authorization::tests::s03_identity_is_derived_from_consumed_custody ... ok
+test authorization::tests::s03_two_attempts_and_cancel_linearize_once ... ok
+test authorization::tests::s03_old_session_aliases_and_time_fail_closed ... ok
+test authorization::tests::s03_first_attempt_is_irrevocable ... ok
+test authorization::tests::s03_kind1_interprets_exact_reference_subset ... ok
+test authorization::tests::s03_independent_event_id_and_signature_agree ... ok
+test authorization::tests::s03_each_lifecycle_event_invalidates_pending_work ... ok
+test authorization::tests::s03_attempt_binds_context_and_consumes_mismatch ... ok
+test authorization::tests::s03_all_limits_bound_storage_and_work ... ok
+
+test result: ok. 244 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.08s
+
+
+running 10 tests
+test local_verification_and_availability_do_not_collapse ... ok
+test profile_layout_and_request_storage_are_accounted_separately ... ok
+test common_profile_manifests_are_conformance_only_and_match_typed_profile_designs ... ok
+test checked_expansion_rejects_before_allocation_at_independent_boundaries ... ok
+test pi_boot_limitation_requires_its_own_evidence ... ok
+test reported_axes_remain_distinct_and_contradictions_reject ... ok
+test required_component_and_custody_never_fall_back ... ok
+test synthetic_evidence_cannot_qualify_production ... ok
+test finite_limits_keep_local_caps_and_zero_disabled_queues ... ok
+test exact_profiles_and_each_independent_required_group ... ok
+
+test result: ok. 10 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+
+running 4 tests
+test local_scalar_intake_clears_input_on_success_and_failure ... ok
+test malformed_seed_is_rejected_at_owned_insertion ... ok
+test owned_types_have_fixed_redacted_formatting ... ok
+test cancelled_and_failed_import_or_backup_has_no_retained_output ... ok
+
+test result: ok. 4 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+
+running 15 tests
+test crates/nsealr-core/src/session/source_backup.rs - session::source_backup::SessionSourceBackupPayload (line 70) - compile fail ... ok
+test crates/nsealr-core/src/nip19.rs - nip19::SecretKey (line 41) - compile fail ... ok
+test crates/nsealr-core/src/session/keyring.rs - session::keyring::SessionKeySource (line 107) - compile fail ... ok
+test crates/nsealr-core/src/session/keyring.rs - session::keyring::SessionKeySource (line 102) - compile fail ... ok
+test crates/nsealr-core/src/bip39/mod.rs - bip39::WordIndexes (line 70) - compile fail ... ok
+test crates/nsealr-core/src/session/keyring.rs - session::keyring::StatelessSessionKeyring::add_source (line 283) - compile fail ... ok
+test crates/nsealr-core/src/authorization.rs - authorization::AuthorizationSession (line 146) - compile fail ... ok
+test crates/nsealr-core/src/session/source_backup.rs - session::source_backup::SessionSourceBackupPayload (line 66) - compile fail ... ok
+test crates/nsealr-core/src/authorization.rs - authorization::AuthorizationSession (line 142) - compile fail ... ok
+test crates/nsealr-core/src/authorization.rs - authorization::AuthorizationSession (line 137) - compile fail ... ok
+test crates/nsealr-core/src/bip39/mod.rs - bip39::WordIndexes (line 65) - compile fail ... ok
+test crates/nsealr-core/src/session/source_backup.rs - session::source_backup::SessionSourceBackupPayload (line 61) - compile fail ... ok
+test crates/nsealr-core/src/nip19.rs - nip19::SecretKey (line 36) - compile fail ... ok
+test crates/nsealr-core/src/session/keyring.rs - session::keyring::SessionKeySource (line 97) - compile fail ... ok
+test crates/nsealr-core/src/authorization.rs - authorization::AuthorizationSession (line 152) - compile fail ... ok
+
+test result: ok. 15 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.03s
+
+cargo test -p nsealr-core --features std
+
+running 245 tests
+test authorization::tests::s03_every_event_mutation_changes_authorized_operation ... ok
+test authorization::tests::s03_failed_or_skipped_display_cannot_approve ... ok
+test authorization::tests::s03_capability_or_retired_status_never_enables_product_signing ... ok
+test base64url::tests::decode_known_pairs_and_canonical_edges ... ok
+test base64url::tests::decode_rejects_invalid_characters ... ok
+test base64url::tests::decode_rejects_non_zero_trailing_bits ... ok
+test authorization::tests::s03_integer_tokens_and_kinds_are_exact ... ok
+test authorization::tests::s03_unicode_decode_is_lossless_or_rejected ... ok
+test authorization::tests::s03_nip01_bytes_match_independent_oracle ... ok
+test authorization::tests::s03_rejects_duplicate_and_incomplete_json ... ok
+test authorization::tests::s03_malformed_known_semantics_never_fall_back ... ok
+test authorization::tests::s03_review_has_complete_indexed_coverage ... ok
+test authorization::tests::s03_host_and_transcript_cannot_mint_authority ... ok
+test base64url::tests::encode_known_pairs ... ok
+test base64url::tests::is_payload_matches_cpp_predicate ... ok
+test base64url::tests::length_helpers_are_exact ... ok
+test base64url::tests::reports_output_too_small ... ok
+test base64url::tests::round_trips_across_all_tail_lengths ... ok
+test base64url::tests::specs_vector_basic_envelope_canonical_round_trip ... ok
+test base64url::tests::specs_vector_padded_payload_is_rejected ... ok
+test bip39::tests::all_zero_twelve_words_is_valid_checksum ... ok
+test bip39::tests::buffer_too_small_paths ... ok
+test bip39::tests::entropy_and_mnemonic_propagate_validation_errors ... ok
+test bip39::tests::from_slice_bounds ... ok
+test bip39::tests::is_valid_word_count_matches_cpp ... ok
+test bip39::tests::parse_rejects_empty_and_whitespace_only ... ok
+test bip39::tests::require_valid_indexes_paths ... ok
+test bip39::tests::word_at_bounds ... ok
+test bip39::tests::word_index_rejects_overlong_and_unknown ... ok
+test bip39::tests::parser_matches_shared_nip06_vector ... ok
+test board_profile_tests::t_display_s3_button_logic_classifies_debounced_short_and_long_presses ... ok
+test board_profile_tests::t_display_s3_serial_input_drains_after_overlong_frame ... ok
+test board_profile_tests::t_display_s3_raster_has_stable_boot_and_review_pixels ... ok
+test board_profile_tests::t_display_s3_status_frames_keep_non_signing_copy_stable ... ok
+test hash::tests::raw_digest_bytes ... ok
+test hash::tests::nist_known_answer_vectors ... ok
+test hash::tests::block_boundary_padding_paths ... ok
+test hash::tests::specs_vector_sha256_over_decoded_base64url_payload ... ok
+test nip19::tests::decode_rejects_wrong_length ... ok
+test nip19::tests::decode_rejects_non_canonical_and_invalid_scalar ... ok
+test nip19::tests::encode_rejects_invalid_scalar_and_small_buffer ... ok
+test nip19::tests::is_valid_secret_key_bounds ... ok
+test nip19::tests::oversized_input_is_malformed ... ok
+test nip19::tests::decoder_matches_shared_vector ... ok
+test policy::approval_gate::tests::reject_ignores_mismatched_request_and_default_is_pending ... ok
+test policy::approval_gate::tests::requires_matching_approval ... ok
+test policy::policy_change_review::tests::error_messages_match_cpp_text ... ok
+test bip39::tests::wordlist_integrity_count_order_and_digest ... ok
+test hash::tests::incremental_updates_match_one_shot ... ok
+test policy::policy_change_review::tests::flow_guards_and_transcript_bounds ... ok
+test policy::policy_change_review::tests::grant_id_list_pushes_and_rejects_overflow ... ok
+test policy::policy_change_review::tests::rejects_each_invalid_proposal_field ... ok
+test policy::policy_change_review::tests::rejects_companion_authority_or_secret_material ... ok
+test policy::policy_change_review::tests::matches_shared_vector ... ok
+test policy::policy_change_review::tests::replays_custom_hardware_wallet_fixture ... ok
+test policy::policy_change_review::tests::flow_requires_device_approval ... ok
+test protocol::tests::reports_development_public_key ... ok
+test protocol::tests::rejects_unknown_top_level_request_fields ... ok
+test protocol::tests::retired_signing_status_is_rejected ... ok
+test qr::envelope::tests::animated_digest_and_length_rejections ... ok
+test protocol::tests::reports_scaffold_capabilities ... ok
+test protocol::tests::binds_configured_signer_identity ... ok
+test protocol::tests::exposes_review_session_for_manual_display_navigation ... ok
+test protocol::tests::exposes_review_frame_before_disabled_signing_response ... ok
+test protocol::tests::rejects_invalid_sign_event_request_shape ... ok
+test protocol::tests::rejects_invalid_dynamic_request_metadata ... ok
+test protocol::tests::transport_and_metadata_rejection_branches ... ok
+test protocol::tests::rejects_params_for_parameterless_methods ... ok
+test protocol::tests::rejects_signing_while_disabled ... ok
+test protocol::tests::review_preserves_json_unicode_escapes ... ok
+test qr::envelope::tests::animated_encoder_rejects_too_many_frames_and_bad_payloads ... ok
+test protocol::tests::echoes_dynamic_request_ids ... ok
+test qr::envelope::tests::animated_structural_rejections ... ok
+test qr::envelope::tests::animated_frame_set_rejections ... ok
+test qr::envelope::tests::content_over_limit_within_request_budget ... ok
+test policy::policy_change_review::tests::optional_label_and_label_escaping_shape_the_digest ... ok
+test qr::envelope::tests::animated_qr_envelope_rejections ... ok
+test qr::envelope::tests::helper_contracts ... ok
+test qr::envelope::tests::animated_frames_accepted_out_of_order ... ok
+test qr::envelope::tests::qr_envelope_decodes_shared_vector ... ok
+test qr::envelope::tests::long_events_many_tags_shared_vector_parses ... ok
+test qr::envelope::tests::animated_qr_envelope_decodes_shared_vector ... ok
+test qr::envelope::tests::qr_envelope_encoder_rejections ... ok
+test qr::envelope::tests::qr_envelope_extracts_event_template_boundary ... ok
+test qr::envelope::tests::qr_envelope_parses_event_template_fields ... ok
+test qr::envelope::tests::qr_envelope_parses_sign_event_request_metadata ... ok
+test qr::envelope::tests::qr_envelope_rejections ... ok
+test qr::envelope::tests::qr_signing_request_preserves_json_unicode_escapes ... ok
+test protocol::tests::error_display_response_frame_and_scanner_grammar ... ok
+test qr::envelope::tests::qr_signing_request_tolerates_escaped_event_content ... ok
+test qr::envelope::tests::qr_signing_request_rejections ... ok
+test qr::envelope::tests::static_encoder_and_container_shapes ... ok
+test qr::envelope::tests::request_limit_rejections ... ok
+test qr::envelope::tests::qr_envelope_encodes_signed_response_vectors_without_signing ... ok
+test qr::envelope::tests::qr_envelope_rejects_shared_invalid_qr_vectors ... ok
+test qr::envelope::tests::tag_field_limit_uses_decoded_bytes ... ok
+test authorization::tests::s03_identity_is_derived_from_consumed_custody ... ok
+test qr::response_display::tests::allows_nested_json_unicode_escapes ... ok
+test qr::envelope::tests::request_parser_grammar_rejections ... ok
+test qr::envelope::tests::qr_signing_request_rejects_shared_invalid_request_vectors ... ok
+test qr::response_display::tests::builds_static_frame_for_small_response ... ok
+test qr::envelope::tests::request_parser_tolerances ... ok
+test qr::envelope::tests::undersized_output_buffers ... ok
+test qr::envelope::tests::qr_limits_match_shared_profile ... ok
+test qr::response_display::tests::animated_response_fixture_replay ... ok
+test qr::response_display::tests::rejects_non_response_payload_shapes ... ok
+test qr::response_display::tests::rejects_invalid_json_and_bad_cycles ... ok
+test qr::response_display::tests::rejects_shared_top_level_invalid_response_vectors ... ok
+test qr::response_display::tests::scanner_structural_rejections ... ok
+test qr::response_display::tests::request_id_rule_matches_shared_charset ... ok
+test qr::response_display::tests::shows_static_frame_once ... ok
+test review::buttons::tests::unchanged_levels_produce_no_event ... ok
+test qr::response_display::tests::scanner_tolerances_and_rejections ... ok
+test review::controls::tests::allow_backward_navigation_before_terminal_decision ... ok
+test review::controls::tests::allow_early_rejection ... ok
+test review::controls::tests::are_terminal_after_decision ... ok
+test review::controls::tests::require_page_traversal_before_approval ... ok
+test review::controls::tests::zero_pages_rejected_and_messages_match_cpp ... ok
+test review::display::tests::matches_shared_long_content_frame_vector ... ok
+test qr::response_display::tests::io_single_cycle_animated ... ok
+test review::display::tests::matches_shared_utf8_boundary_frame_vector ... ok
+test review::display::tests::rejects_unsafe_frame_bounds ... ok
+test review::display::tests::preserves_logical_page_indicator_and_body_styles ... ok
+test qr::envelope::tests::animated_payload_content_rejections ... ok
+test review::display::tests::renders_decision_frame ... ok
+test review::display::tests::renders_navigation_frame ... ok
+test review::display::tests::truncate_helper_direct_paths ... ok
+test review::display::tests::wraps_and_truncates_long_body_lines ... ok
+test review::display::tests::validation_branches_and_messages ... ok
+test qr::response_display::tests::static_animated_threshold_boundary ... ok
+test review::display::tests::wraps_utf8_without_splitting_codepoints ... ok
+test review::qr::tests::display_pages_escape_non_ascii_for_display_safety ... ok
+test review::qr::tests::display_pages_preserve_supported_ascii_punctuation ... ok
+test review::qr::tests::display_pages_group_logical_sections_with_compact_styles ... ok
+test review::qr::tests::display_pages_show_full_tag_values_without_ellipsis ... ok
+test review::qr::tests::display_pages_render_control_escapes_visibly ... ok
+test review::qr::tests::display_pages_split_full_long_content_without_ellipsis ... ok
+test review::qr::tests::display_pages_use_scroll_line_indicators_for_long_sections ... ok
+test review::qr::tests::review_pages_match_shared_tagged_vector ... ok
+test review::qr::tests::signing_request_unicode_escapes_render_escaped_review_pages ... ok
+test review::qr::tests::review_pages_match_shared_basic_vector ... ok
+test review::qr::tests::review_binds_configured_signer_identity ... ok
+test review::qr::tests::trusted_review_request_matches_shared_basic_vector ... ok
+test review::qr::tests::trusted_review_request_matches_shared_tagged_vector ... ok
+test review::qr_flow::tests::flow_rejects_mixed_scanned_request_frames ... ok
+test qr::response_display::tests::cycles_animated_frames_for_large_response ... ok
+test review::qr_flow::tests::io_flow_requires_nonzero_step_limit ... ok
+test review::qr::tests::trusted_review_session_binds_qr_digest_and_navigation ... ok
+test review::qr::tests::display_pages_match_shared_detail_page_vectors ... ok
+test review::qr_flow::tests::flow_drives_scanned_qr_without_signing_backend ... ok
+test review::qr_flow::tests::error_messages_capacity_and_frame_bounds ... ok
+test review::qr_flow::tests::flow_rejects_unsafe_scanned_qr ... ok
+test review::qr_flow::tests::empty_and_foreign_scans_report_envelope_errors ... ok
+test review::qr_flow::tests::io_flow_drives_scanner_display_and_buttons_without_signing ... ok
+test review::signer_identity::tests::validates_lowercase_hex_public_key ... ok
+test review::serial::tests::error_messages_and_flow_accessors ... ok
+test review::qr_flow::tests::io_flow_rejects_non_terminal_button_stream ... ok
+test review::signer_identity::tests::development_fixture_is_valid_and_matches_constant ... ok
+test review::qr_flow::tests::transcript_matches_shared_detail_scroll_vector ... ok
+test review::serial::tests::io_flow_step_limit_branches ... ok
+test review::signer_identity::tests::require_valid_rejects_bad_key_with_cpp_message ... ok
+test review::trusted::tests::binds_display_navigation_and_approval ... ok
+test review::serial::tests::review_session_uses_full_scroll_display_pages ... ok
+test review::serial::tests::io_flow_drives_request_display_and_buttons_without_signing ... ok
+test review::serial::tests::review_binds_configured_signer_identity ... ok
+test review::qr_flow::tests::transcript_records_early_rejection ... ok
+test review::qr_flow::tests::transcript_records_display_and_approval_steps ... ok
+test review::qr_flow::tests::flow_accepts_animated_scanned_request_frames ... ok
+test review::trusted::tests::accessor_render_error_and_logical_terminal_lock ... ok
+test review::types::tests::line_list_pushes_and_rejects_overflow ... ok
+test review::trusted::tests::keeps_rejection_terminal ... ok
+test review::qr_flow::tests::flow_binds_selected_session_account_identity ... ok
+test review::qr::tests::validation_capacity_and_escaping_branches ... ok
+test review::trusted::tests::constructor_validation_and_messages ... ok
+test review::serial::tests::review_session_uses_two_axis_navigation_for_scroll_windows ... ok
+test review::types::tests::page_list_pushes_and_rejects_overflow ... ok
+test review::serial::tests::sign_event_review_matches_shared_review_contract ... ok
+test review::trusted::tests::allows_backward_review_before_approval ... ok
+test authorization::tests::s03_review_escape_spelling_is_injective ... ok
+test serial::frame::tests::encode_rejects_payload_that_overflows_checksum_scratch ... ok
+test serial::frame::tests::frame_type_tokens_round_trip_all_variants ... ok
+test review::types::tests::style_list_pushes_and_rejects_overflow ... ok
+test seedqr::tests::compact_length_rules ... ok
+test serial::frame::tests::encodes_response_and_error_frames_that_round_trip ... ok
+test seedqr::tests::standard_empty_and_shape_errors ... ok
+test serial::frame::tests::decode_structural_rejections ... ok
+test serial::frame::tests::serial_frame_rejects_shared_invalid_vectors ... ok
+test serial::frame::tests::encode_rejects_bad_payload_and_small_buffer ... ok
+test serial::frame::tests::serial_frame_rejections ... ok
+test serial::frame::tests::decode_line_ending_variants ... ok
+test serial::input::tests::rejects_invalid_max_frame_bytes ... ok
+test serial::frame::tests::serial_frame_round_trip ... ok
+test session::account::tests::context_builder_rejects_hand_built_invalid_identity ... ok
+test seedqr::tests::decoders_match_shared_vector ... ok
+test session::account::tests::consumes_shared_source_public_key_proof_metadata_without_derivation ... ok
+test session::account::tests::does_not_satisfy_public_key_proof_gate ... ok
+test session::import_flow::tests::rejection_does_not_load_keyring ... ok
+test session::account::tests::validates_source_route_and_recovery_shape ... ok
+test session::import_flow::tests::requires_local_approval_before_loading_keyring ... ok
+test session::account::tests::binds_qr_review_identity_without_derivation ... ok
+test session::import_review::tests::replays_nip06_account_0_leader_fixture ... ok
+test session::import_flow::tests::blocks_early_or_nonterminal_approval ... ok
+test session::import_review::tests::hides_secret_material ... ok
+test session::keyring::tests::accepts_parsed_key_sources ... ok
+test session::keyring::tests::consumed_source_revalidates_corrupted_internal_seed ... ok
+test session::keyring::tests::transfer_and_live_wipe ... ok
+test session::import_flow::tests::zero_steps_full_keyring_and_transcript_bounds ... ok
+test session::keyring::tests::add_source_revalidates_both_kinds ... ok
+test session::keyring::tests::clear_wipes_active_sources ... ok
+test session::source_backup::tests::flow_guards_max_steps_and_non_terminal_streams ... ok
+test session::keyring::tests::rejects_invalid_sources ... ok
+test session::source_backup::tests::transcript_bounds_and_rejects_overflow ... ok
+test session::source_backup::tests::io_reveals_only_after_displayed_approval ... ok
+test session::source_generation::tests::rejects_invalid_entropy ... ok
+test session::source_backup::tests::flow_reveals_only_after_local_approval ... ok
+test session::source_backup::tests::payload_matches_shared_secret_payloads ... ok
+test session::source_backup::tests::review_matches_shared_danger_zone_vectors ... ok
+test session::source_backup::tests::io_rejection_or_timeout_does_not_emit_payload ... ok
+test session::source_generation::tests::uses_ram_only_source_boundary ... ok
+test tests::harness_runs ... ok
+test session::source_qr::tests::import_flow_loads_only_after_review_approval ... ok
+test tests::std_feature_links_std_facade ... ok
+test session::source_qr::tests::rejects_invalid_inputs ... ok
+test session::source_qr::tests::import_flow_error_wrapping_branches ... ok
+test text::tests::builds_appends_and_compares ... ok
+test unicode::tests::decode_next_codepoint_direct ... ok
+test unicode::tests::encode_utf8_widths_and_rejection ... ok
+test unicode::tests::is_valid_utf8_accepts_and_rejects ... ok
+test session::source_backup::tests::payload_rejects_unsupported_word_counts_and_bad_checksums ... ok
+test unicode::tests::parse_code_unit_paths ... ok
+test text::tests::rejects_overflow_and_keeps_contents ... ok
+test unicode::tests::scalar_boundaries ... ok
+test session::source_qr::tests::import_flow_rejects_without_keyring_load ... ok
+test unicode::tests::json_escape_bmp_and_surrogate_pairs ... ok
+test session::source_qr::tests::compact_seedqr_import_flow_loads_after_review_approval ... ok
+test text::tests::wipe_zeroes_buffer_and_length ... ok
+test session::source_qr::tests::parses_ram_only_sources ... ok
+test authorization::tests::s03_old_session_aliases_and_time_fail_closed ... ok
+test authorization::tests::s03_first_attempt_is_irrevocable ... ok
+test authorization::tests::s03_two_attempts_and_cancel_linearize_once ... ok
+test authorization::tests::s03_kind1_interprets_exact_reference_subset ... ok
+test authorization::tests::s03_independent_event_id_and_signature_agree ... ok
+test authorization::tests::s03_each_lifecycle_event_invalidates_pending_work ... ok
+test authorization::tests::s03_attempt_binds_context_and_consumes_mismatch ... ok
+test authorization::tests::s03_all_limits_bound_storage_and_work ... ok
+
+test result: ok. 245 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.09s
+
+
+running 10 tests
+test local_verification_and_availability_do_not_collapse ... ok
+test profile_layout_and_request_storage_are_accounted_separately ... ok
+test common_profile_manifests_are_conformance_only_and_match_typed_profile_designs ... ok
+test checked_expansion_rejects_before_allocation_at_independent_boundaries ... ok
+test pi_boot_limitation_requires_its_own_evidence ... ok
+test required_component_and_custody_never_fall_back ... ok
+test reported_axes_remain_distinct_and_contradictions_reject ... ok
+test synthetic_evidence_cannot_qualify_production ... ok
+test finite_limits_keep_local_caps_and_zero_disabled_queues ... ok
+test exact_profiles_and_each_independent_required_group ... ok
+
+test result: ok. 10 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+
+running 4 tests
+test local_scalar_intake_clears_input_on_success_and_failure ... ok
+test malformed_seed_is_rejected_at_owned_insertion ... ok
+test owned_types_have_fixed_redacted_formatting ... ok
+test cancelled_and_failed_import_or_backup_has_no_retained_output ... ok
+
+test result: ok. 4 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+
+running 15 tests
+test crates/nsealr-core/src/authorization.rs - authorization::AuthorizationSession (line 142) - compile fail ... ok
+test crates/nsealr-core/src/session/source_backup.rs - session::source_backup::SessionSourceBackupPayload (line 70) - compile fail ... ok
+test crates/nsealr-core/src/bip39/mod.rs - bip39::WordIndexes (line 70) - compile fail ... ok
+test crates/nsealr-core/src/nip19.rs - nip19::SecretKey (line 41) - compile fail ... ok
+test crates/nsealr-core/src/session/source_backup.rs - session::source_backup::SessionSourceBackupPayload (line 66) - compile fail ... ok
+test crates/nsealr-core/src/session/keyring.rs - session::keyring::SessionKeySource (line 107) - compile fail ... ok
+test crates/nsealr-core/src/session/keyring.rs - session::keyring::SessionKeySource (line 102) - compile fail ... ok
+test crates/nsealr-core/src/session/keyring.rs - session::keyring::StatelessSessionKeyring::add_source (line 283) - compile fail ... ok
+test crates/nsealr-core/src/bip39/mod.rs - bip39::WordIndexes (line 65) - compile fail ... ok
+test crates/nsealr-core/src/session/keyring.rs - session::keyring::SessionKeySource (line 97) - compile fail ... ok
+test crates/nsealr-core/src/authorization.rs - authorization::AuthorizationSession (line 146) - compile fail ... ok
+test crates/nsealr-core/src/session/source_backup.rs - session::source_backup::SessionSourceBackupPayload (line 61) - compile fail ... ok
+test crates/nsealr-core/src/nip19.rs - nip19::SecretKey (line 36) - compile fail ... ok
+test crates/nsealr-core/src/authorization.rs - authorization::AuthorizationSession (line 137) - compile fail ... ok
+test crates/nsealr-core/src/authorization.rs - authorization::AuthorizationSession (line 152) - compile fail ... ok
+
+test result: ok. 15 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.03s
+
+cargo build -p nsealr-core --target riscv32imafc-unknown-none-elf
+cargo test --manifest-path apps/desktop-simulator/Cargo.toml --locked --offline
+
+running 1 test
+test replay::session_reviews::tests::backup_mismatch_does_not_echo_secret_output ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+
+running 20 tests
+test completeness_rule_every_category_is_classified ... ok
+test completeness_rule_every_invalid_file_is_classified ... ok
+test replay_nip19 ... ok
+test replay_keys ... ok
+test replay_limits ... ok
+test replay_policies ... ok
+test replay_seedqr ... ok
+test replay_accounts ... ok
+test replay_review_display_frames ... ok
+test replay_source_public_key_proofs ... ok
+test replay_devices ... ok
+test replay_session_source_backups ... ok
+test replay_review ... ok
+test replay_review_screens ... ok
+test replay_policy_changes ... ok
+test replay_session_import_reviews ... ok
+test replay_transports ... ok
+test replay_invalid ... ok
+test replay_review_detail_pages ... ok
+test replay_review_transcripts ... ok
+
+test result: ok. 20 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+cargo deny check
+advisories ok, bans ok, licenses ok, sources ok
+cargo deny --manifest-path apps/desktop-simulator/Cargo.toml --config deny.toml check
+advisories ok, bans ok, licenses ok, sources ok
+cargo llvm-cov --workspace --all-features --summary-only --json --output-path build/rust-core-coverage.json
+
+running 245 tests
+test base64url::tests::decode_known_pairs_and_canonical_edges ... ok
+test base64url::tests::decode_rejects_invalid_characters ... ok
+test base64url::tests::encode_known_pairs ... ok
+test authorization::tests::s03_every_event_mutation_changes_authorized_operation ... ok
+test base64url::tests::is_payload_matches_cpp_predicate ... ok
+test base64url::tests::decode_rejects_non_zero_trailing_bits ... ok
+test base64url::tests::length_helpers_are_exact ... ok
+test base64url::tests::reports_output_too_small ... ok
+test base64url::tests::specs_vector_padded_payload_is_rejected ... ok
+test base64url::tests::specs_vector_basic_envelope_canonical_round_trip ... ok
+test bip39::tests::all_zero_twelve_words_is_valid_checksum ... ok
+test bip39::tests::entropy_and_mnemonic_propagate_validation_errors ... ok
+test bip39::tests::from_slice_bounds ... ok
+test bip39::tests::buffer_too_small_paths ... ok
+test bip39::tests::is_valid_word_count_matches_cpp ... ok
+test base64url::tests::round_trips_across_all_tail_lengths ... ok
+test bip39::tests::parse_rejects_empty_and_whitespace_only ... ok
+test bip39::tests::require_valid_indexes_paths ... ok
+test bip39::tests::word_at_bounds ... ok
+test bip39::tests::word_index_rejects_overlong_and_unknown ... ok
+test bip39::tests::parser_matches_shared_nip06_vector ... ok
+test board_profile_tests::t_display_s3_button_logic_classifies_debounced_short_and_long_presses ... ok
+test board_profile_tests::t_display_s3_raster_has_stable_boot_and_review_pixels ... ok
+test board_profile_tests::t_display_s3_status_frames_keep_non_signing_copy_stable ... ok
+test board_profile_tests::t_display_s3_serial_input_drains_after_overlong_frame ... ok
+test hash::tests::block_boundary_padding_paths ... ok
+test hash::tests::raw_digest_bytes ... ok
+test hash::tests::nist_known_answer_vectors ... ok
+test nip19::tests::decode_rejects_wrong_length ... ok
+test nip19::tests::decode_rejects_non_canonical_and_invalid_scalar ... ok
+test nip19::tests::encode_rejects_invalid_scalar_and_small_buffer ... ok
+test policy::policy_change_review::tests::error_messages_match_cpp_text ... ok
+test nip19::tests::is_valid_secret_key_bounds ... ok
+test hash::tests::specs_vector_sha256_over_decoded_base64url_payload ... ok
+test nip19::tests::decoder_matches_shared_vector ... ok
+test policy::approval_gate::tests::reject_ignores_mismatched_request_and_default_is_pending ... ok
+test bip39::tests::wordlist_integrity_count_order_and_digest ... ok
+test hash::tests::incremental_updates_match_one_shot ... ok
+test authorization::tests::s03_nip01_bytes_match_independent_oracle ... ok
+test policy::policy_change_review::tests::grant_id_list_pushes_and_rejects_overflow ... ok
+test policy::policy_change_review::tests::flow_guards_and_transcript_bounds ... ok
+test policy::policy_change_review::tests::matches_shared_vector ... ok
+test authorization::tests::s03_malformed_known_semantics_never_fall_back ... ok
+test policy::policy_change_review::tests::flow_requires_device_approval ... ok
+test nip19::tests::oversized_input_is_malformed ... ok
+test policy::approval_gate::tests::requires_matching_approval ... ok
+test policy::policy_change_review::tests::rejects_companion_authority_or_secret_material ... ok
+test authorization::tests::s03_integer_tokens_and_kinds_are_exact ... ok
+test policy::policy_change_review::tests::rejects_each_invalid_proposal_field ... ok
+test authorization::tests::s03_unicode_decode_is_lossless_or_rejected ... ok
+test policy::policy_change_review::tests::replays_custom_hardware_wallet_fixture ... ok
+test qr::envelope::tests::animated_digest_and_length_rejections ... ok
+test protocol::tests::exposes_review_session_for_manual_display_navigation ... ok
+test protocol::tests::rejects_params_for_parameterless_methods ... ok
+test protocol::tests::reports_development_public_key ... ok
+test protocol::tests::exposes_review_frame_before_disabled_signing_response ... ok
+test protocol::tests::rejects_invalid_sign_event_request_shape ... ok
+test policy::policy_change_review::tests::optional_label_and_label_escaping_shape_the_digest ... ok
+test protocol::tests::retired_signing_status_is_rejected ... ok
+test protocol::tests::rejects_invalid_dynamic_request_metadata ... ok
+test protocol::tests::rejects_unknown_top_level_request_fields ... ok
+test protocol::tests::review_preserves_json_unicode_escapes ... ok
+test protocol::tests::reports_scaffold_capabilities ... ok
+test protocol::tests::binds_configured_signer_identity ... ok
+test protocol::tests::rejects_signing_while_disabled ... ok
+test authorization::tests::s03_rejects_duplicate_and_incomplete_json ... ok
+test protocol::tests::echoes_dynamic_request_ids ... ok
+test protocol::tests::transport_and_metadata_rejection_branches ... ok
+test qr::envelope::tests::animated_encoder_rejects_too_many_frames_and_bad_payloads ... ok
+test qr::envelope::tests::animated_structural_rejections ... ok
+test qr::envelope::tests::helper_contracts ... ok
+test qr::envelope::tests::content_over_limit_within_request_budget ... ok
+test qr::envelope::tests::qr_envelope_encoder_rejections ... ok
+test qr::envelope::tests::animated_frame_set_rejections ... ok
+test qr::envelope::tests::qr_limits_match_shared_profile ... ok
+test qr::envelope::tests::qr_envelope_rejections ... ok
+test qr::envelope::tests::qr_envelope_decodes_shared_vector ... ok
+test qr::envelope::tests::qr_signing_request_preserves_json_unicode_escapes ... ok
+test qr::envelope::tests::qr_signing_request_tolerates_escaped_event_content ... ok
+test qr::envelope::tests::request_limit_rejections ... ok
+test qr::envelope::tests::animated_frames_accepted_out_of_order ... ok
+test qr::envelope::tests::animated_qr_envelope_rejections ... ok
+test qr::envelope::tests::qr_envelope_extracts_event_template_boundary ... ok
+test qr::envelope::tests::static_encoder_and_container_shapes ... ok
+test qr::envelope::tests::tag_field_limit_uses_decoded_bytes ... ok
+test qr::envelope::tests::request_parser_grammar_rejections ... ok
+test qr::envelope::tests::qr_envelope_parses_sign_event_request_metadata ... ok
+test qr::envelope::tests::qr_envelope_parses_event_template_fields ... ok
+test qr::envelope::tests::qr_signing_request_rejections ... ok
+test qr::envelope::tests::request_parser_tolerances ... ok
+test qr::envelope::tests::long_events_many_tags_shared_vector_parses ... ok
+test qr::envelope::tests::qr_envelope_rejects_shared_invalid_qr_vectors ... ok
+test qr::envelope::tests::animated_qr_envelope_decodes_shared_vector ... ok
+test qr::envelope::tests::qr_signing_request_rejects_shared_invalid_request_vectors ... ok
+test qr::response_display::tests::builds_static_frame_for_small_response ... ok
+test qr::response_display::tests::rejects_shared_top_level_invalid_response_vectors ... ok
+test qr::response_display::tests::allows_nested_json_unicode_escapes ... ok
+test qr::response_display::tests::scanner_structural_rejections ... ok
+test qr::response_display::tests::request_id_rule_matches_shared_charset ... ok
+test qr::response_display::tests::shows_static_frame_once ... ok
+test qr::response_display::tests::rejects_non_response_payload_shapes ... ok
+test review::buttons::tests::unchanged_levels_produce_no_event ... ok
+test qr::response_display::tests::rejects_invalid_json_and_bad_cycles ... ok
+test review::controls::tests::allow_backward_navigation_before_terminal_decision ... ok
+test review::controls::tests::are_terminal_after_decision ... ok
+test qr::envelope::tests::undersized_output_buffers ... ok
+test review::controls::tests::allow_early_rejection ... ok
+test review::controls::tests::require_page_traversal_before_approval ... ok
+test qr::envelope::tests::qr_envelope_encodes_signed_response_vectors_without_signing ... ok
+test review::controls::tests::zero_pages_rejected_and_messages_match_cpp ... ok
+test review::display::tests::matches_shared_utf8_boundary_frame_vector ... ok
+test review::display::tests::matches_shared_long_content_frame_vector ... ok
+test qr::response_display::tests::scanner_tolerances_and_rejections ... ok
+test review::display::tests::preserves_logical_page_indicator_and_body_styles ... ok
+test review::display::tests::rejects_unsafe_frame_bounds ... ok
+test review::display::tests::truncate_helper_direct_paths ... ok
+test review::display::tests::renders_decision_frame ... ok
+test qr::response_display::tests::animated_response_fixture_replay ... ok
+test review::display::tests::renders_navigation_frame ... ok
+test review::display::tests::validation_branches_and_messages ... ok
+test review::display::tests::wraps_and_truncates_long_body_lines ... ok
+test review::display::tests::wraps_utf8_without_splitting_codepoints ... ok
+test protocol::tests::error_display_response_frame_and_scanner_grammar ... ok
+test review::qr::tests::display_pages_escape_non_ascii_for_display_safety ... ok
+test qr::response_display::tests::io_single_cycle_animated ... ok
+test qr::envelope::tests::animated_payload_content_rejections ... ok
+test review::qr::tests::display_pages_preserve_supported_ascii_punctuation ... ok
+test review::qr::tests::display_pages_render_control_escapes_visibly ... ok
+test qr::response_display::tests::static_animated_threshold_boundary ... ok
+test review::qr::tests::display_pages_show_full_tag_values_without_ellipsis ... ok
+test review::qr::tests::display_pages_group_logical_sections_with_compact_styles ... ok
+test review::qr::tests::signing_request_unicode_escapes_render_escaped_review_pages ... ok
+test review::qr::tests::display_pages_split_full_long_content_without_ellipsis ... ok
+test review::qr::tests::display_pages_use_scroll_line_indicators_for_long_sections ... ok
+test review::qr::tests::review_pages_match_shared_basic_vector ... ok
+test review::qr::tests::review_pages_match_shared_tagged_vector ... ok
+test review::qr::tests::trusted_review_request_matches_shared_basic_vector ... ok
+test review::qr::tests::trusted_review_request_matches_shared_tagged_vector ... ok
+test review::qr_flow::tests::flow_rejects_mixed_scanned_request_frames ... ok
+test review::qr::tests::review_binds_configured_signer_identity ... ok
+test review::qr::tests::trusted_review_session_binds_qr_digest_and_navigation ... ok
+test review::qr_flow::tests::flow_drives_scanned_qr_without_signing_backend ... ok
+test review::qr_flow::tests::flow_rejects_unsafe_scanned_qr ... ok
+test review::qr_flow::tests::empty_and_foreign_scans_report_envelope_errors ... ok
+test review::qr_flow::tests::io_flow_requires_nonzero_step_limit ... ok
+test review::qr_flow::tests::io_flow_drives_scanner_display_and_buttons_without_signing ... ok
+test qr::response_display::tests::cycles_animated_frames_for_large_response ... ok
+test review::qr_flow::tests::error_messages_capacity_and_frame_bounds ... ok
+test review::qr::tests::display_pages_match_shared_detail_page_vectors ... ok
+test review::qr_flow::tests::transcript_records_display_and_approval_steps ... ok
+test review::serial::tests::error_messages_and_flow_accessors ... ok
+test review::serial::tests::io_flow_step_limit_branches ... ok
+test review::qr_flow::tests::transcript_records_early_rejection ... ok
+test review::qr_flow::tests::io_flow_rejects_non_terminal_button_stream ... ok
+test review::serial::tests::io_flow_drives_request_display_and_buttons_without_signing ... ok
+test review::qr_flow::tests::flow_accepts_animated_scanned_request_frames ... ok
+test review::serial::tests::review_session_uses_full_scroll_display_pages ... ok
+test review::qr::tests::validation_capacity_and_escaping_branches ... ok
+test review::qr_flow::tests::flow_binds_selected_session_account_identity ... ok
+test review::serial::tests::review_binds_configured_signer_identity ... ok
+test review::qr_flow::tests::transcript_matches_shared_detail_scroll_vector ... ok
+test review::serial::tests::sign_event_review_matches_shared_review_contract ... ok
+test review::serial::tests::review_session_uses_two_axis_navigation_for_scroll_windows ... ok
+test review::signer_identity::tests::development_fixture_is_valid_and_matches_constant ... ok
+test review::signer_identity::tests::require_valid_rejects_bad_key_with_cpp_message ... ok
+test review::signer_identity::tests::validates_lowercase_hex_public_key ... ok
+test review::trusted::tests::keeps_rejection_terminal ... ok
+test review::types::tests::style_list_pushes_and_rejects_overflow ... ok
+test review::trusted::tests::binds_display_navigation_and_approval ... ok
+test review::trusted::tests::allows_backward_review_before_approval ... ok
+test seedqr::tests::standard_empty_and_shape_errors ... ok
+test seedqr::tests::compact_length_rules ... ok
+test review::types::tests::line_list_pushes_and_rejects_overflow ... ok
+test serial::frame::tests::decode_structural_rejections ... ok
+test seedqr::tests::decoders_match_shared_vector ... ok
+test review::trusted::tests::constructor_validation_and_messages ... ok
+test serial::frame::tests::decode_line_ending_variants ... ok
+test review::trusted::tests::accessor_render_error_and_logical_terminal_lock ... ok
+test serial::frame::tests::encode_rejects_bad_payload_and_small_buffer ... ok
+test serial::frame::tests::frame_type_tokens_round_trip_all_variants ... ok
+test serial::frame::tests::encode_rejects_payload_that_overflows_checksum_scratch ... ok
+test serial::frame::tests::serial_frame_rejects_shared_invalid_vectors ... ok
+test review::types::tests::page_list_pushes_and_rejects_overflow ... ok
+test serial::frame::tests::serial_frame_round_trip ... ok
+test serial::frame::tests::serial_frame_rejections ... ok
+test serial::frame::tests::encodes_response_and_error_frames_that_round_trip ... ok
+test session::account::tests::context_builder_rejects_hand_built_invalid_identity ... ok
+test session::account::tests::consumes_shared_source_public_key_proof_metadata_without_derivation ... ok
+test serial::input::tests::rejects_invalid_max_frame_bytes ... ok
+test session::account::tests::does_not_satisfy_public_key_proof_gate ... ok
+test session::account::tests::binds_qr_review_identity_without_derivation ... ok
+test session::import_flow::tests::rejection_does_not_load_keyring ... ok
+test session::account::tests::validates_source_route_and_recovery_shape ... ok
+test session::import_flow::tests::requires_local_approval_before_loading_keyring ... ok
+test session::import_review::tests::hides_secret_material ... ok
+test session::import_review::tests::replays_nip06_account_0_leader_fixture ... ok
+test session::keyring::tests::clear_wipes_active_sources ... ok
+test session::keyring::tests::transfer_and_live_wipe ... ok
+test session::keyring::tests::add_source_revalidates_both_kinds ... ok
+test authorization::tests::s03_capability_or_retired_status_never_enables_product_signing ... ok
+test session::keyring::tests::consumed_source_revalidates_corrupted_internal_seed ... ok
+test session::source_backup::tests::payload_rejects_unsupported_word_counts_and_bad_checksums ... ok
+test session::keyring::tests::accepts_parsed_key_sources ... ok
+test session::source_backup::tests::transcript_bounds_and_rejects_overflow ... ok
+test session::source_backup::tests::io_rejection_or_timeout_does_not_emit_payload ... ok
+test session::source_backup::tests::flow_reveals_only_after_local_approval ... ok
+test session::source_generation::tests::rejects_invalid_entropy ... ok
+test session::import_flow::tests::blocks_early_or_nonterminal_approval ... ok
+test tests::harness_runs ... ok
+test session::source_backup::tests::flow_guards_max_steps_and_non_terminal_streams ... ok
+test session::source_generation::tests::uses_ram_only_source_boundary ... ok
+test session::source_qr::tests::compact_seedqr_import_flow_loads_after_review_approval ... ok
+test session::source_backup::tests::review_matches_shared_danger_zone_vectors ... ok
+test session::source_backup::tests::io_reveals_only_after_displayed_approval ... ok
+test tests::std_feature_links_std_facade ... ok
+test text::tests::builds_appends_and_compares ... ok
+test session::source_qr::tests::import_flow_rejects_without_keyring_load ... ok
+test session::source_backup::tests::payload_matches_shared_secret_payloads ... ok
+test session::source_qr::tests::import_flow_error_wrapping_branches ... ok
+test text::tests::rejects_overflow_and_keeps_contents ... ok
+test text::tests::wipe_zeroes_buffer_and_length ... ok
+test session::source_qr::tests::import_flow_loads_only_after_review_approval ... ok
+test unicode::tests::is_valid_utf8_accepts_and_rejects ... ok
+test session::import_flow::tests::zero_steps_full_keyring_and_transcript_bounds ... ok
+test unicode::tests::json_escape_bmp_and_surrogate_pairs ... ok
+test session::source_qr::tests::rejects_invalid_inputs ... ok
+test session::keyring::tests::rejects_invalid_sources ... ok
+test unicode::tests::parse_code_unit_paths ... ok
+test unicode::tests::scalar_boundaries ... ok
+test session::source_qr::tests::parses_ram_only_sources ... ok
+test authorization::tests::s03_failed_or_skipped_display_cannot_approve ... ok
+test unicode::tests::decode_next_codepoint_direct ... ok
+test unicode::tests::encode_utf8_widths_and_rejection ... ok
+test authorization::tests::s03_review_has_complete_indexed_coverage ... ok
+test authorization::tests::s03_host_and_transcript_cannot_mint_authority ... ok
+test authorization::tests::s03_identity_is_derived_from_consumed_custody ... ok
+test authorization::tests::s03_old_session_aliases_and_time_fail_closed ... ok
+test authorization::tests::s03_two_attempts_and_cancel_linearize_once ... ok
+test authorization::tests::s03_first_attempt_is_irrevocable ... ok
+test authorization::tests::s03_review_escape_spelling_is_injective ... ok
+test authorization::tests::s03_independent_event_id_and_signature_agree ... ok
+test authorization::tests::s03_kind1_interprets_exact_reference_subset ... ok
+test authorization::tests::s03_each_lifecycle_event_invalidates_pending_work ... ok
+test authorization::tests::s03_attempt_binds_context_and_consumes_mismatch ... ok
+test authorization::tests::s03_all_limits_bound_storage_and_work ... ok
+
+test result: ok. 245 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.17s
+
+
+running 10 tests
+test local_verification_and_availability_do_not_collapse ... ok
+test common_profile_manifests_are_conformance_only_and_match_typed_profile_designs ... ok
+test profile_layout_and_request_storage_are_accounted_separately ... ok
+test checked_expansion_rejects_before_allocation_at_independent_boundaries ... ok
+test required_component_and_custody_never_fall_back ... ok
+test finite_limits_keep_local_caps_and_zero_disabled_queues ... ok
+test reported_axes_remain_distinct_and_contradictions_reject ... ok
+test pi_boot_limitation_requires_its_own_evidence ... ok
+test synthetic_evidence_cannot_qualify_production ... ok
+test exact_profiles_and_each_independent_required_group ... ok
+
+test result: ok. 10 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+
+running 4 tests
+test local_scalar_intake_clears_input_on_success_and_failure ... ok
+test malformed_seed_is_rejected_at_owned_insertion ... ok
+test owned_types_have_fixed_redacted_formatting ... ok
+test cancelled_and_failed_import_or_backup_has_no_retained_output ... ok
+
+test result: ok. 4 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+cargo llvm-cov --manifest-path apps/desktop-simulator/Cargo.toml --workspace --all-features --summary-only --json --output-path build/rust-host-coverage.json
+
+running 1 test
+test replay::session_reviews::tests::backup_mismatch_does_not_echo_secret_output ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+
+running 20 tests
+test completeness_rule_every_category_is_classified ... ok
+test completeness_rule_every_invalid_file_is_classified ... ok
+test replay_nip19 ... ok
+test replay_limits ... ok
+test replay_keys ... ok
+test replay_policies ... ok
+test replay_seedqr ... ok
+test replay_review_display_frames ... ok
+test replay_accounts ... ok
+test replay_devices ... ok
+test replay_review ... ok
+test replay_review_screens ... ok
+test replay_session_import_reviews ... ok
+test replay_source_public_key_proofs ... ok
+test replay_session_source_backups ... ok
+test replay_policy_changes ... ok
+test replay_invalid ... ok
+test replay_transports ... ok
+test replay_review_detail_pages ... ok
+test replay_review_transcripts ... ok
+
+test result: ok. 20 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+python3 ci/check_coverage_ratchet.py build/rust-core-coverage.json ci/ratchet.json build/rust-host-coverage.json
+package                        measured   floor   status
+----------------------------------------------------------
+desktop-simulator                76.61%   76.70%  BELOW FLOOR
+nsealr-core                     100.00%  100.00%  ok
+bash ci/repro_build.sh
+repro-build: same-tree clean build A
+repro-build: same-tree clean build B
+repro-build: cross-path clean build X (second checkout at a different path)
+repro-build: byte-identity results
+  OK   desktop-simulator (same-tree A==B)         9e2a96734fbd5fe1b1cf767ebca86b6670332353bfbb774cbb950460e07dba1d
+  OK   nsealr-core rlib (same-tree A==B)          6f184e4de0a7ab2afe1a3da1e38e4274bc42b9bab3ffaa92118f40c0b5057e71
+  OK   nsealr-core rlib (cross-path A==X)         6f184e4de0a7ab2afe1a3da1e38e4274bc42b9bab3ffaa92118f40c0b5057e71
+repro-build: PASS
+  path-independent device artifact:
+    nsealr-core riscv32imafc-unknown-none-elf release rlib  sha256 = 6f184e4de0a7ab2afe1a3da1e38e4274bc42b9bab3ffaa92118f40c0b5057e71
+  desktop-simulator release binary (same-tree) sha256 = 9e2a96734fbd5fe1b1cf767ebca86b6670332353bfbb774cbb950460e07dba1d
+make -C protocols/contracts/v1 ci
+make[1]: Entering directory '/home/tux/nsealr/.restart-tools/goal/t01-current-integration/protocols/contracts/v1'
+python3 scripts/verify_specs.py
+nSealr specs v0 verification passed
+python3 -B -m unittest discover -s tests -v
+python3 scripts/verify_repo.py
+Component structure and license verified independently of checkout name
+make[1]: Leaving directory '/home/tux/nsealr/.restart-tools/goal/t01-current-integration/protocols/contracts/v1'
+pnpm run ci
+
+> @nsealr/bridge-workspace@0.1.0 ci /home/tux/nsealr/.restart-tools/goal/t01-current-integration
+> pnpm build && pnpm typecheck && pnpm test && pnpm consumer-smoke && pnpm examples-smoke && pnpm readme-examples:check && pnpm api-docs:check && pnpm api-review:check && pnpm package-registry:check && pnpm browser-runtime-imports:check && pnpm browser-runtime-bundle:check && pnpm browser-extension-security:check && pnpm public-imports:check && pnpm release-plan:check && pnpm release-artifacts:safety && pnpm pack-smoke && pnpm product-boundaries:check && pnpm current-guides:check
+
+
+> @nsealr/bridge-workspace@0.1.0 build /home/tux/nsealr/.restart-tools/goal/t01-current-integration
+> node tools/bridge/build_packages.mjs
+
+SDK root/browser/Node runtime and owned declarations bundled
+nSealr package build artifacts generated
+
+> @nsealr/bridge-workspace@0.1.0 typecheck /home/tux/nsealr/.restart-tools/goal/t01-current-integration
+> tsc --noEmit
+
+
+> @nsealr/bridge-workspace@0.1.0 test /home/tux/nsealr/.restart-tools/goal/t01-current-integration
+> vitest run --maxWorkers=4
+
+
+ RUN  v4.1.5 /home/tux/nsealr/.restart-tools/goal/t01-current-integration
+
+
+ Test Files  77 passed | 1 skipped (78)
+      Tests  725 passed | 1 skipped (726)
+   Start at  16:14:36
+   Duration  3.32s (transform 980ms, setup 0ms, import 3.42s, tests 4.09s, environment 4ms)
+
+
+> @nsealr/bridge-workspace@0.1.0 consumer-smoke /home/tux/nsealr/.restart-tools/goal/t01-current-integration
+> pnpm --filter @nsealr/consumer-smoke smoke
+
+
+> @nsealr/consumer-smoke@0.1.0 smoke /home/tux/nsealr/.restart-tools/goal/t01-current-integration/apps/bridge/consumer-smoke
+> node --no-warnings --import tsx/esm src/index.ts
+
+nSealr package consumer smoke passed
+
+> @nsealr/bridge-workspace@0.1.0 examples-smoke /home/tux/nsealr/.restart-tools/goal/t01-current-integration
+> pnpm --filter @nsealr/sdk-examples verify
+
+
+> @nsealr/sdk-examples@0.1.0 verify /home/tux/nsealr/.restart-tools/goal/t01-current-integration/apps/bridge/sdk-examples
+> node --no-warnings --import tsx/esm src/index.ts
+
+nSealr SDK examples passed
+
+> @nsealr/bridge-workspace@0.1.0 readme-examples:check /home/tux/nsealr/.restart-tools/goal/t01-current-integration
+> node tools/bridge/check_readme_examples.mjs
+
+nSealr README examples passed (2 snippets)
+
+> @nsealr/bridge-workspace@0.1.0 api-docs:check /home/tux/nsealr/.restart-tools/goal/t01-current-integration
+> node tools/bridge/check_api_docs.mjs
+
+companion API docs are up to date
+
+> @nsealr/bridge-workspace@0.1.0 api-review:check /home/tux/nsealr/.restart-tools/goal/t01-current-integration
+> node tools/bridge/check_api_review.mjs
+
+companion API review is up to date
+
+> @nsealr/bridge-workspace@0.1.0 package-registry:check /home/tux/nsealr/.restart-tools/goal/t01-current-integration
+> node tools/bridge/check_package_registry.mjs
+
+companion package registry passed (1 public, 12 private)
+
+> @nsealr/bridge-workspace@0.1.0 browser-runtime-imports:check /home/tux/nsealr/.restart-tools/goal/t01-current-integration
+> node tools/bridge/check_browser_runtime_imports.mjs
+
+companion browser runtime import hygiene passed (66 source files)
+
+> @nsealr/bridge-workspace@0.1.0 browser-runtime-bundle:check /home/tux/nsealr/.restart-tools/goal/t01-current-integration
+> node tools/bridge/check_browser_runtime_bundle.mjs
+
+companion browser runtime bundle smoke passed (4 entrypoints)
+
+> @nsealr/bridge-workspace@0.1.0 browser-extension-security:check /home/tux/nsealr/.restart-tools/goal/t01-current-integration
+> node tools/bridge/check_browser_extension_security.mjs
+
+companion browser extension security audit passed
+
+> @nsealr/bridge-workspace@0.1.0 public-imports:check /home/tux/nsealr/.restart-tools/goal/t01-current-integration
+> node tools/bridge/check_public_imports.mjs
+
+companion public package import hygiene passed
+
+> @nsealr/bridge-workspace@0.1.0 release-plan:check /home/tux/nsealr/.restart-tools/goal/t01-current-integration
+> node tools/bridge/check_release_plan.mjs
+
+companion package release plan passed (1 public packages)
+
+> @nsealr/bridge-workspace@0.1.0 release-artifacts:safety /home/tux/nsealr/.restart-tools/goal/t01-current-integration
+> node tools/bridge/check_release_artifacts_safety.mjs
+
+companion release artifact output safety check passed
+
+> @nsealr/bridge-workspace@0.1.0 pack-smoke /home/tux/nsealr/.restart-tools/goal/t01-current-integration
+> node tools/bridge/pack_smoke.mjs
+
+📦  @nsealr/sdk@0.1.0
+Tarball Contents
+dist/browser.d.ts
+dist/browser.js
+dist/index.d.ts
+dist/index.js
+dist/internal/browser-provider/index.d.ts
+dist/internal/browser-provider/provider.d.ts
+dist/internal/client/browser.d.ts
+dist/internal/client/client-identity.d.ts
+dist/internal/client/grant-store.d.ts
+dist/internal/client/index.d.ts
+dist/internal/client/local-service-client.d.ts
+dist/internal/client/native-host-manifest.d.ts
+dist/internal/client/native-messaging.d.ts
+dist/internal/client/pairing-review.d.ts
+dist/internal/client/service.d.ts
+dist/internal/client/storage-review.d.ts
+dist/internal/core/index.d.ts
+dist/internal/core/nip44.d.ts
+dist/internal/core/nostr.d.ts
+dist/internal/framing/index.d.ts
+dist/internal/framing/serial.d.ts
+dist/internal/nip46/index.d.ts
+dist/internal/nip46/nip46.d.ts
+dist/internal/nip46/relay-pool-adapter.d.ts
+dist/internal/nip46/relay-transport.d.ts
+dist/internal/nip46/session-manager.d.ts
+dist/internal/nip46/session-protocol.d.ts
+dist/internal/nip46/session-store.d.ts
+dist/internal/policy/index.d.ts
+dist/internal/policy/policy.d.ts
+dist/internal/protocol/capabilities.d.ts
+dist/internal/protocol/encoding.d.ts
+dist/internal/protocol/index.d.ts
+dist/internal/protocol/limits.d.ts
+dist/internal/protocol/protocol.d.ts
+dist/internal/qr/index.d.ts
+dist/internal/qr/qr.d.ts
+dist/internal/review/index.d.ts
+dist/internal/review/review.d.ts
+dist/node.d.ts
+dist/node.js
+LICENSE
+package.json
+README.md
+Tarball Details
+/tmp/nsealr-t01-current-integration/nsealr-sdk-pack-YAlKgR/nsealr-sdk-0.1.0.tgz
+
+added 14 packages in 1s
+isolated packed root/browser/Node behavior and hidden-import negatives passed
+packed browser bundle executes without Node module globals; real browser qualification remains separate
+single packed SDK runtime/browser/type acceptance passed
+
+> @nsealr/bridge-workspace@0.1.0 product-boundaries:check /home/tux/nsealr/.restart-tools/goal/t01-current-integration
+> node tools/bridge/check_product_boundaries.mjs && node tools/bridge/test_product_boundaries.mjs
+
+production source custody, validator ownership and stateless feature boundaries passed
+companion public package import hygiene passed
+PASS 17279524b14390ef046f228aca1bca86cdb53bf1086206cdc9f390d4758de0dd
+PASS 22395efa9f7fff63f3c5a16df222bb3e1fb5db59d6a170ff8614cf66b0c9fe1e
+PASS 5c005c269d5192537af02c9176bb32723fc32fcef71c0fe86cd3da7c831b1bfd
+PASS b9cee4b876e69c9af01cc704d96612e0c37037ed0ffd4cdca693f159d4e7fe34
+PASS 6c1bc0ee0023c497e9030f98c0f04507fc23f98e6c1efb69dec1422f6af205f0
+PASS 592cff524db06bc8f42bb806609350cd0f87df15621236b9fccd9f2626a7ea08
+PASS cd29a3bff1f2024239a136fafc7112e671dbde856cb27716c7f4f72e571bce6d
+PASS f04c62a5f9ba82470e652915b34c879021182aa4b2a9143e4b78c398b614cf12
+8 admitted source/privacy/capability replacement obligations passed; recipe and CLI obligations are separate gates
+
+> @nsealr/bridge-workspace@0.1.0 current-guides:check /home/tux/nsealr/.restart-tools/goal/t01-current-integration
+> node --import tsx/esm tools/bridge/check_current_guides.mjs && node --import tsx/esm tools/bridge/test_current_guides.mjs
+
+current guide command/flag, public owner and feature claims checked in 33 files
+PASS 22d92bfa3cba175cb486230c6a38dce63bffc1536d6438b42e18d931dc831335: seven historical stale-command classes rejected; 154 actual current command/option forms accepted
+PASS 952ea32a0de834c901ff6caa2b5d5e0c0615664b7e76735cb1601a87113ffcd3: seven historical stale-command classes rejected; 154 actual current command/option forms accepted
+PASS f92de0975ed8c8305a907083f7a06234f4488c9c8867542e4320758d97488d3e: seven historical stale-command classes rejected; 154 actual current command/option forms accepted
+make -C apps/pi ci
+make[1]: Entering directory '/home/tux/nsealr/.restart-tools/goal/t01-current-integration/apps/pi'
+python3 -m venv .venv
+.venv/bin/python -m pip install --disable-pip-version-check -r requirements.txt
+Looking in links: /home/tux/nsealr/.restart-tools/goal/r00/tools/baseline/.work/final/.tools/wheels
+Processing /home/tux/nsealr/.restart-tools/goal/r00/tools/baseline/.work/final/.tools/wheels/mnemonic-0.21-py3-none-any.whl (from -r requirements.txt (line 1))
+Processing /home/tux/nsealr/.restart-tools/goal/r00/tools/baseline/.work/final/.tools/wheels/secp256k1-0.14.0-cp312-cp312-manylinux_2_17_x86_64.manylinux2014_x86_64.whl (from -r requirements.txt (line 2))
+Processing /home/tux/nsealr/.restart-tools/goal/r00/tools/baseline/.work/final/.tools/wheels/cffi-2.1.1-cp312-cp312-manylinux2014_x86_64.manylinux_2_17_x86_64.whl (from secp256k1==0.14.0->-r requirements.txt (line 2))
+Processing /home/tux/nsealr/.restart-tools/goal/r00/tools/baseline/.work/final/.tools/wheels/pycparser-3.11-py3-none-any.whl (from cffi>=1.3.0->secp256k1==0.14.0->-r requirements.txt (line 2))
+Installing collected packages: pycparser, mnemonic, cffi, secp256k1
+Successfully installed cffi-2.1.1 mnemonic-0.21 pycparser-3.11 secp256k1-0.14.0
+PIP_IN_TREE_BUILD="$( .venv/bin/python -m pip install --use-feature=in-tree-build --help >/dev/null 2>&1 && printf '%s' '--use-feature=in-tree-build' || true )"; \
+.venv/bin/python -m pip install --disable-pip-version-check $PIP_IN_TREE_BUILD .
+Looking in links: /home/tux/nsealr/.restart-tools/goal/r00/tools/baseline/.work/final/.tools/wheels
+Processing /home/tux/nsealr/.restart-tools/goal/t01-current-integration/apps/pi
+  Installing build dependencies: started
+  Installing build dependencies: finished with status 'done'
+  Getting requirements to build wheel: started
+  Getting requirements to build wheel: finished with status 'done'
+  Preparing metadata (pyproject.toml): started
+  Preparing metadata (pyproject.toml): finished with status 'done'
+Requirement already satisfied: mnemonic==0.21 in ./.venv/lib/python3.12/site-packages (from nsealr-vault==0.1.0) (0.21)
+Requirement already satisfied: secp256k1==0.14.0 in ./.venv/lib/python3.12/site-packages (from nsealr-vault==0.1.0) (0.14.0)
+Requirement already satisfied: cffi>=1.3.0 in ./.venv/lib/python3.12/site-packages (from secp256k1==0.14.0->nsealr-vault==0.1.0) (2.1.1)
+Requirement already satisfied: pycparser in ./.venv/lib/python3.12/site-packages (from cffi>=1.3.0->secp256k1==0.14.0->nsealr-vault==0.1.0) (3.11)
+Building wheels for collected packages: nsealr-vault
+  Building wheel for nsealr-vault (pyproject.toml): started
+  Building wheel for nsealr-vault (pyproject.toml): finished with status 'done'
+  Created wheel for nsealr-vault: filename=nsealr_vault-0.1.0-py3-none-any.whl size=44550 sha256=ced4878cd221bfcf1bfca354365270f81dcb4894e6739596f89a3c66dab1c43c
+  Stored in directory: /tmp/nsealr-t01-current-integration/pip-ephem-wheel-cache-0d6ku301/wheels/8b/ae/4a/aa42da6aee09a449694ba3181bc62685abecfc8ec09338bc97
+Successfully built nsealr-vault
+Installing collected packages: nsealr-vault
+Successfully installed nsealr-vault-0.1.0
+.venv/bin/python scripts/verify_repo.py
+Component structure and license verified independently of checkout name
+.venv/bin/python -m unittest discover -s tests
+.venv/bin/python scripts/verify_repo.py
+Component structure and license verified independently of checkout name
+.venv/bin/python -m compileall -q app tests
+.venv/bin/python scripts/verify_repo.py
+Component structure and license verified independently of checkout name
+.venv/bin/python -m pip check
+No broken requirements found.
+.venv/bin/python scripts/verify_repo.py
+Component structure and license verified independently of checkout name
+make[1]: Leaving directory '/home/tux/nsealr/.restart-tools/goal/t01-current-integration/apps/pi'
+python3 -B -m unittest discover -s tests/integration -p 'test_*.py' -v
+python3 scripts/check_product_gates.py
+all retained gate placements and seventeen self-contained integration obligations present
+python3 -B -m unittest discover -s scripts -p 'test_product_gates.py' -v
+python3 -B -m tests.integration.run
+[1/17 original 1] check_fixture_snapshots
+{'artifact': 'nsealr-contracts-v1', 'artifact_format': 2, 'files': 255, 'records': 266, 'retired': 11, 'source_commit': '45f8b6ff1123f3f55be4ce457fd1008e91043cc2', 'artifact_tree': 'b629e75d18190ded2403ffabe965b595a9bcf6a6', 'consumers': ['bridge', 'engine', 'pi']}
+[2/17 original 2] integration_feature_matrix
+nSealr integrated feature matrix validation passed
+[3/17 original 3] integration_companion_fixtures
+
+> @nsealr/bridge-workspace@0.1.0 build /home/tux/nsealr/.restart-tools/goal/t01-current-integration
+> node tools/bridge/build_packages.mjs
+
+SDK root/browser/Node runtime and owned declarations bundled
+nSealr package build artifacts generated
+nSealr integrated companion fixture verification passed
+[4/17 original 4] integration_companion_policy_cli
+
+> @nsealr/bridge-workspace@0.1.0 build /home/tux/nsealr/.restart-tools/goal/t01-current-integration
+> node tools/bridge/build_packages.mjs
+
+SDK root/browser/Node runtime and owned declarations bundled
+nSealr package build artifacts generated
+
+> @nsealr/bridge-workspace@0.1.0 nsealr /home/tux/nsealr/.restart-tools/goal/t01-current-integration
+> pnpm --filter @nsealr/cli nsealr policy review-change --proposal /tmp/nsealr-t01-current-integration/nsealr-policy-cli-integrated-iydfxb3o/custom-hardware-wallet-enable-kind-1-automation-proposal.json --account /home/tux/nsealr/.restart-tools/goal/t01-current-integration/protocols/contracts/v1/vectors/accounts/custom-hardware-wallet-slot-0.json --current-policy /home/tux/nsealr/.restart-tools/goal/t01-current-integration/protocols/contracts/v1/vectors/policies/manual-only-persistent-device.json --proposed-policy /home/tux/nsealr/.restart-tools/goal/t01-current-integration/protocols/contracts/v1/vectors/policies/scoped-automation-daily-use.json --grant /home/tux/nsealr/.restart-tools/goal/t01-current-integration/protocols/contracts/v1/vectors/grants/custom-hardware-wallet-kind-1-session.json --out /tmp/nsealr-t01-current-integration/nsealr-policy-cli-integrated-iydfxb3o/custom-hardware-wallet-enable-kind-1-automation-review.json
+
+
+> @nsealr/cli@0.1.0 nsealr /home/tux/nsealr/.restart-tools/goal/t01-current-integration/apps/bridge/cli
+> node --disable-warning=DEP0205 --import tsx src/index.ts policy review-change --proposal /tmp/nsealr-t01-current-integration/nsealr-policy-cli-integrated-iydfxb3o/custom-hardware-wallet-enable-kind-1-automation-proposal.json --account /home/tux/nsealr/.restart-tools/goal/t01-current-integration/protocols/contracts/v1/vectors/accounts/custom-hardware-wallet-slot-0.json --current-policy /home/tux/nsealr/.restart-tools/goal/t01-current-integration/protocols/contracts/v1/vectors/policies/manual-only-persistent-device.json --proposed-policy /home/tux/nsealr/.restart-tools/goal/t01-current-integration/protocols/contracts/v1/vectors/policies/scoped-automation-daily-use.json --grant /home/tux/nsealr/.restart-tools/goal/t01-current-integration/protocols/contracts/v1/vectors/grants/custom-hardware-wallet-kind-1-session.json --out /tmp/nsealr-t01-current-integration/nsealr-policy-cli-integrated-iydfxb3o/custom-hardware-wallet-enable-kind-1-automation-review.json
+
+
+> @nsealr/bridge-workspace@0.1.0 nsealr /home/tux/nsealr/.restart-tools/goal/t01-current-integration
+> pnpm --filter @nsealr/cli nsealr policy review-change --proposal /tmp/nsealr-t01-current-integration/nsealr-policy-cli-integrated-iydfxb3o/esp32-usb-enable-kind-1-automation-proposal.json --account /home/tux/nsealr/.restart-tools/goal/t01-current-integration/protocols/contracts/v1/vectors/accounts/esp32-usb-device-slot-0.json --current-policy /home/tux/nsealr/.restart-tools/goal/t01-current-integration/protocols/contracts/v1/vectors/policies/manual-only-persistent-device.json --proposed-policy /home/tux/nsealr/.restart-tools/goal/t01-current-integration/protocols/contracts/v1/vectors/policies/scoped-automation-daily-use.json --grant /home/tux/nsealr/.restart-tools/goal/t01-current-integration/protocols/contracts/v1/vectors/grants/esp32-usb-kind-1-session.json --out /tmp/nsealr-t01-current-integration/nsealr-policy-cli-integrated-iydfxb3o/esp32-usb-enable-kind-1-automation-review.json
+
+
+> @nsealr/cli@0.1.0 nsealr /home/tux/nsealr/.restart-tools/goal/t01-current-integration/apps/bridge/cli
+> node --disable-warning=DEP0205 --import tsx src/index.ts policy review-change --proposal /tmp/nsealr-t01-current-integration/nsealr-policy-cli-integrated-iydfxb3o/esp32-usb-enable-kind-1-automation-proposal.json --account /home/tux/nsealr/.restart-tools/goal/t01-current-integration/protocols/contracts/v1/vectors/accounts/esp32-usb-device-slot-0.json --current-policy /home/tux/nsealr/.restart-tools/goal/t01-current-integration/protocols/contracts/v1/vectors/policies/manual-only-persistent-device.json --proposed-policy /home/tux/nsealr/.restart-tools/goal/t01-current-integration/protocols/contracts/v1/vectors/policies/scoped-automation-daily-use.json --grant /home/tux/nsealr/.restart-tools/goal/t01-current-integration/protocols/contracts/v1/vectors/grants/esp32-usb-kind-1-session.json --out /tmp/nsealr-t01-current-integration/nsealr-policy-cli-integrated-iydfxb3o/esp32-usb-enable-kind-1-automation-review.json
+
+nSealr integrated companion policy-change review CLI verification passed
+[5/17 original 5] integration_companion_nip46_cli
+
+> @nsealr/bridge-workspace@0.1.0 build /home/tux/nsealr/.restart-tools/goal/t01-current-integration
+> node tools/bridge/build_packages.mjs
+
+SDK root/browser/Node runtime and owned declarations bundled
+nSealr package build artifacts generated
+
+> @nsealr/bridge-workspace@0.1.0 nsealr /home/tux/nsealr/.restart-tools/goal/t01-current-integration
+> pnpm --filter @nsealr/cli nsealr nip46 decide --message /tmp/nsealr-t01-current-integration/nsealr-nip46-integrated-s5ia6kk2/sign-event-permitted-message.json --policy-file /home/tux/nsealr/.restart-tools/goal/t01-current-integration/protocols/contracts/v1/vectors/nip46-policy-files/sign-event-kind-1-approved.json --out /tmp/nsealr-t01-current-integration/nsealr-nip46-integrated-s5ia6kk2/sign-event-permitted-decision.json
+
+
+> @nsealr/cli@0.1.0 nsealr /home/tux/nsealr/.restart-tools/goal/t01-current-integration/apps/bridge/cli
+> node --disable-warning=DEP0205 --import tsx src/index.ts nip46 decide --message /tmp/nsealr-t01-current-integration/nsealr-nip46-integrated-s5ia6kk2/sign-event-permitted-message.json --policy-file /home/tux/nsealr/.restart-tools/goal/t01-current-integration/protocols/contracts/v1/vectors/nip46-policy-files/sign-event-kind-1-approved.json --out /tmp/nsealr-t01-current-integration/nsealr-nip46-integrated-s5ia6kk2/sign-event-permitted-decision.json
+
+
+> @nsealr/bridge-workspace@0.1.0 nsealr /home/tux/nsealr/.restart-tools/goal/t01-current-integration
+> pnpm --filter @nsealr/cli nsealr nip46 decide --message /tmp/nsealr-t01-current-integration/nsealr-nip46-integrated-s5ia6kk2/sign-event-denied-message.json --out /tmp/nsealr-t01-current-integration/nsealr-nip46-integrated-s5ia6kk2/sign-event-denied-decision.json --permissions sign_event:4
+
+
+> @nsealr/cli@0.1.0 nsealr /home/tux/nsealr/.restart-tools/goal/t01-current-integration/apps/bridge/cli
+> node --disable-warning=DEP0205 --import tsx src/index.ts nip46 decide --message /tmp/nsealr-t01-current-integration/nsealr-nip46-integrated-s5ia6kk2/sign-event-denied-message.json --out /tmp/nsealr-t01-current-integration/nsealr-nip46-integrated-s5ia6kk2/sign-event-denied-decision.json --permissions sign_event:4
+
+
+> @nsealr/bridge-workspace@0.1.0 nsealr /home/tux/nsealr/.restart-tools/goal/t01-current-integration
+> pnpm --filter @nsealr/cli nsealr nip46 decide --message /tmp/nsealr-t01-current-integration/nsealr-nip46-integrated-s5ia6kk2/connect-review-message.json --out /tmp/nsealr-t01-current-integration/nsealr-nip46-integrated-s5ia6kk2/connect-review-decision.json
+
+
+> @nsealr/cli@0.1.0 nsealr /home/tux/nsealr/.restart-tools/goal/t01-current-integration/apps/bridge/cli
+> node --disable-warning=DEP0205 --import tsx src/index.ts nip46 decide --message /tmp/nsealr-t01-current-integration/nsealr-nip46-integrated-s5ia6kk2/connect-review-message.json --out /tmp/nsealr-t01-current-integration/nsealr-nip46-integrated-s5ia6kk2/connect-review-decision.json
+
+
+> @nsealr/bridge-workspace@0.1.0 nsealr /home/tux/nsealr/.restart-tools/goal/t01-current-integration
+> pnpm --filter @nsealr/cli nsealr nip46 review-connect --message /tmp/nsealr-t01-current-integration/nsealr-nip46-integrated-s5ia6kk2/connect-review-message.json --out /tmp/nsealr-t01-current-integration/nsealr-nip46-integrated-s5ia6kk2/connect-review.json
+
+
+> @nsealr/cli@0.1.0 nsealr /home/tux/nsealr/.restart-tools/goal/t01-current-integration/apps/bridge/cli
+> node --disable-warning=DEP0205 --import tsx src/index.ts nip46 review-connect --message /tmp/nsealr-t01-current-integration/nsealr-nip46-integrated-s5ia6kk2/connect-review-message.json --out /tmp/nsealr-t01-current-integration/nsealr-nip46-integrated-s5ia6kk2/connect-review.json
+
+
+> @nsealr/bridge-workspace@0.1.0 nsealr /home/tux/nsealr/.restart-tools/goal/t01-current-integration
+> pnpm --filter @nsealr/cli nsealr nip46 approve-connect --review /tmp/nsealr-t01-current-integration/nsealr-nip46-integrated-s5ia6kk2/connect-review.json --reviewed-connect-digest 4591a3b711e32fdbadbfce542b15127490f8215351e621b0a0e0ed1e4f093225 --approved-at 1900000001 --out /tmp/nsealr-t01-current-integration/nsealr-nip46-integrated-s5ia6kk2/connect-approval.json
+
+
+> @nsealr/cli@0.1.0 nsealr /home/tux/nsealr/.restart-tools/goal/t01-current-integration/apps/bridge/cli
+> node --disable-warning=DEP0205 --import tsx src/index.ts nip46 approve-connect --review /tmp/nsealr-t01-current-integration/nsealr-nip46-integrated-s5ia6kk2/connect-review.json --reviewed-connect-digest 4591a3b711e32fdbadbfce542b15127490f8215351e621b0a0e0ed1e4f093225 --approved-at 1900000001 --out /tmp/nsealr-t01-current-integration/nsealr-nip46-integrated-s5ia6kk2/connect-approval.json
+
+
+> @nsealr/bridge-workspace@0.1.0 nsealr /home/tux/nsealr/.restart-tools/goal/t01-current-integration
+> pnpm --filter @nsealr/cli nsealr nip46 review-auth-challenge --step /tmp/nsealr-t01-current-integration/nsealr-nip46-integrated-s5ia6kk2/auth-challenge-step.json --out /tmp/nsealr-t01-current-integration/nsealr-nip46-integrated-s5ia6kk2/auth-challenge-review.json
+
+
+> @nsealr/cli@0.1.0 nsealr /home/tux/nsealr/.restart-tools/goal/t01-current-integration/apps/bridge/cli
+> node --disable-warning=DEP0205 --import tsx src/index.ts nip46 review-auth-challenge --step /tmp/nsealr-t01-current-integration/nsealr-nip46-integrated-s5ia6kk2/auth-challenge-step.json --out /tmp/nsealr-t01-current-integration/nsealr-nip46-integrated-s5ia6kk2/auth-challenge-review.json
+
+
+> @nsealr/bridge-workspace@0.1.0 nsealr /home/tux/nsealr/.restart-tools/goal/t01-current-integration
+> pnpm --filter @nsealr/cli nsealr nip46 approve-auth-challenge --review /tmp/nsealr-t01-current-integration/nsealr-nip46-integrated-s5ia6kk2/auth-challenge-review.json --reviewed-auth-challenge-digest 5b747488c9ce1037751d48004f6b30db5719b88477e4695fedf67f7e3a1abe19 --approved-at 1900000200 --out /tmp/nsealr-t01-current-integration/nsealr-nip46-integrated-s5ia6kk2/auth-challenge-approval.json
+
+
+> @nsealr/cli@0.1.0 nsealr /home/tux/nsealr/.restart-tools/goal/t01-current-integration/apps/bridge/cli
+> node --disable-warning=DEP0205 --import tsx src/index.ts nip46 approve-auth-challenge --review /tmp/nsealr-t01-current-integration/nsealr-nip46-integrated-s5ia6kk2/auth-challenge-review.json --reviewed-auth-challenge-digest 5b747488c9ce1037751d48004f6b30db5719b88477e4695fedf67f7e3a1abe19 --approved-at 1900000200 --out /tmp/nsealr-t01-current-integration/nsealr-nip46-integrated-s5ia6kk2/auth-challenge-approval.json
+
+
+> @nsealr/bridge-workspace@0.1.0 nsealr /home/tux/nsealr/.restart-tools/goal/t01-current-integration
+> pnpm --filter @nsealr/cli nsealr nip46 create-session-checkpoint --review /tmp/nsealr-t01-current-integration/nsealr-nip46-integrated-s5ia6kk2/connect-review.json --approval /tmp/nsealr-t01-current-integration/nsealr-nip46-integrated-s5ia6kk2/connect-approval.json --name nostrconnect-approved-kind-1-checkpoint --client-pubkey bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb --relays wss://relay1.example.com/,wss://relay2.example.com/path --policy-file /home/tux/nsealr/.restart-tools/goal/t01-current-integration/protocols/contracts/v1/vectors/nip46-policy-files/sign-event-kind-1-approved.json --expires-at 1900003601 --out /tmp/nsealr-t01-current-integration/nsealr-nip46-integrated-s5ia6kk2/connect-session-checkpoint.json
+
+
+> @nsealr/cli@0.1.0 nsealr /home/tux/nsealr/.restart-tools/goal/t01-current-integration/apps/bridge/cli
+> node --disable-warning=DEP0205 --import tsx src/index.ts nip46 create-session-checkpoint --review /tmp/nsealr-t01-current-integration/nsealr-nip46-integrated-s5ia6kk2/connect-review.json --approval /tmp/nsealr-t01-current-integration/nsealr-nip46-integrated-s5ia6kk2/connect-approval.json --name nostrconnect-approved-kind-1-checkpoint --client-pubkey bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb --relays wss://relay1.example.com/,wss://relay2.example.com/path --policy-file /home/tux/nsealr/.restart-tools/goal/t01-current-integration/protocols/contracts/v1/vectors/nip46-policy-files/sign-event-kind-1-approved.json --expires-at 1900003601 --out /tmp/nsealr-t01-current-integration/nsealr-nip46-integrated-s5ia6kk2/connect-session-checkpoint.json
+
+
+> @nsealr/bridge-workspace@0.1.0 nsealr /home/tux/nsealr/.restart-tools/goal/t01-current-integration
+> pnpm --filter @nsealr/cli nsealr nip46 gate-session-request --session /tmp/nsealr-t01-current-integration/nsealr-nip46-integrated-s5ia6kk2/connect-session-checkpoint.json --event /tmp/nsealr-t01-current-integration/nsealr-nip46-integrated-s5ia6kk2/session-gate-event.json --message /tmp/nsealr-t01-current-integration/nsealr-nip46-integrated-s5ia6kk2/session-gate-message.json --evaluated-at 1900000100 --out /tmp/nsealr-t01-current-integration/nsealr-nip46-integrated-s5ia6kk2/session-gate.json
+
+
+> @nsealr/cli@0.1.0 nsealr /home/tux/nsealr/.restart-tools/goal/t01-current-integration/apps/bridge/cli
+> node --disable-warning=DEP0205 --import tsx src/index.ts nip46 gate-session-request --session /tmp/nsealr-t01-current-integration/nsealr-nip46-integrated-s5ia6kk2/connect-session-checkpoint.json --event /tmp/nsealr-t01-current-integration/nsealr-nip46-integrated-s5ia6kk2/session-gate-event.json --message /tmp/nsealr-t01-current-integration/nsealr-nip46-integrated-s5ia6kk2/session-gate-message.json --evaluated-at 1900000100 --out /tmp/nsealr-t01-current-integration/nsealr-nip46-integrated-s5ia6kk2/session-gate.json
+
+
+> @nsealr/bridge-workspace@0.1.0 nsealr /home/tux/nsealr/.restart-tools/goal/t01-current-integration
+> pnpm --filter @nsealr/cli nsealr nip46 parse-connection-uri --uri-file /tmp/nsealr-t01-current-integration/nsealr-nip46-integrated-s5ia6kk2/bunker-remote-signer-token.txt --out /tmp/nsealr-t01-current-integration/nsealr-nip46-integrated-s5ia6kk2/bunker-remote-signer-token.json
+
+
+> @nsealr/cli@0.1.0 nsealr /home/tux/nsealr/.restart-tools/goal/t01-current-integration/apps/bridge/cli
+> node --disable-warning=DEP0205 --import tsx src/index.ts nip46 parse-connection-uri --uri-file /tmp/nsealr-t01-current-integration/nsealr-nip46-integrated-s5ia6kk2/bunker-remote-signer-token.txt --out /tmp/nsealr-t01-current-integration/nsealr-nip46-integrated-s5ia6kk2/bunker-remote-signer-token.json
+
+
+> @nsealr/bridge-workspace@0.1.0 nsealr /home/tux/nsealr/.restart-tools/goal/t01-current-integration
+> pnpm --filter @nsealr/cli nsealr nip46 parse-connection-uri --uri-file /tmp/nsealr-t01-current-integration/nsealr-nip46-integrated-s5ia6kk2/nostrconnect-client-token.txt --out /tmp/nsealr-t01-current-integration/nsealr-nip46-integrated-s5ia6kk2/nostrconnect-client-token.json
+
+
+> @nsealr/cli@0.1.0 nsealr /home/tux/nsealr/.restart-tools/goal/t01-current-integration/apps/bridge/cli
+> node --disable-warning=DEP0205 --import tsx src/index.ts nip46 parse-connection-uri --uri-file /tmp/nsealr-t01-current-integration/nsealr-nip46-integrated-s5ia6kk2/nostrconnect-client-token.txt --out /tmp/nsealr-t01-current-integration/nsealr-nip46-integrated-s5ia6kk2/nostrconnect-client-token.json
+
+
+> @nsealr/bridge-workspace@0.1.0 nsealr /home/tux/nsealr/.restart-tools/goal/t01-current-integration
+> pnpm --filter @nsealr/cli nsealr nip46 verify-connection-token-response --uri-file /tmp/nsealr-t01-current-integration/nsealr-nip46-integrated-s5ia6kk2/connection-token-response-uri.txt --step /tmp/nsealr-t01-current-integration/nsealr-nip46-integrated-s5ia6kk2/connection-token-response-step.json --out /tmp/nsealr-t01-current-integration/nsealr-nip46-integrated-s5ia6kk2/connection-token-response.json
+
+
+> @nsealr/cli@0.1.0 nsealr /home/tux/nsealr/.restart-tools/goal/t01-current-integration/apps/bridge/cli
+> node --disable-warning=DEP0205 --import tsx src/index.ts nip46 verify-connection-token-response --uri-file /tmp/nsealr-t01-current-integration/nsealr-nip46-integrated-s5ia6kk2/connection-token-response-uri.txt --step /tmp/nsealr-t01-current-integration/nsealr-nip46-integrated-s5ia6kk2/connection-token-response-step.json --out /tmp/nsealr-t01-current-integration/nsealr-nip46-integrated-s5ia6kk2/connection-token-response.json
+
+NIP-46 v1 auth-negative executed: relay-step-response-auth-url-with-credentials
+NIP-46 v1 auth-negative executed: relay-step-response-auth-url-with-fragment
+NIP-46 v1 auth-negative executed: relay-step-response-auth-url-wrong-scheme
+nSealr integrated companion NIP-46 decision, connect-review, connect-approval, auth-challenge review, auth-challenge rejection, session checkpoint, session gate, connection URI, and connection token response CLI verification passed
+[6/17 original 6] integration_companion_serial_frame_cli
+
+> @nsealr/bridge-workspace@0.1.0 build /home/tux/nsealr/.restart-tools/goal/t01-current-integration
+> node tools/bridge/build_packages.mjs
+
+SDK root/browser/Node runtime and owned declarations bundled
+nSealr package build artifacts generated
+
+> @nsealr/bridge-workspace@0.1.0 nsealr /home/tux/nsealr/.restart-tools/goal/t01-current-integration
+> pnpm --filter @nsealr/cli nsealr request get-signing-status --request-id req-lab-retired --out /tmp/nsealr-t01-current-integration/nsealr-serial-frame-r531cimn/discovery-request.json
+
+
+> @nsealr/cli@0.1.0 nsealr /home/tux/nsealr/.restart-tools/goal/t01-current-integration/apps/bridge/cli
+> node --disable-warning=DEP0205 --import tsx src/index.ts request get-signing-status --request-id req-lab-retired --out /tmp/nsealr-t01-current-integration/nsealr-serial-frame-r531cimn/discovery-request.json
+
+/home/tux/nsealr/.restart-tools/goal/t01-current-integration/apps/bridge/cli:
+ ERR_PNPM_RECURSIVE_RUN_FIRST_FAIL  @nsealr/cli@0.1.0 nsealr: `node --disable-warning=DEP0205 --import tsx src/index.ts request get-signing-status --request-id req-lab-retired --out /tmp/nsealr-t01-current-integration/nsealr-serial-frame-r531cimn/discovery-request.json`
+Exit status 1
+ ELIFECYCLE  Command failed with exit code 1.
+nSealr integrated companion serial-frame CLI verification passed
+[7/17 original 7] integration_companion_service_context
+
+> @nsealr/bridge-workspace@0.1.0 build /home/tux/nsealr/.restart-tools/goal/t01-current-integration
+> node tools/bridge/build_packages.mjs
+
+SDK root/browser/Node runtime and owned declarations bundled
+nSealr package build artifacts generated
+
+> @nsealr/bridge-workspace@0.1.0 nsealr /home/tux/nsealr/.restart-tools/goal/t01-current-integration
+> pnpm --filter @nsealr/cli nsealr local review-storage --grant-store /tmp/nsealr-t01-current-integration/nsealr-service-context-prltslh7/local-grants.json --out /tmp/nsealr-t01-current-integration/nsealr-service-context-prltslh7/storage-review.json
+
+
+> @nsealr/cli@0.1.0 nsealr /home/tux/nsealr/.restart-tools/goal/t01-current-integration/apps/bridge/cli
+> node --disable-warning=DEP0205 --import tsx src/index.ts local review-storage --grant-store /tmp/nsealr-t01-current-integration/nsealr-service-context-prltslh7/local-grants.json --out /tmp/nsealr-t01-current-integration/nsealr-service-context-prltslh7/storage-review.json
+
+
+> @nsealr/bridge-workspace@0.1.0 nsealr /home/tux/nsealr/.restart-tools/goal/t01-current-integration
+> pnpm --filter @nsealr/cli nsealr local approve-storage --review /tmp/nsealr-t01-current-integration/nsealr-service-context-prltslh7/storage-review.json --reviewed-storage-digest c5e33c421e844f9c41c1bc078625a910ccea7e4200256d42b28fd943dc54b592 --approved-at 1900000001 --out /tmp/nsealr-t01-current-integration/nsealr-service-context-prltslh7/storage-approval.json
+
+
+> @nsealr/cli@0.1.0 nsealr /home/tux/nsealr/.restart-tools/goal/t01-current-integration/apps/bridge/cli
+> node --disable-warning=DEP0205 --import tsx src/index.ts local approve-storage --review /tmp/nsealr-t01-current-integration/nsealr-service-context-prltslh7/storage-review.json --reviewed-storage-digest c5e33c421e844f9c41c1bc078625a910ccea7e4200256d42b28fd943dc54b592 --approved-at 1900000001 --out /tmp/nsealr-t01-current-integration/nsealr-service-context-prltslh7/storage-approval.json
+
+
+> @nsealr/bridge-workspace@0.1.0 nsealr /home/tux/nsealr/.restart-tools/goal/t01-current-integration
+> pnpm --filter @nsealr/cli nsealr local review-storage --account-store /tmp/nsealr-t01-current-integration/nsealr-service-context-prltslh7/accounts.json --route-driver-store /tmp/nsealr-t01-current-integration/nsealr-service-context-prltslh7/oversized-ignored-lines-drivers.json --out /tmp/nsealr-t01-current-integration/nsealr-service-context-prltslh7/route-driver-storage-review.json
+
+
+> @nsealr/cli@0.1.0 nsealr /home/tux/nsealr/.restart-tools/goal/t01-current-integration/apps/bridge/cli
+> node --disable-warning=DEP0205 --import tsx src/index.ts local review-storage --account-store /tmp/nsealr-t01-current-integration/nsealr-service-context-prltslh7/accounts.json --route-driver-store /tmp/nsealr-t01-current-integration/nsealr-service-context-prltslh7/oversized-ignored-lines-drivers.json --out /tmp/nsealr-t01-current-integration/nsealr-service-context-prltslh7/route-driver-storage-review.json
+
+
+> @nsealr/bridge-workspace@0.1.0 nsealr /home/tux/nsealr/.restart-tools/goal/t01-current-integration
+> pnpm --filter @nsealr/cli nsealr local approve-storage --review /tmp/nsealr-t01-current-integration/nsealr-service-context-prltslh7/route-driver-storage-review.json --reviewed-storage-digest d6f31cf493f73ad70ac751396366cb61a142b4da3399d8b0e70927641b783530 --approved-at 1900000001 --out /tmp/nsealr-t01-current-integration/nsealr-service-context-prltslh7/route-driver-storage-approval.json
+
+
+> @nsealr/cli@0.1.0 nsealr /home/tux/nsealr/.restart-tools/goal/t01-current-integration/apps/bridge/cli
+> node --disable-warning=DEP0205 --import tsx src/index.ts local approve-storage --review /tmp/nsealr-t01-current-integration/nsealr-service-context-prltslh7/route-driver-storage-review.json --reviewed-storage-digest d6f31cf493f73ad70ac751396366cb61a142b4da3399d8b0e70927641b783530 --approved-at 1900000001 --out /tmp/nsealr-t01-current-integration/nsealr-service-context-prltslh7/route-driver-storage-approval.json
+
+
+> @nsealr/bridge-workspace@0.1.0 nsealr /home/tux/nsealr/.restart-tools/goal/t01-current-integration
+> pnpm --filter @nsealr/cli nsealr local review-storage --account-store /tmp/nsealr-t01-current-integration/nsealr-service-context-prltslh7/accounts.json --route-driver-store /tmp/nsealr-t01-current-integration/nsealr-service-context-prltslh7/oversized-timeout-drivers.json --out /tmp/nsealr-t01-current-integration/nsealr-service-context-prltslh7/route-driver-storage-review.json
+
+
+> @nsealr/cli@0.1.0 nsealr /home/tux/nsealr/.restart-tools/goal/t01-current-integration/apps/bridge/cli
+> node --disable-warning=DEP0205 --import tsx src/index.ts local review-storage --account-store /tmp/nsealr-t01-current-integration/nsealr-service-context-prltslh7/accounts.json --route-driver-store /tmp/nsealr-t01-current-integration/nsealr-service-context-prltslh7/oversized-timeout-drivers.json --out /tmp/nsealr-t01-current-integration/nsealr-service-context-prltslh7/route-driver-storage-review.json
+
+
+> @nsealr/bridge-workspace@0.1.0 nsealr /home/tux/nsealr/.restart-tools/goal/t01-current-integration
+> pnpm --filter @nsealr/cli nsealr local approve-storage --review /tmp/nsealr-t01-current-integration/nsealr-service-context-prltslh7/route-driver-storage-review.json --reviewed-storage-digest 5cc2cf5c83ce23f3885b03be11baf678960386e4869d815c33d0740afd3d3bb5 --approved-at 1900000002 --out /tmp/nsealr-t01-current-integration/nsealr-service-context-prltslh7/route-driver-storage-approval.json
+
+
+> @nsealr/cli@0.1.0 nsealr /home/tux/nsealr/.restart-tools/goal/t01-current-integration/apps/bridge/cli
+> node --disable-warning=DEP0205 --import tsx src/index.ts local approve-storage --review /tmp/nsealr-t01-current-integration/nsealr-service-context-prltslh7/route-driver-storage-review.json --reviewed-storage-digest 5cc2cf5c83ce23f3885b03be11baf678960386e4869d815c33d0740afd3d3bb5 --approved-at 1900000002 --out /tmp/nsealr-t01-current-integration/nsealr-service-context-prltslh7/route-driver-storage-approval.json
+
+nSealr companion service context storage-approval integration passed
+[8/17 original 8] integration_companion_route_identity
+
+> @nsealr/bridge-workspace@0.1.0 build /home/tux/nsealr/.restart-tools/goal/t01-current-integration
+> node tools/bridge/build_packages.mjs
+
+SDK root/browser/Node runtime and owned declarations bundled
+nSealr package build artifacts generated
+nSealr companion selected-route response identity integration passed
+nSealr integrated companion route identity smoke test passed
+[9/17 original 9] integration_companion_sdk_browser
+
+> @nsealr/bridge-workspace@0.1.0 build /home/tux/nsealr/.restart-tools/goal/t01-current-integration
+> node tools/bridge/build_packages.mjs
+
+SDK root/browser/Node runtime and owned declarations bundled
+nSealr package build artifacts generated
+
+> @nsealr/bridge-workspace@0.1.0 browser-runtime-imports:check /home/tux/nsealr/.restart-tools/goal/t01-current-integration
+> node tools/bridge/check_browser_runtime_imports.mjs
+
+companion browser runtime import hygiene passed (66 source files)
+nSealr browser-safe SDK facade integration passed
+
+> @nsealr/bridge-workspace@0.1.0 pack-smoke /home/tux/nsealr/.restart-tools/goal/t01-current-integration
+> node tools/bridge/pack_smoke.mjs
+
+📦  @nsealr/sdk@0.1.0
+Tarball Contents
+dist/browser.d.ts
+dist/browser.js
+dist/index.d.ts
+dist/index.js
+dist/internal/browser-provider/index.d.ts
+dist/internal/browser-provider/provider.d.ts
+dist/internal/client/browser.d.ts
+dist/internal/client/client-identity.d.ts
+dist/internal/client/grant-store.d.ts
+dist/internal/client/index.d.ts
+dist/internal/client/local-service-client.d.ts
+dist/internal/client/native-host-manifest.d.ts
+dist/internal/client/native-messaging.d.ts
+dist/internal/client/pairing-review.d.ts
+dist/internal/client/service.d.ts
+dist/internal/client/storage-review.d.ts
+dist/internal/core/index.d.ts
+dist/internal/core/nip44.d.ts
+dist/internal/core/nostr.d.ts
+dist/internal/framing/index.d.ts
+dist/internal/framing/serial.d.ts
+dist/internal/nip46/index.d.ts
+dist/internal/nip46/nip46.d.ts
+dist/internal/nip46/relay-pool-adapter.d.ts
+dist/internal/nip46/relay-transport.d.ts
+dist/internal/nip46/session-manager.d.ts
+dist/internal/nip46/session-protocol.d.ts
+dist/internal/nip46/session-store.d.ts
+dist/internal/policy/index.d.ts
+dist/internal/policy/policy.d.ts
+dist/internal/protocol/capabilities.d.ts
+dist/internal/protocol/encoding.d.ts
+dist/internal/protocol/index.d.ts
+dist/internal/protocol/limits.d.ts
+dist/internal/protocol/protocol.d.ts
+dist/internal/qr/index.d.ts
+dist/internal/qr/qr.d.ts
+dist/internal/review/index.d.ts
+dist/internal/review/review.d.ts
+dist/node.d.ts
+dist/node.js
+LICENSE
+package.json
+README.md
+Tarball Details
+/tmp/nsealr-t01-current-integration/nsealr-sdk-pack-u37w2J/nsealr-sdk-0.1.0.tgz
+
+added 14 packages in 305ms
+isolated packed root/browser/Node behavior and hidden-import negatives passed
+packed browser bundle executes without Node module globals; real browser qualification remains separate
+single packed SDK runtime/browser/type acceptance passed
+nSealr integrated browser-safe SDK facade and isolated packed SDK verification passed
+[10/17 original 10] integration_browser_extension_package_plan
+
+> @nsealr/bridge-workspace@0.1.0 build /home/tux/nsealr/.restart-tools/goal/t01-current-integration
+> node tools/bridge/build_packages.mjs
+
+SDK root/browser/Node runtime and owned declarations bundled
+nSealr package build artifacts generated
+nSealr integrated browser-extension package-plan CLI verification passed
+[11/17 original 11] integration_browser_extension_package_build
+
+> @nsealr/bridge-workspace@0.1.0 build /home/tux/nsealr/.restart-tools/goal/t01-current-integration
+> node tools/bridge/build_packages.mjs
+
+SDK root/browser/Node runtime and owned declarations bundled
+nSealr package build artifacts generated
+nSealr integrated browser-extension package-build verification passed
+[12/17 original 12] integration_browser_extension_origin_permission_cli
+
+> @nsealr/bridge-workspace@0.1.0 build /home/tux/nsealr/.restart-tools/goal/t01-current-integration
+> node tools/bridge/build_packages.mjs
+
+SDK root/browser/Node runtime and owned declarations bundled
+nSealr package build artifacts generated
+nSealr integrated browser-extension origin-permission CLI verification passed
+[13/17 original 13] integration_browser_extension_origin_review_control
+
+> @nsealr/bridge-workspace@0.1.0 build /home/tux/nsealr/.restart-tools/goal/t01-current-integration
+> node tools/bridge/build_packages.mjs
+
+SDK root/browser/Node runtime and owned declarations bundled
+nSealr package build artifacts generated
+nSealr integrated browser-extension origin-review control verification passed
+[14/17 original 14] integration_browser_extension_origin_approval_control
+
+> @nsealr/bridge-workspace@0.1.0 build /home/tux/nsealr/.restart-tools/goal/t01-current-integration
+> node tools/bridge/build_packages.mjs
+
+SDK root/browser/Node runtime and owned declarations bundled
+nSealr package build artifacts generated
+nSealr integrated browser-extension origin-approval control verification passed
+[15/17 original 15] integration_browser_native_messaging_manifest
+
+> @nsealr/bridge-workspace@0.1.0 build /home/tux/nsealr/.restart-tools/goal/t01-current-integration
+> node tools/bridge/build_packages.mjs
+
+SDK root/browser/Node runtime and owned declarations bundled
+nSealr package build artifacts generated
+nSealr integrated browser native-messaging manifest verification passed
+[16/17 original 17] integration_raspberry_hardware_probe
+make[1]: Entering directory '/home/tux/nsealr/.restart-tools/goal/t01-current-integration/apps/pi'
+python3 -m venv .venv
+.venv/bin/python -m pip install --disable-pip-version-check -r requirements.txt
+Looking in links: /home/tux/nsealr/.restart-tools/goal/r00/tools/baseline/.work/final/.tools/wheels
+Requirement already satisfied: mnemonic==0.21 in ./.venv/lib/python3.12/site-packages (from -r requirements.txt (line 1)) (0.21)
+Requirement already satisfied: secp256k1==0.14.0 in ./.venv/lib/python3.12/site-packages (from -r requirements.txt (line 2)) (0.14.0)
+Requirement already satisfied: cffi>=1.3.0 in ./.venv/lib/python3.12/site-packages (from secp256k1==0.14.0->-r requirements.txt (line 2)) (2.1.1)
+Requirement already satisfied: pycparser in ./.venv/lib/python3.12/site-packages (from cffi>=1.3.0->secp256k1==0.14.0->-r requirements.txt (line 2)) (3.11)
+PIP_IN_TREE_BUILD="$( .venv/bin/python -m pip install --use-feature=in-tree-build --help >/dev/null 2>&1 && printf '%s' '--use-feature=in-tree-build' || true )"; \
+.venv/bin/python -m pip install --disable-pip-version-check $PIP_IN_TREE_BUILD .
+Looking in links: /home/tux/nsealr/.restart-tools/goal/r00/tools/baseline/.work/final/.tools/wheels
+Processing /home/tux/nsealr/.restart-tools/goal/t01-current-integration/apps/pi
+  Installing build dependencies: started
+  Installing build dependencies: finished with status 'done'
+  Getting requirements to build wheel: started
+  Getting requirements to build wheel: finished with status 'done'
+  Preparing metadata (pyproject.toml): started
+  Preparing metadata (pyproject.toml): finished with status 'done'
+Requirement already satisfied: mnemonic==0.21 in ./.venv/lib/python3.12/site-packages (from nsealr-vault==0.1.0) (0.21)
+Requirement already satisfied: secp256k1==0.14.0 in ./.venv/lib/python3.12/site-packages (from nsealr-vault==0.1.0) (0.14.0)
+Requirement already satisfied: cffi>=1.3.0 in ./.venv/lib/python3.12/site-packages (from secp256k1==0.14.0->nsealr-vault==0.1.0) (2.1.1)
+Requirement already satisfied: pycparser in ./.venv/lib/python3.12/site-packages (from cffi>=1.3.0->secp256k1==0.14.0->nsealr-vault==0.1.0) (3.11)
+Building wheels for collected packages: nsealr-vault
+  Building wheel for nsealr-vault (pyproject.toml): started
+  Building wheel for nsealr-vault (pyproject.toml): finished with status 'done'
+  Created wheel for nsealr-vault: filename=nsealr_vault-0.1.0-py3-none-any.whl size=44550 sha256=cef5e9c360ff56856cec481bb1bdae96d47d8624af2c3f870d73981ff8833d00
+  Stored in directory: /tmp/nsealr-t01-current-integration/pip-ephem-wheel-cache-5wwq7h5x/wheels/8b/ae/4a/aa42da6aee09a449694ba3181bc62685abecfc8ec09338bc97
+Successfully built nsealr-vault
+Installing collected packages: nsealr-vault
+  Attempting uninstall: nsealr-vault
+    Found existing installation: nsealr-vault 0.1.0
+    Uninstalling nsealr-vault-0.1.0:
+      Successfully uninstalled nsealr-vault-0.1.0
+Successfully installed nsealr-vault-0.1.0
+make[1]: Leaving directory '/home/tux/nsealr/.restart-tools/goal/t01-current-integration/apps/pi'
+nSealr integrated Raspberry hardware-probe smoke passed
+[17/17 original 19] integration_vault_companion
+
+> @nsealr/bridge-workspace@0.1.0 build /home/tux/nsealr/.restart-tools/goal/t01-current-integration
+> node tools/bridge/build_packages.mjs
+
+SDK root/browser/Node runtime and owned declarations bundled
+nSealr package build artifacts generated
+make[1]: Entering directory '/home/tux/nsealr/.restart-tools/goal/t01-current-integration/apps/pi'
+python3 -m venv .venv
+.venv/bin/python -m pip install --disable-pip-version-check -r requirements.txt
+Looking in links: /home/tux/nsealr/.restart-tools/goal/r00/tools/baseline/.work/final/.tools/wheels
+Requirement already satisfied: mnemonic==0.21 in ./.venv/lib/python3.12/site-packages (from -r requirements.txt (line 1)) (0.21)
+Requirement already satisfied: secp256k1==0.14.0 in ./.venv/lib/python3.12/site-packages (from -r requirements.txt (line 2)) (0.14.0)
+Requirement already satisfied: cffi>=1.3.0 in ./.venv/lib/python3.12/site-packages (from secp256k1==0.14.0->-r requirements.txt (line 2)) (2.1.1)
+Requirement already satisfied: pycparser in ./.venv/lib/python3.12/site-packages (from cffi>=1.3.0->secp256k1==0.14.0->-r requirements.txt (line 2)) (3.11)
+PIP_IN_TREE_BUILD="$( .venv/bin/python -m pip install --use-feature=in-tree-build --help >/dev/null 2>&1 && printf '%s' '--use-feature=in-tree-build' || true )"; \
+.venv/bin/python -m pip install --disable-pip-version-check $PIP_IN_TREE_BUILD .
+Looking in links: /home/tux/nsealr/.restart-tools/goal/r00/tools/baseline/.work/final/.tools/wheels
+Processing /home/tux/nsealr/.restart-tools/goal/t01-current-integration/apps/pi
+  Installing build dependencies: started
+  Installing build dependencies: finished with status 'done'
+  Getting requirements to build wheel: started
+  Getting requirements to build wheel: finished with status 'done'
+  Preparing metadata (pyproject.toml): started
+  Preparing metadata (pyproject.toml): finished with status 'done'
+Requirement already satisfied: mnemonic==0.21 in ./.venv/lib/python3.12/site-packages (from nsealr-vault==0.1.0) (0.21)
+Requirement already satisfied: secp256k1==0.14.0 in ./.venv/lib/python3.12/site-packages (from nsealr-vault==0.1.0) (0.14.0)
+Requirement already satisfied: cffi>=1.3.0 in ./.venv/lib/python3.12/site-packages (from secp256k1==0.14.0->nsealr-vault==0.1.0) (2.1.1)
+Requirement already satisfied: pycparser in ./.venv/lib/python3.12/site-packages (from cffi>=1.3.0->secp256k1==0.14.0->nsealr-vault==0.1.0) (3.11)
+Building wheels for collected packages: nsealr-vault
+  Building wheel for nsealr-vault (pyproject.toml): started
+  Building wheel for nsealr-vault (pyproject.toml): finished with status 'done'
+  Created wheel for nsealr-vault: filename=nsealr_vault-0.1.0-py3-none-any.whl size=44550 sha256=fb5c6a2dbe8b2f13fa6e8a10d196dc5e94eaef6fd81a94c6a87b0a5a58834553
+  Stored in directory: /tmp/nsealr-t01-current-integration/pip-ephem-wheel-cache-y88f_6xj/wheels/8b/ae/4a/aa42da6aee09a449694ba3181bc62685abecfc8ec09338bc97
+Successfully built nsealr-vault
+Installing collected packages: nsealr-vault
+  Attempting uninstall: nsealr-vault
+    Found existing installation: nsealr-vault 0.1.0
+    Uninstalling nsealr-vault-0.1.0:
+      Successfully uninstalled nsealr-vault-0.1.0
+Successfully installed nsealr-vault-0.1.0
+make[1]: Leaving directory '/home/tux/nsealr/.restart-tools/goal/t01-current-integration/apps/pi'
+
+> @nsealr/bridge-workspace@0.1.0 nsealr /home/tux/nsealr/.restart-tools/goal/t01-current-integration
+> pnpm --filter @nsealr/cli nsealr request sign-event --event-template /tmp/nsealr-t01-current-integration/nsealr-integrated-rs0alts7/template.json --out /tmp/nsealr-t01-current-integration/nsealr-integrated-rs0alts7/request.qr --output-format qr
+
+
+> @nsealr/cli@0.1.0 nsealr /home/tux/nsealr/.restart-tools/goal/t01-current-integration/apps/bridge/cli
+> node --disable-warning=DEP0205 --import tsx src/index.ts request sign-event --event-template /tmp/nsealr-t01-current-integration/nsealr-integrated-rs0alts7/template.json --out /tmp/nsealr-t01-current-integration/nsealr-integrated-rs0alts7/request.qr --output-format qr
+
+
+> @nsealr/bridge-workspace@0.1.0 nsealr /home/tux/nsealr/.restart-tools/goal/t01-current-integration
+> pnpm --filter @nsealr/cli nsealr review-request --request /tmp/nsealr-t01-current-integration/nsealr-integrated-rs0alts7/request.qr --request-format qr --author-pubkey 17162c921dc4d2518f9a101db33695df1afb56ab82f5ff3e5da6eec3ca5cd917 --out /tmp/nsealr-t01-current-integration/nsealr-integrated-rs0alts7/companion-review.json
+
+
+> @nsealr/cli@0.1.0 nsealr /home/tux/nsealr/.restart-tools/goal/t01-current-integration/apps/bridge/cli
+> node --disable-warning=DEP0205 --import tsx src/index.ts review-request --request /tmp/nsealr-t01-current-integration/nsealr-integrated-rs0alts7/request.qr --request-format qr --author-pubkey 17162c921dc4d2518f9a101db33695df1afb56ab82f5ff3e5da6eec3ca5cd917 --out /tmp/nsealr-t01-current-integration/nsealr-integrated-rs0alts7/companion-review.json
+
+
+> @nsealr/bridge-workspace@0.1.0 nsealr /home/tux/nsealr/.restart-tools/goal/t01-current-integration
+> pnpm --filter @nsealr/cli nsealr review-request --request /tmp/nsealr-t01-current-integration/nsealr-integrated-rs0alts7/request.qr --request-format qr --screen-review --author-pubkey 17162c921dc4d2518f9a101db33695df1afb56ab82f5ff3e5da6eec3ca5cd917 --out /tmp/nsealr-t01-current-integration/nsealr-integrated-rs0alts7/companion-screen-review.json
+
+
+> @nsealr/cli@0.1.0 nsealr /home/tux/nsealr/.restart-tools/goal/t01-current-integration/apps/bridge/cli
+> node --disable-warning=DEP0205 --import tsx src/index.ts review-request --request /tmp/nsealr-t01-current-integration/nsealr-integrated-rs0alts7/request.qr --request-format qr --screen-review --author-pubkey 17162c921dc4d2518f9a101db33695df1afb56ab82f5ff3e5da6eec3ca5cd917 --out /tmp/nsealr-t01-current-integration/nsealr-integrated-rs0alts7/companion-screen-review.json
+
+
+> @nsealr/bridge-workspace@0.1.0 nsealr /home/tux/nsealr/.restart-tools/goal/t01-current-integration
+> pnpm --filter @nsealr/cli nsealr review-request --request /tmp/nsealr-t01-current-integration/nsealr-integrated-rs0alts7/request.qr --request-format qr --detail-pages --author-pubkey 17162c921dc4d2518f9a101db33695df1afb56ab82f5ff3e5da6eec3ca5cd917 --max-title-chars 18 --max-body-lines 5 --max-line-chars 26 --max-compact-body-lines 9 --max-compact-line-chars 48 --out /tmp/nsealr-t01-current-integration/nsealr-integrated-rs0alts7/companion-detail-pages.json
+
+
+> @nsealr/cli@0.1.0 nsealr /home/tux/nsealr/.restart-tools/goal/t01-current-integration/apps/bridge/cli
+> node --disable-warning=DEP0205 --import tsx src/index.ts review-request --request /tmp/nsealr-t01-current-integration/nsealr-integrated-rs0alts7/request.qr --request-format qr --detail-pages --author-pubkey 17162c921dc4d2518f9a101db33695df1afb56ab82f5ff3e5da6eec3ca5cd917 --max-title-chars 18 --max-body-lines 5 --max-line-chars 26 --max-compact-body-lines 9 --max-compact-line-chars 48 --out /tmp/nsealr-t01-current-integration/nsealr-integrated-rs0alts7/companion-detail-pages.json
+
+
+> @nsealr/bridge-workspace@0.1.0 nsealr /home/tux/nsealr/.restart-tools/goal/t01-current-integration
+> pnpm --filter @nsealr/cli nsealr verify-response --request /tmp/nsealr-t01-current-integration/nsealr-integrated-rs0alts7/request.qr --request-format qr --response /tmp/nsealr-t01-current-integration/nsealr-integrated-rs0alts7/response.qr --response-format qr
+
+
+> @nsealr/cli@0.1.0 nsealr /home/tux/nsealr/.restart-tools/goal/t01-current-integration/apps/bridge/cli
+> node --disable-warning=DEP0205 --import tsx src/index.ts verify-response --request /tmp/nsealr-t01-current-integration/nsealr-integrated-rs0alts7/request.qr --request-format qr --response /tmp/nsealr-t01-current-integration/nsealr-integrated-rs0alts7/response.qr --response-format qr
+
+response verified
+
+> @nsealr/bridge-workspace@0.1.0 nsealr /home/tux/nsealr/.restart-tools/goal/t01-current-integration
+> pnpm --filter @nsealr/cli nsealr verify-response --request /tmp/nsealr-t01-current-integration/nsealr-integrated-rs0alts7/request.qr --request-format qr --response /tmp/nsealr-t01-current-integration/nsealr-integrated-rs0alts7/detail-flow-response.qr --response-format qr
+
+
+> @nsealr/cli@0.1.0 nsealr /home/tux/nsealr/.restart-tools/goal/t01-current-integration/apps/bridge/cli
+> node --disable-warning=DEP0205 --import tsx src/index.ts verify-response --request /tmp/nsealr-t01-current-integration/nsealr-integrated-rs0alts7/request.qr --request-format qr --response /tmp/nsealr-t01-current-integration/nsealr-integrated-rs0alts7/detail-flow-response.qr --response-format qr
+
+response verified
+
+> @nsealr/bridge-workspace@0.1.0 nsealr /home/tux/nsealr/.restart-tools/goal/t01-current-integration
+> pnpm --filter @nsealr/cli nsealr verify-response --request /tmp/nsealr-t01-current-integration/nsealr-integrated-rs0alts7/request.qr --request-format qr --response /tmp/nsealr-t01-current-integration/nsealr-integrated-rs0alts7/detail-flow-response.qra --response-format qr-animated
+
+
+> @nsealr/cli@0.1.0 nsealr /home/tux/nsealr/.restart-tools/goal/t01-current-integration/apps/bridge/cli
+> node --disable-warning=DEP0205 --import tsx src/index.ts verify-response --request /tmp/nsealr-t01-current-integration/nsealr-integrated-rs0alts7/request.qr --request-format qr --response /tmp/nsealr-t01-current-integration/nsealr-integrated-rs0alts7/detail-flow-response.qra --response-format qr-animated
+
+response verified
+
+> @nsealr/bridge-workspace@0.1.0 nsealr /home/tux/nsealr/.restart-tools/goal/t01-current-integration
+> pnpm --filter @nsealr/cli nsealr verify-response --request /tmp/nsealr-t01-current-integration/nsealr-integrated-rs0alts7/request.qr --request-format qr --response /tmp/nsealr-t01-current-integration/nsealr-integrated-rs0alts7/seedqr-flow-response.qr --response-format qr
+
+
+> @nsealr/cli@0.1.0 nsealr /home/tux/nsealr/.restart-tools/goal/t01-current-integration/apps/bridge/cli
+> node --disable-warning=DEP0205 --import tsx src/index.ts verify-response --request /tmp/nsealr-t01-current-integration/nsealr-integrated-rs0alts7/request.qr --request-format qr --response /tmp/nsealr-t01-current-integration/nsealr-integrated-rs0alts7/seedqr-flow-response.qr --response-format qr
+
+response verified
+
+> @nsealr/bridge-workspace@0.1.0 nsealr /home/tux/nsealr/.restart-tools/goal/t01-current-integration
+> pnpm --filter @nsealr/cli nsealr verify-response --request /tmp/nsealr-t01-current-integration/nsealr-integrated-rs0alts7/request.qr --request-format qr --response /tmp/nsealr-t01-current-integration/nsealr-integrated-rs0alts7/nsec-flow-response.qr --response-format qr
+
+
+> @nsealr/cli@0.1.0 nsealr /home/tux/nsealr/.restart-tools/goal/t01-current-integration/apps/bridge/cli
+> node --disable-warning=DEP0205 --import tsx src/index.ts verify-response --request /tmp/nsealr-t01-current-integration/nsealr-integrated-rs0alts7/request.qr --request-format qr --response /tmp/nsealr-t01-current-integration/nsealr-integrated-rs0alts7/nsec-flow-response.qr --response-format qr
+
+response verified
+nSealr integrated Raspberry QR flow/companion smoke test passed
+All 17 retained product integration steps passed. External hardware and optional physical resources are separate.

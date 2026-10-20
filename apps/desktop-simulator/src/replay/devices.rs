@@ -7,8 +7,12 @@ use nsealr_core::protocol::{development_device_protocol_context, handle_serial_f
 use serde_json::Value;
 
 pub(super) fn replay(value: &Value) -> ReplayResult {
-    let request = value.get("request").ok_or("device vector requires request")?;
-    let expected = value.get("response").ok_or("device vector requires response")?;
+    let request = value
+        .get("request")
+        .ok_or("device vector requires request")?;
+    let expected = value
+        .get("response")
+        .ok_or("device vector requires response")?;
     let frame = super::encode_serial_request_frame(&compact_bytes(request))?;
     let response = handle_serial_frame(&frame, &development_device_protocol_context())
         .map_err(|error| format!("handle_serial_frame: {error}"))?;

@@ -1,0 +1,30 @@
+{
+  "checks": [
+    {
+      "argv": [
+        "git",
+        "diff",
+        "--cached",
+        "--check"
+      ],
+      "exit": 2,
+      "stdout": "docs/restart/implementation/reviews/T01-service-component/corrections/affected-controls.stdout.log:9: new blank line at EOF.\n",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "git",
+        "diff",
+        "--cached",
+        "--check",
+        "--",
+        ".",
+        ":(exclude)**/*.log"
+      ],
+      "exit": 0,
+      "stdout": "",
+      "stderr": ""
+    }
+  ],
+  "role": "Exact raw build/Vitest stdout can retain final blanks. Non-log review proof passes; preserve raw bytes rather than normalize observations. No product change or acceptance waiver."
+}
