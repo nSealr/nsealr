@@ -1,0 +1,79 @@
+EEFFFF
+======================================================================
+ERROR: test_nonstring_method_rejects_without_raising_or_entering_crypto (test_vault_core.Wire2ReferenceTests.test_nonstring_method_rejects_without_raising_or_entering_crypto) (method='[]')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/tux/nsealr/.restart-tools/goal/t01-pi-consumer/apps/pi/tests/test_vault_core.py", line 459, in test_nonstring_method_rejects_without_raising_or_entering_crypto
+    response = sign_request(request, KEY["secret_key"], approved=True)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/tux/nsealr/.restart-tools/goal/t01-pi-consumer/apps/pi/app/nsealr_vault/signer.py", line 129, in sign_request
+    validation_error = validate_signing_request(request)
+                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/tux/nsealr/.restart-tools/goal/t01-pi-consumer/apps/pi/app/nsealr_vault/signer.py", line 78, in validate_signing_request
+    if method not in {"get_capabilities", "get_public_key", "sign_event"}:
+       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+TypeError: unhashable type: 'list'
+
+======================================================================
+ERROR: test_nonstring_method_rejects_without_raising_or_entering_crypto (test_vault_core.Wire2ReferenceTests.test_nonstring_method_rejects_without_raising_or_entering_crypto) (method='{}')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/tux/nsealr/.restart-tools/goal/t01-pi-consumer/apps/pi/tests/test_vault_core.py", line 459, in test_nonstring_method_rejects_without_raising_or_entering_crypto
+    response = sign_request(request, KEY["secret_key"], approved=True)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/tux/nsealr/.restart-tools/goal/t01-pi-consumer/apps/pi/app/nsealr_vault/signer.py", line 129, in sign_request
+    validation_error = validate_signing_request(request)
+                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/tux/nsealr/.restart-tools/goal/t01-pi-consumer/apps/pi/app/nsealr_vault/signer.py", line 78, in validate_signing_request
+    if method not in {"get_capabilities", "get_public_key", "sign_event"}:
+       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+TypeError: unhashable type: 'dict'
+
+======================================================================
+FAIL: test_nonstring_method_rejects_without_raising_or_entering_crypto (test_vault_core.Wire2ReferenceTests.test_nonstring_method_rejects_without_raising_or_entering_crypto) (method='None')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/tux/nsealr/.restart-tools/goal/t01-pi-consumer/apps/pi/tests/test_vault_core.py", line 461, in test_nonstring_method_rejects_without_raising_or_entering_crypto
+    self.assertEqual(response["error"]["code"], "invalid_request")
+AssertionError: 'unsupported_method' != 'invalid_request'
+- unsupported_method
++ invalid_request
+
+
+======================================================================
+FAIL: test_nonstring_method_rejects_without_raising_or_entering_crypto (test_vault_core.Wire2ReferenceTests.test_nonstring_method_rejects_without_raising_or_entering_crypto) (method='True')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/tux/nsealr/.restart-tools/goal/t01-pi-consumer/apps/pi/tests/test_vault_core.py", line 461, in test_nonstring_method_rejects_without_raising_or_entering_crypto
+    self.assertEqual(response["error"]["code"], "invalid_request")
+AssertionError: 'unsupported_method' != 'invalid_request'
+- unsupported_method
++ invalid_request
+
+
+======================================================================
+FAIL: test_nonstring_method_rejects_without_raising_or_entering_crypto (test_vault_core.Wire2ReferenceTests.test_nonstring_method_rejects_without_raising_or_entering_crypto) (method='0')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/tux/nsealr/.restart-tools/goal/t01-pi-consumer/apps/pi/tests/test_vault_core.py", line 461, in test_nonstring_method_rejects_without_raising_or_entering_crypto
+    self.assertEqual(response["error"]["code"], "invalid_request")
+AssertionError: 'unsupported_method' != 'invalid_request'
+- unsupported_method
++ invalid_request
+
+
+======================================================================
+FAIL: test_nonstring_method_rejects_without_raising_or_entering_crypto (test_vault_core.Wire2ReferenceTests.test_nonstring_method_rejects_without_raising_or_entering_crypto) (method='2.0')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/tux/nsealr/.restart-tools/goal/t01-pi-consumer/apps/pi/tests/test_vault_core.py", line 461, in test_nonstring_method_rejects_without_raising_or_entering_crypto
+    self.assertEqual(response["error"]["code"], "invalid_request")
+AssertionError: 'unsupported_method' != 'invalid_request'
+- unsupported_method
++ invalid_request
+
+
+----------------------------------------------------------------------
+Ran 1 test in 0.002s
+
+FAILED (failures=4, errors=2)
