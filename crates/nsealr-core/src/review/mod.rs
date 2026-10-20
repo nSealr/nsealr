@@ -23,6 +23,7 @@
 pub mod buttons;
 pub mod controls;
 pub mod display;
+pub mod event;
 pub mod qr;
 pub mod qr_flow;
 pub mod serial;

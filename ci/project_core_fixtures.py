@@ -51,5 +51,10 @@ def project(output):
         fields+=[key+':'+str(proposal[key]).lower() for key in ['device_review_required','physical_approval_required','companion_authoritative','contains_secret_material']]
         policies.append('fn '+name+'() -> PolicyChangeFixture { let mut proposed_grant_ids=PolicyChangeGrantIds::new(); '+''.join('proposed_grant_ids.try_push('+quote(grant)+').unwrap();' for grant in proposal['proposed_grant_ids'])+' PolicyChangeFixture { proposal:PolicyChangeProposal {'+','.join(fields)+'},proposal_id:'+quote(review['proposal_id'])+',approval_digest:'+quote(review['approval_digest'])+',pages:'+pages(review['pages'])+'} }')
     (output/'policy-fixtures.rs').write_text('\n'.join(policies))
+    # Independent S03 expected answers are immutable reviewed data, separate
+    # from the legacy v1 transport artifact. Copy bytes only; never derive them
+    # from the parser, canonical writer or fixture signer under test.
+    (output/'s03-vectors.json').write_bytes(
+        (ROOT/'docs/restart/implementation/S03/vectors.json').read_bytes())
 
 if __name__=='__main__':project(Path(sys.argv[1]))

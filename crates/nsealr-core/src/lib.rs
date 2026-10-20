@@ -47,8 +47,10 @@ extern crate std;
 #[cfg(test)]
 mod board_profile_tests;
 
+pub mod authorization;
 pub mod base64url;
 pub mod bip39;
+pub mod event;
 pub mod hash;
 pub mod nip19;
 pub mod policy;
