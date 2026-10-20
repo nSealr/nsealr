@@ -12,7 +12,7 @@ The objective is a useful Nostr signer ecosystem with accessible connected hardw
 4. [Measured source baseline](baseline.md)
 5. [Machine-readable implementation graph](../../plan/work-items.json)
 6. [Decision validation and feasibility limits](validation.md)
-7. [Client and optical qualification](../product/client-qualification.md)
+7. [Client and optical qualification plan](../product/compatibility-plan.md)
 8. [Specification-first development and initial work packages](development.md)
 9. [Product contract, feature matrix and user journeys](../product/contract.md)
 10. [PCB pipeline, tool capabilities and reference designs](pcb-development.md)
@@ -23,7 +23,9 @@ The graph records **47 implementation tasks**, their dependencies, scope, accept
 
 Verify the actual checkout and run `python3 scripts/validate_restart_plan.py`. Follow [the execution handoff](implementation/handoff.md), reconcile actual branches/PRs with the graph, and select eligible work without duplicating an active author. Preserve the existing reviewed evidence; do not rerun completed tasks merely because a new session starts. Source changes, failures or unresolved concerns determine which checks must run again.
 
-A02 source consolidation and its bounded anchor repair are integrated as actual main `b1c90139`, with full corrected-main CI39412818666 passed. Distinct review `d280bfdc` accepts all five unchanged criteria against the original migration inputs. The [closure result and handoff](implementation/A02/closure/handoff.md) bind that exact product, complete review/CI evidence and the preserved failed `d931277` main run. Closure metadata follows its separate exact review, protected PR checks and resulting-main CI; [the sole task graph](../../plan/work-items.json) records adopted state. The historical `f2ef70f` evidence index stays at 1,508 files, while new A02 results use graph-bound artifacts. Dependent work still needs its own source/specification admission and actual validation. Source-notice publication, archival, registry release and physical qualification remain separate gates.
+A02 consolidation, its bounded provenance-anchor repair and closure passed normal protected integration and actual resulting-main CI. The [A02 handoff](implementation/A02/closure/handoff.md) preserves original source roles, complete evidence and the failed earlier main run. P02 supplies the [current compatibility plan](../product/compatibility-plan.md) and [opt-in procedures](../product/research-protocols.md); these are planning, not observed interoperability or participant results.
+
+The portable core includes S03's strict event parser, canonicalization, complete inspection and consuming one-use authorization. Its [delivery evidence](implementation/S03/delivery/README.md) separates independently tested source from integration status and physical guarantees. Production signing remains disabled until K01 and the applicable device work. The next shared dependency is T01's explicit capability/routing cutover, then K01; actual release state always comes from [the sole task graph](../../plan/work-items.json) and required GitHub checks. The historical f2 evidence index remains at1,508 files; new results use scoped graph-bound proof. Source notices, archival, registry publication and physical qualification remain separate work.
 
 ## Delivery order
 

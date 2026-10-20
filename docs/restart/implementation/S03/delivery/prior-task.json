@@ -1,0 +1,93 @@
+{
+  "id": "S03",
+  "title": "Make authorization bind exactly one canonical operation",
+  "stage": "R2",
+  "status": "running",
+  "owner_role": "device_security",
+  "depends_on": [
+    "P01",
+    "S02"
+  ],
+  "scope": [
+    "device request parser",
+    "NIP-01 canonicalization",
+    "trusted review state"
+  ],
+  "acceptance": [
+    "Derive identity and canonical event bytes inside the trusted device boundary.",
+    "Bind preview, selected identity, full operation and one-use approval; reject mutation, replay, cancellation races and unreviewed metadata.",
+    "Bound resource use and handle long/hostile Unicode content without misleading truncation.",
+    "An independently computed event ID and signature verifier agree for positive and adversarial vectors.",
+    "This task establishes portable authorization/parser semantics with host-executable negative tests. Physical UI/input and peripheral isolation remain each profile's actual-device acceptance; do not wait for all boards to implement the state machine."
+  ],
+  "required_evidence": [
+    "state-transition design",
+    "independent vectors",
+    "negative test logs"
+  ],
+  "required_resources": [],
+  "assignee": "/root/s03_author",
+  "candidate_commits": {
+    "nSealr/nsealr": "03216fba02d229bcdb5c81d0573bbe26c6f35abc"
+  },
+  "reviewer": null,
+  "review_verdict": null,
+  "result_artifacts": [],
+  "requires_physical_evidence": false,
+  "input_commits": {
+    "nSealr/nsealr": "3cbd818a0bcd4016eb8983dad7605cb57280d913"
+  },
+  "assignment_record": "https://github.com/nSealr/nsealr/issues/17",
+  "github_issue": "https://github.com/nSealr/nsealr/issues/17",
+  "current_checkpoint": {
+    "artifacts": [
+      {
+        "blob": "8132b91ae9f8ac09543479b695ba563aa1524f26",
+        "commit": "03216fba02d229bcdb5c81d0573bbe26c6f35abc",
+        "mode": "100644",
+        "path": "docs/restart/implementation/S03/integration-comment-correction.json",
+        "repository": "nSealr/nsealr",
+        "sha256": "08a5c2425ccfde3bec14ba76db2d6322cb7943092dde721d5b728e9f87874cfb",
+        "url": "https://github.com/nSealr/nsealr/blob/03216fba02d229bcdb5c81d0573bbe26c6f35abc/docs/restart/implementation/S03/integration-comment-correction.json"
+      },
+      {
+        "blob": "6057edef53f3603372a032e4930f768f8d362914",
+        "commit": "8df9f5bb3231eac4d33cc9837851ad3ab9bad537",
+        "mode": "100644",
+        "path": "docs/restart/implementation/reviews/S03-comments/review.json",
+        "repository": "nSealr/nsealr",
+        "sha256": "a181a7db4b2b10041d793194bb7e019fb17cb3e60b2c47ac956be3e388ba0b46",
+        "url": "https://github.com/nSealr/nsealr/blob/8df9f5bb3231eac4d33cc9837851ad3ab9bad537/docs/restart/implementation/reviews/S03-comments/review.json"
+      },
+      {
+        "blob": "5bca8b0af84384ebc253f1c8d12ce7f362377b4b",
+        "commit": "b03475ccf4a057c7771065126002f2e4e056d28d",
+        "mode": "100644",
+        "path": "docs/restart/implementation/reviews/S03-security/report.json",
+        "repository": "nSealr/nsealr",
+        "sha256": "5dc0ecc5e1ad92f3274c6e2bbefdd7ccad4e3262d28bc751f2ddf7399d52b683",
+        "url": "https://github.com/nSealr/nsealr/blob/b03475ccf4a057c7771065126002f2e4e056d28d/docs/restart/implementation/reviews/S03-security/report.json"
+      }
+    ],
+    "branch": "restart/s03-authorization",
+    "comment_review": {
+      "candidate": "95cd3fc79d885c58bdabe71498d2509b6ff4370e",
+      "commit": "8df9f5bb3231eac4d33cc9837851ad3ab9bad537",
+      "verdict": "PASS_comments_only"
+    },
+    "delivery_commit": "03216fba02d229bcdb5c81d0573bbe26c6f35abc",
+    "execution": "Assigned incomplete work; this status does not claim an active process or accepted integration.",
+    "observed_utc": "2026-10-20T10:09:37.336221+00:00",
+    "original_implementation_review": {
+      "candidate": "2d7d465a291c4d4a1324d90595fc45a2fdbefca5",
+      "commit": "b03475ccf4a057c7771065126002f2e4e056d28d",
+      "no_rebinding_to_later_source": true,
+      "verdict": "PASS_bounded_S03_security_candidate"
+    },
+    "pr": 23,
+    "product_source_imported": false,
+    "repository": "nSealr/nsealr",
+    "source_candidate": "95cd3fc79d885c58bdabe71498d2509b6ff4370e",
+    "stage": "Reviewed portable authorization source and separately reviewed three-comment correction delivered; actual A02 layout integration and affected integration review/CI remain pending."
+  }
+}

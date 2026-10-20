@@ -1,0 +1,19 @@
+{
+  "scope": "Reviewer-only input-format mistakes; no product or author proof changed",
+  "attempts": [
+    {
+      "number": 1,
+      "exit_code": 1,
+      "log": "inventory-attempt-01.log",
+      "cause": "Historical source manifest uses artifacts, historical reviewer manifest uses files; reviewer initially assumed one format.",
+      "correction": "Inspect both actual schemas and use explicit per-manifest member key."
+    },
+    {
+      "number": 2,
+      "exit_code": 1,
+      "log": "inventory-attempt-02.log",
+      "cause": "Early pre-commit author command receipts omit source_commit; reviewer initially indexed that later optional field.",
+      "correction": "Preserve absent early checkpoint field as null with its original preparation role; exact full-CI record still strictly requires cleandda66 and exit0."
+    }
+  ]
+}
