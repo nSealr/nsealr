@@ -1,0 +1,199 @@
+{
+  "candidate": "b45812362e2f8340572aaaffd0384a9662fc6fb2",
+  "tree": "bfa3923cbbd79037fd9b2a1ef8105b7935468c10",
+  "base": "5d047b5d3150d58a1a45caf00c8946b7f18364bb",
+  "new_scoped_paths": 44,
+  "existing_paths_or_modes_changed": 0,
+  "manifest_members_verified": 43,
+  "source_bindings_verified": 43,
+  "original_command_log_pairs_verified": 13,
+  "commands": [
+    {
+      "receipt": "checks/package-01/commands.json",
+      "label": "affected-docs",
+      "argv": [
+        "make",
+        "docs"
+      ],
+      "exit": 0
+    },
+    {
+      "receipt": "checks/package-01/commands.json",
+      "label": "existing-native-reference-ABI",
+      "argv": [
+        "python3",
+        "-c",
+        "import sys,json,hashlib,pathlib,ctypes,_ctypes,secp256k1; modules={name:module.__file__ for name,module in sys.modules.items() if name.startswith(\"secp256k1\") and str(getattr(module,\"__file__\",\"\")).endswith(\".so\")}; assert len(modules)==1,modules; print(json.dumps({\"secp256k1_native\":[{\"module\":name,\"path\":path,\"sha256\":hashlib.sha256(pathlib.Path(path).read_bytes()).hexdigest()} for name,path in modules.items()],\"ctypes_native\":{\"path\":_ctypes.__file__,\"sha256\":hashlib.sha256(pathlib.Path(_ctypes.__file__).read_bytes()).hexdigest()}},indent=2))"
+      ],
+      "exit": 1
+    },
+    {
+      "receipt": "checks/native-metadata-correction/commands.json",
+      "label": "actual-native-reference-ABI",
+      "argv": [
+        "python3",
+        "-c",
+        "import sys,json,hashlib,pathlib,ctypes,_ctypes,secp256k1; modules={name:module.__file__ for name,module in sys.modules.items() if name.startswith(\"secp256k1\") and str(getattr(module,\"__file__\",\"\")).endswith(\".so\")}; assert len(modules)==1,modules; print(json.dumps({\"secp256k1_native\":[{\"module\":name,\"path\":path,\"sha256\":hashlib.sha256(pathlib.Path(path).read_bytes()).hexdigest()} for name,path in modules.items()],\"ctypes_native\":{\"origin\":_ctypes.__spec__.origin,\"standalone_module_file\":getattr(_ctypes,\"__file__\",None),\"interpreter\":sys.executable,\"interpreter_sha256\":hashlib.sha256(pathlib.Path(sys.executable).read_bytes()).hexdigest()}},indent=2))"
+      ],
+      "exit": 0
+    },
+    {
+      "receipt": "checks/native-metadata-correction/commands.json",
+      "label": "outside-scope-unchanged",
+      "argv": [
+        "git",
+        "diff",
+        "--exit-code",
+        "5d047b5d3150d58a1a45caf00c8946b7f18364bb",
+        "--",
+        ".",
+        ":(exclude)docs/restart/implementation/QP01/engine-boundary"
+      ],
+      "exit": 0
+    },
+    {
+      "receipt": "checks/setup-01/commands.json",
+      "label": "rustc-identity",
+      "argv": [
+        "rustc",
+        "-Vv"
+      ],
+      "exit": 0
+    },
+    {
+      "receipt": "checks/setup-01/commands.json",
+      "label": "python-identity",
+      "argv": [
+        "python3",
+        "--version"
+      ],
+      "exit": 0
+    },
+    {
+      "receipt": "checks/setup-01/commands.json",
+      "label": "format-probe",
+      "argv": [
+        "rustfmt",
+        "--edition",
+        "2021",
+        "/home/tux/nsealr/.restart-tools/goal/qp01-engine-boundary/docs/restart/implementation/QP01/engine-boundary/probe/src/lib.rs"
+      ],
+      "exit": 0
+    },
+    {
+      "receipt": "checks/setup-01/commands.json",
+      "label": "isolated-lock",
+      "argv": [
+        "cargo",
+        "generate-lockfile",
+        "--offline",
+        "--manifest-path",
+        "/home/tux/nsealr/.restart-tools/goal/qp01-engine-boundary/docs/restart/implementation/QP01/engine-boundary/probe/Cargo.toml"
+      ],
+      "exit": 0
+    },
+    {
+      "receipt": "checks/host-01/commands.json",
+      "label": "host-cdylib",
+      "argv": [
+        "cargo",
+        "build",
+        "--locked",
+        "--offline",
+        "--release",
+        "--manifest-path",
+        "/home/tux/nsealr/.restart-tools/goal/qp01-engine-boundary/docs/restart/implementation/QP01/engine-boundary/probe/Cargo.toml"
+      ],
+      "exit": 0
+    },
+    {
+      "receipt": "checks/host-01/commands.json",
+      "label": "python-rust-canary",
+      "argv": [
+        "python3",
+        "/home/tux/nsealr/.restart-tools/goal/qp01-engine-boundary/docs/restart/implementation/QP01/engine-boundary/canary.py",
+        "/home/tux/nsealr/.restart-tools/goal/qp01-engine-boundary/target/qp01-engine-boundary/release/libqp01_public_boundary_canary.so",
+        "/home/tux/nsealr/.restart-tools/goal/qp01-engine-boundary/docs/restart/implementation/QP01/engine-boundary/checks/host-01/result.json"
+      ],
+      "exit": 0
+    },
+    {
+      "receipt": "checks/host-01/commands.json",
+      "label": "probe-features",
+      "argv": [
+        "cargo",
+        "tree",
+        "--locked",
+        "--offline",
+        "--manifest-path",
+        "/home/tux/nsealr/.restart-tools/goal/qp01-engine-boundary/docs/restart/implementation/QP01/engine-boundary/probe/Cargo.toml",
+        "-e",
+        "features"
+      ],
+      "exit": 0
+    },
+    {
+      "receipt": "checks/host-01/commands.json",
+      "label": "host-elf-abi",
+      "argv": [
+        "readelf",
+        "-W",
+        "-h",
+        "-d",
+        "--version-info",
+        "/home/tux/nsealr/.restart-tools/goal/qp01-engine-boundary/target/qp01-engine-boundary/release/libqp01_public_boundary_canary.so"
+      ],
+      "exit": 0
+    },
+    {
+      "receipt": "checks/host-01/commands.json",
+      "label": "host-exports",
+      "argv": [
+        "nm",
+        "-D",
+        "--defined-only",
+        "/home/tux/nsealr/.restart-tools/goal/qp01-engine-boundary/target/qp01-engine-boundary/release/libqp01_public_boundary_canary.so"
+      ],
+      "exit": 0
+    }
+  ],
+  "source_context": "7c755299e27a8affb5defa42fe318dfab4e2ff1c",
+  "source_clean_before_host_commands": true,
+  "all_existing_graph_resources_releases_criteria_deps_byte_exact": true,
+  "all3QP01_and6Q02_criteria_incomplete": true,
+  "isolated_registry_identities_exact_root": 31,
+  "new_registry_or_Python_dependencies": 0,
+  "durable_library": {
+    "path": "artifacts/public-fixture-x86_64-only.so",
+    "bytes": 493312,
+    "sha256": "3291c34290ce2a96eb692ee191e976ebf6451221a4a6192e00f7dc09438d7a4c"
+  },
+  "positive_observed_frames": 33,
+  "positive_observed_output_bytes": 344,
+  "prototype_execution_repeated": false,
+  "scope": "Root verifies decision/provenance/global source/copy/limits and distinct immutable code-review receipt. B01 owns boundary code and one actual focused rerun. Preparation only, not target/product/physical/criterion acceptance.",
+  "independent_input_before_probe_exact": true,
+  "component_receipt": {
+    "commit": "cabe9f785957e44d124fc1250505fe0842955312",
+    "review_json_sha256": "1658ab870011edf1cea9ae3769f822f26d2903603ebb02f152117bd598c04dd7",
+    "verdict": "PASS_canary_component_only",
+    "review_only_paths": 8,
+    "paired_artifacts_verified": 7,
+    "code_review_repeated_by_root": false,
+    "root_canary_rerun": false,
+    "actual_distinct_trace_matches_original": true
+  },
+  "root_review_packaging_check": {
+    "initial_command": [
+      "git",
+      "diff",
+      "--check",
+      "--no-index",
+      "/dev/null",
+      "docs/restart/implementation/reviews/QP01-engine-boundary-source/report.md"
+    ],
+    "exit": 1,
+    "meaning": "--no-index implies diff exit status; newly added file is different from /dev/null. This was an unsuitable success assertion, not a reported whitespace or product failure.",
+    "correction": "Stage review-only paths and use git diff --cached --check; no source, test, expected output or threshold change."
+  }
+}
