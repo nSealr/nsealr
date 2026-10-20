@@ -33,6 +33,7 @@ def write_route_identity_script(path: Path) -> None:
     path.write_text(textwrap.dedent("""\
         import assert from "node:assert/strict";
         import { readFileSync } from "node:fs";
+        import { createHash } from "node:crypto";
         import { join } from "node:path";
         import { clientIdForIdentity, handleLocalServiceRequest } from "@nsealr/client";
 
@@ -58,10 +59,21 @@ def write_route_identity_script(path: Path) -> None:
           approved_at: 1900000000,
           expires_at: 2000000000
         };
+        // Synthetic recording adapter inputs; no physical/provider qualification.
+        const compatibility = (route, exactRequest) => {
+          const common = readJson("vectors/profile-capabilities/cases-v1.json");
+          const implementation = readJson(common.implementation_examples[route.profile]);
+          const adapter = structuredClone(implementation);
+          const { conformance_only: _, ...body } = structuredClone(implementation);
+          const reported = { ...body, format: "nsealr.capabilities.v1", form: "full" };
+          for (const source of [adapter, reported]) for (const method of source.methods) Object.assign(method, { configuration: "configured", availability: "available", reason: null });
+          return { implementation, adapter, reported, limits: structuredClone(common.limits_manifest), adapter_limits: structuredClone(common.limits_manifest), connection_id: "conformance.integration.usb", generation: 1,
+            review_plan: { request_sha256: createHash("sha256").update(JSON.stringify(exactRequest)).digest("hex"), implementation_id: implementation.implementation_id, connection_id: "conformance.integration.usb", generation: 1, context_id: "conformance.no-authority", geometry_id: "conformance.recording.synthetic", pages: 7 } };
+        };
         const context = (account, signerResponse) => ({
           accounts: [account],
           grants: [grant],
-          now: 1900000001,
+          now: 1900000001, monotonicNow: () => 0, signerCompatibility: compatibility,
           signerDispatcher: () => signerResponse
         });
         const dispatch = (requestId, routeRequest, signerRequest, account, signerResponse) => handleLocalServiceRequest({
@@ -100,13 +112,13 @@ def write_route_identity_script(path: Path) -> None:
         );
 
         const publicKeyRequest = {
-          version: 1,
+          version: 2,
           request_id: "lab-route-identity-get-public-key",
           method: "get_public_key"
         };
         const publicKeyRoute = { ...esp32Route, method: "get_public_key" };
         const publicKeyResponse = {
-          version: 1,
+          version: 2,
           request_id: publicKeyRequest.request_id,
           ok: true,
           result: { public_key: response.result.event.pubkey }

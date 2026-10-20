@@ -103,3 +103,11 @@ geometry ID. Missing/stale/changed observations reject before writing, including
 after opening a port. Four logical preview sections cannot stand in for this
 count. The host does not duplicate the renderer, infer consent or qualify display
 fit; the device/S03 owner retains complete inspection and its own bounds.
+
+A timeout/cancel revokes writes immediately. If the adapter promise has not
+settled, its existing pending reservation remains occupied until settlement,
+including a promise incorrectly returned to the synchronous API; retries cannot
+accumulate orphans. Synchronous results/throws release normally. A local
+minimum-complete-exchange calculation covers encoded request and positive
+response work for all three methods before I/O. Noise remains subject to the
+actual cumulative transport ledger; no frame/work capacity is enlarged.

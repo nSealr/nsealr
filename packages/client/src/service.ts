@@ -169,6 +169,7 @@ export function assessSignerCompatibility(route: RouteSelection, request: unknow
   const frameBytes = route.transport === "usb" ? "nsealr1f:request::0000000000000000\n".length + encodedBytes(bytes) : "nsealr1:".length + encodedBytes(bytes);
   if (frameBytes > boundTransport.frame_bytes) compatibilityError("limit_exceeded", "complete encoded request exceeds frame capacity");
   if (route.transport === "qr" && bytes > boundTransport.static_decoded_json_bytes!) compatibilityError("limit_exceeded", "static QR request exceeds actual decoded capacity");
+  let responseShape: unknown;
   if (method.scope === "sign_event") {
     const event = (request.params as {event_template: {created_at: number; kind: number; content: string; tags: string[][]}}).event_template;
     if ([4, 13, 14, 1059, 10050, 22242].includes(event.kind)) compatibilityError("workflow_not_admitted", "user-message/setup/AUTH events require their separately admitted context/workflow; generic signing is not a blind-sign route");
@@ -181,10 +182,7 @@ export function assessSignerCompatibility(route: RouteSelection, request: unknow
     if (tags > method.aggregate_tag_utf8_bytes!) compatibilityError("limit_exceeded", "tags exceed aggregate capacity");
     // Output sizes use the fixed wire shape and fixed-width public fields;
     // this is capacity planning, never a computed crypto expected answer.
-    const response = { version: 2, request_id: request.request_id, ok: true, result: { event: { id: "0".repeat(64), pubkey: route.public_key, ...event, sig: "0".repeat(128) } } };
-    const output = compactJsonUtf8ByteLength(response);
-    const encodedOutput = route.transport === "usb" ? "nsealr1f:response::0000000000000000\n".length + encodedBytes(output) : "nsealr1:".length + encodedBytes(output);
-    if (output > method.response_json_bytes || output > boundTransport.reassembly_bytes || encodedOutput > boundTransport.frame_bytes) compatibilityError("limit_exceeded", "complete response cannot fit effective capacity");
+    responseShape = { version: 2, request_id: request.request_id, ok: true, result: { event: { id: "0".repeat(64), pubkey: route.public_key, ...event, sig: "0".repeat(128) } } };
     const canonicalBytes = compactJsonUtf8ByteLength([0, route.public_key, event.created_at, event.kind, event.tags, event.content]);
     const plan = snapshot.review_plan;
     if (!plan || !Number.isSafeInteger(plan.pages) || plan.pages < 1 ||
@@ -193,7 +191,14 @@ export function assessSignerCompatibility(route: RouteSelection, request: unknow
       typeof plan.context_id !== "string" || !/^[A-Za-z0-9._:-]{1,128}$/u.test(plan.context_id) ||
       typeof plan.geometry_id !== "string" || !/^[A-Za-z0-9._:-]{1,128}$/u.test(plan.geometry_id)) compatibilityError("runtime_unavailable", "current complete local review plan is missing or stale");
     if (canonicalBytes > method.canonical_bytes! || plan.pages > method.review_pages!) compatibilityError("limit_exceeded", "canonical/complete-review capacity is insufficient");
+  } else {
+    responseShape = { version: 2, request_id: request.request_id, ok: true, result: request.method === "get_capabilities" ? { capabilities: snapshot.reported } : { public_key: route.public_key } };
   }
+  const output = compactJsonUtf8ByteLength(responseShape);
+  const encodedOutput = route.transport === "usb" ? "nsealr1f:response::0000000000000000\n".length + encodedBytes(output) : "nsealr1:".length + encodedBytes(output);
+  if (output > method.response_json_bytes || output > boundTransport.reassembly_bytes || encodedOutput > boundTransport.frame_bytes) compatibilityError("limit_exceeded", "complete response cannot fit effective capacity");
+  const exchangeWork = frameBytes + encodedOutput;
+  if (!Number.isSafeInteger(exchangeWork) || exchangeWork > method.parse_work || exchangeWork > boundTransport.parse_work) compatibilityError("limit_exceeded", "complete exchange exceeds effective byte/work capacity");
   return { method, transport: boundTransport };
 }
 
@@ -375,6 +380,7 @@ type PreparedSignerDispatch =
       dispatcher: SignerRequestDispatcher;
       dispatchRequest: SignerDispatchRequest;
       release: () => void;
+      trackPending: (operation: unknown) => Promise<unknown>;
       checkCurrent: () => void;
       timeout_ms?: number;
     }
@@ -1064,6 +1070,13 @@ function prepareSignerDispatch(
     request: structuredClone(request.params.request)
   };
   let active = true;
+  let unsettled = false;
+  let reservationReleased = false;
+  const releaseReservation = () => {
+    if (reservationReleased) return;
+    reservationReleased = true;
+    if (dispatchRequest.effective_limits) pendingDispatches.set(context, Math.max(0, (pendingDispatches.get(context) ?? 1) - 1));
+  };
   const cancellation = new AbortController();
   let timeoutMs: number | undefined;
   let current = (): void => { if (!active) compatibilityError("runtime_unavailable", "operation is no longer active"); };
@@ -1110,11 +1123,21 @@ function prepareSignerDispatch(
     dispatchRequest,
     checkCurrent: current,
     timeout_ms: timeoutMs,
+    trackPending: (operation) => {
+      // An uncooperative adapter cannot be forcibly settled by a timeout. Keep
+      // its existing finite reservation; abort/revocation still happen now.
+      unsettled = true;
+      const settled = () => { unsettled = false; if (!active) releaseReservation(); };
+      return Promise.resolve(operation).then(
+        (value) => { settled(); return value; },
+        (error: unknown) => { settled(); throw error; }
+      );
+    },
     release: () => {
       if (!active) return;
       active = false;
       cancellation.abort();
-      if (dispatchRequest.effective_limits) pendingDispatches.set(context, Math.max(0, (pendingDispatches.get(context) ?? 1) - 1));
+      if (!unsettled) releaseReservation();
     }
   };
 }
@@ -1174,6 +1197,7 @@ function dispatchSignerRequest(
   try {
     prepared.checkCurrent();
     signerResponse = prepared.dispatcher(prepared.dispatchRequest);
+    if (isPromiseLike(signerResponse)) signerResponse = prepared.trackPending(signerResponse);
     prepared.checkCurrent();
     if (!isPromiseLike(signerResponse)) checkDispatchResponseCapacity(prepared.dispatchRequest, signerResponse);
   } catch (error) {
@@ -1204,7 +1228,7 @@ async function dispatchSignerRequestAsync(
   let timer: ReturnType<typeof setTimeout> | undefined;
   try {
     prepared.checkCurrent();
-    const operation = prepared.dispatcher(prepared.dispatchRequest);
+    const operation = prepared.trackPending(prepared.dispatcher(prepared.dispatchRequest));
     signerResponse = prepared.timeout_ms === undefined ? await operation : await Promise.race([
       operation,
       new Promise<never>((_resolve, reject) => {
