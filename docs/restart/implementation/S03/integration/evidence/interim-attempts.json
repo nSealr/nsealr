@@ -1,0 +1,41 @@
+{
+  "schema_version": 1,
+  "task": "S03",
+  "scope": "Actual integration orchestration/proof probes; no product failure is hidden. Historical80 source/review files retain their original failures unchanged.",
+  "attempts": [
+    {
+      "name": "initial three-way wrapper",
+      "outcome": "exit1 AssertionError b'' when git merge-file reported more than2 conflict regions",
+      "partial_state": "Four declared nonconflicting files had been written before the wrapper stopped.",
+      "resolution": "Reran all20 merges from immutable b1/base/delivery inputs, accepting documented conflict counts; resolved4 files while retaining OUT_DIR data.",
+      "durable_record": "initial-port.json",
+      "standalone_raw_log": "One-off terminal diagnostic; no standalone log was created."
+    },
+    {
+      "name": "initial vendor directory equality",
+      "outcome": "exit1 AssertionError on45 rewritten checksum files and28 omitted packaging metadata paths",
+      "resolution": "Classified actual supported cargo vendor output; no admitted vendor bytes replaced. Complete differences and per-file hashes retained.",
+      "durable_record": "vendor-union-check.json",
+      "standalone_raw_log": "One-off terminal diagnostic; no standalone log was created."
+    },
+    {
+      "name": "vendor metadata comparison refinement",
+      "outcome": "exit1 KeyError '.cargo-checksum.json'",
+      "resolution": "Validate generated input-checksum entries against exact retained input checksum bytes. All package/source/license data matches.",
+      "durable_record": "commands/vendor-check/command.json",
+      "standalone_raw_log": "One-off terminal diagnostic; no standalone log was created."
+    },
+    {
+      "name": "first bounded path checker",
+      "outcome": "exit1 because5 already admitted specification files differ from older product-only b1 input",
+      "resolution": "Explicitly freeze all5 to e95 identity and allow their already-admitted addition; read-only product inputs remain b1-bound.",
+      "durable_records": [
+        "commands/port-scope/command.json",
+        "commands/port-scope/stderr.log",
+        "commands/port-scope-02/command.json"
+      ]
+    }
+  ],
+  "actual_product_tests_failed_so_far": 0,
+  "product_contradiction_observed": false
+}
