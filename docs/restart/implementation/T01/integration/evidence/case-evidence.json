@@ -1,0 +1,745 @@
+{
+  "schema_version": 1,
+  "role": "References to actual controls, not another expected-data SSOT or self-acceptance",
+  "product_candidate": "c4a2aa8d6567369caa52d7e0680e7581c2a554c3",
+  "input_cases_fixed_before_runtime": "bb20fe12",
+  "cases": 42,
+  "case_values_unchanged": true,
+  "execution_receipts": [
+    {
+      "path": "docs/restart/implementation/T01/integration/evidence/commands/wire2-full-stable-ci-01/command.json",
+      "sha256": "2106ed814beda338607035a6a771b8145f2788c6bd184888587e5a201e7cf25a",
+      "source_commit": "ae34085dd6017eaf2539cf0b570bfb49daace824",
+      "initial_tracked_diff_sha256": "f0d4f50faa285485b3ae0580b1839d4bac712b10d4d30a55ce4aab906da37c4e",
+      "exit_code": 2
+    },
+    {
+      "path": "docs/restart/implementation/T01/integration/evidence/commands/wire2-rust-stable-ci-02/command.json",
+      "sha256": "9b70164db4c53cab002aa5dcdd46fb6cb58ee6dc11e824ca6240dc3b82e6ae18",
+      "source_commit": "d2348f39d391858a8b26a2a674e157cd908af0e2",
+      "initial_tracked_diff_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "exit_code": 0
+    },
+    {
+      "path": "docs/restart/implementation/T01/integration/evidence/commands/wire2-pending-discovery-regression-01/command.json",
+      "sha256": "3d269988a4973fffd3f67790dbb25f17149b9ed389eaac62b92720a1fcefd942",
+      "source_commit": "d2348f39d391858a8b26a2a674e157cd908af0e2",
+      "initial_tracked_diff_sha256": "e51d1e7ae71ae5aacef6814147484ab928bfb0463e55c50a198b5b827ca8b02c",
+      "exit_code": 0
+    },
+    {
+      "path": "docs/restart/implementation/T01/integration/evidence/commands/wire2-actual-rebase-cold-main-02/command.json",
+      "sha256": "1e214af7a4ef5fb011ecaf5ec587110632fc4fb87cf49315f3b462ff105f266e",
+      "source_commit": "c4a2aa8d6567369caa52d7e0680e7581c2a554c3",
+      "initial_tracked_diff_sha256": "aab08db5e60395a7138a8e705a9591aedce13c5bf5d102a3bbc73c8838b6dcd0",
+      "exit_code": 0
+    }
+  ],
+  "full_campaign_exit2_preserved": "Only fmt/clippy/hostcoverage failed; complete affected Rust gate later exits0. Other components/17steps are reused at exact unchanged input bindings.",
+  "rows": [
+    {
+      "id": "A-01",
+      "independent_semantic_input": "protocols/contracts/v1/vectors/profile-capabilities/cases-v1.json#A-01",
+      "executed_control_references": [
+        {
+          "path": "crates/nsealr-core/tests/profile_capabilities.rs",
+          "sha256": "76cc2cf4237d420968e4b4bf08118f9cc1e0c411a6dea32cef50077885bf0ce8",
+          "selector": "reported_axes_remain_distinct_and_contradictions_reject"
+        },
+        {
+          "path": "packages/protocol/src/capabilities.test.ts",
+          "sha256": "45072d6deadf14a07e5a99506928efafef86b3de87099073fdd1b4f855da8a25",
+          "selector": "A-01/A-02"
+        }
+      ],
+      "limitations": [],
+      "actual_calls_and_assertions": "parseReportedCapabilities preserves each independent support/configuration/availability tuple; contradictory states throw. Rust ReportedFeature::validate checks the same axes."
+    },
+    {
+      "id": "A-02",
+      "independent_semantic_input": "protocols/contracts/v1/vectors/profile-capabilities/cases-v1.json#A-02",
+      "executed_control_references": [
+        {
+          "path": "crates/nsealr-core/tests/profile_capabilities.rs",
+          "sha256": "76cc2cf4237d420968e4b4bf08118f9cc1e0c411a6dea32cef50077885bf0ce8",
+          "selector": "local_verification_and_availability_do_not_collapse"
+        },
+        {
+          "path": "packages/protocol/src/capabilities.test.ts",
+          "sha256": "45072d6deadf14a07e5a99506928efafef86b3de87099073fdd1b4f855da8a25",
+          "selector": "A-01/A-02"
+        }
+      ],
+      "limitations": [],
+      "actual_calls_and_assertions": "assess_profile is called for independently varied availability/verification; exact Unknown/Unavailable/Unverified blocker reasons and the available+verified positive are asserted."
+    },
+    {
+      "id": "A-03",
+      "independent_semantic_input": "protocols/contracts/v1/vectors/profile-capabilities/cases-v1.json#A-03",
+      "executed_control_references": [
+        {
+          "path": "packages/protocol/src/capabilities.test.ts",
+          "sha256": "45072d6deadf14a07e5a99506928efafef86b3de87099073fdd1b4f855da8a25",
+          "selector": "A-03"
+        },
+        {
+          "path": "protocols/contracts/v1/tests/test_profile_capabilities.py",
+          "sha256": "9c81c16db4dfd89a0dd9e31afa2d9424d3d5e9591b1316e5acf183aabdafcaa7",
+          "selector": "test_all_authority_claims_reject_at_every_named_position"
+        }
+      ],
+      "limitations": [],
+      "actual_calls_and_assertions": "Original-byte parseReportedCapabilities is called for every named authority/evidence field at root/method/transport/messages/device; each throws. Independent Python validator repeats named positions. Metadata parsing exposes no authority constructor."
+    },
+    {
+      "id": "A-04",
+      "independent_semantic_input": "protocols/contracts/v1/vectors/profile-capabilities/cases-v1.json#A-04",
+      "executed_control_references": [
+        {
+          "path": "packages/client/src/profile-dispatch.test.ts",
+          "sha256": "b241e4ccbadb6022554502a3755b72b2f321f401abb5d64503a4a01eb7d7bf99",
+          "selector": "A-04/R-06"
+        }
+      ],
+      "limitations": [],
+      "actual_calls_and_assertions": "Service verifySignerResponse refuses wrong response user/request/canonicalID/signature; separate before-write account-public-key substitution fails and records zero operation writes."
+    },
+    {
+      "id": "A-05",
+      "independent_semantic_input": "protocols/contracts/v1/vectors/profile-capabilities/cases-v1.json#A-05",
+      "executed_control_references": [
+        {
+          "path": "packages/client/src/profile-dispatch.test.ts",
+          "sha256": "b241e4ccbadb6022554502a3755b72b2f321f401abb5d64503a4a01eb7d7bf99",
+          "selector": "A-05/R-05"
+        }
+      ],
+      "limitations": [],
+      "actual_calls_and_assertions": "Actual handleLocalServiceRequestAsync recording dispatch changes provider availability between selection/write; current hook refuses, writes remain0 and the stale hook becomes inactive."
+    },
+    {
+      "id": "A-06",
+      "independent_semantic_input": "protocols/contracts/v1/vectors/profile-capabilities/cases-v1.json#A-06",
+      "executed_control_references": [
+        {
+          "path": "packages/protocol/src/capabilities.test.ts",
+          "sha256": "45072d6deadf14a07e5a99506928efafef86b3de87099073fdd1b4f855da8a25",
+          "selector": "S-01/P-01"
+        },
+        {
+          "path": "crates/nsealr-core/tests/profile_capabilities.rs",
+          "sha256": "76cc2cf4237d420968e4b4bf08118f9cc1e0c411a6dea32cef50077885bf0ce8",
+          "selector": "synthetic_evidence_cannot_qualify_production"
+        }
+      ],
+      "limitations": [
+        "Descriptor/manifest equality establishes consistency only; no device evidence loader or production qualification is inferred. Synthetic production assessments and untrusted evidence assertions reject."
+      ],
+      "actual_calls_and_assertions": "Full/reference descriptor resolution yields equal diagnostic data; no verified/signing_enabled fields are created. Production assess_profile with conformance marker explicitly adds the release blocker. No attestation procedure is executed."
+    },
+    {
+      "id": "P-01",
+      "independent_semantic_input": "protocols/contracts/v1/vectors/profile-capabilities/cases-v1.json#P-01",
+      "executed_control_references": [
+        {
+          "path": "crates/nsealr-core/tests/profile_capabilities.rs",
+          "sha256": "76cc2cf4237d420968e4b4bf08118f9cc1e0c411a6dea32cef50077885bf0ce8",
+          "selector": "exact_profiles_and_each_independent_required_group"
+        },
+        {
+          "path": "packages/protocol/src/capabilities.test.ts",
+          "sha256": "45072d6deadf14a07e5a99506928efafef86b3de87099073fdd1b4f855da8a25",
+          "selector": "S-01/P-01"
+        }
+      ],
+      "limitations": [],
+      "actual_calls_and_assertions": "assess_profile runs all four fixed profile IDs with their own custody/group observations, asserting zero conformance blockers; common manifests assert conformance_only and unidentified hardware, never production available signing."
+    },
+    {
+      "id": "P-02",
+      "independent_semantic_input": "protocols/contracts/v1/vectors/profile-capabilities/cases-v1.json#P-02",
+      "executed_control_references": [
+        {
+          "path": "crates/nsealr-core/tests/profile_capabilities.rs",
+          "sha256": "76cc2cf4237d420968e4b4bf08118f9cc1e0c411a6dea32cef50077885bf0ce8",
+          "selector": "exact_profiles_and_each_independent_required_group"
+        },
+        {
+          "path": "protocols/contracts/v1/tests/test_profile_capabilities.py",
+          "sha256": "9c81c16db4dfd89a0dd9e31afa2d9424d3d5e9591b1316e5acf183aabdafcaa7",
+          "selector": "test_each_missing_own_group_rejects_without_other_profile_requirements"
+        }
+      ],
+      "limitations": [],
+      "actual_calls_and_assertions": "For each profile and every requirement index, the local observation is removed; assess_profile yields precisely the required blocker, with R-MSG omitted for offline profiles. Python removes each required group and asserts validation errors."
+    },
+    {
+      "id": "P-03",
+      "independent_semantic_input": "protocols/contracts/v1/vectors/profile-capabilities/cases-v1.json#P-03",
+      "executed_control_references": [
+        {
+          "path": "crates/nsealr-core/tests/profile_capabilities.rs",
+          "sha256": "76cc2cf4237d420968e4b4bf08118f9cc1e0c411a6dea32cef50077885bf0ce8",
+          "selector": "pi_boot_limitation_requires_its_own_evidence"
+        }
+      ],
+      "limitations": [],
+      "actual_calls_and_assertions": "Pi unavailable boot enforcement with verified limitation observation has no conformance lifecycle blocker; Unknown/Unavailable/Unverified limitation and missing boot observation yield Lifecycle. P4 cannot borrow the Pi limitation. This does not measure secure boot."
+    },
+    {
+      "id": "P-04",
+      "independent_semantic_input": "protocols/contracts/v1/vectors/profile-capabilities/cases-v1.json#P-04",
+      "executed_control_references": [
+        {
+          "path": "crates/nsealr-core/tests/profile_capabilities.rs",
+          "sha256": "76cc2cf4237d420968e4b4bf08118f9cc1e0c411a6dea32cef50077885bf0ce8",
+          "selector": "required_component_and_custody_never_fall_back"
+        },
+        {
+          "path": "packages/client/src/profile-dispatch.test.ts",
+          "sha256": "b241e4ccbadb6022554502a3755b72b2f321f401abb5d64503a4a01eb7d7bf99",
+          "selector": "P-04/P-05/P-06/P-07"
+        }
+      ],
+      "limitations": [],
+      "actual_calls_and_assertions": "No-SE profile has absent component and matching persistent custody; injected unknown component blocks. Route account with volatile custody rejects custody_mismatch rather than silently changing profile."
+    },
+    {
+      "id": "P-05",
+      "independent_semantic_input": "protocols/contracts/v1/vectors/profile-capabilities/cases-v1.json#P-05",
+      "executed_control_references": [
+        {
+          "path": "crates/nsealr-core/tests/profile_capabilities.rs",
+          "sha256": "76cc2cf4237d420968e4b4bf08118f9cc1e0c411a6dea32cef50077885bf0ce8",
+          "selector": "required_component_and_custody_never_fall_back"
+        },
+        {
+          "path": "packages/client/src/profile-dispatch.test.ts",
+          "sha256": "b241e4ccbadb6022554502a3755b72b2f321f401abb5d64503a4a01eb7d7bf99",
+          "selector": "P-04/P-05/P-06/P-07"
+        }
+      ],
+      "limitations": [],
+      "actual_calls_and_assertions": "assess_profile is called with absent/unknown/wrong-part-or-configuration/failed required component and wrong custody; exact component/custody blockers and retained custom custody are asserted. Real route compatibility also refuses absent matching SE configuration."
+    },
+    {
+      "id": "P-06",
+      "independent_semantic_input": "protocols/contracts/v1/vectors/profile-capabilities/cases-v1.json#P-06",
+      "executed_control_references": [
+        {
+          "path": "packages/client/src/profile-dispatch.test.ts",
+          "sha256": "b241e4ccbadb6022554502a3755b72b2f321f401abb5d64503a4a01eb7d7bf99",
+          "selector": "P-06/D-05/D-06/D-07"
+        },
+        {
+          "path": "packages/client/src/profile-dispatch.test.ts",
+          "sha256": "b241e4ccbadb6022554502a3755b72b2f321f401abb5d64503a4a01eb7d7bf99",
+          "selector": "P-04/P-05/P-06/P-07"
+        }
+      ],
+      "limitations": [],
+      "actual_calls_and_assertions": "Offline QR metadata is session-only/manual; actual service refuses DM/seal/setup/AUTH kinds4/13/14/1059/10050/22242 with workflow_not_admitted and zero writes. Pi actual raw reference ingress guards these kinds independently."
+    },
+    {
+      "id": "P-07",
+      "independent_semantic_input": "protocols/contracts/v1/vectors/profile-capabilities/cases-v1.json#P-07",
+      "executed_control_references": [
+        {
+          "path": "packages/client/src/profile-dispatch.test.ts",
+          "sha256": "b241e4ccbadb6022554502a3755b72b2f321f401abb5d64503a4a01eb7d7bf99",
+          "selector": "P-04/P-05/P-06/P-07"
+        }
+      ],
+      "limitations": [],
+      "actual_calls_and_assertions": "Matching manual local route succeeds in the positive dispatch. Changing account policy support to scoped_automation throws; using the implementation manifest itself as current adapter does not invent availability."
+    },
+    {
+      "id": "P-08",
+      "independent_semantic_input": "protocols/contracts/v1/vectors/profile-capabilities/cases-v1.json#P-08",
+      "executed_control_references": [
+        {
+          "path": "crates/nsealr-core/tests/profile_capabilities.rs",
+          "sha256": "76cc2cf4237d420968e4b4bf08118f9cc1e0c411a6dea32cef50077885bf0ce8",
+          "selector": "synthetic_evidence_cannot_qualify_production"
+        },
+        {
+          "path": "packages/protocol/src/capabilities.test.ts",
+          "sha256": "45072d6deadf14a07e5a99506928efafef86b3de87099073fdd1b4f855da8a25",
+          "selector": "A-03"
+        },
+        {
+          "path": "packages/protocol/src/capabilities.test.ts",
+          "sha256": "45072d6deadf14a07e5a99506928efafef86b3de87099073fdd1b4f855da8a25",
+          "selector": "S-02"
+        }
+      ],
+      "limitations": [
+        "Descriptor/manifest equality establishes consistency only; no device evidence loader or production qualification is inferred. Synthetic production assessments and untrusted evidence assertions reject."
+      ],
+      "actual_calls_and_assertions": "Production assess_profile rejects conformance evidence; removing the marker while all evidence groups are unknown yields eight blockers. Strict reported-metadata parsing rejects evidence/authority assertions and immutable/unknown substitutions. No production firmware/SDK/image/procedure loader is implemented or qualified."
+    },
+    {
+      "id": "P-09",
+      "independent_semantic_input": "protocols/contracts/v1/vectors/profile-capabilities/cases-v1.json#P-09",
+      "executed_control_references": [
+        {
+          "path": "protocols/contracts/v1/tests/test_profile_capabilities.py",
+          "sha256": "9c81c16db4dfd89a0dd9e31afa2d9424d3d5e9591b1316e5acf183aabdafcaa7",
+          "selector": "test_unknown_manifest_semantics_and_duplicate_catalog_reject"
+        },
+        {
+          "path": "packages/policy/src/policy.test.ts",
+          "sha256": "21d80454c6c186bb3c9006d5c61ccd8e7773ea8374c1eca969465032c5df2199",
+          "selector": "external"
+        }
+      ],
+      "limitations": [],
+      "actual_calls_and_assertions": "Python validate_capability_data rejects board_sdk as profile. Existing policy tests reject external_nip46 as a persistent nSealr grant route; external route metadata cannot inherit a local profile in the reviewed account parser. This is route/type separation, not a BoardSDK runtime test."
+    },
+    {
+      "id": "S-01",
+      "independent_semantic_input": "protocols/contracts/v1/vectors/profile-capabilities/cases-v1.json#S-01",
+      "executed_control_references": [
+        {
+          "path": "packages/protocol/src/capabilities.test.ts",
+          "sha256": "45072d6deadf14a07e5a99506928efafef86b3de87099073fdd1b4f855da8a25",
+          "selector": "S-01/P-01"
+        }
+      ],
+      "limitations": [],
+      "actual_calls_and_assertions": "Parse full and compact reference for each profile and resolve through the exact local manifest; deep equality is asserted with no verified/signing_enabled fields."
+    },
+    {
+      "id": "S-02",
+      "independent_semantic_input": "protocols/contracts/v1/vectors/profile-capabilities/cases-v1.json#S-02",
+      "executed_control_references": [
+        {
+          "path": "packages/protocol/src/capabilities.test.ts",
+          "sha256": "45072d6deadf14a07e5a99506928efafef86b3de87099073fdd1b4f855da8a25",
+          "selector": "S-02"
+        }
+      ],
+      "limitations": [],
+      "actual_calls_and_assertions": "Parse/resolve calls reject duplicate method/algorithm IDs, unknown local manifest/digest, immutable or unknown deltas and wrong enum values; no network/reference retrieval occurs."
+    },
+    {
+      "id": "S-03",
+      "independent_semantic_input": "protocols/contracts/v1/vectors/profile-capabilities/cases-v1.json#S-03",
+      "executed_control_references": [
+        {
+          "path": "packages/protocol/src/capabilities.test.ts",
+          "sha256": "45072d6deadf14a07e5a99506928efafef86b3de87099073fdd1b4f855da8a25",
+          "selector": "S-03"
+        },
+        {
+          "path": "apps/pi/tests/test_vault_core.py",
+          "sha256": "10327e8580fb45a3a9caffe5c2fd2480e0616162ecd46fcc85e9320424bdee25",
+          "selector": "duplicate"
+        }
+      ],
+      "limitations": [],
+      "actual_calls_and_assertions": "readBoundedJson/parseReportedCapabilities reject original-byte decoded duplicates/escaped alias/trailingJSON/BOM/invalidUTF8/surrogate/token/depth/size violations. Pi static+animated QR original-byte tests independently retain these refusals."
+    },
+    {
+      "id": "S-04",
+      "independent_semantic_input": "protocols/contracts/v1/vectors/profile-capabilities/cases-v1.json#S-04",
+      "executed_control_references": [
+        {
+          "path": "protocols/contracts/v1/tests/test_profile_capabilities.py",
+          "sha256": "9c81c16db4dfd89a0dd9e31afa2d9424d3d5e9591b1316e5acf183aabdafcaa7",
+          "selector": "test_wire2_rejects_wire1_and_retired_status_without_fallback"
+        },
+        {
+          "path": "tests/integration/integration_companion_serial_frame_cli.py",
+          "sha256": "fc92048fa6ba13f6040f112dfc155f7e8b0f3b9305036b48659155be13b95be2",
+          "selector": "get-signing-status"
+        }
+      ],
+      "limitations": [],
+      "actual_calls_and_assertions": "Independent check_request_shape rejects numeric1/boolean/fractional version/retiredstatus, with a valid numeric2 positive. Actual serial CLI integration retains get-signing-status refusal and adds get-capabilities positive instead."
+    },
+    {
+      "id": "S-05",
+      "independent_semantic_input": "protocols/contracts/v1/vectors/profile-capabilities/cases-v1.json#S-05",
+      "executed_control_references": [
+        {
+          "path": "scripts/test_contracts.py",
+          "sha256": "66142103dbbe0df458e036f4500b2dac26252a4f0c40b1f71b0f08a2aca4310c",
+          "selector": "test_rewritten_history_validates_from_only_cold_main_with_historical_metadata"
+        },
+        {
+          "path": "scripts/test_contracts.py",
+          "sha256": "66142103dbbe0df458e036f4500b2dac26252a4f0c40b1f71b0f08a2aca4310c",
+          "selector": "test_entire_metadata_modes_hidden_extras_empty_dirs_and_special_files"
+        }
+      ],
+      "limitations": [],
+      "actual_calls_and_assertions": "Existing38realGit tests exercise literal tree/schema/modes/hidden/source/consumer/stale/tamper rejection; actual-source cold fetch runs the production checker after normal rebase, with historical objects absent, malformed bindings rejected and exact restoration passing."
+    },
+    {
+      "id": "S-06",
+      "independent_semantic_input": "protocols/contracts/v1/vectors/profile-capabilities/cases-v1.json#S-06",
+      "executed_control_references": [
+        {
+          "path": "tools/bridge/pack_smoke.mjs",
+          "sha256": "41d12d735f5c21eae8a621ef0bdc2ab7870298f5f01d7c42883b155e3e6709f4",
+          "selector": "SignEventRequest"
+        },
+        {
+          "path": "tests/integration/integration_companion_sdk_browser.py",
+          "sha256": "98275a504db2c0cdac438cb021ad3eb52d6ce0502a54872c85de60a3bd4bca51",
+          "selector": "main"
+        }
+      ],
+      "limitations": [],
+      "actual_calls_and_assertions": "Full package build/typecheck/packed Node/browser/SDK/runtime/declaration/hidden-import/API/README gates and Pi reference run; active device headers2 coexist with unchanged outer browser/service/policy/NIP46 domains. Frozen evidence gate verifies original1508 bytes."
+    },
+    {
+      "id": "S-07",
+      "independent_semantic_input": "protocols/contracts/v1/vectors/profile-capabilities/cases-v1.json#S-07",
+      "executed_control_references": [
+        {
+          "path": "packages/protocol/src/capabilities.test.ts",
+          "sha256": "45072d6deadf14a07e5a99506928efafef86b3de87099073fdd1b4f855da8a25",
+          "selector": "S-07/L-05"
+        },
+        {
+          "path": "packages/client/src/profile-dispatch.test.ts",
+          "sha256": "b241e4ccbadb6022554502a3755b72b2f321f401abb5d64503a4a01eb7d7bf99",
+          "selector": "L-01/L-05"
+        }
+      ],
+      "limitations": [],
+      "actual_calls_and_assertions": "compactReportedCapabilities passes an exactly representable reference, throws below budget and when transport/message changes cannot be represented. Actual service full-vs-reference discovery planning refuses the oversized full form before write and permits the complete known compact form; stale-state hooks reject subsequent changes."
+    },
+    {
+      "id": "R-01",
+      "independent_semantic_input": "protocols/contracts/v1/vectors/profile-capabilities/cases-v1.json#R-01",
+      "executed_control_references": [
+        {
+          "path": "packages/client/src/profile-dispatch.test.ts",
+          "sha256": "b241e4ccbadb6022554502a3755b72b2f321f401abb5d64503a4a01eb7d7bf99",
+          "selector": "R-01"
+        },
+        {
+          "path": "apps/bridge/service/src/drivers.test.ts",
+          "sha256": "86f4a120d1bf976768f43a202b418e83e56871c57f17574a39e26ed57b0a528a",
+          "selector": "R-01/R-05"
+        }
+      ],
+      "limitations": [],
+      "actual_calls_and_assertions": "handleLocalServiceRequestAsync -> selected account -> recording adapter/real serial driver verifies the independent signed response; exactly one operation write and original request/identity are asserted."
+    },
+    {
+      "id": "R-02",
+      "independent_semantic_input": "protocols/contracts/v1/vectors/profile-capabilities/cases-v1.json#R-02",
+      "executed_control_references": [
+        {
+          "path": "packages/client/src/profile-dispatch.test.ts",
+          "sha256": "b241e4ccbadb6022554502a3755b72b2f321f401abb5d64503a4a01eb7d7bf99",
+          "selector": "R-02"
+        },
+        {
+          "path": "tests/integration/integration_vault_companion.py",
+          "sha256": "fd94d4aea3310fcd8227f5b22b2708db520e6810b6b3d7c0fa00d18a1e1e0089",
+          "selector": "main"
+        }
+      ],
+      "limitations": [],
+      "actual_calls_and_assertions": "Actual QR recording route uses Pi session custody and a separately lowered finite deadline, writes the original operation envelope, and verifies the same independently signed event. Full independent Pi/Bridge QR integration also passes; no optical hardware is measured."
+    },
+    {
+      "id": "R-03",
+      "independent_semantic_input": "protocols/contracts/v1/vectors/profile-capabilities/cases-v1.json#R-03",
+      "executed_control_references": [
+        {
+          "path": "packages/client/src/profile-dispatch.test.ts",
+          "sha256": "b241e4ccbadb6022554502a3755b72b2f321f401abb5d64503a4a01eb7d7bf99",
+          "selector": "R-03"
+        }
+      ],
+      "limitations": [],
+      "actual_calls_and_assertions": "Each requested account/profile/implementation/limits/contract/method revision/catalog/algorithm/custody/transport/codec mutation calls handleAsync and asserts refusal plus zero writes, without switching routes."
+    },
+    {
+      "id": "R-04",
+      "independent_semantic_input": "protocols/contracts/v1/vectors/profile-capabilities/cases-v1.json#R-04",
+      "executed_control_references": [
+        {
+          "path": "packages/client/src/profile-dispatch.test.ts",
+          "sha256": "b241e4ccbadb6022554502a3755b72b2f321f401abb5d64503a4a01eb7d7bf99",
+          "selector": "R-04"
+        }
+      ],
+      "limitations": [],
+      "actual_calls_and_assertions": "A remote safe-integer maximum content cap is intersected with local8-byte cap; service refuses and writes0. Unknown implementation ID similarly refuses. Dimension-wise intersection asserts every result <= both endpoints."
+    },
+    {
+      "id": "R-05",
+      "independent_semantic_input": "protocols/contracts/v1/vectors/profile-capabilities/cases-v1.json#R-05",
+      "executed_control_references": [
+        {
+          "path": "packages/client/src/profile-dispatch.test.ts",
+          "sha256": "b241e4ccbadb6022554502a3755b72b2f321f401abb5d64503a4a01eb7d7bf99",
+          "selector": "A-05/R-05"
+        },
+        {
+          "path": "apps/bridge/service/src/drivers.test.ts",
+          "sha256": "86f4a120d1bf976768f43a202b418e83e56871c57f17574a39e26ed57b0a528a",
+          "selector": "R-01/R-05"
+        }
+      ],
+      "limitations": [],
+      "actual_calls_and_assertions": "After selection, account key/provider/connection ID/generation/deadline or complete plan context/geometry/pages are changed; actual before-write hook and driver post-open checks refuse, write0 and revoke the old hook."
+    },
+    {
+      "id": "R-06",
+      "independent_semantic_input": "protocols/contracts/v1/vectors/profile-capabilities/cases-v1.json#R-06",
+      "executed_control_references": [
+        {
+          "path": "packages/client/src/profile-dispatch.test.ts",
+          "sha256": "b241e4ccbadb6022554502a3755b72b2f321f401abb5d64503a4a01eb7d7bf99",
+          "selector": "A-04/R-06"
+        }
+      ],
+      "limitations": [],
+      "actual_calls_and_assertions": "Independent valid signed response positive passes; service calls with wrong request ID/user/eventID/signature return failure. No publication result is inferred."
+    },
+    {
+      "id": "L-01",
+      "independent_semantic_input": "protocols/contracts/v1/vectors/profile-capabilities/cases-v1.json#L-01",
+      "executed_control_references": [
+        {
+          "path": "packages/client/src/profile-dispatch.test.ts",
+          "sha256": "b241e4ccbadb6022554502a3755b72b2f321f401abb5d64503a4a01eb7d7bf99",
+          "selector": "L-01: each actual operation dimension"
+        },
+        {
+          "path": "packages/protocol/src/capabilities.test.ts",
+          "sha256": "45072d6deadf14a07e5a99506928efafef86b3de87099073fdd1b4f855da8a25",
+          "selector": "L-01/L-02"
+        },
+        {
+          "path": "packages/transport/src/transport.test.ts",
+          "sha256": "4ba4b00f94ef8a76d251ebdf328a266c2adf52db44d64bc3655d370ad8b12ece",
+          "selector": "bounds actual incoming"
+        }
+      ],
+      "limitations": [],
+      "actual_calls_and_assertions": "Thirteen actual operation dimensions use fixed independent JSON/event/canonical/framing lengths at -1/0/+1; UTF8 multibyte and original whitespace-expanded requests assert bounded parse. Actual serial transport tests enforce fixed125/226byte frame boundaries; existing QR/framing suites retain frame/reassembly caps."
+    },
+    {
+      "id": "L-02",
+      "independent_semantic_input": "protocols/contracts/v1/vectors/profile-capabilities/cases-v1.json#L-02",
+      "executed_control_references": [
+        {
+          "path": "packages/protocol/src/capabilities.test.ts",
+          "sha256": "45072d6deadf14a07e5a99506928efafef86b3de87099073fdd1b4f855da8a25",
+          "selector": "L-01/L-02"
+        },
+        {
+          "path": "crates/nsealr-core/tests/profile_capabilities.rs",
+          "sha256": "76cc2cf4237d420968e4b4bf08118f9cc1e0c411a6dea32cef50077885bf0ce8",
+          "selector": "finite_limits_keep_local_caps_and_zero_disabled_queues"
+        }
+      ],
+      "limitations": [],
+      "actual_calls_and_assertions": "Every numerical manifest dimension is replaced with null/negative/fractional/unsafe/unlimited/zero-required or deleted; parseLimitsManifest throws. Unknown units and contradictory pending/retained aggregates throw; only disabled queue/cache zeros remain."
+    },
+    {
+      "id": "L-03",
+      "independent_semantic_input": "protocols/contracts/v1/vectors/profile-capabilities/cases-v1.json#L-03",
+      "executed_control_references": [
+        {
+          "path": "packages/protocol/src/capabilities.test.ts",
+          "sha256": "45072d6deadf14a07e5a99506928efafef86b3de87099073fdd1b4f855da8a25",
+          "selector": "L-01/L-03"
+        },
+        {
+          "path": "crates/nsealr-core/tests/profile_capabilities.rs",
+          "sha256": "76cc2cf4237d420968e4b4bf08118f9cc1e0c411a6dea32cef50077885bf0ce8",
+          "selector": "checked_expansion_rejects_before_allocation_at_independent_boundaries"
+        }
+      ],
+      "limitations": [],
+      "actual_calls_and_assertions": "checkedProduct verifies independent65535*4/65536*4 values and rejects safe-integer overflow before allocation. Rust expansion tests and actual smaller local704-byte planning refuse oversized operations; this does not qualify NIP44 crypto."
+    },
+    {
+      "id": "L-04",
+      "independent_semantic_input": "protocols/contracts/v1/vectors/profile-capabilities/cases-v1.json#L-04",
+      "executed_control_references": [
+        {
+          "path": "packages/client/src/profile-dispatch.test.ts",
+          "sha256": "b241e4ccbadb6022554502a3755b72b2f321f401abb5d64503a4a01eb7d7bf99",
+          "selector": "L-04: bounded pending"
+        },
+        {
+          "path": "packages/client/src/profile-dispatch.test.ts",
+          "sha256": "b241e4ccbadb6022554502a3755b72b2f321f401abb5d64503a4a01eb7d7bf99",
+          "selector": "L-04: a timed-out unsettled"
+        },
+        {
+          "path": "packages/transport/src/transport.test.ts",
+          "sha256": "4ba4b00f94ef8a76d251ebdf328a266c2adf52db44d64bc3655d370ad8b12ece",
+          "selector": "L-04: cumulative tiny-line"
+        }
+      ],
+      "limitations": [],
+      "actual_calls_and_assertions": "Actual pending sign_event and compact get_capabilities requests block retry/other methods without extra adapter starts or writes; timeout/cancel/sync incompatibility revoke hooks but hold reservation until settlement and then recover. Actual serial tiny-line flood charges cumulative bytes and refuses retry on failed connection.",
+      "additional_focused_receipt": "commands/wire2-pending-discovery-regression-01/command.json"
+    },
+    {
+      "id": "L-05",
+      "independent_semantic_input": "protocols/contracts/v1/vectors/profile-capabilities/cases-v1.json#L-05",
+      "executed_control_references": [
+        {
+          "path": "packages/protocol/src/capabilities.test.ts",
+          "sha256": "45072d6deadf14a07e5a99506928efafef86b3de87099073fdd1b4f855da8a25",
+          "selector": "S-07/L-05"
+        },
+        {
+          "path": "packages/client/src/profile-dispatch.test.ts",
+          "sha256": "b241e4ccbadb6022554502a3755b72b2f321f401abb5d64503a4a01eb7d7bf99",
+          "selector": "L-01/L-05"
+        }
+      ],
+      "limitations": [],
+      "actual_calls_and_assertions": "Complete full/reference resolution and exact compact budgets are asserted. Actual service refuses nonfitting full discovery and succeeds only the complete known reference; unknown reference/digest rejects. No global cap is increased."
+    },
+    {
+      "id": "L-06",
+      "independent_semantic_input": "protocols/contracts/v1/vectors/profile-capabilities/cases-v1.json#L-06",
+      "executed_control_references": [
+        {
+          "path": "packages/client/src/profile-dispatch.test.ts",
+          "sha256": "b241e4ccbadb6022554502a3755b72b2f321f401abb5d64503a4a01eb7d7bf99",
+          "selector": "L-04/L-06: exact expiry"
+        },
+        {
+          "path": "packages/client/src/profile-dispatch.test.ts",
+          "sha256": "b241e4ccbadb6022554502a3755b72b2f321f401abb5d64503a4a01eb7d7bf99",
+          "selector": "L-04/L-06: an unresolved adapter"
+        }
+      ],
+      "limitations": [],
+      "actual_calls_and_assertions": "Local monotonic99/100/101 boundary, rollback/missing/overflow and finite local deadlines are exercised; exact expiry refuses and revokes writes. Unsettled operations remain reserved until observed settlement; peer cannot extend the existing S03 owner lifetime."
+    },
+    {
+      "id": "L-07",
+      "independent_semantic_input": "protocols/contracts/v1/vectors/profile-capabilities/cases-v1.json#L-07",
+      "executed_control_references": [
+        {
+          "path": "crates/nsealr-core/tests/profile_capabilities.rs",
+          "sha256": "76cc2cf4237d420968e4b4bf08118f9cc1e0c411a6dea32cef50077885bf0ce8",
+          "selector": "profile_layout_and_request_storage_are_accounted_separately"
+        }
+      ],
+      "limitations": [
+        "Host typed layouts and finite serialized-payload/count reservations measured/checked; VM/allocator bookkeeping remains separately bounded structurally, no exact heap-byte or MCU-stack/RAM/latency measurement claimed. See resource-accounting.json."
+      ],
+      "actual_calls_and_assertions": "Rust size_of assertions measure typed profile/limits/observations/assessment/ParsedRequest/EventTemplate, preserving original S03 storage assertions; actual finite request/frame/work/pending/retained checks account serialized payload reservations separately. No exact VM heap-overhead, MCU stack/RAM or latency measurement is asserted."
+    },
+    {
+      "id": "D-01",
+      "independent_semantic_input": "protocols/contracts/v1/vectors/profile-capabilities/cases-v1.json#D-01",
+      "executed_control_references": [
+        {
+          "path": "packages/protocol/src/capabilities.test.ts",
+          "sha256": "45072d6deadf14a07e5a99506928efafef86b3de87099073fdd1b4f855da8a25",
+          "selector": "D-01/D-02/D-03/D-04"
+        }
+      ],
+      "limitations": [],
+      "actual_calls_and_assertions": "requireMessageFeature refuses device primitive/context/workflow in the common unavailable report despite existing independent host NIP46 relay crypto. No host crypto flag is consulted to promote device support."
+    },
+    {
+      "id": "D-02",
+      "independent_semantic_input": "protocols/contracts/v1/vectors/profile-capabilities/cases-v1.json#D-02",
+      "executed_control_references": [
+        {
+          "path": "packages/protocol/src/capabilities.test.ts",
+          "sha256": "45072d6deadf14a07e5a99506928efafef86b3de87099073fdd1b4f855da8a25",
+          "selector": "D-01/D-02/D-03/D-04"
+        }
+      ],
+      "limitations": [],
+      "actual_calls_and_assertions": "Set only the synthetic primitive feature supported/configured/available: requireMessageFeature primitive succeeds, context and named workflow throw. No decryption execution API is added."
+    },
+    {
+      "id": "D-03",
+      "independent_semantic_input": "protocols/contracts/v1/vectors/profile-capabilities/cases-v1.json#D-03",
+      "executed_control_references": [
+        {
+          "path": "packages/protocol/src/capabilities.test.ts",
+          "sha256": "45072d6deadf14a07e5a99506928efafef86b3de87099073fdd1b4f855da8a25",
+          "selector": "D-01/D-02/D-03/D-04"
+        }
+      ],
+      "limitations": [],
+      "actual_calls_and_assertions": "Adding only verified context still leaves workflow unavailable and throws; contradictory workflow feature declarations reject in independent metadata validation."
+    },
+    {
+      "id": "D-04",
+      "independent_semantic_input": "protocols/contracts/v1/vectors/profile-capabilities/cases-v1.json#D-04",
+      "executed_control_references": [
+        {
+          "path": "packages/protocol/src/capabilities.test.ts",
+          "sha256": "45072d6deadf14a07e5a99506928efafef86b3de87099073fdd1b4f855da8a25",
+          "selector": "D-01/D-02/D-03/D-04"
+        }
+      ],
+      "limitations": [
+        "Positive exact-name eligibility uses synthetic workflow.test and mismatched-name refusal; this is diagnostic test routing, not an admitted C02 execution sequence. All real workflow manifests remain unavailable."
+      ],
+      "actual_calls_and_assertions": "Set the synthetic workflow feature and exact workflow.test ID: requireMessageFeature with that same name succeeds, other name throws. This is eligibility only; no peer/sender-copy or10050/22242 execution/crypto/publication is performed, and real manifests remain unavailable."
+    },
+    {
+      "id": "D-05",
+      "independent_semantic_input": "protocols/contracts/v1/vectors/profile-capabilities/cases-v1.json#D-05",
+      "executed_control_references": [
+        {
+          "path": "packages/client/src/profile-dispatch.test.ts",
+          "sha256": "b241e4ccbadb6022554502a3755b72b2f321f401abb5d64503a4a01eb7d7bf99",
+          "selector": "P-06/D-05/D-06/D-07"
+        }
+      ],
+      "limitations": [
+        "Current operation/catalog guards refuse all unadmitted DM/setup/AUTH and unsupported primitive requests before write; C02 cryptographic/context/relay/publication binding remains unimplemented and unqualified."
+      ],
+      "actual_calls_and_assertions": "Current service refuses unadmitted encrypted/seal/gift-wrap kinds and primitive method requests before writes; immutable S03 consuming-context/cancel/replay tests remain. Actual recipient/plaintext/ciphertext/seal cryptographic binding is explicitly deferred to C02, not inferred from T01 metadata."
+    },
+    {
+      "id": "D-06",
+      "independent_semantic_input": "protocols/contracts/v1/vectors/profile-capabilities/cases-v1.json#D-06",
+      "executed_control_references": [
+        {
+          "path": "packages/client/src/profile-dispatch.test.ts",
+          "sha256": "b241e4ccbadb6022554502a3755b72b2f321f401abb5d64503a4a01eb7d7bf99",
+          "selector": "P-06/D-05/D-06/D-07"
+        }
+      ],
+      "limitations": [
+        "Current operation/catalog guards refuse all unadmitted DM/setup/AUTH and unsupported primitive requests before write; C02 cryptographic/context/relay/publication binding remains unimplemented and unqualified."
+      ],
+      "actual_calls_and_assertions": "Generic device kind10050/22242 and unadmitted message paths are refused with zero writes; real workflow manifests remain unavailable. No actual relay AUTH/advertisement network exchange or publication procedure is claimed."
+    },
+    {
+      "id": "D-07",
+      "independent_semantic_input": "protocols/contracts/v1/vectors/profile-capabilities/cases-v1.json#D-07",
+      "executed_control_references": [
+        {
+          "path": "packages/client/src/profile-dispatch.test.ts",
+          "sha256": "b241e4ccbadb6022554502a3755b72b2f321f401abb5d64503a4a01eb7d7bf99",
+          "selector": "P-06/D-05/D-06/D-07"
+        }
+      ],
+      "limitations": [
+        "Current operation/catalog guards refuse all unadmitted DM/setup/AUTH and unsupported primitive requests before write; C02 cryptographic/context/relay/publication binding remains unimplemented and unqualified."
+      ],
+      "actual_calls_and_assertions": "Unknown NIP04/NIP44/export methods and offline DM/setup/AUTH kinds are submitted to actual service and rejected before writes; no alternate method/codec/crypto/route fallback is executed."
+    }
+  ],
+  "distinct_final_criteria_verdict": "PENDING",
+  "inventory_is_not_execution_proof": true,
+  "coverage_interpretation": "Each row states actual calls/assertions and limits, with source hashes. This is author evidence for distinct assessment, not42self-grantedPASS decisions. Original inventory preservation alone is not a behavioral result."
+}

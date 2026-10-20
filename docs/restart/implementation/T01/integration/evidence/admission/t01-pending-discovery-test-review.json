@@ -1,0 +1,44 @@
+{
+  "task": "T01",
+  "reviewer": "/root",
+  "author": "/root/a02_sol",
+  "candidate": "c4a2aa8d6567369caa52d7e0680e7581c2a554c3",
+  "tree": "855c5e114ac52abf82b75edfaff1103f7a8d5308",
+  "verdict": "PASS_AFFECTED_PENDING_DISCOVERY_TEST_ONLY",
+  "read_entire_new_method": true,
+  "all_previous_test_bytes_exact": true,
+  "path": "packages/client/src/profile-dispatch.test.ts",
+  "sha256": "b241e4ccbadb6022554502a3755b72b2f321f401abb5d64503a4a01eb7d7bf99",
+  "unchanged_runtime_files": [
+    "packages/client/src/service.ts",
+    "apps/bridge/service/src/drivers.ts",
+    "packages/transport/src/transport.ts",
+    "scripts/verify_contracts.py"
+  ],
+  "artifact_subtree_unchanged": "b629e75d18190ded2403ffabe965b595a9bcf6a6",
+  "actual_behavior": "One valid compact discovery stays pending; subsequent getcaps/getpub/sign_event deny runtime_unavailable with one adapter start/one write total. Actual settlement succeeds; fresh discovery starts and writes once afterward.",
+  "input_limits": "Fixed public requests and admitted synthetic local observations. Production compact helper builds a valid discovery subject; it is not an oracle for the pending-slot property. No crypto/frame expected answer is generated from product output.",
+  "actual_author_receipts_verified": [
+    {
+      "path": "docs/restart/implementation/T01/integration/evidence/commands/wire2-pending-discovery-regression-01/command.json",
+      "sha256": "3d269988a4973fffd3f67790dbb25f17149b9ed389eaac62b92720a1fcefd942",
+      "exit": 0,
+      "actual_identity": "d2348f39d391858a8b26a2a674e157cd908af0e2+recorded test-only dirtydiff"
+    },
+    {
+      "path": "docs/restart/implementation/T01/integration/evidence/commands/wire2-pending-discovery-typecheck-10/command.json",
+      "sha256": "9de292c641cebd3a7b5e909f188889c14b1cf8e4ef0485ec76cbf1ec69b0c87f",
+      "exit": 0,
+      "actual_identity": "d2348f39d391858a8b26a2a674e157cd908af0e2+recorded test-only dirtydiff"
+    }
+  ],
+  "focus_limit": "One new method executed;18other methods not selected in that invocation. Prior runs/reviews retain original identity. FullfinalhostedCI remains required.",
+  "root_duplicate_test_run": false,
+  "no_product_or_limit_change": true,
+  "remaining": [
+    "Finalcandidate coldrebase andproofpack",
+    "Distinct finalreview",
+    "ProtectedPR/fullactualmainCI",
+    "T01acceptance/physicalrelease"
+  ]
+}
