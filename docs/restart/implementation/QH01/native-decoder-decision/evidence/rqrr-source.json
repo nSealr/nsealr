@@ -1,0 +1,216 @@
+{
+  "crate": "rqrr",
+  "version": "0.11.0",
+  "archive_sha256": "8d084c50c5cfa397a081850da329566c8667b0b6c4e81da16abff1fef27de93b",
+  "role": "Exact targeted source slices. Line numbers refer to pinned official archive; source evidence, not execution/fork.",
+  "source_files": [
+    {
+      "archive_member": "rqrr-0.11.0/Cargo.toml.orig",
+      "source_path": "Cargo.toml.orig",
+      "sha256": "8a884013d82adc4943cdc6f73f0705c70d7f682b744cfc73d392f36881dec6c0",
+      "bytes": 953
+    },
+    {
+      "archive_member": "rqrr-0.11.0/src/decode.rs",
+      "source_path": "src/decode.rs",
+      "sha256": "19c74cbc7ed0b0e708382469dfa7d45218c4b422944d575830f66412310549f5",
+      "bytes": 31826
+    },
+    {
+      "archive_member": "rqrr-0.11.0/src/detect.rs",
+      "source_path": "src/detect.rs",
+      "sha256": "d9092266479560affa8ceb40beac33b2987cf31f28f11498162ddf8de7369125",
+      "bytes": 21527
+    },
+    {
+      "archive_member": "rqrr-0.11.0/src/geometry.rs",
+      "source_path": "src/geometry.rs",
+      "sha256": "e8a08541952259c802199c4f3b3e02a78c677bda9b651b3d32593a73fd5abb0a",
+      "bytes": 9489
+    },
+    {
+      "archive_member": "rqrr-0.11.0/src/identify/grid.rs",
+      "source_path": "src/identify/grid.rs",
+      "sha256": "5cec355a3d1b5ae7664b018aee36ad5550d4e3f00573dffbedc4bf4ae5eeae5b",
+      "bytes": 14200
+    },
+    {
+      "archive_member": "rqrr-0.11.0/src/identify/match_capstones.rs",
+      "source_path": "src/identify/match_capstones.rs",
+      "sha256": "c32a313cc5b8de43f43d775448cb9bd96b09590926f691eb3f15fc8449d92cd6",
+      "bytes": 2464
+    },
+    {
+      "archive_member": "rqrr-0.11.0/src/lib.rs",
+      "source_path": "src/lib.rs",
+      "sha256": "a13c879112b5e9c84ff2a23c3ab7b2b7f042b8223e6d4fad8803d35ffae9f45e",
+      "bytes": 22885
+    },
+    {
+      "archive_member": "rqrr-0.11.0/src/prepare.rs",
+      "source_path": "src/prepare.rs",
+      "sha256": "6d90405aaf2bcc77f1c04c4cc1d77c7e04c99ff0db5bb2fd9b85ac11e9129093",
+      "bytes": 20068
+    },
+    {
+      "archive_member": "rqrr-0.11.0/src/version_db.rs",
+      "source_path": "src/version_db.rs",
+      "sha256": "a0ff2ad141ff3be4f6330c8c500a2eeed3897d34ce248cad04eb31bae217254d",
+      "bytes": 23642
+    }
+  ],
+  "sections": [
+    {
+      "id": "rqrr-writer-api",
+      "path": "src/lib.rs",
+      "start_line": 83,
+      "end_line": 119,
+      "sha256": "92623679d99557638b4f6c08fdfeed62c08c5a936fad5a86aa43d1574ca4743c",
+      "text": "        }\n    }\n\n    /// Try to decode the grid.\n    ///\n    /// If successful returns the decoded string as well as metadata about the\n    /// code.\n    pub fn decode(&self) -> DeQRResult<(MetaData, String)> {\n        let mut out = Vec::new();\n        let meta = self.decode_to(&mut out)?;\n        let out = String::from_utf8(out)?;\n        Ok((meta, out))\n    }\n\n    /// Try to read metadata, and return the raw, uncorrected bit stream.\n    ///\n    /// If successful, returns the metadata along with the raw bit pattern.\n    /// The raw data is still masked, so bits appear as in the source image.\n    pub fn get_raw_data(&self) -> DeQRResult<(MetaData, RawData)> {\n        decode::get_raw(&self.grid, false)\n    }\n\n    /// Try to decode the grid.\n    ///\n    /// Instead of returning a String, this method writes the decoded result to\n    /// the given writer\n    ///\n    /// **Warning**: This may lead to half decoded content to be written to the\n    /// writer.\n    pub fn decode_to<W>(&self, writer: W) -> DeQRResult<MetaData>\n    where\n        W: Write,\n    {\n        decode::decode(&self.grid, writer)\n    }\n}\n\n"
+    },
+    {
+      "id": "rqrr-clone-and-buffer",
+      "path": "src/prepare.rs",
+      "start_line": 1,
+      "end_line": 83,
+      "sha256": "72e7a22d7695578b1226996448f95829fee7b71291e46d8a2630d0dabe08e1e3",
+      "text": "use std::{cmp, num::NonZeroUsize};\n\nuse crate::identify::match_capstones::CapStoneGroup;\nuse crate::identify::Point;\nuse lru::LruCache;\n\n/// An black-and-white image that can be mutated on search for QR codes\n///\n/// During search for QR codes, some black zones will be recolored in\n/// 'different' shades of black. This is done to speed up the search and\n/// mitigate the impact of a huge zones.\npub struct PreparedImage<S> {\n    buffer: S,\n    cache: LruCache<u8, ColoredRegion>,\n}\n\nimpl<S> Clone for PreparedImage<S>\nwhere\n    S: Clone,\n{\n    fn clone(&self) -> Self {\n        let mut cache = LruCache::new(self.cache.cap());\n        for (k, v) in self.cache.iter() {\n            cache.put(*k, *v);\n        }\n\n        PreparedImage {\n            buffer: self.buffer.clone(),\n            cache,\n        }\n    }\n}\n\npub trait ImageBuffer {\n    fn width(&self) -> usize;\n    fn height(&self) -> usize;\n\n    fn get_pixel(&self, x: usize, y: usize) -> u8;\n    fn set_pixel(&mut self, x: usize, y: usize, val: u8);\n}\n\n#[cfg(feature = \"img\")]\nimpl<\n        T: image::GenericImage<Pixel = image::Luma<u8>>\n            + image::GenericImageView<Pixel = image::Luma<u8>>,\n    > ImageBuffer for T\n{\n    fn width(&self) -> usize {\n        self.width() as usize\n    }\n\n    fn height(&self) -> usize {\n        self.height() as usize\n    }\n\n    fn get_pixel(&self, x: usize, y: usize) -> u8 {\n        self.get_pixel(x as u32, y as u32).0[0]\n    }\n\n    fn set_pixel(&mut self, x: usize, y: usize, val: u8) {\n        let pixel = image::Luma::<u8>::from([val; 1]);\n\n        self.put_pixel(x as u32, y as u32, pixel);\n    }\n}\n\n#[derive(Clone, Debug)]\npub struct BasicImageBuffer {\n    w: usize,\n    h: usize,\n    pixels: Box<[u8]>,\n}\n\nimpl ImageBuffer for BasicImageBuffer {\n    fn width(&self) -> usize {\n        self.w\n    }\n\n    fn height(&self) -> usize {\n        self.h\n    }\n\n    fn get_pixel(&self, x: usize, y: usize) -> u8 {\n"
+    },
+    {
+      "id": "rqrr-prepare",
+      "path": "src/prepare.rs",
+      "start_line": 177,
+      "end_line": 225,
+      "sha256": "8e41350d0530dc0dc13d93bc42105c8fe5ea7cc0e9ad20a573e1535f02521c91",
+      "text": "\nimpl<S> PreparedImage<S>\nwhere\n    S: ImageBuffer,\n{\n    pub fn prepare(mut buf: S) -> Self {\n        let w = buf.width();\n        let h = buf.height();\n        let mut row_average = vec![0; w];\n        let mut avg_v = 0;\n        let mut avg_u = 0;\n\n        let threshold_s = cmp::max(w / 8, 1);\n\n        for y in 0..h {\n            row_average.fill(0);\n\n            for x in 0..w {\n                let (v, u) = if y % 2 == 0 {\n                    (w - 1 - x, x)\n                } else {\n                    (x, w - 1 - x)\n                };\n                avg_v = avg_v * (threshold_s - 1) / threshold_s + buf.get_pixel(v, y) as usize;\n                avg_u = avg_u * (threshold_s - 1) / threshold_s + buf.get_pixel(u, y) as usize;\n                row_average[v] += avg_v;\n                row_average[u] += avg_u;\n            }\n\n            #[allow(clippy::needless_range_loop)]\n            for x in 0..w {\n                let fill = if (buf.get_pixel(x, y) as usize)\n                    < row_average[x] * (100 - 5) / (200 * threshold_s)\n                {\n                    PixelColor::Black\n                } else {\n                    PixelColor::White\n                };\n                buf.set_pixel(x, y, fill.into());\n            }\n        }\n\n        PreparedImage {\n            buffer: buf,\n            cache: LruCache::new(NonZeroUsize::new(251).unwrap()),\n        }\n    }\n\n    /// Group [CapStones](struct.CapStone.html) into [Grids](struct.Grid.html)\n"
+    },
+    {
+      "id": "rqrr-eager-detection-and-clone",
+      "path": "src/prepare.rs",
+      "start_line": 229,
+      "end_line": 302,
+      "sha256": "76194fa66e480edfb4f61b09f8d9720e4f1f4baf015ed01c714840f1ec34eb14",
+      "text": "    pub fn detect_grids<'a>(\n        &'a mut self,\n    ) -> Vec<crate::Grid<crate::identify::grid::RefGridImage<'a, S>>>\n    where\n        S: Clone,\n    {\n        let mut res = Vec::new();\n        let stones = crate::capstones_from_image(self);\n        let groups = self.find_groupings(stones);\n        let locations: Vec<_> = groups\n            .into_iter()\n            .filter_map(|v| crate::SkewedGridLocation::from_group(self, v))\n            .collect();\n        for grid_location in locations {\n            let bounds = [\n                grid_location.c.map(0.0, 0.0),\n                grid_location\n                    .c\n                    .map(grid_location.grid_size as f64 + 1.0, 0.0),\n                grid_location.c.map(\n                    grid_location.grid_size as f64 + 1.0,\n                    grid_location.grid_size as f64 + 1.0,\n                ),\n                grid_location\n                    .c\n                    .map(0.0, grid_location.grid_size as f64 + 1.0),\n            ];\n            let grid = grid_location.into_grid_image(self);\n            res.push(crate::Grid { grid, bounds });\n        }\n\n        res\n    }\n\n    /// Find CapStones that form a grid\n    ///\n    /// By trying to match up the relative perspective of 3\n    /// [CapStones](struct.CapStone.html) along with other criteria we can find the\n    /// CapStones that corner the same QR code.\n    fn find_groupings(&mut self, capstones: Vec<crate::CapStone>) -> Vec<CapStoneGroup>\n    where\n        S: Clone,\n    {\n        let mut used_capstones = Vec::new();\n        let mut groups = Vec::new();\n        for idx in 0..capstones.len() {\n            if used_capstones.contains(&idx) {\n                continue;\n            }\n            let pairs = crate::identify::find_and_rank_possible_neighbors(&capstones, idx);\n            for pair in pairs {\n                if used_capstones.contains(&pair.0) || used_capstones.contains(&pair.1) {\n                    continue;\n                }\n                let group_under_test = CapStoneGroup(\n                    capstones[pair.0].clone(),\n                    capstones[idx].clone(),\n                    capstones[pair.1].clone(),\n                );\n                // Confirm that this group has the other requirements of a QR code.\n                // A copy of the input image is used to not contaminate the\n                // original on an incorrect set of CapStones\n                let mut image_copy = self.clone();\n                if crate::SkewedGridLocation::from_group(&mut image_copy, group_under_test.clone())\n                    .is_none()\n                {\n                    continue;\n                }\n                // This is a viable set, save this grouping\n                groups.push(group_under_test);\n                used_capstones.push(pair.0);\n                used_capstones.push(idx);\n                used_capstones.push(pair.1);\n            }\n"
+    },
+    {
+      "id": "rqrr-cache-repaint",
+      "path": "src/prepare.rs",
+      "start_line": 330,
+      "end_line": 373,
+      "sha256": "acf80f3f34eb1d1651803a89a72b5a6b5c57bed4620c5f788ebc7c518e698697",
+      "text": "    pub(crate) fn get_region(&mut self, (x, y): (usize, usize)) -> ColoredRegion {\n        let color: PixelColor = self.buffer.get_pixel(x, y).into();\n        match color {\n            PixelColor::Discarded(r) => *self.cache.get(&r).unwrap(),\n            PixelColor::Black => {\n                let cache_fill = self.cache.len();\n                let reg_idx = if cache_fill == self.cache.cap().get() {\n                    let (c, reg) = self.cache.pop_lru().expect(\"fill is at capacity (251)\");\n                    #[allow(clippy::single_match)]\n                    match reg {\n                        ColoredRegion::Unclaimed {\n                            src_x,\n                            src_y,\n                            color,\n                            ..\n                        } => {\n                            let _ = self.flood_fill(\n                                src_x,\n                                src_y,\n                                color.into(),\n                                PixelColor::Black.into(),\n                                |_| (),\n                            );\n                        }\n                        _ => (),\n                    }\n                    c\n                } else {\n                    cache_fill as u8\n                };\n                let next_reg_color = PixelColor::Discarded(reg_idx);\n                let counter = self.repaint_and_apply((x, y), next_reg_color, AreaCounter(0));\n                let new_reg = ColoredRegion::Unclaimed {\n                    color: next_reg_color,\n                    src_x: x,\n                    src_y: y,\n                    pixel_count: counter.0,\n                };\n                self.cache.put(reg_idx, new_reg);\n                new_reg\n            }\n            PixelColor::Tmp1 => ColoredRegion::Tmp1,\n            PixelColor::Alignment => ColoredRegion::Alignment,\n            PixelColor::CapStone => ColoredRegion::CapStone,\n"
+    },
+    {
+      "id": "rqrr-flood-heap",
+      "path": "src/prepare.rs",
+      "start_line": 434,
+      "end_line": 500,
+      "sha256": "c900d37d7937af937b3153cb27135fb7f625876f3eae90eacff0e83a01273fc2",
+      "text": "    fn flood_fill<F>(&mut self, x: usize, y: usize, from: u8, to: u8, mut fill: F) -> F\n    where\n        F: AreaFiller,\n    {\n        assert_ne!(from, to);\n        let w = self.width();\n        let mut queue = Vec::new();\n        queue.push((x, y));\n\n        while let Some((x, y)) = queue.pop() {\n            // Bail early in case there is nothing to fill\n            if self.buffer.get_pixel(x, y) == to || self.buffer.get_pixel(x, y) != from {\n                continue;\n            }\n\n            let mut left = x;\n            let mut right = x;\n\n            while left > 0 && self.buffer.get_pixel(left - 1, y) == from {\n                left -= 1;\n            }\n            while right < w - 1 && self.buffer.get_pixel(right + 1, y) == from {\n                right += 1\n            }\n\n            /* Fill the extent */\n            for idx in left..=right {\n                self.buffer.set_pixel(idx, y, to);\n            }\n\n            fill.update(Row { left, right, y });\n\n            /* Seed new flood-fills */\n            if y > 0 {\n                let mut seeded_previous = false;\n                for x in left..=right {\n                    let p = self.buffer.get_pixel(x, y - 1);\n                    if p == from {\n                        if !seeded_previous {\n                            queue.push((x, y - 1));\n                        }\n                        seeded_previous = true;\n                    } else {\n                        seeded_previous = false;\n                    }\n                }\n            }\n            if y < self.height() - 1 {\n                let mut seeded_previous = false;\n                for x in left..=right {\n                    let p = self.buffer.get_pixel(x, y + 1);\n                    if p == from {\n                        if !seeded_previous {\n                            queue.push((x, y + 1));\n                        }\n                        seeded_previous = true;\n                    } else {\n                        seeded_previous = false;\n                    }\n                }\n            }\n        }\n        fill\n    }\n}\n\nimpl PreparedImage<BasicImageBuffer> {\n"
+    },
+    {
+      "id": "rqrr-checked-constructors",
+      "path": "src/prepare.rs",
+      "start_line": 501,
+      "end_line": 546,
+      "sha256": "3aa882932307b2a8db030a2f39a21d8162ccddbc36378e45853aebb8750f781c",
+      "text": "    /// Given a function with binary output, generate a searchable image\n    ///\n    /// If the given function returns `true` the matching pixel will be 'black'.\n    pub fn prepare_from_bitmap<F>(w: usize, h: usize, mut fill: F) -> Self\n    where\n        F: FnMut(usize, usize) -> bool,\n    {\n        let capacity = w.checked_mul(h).expect(\"Image dimensions caused overflow\");\n        let mut pixels = Vec::with_capacity(capacity);\n\n        for y in 0..h {\n            for x in 0..w {\n                let col = if fill(x, y) {\n                    PixelColor::Black\n                } else {\n                    PixelColor::White\n                };\n                pixels.push(col.into())\n            }\n        }\n        let pixels = pixels.into_boxed_slice();\n        let buffer = BasicImageBuffer { w, h, pixels };\n        PreparedImage::without_preparation(buffer)\n    }\n\n    /// Given a byte valued function, generate a searchable image\n    ///\n    /// The values returned by the function are interpreted as luminance. i.e. a\n    /// value of 0 is black, 255 is white.\n    pub fn prepare_from_greyscale<F>(w: usize, h: usize, mut fill: F) -> Self\n    where\n        F: FnMut(usize, usize) -> u8,\n    {\n        let capacity = w.checked_mul(h).expect(\"Image dimensions caused overflow\");\n        let mut data = Vec::with_capacity(capacity);\n        for y in 0..h {\n            for x in 0..w {\n                data.push(fill(x, y));\n            }\n        }\n        let pixels = data.into_boxed_slice();\n        let buffer = BasicImageBuffer { w, h, pixels };\n        PreparedImage::prepare(buffer)\n    }\n}\n\n"
+    },
+    {
+      "id": "rqrr-uncapped-capstone-vector",
+      "path": "src/detect.rs",
+      "start_line": 35,
+      "end_line": 78,
+      "sha256": "53f84af6c6f9243478a49849f3e98de9a7a6e38924adb553e01c31a63d6d42d6",
+      "text": "pub fn capstones_from_image<S>(img: &mut PreparedImage<S>) -> Vec<CapStone>\nwhere\n    S: ImageBuffer,\n{\n    let mut res = Vec::new();\n\n    for y in 0..img.height() {\n        let mut finder = LineScanner::new(img.get_pixel_at(0, y));\n        for x in 1..img.width() {\n            let linepos = match finder.advance(img.get_pixel_at(x, y)) {\n                Some(l) => l,\n                None => continue,\n            };\n\n            if !is_capstone(img, &linepos, y) {\n                continue;\n            }\n\n            let cap = match create_capstone(img, &linepos, y) {\n                Some(c) => c,\n                None => continue,\n            };\n\n            res.push(cap);\n        }\n\n        // Insert a virtual white pixel at the end to trigger a re-check. Necessary when\n        // the capstone lies right on the corner of an image\n        if let Some(linepos) = finder.advance(PixelColor::White) {\n            if !is_capstone(img, &linepos, y) {\n                continue;\n            }\n\n            let cap = match create_capstone(img, &linepos, y) {\n                Some(c) => c,\n                None => continue,\n            };\n\n            res.push(cap);\n        }\n    }\n    res\n}\n\n"
+    },
+    {
+      "id": "rqrr-pair-vector-and-sort",
+      "path": "src/identify/match_capstones.rs",
+      "start_line": 14,
+      "end_line": 49,
+      "sha256": "c200e1ff4b716fa3fde606e8548e64e8caab2cf58e0c5526adf99f19c6edddd4",
+      "text": "pub fn find_and_rank_possible_neighbors(capstones: &[CapStone], idx: usize) -> Vec<(usize, usize)> {\n    const VIABILITY_THRESHOLD: f64 = 0.25;\n\n    let (hlist, vlist) = find_possible_neighbors(capstones, idx);\n    let mut res = Vec::new();\n    struct NeighborSet {\n        score: f64,\n        h_index: usize,\n        v_index: usize,\n    }\n    /* Test each possible grouping */\n    for hn in hlist {\n        for vn in vlist.iter() {\n            let score = {\n                if hn.distance < vn.distance {\n                    (1.0f64 - hn.distance / vn.distance).abs()\n                } else {\n                    (1.0f64 - vn.distance / hn.distance).abs()\n                }\n            };\n            if score < VIABILITY_THRESHOLD {\n                res.push(NeighborSet {\n                    score,\n                    h_index: hn.index,\n                    v_index: vn.index,\n                });\n            }\n        }\n    }\n\n    res.sort_unstable_by(|a, b| {\n        (a.score)\n            .partial_cmp(&(b.score))\n            .expect(\"Neighbor distance should never cause a div by 0\")\n    });\n    res.iter().map(|n| (n.h_index, n.v_index)).collect()\n"
+    },
+    {
+      "id": "rqrr-alignment-spiral",
+      "path": "src/identify/grid.rs",
+      "start_line": 234,
+      "end_line": 289,
+      "sha256": "a7484dd09a504e9487f8b10699827211bf14b4b5b9da0ff4951ba8e74ff7e8ec",
+      "text": "    c0: &CapStone,\n    c2: &CapStone,\n) -> Option<Point>\nwhere\n    S: ImageBuffer,\n{\n    /* Guess another two corners of the alignment pattern so that we\n     * can estimate its size.\n     */\n    let (u, v) = c0.c.unmap(&align_seed);\n    let a = c0.c.map(u, v + 1.0);\n    let (u, v) = c2.c.unmap(&align_seed);\n    let c = c2.c.map(u + 1.0, v);\n    let size_estimate = ((a.x - align_seed.x) * -(c.y - align_seed.y)\n        + (a.y - align_seed.y) * (c.x - align_seed.x))\n        .unsigned_abs() as usize;\n\n    /* Spiral outwards from the estimate point until we find something\n     * roughly the right size. Don't look too far from the estimate\n     * point.\n     */\n    let mut dir = 0;\n    let mut step_size = 1;\n\n    while step_size * step_size < size_estimate * 100 {\n        const DX_MAP: [i32; 4] = [1, 0, -1, 0];\n        const DY_MAP: [i32; 4] = [0, -1, 0, 1];\n        for _pass in 0..step_size {\n            let x = align_seed.x as usize;\n            let y = align_seed.y as usize;\n\n            // Alignment pattern should not be white\n            if x < img.width() && y < img.height() && PixelColor::White != img.get_pixel_at(x, y) {\n                let region = img.get_region((x, y));\n                let count = match region {\n                    ColoredRegion::Unclaimed { pixel_count, .. } => pixel_count,\n                    _ => continue,\n                };\n\n                // Matches expected size of alignment pattern\n                if count >= size_estimate / 2 && count <= size_estimate * 2 {\n                    return Some(align_seed);\n                }\n            }\n\n            align_seed.x += DX_MAP[dir];\n            align_seed.y += DY_MAP[dir];\n        }\n\n        // Cycle directions\n        dir = (dir + 1) % 4;\n        if dir & 1 == 0 {\n            step_size += 1\n        }\n    }\n    None\n"
+    },
+    {
+      "id": "rqrr-perspective-asserts",
+      "path": "src/geometry.rs",
+      "start_line": 47,
+      "end_line": 67,
+      "sha256": "cc5588f5ecfec9ec5376308b18c2a708a1776c4933441a2db5ee2e026957d518",
+      "text": "    pub fn map(&self, u: f64, v: f64) -> Point {\n        let den = self.0[6] * u + self.0[7] * v + 1.0f64;\n        let x = (self.0[0] * u + self.0[1] * v + self.0[2]) / den;\n        let y = (self.0[3] * u + self.0[4] * v + self.0[5]) / den;\n\n        let x = x.round();\n        let y = y.round();\n\n        assert!(x <= i32::MAX as f64);\n        assert!(x >= i32::MIN as f64);\n        assert!(y <= i32::MAX as f64);\n        assert!(y >= i32::MIN as f64);\n        Point {\n            x: x as i32,\n            y: y as i32,\n        }\n    }\n\n    pub fn unmap(&self, p: &Point) -> (f64, f64) {\n        let x = p.x as f64;\n        let y = p.y as f64;\n"
+    },
+    {
+      "id": "rqrr-integer-geometry",
+      "path": "src/geometry.rs",
+      "start_line": 99,
+      "end_line": 132,
+      "sha256": "8fb29c98c14c5b1d0f023efaa637c50943213e54fd203a70f86eaee7b66a6b0a",
+      "text": "     *\n     * We do this by inverting the matrix and applying it to (e, f):\n     *       [ d -b] [e]   [rx]\n     * 1/det [-c  a] [f] = [ry]\n     */\n    let det = a * d - b * c;\n    if det == 0 {\n        None\n    } else {\n        Some(Point {\n            x: (d * e - b * f) / det,\n            y: (-c * e + a * f) / det,\n        })\n    }\n}\n\n#[derive(Debug, Clone)]\npub struct BresenhamScan {\n    x: i32,\n    y: i32,\n    dom_step: i32,\n    non_step: i32,\n    i: i32,\n    d: i32,\n    n: i32,\n    a: i32,\n    x_dom: bool,\n}\n\nimpl BresenhamScan {\n    pub fn new(from: &Point, to: &Point) -> Self {\n        let n = to.x - from.x;\n        let d = to.y - from.y;\n        let x = from.x;\n"
+    },
+    {
+      "id": "rqrr-workspace-and-version",
+      "path": "src/decode.rs",
+      "start_line": 12,
+      "end_line": 32,
+      "sha256": "738b60179d4194aa0f11da93ca54df9c69edf328a5d32f13c0dfbbb12af3c8bc",
+      "text": "pub const MAX_PAYLOAD_SIZE: usize = 8896;\n\n/// Version of a QR Code which determines its size\n#[derive(Debug, Clone, Copy, Eq, PartialEq)]\npub struct Version(pub usize);\n\nimpl Version {\n    /// Given the grid size, determine the likely grid size\n    pub fn from_size(b: usize) -> DeQRResult<Self> {\n        let computed_version = b.saturating_sub(17) / 4;\n\n        if computed_version > 0 && computed_version <= 40 {\n            Ok(Version(computed_version))\n        } else {\n            Err(DeQRError::InvalidVersion)\n        }\n    }\n\n    /// Return the size of a grid of the given version\n    pub fn to_size(&self) -> usize {\n        self.0 * 4 + 17\n"
+    },
+    {
+      "id": "rqrr-raw-array",
+      "path": "src/decode.rs",
+      "start_line": 50,
+      "end_line": 78,
+      "sha256": "c8740225bec6b6da99d6053d2a7f654dbfd4111df716034e56b96cbec13a694e",
+      "text": "/// The bit stream contained in the QR Code\n#[derive(Clone)]\npub struct RawData {\n    /// The bits of the QR Code\n    pub data: [u8; MAX_PAYLOAD_SIZE],\n    /// Length of the bit stream in bits.\n    pub len: usize,\n}\n\nimpl RawData {\n    /// Push a new bit into the bit stream\n    pub fn push(&mut self, bit: bool) {\n        assert!((self.len / 8) < MAX_PAYLOAD_SIZE);\n        let bitpos = (self.len & 7) as u8;\n        let bytepos = self.len >> 3;\n\n        if bit {\n            self.data[bytepos] |= 0x80_u8 >> bitpos;\n        }\n        self.len += 1;\n    }\n}\n\n#[derive(Clone)]\npub struct CorrectedDataStream {\n    data: [u8; MAX_PAYLOAD_SIZE],\n    ptr: usize,\n    bit_len: usize,\n}\n"
+    },
+    {
+      "id": "rqrr-mirrored-retry",
+      "path": "src/decode.rs",
+      "start_line": 117,
+      "end_line": 139,
+      "sha256": "4d7b20d1617aa840ac0e66030c9e6437d3eadeaf19c4999654ca2eb0db9bd3a6",
+      "text": "pub fn decode<W>(code: &dyn BitGrid, writer: W) -> DeQRResult<MetaData>\nwhere\n    W: Write,\n{\n    fn _decode(c: &dyn BitGrid) -> DeQRResult<(MetaData, CorrectedDataStream)> {\n        let (meta, raw) = get_raw(c, true)?;\n        let stream = codestream_ecc(&meta, raw)?;\n        Ok((meta, stream))\n    }\n    let (meta, stream) = match _decode(code) {\n        Ok((meta, stream)) => (meta, stream),\n        Err(original) => match _decode(&crate::MirroredGrid(code)) {\n            Ok((meta, stream)) => (meta, stream),\n            Err(_) => return Err(original),\n        },\n    };\n\n    decode_payload(&meta, stream, writer)?;\n    Ok(meta)\n}\n\n/// Return extracted metadata and the raw, uncorrected bit stream.\n///\n"
+    },
+    {
+      "id": "rqrr-byte-writer",
+      "path": "src/decode.rs",
+      "start_line": 212,
+      "end_line": 232,
+      "sha256": "481eee763839069ac02fc0f89d5948e7847b32bce62d41c0e4b3b4292220c09c",
+      "text": "fn decode_byte<W>(meta: &MetaData, ds: &mut CorrectedDataStream, mut writer: W) -> DeQRResult<()>\nwhere\n    W: Write,\n{\n    let nbits = match meta.version {\n        Version(0..=9) => 8,\n        _ => 16,\n    };\n\n    let count = ds.take_bits_checked(nbits)?;\n    if ds.bits_remaining() < count * 8 {\n        Err(DeQRError::DataUnderflow)?;\n    }\n\n    for _ in 0..count {\n        let buf = &[ds.take_bits(8) as u8];\n        writer.write_all(buf).map_err(|_| DeQRError::IoError)?;\n    }\n    Ok(())\n}\n\n"
+    },
+    {
+      "id": "rqrr-ECC-array",
+      "path": "src/decode.rs",
+      "start_line": 325,
+      "end_line": 343,
+      "sha256": "9358d02d96e86d9725b159f249de42784be330126bc3173403ee6cb56113511c",
+      "text": "fn codestream_ecc(meta: &MetaData, ds: RawData) -> DeQRResult<CorrectedDataStream> {\n    let mut out = CorrectedDataStream {\n        data: [0; MAX_PAYLOAD_SIZE],\n        ptr: 0,\n        bit_len: 0,\n    };\n\n    let ver = &VERSION_DATA_BASE[meta.version.0];\n    let sb_ecc = &ver.ecc[meta.ecc_level as usize];\n    let lb_ecc = RSParameters {\n        bs: sb_ecc.bs + 1,\n        dw: sb_ecc.dw + 1,\n        ns: sb_ecc.ns,\n    };\n\n    let lb_count = (ver.data_bytes - sb_ecc.bs * sb_ecc.ns) / (sb_ecc.bs + 1);\n    let bc = lb_count + sb_ecc.ns;\n    let ecc_offset = sb_ecc.dw * bc + lb_count;\n\n"
+    },
+    {
+      "id": "rqrr-simple-grid-allocation",
+      "path": "src/lib.rs",
+      "start_line": 257,
+      "end_line": 275,
+      "sha256": "d579147e0a9e7d49f7937f6e4952b765b06fc5c61ae9e6b2909bd8eec87d81d9",
+      "text": "impl SimpleGrid {\n    pub fn from_func<F>(size: usize, fill_func: F) -> Self\n    where\n        F: Fn(usize, usize) -> bool,\n    {\n        let mut cell_bitmap = vec![0; (size * size).div_ceil(8)];\n        let mut c = 0;\n        for y in 0..size {\n            for x in 0..size {\n                if fill_func(x, y) {\n                    cell_bitmap[c >> 3] |= 1 << (c & 7) as u8;\n                }\n                c += 1;\n            }\n        }\n\n        SimpleGrid { cell_bitmap, size }\n    }\n}\n"
+    },
+    {
+      "id": "rqrr-std-reference",
+      "path": "src/lib.rs",
+      "start_line": 38,
+      "end_line": 45,
+      "sha256": "5dff4bc8ae6c083b443793a24663d2dfc9398ae9165304feb6f27f31d928f16d",
+      "text": "pub(crate) use self::detect::{capstones_from_image, CapStone};\npub use self::identify::Point;\npub(crate) use self::identify::SkewedGridLocation;\npub use self::prepare::PreparedImage;\nuse std::error::Error;\nuse std::io::Write;\n\nmod decode;\n"
+    }
+  ]
+}

@@ -1,0 +1,158 @@
+{
+  "crate": "quircs",
+  "version": "0.10.3",
+  "archive_sha256": "d71dee9e56835add6f9c26227e6c690b19eda9414f5affc666c3ec833ba140dc",
+  "role": "Exact targeted source slices. Line numbers refer to pinned official archive; source evidence, not execution/fork.",
+  "source_files": [
+    {
+      "archive_member": "quircs-0.10.3/Cargo.toml.orig",
+      "source_path": "Cargo.toml.orig",
+      "sha256": "9974514ab055055c2065fa97885528d82376351fe0a22913e772c2d1a9e6fc71",
+      "bytes": 629
+    },
+    {
+      "archive_member": "quircs-0.10.3/src/decode.rs",
+      "source_path": "src/decode.rs",
+      "sha256": "e58046411cfbe930ef5bd1ed1bddf21916f1d0e6aabf564636a97edc30ee3c78",
+      "bytes": 22013
+    },
+    {
+      "archive_member": "quircs-0.10.3/src/identify.rs",
+      "source_path": "src/identify.rs",
+      "sha256": "73ac567aa9aaf41cdce7bd38d05552e7a13bc447db28509292d84e32fd01ab3e",
+      "bytes": 36516
+    },
+    {
+      "archive_member": "quircs-0.10.3/src/lib.rs",
+      "source_path": "src/lib.rs",
+      "sha256": "692c4c713ee6636daf602a519a85a8d550e3587ce9dbe7da976a37dd419da045",
+      "bytes": 956
+    },
+    {
+      "archive_member": "quircs-0.10.3/src/quirc.rs",
+      "source_path": "src/quirc.rs",
+      "sha256": "da66fbdc045aee211095f610e2e33c19ddc5cc1ac192530f87a75cd51fd146dd",
+      "bytes": 5427
+    },
+    {
+      "archive_member": "quircs-0.10.3/src/version_db.rs",
+      "source_path": "src/version_db.rs",
+      "sha256": "11f9803ea2facbf7c8e27bce0c0567ac99bdfd0dc0eafa50c79c6e045d97c105",
+      "bytes": 11761
+    }
+  ],
+  "sections": [
+    {
+      "id": "quircs-state-default-resize",
+      "path": "src/quirc.rs",
+      "start_line": 1,
+      "end_line": 73,
+      "sha256": "b60ff1a64d5e32d1dc15f61199e88a83985a123215548b79714deff05878474c",
+      "text": "use num_derive::{FromPrimitive, ToPrimitive};\n\npub type Pixel = u16;\n\n#[derive(Debug, Clone)]\npub struct Quirc {\n    pub pixels: Vec<Pixel>,\n    pub w: usize,\n    pub h: usize,\n    pub regions: Vec<Region>,\n    pub capstones: Vec<Capstone>,\n    pub grids: Vec<Grid>,\n}\n\nimpl Default for Quirc {\n    fn default() -> Self {\n        Self {\n            pixels: Vec::new(),\n            w: 0,\n            h: 0,\n            regions: Vec::with_capacity(254),\n            capstones: Vec::with_capacity(32),\n            grids: Vec::with_capacity(8),\n        }\n    }\n}\n\nimpl Quirc {\n    /// Construct a new QR-code recognizer.\n    pub fn new() -> Self {\n        Self::default()\n    }\n\n    /// Resize the QR-code recognizer. The size of an image must be\n    /// specified before codes can be analyzed.\n    ///\n    /// This function returns 0 on success, or -1 if sufficient memory could  not be allocated.\n    pub fn resize(&mut self, width: usize, height: usize) {\n        if self.w == width && self.h == height {\n            return;\n        }\n\n        let newdim = width * height;\n        self.pixels.resize(newdim, 0);\n        self.w = width;\n        self.h = height;\n    }\n\n    pub fn num_regions(&self) -> usize {\n        self.regions.len()\n    }\n\n    pub fn num_capstones(&self) -> usize {\n        self.capstones.len()\n    }\n\n    /// Return the number of QR-codes identified in the last processed image.\n    pub fn count(&self) -> usize {\n        self.grids.len()\n    }\n\n    /// Resets all internal state.\n    pub fn reset(&mut self) {\n        self.regions.clear();\n        self.capstones.clear();\n        self.grids.clear();\n    }\n}\n\n#[derive(Debug, Copy, Clone, Default)]\npub struct Grid {\n    pub caps: [usize; 3],\n    pub align_region: Option<Pixel>,\n"
+    },
+    {
+      "id": "quircs-eager-identify",
+      "path": "src/identify.rs",
+      "start_line": 1200,
+      "end_line": 1248,
+      "sha256": "00ee409aa3066034740b49cafffb2a7ee64992b6e2f544ed7848a92b010d1285",
+      "text": "    }\n}\n\nimpl Quirc {\n    /// These functions are used to process images for QR-code recognition.\n    /// The locations and content of each\n    /// code may be obtained using accessor functions described below.\n    pub fn identify<'a>(&'a mut self, width: usize, height: usize, image: &[u8]) -> CodeIter<'a> {\n        self.resize(width, height);\n\n        assert_eq!(\n            self.w * self.h,\n            image.len(),\n            \"image must be exactly of the size width * height\"\n        );\n\n        self.reset();\n        self.regions.push(Default::default());\n        self.regions.push(Default::default());\n\n        let threshold = otsu(self, image);\n        pixels_setup(self, image, threshold);\n\n        let mut image = ImageMut {\n            pixels: &mut self.pixels,\n            width: self.w,\n            height: self.h,\n        };\n        let regions = &mut self.regions;\n        let capstones = &mut self.capstones;\n\n        for i in 0..self.h {\n            finder_scan(&mut image, regions, capstones, i);\n        }\n\n        let grids = &mut self.grids;\n        for i in 0..capstones.len() {\n            test_grouping(&mut image, regions, capstones, grids, i);\n        }\n\n        CodeIter {\n            quirc: self,\n            current: 0,\n        }\n    }\n\n    /// Extract the QR-code specified by the given index.\n    fn extract(&self, index: usize) -> Result<Code, ExtractError> {\n        let qr = self.grids[index];\n"
+    },
+    {
+      "id": "quircs-region-cap",
+      "path": "src/identify.rs",
+      "start_line": 285,
+      "end_line": 318,
+      "sha256": "a661c51379a7eb656efacebaeeaabbd9db78a4e5cba2909e5f67510da72ebda9",
+      "text": "fn region_code(image: &mut ImageMut<'_>, regions: &mut Vec<Region>, x: i32, y: usize) -> i32 {\n    if x < 0 || x >= image.width as i32 || y >= image.height {\n        return -1;\n    }\n    let pixel = image.pixels[(y as i32 * image.width as i32 + x) as usize];\n    if pixel >= 2 {\n        return pixel as i32;\n    }\n    if pixel == 0 {\n        return -1;\n    }\n    let region = regions.len() as i32;\n\n    if region >= 65_534 {\n        return -1;\n    }\n\n    regions.push(Region {\n        seed: Point { x, y: y as i32 },\n        count: 0,\n        capstone: -1,\n    });\n\n    flood_fill_seed(\n        image,\n        x,\n        y,\n        pixel,\n        region as Pixel,\n        Some(&area_count),\n        &mut UserData::Region(&mut regions[region as usize]),\n    );\n\n    region\n"
+    },
+    {
+      "id": "quircs-capstone-cap",
+      "path": "src/identify.rs",
+      "start_line": 414,
+      "end_line": 433,
+      "sha256": "69dfd1fe7bcd3baa8d65bd06b8865ce493adc7b650413050091c0f09136d062b",
+      "text": "fn record_capstone(\n    image: &mut ImageMut<'_>,\n    regions: &mut [Region],\n    capstones: &mut Vec<Capstone>,\n    ring: Pixel,\n    stone: i32,\n) {\n    if capstones.len() >= 32 {\n        return;\n    }\n    let cs_index = capstones.len() as i32;\n\n    let capstone = Capstone {\n        qr_grid: -1,\n        ring: ring as i32,\n        stone,\n        ..Default::default()\n    };\n    capstones.push(capstone);\n    let capstone = &mut capstones[cs_index as usize];\n"
+    },
+    {
+      "id": "quircs-grid-cap",
+      "path": "src/identify.rs",
+      "start_line": 951,
+      "end_line": 987,
+      "sha256": "5bfccdaf556b29c373bd8796283e917dfd207283fb60623b40c6f54a4474d710",
+      "text": "fn record_qr_grid(\n    image: &mut ImageMut<'_>,\n    regions: &mut Vec<Region>,\n    capstones: &mut [Capstone],\n    grids: &mut Vec<Grid>,\n    mut a: usize,\n    b: usize,\n    mut c: usize,\n) {\n    if grids.len() >= 8 {\n        return;\n    }\n    /* Construct the hypotenuse line from A to C. B should be to\n     * the left of this line.\n     */\n    let h0 = capstones[a].center;\n    let mut hd = Point {\n        x: capstones[c].center.x - capstones[a].center.x,\n        y: capstones[c].center.y - capstones[a].center.y,\n    };\n\n    /* Make sure A-B-C is clockwise */\n    if (capstones[b].center.x - h0.x) * -hd.y + (capstones[b].center.y - h0.y) * hd.x > 0 {\n        std::mem::swap(&mut a, &mut c);\n        hd.x = -hd.x;\n        hd.y = -hd.y\n    }\n    /* Record the grid and its components */\n    let qr_index = grids.len();\n\n    let mut qr = Grid::default();\n    qr.caps[0] = a;\n    qr.caps[1] = b;\n    qr.caps[2] = c;\n    qr.align_region = None;\n    grids.push(qr);\n\n"
+    },
+    {
+      "id": "quircs-flood-heap",
+      "path": "src/identify.rs",
+      "start_line": 149,
+      "end_line": 225,
+      "sha256": "5297c48c60f655d2a697b1f10dcb7dbd952f4d3027a5e1c50d8130d600cdd6da",
+      "text": "fn flood_fill_seed<F>(\n    image: &mut ImageMut<'_>,\n    starting_x: i32,\n    starting_y: usize,\n    from: Pixel,\n    to: Pixel,\n    func: Option<&F>,\n    user_data: &mut UserData<'_>,\n) where\n    F: Fn(&mut UserData<'_>, usize, i32, i32),\n{\n    let mut flood_from = vec![(starting_x as usize, starting_y)];\n\n    while let Some((x, y)) = flood_from.pop() {\n        let mut left = x;\n        let mut right = x;\n        let width = image.width;\n\n        let row = &mut image.pixels[y * width..(y + 1) * width];\n        while left > 0 && row[left - 1] == from {\n            left -= 1;\n        }\n        while right < width - 1 && row[right + 1] == from {\n            right += 1;\n        }\n\n        // Fill the extent\n        for val in &mut row[left..=right] {\n            *val = to;\n        }\n\n        if let Some(func) = func {\n            func(user_data, y, left as i32, right as i32);\n        }\n\n        // Seed new flood-fills\n\n        if y > 0 {\n            // Not the first row, so fill the previous row\n            let offset = (y - 1) * width;\n            // Two side-by-side pixels do not need two flood fills seeded, since the first flood file will scan to the right and cover the second one.\n            // Keeping track of whether the previous pixel matched lets those unnecessary side-by-side flood fills to be skipped.\n            let mut prev_matched = false;\n            for i in left..=right {\n                // Safety: pixels is in range, as verified by the assert at the beginning.\n                // Unfortunately this is required, as the compiler will add bounds checks that are quite measurable.\n                let val = unsafe { *image.pixels.get_unchecked(offset + i) };\n                if val == from {\n                    if !prev_matched {\n                        flood_from.push((i, y - 1));\n                        prev_matched = true;\n                    }\n                } else {\n                    prev_matched = false;\n                }\n            }\n        }\n\n        if y < image.height - 1 {\n            // Not the last row, so fill the next row\n            let offset = (y + 1) * width;\n            let mut prev_matched = false;\n            for i in left..=right {\n                // Safety: pixels is in range, as verified by the assert at the beginning.\n                // Unfortunately this is required, as the compiler will add bounds checks that are quite measurable.\n                let val = unsafe { *image.pixels.get_unchecked(offset + i) };\n                if val == from {\n                    if !prev_matched {\n                        flood_from.push((i, y + 1));\n                        prev_matched = true;\n                    }\n                } else {\n                    prev_matched = false;\n                }\n            }\n        }\n    }\n"
+    },
+    {
+      "id": "quircs-alignment-spiral",
+      "path": "src/identify.rs",
+      "start_line": 535,
+      "end_line": 589,
+      "sha256": "58b51b0c81ca60a462cf1a5d956443d8b45ebf50f40816a663571078a4e940ae",
+      "text": "fn find_alignment_pattern(\n    image: &mut ImageMut<'_>,\n    capstones: &[Capstone],\n    regions: &mut Vec<Region>,\n    qr: &mut Grid,\n) {\n    let c0 = &capstones[qr.caps[0]];\n    let c2 = &capstones[qr.caps[2]];\n\n    let mut a = Point::default();\n    let mut c = Point::default();\n    let mut step_size = 1;\n    let mut dir = 0;\n    let mut u = 0.;\n    let mut v = 0.;\n\n    /* Grab our previous estimate of the alignment pattern corner */\n    let mut b = qr.align;\n\n    /* Guess another two corners of the alignment pattern so that we\n     * can estimate its size.\n     */\n    perspective_unmap(&c0.c, &b, &mut u, &mut v);\n    perspective_map(&c0.c, u, v + 1.0f64, &mut a);\n    perspective_unmap(&c2.c, &b, &mut u, &mut v);\n    perspective_map(&c2.c, u + 1.0f64, v, &mut c);\n    let size_estimate = ((a.x - b.x) * -(c.y - b.y) + (a.y - b.y) * (c.x - b.x)).abs();\n\n    /* Spiral outwards from the estimate point until we find something\n     * roughly the right size. Don't look too far from the estimate\n     * point.\n     */\n    static DX_MAP: [i32; 4] = [1, 0, -1, 0];\n    static DY_MAP: [i32; 4] = [0, -1, 0, 1];\n\n    while step_size * step_size < size_estimate * 100 {\n        for _ in 0..step_size {\n            let code = region_code(image, regions, b.x, b.y as usize);\n            if code >= 0 {\n                let reg = &regions[code as usize];\n                if reg.count >= size_estimate / 2 && reg.count <= size_estimate * 2 {\n                    qr.align_region = Some(code as Pixel);\n                    return;\n                }\n            }\n            b.x += DX_MAP[dir as usize];\n            b.y += DY_MAP[dir as usize];\n        }\n\n        dir = (dir + 1) % 4;\n        if dir & 1 == 0 {\n            step_size += 1\n        }\n    }\n}\n"
+    },
+    {
+      "id": "quircs-integer-geometry",
+      "path": "src/identify.rs",
+      "start_line": 29,
+      "end_line": 58,
+      "sha256": "b72274a449ead4738b4c774d78c7848362c9f6fb50c0941ff158fad461ae4b57",
+      "text": "fn line_intersect(p0: &Point, p1: &Point, q0: &Point, q1: &Point, r: &mut Point) -> i32 {\n    /* (a, b) is perpendicular to line p */\n    let a = -(p1.y - p0.y);\n    let b = p1.x - p0.x;\n\n    /* (c, d) is perpendicular to line q */\n    let c = -(q1.y - q0.y);\n    let d = q1.x - q0.x;\n\n    /* e and f are dot products of the respective vectors with p and q */\n    let e = a * p1.x + b * p1.y;\n    let f = c * q1.x + d * q1.y;\n\n    /* Now we need to solve:\n     *     [a b] [rx]   [e]\n     *     [c d] [ry] = [f]\n     *\n     * We do this by inverting the matrix and applying it to (e, f):\n     *       [ d -b] [e]   [rx]\n     * 1/det [-c  a] [f] = [ry]\n     */\n    let det = a * d - b * c;\n    if det == 0 {\n        return 0;\n    }\n    r.x = (d * e - b * f) / det;\n    r.y = (-c * e + a * f) / det;\n\n    1\n}\n"
+    },
+    {
+      "id": "quircs-payload-array",
+      "path": "src/decode.rs",
+      "start_line": 1,
+      "end_line": 16,
+      "sha256": "4a8a2dbcd215190f281e4701b950f80fd00c632d1467ab25ed1cebd71e5177ae",
+      "text": "#![allow(clippy::many_single_char_names)]\n\nuse num_traits::{FromPrimitive, ToPrimitive};\nuse std::convert::TryFrom;\n\nuse crate::quirc::*;\nuse crate::version_db::*;\nuse crate::DecodeError;\n\n#[derive(Copy, Clone)]\nstruct Datastream {\n    raw: [u8; 8896],\n    data_bits: i32,\n    ptr: i32,\n    data: [u8; 8896],\n}\n"
+    },
+    {
+      "id": "quircs-numeric-growth",
+      "path": "src/decode.rs",
+      "start_line": 512,
+      "end_line": 554,
+      "sha256": "81b6446bad61a02bb447df176808fa06467d5292a334cb752120d50319bcbaf0",
+      "text": "fn numeric_tuple(data: &mut Data, ds: &mut Datastream, bits: i32, digits: usize) -> i32 {\n    if bits_remaining(ds) < bits {\n        return -1;\n    }\n    let mut tuple = take_bits(ds, bits);\n    let len = data.payload.len();\n    data.payload.resize(len + digits, 0);\n\n    for val in data.payload[len..].iter_mut().rev() {\n        *val = (tuple % 10 + '0' as i32) as u8;\n        tuple /= 10;\n    }\n\n    0\n}\n\nfn decode_numeric(data: &mut Data, ds: &mut Datastream) -> Result<(), DecodeError> {\n    let mut bits: i32 = 14;\n    if data.version < 10 {\n        bits = 10;\n    } else if data.version < 27 {\n        bits = 12;\n    }\n    let mut count = take_bits(ds, bits);\n    if data.payload.len() + count as usize + 1 > 8896 {\n        return Err(DecodeError::DataOverflow);\n    }\n    while count >= 3 {\n        if numeric_tuple(data, ds, 10, 3) < 0 {\n            return Err(DecodeError::DataUnderflow);\n        }\n        count -= 3;\n    }\n    if count >= 2 {\n        if numeric_tuple(data, ds, 7, 2) < 0 {\n            return Err(DecodeError::DataUnderflow);\n        }\n        count -= 2;\n    }\n\n    if count != 0 && numeric_tuple(data, ds, 4, 1) < 0 {\n        return Err(DecodeError::DataUnderflow);\n    }\n"
+    },
+    {
+      "id": "quircs-byte-growth",
+      "path": "src/decode.rs",
+      "start_line": 601,
+      "end_line": 616,
+      "sha256": "6ede69d808b3cd4ad9302a65b92f4abd4139c7964a83f90674c8f58b75864364",
+      "text": "fn decode_byte(data: &mut Data, ds: &mut Datastream) -> Result<(), DecodeError> {\n    let bits = if data.version < 10 { 8 } else { 16 };\n    let count = take_bits(ds, bits);\n    if data.payload.len() + count as usize + 1 > 8896 {\n        return Err(DecodeError::DataOverflow);\n    }\n    if bits_remaining(ds) < count * 8 {\n        return Err(DecodeError::DataUnderflow);\n    }\n\n    for _i in 0..count {\n        data.payload.push(take_bits(ds, 8) as u8);\n    }\n\n    Ok(())\n}\n"
+    },
+    {
+      "id": "quircs-kanji-growth",
+      "path": "src/decode.rs",
+      "start_line": 618,
+      "end_line": 652,
+      "sha256": "0ef670c50e790e29ebb567304db366ee848a9d414230bdbbf580b4474e082b16",
+      "text": "fn decode_kanji(data: &mut Data, ds: &mut Datastream) -> Result<(), DecodeError> {\n    let mut bits = 12;\n    if data.version < 10 {\n        bits = 8;\n    } else if data.version < 27 {\n        bits = 10;\n    }\n\n    let count = take_bits(ds, bits);\n    if data.payload.len() + count as usize * 2 + 1 > 8896 {\n        return Err(DecodeError::DataOverflow);\n    }\n    if bits_remaining(ds) < count * 13 {\n        return Err(DecodeError::DataUnderflow);\n    }\n\n    for _i in 0..count {\n        let d = take_bits(ds, 13);\n        let msb = d / 0xc0;\n        let lsb = d % 0xc0;\n        let intermediate = msb << 8 | lsb;\n        let sjw = if intermediate + 0x8140 <= 0x9ffc {\n            /* bytes are in the range 0x8140 to 0x9FFC */\n            (intermediate + 0x8140) as u16\n        } else {\n            /* bytes are in the range 0xE040 to 0xEBBF */\n            (intermediate + 0xc140) as u16\n        };\n\n        data.payload.push((sjw as i32 >> 8) as u8);\n        data.payload.push((sjw as i32 & 0xff) as u8);\n    }\n\n    Ok(())\n}\n"
+    },
+    {
+      "id": "quircs-decode-entry",
+      "path": "src/decode.rs",
+      "start_line": 702,
+      "end_line": 739,
+      "sha256": "adbd9c85cc9a907256dccb78eb3a3b3ae0b289ddd3e4c32352a60d5b2c736e83",
+      "text": "impl Code {\n    /// Decode a QR-code, returning the payload data.\n    pub fn decode(&self) -> Result<Data, DecodeError> {\n        let mut ds: Datastream = Datastream {\n            raw: [0; 8896],\n            data_bits: 0,\n            ptr: 0,\n            data: [0; 8896],\n        };\n\n        if (self.size - 17) % 4 != 0 {\n            return Err(DecodeError::InvalidGridSize);\n        }\n\n        let mut data = Data {\n            version: usize::try_from((self.size - 17) / 4)\n                .map_err(|_| DecodeError::InvalidVersion)?,\n            ..Default::default()\n        };\n\n        if data.version < VERSION_MIN || data.version > VERSION_MAX {\n            return Err(DecodeError::InvalidVersion);\n        }\n\n        /* Read format information -- try both locations */\n        let mut res = read_format(self, &mut data, 0);\n        if res.is_err() {\n            res = read_format(self, &mut data, 1);\n        }\n        res?;\n\n        read_data(self, &mut data, &mut ds);\n        codestream_ecc(&mut data, &mut ds)?;\n        decode_payload(&mut data, &mut ds)?;\n\n        Ok(data)\n    }\n}\n"
+    },
+    {
+      "id": "quircs-std-reference",
+      "path": "src/quirc.rs",
+      "start_line": 192,
+      "end_line": 207,
+      "sha256": "6f30cef3fc38b196ea83eac0f3aecb6daa954aa340241a8283a7152556b2aaeb",
+      "text": "pub enum DataType {\n    Numeric = 1,\n    Alpha = 2,\n    Byte = 4,\n    Eci = 7,\n    Kanji = 8,\n}\n\nimpl std::fmt::Display for DataType {\n    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {\n        let x = match self {\n            DataType::Numeric => \"numeric\",\n            DataType::Alpha => \"alpha\",\n            DataType::Byte => \"byte\",\n            DataType::Eci => \"eci\",\n            DataType::Kanji => \"kanji\",\n"
+    }
+  ]
+}

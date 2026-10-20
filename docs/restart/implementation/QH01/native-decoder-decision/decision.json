@@ -1,0 +1,170 @@
+{
+  "schema_version": 1,
+  "task": "QH01",
+  "author": "/root/b01_final_review",
+  "model_policy": "gpt-6.1-sol xhigh",
+  "status": "WIP_SAFE_PAUSE_SOURCE_ANALYSIS_UNREVIEWED",
+  "source_input": "0985af3a3e2aab335eaaeac09a3b3f1fd0bd1ebf",
+  "source_tree": "0100f32f63682312440f32c2ca3b0f9f6aa0f0c3",
+  "question": "Can a small in-process wrapper use the current upstream APIs to enforce caller-declared dimensions/pixels/allocation/work and decoded-envelope limits before affected work/allocation, without a decoder fork?",
+  "answer": "NO_FOR_COMPLETE_THIN_WRAPPER_CONTRACT_WITH_CURRENT_EXPOSED_APIS",
+  "recommendation": "Do not adopt either crate as an already resource-bounded scanner. rqrr has a useful bounded-output writer seam, but this is only a partial property and does not change the full-contract NO. No third candidate, implementation, decoder fork or workaround is selected.",
+  "source_pins": "source-pins.json",
+  "targeted_evidence": [
+    "evidence/quircs-source.json",
+    "evidence/rqrr-source.json"
+  ],
+  "comparative_properties": [
+    {
+      "property": "Caller dimensions, pixel count, raw stride/storage length before the decoder",
+      "quircs": "Can be prechecked by wrapper before Quirc::new/identify, including checked W*H and exact image.len; identify itself resizes before its length assertion. These are input preconditions, not a complete geometry/work/allocator proof.",
+      "rqrr": "Can be prechecked before raw-buffer preparation. prepare_from_* checked_mul uses expect after caller entry and then infallible allocation. A private trusted ImageBuffer can expose an already bounded owned luma buffer; that does not intercept internal allocations.",
+      "basis": [
+        "quircs-state-default-resize",
+        "quircs-eager-identify",
+        "rqrr-clone-and-buffer",
+        "rqrr-checked-constructors"
+      ]
+    },
+    {
+      "property": "Caller scratch/state allocation budget before internal growth",
+      "quircs": "No per-instance fallible allocator/budget API. Vec pixels/state and local flood Vec grow internally; initial capacities/hard region/capstone/grid counts are library facts, not caller limits or heap measurement. reset retains Vec capacity.",
+      "rqrr": "No complete per-call allocation API. row_average/LruCache/flood queue/capstone/pair/group/location/result vectors and trial clone state are created internally; generic ImageBuffer controls only its own storage.",
+      "basis": [
+        "quircs-state-default-resize",
+        "quircs-flood-heap",
+        "quircs-region-cap",
+        "quircs-capstone-cap",
+        "quircs-grid-cap",
+        "rqrr-prepare",
+        "rqrr-flood-heap",
+        "rqrr-uncapped-capstone-vector",
+        "rqrr-pair-vector-and-sort",
+        "rqrr-eager-detection-and-clone"
+      ]
+    },
+    {
+      "property": "Caller logical work/deadline/cancel bound before costly detection/ECC",
+      "quircs": "No budget/progress/cancel argument. identify eagerly scans and groups before yielding iterator. Geometry-derived spiral, flood revisits and fixed-iteration refinement are not charged to a caller meter; take(1) cannot undo detection.",
+      "rqrr": "No complete meter/cancel argument. detect_grids eagerly detects, ranks/sorts pairs, clones trial image/cache and builds result Vec. ImageBuffer callbacks can observe some pixel work but not every pair/geometry/ECC operation.",
+      "basis": [
+        "quircs-eager-identify",
+        "quircs-alignment-spiral",
+        "rqrr-eager-detection-and-clone",
+        "rqrr-cache-repaint",
+        "rqrr-pair-vector-and-sort",
+        "rqrr-alignment-spiral",
+        "rqrr-mirrored-retry"
+      ]
+    },
+    {
+      "property": "Decoded envelope storage cap before appending output",
+      "quircs": "No caller-provided writer or output limit. Code::decode constructs Data.payload Vec first; per-mode logical overflow guard is8896 library bytes, not a caller envelope cap and not Vec capacity/allocator overhead. A later length rejection is too late to provide this particular pre-allocation property.",
+      "rqrr": "Grid::decode_to accepts std::io::Write. A future fixed-capacity writer can reject a complete write chunk before copying beyond its declared storage, and discard all partial content on ANY error. Convenience decode instead collects Vec/String. This is source feasibility only, no wrapper implemented/tested.",
+      "basis": [
+        "quircs-byte-growth",
+        "quircs-numeric-growth",
+        "quircs-kanji-growth",
+        "quircs-decode-entry",
+        "rqrr-writer-api",
+        "rqrr-byte-writer"
+      ]
+    },
+    {
+      "property": "Intrinsic QR workspace/retries, separate from caller budgets",
+      "quircs": "Regions stop at65534 entries including reserved entries; capstones32 and grids8; Code bitmap3917bytes; Datastream contains two8896byte arrays; QR version1..40 checked and format read tries at most two locations. Exact target stack/heap/work remains unmeasured.",
+      "rqrr": "LRU cache251 is not whole-state cap; RawData/CorrectedDataStream each contain8896byte arrays; version1..40; normal then one mirrored raw/ECC attempt. Writer payload processing is after those attempts, so writer failure is not replayed into a mirrored output write. Exact total live storage/stack remains unmeasured.",
+      "basis": [
+        "quircs-region-cap",
+        "quircs-capstone-cap",
+        "quircs-grid-cap",
+        "quircs-payload-array",
+        "quircs-decode-entry",
+        "rqrr-clone-and-buffer",
+        "rqrr-workspace-and-version",
+        "rqrr-raw-array",
+        "rqrr-ECC-array",
+        "rqrr-mirrored-retry"
+      ]
+    },
+    {
+      "property": "Arithmetic, panic and allocation-failure boundary",
+      "quircs": "Unchecked width*height precedes allocation; signed geometric products/casts and unchecked pixel accesses remain in implementation. Caller size/length checks are necessary but not a proof of every derived geometry precondition. No panic/overflow/exploit was executed here.",
+      "rqrr": "Checked helper W*H panics on overflow, infallible Vec growth; additional unchecked arithmetic, SimpleGrid size*size, geometric assertions and io errors are distinct. catch_unwind/timeouts are not recoverable allocation/work caps and do not stop an uncooperative synchronous call by themselves. No vulnerability reproduction claimed.",
+      "basis": [
+        "quircs-state-default-resize",
+        "quircs-integer-geometry",
+        "quircs-flood-heap",
+        "rqrr-checked-constructors",
+        "rqrr-simple-grid-allocation",
+        "rqrr-perspective-asserts",
+        "rqrr-integer-geometry",
+        "rqrr-alignment-spiral"
+      ]
+    }
+  ],
+  "std_alloc_target": {
+    "quircs": {
+      "version": "0.10.3",
+      "rust_version_declared": "1.68",
+      "edition": "2018",
+      "features": {},
+      "source": "Uses std/Vec/String/std::fmt/std::convert; no no_std or alloc-only feature in pinned source. Runtime num-derive/num-traits/thiserror; image is dev-only.",
+      "target_scope": "A Rust std+heap target is required as-is. Pure Rust label does not imply no unsafe or bare-metal support. No target build/link/run tested."
+    },
+    "rqrr": {
+      "version": "0.11.0",
+      "rust_version_declared": "1.85.1",
+      "edition": "2021",
+      "features": {
+        "default": [
+          "img"
+        ],
+        "img": [
+          "image"
+        ]
+      },
+      "source": "Disabling default img omits optional image adapter dependency, not std::io::Write/std::error or internal Vec/Box/LRU allocation. No no_std/alloc-only mode in pinned source. Runtime g2p/lru remain.",
+      "target_scope": "Std+heap source only; dependency ranges are not a selected product lock. No ARM/Pi/bare-metal/ABI/build qualification."
+    },
+    "current_repo_toolchain": "1.95.0 read only; no new dependency resolution, build, lock or target change."
+  },
+  "minimum_missing_property": {
+    "required": "A reviewed total allocation/work enforcement boundary that refuses before every relevant internal growth/phase, OR a complete conservative target-specific admission bound covering all admitted images and arithmetic/storage preconditions before the whole call. The APIs do not supply the former; this reading has not established the latter.",
+    "concrete_uncovered_paths": [
+      "quircs identify flood Vec and geometry-derived alignment spiral after eager identify entry",
+      "rqrr flood queue and251cache eviction repaint, capstone/pair enumeration+sort, cloned image/cache per trial and geometry spiral",
+      "both infallible allocation/OOM and unmetered internal geometry/ECC work"
+    ],
+    "experiment_limit": "Four fixed-image decodes or observed elapsed time/peak memory could establish sample feasibility only; they cannot by themselves prove the missing all-input pre-allocation/work bound. No extra experiment initiated."
+  },
+  "license_observations": {
+    "quircs": "Official metadata/Cargo MIT differs from delivered ISC-style LICENSE notice. Both exact bodies/metadata retained; adoption-license reconciliation not claimed.",
+    "rqrr": "(MIT OR Apache-2.0) AND ISC in manifest; all three bodies retained. README summary alone is incomplete."
+  },
+  "existing_assets": "existing-asset-references.json: exact13949 image/envelope references, no duplicate corpus; prior ZBar host PASS does not qualify either new decoder.",
+  "execution": {
+    "crate_compiles": 0,
+    "decoder_runs": 0,
+    "new_tests_or_corpus": 0,
+    "product_changes": 0,
+    "checks": "Official archive checksum match, source slice/file bindings and historical asset hashes only; not decoder functional/resource evidence."
+  },
+  "limits": [
+    "All five QH01 criteria remain incomplete; source decision is not scanner/native/physical qualification.",
+    "No hardware pixel/memory/time capacity, framing/ECC/UR selection, manual-port limit reinterpretation, readiness or key/consent authority inferred.",
+    "No third candidate, worker/isolation architecture, decoder fork, product dependency, app/graph/sharedhandoff/R00/vendor/CI change."
+  ],
+  "artifact_manifest": null,
+  "self_binding": "Immutable WIP commit binds this saved source-only draft. No final manifest, source-security PASS, decoder runtime result, future CI or physical acceptance is claimed.",
+  "recommendation_state": "Draft technical conclusion retained. No independent review or final source-decision acceptance; readable decision write-up and final artifact inventory were not finished before explicit pause.",
+  "pause": {
+    "instruction_source": "/home/tux/nsealr-coordinator-safe-pause-2026-10-20.txt",
+    "role": "Task-scoped WIP status only; root exclusively owns canonical pause handoff/goal transition.",
+    "state": "Source analysis saved; stop after commit/push verification. No further research/code/gate/test.",
+    "ignored_useful_material": ".runtime/ has the two checksum-matched official .crate archives and extracted source trees (40 ignored files at pause), useful for exact resume. No new product dependencies, toolchain install, secrets or corpus.",
+    "pending": "Draft needs source precision/editorial completion and coherent artifact bindings, then distinct root source review. No decoder implementation/test/corpus/backend admission. quircs metadata-versus-delivered-license difference remains explicitly unreconciled.",
+    "next_step_after_explicit_resume": "Read coordinator pause/resume handoff and current source/ownership delta first; reuse these pinned sources, finish only the finite two-candidate decision/proof packet and obtain distinct review before any runtime scope.",
+    "author_processes": "All current source retrieval/export commands completed; no author local background build/probe/test or hosted observer started. Coordinator owns remote CI state."
+  }
+}
