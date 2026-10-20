@@ -1,0 +1,529 @@
+{
+  "acceptance_mapping": [
+    {
+      "index": 0,
+      "outcome": "not executed on a combined candidate",
+      "planned_gates": [
+        "G03",
+        "G04",
+        "G05"
+      ],
+      "requirement": "Derive identity and canonical event bytes inside the trusted device boundary."
+    },
+    {
+      "index": 1,
+      "outcome": "not executed on a combined candidate",
+      "planned_gates": [
+        "G01",
+        "G04",
+        "G05",
+        "G06",
+        "G09"
+      ],
+      "requirement": "Bind preview, selected identity, full operation and one-use approval; reject mutation, replay, cancellation races and unreviewed metadata."
+    },
+    {
+      "index": 2,
+      "outcome": "not executed on a combined candidate",
+      "planned_gates": [
+        "G02",
+        "G05",
+        "G06",
+        "G07"
+      ],
+      "requirement": "Bound resource use and handle long/hostile Unicode content without misleading truncation."
+    },
+    {
+      "index": 3,
+      "outcome": "not executed on a combined candidate",
+      "planned_gates": [
+        "G02",
+        "G04",
+        "G08",
+        "G09"
+      ],
+      "requirement": "An independently computed event ID and signature verifier agree for positive and adversarial vectors."
+    },
+    {
+      "index": 4,
+      "outcome": "not executed on a combined candidate",
+      "planned_gates": [
+        "G05",
+        "G06",
+        "G07",
+        "G08",
+        "G09"
+      ],
+      "requirement": "This task establishes portable authorization/parser semantics with host-executable negative tests. Physical UI/input and peripheral isolation remain each profile's actual-device acceptance; do not wait for all boards to implement the state machine."
+    }
+  ],
+  "actual_integrated_a02_main": "b1c90139a651895284b2624da7d12903cf16bc9d",
+  "actual_main_ci": {
+    "id": 39412818666,
+    "head_sha": "b1c90139a651895284b2624da7d12903cf16bc9d",
+    "event": "push",
+    "status": "in_progress",
+    "conclusion": null,
+    "html_url": "https://github.com/nSealr/nsealr/actions/runs/39412818666",
+    "updated_at": "2026-10-20T11:08:21Z"
+  },
+  "actual_main_ci_passed": false,
+  "actual_main_pin_admitted_for_S03": false,
+  "canonical_acceptance": [
+    "Derive identity and canonical event bytes inside the trusted device boundary.",
+    "Bind preview, selected identity, full operation and one-use approval; reject mutation, replay, cancellation races and unreviewed metadata.",
+    "Bound resource use and handle long/hostile Unicode content without misleading truncation.",
+    "An independently computed event ID and signature verifier agree for positive and adversarial vectors.",
+    "This task establishes portable authorization/parser semantics with host-executable negative tests. Physical UI/input and peripheral isolation remain each profile's actual-device acceptance; do not wait for all boards to implement the state machine."
+  ],
+  "current_preparation_writable_scope": [
+    "docs/restart/implementation/S03/integration/brief.md",
+    "docs/restart/implementation/S03/integration/source-reconciliation.json",
+    "docs/restart/implementation/S03/integration/acceptance-plan.json",
+    "docs/restart/implementation/S03/integration/nip-reconciliation.json",
+    "docs/restart/implementation/S03/integration/source-pin-addendum.json"
+  ],
+  "distinct_preimplementation_review": "pending",
+  "evidence_contract": {
+    "never_overwrite": "original source/spec/vector/oracle/observation/review bytes; historical reviewed candidates remain historical.",
+    "new_execution_path": "docs/restart/implementation/S03/integration/evidence/",
+    "record": [
+      "exact actual-main/source/candidate commits and trees",
+      "every declared source/data/vendor transformation",
+      "UTC argv,cwd,pinned environment,exit status and complete logs",
+      "before/after identities and all meaningful failures",
+      "per-case correspondence,unchanged expected values and independent actual-output verification",
+      "new artifact hashes,dependency/feature closures,licenses,coverage and reproducibility",
+      "exact distinct review and later actual protected PR/main CI"
+    ]
+  },
+  "expected_data_immutable": [
+    "protocols/contracts/v1/**",
+    "original S03 vectors.json",
+    "original S03 oracle.py and pinned oracle-source/**",
+    "historical S03/A02 evidence and reviews",
+    "all existing closed task artifacts and criteria"
+  ],
+  "implementation_admitted": false,
+  "integration_gates": [
+    {
+      "commands": [],
+      "gate": "actual A02 main and integration-spec admission",
+      "id": "G00",
+      "required": "Coordinator supplies the actual integrated A02 main/tree and successful exact-main CI identity. Compare all preparation-bound target inputs and source paths, pin any differences in an addendum and obtain distinct acceptance of that exact addendum/brief before code. The historical S03 NIP37db and current P01 qualification NIPa79 citations are separately pinned; adjudicate any relevant requirement delta without silently asserting equivalence or expanding the accepted grammar.",
+      "status": "HELD: actual main CI failed; corrected actual-main pin/CI and distinct source-pin/brief acceptance required before code."
+    },
+    {
+      "commands": [
+        "git diff --name-status <actual-A02-main> <candidate>",
+        "git diff --check <actual-A02-main> <candidate>"
+      ],
+      "gate": "declared source and consumer reconciliation",
+      "id": "G01",
+      "required": "Declare every actual preimage/postimage/mode, including all13 core collisions, lock resolution,7 other product paths and explicit additional target interfaces. Preserve all untouched owners/current contracts/graph/closed evidence. Original source/evidence copy sets and later integrated changes remain separate.",
+      "status": "planned"
+    },
+    {
+      "commands": [
+        "python3 scripts/verify_contracts.py",
+        "python3 -B -m unittest discover -s scripts -p 'test_contracts.py'"
+      ],
+      "gate": "immutable expected data and OUT_DIR projections",
+      "id": "G02",
+      "required": "All current170 projections and generated review/detail/policy data retain their original committed expected values. Declared S03 independent-vector projection reads the unchanged frozen vector file only. Compare from two checkout paths; missing/extra/hidden/tampered/stale source, pointer, manifest and generated-output mappings must fail. Never invoke code under test to derive expected bytes or signatures.",
+      "status": "planned"
+    },
+    {
+      "commands": [
+        "cargo metadata --locked --offline --format-version 1",
+        "cargo metadata --locked --offline --format-version 1 --manifest-path apps/desktop-simulator/Cargo.toml",
+        "cargo tree --locked --offline -e features -p nsealr-core",
+        "cargo tree --locked --offline -e features --manifest-path apps/desktop-simulator/Cargo.toml"
+      ],
+      "gate": "separate dependency closures and exact vendor union",
+      "id": "G03",
+      "required": "Retain separate embedded/host roots,lockfiles,toolchain pins and targets. Pin only reviewed k2560.14.0/schnorr/defaults-off and serde_json1.0.151 dev input plus exact used transitive versions. Preserve all26 existing union package identities and all current vendor licenses/checksums; reconcile21 new reviewed package identities/686 vendor files. Verify no accidental std,default,RNG or test backend reaches the production feature closure; record supported pinned Cargo vendor command after admission.",
+      "status": "planned"
+    },
+    {
+      "commands": [
+        "S03_OBSERVED=<absolute-new-integration-evidence>/observed-events.json cargo test --locked --offline -p nsealr-core s03_ -- --nocapture",
+        "python3 docs/restart/implementation/S03/oracle.py --check --fixtures docs/restart/implementation/S03/vectors.json --observed <absolute-new-integration-evidence>/observed-events.json"
+      ],
+      "gate": "actual S03 behavior and independent expected oracle",
+      "id": "G04",
+      "required": "All20 original named behavioral families execute with unchanged8 independent vector cases, original pinned Python/BIP340 reference and official controls. Check actual keys1,3,n-3,original-scalar limitation,canonical/event ID/signatures and mutation/wrong-key/double-hash rejection. Preserve all original fixture/oracle/license bytes and earlier observations; output goes only under new integration/evidence.",
+      "status": "planned"
+    },
+    {
+      "commands": [
+        "cargo test --locked --offline -p nsealr-core --doc",
+        "cargo test --locked --offline --workspace",
+        "cargo test --locked --offline -p nsealr-core --features std",
+        "cargo build --locked --offline -p nsealr-core --no-default-features --target riscv32imafc-unknown-none-elf"
+      ],
+      "gate": "private authority and target-independent memory boundaries",
+      "id": "G05",
+      "required": "Retain non-Clone/private-constructor/non-exposure compile-fail controls; no forged preview/transcript/approved flag or cross-owner ticket. Check consume-before-context/backend failure,all lifecycle invalidations,races,clock/generation failure,complete failed/skipped display rejection and production SigningUnavailable/signing_disabled. Recheck pending<=8KiB/session<=16KiB static assertions; do not claim peak stack,physical erasure,entropy or timing.",
+      "status": "planned"
+    },
+    {
+      "commands": [
+        "cargo test --locked --offline --manifest-path apps/desktop-simulator/Cargo.toml"
+      ],
+      "gate": "strict parser through both current transport/preview paths",
+      "id": "G06",
+      "required": "Current authoritative artifact must remain unchanged and all retained cases accounted for individually. Test decoded aliases/duplicate/unknown fields,exact one-object grammar,numeric spelling/range,UTF-8/surrogates,tags and kind-1 semantics across internal,serial and QR adapters. Preserve legacy outer704/512/16/64 QR limits and bounded serial policy independently of conformance4096/2048/32/256. Explain error-layer and diagnostic Rust API adaptations per case; unsupported or contradictory expectations stop for a reviewed addendum,never silent fixture edits.",
+      "status": "planned"
+    },
+    {
+      "commands": [
+        "make docs test",
+        "make product-gates integration-tests integration"
+      ],
+      "gate": "actual product gates and parser-affected integration",
+      "id": "G07",
+      "required": "Execute scripts/check_product_gates.py and its negative controls,all current helper cases and all17 uninterrupted product integration steps. Exercise Bridge fixture/policy/serial/service/origin/route/native messaging and Pi independent oracle interactions against the combined parser path. Preserve route/ack negatives,unsupported/card rejection,independent Python/libsecp expectations and packed SDK browser/Node/type consumers. Do not add sibling hardware or SDK prerequisites,retire a failing meaningful test,or weaken the required17-step set.",
+      "status": "planned"
+    },
+    {
+      "commands": [
+        "make ci"
+      ],
+      "gate": "coherent complete combined acceptance",
+      "id": "G08",
+      "required": "After targeted checks,execute complete combined product acceptance once on an exact coherent candidate using pinned tools:both Rust workspaces,fmt/clippy/no_std,std/doctests,artifact/contracts,Bridge/Pi/helpers,SDK/security/product integrations,both dependency audits,unchanged100.00/76.70 coverage floors and same-tree/core cross-path reproducibility. Record fresh actual hashes and warnings. Historical old S03/A02 full suites are inputs,not this future combined result.",
+      "status": "planned"
+    },
+    {
+      "commands": [],
+      "gate": "focused independent integrated review and protected delivery",
+      "id": "G09",
+      "required": "Distinct exact review inspects13 core collisions plus lock/workspace/vendor/projection and changed consumer adapters. Reuse original source review/comments only on pinned inputs; independently exercise existing hostile transition/grammar campaign (including original2104-case controls where applicable) on the combined build,with any harness/path adaptation explicitly bound. No need to re-author the old review from scratch. Then normal protected PR/full CI and exact resulting main CI; no future verdict,integration or closure invented.",
+      "status": "planned"
+    }
+  ],
+  "main_source_observation": {
+    "commit": "b1c90139a651895284b2624da7d12903cf16bc9d",
+    "tree": "0014d51b24ea0b58650d3dee3a5a8616367e6769",
+    "preparation_base": "a5f7b9f2e087c9538495a16706644f3390e6b01c",
+    "tree_identical_to_preparation_base": false,
+    "scope": "Exact bounded repair delta is classified in source-pin-addendum.json; all746 target preimages unchanged and only2 of30 context inputs changed, retained read-only."
+  },
+  "phase": "Integration preparation only; no product execution or admission",
+  "potential_future_writable_scope_after_addendum": [
+    "21 declared S03 product source paths with explicit per-file reconciliation",
+    "apps/desktop-simulator/Cargo.lock",
+    "the exact used vendor union and retained licenses/checksums",
+    "ci/project_core_fixtures.py",
+    "ci/core-test-projections.json",
+    "crates/nsealr-core/build.rs",
+    "crates/nsealr-core/src/review/test_fixtures.rs",
+    "80 exact historical public copies listed in source-pin-addendum.json; no other copies",
+    "new docs/restart/implementation/S03/integration/evidence/ records"
+  ],
+  "preparation_base": "a5f7b9f2e087c9538495a16706644f3390e6b01c",
+  "prepared_utc": "2026-10-20T10:25:34.821405+00:00",
+  "preserved_original_cases": [
+    {
+      "execution_status": "not executed by this preparation",
+      "id": "I01",
+      "integration_requirement": "Execute this preserved family on the actual combined candidate with current SSOT projections, unchanged independent expected inputs and new output paths; retain original historical observations separately.",
+      "original_actions": "Consume each S02 secret; compare derived x-only key with pinned BIP340 oracle; replace selected account while review is pending.",
+      "original_arrange": "Disposable scalars 1, 3 and n-3; wrong caller descriptor public key; zero/n intake negative controls.",
+      "original_expected": "Known keys match independent derivation; descriptors cannot choose author. Raw caller buffer remains cleared; no public secret getter/Clone. Account replacement invalidates old review even for same x-only pubkey.",
+      "requirements": [
+        "S03-0",
+        "PROD-01",
+        "AUTH-05"
+      ],
+      "test_name": "s03_identity_is_derived_from_consumed_custody"
+    },
+    {
+      "execution_status": "not executed by this preparation",
+      "id": "P01",
+      "integration_requirement": "Execute this preserved family on the actual combined candidate with current SSOT projections, unchanged independent expected inputs and new output paths; retain original historical observations separately.",
+      "original_actions": "Feed raw bytes to standalone parser, serial and QR adapters; permute known member order; append second object/NUL/nonspace; test trailing comma and missing comma.",
+      "original_arrange": "Valid request plus duplicates at envelope/params/template layers, including kind versus k\\u0069nd and params versus p\\u0061rams.",
+      "original_expected": "Each duplicate/unknown/missing/trailing/malformed input rejects before any approval/backend call. Unique reordered objects decode to the same operation.",
+      "requirements": [
+        "S03-2",
+        "PROD-05",
+        "PROD-09"
+      ],
+      "test_name": "s03_rejects_duplicate_and_incomplete_json"
+    },
+    {
+      "execution_status": "not executed by this preparation",
+      "id": "P02",
+      "integration_requirement": "Execute this preserved family on the actual combined candidate with current SSOT projections, unchanged independent expected inputs and new output paths; retain original historical observations separately.",
+      "original_actions": "Place at version/kind/created_at with each other field valid. Parse syntactically valid unsupported kinds separately from authorization.",
+      "original_arrange": "Values 0,1,65535,65536,-1,-0,+1,01,1.0,1e0,NaN,Infinity,2^53-1,2^53,u64 overflow; booleans/null/string types.",
+      "original_expected": "kind 0..65535 only; timestamp 0..2^53-1 only; canonical unsigned-decimal spellings only. Valid other kinds parse but never receive S03 authority; malformed number rejected by parser.",
+      "requirements": [
+        "S03-0",
+        "S03-2",
+        "PROD-09"
+      ],
+      "test_name": "s03_integer_tokens_and_kinds_are_exact"
+    },
+    {
+      "execution_status": "not executed by this preparation",
+      "id": "P03",
+      "integration_requirement": "Execute this preserved family on the actual combined candidate with current SSOT projections, unchanged independent expected inputs and new output paths; retain original historical observations separately.",
+      "original_actions": "Exercise standalone and both adapter paths; compare valid escaped/raw equivalents.",
+      "original_arrange": "Valid raw/escaped BMP, U+1F600 surrogate pair, combining e+U+0301; invalid UTF8 overlong NUL, surrogate UTF8, >U+10FFFF, truncated sequence; lone/reversed surrogate escapes; raw C0.",
+      "original_expected": "Malformed inputs reject without replacement/deletion; valid scalar strings identical after decoding. Composed and decomposed strings remain distinct.",
+      "requirements": [
+        "S03-2",
+        "PROD-05"
+      ],
+      "test_name": "s03_unicode_decode_is_lossless_or_rejected"
+    },
+    {
+      "execution_status": "not executed by this preparation",
+      "id": "C01",
+      "integration_requirement": "Execute this preserved family on the actual combined candidate with current SSOT projections, unchanged independent expected inputs and new output paths; retain original historical observations separately.",
+      "original_actions": "Derive fixture identity inside owner; serialize/hash with core and independently from semantic inputs.",
+      "original_arrange": "Tiny empty-content operation plus each control, slash, quote, backslash, U+2028/U+2029, supplementary scalar, NUL, composed/decomposed text; tags with duplicate ordered values.",
+      "original_expected": "Exact canonical byte equality and 32-byte SHA256 equality; no normalization, unexpected escaping, extra whitespace or double hash. Exact seven escape spellings are enumerated in canonical_escape_contract: quote/backslash plus five named controls; all other C0 scalars use lowercase u00xx.",
+      "requirements": [
+        "S03-0",
+        "S03-3",
+        "AUTH-05"
+      ],
+      "test_name": "s03_nip01_bytes_match_independent_oracle"
+    },
+    {
+      "execution_status": "not executed by this preparation",
+      "id": "C02",
+      "integration_requirement": "Execute this preserved family on the actual combined candidate with current SSOT projections, unchanged independent expected inputs and new output paths; retain original historical observations separately.",
+      "original_actions": "Change created_at/kind/content/tag count/tag order/duplicate count/each tag field/selected identity one at a time; separately alter envelope whitespace/key order or equivalent string escapes.",
+      "original_arrange": "One valid kind1 event with multiple tags and suffix fields.",
+      "original_expected": "Signed-value mutations cannot reuse authority and have independent expected event IDs; syntax-only equivalents have same event ID but new review still needed for different request/session.",
+      "requirements": [
+        "S03-1",
+        "S03-3",
+        "AUTH-02",
+        "AUTH-05"
+      ],
+      "test_name": "s03_every_event_mutation_changes_authorized_operation"
+    },
+    {
+      "execution_status": "not executed by this preparation",
+      "id": "KIND01",
+      "integration_requirement": "Execute this preserved family on the actual combined candidate with current SSOT projections, unchanged independent expected inputs and new output paths; retain original historical observations separately.",
+      "original_actions": "Traverse each complete review; compare typed role/index/value records and overview to independently authored expectations.",
+      "original_arrange": "Plain note; root-only reply; root+different reply; unmarked e references; p target; q event ID+author and q address with colon-bearing identifier; unknown tag and suffix.",
+      "original_expected": "Every signed value appears once in indexed review with exact role. Unmarked context says ambiguous; quote/author/relay hints remain unverified. Unknown/extension data is complete and explicitly uninterpreted.",
+      "requirements": [
+        "S03-1",
+        "PROD-05"
+      ],
+      "test_name": "s03_kind1_interprets_exact_reference_subset"
+    },
+    {
+      "execution_status": "not executed by this preparation",
+      "id": "KIND02",
+      "integration_requirement": "Execute this preserved family on the actual combined candidate with current SSOT projections, unchanged independent expected inputs and new output paths; retain original historical observations separately.",
+      "original_actions": "Attempt to review each input. URI cases include valid mixed-case DNS/path %HH and empty hints; bad port/IPv4/labels/userinfo/query/fragment/Unicode/IPv6/control/backslash.",
+      "original_arrange": "Malformed known e/p/q; invalid curve pubkey; root duplicates/reply duplicates/equal root-reply/reply without root/mixed marked-unmarked; empty tags/identifier; emoji; kinds0,3,5,6,7,10002,10050,22242,16,17,14,13,1059.",
+      "original_expected": "Reject unsupported or malformed known semantics before consent, even if raw strings fit. Additional-data path cannot bypass validation. Admitted URI values retain exact bytes.",
+      "requirements": [
+        "S03-1",
+        "PROD-05"
+      ],
+      "test_name": "s03_malformed_known_semantics_never_fall_back"
+    },
+    {
+      "execution_status": "not executed by this preparation",
+      "id": "R01",
+      "integration_requirement": "Execute this preserved family on the actual combined candidate with current SSOT projections, unchanged independent expected inputs and new output paths; retain original historical observations separately.",
+      "original_actions": "Collect all generated frames; reconstruct per-field escaped values by indexes; compare to independently encoded values; mutate final suffix after shared prefix.",
+      "original_arrange": "Maximal admitted content/tags, empty strings, long suffix, different display widths/heights including smallest valid geometry.",
+      "original_expected": "No omitted field, hidden suffix, ellipsis, collapsed whitespace or ambiguous index; each accepted operation is entirely inspectable. Capacity failure rejects before approval.",
+      "requirements": [
+        "S03-1",
+        "S03-2",
+        "AUTH-01",
+        "PROD-05"
+      ],
+      "test_name": "s03_review_has_complete_indexed_coverage"
+    },
+    {
+      "execution_status": "not executed by this preparation",
+      "id": "R02",
+      "integration_requirement": "Execute this preserved family on the actual combined candidate with current SSOT projections, unchanged independent expected inputs and new output paths; retain original historical observations separately.",
+      "original_actions": "Generate review inspection tokens for each pair and roundtrip with small independent decoder.",
+      "original_arrange": "Literal U+202E versus bidi scalar; literal backslash-u braces versus scalar; literal backslash-n versus newline; zero-width joiner, combining marks, CR, LF, tabs, spaces at boundaries, quote, emoji.",
+      "original_expected": "Distinct accepted scalar strings have distinct inspection text; canonical signed bytes stay unchanged; escape tokens are not split across frames.",
+      "requirements": [
+        "S03-2",
+        "PROD-05"
+      ],
+      "test_name": "s03_review_escape_spelling_is_injective"
+    },
+    {
+      "execution_status": "not executed by this preparation",
+      "id": "R03",
+      "integration_requirement": "Execute this preserved family on the actual combined candidate with current SSOT projections, unchanged independent expected inputs and new output paths; retain original historical observations separately.",
+      "original_actions": "Jump logical section, skip scroll windows, replay acknowledgements, fail last data page, reach decision without all frames displayed.",
+      "original_arrange": "Multi-page field; local display driver that fails on chosen pages; stale page/generation acknowledgements; early Approve.",
+      "original_expected": "No Approved state until every exact flat page has successful local presentation and acknowledgement plus distinct final consent. Failure/cancel leaves no authority; no generic trusted=true override.",
+      "requirements": [
+        "S03-1",
+        "AUTH-01"
+      ],
+      "test_name": "s03_failed_or_skipped_display_cannot_approve"
+    },
+    {
+      "execution_status": "not executed by this preparation",
+      "id": "A01",
+      "integration_requirement": "Execute this preserved family on the actual combined candidate with current SSOT projections, unchanged independent expected inputs and new output paths; retain original historical observations separately.",
+      "original_actions": "Route via each host entry; try public API forgery/Clone using compile-fail probes; separately run a valid local review control.",
+      "original_arrange": "Host envelopes with approved/button/trusted/approval_digest fields; constructed legacy pages; copied transcript; readiness all true.",
+      "original_expected": "Host fields reject; diagnostic objects cannot convert to authority or supply a key; no exported approved constructor/callback/Clone. Valid local path reaches Approved.",
+      "requirements": [
+        "S03-1",
+        "AUTH-01",
+        "PROD-04"
+      ],
+      "test_name": "s03_host_and_transcript_cannot_mint_authority"
+    },
+    {
+      "execution_status": "not executed by this preparation",
+      "id": "A02",
+      "integration_requirement": "Execute this preserved family on the actual combined candidate with current SSOT projections, unchanged independent expected inputs and new output paths; retain original historical observations separately.",
+      "original_actions": "Alter one bound value at a time via test-only fault injection, including current identity and generated review data; first attempt then original retry.",
+      "original_arrange": "Approved control operation with pinned request, account/session/policy/limits/review generations and deadline.",
+      "original_expected": "Zero backend calls/output on mismatch, grant consumed, retry rejected. Immutable public API prevents normal mutation; private mutation proves fail-closed boundary, not a supported setter.",
+      "requirements": [
+        "S03-1",
+        "AUTH-02",
+        "PROD-04"
+      ],
+      "test_name": "s03_attempt_binds_context_and_consumes_mismatch"
+    },
+    {
+      "execution_status": "not executed by this preparation",
+      "id": "A03",
+      "integration_requirement": "Execute this preserved family on the actual combined candidate with current SSOT projections, unchanged independent expected inputs and new output paths; retain original historical observations separately.",
+      "original_actions": "Attempt twice, duplicate consent, retry through other adapter, and new request with reused request ID.",
+      "original_arrange": "Approved operation and private counted backend; success, pre-invocation validation failure, crypto Err, wrong-key/signature return, simulated lost response.",
+      "original_expected": "At most one backend invocation per local consent; all outcomes leave Spent. Production unavailable path also consumes. No retry reconstructs output; new attempt needs fresh review.",
+      "requirements": [
+        "S03-1",
+        "AUTH-03",
+        "PROD-04"
+      ],
+      "test_name": "s03_first_attempt_is_irrevocable"
+    },
+    {
+      "execution_status": "not executed by this preparation",
+      "id": "A04",
+      "integration_requirement": "Execute this preserved family on the actual combined candidate with current SSOT projections, unchanged independent expected inputs and new output paths; retain original historical observations separately.",
+      "original_actions": "Cross product meaningful state/event orderings; attempt after every invalidation; inject completion from prior generation.",
+      "original_arrange": "Receive/Reviewing/Approved/Executing/Spent states; cancel, reject, lock, reset, deadline, same/different-account replacement, same/different-policy update and limits update.",
+      "original_expected": "No stale authority or completion output; locked/reset key owner dropped as applicable. New idle session has no imported consent. A started crypto call cannot be undone but never authorizes a second.",
+      "requirements": [
+        "S03-1",
+        "AUTH-04",
+        "PROD-04"
+      ],
+      "test_name": "s03_each_lifecycle_event_invalidates_pending_work"
+    },
+    {
+      "execution_status": "not executed by this preparation",
+      "id": "A05",
+      "integration_requirement": "Execute this preserved family on the actual combined candidate with current SSOT projections, unchanged independent expected inputs and new output paths; retain original historical observations separately.",
+      "original_actions": "Race execute/execute and execute/cancel with both deterministic orderings. Exercise private begin/completion transition with cancellation between them.",
+      "original_arrange": "One actual session behind std::sync::Mutex; two host threads released by barrier; private counted success/failure backend.",
+      "original_expected": "At most one attempt authorized. Cancel-before-start yields zero calls; start-before-cancel permits at most one call and stale completion is discarded. No unsynchronized cloned state.",
+      "requirements": [
+        "S03-1",
+        "AUTH-03",
+        "AUTH-04"
+      ],
+      "test_name": "s03_two_attempts_and_cancel_linearize_once"
+    },
+    {
+      "execution_status": "not executed by this preparation",
+      "id": "A06",
+      "integration_requirement": "Execute this preserved family on the actual combined candidate with current SSOT projections, unchanged independent expected inputs and new output paths; retain original historical observations separately.",
+      "original_actions": "Replay old local event/callback into new session; same public identity selected again; host supplies future timestamps and stalled request retries.",
+      "original_arrange": "Old review/page token and request ID retained by hostile host; new owner after reset/reconnect; clock ticks deadline-1/deadline/deadline+1 and rollback; checked counter overflow.",
+      "original_expected": "Old authority never resurrects; exact deadline expires; clock rollback/unavailable/overflow rejects and invalidates; no host timestamp or navigation extends deadline.",
+      "requirements": [
+        "S03-1",
+        "AUTH-02",
+        "AUTH-04"
+      ],
+      "test_name": "s03_old_session_aliases_and_time_fail_closed"
+    },
+    {
+      "execution_status": "not executed by this preparation",
+      "id": "L01",
+      "integration_requirement": "Execute this preserved family on the actual combined candidate with current SSOT projections, unchanged independent expected inputs and new output paths; retain original historical observations separately.",
+      "original_actions": "Test below/at/above each independently using smaller trusted test limits where input cap would dominate; long UTF8/escaped expansion; deep malformed arrays; repeated short requests while busy; checked multiplication/addition overflow. Record size_of PendingOperation and AuthorizationSession plus separately inventoried external/transient/backend storage; ensure no per-field fixed 256-byte array creates a 64 KiB retained layout.",
+      "original_arrange": "Every configured input/content/tag count/fields/field bytes/aggregate/canonical bytes/page count/geometry boundary and one pending slot. Compact 4096-byte arena with span indexing; maximum field count and aggregate data together.",
+      "original_expected": "No panic/unbounded allocation/recursion or retained queue growth; reject before write/crypto/approval; operation counters remain within derived configured bound. Record static type sizes and target build only. PendingOperation <=8192 bytes; complete retained AuthorizationSession <=16384 bytes including all inline fields and pending storage once. No retained canonical/page copies or alternate queue.",
+      "requirements": [
+        "S03-2",
+        "PROD-09"
+      ],
+      "test_name": "s03_all_limits_bound_storage_and_work"
+    },
+    {
+      "execution_status": "not executed by this preparation",
+      "id": "D01",
+      "integration_requirement": "Execute this preserved family on the actual combined candidate with current SSOT projections, unchanged independent expected inputs and new output paths; retain original historical observations separately.",
+      "original_actions": "Send sign_event through serial/QR adapters; call production attempt twice; inspect exported symbols/features and migrate simulator preview expectations.",
+      "original_arrange": "Default/no_std and std builds; legacy SigningReadiness true/false combinations; host persistent_grants/origin/descriptor; valid fixture locally reviewed via disabled production backend.",
+      "original_expected": "Product emits signing_disabled/SigningUnavailable and no signature; first unavailable attempt consumed. Only cfg(test) backend can fixture-sign; no runtime/feature switch bypass. Public preview decisions never accepted as signing permission.",
+      "requirements": [
+        "S03-4",
+        "AUTH-01",
+        "PROD-04",
+        "PROD-11"
+      ],
+      "test_name": "s03_legacy_status_never_enables_product_signing"
+    },
+    {
+      "execution_status": "not executed by this preparation",
+      "id": "V01",
+      "integration_requirement": "Execute this preserved family on the actual combined candidate with current SSOT projections, unchanged independent expected inputs and new output paths; retain original historical observations separately.",
+      "original_actions": "Parse/review/approve fixture through actual S03 owner, private backend signs raw event digest; independent oracle verifies output and correlation. Flip each canonical field, ID byte, signature byte, key or request correlation; include valid wrong-author signature and high-level prehash trap.",
+      "original_arrange": "Independent semantic fixtures with exact derived public keys, canonical bytes, IDs, auxiliary bytes and valid BIP340 signatures; official vectors selected for verifier sanity.",
+      "original_expected": "Control output matches independent event hash and raw signature under selected identity. Modified/wrong-key/double-hashed/stale-correlated outputs reject. No test accepts agreement between two copies of the same canonicalizer as oracle.",
+      "requirements": [
+        "S03-0",
+        "S03-3",
+        "AUTH-05",
+        "PROD-10"
+      ],
+      "test_name": "s03_independent_event_id_and_signature_agree"
+    }
+  ],
+  "product_or_test_implementation_performed": false,
+  "reviewed_delivery": "03216fba02d229bcdb5c81d0573bbe26c6f35abc",
+  "schema_version": 1,
+  "source_pin_addendum_required": true,
+  "stop_conditions": [
+    "Actual A02 main/main-CI identity or distinct source-pin/spec acceptance is absent.",
+    "Any target/source identity differs without explicit reconciliation.",
+    "Unexpected new dependency/version/feature,missing license/checksum or old workspace lock replacement.",
+    "Any expected contract/vector value must change to pass,or meaningful case/limit/authority check is removed or weakened.",
+    "Test backend/signing provider,host consent,legacy preview conversion,original-scalar recovery/export policy or new catalog/NIP44 service is introduced.",
+    "Product gates/integration/oracle/coverage/reproduction fails or exact candidate changes after affected review."
+  ],
+  "task": "S03",
+  "task_closed": false,
+  "read_only_target_interfaces": [
+    "scripts/verify_contracts.py",
+    "scripts/test_contracts.py",
+    "scripts/check_product_gates.py",
+    "scripts/test_product_gates.py",
+    "tests/integration/run.py",
+    "protocols/contracts/v1/**"
+  ]
+}
