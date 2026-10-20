@@ -1,6 +1,6 @@
 # Execution and proof
 
-A Codex coordinator maintains the task graph and assigns bounded work to independent implementers/reviewers. Git worktrees, CI and evidence files are sufficient initially. Hardware/security specialists use the maintainer-requested Astra xhigh configuration after checking availability. This foundation does not start an unattended service.
+A Codex coordinator maintains the task graph and assigns bounded work to independent implementers/reviewers. Git worktrees, CI and evidence files are sufficient initially. The latest maintainer policy (20 October 2026) uses `gpt-6.1-sol` with `xhigh` reasoning for coordinator, implementers and reviewers. Minimize Astra; `gpt-6-astra` `xhigh` is an exceptional escalation requiring a concrete task/review complexity reason recorded in its assignment. Hardware/security labels alone do not justify escalation. Verify runtime settings and transition existing authors only at safe recoverable checkpoints; preserve historical model evidence. This foundation does not start an unattended service.
 
 The [development contract](development.md) defines specification readiness, first-tranche substeps and a worked one-use authorization contract. A roadmap task is not automatically an implementation-ready brief. Requirements and experiments must be resolved at the boundary being implemented before claiming conformance.
 

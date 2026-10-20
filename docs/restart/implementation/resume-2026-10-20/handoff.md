@@ -9,3 +9,7 @@ Continue from exact author checkpoints: A02 `52288f8` / isolated product `2bb100
 Canonical `nsealr` main remains `f2ef70f` and hardware main remains `340697d`: the A02 source freeze still applies. Hold PR23, PR28, hardware PR1 and this checkpoint PR until the proper reconciled integration. The pause branch task graph is an unmerged proposal, not a second adopted plan. Preserve all 47 criteria, seven closed task records and frozen evidence during actual migration/adoption.
 
 All earlier privacy, source verification, distinct-review and physical qualification requirements remain. No purchase, factory submission, production-key ceremony or fuse operation is authorized by resuming. Resume is not a release claim; only concrete accepted evidence closes gates.
+
+## Latest model policy
+
+The maintainer's subsequent clarification supersedes the brief Astra-coordinator request: default **GPT-6.1 Sol `xhigh` for both coordinator and all agents**, minimizing Astra. Astra `xhigh` requires a concrete exceptional task/review complexity reason; a hardware/security label is insufficient. The coordinator's actual current turn metadata confirms Sol `xhigh`. The three initially Astra authors were asked to checkpoint and stop; successor assignments use Sol `xhigh`. Read [the policy receipt](model-policy.json) for actual observation and handoff status. Historical pause, model and review records remain untouched. The current instructions/plan changes are unmerged proposals pending normal A02 reconciliation, not a reason to advance frozen source mains.
