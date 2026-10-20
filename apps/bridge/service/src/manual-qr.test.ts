@@ -347,13 +347,17 @@ describe("service manual QR port through the existing client lifecycle", () => {
   it.each(["currentness", "retention"])("releases the owner after a pre-open%s rejection", async (failure) => {
     const state = setup(); const actualDispatch = state.context.signerDispatcher!;
     const retained = state.snapshot.adapter_limits.methods[1].retained_bytes;
-    if (failure === "currentness") state.context.signerDispatcher = (dispatch) => actualDispatch({ ...dispatch,
-      before_write: () => { throw new Error("synthetic host currentness failure"); } });
-    else state.snapshot.adapter_limits.methods[1].retained_bytes = 1;
-    expect((await run(state)).ok).toBe(false); expect(state.counts.opens).toBe(0);
-    state.context.signerDispatcher = actualDispatch;
+    let entries = 0, rejectCurrentness = failure === "currentness";
+    state.context.signerDispatcher = (dispatch) => {
+      entries++;
+      return actualDispatch(rejectCurrentness ? { ...dispatch,
+        before_write: () => { throw new Error("synthetic host currentness failure"); } } : dispatch);
+    };
+    if (failure === "retention") state.snapshot.adapter_limits.methods[1].retained_bytes = 1;
+    expect((await run(state)).ok).toBe(false); expect(entries).toBe(1); expect(state.counts.opens).toBe(0);
+    rejectCurrentness = false;
     state.snapshot.adapter_limits.methods[1].retained_bytes = retained;
-    expect((await run(state)).ok).toBe(true);
+    expect((await run(state)).ok).toBe(true); expect(entries).toBe(2);
     expect(state.counts).toEqual({ opens: 1, scans: 1, closes: 1 });
   });
 });
