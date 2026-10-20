@@ -1,0 +1,10 @@
+{
+  "source_identified_by": "root distinct interim reading",
+  "affected_runtime_source": "04b8911fedeb96844ea3ee0783753da49ec1337b",
+  "status_before_execution": "source-identified invariant gap, not yet observed exploit",
+  "expected_invariant": "One factory owner is reserved before invoking any external currentness callback. A nested actual client call from the provider in a distinct LocalServiceContext must fail busy without a second open. All pre-open failures release the owner, while attempted opens/close failures retain quarantine semantics.",
+  "reproduction": "wrap existing dispatcher to flag its synchronous entry; provider reenters actual handleLocalServiceRequestAsync once only inside adapter.current; use distinct copied context and same factory, hold opener promise and observe opens before settling; settle all promises in finally",
+  "expected_count_while_held": 1,
+  "expected_nested_error": "signer_transport_failed",
+  "expected_after_successful_close": "fresh actual exchange succeeds"
+}

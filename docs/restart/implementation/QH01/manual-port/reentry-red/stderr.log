@@ -1,0 +1,22 @@
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  apps/bridge/service/src/manual-qr.test.ts > service manual QR port through the existing client lifecycle > reserves the factory before currentness callbacks can reenter through another actual client context
+AssertionError: expected 2 to be 1 // Object.is equality
+
+- Expected
++ Received
+
+- 1
++ 2
+
+ ❯ apps/bridge/service/src/manual-qr.test.ts:335:34
+    333|       await entered.promise;
+    334|       expect(triggered).toBe(true); expect(nested).toBeDefined();
+    335|       expect(state.counts.opens).toBe(1);
+       |                                  ^
+    336|     } finally {
+    337|       finish.resolve();
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+

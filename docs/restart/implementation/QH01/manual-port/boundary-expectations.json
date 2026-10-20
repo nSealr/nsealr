@@ -1,0 +1,34 @@
+{
+  "runtime_source_before_checks": "04b8911f",
+  "independent_inputs": [
+    "Existing public-key request/response fixture",
+    "Node Buffer JSON UTF8/base64url encoding, not the QR codec under test",
+    "Explicit peer-error body with200ASCII padding bytes"
+  ],
+  "declared_additional_instances": 17,
+  "execution_not_yet_claimed": true,
+  "expectations": [
+    {
+      "dimensions": [
+        "raw frame bytes",
+        "decoded static JSON bytes",
+        "method response JSON bytes",
+        "transport reassembly bytes",
+        "cumulative request+response raw work"
+      ],
+      "deltas": [
+        -1,
+        0,
+        1
+      ],
+      "negative": "actual scanned error response rejected BEFORE decoder; actual positive response-shape preflight still fits; one open/scan/close",
+      "exact_and_plus_one": "same original peer error accepted and decoded once; not consent"
+    },
+    {
+      "delayed_presenter": "generation changed after initial service hook: trusted actual-effect hook rejects before present/scan; close still required"
+    },
+    {
+      "late_scan": "actual client timeout then uncooperative scan resolves malformed original bytes; decoder never called and port closes"
+    }
+  ]
+}

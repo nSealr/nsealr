@@ -44,11 +44,11 @@ experimentb4581236 and their distinct limited reviews. QP01 remains planned and
 all three criteria remain incomplete; all six Q02 criteria remain incomplete.
 No persistent import/user-key adapter, ARM/image build, actual optical/UI test,
 entropy/provider or no-persistence qualification is admitted by this delivery.
-Its current source/copy/metadata package awaits root's exact final review and
-normal protected PR/resulting-main gates. Reuse the source-matched canary and
+Its [foundation delivery is now accepted on actual main d41](reviews/QP01-current-delivery/adoption/actual-main-acceptance.json),
+after normal protected PR41/full PR and actual-main CI. Reuse the source-matched canary and
 K01 proof; do not repeat them merely to update navigation or timestamps.
 
-That delivery also carries B01's frozen QH01 [QR ingress component](QH01/qr-ingress/handoff.md)
+That accepted delivery also carries B01's frozen QH01 [QR ingress component](QH01/qr-ingress/handoff.md)
 from557fe975: only `packages/qr/src/qr.ts` and its tests change outside scoped
 proof. Static and animated early length/work guards retain existing codec limits,
 integrity/parser checks and framing. Root's
@@ -56,6 +56,17 @@ integrity/parser checks and framing. Root's
 `PASS_QR_ingress_component_only`; all five QH01 criteria stay incomplete and its
 task remains planned. The shared delivery wrapper distinguishes this runtime correction from QP01 preparation;
 it does not admit a complete Bridge optical/client workflow or physical release.
+
+The next [manual QR service component](QH01/delivery/README.md) copies B01's
+exact2b08278a source and preserved proof onto actuald41. It injects one trusted
+manual port through the existing client lifecycle, with two new TypeScript
+files and only two workspace dependency/link additions. Root's
+[distinct review](reviews/QH01-manual-port/report.md) atbfc6b29a is
+`PASS_manual_QR_service_component_only`; final metadata/protected adoption
+remain pending.
+It enables no default route/readiness or key/provider path. All five QH01
+criteria remain incomplete; native/physical scan/display, real-client timing,
+framing/UR and the actual Pi/P4 resource gates remain open.
 
 The sole task authority is [plan/work-items.json](../../../plan/work-items.json).
 Use existing commands, targeted source reads, one CI observer and applicable
