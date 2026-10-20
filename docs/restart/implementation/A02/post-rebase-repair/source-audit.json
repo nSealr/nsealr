@@ -1,0 +1,72 @@
+{
+  "schema_version": 1,
+  "task": "A02",
+  "phase": "Bounded forward repair preparation only; no checker implementation modified or task closed",
+  "recorded_utc": "2026-10-20T10:36:01.271099+00:00",
+  "input_commit": "d931277bebbc5f43514b0e8438d65fb60603fa35",
+  "input_tree": "e67b1337eaea5cfe3242fe4d83845881764ea5f0",
+  "failed_main_CI": {
+    "id": 39408038674,
+    "job": 118578669141,
+    "head": "d931277bebbc5f43514b0e8438d65fb60603fa35",
+    "url": "https://github.com/nSealr/nsealr/actions/runs/39408038674",
+    "conclusion": "failure",
+    "capture_logs_zip_sha256": "0c074b0fdd3253b5518683cd5ba853db58b0c095c264167f87cdb0c2f7fe291d",
+    "symptom": "verify_contracts git show immutable BASELINE5cb fails128 in cold main-only source; integration step1 repeats the same failure"
+  },
+  "original_pr_CI": {
+    "id": 39406783194,
+    "head": "a5f7b9f2e087c9538495a16706644f3390e6b01c",
+    "conclusion": "success"
+  },
+  "exact_rebased_anchors": [
+    {
+      "historical_commit": "86569e073da4faec0811d67137bbb0fd4f74c7c6",
+      "adopted_ancestor": "68508ea1eea1e07b0064fadd65b33433d72701f8",
+      "exact_whole_tree": "59008a6e0fdb4475d03bbe4f1761f8514f552e84",
+      "artifact_tree_inventory_sha256": "f2fd93d0fb3f5b6c011640b108098a80bfba33d2be58709633b58246bbabfd26",
+      "artifact_rows": 260,
+      "adopted_ancestor_of_main": true
+    },
+    {
+      "historical_commit": "5cb16cbaffc6b90ca9dfbb1ce7a5388e731d1ae0",
+      "adopted_ancestor": "59653fcc15c4cbc21a39d0a0dd5548abe46165b0",
+      "exact_whole_tree": "d3ee175dbdcd91bcd01f1cde50be2451251ebd96",
+      "artifact_tree_inventory_sha256": "ecc8d616768d7ff0fca3c872a1fa6015f7ac2cf3c55422e1fc5f69695e182303",
+      "artifact_rows": 263,
+      "adopted_ancestor_of_main": true
+    }
+  ],
+  "inputs": [
+    {
+      "path": "scripts/verify_contracts.py",
+      "source_commit": "d931277bebbc5f43514b0e8438d65fb60603fa35",
+      "sha256": "1fd0ff4be577ed4f269fffe691becb3e0f2370a2c4002f8ea4635629969ea681",
+      "bytes": 5247
+    },
+    {
+      "path": "scripts/test_contracts.py",
+      "source_commit": "d931277bebbc5f43514b0e8438d65fb60603fa35",
+      "sha256": "d4051ad444d5a69bbbabc9fa3e5850a096cdb3e9420a6d355742191bc64b7208",
+      "bytes": 7903
+    },
+    {
+      "path": "protocols/contracts/v1/manifest.json",
+      "source_commit": "d931277bebbc5f43514b0e8438d65fb60603fa35",
+      "sha256": "16bf215c6f65a5c616c30971cb860351272633ff6a8c75edc8246eab61f8bbeb",
+      "bytes": 73383
+    },
+    {
+      "path": "protocols/contracts/v1/consumers.json",
+      "source_commit": "d931277bebbc5f43514b0e8438d65fb60603fa35",
+      "sha256": "36389c1847c7277d70d960b8116da4c351f6950e1ecc57bfe17d68ec84426e0d",
+      "bytes": 3717
+    }
+  ],
+  "diagnosis": "Protected normal rebase changed intermediate commit identities. The old ids were reachable in the PR head and rehearsal, but not from a cold fetch of rewritten main. Current artifact trees are identical. Historical origin metadata must remain unchanged; runtime comparisons must pin equal adopted source/postimage ancestors now permanently reachable from main.",
+  "not_claimed": [
+    "No artifact mutation or weakened gate",
+    "No corrected-main CI result",
+    "No A02 closure or S03 implementation admission"
+  ]
+}
