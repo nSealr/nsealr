@@ -1,0 +1,33 @@
+{
+  "commands": [
+    {
+      "label": "local-discovery-link",
+      "argv": [
+        "ln",
+        "-s",
+        "libzbar.so.0",
+        "/home/tux/nsealr/.restart-tools/goal/qh01-native-qr-probe/docs/restart/implementation/QH01/native-qr-probe/.runtime/native/usr/lib/x86_64-linux-gnu/libzbar.so"
+      ],
+      "exit": 0,
+      "elapsed_seconds": 0.001,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "native-linkage-local",
+      "argv": [
+        "ldd",
+        "/home/tux/nsealr/.restart-tools/goal/qh01-native-qr-probe/docs/restart/implementation/QH01/native-qr-probe/.runtime/native/usr/lib/x86_64-linux-gnu/libzbar.so.0"
+      ],
+      "exit": 0,
+      "elapsed_seconds": 0.004,
+      "stdout_sha256": "777e038159e137507d4508464980d667126e8cd337ecc9938e9f78fe73936fb3",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ],
+  "reason": "Extracted Debian runtime suppliesSONAME symlink only. StandardCPython ctypes.find_library fallback uses ld -lzbar withLD_LIBRARY_PATH; local unversioned discovery symlink points to exact approved SONAME/binary, no DLL/API monkeypatch or ELF change.",
+  "symlink": "libzbar.so",
+  "symlink_target": "libzbar.so.0",
+  "environment": "execution-environment.json",
+  "earlier_ldd": "native-linkage.stdout.log predatesLD_LIBRARY_PATH; its0exit did not prove linkage readiness; current ldd resolves isolatedV4L dependencies."
+}
