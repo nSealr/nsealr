@@ -59,13 +59,13 @@ describe("identity, recovery, and policy contracts", () => {
     const grant = parseGrantDescriptor(loadJson(resolve(specsRoot, "vectors/grants/esp32-usb-kind-1-session.json")));
 
     expect(account.signer_route.type).toBe("raspberry_qr_vault");
-    expect(account.capabilities.persistent_grants).toBe(false);
+    expect(account.capabilities).not.toHaveProperty("persistent_grants");
     expect(account.recovery.source_fingerprint).toBe("cd64b58daca009b9");
     expect(esp32QrAccount.signer_route.type).toBe("esp32_qr_vault");
-    expect(esp32QrAccount.capabilities.persistent_grants).toBe(false);
+    expect(esp32QrAccount.capabilities).not.toHaveProperty("persistent_grants");
     expect(esp32QrAccount.recovery.source_fingerprint).toBe("cd64b58daca009b9");
     expect(customHardwareWalletAccount.recovery.type).toBe("hardware_wallet_slot");
-    expect(customHardwareWalletAccount.capabilities.persistent_grants).toBe(true);
+    expect(customHardwareWalletAccount.signer_route.policy_support).toBe("manual_only");
     expect(policy.mode).toBe("manual_only");
     expect(policy.grants_allowed).toBe(false);
     expect(persistentManualPolicy.mode).toBe("manual_only");
@@ -272,7 +272,7 @@ describe("identity, recovery, and policy contracts", () => {
     };
     account.capabilities.persistent_grants = true;
 
-    expect(() => parseAccountDescriptor(account)).toThrow(/external NIP-46 routes must not claim nSealr persistent grants/u);
+    expect(() => parseAccountDescriptor(account)).toThrow(/capabilities has unsupported field persistent_grants/u);
   });
 
   it("rejects wildcard grants and non-persistent policy-route grant targets", () => {
@@ -535,7 +535,7 @@ describe("identity, recovery, and policy contracts", () => {
     })).toThrow(/account_id is ambiguous/u);
     expect(() => selectAccountRoute([account], {
       account_id: account.account_id,
-      method: "get_public_key"
+      method: "get_signing_status"
     })).toThrow(/method is unsupported/u);
     expect(() => selectAccountRoute([account], {
       account_id: account.account_id,
@@ -546,7 +546,7 @@ describe("identity, recovery, and policy contracts", () => {
     expect(() => parseRouteSelection({
       ...routeSelection,
       repository: "firmware"
-    })).toThrow(/repository does not match/u);
+    })).toThrow(/repository must be nsealr/u);
     expect(() => parseRouteSelection({
       ...routeSelection,
       contains_secret_material: true

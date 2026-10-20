@@ -1,0 +1,192 @@
+error: unknown command 'smartcard-sim-sign'
+
+⎯⎯⎯⎯⎯⎯ Failed Tests 15 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  apps/bridge/cli/src/index.test.ts > nsealr CLI > verifies all event fixtures from the specs repository
+Error: version must be 2
+ ❯ validateNip46BridgeDecisionFixtures apps/bridge/cli/src/index.ts:444:7
+    442|     }
+    443|     assertJsonEqual(
+    444|       decideNip46BridgeAction(fixture.request_message, check.granted_p…
+       |       ^
+    445|       check.decision,
+    446|       `invalid NIP-46 fixture ${name}: bridge decision mismatch at ${i…
+ ❯ validateNip46PayloadFixture apps/bridge/cli/src/index.ts:459:3
+ ❯ Command.<anonymous> apps/bridge/cli/src/index.ts:756:9
+ ❯ Command.listener [as _actionHandler] node_modules/.pnpm/commander@14.0.2/node_modules/commander/lib/command.js:568:17
+ ❯ node_modules/.pnpm/commander@14.0.2/node_modules/commander/lib/command.js:1604:14
+ ❯ Command._chainOrCall node_modules/.pnpm/commander@14.0.2/node_modules/commander/lib/command.js:1488:12
+ ❯ Command._parseCommand node_modules/.pnpm/commander@14.0.2/node_modules/commander/lib/command.js:1603:27
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/15]⎯
+
+ FAIL  apps/bridge/cli/src/index.test.ts > nsealr CLI > verifies event and trusted-review fixtures from the specs repository
+AssertionError: promise rejected "Error: version must be 2" instead of resolving
+ ❯ apps/bridge/cli/src/index.test.ts:237:80
+
+
+Caused by: Error: version must be 2
+ ❯ validateNip46BridgeDecisionFixtures apps/bridge/cli/src/index.ts:444:7
+ ❯ validateNip46PayloadFixture apps/bridge/cli/src/index.ts:459:3
+ ❯ Command.<anonymous> apps/bridge/cli/src/index.ts:756:9
+ ❯ Command.listener [as _actionHandler] node_modules/.pnpm/commander@14.0.2/node_modules/commander/lib/command.js:568:17
+ ❯ node_modules/.pnpm/commander@14.0.2/node_modules/commander/lib/command.js:1604:14
+ ❯ Command._chainOrCall node_modules/.pnpm/commander@14.0.2/node_modules/commander/lib/command.js:1488:12
+ ❯ Command._parseCommand node_modules/.pnpm/commander@14.0.2/node_modules/commander/lib/command.js:1603:27
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/15]⎯
+
+ FAIL  apps/bridge/cli/src/index.test.ts > nsealr CLI > S01 metadata fixture comparison ignores object key order
+AssertionError: promise rejected "Error: version must be 2" instead of resolving
+ ❯ apps/bridge/cli/src/index.test.ts:254:74
+    252|     vector.expected_step = reverseKeys(vector.expected_step) as Record…
+    253|     writeFileSync(path, JSON.stringify(vector));
+    254|     await expect(runCli(["fixture", "verify", "--specs", tempSpecsRoot…
+       |                                                                          ^
+    255|   });
+    256|
+
+Caused by: Error: version must be 2
+ ❯ validateNip46BridgeDecisionFixtures apps/bridge/cli/src/index.ts:444:7
+ ❯ validateNip46PayloadFixture apps/bridge/cli/src/index.ts:459:3
+ ❯ Command.<anonymous> apps/bridge/cli/src/index.ts:756:9
+ ❯ Command.listener [as _actionHandler] node_modules/.pnpm/commander@14.0.2/node_modules/commander/lib/command.js:568:17
+ ❯ node_modules/.pnpm/commander@14.0.2/node_modules/commander/lib/command.js:1604:14
+ ❯ Command._chainOrCall node_modules/.pnpm/commander@14.0.2/node_modules/commander/lib/command.js:1488:12
+ ❯ Command._parseCommand node_modules/.pnpm/commander@14.0.2/node_modules/commander/lib/command.js:1603:27
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/15]⎯
+
+ FAIL  apps/bridge/cli/src/index.test.ts > nsealr CLI > S01 metadata fixture comparison rejects changed value
+ FAIL  apps/bridge/cli/src/index.test.ts > nsealr CLI > S01 metadata fixture comparison rejects changed type
+ FAIL  apps/bridge/cli/src/index.test.ts > nsealr CLI > S01 metadata fixture comparison rejects changed extra
+ FAIL  apps/bridge/cli/src/index.test.ts > nsealr CLI > S01 metadata fixture comparison rejects changed missing
+ FAIL  apps/bridge/cli/src/index.test.ts > nsealr CLI > S01 metadata fixture comparison rejects changed array order
+AssertionError: expected [Function] to throw error matching /relay step fixture.*step mismatch/ but got 'version must be 2'
+
+- Expected:
+/relay step fixture.*step mismatch/
+
++ Received:
+"version must be 2"
+
+ ❯ apps/bridge/cli/src/index.test.ts:269:74
+    267|     if (mutation === "array order") (expected.relay_urls as string[]).…
+    268|     writeFileSync(path, JSON.stringify(vector));
+    269|     await expect(runCli(["fixture", "verify", "--specs", tempSpecsRoot…
+       |                                                                          ^
+    270|   });
+    271|
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/15]⎯
+
+ FAIL  apps/bridge/cli/src/index.test.ts > nsealr CLI > rejects policy decision fixture drift
+AssertionError: expected [Function] to throw error matching /policy decision mismatch/u but got 'version must be 2'
+
+- Expected:
+/policy decision mismatch/u
+
++ Received:
+"version must be 2"
+
+ ❯ apps/bridge/cli/src/index.test.ts:283:74
+    281|     writeFileSync(vectorPath, `${JSON.stringify(vector, null, 2)}\n`, …
+    282|
+    283|     await expect(runCli(["fixture", "verify", "--specs", tempSpecsRoot…
+       |                                                                          ^
+    284|       /policy decision mismatch/u
+    285|     );
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[5/15]⎯
+
+ FAIL  apps/bridge/cli/src/index.test.ts > nsealr CLI > rejects NIP-46 permission policy fixture drift
+AssertionError: expected [Function] to throw error matching /permission check mismatch/u but got 'version must be 2'
+
+- Expected:
+/permission check mismatch/u
+
++ Received:
+"version must be 2"
+
+ ❯ apps/bridge/cli/src/index.test.ts:362:74
+    360|     writeFileSync(vectorPath, `${JSON.stringify(vector, null, 2)}\n`, …
+    361|
+    362|     await expect(runCli(["fixture", "verify", "--specs", tempSpecsRoot…
+       |                                                                          ^
+    363|       /permission check mismatch/u
+    364|     );
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[6/15]⎯
+
+ FAIL  apps/bridge/cli/src/index.test.ts > nsealr CLI > rejects NIP-46 bridge decision fixture drift
+AssertionError: expected [Function] to throw error matching /bridge decision mismatch/u but got 'version must be 2'
+
+- Expected:
+/bridge decision mismatch/u
+
++ Received:
+"version must be 2"
+
+ ❯ apps/bridge/cli/src/index.test.ts:378:74
+    376|     writeFileSync(vectorPath, `${JSON.stringify(vector, null, 2)}\n`, …
+    377|
+    378|     await expect(runCli(["fixture", "verify", "--specs", tempSpecsRoot…
+       |                                                                          ^
+    379|       /bridge decision mismatch/u
+    380|     );
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[7/15]⎯
+
+ FAIL  apps/bridge/cli/src/index.test.ts > nsealr CLI > rejects NIP-46 policy-file fixture drift
+AssertionError: expected [Function] to throw error matching /NIP-46 policy-file fixture/u but got 'version must be 2'
+
+- Expected:
+/NIP-46 policy-file fixture/u
+
++ Received:
+"version must be 2"
+
+ ❯ apps/bridge/cli/src/index.test.ts:426:74
+    424|     writeFileSync(policyPath, `${JSON.stringify(policy, null, 2)}\n`, …
+    425|
+    426|     await expect(runCli(["fixture", "verify", "--specs", tempSpecsRoot…
+       |                                                                          ^
+    427|       /NIP-46 policy-file fixture/u
+    428|     );
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[8/15]⎯
+
+ FAIL  apps/bridge/cli/src/index.test.ts > nsealr CLI > writes NIP-46 bridge decisions without opening relay or signer transports
+ FAIL  apps/bridge/cli/src/index.test.ts > nsealr CLI > can read NIP-46 approved permissions from an explicit policy file
+Error: version must be 2
+ ❯ Command.<anonymous> apps/bridge/cli/src/index.ts:1591:30
+    1589|         ? readNip46PolicyPermissions(options.policyFile)
+    1590|         : parseNip46ApprovedPermissions(options.permissions);
+    1591|       writeJson(options.out, decideNip46BridgeAction(message, permissi…
+       |                              ^
+    1592|     });
+    1593|
+ ❯ Command.listener [as _actionHandler] node_modules/.pnpm/commander@14.0.2/node_modules/commander/lib/command.js:568:17
+ ❯ node_modules/.pnpm/commander@14.0.2/node_modules/commander/lib/command.js:1604:14
+ ❯ Command._chainOrCall node_modules/.pnpm/commander@14.0.2/node_modules/commander/lib/command.js:1488:12
+ ❯ Command._parseCommand node_modules/.pnpm/commander@14.0.2/node_modules/commander/lib/command.js:1603:27
+ ❯ node_modules/.pnpm/commander@14.0.2/node_modules/commander/lib/command.js:1367:27
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[9/15]⎯
+
+ FAIL  apps/bridge/cli/src/index.test.ts > nsealr CLI > rejects invalid NIP-46 decisions before writing output
+AssertionError: expected [Function] to throw error including 'event_template contains forbidden fie…' but got 'version must be 2'
+
+Expected: "event_template contains forbidden fields"
+Received: "version must be 2"
+
+ ❯ apps/bridge/cli/src/index.test.ts:816:6
+    814|     await expect(
+    815|       runCli(["nip46", "decide", "--message", messagePath, "--permissi…
+    816|     ).rejects.toThrow("event_template contains forbidden fields");
+       |      ^
+    817|     expect(existsSync(decisionPath)).toBe(false);
+    818|   });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[10/15]⎯
+

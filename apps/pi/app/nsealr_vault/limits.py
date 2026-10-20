@@ -4,6 +4,29 @@ import json
 from typing import Any
 
 
+# Wire revision is independent of the retained codec/implementation-limit v0 IDs.
+SIGNING_VERSION = 2
+
+# The independent Python harness is a synthetic conformance implementation, not
+# an identified Pi release or shared-engine/device qualification. Only discovery
+# is advertised available; the selected manifest retains unavailable provider
+# defaults for public-key/signing operations. Its local verification is separate.
+PI_REFERENCE_CAPABILITIES: dict[str, Any] = {
+    "format": "nsealr.capabilities.v1",
+    "form": "reference",
+    "profile": "pi_qr",
+    "implementation_id": "nsealr.conformance.pi_qr.v1",
+    "runtime": [
+        {
+            "method_id": "get_capabilities",
+            "configuration": "configured",
+            "availability": "available",
+            "reason": None,
+        }
+    ],
+}
+
+
 NSEALR_V0_LIMITS: dict[str, int] = {
     "max_request_id_length": 128,
     "max_decoded_request_json_bytes": 704,

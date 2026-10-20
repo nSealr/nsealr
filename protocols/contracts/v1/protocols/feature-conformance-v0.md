@@ -79,3 +79,17 @@ The matrix separates `target` from `current`.
 
 This distinction allows roadmaps to be honest without weakening the final
 compatibility contract.
+
+## Current profile interpretation
+
+The retained matrix is a feature target inventory, not current runtime capability
+or release proof. The current wire2 profile requirements and explicitly unqualified
+examples are [profile-capabilities-v1.md](profile-capabilities-v1.md) and the common
+[42-case inventory](../vectors/profile-capabilities/cases-v1.json). Support,
+configuration, availability and locally verified evidence are distinct. No matrix
+status or descriptor field supplies consent, hardware attestation or production
+signing authority. The Board SDK and companion access surfaces do not become
+signer profiles. NIP44 primitive metadata does not imply verified context or the
+NIP17/59 workflow; the connected profiles' R-MSG target remains unavailable until
+its separate complete workflow evidence exists. Offline profiles reject those
+message/setup operations, including kinds 10050/22242.

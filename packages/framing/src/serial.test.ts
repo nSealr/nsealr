@@ -1,4 +1,5 @@
 import { readFileSync } from "node:fs";
+import { createHash } from "node:crypto";
 import { resolve } from "node:path";
 import { describe, expect, it } from "vitest";
 import { resolveSpecsRoot } from "@nsealr/fixtures";
@@ -10,6 +11,23 @@ const signEventRequest = JSON.parse(readFileSync(resolve(specsRoot, "examples/re
 const serialVector = JSON.parse(readFileSync(resolve(specsRoot, "vectors/transports/serial-frame-request-kind-1-basic.json"), "utf8"));
 
 describe("serial framing draft", () => {
+  it("preserves original signer UTF8/token evidence through decoding", () => {
+    const valid = '{"version":2,"request_id":"r","method":"get_public_key"}';
+    function frame(bytes: Uint8Array): string {
+      const payload = Buffer.from(bytes).toString("base64url");
+      const checksum = createHash("sha256").update(`request:${payload}`).digest("hex").slice(0, 16);
+      return `nsealr1f:request:${payload}:${checksum}\n`;
+    }
+    for (const raw of [
+      valid.replace('"version":2', '"version":2e0'),
+      valid.replace('"version":2', '"version":2,"\\u0076ersion":2'),
+      valid.replace('"r"', '"\\ud800"'), '\ufeff' + valid,
+      valid + '{}'
+    ]) expect(() => decodeSerialFrame(frame(Buffer.from(raw)))).toThrow();
+    const invalid = Buffer.concat([Buffer.from(valid.slice(0, -1) + ',"s":"'), Buffer.of(0xff), Buffer.from('"}')]);
+    expect(() => decodeSerialFrame(frame(invalid))).toThrow(/UTF-8/);
+    expect(decodeSerialFrame(frame(Buffer.from(valid))).payload).toEqual(JSON.parse(valid));
+  });
   it("round-trips a request frame as one newline-terminated ASCII line", () => {
     const frame = encodeSerialFrame({ type: "request", payload: signEventRequest });
 

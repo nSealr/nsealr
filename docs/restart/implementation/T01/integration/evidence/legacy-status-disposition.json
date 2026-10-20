@@ -1,0 +1,30 @@
+{
+  "task": "T01",
+  "semantic_source": "Accepted original T01 and cb39: remove get_signing_status/universal fields; no wire1 fallback",
+  "rows": [
+    {
+      "path": "protocols/contracts/v1/vectors/invalid/response-signing-status-disabled-without-missing-gates.json",
+      "historical_expected_error": "signing_status signing_enabled false requires at least one missing gate",
+      "current_expected_error": "successful response result contains unknown fields: signing_status",
+      "disposition": "Original legacy payload condition remains as a retired-universal-field rejection. Explicit replacement positives/contradictions are in common42 A/S cases and strict capability tests."
+    },
+    {
+      "path": "protocols/contracts/v1/vectors/invalid/response-signing-status-duplicate-development-accepted-gate.json",
+      "historical_expected_error": "duplicate signing_status development_accepted gate: parser_limits",
+      "current_expected_error": "successful response result contains unknown fields: signing_status",
+      "disposition": "Original legacy payload condition remains as a retired-universal-field rejection. Explicit replacement positives/contradictions are in common42 A/S cases and strict capability tests."
+    },
+    {
+      "path": "protocols/contracts/v1/vectors/invalid/response-signing-status-enabled-with-missing-gates.json",
+      "historical_expected_error": "signing_status signing_enabled true requires empty missing_gates",
+      "current_expected_error": "successful response result contains unknown fields: signing_status",
+      "disposition": "Original legacy payload condition remains as a retired-universal-field rejection. Explicit replacement positives/contradictions are in common42 A/S cases and strict capability tests."
+    },
+    {
+      "path": "protocols/contracts/v1/vectors/invalid/response-signing-status-duplicate-missing-gate.json",
+      "historical_expected_error": "duplicate signing_status missing gate: runtime_signing_feature",
+      "current_expected_error": "successful response result contains unknown fields: signing_status",
+      "disposition": "Original legacy payload condition remains as a retired-universal-field rejection. Explicit replacement positives/contradictions are in common42 A/S cases and strict capability tests."
+    }
+  ]
+}

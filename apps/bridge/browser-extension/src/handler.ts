@@ -91,7 +91,7 @@ function assertPublicKey(value: unknown): asserts value is string {
 
 function signerRequestFromExtensionRequest(request: Extract<BrowserExtensionRequest, { method: "sign_event" }>): SignEventRequest {
   return {
-    version: 1,
+    version: 2,
     request_id: request.request_id,
     method: "sign_event",
     params: {
@@ -102,7 +102,7 @@ function signerRequestFromExtensionRequest(request: Extract<BrowserExtensionRequ
 
 function assertSignedEventResponse(request: SignEventRequest, event: SignedEvent): void {
   const response = {
-    version: 1,
+    version: 2,
     request_id: request.request_id,
     ok: true,
     result: {

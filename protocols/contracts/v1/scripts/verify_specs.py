@@ -30,7 +30,7 @@ BECH32_CHARSET = "qpzry9x8gf2tvdw0s3jn54khce6mua7l"
 BECH32_CHARSET_REV = {char: index for index, char in enumerate(BECH32_CHARSET)}
 LIMIT_PROFILE = "vectors/limits/nsealr-v0.json"
 MAX_SAFE_INTEGER = 9007199254740991
-DEVICE_METHODS = {"get_capabilities", "get_signing_status", "get_public_key", "sign_event"}
+DEVICE_METHODS = {"get_capabilities", "get_public_key", "sign_event"}
 ROUTE_TYPES = {
     "raspberry_qr_vault",
     "esp32_qr_vault",
@@ -47,9 +47,9 @@ ROUTE_REPOSITORIES = {
 }
 ROUTE_TRANSPORTS = {"qr", "usb", "nip46_relay", "embedded"}
 ROUTE_CUSTODY_MODES = {
-    "stateless_session",
-    "device_persistent",
-    "custom_hardware_persistent",
+    "volatile_session",
+    "mcu_wrapped_persistent",
+    "custom_se_assisted_persistent",
     "external_signer",
 }
 ACCESS_SURFACES = {"browser_provider_nip07"}
@@ -110,38 +110,6 @@ SECRET_FIELD_NAMES = {
     "passphrase",
     "nip49_ciphertext",
 }
-SIGNING_STATUS_GATES = [
-    "runtime_signing_feature",
-    "parser_limits",
-    "trusted_review_display",
-    "physical_approval_controls",
-    "approval_digest_binding",
-    "unicode_review_rendering",
-    "key_provisioning",
-    "source_public_key_proof",
-    "secure_boot",
-    "flash_encryption",
-    "debug_lock",
-    "companion_signed_output_verification",
-]
-ESP32_S3_SCAFFOLD_MISSING_SIGNING_GATES = [
-    "runtime_signing_feature",
-    "trusted_review_display",
-    "physical_approval_controls",
-    "unicode_review_rendering",
-    "key_provisioning",
-    "source_public_key_proof",
-    "secure_boot",
-    "flash_encryption",
-    "debug_lock",
-    "companion_signed_output_verification",
-]
-ESP32_S3_SCAFFOLD_DEVELOPMENT_ACCEPTED_SIGNING_GATES = [
-    "parser_limits",
-    "trusted_review_display",
-    "physical_approval_controls",
-    "approval_digest_binding",
-]
 REVIEW_DETAIL_BODY_LINE_STYLES = {"meta", "normal", "value"}
 FEATURE_TARGETS = {"required", "optional", "not_applicable", "forbidden", "research"}
 FEATURE_CURRENT_STATUSES = {
@@ -478,6 +446,8 @@ def check_safe_integer(path: Path, field: str, value: object, errors: list[str],
         errors.append(f"{path}: event_template {field} must be a non-negative safe integer")
     if value > limits["max_safe_integer"]:
         errors.append(f"{path}: event_template {field} exceeds max_safe_integer")
+    if field == "kind" and value > 65535:
+        errors.append(f"{path}: event_template kind exceeds 65535")
 
 
 def check_signed_event_safe_integer(path: Path, field: str, value: object, errors: list[str], limits: dict) -> None:
@@ -488,6 +458,8 @@ def check_signed_event_safe_integer(path: Path, field: str, value: object, error
         errors.append(f"{path}: signed event {field} must be a non-negative safe integer")
     if value > limits["max_safe_integer"]:
         errors.append(f"{path}: signed event {field} exceeds max_safe_integer")
+    if field == "kind" and value > 65535:
+        errors.append(f"{path}: signed event kind exceeds 65535")
 
 
 def check_request_shape(path: Path, value: object, errors: list[str]) -> None:
@@ -498,8 +470,8 @@ def check_request_shape(path: Path, value: object, errors: list[str]) -> None:
     if json_utf8_size(value) > limits["max_decoded_request_json_bytes"]:
         errors.append(f"{path}: decoded request JSON exceeds max_decoded_request_json_bytes")
 
-    if value.get("version") != 1:
-        errors.append(f"{path}: version must be 1")
+    if type(value.get("version")) is not int or value.get("version") != 2:
+        errors.append(f"{path}: version must be 2")
     request_id = value.get("request_id")
     if not isinstance(request_id, str) or not REQUEST_ID_RE.fullmatch(request_id):
         errors.append(f"{path}: request_id must match the v0 request id profile")
@@ -516,11 +488,11 @@ def check_request_shape(path: Path, value: object, errors: list[str]) -> None:
     if unknown_top_level:
         errors.append(f"{path}: unknown top-level fields: {unknown_top_level}")
     if method == "get_capabilities" and "params" in value:
-        errors.append(f"{path}: get_capabilities must not include params in v0")
+        errors.append(f"{path}: get_capabilities must not include params in wire2")
     if method == "get_signing_status" and "params" in value:
-        errors.append(f"{path}: get_signing_status must not include params in v0")
+        errors.append(f"{path}: get_signing_status must not include params in wire2")
     if method == "get_public_key" and "params" in value:
-        errors.append(f"{path}: get_public_key must not include params in v0")
+        errors.append(f"{path}: get_public_key must not include params in wire2")
     if method == "sign_event":
         params = value.get("params")
         if not isinstance(params, dict):
@@ -598,8 +570,8 @@ def check_response_shape(path: Path, value: dict, errors: list[str]) -> None:
     unknown_top_level = sorted(set(value) - allowed_top_level)
     if unknown_top_level:
         errors.append(f"{path}: unknown top-level response fields: {unknown_top_level}")
-    if value.get("version") != 1:
-        errors.append(f"{path}: version must be 1")
+    if type(value.get("version")) is not int or value.get("version") != 2:
+        errors.append(f"{path}: version must be 2")
     request_id = value.get("request_id")
     if not isinstance(request_id, str) or not REQUEST_ID_RE.fullmatch(request_id):
         errors.append(f"{path}: request_id is invalid")
@@ -612,70 +584,17 @@ def check_response_shape(path: Path, value: dict, errors: list[str]) -> None:
         if not isinstance(result, dict):
             errors.append(f"{path}: successful response requires result")
             return
-        result_fields = {"public_key", "capabilities", "signing_status", "event"} & set(result)
-        unknown_result_fields = sorted(set(result) - {"public_key", "capabilities", "signing_status", "event"})
+        result_fields = {"public_key", "capabilities", "event"} & set(result)
+        unknown_result_fields = sorted(set(result) - {"public_key", "capabilities", "event"})
         if unknown_result_fields:
-            errors.append(f"{path}: successful response result has unknown fields: {unknown_result_fields}")
+            errors.append(f"{path}: successful response result contains unknown fields: {", ".join(unknown_result_fields)}")
         if len(result_fields) != 1:
             errors.append(f"{path}: successful response result must contain exactly one result field")
             return
         if "public_key" in result and (not isinstance(result["public_key"], str) or not HEX32_RE.fullmatch(result["public_key"])):
             errors.append(f"{path}: public_key must be 32-byte lowercase hex")
         if "capabilities" in result:
-            capabilities = result["capabilities"]
-            if not isinstance(capabilities, dict):
-                errors.append(f"{path}: capabilities must be an object")
-                return
-            for field in ("device", "protocols", "methods", "transports"):
-                if field not in capabilities:
-                    errors.append(f"{path}: capabilities missing {field}")
-            if "signing_enabled" in capabilities and not isinstance(capabilities["signing_enabled"], bool):
-                errors.append(f"{path}: signing_enabled must be boolean")
-            if "requires_physical_approval" in capabilities and not isinstance(capabilities["requires_physical_approval"], bool):
-                errors.append(f"{path}: requires_physical_approval must be boolean")
-            methods = capabilities.get("methods")
-            if isinstance(methods, list):
-                unknown_methods = sorted(set(methods) - DEVICE_METHODS)
-                if unknown_methods:
-                    errors.append(f"{path}: capabilities declare unknown methods: {unknown_methods}")
-        if "signing_status" in result:
-            signing_status = result["signing_status"]
-            if not isinstance(signing_status, dict):
-                errors.append(f"{path}: signing_status must be an object")
-                return
-            unknown_status_fields = sorted(set(signing_status) - {"signing_enabled", "missing_gates", "development_accepted_gates"})
-            if unknown_status_fields:
-                errors.append(f"{path}: signing_status has unknown fields: {unknown_status_fields}")
-            if not isinstance(signing_status.get("signing_enabled"), bool):
-                errors.append(f"{path}: signing_status.signing_enabled must be boolean")
-            missing_gates = signing_status.get("missing_gates")
-            if not isinstance(missing_gates, list):
-                errors.append(f"{path}: signing_status.missing_gates must be an array")
-            else:
-                seen_missing_gates: set[str] = set()
-                for gate in missing_gates:
-                    if gate not in SIGNING_STATUS_GATES:
-                        errors.append(f"{path}: signing_status.missing_gates contains unknown gate {gate!r}")
-                    elif gate in seen_missing_gates:
-                        errors.append(f"{path}: duplicate signing_status missing gate: {gate}")
-                    else:
-                        seen_missing_gates.add(gate)
-                if signing_status.get("signing_enabled") is True and missing_gates:
-                    errors.append(f"{path}: signing_status signing_enabled true requires empty missing_gates")
-                if signing_status.get("signing_enabled") is False and not missing_gates:
-                    errors.append(f"{path}: signing_status signing_enabled false requires at least one missing gate")
-            accepted_gates = signing_status.get("development_accepted_gates")
-            if not isinstance(accepted_gates, list):
-                errors.append(f"{path}: signing_status.development_accepted_gates must be an array")
-            else:
-                seen_accepted_gates: set[str] = set()
-                for gate in accepted_gates:
-                    if gate not in SIGNING_STATUS_GATES:
-                        errors.append(f"{path}: signing_status.development_accepted_gates contains unknown gate {gate!r}")
-                    elif gate in seen_accepted_gates:
-                        errors.append(f"{path}: duplicate signing_status development_accepted gate: {gate}")
-                    else:
-                        seen_accepted_gates.add(gate)
+            check_capability_data(str(path), result["capabilities"], errors)
         if "event" in result:
             event = result["event"]
             if not isinstance(event, dict):
@@ -1155,117 +1074,54 @@ def check_account_descriptor_shape(path: str, value: object, errors: list[str]) 
         path,
         "account descriptor",
         value,
-        {"format", "account_id", "label", "public_key", "signer_route", "recovery", "capabilities", "policy_profile_id"},
+        {"format", "account_id", "label", "public_key", "signer_route", "recovery", "capabilities", "policy_profile_id", "profile", "implementation_id", "limits_id"},
         errors,
     )
-    if value.get("format") != "nsealr-account-descriptor-v0":
+    if value.get("format") != "nsealr.account.v1":
         errors.append(f"{path}: format mismatch")
     check_string_id(path, "account_id", value.get("account_id"), errors)
-    if not isinstance(value.get("label"), str) or not value["label"]:
-        errors.append(f"{path}: label must be a non-empty string")
+    if not isinstance(value.get("label"), str) or not value["label"] or utf8_size(value["label"]) > 128:
+        errors.append(f"{path}: label must be a bounded non-empty string")
     if not isinstance(value.get("public_key"), str) or not HEX32_RE.fullmatch(value["public_key"]):
         errors.append(f"{path}: public_key must be 32-byte lowercase hex")
-
     route = value.get("signer_route")
     if not isinstance(route, dict):
         errors.append(f"{path}: signer_route must be an object")
         return
-    check_known_fields(
-        path,
-        "signer_route",
-        route,
-        {"type", "repository", "transport", "custody", "trusted_review", "policy_support"},
-        errors,
-    )
+    check_known_fields(path, "signer_route", route, {"type", "repository", "transport", "custody", "trusted_review", "policy_support"}, errors)
     route_type = route.get("type")
     if route_type not in ROUTE_TYPES:
         errors.append(f"{path}: signer_route.type is unknown")
+    external = route_type == "external_nip46"
     expected_repository = ROUTE_REPOSITORIES.get(route_type)
     if expected_repository is not None and route.get("repository") != expected_repository:
         errors.append(f"{path}: signer_route.repository must be {expected_repository}")
-    if expected_repository is None and "repository" in route:
+    if external and "repository" in route:
         errors.append(f"{path}: external signer routes must not claim a nSealr repository")
-    if route.get("transport") not in ROUTE_TRANSPORTS:
-        errors.append(f"{path}: signer_route.transport is unknown")
-    if route.get("custody") not in ROUTE_CUSTODY_MODES:
-        errors.append(f"{path}: signer_route.custody is unknown")
-    if route.get("trusted_review") not in ROUTE_REVIEW_MODES:
-        errors.append(f"{path}: signer_route.trusted_review is unknown")
-    if route.get("policy_support") not in POLICY_SUPPORT_MODES:
-        errors.append(f"{path}: signer_route.policy_support is unknown")
-
+    expected_profile = {"esp32_usb_nip46": "esp32_no_se", "esp32_qr_vault": "p4_qr", "raspberry_qr_vault": "pi_qr", "custom_hardware_wallet": "custom_board"}.get(route_type)
+    if value.get("profile") != expected_profile:
+        errors.append(f"{path}: profile does not match signer route")
+    for name in ("implementation_id", "limits_id"):
+        if external:
+            if value.get(name) is not None: errors.append(f"{path}: external route must not claim {name}")
+        else:
+            check_string_id(path, name, value.get(name), errors)
+    if expected_profile is not None:
+        custody, transport = PROFILE_CUSTODY[expected_profile], "qr" if expected_profile in {"pi_qr", "p4_qr"} else "usb"
+        if route.get("custody") != custody: errors.append(f"{path}: custody does not match profile")
+        if route.get("transport") != transport: errors.append(f"{path}: transport does not match profile")
+        if route.get("trusted_review") != "device_display": errors.append(f"{path}: local signer requires device_display review")
+        if route.get("policy_support") != "manual_only": errors.append(f"{path}: initial local profile must use manual_only policy support")
+    elif external and (route.get("transport"), route.get("custody"), route.get("trusted_review"), route.get("policy_support")) != ("nip46_relay", "external_signer", "external_policy", "external"):
+        errors.append(f"{path}: external signer route semantics mismatch")
     capabilities = value.get("capabilities")
     if not isinstance(capabilities, dict):
         errors.append(f"{path}: capabilities must be an object")
         return
-    check_known_fields(
-        path,
-        "capabilities",
-        capabilities,
-        {"methods", "physical_review", "physical_approval", "persistent_grants"},
-        errors,
-    )
+    check_known_fields(path, "capabilities", capabilities, {"methods"}, errors)
     methods = capabilities.get("methods")
-    if not isinstance(methods, list) or not all(isinstance(method, str) for method in methods):
-        errors.append(f"{path}: capabilities.methods must be an array of strings")
-    elif unknown_methods := sorted(set(methods) - DEVICE_METHODS):
-        errors.append(f"{path}: capabilities.methods contain unknown methods {unknown_methods}")
-    for field in ("physical_review", "physical_approval", "persistent_grants"):
-        if not isinstance(capabilities.get(field), bool):
-            errors.append(f"{path}: capabilities.{field} must be boolean")
-
-    if route_type in QR_ROUTE_TYPES:
-        serialized = json.dumps(value, ensure_ascii=False, sort_keys=True).lower()
-        if "tropic01" in serialized:
-            errors.append(f"{path}: stateless QR vault descriptors must not reference TROPIC01")
-        if route.get("transport") != "qr":
-            errors.append(f"{path}: stateless QR vault routes must use qr transport")
-        if route.get("custody") != "stateless_session":
-            errors.append(f"{path}: stateless QR vault routes must use stateless_session custody")
-        if route.get("policy_support") != "manual_only":
-            errors.append(f"{path}: stateless QR vault routes must use manual_only policy support")
-        if capabilities.get("persistent_grants") is not False:
-            errors.append(f"{path}: stateless QR vault routes must not support persistent grants")
-    elif route_type == "esp32_usb_nip46":
-        if route.get("transport") != "usb":
-            errors.append(f"{path}: ESP32 USB/NIP-46 routes must use usb transport")
-        if route.get("custody") != "device_persistent":
-            errors.append(f"{path}: ESP32 USB/NIP-46 routes must use device_persistent custody")
-        if route.get("trusted_review") != "device_display":
-            errors.append(f"{path}: ESP32 USB/NIP-46 routes must use device_display review")
-        if route.get("policy_support") != "scoped_automation":
-            errors.append(f"{path}: ESP32 USB/NIP-46 routes must use scoped_automation policy support")
-        if capabilities.get("physical_review") is not True or capabilities.get("physical_approval") is not True:
-            errors.append(f"{path}: ESP32 USB/NIP-46 routes require physical review and approval")
-        if capabilities.get("persistent_grants") is not True:
-            errors.append(f"{path}: ESP32 USB/NIP-46 routes require persistent grant support")
-    elif route_type == "custom_hardware_wallet":
-        if route.get("transport") != "usb":
-            errors.append(f"{path}: custom hardware-wallet routes must use usb transport in v0")
-        if route.get("custody") != "custom_hardware_persistent":
-            errors.append(f"{path}: custom hardware-wallet routes must use custom_hardware_persistent custody")
-        if route.get("trusted_review") != "device_display":
-            errors.append(f"{path}: custom hardware-wallet routes must use device_display review")
-        if route.get("policy_support") != "scoped_automation":
-            errors.append(f"{path}: custom hardware-wallet routes must use scoped_automation policy support")
-        if capabilities.get("physical_review") is not True or capabilities.get("physical_approval") is not True:
-            errors.append(f"{path}: custom hardware-wallet routes require physical review and approval")
-        if capabilities.get("persistent_grants") is not True:
-            errors.append(f"{path}: custom hardware-wallet routes require persistent grant support")
-    elif route_type == "external_nip46":
-        if route.get("transport") != "nip46_relay":
-            errors.append(f"{path}: external NIP-46 routes must use nip46_relay transport")
-        if route.get("custody") != "external_signer":
-            errors.append(f"{path}: external NIP-46 routes must use external_signer custody")
-        if route.get("trusted_review") != "external_policy":
-            errors.append(f"{path}: external NIP-46 routes must use external_policy review")
-        if route.get("policy_support") != "external":
-            errors.append(f"{path}: external NIP-46 routes must use external policy support")
-        if capabilities.get("physical_review") is not False or capabilities.get("physical_approval") is not False:
-            errors.append(f"{path}: external NIP-46 routes must not claim nSealr physical review or approval")
-        if capabilities.get("persistent_grants") is not False:
-            errors.append(f"{path}: external NIP-46 routes must not claim nSealr persistent grants")
-
+    if not isinstance(methods, list) or not methods or any(not isinstance(m, str) or m not in DEVICE_METHODS for m in methods) or len(set(methods)) != len(methods):
+        errors.append(f"{path}: capabilities.methods must be unique supported methods")
     recovery = value.get("recovery")
     if not isinstance(recovery, dict):
         errors.append(f"{path}: recovery must be an object")
@@ -1999,26 +1855,22 @@ def check_policy_change_review_vector(rel: str, errors: list[str]) -> None:
         errors.append(f"{vector_path}: approval_digest mismatch")
 
 
-def route_selection_from_account(account: dict) -> dict:
+def route_selection_from_account(account: dict, method: str = "sign_event") -> dict:
     route = account["signer_route"]
-    capabilities = account["capabilities"]
+    external = route["type"] == "external_nip46"
     selection = {
-        "format": "nsealr-route-selection-v0",
-        "account_id": account["account_id"],
-        "public_key": account["public_key"],
-        "route_type": route["type"],
-        "transport": route["transport"],
-        "custody": route["custody"],
-        "trusted_review": route["trusted_review"],
-        "policy_support": route["policy_support"],
-        "policy_profile_id": account["policy_profile_id"],
-        "physical_review": capabilities["physical_review"],
-        "physical_approval": capabilities["physical_approval"],
-        "persistent_grants": capabilities["persistent_grants"],
-        "contains_secret_material": False,
+        "format": "nsealr.route-selection.v1", "account_id": account["account_id"],
+        "public_key": account["public_key"], "route_type": route["type"],
+        "transport": route["transport"], "custody": route["custody"],
+        "trusted_review": route["trusted_review"], "policy_support": route["policy_support"],
+        "policy_profile_id": account["policy_profile_id"], "contains_secret_material": False,
+        "profile": account["profile"], "implementation_id": account["implementation_id"], "limits_id": account["limits_id"],
+        "contract": "nip46" if external else "nsealr.signing.v2", "method": method, "method_revision": 1,
+        "operation_id": {"get_capabilities": "nsealr.discovery.v1", "get_public_key": "nostr.public-key.v1", "sign_event": "nostr.sign-event.v1"}[method],
+        "algorithm_id": None if method == "get_capabilities" else "bip340.secp256k1.v1",
+        "codec_id": "nip46" if external else "nsealr.qr-envelope.v0" if route["transport"] == "qr" else "nsealr.serial-frame.v0",
     }
-    if "repository" in route:
-        selection["repository"] = route["repository"]
+    if "repository" in route: selection["repository"] = route["repository"]
     return selection
 
 
@@ -2026,64 +1878,28 @@ def check_route_selection_request_shape(path: str, request: object, errors: list
     if not isinstance(request, dict):
         errors.append(f"{path}: request must be an object")
         return
-    unknown = sorted(set(request) - {"account_id", "method", "route_type"})
-    if unknown:
-        errors.append(f"{path}: request has unknown fields {unknown}")
+    check_known_fields(path, "request", request, {"account_id", "method", "route_type", "profile", "implementation_id", "limits_id", "contract", "method_revision", "operation_id", "algorithm_id", "codec_id", "transport", "custody"}, errors)
     check_string_id(path, "request.account_id", request.get("account_id"), errors)
-    if not isinstance(request.get("method"), str) or not request["method"]:
-        errors.append(f"{path}: request.method must be a non-empty string")
-    if "route_type" in request and request.get("route_type") not in ROUTE_TYPES:
-        errors.append(f"{path}: request.route_type is unknown")
+    if request.get("method") not in DEVICE_METHODS: errors.append(f"{path}: unsupported request.method")
+    if "route_type" in request and request["route_type"] not in ROUTE_TYPES: errors.append(f"{path}: request.route_type is unknown")
 
 
 def check_route_selection_shape(path: str, selection: object, errors: list[str]) -> None:
     if not isinstance(selection, dict):
         errors.append(f"{path}: selection must be an object")
         return
-    expected_fields = {
-        "format",
-        "account_id",
-        "public_key",
-        "route_type",
-        "repository",
-        "transport",
-        "custody",
-        "trusted_review",
-        "policy_support",
-        "policy_profile_id",
-        "physical_review",
-        "physical_approval",
-        "persistent_grants",
-        "contains_secret_material",
-    }
-    unknown = sorted(set(selection) - expected_fields)
-    if unknown:
-        errors.append(f"{path}: selection has unknown fields {unknown}")
-    if selection.get("format") != "nsealr-route-selection-v0":
-        errors.append(f"{path}: selection format mismatch")
-    check_string_id(path, "selection.account_id", selection.get("account_id"), errors)
-    if not isinstance(selection.get("public_key"), str) or not HEX32_RE.fullmatch(selection["public_key"]):
-        errors.append(f"{path}: selection.public_key must be 32-byte lowercase hex")
-    if selection.get("route_type") not in ROUTE_TYPES:
-        errors.append(f"{path}: selection.route_type is unknown")
-    expected_repository = ROUTE_REPOSITORIES.get(selection.get("route_type"))
-    if expected_repository is not None and selection.get("repository") != expected_repository:
-        errors.append(f"{path}: selection.repository must be {expected_repository}")
-    if expected_repository is None and "repository" in selection:
-        errors.append(f"{path}: external signer selections must not claim a nSealr repository")
-    if selection.get("transport") not in ROUTE_TRANSPORTS:
-        errors.append(f"{path}: selection.transport is unknown")
-    if selection.get("custody") not in ROUTE_CUSTODY_MODES:
-        errors.append(f"{path}: selection.custody is unknown")
-    if selection.get("trusted_review") not in ROUTE_REVIEW_MODES:
-        errors.append(f"{path}: selection.trusted_review is unknown")
-    if selection.get("policy_support") not in POLICY_SUPPORT_MODES:
-        errors.append(f"{path}: selection.policy_support is unknown")
-    for field in ("physical_review", "physical_approval", "persistent_grants"):
-        if not isinstance(selection.get(field), bool):
-            errors.append(f"{path}: selection.{field} must be boolean")
-    if selection.get("contains_secret_material") is not False:
-        errors.append(f"{path}: selection.contains_secret_material must be false")
+    required = {"format", "account_id", "public_key", "route_type", "transport", "custody", "trusted_review", "policy_support", "policy_profile_id", "contains_secret_material", "profile", "implementation_id", "limits_id", "contract", "method", "method_revision", "operation_id", "algorithm_id", "codec_id"}
+    check_known_fields(path, "selection", selection, required | {"repository"}, errors)
+    if not required <= set(selection): errors.append(f"{path}: missing selection fields")
+    if selection.get("format") != "nsealr.route-selection.v1": errors.append(f"{path}: selection format mismatch")
+    if selection.get("contains_secret_material") is not False: errors.append(f"{path}: selection must not contain secret material")
+    # Validate the same profile/route invariants independently of any request.
+    descriptor = {"format": "nsealr.account.v1", "account_id": selection.get("account_id"), "label": "Selection", "public_key": selection.get("public_key"), "signer_route": {key: selection[key] for key in ("transport", "custody", "trusted_review", "policy_support", "repository") if key in selection}, "profile": selection.get("profile"), "implementation_id": selection.get("implementation_id"), "limits_id": selection.get("limits_id"), "capabilities": {"methods": [selection.get("method")]}, "policy_profile_id": selection.get("policy_profile_id"), "recovery": {"type": "device_slot", "slot_id": "selection-only", "backup_required": True}}
+    descriptor["signer_route"]["type"] = selection.get("route_type")
+    check_account_descriptor_shape(path, descriptor, errors)
+    if selection.get("method") in DEVICE_METHODS:
+        expected = route_selection_from_account(descriptor, selection["method"])
+        if selection != expected: errors.append(f"{path}: selection semantic binding mismatch")
 
 
 def expected_route_selection(vector_path: str, vector: dict, errors: list[str]) -> dict | None:
@@ -2111,7 +1927,7 @@ def expected_route_selection(vector_path: str, vector: dict, errors: list[str]) 
     if request.get("method") not in capabilities.get("methods", []):
         errors.append(f"{vector_path}: request.method is not supported by account")
         return None
-    return route_selection_from_account(account)
+    return route_selection_from_account(account, request["method"])
 
 
 def check_route_selection_vector(rel: str, errors: list[str]) -> None:
@@ -3689,7 +3505,7 @@ def expected_nip46_relay_response_result_type(
     response_errors: list[str] = []
     check_response_shape(
         Path(vector_path),
-        {"version": 1, "request_id": message.get("id"), "ok": True, "result": {"event": decoded}},
+        {"version": 2, "request_id": message.get("id"), "ok": True, "result": {"event": decoded}},
         response_errors,
     )
     if response_errors:
@@ -4540,7 +4356,7 @@ def expected_nip46_permission_requirement(vector_path: str, message: dict, error
         request_errors = request_shape_errors(
             Path(vector_path),
             {
-                "version": 1,
+                "version": 2,
                 "request_id": message.get("id"),
                 "method": "sign_event",
                 "params": {
@@ -4570,7 +4386,7 @@ def expected_nsealr_request_from_nip46_message(
     params = message.get("params", [])
     if method == "get_public_key":
         return {
-            "version": 1,
+            "version": 2,
             "request_id": request_id,
             "method": "get_public_key",
         }
@@ -4582,7 +4398,7 @@ def expected_nsealr_request_from_nip46_message(
         except json.JSONDecodeError:
             return None
         return {
-            "version": 1,
+            "version": 2,
             "request_id": request_id,
             "method": "sign_event",
             "params": {
@@ -5561,104 +5377,6 @@ def check_persistent_secret_custody_vector(rel: str, errors: list[str]) -> None:
                 errors.append(f"{vector_path}: non_claims must mention {required}")
 
 
-def check_device_security_profile_vector(rel: str, errors: list[str]) -> None:
-    vector_path = f"vectors/devices/{rel}.json"
-    vector = load_required_json(vector_path, errors)
-    if vector is None:
-        return
-    if vector.get("name") != rel:
-        errors.append(f"{vector_path}: name mismatch")
-    if vector.get("format") != "firmware-boot-hardening-profile-v0":
-        errors.append(f"{vector_path}: format mismatch")
-    if vector.get("contract_id") != "firmware-boot-hardening-v0":
-        errors.append(f"{vector_path}: contract_id mismatch")
-    if vector.get("solution") != "esp32_usb_nip46":
-        errors.append(f"{vector_path}: solution must be esp32_usb_nip46")
-    if vector.get("repository") != "nsealr":
-        errors.append(f"{vector_path}: repository must be nsealr")
-    if vector.get("target") != "esp32_s3_usb_signer":
-        errors.append(f"{vector_path}: target must be esp32_s3_usb_signer")
-    if vector.get("profile") != "development_scaffold":
-        errors.append(f"{vector_path}: profile must be development_scaffold")
-    if vector.get("current") != "partial":
-        errors.append(f"{vector_path}: current must be partial")
-
-    boundary = vector.get("current_boundary")
-    if not isinstance(boundary, dict):
-        errors.append(f"{vector_path}: current_boundary must be an object")
-        boundary = {}
-    expected_boundary = {
-        "schema": "nsealr-esp32-security-profile-v0",
-        "runtime_signing_feature_enabled": False,
-        "production_signing_allowed": False,
-        "secure_boot_enabled": False,
-        "flash_encryption_enabled": False,
-        "debug_access_locked": False,
-        "persistent_secret_storage": "not_implemented",
-    }
-    for key, expected in expected_boundary.items():
-        if boundary.get(key) != expected:
-            errors.append(f"{vector_path}: current_boundary.{key} mismatch")
-
-    required_sections = vector.get("required_profile_sections")
-    expected_sections = {
-        "secure_boot",
-        "flash_encryption",
-        "debug_access",
-        "key_provisioning",
-        "trusted_review_display",
-        "display_review_protocol_evidence",
-        "unicode_review_rendering",
-        "companion_transport_evidence",
-        "firmware_protocol_evidence",
-        "security_fuse_audit_evidence",
-        "physical_approval_controls",
-        "companion_signed_output_verification",
-        "production_blockers",
-    }
-    if not isinstance(required_sections, list) or set(required_sections) != expected_sections:
-        errors.append(f"{vector_path}: required_profile_sections mismatch")
-    elif len(required_sections) != len(set(required_sections)):
-        errors.append(f"{vector_path}: required_profile_sections contains duplicates")
-
-    blockers = vector.get("required_production_blockers")
-    if not isinstance(blockers, list):
-        errors.append(f"{vector_path}: required_production_blockers must be an array")
-        blockers = []
-    for blocker in blockers:
-        if blocker not in SIGNING_STATUS_GATES:
-            errors.append(f"{vector_path}: unknown production blocker {blocker!r}")
-    if len(blockers) != len(set(blockers)):
-        errors.append(f"{vector_path}: required_production_blockers contains duplicates")
-    for blocker in ("secure_boot", "flash_encryption", "debug_lock", "key_provisioning", "source_public_key_proof"):
-        if blocker not in blockers:
-            errors.append(f"{vector_path}: missing required production blocker {blocker}")
-
-    implemented_controls = vector.get("implemented_controls")
-    expected_implemented = {
-        "validated_development_security_profile",
-        "read_only_efuse_audit_report",
-        "signing_status_reports_hardening_blockers",
-    }
-    if not isinstance(implemented_controls, list) or set(implemented_controls) != expected_implemented:
-        errors.append(f"{vector_path}: implemented_controls mismatch")
-
-    not_implemented_controls = vector.get("not_implemented_controls")
-    expected_not_implemented = {
-        "production_signing",
-        "production_key_provisioning",
-        "source_public_key_proof",
-        "secure_boot_enabled",
-        "flash_encryption_enabled",
-        "debug_access_locked",
-    }
-    if not isinstance(not_implemented_controls, list) or set(not_implemented_controls) != expected_not_implemented:
-        errors.append(f"{vector_path}: not_implemented_controls mismatch")
-
-    notes = vector.get("notes")
-    if not isinstance(notes, str) or "does not enable" not in notes:
-        errors.append(f"{vector_path}: notes must state the non-enabling boundary")
-
 
 def check_nip46_response_message(vector_path: str, message: object, expected_id: str, errors: list[str]) -> dict | None:
     if not isinstance(message, dict):
@@ -6149,41 +5867,184 @@ def check_nip46_session_gate_vector(rel: str, errors: list[str]) -> None:
 
 
 
+# Data-only independent interpretation. These functions never import a runtime
+# consumer, produce a signature, or create an authorization/physical observation.
+PROFILE_CUSTODY = {"esp32_no_se": "mcu_wrapped_persistent", "pi_qr": "volatile_session", "p4_qr": "volatile_session", "custom_board": "custom_se_assisted_persistent"}
+PROFILE_GROUPS = {"R-ID", "R-AUTH", "R-CATALOG", "R-SECRET", "R-BOUNDS", "R-RECOVERY", "R-LIFECYCLE", "R-RELEASE"}
+FEATURE_FIELDS = {"support", "configuration", "availability", "reason"}
+MESSAGE_FEATURES = {"nip44_v2_primitive", "verified_message_context_v1", "nip17_59_one_to_one_text_v1"}
+CATALOG_METHODS = DEVICE_METHODS | {"nip44_encrypt", "nip44_decrypt"}
+
+
+def exact_object(value: object, fields: set[str], label: str) -> dict:
+    if not isinstance(value, dict) or set(value) != fields:
+        raise ValueError(f"{label}: missing or unknown fields")
+    return value
+
+
+def bounded_id(value: object) -> None:
+    if not isinstance(value, str) or not REQUEST_ID_RE.fullmatch(value):
+        raise ValueError("identifier is not bounded")
+
+
+def positive_integer(value: object, zero: bool = False) -> None:
+    if type(value) is not int or not (0 if zero else 1) <= value <= MAX_SAFE_INTEGER:
+        raise ValueError("dimension must be a finite unsigned safe integer")
+
+
+def unique_entries(value: object, name: str, maximum: int, minimum: int = 1) -> list:
+    if not isinstance(value, list) or not minimum <= len(value) <= maximum:
+        raise ValueError(f"{name}: invalid bounded array")
+    ids = [entry.get(name) if isinstance(entry, dict) else entry for entry in value]
+    if any(not isinstance(item, str) for item in ids) or len(set(ids)) != len(ids):
+        raise ValueError(f"{name}: duplicate or invalid IDs")
+    return value
+
+
+def feature_state(value: dict) -> None:
+    support, configuration, availability = (value.get(key) for key in ("support", "configuration", "availability"))
+    if support not in {"supported", "unavailable", "unknown"} or configuration not in {"configured", "unconfigured", "unavailable", "unknown"} or availability not in {"available", "unavailable", "unknown"}:
+        raise ValueError("unknown feature state")
+    if configuration == "configured" and support != "supported":
+        raise ValueError("configured unsupported feature")
+    if availability == "available":
+        if support != "supported" or configuration != "configured" or value.get("reason") is not None:
+            raise ValueError("contradictory available feature")
+    elif value.get("reason") not in {"locked", "provider_missing", "busy", "not_implemented", "unknown"}:
+        raise ValueError("unavailable feature requires a reason")
+
+
+def validate_capability_data(value: object, *, implementation: bool = False) -> dict:
+    if not isinstance(value, dict): raise ValueError("capability must be an object")
+    if not implementation and value.get("form") == "reference":
+        exact_object(value, {"format", "form", "profile", "implementation_id", "runtime"}, "reference")
+        if value["format"] != "nsealr.capabilities.v1" or value["profile"] not in PROFILE_CUSTODY: raise ValueError("unknown reference format/profile")
+        bounded_id(value["implementation_id"])
+        for delta in unique_entries(value["runtime"], "method_id", 16, 0):
+            exact_object(delta, {"method_id", "configuration", "availability", "reason"}, "runtime delta")
+            if delta["method_id"] not in CATALOG_METHODS: raise ValueError("unknown method")
+            feature_state({**delta, "support": "supported"})
+        return value
+    fields = {"format", "profile", "requirements_id", "implementation_id", "limits_id", "device", "custody", "secure_element", "consent", "methods", "transports", "messages"} | ({"conformance_only"} if implementation else {"form"})
+    exact_object(value, fields, "implementation" if implementation else "capabilities")
+    if value["format"] != ("nsealr.implementation-profile.v1" if implementation else "nsealr.capabilities.v1") or value["profile"] not in PROFILE_CUSTODY: raise ValueError("unknown format/profile")
+    if implementation:
+        if type(value["conformance_only"]) is not bool: raise ValueError("conformance marker must be boolean")
+    elif value["form"] != "full": raise ValueError("unknown capability form")
+    for key in ("requirements_id", "implementation_id", "limits_id"): bounded_id(value[key])
+    device = exact_object(value["device"], {"name", "firmware", "hardware"}, "device")
+    for label in device.values():
+        if not isinstance(label, str) or not label or len(label.encode("utf8")) > 128: raise ValueError("device label bound")
+    custody = exact_object(value["custody"], {"mode", "configuration_id"}, "custody")
+    if custody["mode"] not in set(PROFILE_CUSTODY.values()): raise ValueError("unknown custody")
+    bounded_id(custody["configuration_id"])
+    se = value["secure_element"]
+    if not isinstance(se, dict) or se.get("state") not in {"absent", "unknown", "required"}: raise ValueError("unknown secure element state")
+    exact_object(se, {"state", "configuration_id"} if se["state"] == "required" else {"state"}, "secure element")
+    if se["state"] == "required": bounded_id(se["configuration_id"])
+    if value["consent"] != "manual_local": raise ValueError("initial consent must remain manual local")
+    for method in unique_entries(value["methods"], "id", 16):
+        exact_object(method, {"id", "revision", "operation_id", "algorithm_ids", "execution_location", "limits_id"} | FEATURE_FIELDS, "method")
+        if method["id"] not in CATALOG_METHODS or type(method["revision"]) is not int or method["revision"] != 1: raise ValueError("unknown method/revision")
+        bounded_id(method["operation_id"]); bounded_id(method["limits_id"])
+        algorithms = unique_entries(method["algorithm_ids"], "algorithm", 4, 0)
+        if any(algorithm not in {"bip340.secp256k1.v1", "nip44.v2"} for algorithm in algorithms): raise ValueError("unknown algorithm")
+        if method["execution_location"] not in {"mcu", "se", "host_os", "unknown"}: raise ValueError("unknown execution location")
+        feature_state(method)
+        if method["availability"] == "available" and (method["execution_location"] == "unknown" or method["id"] != "get_capabilities" and not algorithms): raise ValueError("available method lacks execution semantics")
+    for transport in unique_entries(value["transports"], "id", 4):
+        exact_object(transport, {"id", "codec_id", "limits_id"} | FEATURE_FIELDS, "transport")
+        if transport["id"] not in {"usb", "qr"} or transport["codec_id"] != {"usb": "nsealr.serial-frame.v0", "qr": "nsealr.qr-envelope.v0"}[transport["id"]]: raise ValueError("transport/codec mismatch")
+        bounded_id(transport["limits_id"]); feature_state(transport)
+    messages = exact_object(value["messages"], MESSAGE_FEATURES, "messages")
+    for name, entry in messages.items():
+        exact_object(entry, FEATURE_FIELDS | {"workflow_id"}, name); feature_state(entry)
+        if name == "nip17_59_one_to_one_text_v1" and entry["support"] == "supported": bounded_id(entry["workflow_id"])
+        elif entry["workflow_id"] is not None: raise ValueError("unexpected workflow ID")
+    primitive, context, workflow = (messages[key]["support"] == "supported" for key in ("nip44_v2_primitive", "verified_message_context_v1", "nip17_59_one_to_one_text_v1"))
+    if context and not primitive or workflow and not (primitive and context): raise ValueError("contradictory message dependencies")
+    return value
+
+
+def check_capability_data(path: str, value: object, errors: list[str], *, implementation: bool = False) -> None:
+    try: validate_capability_data(value, implementation=implementation)
+    except (ValueError, UnicodeError, TypeError) as error: errors.append(f"{path}: {error}")
+
+
+def validate_limits_data(value: object) -> dict:
+    exact_object(value, {"format", "limits_id", "methods", "transports"}, "limits")
+    if value["format"] != "nsealr.limits.v1": raise ValueError("unknown limits format")
+    bounded_id(value["limits_id"])
+    base = {"method_id", "scope", "request_json_bytes", "response_json_bytes", "parse_work", "retained_bytes", "pending_requests", "deadline_ms", "queued_operations", "cached_responses"}
+    event = {"content_utf8_bytes", "tag_count", "tag_fields", "tag_field_utf8_bytes", "aggregate_tag_utf8_bytes", "canonical_bytes", "review_pages"}
+    message = {"plaintext_bytes", "padded_bytes", "ciphertext_bytes", "base64_bytes", "context_bytes", "pending_contexts"}
+    for entry in unique_entries(value["methods"], "method_id", 16):
+        scope = entry.get("scope")
+        if scope not in {"discovery", "sign_event", "message"}: raise ValueError("unknown method dimension scope")
+        fields = base | (event if scope == "sign_event" else message if scope == "message" else set())
+        exact_object(entry, fields, "method limits")
+        if entry["method_id"] not in ({"get_capabilities", "get_public_key"} if scope == "discovery" else {"sign_event"} if scope == "sign_event" else {"nip44_encrypt", "nip44_decrypt"}): raise ValueError("dimensions do not apply to method")
+        for key in fields - {"method_id", "scope"}: positive_integer(entry[key], key in {"queued_operations", "cached_responses"})
+        retention = entry["request_json_bytes"] * (entry["pending_requests"] + entry["queued_operations"]) + entry["response_json_bytes"] * entry["cached_responses"]
+        if retention > min(MAX_SAFE_INTEGER, entry["retained_bytes"]) or entry["response_json_bytes"] > entry["retained_bytes"]: raise ValueError("inconsistent method retention")
+    for entry in unique_entries(value["transports"], "transport_id", 4):
+        id_ = entry.get("transport_id")
+        if id_ not in {"usb", "qr"} or entry.get("scope") != "transport": raise ValueError("unknown transport dimension scope")
+        fields = {"transport_id", "scope", "frame_bytes", "frame_count", "reassembly_bytes", "parse_work", "retained_bytes", "pending_requests", "deadline_ms", "queued_frames"} | ({"static_decoded_json_bytes", "chunk_payload_chars"} if id_ == "qr" else set())
+        exact_object(entry, fields, "transport limits")
+        for key in fields - {"transport_id", "scope"}: positive_integer(entry[key], key == "queued_frames")
+        retention = entry["frame_bytes"] * entry["queued_frames"] + entry["reassembly_bytes"] * entry["pending_requests"]
+        if retention > min(MAX_SAFE_INTEGER, entry["retained_bytes"]): raise ValueError("inconsistent transport retention")
+    return value
+
+
+def check_profile_contract(common: dict, errors: list[str]) -> None:
+    for requirement in common.get("requirements", []):
+        try:
+            exact_object(requirement, {"format", "requirements_id", "profile", "required_groups", "custody_mode", "consent", "automation", "secure_element"}, "requirements")
+            profile = requirement["profile"]
+            if profile not in PROFILE_CUSTODY or requirement["format"] != "nsealr.profile-requirements.v1" or requirement["requirements_id"] != f"nsealr.profile-requirements.{profile}.v1": raise ValueError("unknown requirements")
+            groups = PROFILE_GROUPS | ({"R-MSG"} if profile in {"esp32_no_se", "custom_board"} else set())
+            if set(requirement["required_groups"]) != groups or len(requirement["required_groups"]) != len(groups): raise ValueError("all own required groups must be present once")
+            if requirement["custody_mode"] != PROFILE_CUSTODY[profile] or requirement["consent"] != "manual_local" or requirement["automation"] != "unavailable": raise ValueError("profile policy mismatch")
+            if requirement["secure_element"] != {"state": "unknown" if profile == "custom_board" else "absent"}: raise ValueError("profile component requirement mismatch")
+        except (ValueError, TypeError) as error: errors.append(f"requirements: {error}")
+    if {entry.get("profile") for entry in common.get("requirements", [])} != set(PROFILE_CUSTODY) or len(common.get("requirements", [])) != 4: errors.append("requirements: exact four profiles required")
+    try: validate_limits_data(common["limits_manifest"])
+    except (KeyError, ValueError, TypeError) as error: errors.append(f"limits: {error}")
+    for profile, rel in common.get("implementation_examples", {}).items():
+        manifest = load_json(rel)
+        check_capability_data(rel, manifest, errors, implementation=True)
+        if manifest.get("profile") != profile or manifest.get("custody", {}).get("mode") != PROFILE_CUSTODY.get(profile) or manifest.get("conformance_only") is not True: errors.append(f"{rel}: conformance profile mismatch")
+        if any(method.get("availability") == "available" for method in manifest.get("methods", []) if method.get("id") == "sign_event"): errors.append(f"{rel}: synthetic implementation must not enable production signing")
+    if set(common.get("implementation_examples", {})) != set(PROFILE_CUSTODY): errors.append("missing implementation examples")
+
+
 def main() -> int:
     errors: list[str] = []
 
     for schema in (
-        "signing-request-v0.schema.json",
-        "signing-response-v0.schema.json",
+        "signing-request-v2.schema.json",
+        "signing-response-v2.schema.json",
         "error-v0.schema.json",
         "nip46-policy-file-v0.schema.json",
-        "account-descriptor-v0.schema.json",
+        "account-v1.schema.json",
         "policy-profile-v0.schema.json",
         "grant-descriptor-v0.schema.json",
         "policy-decision-vector-v0.schema.json",
-        "route-selection-vector-v0.schema.json",
+        "route-selection-v1.schema.json",
         "nip46-session-active-v0.schema.json",
     ):
         load_json(f"schemas/{schema}")
 
-    signing_response_schema = load_json("schemas/signing-response-v0.schema.json")
-    signing_status_props = (
-        signing_response_schema.get("$defs", {})
-        .get("signing_status", {})
-        .get("properties", {})
-    )
-    for gate_field in ("missing_gates", "development_accepted_gates"):
-        schema_gate_enum = signing_status_props.get(gate_field, {}).get("items", {}).get("enum", [])
-        if schema_gate_enum != SIGNING_STATUS_GATES:
-            errors.append(
-                "schemas/signing-response-v0.schema.json: "
-                f"signing_status.{gate_field} enum must match SIGNING_STATUS_GATES"
-            )
-
     check_implementation_limits(errors)
 
     for path in sorted((ROOT / "examples").glob("request-*.json")):
-        check_request_shape(path.relative_to(ROOT), load_json(str(path.relative_to(ROOT))), errors)
+        value = load_json(str(path.relative_to(ROOT)))
+        if value.get("method") == "get_signing_status":
+            if not request_shape_errors(path, value): errors.append(f"{path}: retired wire1 status unexpectedly accepted")
+        else:
+            check_request_shape(path.relative_to(ROOT), value, errors)
 
     for path in sorted((ROOT / "examples" / "invalid").glob("request-*.json")):
         invalid_errors = request_shape_errors(path.relative_to(ROOT), load_json(str(path.relative_to(ROOT))))
@@ -6191,137 +6052,26 @@ def main() -> int:
             errors.append(f"{path.relative_to(ROOT)}: invalid request unexpectedly passed")
 
     for path in sorted((ROOT / "examples").glob("response-*.json")):
-        check_response_shape(path.relative_to(ROOT), load_json(str(path.relative_to(ROOT))), errors)
+        value = load_json(str(path.relative_to(ROOT)))
+        if "signing_status" in value.get("result", {}):
+            rejected: list[str] = []
+            check_response_shape(path.relative_to(ROOT), value, rejected)
+            if not rejected: errors.append(f"{path}: retired status response unexpectedly accepted")
+        else:
+            check_response_shape(path.relative_to(ROOT), value, errors)
 
-    capability_request = load_required_json("examples/request-get-capabilities.json", errors)
-    capability_response = load_required_json("examples/response-get-capabilities-esp32-s3-scaffold.json", errors)
-    capability_vector = load_required_json("vectors/devices/esp32-s3-capabilities-scaffold.json", errors)
-    signing_status_request = load_required_json("examples/request-get-signing-status.json", errors)
-    signing_status_response = load_required_json("examples/response-get-signing-status-esp32-s3-scaffold.json", errors)
-    signing_status_vector = load_required_json("vectors/devices/esp32-s3-signing-status-disabled.json", errors)
-    public_key_request = load_required_json("examples/request-get-public-key.json", errors)
-    public_key_response = load_required_json("examples/response-get-public-key.json", errors)
-    public_key_vector = load_required_json("vectors/devices/esp32-s3-get-public-key-dev.json", errors)
-    signing_disabled_response = load_required_json("examples/response-sign-event-disabled-esp32-s3-scaffold.json", errors)
-    signing_disabled_vector = load_required_json("vectors/devices/esp32-s3-sign-event-disabled.json", errors)
-    if capability_request is not None:
-        if capability_request.get("method") != "get_capabilities":
-            errors.append("examples/request-get-capabilities.json: method must be get_capabilities")
-    if capability_request is not None and capability_response is not None:
-        if capability_response.get("request_id") != capability_request.get("request_id"):
-            errors.append("examples/response-get-capabilities-esp32-s3-scaffold.json: request_id mismatch")
-        capabilities = capability_response.get("result", {}).get("capabilities", {})
-        if capabilities.get("signing_enabled") is not False:
-            errors.append("examples/response-get-capabilities-esp32-s3-scaffold.json: scaffold signing must be disabled")
-        if capabilities.get("requires_physical_approval") is not True:
-            errors.append("examples/response-get-capabilities-esp32-s3-scaffold.json: physical approval must be required")
-        if "sign_event" not in capabilities.get("methods", []):
-            errors.append("examples/response-get-capabilities-esp32-s3-scaffold.json: sign_event capability must be declared")
-        if "get_signing_status" not in capabilities.get("methods", []):
-            errors.append("examples/response-get-capabilities-esp32-s3-scaffold.json: get_signing_status capability must be declared")
-    if capability_vector is not None and capability_request is not None and capability_response is not None:
-        if capability_vector.get("request") != capability_request:
-            errors.append("vectors/devices/esp32-s3-capabilities-scaffold.json: request mismatch")
-        if capability_vector.get("response") != capability_response:
-            errors.append("vectors/devices/esp32-s3-capabilities-scaffold.json: response mismatch")
-    if signing_status_request is not None:
-        if signing_status_request.get("method") != "get_signing_status":
-            errors.append("examples/request-get-signing-status.json: method must be get_signing_status")
-    if signing_status_request is not None and signing_status_response is not None:
-        if signing_status_response.get("request_id") != signing_status_request.get("request_id"):
-            errors.append("examples/response-get-signing-status-esp32-s3-scaffold.json: request_id mismatch")
-        signing_status = signing_status_response.get("result", {}).get("signing_status", {})
-        if signing_status.get("signing_enabled") is not False:
-            errors.append("examples/response-get-signing-status-esp32-s3-scaffold.json: scaffold signing must be disabled")
-        if signing_status.get("missing_gates") != ESP32_S3_SCAFFOLD_MISSING_SIGNING_GATES:
-            errors.append("examples/response-get-signing-status-esp32-s3-scaffold.json: missing gate list mismatch")
-        if signing_status.get("development_accepted_gates") != ESP32_S3_SCAFFOLD_DEVELOPMENT_ACCEPTED_SIGNING_GATES:
-            errors.append("examples/response-get-signing-status-esp32-s3-scaffold.json: development accepted gate list mismatch")
-    if signing_status_vector is not None and signing_status_request is not None and signing_status_response is not None:
-        if signing_status_vector.get("request") != signing_status_request:
-            errors.append("vectors/devices/esp32-s3-signing-status-disabled.json: request mismatch")
-        if signing_status_vector.get("response") != signing_status_response:
-            errors.append("vectors/devices/esp32-s3-signing-status-disabled.json: response mismatch")
-    if public_key_request is not None:
-        if public_key_request.get("method") != "get_public_key":
-            errors.append("examples/request-get-public-key.json: method must be get_public_key")
-    if public_key_request is not None and public_key_response is not None:
-        if public_key_response.get("request_id") != public_key_request.get("request_id"):
-            errors.append("examples/response-get-public-key.json: request_id mismatch")
-    if public_key_vector is not None and public_key_request is not None and public_key_response is not None:
-        if public_key_vector.get("request") != public_key_request:
-            errors.append("vectors/devices/esp32-s3-get-public-key-dev.json: request mismatch")
-        if public_key_vector.get("response") != public_key_response:
-            errors.append("vectors/devices/esp32-s3-get-public-key-dev.json: response mismatch")
-    if signing_disabled_response is not None:
-        if signing_disabled_response.get("ok") is not False:
-            errors.append("examples/response-sign-event-disabled-esp32-s3-scaffold.json: ok must be false")
-        error = signing_disabled_response.get("error", {})
-        if error.get("code") != "signing_disabled":
-            errors.append("examples/response-sign-event-disabled-esp32-s3-scaffold.json: code must be signing_disabled")
-        if error.get("retryable") is not False:
-            errors.append("examples/response-sign-event-disabled-esp32-s3-scaffold.json: retryable must be false")
-    if signing_disabled_vector is not None and signing_disabled_response is not None:
-        if signing_disabled_vector.get("request") != load_json("examples/request-kind-1-basic.json"):
-            errors.append("vectors/devices/esp32-s3-sign-event-disabled.json: request mismatch")
-        if signing_disabled_vector.get("response") != signing_disabled_response:
-            errors.append("vectors/devices/esp32-s3-sign-event-disabled.json: response mismatch")
-
-    capabilities_enabled = load_required_json(
-        "examples/response-get-capabilities-esp32-s3-enabled.json", errors
-    )
-    if capabilities_enabled is not None:
-        enabled_caps = capabilities_enabled.get("result", {}).get("capabilities", {})
-        if enabled_caps.get("signing_enabled") is not True:
-            errors.append("examples/response-get-capabilities-esp32-s3-enabled.json: signing must be enabled")
-        if enabled_caps.get("requires_physical_approval") is not True:
-            errors.append("examples/response-get-capabilities-esp32-s3-enabled.json: physical approval must remain required")
-        if "sign_event" not in enabled_caps.get("methods", []):
-            errors.append("examples/response-get-capabilities-esp32-s3-enabled.json: sign_event capability must be declared")
-
-    signing_status_enabled = load_required_json(
-        "examples/response-get-signing-status-esp32-s3-enabled.json", errors
-    )
-    if signing_status_enabled is not None:
-        enabled_status = signing_status_enabled.get("result", {}).get("signing_status", {})
-        if enabled_status.get("signing_enabled") is not True:
-            errors.append("examples/response-get-signing-status-esp32-s3-enabled.json: signing must be enabled")
-        if enabled_status.get("missing_gates") != []:
-            errors.append("examples/response-get-signing-status-esp32-s3-enabled.json: enabled status requires empty missing_gates")
-
-    capabilities_enabled_request = load_required_json(
-        "examples/request-get-capabilities-enabled.json", errors
-    )
-    if capabilities_enabled_request is not None and capabilities_enabled_request.get("method") != "get_capabilities":
-        errors.append("examples/request-get-capabilities-enabled.json: method must be get_capabilities")
-    if capabilities_enabled is not None and capabilities_enabled_request is not None:
-        if capabilities_enabled.get("request_id") != capabilities_enabled_request.get("request_id"):
-            errors.append("examples/response-get-capabilities-esp32-s3-enabled.json: request_id mismatch")
-    capabilities_enabled_vector = load_required_json(
-        "vectors/devices/esp32-s3-capabilities-enabled.json", errors
-    )
-    if capabilities_enabled_vector is not None:
-        if capabilities_enabled_vector.get("request") != capabilities_enabled_request:
-            errors.append("vectors/devices/esp32-s3-capabilities-enabled.json: request mismatch")
-        if capabilities_enabled_vector.get("response") != capabilities_enabled:
-            errors.append("vectors/devices/esp32-s3-capabilities-enabled.json: response mismatch")
-
-    signing_status_enabled_request = load_required_json(
-        "examples/request-get-signing-status-enabled.json", errors
-    )
-    if signing_status_enabled_request is not None and signing_status_enabled_request.get("method") != "get_signing_status":
-        errors.append("examples/request-get-signing-status-enabled.json: method must be get_signing_status")
-    if signing_status_enabled is not None and signing_status_enabled_request is not None:
-        if signing_status_enabled.get("request_id") != signing_status_enabled_request.get("request_id"):
-            errors.append("examples/response-get-signing-status-esp32-s3-enabled.json: request_id mismatch")
-    signing_status_enabled_vector = load_required_json(
-        "vectors/devices/esp32-s3-signing-status-enabled.json", errors
-    )
-    if signing_status_enabled_vector is not None:
-        if signing_status_enabled_vector.get("request") != signing_status_enabled_request:
-            errors.append("vectors/devices/esp32-s3-signing-status-enabled.json: request mismatch")
-        if signing_status_enabled_vector.get("response") != signing_status_enabled:
-            errors.append("vectors/devices/esp32-s3-signing-status-enabled.json: response mismatch")
+    common = load_json("vectors/profile-capabilities/cases-v1.json")
+    check_profile_contract(common, errors)
+    for request_path, response_path, vector_path in (
+        ("examples/request-get-public-key.json", "examples/response-get-public-key.json", "vectors/devices/esp32-s3-get-public-key-dev.json"),
+        ("examples/request-kind-1-basic.json", "examples/response-sign-event-disabled-esp32-s3-scaffold.json", "vectors/devices/esp32-s3-sign-event-disabled.json"),
+    ):
+        request, response, vector = load_json(request_path), load_json(response_path), load_json(vector_path)
+        if request != vector.get("request") or response != vector.get("response") or response.get("request_id") != request.get("request_id"):
+            errors.append(f"{vector_path}: request/response pair mismatch")
+    for name in ("scaffold", "enabled"):
+        report = load_json(f"examples/response-get-capabilities-esp32-s3-{name}.json")["result"]["capabilities"]
+        check_capability_data(f"capabilities-{name}", report, errors)
 
     key = load_json("vectors/keys/test-key-1.json")
     if not HEX32_RE.fullmatch(key.get("public_key", "")):
@@ -6338,6 +6088,7 @@ def main() -> int:
             errors.append("vectors/keys/nip06-account-0-leader.json: account mismatch")
         if xonly_pubkey_from_secret(nip06_key.get("secret_key", "")) != nip06_key.get("public_key"):
             errors.append("vectors/keys/nip06-account-0-leader.json: public_key mismatch")
+    public_key_response = load_json("examples/response-get-public-key.json")
     if public_key_response is not None:
         response_public_key = public_key_response.get("result", {}).get("public_key")
         if response_public_key != key.get("public_key"):
@@ -6452,9 +6203,6 @@ def main() -> int:
 
     for rel in custody_contract_vector_names():
         check_persistent_secret_custody_vector(rel, errors)
-
-    for rel in device_security_profile_vector_names():
-        check_device_security_profile_vector(rel, errors)
 
     for rel in invalid_vector_names():
         check_invalid_vector(rel, errors)

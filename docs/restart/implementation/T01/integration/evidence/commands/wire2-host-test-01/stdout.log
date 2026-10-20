@@ -1,0 +1,115 @@
+
+> @nsealr/bridge-workspace@0.1.0 test /home/tux/nsealr/.restart-tools/goal/t01-current-integration
+> vitest run --maxWorkers=4
+
+
+ RUN  v4.1.5 /home/tux/nsealr/.restart-tools/goal/t01-current-integration
+
+ ❯ apps/bridge/browser-extension/src/runtime-message.test.ts (16 tests | 3 failed) 24ms
+     × bridges runtime messages through the background controller without browser APIs 6ms
+     × emits secretless pending request state around accepted runtime messages 1ms
+     × installs an injected runtime message listener and sends accepted responses 2ms
+ ❯ apps/bridge/browser-extension/src/package-build.test.ts (14 tests | 13 failed) 45ms
+     × writes a deterministic secretless package artifact to a new output directory 4ms
+     × verifies package-build reports against the written artifact directory 1ms
+     × rejects manifest drift even when package-build file hashes are updated 0ms
+     × rejects background route drift even when package-build file hashes are updated 0ms
+     × rejects popup mode drift even when package-build file hashes are updated 0ms
+     × rejects popup HTML drift even when package-build file hashes are updated 0ms
+     × rejects origin approval popup drift even when package-build file hashes are updated 0ms
+     × rejects content-script drift even when package-build file hashes are updated 0ms
+     × rejects page-script drift even when package-build file hashes are updated 0ms
+     × writes a Firefox package artifact with explicit browser settings 0ms
+     × rejects source-tree artifact paths during package verification 0ms
+     × writes an explicit storage-backed origin approval package artifact 0ms
+     × rejects ambiguous or unsafe package builds before writing output 0ms
+ ❯ apps/bridge/browser-extension/src/nsealr-entrypoints.test.ts (9 tests | 1 failed) 20ms
+     × wires the background packaged entrypoint through browser.runtime and secretless route config 7ms
+ ❯ apps/bridge/browser-extension/src/package-build-cli.test.ts (7 tests | 6 failed) 14ms
+     × writes a Chromium package build from explicit args 4ms
+     × rejects package verification against a different reviewed package plan 1ms
+     × rejects package artifacts with unexpected output files 1ms
+     × writes a Chromium package build with extension-storage origin approval 1ms
+     × writes a Firefox package build from explicit args 1ms
+     × rejects unsupported or incomplete package-build args before output 3ms
+ ❯ apps/bridge/cli/src/index.test.ts (61 tests | 19 failed) 279ms
+     × creates parameterless device requests with caller supplied request ids 8ms
+     × rejects invalid caller supplied request ids before writing device requests 3ms
+     × verifies all event fixtures from the specs repository 16ms
+     × verifies event and trusted-review fixtures from the specs repository 9ms
+     × S01 metadata fixture comparison ignores object key order 13ms
+     × S01 metadata fixture comparison rejects changed value 14ms
+     × S01 metadata fixture comparison rejects changed type 13ms
+     × S01 metadata fixture comparison rejects changed extra 13ms
+     × S01 metadata fixture comparison rejects changed missing 13ms
+     × S01 metadata fixture comparison rejects changed array order 14ms
+     × rejects policy decision fixture drift 13ms
+     × rejects NIP-46 permission policy fixture drift 13ms
+     × rejects NIP-46 bridge decision fixture drift 14ms
+     × rejects NIP-46 policy-file fixture drift 13ms
+     × writes NIP-46 bridge decisions without opening relay or signer transports 4ms
+     × can read NIP-46 approved permissions from an explicit policy file 1ms
+     × rejects invalid NIP-46 decisions before writing output 1ms
+     × rejects invalid original requests before verifying responses 1ms
+     × rejects invalid serial line requests before opening a port or writing output 1ms
+ ❯ packages/nip46/src/nip46.test.ts (31 tests | 9 failed) 94ms
+     × maps a decrypted sign_event request to a nSealr signing request 4ms
+     × maps a decrypted get_public_key request to a nSealr public-key request 0ms
+     × matches shared NIP-46 bridge vectors from the specs repository 8ms
+     × rejects unsupported or unsafe NIP-46 request payloads 2ms
+     × matches shared NIP-46 relay step vectors 11ms
+     × matches shared NIP-46 pending-session request gate vectors 3ms
+     × rejects shared invalid NIP-46 hardening vectors deterministically 11ms
+     × matches request permissions without granting policy 0ms
+     × decides whether a NIP-46 request may reach signer transport 0ms
+ ❯ packages/fixtures/src/fixtures.test.ts (28 tests | 1 failed) 84ms
+     × loads trusted review-screen vectors from the specs repository 7ms
+ ❯ apps/bridge/browser-extension/src/background-browser.test.ts (9 tests | 1 failed) 21ms
+     × installs runtime message handling over explicit browser-like runtime dependencies 8ms
+ ❯ apps/bridge/browser-extension/src/content-window.test.ts (12 tests | 2 failed) 20ms
+     × accepts page bridge events only from the expected source and origin 7ms
+     × installs an injected window listener and posts accepted bridge responses 3ms
+ ❯ apps/bridge/browser-extension/src/background.test.ts (9 tests | 1 failed) 16ms
+     × composes request handling and pairing intent over the same native-messaging boundary 8ms
+ ❯ apps/bridge/browser-extension/src/page-window.test.ts (6 tests | 1 failed) 10ms
+     × round-trips page bridge messages through the injected window and content listener 7ms
+ ❯ packages/browser-provider/src/provider.test.ts (14 tests | 2 failed) 32ms
+     × can back NIP-07 signEvent with an explicit local-service signer dispatcher 3ms
+     × rejects wrong-route signer responses before browser callers trust signatures 1ms
+ ❯ apps/bridge/browser-extension/src/content-script.test.ts (8 tests | 1 failed) 11ms
+     × bridges page envelopes to an injected background requester with sender binding 7ms
+ ❯ packages/nip46/src/session-security.test.ts (39 tests | 22 failed) 989ms
+     × discovers the user separately from transport before activation 54ms
+     × rejects a changed user key with a valid event signature 34ms
+     × ignores foreign signed transport authors delivered past adapter filters 31ms
+     × rejects duplicate wire JSON without consuming the request 28ms
+     × rejects escaped duplicate wire JSON without consuming the request 26ms
+     × rejects trailing wire JSON without consuming the request 27ms
+     × rejects nested signed-event duplicate members 27ms
+     × does not reuse IDs when the caller RNG repeats 26ms
+     × permits a signed user result distinct from transport author 8ms
+     × also permits a user key equal to the transport key 26ms
+     × foreign signed errors cannot consume connect 30ms
+     × foreign signed errors cannot consume get_public_key 29ms
+     × foreign signed errors cannot consume sign_event 26ms
+     × ignores replayed completed and other-manager responses 25ms
+     × snapshots the submitted template before asynchronous work 27ms
+     × rejects malformed correlated replies and preserves remote rejection 26ms
+     × limits pending requests before publish and clears them on close 28ms
+     × retains an unsettled publication slot across timeout and reclaims it on settlement 27ms
+     × rejects a response with wrong template 26ms
+     × rejects a response with wrong id 26ms
+     × rejects a response with wrong signature 26ms
+     × ignores an invalid outer signature and raw over-limit JSON before a valid response 26ms
+ ❯ apps/bridge/browser-extension/src/local-service.test.ts (3 tests | 1 failed) 8ms
+     × routes sender-derived identity to the native-messaging local service before returning a public key 6ms
+ ❯ packages/nip46/src/session-manager.test.ts (3 tests | 1 failed) 87ms
+     × connects and signs an event end-to-end over the in-memory relay 59ms
+
+ Test Files  16 failed | 61 passed | 1 skipped (78)
+      Tests  84 failed | 630 passed | 1 skipped (715)
+     Errors  3 errors
+   Start at  15:21:26
+   Duration  3.08s (transform 1.13s, setup 0ms, import 3.56s, tests 2.87s, environment 4ms)
+
+ ELIFECYCLE  Test failed. See above for more details.

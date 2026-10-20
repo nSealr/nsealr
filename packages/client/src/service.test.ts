@@ -1,3 +1,4 @@
+import { createHash as independentPlanHash } from "node:crypto";
 import { readFileSync } from "node:fs";
 import { resolve } from "node:path";
 import { describe, expect, it } from "vitest";
@@ -64,6 +65,21 @@ function accountsWithSelectedRoutePublicKey(publicKey: string) {
   return fixtures.accounts.map((account) => account.account_id === routeAccountId
     ? { ...account, public_key: publicKey }
     : account);
+}
+
+
+// Synthetic current adapter observations for S01 boundary regression tests.
+// The common artifact is the sole data source; no physical/release proof exists.
+// The synthetic recording adapter independently declares seven complete pages; no device renderer/fit is qualified.
+function conformanceSnapshot(route: { profile: string | null }): import("@nsealr/client").SignerCompatibilitySnapshot {
+  const common = JSON.parse(readFileSync(resolve(specsRoot, "vectors/profile-capabilities/cases-v1.json"), "utf8"));
+  const implementation = JSON.parse(readFileSync(resolve(specsRoot, common.implementation_examples[route.profile!]), "utf8"));
+  const adapter = structuredClone(implementation);
+  const { conformance_only: _, ...body } = structuredClone(implementation);
+  const reported = { ...body, format: "nsealr.capabilities.v1" as const, form: "full" as const };
+  for (const source of [adapter, reported]) for (const method of source.methods) Object.assign(method, { configuration: "configured", availability: "available", reason: null });
+  const limits = structuredClone(common.limits_manifest);
+  return { implementation, adapter, reported, limits, adapter_limits: structuredClone(limits), connection_id: "conformance.host-test.1", generation: 1, review_plan: { request_sha256: independentPlanHash("sha256").update(JSON.stringify(request)).digest("hex"), implementation_id: implementation.implementation_id, connection_id: "conformance.host-test.1", generation: 1, context_id: "conformance.no-authority", geometry_id: "conformance.recording.synthetic", pages: 7 } };
 }
 
 describe("local service boundary", () => {
@@ -501,7 +517,7 @@ describe("local service boundary", () => {
       accounts: fixtures.accounts,
       grants: [grant],
       now: 1_900_000_000,
-      signerDispatcher: (dispatchRequest) => {
+      signerCompatibility: conformanceSnapshot, monotonicNow: () => 0, signerDispatcher: (dispatchRequest) => {
         dispatched.push(dispatchRequest);
         return response;
       }
@@ -513,11 +529,13 @@ describe("local service boundary", () => {
         signer_response: response
       }
     });
-    expect(dispatched).toEqual([{
-      client,
-      route_selection: routeVector.selection,
-      request
+    expect(dispatched).toMatchObject([{
+      client, route_selection: routeVector.selection, request,
+      before_write: expect.any(Function),
+      effective_limits: { method: { request_json_bytes: 704 }, transport: { frame_bytes: 1024 } },
+      abort_signal: expect.any(AbortSignal)
     }]);
+    expect(() => (dispatched[0] as { before_write: () => void }).before_write()).toThrow(/no longer active/u);
   });
 
   it("rejects retired routes before invoking any signer dispatcher", () => {
@@ -528,8 +546,8 @@ describe("local service boundary", () => {
         params: { client, route_request: { ...routeVector.request, route_type: "smartcard" }, request,
           ...(acknowledgement === undefined ? {} : { external_review_acknowledgement: acknowledgement }) }
       }, { accounts: fixtures.accounts, grants: [grant], now: 1_900_000_000,
-        signerDispatcher: () => { called = true; return response; } });
-      expect(result).toMatchObject({ ok: false, error: { code: "route_selection_failed", message: "route selection route_type is unknown" } });
+        signerCompatibility: conformanceSnapshot, monotonicNow: () => 0, signerDispatcher: () => { called = true; return response; } });
+      expect(result).toMatchObject({ ok: false, error: { code: "route_selection_failed", message: "route_type is unknown" } });
       expect(called).toBe(false);
     }
   });
@@ -537,7 +555,7 @@ describe("local service boundary", () => {
   it("refuses host acknowledgement bypass while preserving active dispatch", () => {
     let calls = 0;
     const context = { accounts: fixtures.accounts, grants: [grant], now: 1_900_000_000,
-      signerDispatcher: () => { calls += 1; return response; } };
+      signerCompatibility: conformanceSnapshot, monotonicNow: () => 0, signerDispatcher: () => { calls += 1; return response; } };
     const base = { version: 1, request_id: "active-route-control", operation: "dispatch_signer_request",
       params: { client, route_request: routeVector.request, request } };
     expect(handleLocalServiceRequest({ ...base, params: { ...base.params,
@@ -564,7 +582,7 @@ describe("local service boundary", () => {
       accounts: fixtures.accounts,
       grants: [grant],
       now: 1_900_000_000,
-      signerDispatcher: () => {
+      signerCompatibility: conformanceSnapshot, monotonicNow: () => 0, signerDispatcher: () => {
         called = true;
         return response;
       }
@@ -697,7 +715,7 @@ describe("local service boundary", () => {
       accounts: fixtures.accounts,
       grants: [grant],
       now: 1_900_000_000,
-      signerDispatcher: () => {
+      signerCompatibility: conformanceSnapshot, monotonicNow: () => 0, signerDispatcher: () => {
         called = true;
         return response;
       }
@@ -738,9 +756,6 @@ describe("local service boundary", () => {
       custody: "external_signer",
       trusted_review: "external_policy",
       policy_support: "external",
-      physical_review: false,
-      physical_approval: false,
-      persistent_grants: false,
       contains_secret_material: false
     });
     expect("repository" in externalNip46RouteVector.selection).toBe(false);
@@ -780,7 +795,7 @@ describe("local service boundary", () => {
       accounts: fixtures.accounts,
       grants: [grant],
       now: 1_900_000_000,
-      signerDispatcher: (dispatchRequest) => {
+      signerCompatibility: conformanceSnapshot, monotonicNow: () => 0, signerDispatcher: (dispatchRequest) => {
         dispatched.push(dispatchRequest);
         return response;
       }
@@ -790,7 +805,7 @@ describe("local service boundary", () => {
         signer_response: response
       }
     });
-    expect(dispatched).toEqual([{
+    expect(dispatched).toMatchObject([{
       client,
       route_selection: externalNip46RouteVector.selection,
       request
@@ -837,7 +852,7 @@ describe("local service boundary", () => {
       accounts: fixtures.accounts,
       grants: [grant],
       now: 1_900_000_000,
-      signerDispatcher: dispatcher
+      signerCompatibility: conformanceSnapshot, monotonicNow: () => 0, signerDispatcher: dispatcher
     })).toMatchObject({
       ok: true,
       result: {
@@ -861,7 +876,7 @@ describe("local service boundary", () => {
       accounts: fixtures.accounts,
       grants: [grant],
       now: 1_900_000_000,
-      signerDispatcher: createRouteDispatcher([{
+      signerCompatibility: conformanceSnapshot, monotonicNow: () => 0, signerDispatcher: createRouteDispatcher([{
         route_type: "raspberry_qr_vault",
         dispatch: () => response
       }])
@@ -886,7 +901,7 @@ describe("local service boundary", () => {
       accounts: fixtures.accounts,
       grants: [grant],
       now: 1_900_000_000,
-      signerDispatcher: createRouteDispatcher([
+      signerCompatibility: conformanceSnapshot, monotonicNow: () => 0, signerDispatcher: createRouteDispatcher([
         {
           route_type: routeVector.selection.route_type,
           dispatch: () => response
@@ -919,7 +934,7 @@ describe("local service boundary", () => {
       accounts: fixtures.accounts,
       grants: [grant],
       now: 1_900_000_000,
-      signerDispatcher: () => {
+      signerCompatibility: conformanceSnapshot, monotonicNow: () => 0, signerDispatcher: () => {
         throw new SignerTransportError(
           "signer_transport_timeout",
           "serial line transport timed out before response after 1000ms"
@@ -948,7 +963,7 @@ describe("local service boundary", () => {
       accounts: fixtures.accounts,
       grants: [grant],
       now: 1_900_000_000,
-      signerDispatcher: async (dispatchRequest) => {
+      signerCompatibility: conformanceSnapshot, monotonicNow: () => 0, signerDispatcher: async (dispatchRequest) => {
         expect(dispatchRequest.route_selection.route_type).toBe("esp32_usb_nip46");
         return response;
       }
@@ -976,7 +991,7 @@ describe("local service boundary", () => {
       accounts: fixtures.accounts,
       grants: [grant],
       now: 1_900_000_000,
-      signerDispatcher: async () => response
+      signerCompatibility: conformanceSnapshot, monotonicNow: () => 0, signerDispatcher: async () => response
     })).toMatchObject({
       ok: false,
       error: {
@@ -1001,7 +1016,7 @@ describe("local service boundary", () => {
       accounts: fixtures.accounts,
       grants: [grant],
       now: 1_900_000_000,
-      signerDispatcher: () => {
+      signerCompatibility: conformanceSnapshot, monotonicNow: () => 0, signerDispatcher: () => {
         called = true;
         return response;
       }
@@ -1046,7 +1061,7 @@ describe("local service boundary", () => {
       accounts: fixtures.accounts,
       grants: [grant],
       now: 1_900_000_000,
-      signerDispatcher: () => ({ ...response, request_id: "other-request" })
+      signerCompatibility: conformanceSnapshot, monotonicNow: () => 0, signerDispatcher: () => ({ ...response, request_id: "other-request" })
     })).toMatchObject({
       ok: false,
       error: {
@@ -1068,7 +1083,7 @@ describe("local service boundary", () => {
       accounts: accountsWithSelectedRoutePublicKey("dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd"),
       grants: [grant],
       now: 1_900_000_000,
-      signerDispatcher: () => response
+      signerCompatibility: conformanceSnapshot, monotonicNow: () => 0, signerDispatcher: () => response
     })).toMatchObject({
       ok: false,
       error: {
@@ -1078,7 +1093,7 @@ describe("local service boundary", () => {
     });
 
     const publicKeyRequest = {
-      version: 1,
+      version: 2,
       request_id: "req-route-pubkey",
       method: "get_public_key"
     };
@@ -1095,8 +1110,8 @@ describe("local service boundary", () => {
       accounts: accountsWithSelectedRoutePublicKey("eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"),
       grants: [grant],
       now: 1_900_000_000,
-      signerDispatcher: () => ({
-        version: 1,
+      signerCompatibility: conformanceSnapshot, monotonicNow: () => 0, signerDispatcher: () => ({
+        version: 2,
         request_id: "req-route-pubkey",
         ok: true,
         result: {

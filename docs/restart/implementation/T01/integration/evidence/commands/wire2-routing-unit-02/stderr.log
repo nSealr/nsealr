@@ -1,0 +1,199 @@
+
+⎯⎯⎯⎯⎯⎯ Failed Tests 12 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  packages/policy/src/policy.test.ts > identity, recovery, and policy contracts > rejects ambiguous or unsupported route selections before signer IO
+AssertionError: expected [Function] to throw error matching /repository does not match/u but got 'signer_route.repository must be nsealr'
+
+- Expected:
+/repository does not match/u
+
++ Received:
+"signer_route.repository must be nsealr"
+
+ ❯ packages/policy/src/policy.test.ts:549:9
+    547|       ...routeSelection,
+    548|       repository: "firmware"
+    549|     })).toThrow(/repository does not match/u);
+       |         ^
+    550|     expect(() => parseRouteSelection({
+    551|       ...routeSelection,
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/12]⎯
+
+ FAIL  packages/transport/src/transport.test.ts > transport adapters > moves request and response JSON through files
+AssertionError: promise rejected "Error: transport response invalid: versio…" instead of resolving
+ ❯ packages/transport/src/transport.test.ts:59:43
+     57|
+     58|     expect(readJsonFile(requestPath)).toEqual(signEventRequest);
+     59|     await expect(transport.readResponse()).resolves.toEqual(expectedRe…
+       |                                           ^
+     60|   });
+     61|
+
+Caused by: Error: transport response invalid: version must be 2
+ ❯ assertValidResponse packages/transport/src/transport.ts:248:11
+ ❯ JsonFileTransport.readResponse packages/transport/src/transport.ts:314:5
+ ❯ packages/transport/src/transport.test.ts:59:28
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/12]⎯
+
+ FAIL  packages/transport/src/transport.test.ts > transport adapters > rejects file transport exchange responses for a different request id
+AssertionError: expected [Function] to throw error including 'transport response request_id does no…' but got 'transport response invalid: version m…'
+
+Expected: "transport response request_id does not match request"
+Received: "transport response invalid: version must be 2"
+
+ ❯ packages/transport/src/transport.test.ts:78:55
+     76|     });
+     77|
+     78|     await expect(transport.exchange(signEventRequest)).rejects.toThrow…
+       |                                                       ^
+     79|   });
+     80|
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/12]⎯
+
+ FAIL  packages/transport/src/transport.test.ts > transport adapters > rejects invalid file transport requests before writing them
+AssertionError: expected [Function] to throw error including 'transport request invalid: request_id…' but got 'transport request invalid: version mu…'
+
+Expected: "transport request invalid: request_id is invalid"
+Received: "transport request invalid: version must be 2"
+
+ ❯ packages/transport/src/transport.test.ts:87:115
+     85|     const transport = new JsonFileTransport({ requestPath, responsePat…
+     86|
+     87|     await expect(transport.writeRequest({ version: 1, request_id: "bad…
+       |                                                                                                                   ^
+     88|       "transport request invalid: request_id is invalid"
+     89|     );
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/12]⎯
+
+ FAIL  packages/transport/src/transport.test.ts > transport adapters > rejects invalid file transport responses before returning them
+AssertionError: expected [Function] to throw error including 'transport response invalid: ok must b…' but got 'transport response invalid: version m…'
+
+Expected: "transport response invalid: ok must be true or false"
+Received: "transport response invalid: version must be 2"
+
+ ❯ packages/transport/src/transport.test.ts:101:43
+     99|     writeJsonFile(responsePath, { version: 1, request_id: signEventReq…
+    100|
+    101|     await expect(transport.readResponse()).rejects.toThrow("transport …
+       |                                           ^
+    102|     expect(() => readFileSync(requestPath, "utf8")).toThrow();
+    103|   });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[5/12]⎯
+
+ FAIL  packages/transport/src/transport.test.ts > transport adapters > exchanges one JSON request and response over stdio JSON lines
+AssertionError: promise rejected "Error: transport response invalid: versio…" instead of resolving
+ ❯ packages/transport/src/transport.test.ts:131:55
+    129|     });
+    130|
+    131|     await expect(transport.exchange(signEventRequest)).resolves.toEqua…
+       |                                                       ^
+    132|       version: 1,
+    133|       request_id: signEventRequest.request_id,
+
+Caused by: Error: transport response invalid: version must be 2
+ ❯ assertValidResponse packages/transport/src/transport.ts:248:11
+ ❯ Socket.<anonymous> packages/transport/src/transport.ts:410:11
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[6/12]⎯
+
+ FAIL  packages/transport/src/transport.test.ts > transport adapters > rejects stdio transport responses for a different request id
+AssertionError: expected [Function] to throw error including 'transport response request_id does no…' but got 'transport response invalid: version m…'
+
+Expected: "transport response request_id does not match request"
+Received: "transport response invalid: version must be 2"
+
+ ❯ packages/transport/src/transport.test.ts:167:55
+    165|     });
+    166|
+    167|     await expect(transport.exchange(signEventRequest)).rejects.toThrow…
+       |                                                       ^
+    168|   });
+    169|
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[7/12]⎯
+
+ FAIL  packages/transport/src/transport.test.ts > transport adapters > rejects invalid stdio transport requests before spawning a signer
+AssertionError: expected [Function] to throw error including 'transport request invalid: request_id…' but got 'transport request invalid: version mu…'
+
+Expected: "transport request invalid: request_id is invalid"
+Received: "transport request invalid: version must be 2"
+
+ ❯ packages/transport/src/transport.test.ts:175:111
+    173|     });
+    174|
+    175|     await expect(transport.exchange({ version: 1, request_id: "bad req…
+       |                                                                                                               ^
+    176|       "transport request invalid: request_id is invalid"
+    177|     );
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[8/12]⎯
+
+ FAIL  packages/transport/src/transport.test.ts > transport adapters > rejects invalid stdio transport responses before returning them
+AssertionError: expected [Function] to throw error including 'transport response invalid: ok must b…' but got 'transport response invalid: version m…'
+
+Expected: "transport response invalid: ok must be true or false"
+Received: "transport response invalid: version must be 2"
+
+ ❯ packages/transport/src/transport.test.ts:200:55
+    198|     });
+    199|
+    200|     await expect(transport.exchange(signEventRequest)).rejects.toThrow…
+       |                                                       ^
+    201|   });
+    202|
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[9/12]⎯
+
+ FAIL  packages/transport/src/transport.test.ts > transport adapters > rejects invalid serial response payloads before returning from transport
+AssertionError: expected [Function] to throw error including 'serial frame response invalid: ok mus…' but got 'serial frame response invalid: versio…'
+
+Expected: "serial frame response invalid: ok must be true or false"
+Received: "serial frame response invalid: version must be 2"
+
+ ❯ packages/transport/src/transport.test.ts:340:58
+    338|     });
+    339|
+    340|     await expect(transport.exchange(capabilitiesRequest)).rejects.toTh…
+       |                                                          ^
+    341|   });
+    342|
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[10/12]⎯
+
+ FAIL  packages/transport/src/transport.test.ts > transport adapters > rejects invalid serial request payloads before writing to transport
+AssertionError: expected [Function] to throw error including 'serial frame request invalid: request…' but got 'serial frame request invalid: version…'
+
+Expected: "serial frame request invalid: request_id is invalid"
+Received: "serial frame request invalid: version must be 2"
+
+ ❯ packages/transport/src/transport.test.ts:352:115
+    350|     });
+    351|
+    352|     await expect(transport.exchange({ version: 1, request_id: "invalid…
+       |                                                                                                                   ^
+    353|       "serial frame request invalid: request_id is invalid"
+    354|     );
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[11/12]⎯
+
+ FAIL  packages/transport/src/transport.test.ts > transport adapters > rejects invalid one-shot serial line requests before opening a port
+AssertionError: expected [Function] to throw error including 'serial line request invalid: request_…' but got 'serial line request invalid: version …'
+
+Expected: "serial line request invalid: request_id is invalid"
+Received: "serial line request invalid: version must be 2"
+
+ ❯ packages/transport/src/transport.test.ts:531:6
+    529|         }
+    530|       })
+    531|     ).rejects.toThrow("serial line request invalid: request_id is inva…
+       |      ^
+    532|
+    533|     expect(opened).toBe(false);
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[12/12]⎯
+

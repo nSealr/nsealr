@@ -1,6 +1,8 @@
 import {
   createRouteDispatcher,
   SignerTransportError,
+  SignerRouteUnavailableError,
+  type SignerDispatchRequest,
   type RouteDispatchEntry,
   type SignerRequestDispatcher,
   type SignerTransportErrorCode
@@ -223,18 +225,23 @@ async function openSerialLinePort(
 
 async function dispatchSerialLineRoute(
   route: ServiceSerialLineRouteDriver,
-  request: unknown,
+  dispatch: SignerDispatchRequest,
   openPort: SerialLinePortOpener
 ): Promise<unknown> {
+  if (!dispatch.before_write || !dispatch.effective_limits) throw new SignerRouteUnavailableError("current local compatibility binding is required before opening a signer port");
+  dispatch.before_write();
   const port = await openSerialLinePort(route, openPort);
   let exchangeFailed = false;
   try {
     const transport = new SerialLineTransport({
       port,
       maxIgnoredLines: route.serial_line.max_ignored_lines,
-      responseTimeoutMs: route.serial_line.response_timeout_ms
+      responseTimeoutMs: Math.min(route.serial_line.response_timeout_ms ?? 30_000, dispatch.effective_limits.method.deadline_ms, dispatch.effective_limits.transport.deadline_ms),
+      beforeWrite: dispatch.before_write,
+      abortSignal: dispatch.abort_signal,
+      maxWorkBytes: Math.min(dispatch.effective_limits.method.parse_work, dispatch.effective_limits.transport.parse_work)
     });
-    return await transport.exchange(request);
+    return await transport.exchange(dispatch.request);
   } catch (error) {
     exchangeFailed = true;
     throw error instanceof SignerTransportError ? error : classifySerialLineExchangeError(error);
@@ -305,7 +312,7 @@ export function createServiceRouteDispatcher(
     account_id: route.account_id,
     route_type: route.route_type,
     transport: route.transport,
-    dispatch: async (request) => dispatchSerialLineRoute(route, request.request, options.openSerialLinePort)
+    dispatch: async (request) => dispatchSerialLineRoute(route, request, options.openSerialLinePort)
   }));
   return createRouteDispatcher(entries);
 }

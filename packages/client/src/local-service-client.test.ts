@@ -1,3 +1,4 @@
+import { createHash as independentPlanHash } from "node:crypto";
 import { readFileSync } from "node:fs";
 import { resolve } from "node:path";
 import { describe, expect, it } from "vitest";
@@ -48,6 +49,21 @@ function externalReviewAcknowledgement(): ExternalReviewAcknowledgement {
     stores_production_secrets: false,
     contains_secret_material: false
   };
+}
+
+
+// Synthetic current adapter observations for S01 boundary regression tests.
+// The common artifact is the sole data source; no physical/release proof exists.
+// The synthetic recording adapter independently declares seven complete pages; no device renderer/fit is qualified.
+function conformanceSnapshot(route: { profile: string | null }): import("@nsealr/client").SignerCompatibilitySnapshot {
+  const common = JSON.parse(readFileSync(resolve(specsRoot, "vectors/profile-capabilities/cases-v1.json"), "utf8"));
+  const implementation = JSON.parse(readFileSync(resolve(specsRoot, common.implementation_examples[route.profile!]), "utf8"));
+  const adapter = structuredClone(implementation);
+  const { conformance_only: _, ...body } = structuredClone(implementation);
+  const reported = { ...body, format: "nsealr.capabilities.v1" as const, form: "full" as const };
+  for (const source of [adapter, reported]) for (const method of source.methods) Object.assign(method, { configuration: "configured", availability: "available", reason: null });
+  const limits = structuredClone(common.limits_manifest);
+  return { implementation, adapter, reported, limits, adapter_limits: structuredClone(limits), connection_id: "conformance.host-test.1", generation: 1, review_plan: { request_sha256: independentPlanHash("sha256").update(JSON.stringify(request)).digest("hex"), implementation_id: implementation.implementation_id, connection_id: "conformance.host-test.1", generation: 1, context_id: "conformance.no-authority", geometry_id: "conformance.recording.synthetic", pages: 7 } };
 }
 
 describe("local service client", () => {
@@ -145,7 +161,7 @@ describe("local service client", () => {
     let calls = 0;
     const service = new LocalServiceClient({ exchange: (message) => handleLocalServiceRequest(message, {
       accounts: fixtures.accounts, grants: [grant], now: 1_900_000_000,
-      signerDispatcher: () => { calls += 1; return response; }
+      signerCompatibility: conformanceSnapshot, monotonicNow: () => 0, signerDispatcher: () => { calls += 1; return response; }
     }) });
     await expect(service.dispatchSignerRequest(client, routeVector.request, request, {
       requestId: "client-host-acknowledgement", externalReviewAcknowledgement: externalReviewAcknowledgement()
@@ -217,7 +233,7 @@ describe("local service client", () => {
           repository: "raspberry"
         }
       }
-    }, "expected-request")).toThrow(/repository does not match/u);
+    }, "expected-request")).toThrow(/repository must be nsealr/u);
     expect(() => validateLocalServiceResponse({
       version: 1,
       request_id: "expected-request",

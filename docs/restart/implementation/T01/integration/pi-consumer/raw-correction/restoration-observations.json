@@ -1,0 +1,61 @@
+{
+  "status": "PASS_CORRECTED_SIX_ORIGINAL_INPUT_OBSERVATIONS",
+  "historical_capture_unchanged": "../raw-ingress-gap/observation.json",
+  "count": 6,
+  "rows": [
+    {
+      "case": "duplicate-kind",
+      "transport": "static",
+      "original_json_sha256": "43b7bd0eb4097b86200a76107e754555eae52a6a3b935fd8cca37813ed2d3ec6",
+      "original_json": "{\"version\":2,\"request_id\":\"req-kind-1-basic\",\"method\":\"sign_event\",\"params\":{\"event_template\":{\"created_at\":1710000000,\"kind\":0,\"kind\":1,\"tags\":[],\"content\":\"nSealr fixture: basic kind 1 event.\"}}}",
+      "result": "REJECTED_BEFORE_SIGNER",
+      "reason": "QR JSON contains a duplicate decoded object key",
+      "signer_invocations": 0
+    },
+    {
+      "case": "duplicate-kind",
+      "transport": "animated",
+      "original_json_sha256": "43b7bd0eb4097b86200a76107e754555eae52a6a3b935fd8cca37813ed2d3ec6",
+      "original_json": "{\"version\":2,\"request_id\":\"req-kind-1-basic\",\"method\":\"sign_event\",\"params\":{\"event_template\":{\"created_at\":1710000000,\"kind\":0,\"kind\":1,\"tags\":[],\"content\":\"nSealr fixture: basic kind 1 event.\"}}}",
+      "result": "REJECTED_BEFORE_SIGNER",
+      "reason": "QR JSON contains a duplicate decoded object key",
+      "signer_invocations": 0
+    },
+    {
+      "case": "escaped-key-alias",
+      "transport": "static",
+      "original_json_sha256": "41879b49518fe350ddb3c36c984c6235d7c449282aeb22c31eff765105068961",
+      "original_json": "{\"version\":2,\"request_id\":\"req-kind-1-basic\",\"method\":\"sign_event\",\"params\":{\"event_template\":{\"created_at\":1710000000,\"kind\":0,\"\\u006bind\":1,\"tags\":[],\"content\":\"nSealr fixture: basic kind 1 event.\"}}}",
+      "result": "REJECTED_BEFORE_SIGNER",
+      "reason": "QR JSON contains a duplicate decoded object key",
+      "signer_invocations": 0
+    },
+    {
+      "case": "escaped-key-alias",
+      "transport": "animated",
+      "original_json_sha256": "41879b49518fe350ddb3c36c984c6235d7c449282aeb22c31eff765105068961",
+      "original_json": "{\"version\":2,\"request_id\":\"req-kind-1-basic\",\"method\":\"sign_event\",\"params\":{\"event_template\":{\"created_at\":1710000000,\"kind\":0,\"\\u006bind\":1,\"tags\":[],\"content\":\"nSealr fixture: basic kind 1 event.\"}}}",
+      "result": "REJECTED_BEFORE_SIGNER",
+      "reason": "QR JSON contains a duplicate decoded object key",
+      "signer_invocations": 0
+    },
+    {
+      "case": "negative-zero-spelling",
+      "transport": "static",
+      "original_json_sha256": "a6c1c7e0ce01b1d83623343a9890c3ab9ba5111369f2f90e8cdba130efaca57d",
+      "original_json": "{\"version\":2,\"request_id\":\"req-kind-1-basic\",\"method\":\"sign_event\",\"params\":{\"event_template\":{\"created_at\":-0,\"kind\":1,\"tags\":[],\"content\":\"nSealr fixture: basic kind 1 event.\"}}}",
+      "result": "REJECTED_BEFORE_SIGNER",
+      "reason": "QR JSON requires canonical unsigned safe integer tokens",
+      "signer_invocations": 0
+    },
+    {
+      "case": "negative-zero-spelling",
+      "transport": "animated",
+      "original_json_sha256": "a6c1c7e0ce01b1d83623343a9890c3ab9ba5111369f2f90e8cdba130efaca57d",
+      "original_json": "{\"version\":2,\"request_id\":\"req-kind-1-basic\",\"method\":\"sign_event\",\"params\":{\"event_template\":{\"created_at\":-0,\"kind\":1,\"tags\":[],\"content\":\"nSealr fixture: basic kind 1 event.\"}}}",
+      "result": "REJECTED_BEFORE_SIGNER",
+      "reason": "QR JSON requires canonical unsigned safe integer tokens",
+      "signer_invocations": 0
+    }
+  ]
+}

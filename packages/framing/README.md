@@ -20,7 +20,7 @@ import { decodeSerialFrame, encodeSerialFrame } from "@nsealr/framing";
 const frame = encodeSerialFrame({
   type: "request",
   payload: {
-    version: 1,
+    version: 2,
     request_id: "readme-frame",
     method: "get_public_key"
   }
@@ -29,7 +29,7 @@ const frame = encodeSerialFrame({
 assert.deepEqual(decodeSerialFrame(frame), {
   type: "request",
   payload: {
-    version: 1,
+    version: 2,
     request_id: "readme-frame",
     method: "get_public_key"
   }

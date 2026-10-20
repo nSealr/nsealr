@@ -82,7 +82,7 @@ function assertNativeHostName(value: string): void {
 
 function signerRequestForTemplate(requestId: string, eventTemplate: EventTemplate): SignEventRequest {
   const request: SignEventRequest = {
-    version: 1,
+    version: 2,
     request_id: requestId,
     method: "sign_event",
     params: {
@@ -102,7 +102,7 @@ function signedEventFromResponse(request: SignEventRequest, response: unknown): 
     throw new Error(`NIP-07 signEvent response invalid: ${validation.error}`);
   }
   const typedResponse = response as SignEventResponse | {
-    version: 1;
+    version: 2;
     request_id: string;
     ok: false;
     error: {
@@ -132,7 +132,7 @@ function localServiceErrorMessage(response: LocalServiceResponse, label: string)
 }
 
 function localServiceProtocolError(request: SignEventRequest, code: string, message: string): {
-  version: 1;
+  version: 2;
   request_id: string;
   ok: false;
   error: {
@@ -142,7 +142,7 @@ function localServiceProtocolError(request: SignEventRequest, code: string, mess
   };
 } {
   return {
-    version: 1,
+    version: 2,
     request_id: request.request_id,
     ok: false,
     error: {

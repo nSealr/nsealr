@@ -46,3 +46,10 @@ pnpm readme-examples:check
 
 README snippets are extracted from publishable package READMEs and executed
 against built package entrypoints.
+
+Current device examples use numeric2 (`nsealr.signing.v2`); the artifact directory
+`contracts/v1` and separate local-service version1 do not select that wire. The
+public root/browser smoke checks expose the same strict profile/implementation/
+finite-limit helpers and reject legacy device wire1. Bounded current adapter
+observations remain application-owned inputs for local dispatch; the examples
+do not manufacture a qualified provider or attached-hardware evidence.

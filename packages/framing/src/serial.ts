@@ -6,6 +6,7 @@ import {
   encodeBase64Url,
   jsonToUtf8Bytes,
   parseStrictJson,
+  parseSigningPayload,
   NSEALR_V0_LIMITS,
   utf8ByteLength
 } from "@nsealr/protocol";
@@ -78,6 +79,7 @@ export function decodeSerialFrame(line: string): SerialFrame {
     throw new Error("serial checksum mismatch");
   }
   const decoded = decodeBase64Url(payload, "serial frame payload must be base64url");
+  if (encodeBase64Url(decoded) !== payload) throw new Error("serial frame payload has invalid trailing bits");
   let json: string;
   try {
     json = TEXT_DECODER.decode(decoded);
@@ -85,9 +87,11 @@ export function decodeSerialFrame(line: string): SerialFrame {
     throw new Error("serial frame payload must be valid UTF-8", { cause: error });
   }
   try {
+    const value = parseStrictJson(json, NSEALR_V0_LIMITS.max_serial_frame_bytes);
+    const signerPayload = typeof value === "object" && value !== null && "request_id" in value && "version" in value && ("method" in value || "ok" in value);
     return {
       type,
-      payload: parseStrictJson(json, NSEALR_V0_LIMITS.max_serial_frame_bytes)
+      payload: signerPayload ? parseSigningPayload(decoded, NSEALR_V0_LIMITS.max_serial_frame_bytes) : value
     };
   } catch (error) {
     throw new Error("serial frame payload is not valid JSON", { cause: error });

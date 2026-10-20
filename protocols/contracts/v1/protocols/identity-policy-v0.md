@@ -82,7 +82,7 @@ automation is a separately reviewed policy state, not the default.
 - Policy-decision transcripts: `vectors/policy-decisions/*.json`
 - Policy-change review transcripts: `vectors/policy-changes/*.json`
 - Schemas:
-  - `schemas/account-descriptor-v0.schema.json`
+  - `schemas/account-v1.schema.json`
   - `schemas/policy-profile-v0.schema.json`
   - `schemas/grant-descriptor-v0.schema.json`
   - `schemas/policy-decision-vector-v0.schema.json`
@@ -90,7 +90,7 @@ automation is a separately reviewed policy state, not the default.
 
 ## Account Descriptor
 
-`nsealr-account-descriptor-v0` binds an `account_id` and public key to an
+`nsealr.account.v1` binds an `account_id` and public key to an
 explicit signer route, recovery metadata, capability metadata, and a policy
 profile id.
 
@@ -115,11 +115,24 @@ device vault, QR session, or external signer.
 Stateless QR vault routes must use:
 
 - `transport: "qr"`
-- `custody: "stateless_session"`
+- `custody: "volatile_session"`
 - `policy_support: "manual_only"`
-- `persistent_grants: false`
+- no persistent-grant, physical-review or approval assertion in account metadata
 
 They must not reference TROPIC01 or any persistent key-at-rest mechanism.
+
+Current local account records also bind an explicit profile, implementation ID
+and finite limits ID. `raspberry_qr_vault` maps to `pi_qr`, the historical
+`esp32_qr_vault` label maps to `p4_qr`, `esp32_usb_nip46` to `esp32_no_se`, and
+`custom_hardware_wallet` to `custom_board`. Connected custody is respectively
+`mcu_wrapped_persistent` and `custom_se_assisted_persistent`; the latter requires
+its actual configured component, without fallback. These labels do not qualify
+hardware. Account capabilities list methods only and do not attest authority.
+All initial local accounts select manual-only policy. Selected routes use
+`nsealr.route-selection.v1`, bind `nsealr.signing.v2`, method revision, operation,
+algorithm, codec and the same profile/implementation/limits tuple. External
+NIP-46 selects `contract: "nip46"` and null local profile/implementation/limits.
+See [profile-capabilities-v1.md](profile-capabilities-v1.md).
 
 ## Policy Profile
 
@@ -127,7 +140,9 @@ They must not reference TROPIC01 or any persistent key-at-rest mechanism.
 types. `manual_only` means every signing operation needs route-specific
 explicit approval: local review and physical approval on trusted-display
 devices. Host review acknowledgements are unsupported.
-`scoped_automation` is only allowed for route families that have an explicit
+The retained policy/grant vectors independently describe future `scoped_automation`
+constraints. They do not enable automation on current profiles. In that separate
+policy domain `scoped_automation` is only allowed for route families that have an explicit
 policy authority, expiry, rate-limit, revocation, audit-log, and
 device-policy confirmation constraints. In v0 this means ESP32 USB/NIP-46 and
 custom hardware-wallet routes, plus external NIP-46 interoperability where the

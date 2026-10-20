@@ -133,7 +133,7 @@ export class Nip46SessionManager {
   async signEvent(template: EventTemplate): Promise<SignedEvent> {
     if (this.phaseValue !== "session_active") throw new Error(`cannot sign_event from phase ${this.phaseValue}`);
     const id = this.nextId();
-    const request = { version: 1 as const, request_id: id, method: "sign_event" as const, params: { event_template: template } };
+    const request = { version: 2 as const, request_id: id, method: "sign_event" as const, params: { event_template: template } };
     const validation = validateRequest(request);
     if (!validation.ok) throw new Error(`NIP-46 sign_event request invalid: ${validation.error}`);
     const snapshot = JSON.parse(JSON.stringify(template)) as EventTemplate;
@@ -143,7 +143,7 @@ export class Nip46SessionManager {
     if (response.error !== undefined) throw new Error(`NIP-46 sign_event rejected: ${response.error}`);
     if (response.result === undefined) throw new Error("NIP-46 sign_event response has no result");
     const event = parseStrictJson(response.result, NSEALR_V0_LIMITS.max_nip46_decrypted_message_json_bytes) as SignedEvent;
-    const result = { version: 1, request_id: id, ok: true, result: { event } };
+    const result = { version: 2, request_id: id, ok: true, result: { event } };
     const shape = validateResponse(result);
     if (!shape.ok) throw new Error(`NIP-46 signed event invalid: ${shape.error}`);
     if (event.pubkey !== selectedUser) throw new Error("NIP-46 signed event user identity does not match session pubkey");
