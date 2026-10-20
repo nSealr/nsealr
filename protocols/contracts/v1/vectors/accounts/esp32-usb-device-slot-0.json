@@ -2,15 +2,12 @@
   "account_id": "acct-esp32-usb-slot-0",
   "capabilities": {
     "methods": [
+      "get_capabilities",
       "get_public_key",
-      "get_signing_status",
       "sign_event"
-    ],
-    "persistent_grants": true,
-    "physical_approval": true,
-    "physical_review": true
+    ]
   },
-  "format": "nsealr-account-descriptor-v0",
+  "format": "nsealr.account.v1",
   "label": "ESP32 USB slot 0",
   "policy_profile_id": "policy-manual-only-persistent-device",
   "public_key": "4f355bdcb7cc0af728ef3cceb9615d90684bb5b2ca5f859ab0f0b704075871aa",
@@ -20,11 +17,14 @@
     "type": "device_slot"
   },
   "signer_route": {
-    "custody": "device_persistent",
-    "policy_support": "scoped_automation",
+    "custody": "mcu_wrapped_persistent",
+    "policy_support": "manual_only",
     "repository": "nsealr",
     "transport": "usb",
     "trusted_review": "device_display",
     "type": "esp32_usb_nip46"
-  }
+  },
+  "profile": "esp32_no_se",
+  "implementation_id": "nsealr.conformance.esp32_no_se.v1",
+  "limits_id": "nsealr.limits.conformance.v1"
 }
