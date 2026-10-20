@@ -1,3 +1,5 @@
+import { parseStrictJson } from "./encoding.js";
+
 /** Bounded public compatibility data. These values never approve device actions. */
 export type ProfileId = "esp32_no_se" | "pi_qr" | "p4_qr" | "custom_board";
 export type Support = "supported" | "unavailable" | "unknown";
@@ -173,74 +175,43 @@ function uniqueIds(values: readonly string[], name: string): void {
   if (new Set(values).size !== values.length) fail(`${name} contains duplicate IDs`);
 }
 
-/** Package-private raw lexical guard. It does not build another object parser:
- * JSON.parse still parses values, after duplicate/Unicode/depth/work checks.
- * Callers must use original bytes; validating a previously parsed object alone
- * cannot recover duplicate-key evidence. */
+/** Package-private metadata constraints layered on the existing shared raw
+ * JSON syntax/duplicate guard. No second object parser or grammar is owned here. */
 export function readBoundedJson(input: string | Uint8Array, maxBytes = 8192, maxDepth = 8): unknown {
+  if (!Number.isSafeInteger(maxBytes) || maxBytes < 1 || maxBytes > 8192 || !Number.isSafeInteger(maxDepth) || maxDepth < 1 || maxDepth > 8) fail("Invalid metadata byte/depth bound");
   let source: string;
   if (typeof input === "string") {
     if (!unicode(input) || encoder.encode(input).byteLength > maxBytes) fail("JSON exceeds its byte/Unicode bound");
     source = input;
   } else {
-    if (input.byteLength > maxBytes) fail("JSON exceeds its byte bound");
+    if (!(input instanceof Uint8Array) || input.byteLength > maxBytes) fail("JSON exceeds its byte/type bound");
     try { source = new TextDecoder("utf-8", { fatal: true, ignoreBOM: true }).decode(input); }
     catch { fail("JSON is not valid UTF8"); }
   }
   if (source.startsWith("\ufeff")) fail("JSON BOM is not accepted");
-  let at = 0;
-  const ws = () => { while (/[\x20\x09\x0a\x0d]/u.test(source[at] ?? "!") && at < source.length) at++; };
-  const string = (): string => {
-    const begin = at++;
-    while (at < source.length) {
-      const char = source[at++];
-      if (char === "\\") { at++; continue; }
-      if (char === '"') {
-        let decoded: unknown;
-        try { decoded = JSON.parse(source.slice(begin, at)); } catch { fail("Malformed JSON string"); }
-        if (typeof decoded !== "string" || !unicode(decoded)) fail("JSON contains an invalid Unicode scalar");
-        return decoded;
+  // This existing package helper is the sole syntax/decoded-duplicate authority.
+  const parsed = parseStrictJson(source, maxBytes);
+  const stack: Array<{ object: boolean; expectsKey: boolean; members: number }> = [];
+  for (const match of source.matchAll(/"(?:\\[\s\S]|[^"\\])*"|[{}\[\],:]|[^\s{}\[\],:]+/gu)) {
+    const token = match[0];
+    if (token === "{" || token === "[") {
+      if (stack.length >= maxDepth) fail("JSON nesting exceeds its bound");
+      stack.push({ object: token === "{", expectsKey: token === "{", members: 0 });
+    } else if (token === "}" || token === "]") stack.pop();
+    else if (token === ",") { const frame = stack.at(-1); if (frame?.object) frame.expectsKey = true; }
+    else if (token.startsWith('"')) {
+      const value = JSON.parse(token) as string;
+      if (!unicode(value)) fail("JSON contains an invalid Unicode scalar");
+      const frame = stack.at(-1);
+      if (frame?.object && frame.expectsKey) {
+        if (++frame.members > 32 || encoder.encode(value).length > 128) fail("Oversized JSON object/key");
+        frame.expectsKey = false;
       }
+    } else if (![":", "true", "false", "null"].includes(token)) {
+      if (!/^(?:0|[1-9][0-9]*)$/u.test(token) || !Number.isSafeInteger(Number(token))) fail("JSON number must be an unsigned decimal safe integer");
     }
-    return fail("Unterminated JSON string");
-  };
-  const value = (depth: number): void => {
-    ws();
-    const char = source[at];
-    if (char === "{" || char === "[") {
-      if (depth >= maxDepth) fail("JSON nesting exceeds its bound");
-      at++; ws();
-      const object = char === "{";
-      const end = object ? "}" : "]";
-      const seen = new Set<string>();
-      if (source[at] === end) { at++; return; }
-      while (at < source.length) {
-        if (object) {
-          if (source[at] !== '"') fail("JSON object key is missing");
-          const key = string();
-          if (encoder.encode(key).byteLength > 128 || seen.size >= 32 || seen.has(key)) fail("Duplicate or oversized JSON object key");
-          seen.add(key); ws();
-          if (source[at++] !== ":") fail("JSON key separator is missing");
-        }
-        value(depth + 1); ws();
-        if (source[at] === end) { at++; return; }
-        if (source[at++] !== ",") fail("JSON value separator is missing");
-        ws();
-      }
-      fail("Unterminated JSON container");
-    }
-    if (char === '"') { string(); return; }
-    for (const literal of ["true", "false", "null"]) {
-      if (source.startsWith(literal, at)) { at += literal.length; return; }
-    }
-    const number = /^(?:0|[1-9][0-9]*)/u.exec(source.slice(at));
-    if (!number) fail("JSON requires an unsigned integer or value");
-    if (!Number.isSafeInteger(Number(number[0]))) fail("JSON integer is unsafe");
-    at += number[0].length;
-  };
-  value(0); ws();
-  if (at !== source.length) fail("JSON has trailing or invalid token data");
-  try { return JSON.parse(source); } catch { return fail("Malformed JSON"); }
+  }
+  return parsed;
 }
 
 function feature(value: Record<string, unknown>, name: string): void {
@@ -406,6 +377,20 @@ const methodBase = ["method_id", "scope", "request_json_bytes", "response_json_b
 const eventDimensions = ["content_utf8_bytes", "tag_count", "tag_fields", "tag_field_utf8_bytes", "aggregate_tag_utf8_bytes", "canonical_bytes", "review_pages"];
 const messageDimensions = ["plaintext_bytes", "padded_bytes", "ciphertext_bytes", "base64_bytes", "context_bytes", "pending_contexts"];
 
+function validateMethodLimits(value: unknown): MethodLimits {
+  const method = record(value, "method limits"); choice(method.method_id, methodIds, "method_id");
+  const scope = choice(method.scope, ["sign_event", "discovery", "message"], "limits.scope");
+  const dimensions = scope === "sign_event" ? eventDimensions : scope === "message" ? messageDimensions : [];
+  keys(method, [...methodBase, ...dimensions], "method limits");
+  if (scope === "sign_event" && method.method_id !== "sign_event" || scope === "discovery" && !["get_capabilities", "get_public_key"].includes(String(method.method_id)) || scope === "message" && !["nip44_encrypt", "nip44_decrypt"].includes(String(method.method_id))) fail("Limit dimensions do not apply to method", "limits_unknown");
+  for (const key of [...methodBase.slice(2), ...dimensions]) integer(method[key], key, ["queued_operations", "cached_responses"].includes(key));
+  const pending = checkedProduct(Number(method.request_json_bytes), Number(method.pending_requests));
+  const queue = checkedProduct(Number(method.request_json_bytes), Number(method.queued_operations));
+  const cache = checkedProduct(Number(method.response_json_bytes), Number(method.cached_responses));
+  if (checkedSum(pending, queue, cache) > Number(method.retained_bytes) || Number(method.response_json_bytes) > Number(method.retained_bytes)) fail("Method retention is inconsistent", "limits_unknown");
+  return method as unknown as MethodLimits;
+}
+
 /** Validate discriminated method/transport dimensions; no missing dimension is
  * interpreted as unlimited, and no unsupported dimension is silently added. */
 export function parseLimitsManifest(value: unknown): LimitsManifest {
@@ -413,18 +398,7 @@ export function parseLimitsManifest(value: unknown): LimitsManifest {
   if (limits.format !== "nsealr.limits.v1") fail("Unknown limits format", "unsupported_contract");
   identifier(limits.limits_id, "limits_id");
   const methods = array(limits.methods, 16, "method limits", 1); const methodNames: string[] = [];
-  for (const entry of methods) {
-    const method = record(entry, "method limits"); methodNames.push(choice(method.method_id, methodIds, "method_id"));
-    const scope = choice(method.scope, ["sign_event", "discovery", "message"], "limits.scope");
-    const dimensions = scope === "sign_event" ? eventDimensions : scope === "message" ? messageDimensions : [];
-    keys(method, [...methodBase, ...dimensions], "method limits");
-    if (scope === "sign_event" && method.method_id !== "sign_event" || scope === "discovery" && !["get_capabilities", "get_public_key"].includes(String(method.method_id)) || scope === "message" && !["nip44_encrypt", "nip44_decrypt"].includes(String(method.method_id))) fail("Limit dimensions do not apply to method", "limits_unknown");
-    for (const key of [...methodBase.slice(2), ...dimensions]) integer(method[key], key, ["queued_operations", "cached_responses"].includes(key));
-    const pending = checkedProduct(Number(method.request_json_bytes), Number(method.pending_requests));
-    const queue = checkedProduct(Number(method.request_json_bytes), Number(method.queued_operations));
-    const cache = checkedProduct(Number(method.response_json_bytes), Number(method.cached_responses));
-    if (checkedSum(pending, queue, cache) > Number(method.retained_bytes) || Number(method.response_json_bytes) > Number(method.retained_bytes)) fail("Method retention is inconsistent", "limits_unknown");
-  }
+  for (const entry of methods) methodNames.push(validateMethodLimits(entry).method_id);
   uniqueIds(methodNames, "method limits");
   const transports = array(limits.transports, 4, "transport limits", 1); const transportNames: string[] = [];
   for (const entry of transports) {
@@ -455,6 +429,7 @@ function checkedSum(...values: number[]): number {
 
 /** Intersect exact applicable dimensions without increasing either local cap. */
 export function intersectMethodLimits(local: MethodLimits, peer: MethodLimits): MethodLimits {
+  validateMethodLimits(local); validateMethodLimits(peer);
   if (local.method_id !== peer.method_id || local.scope !== peer.scope || stable(Object.keys(local).sort()) !== stable(Object.keys(peer).sort())) fail("Mismatched limit units/dimensions", "limits_unknown");
   const output = { ...local } as unknown as Record<string, unknown>;
   for (const key of Object.keys(local)) {
@@ -462,7 +437,7 @@ export function intersectMethodLimits(local: MethodLimits, peer: MethodLimits): 
     const allowZero = ["queued_operations", "cached_responses"].includes(key);
     output[key] = Math.min(integer((local as unknown as Record<string, unknown>)[key], key, allowZero), integer((peer as unknown as Record<string, unknown>)[key], key, allowZero));
   }
-  return output as unknown as MethodLimits;
+  return validateMethodLimits(output);
 }
 
 /** Separate primitive/context/workflow eligibility; no compound API is added. */

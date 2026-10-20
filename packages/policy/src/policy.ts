@@ -1126,7 +1126,8 @@ export function parseRouteSelection(value: unknown): RouteSelection {
   rejectSecretFields(value); assertRecord(value, "route selection");
   const fields = ["format", "account_id", "public_key", "route_type", "repository", "transport", "custody", "trusted_review", "policy_support", "policy_profile_id", "profile", "implementation_id", "limits_id", "contract", "method", "method_revision", "operation_id", "algorithm_id", "codec_id", "contains_secret_material"];
   assertOnlyKeys(value, fields, "route selection");
-  if (fields.filter((key) => key !== "repository").some((key) => !Object.hasOwn(value, key)) || value.format !== "nsealr.route-selection.v1" || value.contains_secret_material !== false) throw new Error("route selection format mismatch");
+  if (fields.filter((key) => key !== "repository").some((key) => !Object.hasOwn(value, key)) || value.format !== "nsealr.route-selection.v1") throw new Error("route selection format mismatch");
+  if (value.contains_secret_material !== false) throw new Error("route selection contains_secret_material must be false");
   const route = parseSignerRoute({ type: value.route_type, ...(value.repository !== undefined ? { repository: value.repository } : {}), transport: value.transport, custody: value.custody, trusted_review: value.trusted_review, policy_support: value.policy_support });
   validateRouteSemantics(route, value.profile as ProfileId | null);
   if (value.method_revision !== 1) throw new Error("unsupported_method: unknown method revision");

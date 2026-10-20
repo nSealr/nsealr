@@ -80,7 +80,7 @@ describe("NIP-46 bridge payloads", () => {
     const request = nsealrRequestFromNip46(message);
 
     expect(request).toEqual({
-      version: 1,
+      version: 2,
       request_id: "nip46-req-1",
       method: "sign_event",
       params: {
@@ -98,7 +98,7 @@ describe("NIP-46 bridge payloads", () => {
         params: []
       })
     ).toEqual({
-      version: 1,
+      version: 2,
       request_id: "nip46-key-1",
       method: "get_public_key"
     });
@@ -845,7 +845,7 @@ describe("NIP-46 bridge payloads", () => {
         event_kind: 1
       },
       nsealr_request: {
-        version: 1,
+        version: 2,
         request_id: "nip46-req-1",
         method: "sign_event",
         params: {

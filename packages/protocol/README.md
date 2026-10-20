@@ -1,14 +1,14 @@
 # @nsealr/protocol
 
-Shared nSealr request, response, capability, signing-status, and resource-limit
+Shared nSealr request, response, profile capability and finite resource-limit
 validation, plus small browser-safe encoding helpers for transport envelopes.
 
 ## Purpose
 
-- Validate nSealr v0 request and response shapes.
+- Validate nSealr signing.v2 request and response shapes.
 - Centralize host-side copies of constrained-signer implementation limits.
 - Reject unsafe `sign_event` templates before transport or signer routing.
-- Validate capability and signing-status diagnostics.
+- Validate strict full/reference capability records and finite applicable limits.
 - Share deterministic JSON-to-UTF-8 and unpadded base64url helpers used by QR
   and serial framing packages without relying on Node runtime globals.
 
@@ -19,7 +19,7 @@ import assert from "node:assert/strict";
 import { validateRequest } from "@nsealr/protocol";
 
 const validation = validateRequest({
-  version: 1,
+  version: 2,
   request_id: "readme-get-public-key",
   method: "get_public_key"
 });
@@ -29,7 +29,7 @@ assert.equal(validation.ok, true);
 
 ## Boundary
 
-These limits are nSealr v0 safety limits, not Nostr protocol limits. This
+These limits are nSealr safety limits, not Nostr protocol limits. This
 package does not perform signing and must be used before any companion access
 surface contacts a signer route. Its encoding helpers are low-level transport
 primitives; callers should prefer `@nsealr/qr` or `@nsealr/framing` for complete

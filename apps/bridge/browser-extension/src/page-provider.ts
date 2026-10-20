@@ -111,7 +111,7 @@ function requirePublicKey(value: unknown, requestId: string): string {
 
 function signerRequestFromTemplate(requestId: string, eventTemplate: EventTemplate): SignEventRequest {
   return {
-    version: 1,
+    version: 2,
     request_id: requestId,
     method: "sign_event",
     params: {
@@ -126,7 +126,7 @@ function requireSignedEvent(value: unknown, request: SignEventRequest): SignedEv
     throw new Error("browser extension signed-event response has unsupported fields");
   }
   const response: SignEventResponse = {
-    version: 1,
+    version: 2,
     request_id: request.request_id,
     ok: true,
     result: {

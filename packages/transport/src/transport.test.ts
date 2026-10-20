@@ -42,7 +42,7 @@ describe("transport adapters", () => {
     const responsePath = join(tempRoot, "response.json");
     const transport = new JsonFileTransport({ requestPath, responsePath });
     const expectedResponse = {
-      version: 1,
+      version: 2,
       request_id: signEventRequest.request_id,
       ok: false,
       error: {
@@ -65,7 +65,7 @@ describe("transport adapters", () => {
     const responsePath = join(tempRoot, "response.json");
     const transport = new JsonFileTransport({ requestPath, responsePath });
     writeJsonFile(responsePath, {
-      version: 1,
+      version: 2,
       request_id: "different-request",
       ok: false,
       error: {
@@ -84,7 +84,7 @@ describe("transport adapters", () => {
     const responsePath = join(tempRoot, "response.json");
     const transport = new JsonFileTransport({ requestPath, responsePath });
 
-    await expect(transport.writeRequest({ version: 1, request_id: "bad request id", method: "get_capabilities" })).rejects.toThrow(
+    await expect(transport.writeRequest({ version: 2, request_id: "bad request id", method: "get_capabilities" })).rejects.toThrow(
       "transport request invalid: request_id is invalid"
     );
     expect(() => readFileSync(requestPath, "utf8")).toThrow();
@@ -96,7 +96,7 @@ describe("transport adapters", () => {
     const responsePath = join(tempRoot, "response.json");
     const transport = new JsonFileTransport({ requestPath, responsePath });
 
-    writeJsonFile(responsePath, { version: 1, request_id: signEventRequest.request_id });
+    writeJsonFile(responsePath, { version: 2, request_id: signEventRequest.request_id });
 
     await expect(transport.readResponse()).rejects.toThrow("transport response invalid: ok must be true or false");
     expect(() => readFileSync(requestPath, "utf8")).toThrow();
@@ -113,7 +113,7 @@ describe("transport adapters", () => {
         "rl.once('line', (line) => {",
         "  const request = JSON.parse(line);",
         "  process.stdout.write(JSON.stringify({",
-        "    version: 1,",
+        "    version: 2,",
         "    request_id: request.request_id,",
         "    ok: false,",
         "    error: { code: 'user_rejected', message: 'Rejected by stdio test signer', retryable: false }",
@@ -129,7 +129,7 @@ describe("transport adapters", () => {
     });
 
     await expect(transport.exchange(signEventRequest)).resolves.toEqual({
-      version: 1,
+      version: 2,
       request_id: signEventRequest.request_id,
       ok: false,
       error: {
@@ -150,7 +150,7 @@ describe("transport adapters", () => {
         "const rl = createInterface({ input: process.stdin });",
         "rl.once('line', () => {",
         "  process.stdout.write(JSON.stringify({",
-        "    version: 1,",
+        "    version: 2,",
         "    request_id: 'different-request',",
         "    ok: false,",
         "    error: { code: 'user_rejected', message: 'Rejected by stdio test signer', retryable: false }",
@@ -172,7 +172,7 @@ describe("transport adapters", () => {
       command: "/definitely/missing/nsealr-stdio-signer"
     });
 
-    await expect(transport.exchange({ version: 1, request_id: "bad request id", method: "get_capabilities" })).rejects.toThrow(
+    await expect(transport.exchange({ version: 2, request_id: "bad request id", method: "get_capabilities" })).rejects.toThrow(
       "transport request invalid: request_id is invalid"
     );
   });
@@ -186,7 +186,7 @@ describe("transport adapters", () => {
         "import { createInterface } from 'node:readline';",
         "const rl = createInterface({ input: process.stdin });",
         "rl.once('line', () => {",
-        "  process.stdout.write(JSON.stringify({ version: 1, request_id: 'req-sign-event-1' }) + '\\n');",
+        "  process.stdout.write(JSON.stringify({ version: 2, request_id: 'req-sign-event-1' }) + '\\n');",
         "});"
       ].join("\n"),
       "utf8"
@@ -333,7 +333,7 @@ describe("transport adapters", () => {
     const transport = new SerialFrameTransport({
       exchangeFrame: async () => encodeSerialFrame({
         type: "response",
-        payload: { version: 1, request_id: capabilitiesRequest.request_id }
+        payload: { version: 2, request_id: capabilitiesRequest.request_id }
       })
     });
 
@@ -349,7 +349,7 @@ describe("transport adapters", () => {
       }
     });
 
-    await expect(transport.exchange({ version: 1, request_id: "invalid request id", method: "get_capabilities" })).rejects.toThrow(
+    await expect(transport.exchange({ version: 2, request_id: "invalid request id", method: "get_capabilities" })).rejects.toThrow(
       "serial frame request invalid: request_id is invalid"
     );
     expect(exchangeCalled).toBe(false);
@@ -522,7 +522,7 @@ describe("transport adapters", () => {
     await expect(
       exchangeSerialLineRequest({
         path: "/dev/cu.usbmodem-test",
-        request: { version: 1, request_id: "invalid request id", method: "get_capabilities" },
+        request: { version: 2, request_id: "invalid request id", method: "get_capabilities" },
         openPort: async () => {
           opened = true;
           throw new Error("port should not open");

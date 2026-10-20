@@ -7,11 +7,11 @@ domain remains `nsealr.authorization.v1`. External Nostr serialization and
 cryptographic domains are unchanged.
 
 Requests have exactly `version`, `request_id`, `method`, and, for `sign_event`
-only, `params`. IDs are 1–64 ASCII characters from `[A-Za-z0-9._:-]`.
+only, `params`. IDs are 1–128 ASCII characters from `[A-Za-z0-9._:-]`.
 `get_capabilities` and `get_public_key` have no params. `sign_event` has exactly
 `params.event_template` with `created_at`, `kind`, `tags`, `content`; supplied
-`id`, `pubkey`, `sig` and unknown members reject. Timestamps/kinds are unsigned
-decimal integer tokens at most 9007199254740991. Decoded duplicate object keys,
+`id`, `pubkey`, `sig` and unknown members reject. Timestamps are unsigned decimal integer tokens at most 9007199254740991;
+kinds are unsigned decimal integer tokens in 0–65535, preserving S03 grammar. Decoded duplicate object keys,
 invalid UTF8/Unicode scalars, BOM, trailing data and unsupported methods reject.
 Numeric 1, unknown revisions and `get_signing_status` reject without fallback.
 The versioned request/response JSON Schemas supplement original-byte parsing.

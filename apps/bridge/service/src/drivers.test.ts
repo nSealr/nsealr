@@ -1,7 +1,9 @@
+import { createHash as independentPlanHash } from "node:crypto";
 import { readFileSync } from "node:fs";
 import { resolve } from "node:path";
 import { describe, expect, it } from "vitest";
-import { type SignerDispatchRequest } from "@nsealr/client";
+import { clientIdForIdentity, handleLocalServiceRequestAsync, type SignerDispatchRequest, type SignerCompatibilitySnapshot } from "@nsealr/client";
+import { parseAccountDescriptor } from "@nsealr/policy";
 import { resolveSpecsRoot } from "@nsealr/fixtures";
 import { encodeSerialFrame } from "@nsealr/framing";
 import {
@@ -21,22 +23,13 @@ const dispatchRequest: SignerDispatchRequest = {
     origin: "app:nsealr-service-test",
     app_name: "nSealr service test"
   },
-  route_selection: {
-    format: "nsealr-route-selection-v0",
-    account_id: "acct-esp32-usb-slot-0",
-    public_key: "4f355bdcb7cc0af728ef3cceb9615d90684bb5b2ca5f859ab0f0b704075871aa",
-    route_type: "esp32_usb_nip46",
-    repository: "nsealr",
-    transport: "usb",
-    custody: "device_persistent",
-    trusted_review: "device_display",
-    policy_support: "scoped_automation",
-    policy_profile_id: "policy-scoped-automation-daily-use",
-    physical_review: true,
-    physical_approval: true,
-    persistent_grants: true,
-    contains_secret_material: false
-  },
+  route_selection: JSON.parse(readFileSync(resolve(specsRoot, "vectors/route-selections/esp32-usb-sign-event-slot-0.json"), "utf8")).selection,
+  before_write: () => undefined,
+  effective_limits: (() => {
+    const common = JSON.parse(readFileSync(resolve(specsRoot, "vectors/profile-capabilities/cases-v1.json"), "utf8"));
+    return { method: common.limits_manifest.methods.find((entry: {method_id: string}) => entry.method_id === "sign_event"), transport: common.limits_manifest.transports.find((entry: {transport_id: string}) => entry.transport_id === "usb") };
+  })(),
+
   request
 };
 
@@ -200,6 +193,38 @@ describe("service route drivers", () => {
     await expect(dispatcher(dispatchRequest)).resolves.toEqual(response);
     expect(written[0]).toMatch(/^nsealr1f:request:/u);
     expect(written.at(-1)).toBe("closed");
+  });
+
+  it("R-01/R-05: actual service and serial driver bind the selected account before open and again before write", async () => {
+    for (const stale of [false, true]) {
+      const common = JSON.parse(readFileSync(resolve(specsRoot, "vectors/profile-capabilities/cases-v1.json"), "utf8"));
+      const implementation = JSON.parse(readFileSync(resolve(specsRoot, common.implementation_examples.esp32_no_se), "utf8"));
+      const adapter = structuredClone(implementation);
+      const { conformance_only: _, ...body } = structuredClone(implementation);
+      const reported = { ...body, format: "nsealr.capabilities.v1", form: "full" };
+      for (const source of [adapter, reported]) for (const method of source.methods) Object.assign(method, { configuration: "configured", availability: "available", reason: null });
+      const snapshot: SignerCompatibilitySnapshot = { implementation, adapter, reported, limits: structuredClone(common.limits_manifest), adapter_limits: structuredClone(common.limits_manifest), connection_id: "conformance.recording-usb", generation: 1, review_plan: { request_sha256: independentPlanHash("sha256").update(JSON.stringify(request)).digest("hex"), implementation_id: implementation.implementation_id, connection_id: "conformance.recording-usb", generation: 1, context_id: "conformance.no-authority", geometry_id: "conformance.recording.synthetic", pages: 7 } };
+      const account = parseAccountDescriptor(JSON.parse(readFileSync(resolve(specsRoot, "vectors/accounts/esp32-usb-device-slot-0.json"), "utf8")));
+      const written: string[] = []; let opens = 0; let closes = 0;
+      const dispatcher = createServiceRouteDispatcher(parseServiceRouteDriverStore(routeDriverStore()), {
+        openSerialLinePort: async () => {
+          opens++;
+          if (stale) snapshot.generation++;
+          return { writeLine: async (line) => { written.push(line); }, readLine: async () => encodeSerialFrame({ type: "response", payload: response }), close: async () => { closes++; } };
+        }
+      });
+      const result = await handleLocalServiceRequestAsync({
+        version: 1, request_id: "service.recording.usb", operation: "dispatch_signer_request",
+        params: { client: dispatchRequest.client, route_request: { account_id: account.account_id, method: "sign_event" }, request }
+      }, {
+        accounts: [account], now: 1, monotonicNow: () => 0,
+        grants: [{ client_id: clientIdForIdentity(dispatchRequest.client), origin: dispatchRequest.client.origin, surface: dispatchRequest.client.surface, allowed_operations: ["dispatch_signer_request"] }],
+        signerCompatibility: () => snapshot, signerDispatcher: dispatcher
+      });
+      expect(result).toMatchObject({ ok: !stale });
+      expect(opens).toBe(1); expect(closes).toBe(1);
+      expect(written).toEqual(stale ? [] : [encodeSerialFrame({ type: "request", payload: request })]);
+    }
   });
 
   it("maps serial-line route failures to deterministic transport error codes", async () => {

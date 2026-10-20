@@ -79,7 +79,7 @@ function signEventTemplate(requestId: string, value: unknown): EventTemplate {
     throw new Error("browser extension sign_event params have unsupported fields");
   }
   const request: SignEventRequest = {
-    version: 1,
+    version: 2,
     request_id: requestId,
     method: "sign_event",
     params: {

@@ -1,9 +1,9 @@
 import { spawn } from "node:child_process";
-import { readFileSync, writeFileSync } from "node:fs";
+import { closeSync, fstatSync, openSync, readSync, writeFileSync } from "node:fs";
 import { type Readable, type Writable } from "node:stream";
 import { verifySignedEventResponse } from "@nsealr/core";
 import { decodeSerialFrame, encodeSerialFrame } from "@nsealr/framing";
-import { NSEALR_V0_LIMITS, utf8ByteLength, validateRequest, validateResponse } from "@nsealr/protocol";
+import { NSEALR_V0_LIMITS, parseSigningPayload, parseStrictJson, utf8ByteLength, validateRequest, validateResponse } from "@nsealr/protocol";
 
 export type SignerTransport = {
   readonly name: string;
@@ -228,7 +228,26 @@ export class SerialLineStreamPort implements SerialLinePort {
 }
 
 export function readJsonFile(path: string): unknown {
-  return JSON.parse(readFileSync(path, "utf8"));
+  const fd = openSync(path, "r");
+  let bytes: Uint8Array;
+  try {
+    const stat = fstatSync(fd);
+    if (!stat.isFile() || stat.size > 8192) throw new Error("JSON file is not regular or exceeds local 8192-byte ceiling");
+    // A fixed buffer plus one overflow byte bounds allocation even if the
+    // opened file grows after fstat. No peer-provided size drives allocation.
+    const buffer = Buffer.alloc(8193); let count = 0;
+    while (count < buffer.length) {
+      const read = readSync(fd, buffer, count, buffer.length - count, null);
+      if (read === 0) break;
+      count += read;
+    }
+    if (count > 8192) throw new Error("JSON file exceeds local byte ceiling");
+    bytes = buffer.subarray(0, count);
+  } finally { closeSync(fd); }
+  const text = new TextDecoder("utf-8", { fatal: true, ignoreBOM: true }).decode(bytes);
+  const value = parseStrictJson(text, 8192);
+  if (typeof value === "object" && value !== null && "request_id" in value && "version" in value && ("method" in value || "ok" in value)) return parseSigningPayload(bytes, 8192);
+  return value;
 }
 
 export function writeJsonFile(path: string, value: unknown): void {
@@ -360,6 +379,8 @@ export class JsonLineStdioTransport implements SignerTransport {
         stdio: ["pipe", "pipe", "pipe"]
       });
       let stdout = "";
+      let stdoutBytes = 0;
+      const decoder = new TextDecoder("utf-8", { fatal: true, ignoreBOM: true });
       let stderr = "";
       let settled = false;
       const responseTimer = setTimeout(() => {
@@ -388,7 +409,6 @@ export class JsonLineStdioTransport implements SignerTransport {
         return;
       }
 
-      child.stdout.setEncoding("utf8");
       child.stderr.setEncoding("utf8");
       child.stderr.on("data", (chunk: string) => {
         stderr += chunk;
@@ -396,17 +416,19 @@ export class JsonLineStdioTransport implements SignerTransport {
           stderr = `${truncateUtf8(stderr, this.maxStderrBytes)}...<stderr truncated>`;
         }
       });
-      child.stdout.on("data", (chunk: string) => {
-        stdout += chunk;
-        if (utf8ByteLength(stdout) > this.maxOutputLineBytes) {
+      child.stdout.on("data", (chunk: Buffer) => {
+        stdoutBytes += chunk.byteLength;
+        if (stdoutBytes > this.maxOutputLineBytes) {
           fail(new Error("stdio signer stdout exceeded max_output_line_bytes before newline response"));
           return;
         }
+        try { stdout += decoder.decode(chunk, { stream: true }); }
+        catch { fail(new Error("stdio signer response must be valid UTF8")); return; }
         const newlineIndex = stdout.indexOf("\n");
         if (newlineIndex === -1) return;
         const line = stdout.slice(0, newlineIndex);
         try {
-          const response = JSON.parse(line);
+          const response = parseSigningPayload(line, Math.min(this.maxOutputLineBytes, 8192));
           assertValidResponse(response);
           assertResponseVerifiedAgainstRequest(request, response);
           succeed(response);
@@ -454,22 +476,47 @@ export class SerialLineTransport implements SignerTransport {
   private readonly port: SerialLinePort;
   private readonly maxIgnoredLines: number;
   private readonly responseTimeoutMs: number;
+  private readonly beforeWrite?: () => void;
+  private readonly abortSignal?: AbortSignal;
+  private busy = false;
+  private failed = false;
+  private deadline = 0;
+  private lastClock = 0;
+  private workBytes = 0;
+  private readonly maxWorkBytes: number;
 
-  constructor(options: { port: SerialLinePort; maxIgnoredLines?: number; responseTimeoutMs?: number }) {
+  constructor(options: { port: SerialLinePort; maxIgnoredLines?: number; responseTimeoutMs?: number; beforeWrite?: () => void; abortSignal?: AbortSignal; maxWorkBytes?: number }) {
     this.port = options.port;
     this.maxIgnoredLines = options.maxIgnoredLines ?? 32;
     this.responseTimeoutMs = options.responseTimeoutMs ?? 30_000;
+    if (!Number.isSafeInteger(this.maxIgnoredLines) || this.maxIgnoredLines < 0 || this.maxIgnoredLines > 128) throw new Error("maxIgnoredLines must be an integer in 0..128");
+    if (!Number.isSafeInteger(this.responseTimeoutMs) || this.responseTimeoutMs < 1 || this.responseTimeoutMs > 120_000) throw new Error("responseTimeoutMs must be an integer in 1..120000");
+    this.beforeWrite = options.beforeWrite;
+    this.abortSignal = options.abortSignal;
+    this.maxWorkBytes = options.maxWorkBytes ?? (this.maxIgnoredLines + 2) * NSEALR_V0_LIMITS.max_serial_frame_bytes;
+    if (!Number.isSafeInteger(this.maxWorkBytes) || this.maxWorkBytes < 1 || this.maxWorkBytes > 1_048_576) throw new Error("maxWorkBytes must be a finite integer in 1..1048576");
   }
 
   async exchange(request: unknown): Promise<unknown> {
+    if (this.busy || this.failed) throw new Error("serial operation already pending or connection requires reopening");
+    this.busy = true;
+    this.lastClock = performance.now();
+    this.deadline = this.lastClock + this.responseTimeoutMs;
+    this.workBytes = 0;
+    let channelUsed = false;
     const transport = new SerialFrameTransport({
       exchangeFrame: async (line) => {
+        if (this.abortSignal?.aborted) throw new Error("serial operation cancelled");
+        this.beforeWrite?.();
+        this.accountWork(line);
+        channelUsed = true;
         await this.writeLineWithTimeout(line);
         for (let ignored = 0; ignored <= this.maxIgnoredLines; ignored += 1) {
           const responseLine = await this.readLineWithTimeout();
           if (responseLine === null) {
             throw new Error("serial line transport reached end of input before response");
           }
+          this.accountWork(responseLine);
           if (responseLine.startsWith("nsealr1f:")) {
             return responseLine;
           }
@@ -477,10 +524,20 @@ export class SerialLineTransport implements SignerTransport {
         throw new Error("serial line transport did not receive a protocol frame");
       }
     });
-    return transport.exchange(request);
+    try { return await transport.exchange(request); }
+    catch (error) { this.failed ||= channelUsed; throw error; }
+    finally { this.busy = false; }
+  }
+
+  private accountWork(line: string): void {
+    if (line.length > NSEALR_V0_LIMITS.max_serial_frame_bytes) throw new Error("serial input line exceeds frame capacity");
+    const size = utf8ByteLength(line);
+    if (size > NSEALR_V0_LIMITS.max_serial_frame_bytes || this.workBytes + size > this.maxWorkBytes) throw new Error("serial operation exceeds cumulative byte/work capacity");
+    this.workBytes += size;
   }
 
   private async writeLineWithTimeout(line: string): Promise<void> {
+    if (this.abortSignal?.aborted) throw new Error("serial operation cancelled");
     await this.withTimeout(
       this.port.writeLine(line),
       `serial line transport timed out before write completed after ${this.responseTimeoutMs}ms`
@@ -496,16 +553,30 @@ export class SerialLineTransport implements SignerTransport {
 
   private async withTimeout<T>(operation: Promise<T>, timeoutMessage: string): Promise<T> {
     let timeout: ReturnType<typeof setTimeout> | undefined;
+    let cancelled: (() => void) | undefined;
     try {
+      if (this.abortSignal?.aborted) throw new Error("serial operation cancelled");
+      const now = performance.now();
+      if (!Number.isFinite(now) || now < this.lastClock || now >= this.deadline) throw new Error(timeoutMessage);
+      this.lastClock = now;
+      const remaining = this.deadline - now;
       return await Promise.race([
         operation,
         new Promise<never>((_resolve, reject) => {
+          cancelled = () => {
+            try { void Promise.resolve(this.port.close?.()).catch(() => undefined); } catch { /* Preserve cancellation. */ }
+            reject(new Error("serial operation cancelled"));
+          };
+          this.abortSignal?.addEventListener("abort", cancelled, { once: true });
+        }),
+        new Promise<never>((_resolve, reject) => {
           timeout = setTimeout(() => {
             reject(new Error(timeoutMessage));
-          }, this.responseTimeoutMs);
+          }, remaining);
         })
       ]);
     } finally {
+      if (cancelled) this.abortSignal?.removeEventListener("abort", cancelled);
       if (timeout !== undefined) {
         clearTimeout(timeout);
       }

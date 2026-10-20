@@ -145,6 +145,8 @@ describe("finite applicable limit dimensions", () => {
     expect(checkedProduct(65536, 4)).toBe(262144);
     expect(() => checkedProduct(Number.MAX_SAFE_INTEGER, 4)).toThrow(/overflow/);
     expect(() => intersectMethodLimits(local, { ...peer, method_id: "get_public_key" })).toThrow(/dimensions/);
+    expect(() => intersectMethodLimits({ ...local, retained_bytes: 1 }, peer)).toThrow(/retention/);
+    expect(() => intersectMethodLimits({ ...local, unknown_unit: 1 } as any, { ...peer, unknown_unit: 1 } as any)).toThrow(/fields/);
   });
 });
 

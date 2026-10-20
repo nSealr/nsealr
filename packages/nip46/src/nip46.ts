@@ -360,12 +360,12 @@ const NIP46_AUTH_CHALLENGE_FALSE_FIELDS = [
 
 type NSealrBridgeRequest =
   | {
-      version: 1;
+      version: 2;
       request_id: string;
       method: "get_public_key";
     }
   | {
-      version: 1;
+      version: 2;
       request_id: string;
       method: "sign_event";
       params: {
@@ -917,7 +917,7 @@ function relayResponseResultType(message: Nip46ResponseMessage): {
     return { resultType: "relay_list_result", signedEventShapeChecked: false, relayUrls };
   }
   const shape = validateResponse({
-    version: 1,
+    version: 2,
     request_id: message.id,
     ok: true,
     result: { event }
@@ -2024,7 +2024,7 @@ export function nsealrRequestFromNip46(value: unknown): NSealrBridgeRequest {
   if (message.method === "get_public_key") {
     if (message.params.length !== 0) throw new Error("NIP-46 get_public_key params must be empty");
     const request: NSealrBridgeRequest = {
-      version: 1,
+      version: 2,
       request_id: message.id,
       method: "get_public_key"
     };
@@ -2034,7 +2034,7 @@ export function nsealrRequestFromNip46(value: unknown): NSealrBridgeRequest {
   if (message.method === "sign_event") {
     if (message.params.length !== 1) throw new Error("NIP-46 sign_event requires one JSON event-template param");
     const request: NSealrBridgeRequest = {
-      version: 1,
+      version: 2,
       request_id: message.id,
       method: "sign_event",
       params: {

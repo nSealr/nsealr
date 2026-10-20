@@ -95,8 +95,7 @@ describe("nsealr CLI", () => {
     const tempRoot = mkdtempSync(join(tmpdir(), "nsealr-cli-device-requests-"));
     const cases = [
       ["get-capabilities", "req-cli-capabilities", "get_capabilities"],
-      ["get-public-key", "req-cli-public-key", "get_public_key"],
-      ["get-signing-status", "req-cli-signing-status", "get_signing_status"]
+      ["get-public-key", "req-cli-public-key", "get_public_key"]
     ] as const;
 
     for (const [cliMethod, requestId, protocolMethod] of cases) {
@@ -106,7 +105,7 @@ describe("nsealr CLI", () => {
 
       const request = loadJson(requestPath);
       expect(request).toEqual({
-        version: 1,
+        version: 2,
         request_id: requestId,
         method: protocolMethod
       });
@@ -119,7 +118,7 @@ describe("nsealr CLI", () => {
     const requestPath = join(tempRoot, "request.json");
 
     await expect(
-      runCli(["request", "get-signing-status", "--request-id", "invalid request id", "--out", requestPath])
+      runCli(["request", "get-capabilities", "--request-id", "invalid request id", "--out", requestPath])
     ).rejects.toThrow("request_id is invalid");
 
     expect(existsSync(requestPath)).toBe(false);
@@ -886,7 +885,7 @@ describe("nsealr CLI", () => {
       requestPath,
       `${JSON.stringify(
         {
-          version: 1,
+          version: 2,
           request_id: "req-invalid-original",
           method: "get_capabilities",
           unexpected: true
@@ -900,7 +899,7 @@ describe("nsealr CLI", () => {
       responsePath,
       `${JSON.stringify(
         {
-          version: 1,
+          version: 2,
           request_id: "req-invalid-original",
           ok: false,
           error: {
@@ -1027,7 +1026,7 @@ describe("nsealr CLI", () => {
 
     writeFileSync(
       requestPath,
-      `${JSON.stringify({ version: 1, request_id: "invalid request id", method: "get_capabilities" }, null, 2)}\n`,
+      `${JSON.stringify({ version: 2, request_id: "invalid request id", method: "get_capabilities" }, null, 2)}\n`,
       "utf8"
     );
 
@@ -1997,7 +1996,7 @@ describe("nsealr CLI", () => {
           origin: approval.grant.origin
         },
         request: {
-          version: 1,
+          version: 2,
           request_id: "cli-grant-store-revoked-request",
           method: "get_public_key"
         }

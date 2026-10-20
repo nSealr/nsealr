@@ -1,0 +1,76 @@
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 4 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  packages/policy/src/policy.test.ts > identity, recovery, and policy contracts > rejects external NIP-46 descriptors that claim nSealr persistent grants
+AssertionError: expected [Function] to throw error matching /external NIP-46 routes must not clai…/u but got 'capabilities has unsupported field pe…'
+
+- Expected:
+/external NIP-46 routes must not claim nSealr persistent grants/u
+
++ Received:
+"capabilities has unsupported field persistent_grants"
+
+ ❯ packages/policy/src/policy.test.ts:275:51
+    273|     account.capabilities.persistent_grants = true;
+    274|
+    275|     expect(() => parseAccountDescriptor(account)).toThrow(/external NI…
+       |                                                   ^
+    276|   });
+    277|
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/4]⎯
+
+ FAIL  packages/policy/src/policy.test.ts > identity, recovery, and policy contracts > rejects ambiguous or unsupported route selections before signer IO
+AssertionError: expected [Function] to throw an error
+
+- Expected:
+null
+
++ Received:
+undefined
+
+ ❯ packages/policy/src/policy.test.ts:539:9
+    537|       account_id: account.account_id,
+    538|       method: "get_public_key"
+    539|     })).toThrow(/method is unsupported/u);
+       |         ^
+    540|     expect(() => selectAccountRoute([account], {
+    541|       account_id: account.account_id,
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/4]⎯
+
+ FAIL  packages/protocol/src/protocol.test.ts > protocol validation > accepts valid v0 signing-status requests and ESP32-S3 scaffold responses
+AssertionError: expected false to be true // Object.is equality
+
+- Expected
++ Received
+
+- true
++ false
+
+ ❯ packages/protocol/src/protocol.test.ts:26:82
+     24|
+     25|   it("accepts valid v0 signing-status requests and ESP32-S3 scaffold r…
+     26|     expect(validateRequest(load("examples/request-get-signing-status.j…
+       |                                                                                  ^
+     27|     expect(validateResponse(load("examples/response-get-signing-status…
+     28|     expect(load("vectors/devices/esp32-s3-signing-status-disabled.json…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/4]⎯
+
+ FAIL  packages/protocol/src/protocol.test.ts > protocol validation > rejects shared invalid response vectors deterministically
+AssertionError: response-signing-status-disabled-without-missing-gates: expected 'successful response result contains u…' to contain 'signing_status signing_enabled false …'
+
+Expected: "signing_status signing_enabled false requires at least one missing gate"
+Received: "successful response result contains unknown fields: signing_status"
+
+ ❯ packages/protocol/src/protocol.test.ts:78:41
+     76|       const result = validateResponse(vector.response);
+     77|       expect(result.ok, vector.name).toBe(false);
+     78|       expect(result.error, vector.name).toContain(vector.expected_erro…
+       |                                         ^
+     79|     }
+     80|   });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/4]⎯
+

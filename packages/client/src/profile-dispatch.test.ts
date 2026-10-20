@@ -1,6 +1,7 @@
+import { createHash as independentPlanHash } from "node:crypto";
 import { readFileSync } from "node:fs";
 import { resolve } from "node:path";
-import { describe, expect, it } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 import { resolveSpecsRoot } from "@nsealr/fixtures";
 import { encodeSerialFrame } from "@nsealr/framing";
 import { encodeQrEnvelope } from "@nsealr/qr";
@@ -26,7 +27,7 @@ function snapshot(profile = "esp32_no_se"): SignerCompatibilitySnapshot {
     Object.assign(method, { configuration: "configured", availability: "available", reason: null });
   }
   const limits = parseLimitsManifest(structuredClone(cases.limits_manifest));
-  return { implementation, adapter, reported, limits, adapter_limits: structuredClone(limits), connection_id: "conformance.connection.1", generation: 1 };
+  return { implementation, adapter, reported, limits, adapter_limits: structuredClone(limits), connection_id: "conformance.connection.1", generation: 1, review_plan: { request_sha256: independentPlanHash("sha256").update(JSON.stringify(request)).digest("hex"), implementation_id: implementation.implementation_id, connection_id: "conformance.connection.1", generation: 1, context_id: "conformance.no-authority", geometry_id: "conformance.recording.synthetic", pages: 7 } };
 }
 function setup(profile = "esp32_no_se") {
   const account = parseAccountDescriptor(load(profile === "pi_qr" ? "vectors/accounts/raspberry-qr-nip06-account-0.json" : "vectors/accounts/esp32-usb-device-slot-0.json"));
@@ -175,6 +176,44 @@ describe("actual local service to recording adapter compatibility", () => {
     expect((await handleLocalServiceRequestAsync(state.envelope, state.context)).ok).toBe(true);
   });
 
+  it("L-04/L-06: an unresolved adapter reaches the absolute local deadline and its stale write hook is revoked", async () => {
+    vi.useFakeTimers();
+    try {
+      const state = setup(); let cancelled = false;
+      state.context.signerDispatcher = (dispatch) => {
+        Object.defineProperty(state, "captured", { value: dispatch });
+        dispatch.abort_signal!.addEventListener("abort", () => { cancelled = true; });
+        return new Promise(() => undefined);
+      };
+      const operation = handleLocalServiceRequestAsync(state.envelope, state.context);
+      await vi.advanceTimersByTimeAsync(100);
+      expect(await operation).toMatchObject({ ok: false, error: { code: "signer_transport_timeout" } });
+      expect(cancelled).toBe(true);
+      expect(() => state.captured!.before_write!()).toThrow(/no longer active/);
+      expect(state.writes).toHaveLength(0);
+    } finally { vi.useRealTimers(); }
+  });
+
+  it("L-01/R-05: complete local review-plan observations bind request, implementation, connection, context and geometry", async () => {
+    for (const change of [undefined, { pages: 0 }, { pages: Number.NaN }, { request_sha256: "0".repeat(64) }, { implementation_id: "wrong" }, { connection_id: "wrong" }, { generation: 2 }, { geometry_id: "" }, { context_id: "" }]) {
+      const state = setup();
+      if (change === undefined) delete state.live.review_plan;
+      else Object.assign(state.live.review_plan!, change);
+      expect((await handleLocalServiceRequestAsync(state.envelope, state.context)).ok).toBe(false);
+      expect(state.writes).toHaveLength(0);
+    }
+    for (const ceiling of [6, 7, 8]) {
+      const state = setup(); state.live.adapter_limits.methods[2].review_pages = ceiling;
+      expect((await handleLocalServiceRequestAsync(state.envelope, state.context)).ok).toBe(ceiling >= 7);
+      expect(state.writes.length).toBe(ceiling >= 7 ? 1 : 0);
+    }
+    for (const change of [{ pages: 8 }, { geometry_id: "changed.geometry" }, { context_id: "changed.context" }]) {
+      const state = setup(); state.beforeWrite = () => { Object.assign(state.live.review_plan!, change); };
+      expect((await handleLocalServiceRequestAsync(state.envelope, state.context)).ok).toBe(false);
+      expect(state.writes).toHaveLength(0);
+    }
+  });
+
   it("P-04/P-05/P-06/P-07: custody, required component and manual-only constraints stay profile-specific", () => {
     const state = setup(), route = selectAccountRoute([state.account], { account_id: state.account.account_id, method: "sign_event" });
     const wrong = structuredClone(state.account); wrong.signer_route.custody = "volatile_session";
@@ -186,5 +225,19 @@ describe("actual local service to recording adapter compatibility", () => {
     expect(() => assessSignerCompatibility(selectAccountRoute([account], {account_id: account.account_id, method: "sign_event"}), request, custom)).toThrow(/SE configuration/);
     const sameObject = structuredClone(state.live); sameObject.adapter = sameObject.implementation;
     expect(() => assessSignerCompatibility(route, request, sameObject)).toThrow(/unavailable/);
+  });
+
+  it("P-06/D-05/D-06/D-07: no generic blind-sign or offline message/setup/AUTH fallback is introduced", async () => {
+    for (const profile of ["esp32_no_se", "pi_qr"]) for (const kind of [4, 13, 14, 1059, 10050, 22242]) {
+      const state = setup(profile); state.envelope.params.request.params.event_template.kind = kind;
+      expect(await handleLocalServiceRequestAsync(state.envelope, state.context)).toMatchObject({ ok: false, error: { code: "workflow_not_admitted" } });
+      expect(state.writes).toHaveLength(0);
+    }
+    for (const method of ["nip04_encrypt", "nip04_decrypt", "nip44_encrypt", "nip44_decrypt", "export_conversation_key"]) {
+      const state = setup(); Object.assign(state.envelope.params.request, {method});
+      state.envelope.params.route_request.method = method;
+      expect((await handleLocalServiceRequestAsync(state.envelope, state.context)).ok).toBe(false);
+      expect(state.writes).toHaveLength(0);
+    }
   });
 });

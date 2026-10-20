@@ -11,7 +11,7 @@ export function resolveSpecsRoot(preferredRoot?: string): string {
     throw new Error(`authoritative contract artifact is missing: ${root}`);
   }
   const identity = JSON.parse(readFileSync(manifest, "utf8"));
-  if (identity.artifact_format !== 1 || identity.artifact_id !== "nsealr-contracts-v1") {
+  if (identity.artifact_format !== 2 || identity.artifact_id !== "nsealr-contracts-v1") {
     throw new Error("unsupported contract artifact identity");
   }
   return root;

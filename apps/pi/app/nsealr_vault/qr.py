@@ -9,6 +9,52 @@ QR_ENVELOPE_PREFIX = "nsealr1:"
 ANIMATED_QR_ENVELOPE_PREFIX = "nsealr1a:"
 
 
+def _strict_json(decoded: str) -> object:
+    """Keep original-byte JSON constraints before constructing a request dict.
+
+    The stdlib owns syntax/escape parsing. Hooks enforce decoded-key uniqueness
+    and the protocol's number grammar; a bounded walk checks scalar strings.
+    Existing frame/reassembly byte caps bound this work. This is not authority.
+    """
+    def object_pairs(pairs: list[tuple[str, object]]) -> dict[str, object]:
+        result: dict[str, object] = {}
+        for key, value in pairs:
+            if key in result:
+                raise ValueError("QR JSON contains a duplicate decoded object key")
+            result[key] = value
+        return result
+
+    def integer(token: str) -> int:
+        maximum = NSEALR_V0_LIMITS["max_safe_integer"]
+        if (not token.isascii() or not token.isdecimal()
+                or len(token) > len(str(maximum)) or len(token) > 1 and token[0] == "0"):
+            raise ValueError("QR JSON requires canonical unsigned safe integer tokens")
+        value = int(token)
+        if value > maximum:
+            raise ValueError("QR JSON integer exceeds max_safe_integer")
+        return value
+
+    def reject_number(_token: str) -> object:
+        raise ValueError("QR JSON requires canonical unsigned safe integer tokens")
+
+    try:
+        value = json.loads(decoded, object_pairs_hook=object_pairs, parse_int=integer,
+                           parse_float=reject_number, parse_constant=reject_number)
+        pending = [value]
+        while pending:
+            item = pending.pop()
+            if isinstance(item, str):
+                item.encode("utf-8")  # Reject unpaired decoded surrogates, preserve valid pairs.
+            elif isinstance(item, dict):
+                pending.extend(item.keys())
+                pending.extend(item.values())
+            elif isinstance(item, list):
+                pending.extend(item)
+        return value
+    except (UnicodeError, RecursionError) as exc:
+        raise ValueError("QR JSON contains invalid Unicode or excessive nesting") from exc
+
+
 def _assert_base64url(value: str) -> None:
     if not value:
         raise ValueError("QR envelope payload must be unpadded base64url")
@@ -81,7 +127,7 @@ def decode_qr_envelope(envelope: str) -> object:
     except UnicodeDecodeError as exc:
         raise ValueError("QR envelope payload must be valid UTF-8") from exc
     try:
-        return json.loads(decoded)
+        return _strict_json(decoded)
     except json.JSONDecodeError as exc:
         raise ValueError("QR envelope payload is not valid JSON") from exc
 
@@ -152,6 +198,6 @@ def decode_animated_qr_envelope_frames(frames: list[str]) -> object:
     except UnicodeDecodeError as exc:
         raise ValueError("animated QR payload must be valid UTF-8") from exc
     try:
-        return json.loads(decoded)
+        return _strict_json(decoded)
     except json.JSONDecodeError as exc:
         raise ValueError("animated QR payload is not valid JSON") from exc

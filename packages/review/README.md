@@ -27,7 +27,7 @@ const eventTemplate = {
   content: "review this event"
 };
 const request = {
-  version: 1,
+  version: 2,
   request_id: "readme-review",
   method: "sign_event",
   params: { event_template: eventTemplate }

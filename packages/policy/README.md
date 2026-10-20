@@ -17,7 +17,7 @@ descriptors.
   context, then render deterministic review pages plus an approval digest for
   device-approved `set_policy` changes.
 - Parse route-selection requests, select secretless account-route metadata for
-  supported methods, and parse `nsealr-route-selection-v0` responses without
+  supported methods, and parse `nsealr.route-selection.v1` responses without
   dispatching signer I/O.
 - Evaluate pure policy-decision vectors for conformance tests.
 
@@ -77,3 +77,9 @@ The package does not store persistent grants or hold production mnemonics,
 passphrases, `nsec` values, or decrypted signing material. Route selection
 returns and validates metadata from account descriptors; it does not open
 transports, create grants, or sign events.
+
+Current local account metadata uses `nsealr.account.v1`, binds its explicit
+profile/implementation/limits tuple and selects manual-only policy. Retained
+policy/grant v0 formats remain a separate conformance domain; they do not enable
+automation on the current local profiles. Account/route data creates no physical
+review, consent, hardware evidence or signing authority.

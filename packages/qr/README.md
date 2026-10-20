@@ -18,7 +18,7 @@ import assert from "node:assert/strict";
 import { decodeQrEnvelope, encodeQrEnvelope } from "@nsealr/qr";
 
 const request = {
-  version: 1,
+  version: 2,
   request_id: "readme-qr",
   method: "get_public_key"
 };
