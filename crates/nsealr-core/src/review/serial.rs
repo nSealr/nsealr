@@ -179,8 +179,8 @@ impl SerialReviewFlow {
         self.session.decision()
     }
 
-    /// Whether the review was approved for signing. Mirrors the C++
-    /// `review_approved`.
+    /// Diagnostic preview outcome; grants no signing authority. Historical C++
+    /// method: `approved_for_signing`.
     #[must_use]
     pub fn review_approved(&self) -> bool {
         self.session.review_approved()
@@ -220,7 +220,7 @@ pub struct SerialReviewIoFlowResult {
     pub approval_digest: TrustedReviewApprovalDigest,
     /// The terminal decision.
     pub decision: Option<bool>,
-    /// Whether the flow ended approved for signing.
+    /// Diagnostic terminal preview outcome; grants no signing authority.
     pub review_approved: bool,
     /// The recorded steps.
     pub transcript: SerialReviewTranscript,

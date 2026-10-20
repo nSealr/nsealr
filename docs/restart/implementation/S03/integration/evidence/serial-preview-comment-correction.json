@@ -1,0 +1,29 @@
+{
+  "schema_version": 1,
+  "task": "S03",
+  "finding_source": "Distinct/root/b01_final_review pre-read relayed by/root during full make ci; final exact review remains pending.",
+  "severity": "LOW",
+  "finding": "Serial review_approved method/result comments still described diagnostic preview as approval for signing; method comment also incorrectly renamed historical C++ identifier. No execution bypass found.",
+  "path": "crates/nsealr-core/src/review/serial.rs",
+  "before_commit": "dda66f3e4d0d25f2fa3f3ee2b5cb5aacfdd122d3",
+  "before_sha256": "b21b3bd57f5d3b05b91d0bfc20624372b46a82929428dd34ddef90978bffcb56",
+  "after_sha256": "dd6137408087bab5ab521ff50e77f562d98a100a05609cccf75c9c918a6c8763",
+  "actual_change": "Two Rustdoc comment blocks only: explicit diagnostic/no signing authority; retain historical C++ approved_for_signing name.",
+  "all_non_Rustdoc_lines_byte_identical": true,
+  "actual_full_make_ci_preserved": "commands/combined-make-ci/command.json",
+  "full_make_ci_exit": 0,
+  "affected_followup": "Core Rustfmt/doctests,docs/test,scope checks and release reproducibility because Rustdoc metadata can affect artifact hashes. No unchanged behavioral suite/fullCI repetition.",
+  "final_independent_verdict": "PENDING",
+  "actual_affected_checks": {
+    "rustfmt": "PASS",
+    "core_doctests": "PASS",
+    "same_tree_and_cross_path_release_reproduction": "PASS"
+  },
+  "affected_receipts": [
+    "commands/serial-comments-fmt/command.json",
+    "commands/serial-comments-doc/command.json",
+    "commands/serial-comments-repro/command.json"
+  ],
+  "new_device_release_rlib_sha256": "590e38bc45a96e78ff81b83b130e4dac31576b4d8e5c58705c5734b96cca2ee5",
+  "host_same_tree_release_sha256": "cba96019e6b57869ab3c59a3f3b1fde1127f712dafbf7c25e7d2a57a7d1d68fe"
+}
