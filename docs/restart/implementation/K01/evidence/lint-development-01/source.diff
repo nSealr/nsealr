@@ -1,0 +1,422 @@
+diff --git a/crates/nsealr-core/src/authorization/tests.rs b/crates/nsealr-core/src/authorization/tests.rs
+index f1e371a5..18c7d4d6 100644
+--- a/crates/nsealr-core/src/authorization/tests.rs
++++ b/crates/nsealr-core/src/authorization/tests.rs
+@@ -1787,3 +1787,319 @@ fn k01_metadata_exact_types_duplicate_keys_and_finite_boundaries() {
+         );
+     }
+ }
++
++#[test]
++fn k01_seventy_cases_have_actual_complete_review_or_exact_zero_effect_failure() {
++    let corpus: Value = serde_json::from_str(include_str!(concat!(
++        env!("CARGO_MANIFEST_DIR"),
++        "/../../docs/restart/implementation/K01/evidence/semantic-matrix.json"
++    )))
++    .unwrap();
++    let mut actual = Vec::new();
++    for row in corpus["rows"].as_array().unwrap() {
++        let mut bounds = limits();
++        if let Some(p) = row["local_review_page_limit"].as_u64() {
++            bounds.review_pages = p as usize;
++        }
++        let mut owner = AuthorizationSession::new(bounds, geometry()).unwrap();
++        owner.select_key(secret(3)).unwrap();
++        let before = backend_calls();
++        let result = owner.begin_request(
++            request(row["template"].as_str().unwrap()).as_bytes(),
++            Some(0),
++        );
++        if row["expected_preflight"] == "reject" {
++            let error = result.unwrap_err();
++            let layer = match error {
++                AuthorizationError::Parse(_) => "parser",
++                AuthorizationError::Inspection(_) => "semantic",
++                _ => panic!("{error:?}"),
++            };
++            assert_eq!(layer, row["error_layer"], "{} {error:?}", row["id"]);
++            let mut aux = Aux::valid(0);
++            let mut out = [0xa5; SIGNED_EVENT_BYTES];
++            assert!(owner
++                .sign_approved("r", &mut || panic!("no approved clock"), &mut aux, &mut out)
++                .is_err());
++            assert_eq!(aux.calls, 0);
++            assert_eq!(backend_calls(), before);
++            assert_eq!(out, [0; SIGNED_EVENT_BYTES]);
++            actual.push(json!({"id":row["id"],"disposition":"actual exact-layer zero-effect rejection","layer":layer,"error":format!("{error:?}"),"approval_calls":0,"entropy_calls":0,"sign_calls":0,"output":false}));
++            continue;
++        }
++        result.unwrap();
++        let io = approve(&mut owner);
++        let event: Value = serde_json::from_str(row["template"].as_str().unwrap()).unwrap();
++        assert_eq!(
++            observed_value(&io, "Signed content"),
++            inspection_quote(event["content"].as_str().unwrap())
++        );
++        let tags = event["tags"].as_array().unwrap();
++        for (t, fields) in tags.iter().enumerate() {
++            for (f, text) in fields.as_array().unwrap().iter().enumerate() {
++                assert_eq!(
++                    observed_value(&io, &format!("Signed tag {t} field {f}:")),
++                    inspection_quote(text.as_str().unwrap()),
++                    "{} t{t} f{f}",
++                    row["id"]
++                );
++            }
++        }
++        let kind = event["kind"].as_u64().unwrap();
++        let effect = observed_value(&io, "Operation and consequences");
++        for role in match kind {
++            0 => &[
++                "Replace the whole public profile",
++                "Nested values/types",
++                "not verified",
++            ][..],
++            1 => &[
++                "kind 1 text note",
++                "References and quotations are unverified",
++            ][..],
++            3 => &[
++                "Replace the entire public follow list",
++                "unfollows everyone",
++                "petnames are unverified",
++            ][..],
++            5 => &[
++                "deletion request",
++                "Erasure is not guaranteed",
++                "cannot undo",
++            ][..],
++            6 if event["content"] == "" => &["Repost", "were not supplied", "unverified"][..],
++            6 => &[
++                "Repost",
++                "checked original ID/signature",
++                "does not establish real-world identity",
++            ][..],
++            7 => &[
++                "LAST e target",
++                "LAST p author hint",
++                "Earlier references are context",
++            ][..],
++            10002 => &[
++                "Replace the whole public relay list",
++                "withdraws all relays",
++                "Missing role means read and write",
++            ][..],
++            _ => panic!("unexpected catalog kind"),
++        } {
++            assert!(
++                effect.contains(role),
++                "{} missing role {role}: {effect}",
++                row["id"]
++            );
++        }
++        if kind == 7 {
++            for name in ["e", "p"] {
++                let last = tags.iter().rposition(|t| t[0] == name);
++                for (t, fields) in tags.iter().enumerate() {
++                    if fields[0] == name {
++                        let role = &io
++                            .pages
++                            .iter()
++                            .find(|p| p.0.starts_with(&format!("Signed tag {t} field 1:")))
++                            .unwrap()
++                            .0;
++                        assert_eq!(role.contains("TARGET"), Some(t) == last);
++                    }
++                }
++            }
++        }
++        if kind == 10002 {
++            for (t, fields) in tags.iter().enumerate() {
++                if fields[0] == "r" {
++                    assert_eq!(
++                        observed_value(&io, &format!("Signed relay tag {t} effective use")),
++                        inspection_quote(
++                            fields
++                                .get(2)
++                                .map(|v| v.as_str().unwrap())
++                                .unwrap_or("read and write")
++                        )
++                    );
++                }
++            }
++        }
++        assert_eq!(owner.state(), AuthorizationState::Approved);
++        assert_eq!(backend_calls(), before);
++        actual.push(json!({"id":row["id"],"disposition":"actual complete local simulation and exact field/role assertions","data_pages":io.pages.len(),"approval_calls":1,"entropy_calls":0,"sign_calls":0,"output":false}));
++    }
++    if let Ok(path) = std::env::var("K01_MATRIX_OBSERVED") {
++        std::fs::write(path, serde_json::to_vec_pretty(&actual).unwrap()).unwrap();
++    }
++}
++
++#[test]
++fn k01_repost_borrowed_original_fields_and_failures_are_checked() {
++    use crate::event::SignedOriginal;
++    let v = &vectors()["vectors"][7];
++    let mut inner: Value = serde_json::from_str(v["template"].as_str().unwrap()).unwrap();
++    inner["pubkey"] = v["pubkey"].clone();
++    inner["id"] = v["event_id"].clone();
++    inner["sig"] = v["signature"].clone();
++    let raw = inner.to_string();
++    let original = SignedOriginal::parse(&raw, limits()).unwrap();
++    original.verify().unwrap();
++    let outer = |content: &str| {
++        json!({"created_at":0,"kind":6,"tags":[["e",v["event_id"],"wss://relay.example"],["p",KEY]],"content":content}).to_string()
++    };
++    let mut s = approved(&outer(&raw));
++    s.cancel();
++    s.begin_request(request(&outer(&raw)).as_bytes(), Some(0))
++        .unwrap();
++    let io = approve(&mut s);
++    assert_eq!(
++        observed_value(&io, "Original signed content"),
++        inspection_quote(inner["content"].as_str().unwrap())
++    );
++    for (t, fields) in inner["tags"].as_array().unwrap().iter().enumerate() {
++        for (f, text) in fields.as_array().unwrap().iter().enumerate() {
++            assert_eq!(
++                observed_value(&io, &format!("Original signed tag {t} field {f}:")),
++                inspection_quote(text.as_str().unwrap())
++            );
++        }
++    }
++    let mut fields = Vec::new();
++    original
++        .visit_tags(|tag, field, text| {
++            fields.push((tag, field, text.to_string()));
++            Ok(())
++        })
++        .unwrap();
++    assert!(!fields.is_empty());
++    assert!(original
++        .visit_tags(|_, _, _| Err(EventError::Limit))
++        .is_err());
++    assert!(original.visit_content(|_| Err(EventError::Limit)).is_err());
++    for change in [
++        "pubkey",
++        "created_at",
++        "kind",
++        "tags",
++        "content",
++        "id",
++        "sig",
++        "extra",
++    ] {
++        let mut bad = inner.clone();
++        if change == "extra" {
++            bad[change] = json!(0);
++        } else {
++            bad.as_object_mut().unwrap().remove(change);
++        }
++        assert!(
++            SignedOriginal::parse(&bad.to_string(), limits()).is_err(),
++            "missing/extra {change}"
++        );
++    }
++    for (field, value) in [
++        ("pubkey", json!("a")),
++        ("id", json!("a")),
++        ("sig", json!("a")),
++        ("pubkey", json!(KEY.to_uppercase())),
++        ("pubkey", json!("0".repeat(64))),
++        ("sig", json!("0".repeat(128))),
++        ("kind", json!(6)),
++        ("created_at", json!(9007199254740992u64)),
++        ("tags", json!([[]])),
++        ("tags", json!([[""]])),
++        ("tags", json!([vec!["x"; 9]])),
++        ("tags", json!([["x", "z".repeat(257)]])),
++        ("tags", json!(vec![json!(["x"]); 33])),
++    ] {
++        let mut bad = inner.clone();
++        bad[field] = value;
++        assert!(
++            session()
++                .begin_request(request(&outer(&bad.to_string())).as_bytes(), Some(0))
++                .is_err(),
++            "{field}: {bad}"
++        );
++    }
++    for raw in [
++        raw.replace(
++            "\"pubkey\":",
++            &format!("\"pubkey\":\"{KEY}\",\"pub\\u006bey\":"),
++        ),
++        raw.replace("\"kind\":1", "\"kind\":1.0"),
++        format!("{raw}false"),
++    ] {
++        assert!(SignedOriginal::parse(&raw, limits()).is_err());
++    }
++    for (field, n) in [(0, 0), (1, 0), (2, 0)] {
++        let mut l = limits();
++        match field {
++            0 => l.tags = n,
++            1 => l.fields_per_tag = n,
++            _ => l.text_bytes = n,
++        };
++        assert!(SignedOriginal::parse(&raw, l).is_err());
++    }
++    let mut l = limits();
++    l.canonical_bytes = 1;
++    assert!(SignedOriginal::parse(&raw, l).unwrap().verify().is_err());
++}
++
++#[test]
++fn k01_reference_coordinates_and_reaction_coherence_have_no_raw_fallback() {
++    let event = |kind, tags: Value| {
++        json!({"created_at":0,"kind":kind,"tags":tags,"content":""}).to_string()
++    };
++    let id = "a".repeat(64);
++    for tags in [
++        json!([["a", format!("30023:{KEY}:x:y")]]),
++        json!([["a", format!("0:{KEY}:")]]),
++        json!([["e", id, "suffix is not relay"], ["k", "1"], ["k", "2"]]),
++    ] {
++        assert!(session()
++            .begin_request(request(&event(5, tags)).as_bytes(), Some(0))
++            .is_ok());
++    }
++    for tags in [
++        json!([["a", format!("0:{KEY}:bad")]]),
++        json!([["a", format!("20000:{KEY}:")]]),
++        json!([["a", format!("30023:{KEY}")]]),
++        json!([["a", format!("030023:{KEY}:x")]]),
++        json!([["k", "1"]]),
++    ] {
++        assert!(session()
++            .begin_request(request(&event(5, tags)).as_bytes(), Some(0))
++            .is_err());
++    }
++    for tags in [
++        json!([
++            ["e", id],
++            ["a", format!("30023:{KEY}:x")],
++            ["a", format!("30023:{KEY}:y")]
++        ]),
++        json!([["e", id], ["a", format!("30023:{KEY}:x"), "", KEY_ONE]]),
++        json!([["e", id], ["k", "1"], ["k", "1"]]),
++        json!([["e", id, "", KEY], ["p", KEY_ONE]]),
++        json!([["e", id], ["a", format!("30023:{KEY}:x")], ["p", KEY_ONE]]),
++    ] {
++        assert!(session()
++            .begin_request(request(&event(7, tags)).as_bytes(), Some(0))
++            .is_err());
++    }
++    let mut s = approved(EMPTY);
++    s.key = Some(secret(1));
++    let mut aux = Aux::valid(0);
++    let before = backend_calls();
++    let mut out = [0xa5; SIGNED_EVENT_BYTES];
++    assert_eq!(
++        s.sign_approved("r", &mut || Some(0), &mut aux, &mut out),
++        Err(AuthorizationError::Binding)
++    );
++    assert_eq!(backend_calls(), before);
++    assert_eq!(out, [0; SIGNED_EVENT_BYTES]);
++    let mut s = approved(EMPTY);
++    s.pending.as_mut().unwrap().request.event = Some(parsed(&event(16, json!([]))));
++    let p = s.pending.as_ref().unwrap();
++    assert!(s.document(p).commitment().is_err());
++    for input in ["{\"x\":tru}", "{\"x\":fals}", "{\"x\":nul}"] {
++        assert!(crate::event::inspect_metadata(input, |_| Ok(())).is_err());
++    }
++}
+diff --git a/crates/nsealr-core/src/event.rs b/crates/nsealr-core/src/event.rs
+index 4806f403..1b19bf77 100644
+--- a/crates/nsealr-core/src/event.rs
++++ b/crates/nsealr-core/src/event.rs
+@@ -673,9 +673,7 @@ pub(crate) fn inspect_metadata(
+             let byte = *reader.input.get(reader.at).ok_or(EventError::Syntax)?;
+             match byte {
+                 b'{' | b'[' => {
+-                    if depth == stack.len() {
+-                        return Err(EventError::Limit);
+-                    }
++                    // The value-depth check above covers every stack push.
+                     reader.at += 1;
+                     stack[depth] = MetadataFrame {
+                         object: byte == b'{',
+@@ -822,9 +820,8 @@ pub(crate) fn inspect_metadata(
+                     }
+                 }
+             }
+-            if key_count == keys.len() {
+-                return Err(EventError::Limit);
+-            }
++            // At most 128 nodes: each member key precedes one child value,
++            // so even the next rejected child can consume only key slot 127.
+             keys[key_count] = (start as u16, frame.node);
+             key_count += 1;
+             emit(MetadataItem {
+diff --git a/crates/nsealr-core/src/review/event.rs b/crates/nsealr-core/src/review/event.rs
+index 053b5d87..cd818145 100644
+--- a/crates/nsealr-core/src/review/event.rs
++++ b/crates/nsealr-core/src/review/event.rs
+@@ -600,6 +600,13 @@ impl ReviewDocument<'_> {
+             value(label, ascii(decimal(n, &mut buf)))?;
+         }
+         value("Signed content (plain text)", self.event.content())?;
++        let last_named = |name| {
++            (0..self.event.tag_count())
++                .rev()
++                .find(|index| self.event.tag(*index).and_then(|mut f| f.next()) == Some(name))
++        };
++        let last_event = last_named("e");
++        let last_person = last_named("p");
+         for tag in 0..self.event.tag_count() {
+             let fields = self.event.tag(tag).ok_or(InspectionError::InvalidTag)?;
+             let name = self
+@@ -626,8 +633,10 @@ impl ReviewDocument<'_> {
+                     (6, "e", 2) => "required original relay (unverified)",
+                     (6, "p", 1) => "original author hint (checked if original supplied)",
+                     (6, "p", 2) => "unverified original author relay hint",
+-                    (7, "e", 1) => "reaction event ID; LAST e is target, earlier are context",
+-                    (7, "p", 1) => "author hint; LAST p is target author",
++                    (7, "e", 1) if last_event == Some(tag) => "reaction TARGET event ID (last e)",
++                    (7, "e", 1) => "earlier reaction context event ID",
++                    (7, "p", 1) if last_person == Some(tag) => "TARGET author hint (last p)",
++                    (7, "p", 1) => "earlier context author hint",
+                     (7, "e" | "p" | "a", 2) => "unverified relay hint",
+                     (7, "e" | "a", 3) => "supplied target author (not real-world identity)",
+                     (7, "a", 1) => "coherent target coordinate (unverified)",
+@@ -645,6 +654,39 @@ impl ReviewDocument<'_> {
+                 push(&mut label, role)?;
+                 value(label.as_str(), text)?;
+             }
++            if matches!(self.event.kind(), 5 | 7) && name == "a" {
++                let address = self
++                    .event
++                    .tag(tag)
++                    .and_then(|mut fields| fields.nth(1))
++                    .ok_or(InspectionError::InvalidTag)?;
++                for (part, text) in address.splitn(3, ':').enumerate() {
++                    let mut label = FixedStr::<160>::new();
++                    push(&mut label, "Signed address tag ")?;
++                    number(&mut label, tag)?;
++                    push(
++                        &mut label,
++                        match part {
++                            0 => " kind",
++                            1 => " public key",
++                            _ => " complete identifier (colons preserved)",
++                        },
++                    )?;
++                    value(label.as_str(), text)?;
++                }
++            }
++            if self.event.kind() == 10002 && name == "r" {
++                let role = self
++                    .event
++                    .tag(tag)
++                    .and_then(|mut fields| fields.nth(2))
++                    .unwrap_or("read and write");
++                let mut label = FixedStr::<160>::new();
++                push(&mut label, "Signed relay tag ")?;
++                number(&mut label, tag)?;
++                push(&mut label, " effective use")?;
++                value(label.as_str(), role)?;
++            }
+         }
+         if self.event.kind() == 0 {
+             inspect_metadata(self.event.content(), |item| {

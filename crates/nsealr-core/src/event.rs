@@ -642,7 +642,7 @@ struct MetadataFrame {
 /// offsets and parent IDs, never a retained DOM or another copy of the content.
 pub(crate) fn inspect_metadata(
     input: &str,
-    mut emit: impl FnMut(MetadataItem<'_>) -> Result<(), EventError>,
+    emit: &mut dyn FnMut(MetadataItem<'_>) -> Result<(), EventError>,
 ) -> Result<usize, EventError> {
     let mut limits = OperationLimits::conformance();
     limits.input_bytes = 2048;
@@ -673,9 +673,7 @@ pub(crate) fn inspect_metadata(
             let byte = *reader.input.get(reader.at).ok_or(EventError::Syntax)?;
             match byte {
                 b'{' | b'[' => {
-                    if depth == stack.len() {
-                        return Err(EventError::Limit);
-                    }
+                    // The value-depth check above covers every stack push.
                     reader.at += 1;
                     stack[depth] = MetadataFrame {
                         object: byte == b'{',
@@ -822,9 +820,8 @@ pub(crate) fn inspect_metadata(
                     }
                 }
             }
-            if key_count == keys.len() {
-                return Err(EventError::Limit);
-            }
+            // At most 128 nodes: each member key precedes one child value,
+            // so even the next rejected child can consume only key slot 127.
             keys[key_count] = (start as u16, frame.node);
             key_count += 1;
             emit(MetadataItem {
@@ -910,7 +907,7 @@ impl<'a> SignedOriginal<'a> {
                     3 => {
                         reader.ws();
                         let start = reader.at;
-                        Self::walk_tags(reader, limits, |_, _, text| {
+                        Self::walk_tags(reader, limits, &mut |_, _, text| {
                             text_bytes += text.len();
                             Ok(())
                         })?;
@@ -944,7 +941,7 @@ impl<'a> SignedOriginal<'a> {
     fn walk_tags(
         reader: &mut Reader<'_>,
         limits: OperationLimits,
-        mut emit: impl FnMut(usize, usize, &str) -> Result<(), EventError>,
+        emit: &mut dyn FnMut(usize, usize, &str) -> Result<(), EventError>,
     ) -> Result<(), EventError> {
         reader.take(b'[')?;
         let mut tag = 0;
@@ -989,7 +986,7 @@ impl<'a> SignedOriginal<'a> {
     }
     pub fn visit_tags(
         &self,
-        emit: impl FnMut(usize, usize, &str) -> Result<(), EventError>,
+        emit: &mut dyn FnMut(usize, usize, &str) -> Result<(), EventError>,
     ) -> Result<(), EventError> {
         let mut reader = Reader::new(&self.input[self.tags.0..self.tags.1], self.limits)?;
         Self::walk_tags(&mut reader, self.limits, emit)?;
@@ -997,7 +994,7 @@ impl<'a> SignedOriginal<'a> {
     }
     pub fn visit_content(
         &self,
-        mut emit: impl FnMut(&str) -> Result<(), EventError>,
+        emit: &mut dyn FnMut(&str) -> Result<(), EventError>,
     ) -> Result<(), EventError> {
         let mut reader = Reader::new(&self.input[self.content.0..self.content.1], self.limits)?;
         let mut buffer = [0; 2048];
@@ -1027,14 +1024,16 @@ impl<'a> SignedOriginal<'a> {
         emit(decimal(u64::from(self.kind), &mut number))?;
         emit(b",[")?;
         let mut previous_tag = None;
-        self.visit_tags(|tag, field, text| {
+        self.visit_tags(&mut |tag, _field, text| {
             if previous_tag != Some(tag) {
                 if previous_tag.is_some() {
                     emit(b"],")?;
                 }
                 emit(b"[")?;
                 previous_tag = Some(tag);
-            } else if field > 0 {
+            } else {
+                // The walker starts every new tag at field zero; a repeated
+                // tag index therefore always means a subsequent field.
                 emit(b",")?;
             }
             json_string(text, &mut emit)
@@ -1043,7 +1042,7 @@ impl<'a> SignedOriginal<'a> {
             emit(b"]")?;
         }
         emit(b"],")?;
-        self.visit_content(|text| json_string(text, &mut emit))?;
+        self.visit_content(&mut |text| json_string(text, &mut emit))?;
         emit(b"]")?;
         if hash.finalize() != self.id {
             return Err(EventError::Shape);

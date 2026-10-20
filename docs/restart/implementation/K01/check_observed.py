@@ -104,6 +104,45 @@ def check(fixtures, observed, identities, rejections):
     require(len(ids) == len(set(ids)) == 13, 'exact13 prepared cases')
     actual = rows(strict(observed.read_text()),
                   ['id','pubkey','canonical_hex','event_id','signature','signed_event_json'], ids)
+    identity_rows = strict(identities.read_text())
+    require(type(identity_rows) is list and len(identity_rows) == 3, 'three original identity rows')
+    seen = set()
+    for row in identity_rows:
+        exact(row, ['scalar','original_scalar','normalized_backend','pubkey'])
+        require(type(row['scalar']) is str and row['scalar'] not in seen, 'unique scalar identity')
+        seen.add(row['scalar'])
+        prepared = next((v for v in expected['identity_expectations'] if v['public_fixture_scalar'] == row['scalar']), None)
+        require(prepared is not None, 'known identity')
+        n = bip.n-3 if row['scalar'] == 'n-3' else int(row['scalar'])
+        original = n.to_bytes(32,'big')
+        normalized = n if bip.has_even_y(bip.point_mul(bip.G,n)) else bip.n-n
+        require(hex_bytes(row['original_scalar'],32) == original
+                and row['original_scalar'] == prepared['original_scalar_hex'], 'actual original recovery scalar')
+        require(hex_bytes(row['normalized_backend'],32) == normalized.to_bytes(32,'big')
+                and row['normalized_backend'] == prepared['normalized_backend_hex'], 'scoped normalized witness')
+        require(hex_bytes(row['pubkey'],32) == bip.pubkey_gen(original)
+                and row['pubkey'] == prepared['pubkey'], 'identity derivation')
+    require(seen == {'1','3','n-3'}, 'all identity cases')
+    negatives = expected['negative_expectations']
+    actual_negative = rows(strict(rejections.read_text()),
+                           ['id','layer','error','approval_calls','entropy_calls','sign_calls','output'],
+                           [v['id'] for v in negatives])
+    for row in negatives:
+        got = actual_negative[row['id']]
+        require(got['layer'] == row['layer'], 'actual expected rejection layer')
+        require(type(got['error']) is str and got['error'].startswith('Parse(' if row['layer'] == 'parser' else 'Inspection('),
+                'bounded actual rejection')
+        for field in ['approval_calls','entropy_calls','sign_calls']:
+            require(type(got[field]) is int and got[field] == 0, 'rejected input caused effects')
+        require(got['output'] is False, 'rejected input released output')
+        if row['layer'] == 'parser':
+            try:
+                template(row['template'].encode('utf-8'))
+            except (ValueError,UnicodeError):
+                pass
+            else:
+                raise ValueError('parser-negative expectation accidentally valid')
+    # Reject malformed records/effect claims before expensive verifier mutations.
     mutations = 0
     for row in vectors:
         item = template(row['template'].encode('utf-8'))
@@ -161,44 +200,6 @@ def check(fixtures, observed, identities, rejections):
     same_id = [v for v in vectors if v['event_id'] == vectors[0]['event_id']]
     require(len(same_id) == 2 and same_id[0]['aux_hex'] != same_id[1]['aux_hex']
             and same_id[0]['signature'] != same_id[1]['signature'], 'independent auxiliary-use control')
-    identity_rows = strict(identities.read_text())
-    require(type(identity_rows) is list and len(identity_rows) == 3, 'three original identity rows')
-    seen = set()
-    for row in identity_rows:
-        exact(row, ['scalar','original_scalar','normalized_backend','pubkey'])
-        require(type(row['scalar']) is str and row['scalar'] not in seen, 'unique scalar identity')
-        seen.add(row['scalar'])
-        prepared = next((v for v in expected['identity_expectations'] if v['public_fixture_scalar'] == row['scalar']), None)
-        require(prepared is not None, 'known identity')
-        n = bip.n-3 if row['scalar'] == 'n-3' else int(row['scalar'])
-        original = n.to_bytes(32,'big')
-        normalized = n if bip.has_even_y(bip.point_mul(bip.G,n)) else bip.n-n
-        require(hex_bytes(row['original_scalar'],32) == original
-                and row['original_scalar'] == prepared['original_scalar_hex'], 'actual original recovery scalar')
-        require(hex_bytes(row['normalized_backend'],32) == normalized.to_bytes(32,'big')
-                and row['normalized_backend'] == prepared['normalized_backend_hex'], 'scoped normalized witness')
-        require(hex_bytes(row['pubkey'],32) == bip.pubkey_gen(original)
-                and row['pubkey'] == prepared['pubkey'], 'identity derivation')
-    require(seen == {'1','3','n-3'}, 'all identity cases')
-    negatives = expected['negative_expectations']
-    actual_negative = rows(strict(rejections.read_text()),
-                           ['id','layer','error','approval_calls','entropy_calls','sign_calls','output'],
-                           [v['id'] for v in negatives])
-    for row in negatives:
-        got = actual_negative[row['id']]
-        require(got['layer'] == row['layer'], 'actual expected rejection layer')
-        require(type(got['error']) is str and got['error'].startswith('Parse(' if row['layer'] == 'parser' else 'Inspection('),
-                'bounded actual rejection')
-        for field in ['approval_calls','entropy_calls','sign_calls']:
-            require(type(got[field]) is int and got[field] == 0, 'rejected input caused effects')
-        require(got['output'] is False, 'rejected input released output')
-        if row['layer'] == 'parser':
-            try:
-                template(row['template'].encode('utf-8'))
-            except (ValueError,UnicodeError):
-                pass
-            else:
-                raise ValueError('parser-negative expectation accidentally valid')
     return {'independent_vectors':13,'identities':3,'preflight_rejections':len(negatives),
             'official_controls':len(official),'per_byte_and_canonical_mutations_rejected':mutations,
             'limits':'source-bound observations only; no execution provenance, hardware or provider qualification from data comparison'}
