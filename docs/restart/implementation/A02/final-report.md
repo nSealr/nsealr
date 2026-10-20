@@ -185,7 +185,8 @@ product/profile alignment. It is not a product prerequisite or physical proof.
 
 The [complete exported nonzero-exit inventory](failure-observations.json) retains
 all exported failed observations. The explanatory `failure-removal-ledger.md`
-is still pending; do not claim its completion from this draft.
+is complete and bound by `acceptance-receipt.json`; independent final review
+and coordinator adoption remain pending.
 Corrections are separate declared changes, not
 rewritten logs or erased assertions. `cargo deny` exits zero with inherited
 registry/index warnings; complete yank-status coverage is not claimed.
