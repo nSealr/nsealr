@@ -348,5 +348,37 @@ class ArtifactProvenanceTests(unittest.TestCase):
         replacement=self.git('rev-parse','HEAD:protocols/contracts/v1').decode().strip()
         self.git('replace',self.tree,replacement);self.reject()
 
+    def test_git_owner_execution_mode_change_rejects_even_with_other_execution_bits(self):
+        self.git('config','core.filemode','true')
+        path=self.artifact/'LICENSE';relative='protocols/contracts/v1/LICENSE'
+        path.chmod(0o755)
+        with self.trust_current_tree():
+            approved=self.git('ls-tree','HEAD','--',relative).split()[0].decode()
+            self.assertEqual(approved,'100755')
+            for permissions in (0o645,0o654,0o644,0o744,0o760):
+                with self.subTest(permissions=oct(permissions)):
+                    path.chmod(permissions);self.git('add','--',relative)
+                    actual_git=self.git('ls-files','--stage','--',relative).split()[0].decode()
+                    print(json.dumps({'control':'owner_execution_mode','approved_git_mode':approved,
+                                      'observed_POSIX_permissions':oct(permissions),'actual_git_index_mode':actual_git,
+                                      'expected_accept':actual_git==approved},sort_keys=True))
+                    if actual_git==approved:self.assertEqual(self.check()['files'],5)
+                    else:self.reject()
+
+    def test_nonowner_execution_and_other_permissions_do_not_invent_git_mode_changes(self):
+        self.git('config','core.filemode','true')
+        path=self.artifact/'LICENSE';relative='protocols/contracts/v1/LICENSE'
+        approved=self.git('ls-tree',self.candidate,'--',relative).split()[0].decode()
+        self.assertEqual(approved,'100644')
+        for permissions in (0o645,0o654,0o600,0o664,0o644):
+            with self.subTest(permissions=oct(permissions)):
+                path.chmod(permissions);self.git('add','--',relative)
+                actual_git=self.git('ls-files','--stage','--',relative).split()[0].decode()
+                self.assertEqual(actual_git,approved)
+                print(json.dumps({'control':'nonowner_permissions_not_git_mode','approved_git_mode':approved,
+                                  'observed_POSIX_permissions':oct(permissions),'actual_git_index_mode':actual_git,
+                                  'expected_accept':True},sort_keys=True))
+                self.assertEqual(self.check()['files'],5)
+
 
 if __name__=='__main__':unittest.main()
