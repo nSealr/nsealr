@@ -1,0 +1,789 @@
+diff --git a/crates/nsealr-core/src/authorization.rs b/crates/nsealr-core/src/authorization.rs
+index 3e871e43..f669d036 100644
+--- a/crates/nsealr-core/src/authorization.rs
++++ b/crates/nsealr-core/src/authorization.rs
+@@ -91,7 +91,7 @@ pub trait AuxiliarySource {
+     fn fill(&mut self, destination: &mut [u8; 32]) -> Result<usize, AuxiliaryError>;
+ }
+ fn fill_auxiliary(
+-    provider: &mut impl AuxiliarySource,
++    provider: &mut dyn AuxiliarySource,
+     destination: &mut [u8; 32],
+ ) -> Result<(), AuthorizationError> {
+     destination.zeroize();
+@@ -589,6 +589,19 @@ impl AuthorizationSession {
+         owner.invalidate();
+         output
+     }
++    fn backend_key(&self, expected: &[u8; 32]) -> Result<SigningKey, AuthorizationError> {
++        let key = SigningKey::from_slice(
++            self.key
++                .as_ref()
++                .ok_or(AuthorizationError::Locked)?
++                .as_bytes(),
++        )
++        .map_err(|_| AuthorizationError::Key)?;
++        if key.verifying_key().to_bytes().as_slice() != expected {
++            return Err(AuthorizationError::Binding);
++        }
++        Ok(key)
++    }
+     fn execute(
+         &mut self,
+         request_id: &str,
+@@ -597,18 +610,7 @@ impl AuthorizationSession {
+     ) -> Result<[u8; 64], AuthorizationError> {
+         let execution = self.start_execution(request_id, now)?;
+         let result = (|| {
+-            let key = SigningKey::from_slice(
+-                execution
+-                    .owner
+-                    .key
+-                    .as_ref()
+-                    .ok_or(AuthorizationError::Locked)?
+-                    .as_bytes(),
+-            )
+-            .map_err(|_| AuthorizationError::Key)?;
+-            if key.verifying_key().to_bytes().as_slice() != execution.public_key {
+-                return Err(AuthorizationError::Binding);
+-            }
++            let key = execution.owner.backend_key(&execution.public_key)?;
+             backend(&key, &execution.event_id)
+         })();
+         Self::finish_execution(execution, result, now)
+@@ -625,8 +627,8 @@ impl AuthorizationSession {
+     pub fn sign_approved(
+         &mut self,
+         request_id: &str,
+-        clock: &mut impl FnMut() -> Option<u64>,
+-        auxiliary: &mut impl AuxiliarySource,
++        clock: &mut dyn FnMut() -> Option<u64>,
++        auxiliary: &mut dyn AuxiliarySource,
+         output: &mut [u8],
+     ) -> Result<usize, AuthorizationError> {
+         let consumed = self.consume_approval();
+@@ -639,18 +641,7 @@ impl AuthorizationSession {
+             let mut aux = Zeroizing::new([0u8; 32]);
+             fill_auxiliary(auxiliary, &mut aux)?;
+             let signature = {
+-                let key = SigningKey::from_slice(
+-                    execution
+-                        .owner
+-                        .key
+-                        .as_ref()
+-                        .ok_or(AuthorizationError::Locked)?
+-                        .as_bytes(),
+-                )
+-                .map_err(|_| AuthorizationError::Key)?;
+-                if key.verifying_key().to_bytes().as_slice() != execution.public_key {
+-                    return Err(AuthorizationError::Binding);
+-                }
++                let key = execution.owner.backend_key(&execution.public_key)?;
+                 #[cfg(test)]
+                 tests::observe_backend_attempt();
+                 key.sign_raw(&execution.event_id, &aux)
+@@ -662,7 +653,7 @@ impl AuthorizationSession {
+                 .pending
+                 .as_ref()
+                 .ok_or(AuthorizationError::Binding)?;
+-            length = p
++            let serialized = p
+                 .request
+                 .event
+                 .as_ref()
+@@ -672,7 +663,8 @@ impl AuthorizationSession {
+                     &execution.event_id,
+                     &signature,
+                     &mut staged,
+-                )?;
++                );
++            length = serialized?;
+             if length > output.len() {
+                 return Err(AuthorizationError::Output);
+             }
+diff --git a/crates/nsealr-core/src/authorization/tests.rs b/crates/nsealr-core/src/authorization/tests.rs
+index f1e371a5..e91548e8 100644
+--- a/crates/nsealr-core/src/authorization/tests.rs
++++ b/crates/nsealr-core/src/authorization/tests.rs
+@@ -1787,3 +1787,378 @@ fn k01_metadata_exact_types_duplicate_keys_and_finite_boundaries() {
+         );
+     }
+ }
++
++#[test]
++fn k01_seventy_cases_have_actual_complete_review_or_exact_zero_effect_failure() {
++    let corpus: Value = serde_json::from_str(include_str!(concat!(
++        env!("CARGO_MANIFEST_DIR"),
++        "/../../docs/restart/implementation/K01/evidence/semantic-matrix.json"
++    )))
++    .unwrap();
++    let mut actual = Vec::new();
++    for row in corpus["rows"].as_array().unwrap() {
++        let mut bounds = limits();
++        if let Some(p) = row["local_review_page_limit"].as_u64() {
++            bounds.review_pages = p as usize;
++        }
++        let mut owner = AuthorizationSession::new(bounds, geometry()).unwrap();
++        owner.select_key(secret(3)).unwrap();
++        let before = backend_calls();
++        let result = owner.begin_request(
++            request(row["template"].as_str().unwrap()).as_bytes(),
++            Some(0),
++        );
++        if row["expected_preflight"] == "reject" {
++            let error = result.unwrap_err();
++            let layer = match error {
++                AuthorizationError::Parse(_) => "parser",
++                AuthorizationError::Inspection(_) => "semantic",
++                _ => panic!("{error:?}"),
++            };
++            assert_eq!(layer, row["error_layer"], "{} {error:?}", row["id"]);
++            let mut aux = Aux::valid(0);
++            let mut out = [0xa5; SIGNED_EVENT_BYTES];
++            assert!(owner
++                .sign_approved("r", &mut || panic!("no approved clock"), &mut aux, &mut out)
++                .is_err());
++            assert_eq!(aux.calls, 0);
++            assert_eq!(backend_calls(), before);
++            assert_eq!(out, [0; SIGNED_EVENT_BYTES]);
++            actual.push(json!({"id":row["id"],"disposition":"actual exact-layer zero-effect rejection","layer":layer,"error":format!("{error:?}"),"approval_calls":0,"entropy_calls":0,"sign_calls":0,"output":false}));
++            continue;
++        }
++        result.unwrap();
++        let io = approve(&mut owner);
++        let event: Value = serde_json::from_str(row["template"].as_str().unwrap()).unwrap();
++        assert_eq!(
++            observed_value(&io, "Signed content"),
++            inspection_quote(event["content"].as_str().unwrap())
++        );
++        let tags = event["tags"].as_array().unwrap();
++        for (t, fields) in tags.iter().enumerate() {
++            for (f, text) in fields.as_array().unwrap().iter().enumerate() {
++                assert_eq!(
++                    observed_value(&io, &format!("Signed tag {t} field {f}:")),
++                    inspection_quote(text.as_str().unwrap()),
++                    "{} t{t} f{f}",
++                    row["id"]
++                );
++            }
++        }
++        let kind = event["kind"].as_u64().unwrap();
++        let effect = observed_value(&io, "Operation and consequences");
++        for role in match kind {
++            0 => &[
++                "Replace the whole public profile",
++                "Nested values/types",
++                "not verified",
++            ][..],
++            1 => &[
++                "kind 1 text note",
++                "References and quotations are unverified",
++            ][..],
++            3 => &[
++                "Replace the entire public follow list",
++                "unfollows everyone",
++                "petnames are unverified",
++            ][..],
++            5 => &[
++                "deletion request",
++                "Erasure is not guaranteed",
++                "cannot undo",
++            ][..],
++            6 if event["content"] == "" => &["Repost", "were not supplied", "unverified"][..],
++            6 => &[
++                "Repost",
++                "checked original ID/signature",
++                "does not establish real-world identity",
++            ][..],
++            7 => &[
++                "LAST e target",
++                "LAST p author hint",
++                "Earlier references are context",
++            ][..],
++            10002 => &[
++                "Replace the whole public relay list",
++                "withdraws all relays",
++                "Missing role means read and write",
++            ][..],
++            _ => panic!("unexpected catalog kind"),
++        } {
++            assert!(
++                effect.contains(role),
++                "{} missing role {role}: {effect}",
++                row["id"]
++            );
++        }
++        if kind == 7 {
++            for name in ["e", "p"] {
++                let last = tags.iter().rposition(|t| t[0] == name);
++                for (t, fields) in tags.iter().enumerate() {
++                    if fields[0] == name {
++                        let role = &io
++                            .pages
++                            .iter()
++                            .find(|p| p.0.starts_with(&format!("Signed tag {t} field 1:")))
++                            .unwrap()
++                            .0;
++                        assert_eq!(role.contains("TARGET"), Some(t) == last);
++                    }
++                }
++            }
++        }
++        if kind == 10002 {
++            for (t, fields) in tags.iter().enumerate() {
++                if fields[0] == "r" {
++                    assert_eq!(
++                        observed_value(&io, &format!("Signed relay tag {t} effective use")),
++                        inspection_quote(
++                            fields
++                                .get(2)
++                                .map(|v| v.as_str().unwrap())
++                                .unwrap_or("read and write")
++                        )
++                    );
++                }
++            }
++        }
++        assert_eq!(owner.state(), AuthorizationState::Approved);
++        assert_eq!(backend_calls(), before);
++        actual.push(json!({"id":row["id"],"disposition":"actual complete local simulation and exact field/role assertions","data_pages":io.pages.len(),"approval_calls":1,"entropy_calls":0,"sign_calls":0,"output":false}));
++    }
++    if let Ok(path) = std::env::var("K01_MATRIX_OBSERVED") {
++        std::fs::write(path, serde_json::to_vec_pretty(&actual).unwrap()).unwrap();
++    }
++}
++
++#[test]
++fn k01_repost_borrowed_original_fields_and_failures_are_checked() {
++    use crate::event::SignedOriginal;
++    let v = &vectors()["vectors"][7];
++    let mut inner: Value = serde_json::from_str(v["template"].as_str().unwrap()).unwrap();
++    inner["pubkey"] = v["pubkey"].clone();
++    inner["id"] = v["event_id"].clone();
++    inner["sig"] = v["signature"].clone();
++    assert!(SignedOriginal::parse("{}", limits()).is_err());
++    let raw = inner.to_string();
++    let original = SignedOriginal::parse(&raw, limits()).unwrap();
++    original.verify().unwrap();
++    let outer = |content: &str| {
++        json!({"created_at":0,"kind":6,"tags":[["e",v["event_id"],"wss://relay.example"],["p",KEY]],"content":content}).to_string()
++    };
++    let mut s = approved(&outer(&raw));
++    s.cancel();
++    s.begin_request(request(&outer(&raw)).as_bytes(), Some(0))
++        .unwrap();
++    let io = approve(&mut s);
++    assert_eq!(
++        observed_value(&io, "Original signed content"),
++        inspection_quote(inner["content"].as_str().unwrap())
++    );
++    for (t, fields) in inner["tags"].as_array().unwrap().iter().enumerate() {
++        for (f, text) in fields.as_array().unwrap().iter().enumerate() {
++            assert_eq!(
++                observed_value(&io, &format!("Original signed tag {t} field {f}:")),
++                inspection_quote(text.as_str().unwrap())
++            );
++        }
++    }
++    let mut fields = Vec::new();
++    original
++        .visit_tags(&mut |tag, field, text| {
++            fields.push((tag, field, text.to_string()));
++            Ok(())
++        })
++        .unwrap();
++    assert!(!fields.is_empty());
++    assert!(original
++        .visit_tags(&mut |_, _, _| Err(EventError::Limit))
++        .is_err());
++    assert!(original
++        .visit_content(&mut |_| Err(EventError::Limit))
++        .is_err());
++    for change in [
++        "pubkey",
++        "created_at",
++        "kind",
++        "tags",
++        "content",
++        "id",
++        "sig",
++        "extra",
++    ] {
++        let mut bad = inner.clone();
++        if change == "extra" {
++            bad[change] = json!(0);
++        } else {
++            bad.as_object_mut().unwrap().remove(change);
++        }
++        assert!(
++            SignedOriginal::parse(&bad.to_string(), limits()).is_err(),
++            "missing/extra {change}"
++        );
++    }
++    for (field, value) in [
++        ("pubkey", json!("a")),
++        ("id", json!("a")),
++        ("sig", json!("a")),
++        ("pubkey", json!(KEY.to_uppercase())),
++        (
++            "sig",
++            json!(v["signature"].as_str().unwrap().to_uppercase()),
++        ),
++        ("pubkey", json!("0".repeat(64))),
++        ("sig", json!("0".repeat(128))),
++        ("kind", json!(6)),
++        ("created_at", json!(9007199254740992u64)),
++        ("tags", json!([[]])),
++        ("tags", json!([[""]])),
++        ("tags", json!([vec!["x"; 9]])),
++        ("tags", json!([["x", "z".repeat(257)]])),
++        ("tags", json!(vec![json!(["x"]); 33])),
++    ] {
++        let mut bad = inner.clone();
++        bad[field] = value;
++        assert!(
++            session()
++                .begin_request(request(&outer(&bad.to_string())).as_bytes(), Some(0))
++                .is_err(),
++            "{field}: {bad}"
++        );
++    }
++    for raw in [
++        raw.replace(
++            "\"pubkey\":",
++            &format!("\"pubkey\":\"{KEY}\",\"pub\\u006bey\":"),
++        ),
++        raw.replace("\"kind\":1", "\"kind\":1.0"),
++        format!("{raw}false"),
++    ] {
++        assert!(SignedOriginal::parse(&raw, limits()).is_err());
++    }
++    for (field, n) in [(0, 0), (1, 0), (2, 0)] {
++        let mut l = limits();
++        match field {
++            0 => l.tags = n,
++            1 => l.fields_per_tag = n,
++            _ => l.text_bytes = n,
++        };
++        assert!(SignedOriginal::parse(&raw, l).is_err());
++    }
++    // Independent fixture length: exercise every partial canonical sink bound,
++    // including failures while streaming an inner tag, not just its prefix.
++    let canonical_len = v["canonical_hex"].as_str().unwrap().len() / 2;
++    for cap in 1..canonical_len {
++        let mut l = limits();
++        l.canonical_bytes = cap;
++        assert!(
++            SignedOriginal::parse(&raw, l).unwrap().verify().is_err(),
++            "cap {cap}"
++        );
++    }
++    let mut l = limits();
++    l.canonical_bytes = canonical_len;
++    SignedOriginal::parse(&raw, l).unwrap().verify().unwrap();
++}
++
++#[test]
++fn k01_reference_coordinates_and_reaction_coherence_have_no_raw_fallback() {
++    let event = |kind, tags: Value| {
++        json!({"created_at":0,"kind":kind,"tags":tags,"content":""}).to_string()
++    };
++    let id = "a".repeat(64);
++    for tags in [
++        json!([["a", format!("30023:{KEY}:x:y")]]),
++        json!([["a", format!("0:{KEY}:")]]),
++        json!([["e", id, "suffix is not relay"], ["k", "1"], ["k", "2"]]),
++    ] {
++        assert!(session()
++            .begin_request(request(&event(5, tags)).as_bytes(), Some(0))
++            .is_ok());
++    }
++    for tags in [
++        json!([["a", format!("0:{KEY}:bad")]]),
++        json!([["a", format!("20000:{KEY}:")]]),
++        json!([["a", format!("30023:{KEY}")]]),
++        json!([["a", format!("030023:{KEY}:x")]]),
++        json!([["k", "1"]]),
++    ] {
++        assert!(session()
++            .begin_request(request(&event(5, tags)).as_bytes(), Some(0))
++            .is_err());
++    }
++    for tags in [
++        json!([
++            ["e", id],
++            ["a", format!("30023:{KEY}:x")],
++            ["a", format!("30023:{KEY}:y")]
++        ]),
++        json!([["e", id], ["a", format!("30023:{KEY}:x"), "", KEY_ONE]]),
++        json!([["e", id], ["k", "1"], ["k", "1"]]),
++        json!([["e", id, "", KEY], ["p", KEY_ONE]]),
++        json!([["e", id], ["a", format!("30023:{KEY}:x")], ["p", KEY_ONE]]),
++    ] {
++        assert!(session()
++            .begin_request(request(&event(7, tags)).as_bytes(), Some(0))
++            .is_err());
++    }
++    let mut s = approved(EMPTY);
++    s.key = Some(secret(1));
++    let mut aux = Aux::valid(0);
++    let before = backend_calls();
++    let mut out = [0xa5; SIGNED_EVENT_BYTES];
++    assert_eq!(
++        s.sign_approved("r", &mut || Some(0), &mut aux, &mut out),
++        Err(AuthorizationError::Binding)
++    );
++    assert_eq!(backend_calls(), before);
++    assert_eq!(out, [0; SIGNED_EVENT_BYTES]);
++    let mut s = approved(EMPTY);
++    s.pending.as_mut().unwrap().request.event = Some(parsed(&event(16, json!([]))));
++    let p = s.pending.as_ref().unwrap();
++    assert!(s.document(p).commitment().is_err());
++    for input in ["{\"x\":tru}", "{\"x\":fals}", "{\"x\":nul}"] {
++        assert!(crate::event::inspect_metadata(input, &mut |_| Ok(())).is_err());
++    }
++}
++
++#[test]
++fn k01_serialization_and_metadata_callback_failures_return_no_partial_object() {
++    let event = parsed(&template(
++        "all\n\"\\\0\x08\x0c\r\tunicode雪",
++        json!([["x", "first"], ["x", "second"]]),
++    ));
++    let key = session().public_key().unwrap();
++    let id = event.event_id(&key).unwrap();
++    let sig = sign(&SigningKey::from_slice(secret(3).as_bytes()).unwrap(), &id).unwrap();
++    let mut complete = [0; SIGNED_EVENT_BYTES];
++    let n = event.write_signed(&key, &id, &sig, &mut complete).unwrap();
++    for len in [0, 1, n - 1] {
++        assert!(event
++            .write_signed(&key, &id, &sig, &mut vec![0; len])
++            .is_err());
++    }
++    assert_eq!(
++        serde_json::from_slice::<Value>(&complete[..n]).unwrap()["content"],
++        event.content()
++    );
++    for kind in [
++        "object",
++        "member key",
++        "string",
++        "boolean",
++        "null",
++        "number (exact token)",
++        "container end; child count",
++    ] {
++        let input = r#"{"s":"text","b":true,"n":null,"v":2}"#;
++        assert_eq!(
++            crate::event::inspect_metadata(input, &mut |item| if item.kind == kind {
++                Err(EventError::Limit)
++            } else {
++                Ok(())
++            }),
++            Err(EventError::Limit)
++        );
++    }
++}
+diff --git a/crates/nsealr-core/src/event.rs b/crates/nsealr-core/src/event.rs
+index 4806f403..8cd3e5cd 100644
+--- a/crates/nsealr-core/src/event.rs
++++ b/crates/nsealr-core/src/event.rs
+@@ -642,7 +642,7 @@ struct MetadataFrame {
+ /// offsets and parent IDs, never a retained DOM or another copy of the content.
+ pub(crate) fn inspect_metadata(
+     input: &str,
+-    mut emit: impl FnMut(MetadataItem<'_>) -> Result<(), EventError>,
++    emit: &mut dyn FnMut(MetadataItem<'_>) -> Result<(), EventError>,
+ ) -> Result<usize, EventError> {
+     let mut limits = OperationLimits::conformance();
+     limits.input_bytes = 2048;
+@@ -673,9 +673,7 @@ pub(crate) fn inspect_metadata(
+             let byte = *reader.input.get(reader.at).ok_or(EventError::Syntax)?;
+             match byte {
+                 b'{' | b'[' => {
+-                    if depth == stack.len() {
+-                        return Err(EventError::Limit);
+-                    }
++                    // The value-depth check above covers every stack push.
+                     reader.at += 1;
+                     stack[depth] = MetadataFrame {
+                         object: byte == b'{',
+@@ -822,9 +820,8 @@ pub(crate) fn inspect_metadata(
+                     }
+                 }
+             }
+-            if key_count == keys.len() {
+-                return Err(EventError::Limit);
+-            }
++            // At most 128 nodes: each member key precedes one child value,
++            // so even the next rejected child can consume only key slot 127.
+             keys[key_count] = (start as u16, frame.node);
+             key_count += 1;
+             emit(MetadataItem {
+@@ -910,7 +907,7 @@ impl<'a> SignedOriginal<'a> {
+                     3 => {
+                         reader.ws();
+                         let start = reader.at;
+-                        Self::walk_tags(reader, limits, |_, _, text| {
++                        Self::walk_tags(reader, limits, &mut |_, _, text| {
+                             text_bytes += text.len();
+                             Ok(())
+                         })?;
+@@ -944,7 +941,7 @@ impl<'a> SignedOriginal<'a> {
+     fn walk_tags(
+         reader: &mut Reader<'_>,
+         limits: OperationLimits,
+-        mut emit: impl FnMut(usize, usize, &str) -> Result<(), EventError>,
++        emit: &mut dyn FnMut(usize, usize, &str) -> Result<(), EventError>,
+     ) -> Result<(), EventError> {
+         reader.take(b'[')?;
+         let mut tag = 0;
+@@ -989,7 +986,7 @@ impl<'a> SignedOriginal<'a> {
+     }
+     pub fn visit_tags(
+         &self,
+-        emit: impl FnMut(usize, usize, &str) -> Result<(), EventError>,
++        emit: &mut dyn FnMut(usize, usize, &str) -> Result<(), EventError>,
+     ) -> Result<(), EventError> {
+         let mut reader = Reader::new(&self.input[self.tags.0..self.tags.1], self.limits)?;
+         Self::walk_tags(&mut reader, self.limits, emit)?;
+@@ -997,7 +994,7 @@ impl<'a> SignedOriginal<'a> {
+     }
+     pub fn visit_content(
+         &self,
+-        mut emit: impl FnMut(&str) -> Result<(), EventError>,
++        emit: &mut dyn FnMut(&str) -> Result<(), EventError>,
+     ) -> Result<(), EventError> {
+         let mut reader = Reader::new(&self.input[self.content.0..self.content.1], self.limits)?;
+         let mut buffer = [0; 2048];
+@@ -1027,14 +1024,16 @@ impl<'a> SignedOriginal<'a> {
+         emit(decimal(u64::from(self.kind), &mut number))?;
+         emit(b",[")?;
+         let mut previous_tag = None;
+-        self.visit_tags(|tag, field, text| {
++        self.visit_tags(&mut |tag, _field, text| {
+             if previous_tag != Some(tag) {
+                 if previous_tag.is_some() {
+                     emit(b"],")?;
+                 }
+                 emit(b"[")?;
+                 previous_tag = Some(tag);
+-            } else if field > 0 {
++            } else {
++                // The walker starts every new tag at field zero; a repeated
++                // tag index therefore always means a subsequent field.
+                 emit(b",")?;
+             }
+             json_string(text, &mut emit)
+@@ -1043,7 +1042,7 @@ impl<'a> SignedOriginal<'a> {
+             emit(b"]")?;
+         }
+         emit(b"],")?;
+-        self.visit_content(|text| json_string(text, &mut emit))?;
++        self.visit_content(&mut |text| json_string(text, &mut emit))?;
+         emit(b"]")?;
+         if hash.finalize() != self.id {
+             return Err(EventError::Shape);
+diff --git a/crates/nsealr-core/src/review/event.rs b/crates/nsealr-core/src/review/event.rs
+index 053b5d87..ec2b7d01 100644
+--- a/crates/nsealr-core/src/review/event.rs
++++ b/crates/nsealr-core/src/review/event.rs
+@@ -203,7 +203,8 @@ pub(crate) fn validate_catalog(
+         return validate_kind1(event);
+     }
+     if event.kind() == 0 {
+-        inspect_metadata(event.content(), |_| Ok(())).map_err(|_| InspectionError::InvalidTag)?;
++        inspect_metadata(event.content(), &mut |_| Ok(()))
++            .map_err(|_| InspectionError::InvalidTag)?;
+         return Ok(());
+     }
+     if !matches!(event.kind(), 3 | 5 | 6 | 7 | 10002) {
+@@ -230,7 +231,7 @@ pub(crate) fn validate_catalog(
+                 }
+                 // Kind3's optional petname and every suffix remain unverified data.
+             }
+-            (5 | 6 | 7, "e") => {
++            (5..=7, "e") => {
+                 target = Some(decode_hex(
+                     fields.next().ok_or(InspectionError::InvalidTag)?,
+                 )?);
+@@ -600,6 +601,13 @@ impl ReviewDocument<'_> {
+             value(label, ascii(decimal(n, &mut buf)))?;
+         }
+         value("Signed content (plain text)", self.event.content())?;
++        let last_named = |name| {
++            (0..self.event.tag_count())
++                .rev()
++                .find(|index| self.event.tag(*index).and_then(|mut f| f.next()) == Some(name))
++        };
++        let last_event = last_named("e");
++        let last_person = last_named("p");
+         for tag in 0..self.event.tag_count() {
+             let fields = self.event.tag(tag).ok_or(InspectionError::InvalidTag)?;
+             let name = self
+@@ -626,8 +634,10 @@ impl ReviewDocument<'_> {
+                     (6, "e", 2) => "required original relay (unverified)",
+                     (6, "p", 1) => "original author hint (checked if original supplied)",
+                     (6, "p", 2) => "unverified original author relay hint",
+-                    (7, "e", 1) => "reaction event ID; LAST e is target, earlier are context",
+-                    (7, "p", 1) => "author hint; LAST p is target author",
++                    (7, "e", 1) if last_event == Some(tag) => "reaction TARGET event ID (last e)",
++                    (7, "e", 1) => "earlier reaction context event ID",
++                    (7, "p", 1) if last_person == Some(tag) => "TARGET author hint (last p)",
++                    (7, "p", 1) => "earlier context author hint",
+                     (7, "e" | "p" | "a", 2) => "unverified relay hint",
+                     (7, "e" | "a", 3) => "supplied target author (not real-world identity)",
+                     (7, "a", 1) => "coherent target coordinate (unverified)",
+@@ -645,9 +655,40 @@ impl ReviewDocument<'_> {
+                 push(&mut label, role)?;
+                 value(label.as_str(), text)?;
+             }
++            if matches!(self.event.kind(), 5 | 7) && name == "a" {
++                let address = self
++                    .event
++                    .tag(tag)
++                    .and_then(|mut fields| fields.nth(1))
++                    .ok_or(InspectionError::InvalidTag)?;
++                for (part, text) in address.splitn(3, ':').enumerate() {
++                    let mut label = FixedStr::<160>::new();
++                    push(&mut label, "Signed address tag ")?;
++                    number(&mut label, tag)?;
++                    let role = match part {
++                        0 => " kind",
++                        1 => " public key",
++                        _ => " complete identifier (colons preserved)",
++                    };
++                    push(&mut label, role)?;
++                    value(label.as_str(), text)?;
++                }
++            }
++            if self.event.kind() == 10002 && name == "r" {
++                let role = self
++                    .event
++                    .tag(tag)
++                    .and_then(|mut fields| fields.nth(2))
++                    .unwrap_or("read and write");
++                let mut label = FixedStr::<160>::new();
++                push(&mut label, "Signed relay tag ")?;
++                number(&mut label, tag)?;
++                push(&mut label, " effective use")?;
++                value(label.as_str(), role)?;
++            }
+         }
+         if self.event.kind() == 0 {
+-            inspect_metadata(self.event.content(), |item| {
++            inspect_metadata(self.event.content(), &mut |item| {
+                 let mut label = FixedStr::<160>::new();
+                 push(&mut label, "Profile node ").map_err(|_| crate::event::EventError::Limit)?;
+                 number(&mut label, item.node).map_err(|_| crate::event::EventError::Limit)?;
+@@ -689,13 +730,13 @@ impl ReviewDocument<'_> {
+                 ascii(decimal(u64::from(original.kind), &mut buf)),
+             )?;
+             original
+-                .visit_content(|text| {
++                .visit_content(&mut |text| {
+                     value("Original signed content", text)
+                         .map_err(|_| crate::event::EventError::Limit)
+                 })
+                 .map_err(|_| InspectionError::Limit)?;
+             original
+-                .visit_tags(|tag, index, text| {
++                .visit_tags(&mut |tag, index, text| {
+                     let mut label = FixedStr::<160>::new();
+                     push(&mut label, "Original signed tag ")
+                         .map_err(|_| crate::event::EventError::Limit)?;
+diff --git a/docs/restart/implementation/K01/check_observed.py b/docs/restart/implementation/K01/check_observed.py
+index f58e0622..91dab719 100644
+--- a/docs/restart/implementation/K01/check_observed.py
++++ b/docs/restart/implementation/K01/check_observed.py
+@@ -104,6 +104,45 @@ def check(fixtures, observed, identities, rejections):
+     require(len(ids) == len(set(ids)) == 13, 'exact13 prepared cases')
+     actual = rows(strict(observed.read_text()),
+                   ['id','pubkey','canonical_hex','event_id','signature','signed_event_json'], ids)
++    identity_rows = strict(identities.read_text())
++    require(type(identity_rows) is list and len(identity_rows) == 3, 'three original identity rows')
++    seen = set()
++    for row in identity_rows:
++        exact(row, ['scalar','original_scalar','normalized_backend','pubkey'])
++        require(type(row['scalar']) is str and row['scalar'] not in seen, 'unique scalar identity')
++        seen.add(row['scalar'])
++        prepared = next((v for v in expected['identity_expectations'] if v['public_fixture_scalar'] == row['scalar']), None)
++        require(prepared is not None, 'known identity')
++        n = bip.n-3 if row['scalar'] == 'n-3' else int(row['scalar'])
++        original = n.to_bytes(32,'big')
++        normalized = n if bip.has_even_y(bip.point_mul(bip.G,n)) else bip.n-n
++        require(hex_bytes(row['original_scalar'],32) == original
++                and row['original_scalar'] == prepared['original_scalar_hex'], 'actual original recovery scalar')
++        require(hex_bytes(row['normalized_backend'],32) == normalized.to_bytes(32,'big')
++                and row['normalized_backend'] == prepared['normalized_backend_hex'], 'scoped normalized witness')
++        require(hex_bytes(row['pubkey'],32) == bip.pubkey_gen(original)
++                and row['pubkey'] == prepared['pubkey'], 'identity derivation')
++    require(seen == {'1','3','n-3'}, 'all identity cases')
++    negatives = expected['negative_expectations']
++    actual_negative = rows(strict(rejections.read_text()),
++                           ['id','layer','error','approval_calls','entropy_calls','sign_calls','output'],
++                           [v['id'] for v in negatives])
++    for row in negatives:
++        got = actual_negative[row['id']]
++        require(got['layer'] == row['layer'], 'actual expected rejection layer')
++        require(type(got['error']) is str and got['error'].startswith('Parse(' if row['layer'] == 'parser' else 'Inspection('),
++                'bounded actual rejection')
++        for field in ['approval_calls','entropy_calls','sign_calls']:
++            require(type(got[field]) is int and got[field] == 0, 'rejected input caused effects')
++        require(got['output'] is False, 'rejected input released output')
++        if row['layer'] == 'parser':
++            try:
++                template(row['template'].encode('utf-8'))
++            except (ValueError,UnicodeError):
++                pass
++            else:
++                raise ValueError('parser-negative expectation accidentally valid')
++    # Reject malformed records/effect claims before expensive verifier mutations.
+     mutations = 0
+     for row in vectors:
+         item = template(row['template'].encode('utf-8'))
+@@ -161,44 +200,6 @@ def check(fixtures, observed, identities, rejections):
+     same_id = [v for v in vectors if v['event_id'] == vectors[0]['event_id']]
+     require(len(same_id) == 2 and same_id[0]['aux_hex'] != same_id[1]['aux_hex']
+             and same_id[0]['signature'] != same_id[1]['signature'], 'independent auxiliary-use control')
+-    identity_rows = strict(identities.read_text())
+-    require(type(identity_rows) is list and len(identity_rows) == 3, 'three original identity rows')
+-    seen = set()
+-    for row in identity_rows:
+-        exact(row, ['scalar','original_scalar','normalized_backend','pubkey'])
+-        require(type(row['scalar']) is str and row['scalar'] not in seen, 'unique scalar identity')
+-        seen.add(row['scalar'])
+-        prepared = next((v for v in expected['identity_expectations'] if v['public_fixture_scalar'] == row['scalar']), None)
+-        require(prepared is not None, 'known identity')
+-        n = bip.n-3 if row['scalar'] == 'n-3' else int(row['scalar'])
+-        original = n.to_bytes(32,'big')
+-        normalized = n if bip.has_even_y(bip.point_mul(bip.G,n)) else bip.n-n
+-        require(hex_bytes(row['original_scalar'],32) == original
+-                and row['original_scalar'] == prepared['original_scalar_hex'], 'actual original recovery scalar')
+-        require(hex_bytes(row['normalized_backend'],32) == normalized.to_bytes(32,'big')
+-                and row['normalized_backend'] == prepared['normalized_backend_hex'], 'scoped normalized witness')
+-        require(hex_bytes(row['pubkey'],32) == bip.pubkey_gen(original)
+-                and row['pubkey'] == prepared['pubkey'], 'identity derivation')
+-    require(seen == {'1','3','n-3'}, 'all identity cases')
+-    negatives = expected['negative_expectations']
+-    actual_negative = rows(strict(rejections.read_text()),
+-                           ['id','layer','error','approval_calls','entropy_calls','sign_calls','output'],
+-                           [v['id'] for v in negatives])
+-    for row in negatives:
+-        got = actual_negative[row['id']]
+-        require(got['layer'] == row['layer'], 'actual expected rejection layer')
+-        require(type(got['error']) is str and got['error'].startswith('Parse(' if row['layer'] == 'parser' else 'Inspection('),
+-                'bounded actual rejection')
+-        for field in ['approval_calls','entropy_calls','sign_calls']:
+-            require(type(got[field]) is int and got[field] == 0, 'rejected input caused effects')
+-        require(got['output'] is False, 'rejected input released output')
+-        if row['layer'] == 'parser':
+-            try:
+-                template(row['template'].encode('utf-8'))
+-            except (ValueError,UnicodeError):
+-                pass
+-            else:
+-                raise ValueError('parser-negative expectation accidentally valid')
+     return {'independent_vectors':13,'identities':3,'preflight_rejections':len(negatives),
+             'official_controls':len(official),'per_byte_and_canonical_mutations_rejected':mutations,
+             'limits':'source-bound observations only; no execution provenance, hardware or provider qualification from data comparison'}

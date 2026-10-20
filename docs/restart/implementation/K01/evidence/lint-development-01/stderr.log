@@ -1,0 +1,48 @@
+    Checking subtle v2.6.1
+    Checking zeroize v1.9.1
+    Checking typenum v1.20.1
+    Checking rand_core v0.10.1
+    Checking const-oid v0.10.2
+    Checking cmov v0.5.4
+    Checking cpubits v0.1.1
+    Checking base16ct v1.0.0
+    Checking cfg-if v1.0.5
+    Checking cpufeatures v0.3.1
+   Compiling nsealr-core v0.0.0 (/home/tux/nsealr/.restart-tools/goal/k01-current-implementation/crates/nsealr-core)
+    Checking itoa v1.0.18
+    Checking memchr v2.8.3
+    Checking serde_core v1.0.229
+    Checking zmij v1.0.23
+    Checking num-traits v0.2.19
+    Checking ff v0.14.0
+    Checking der v0.8.2
+    Checking ctutils v0.4.3
+    Checking group v0.14.0
+    Checking hybrid-array v0.4.15
+    Checking crypto-common v0.2.2
+    Checking block-buffer v0.12.1
+    Checking crypto-bigint v0.7.5
+    Checking sec1 v0.8.1
+    Checking serde_json v1.0.151
+    Checking digest v0.11.3
+    Checking signature v3.0.0
+    Checking sha2 v0.11.0
+    Checking primefield v0.14.0
+    Checking elliptic-curve v0.14.1
+    Checking wnaf v0.14.1
+    Checking ecdsa v0.17.0
+    Checking primeorder v0.14.0
+    Checking k256 v0.14.0
+error: this OR pattern can be rewritten using a range
+   --> crates/nsealr-core/src/review/event.rs:233:14
+    |
+233 |             (5 | 6 | 7, "e") => {
+    |              ^^^^^^^^^ help: try: `5..=7`
+    |
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.95.0/index.html#manual_range_patterns
+    = note: `-D clippy::manual-range-patterns` implied by `-D warnings`
+    = help: to override `-D warnings` add `#[allow(clippy::manual_range_patterns)]`
+
+error: could not compile `nsealr-core` (lib) due to 1 previous error
+warning: build failed, waiting for other jobs to finish...
+error: could not compile `nsealr-core` (lib test) due to 1 previous error

@@ -1,0 +1,52 @@
+{
+  "source_head": "e37325765b61f3492d85c7ce7426955c39525106",
+  "cwd": "/home/tux/nsealr/.restart-tools/goal/k01-current-implementation",
+  "environment_sha256": "5b0f773e07fc90aa4a2b7d62c102bbc7b824b6bab135002ee0a01ad90a0ef001",
+  "overrides": {
+    "CARGO_TARGET_DIR": "/home/tux/nsealr/.restart-tools/goal/k01-current-implementation/target/k01-development"
+  },
+  "probe_sources": {
+    "/home/tux/nsealr/.restart-tools/goal/k01-current-implementation/docs/restart/implementation/K01/probes/final-link/Cargo.lock": "90642ef468d23143b47a3c64beba9eed26b6b2bc0ad730344a495e045addafac",
+    "/home/tux/nsealr/.restart-tools/goal/k01-current-implementation/docs/restart/implementation/K01/probes/final-link/Cargo.toml": "e37027b64b7d4793c6f4bcc56504b7df9e4eb64b1aa7f274881cd7c73b11338e",
+    "/home/tux/nsealr/.restart-tools/goal/k01-current-implementation/docs/restart/implementation/K01/probes/final-link/src/main.rs": "18de1db6d9f1992e45cb9e3f6868ba27165f9c41925832127976b06740fd15cd"
+  },
+  "commands": [
+    {
+      "argv": [
+        "cargo",
+        "build",
+        "--locked",
+        "--offline",
+        "--release",
+        "-p",
+        "nsealr-core",
+        "--target",
+        "riscv32imafc-unknown-none-elf"
+      ],
+      "exit": 0,
+      "elapsed_seconds": 3.788,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "5d1f6cc637ff808e183fd23bfcfbcb038c241ebdd9b843f500ba85e5eb8b011a"
+    },
+    {
+      "argv": [
+        "cargo",
+        "rustc",
+        "--manifest-path",
+        "docs/restart/implementation/K01/probes/final-link/Cargo.toml",
+        "--locked",
+        "--offline",
+        "--release",
+        "--target",
+        "riscv32imafc-unknown-none-elf",
+        "--",
+        "-C",
+        "link-arg=--entry=_start"
+      ],
+      "exit": 101,
+      "elapsed_seconds": 0.03,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "27667d166e7633af3d54206fe6dc7530c5965b67249177b7125a2cedaf03e6ce"
+    }
+  ]
+}
