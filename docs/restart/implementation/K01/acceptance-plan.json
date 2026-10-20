@@ -1,0 +1,408 @@
+{
+  "schema_version": 1,
+  "task": "K01",
+  "artifact_kind": "preimplementation acceptance plan; no K01 runtime acceptance executed",
+  "author": "/root/b01_final_review",
+  "reviewer": "/root",
+  "base_commit": "dbad656997ad8cf9024ca1489291f5f1d4d3094a",
+  "approval_state": "Root review e598edab952b6e17df9f1286ff28c760cd0fac37 requested changes for K01-SPEC-01. This authored checking-plan correction awaits distinct affected-delta review; runtime still waits actual adopted T01/main gates and root admission.",
+  "canonical_acceptance": [
+    "Implement canonical signing and verify every output under the selected identity using qualified libraries.",
+    "Prove one-use consent and exact-review binding with negative tests; preserve independent Python/vector verification.",
+    "Build the host engine and no_std compile/final-link probes for an initial embedded target without board-specific Nostr semantics or mandatory SE dependencies; other profile hardware does not gate this common milestone.",
+    "Define bounded secret ownership across complete operations; avoid repeatedly copying keys across language/process adapters.",
+    "Reject duplicate JSON members, trailing bytes, invalid Unicode and Nostr kind outside 0..65535; keep an independent NIP-01 oracle rather than only cross-language parity.",
+    "Bound parse/review storage and work in the portable implementation, preserving independent edge-case vectors. Record available static size/build evidence; actual stack/peak RAM, parse/crypto latency, entropy and QR buffering are mandatory in each device implementation task before that profile releases."
+  ],
+  "criterion_mapping": [
+    {
+      "index": 0,
+      "status": "planned_not_executed",
+      "groups": [
+        "IDENTITY",
+        "CATALOG",
+        "RAW-OUTPUT"
+      ],
+      "required_observation": "Actual engine output contains exactly the selected pubkey and reviewed fields; independently computed canonical ID/raw BIP340 signature agree. Every output is verified before exposure."
+    },
+    {
+      "index": 1,
+      "status": "planned_not_executed",
+      "groups": [
+        "AUTHORITY",
+        "CATALOG",
+        "RAW-OUTPUT"
+      ],
+      "required_observation": "One-use attempt consumes before checks/callbacks, all original security families retained; independent Python/vector oracle remains independent and actual wrong/stale/unreviewed output rejected."
+    },
+    {
+      "index": 2,
+      "status": "planned_not_executed",
+      "groups": [
+        "TARGET",
+        "GATES"
+      ],
+      "required_observation": "Actual changed host engine tests plus allocator-free no_std compile and exercised final ELF for existing initial RISC-V target. No SE/other profile hardware prerequisite or bootable claim."
+    },
+    {
+      "index": 3,
+      "status": "planned_not_executed",
+      "groups": [
+        "IDENTITY",
+        "ENTROPY",
+        "MEMORY"
+      ],
+      "required_observation": "Original scalar is sole retained secret owner; scoped backend conversion and all scratch/copies inventoried across success/failure/lifecycle; no repeated language/process/page copies or unsupported physical-erasure claim."
+    },
+    {
+      "index": 4,
+      "status": "planned_not_executed",
+      "groups": [
+        "PARSER",
+        "CATALOG",
+        "RAW-OUTPUT"
+      ],
+      "required_observation": "Actual parser rejects decoded duplicates, trailing data, Unicode errors and kind beyond65535; seven-kind semantic admission independent of syntactic kind range; pinned independent NIP01 oracle retained."
+    },
+    {
+      "index": 5,
+      "status": "planned_not_executed",
+      "groups": [
+        "PARSER",
+        "CATALOG",
+        "MEMORY",
+        "TARGET"
+      ],
+      "required_observation": "Actual fixed bounds at limit and limit+1, complete injective review and bounded work/static sizes; device stack/peak RAM/latency/entropy/QR proof remains each profile gate."
+    }
+  ],
+  "independent_inputs": {
+    "file": "independent-inputs.json",
+    "new_positive_vectors": 13,
+    "new_negative_expected_rejections": 27,
+    "existing_s03_vectors": {
+      "path": "docs/restart/implementation/S03/vectors.json",
+      "count": 8,
+      "rule": "Exact original bytes/hash/oracle unchanged. These remain controls, not expectations regenerated from Rust."
+    },
+    "authority": "P01 and catalog.md define semantic expectations. Python JSON/hashlib + pinned upstream BIP340 reference define canonical/signature expectations. Product outputs are compared later and may not teach the expected oracle.",
+    "before_runtime": "The 13 mathematical expectations for 12 distinct new catalog templates, three independent original/normalized identity records and 27 negative dispositions are authored now, before K01 code. Expand the per-kind hostile/boundary matrix with exact expected classes/roles before each affected runtime edit; preserve old expected records and deliberate extensions.",
+    "test_provider": "All included scalar 3 and auxiliary bytes (zero or integer 1) are public fixture material. Only test/probe providers may use them, never a production runtime selector.",
+    "distinct_new_catalog_templates": 12,
+    "auxiliary_control": "One additional public aux=integer1 row shares profile-empty eventID; it must have its independently expected different signature, detecting ignored provider bytes."
+  },
+  "groups": [
+    {
+      "id": "IDENTITY",
+      "inputs": "Published scalars 1, 3, n-3, zero,n; invalid/valid canonical nsec and wrong host descriptor; unchanged existing codecs.",
+      "positive": "Original import survives internally byte-for-byte through multiple complete operations and local test-only re-encoding; actual x-only pubkey matches pinned reference.3 and n-3 have identical public identity but distinct original recovery bytes and account epochs.",
+      "negative": "Invalid intake clears caller scratch, replacement even with same x-only identity cancels pending work; no Clone/Copy/raw public accessor/secret Debug. Lock/reset/drop cancel and clear current owned secret.",
+      "proof": "Public-fixture tests use owned memory before Drop or explicit test cleanup hooks, never unsafe post-drop reads or fabricated physical-erasure proof."
+    },
+    {
+      "id": "PARSER",
+      "inputs": "All original P01/P02/P03 parser families plus all new kinds and nested metadata/original repost JSON.",
+      "positive": "Reordered unique outer members decode identically; exact Unicode form/whitespace/tag order/duplicate tags/canonical bytes preserved; endpoint integer bounds accepted.",
+      "negative": "Missing/unknown/duplicate/escaped-duplicate fields at every parsed object level, wrong types, booleans as integers, -0/leading0/fraction/exponent outer integer, malformed/overlong UTF8, raw/unpaired surrogates, BOM/trailing bytes/objects/commas, kind 65536 or time>2^53-1 reject before review/entropy/crypto. Metadata RFC8259 number spelling is preserved as signed text, not rounded through float."
+    },
+    {
+      "id": "CATALOG",
+      "inputs": "13 new (12 distinct catalog templates) independent positives+8 original S03 controls; 27 concrete negative expectations; the mandatory matrix below for all 7 kinds.",
+      "positive": "Compare complete ordered inspection frames and semantic roles, including every raw field, unknown tag and known-tag suffix, nested metadata and signed-original evidence. Entire reference/author/replacement/unverified warnings are present before the separate final consent.",
+      "negative": "Malformed known prefix cannot use raw fallback; unsupported kind/opaque message rejects; missing/repeated/contradictory reference context and unrenderable cases reject. No host preview/evidence flag can authenticate original content.",
+      "specific_edges": [
+        "kind0 nested escaped duplicate, all JSON types/root-object/depth/node/member bounds",
+        "kind 1 unmarked versus marked/root-only/deeper reply, colon-containing q coordinates and malformed known prefix",
+        "kind 3 empty/duplicate/full replacement and unverified relay/petname",
+        "kind 5 no target, coordinate remainder colons, foreign explicit coordinate author, multiple unpaired k hints and deletion-on-deletion limitation",
+        "kind 6 empty content versus exact signed original, required nonempty relay, unique target, ID/signature/author/kind mismatch and included JSON duplicates",
+        "kind 7 final e/p selection with preceding references shown, coherent a/k hints, literal Unicode versus deferred custom emoji",
+        "kind 10002 empty withdrawal, omitted read+write role, read/write roles, ordered duplicates, suffixes, invalidrole/credentials/encoded controls"
+      ]
+    },
+    {
+      "id": "AUTHORITY",
+      "inputs": "Original I01/P*/C*/KIND*/R*/A*/L01/D01/V01 obligations and each admitted kind; deterministic adversarial scheduling/test counters.",
+      "positive": "Only successful full local presentation and final fresh consent permit the single attempt. Trusted clock/provider/backend are invoked in the declared order; output only after fresh completion validation.",
+      "negative": "Mismatch, missing/rollback/expired/overflow clock, any provider/backend/output failure and second attempt all consume. Burn occurs before even clock/context/entropy callbacks. Cancel/lock/reset/account/policy/geometry/limit/catalog revision changes and exhausted counters discard stale completions. Test wrong ID before/after approval and cancellation before/after start.",
+      "observability": "Count actual calls and ordered transitions, not just returned enum names. Serialized &mut ownership and compile-fail Clone/authority-construction tests remain; no claim that epochs revoke an already-running external command."
+    },
+    {
+      "id": "ENTROPY",
+      "inputs": "Test/probe provider with success exactly 32 bytes; short success and errors after each 0..32 written prefix; unavailable/interrupted/health/provider failures.",
+      "positive": "Exactly one successful32-byte auxiliary request after valid consumed consent; no provider needed for parser/rejected review/public-key disclosure. Provider writes cease before return.",
+      "negative": "Any error or short count wipes whole owned destination, yields zero signature/output and no hidden fallback/automatic retry; repeated/stuck cases signaled by provider fail closed. Clock/context failure before fill causes zero fill calls. A later retry requires fresh review.",
+      "limits": "The core cannot statistically authenticate source health or detect a provider lying about a complete fill. Real provider configuration, source-to-binary linkage/invocation, DMA quiescence/terminal recovery, deadlines/cancel/reset and actual faults remain per-profile proof."
+    },
+    {
+      "id": "RAW-OUTPUT",
+      "inputs": "Exact immutable original 8 and new 13 independent canonical/ID/signature expectations; pinned official verifier controls; actual selected public key and final serialized output.",
+      "positive": "Actual adapter uses raw32-byte eventID and explicit auxiliary bytes. In release configuration verify_raw checks every signature under selected identity, and independent Python parses emitted signed fields/recomputes ID/verifies signature. Get-public-key is custody-derived, not login authorization. Both different-auxiliary signatures for the same ID must match; a provider-ignoring backend fails.",
+      "negative": "Hash(eventID), wrong key, changed canonical fields, malformed/r/s-boundary signature, each signature/ID-byte mutation and stale correlation reject. Zero output on late completion or failed fresh final clock. No partial buffer or diagnostic-approved signature path; undersized output consumes and returns failure.",
+      "cache": "No result-cache service in this milestone; repeated request cannot execute again without fresh review. Publication remains external and distinct."
+    },
+    {
+      "id": "MEMORY",
+      "inputs": "Actual owner/key conversion/sign_raw/aux/hash/builder paths and emitted target/layout evidence.",
+      "positive": "Finite per-operation scratch inventory; one original scalar owner plus one scoped backend conversion, no secret copying through response/review/host DTOs; explicit whole-buffer wipes on owned failure paths. Pending<=8192, session<=16384, completed public output<=9216 separately accounted.",
+      "negative": "All limit+1/checked arithmetic/depth/work errors reject before unsafe write/crypto; no unbounded allocation/recursive parse/retained pages/extra queue. Failures do not leak random bytes/scalars in Debug/errors.",
+      "remaining": "Backend inaccessible t/rand/NonZeroScalar scratch/moves have no universal wipe guarantee. A required unresolved guarantee blocks real-key/device admission; wrappers/zeroize types/static sizes are not physical measurements."
+    },
+    {
+      "id": "TARGET",
+      "inputs": "Existing Rust 1.95.0, riscv32imafc-unknown-none-elf and vendored two-lock graph; new scoped link-only harness against actual changed core.",
+      "positive": "Host default/std and standalone host tests; no_std compile plus real final ELF with actual K01 intake/local review/first attempt/raw sign/verify/output calls retained through volatile public fixture input. Inspect used features, symbols, sections and static type limits.",
+      "negative": "A missing required entropy provider must not compile/link as a silent stub. Reject accidental allocator/std/OS RNG/default provider/fixture selector in production graph; do not substitute old isolated spike or unused rlib for exercised integration.",
+      "limits": "No startup/memory map/peripheral/entropy execution or flashing; no new ISA/board/SE prerequisite. Actual stack/peak RAM/timing/QR/provider/isolation are device gates."
+    },
+    {
+      "id": "GATES",
+      "inputs": "Actual adopted T01 baseline and stable complete K01 candidate, existing commands and gate implementations.",
+      "positive": "Focused tests while developing, then complete makeci including actual runner and all positive/negative tests, audits/coverage/reproduction and host/core workspace boundaries. Preserve all significant failures and distinguish product/test/verifier defects.",
+      "negative": "No lowered floor, renamed-only substitute case, new silent baseline, fixture overwrite, gate/source-checker modification or falsely inherited CI pass. Scope changes need concrete reviewed correction."
+    }
+  ],
+  "mandatory_per_kind_matrix": {
+    "kinds": [
+      0,
+      1,
+      3,
+      5,
+      6,
+      7,
+      10002
+    ],
+    "families": [
+      "minimal valid operation",
+      "complete complex operation with all interpreted roles",
+      "wrong type or missing required member",
+      "decoded/escaped duplicate object member",
+      "invalid known reference/prefix (for kind0 invalid nested metadata shape instead)",
+      "unknown tag fully shown as uninterpreted",
+      "valid known-prefix suffix fully shown as uninterpreted (all tags additional in kind0)",
+      "exact aggregate/render/depth boundary and boundary+1",
+      "complete-review capacity failure before consent"
+    ],
+    "rule": "These are required cases, not a claim of an executed63-case suite. Expand concrete exact inputs/expected roles before affected edits; retain originals and count actual cases only after execution."
+  },
+  "retained_s03_families": [
+    {
+      "id": "I01",
+      "original_test_name": "s03_identity_is_derived_from_consumed_custody",
+      "original_expected_source": "docs/restart/implementation/S03/acceptance-plan.json#cases/I01",
+      "disposition": "deliberate_K01_extension",
+      "K01_expectation": "Retain actual custody/epoch proof; deliberately extend it to preserving original nsec while deriving only a scoped normalized backend key."
+    },
+    {
+      "id": "P01",
+      "original_test_name": "s03_rejects_duplicate_and_incomplete_json",
+      "original_expected_source": "docs/restart/implementation/S03/acceptance-plan.json#cases/P01",
+      "disposition": "retain_security_meaning"
+    },
+    {
+      "id": "P02",
+      "original_test_name": "s03_integer_tokens_and_kinds_are_exact",
+      "original_expected_source": "docs/restart/implementation/S03/acceptance-plan.json#cases/P02",
+      "disposition": "deliberate_K01_extension",
+      "K01_expectation": "Retain exact numeric grammar/ranges. Deliberately extend semantic admission from kind 1 to the seven catalog kinds; valid other kinds still parse but reject authorization."
+    },
+    {
+      "id": "P03",
+      "original_test_name": "s03_unicode_decode_is_lossless_or_rejected",
+      "original_expected_source": "docs/restart/implementation/S03/acceptance-plan.json#cases/P03",
+      "disposition": "retain_security_meaning"
+    },
+    {
+      "id": "C01",
+      "original_test_name": "s03_nip01_bytes_match_independent_oracle",
+      "original_expected_source": "docs/restart/implementation/S03/acceptance-plan.json#cases/C01",
+      "disposition": "retain_security_meaning"
+    },
+    {
+      "id": "C02",
+      "original_test_name": "s03_every_event_mutation_changes_authorized_operation",
+      "original_expected_source": "docs/restart/implementation/S03/acceptance-plan.json#cases/C02",
+      "disposition": "retain_security_meaning"
+    },
+    {
+      "id": "KIND01",
+      "original_test_name": "s03_kind1_interprets_exact_reference_subset",
+      "original_expected_source": "docs/restart/implementation/S03/acceptance-plan.json#cases/KIND01",
+      "disposition": "deliberate_K01_extension",
+      "K01_expectation": "Retain all complete kind 1 reference/role behavior, then add the six other precise semantic reviewers and the explicit percent-control rejection."
+    },
+    {
+      "id": "KIND02",
+      "original_test_name": "s03_malformed_known_semantics_never_fall_back",
+      "original_expected_source": "docs/restart/implementation/S03/acceptance-plan.json#cases/KIND02",
+      "disposition": "deliberate_K01_extension",
+      "K01_expectation": "Retain malformed/unsupported known-prefix rejection with no raw fallback; extend it to each catalog kind rather than rejecting every non-kind 1."
+    },
+    {
+      "id": "R01",
+      "original_test_name": "s03_review_has_complete_indexed_coverage",
+      "original_expected_source": "docs/restart/implementation/S03/acceptance-plan.json#cases/R01",
+      "disposition": "retain_security_meaning"
+    },
+    {
+      "id": "R02",
+      "original_test_name": "s03_review_escape_spelling_is_injective",
+      "original_expected_source": "docs/restart/implementation/S03/acceptance-plan.json#cases/R02",
+      "disposition": "retain_security_meaning"
+    },
+    {
+      "id": "R03",
+      "original_test_name": "s03_failed_or_skipped_display_cannot_approve",
+      "original_expected_source": "docs/restart/implementation/S03/acceptance-plan.json#cases/R03",
+      "disposition": "retain_security_meaning"
+    },
+    {
+      "id": "A01",
+      "original_test_name": "s03_host_and_transcript_cannot_mint_authority",
+      "original_expected_source": "docs/restart/implementation/S03/acceptance-plan.json#cases/A01",
+      "disposition": "retain_security_meaning"
+    },
+    {
+      "id": "A02",
+      "original_test_name": "s03_attempt_binds_context_and_consumes_mismatch",
+      "original_expected_source": "docs/restart/implementation/S03/acceptance-plan.json#cases/A02",
+      "disposition": "retain_security_meaning"
+    },
+    {
+      "id": "A03",
+      "original_test_name": "s03_first_attempt_is_irrevocable",
+      "original_expected_source": "docs/restart/implementation/S03/acceptance-plan.json#cases/A03",
+      "disposition": "retain_security_meaning"
+    },
+    {
+      "id": "A04",
+      "original_test_name": "s03_each_lifecycle_event_invalidates_pending_work",
+      "original_expected_source": "docs/restart/implementation/S03/acceptance-plan.json#cases/A04",
+      "disposition": "retain_security_meaning"
+    },
+    {
+      "id": "A05",
+      "original_test_name": "s03_two_attempts_and_cancel_linearize_once",
+      "original_expected_source": "docs/restart/implementation/S03/acceptance-plan.json#cases/A05",
+      "disposition": "retain_security_meaning"
+    },
+    {
+      "id": "A06",
+      "original_test_name": "s03_old_session_aliases_and_time_fail_closed",
+      "original_expected_source": "docs/restart/implementation/S03/acceptance-plan.json#cases/A06",
+      "disposition": "retain_security_meaning"
+    },
+    {
+      "id": "L01",
+      "original_test_name": "s03_all_limits_bound_storage_and_work",
+      "original_expected_source": "docs/restart/implementation/S03/acceptance-plan.json#cases/L01",
+      "disposition": "retain_security_meaning"
+    },
+    {
+      "id": "D01",
+      "original_test_name": "s03_legacy_status_never_enables_product_signing",
+      "original_expected_source": "docs/restart/implementation/S03/acceptance-plan.json#cases/D01",
+      "disposition": "deliberate_K01_extension",
+      "K01_expectation": "Retain zero authority/output for legacy diagnostic and unqualified transport paths. Deliberately add only qualified engine execution under private consuming authority plus explicitly supplied provider; no production fixture selector. Old blanket engine SigningUnavailable expectation becomes the still-tested missing/unqualified-provider path, not a fake global readiness flag."
+    },
+    {
+      "id": "V01",
+      "original_test_name": "s03_independent_event_id_and_signature_agree",
+      "original_expected_source": "docs/restart/implementation/S03/acceptance-plan.json#cases/V01",
+      "disposition": "retain_security_meaning"
+    }
+  ],
+  "commands_after_runtime_admission": [
+    {
+      "phase": "development",
+      "argv": "cargo test --locked --offline -p nsealr-core; cargo test --locked --offline -p nsealr-core --all-features",
+      "scope": "Focused new/affected tests plus existing core cases; no execution claimed now."
+    },
+    {
+      "phase": "independent observed output",
+      "argv": "python3 -B docs/restart/implementation/S03/oracle.py --check --fixtures docs/restart/implementation/S03/vectors.json --observed docs/restart/implementation/K01/evidence/s03-observed-events.json",
+      "scope": "Reuse exact existing oracle with new actual observations; never overwrite original observed files."
+    },
+    {
+      "phase": "independent new-kind output",
+      "argv": "python3 -B docs/restart/implementation/K01/check_observed.py --fixtures docs/restart/implementation/K01/independent-inputs.json --observed docs/restart/implementation/K01/evidence/observed-events.json --identities docs/restart/implementation/K01/evidence/observed-identities.json --rejections docs/restart/implementation/K01/evidence/observed-rejections.json",
+      "scope": "Future narrow K01 offline test checker, implemented only after actual T01 adoption and root runtime admission. Reuse pinned S03 template/canonical/reference primitives, not its sample-specific check/generate. The helper and observations do not exist/pass yet; the strict contract below retains all obligations."
+    },
+    {
+      "phase": "initial target compile",
+      "argv": "cargo build --locked --offline --release -p nsealr-core --target riscv32imafc-unknown-none-elf",
+      "scope": "Actual production feature graph, not only test feature/host."
+    },
+    {
+      "phase": "actual engine final link",
+      "argv": "cargo rustc --manifest-path docs/restart/implementation/K01/probes/final-link/Cargo.toml --locked --offline --release --target riscv32imafc-unknown-none-elf -- -C link-arg=--entry=_start",
+      "scope": "Future admitted narrow harness, not yet authored/executed. Capture actual argv/env, ELF hash, map/readelf/nm-u/size-A and missing-provider negative. Probe calls actual changed core, not research-only backend."
+    },
+    {
+      "phase": "affected cross-consumer integration",
+      "argv": "make product-gates integration-tests integration",
+      "scope": "Run all actual complete 17-step runner obligations and new affected parser/output negatives; preserve meanings, not names/counts alone."
+    },
+    {
+      "phase": "stable final candidate",
+      "argv": "make ci",
+      "scope": "Run complete existing local gate once coherent, including core/host, artifact/Bridge/Pi/helper/packed SDK, coverage, audits and fresh A==B==X reproduction. Preserve actual accepted floors, at least core 100.00/host 76.70; no threshold lowering."
+    },
+    {
+      "phase": "distinct final review/integration",
+      "argv": "Exact candidate independent source/adversarial review; coordinator-owned protected PR/normal merge/actual resulting-main CI",
+      "scope": "Required later, no future PASS or main/task closure claimed here."
+    }
+  ],
+  "evidence_contract": {
+    "write_new_results": "docs/restart/implementation/K01/evidence/ only after implementation admission; preserve preparation/source/independent expectations and significant failures",
+    "record": [
+      "exact actual adopted T01/main/API inputs and reconciled source delta",
+      "requirements-derived expectations established before affected runtime edits",
+      "actual candidate/tree, clean/dirty state and complete command/environment/exit/log/binary hashes",
+      "case-level calls/transitions/output correspondence, original 8/new 13 independent checks and semantic negatives",
+      "copy/scratch/entropy-provider assumptions, bound/type/link evidence and remaining physical limits",
+      "full original 20 family correspondence, dependency/features/license/audit/coverage/reproduction proof",
+      "distinct review identity and later real protected PR/main checks under coordinator ownership"
+    ],
+    "historical_index": "Do not freeze mutable current product docs as new closed artifacts; use immutable Git source/postimage bindings and scoped evidence. Do not change frozen1508 or original source/review/vector records."
+  },
+  "no_runtime_acceptance_executed": true,
+  "no_graph_or_product_changes_authorized_by_this_document": true,
+  "retained_family_rule": "For each retain_security_meaning row, preserve the original expected positive/adversarial obligation exactly at its bound source; extend cross-kind coverage where relevant. The five explicit extensions change catalog/owner/qualified-engine behavior, never the original security invariant.",
+  "new_kind_output_checker_contract": {
+    "reason": "K01-SPEC-01: mathematical vector fields were compatible, but unchanged S03 check constructs parser negatives using first-fixture kind 1/time 0/empty-content substitutions. On K01 first kind 0 they can be no-ops. Do not reuse that check function or reorder fixtures to bypass the failure.",
+    "future_file": "docs/restart/implementation/K01/check_observed.py",
+    "admission": "Only a bounded future test/evidence helper inside existing K01 scope; no product implementation now. Actual T01 adoption, one affected API reconciliation and root runtime admission remain prerequisites.",
+    "independent_primitives": "Import only the already pinned S03 template/canonical/reference loader or their declared function bindings; validate their source identity from source-inputs.json. Use Python/hashlib plus the hash-checked upstream BIP340 reference; no product/parser/renderer implementation supplies expected values. Never invoke S03 check/generate for this new set. Bind the expected data to the accepted immutable preparation/admission commit and SHA256; do not accept a self-asserted hash or HEAD as a changing baseline. A deliberate new fixture requires its reviewed semantic expectation before affected runtime edits.",
+    "strict_records": {
+      "all_files": "One complete JSON value, decoded duplicate member rejection, exact declared row fields/types and unique IDs; reject missing, extra, duplicate or mismatched case records rather than silently dropping them. Validate byte/hex lengths and finite fixture bounds. Record source-bound actual harness commands/candidate outside these data values; a flag cannot establish execution provenance.",
+      "events": "Exactly all 13 expected IDs. Each actual record has id,pubkey,canonical_hex,event_id,signature and signed_event_json. Parse the exact final serialized signed event with independent strict JSON/type/integer rules, exactly pubkey/created_at/kind/tags/content/id/sig; reconstruct the template with existing independent primitives and compare all signed values, canonical bytes, SHA256 ID, selected identity and signature. Do not copy fixture fields into the observations.",
+      "identities": "Exactly the three public import cases 1, 3, n-3, with actual original scalar, scoped normalized-backend witness and derived public key from private test instrumentation. Compare with existing identity_expectations and upstream derivation; no production secret getter is added. Original nsec retention, even for same x-only key, remains a separate actual owner test.",
+      "rejections": "Exactly every explicit negative_expectations ID (currently 27) with its actual error layer, approval/entropy/sign-call counts and output presence. Compare to the declared parser/semantic expectation; these preflight cases require zero approval/entropy/sign calls and zero output. Reject omissions/duplicates/unknown cases. New lifecycle/provider/late-output tests retain their own declared call-count expectations in their existing groups; do not pretend every failure occurs at parser intake."
+    },
+    "explicit_negative_inputs": "Use each literal negative_expectations.template (or an explicitly declared byte input for later malformed-UTF8 cases); never derive a negative by substituting text in the first positive. Existing independent template must actually reject each parser-labelled case. Semantic rejection is the P01/catalog-authored expectation, not a value learned from product output. The 27 current cases and future required per-kind matrix remain mandatory; fail if a parser control accidentally becomes valid.",
+    "crypto_obligations": [
+      "Independently recompute each expected canonical byte string, SHA256 ID, public key and raw signature from its declared public fixture scalar and exact aux_hex before comparing actual output; reject a changed expected auxiliary value even if an old signature was retained.",
+      "Compare all 13 prepared canonical/ID/signature rows, including same-ID/different auxiliary-zero versus auxiliary-one signatures; compare actual final serialized event fields too.",
+      "Use pinned official verifier controls to establish reference sanity and verify every output under the selected full public key and raw 32-byte ID.",
+      "For each output reject wrong-key and double-hashed-ID verification, every 64 signature-byte mutation and every 32 ID-byte mutation; independently mutate each canonical field and prove changed ID invalidates the original signature.",
+      "Recompute/check all three original-versus-normalized identity witnesses; do not infer original recovery bytes from normalized backend state or public-key equality."
+    ],
+    "retained_separate_S03_gate": "The existing separate oracle.py --check command on the original eight S03 fixtures remains byte-for-byte unchanged in commands_after_runtime_admission. It retains its original raw JSON/Unicode/integer negative controls and key/canonical/signature mutation obligations; new-kind checking does not replace or weaken it.",
+    "checker_negative_controls": "When this helper is implemented, demonstrate nonzero rejection for missing/duplicate/extra IDs, tampered canonical/ID/key/signature/auxiliary expectations or actual serialized fields, malformed observation JSON and a rejection record falsely showing approval/provider/sign/output effects. Preserve significant failures. Content comparison cannot authenticate a fabricated run: actual source-bound harness logs and distinct review must establish provenance.",
+    "no_acceptance_claim": "The old review reproducer uses explicitly synthetic expected witnesses only to reach the failing checker branch; those files are not actual K01 output. No future checker execution, product negative result, T01 admission or physical qualification is claimed by this specification correction."
+  },
+  "specification_correction": {
+    "finding": "K01-SPEC-01",
+    "independent_review_commit": "e598edab952b6e17df9f1286ff28c760cd0fac37",
+    "reviewed_candidate": "a783fd37033f63d04e27b6855ad064b7402ce428",
+    "classification": "Verifier integration plan defect, not product failure",
+    "former_command": {
+      "phase": "independent new-kind output",
+      "argv": "python3 -B docs/restart/implementation/S03/oracle.py --check --fixtures docs/restart/implementation/K01/independent-inputs.json --observed docs/restart/implementation/K01/evidence/observed-events.json",
+      "scope": "Existing checker supports the vector-row format. Supply its three actual public-key import witnesses in adjacent .keys.json; its legacy empty_event_signature field is a first-fixture signature witness, explicitly bound here to profile-empty. Do not copy expected fields into actual observations."
+    },
+    "author_disposition": "Replaced new-kind check instructions only; unchanged original gate/data/source bindings retained. Awaiting distinct affected-delta review."
+  }
+}
