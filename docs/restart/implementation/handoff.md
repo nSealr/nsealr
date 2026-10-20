@@ -19,10 +19,14 @@ production signing. The graph and actual protected PR/main checks determine
 integration status; dated pending fields in old evidence are not live trackers.
 No device UI/input, entropy, isolation, timing, erasure or release is qualified.
 
-Next: finish the reviewed T01 capability/routing cutover against the adopted S03
-API, then K01's actual portable signing engine. T01 preparation must fix the
-decoded QR/serial projections as well as visible wire-version fields; preserve
-independent event vectors and all retained rejection obligations. Custom-PCB
+T01's [source and delivery](T01/delivery/README.md) now bind the reviewed version2
+capability/routing cutover, decoded QR/serial projections and independent fixed
+inputs. Its integrated graph record is an adoption proposal until normal
+protected integration, actual resulting-main full CI and clean cold-main source
+checks pass. Confirm those external observations before admitting K01 runtime.
+Then reconcile K01's already reviewed specification against that actual API and
+implement its bounded portable signing provider. Preserve independent event
+vectors and all retained rejection obligations. Custom-PCB
 research stays independent. The maintainer reports three test kits and Tropic
 development boards in the existing resource records; exact variants, components,
 operator/access and bench tools are not established by that report. The Pi QR
