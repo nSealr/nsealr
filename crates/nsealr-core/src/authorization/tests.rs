@@ -1481,6 +1481,8 @@ fn k01_actual_engine_outputs_match_all_prepared_independent_cases() {
 #[test]
 fn k01_original_recovery_bytes_and_scoped_backend_witnesses() {
     let mut actual = Vec::new();
+    let mut operations = Vec::new();
+    let mut original_encodings = Vec::new();
     for row in k01_inputs()["identity_expectations"].as_array().unwrap() {
         let encoded = row["original_scalar_hex"].as_str().unwrap();
         let mut bytes = [0u8; 32];
@@ -1499,21 +1501,46 @@ fn k01_original_recovery_bytes_and_scoped_backend_witnesses() {
         assert_eq!(normalized, row["normalized_backend_hex"]);
         let key = hex(&s.public_key().unwrap());
         assert_eq!(key, row["pubkey"]);
-        s.begin_request(request(EMPTY).as_bytes(), Some(0)).unwrap();
-        approve(&mut s);
-        assert_eq!(hex(s.key.as_ref().unwrap().as_bytes()), original);
-        s.sign_approved(
-            "r",
-            &mut || Some(0),
-            &mut Aux::valid(0),
-            &mut [0; SIGNED_EVENT_BYTES],
-        )
-        .unwrap();
-        assert_eq!(hex(s.key.as_ref().unwrap().as_bytes()), original);
+        let mut encoded_nsec = [0; 128];
+        let original_nsec = crate::nip19::encode_nsec(s.key.as_ref().unwrap(), &mut encoded_nsec)
+            .unwrap()
+            .to_string();
+        original_encodings.push(original_nsec.clone());
+        // Three fresh, fully reviewed operations per original fixture owner.
+        // Re-encoding is test-only: no recovery getter is added to production.
+        for tick in 0..3 {
+            s.begin_request(request(EMPTY).as_bytes(), Some(tick))
+                .unwrap();
+            approve_at(&mut s, tick);
+            let before = backend_calls();
+            let mut provider = Aux::valid(0);
+            let mut output = [0; SIGNED_EVENT_BYTES];
+            let n = s
+                .sign_approved("r", &mut || Some(tick), &mut provider, &mut output)
+                .unwrap();
+            let signed: Value = serde_json::from_slice(&output[..n]).unwrap();
+            assert_eq!(signed["pubkey"], key);
+            assert_eq!(backend_calls(), before + 1);
+            assert_eq!(provider.calls, 1);
+            assert_eq!(s.state(), AuthorizationState::Spent);
+            assert_eq!(hex(s.key.as_ref().unwrap().as_bytes()), original);
+            let mut recovery = [0; 128];
+            let recovered_nsec =
+                crate::nip19::encode_nsec(s.key.as_ref().unwrap(), &mut recovery).unwrap();
+            assert_eq!(recovered_nsec, original_nsec);
+            let recovered = crate::nip19::decode_nsec(recovered_nsec).unwrap();
+            assert_eq!(hex(recovered.as_bytes()), original);
+            operations.push(json!({"scalar":row["public_fixture_scalar"],"fresh_operation":tick+1,"original_scalar":original,"test_only_original_nsec":recovered_nsec,"provider_calls":provider.calls,"sign_calls":backend_calls()-before,"state":"Spent"}));
+        }
         actual.push(json!({"scalar":row["public_fixture_scalar"],"original_scalar":original,"normalized_backend":normalized,"pubkey":key}));
         s.lock().unwrap();
         assert!(s.key.is_none());
         assert!(s.public_key().is_none());
+    }
+    // Same x-only key is not the same recovery representation (3 versus n-3).
+    assert_ne!(original_encodings[1], original_encodings[2]);
+    if let Ok(path) = std::env::var("K01_IDENTITY_OPERATIONS") {
+        std::fs::write(path, serde_json::to_vec_pretty(&operations).unwrap()).unwrap();
     }
     if let Ok(path) = std::env::var("K01_IDENTITIES") {
         std::fs::write(path, serde_json::to_vec_pretty(&actual).unwrap()).unwrap();
@@ -1835,6 +1862,7 @@ fn k01_seventy_cases_have_actual_complete_review_or_exact_zero_effect_failure() 
             observed_value(&io, "Signed content"),
             inspection_quote(event["content"].as_str().unwrap())
         );
+        let indexed_fields = assert_catalog_field_roles(&io, &event);
         let tags = event["tags"].as_array().unwrap();
         for (t, fields) in tags.iter().enumerate() {
             for (f, text) in fields.as_array().unwrap().iter().enumerate() {
@@ -1949,7 +1977,7 @@ fn k01_seventy_cases_have_actual_complete_review_or_exact_zero_effect_failure() 
         }
         assert_eq!(owner.state(), AuthorizationState::Approved);
         assert_eq!(backend_calls(), before);
-        actual.push(json!({"id":row["id"],"disposition":"actual complete local simulation and exact field/role assertions","data_pages":io.pages.len(),"content_role":actual_role,"approval_calls":1,"entropy_calls":0,"sign_calls":0,"output":false}));
+        actual.push(json!({"id":row["id"],"disposition":"actual complete local simulation and exact field/role assertions","data_pages":io.pages.len(),"content_role":actual_role,"ordered_indexed_fields_with_semantic_roles":indexed_fields,"contiguous_data_and_separate_decision":true,"approval_calls":1,"entropy_calls":0,"sign_calls":0,"output":false}));
     }
     assert!(role_errors.is_empty(), "{}", role_errors.join("\n"));
     if let Ok(path) = std::env::var("K01_MATRIX_OBSERVED") {
@@ -2187,4 +2215,253 @@ fn k01_serialization_and_metadata_callback_failures_return_no_partial_object() {
             Err(EventError::Limit)
         );
     }
+}
+
+#[test]
+fn k01_every_auxiliary_written_prefix_fails_with_whole_wipe_and_no_backend() {
+    struct Prefix {
+        written: usize,
+        result: Result<usize, AuxiliaryError>,
+        calls: usize,
+    }
+    impl AuxiliarySource for Prefix {
+        fn fill(&mut self, out: &mut [u8; 32]) -> Result<usize, AuxiliaryError> {
+            assert_eq!(out, &[0; 32]);
+            self.calls += 1;
+            out[..self.written].fill(0xa5);
+            self.result
+        }
+    }
+    let mut actual = Vec::new();
+    for written in 0..=32 {
+        for result in [
+            Err(AuxiliaryError::Unavailable),
+            Err(AuxiliaryError::Interrupted),
+            Err(AuxiliaryError::Health),
+            Err(AuxiliaryError::Provider),
+            Ok(written.min(31)),
+            Ok(33),
+        ] {
+            let mut provider = Prefix {
+                written,
+                result,
+                calls: 0,
+            };
+            let mut destination = [0x55; 32];
+            assert_eq!(
+                fill_auxiliary(&mut provider, &mut destination),
+                Err(AuthorizationError::Auxiliary)
+            );
+            assert_eq!(destination, [0; 32], "written {written} result {result:?}");
+            let mut owner = approved(EMPTY);
+            let before = backend_calls();
+            let mut output = [0xa5; SIGNED_EVENT_BYTES];
+            let mut clocks = 0;
+            assert_eq!(
+                owner.sign_approved(
+                    "r",
+                    &mut || {
+                        clocks += 1;
+                        Some(0)
+                    },
+                    &mut provider,
+                    &mut output
+                ),
+                Err(AuthorizationError::Auxiliary)
+            );
+            assert_eq!(clocks, 2);
+            assert_eq!(provider.calls, 2);
+            assert_eq!(backend_calls(), before);
+            assert_eq!(output, [0; SIGNED_EVENT_BYTES]);
+            assert_eq!(owner.state(), AuthorizationState::Spent);
+            assert!(owner.pending.is_none());
+            assert!(owner
+                .sign_approved(
+                    "r",
+                    &mut || panic!("spent prefix retry"),
+                    &mut provider,
+                    &mut output
+                )
+                .is_err());
+            assert_eq!(provider.calls, 2);
+            actual.push(json!({"written_prefix":written,"reported_result":format!("{result:?}"),"direct_full_destination_wipe":true,"actual_engine_calls":1,"engine_provider_calls":1,"sign_calls":backend_calls()-before,"clock_calls":clocks,"output":false,"retry_provider_calls":0,"state":"Spent"}));
+        }
+    }
+    assert_eq!(actual.len(), 198);
+    if let Ok(path) = std::env::var("K01_PREFIX_OBSERVED") {
+        std::fs::write(path, serde_json::to_vec_pretty(&actual).unwrap()).unwrap();
+    }
+}
+
+// These inspect actual local frames. Expected roles follow the literal catalog
+// prefixes and input order, rather than copying frames produced by the renderer.
+fn assert_presented_field(io: &Io, prefix: &str, expected: &str) -> (usize, usize) {
+    let frames: Vec<_> = io
+        .pages
+        .iter()
+        .enumerate()
+        .filter(|(_, p)| p.0.starts_with(prefix))
+        .collect();
+    assert!(!frames.is_empty(), "missing field {prefix}");
+    for (fragment, (global, page)) in frames.iter().enumerate() {
+        assert_eq!(
+            *global,
+            frames[0].0 + fragment,
+            "noncontiguous field {prefix}"
+        );
+        let (_, number) = page.0.rsplit_once(" / fragment ").unwrap();
+        assert_eq!(number.parse::<usize>().unwrap(), fragment);
+    }
+    assert_eq!(
+        observed_value(io, prefix),
+        inspection_quote(expected),
+        "complete field {prefix}"
+    );
+    (frames[0].0, frames.last().unwrap().0)
+}
+fn assert_catalog_field_roles(io: &Io, event: &Value) -> usize {
+    assert_eq!(io.calls, io.pages.len() + 1); // One actual separate decision frame.
+    for (index, page) in io.pages.iter().enumerate() {
+        assert_eq!(page.2, index);
+        assert_eq!(page.3, io.pages.len() + 1);
+    }
+    assert_presented_field(io, "Selected actual signing identity", KEY);
+    assert_presented_field(
+        io,
+        "Signed kind",
+        &event["kind"].as_u64().unwrap().to_string(),
+    );
+    assert_presented_field(
+        io,
+        "Signed created_at (untrusted timestamp)",
+        &event["created_at"].as_u64().unwrap().to_string(),
+    );
+    assert_presented_field(
+        io,
+        "Signed tag count",
+        &event["tags"].as_array().unwrap().len().to_string(),
+    );
+    let (_, mut prior) =
+        assert_presented_field(io, "Signed content", event["content"].as_str().unwrap());
+    let kind = event["kind"].as_u64().unwrap();
+    let tags = event["tags"].as_array().unwrap();
+    let mut fields_checked = 0;
+    for (t, fields) in tags.iter().enumerate() {
+        let fields = fields.as_array().unwrap();
+        let name = fields[0].as_str().unwrap();
+        for (f, text) in fields.iter().enumerate() {
+            let prefix = format!("Signed tag {t} field {f}:");
+            let (first, last) = assert_presented_field(io, &prefix, text.as_str().unwrap());
+            assert!(first > prior, "input field order");
+            prior = last;
+            let label = &io.pages[first].0;
+            let words: &[&str] = match (kind, name, f) {
+                (_, _, 0) => &["tag identifier"],
+                (1, "e", 1) => &["unverified", "event reference"],
+                (1, "p", 1) => &["public key"],
+                (1, "q", 1) => &["unverified", "quotation target"],
+                (1, "e" | "p" | "q", 2) => &["relay hint", "not authenticated"],
+                (1, "e", 3) => &["reply-context marker"],
+                (1, "e", 4) | (1, "q", 3) => &["claimed author", "not verified"],
+                (3, "p", 1) => &["followed public key", "list entry"],
+                (3, "p", 2) => &["unverified relay hint"],
+                (3, "p", 3) => &["unverified petname"],
+                (5, "e", 1) => &["deletion", "event ID", "target"],
+                (5, "a", 1) => &["deletion coordinate", "selected key"],
+                (5, "k", 1) => &["unpaired", "kind hint"],
+                (6, "e", 1) => &["sole repost", "event ID target"],
+                (6, "e", 2) => &["required", "relay", "unverified"],
+                (6, "p", 1) => &["original author hint", "checked if original supplied"],
+                (6, "p", 2) => &["unverified", "relay hint"],
+                (7, "e", 1) => &["event ID"],
+                (7, "p", 1) => &["author hint"],
+                (7, "e" | "p" | "a", 2) => &["unverified relay hint"],
+                (7, "e" | "a", 3) => &["supplied target author", "not real-world identity"],
+                (7, "a", 1) => &["coherent", "coordinate", "unverified"],
+                (7, "k", 1) => &["coherent", "kind hint", "unverified"],
+                (10002, "r", 1) => &["public relay URL", "unverified"],
+                (10002, "r", 2) => &["relay role", "absent means both"],
+                _ => &["additional signed data", "meaning not verified"],
+            };
+            for word in words {
+                assert!(
+                    label.contains(word),
+                    "kind{kind} t{t} f{f}: {word} in {label}"
+                );
+            }
+            fields_checked += 1;
+        }
+        if matches!(kind, 5 | 7) && name == "a" {
+            for (part, text) in fields[1].as_str().unwrap().splitn(3, ':').enumerate() {
+                let suffix = match part {
+                    0 => "kind",
+                    1 => "public key",
+                    _ => "complete identifier (colons preserved)",
+                };
+                assert_presented_field(io, &format!("Signed address tag {t} {suffix}"), text);
+            }
+        }
+    }
+    fields_checked
+}
+
+#[test]
+fn k01_nested_profile_nodes_types_keys_values_and_order_are_all_presented() {
+    // Literal pre-runtime kind0-complex input; this expected tree is defined by
+    // that JSON's preorder/parent/entry semantics, not by the product walker.
+    let corpus: Value = serde_json::from_str(include_str!(concat!(
+        env!("CARGO_MANIFEST_DIR"),
+        "/../../docs/restart/implementation/K01/evidence/semantic-matrix.json"
+    )))
+    .unwrap();
+    let row = corpus["rows"]
+        .as_array()
+        .unwrap()
+        .iter()
+        .find(|r| r["id"] == "kind0-complex")
+        .unwrap();
+    let mut owner = session();
+    owner
+        .begin_request(
+            request(row["template"].as_str().unwrap()).as_bytes(),
+            Some(0),
+        )
+        .unwrap();
+    let io = approve(&mut owner);
+    let expected = [
+        (0, 0, 0, "object", "start"),
+        (0, 0, 0, "member key", "name"),
+        (1, 0, 0, "string", "Alice"),
+        (0, 0, 1, "member key", "nested"),
+        (2, 0, 1, "object", "start"),
+        (2, 2, 0, "member key", "n"),
+        (3, 2, 0, "number (exact token)", "-1.25e+2"),
+        (2, 2, 1, "member key", "yes"),
+        (4, 2, 1, "boolean", "true"),
+        (2, 2, 2, "member key", "none"),
+        (5, 2, 2, "null", "null"),
+        (2, 2, 3, "member key", "list"),
+        (6, 2, 3, "array", "start"),
+        (7, 6, 0, "string", "é"),
+        (8, 6, 1, "boolean", "false"),
+        (6, 6, 2, "container end; child count", "end"),
+        (2, 2, 4, "container end; child count", "end"),
+        (0, 0, 2, "container end; child count", "end"),
+    ];
+    let mut prior = 0;
+    let mut frame_count = 0;
+    for (node, parent, index, kind, text) in expected {
+        let prefix = format!("Profile node {node} parent {parent} index/count {index}: {kind}");
+        let (first, last) = assert_presented_field(&io, &prefix, text);
+        assert!(first > prior);
+        prior = last;
+        frame_count += last - first + 1;
+    }
+    assert_eq!(
+        io.pages
+            .iter()
+            .filter(|p| p.0.starts_with("Profile node"))
+            .count(),
+        frame_count
+    );
 }
