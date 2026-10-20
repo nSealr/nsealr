@@ -58,12 +58,15 @@ task remains planned. The shared delivery wrapper distinguishes this runtime cor
 it does not admit a complete Bridge optical/client workflow or physical release.
 
 The next [manual QR service component](QH01/delivery/README.md) copies B01's
-exact2b08278a source and preserved proof onto actuald41. It injects one trusted
-manual port through the existing client lifecycle, with two new TypeScript
-files and only two workspace dependency/link additions. Root's
-[distinct review](reviews/QH01-manual-port/report.md) atbfc6b29a is
-`PASS_manual_QR_service_component_only`; final metadata/protected adoption
-remain pending.
+exact138276c9 packet onto actuald41, retaining preparation input2da as a
+separate identical-tree source. Runtime7d1/package/lock are unchanged; final
+testac8 supplies actual dispatcher-entry/recovery proof after the old invalid
+retention fixture was found to stop before dispatch. Exact old snapshots and
+all failed logs remain. Root's [original runtime review](reviews/QH01-manual-port/report.md)
+atbfc6 and [affected test/proof reviews](reviews/QH01-manual-port-test-correction/packet-review.json)
+at1c7 retain separate source roles. The injected port uses the existing client
+lifecycle, with two new TypeScript files and two workspace links only. Exact
+final metadata/protected adoption gates remain pending.
 It enables no default route/readiness or key/provider path. All five QH01
 criteria remain incomplete; native/physical scan/display, real-client timing,
 framing/UR and the actual Pi/P4 resource gates remain open.

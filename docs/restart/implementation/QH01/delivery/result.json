@@ -10,17 +10,23 @@
   "input_tree": "2b45fde5247e75412f257fe288312b7bdccf8348",
   "source_roles": {
     "manual_port": {
-      "candidate": "2b08278adf0047c5e7a230d50590deccfe933511",
-      "tree": "009b0ba30b00e98ad12478515544c6425865bea1",
+      "candidate": "138276c94cff637efafa52fc0225ee25fdd50e83",
+      "tree": "df265c4a8da8361e77bd7535c94f56deef96877f",
       "author": "/root/b01_final_review",
-      "runtime_and_final_test_source": "7d1b126ee1b27fc3a99bedeff202cc557217f49f",
       "first_expectations": "ac6c337eaea72eda51521bf706018ef9a4992428",
       "initial_module_absence_RED": "89fe25f072a2d7c4e5b99c75dd57e3bf64159e2d",
       "actual_reentry_RED": "cfabd3d6bac709d2f5148d8b9fdaf6bfa1f6bd75",
-      "files": 60,
+      "files": 77,
       "product_paths": 4,
-      "proof_paths": 56,
-      "component_review": {
+      "proof_paths": 73,
+      "review_files": 18,
+      "preparation_input": "2da6938171b2133e0796d946906cb84a0f8c90f0",
+      "actual_main_identical_source": "d41a37e25cd0a86d3a47294f8d0ba24913128a21",
+      "previous_candidate": "2b08278adf0047c5e7a230d50590deccfe933511",
+      "runtime_source": "7d1b126ee1b27fc3a99bedeff202cc557217f49f",
+      "original_test_source": "7d1b126ee1b27fc3a99bedeff202cc557217f49f",
+      "final_test_source": "ac8b14e54a6c4e028902d8ac3301bb6a1392c5fd",
+      "retained_runtime_component_review": {
         "commit": "bfc6b29a6ad12424df3236a6b225f55e355e4cff",
         "path": "docs/restart/implementation/reviews/QH01-manual-port/review.json",
         "sha256": "4e4adf1a75a2ff4dbd5411f1a853b1ea270d0e539d39efd670fb165f8a59749d",
@@ -29,9 +35,34 @@
         "verdict": "PASS_manual_QR_service_component_only",
         "role": "Exact injected manual QR service component only; all5task criteria incomplete"
       },
-      "review_files": 11,
-      "preparation_input": "2da6938171b2133e0796d946906cb84a0f8c90f0",
-      "actual_main_identical_source": "d41a37e25cd0a86d3a47294f8d0ba24913128a21"
+      "test_correction_review": {
+        "commit": "1c7f95f59f367b4c1341f188d0d867859760604b",
+        "path": "docs/restart/implementation/reviews/QH01-manual-port-test-correction/review.json",
+        "sha256": "5fea8d1d5311dbd728ff737422f4cc6ccad8c54ab143a0d9d9e8c49d1462ca12",
+        "reviewer": "/root",
+        "candidate": "ac8b14e54a6c4e028902d8ac3301bb6a1392c5fd",
+        "verdict": "PASS_manual_QR_retention_test_correction_only",
+        "role": "Affected final test only; prior masked retention-control claim superseded without runtime change"
+      },
+      "source_proof_review": {
+        "commit": "1c7f95f59f367b4c1341f188d0d867859760604b",
+        "path": "docs/restart/implementation/reviews/QH01-manual-port-test-correction/packet-review.json",
+        "sha256": "8721f2a02a3d38f3ae0687162ef495c1064eb27c3938c75e3f767d8ede52a3e9",
+        "reviewer": "/root",
+        "candidate": "138276c94cff637efafa52fc0225ee25fdd50e83",
+        "verdict": "PASS_test_correction_source_and_proof_only",
+        "role": "Exact updated author packet and historical recovery only; not task acceptance"
+      },
+      "retention_test_correction": {
+        "RED_source": "c9fa71195abcefa206afc267b17c76875d1c8328",
+        "actual_entries": 0,
+        "expected_entries": 1,
+        "cause": "Old retained_bytes1 fixture failed actual client manifest validation before dispatch; not a runtime defect.",
+        "corrected_meaning": "Valid independent needed-1 manifest enters actual dispatcher, rejects before open, then next actual call enters and opens/scans/closes once.",
+        "author_observations": "Affected2/stable58/typecheck on corrected source; original80 reused by unchanged inputs.",
+        "root_observation": "Only affected2PASS/56skipped; unchanged runtime review/source evidence reused.",
+        "historical_recovery": "All old59members recoverable; old manifest and three changed members retained in four exact snapshots."
+      }
     },
     "previous_foundation": {
       "commit": "3e3d02aecc72c9218c8339e7c28093fc17357ca4",
@@ -50,24 +81,24 @@
   },
   "copy_inventory": {
     "path": "docs/restart/implementation/QH01/delivery/copy-inventory.json",
-    "sha256": "acf1fab83bd51a43a3fdb3867a60711e34dfca01e8cd167fd508d3cd595e4c17"
+    "sha256": "a4bfdcfc4f5d6959eea65493e386cdcfb43b74a69a4990b29c320c7827d97567"
   },
   "source_scope": {
     "path": "docs/restart/implementation/QH01/delivery/source-scope.json",
-    "sha256": "c367422e9dd187becc799fa01271b77e48b662336c98625262df339b59a30911"
+    "sha256": "1eb882bcc45985f51e26acab1313f9d44b6cf415a3f1e136ad2b1fda8709b647"
   },
   "current_navigation": [
     {
       "path": "docs/restart/README.md",
-      "sha256": "1007dad1d2c5daf73d9db85516ef128037b9f39fec5f20a167b909b2181236b9"
+      "sha256": "c48aa552d215706b63ff6d199a7067a7966dc18cb94b449b7d6ae36a51241931"
     },
     {
       "path": "docs/restart/implementation/handoff.md",
-      "sha256": "ceaf58d81f147ec01763de32a77157068bc19148028c940bf5a8cdbfe3968e59"
+      "sha256": "94449d5278f03437335eea7fc649a09a134ddd6666dc566ca6ab4f0562f28448"
     },
     {
       "path": "docs/restart/implementation/QH01/delivery/README.md",
-      "sha256": "090e5f5ab762f737d928c5cb73c7d72465bbcd7b6bd0b352380942599d717002"
+      "sha256": "b0911f4d81f0c392e9496fbd425f5489f93b7d63d0aedfed9ac2f3829a0b676f"
     }
   ],
   "acceptance_assessments": [
@@ -163,7 +194,7 @@
   "task_reviewer": null,
   "task_verdict": null,
   "delivery_gates": {
-    "limited_component_review": "PASS_manual_QR_service_component_only on exact2b08278a by/root atbfc6b29a; not task completion",
+    "limited_component_review": "Retained original runtime code review bfc6 on2b; actual affected test reviewac8 and source/proof review138 at1c7 pass only those scopes. No task acceptance.",
     "exact_final_metadata_review": "PENDING_ROOT",
     "protected_PR_and_actual_main": "PENDING_ROOT_FOR_NEW_MANUAL_COMPONENT; actual prior foundation gates complete"
   },
@@ -173,7 +204,7 @@
     "Client request/key/template/ID/signature verification and logical bounds are software observations, not fresh physical consent/sender authentication",
     "All5QH01/all3QP01/all6Q02 criteria remain incomplete; exact kit/operator/access follow-up already pending"
   ],
-  "evidence_reuse": "Original58manual+80existing/typecheck and source-matched prior proofs remain attributed to actual original commands, not rerun by copying. Initial zero-case RED and actual reentry behavioral RED preserved separately. Fresh affected docs/plan/frozen/contracts required on coherent final metadata.",
+  "evidence_reuse": "Original2b runtime review and80existing/typecheck/raw observations remain source-specific. Old58 did not prove retention cleanup under invalid fixture1. Correctedac8 entry/recovery evidence and138 packet review supply that missing proof; snapshots/REDs and metadata01/02 remain historical. Fresh metadata03 applies to final graph/copies. No product tests/fullsuite/corpus/canary rerun by delivery author.",
   "manifest": {
     "path": "docs/restart/implementation/QH01/delivery/artifact-manifest.json",
     "binding": "Manifest may hash graph/result; neither stores its digest. Final immutable Git commit binds all wrapper proof."
