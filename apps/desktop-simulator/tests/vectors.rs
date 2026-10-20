@@ -81,6 +81,59 @@ fn replay_devices() {
 }
 
 #[test]
+fn device_replay_rejects_missing_fields_and_a_false_expected_identity() {
+    // Exercise the real parity oracle and CLI failure path with the fixed
+    // independently authored public fixture, never a runtime-generated answer.
+    let source = desktop_simulator::vectors_root().join("devices/esp32-s3-get-public-key-dev.json");
+    assert!(replay_file(&source).is_ok());
+    assert_eq!(
+        desktop_simulator::run_cli(&[source.display().to_string()]),
+        0
+    );
+    let original: serde_json::Value =
+        serde_json::from_slice(&std::fs::read(&source).unwrap()).unwrap();
+    let directory = std::env::temp_dir().join(format!(
+        "nsealr-t01-device-replay-negative-{}",
+        std::process::id()
+    ));
+    std::fs::create_dir(&directory).expect("fresh test-owned directory");
+    struct Cleanup(std::path::PathBuf);
+    impl Drop for Cleanup {
+        fn drop(&mut self) {
+            let _ = std::fs::remove_dir_all(&self.0);
+        }
+    }
+    let _cleanup = Cleanup(directory.clone());
+    let devices = directory.join("devices");
+    std::fs::create_dir(&devices).unwrap();
+    let file = devices.join("public-identity-negative.json");
+    let mut wrong = original.clone();
+    wrong["response"]["result"]["public_key"] = serde_json::Value::String("0".repeat(64));
+    std::fs::write(&file, serde_json::to_vec(&wrong).unwrap()).unwrap();
+    assert!(replay_file(&file)
+        .unwrap_err()
+        .contains("wire2 device response mismatch"));
+    assert_eq!(desktop_simulator::run_cli(&[file.display().to_string()]), 1);
+    for (value, missing) in [
+        (
+            serde_json::json!({"response": original["response"]}),
+            "request",
+        ),
+        (
+            serde_json::json!({"request": original["request"]}),
+            "response",
+        ),
+    ] {
+        std::fs::write(&file, serde_json::to_vec(&value).unwrap()).unwrap();
+        assert_eq!(
+            replay_file(&file).unwrap_err(),
+            format!("device vector requires {missing}")
+        );
+        assert_eq!(desktop_simulator::run_cli(&[file.display().to_string()]), 1);
+    }
+}
+
+#[test]
 fn replay_policies() {
     replay_category("policies", &[]);
 }

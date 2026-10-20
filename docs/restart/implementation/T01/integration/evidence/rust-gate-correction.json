@@ -1,0 +1,86 @@
+{
+  "schema_version": 1,
+  "state": "RUST_AFFECTED_GATES_AND_REVIEW_PENDING",
+  "full_campaign": "commands/wire2-full-stable-ci-01/command.json",
+  "full_campaign_exit": 2,
+  "full_campaign_source": "ae34085dd6017eaf2539cf0b570bfb49daace824 plus recorded proof-only dirty diff",
+  "failed_recipes": {
+    "cargo-fmt": "Formatting only: comment alignment in simulatorlib and multiline get/ok_or in device replay.",
+    "cargo-clippy": "Redundant must_use attribute on Iterator-returning blockers, clippy double_must_use.",
+    "coverage-ratchet": "Desktop-simulator76.61 < unchanged76.70 floor. Core100.00 = unchanged100.00 floor."
+  },
+  "unchanged_gates_passed": [
+    "root docs/test/lint/audit and38provenance controls",
+    "core and std tests/device target",
+    "vector categories/completeness tests",
+    "cargo-deny",
+    "repro-build same-tree/cross-path",
+    "contract suite/lint/audit",
+    "Bridge725testsPASS plus unchanged1optional-live-relay skip, package/browser/API/readme/pack gates",
+    "Pi162tests and component gates",
+    "115integration-unit tests",
+    "10product-gate controls",
+    "all17actual product integration steps"
+  ],
+  "coverage_gap": {
+    "method": "Existing cargo llvm-cov report --lcov, no test/source rerun for diagnosis",
+    "uncovered_useful_behavior": "Generic exact expected-vs-actual mismatch rejection in replay.rs102-104 was never exercised by positive device replay fixtures. Earlier universal-status device branches were retired, changing package line denominator.",
+    "test": "device_replay_rejects_missing_fields_and_a_false_expected_identity: immutable public getpub positive through replay and CLI, test-owned copy with expected publickey changed rejects both; missingrequest/response reject both. Fixed expected data comes from imported independent fixture, never runtime output.",
+    "runtime_change": "None: only fmt and removal of redundant attribute; Iterator already carries must_use."
+  },
+  "snapshots": [
+    {
+      "source_generated_path": "build/rust-core-coverage.json",
+      "destination": "docs/restart/implementation/T01/integration/evidence/coverage-before-correction/core.json",
+      "bytes": 18635,
+      "sha256": "bbfe52091e43fc8981908c2bc85eaa9d39a1dbf120c66c82ca78f410a0bc184b"
+    },
+    {
+      "source_generated_path": "build/rust-host-coverage.json",
+      "destination": "docs/restart/implementation/T01/integration/evidence/coverage-before-correction/host.json",
+      "bytes": 6861,
+      "sha256": "efe79a8ccfd2ddafc884640815728842a6702a88bb38d4c225292d44b0ef2fd7"
+    },
+    {
+      "source_generated_path": "target/t01-runtime/host-before.lcov",
+      "destination": "docs/restart/implementation/T01/integration/evidence/coverage-before-correction/host.lcov",
+      "bytes": 78823,
+      "sha256": "495f1cec8394d7283d031213f8777638823bd6a044e92e2bd54b8999f938463f"
+    }
+  ],
+  "affected_paths": [
+    {
+      "path": "crates/nsealr-core/src/capabilities.rs",
+      "mode": "100644",
+      "sha256": "f082e7155b3cda67709e4bebc1afde611690e976075f6e47a5a85e0789718d76",
+      "preimage": "ae34085dd6017eaf2539cf0b570bfb49daace824",
+      "preimage_sha256": "680db48d6dc87d03792cbca00afd2a8e9489050c0d33f366b16d0b49a43fbbcd"
+    },
+    {
+      "path": "apps/desktop-simulator/src/lib.rs",
+      "mode": "100644",
+      "sha256": "ea96fa1576f2657ca49c7bc1523fef49121ce9ba285f6b86b9044f2f55e59dd7",
+      "preimage": "ae34085dd6017eaf2539cf0b570bfb49daace824",
+      "preimage_sha256": "1bcd17547bc7bbf01480a10f554c2145a7370496084f68dd81fbdd7dbe3b0e10"
+    },
+    {
+      "path": "apps/desktop-simulator/src/replay/devices.rs",
+      "mode": "100644",
+      "sha256": "37f28b638a74390a8132cc91c05be722c62f00f1f104f6014f9c450be9a69cb0",
+      "preimage": "ae34085dd6017eaf2539cf0b570bfb49daace824",
+      "preimage_sha256": "b00a4f801f3d480497ad569a22a0d6237757258ca85a2288fb14f153298442f6"
+    },
+    {
+      "path": "apps/desktop-simulator/tests/vectors.rs",
+      "mode": "100644",
+      "sha256": "ddc13d48f1bf83065bcd1ba0cf3fbb6d909cc913b60872ddee6475aac668014d",
+      "preimage": "ae34085dd6017eaf2539cf0b570bfb49daace824",
+      "preimage_sha256": "1e696e0d4c918c8a2ff33a33d2d59dde1ce83e6ae91cfee1a82ab922d21d4649"
+    }
+  ],
+  "affected_gate_next": [
+    "make rust-ci",
+    "distinct affected Rust diagnostic/test review"
+  ],
+  "reuse_limits": "Prior Bridge/Pi/17 integration receipts remain exact successful observations on ae340 source and recorded proof-only dirtydiff; no claim those were freshly re-executed on later Rust-test/format afterimage. Final hosted fullPR CI mandatory."
+}
