@@ -39,8 +39,9 @@ def _request_id(request: object) -> str:
 def validate_signing_request(request: dict[str, Any]) -> dict[str, Any] | None:
     """Validate an already decoded reference request, not original-byte ingress.
 
-    The excluded QR/CLI decoders cannot recover duplicate keys or number spelling
-    here. This reference does not replace the shared Rust engine's raw parser.
+    QR ingress checks the original JSON before constructing this dict. Direct
+    dict/CLI JSON ingress cannot recover duplicate keys or number spelling here.
+    This reference does not replace the shared Rust engine's raw parser.
     """
     try:
         size = compact_json_utf8_size(request)
@@ -61,6 +62,8 @@ def validate_signing_request(request: dict[str, Any]) -> dict[str, Any] | None:
     ):
         return _error_response("unknown", "invalid_request", "Missing request_id.", False)
     method = request.get("method")
+    if not isinstance(method, str):
+        return _error_response(_request_id(request), "invalid_request", "method must be a string", False)
     if method == "get_capabilities" and "params" in request:
         return _error_response(
             _request_id(request),
@@ -108,6 +111,11 @@ def validate_signing_request(request: dict[str, Any]) -> dict[str, Any] | None:
             return _error_response(_request_id(request), "invalid_request", str(exc), False)
         if params["event_template"]["kind"] > 65535:
             return _error_response(_request_id(request), "invalid_request", "event_template kind exceeds NIP-01 maximum 65535", False)
+        if params["event_template"]["kind"] in {4, 13, 14, 1059, 10050, 22242}:
+            return _error_response(
+                _request_id(request), "invalid_request",
+                "pi_qr does not admit DM, message setup or relay AUTH through generic sign_event", False,
+            )
     return None
 
 

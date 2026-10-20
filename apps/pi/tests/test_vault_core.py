@@ -452,6 +452,30 @@ class Wire2ReferenceTests(unittest.TestCase):
                 self.assertEqual(response["error"]["code"], "unsupported_method")
                 signer.assert_not_called()
 
+    def test_nonstring_method_rejects_without_raising_or_entering_crypto(self) -> None:
+        for method in ([], {}, None, True, 0, 2.0):
+            request = {"version": 2, "request_id": "pi-method-type", "method": method}
+            with self.subTest(method=repr(method)), patch("nsealr_vault.signer.sign_event") as signer, patch("nsealr_vault.signer.xonly_pubkey_from_secret") as public_key:
+                response = sign_request(request, KEY["secret_key"], approved=True)
+                self.assertFalse(response["ok"])
+                self.assertEqual(response["error"]["code"], "invalid_request")
+                signer.assert_not_called()
+                public_key.assert_not_called()
+
+    def test_offline_message_setup_and_auth_kinds_reject_before_crypto(self) -> None:
+        # Fixed P-06/D-05/D-06/D-07 obligations: a public generic sign_event
+        # wrapper cannot supply an admitted DM/setup/AUTH workflow context.
+        for kind in (4, 13, 14, 1059, 10050, 22242):
+            request = json.loads(json.dumps(BASIC_REQUEST))
+            request["params"]["event_template"]["kind"] = kind
+            with self.subTest(kind=kind), patch("nsealr_vault.signer.sign_event") as signer, patch("nsealr_vault.signer.xonly_pubkey_from_secret") as public_key:
+                response = sign_request(request, KEY["secret_key"], approved=True)
+                self.assertFalse(response["ok"])
+                self.assertEqual(response["error"]["code"], "invalid_request")
+                self.assertIn("pi_qr", response["error"]["message"])
+                signer.assert_not_called()
+                public_key.assert_not_called()
+
     def test_discovery_is_complete_bounded_synthetic_reference_without_key_access(self) -> None:
         request = {"version": 2, "request_id": "pi-discovery", "method": "get_capabilities"}
         manifest = json.loads((SPECS / "examples/profile-manifests/pi_qr-conformance-v1.json").read_text())
