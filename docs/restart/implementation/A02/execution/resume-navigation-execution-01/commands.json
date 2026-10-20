@@ -1,0 +1,55 @@
+[
+  {
+    "command": [
+      "git",
+      "diff",
+      "--name-only",
+      "2bb10013c9fcaab04c544abcff3f480243200da1",
+      "HEAD"
+    ],
+    "cwd": "/home/tux/nsealr/.restart-tools/goal/a02/tools/migration/.runtime/rehearsal-01/repository",
+    "ended_utc": "2026-10-20T09:21:26.638502+00:00",
+    "environment_sha256": "1329698bcbfb60c23fcd6617913d050c6e9d7e2f46108c49c01bb2a19625fae5",
+    "exit_code": 0,
+    "explicit_environment_sha256": "2d76458d6026799a9b33fd6b76528e7565111c2fc2898b78fe61a48d9881d32c",
+    "label": "exact-one-file-delta",
+    "log": "00-exact-one-file-delta.log",
+    "sha256": "1590cdff3e095ed7520a47403dd571b9196884adc59d992d9df68f37a319dcea",
+    "started_utc": "2026-10-20T09:21:26.637046+00:00"
+  },
+  {
+    "command": [
+      "make",
+      "docs",
+      "test"
+    ],
+    "cwd": "/home/tux/nsealr/.restart-tools/goal/a02/tools/migration/.runtime/rehearsal-01/repository",
+    "ended_utc": "2026-10-20T09:21:29.895928+00:00",
+    "environment_sha256": "1329698bcbfb60c23fcd6617913d050c6e9d7e2f46108c49c01bb2a19625fae5",
+    "exit_code": 0,
+    "explicit_environment_sha256": "2d76458d6026799a9b33fd6b76528e7565111c2fc2898b78fe61a48d9881d32c",
+    "label": "current-document-evidence-checks",
+    "log": "01-current-document-evidence-checks.log",
+    "sha256": "ce0c583dc6eea2a19792bbe5db1970a03fdea94c5d4773c5ab68812e84a7327a",
+    "started_utc": "2026-10-20T09:21:26.639812+00:00"
+  },
+  {
+    "command": [
+      "node",
+      "--import",
+      "tsx",
+      "--input-type=module",
+      "-e",
+      "import {readFileSync} from 'node:fs'; import {checkGuide,main} from './tools/bridge/check_current_guides.mjs';main();checkGuide('docs/reproducible-build.md',readFileSync('docs/reproducible-build.md','utf8'));console.log('reproduction guide current-owner and claim checks passed');"
+    ],
+    "cwd": "/home/tux/nsealr/.restart-tools/goal/a02/tools/migration/.runtime/rehearsal-01/repository",
+    "ended_utc": "2026-10-20T09:21:30.345949+00:00",
+    "environment_sha256": "1329698bcbfb60c23fcd6617913d050c6e9d7e2f46108c49c01bb2a19625fae5",
+    "exit_code": 1,
+    "explicit_environment_sha256": "2d76458d6026799a9b33fd6b76528e7565111c2fc2898b78fe61a48d9881d32c",
+    "label": "current-guide-claims",
+    "log": "02-current-guide-claims.log",
+    "sha256": "b77c9ec138e214e17fd9a140bcaa2c7b3e741a7c899c4d85f613d68b394a21ca",
+    "started_utc": "2026-10-20T09:21:29.896159+00:00"
+  }
+]
