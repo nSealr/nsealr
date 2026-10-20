@@ -131,7 +131,87 @@
           "sha256": "8e8856e77a02780b4e83038849bb12bcb2e7f88fc4d3191208d308266f980443"
         }
       ]
+    },
+    {
+      "path": "docs/restart/implementation/Q01/delivery/checks-metadata-01/commands.json",
+      "sha256": "c95a3cf01d939aed71526131eb921402e06d38de0309b657a17f8be71ebfa154",
+      "results": [
+        {
+          "label": "q01-verdict-docs",
+          "argv": [
+            "make",
+            "docs"
+          ],
+          "cwd": "/home/tux/nsealr/.restart-tools/goal/q01-current-delivery",
+          "started": "2026-10-20T17:19:44.567759+00:00",
+          "log": "00-q01-verdict-docs.log",
+          "ended": "2026-10-20T17:19:44.595057+00:00",
+          "exit_code": 0,
+          "sha256": "0b25578012f49961489fb570a141d4e2fe3d4b6882374bc66ba0747c724c7e02"
+        },
+        {
+          "label": "q01-verdict-plan",
+          "argv": [
+            "python3",
+            "scripts/validate_restart_plan.py"
+          ],
+          "cwd": "/home/tux/nsealr/.restart-tools/goal/q01-current-delivery",
+          "started": "2026-10-20T17:19:44.595254+00:00",
+          "log": "01-q01-verdict-plan.log",
+          "ended": "2026-10-20T17:19:44.841886+00:00",
+          "exit_code": 0,
+          "sha256": "b5b628197db17c5aee85e878ad649963eefad9fb0f097e6dc65795ea3332c88e"
+        },
+        {
+          "label": "q01-verdict-metadata-whitespace",
+          "argv": [
+            "git",
+            "diff",
+            "--check",
+            "325a9887b4b45352f7c79ee818e66d5d7679f114",
+            "--",
+            ".",
+            ":(exclude)docs/restart/implementation/Q01/delivery/checks-metadata-01/*.log"
+          ],
+          "cwd": "/home/tux/nsealr/.restart-tools/goal/q01-current-delivery",
+          "started": "2026-10-20T17:19:44.842256+00:00",
+          "log": "02-q01-verdict-metadata-whitespace.log",
+          "ended": "2026-10-20T17:19:44.849966+00:00",
+          "exit_code": 0,
+          "sha256": "4ab126372477e408bd5e18ffc0bed06adcc6ae3134e0154d5f378ea8f7ac241b"
+        }
+      ]
     }
   ],
-  "limits": "Original rootmake docs test observation remains1e6 with actual recorded dirtydiff on identical base tree; source IDs reconciled once to7f and affected docs/plan/evidence pass. Raw whitespace failures remain if observed; no log normalized. Actual-mainCI/source acceptance and distinct final metadata review pending; no runtime/physical/adoption/closure claim."
+  "limits": "Original rootmake docs test observation remains1e6 with actual recorded dirtydiff on identical base tree; source IDs reconciled once to7f and affected docs/plan/evidence pass. Raw whitespace failures remain if observed; no log normalized. Actual-mainCI/source acceptance and distinct final metadata review pending; no runtime/physical/adoption/closure claim.",
+  "metadata_correction": {
+    "finding": "Q01-META-01",
+    "review_commit": "132f50e30ad8c5b59f7595092ce1784f88b61e9b",
+    "review_path": "docs/restart/implementation/reviews/Q01-current-delivery/review.json",
+    "review_sha256": "b9f63c33d2369d0cc3f0eac2c661ca19c1a129fbc668be8980927aca3734684f",
+    "reviewed_candidate": "325a9887b4b45352f7c79ee818e66d5d7679f114",
+    "original_source_review": "f1e9f06e6b2b790e8097dfb10d2736ea502faadc",
+    "original_verdict": "PASS_specifica_soltanto",
+    "correction": "Exactly three criteria_assessment source_review_verdict fields now preserve the original label; no translation is substituted.",
+    "result_sha256": "ebca78062134fa018d5f7917ffcf43278a5f9128077d520fde573c30349b13ec",
+    "only_result_semantic_delta_is_three_verdict_fields": true,
+    "only_graph_delta_from_reviewed_input_is_result_artifact_sha256": true,
+    "all_four_historical_spec_review_bytes_Git_modes_unchanged": true,
+    "all_seven_non_null_current_reuse_paths_match_declared_hashes_Git_modes": true,
+    "other46_fullrecords_all47criteria_dependencies_and_other_graph_fields_unchanged": true,
+    "original_failed_whitespace_logs_unchanged": true,
+    "local_mode_diagnostic": {
+      "initial_assertion": "Exact OS permissions equal 0644",
+      "observed": "0664 for four source copies, unchanged Git regular-file mode100644",
+      "classification": "Incorrect local diagnostic assumption; use Git executable/regular mode, without chmod or source changes."
+    },
+    "no_runtime_or_source_sweep_or_suite": true,
+    "affected_docs_plan_metadata_whitespace_exit_codes": [
+      0,
+      0,
+      0
+    ],
+    "affected_final_approval": "PENDING_ROOT_REVIEW",
+    "actual_main_CI": "39463503467 remains pending root confirmation; no polling or new claim"
+  }
 }
