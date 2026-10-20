@@ -1,0 +1,19 @@
+{
+  "utc": "2026-10-20T17:59:38.384396+00:00",
+  "classification": "root receipt-verifier assumption defect; no product or test defect",
+  "initial_result": "Inline receipt attempt exited1 AssertionError before writing acceptance; it required HEAD-is-now-at in both Actions checkout and bootstrap logs.",
+  "initial_predicate": "head in checkout and head in bootstrap and HEAD-is-now-at-prefix in checkout and HEAD-is-now-at-prefix in bootstrap",
+  "actual_input": "Actions checks out named main with checkout -B; only bootstrap uses detached checkout. The named branch correctly logs the exact full SHA immediately after git log -1 --format=%H.",
+  "source_evidence": {
+    "run": 39469150123,
+    "archive_sha256": "2a50f2abdf8aeb92654a5900be67710a584844d490fa96b603fdc30b121ed486",
+    "checkout_member": "verify/2_Run actions_checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09.txt",
+    "exact_checkout_observation": [
+      "2026-10-20T17:47:41.3142714Z [command]/usr/bin/git log -1 --format=%H",
+      "2026-10-20T17:47:41.3165091Z b159425e7fdb0111bed904e69381dafd23ade6e4"
+    ]
+  },
+  "corrected_rule": "Require actual main branch checkout command and exact immediately following git-log full SHA; independently bind bootstrap full-SHA fetch/detached checkout. All prior run/job/check/app/tree/archive/17steps/floors/source gates retained.",
+  "product_test_threshold_change": false,
+  "CI_or_tests_reexecuted_for_correction": false
+}
