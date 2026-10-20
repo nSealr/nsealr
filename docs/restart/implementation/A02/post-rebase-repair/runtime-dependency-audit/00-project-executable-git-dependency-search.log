@@ -1,0 +1,46 @@
+packages/browser-provider/package.json:37:    "type": "git",
+packages/client/package.json:46:    "type": "git",
+packages/core/package.json:37:    "type": "git",
+packages/dev-signer/package.json:36:    "type": "git",
+packages/fixtures/package.json:37:    "type": "git",
+packages/framing/package.json:36:    "type": "git",
+packages/nip46/package.json:39:    "type": "git",
+packages/policy/package.json:32:    "type": "git",
+packages/protocol/package.json:32:    "type": "git",
+packages/qr/package.json:36:    "type": "git",
+packages/review/package.json:32:    "type": "git",
+packages/sdk/package.json:47:    "type": "git",
+packages/transport/package.json:37:    "type": "git",
+scripts/test_contracts.py:34:    def git(self,*args):return subprocess.check_output(['git','-C',str(self.repo),*args],stderr=subprocess.STDOUT)
+scripts/test_contracts.py:118:                return subprocess.check_output(['git','-C',str(repo),*args],stderr=subprocess.STDOUT)
+scripts/test_contracts.py:135:            subprocess.check_output(['git','-c','init.templateDir=','init','-q','--initial-branch=intake',str(cold)],stderr=subprocess.STDOUT)
+scripts/test_contracts.py:142:                absent=subprocess.run(['git','-C',str(cold),'cat-file','-e',historical+'^{commit}'],capture_output=True)
+scripts/test_evidence.py:32:    def git(self,*args):return subprocess.check_output(['git','-C',str(self.root),*args],stderr=subprocess.DEVNULL)
+scripts/verify_contracts.py:29:    return subprocess.check_output(['git','-C',str(repository),*args],stderr=subprocess.DEVNULL)
+scripts/verify_evidence.py:32:    return subprocess.check_output(['git','-C',str(root),*args],stderr=subprocess.DEVNULL)
+scripts/verify_evidence.py:74:    batch=subprocess.Popen(['git','-C',str(root),'cat-file','--batch'],stdin=subprocess.PIPE,stdout=subprocess.PIPE)
+tools/baseline/bootstrap.py:98:    recorder.run(f'{name}-init', ['git', 'init', str(path)], root)
+tools/baseline/bootstrap.py:99:    recorder.run(f'{name}-fetch', ['git', 'fetch', '--no-tags', origin, commit], path)
+tools/baseline/bootstrap.py:100:    recorder.run(f'{name}-checkout', ['git', 'checkout', '--detach', 'FETCH_HEAD'], path)
+tools/baseline/bootstrap.py:101:    actual = subprocess.check_output(['git', 'rev-parse', 'HEAD'], cwd=path, text=True).strip()
+tools/baseline/bootstrap.py:102:    dirty = subprocess.check_output(['git', 'status', '--porcelain'], cwd=path, text=True).strip()
+tools/baseline/bootstrap.py:116:    for name in ('git', 'make', 'cc', 'rsync'):
+tools/baseline/bootstrap.py:120:    candidate = subprocess.check_output(['git', 'rev-parse', 'HEAD'], cwd=SOURCE, text=True).strip()
+tools/baseline/bootstrap.py:121:    if subprocess.check_output(['git', 'status', '--porcelain', '--untracked-files=no'], cwd=SOURCE, text=True).strip():
+tools/baseline/bootstrap.py:176:    for name, command in {'python':['python3','--version'], 'pip':['python3','-m','pip','--version'], 'node':['node','--version'], 'npm':['npm','--version'], 'pnpm':['pnpm','--version'], 'rust':['rustc','--version'], 'cargo':['cargo','--version'], 'rustup':['rustup','--version'], 'cargo-deny':['cargo','deny','--version'], 'cargo-llvm-cov':['cargo','llvm-cov','--version'], 'cc':['cc','--version'], 'make':['make','--version'], 'git':['git','--version'], 'libc':['ldd','--version']}.items():
+tools/baseline/bootstrap.py:185:        source_state[name] = {'status':subprocess.check_output(['git','status','--porcelain'],cwd=source,text=True), 'diff_sha256':hashlib.sha256(subprocess.check_output(['git','diff','--binary'],cwd=source)).hexdigest()}
+tools/baseline/run.py:15:    return {name: subprocess.check_output(['git', 'status', '--porcelain'], cwd=root/name, text=True) for name in inputs}
+tools/baseline/run.py:28:        actual = subprocess.check_output(['git', 'rev-parse', 'HEAD'], cwd=source, text=True).strip()
+tools/baseline/run.py:37:        diff = hashlib.sha256(subprocess.check_output(['git','diff','--binary'],cwd=source)).hexdigest()
+tools/baseline/run.py:48:    changed = [name for name in inputs if after[name] != before[name] or hashlib.sha256(subprocess.check_output(['git','diff','--binary'],cwd=root/name)).hexdigest() != expected[name]['diff_sha256']]
+tools/baseline/run.py:50:        if subprocess.check_output(['git','rev-parse','HEAD'],cwd=root/name,text=True).strip() != inputs[name] and name not in changed:
+tools/baseline/test_bootstrap.py:60:            def git(*args):return subprocess.check_output(['git','-C',str(source),*args],stderr=subprocess.STDOUT).strip().decode()
+tools/baseline/test_bootstrap.py:65:            self.assertEqual(subprocess.check_output(['git','-C',str(root/'nsealr'),'rev-parse','HEAD'],text=True).strip(),selected)
+tools/baseline/test_bootstrap.py:66:            result=subprocess.run(['git','-C',str(root/'nsealr'),'cat-file','-e',excluded],capture_output=True)
+tools/baseline/test_bootstrap.py:72:            root=Path(tmp);source=root/'source';subprocess.run(['git','init','-q',str(source)],check=True)
+tools/baseline/test_bootstrap.py:87:            subprocess.run(['git','init','-q',str(source)],check=True)
+tools/baseline/test_bootstrap.py:88:            subprocess.run(['git','-C',str(source),'add','.'],check=True)
+tools/baseline/test_bootstrap.py:89:            subprocess.run(['git','-C',str(source),'-c','user.name=Test','-c','user.email=test@invalid.example','commit','-qm','fixture'],check=True)
+tools/baseline/test_bootstrap.py:90:            commit=subprocess.check_output(['git','-C',str(source),'rev-parse','HEAD'],text=True).strip()
+tools/bridge/verify_repo.py:94:    if package.get("repository") != {"type": "git", "url": COMPANION_REPOSITORY_URL}:
+tools/bridge/verify_repo.py:336:            "type": "git",
