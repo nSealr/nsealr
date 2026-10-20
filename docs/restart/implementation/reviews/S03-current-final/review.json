@@ -1,0 +1,352 @@
+{
+  "schema_version": 1,
+  "task": "S03",
+  "reviewer": "/root/b01_final_review",
+  "implementation_author": "/root/a02_sol",
+  "reviewed_utc": "2026-10-20T12:31:18.854515+00:00",
+  "candidate_commit": "c358229777d2582964a4f326ce8d15709841a395",
+  "candidate_tree": "ffd6f5b0bb667ff33ef6a7d65eabab874bdfa596",
+  "product_checkpoint": "7eee22fbc269033756e53020b1370fc6671da3ab",
+  "input_commit": "b1c90139a651895284b2624da7d12903cf16bc9d",
+  "accepted_specification": "e95eaaf8e3fd76ede797f128f0cc7de43ab2bb03",
+  "specification_review": "826fc0d71d5dad07fa735efafe27ac33863f49bb",
+  "original_source": "03216fba02d229bcdb5c81d0573bbe26c6f35abc",
+  "historical_reviews": [
+    {
+      "commit": "b03475ccf4a057c7771065126002f2e4e056d28d",
+      "candidate": "2d7d465a291c4d4a1324d90595fc45a2fdbefca5"
+    },
+    {
+      "commit": "8df9f5bb3231eac4d33cc9837851ad3ab9bad537",
+      "candidate": "95cd3fc79d885c58bdabe71498d2509b6ff4370e"
+    }
+  ],
+  "pre_read": {
+    "review": "1165dc25bd8aefd113aa6d007759cd28998813b6",
+    "candidate": "61e577f51fa8a907cd2ec9c73cc743a053487b1f",
+    "scope": "No-verdict historical preparation only"
+  },
+  "verdict": "PASS_exact_combined_portable_candidate",
+  "blocking_findings": [],
+  "resolved_findings": [
+    {
+      "id": "S03-PORT-PREP-01",
+      "severity": "low",
+      "scope": "Misleading serial diagnostic-preview signing comments",
+      "resolution": "Exactly two Rustdoc blocks corrected; non-Rustdoc source lines identical to full-tested checkpoint"
+    }
+  ],
+  "acceptance_results": [
+    {
+      "index": 0,
+      "requirement": "Derive identity and canonical event bytes inside the trusted device boundary.",
+      "outcome": "pass",
+      "scope": "Portable source/host-executable criteria only; no graph closure or physical qualification",
+      "evidence": [
+        "report.md",
+        "inventory-result.json",
+        "source-observations.json",
+        "evidence/adversarial-summary.json",
+        "current-boundaries.log",
+        "independent-lifecycle.log",
+        "independent-oracle.log"
+      ]
+    },
+    {
+      "index": 1,
+      "requirement": "Bind preview, selected identity, full operation and one-use approval; reject mutation, replay, cancellation races and unreviewed metadata.",
+      "outcome": "pass",
+      "scope": "Portable source/host-executable criteria only; no graph closure or physical qualification",
+      "evidence": [
+        "report.md",
+        "inventory-result.json",
+        "source-observations.json",
+        "evidence/adversarial-summary.json",
+        "current-boundaries.log",
+        "independent-lifecycle.log",
+        "independent-oracle.log"
+      ]
+    },
+    {
+      "index": 2,
+      "requirement": "Bound resource use and handle long/hostile Unicode content without misleading truncation.",
+      "outcome": "pass",
+      "scope": "Portable source/host-executable criteria only; no graph closure or physical qualification",
+      "evidence": [
+        "report.md",
+        "inventory-result.json",
+        "source-observations.json",
+        "evidence/adversarial-summary.json",
+        "current-boundaries.log",
+        "independent-lifecycle.log",
+        "independent-oracle.log"
+      ]
+    },
+    {
+      "index": 3,
+      "requirement": "An independently computed event ID and signature verifier agree for positive and adversarial vectors.",
+      "outcome": "pass",
+      "scope": "Portable source/host-executable criteria only; no graph closure or physical qualification",
+      "evidence": [
+        "report.md",
+        "inventory-result.json",
+        "source-observations.json",
+        "evidence/adversarial-summary.json",
+        "current-boundaries.log",
+        "independent-lifecycle.log",
+        "independent-oracle.log"
+      ]
+    },
+    {
+      "index": 4,
+      "requirement": "This task establishes portable authorization/parser semantics with host-executable negative tests. Physical UI/input and peripheral isolation remain each profile's actual-device acceptance; do not wait for all boards to implement the state machine.",
+      "outcome": "pass",
+      "scope": "Portable source/host-executable criteria only; no graph closure or physical qualification",
+      "evidence": [
+        "report.md",
+        "inventory-result.json",
+        "source-observations.json",
+        "evidence/adversarial-summary.json",
+        "current-boundaries.log",
+        "independent-lifecycle.log",
+        "independent-oracle.log"
+      ]
+    }
+  ],
+  "independent_checks": {
+    "adversarial_cases": 2104,
+    "strict_canonical_matches": 202,
+    "strict_rejects": 1853,
+    "envelope_checks": 49,
+    "semantic_controls": 43,
+    "reviews_reconstructed": 114,
+    "frames_reconstructed": 5215,
+    "preflight_rejections": 22,
+    "lifecycle_tests": 4,
+    "additional_current_boundary_tests": 4,
+    "oracle_events": 8,
+    "actual_key_imports": 3,
+    "official_verifier_controls": 7,
+    "signature_byte_mutations_rejected": 512,
+    "event_id_byte_mutations_rejected": 256,
+    "canonical_field_mutations_rejected": 32,
+    "wrong_key_mutations_rejected": 8,
+    "double_hash_mutations_rejected": 8,
+    "manifest_members": 211,
+    "input_copies": 87,
+    "product_bindings": 26,
+    "vendor_source_files": 686,
+    "vendor_checksum_members": 1869,
+    "registry_union": {
+      "old": 24,
+      "current": 45,
+      "added": 21
+    },
+    "projected_outputs": 174,
+    "old_projection_outputs_exact": 173,
+    "retained_contract_files": 251,
+    "frozen_files": 1508
+  },
+  "author_full_suite": {
+    "checkpoint": "dda66f3e4d0d25f2fa3f3ee2b5cb5aacfdd122d3",
+    "initial_clean_status_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "full_make_ci": "Actual receipt and both raw logs verified; not independently rerun",
+    "core_default_unit": 246,
+    "core_std_unit": 247,
+    "secret_boundary_integration": 4,
+    "public_doctests": 15,
+    "host_categories": 20,
+    "retained_integration_steps": 17,
+    "coverage": {
+      "core": 100.0,
+      "host": 76.75709001233045,
+      "unchanged_floors": [
+        100.0,
+        76.7
+      ]
+    },
+    "subsequent_delta": "Two Rustdoc blocks only; actual affected fmt/doctests/fresh A==B==X reproduction verified",
+    "current_device_rlib_sha256": "590e38bc45a96e78ff81b83b130e4dac31576b4d8e5c58705c5734b96cca2ee5"
+  },
+  "retained_limits": [
+    "One trusted firmware/image and trusted local clock/display/input adapters; no hostile firmware sandbox",
+    "Production SigningUnavailable/signing_disabled; fixture signer private cfg(test)",
+    "Only admitted kind1 semantic subset; no remaining event catalog/provider/export/NIP44 implementation",
+    "Normalized execution scalar does not preserve original imported nsec; D02/K01 must preserve recovery custody separately",
+    "Static retained bounds do not measure peak target stack/RAM/latency/erasure or physical consent",
+    "Offline audits do not verify current yanked status"
+  ],
+  "later_main": {
+    "commit": "503719d5c607bdbcd1da30a89b0c3c6f5983c01b",
+    "exact_delta_paths": 129,
+    "classification": "A02 closure metadata/proof only; preserve newer graph on later normal integration",
+    "CI_scope": "Its actual completed main CI was separately verified in metadata review13e5610a; never relabelled as S03 CI"
+  },
+  "pending": [
+    "Protected full S03 PR CI",
+    "Normal merge preserving current metadata",
+    "Actual resulting-main CI",
+    "Separate exact closure-metadata review",
+    "Actual profile hardware/UI/input/peripheral/clock/entropy/erasure and release gates"
+  ],
+  "criteria_closed_by_this_review": 0,
+  "graph_edited": false,
+  "model_policy": {
+    "model": "gpt-6.1-sol",
+    "reasoning_effort": "xhigh",
+    "Astra_escalation": false
+  },
+  "artifacts": [
+    {
+      "path": ".gitignore",
+      "bytes": 8,
+      "sha256": "020c2606e8ed484089c2083e0be438b9d0736bee1558a6b76af0d58bd23f69cf"
+    },
+    {
+      "path": "adversarial.py",
+      "bytes": 11583,
+      "sha256": "a973c60ec3ddc5ccd9bb82bd07e0e314b760f2da8968d20a7ca6739451ec449d"
+    },
+    {
+      "path": "candidate-raw-whitespace.log",
+      "bytes": 5593,
+      "sha256": "77433ffbeff8519e110773c35803a9b7ded7d105f7470762134f9c48c7baae54"
+    },
+    {
+      "path": "commands.json",
+      "bytes": 9929,
+      "sha256": "490f7ac8d5b6d836d689fc7854264809e6b5b970501e0cff978e238379d685d6"
+    },
+    {
+      "path": "current-boundaries.log",
+      "bytes": 1242,
+      "sha256": "120382db342e9c6ff12195932f9168da599a3a50ab1179031f9855aa15ecff70"
+    },
+    {
+      "path": "evidence/adversarial-inputs.jsonl",
+      "bytes": 938972,
+      "sha256": "5bb65f63ad3dba4cd044192522db62a6eab0dd0c11e4b7295a1787fb1c8f3b87"
+    },
+    {
+      "path": "evidence/adversarial-output.jsonl",
+      "bytes": 1147929,
+      "sha256": "7f1127e11f681fc7fde1d929c54eca5159aade7ad7252cf8610c650ab173c941"
+    },
+    {
+      "path": "evidence/adversarial-stderr.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "evidence/adversarial-summary.json",
+      "bytes": 245,
+      "sha256": "4346029265490704c0fd84479b628e7742fdcedcf7bde1465578278073c57773"
+    },
+    {
+      "path": "frozen-evidence.log",
+      "bytes": 140,
+      "sha256": "138790849cdcf7f3e23898c363e56fd327728e56d6e357aa838c9a78472114c5"
+    },
+    {
+      "path": "independent-adversarial.log",
+      "bytes": 225,
+      "sha256": "f9cfa8ad6eba58484e83f1aa3b6f412f91e4ea71adb45f012913816a2ef22dee"
+    },
+    {
+      "path": "independent-build.log",
+      "bytes": 698,
+      "sha256": "776020a55427cf22a7f674551aae7ea886ebf7803ec234f08a6c79e1ce67cbe8"
+    },
+    {
+      "path": "independent-lifecycle.log",
+      "bytes": 1938,
+      "sha256": "0662c8865bfcb81fbc6592f527bafe75047218c6b9d1385ae94a2100068af894"
+    },
+    {
+      "path": "independent-oracle.log",
+      "bytes": 324,
+      "sha256": "7d2fbf1d29aa16aec133ef9014af9c6b0dffd5766d7016ba8949d503fa884ad2"
+    },
+    {
+      "path": "inspection-attempts.json",
+      "bytes": 837,
+      "sha256": "886bb0bedc18c468e0572e66ff28733dc66d1721b9a8809bf45d7c04d2db9685"
+    },
+    {
+      "path": "inventory-attempt-01.log",
+      "bytes": 282,
+      "sha256": "fbf9b20fd613e0da4081dc19f12be27218a43d5523594a3effffcdb69baaa668"
+    },
+    {
+      "path": "inventory-attempt-02.log",
+      "bytes": 484,
+      "sha256": "4b24d7da6aa991cfc207d82a4dc893e277e9fbd90bde23c58b8d9e7c56038921"
+    },
+    {
+      "path": "inventory-result.json",
+      "bytes": 9786,
+      "sha256": "178da62940afb8ac0b3efe191ea21df19f4e3a2db5048b7b117238dccfa458d3"
+    },
+    {
+      "path": "inventory.log",
+      "bytes": 1023,
+      "sha256": "326c1043902fa5d75fb27005187f9f9a0c4b4e97d4c033bff867da8e0bb08933"
+    },
+    {
+      "path": "inventory.py",
+      "bytes": 10813,
+      "sha256": "6acfc742e857bbc1fb933496c9a07265930802177edc2f13d1e6076a6e1de975"
+    },
+    {
+      "path": "probe/Cargo.lock",
+      "bytes": 10072,
+      "sha256": "48f090bf8b00556e2aafa9d8c0a083f7d5f8e85eecb551db7b789904d4197a3c"
+    },
+    {
+      "path": "probe/Cargo.toml",
+      "bytes": 206,
+      "sha256": "11cb9adb1b6b08023da1d51416bdcd4192b278b55007023c5d52218063625acb"
+    },
+    {
+      "path": "probe/src/main.rs",
+      "bytes": 11127,
+      "sha256": "274e437d057a04041835bcd662704cdcd45ce9180c480df74442329b07e0d7f4"
+    },
+    {
+      "path": "probe/tests/current_boundaries.rs",
+      "bytes": 6928,
+      "sha256": "0f6eecd4b5c9a2b5c758da54f12d59ab4690b742c7084bf37ac8b2ec8e5fa405"
+    },
+    {
+      "path": "probe-lock.log",
+      "bytes": 55,
+      "sha256": "b8756896912d736962b0131f3aac3318de4dd76ea06437cb84dd706a984c1be3"
+    },
+    {
+      "path": "probe-source-bindings.json",
+      "bytes": 1698,
+      "sha256": "34a5f620f2a0acc536bad9d3d7a97263f34d1403916475d18c0ec1a4fa7b0b0a"
+    },
+    {
+      "path": "production-features.log",
+      "bytes": 10476,
+      "sha256": "e63da58df6065c52337a10bb36d8b548ec6267441a8a15563b0a2ce5a4bc909b"
+    },
+    {
+      "path": "report.md",
+      "bytes": 11057,
+      "sha256": "4a9f23f88bc9075aaf93e0681eded2ebddca20c8d77816f1072a550e859f53b6"
+    },
+    {
+      "path": "retained-contracts.log",
+      "bytes": 152,
+      "sha256": "5a55b9297524922045d80ae336a70c873b1def09daa7e38fe09572142b4911e3"
+    },
+    {
+      "path": "source-observations.json",
+      "bytes": 4123,
+      "sha256": "6a1698cc47ae5e1b0efdce4c9fd3441036031795a7ae08f368b1bf44769f9bfc"
+    }
+  ],
+  "self_binding": "No JSON self-hash. The enclosing review commit is reported externally; every other paired reviewer file is listed above. Build/cache products are ignored, not evidence members."
+}
