@@ -1,0 +1,35 @@
+{
+  "schema_version": 1,
+  "task": "QH01",
+  "reviewer": "/root",
+  "author": "/root/b01_final_review",
+  "candidate": "ac8b14e54a6c4e028902d8ac3301bb6a1392c5fd",
+  "verdict": "PASS_manual_QR_retention_test_correction_only",
+  "findings": [],
+  "previous_source_candidate": "2b08278adf0047c5e7a230d50590deccfe933511",
+  "retained_code_review": "bfc6b29a6ad12424df3236a6b225f55e355e4cff",
+  "changed_perimeter": "Only final existing pre-open currentness/retention test assertions and independent retention fixture; runtime/package/lock unchanged byte for byte.",
+  "resolved_test_defect": {
+    "RED_source": "c9fa71195abcefa206afc267b17c76875d1c8328",
+    "actual_RED": "Focused exit1:0 actual dispatcher entries versus1 expected under original retained_bytes1.",
+    "cause": "Actual client reparses limits and rejects invalid retained capacity before dispatch. The original retention-release test did not exercise factory cleanup.",
+    "correction": "Count actual dispatcher entries1then2, zero opens on failedcall and one open/scan/close on freshcall. Use independently calculated valid manifest budget one byte below adapter logical reservation. No product ceiling/criterion weakened."
+  },
+  "independent_evidence": {
+    "command": "runtime/command.json",
+    "exit_code": 0,
+    "passed": 2,
+    "unaffected_skipped": 56,
+    "workspace_reuse": "Existing pinned install and current package exports from prior root review; all build/runtime/package/lock inputs unchanged."
+  },
+  "source_integrity": {
+    "three_other_product_paths_exact": true,
+    "four_historical_snapshots_verified": true,
+    "original_RED_raw_pair_verified": true
+  },
+  "historical_claim_correction": "Previous bfc report remains immutable for its original source and observed58PASS. Its reference to two pre-open release controls did not establish adapter retention cleanup for oldfixture1; this affected-test review supplies that missing proof. No historical results relabelled.",
+  "limits": [
+    "All5QH01 criteria incomplete; no native/camera/physical/provider/key/framing qualification.",
+    "This review covers exact corrected test source, not a not-yet-frozen final author/delivery proof packet. Root final metadata/source correspondence and protected integration/main gates remain required."
+  ]
+}

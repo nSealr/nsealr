@@ -1,0 +1,22 @@
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  apps/bridge/service/src/manual-qr.test.ts > service manual QR port through the existing client lifecycle > releases the owner after a pre-openretention rejection
+AssertionError: expected +0 to be 1 // Object.is equality
+
+- Expected
++ Received
+
+- 1
++ 0
+
+ ❯ apps/bridge/service/src/manual-qr.test.ts:357:64
+    355|     };
+    356|     if (failure === "retention") state.snapshot.adapter_limits.methods…
+    357|     expect((await run(state)).ok).toBe(false); expect(entries).toBe(1)…
+       |                                                                ^
+    358|     rejectCurrentness = false;
+    359|     state.snapshot.adapter_limits.methods[1].retained_bytes = retained;
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+

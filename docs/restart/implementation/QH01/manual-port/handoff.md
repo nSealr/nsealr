@@ -1,7 +1,8 @@
 # Manual QR service port: bounded software component
 
-Ready for root's distinct exact component review. Runtime and final tests bind
-`7d1b126ee1b27fc3a99bedeff202cc557217f49f`; later commits package proof only.
+Ready for root's distinct affected-test/proof review. Runtime remains exact
+`7d1b126ee1b27fc3a99bedeff202cc557217f49f`; strengthened final tests bind
+`ac8b14e54a6c4e028902d8ac3301bb6a1392c5fd`; later commits package proof only.
 The four product paths are the new service adapter/tests and the service's two
 existing workspace dependencies/importer links. There is no default route,
 CLI wiring, readiness change or second client lifecycle. See `source-scope.json`.
@@ -14,8 +15,11 @@ actual-main CI still pending. `source-admission.json` preserves that historical
 gate observation; no actual-main/PR/future delivery success is inferred here.
 The unchanged original brief/expectations retain their preparation-time roles.
 
-Actual final commands in `final-checks/commands.json` pass 58 manual-port cases,
-80 existing cases across six pertinent service/client files, and typecheck.
+Current commands in `test-correction/green/commands.json` pass both focused
+pre-open cases, the unchanged 58-case set with stronger final assertions, and
+typecheck. The original 80 existing cases across six pertinent service/client
+files in `final-checks/commands.json` are reused on identical runtime/dependency
+blobs; their receipts are preserved.
 Existing pinned offline dependencies/current package exports were built here;
 unchanged shared package sources match the original source bindings. Tests use
 independent existing public get-key/signed-event responses and Node Buffer for
@@ -43,6 +47,17 @@ only after native quiescence. Only one factory may own that port. Failed opener
 or cleanup quarantines the owner; primary transport errors survive cleanup
 failure. An uncooperative promise stays reserved after host timeout. Host
 abort never proves device recall, physical approval or fresh sender identity.
+
+Root's later review found a TEST defect in the prior retention-release control:
+`retained_bytes=1` failed client manifest preflight and never entered the adapter.
+New actual dispatcher-entry assertions first reproduced zero entries versus one
+expected (`test-correction/red/`). Only that fixture then changed to the already
+independently defined request JSON/frame +704JSON +947frame budget minus one.
+The manifest is valid; the adapter now actually rejects before opening and a
+second call enters again and succeeds after the budget is restored. Runtime,
+thresholds, original 38 definitions and the 58-case set are unchanged. Current
+result/scope distinguish this corrected proof from the old masked observation;
+all previous 59 members remain recoverable by exact hashes/source/copy roles.
 
 All five QH01 criteria remain incomplete. This public-fixture exchange does not
 qualify camera/native resources, Pi/P4 hardware, real Nostr-client timing,
