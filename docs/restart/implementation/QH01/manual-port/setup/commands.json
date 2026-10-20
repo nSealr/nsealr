@@ -1,0 +1,33 @@
+{
+  "source": "2da6938171b2133e0796d946906cb84a0f8c90f0",
+  "role": "Source-under-PR preparation only; no actual-main or runtime admission claimed",
+  "environment_path": "docs/restart/implementation/R00/evidence/final/environment.json",
+  "environment_sha256": "5b0f773e07fc90aa4a2b7d62c102bbc7b824b6bab135002ee0a01ad90a0ef001",
+  "reason": "Fresh worktree needs existing pinned workspace dependencies and actual current package dist exports for focused service tests; no registry additions or copied stale exports.",
+  "commands": [
+    {
+      "name": "existing-offline-dependencies",
+      "argv": [
+        "pnpm",
+        "install",
+        "--frozen-lockfile",
+        "--offline"
+      ],
+      "exit": 0,
+      "elapsed_seconds": 0.755,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "current-workspace-exports",
+      "argv": [
+        "pnpm",
+        "build"
+      ],
+      "exit": 0,
+      "elapsed_seconds": 9.617,
+      "stdout_sha256": "ffa300421a75ad85c5e8030baee4740d483656bc625440d19a5c79e8a568260c",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ]
+}
