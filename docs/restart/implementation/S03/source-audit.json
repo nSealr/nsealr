@@ -1,0 +1,849 @@
+{
+  "schema_version": 1,
+  "task": "S03",
+  "artifact_kind": "preparation_source_audit",
+  "as_of": "2026-10-18",
+  "author": "/root/s03_author",
+  "repository": "https://github.com/nSealr/nsealr",
+  "input_commit": "3cbd818a0bcd4016eb8983dad7605cb57280d913",
+  "worktree": "/home/tux/nsealr/.restart-tools/goal/s03",
+  "branch": "restart/s03-authorization",
+  "task_ledger": "docs/restart/work-items.json",
+  "approval_state": "awaiting_exact_specification_review",
+  "scope": "three preparation artifacts only",
+  "dependency_observation": {
+    "P01": "verified at input; coordinator owns integration/lifecycle promotion",
+    "S02": "integrated at input",
+    "S03": "planned at input"
+  },
+  "input_files": [
+    {
+      "path": "AGENTS.md",
+      "sha256": "bb2487e1ddf719f2c49621bc6018b6505beb1d9145805e3a157d9bab37c45020",
+      "bytes": 2703
+    },
+    {
+      "path": "docs/restart/README.md",
+      "sha256": "3a5f718421945f6952ef76c661e197eb2bddbb01ab773a2f7bac1ad5fc17ffe5",
+      "bytes": 4314
+    },
+    {
+      "path": "docs/restart/work-items.json",
+      "sha256": "4738881563c35c25aeadedcc5f41e3d3c34e8c8740139dce9185a8f15aa01e97",
+      "bytes": 327263
+    },
+    {
+      "path": "docs/restart/architecture.md",
+      "sha256": "855730fb0a801f411616869ffc01640eb46522d7bb27bf63747fa2fa7f290b2e",
+      "bytes": 4852
+    },
+    {
+      "path": "docs/restart/development.md",
+      "sha256": "e47d96d5350ff9a60c7b53efb5005e09e9e4e99dddb81f20371bbfd8fe88dee9",
+      "bytes": 14256
+    },
+    {
+      "path": "docs/restart/execution.md",
+      "sha256": "22c6bc2e97d420ba2b7f41ada1969b513ca9c967af801040ee104df556ab9d69",
+      "bytes": 7809
+    },
+    {
+      "path": "docs/restart/implementation/P01/brief.md",
+      "sha256": "5d5d2c000cb4bc01404ea82b0162ac1119c0830996491ed6cbd4f6dbe886c874",
+      "bytes": 3419
+    },
+    {
+      "path": "docs/restart/implementation/P01/requirements.md",
+      "sha256": "f8635e2941895b7d4043e769c9b73e2064036b1358e5f4266854b074a9b81326",
+      "bytes": 17199
+    },
+    {
+      "path": "docs/restart/implementation/P01/event-review-contract.md",
+      "sha256": "acaec734d7f5317097dde97eb071c59132ee3a1ed6af1fdb3f6289d1a0950043",
+      "bytes": 9733
+    },
+    {
+      "path": "docs/restart/implementation/P01/threat-models.md",
+      "sha256": "ebf8d5a821eb4843d7b961840a4b21cc74a2997dfa5b9e15f0cc6907586ffee0",
+      "bytes": 8532
+    },
+    {
+      "path": "docs/restart/implementation/S02/crypto-selection.md",
+      "sha256": "6f02f64a24e5747f63d25b81a472dc5e257055f4fbb853587113b1c355bd7f56",
+      "bytes": 7734
+    },
+    {
+      "path": "docs/restart/implementation/S02/secret-flow.md",
+      "sha256": "067030391a583560d95d78f9f768afa093fee3f6a65ae489b18be774e7324cba",
+      "bytes": 4334
+    },
+    {
+      "path": "docs/restart/implementation/S02/entropy-contract.md",
+      "sha256": "a0883cbd920b85ab1db71e619b2c503d7a84137761ab60d8913e5353c9ce0916",
+      "bytes": 4710
+    },
+    {
+      "path": "crates/nsealr-core/src/lib.rs",
+      "sha256": "6da880388eb54a911589d795abbb86dbd4b30f038413583901bb541e81d95e18",
+      "bytes": 3870
+    },
+    {
+      "path": "crates/nsealr-core/src/nip19.rs",
+      "sha256": "738499a70213b0c8aeb2299b47ac7c8a7839cd7f6b5f4316a37448c9878484f0",
+      "bytes": 18769
+    },
+    {
+      "path": "crates/nsealr-core/src/hash.rs",
+      "sha256": "6cd8c18667fca5623dec65718b2ab87084c1ff260a3589b311da34a1f3f577ae",
+      "bytes": 6801
+    },
+    {
+      "path": "crates/nsealr-core/src/unicode.rs",
+      "sha256": "ab2a82b6eac588242a667a569ca1b2215b3a9c8b052c428745ad507e376e30b7",
+      "bytes": 12693
+    },
+    {
+      "path": "crates/nsealr-core/src/protocol.rs",
+      "sha256": "c0ae1f165ae375486665b1198fd5edd7cacb24caf186d7de43695bd147b944eb",
+      "bytes": 55238
+    },
+    {
+      "path": "crates/nsealr-core/src/qr/envelope.rs",
+      "sha256": "85a06ad576c725bbc8ec36148457493e8f755fa6bb2b458a8984c7abe9753158",
+      "bytes": 107498
+    },
+    {
+      "path": "crates/nsealr-core/src/qr/limits.rs",
+      "sha256": "905651aed81dfcb4b22aaa4003b7c23e0126dcfc768d2f7c3c9db47e881a8a1c",
+      "bytes": 2691
+    },
+    {
+      "path": "crates/nsealr-core/src/policy/approval_gate.rs",
+      "sha256": "5e783c086330e45f23fef65e1643692c937bfa2b548cf8672df4f235163d45b7",
+      "bytes": 8444
+    },
+    {
+      "path": "crates/nsealr-core/src/policy/signing_policy.rs",
+      "sha256": "dbd273c220757ebeee6ab1092a7274af72425aa6c6ca482d4a2058161b1fb253",
+      "bytes": 12020
+    },
+    {
+      "path": "crates/nsealr-core/src/policy/policy_change_review.rs",
+      "sha256": "70046d74659db21ce5a696329a86a8b4dafeb919fca359ce16bf57fc1cf32a2a",
+      "bytes": 63102
+    },
+    {
+      "path": "crates/nsealr-core/src/review/trusted.rs",
+      "sha256": "74dab25c3a97766450d72804b42ee47f3f6227c5ddeb317b091c860706ea4ee0",
+      "bytes": 20915
+    },
+    {
+      "path": "crates/nsealr-core/src/review/types.rs",
+      "sha256": "9c5ef51d0f4f935d2b366557d83f3671ecffd92ffd95fef40171fb80a0986d22",
+      "bytes": 15873
+    },
+    {
+      "path": "crates/nsealr-core/src/review/display.rs",
+      "sha256": "55c160f6e17cd672cb93a5d407656d879061564c8201e9065cfee93db24ee74d",
+      "bytes": 27649
+    },
+    {
+      "path": "crates/nsealr-core/src/review/qr.rs",
+      "sha256": "d924a54f6014ea77ac933b64678424d41d07a0ae6f2b4759d9a1ee799b578a4b",
+      "bytes": 82838
+    },
+    {
+      "path": "crates/nsealr-core/src/review/serial.rs",
+      "sha256": "439788a587f1a6a4a789f80eabe64d9440137160d1a5b3b1e18a2bfb010cc324",
+      "bytes": 25739
+    },
+    {
+      "path": "crates/nsealr-core/src/review/qr_flow.rs",
+      "sha256": "97b8251a2bdc63ea7e2637918311b65f5bdd4cb4f731395f132ae38b75a7949d",
+      "bytes": 49071
+    },
+    {
+      "path": "crates/nsealr-core/src/review/controls.rs",
+      "sha256": "8fff6d322b12f88aa5a66e55b68bd1bb0b3122aeb2484cda9f0cd747da697a22",
+      "bytes": 9563
+    },
+    {
+      "path": "crates/nsealr-core/src/review/signer_identity.rs",
+      "sha256": "c73a778df311fe6ec996be4d4f104c60840065f3927b3c6f378616ef099f1285",
+      "bytes": 5469
+    },
+    {
+      "path": "crates/nsealr-core/src/session/account.rs",
+      "sha256": "1966870403484b6552335d3843e86054b38a5a8747e2fd7675d4f1366f213e3e",
+      "bytes": 28558
+    },
+    {
+      "path": "crates/nsealr-core/src/session/keyring.rs",
+      "sha256": "8cb2541f8092a102c81eb3c5dcf971a527fcf8d2247b911c33843bdfa8430003",
+      "bytes": 23857
+    },
+    {
+      "path": "crates/nsealr-core/Cargo.toml",
+      "sha256": "628a4f6591a0b6b5d8406bad3dc849e304f01d4a54394c530809967ebe0728e4",
+      "bytes": 652
+    },
+    {
+      "path": "Cargo.toml",
+      "sha256": "056d5245eb259bb54f567622b610f959073848c3e01720b96ec4743f5d962747",
+      "bytes": 1252
+    },
+    {
+      "path": "Cargo.lock",
+      "sha256": "92be519cdf623cc5e96fba7420cad3e4cf5ff0f08574f8e5969a65c48df54b1b",
+      "bytes": 5592
+    },
+    {
+      "path": ".cargo/config.toml",
+      "sha256": "98e1cf108d2b5aa2ff9d9fb6f58df4d0332df3a85411cf8c1249c615edecf625",
+      "bytes": 716
+    },
+    {
+      "path": "Makefile",
+      "sha256": "c821598a95c1e971e36072371b85cb85dede3fbe1d53a4dbb4c98d31a899545e",
+      "bytes": 2957
+    },
+    {
+      "path": "ci/ratchet.json",
+      "sha256": "3d22c0725dbfe46d62ab285e0b619ce054e1895a4f6f23f26d1b49e9602fa9b2",
+      "bytes": 758
+    },
+    {
+      "path": "apps/desktop-simulator/src/replay/review.rs",
+      "sha256": "77bb117ef897910fc2a54960d1b9ad278ee022b4982e619eec732c2d893c5348",
+      "bytes": 19981
+    },
+    {
+      "path": "apps/desktop-simulator/src/replay/policies.rs",
+      "sha256": "480dcd688a73923d9d00f54ae4cfa8f7449151fd891911a55741a1210cafe6dc",
+      "bytes": 5016
+    },
+    {
+      "path": "research/2026-10-13/crypto/Cargo.toml",
+      "sha256": "552be9ec630b43df2dad820b2162fb8660cde84808da12707ad0f1fed5212016",
+      "bytes": 783
+    },
+    {
+      "path": "research/2026-10-13/crypto/Cargo.lock",
+      "sha256": "785c21fd7dc57b9bc22368cafb26c25ac3083933413948884478359d78f5f03b",
+      "bytes": 9054
+    }
+  ],
+  "external_primary_sources": [
+    {
+      "id": "nip01",
+      "url": "https://raw.githubusercontent.com/nostr-protocol/nips/37db639582d857e12468dcccd99b2c7f1d657da9/01.md",
+      "revision": "37db639582d857e12468dcccd99b2c7f1d657da9",
+      "retrieved_utc": "2026-10-18T17:08:46.083312+00:00",
+      "sections": [
+        "Events and signatures",
+        "Tags"
+      ],
+      "http_status": 200,
+      "sha256": "b229fa210af54e4a821c0c483fba88d7dcd2b7a6f26c010b4548039919da266e",
+      "bytes": 14072,
+      "retained_copy": false
+    },
+    {
+      "id": "nip10",
+      "url": "https://raw.githubusercontent.com/nostr-protocol/nips/37db639582d857e12468dcccd99b2c7f1d657da9/10.md",
+      "revision": "37db639582d857e12468dcccd99b2c7f1d657da9",
+      "retrieved_utc": "2026-10-18T17:08:46.308349+00:00",
+      "sections": [
+        "Text Notes and Threads",
+        "Marked e tags",
+        "p tag",
+        "Deprecated Positional e tags"
+      ],
+      "http_status": 200,
+      "sha256": "655501f90e70e838561f3b63134f1b0a9ddcbf6e4de05fbbacc0990bcbe5a5d8",
+      "bytes": 3817,
+      "retained_copy": false
+    },
+    {
+      "id": "nip18",
+      "url": "https://raw.githubusercontent.com/nostr-protocol/nips/37db639582d857e12468dcccd99b2c7f1d657da9/18.md",
+      "revision": "37db639582d857e12468dcccd99b2c7f1d657da9",
+      "retrieved_utc": "2026-10-18T17:08:46.490858+00:00",
+      "sections": [
+        "Quote Reposts"
+      ],
+      "http_status": 200,
+      "sha256": "fb9fdc741e9d6da48c42ce174cc8b30d274ba113df6b6f58d512bdc07feb80d2",
+      "bytes": 1693,
+      "retained_copy": false
+    },
+    {
+      "id": "rfc8259",
+      "url": "https://www.rfc-editor.org/rfc/rfc8259.txt",
+      "revision": "December 2017",
+      "retrieved_utc": "2026-10-18T17:08:46.761419+00:00",
+      "sections": [
+        "sections 4-9"
+      ],
+      "http_status": 200,
+      "sha256": "61a5378f4255c720beb2a4b4a63b29540147c140f36988bf086291989b4cd2d7",
+      "bytes": 28360,
+      "retained_copy": false
+    },
+    {
+      "id": "rfc3986",
+      "url": "https://www.rfc-editor.org/rfc/rfc3986.txt",
+      "revision": "January 2005",
+      "retrieved_utc": "2026-10-18T17:08:47.015509+00:00",
+      "sections": [
+        "sections 2.2,2.3,3.2,3.3"
+      ],
+      "http_status": 200,
+      "sha256": "3102dae4b68cebe40337730312fcb612297b8928547267e8b3d1ee6002b2d683",
+      "bytes": 141811,
+      "retained_copy": false
+    },
+    {
+      "id": "unicode_tr36",
+      "url": "https://www.unicode.org/reports/tr36/tr36-15.html",
+      "revision": "revision 15",
+      "retrieved_utc": "2026-10-18T17:08:47.669910+00:00",
+      "sections": [
+        "sections 2.5,3.1-3.6"
+      ],
+      "http_status": 200,
+      "sha256": "8d4d95e2736f6370e41f871b1b44c31892b9db6695ad2aec338dd14a31e8b2f5",
+      "bytes": 189063,
+      "retained_copy": false
+    },
+    {
+      "id": "bip340",
+      "url": "https://raw.githubusercontent.com/bitcoin/bips/927b6de9915c9262615a6399de51b200f81e5aa4/bip-0340.mediawiki",
+      "revision": "927b6de9915c9262615a6399de51b200f81e5aa4",
+      "retrieved_utc": "2026-10-18T17:08:47.875259+00:00",
+      "sections": [
+        "Specification / Public Key Generation",
+        "Default Signing",
+        "Verification"
+      ],
+      "http_status": 200,
+      "sha256": "17d64d6dc6bc97f4ecf178697bf810b92aa2a9e41ef13db809c25bc44a9b8109",
+      "bytes": 39995,
+      "retained_copy": false
+    },
+    {
+      "id": "bip340_reference",
+      "url": "https://raw.githubusercontent.com/bitcoin/bips/927b6de9915c9262615a6399de51b200f81e5aa4/bip-0340/reference.py",
+      "revision": "927b6de9915c9262615a6399de51b200f81e5aa4",
+      "retrieved_utc": "2026-10-18T17:08:48.047397+00:00",
+      "sections": [
+        "schnorr_sign",
+        "schnorr_verify",
+        "pubkey_gen"
+      ],
+      "http_status": 200,
+      "sha256": "4b1d4ad9e60820df4a6d239733d52b014bc03e4c47afd757a2fe4d3b586d892c",
+      "bytes": 8016,
+      "retained_copy": false
+    }
+  ],
+  "library_source": {
+    "selected_package": {
+      "name": "k256",
+      "version": "0.14.0",
+      "source": "registry+https://github.com/rust-lang/crates.io-index",
+      "checksum": "93f50113171a713f4a4231ef82eb26703607139b35dcb56241f0ceab2ae1f7d8",
+      "dependencies": [
+        "cpubits",
+        "ecdsa",
+        "elliptic-curve",
+        "primeorder",
+        "sha2",
+        "signature",
+        "wnaf"
+      ]
+    },
+    "requested_features": [
+      "schnorr"
+    ],
+    "default_features": false,
+    "reviewed_files": [
+      {
+        "package": "k256",
+        "version": "0.14.0",
+        "relative_path": "Cargo.toml",
+        "sha256": "fc7d0d340c2444bdfd36cbc64d9be2901a8156db141c74be23386c28a1aec67c"
+      },
+      {
+        "package": "k256",
+        "version": "0.14.0",
+        "relative_path": "src/schnorr/signing.rs",
+        "sha256": "16a51fd4383ea6faecc0cad3c2faf6fec77947c09abb147813f01d73541f8798"
+      },
+      {
+        "package": "k256",
+        "version": "0.14.0",
+        "relative_path": "src/schnorr/verifying.rs",
+        "sha256": "cae3985315f66858616bad17f0d4d23243cda4774a6eff5aea89b77cba7e4d8e"
+      }
+    ],
+    "docs_rs_observation": "Versioned docs.rs pages returned web internal errors; actual local registry source and pinned S02 selection were inspected instead.",
+    "limitations": "source inspection does not qualify target timing, memory erasure, entropy or production signing"
+  },
+  "source_gaps": [
+    {
+      "id": "G01",
+      "requirements": [
+        "AUTH-01",
+        "AUTH-02",
+        "AUTH-03",
+        "PROD-04"
+      ],
+      "path": "crates/nsealr-core/src/policy/approval_gate.rs",
+      "symbols": [
+        "ApprovalGate",
+        "begin_review",
+        "approve",
+        "can_sign"
+      ],
+      "observation": "Public Clone gate accepts arbitrary request/digest strings; can_sign borrows and does not consume. Empty initial strings can also match approve. No operation, custody, epoch, policy or deadline is owned.",
+      "planned_change": "Replace authority with private non-Clone state in one AuthorizationSession; remove reusable public authority.",
+      "acceptance_cases": [
+        "A01",
+        "A02",
+        "A03",
+        "A04",
+        "A05"
+      ]
+    },
+    {
+      "id": "G02",
+      "requirements": [
+        "AUTH-01",
+        "AUTH-04",
+        "PROD-05"
+      ],
+      "path": "crates/nsealr-core/src/review/trusted.rs",
+      "symbols": [
+        "TrustedReviewSession::new",
+        "current_frame",
+        "handle_button"
+      ],
+      "observation": "Constructible pages/digest and Clone session are independent of actual canonical event. Logical Next skips remaining scroll windows and there is no successful-display acknowledgement.",
+      "planned_change": "Generate complete immutable operation-bound review and require all flat pages successfully shown before local consent.",
+      "acceptance_cases": [
+        "A01",
+        "R01",
+        "R02",
+        "R03"
+      ]
+    },
+    {
+      "id": "G03",
+      "requirements": [
+        "PROD-01",
+        "AUTH-02",
+        "AUTH-05"
+      ],
+      "path": "crates/nsealr-core/src/session/account.rs",
+      "symbols": [
+        "select_session_account",
+        "SelectedSessionAccount"
+      ],
+      "observation": "Descriptor pubkey is syntax checked and copied; source_public_key_proof_verified explicitly false. Source fingerprint is not actual public-key derivation.",
+      "planned_change": "Consume actual S02 standalone key into private backend owner and derive x-only key using k256.",
+      "acceptance_cases": [
+        "I01",
+        "A02",
+        "V01"
+      ]
+    },
+    {
+      "id": "G04",
+      "requirements": [
+        "PROD-05",
+        "PROD-09"
+      ],
+      "path": "crates/nsealr-core/src/qr/envelope.rs",
+      "symbols": [
+        "Scanner::for_each_member",
+        "Scanner::parse_number_token",
+        "Scanner::skip_container",
+        "parse_qr_signing_request"
+      ],
+      "observation": "Duplicate object values overwrite; trailing comma tolerated; container skipping does not validate nested grammar; kind admits i32 range; leading zero integer tokens can survive. Fixed byte limits already exist.",
+      "planned_change": "One schema-directed strict parser with decoded-name duplicate rejection, strict integer grammar, u16 kind and complete input consumption.",
+      "acceptance_cases": [
+        "P01",
+        "P02",
+        "P03",
+        "L01"
+      ]
+    },
+    {
+      "id": "G05",
+      "requirements": [
+        "PROD-05",
+        "PROD-09"
+      ],
+      "path": "crates/nsealr-core/src/protocol.rs",
+      "symbols": [
+        "skip_json_value",
+        "parse_request_metadata",
+        "handle_serial_frame_with_review_preview"
+      ],
+      "observation": "Second recursive lenient scanner has no trailing-data check, permissive separators and inconsistent duplicate behavior. Handler emits signing_disabled, which is a retained safety boundary.",
+      "planned_change": "Use shared strict parser for every envelope method; keep disabled signing response independent of readiness flags.",
+      "acceptance_cases": [
+        "P01",
+        "P02",
+        "L01",
+        "D01"
+      ]
+    },
+    {
+      "id": "G06",
+      "requirements": [
+        "AUTH-02",
+        "AUTH-05"
+      ],
+      "path": "crates/nsealr-core/src/review/qr.rs",
+      "symbols": [
+        "qr_approval_digest",
+        "DigestWriter",
+        "push_pages_json"
+      ],
+      "observation": "Hashes a legacy review JSON with caller identity; does not compute the NIP-01 event ID. No implemented NIP-01 signing backend in core.",
+      "planned_change": "Canonicalize complete owned event with custody key; use separate domain-bound review commitment.",
+      "acceptance_cases": [
+        "C01",
+        "C02",
+        "V01",
+        "A02"
+      ]
+    },
+    {
+      "id": "G07",
+      "requirements": [
+        "PROD-05",
+        "AUTH-01"
+      ],
+      "path": "crates/nsealr-core/src/review/qr.rs",
+      "symbols": [
+        "for_each_summary_event",
+        "display_safe_text",
+        "build_qr_display_review_pages"
+      ],
+      "observation": "Generic kind/tag display has no P01 kind-specific admission. U+XXXX non-ASCII spelling can collide with literal text; literal backslashes are not escaped in current safe view.",
+      "planned_change": "Admit only fully specified kind1 semantics; distinct indexed interpreted/additional data and injective escaping.",
+      "acceptance_cases": [
+        "R01",
+        "R02",
+        "KIND01",
+        "KIND02"
+      ]
+    },
+    {
+      "id": "G08",
+      "requirements": [
+        "PROD-05",
+        "AUTH-01"
+      ],
+      "path": "crates/nsealr-core/src/review/display.rs",
+      "symbols": [
+        "bounded_body_lines",
+        "truncate_for_display",
+        "render_review_page"
+      ],
+      "observation": "General renderer wraps then ellipsizes overflowing body; success alone does not establish complete inspection.",
+      "planned_change": "Authority-bearing renderer rejects overflow, generates all bounded pages and fails before consent.",
+      "acceptance_cases": [
+        "R01",
+        "R03",
+        "L01"
+      ]
+    },
+    {
+      "id": "G09",
+      "requirements": [
+        "AUTH-01",
+        "AUTH-03"
+      ],
+      "path": "crates/nsealr-core/src/review/qr_flow.rs",
+      "symbols": [
+        "QrReviewFlow",
+        "QrReviewIoFlowResult",
+        "QrReviewTranscriptStep"
+      ],
+      "observation": "Clone wrappers and approved_for_signing booleans look like reusable authority; serial facade mirrors them.",
+      "planned_change": "Migrate consumers to diagnostic review decisions; neither previews nor transcripts convert to new authorization.",
+      "acceptance_cases": [
+        "A01",
+        "A03",
+        "D01"
+      ]
+    },
+    {
+      "id": "G10",
+      "requirements": [
+        "AUTH-04",
+        "PROD-04"
+      ],
+      "path": "crates/nsealr-core/src/policy/approval_gate.rs",
+      "symbols": [
+        "ApprovalGate"
+      ],
+      "observation": "No cancel/lock/reset/expiry/account/policy generation lifecycle; beginning another review resets reusable state without a session binding.",
+      "planned_change": "One pending owner, checked generations, monotonic deadline and explicit invalidation; no grant serialization.",
+      "acceptance_cases": [
+        "A04",
+        "A05",
+        "A06",
+        "L01"
+      ]
+    },
+    {
+      "id": "G11",
+      "requirements": [
+        "PROD-11",
+        "AUTH-01"
+      ],
+      "path": "crates/nsealr-core/src/policy/signing_policy.rs",
+      "symbols": [
+        "SigningReadiness",
+        "evaluate_signing_readiness"
+      ],
+      "observation": "Universal public bool bag can evaluate true but has no evidence provenance; current transport still hardcodes signing_disabled.",
+      "planned_change": "Do not consume this bag as authority; retain T01 ownership of full readiness replacement.",
+      "acceptance_cases": [
+        "D01"
+      ]
+    },
+    {
+      "id": "G12",
+      "requirements": [
+        "PROD-01",
+        "PROD-04"
+      ],
+      "path": "crates/nsealr-core/src/nip19.rs",
+      "symbols": [
+        "SecretKey::take_from",
+        "SecretKey::as_bytes",
+        "Drop"
+      ],
+      "observation": "S02 already prevents public raw borrow/Clone and clears caller intake. Keyring consumes sources. Backend scalar conversion will still create internal temporaries.",
+      "planned_change": "Preserve exposed boundary; one narrow consuming backend conversion with scratch inventory and no real-key qualification claim.",
+      "acceptance_cases": [
+        "I01",
+        "A04"
+      ]
+    }
+  ],
+  "preparation_checks": [
+    {
+      "argv": [
+        "git",
+        "rev-parse",
+        "HEAD",
+        "origin/main"
+      ],
+      "cwd": "repository root",
+      "exit_code": 0,
+      "stdout": "3cbd818a0bcd4016eb8983dad7605cb57280d913\n3cbd818a0bcd4016eb8983dad7605cb57280d913\n",
+      "stderr": "",
+      "interpretation": "preparation identity/scope observation"
+    },
+    {
+      "argv": [
+        "git",
+        "remote",
+        "get-url",
+        "origin"
+      ],
+      "cwd": "repository root",
+      "exit_code": 0,
+      "stdout": "https://github.com/nSealr/nsealr.git\n",
+      "stderr": "",
+      "interpretation": "preparation identity/scope observation"
+    },
+    {
+      "argv": [
+        "git",
+        "status",
+        "--short",
+        "--branch"
+      ],
+      "cwd": "repository root",
+      "exit_code": 0,
+      "stdout": "## restart/s03-authorization\n?? docs/restart/implementation/S03/\n",
+      "stderr": "",
+      "interpretation": "preparation identity/scope observation"
+    },
+    {
+      "argv": [
+        "git",
+        "grep",
+        "-n",
+        "ApprovalTicket",
+        "HEAD",
+        "--",
+        "crates",
+        "apps"
+      ],
+      "cwd": "repository root",
+      "exit_code": 1,
+      "stdout": "",
+      "stderr": "",
+      "interpretation": "absence is expected for ApprovalTicket; no behavioral execution claim"
+    }
+  ],
+  "initial_workspace_correction": {
+    "observation": "/home/tux/nsealr is an integration directory, not a Git repository; initial git status exited 128 before reading repository files.",
+    "resolution": "read integration AGENTS.md and use firmware repo / owned s03 worktree; no source mutation occurred"
+  },
+  "not_executed": [
+    "No product changes",
+    "No behavioral acceptance tests",
+    "No S02 suite rerun",
+    "No physical device test",
+    "No independent final review"
+  ],
+  "source_authority_note": "Findings above are source observations, not claimed executed exploits; first implementation step must preserve baseline behavioral reproductions.",
+  "coordination": {
+    "A02": "Read preparation brief at a02 worktree; it preserves crates path. No A02 files changed; coordinator must reconcile actual pinned inputs before implementation/import.",
+    "future_modules": [
+      "crates/nsealr-core/src/event.rs",
+      "crates/nsealr-core/src/authorization.rs",
+      "crates/nsealr-core/src/review/event.rs"
+    ],
+    "no_private_history_import": true
+  },
+  "adjacent_read_only_observations": [
+    {
+      "repository": "nSealr/companion",
+      "commit": "678796900e462f5504e47fe934e2e5f23d85824f",
+      "path": "packages/policy/src/policy.ts",
+      "sha256": "4ec84d68034d7a166d15d6bf95704479925c275b915771232f5381733d72a0b3",
+      "symbols": [
+        "validateRouteSemantics"
+      ],
+      "observation": "Legacy ESP32USB/custom host routes require persistent_grants=true. This is not S03 consent authority; T01/F01 own replacement/optional automation, no compatibility obligation."
+    }
+  ],
+  "preparation_verification": {
+    "utc": "2026-10-18T17:13:12.748756+00:00",
+    "python": "3.13.5 (main, Aug 10 2026, 12:06:59) [GCC 14.2.0]",
+    "platform": "Linux-6.12.101+deb13-amd64-x86_64-with-glibc2.41",
+    "checks": [
+      {
+        "command": "git diff --cached --check",
+        "exit_code": 0,
+        "stdout": "",
+        "stderr": ""
+      },
+      {
+        "command": "python3 - (inline source SHA256 and case-reference verification)",
+        "exit_code": 0,
+        "checks": [
+          "all 43 input file SHA256 values recomputed from git show 3cbd818a0bcd4016eb8983dad7605cb57280d913:path",
+          "20 case IDs unique; all source-gap and acceptance-case references resolve",
+          "exactly indexes 0..4 map unchanged S03 acceptance",
+          "8 external sources have HTTP 200 and SHA256 records"
+        ],
+        "stdout": {
+          "input_hashes_verified": 43,
+          "case_links_verified": 20,
+          "acceptance_indexes_verified": 5,
+          "external_hash_records": 8,
+          "product_tests_run": false
+        }
+      }
+    ],
+    "meaning": "Preparation consistency only, not implementation/physical acceptance. No unrelated S02 tests rerun."
+  },
+  "input_reconciliation": {
+    "observed_main_commit": "7b5553685dac56029a4379be12054154b6b5e0b5",
+    "utc": "2026-10-18T17:18:18.566592+00:00",
+    "audited_input_files": 43,
+    "byte_identical_files": 41,
+    "changed_files": [
+      {
+        "path": "docs/restart/README.md",
+        "input_sha256": "3a5f718421945f6952ef76c661e197eb2bddbb01ab773a2f7bac1ad5fc17ffe5",
+        "current_sha256": "84ff28271341348f7f82da12ccac2920dfb534a1dac222cd665b16201bc025ea",
+        "current_bytes": 4403,
+        "classification": "lifecycle_handoff_guidance"
+      },
+      {
+        "path": "docs/restart/work-items.json",
+        "input_sha256": "4738881563c35c25aeadedcc5f41e3d3c34e8c8740139dce9185a8f15aa01e97",
+        "current_sha256": "119aeeb2f1cb32a6990cc5aeaa6aa2dc4934820e9ed1b0679db1cd382d2acff3",
+        "current_bytes": 328318,
+        "classification": "canonical_task_lifecycle_metadata"
+      }
+    ],
+    "unchanged_acceptance_tasks": [
+      "P01",
+      "S02",
+      "S03"
+    ],
+    "graph_revision": 11,
+    "current_task_observations": {
+      "P01": {
+        "status": "integrated",
+        "assignee": "/root",
+        "github_issue": "https://github.com/nSealr/nsealr/issues/2",
+        "input_commits": {
+          "nSealr/nsealr": "768e8a35ae541f53f5da9c7bea7bf5c577fb474d"
+        }
+      },
+      "S02": {
+        "status": "integrated",
+        "assignee": "/root/secret_execution",
+        "github_issue": "https://github.com/nSealr/nsealr/issues/4",
+        "input_commits": {
+          "nSealr/nsealr": "768e8a35ae541f53f5da9c7bea7bf5c577fb474d"
+        }
+      },
+      "S03": {
+        "status": "running",
+        "assignee": "/root/s03_author",
+        "github_issue": "https://github.com/nSealr/nsealr/issues/17",
+        "input_commits": {
+          "nSealr/nsealr": "3cbd818a0bcd4016eb8983dad7605cb57280d913"
+        }
+      }
+    },
+    "semantic_disposition": "Source input remains 3cbd818a; all audited product/library/requirement files remain identical. README changes update foundation status and handoff guidance; graph records integrated dependencies and S03 running on the same pinned source. No algorithm/admission changes or product writes are imported by this reconciliation. Exact revised brief still awaits approval.",
+    "A02_coordination": "Actual import not started. Coordinator will pin the selected final core tuple before adoption and reconcile conflicts without discarding approved work."
+  },
+  "specification_clarifications": {
+    "reviewed_predecessor_candidate": "510b0fb06fd588f2a24cb03f2c2a6e4c15c534d6",
+    "requested_by": "/root",
+    "items": [
+      "Enumerate seven canonical JSON escape spellings: quote/backslash and five named controls; remaining C0 lowercase u00xx.",
+      "Use one aggregate-bounded decoded-string arena with spans; forbid per-slot 256-byte strings. Enforce PendingOperation <=8192 and complete retained AuthorizationSession <=16384 bytes, including all inline fields; inventory excluded external/transient scratch separately.",
+      "ASCII escaped cursor is portable conformance/exact inspection only. Device plus P02 gates qualify readable Unicode/usability; any expanded renderer requires owned review.",
+      "Reconcile both README and graph metadata drift against exact main, retaining source input and all 20 behavioral families."
+    ],
+    "implementation_performed": false
+  },
+  "clarification_validation": {
+    "utc": "2026-10-18T17:18:18.566657+00:00",
+    "python": "3.13.5 (main, Aug 10 2026, 12:06:59) [GCC 14.2.0]",
+    "platform": "Linux-6.12.101+deb13-amd64-x86_64-with-glibc2.41",
+    "command": "python3 - (inline original/main input SHA256, unchanged acceptance, case references, escape and retained-budget consistency checks)",
+    "exit_code": 0,
+    "stdout": {
+      "original_input_hashes_verified": 43,
+      "current_main_identical_inputs": 41,
+      "current_main_changed_inputs": 2,
+      "case_links_verified": 20,
+      "acceptance_indexes_verified": 5,
+      "canonical_escape_spellings": 7,
+      "retained_base_bytes": 5318,
+      "product_tests_run": false
+    },
+    "meaning": "Preparation reconciliation only; no product implementation, broad test-suite replay or physical validation."
+  }
+}

@@ -1,0 +1,168 @@
+{
+  "schema_version": 1,
+  "task": "S03",
+  "review_kind": "independent final security review",
+  "reviewer": "/root/s03_security_review",
+  "author": "/root/s03_author",
+  "review_branch": "review/s03-security",
+  "candidate_commit": "2d7d465a291c4d4a1324d90595fc45a2fdbefca5",
+  "final_source_commit": "271bb88cf8a3efef71a01f2130897ab098e537a5",
+  "behavior_commit": "e6747615f13734f8fce3724bc03c7c5b98c90f07",
+  "source_base": "3cbd818a0bcd4016eb8983dad7605cb57280d913",
+  "accepted_specification": "e63165d95f6094877b031f4baccce32831a50d68",
+  "distinct_spec_review": "68b4374f93487fef3b559e9a401bc231a7c7bdfe",
+  "frozen_main": "f2ef70f522af4977e15f81554a8c6eadcdbe8097",
+  "reviewed_utc": "2026-10-18T18:25:08.521006+00:00",
+  "verdict": "PASS_bounded_S03_security_candidate",
+  "verdict_scope": "The exact candidate satisfies the accepted portable kind-1 parsing, canonicalization, complete exact-inspection and one-use authorization security boundary. No blocking security defect found. This is not task closure, merge approval for an unreviewed integrated tree, production signing, remaining catalog acceptance, physical release qualification or external certification.",
+  "blocking_findings": [],
+  "findings": [
+    {
+      "id": "S03-SEC-01",
+      "severity": "low",
+      "blocking_current_security": false,
+      "title": "Legacy QR preview documentation still describes a diagnostic decision as signing approval",
+      "locations": [
+        "crates/nsealr-core/src/review/qr_flow.rs:124",
+        "crates/nsealr-core/src/review/qr_flow.rs:200",
+        "crates/nsealr-core/src/review/qr_flow.rs:334"
+      ],
+      "observed": "The three public comments say approved for signing. Their actual review_approved fields/method are copied diagnostic state. The renamed ReviewDecisionState, TrustedReviewSession and QR flow have no conversion into AuthorizationSession, no custody key and no execution provider. No current signing authority follows from those booleans.",
+      "risk": "Misleading generated API documentation may encourage a future integration to treat a reusable preview boolean as authority.",
+      "required_integration_action": "Root explicitly owns correction of these comments during S03/A02 layout integration before S03 source is merged to main. Keep this reviewed candidate frozen. The integration review must inspect the mechanical documentation delta, source equivalence and affected checks; do not defer the correction as shipped K01 debt.",
+      "authority": "Coordinator message to this independent reviewer on 2026-10-18; no product files changed by reviewer."
+    }
+  ],
+  "security_analysis": [
+    {
+      "area": "Strict schema and canonical bytes",
+      "anchors": [
+        "crates/nsealr-core/src/event.rs:152",
+        "crates/nsealr-core/src/event.rs:170",
+        "crates/nsealr-core/src/event.rs:228",
+        "crates/nsealr-core/src/event.rs:359",
+        "crates/nsealr-core/src/event.rs:477",
+        "crates/nsealr-core/src/event.rs:519",
+        "crates/nsealr-core/src/event.rs:550",
+        "crates/nsealr-core/src/qr/envelope.rs:679"
+      ],
+      "conclusion": "One fixed-schema Reader replaces both permissive scanners. Decoded names are compared before dispatch, so aliases cannot bypass uniqueness or the allowlist. Complete-object consumption, exact decimal unsigned lexemes, u16 kind, interoperable timestamp policy, strict UTF-8/surrogates, tag shape and aggregate capacities fail closed. Unknown fields reject without recursively traversing their values. EventTemplate owns decoded values once and canonicalizes order-preserving NIP-01 strings/arrays with the exact accepted seven escapes plus lowercase other-C0 escapes. Standalone write_canonical accepts public bytes for a diagnostic calculation; authorization never takes that caller output as identity or authority."
+    },
+    {
+      "area": "Custody and one-use execution",
+      "anchors": [
+        "crates/nsealr-core/src/authorization.rs:112",
+        "crates/nsealr-core/src/authorization.rs:124",
+        "crates/nsealr-core/src/authorization.rs:233",
+        "crates/nsealr-core/src/authorization.rs:335",
+        "crates/nsealr-core/src/authorization.rs:444",
+        "crates/nsealr-core/src/authorization.rs:464",
+        "crates/nsealr-core/src/authorization.rs:501"
+      ],
+      "conclusion": "A non-Clone owner consumes the S02 secret, derives its actual x-only identity and retains one immutable parsed request. The private pending context binds request, account/session/policy/operation/configuration, exact review, limits, geometry and deadline. start_execution changes Approved to Spent before correlation/time/binding validation or backend invocation. Completion is revalidated, verifies raw BIP340 against the bound key/ID, invalidates unconditionally, and has no response cache. Execution borrows the original owner exclusively; safe external callers cannot detach or retarget it to a reconstructed owner with repeated numeric counters. Existing authored fault-injection and race tests were inspected and independently rerun; public lifecycle probes add rejected configuration and same-key account replacement controls."
+    },
+    {
+      "area": "Lifecycle and trusted local boundary",
+      "anchors": [
+        "crates/nsealr-core/src/authorization.rs:244",
+        "crates/nsealr-core/src/authorization.rs:265",
+        "crates/nsealr-core/src/authorization.rs:279",
+        "crates/nsealr-core/src/authorization.rs:357",
+        "crates/nsealr-core/src/authorization.rs:409"
+      ],
+      "conclusion": "Cancel, lock/reset, policy/account/configuration changes and unavailable/rolled-back/expired time clear pending authority. Busy intake cannot replace the request or extend deadline. Full traversal has no jumping API; every successful local Next advances one flat page and a distinct final decision is required. Failed display cannot acknowledge; early approval or duplicate consent is terminal. LocalReviewIo and supplied monotonic ticks are trusted-image adapter responsibilities: malicious firmware can lie, so this is not a sandbox or physical button attestation. Future transport connection teardown/rebind must invoke invalidation on this same owner; current legacy transports are signing-disabled and do not create owner authority. There is no qualified asynchronous provider or live reconnect integration in S03."
+    },
+    {
+      "area": "Semantic and exact review adequacy",
+      "anchors": [
+        "crates/nsealr-core/src/review/event.rs:87",
+        "crates/nsealr-core/src/review/event.rs:111",
+        "crates/nsealr-core/src/review/event.rs:168",
+        "crates/nsealr-core/src/review/event.rs:192",
+        "crates/nsealr-core/src/review/event.rs:275"
+      ],
+      "conclusion": "Only the accepted kind-1 subset reaches this owner. Known e/p/q prefixes validate curve keys, markers/reply context, quote address structure and conservative URI grammar; invalid known semantics and emoji never fall back to uninterpreted acceptance. Unknown tags and defined suffixes are complete indexed additional signed data. Every signed field, identity, correlation and bound local context is paginated with label/value/position accounting. Quoting plus escaped literal backslash makes the ASCII token grammar injective, including literal escape text versus bidi/combining/control/supplementary scalars. Tokens never split across lines in the independent reconstruction. This proves exact inspection, not readable Unicode UX, high-level reply education or actual screen/input usability."
+    },
+    {
+      "area": "Resource bounds and maintainability",
+      "anchors": [
+        "crates/nsealr-core/src/event.rs:95",
+        "crates/nsealr-core/src/authorization.rs:571",
+        "crates/nsealr-core/src/review/event.rs:471"
+      ],
+      "conclusion": "Single 4096-byte decoded arena, bounded spans/tag boundaries and one pending slot avoid the former Cartesian allocation risk. Host retained EventTemplate/Pending/AuthorizationSession sizes independently reproduced as 5232/5728/6016 bytes, within 8192/16384 caps also compiled for RISC-V. Canonical hash streams; no canonical copy, page array, queue or completed-result cache lives in the owner. The narrow parser/semantic-review/owner modules remain understandable without a generic authorization registry. Frame lookup recomputes the bounded document and a full review can be quadratic in page count; actual peak stack/RAM and latency remain explicit device gates. This source review does not infer those measurements from fixed type sizes."
+    },
+    {
+      "area": "Shipping boundary, dependencies and key material",
+      "anchors": [
+        "crates/nsealr-core/Cargo.toml",
+        "crates/nsealr-core/src/authorization.rs:538",
+        "crates/nsealr-core/src/authorization.rs:557",
+        "vendor/k256/src/schnorr/signing.rs:53",
+        "vendor/k256/src/schnorr/signing.rs:146",
+        "vendor/k256/src/schnorr/signing.rs:320",
+        "crates/nsealr-core/src/nip19.rs:54"
+      ],
+      "conclusion": "Product attempt_sign supplies only SigningUnavailable to the private consuming boundary; the actual sign_raw call is in a private cfg(test) module, with no public secret callback, mint, test feature or production enable switch. No obsolete can_sign/approved_for_signing authority API remains; the historical fixture field reader is diagnostic. The activated no-default runtime graph includes k256 Schnorr/arithmetic and transitive ecdsa DER/digest support, but no alloc/std/serde/ECDH/getrandom or ECDSA algorithm feature. rand_core traits do not create an entropy provider. All lock package checksums and 1869 vendor file hashes match; provenance/license source is retained. S02 intake wipes caller storage; k256 Drop zeroizes its retained scalar, but conversion copies/moves, scalar temporaries, compiler spills and backend scratch are not proven erased. k256 normalizes d to n-d for even Y and keeps only that scalar; future recovery custody must preserve the original imported source before conversion. No recovery export or NIP44 path is implemented; scalar negation alone is not evidence of an NIP44 x-coordinate failure."
+    }
+  ],
+  "independent_validation": {
+    "meaning": "The reviewer authored an external Rust consumer and separate Python strict grammar/hash/inspection expectations, then linked the unmodified candidate through real public boundaries. No absent-API compile error is counted as a behavioral probe.",
+    "adversarial_summary": {
+      "cases": 2104,
+      "strict_accepted": 202,
+      "strict_rejected": 1853,
+      "canonical_matches": 202,
+      "reviews_reconstructed": 114,
+      "frames_reconstructed": 5215,
+      "preflight_rejections": 22,
+      "envelope_checks": 49,
+      "semantic_checks": 43
+    },
+    "adversarial_details": [
+      "Deterministic 1800 byte insertion/deletion/replacement mutations with seed 0x5303, plus explicit malformed/duplicate/escaped-name/type/integer/UTF-8/deep-unknown cases and unique member-order controls.",
+      "Canonical JSON bytes and SHA256 checked independently with Python json/hashlib for every accepted template.",
+      "All accepted review frame fields reconstructed against independent quoted ASCII encoding and original semantic input; labels, indexes, contiguous fragments, total line/column budget and position checked.",
+      "43 hand-selected semantic positives/negatives check validate_kind1 and actual begin_request/review admission; 22 geometry failures reject before review.",
+      "49 envelope tests run ParsedRequest, QR request adapter and framed serial handler, including escaped aliases, duplicate keys, unknown host authority fields, numeric wire version spelling and trailing objects."
+    ],
+    "public_lifecycle_families": 4,
+    "author_affected_families_rerun": 20,
+    "public_api_doctests_rerun": 15,
+    "actual_signature_oracle_rerun": {
+      "events": 8,
+      "actual_key_imports": 3,
+      "official_verifier_controls": 7,
+      "signature_byte_negatives": 512,
+      "event_id_byte_negatives": 256,
+      "canonical_field_negatives": 32,
+      "wrong_key_negatives": 8,
+      "double_hash_negatives": 8
+    },
+    "riscv_no_std_release_build": "PASS; this is a library compile with const size assertions, not final target firmware qualification or the remapped reproducibility artifact.",
+    "manifest_integrity": "34 author artifacts plus all three accepted specification files verified exactly; final candidate differs from final source only by S03 evidence/handoff.",
+    "frozen_main_reconciliation": "All 43 input-source hashes independently recomputed: 41 byte-identical at frozen main f2ef70f; restart README and graph are the only differing files.",
+    "narrow_scope_reconciliation": "source_backup.rs and board_profile_tests.rs exactly equal base after the sole render_review_page to render_preview_page textual substitution; no backup or secret behavior change.",
+    "tests_not_repeated": "Full make ci, unaffected simulator groups, complete coverage/reproducibility/deny were not redundantly rerun. Their exact hash-verified author logs cover final source271bb88. Targeted changed behavior, public surface, actual outputs and no_std dependency compilation were independently rerun.",
+    "reviewer_probe_failures": "Two false negative controls were preserved with raw traces and explanations: a label-prefix filter counted Signed tag count as a tag field, and an uppercase-hex negative used digits only. Corrected reviewer expectations pass; product source was never changed.",
+    "commands": "evidence/commands.json",
+    "reproduce": [
+      "python3 docs/restart/implementation/reviews/S03-security/run_review.py"
+    ],
+    "evidence_manifest": "artifact-manifest.json",
+    "diff_validation": "Source/report/probe staged whitespace check passes. Whole-artifact check reports four trailing blank lines from preserved raw cargo outputs; evidence/diff-check.json records the exact exception without modifying logs or repository policy."
+  },
+  "integration_requirements": [
+    "Apply S03-SEC-01 wording correction before source merge; review exact integrated delta and affected tests.",
+    "Root must reconcile this exact product source with A02 selected-source/layout admission and later S01 tooling/fixture adoption. This report never authorizes overwriting moving main.",
+    "T01 new wire v2 must be reviewed against the integrated S03 API. This candidate preserves numeric wire version1 and does not license descriptors, persistent grants or copied previews as approval.",
+    "Any change to parser grammar, kind/URI scope, renderer, authorization ownership, backend, dependency features or lifecycle behavior invalidates affected evidence and needs review of that changed candidate."
+  ],
+  "unqualified_remaining": {
+    "K01": "Remaining event catalog, production signing/provider and entropy, fresh completion-time/output-boundary validation, full secret scratch analysis and actual final target linking.",
+    "D02_K01": "Preserve original-scalar recovery custody before normalized execution-key conversion; no normalization/export policy established here.",
+    "T01": "Per-profile capabilities, limits, readiness and transport routing; connection lifecycle must invalidate the owner.",
+    "P02_devices": "Faithful readable Unicode with exact inspection, real display/input origin, usable review timing, monotonic clock/reset behavior, entropy, physical custody/erasure/peripheral isolation, target peak RAM/stack/latency and client receiver behavior.",
+    "release": "No device profile, fabrication, physical release, production key use or external security certification is qualified."
+  }
+}

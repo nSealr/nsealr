@@ -1,0 +1,22 @@
+{
+  "probe_source": "extern crate k256; fn main() { println!(\"{} {}\", core::mem::size_of::<k256::schnorr::SigningKey>(), core::mem::size_of::<Option<k256::schnorr::SigningKey>>()); }\n",
+  "compile_argv": [
+    "rustc",
+    "--edition=2021",
+    "/tmp/s03-key-size.rs",
+    "--extern",
+    "k256=/home/tux/nsealr/.restart-tools/goal/s03/target/debug/deps/libk256-ea6a2d0456696c37.rlib",
+    "-L",
+    "dependency=/home/tux/nsealr/.restart-tools/goal/s03/target/debug/deps",
+    "-o",
+    "/tmp/s03-key-size"
+  ],
+  "compile_exit_code": 0,
+  "dependency_sha256": "892fec335648b2a952030c843c5468bae201865ce7acfb53b274660197cbef59",
+  "run_argv": [
+    "/tmp/s03-key-size"
+  ],
+  "run_exit_code": 0,
+  "output": "136 136\n",
+  "interpretation": "Host static inline type sizes only. Option<SigningKey> is already included in the retained AuthorizationSession total, not additive. No peak stack or backend scratch claim."
+}
