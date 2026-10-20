@@ -1,0 +1,1007 @@
+{
+  "format": "nsealr.k01-pre-runtime-semantic-matrix-v1",
+  "role": "Concrete semantic inputs/expected roles and negative effects established before affected runtime code. Not observed outputs or execution proof.",
+  "accepted_spec": "822c6390a929d3c490e9fa02f6e17191e84958c5",
+  "current_base": "a64a2090d317b1ad07b6293c9f9211b2a1371c0f",
+  "independent_source": "Accepted P01/catalog/mandatory_per_kind_matrix; original prepared13/3/27 remain unchanged. JSON construction only, no product import, parser/renderer/signer output or new crypto research.",
+  "families": 9,
+  "actual_concrete_rows": 70,
+  "boundary_family_has_two_rows": true,
+  "rows": [
+    {
+      "id": "kind0-minimal",
+      "kind": 0,
+      "template": "{\"created_at\":1710000000,\"kind\":0,\"tags\":[],\"content\":\"{}\"}",
+      "expected_preflight": "accept",
+      "expected_roles": [
+        "profile replacement",
+        "metadata object",
+        "no verified identity"
+      ],
+      "expected_original_values": "Every decoded content/tag field and extension must be fully indexed and inspectable; no product-produced expected output.",
+      "expected_effects_before_failure": null
+    },
+    {
+      "id": "kind0-complex",
+      "kind": 0,
+      "template": "{\"created_at\":1710000000,\"kind\":0,\"tags\":[],\"content\":\"{\\\"name\\\":\\\"Alice\\\",\\\"nested\\\":{\\\"n\\\":-1.25e+2,\\\"yes\\\":true,\\\"none\\\":null,\\\"list\\\":[\\\"é\\\",false]}}\"}",
+      "expected_preflight": "accept",
+      "expected_roles": [
+        "profile replacement",
+        "metadata object",
+        "no verified identity"
+      ],
+      "expected_original_values": "Every decoded content/tag field and extension must be fully indexed and inspectable; no product-produced expected output.",
+      "expected_effects_before_failure": null
+    },
+    {
+      "id": "kind0-wrong-type",
+      "kind": 0,
+      "template": "{\"created_at\":1710000000,\"kind\":0,\"tags\":[],\"content\":1}",
+      "expected_preflight": "reject",
+      "expected_roles": [],
+      "expected_original_values": "Every decoded content/tag field and extension must be fully indexed and inspectable; no product-produced expected output.",
+      "expected_effects_before_failure": {
+        "approval": 0,
+        "entropy": 0,
+        "sign": 0,
+        "output": false
+      },
+      "error_layer": "parser"
+    },
+    {
+      "id": "kind0-escaped-duplicate",
+      "kind": 0,
+      "template": "{\"created_at\":1710000000,\"kind\":0,\"k\\u0069nd\":0,\"tags\":[],\"content\":\"{}\"}",
+      "expected_preflight": "reject",
+      "expected_roles": [],
+      "expected_original_values": "Every decoded content/tag field and extension must be fully indexed and inspectable; no product-produced expected output.",
+      "expected_effects_before_failure": {
+        "approval": 0,
+        "entropy": 0,
+        "sign": 0,
+        "output": false
+      },
+      "error_layer": "parser"
+    },
+    {
+      "id": "kind0-known-prefix-invalid",
+      "kind": 0,
+      "template": "{\"created_at\":1710000000,\"kind\":0,\"tags\":[],\"content\":\"{\\\"a\\\":{\\\"x\\\":1,\\\"\\\\u0078\\\":2}}\"}",
+      "expected_preflight": "reject",
+      "expected_roles": [],
+      "expected_original_values": "Every decoded content/tag field and extension must be fully indexed and inspectable; no product-produced expected output.",
+      "expected_effects_before_failure": {
+        "approval": 0,
+        "entropy": 0,
+        "sign": 0,
+        "output": false
+      },
+      "error_layer": "semantic"
+    },
+    {
+      "id": "kind0-unknown-tag",
+      "kind": 0,
+      "template": "{\"created_at\":1710000000,\"kind\":0,\"tags\":[[\"opaque\",\"unknown-value\",\"complete-last-value\"]],\"content\":\"{}\"}",
+      "expected_preflight": "accept",
+      "expected_roles": [
+        "profile replacement",
+        "metadata object",
+        "no verified identity"
+      ],
+      "expected_original_values": "Every decoded content/tag field and extension must be fully indexed and inspectable; no product-produced expected output.",
+      "expected_effects_before_failure": null
+    },
+    {
+      "id": "kind0-known-prefix-suffix",
+      "kind": 0,
+      "template": "{\"created_at\":1710000000,\"kind\":0,\"tags\":[[\"opaque\",\"prefix\",\"suffix\"]],\"content\":\"{}\"}",
+      "expected_preflight": "accept",
+      "expected_roles": [
+        "profile replacement",
+        "metadata object",
+        "no verified identity"
+      ],
+      "expected_original_values": "Every decoded content/tag field and extension must be fully indexed and inspectable; no product-produced expected output.",
+      "expected_effects_before_failure": null
+    },
+    {
+      "id": "kind0-tag-count-32",
+      "kind": 0,
+      "template": "{\"created_at\":1710000000,\"kind\":0,\"tags\":[[\"opaque\",\"0\"],[\"opaque\",\"1\"],[\"opaque\",\"2\"],[\"opaque\",\"3\"],[\"opaque\",\"4\"],[\"opaque\",\"5\"],[\"opaque\",\"6\"],[\"opaque\",\"7\"],[\"opaque\",\"8\"],[\"opaque\",\"9\"],[\"opaque\",\"10\"],[\"opaque\",\"11\"],[\"opaque\",\"12\"],[\"opaque\",\"13\"],[\"opaque\",\"14\"],[\"opaque\",\"15\"],[\"opaque\",\"16\"],[\"opaque\",\"17\"],[\"opaque\",\"18\"],[\"opaque\",\"19\"],[\"opaque\",\"20\"],[\"opaque\",\"21\"],[\"opaque\",\"22\"],[\"opaque\",\"23\"],[\"opaque\",\"24\"],[\"opaque\",\"25\"],[\"opaque\",\"26\"],[\"opaque\",\"27\"],[\"opaque\",\"28\"],[\"opaque\",\"29\"],[\"opaque\",\"30\"],[\"opaque\",\"31\"]],\"content\":\"{}\"}",
+      "expected_preflight": "accept",
+      "expected_roles": [
+        "profile replacement",
+        "metadata object",
+        "no verified identity"
+      ],
+      "expected_original_values": "Every decoded content/tag field and extension must be fully indexed and inspectable; no product-produced expected output.",
+      "expected_effects_before_failure": null,
+      "error_layer": null
+    },
+    {
+      "id": "kind0-tag-count-33",
+      "kind": 0,
+      "template": "{\"created_at\":1710000000,\"kind\":0,\"tags\":[[\"opaque\",\"0\"],[\"opaque\",\"1\"],[\"opaque\",\"2\"],[\"opaque\",\"3\"],[\"opaque\",\"4\"],[\"opaque\",\"5\"],[\"opaque\",\"6\"],[\"opaque\",\"7\"],[\"opaque\",\"8\"],[\"opaque\",\"9\"],[\"opaque\",\"10\"],[\"opaque\",\"11\"],[\"opaque\",\"12\"],[\"opaque\",\"13\"],[\"opaque\",\"14\"],[\"opaque\",\"15\"],[\"opaque\",\"16\"],[\"opaque\",\"17\"],[\"opaque\",\"18\"],[\"opaque\",\"19\"],[\"opaque\",\"20\"],[\"opaque\",\"21\"],[\"opaque\",\"22\"],[\"opaque\",\"23\"],[\"opaque\",\"24\"],[\"opaque\",\"25\"],[\"opaque\",\"26\"],[\"opaque\",\"27\"],[\"opaque\",\"28\"],[\"opaque\",\"29\"],[\"opaque\",\"30\"],[\"opaque\",\"31\"],[\"opaque\",\"32\"]],\"content\":\"{}\"}",
+      "expected_preflight": "reject",
+      "expected_roles": [],
+      "expected_original_values": "Every decoded content/tag field and extension must be fully indexed and inspectable; no product-produced expected output.",
+      "expected_effects_before_failure": {
+        "approval": 0,
+        "entropy": 0,
+        "sign": 0,
+        "output": false
+      },
+      "error_layer": "parser"
+    },
+    {
+      "id": "kind0-review-capacity",
+      "kind": 0,
+      "template": "{\"created_at\":1710000000,\"kind\":0,\"tags\":[],\"content\":\"{}\"}",
+      "expected_preflight": "reject",
+      "expected_roles": [],
+      "expected_original_values": "Every decoded content/tag field and extension must be fully indexed and inspectable; no product-produced expected output.",
+      "expected_effects_before_failure": {
+        "approval": 0,
+        "entropy": 0,
+        "sign": 0,
+        "output": false
+      },
+      "error_layer": "semantic",
+      "local_review_page_limit": 2
+    },
+    {
+      "id": "kind1-minimal",
+      "kind": 1,
+      "template": "{\"created_at\":0,\"kind\":1,\"tags\":[],\"content\":\"note\"}",
+      "expected_preflight": "accept",
+      "expected_roles": [
+        "text note",
+        "unverified references",
+        "reply context"
+      ],
+      "expected_original_values": "Every decoded content/tag field and extension must be fully indexed and inspectable; no product-produced expected output.",
+      "expected_effects_before_failure": null
+    },
+    {
+      "id": "kind1-complex",
+      "kind": 1,
+      "template": "{\"created_at\":0,\"kind\":1,\"tags\":[[\"e\",\"1111111111111111111111111111111111111111111111111111111111111111\",\"\",\"root\",\"79be667ef9dcbbac55a06295ce870b07029bfcdb2dce28d959f2815b16f81798\"],[\"e\",\"2222222222222222222222222222222222222222222222222222222222222222\",\"wss://relay.example\",\"reply\",\"79be667ef9dcbbac55a06295ce870b07029bfcdb2dce28d959f2815b16f81798\"],[\"p\",\"79be667ef9dcbbac55a06295ce870b07029bfcdb2dce28d959f2815b16f81798\",\"\"],[\"q\",\"1111111111111111111111111111111111111111111111111111111111111111\",\"\",\"79be667ef9dcbbac55a06295ce870b07029bfcdb2dce28d959f2815b16f81798\"]],\"content\":\"note\"}",
+      "expected_preflight": "accept",
+      "expected_roles": [
+        "text note",
+        "unverified references",
+        "reply context"
+      ],
+      "expected_original_values": "Every decoded content/tag field and extension must be fully indexed and inspectable; no product-produced expected output.",
+      "expected_effects_before_failure": null
+    },
+    {
+      "id": "kind1-wrong-type",
+      "kind": 1,
+      "template": "{\"created_at\":0,\"kind\":1,\"tags\":[],\"content\":1}",
+      "expected_preflight": "reject",
+      "expected_roles": [],
+      "expected_original_values": "Every decoded content/tag field and extension must be fully indexed and inspectable; no product-produced expected output.",
+      "expected_effects_before_failure": {
+        "approval": 0,
+        "entropy": 0,
+        "sign": 0,
+        "output": false
+      },
+      "error_layer": "parser"
+    },
+    {
+      "id": "kind1-escaped-duplicate",
+      "kind": 1,
+      "template": "{\"created_at\":0,\"kind\":1,\"k\\u0069nd\":1,\"tags\":[],\"content\":\"note\"}",
+      "expected_preflight": "reject",
+      "expected_roles": [],
+      "expected_original_values": "Every decoded content/tag field and extension must be fully indexed and inspectable; no product-produced expected output.",
+      "expected_effects_before_failure": {
+        "approval": 0,
+        "entropy": 0,
+        "sign": 0,
+        "output": false
+      },
+      "error_layer": "parser"
+    },
+    {
+      "id": "kind1-known-prefix-invalid",
+      "kind": 1,
+      "template": "{\"created_at\":0,\"kind\":1,\"tags\":[[\"p\",\"not-a-key\"]],\"content\":\"note\"}",
+      "expected_preflight": "reject",
+      "expected_roles": [],
+      "expected_original_values": "Every decoded content/tag field and extension must be fully indexed and inspectable; no product-produced expected output.",
+      "expected_effects_before_failure": {
+        "approval": 0,
+        "entropy": 0,
+        "sign": 0,
+        "output": false
+      },
+      "error_layer": "semantic"
+    },
+    {
+      "id": "kind1-unknown-tag",
+      "kind": 1,
+      "template": "{\"created_at\":0,\"kind\":1,\"tags\":[[\"opaque\",\"unknown-value\",\"complete-last-value\"]],\"content\":\"note\"}",
+      "expected_preflight": "accept",
+      "expected_roles": [
+        "text note",
+        "unverified references",
+        "reply context"
+      ],
+      "expected_original_values": "Every decoded content/tag field and extension must be fully indexed and inspectable; no product-produced expected output.",
+      "expected_effects_before_failure": null
+    },
+    {
+      "id": "kind1-known-prefix-suffix",
+      "kind": 1,
+      "template": "{\"created_at\":0,\"kind\":1,\"tags\":[[\"p\",\"79be667ef9dcbbac55a06295ce870b07029bfcdb2dce28d959f2815b16f81798\",\"\",\"suffix\"]],\"content\":\"note\"}",
+      "expected_preflight": "accept",
+      "expected_roles": [
+        "text note",
+        "unverified references",
+        "reply context"
+      ],
+      "expected_original_values": "Every decoded content/tag field and extension must be fully indexed and inspectable; no product-produced expected output.",
+      "expected_effects_before_failure": null
+    },
+    {
+      "id": "kind1-tag-count-32",
+      "kind": 1,
+      "template": "{\"created_at\":0,\"kind\":1,\"tags\":[[\"opaque\",\"0\"],[\"opaque\",\"1\"],[\"opaque\",\"2\"],[\"opaque\",\"3\"],[\"opaque\",\"4\"],[\"opaque\",\"5\"],[\"opaque\",\"6\"],[\"opaque\",\"7\"],[\"opaque\",\"8\"],[\"opaque\",\"9\"],[\"opaque\",\"10\"],[\"opaque\",\"11\"],[\"opaque\",\"12\"],[\"opaque\",\"13\"],[\"opaque\",\"14\"],[\"opaque\",\"15\"],[\"opaque\",\"16\"],[\"opaque\",\"17\"],[\"opaque\",\"18\"],[\"opaque\",\"19\"],[\"opaque\",\"20\"],[\"opaque\",\"21\"],[\"opaque\",\"22\"],[\"opaque\",\"23\"],[\"opaque\",\"24\"],[\"opaque\",\"25\"],[\"opaque\",\"26\"],[\"opaque\",\"27\"],[\"opaque\",\"28\"],[\"opaque\",\"29\"],[\"opaque\",\"30\"],[\"opaque\",\"31\"]],\"content\":\"note\"}",
+      "expected_preflight": "accept",
+      "expected_roles": [
+        "text note",
+        "unverified references",
+        "reply context"
+      ],
+      "expected_original_values": "Every decoded content/tag field and extension must be fully indexed and inspectable; no product-produced expected output.",
+      "expected_effects_before_failure": null,
+      "error_layer": null
+    },
+    {
+      "id": "kind1-tag-count-33",
+      "kind": 1,
+      "template": "{\"created_at\":0,\"kind\":1,\"tags\":[[\"opaque\",\"0\"],[\"opaque\",\"1\"],[\"opaque\",\"2\"],[\"opaque\",\"3\"],[\"opaque\",\"4\"],[\"opaque\",\"5\"],[\"opaque\",\"6\"],[\"opaque\",\"7\"],[\"opaque\",\"8\"],[\"opaque\",\"9\"],[\"opaque\",\"10\"],[\"opaque\",\"11\"],[\"opaque\",\"12\"],[\"opaque\",\"13\"],[\"opaque\",\"14\"],[\"opaque\",\"15\"],[\"opaque\",\"16\"],[\"opaque\",\"17\"],[\"opaque\",\"18\"],[\"opaque\",\"19\"],[\"opaque\",\"20\"],[\"opaque\",\"21\"],[\"opaque\",\"22\"],[\"opaque\",\"23\"],[\"opaque\",\"24\"],[\"opaque\",\"25\"],[\"opaque\",\"26\"],[\"opaque\",\"27\"],[\"opaque\",\"28\"],[\"opaque\",\"29\"],[\"opaque\",\"30\"],[\"opaque\",\"31\"],[\"opaque\",\"32\"]],\"content\":\"note\"}",
+      "expected_preflight": "reject",
+      "expected_roles": [],
+      "expected_original_values": "Every decoded content/tag field and extension must be fully indexed and inspectable; no product-produced expected output.",
+      "expected_effects_before_failure": {
+        "approval": 0,
+        "entropy": 0,
+        "sign": 0,
+        "output": false
+      },
+      "error_layer": "parser"
+    },
+    {
+      "id": "kind1-review-capacity",
+      "kind": 1,
+      "template": "{\"created_at\":0,\"kind\":1,\"tags\":[],\"content\":\"note\"}",
+      "expected_preflight": "reject",
+      "expected_roles": [],
+      "expected_original_values": "Every decoded content/tag field and extension must be fully indexed and inspectable; no product-produced expected output.",
+      "expected_effects_before_failure": {
+        "approval": 0,
+        "entropy": 0,
+        "sign": 0,
+        "output": false
+      },
+      "error_layer": "semantic",
+      "local_review_page_limit": 2
+    },
+    {
+      "id": "kind3-minimal",
+      "kind": 3,
+      "template": "{\"created_at\":0,\"kind\":3,\"tags\":[],\"content\":\"\"}",
+      "expected_preflight": "accept",
+      "expected_roles": [
+        "whole contact-list replacement",
+        "unfollow all when empty",
+        "unverified petname"
+      ],
+      "expected_original_values": "Every decoded content/tag field and extension must be fully indexed and inspectable; no product-produced expected output.",
+      "expected_effects_before_failure": null
+    },
+    {
+      "id": "kind3-complex",
+      "kind": 3,
+      "template": "{\"created_at\":0,\"kind\":3,\"tags\":[[\"p\",\"79be667ef9dcbbac55a06295ce870b07029bfcdb2dce28d959f2815b16f81798\",\"wss://relay.example\",\"unverified Alice\",\"suffix\"],[\"p\",\"79be667ef9dcbbac55a06295ce870b07029bfcdb2dce28d959f2815b16f81798\"]],\"content\":\"uninterpreted text\"}",
+      "expected_preflight": "accept",
+      "expected_roles": [
+        "whole contact-list replacement",
+        "unfollow all when empty",
+        "unverified petname"
+      ],
+      "expected_original_values": "Every decoded content/tag field and extension must be fully indexed and inspectable; no product-produced expected output.",
+      "expected_effects_before_failure": null
+    },
+    {
+      "id": "kind3-wrong-type",
+      "kind": 3,
+      "template": "{\"created_at\":0,\"kind\":3,\"tags\":[],\"content\":1}",
+      "expected_preflight": "reject",
+      "expected_roles": [],
+      "expected_original_values": "Every decoded content/tag field and extension must be fully indexed and inspectable; no product-produced expected output.",
+      "expected_effects_before_failure": {
+        "approval": 0,
+        "entropy": 0,
+        "sign": 0,
+        "output": false
+      },
+      "error_layer": "parser"
+    },
+    {
+      "id": "kind3-escaped-duplicate",
+      "kind": 3,
+      "template": "{\"created_at\":0,\"kind\":3,\"k\\u0069nd\":3,\"tags\":[],\"content\":\"\"}",
+      "expected_preflight": "reject",
+      "expected_roles": [],
+      "expected_original_values": "Every decoded content/tag field and extension must be fully indexed and inspectable; no product-produced expected output.",
+      "expected_effects_before_failure": {
+        "approval": 0,
+        "entropy": 0,
+        "sign": 0,
+        "output": false
+      },
+      "error_layer": "parser"
+    },
+    {
+      "id": "kind3-known-prefix-invalid",
+      "kind": 3,
+      "template": "{\"created_at\":0,\"kind\":3,\"tags\":[[\"p\",\"not-a-key\"]],\"content\":\"\"}",
+      "expected_preflight": "reject",
+      "expected_roles": [],
+      "expected_original_values": "Every decoded content/tag field and extension must be fully indexed and inspectable; no product-produced expected output.",
+      "expected_effects_before_failure": {
+        "approval": 0,
+        "entropy": 0,
+        "sign": 0,
+        "output": false
+      },
+      "error_layer": "semantic"
+    },
+    {
+      "id": "kind3-unknown-tag",
+      "kind": 3,
+      "template": "{\"created_at\":0,\"kind\":3,\"tags\":[[\"opaque\",\"unknown-value\",\"complete-last-value\"]],\"content\":\"\"}",
+      "expected_preflight": "accept",
+      "expected_roles": [
+        "whole contact-list replacement",
+        "unfollow all when empty",
+        "unverified petname"
+      ],
+      "expected_original_values": "Every decoded content/tag field and extension must be fully indexed and inspectable; no product-produced expected output.",
+      "expected_effects_before_failure": null
+    },
+    {
+      "id": "kind3-known-prefix-suffix",
+      "kind": 3,
+      "template": "{\"created_at\":0,\"kind\":3,\"tags\":[[\"p\",\"79be667ef9dcbbac55a06295ce870b07029bfcdb2dce28d959f2815b16f81798\",\"\",\"petname\",\"suffix\"]],\"content\":\"\"}",
+      "expected_preflight": "accept",
+      "expected_roles": [
+        "whole contact-list replacement",
+        "unfollow all when empty",
+        "unverified petname"
+      ],
+      "expected_original_values": "Every decoded content/tag field and extension must be fully indexed and inspectable; no product-produced expected output.",
+      "expected_effects_before_failure": null
+    },
+    {
+      "id": "kind3-tag-count-32",
+      "kind": 3,
+      "template": "{\"created_at\":0,\"kind\":3,\"tags\":[[\"opaque\",\"0\"],[\"opaque\",\"1\"],[\"opaque\",\"2\"],[\"opaque\",\"3\"],[\"opaque\",\"4\"],[\"opaque\",\"5\"],[\"opaque\",\"6\"],[\"opaque\",\"7\"],[\"opaque\",\"8\"],[\"opaque\",\"9\"],[\"opaque\",\"10\"],[\"opaque\",\"11\"],[\"opaque\",\"12\"],[\"opaque\",\"13\"],[\"opaque\",\"14\"],[\"opaque\",\"15\"],[\"opaque\",\"16\"],[\"opaque\",\"17\"],[\"opaque\",\"18\"],[\"opaque\",\"19\"],[\"opaque\",\"20\"],[\"opaque\",\"21\"],[\"opaque\",\"22\"],[\"opaque\",\"23\"],[\"opaque\",\"24\"],[\"opaque\",\"25\"],[\"opaque\",\"26\"],[\"opaque\",\"27\"],[\"opaque\",\"28\"],[\"opaque\",\"29\"],[\"opaque\",\"30\"],[\"opaque\",\"31\"]],\"content\":\"\"}",
+      "expected_preflight": "accept",
+      "expected_roles": [
+        "whole contact-list replacement",
+        "unfollow all when empty",
+        "unverified petname"
+      ],
+      "expected_original_values": "Every decoded content/tag field and extension must be fully indexed and inspectable; no product-produced expected output.",
+      "expected_effects_before_failure": null,
+      "error_layer": null
+    },
+    {
+      "id": "kind3-tag-count-33",
+      "kind": 3,
+      "template": "{\"created_at\":0,\"kind\":3,\"tags\":[[\"opaque\",\"0\"],[\"opaque\",\"1\"],[\"opaque\",\"2\"],[\"opaque\",\"3\"],[\"opaque\",\"4\"],[\"opaque\",\"5\"],[\"opaque\",\"6\"],[\"opaque\",\"7\"],[\"opaque\",\"8\"],[\"opaque\",\"9\"],[\"opaque\",\"10\"],[\"opaque\",\"11\"],[\"opaque\",\"12\"],[\"opaque\",\"13\"],[\"opaque\",\"14\"],[\"opaque\",\"15\"],[\"opaque\",\"16\"],[\"opaque\",\"17\"],[\"opaque\",\"18\"],[\"opaque\",\"19\"],[\"opaque\",\"20\"],[\"opaque\",\"21\"],[\"opaque\",\"22\"],[\"opaque\",\"23\"],[\"opaque\",\"24\"],[\"opaque\",\"25\"],[\"opaque\",\"26\"],[\"opaque\",\"27\"],[\"opaque\",\"28\"],[\"opaque\",\"29\"],[\"opaque\",\"30\"],[\"opaque\",\"31\"],[\"opaque\",\"32\"]],\"content\":\"\"}",
+      "expected_preflight": "reject",
+      "expected_roles": [],
+      "expected_original_values": "Every decoded content/tag field and extension must be fully indexed and inspectable; no product-produced expected output.",
+      "expected_effects_before_failure": {
+        "approval": 0,
+        "entropy": 0,
+        "sign": 0,
+        "output": false
+      },
+      "error_layer": "parser"
+    },
+    {
+      "id": "kind3-review-capacity",
+      "kind": 3,
+      "template": "{\"created_at\":0,\"kind\":3,\"tags\":[],\"content\":\"\"}",
+      "expected_preflight": "reject",
+      "expected_roles": [],
+      "expected_original_values": "Every decoded content/tag field and extension must be fully indexed and inspectable; no product-produced expected output.",
+      "expected_effects_before_failure": {
+        "approval": 0,
+        "entropy": 0,
+        "sign": 0,
+        "output": false
+      },
+      "error_layer": "semantic",
+      "local_review_page_limit": 2
+    },
+    {
+      "id": "kind5-minimal",
+      "kind": 5,
+      "template": "{\"created_at\":0,\"kind\":5,\"tags\":[[\"e\",\"1111111111111111111111111111111111111111111111111111111111111111\"]],\"content\":\"reason\"}",
+      "expected_preflight": "accept",
+      "expected_roles": [
+        "deletion request",
+        "relay/client erasure not guaranteed",
+        "unverified target ownership"
+      ],
+      "expected_original_values": "Every decoded content/tag field and extension must be fully indexed and inspectable; no product-produced expected output.",
+      "expected_effects_before_failure": null
+    },
+    {
+      "id": "kind5-complex",
+      "kind": 5,
+      "template": "{\"created_at\":0,\"kind\":5,\"tags\":[[\"e\",\"1111111111111111111111111111111111111111111111111111111111111111\",\"uninterpreted-suffix\"],[\"e\",\"2222222222222222222222222222222222222222222222222222222222222222\"],[\"a\",\"30001:f9308a019258c31049344f85f89d5229b531c845836f99b08601f113bce036f9:remainder:with:colons\"],[\"k\",\"5\"],[\"k\",\"1\"]],\"content\":\"reason\"}",
+      "expected_preflight": "accept",
+      "expected_roles": [
+        "deletion request",
+        "relay/client erasure not guaranteed",
+        "unverified target ownership"
+      ],
+      "expected_original_values": "Every decoded content/tag field and extension must be fully indexed and inspectable; no product-produced expected output.",
+      "expected_effects_before_failure": null
+    },
+    {
+      "id": "kind5-wrong-type",
+      "kind": 5,
+      "template": "{\"created_at\":0,\"kind\":5,\"tags\":[[\"e\",\"1111111111111111111111111111111111111111111111111111111111111111\"]],\"content\":1}",
+      "expected_preflight": "reject",
+      "expected_roles": [],
+      "expected_original_values": "Every decoded content/tag field and extension must be fully indexed and inspectable; no product-produced expected output.",
+      "expected_effects_before_failure": {
+        "approval": 0,
+        "entropy": 0,
+        "sign": 0,
+        "output": false
+      },
+      "error_layer": "parser"
+    },
+    {
+      "id": "kind5-escaped-duplicate",
+      "kind": 5,
+      "template": "{\"created_at\":0,\"kind\":5,\"k\\u0069nd\":5,\"tags\":[[\"e\",\"1111111111111111111111111111111111111111111111111111111111111111\"]],\"content\":\"reason\"}",
+      "expected_preflight": "reject",
+      "expected_roles": [],
+      "expected_original_values": "Every decoded content/tag field and extension must be fully indexed and inspectable; no product-produced expected output.",
+      "expected_effects_before_failure": {
+        "approval": 0,
+        "entropy": 0,
+        "sign": 0,
+        "output": false
+      },
+      "error_layer": "parser"
+    },
+    {
+      "id": "kind5-known-prefix-invalid",
+      "kind": 5,
+      "template": "{\"created_at\":0,\"kind\":5,\"tags\":[[\"e\",\"not-an-id\"]],\"content\":\"reason\"}",
+      "expected_preflight": "reject",
+      "expected_roles": [],
+      "expected_original_values": "Every decoded content/tag field and extension must be fully indexed and inspectable; no product-produced expected output.",
+      "expected_effects_before_failure": {
+        "approval": 0,
+        "entropy": 0,
+        "sign": 0,
+        "output": false
+      },
+      "error_layer": "semantic"
+    },
+    {
+      "id": "kind5-unknown-tag",
+      "kind": 5,
+      "template": "{\"created_at\":0,\"kind\":5,\"tags\":[[\"e\",\"1111111111111111111111111111111111111111111111111111111111111111\"],[\"opaque\",\"unknown-value\",\"complete-last-value\"]],\"content\":\"reason\"}",
+      "expected_preflight": "accept",
+      "expected_roles": [
+        "deletion request",
+        "relay/client erasure not guaranteed",
+        "unverified target ownership"
+      ],
+      "expected_original_values": "Every decoded content/tag field and extension must be fully indexed and inspectable; no product-produced expected output.",
+      "expected_effects_before_failure": null
+    },
+    {
+      "id": "kind5-known-prefix-suffix",
+      "kind": 5,
+      "template": "{\"created_at\":0,\"kind\":5,\"tags\":[[\"e\",\"1111111111111111111111111111111111111111111111111111111111111111\",\"suffix\"]],\"content\":\"reason\"}",
+      "expected_preflight": "accept",
+      "expected_roles": [
+        "deletion request",
+        "relay/client erasure not guaranteed",
+        "unverified target ownership"
+      ],
+      "expected_original_values": "Every decoded content/tag field and extension must be fully indexed and inspectable; no product-produced expected output.",
+      "expected_effects_before_failure": null
+    },
+    {
+      "id": "kind5-tag-count-32",
+      "kind": 5,
+      "template": "{\"created_at\":0,\"kind\":5,\"tags\":[[\"e\",\"1111111111111111111111111111111111111111111111111111111111111111\"],[\"opaque\",\"0\"],[\"opaque\",\"1\"],[\"opaque\",\"2\"],[\"opaque\",\"3\"],[\"opaque\",\"4\"],[\"opaque\",\"5\"],[\"opaque\",\"6\"],[\"opaque\",\"7\"],[\"opaque\",\"8\"],[\"opaque\",\"9\"],[\"opaque\",\"10\"],[\"opaque\",\"11\"],[\"opaque\",\"12\"],[\"opaque\",\"13\"],[\"opaque\",\"14\"],[\"opaque\",\"15\"],[\"opaque\",\"16\"],[\"opaque\",\"17\"],[\"opaque\",\"18\"],[\"opaque\",\"19\"],[\"opaque\",\"20\"],[\"opaque\",\"21\"],[\"opaque\",\"22\"],[\"opaque\",\"23\"],[\"opaque\",\"24\"],[\"opaque\",\"25\"],[\"opaque\",\"26\"],[\"opaque\",\"27\"],[\"opaque\",\"28\"],[\"opaque\",\"29\"],[\"opaque\",\"30\"]],\"content\":\"reason\"}",
+      "expected_preflight": "accept",
+      "expected_roles": [
+        "deletion request",
+        "relay/client erasure not guaranteed",
+        "unverified target ownership"
+      ],
+      "expected_original_values": "Every decoded content/tag field and extension must be fully indexed and inspectable; no product-produced expected output.",
+      "expected_effects_before_failure": null,
+      "error_layer": null
+    },
+    {
+      "id": "kind5-tag-count-33",
+      "kind": 5,
+      "template": "{\"created_at\":0,\"kind\":5,\"tags\":[[\"e\",\"1111111111111111111111111111111111111111111111111111111111111111\"],[\"opaque\",\"0\"],[\"opaque\",\"1\"],[\"opaque\",\"2\"],[\"opaque\",\"3\"],[\"opaque\",\"4\"],[\"opaque\",\"5\"],[\"opaque\",\"6\"],[\"opaque\",\"7\"],[\"opaque\",\"8\"],[\"opaque\",\"9\"],[\"opaque\",\"10\"],[\"opaque\",\"11\"],[\"opaque\",\"12\"],[\"opaque\",\"13\"],[\"opaque\",\"14\"],[\"opaque\",\"15\"],[\"opaque\",\"16\"],[\"opaque\",\"17\"],[\"opaque\",\"18\"],[\"opaque\",\"19\"],[\"opaque\",\"20\"],[\"opaque\",\"21\"],[\"opaque\",\"22\"],[\"opaque\",\"23\"],[\"opaque\",\"24\"],[\"opaque\",\"25\"],[\"opaque\",\"26\"],[\"opaque\",\"27\"],[\"opaque\",\"28\"],[\"opaque\",\"29\"],[\"opaque\",\"30\"],[\"opaque\",\"31\"]],\"content\":\"reason\"}",
+      "expected_preflight": "reject",
+      "expected_roles": [],
+      "expected_original_values": "Every decoded content/tag field and extension must be fully indexed and inspectable; no product-produced expected output.",
+      "expected_effects_before_failure": {
+        "approval": 0,
+        "entropy": 0,
+        "sign": 0,
+        "output": false
+      },
+      "error_layer": "parser"
+    },
+    {
+      "id": "kind5-review-capacity",
+      "kind": 5,
+      "template": "{\"created_at\":0,\"kind\":5,\"tags\":[[\"e\",\"1111111111111111111111111111111111111111111111111111111111111111\"]],\"content\":\"reason\"}",
+      "expected_preflight": "reject",
+      "expected_roles": [],
+      "expected_original_values": "Every decoded content/tag field and extension must be fully indexed and inspectable; no product-produced expected output.",
+      "expected_effects_before_failure": {
+        "approval": 0,
+        "entropy": 0,
+        "sign": 0,
+        "output": false
+      },
+      "error_layer": "semantic",
+      "local_review_page_limit": 2
+    },
+    {
+      "id": "kind6-minimal",
+      "kind": 6,
+      "template": "{\"created_at\":0,\"kind\":6,\"tags\":[[\"e\",\"1111111111111111111111111111111111111111111111111111111111111111\",\"wss://relay.example\"]],\"content\":\"\"}",
+      "expected_preflight": "accept",
+      "expected_roles": [
+        "repost",
+        "cryptographic original is not real-world authorship",
+        "unverified when content absent"
+      ],
+      "expected_original_values": "Every decoded content/tag field and extension must be fully indexed and inspectable; no product-produced expected output.",
+      "expected_effects_before_failure": null
+    },
+    {
+      "id": "kind6-complex",
+      "kind": 6,
+      "template": "{\"created_at\":1710000000,\"kind\":6,\"tags\":[[\"e\",\"ace92fa493851b10ea01239d8061fa889e1a692813eef5203dffe9e8360d9335\",\"wss://relay.example/\"],[\"p\",\"79be667ef9dcbbac55a06295ce870b07029bfcdb2dce28d959f2815b16f81798\"],[\"x\",\"complete\"]],\"content\":\"{\\\"created_at\\\":1710000001,\\\"kind\\\":1,\\\"tags\\\":[],\\\"content\\\":\\\"hello\\\",\\\"pubkey\\\":\\\"79be667ef9dcbbac55a06295ce870b07029bfcdb2dce28d959f2815b16f81798\\\",\\\"id\\\":\\\"ace92fa493851b10ea01239d8061fa889e1a692813eef5203dffe9e8360d9335\\\",\\\"sig\\\":\\\"8fe3377831f073ec1adde9183a03c228f1865409d2fcc236c0d5ec0c3f71a1c37427ad6b1fa61f22fbfbc346d25641f814209c823ca1de2def49dbfe7460cd68\\\"}\"}",
+      "expected_preflight": "accept",
+      "expected_roles": [
+        "repost",
+        "cryptographic original is not real-world authorship",
+        "unverified when content absent"
+      ],
+      "expected_original_values": "Every decoded content/tag field and extension must be fully indexed and inspectable; no product-produced expected output.",
+      "expected_effects_before_failure": null
+    },
+    {
+      "id": "kind6-wrong-type",
+      "kind": 6,
+      "template": "{\"created_at\":0,\"kind\":6,\"tags\":[[\"e\",\"1111111111111111111111111111111111111111111111111111111111111111\",\"wss://relay.example\"]],\"content\":1}",
+      "expected_preflight": "reject",
+      "expected_roles": [],
+      "expected_original_values": "Every decoded content/tag field and extension must be fully indexed and inspectable; no product-produced expected output.",
+      "expected_effects_before_failure": {
+        "approval": 0,
+        "entropy": 0,
+        "sign": 0,
+        "output": false
+      },
+      "error_layer": "parser"
+    },
+    {
+      "id": "kind6-escaped-duplicate",
+      "kind": 6,
+      "template": "{\"created_at\":0,\"kind\":6,\"k\\u0069nd\":6,\"tags\":[[\"e\",\"1111111111111111111111111111111111111111111111111111111111111111\",\"wss://relay.example\"]],\"content\":\"\"}",
+      "expected_preflight": "reject",
+      "expected_roles": [],
+      "expected_original_values": "Every decoded content/tag field and extension must be fully indexed and inspectable; no product-produced expected output.",
+      "expected_effects_before_failure": {
+        "approval": 0,
+        "entropy": 0,
+        "sign": 0,
+        "output": false
+      },
+      "error_layer": "parser"
+    },
+    {
+      "id": "kind6-known-prefix-invalid",
+      "kind": 6,
+      "template": "{\"created_at\":0,\"kind\":6,\"tags\":[[\"e\",\"not-an-id\"]],\"content\":\"\"}",
+      "expected_preflight": "reject",
+      "expected_roles": [],
+      "expected_original_values": "Every decoded content/tag field and extension must be fully indexed and inspectable; no product-produced expected output.",
+      "expected_effects_before_failure": {
+        "approval": 0,
+        "entropy": 0,
+        "sign": 0,
+        "output": false
+      },
+      "error_layer": "semantic"
+    },
+    {
+      "id": "kind6-unknown-tag",
+      "kind": 6,
+      "template": "{\"created_at\":0,\"kind\":6,\"tags\":[[\"e\",\"1111111111111111111111111111111111111111111111111111111111111111\",\"wss://relay.example\"],[\"opaque\",\"unknown-value\",\"complete-last-value\"]],\"content\":\"\"}",
+      "expected_preflight": "accept",
+      "expected_roles": [
+        "repost",
+        "cryptographic original is not real-world authorship",
+        "unverified when content absent"
+      ],
+      "expected_original_values": "Every decoded content/tag field and extension must be fully indexed and inspectable; no product-produced expected output.",
+      "expected_effects_before_failure": null
+    },
+    {
+      "id": "kind6-known-prefix-suffix",
+      "kind": 6,
+      "template": "{\"created_at\":0,\"kind\":6,\"tags\":[[\"e\",\"1111111111111111111111111111111111111111111111111111111111111111\",\"wss://relay.example\",\"suffix\"]],\"content\":\"\"}",
+      "expected_preflight": "accept",
+      "expected_roles": [
+        "repost",
+        "cryptographic original is not real-world authorship",
+        "unverified when content absent"
+      ],
+      "expected_original_values": "Every decoded content/tag field and extension must be fully indexed and inspectable; no product-produced expected output.",
+      "expected_effects_before_failure": null
+    },
+    {
+      "id": "kind6-tag-count-32",
+      "kind": 6,
+      "template": "{\"created_at\":0,\"kind\":6,\"tags\":[[\"e\",\"1111111111111111111111111111111111111111111111111111111111111111\",\"wss://relay.example\"],[\"opaque\",\"0\"],[\"opaque\",\"1\"],[\"opaque\",\"2\"],[\"opaque\",\"3\"],[\"opaque\",\"4\"],[\"opaque\",\"5\"],[\"opaque\",\"6\"],[\"opaque\",\"7\"],[\"opaque\",\"8\"],[\"opaque\",\"9\"],[\"opaque\",\"10\"],[\"opaque\",\"11\"],[\"opaque\",\"12\"],[\"opaque\",\"13\"],[\"opaque\",\"14\"],[\"opaque\",\"15\"],[\"opaque\",\"16\"],[\"opaque\",\"17\"],[\"opaque\",\"18\"],[\"opaque\",\"19\"],[\"opaque\",\"20\"],[\"opaque\",\"21\"],[\"opaque\",\"22\"],[\"opaque\",\"23\"],[\"opaque\",\"24\"],[\"opaque\",\"25\"],[\"opaque\",\"26\"],[\"opaque\",\"27\"],[\"opaque\",\"28\"],[\"opaque\",\"29\"],[\"opaque\",\"30\"]],\"content\":\"\"}",
+      "expected_preflight": "accept",
+      "expected_roles": [
+        "repost",
+        "cryptographic original is not real-world authorship",
+        "unverified when content absent"
+      ],
+      "expected_original_values": "Every decoded content/tag field and extension must be fully indexed and inspectable; no product-produced expected output.",
+      "expected_effects_before_failure": null,
+      "error_layer": null
+    },
+    {
+      "id": "kind6-tag-count-33",
+      "kind": 6,
+      "template": "{\"created_at\":0,\"kind\":6,\"tags\":[[\"e\",\"1111111111111111111111111111111111111111111111111111111111111111\",\"wss://relay.example\"],[\"opaque\",\"0\"],[\"opaque\",\"1\"],[\"opaque\",\"2\"],[\"opaque\",\"3\"],[\"opaque\",\"4\"],[\"opaque\",\"5\"],[\"opaque\",\"6\"],[\"opaque\",\"7\"],[\"opaque\",\"8\"],[\"opaque\",\"9\"],[\"opaque\",\"10\"],[\"opaque\",\"11\"],[\"opaque\",\"12\"],[\"opaque\",\"13\"],[\"opaque\",\"14\"],[\"opaque\",\"15\"],[\"opaque\",\"16\"],[\"opaque\",\"17\"],[\"opaque\",\"18\"],[\"opaque\",\"19\"],[\"opaque\",\"20\"],[\"opaque\",\"21\"],[\"opaque\",\"22\"],[\"opaque\",\"23\"],[\"opaque\",\"24\"],[\"opaque\",\"25\"],[\"opaque\",\"26\"],[\"opaque\",\"27\"],[\"opaque\",\"28\"],[\"opaque\",\"29\"],[\"opaque\",\"30\"],[\"opaque\",\"31\"]],\"content\":\"\"}",
+      "expected_preflight": "reject",
+      "expected_roles": [],
+      "expected_original_values": "Every decoded content/tag field and extension must be fully indexed and inspectable; no product-produced expected output.",
+      "expected_effects_before_failure": {
+        "approval": 0,
+        "entropy": 0,
+        "sign": 0,
+        "output": false
+      },
+      "error_layer": "parser"
+    },
+    {
+      "id": "kind6-review-capacity",
+      "kind": 6,
+      "template": "{\"created_at\":0,\"kind\":6,\"tags\":[[\"e\",\"1111111111111111111111111111111111111111111111111111111111111111\",\"wss://relay.example\"]],\"content\":\"\"}",
+      "expected_preflight": "reject",
+      "expected_roles": [],
+      "expected_original_values": "Every decoded content/tag field and extension must be fully indexed and inspectable; no product-produced expected output.",
+      "expected_effects_before_failure": {
+        "approval": 0,
+        "entropy": 0,
+        "sign": 0,
+        "output": false
+      },
+      "error_layer": "semantic",
+      "local_review_page_limit": 2
+    },
+    {
+      "id": "kind7-minimal",
+      "kind": 7,
+      "template": "{\"created_at\":0,\"kind\":7,\"tags\":[[\"e\",\"1111111111111111111111111111111111111111111111111111111111111111\"]],\"content\":\"+\"}",
+      "expected_preflight": "accept",
+      "expected_roles": [
+        "reaction",
+        "last e target",
+        "last p author hint"
+      ],
+      "expected_original_values": "Every decoded content/tag field and extension must be fully indexed and inspectable; no product-produced expected output.",
+      "expected_effects_before_failure": null
+    },
+    {
+      "id": "kind7-complex",
+      "kind": 7,
+      "template": "{\"created_at\":0,\"kind\":7,\"tags\":[[\"e\",\"2222222222222222222222222222222222222222222222222222222222222222\",\"\",\"f9308a019258c31049344f85f89d5229b531c845836f99b08601f113bce036f9\"],[\"p\",\"f9308a019258c31049344f85f89d5229b531c845836f99b08601f113bce036f9\"],[\"e\",\"1111111111111111111111111111111111111111111111111111111111111111\",\"\",\"79be667ef9dcbbac55a06295ce870b07029bfcdb2dce28d959f2815b16f81798\"],[\"p\",\"79be667ef9dcbbac55a06295ce870b07029bfcdb2dce28d959f2815b16f81798\"],[\"a\",\"30001:79be667ef9dcbbac55a06295ce870b07029bfcdb2dce28d959f2815b16f81798:id:rest\",\"\",\"79be667ef9dcbbac55a06295ce870b07029bfcdb2dce28d959f2815b16f81798\"],[\"k\",\"30001\"]],\"content\":\"😀\"}",
+      "expected_preflight": "accept",
+      "expected_roles": [
+        "reaction",
+        "last e target",
+        "last p author hint"
+      ],
+      "expected_original_values": "Every decoded content/tag field and extension must be fully indexed and inspectable; no product-produced expected output.",
+      "expected_effects_before_failure": null
+    },
+    {
+      "id": "kind7-wrong-type",
+      "kind": 7,
+      "template": "{\"created_at\":0,\"kind\":7,\"tags\":[[\"e\",\"1111111111111111111111111111111111111111111111111111111111111111\"]],\"content\":1}",
+      "expected_preflight": "reject",
+      "expected_roles": [],
+      "expected_original_values": "Every decoded content/tag field and extension must be fully indexed and inspectable; no product-produced expected output.",
+      "expected_effects_before_failure": {
+        "approval": 0,
+        "entropy": 0,
+        "sign": 0,
+        "output": false
+      },
+      "error_layer": "parser"
+    },
+    {
+      "id": "kind7-escaped-duplicate",
+      "kind": 7,
+      "template": "{\"created_at\":0,\"kind\":7,\"k\\u0069nd\":7,\"tags\":[[\"e\",\"1111111111111111111111111111111111111111111111111111111111111111\"]],\"content\":\"+\"}",
+      "expected_preflight": "reject",
+      "expected_roles": [],
+      "expected_original_values": "Every decoded content/tag field and extension must be fully indexed and inspectable; no product-produced expected output.",
+      "expected_effects_before_failure": {
+        "approval": 0,
+        "entropy": 0,
+        "sign": 0,
+        "output": false
+      },
+      "error_layer": "parser"
+    },
+    {
+      "id": "kind7-known-prefix-invalid",
+      "kind": 7,
+      "template": "{\"created_at\":0,\"kind\":7,\"tags\":[[\"e\",\"not-an-id\"]],\"content\":\"+\"}",
+      "expected_preflight": "reject",
+      "expected_roles": [],
+      "expected_original_values": "Every decoded content/tag field and extension must be fully indexed and inspectable; no product-produced expected output.",
+      "expected_effects_before_failure": {
+        "approval": 0,
+        "entropy": 0,
+        "sign": 0,
+        "output": false
+      },
+      "error_layer": "semantic"
+    },
+    {
+      "id": "kind7-unknown-tag",
+      "kind": 7,
+      "template": "{\"created_at\":0,\"kind\":7,\"tags\":[[\"e\",\"1111111111111111111111111111111111111111111111111111111111111111\"],[\"opaque\",\"unknown-value\",\"complete-last-value\"]],\"content\":\"+\"}",
+      "expected_preflight": "accept",
+      "expected_roles": [
+        "reaction",
+        "last e target",
+        "last p author hint"
+      ],
+      "expected_original_values": "Every decoded content/tag field and extension must be fully indexed and inspectable; no product-produced expected output.",
+      "expected_effects_before_failure": null
+    },
+    {
+      "id": "kind7-known-prefix-suffix",
+      "kind": 7,
+      "template": "{\"created_at\":0,\"kind\":7,\"tags\":[[\"e\",\"1111111111111111111111111111111111111111111111111111111111111111\",\"\",\"79be667ef9dcbbac55a06295ce870b07029bfcdb2dce28d959f2815b16f81798\",\"suffix\"]],\"content\":\"+\"}",
+      "expected_preflight": "accept",
+      "expected_roles": [
+        "reaction",
+        "last e target",
+        "last p author hint"
+      ],
+      "expected_original_values": "Every decoded content/tag field and extension must be fully indexed and inspectable; no product-produced expected output.",
+      "expected_effects_before_failure": null
+    },
+    {
+      "id": "kind7-tag-count-32",
+      "kind": 7,
+      "template": "{\"created_at\":0,\"kind\":7,\"tags\":[[\"e\",\"1111111111111111111111111111111111111111111111111111111111111111\"],[\"opaque\",\"0\"],[\"opaque\",\"1\"],[\"opaque\",\"2\"],[\"opaque\",\"3\"],[\"opaque\",\"4\"],[\"opaque\",\"5\"],[\"opaque\",\"6\"],[\"opaque\",\"7\"],[\"opaque\",\"8\"],[\"opaque\",\"9\"],[\"opaque\",\"10\"],[\"opaque\",\"11\"],[\"opaque\",\"12\"],[\"opaque\",\"13\"],[\"opaque\",\"14\"],[\"opaque\",\"15\"],[\"opaque\",\"16\"],[\"opaque\",\"17\"],[\"opaque\",\"18\"],[\"opaque\",\"19\"],[\"opaque\",\"20\"],[\"opaque\",\"21\"],[\"opaque\",\"22\"],[\"opaque\",\"23\"],[\"opaque\",\"24\"],[\"opaque\",\"25\"],[\"opaque\",\"26\"],[\"opaque\",\"27\"],[\"opaque\",\"28\"],[\"opaque\",\"29\"],[\"opaque\",\"30\"]],\"content\":\"+\"}",
+      "expected_preflight": "accept",
+      "expected_roles": [
+        "reaction",
+        "last e target",
+        "last p author hint"
+      ],
+      "expected_original_values": "Every decoded content/tag field and extension must be fully indexed and inspectable; no product-produced expected output.",
+      "expected_effects_before_failure": null,
+      "error_layer": null
+    },
+    {
+      "id": "kind7-tag-count-33",
+      "kind": 7,
+      "template": "{\"created_at\":0,\"kind\":7,\"tags\":[[\"e\",\"1111111111111111111111111111111111111111111111111111111111111111\"],[\"opaque\",\"0\"],[\"opaque\",\"1\"],[\"opaque\",\"2\"],[\"opaque\",\"3\"],[\"opaque\",\"4\"],[\"opaque\",\"5\"],[\"opaque\",\"6\"],[\"opaque\",\"7\"],[\"opaque\",\"8\"],[\"opaque\",\"9\"],[\"opaque\",\"10\"],[\"opaque\",\"11\"],[\"opaque\",\"12\"],[\"opaque\",\"13\"],[\"opaque\",\"14\"],[\"opaque\",\"15\"],[\"opaque\",\"16\"],[\"opaque\",\"17\"],[\"opaque\",\"18\"],[\"opaque\",\"19\"],[\"opaque\",\"20\"],[\"opaque\",\"21\"],[\"opaque\",\"22\"],[\"opaque\",\"23\"],[\"opaque\",\"24\"],[\"opaque\",\"25\"],[\"opaque\",\"26\"],[\"opaque\",\"27\"],[\"opaque\",\"28\"],[\"opaque\",\"29\"],[\"opaque\",\"30\"],[\"opaque\",\"31\"]],\"content\":\"+\"}",
+      "expected_preflight": "reject",
+      "expected_roles": [],
+      "expected_original_values": "Every decoded content/tag field and extension must be fully indexed and inspectable; no product-produced expected output.",
+      "expected_effects_before_failure": {
+        "approval": 0,
+        "entropy": 0,
+        "sign": 0,
+        "output": false
+      },
+      "error_layer": "parser"
+    },
+    {
+      "id": "kind7-review-capacity",
+      "kind": 7,
+      "template": "{\"created_at\":0,\"kind\":7,\"tags\":[[\"e\",\"1111111111111111111111111111111111111111111111111111111111111111\"]],\"content\":\"+\"}",
+      "expected_preflight": "reject",
+      "expected_roles": [],
+      "expected_original_values": "Every decoded content/tag field and extension must be fully indexed and inspectable; no product-produced expected output.",
+      "expected_effects_before_failure": {
+        "approval": 0,
+        "entropy": 0,
+        "sign": 0,
+        "output": false
+      },
+      "error_layer": "semantic",
+      "local_review_page_limit": 2
+    },
+    {
+      "id": "kind10002-minimal",
+      "kind": 10002,
+      "template": "{\"created_at\":0,\"kind\":10002,\"tags\":[],\"content\":\"\"}",
+      "expected_preflight": "accept",
+      "expected_roles": [
+        "relay-list replacement",
+        "withdraw all when empty",
+        "not DM relay list"
+      ],
+      "expected_original_values": "Every decoded content/tag field and extension must be fully indexed and inspectable; no product-produced expected output.",
+      "expected_effects_before_failure": null
+    },
+    {
+      "id": "kind10002-complex",
+      "kind": 10002,
+      "template": "{\"created_at\":0,\"kind\":10002,\"tags\":[[\"r\",\"wss://relay.example\",\"read\",\"suffix\"],[\"r\",\"ws://127.0.0.1:80/x\",\"write\"],[\"r\",\"wss://relay.example\"]],\"content\":\"\"}",
+      "expected_preflight": "accept",
+      "expected_roles": [
+        "relay-list replacement",
+        "withdraw all when empty",
+        "not DM relay list"
+      ],
+      "expected_original_values": "Every decoded content/tag field and extension must be fully indexed and inspectable; no product-produced expected output.",
+      "expected_effects_before_failure": null
+    },
+    {
+      "id": "kind10002-wrong-type",
+      "kind": 10002,
+      "template": "{\"created_at\":0,\"kind\":10002,\"tags\":[],\"content\":1}",
+      "expected_preflight": "reject",
+      "expected_roles": [],
+      "expected_original_values": "Every decoded content/tag field and extension must be fully indexed and inspectable; no product-produced expected output.",
+      "expected_effects_before_failure": {
+        "approval": 0,
+        "entropy": 0,
+        "sign": 0,
+        "output": false
+      },
+      "error_layer": "parser"
+    },
+    {
+      "id": "kind10002-escaped-duplicate",
+      "kind": 10002,
+      "template": "{\"created_at\":0,\"kind\":10002,\"k\\u0069nd\":10002,\"tags\":[],\"content\":\"\"}",
+      "expected_preflight": "reject",
+      "expected_roles": [],
+      "expected_original_values": "Every decoded content/tag field and extension must be fully indexed and inspectable; no product-produced expected output.",
+      "expected_effects_before_failure": {
+        "approval": 0,
+        "entropy": 0,
+        "sign": 0,
+        "output": false
+      },
+      "error_layer": "parser"
+    },
+    {
+      "id": "kind10002-known-prefix-invalid",
+      "kind": 10002,
+      "template": "{\"created_at\":0,\"kind\":10002,\"tags\":[[\"r\",\"bad://relay\"]],\"content\":\"\"}",
+      "expected_preflight": "reject",
+      "expected_roles": [],
+      "expected_original_values": "Every decoded content/tag field and extension must be fully indexed and inspectable; no product-produced expected output.",
+      "expected_effects_before_failure": {
+        "approval": 0,
+        "entropy": 0,
+        "sign": 0,
+        "output": false
+      },
+      "error_layer": "semantic"
+    },
+    {
+      "id": "kind10002-unknown-tag",
+      "kind": 10002,
+      "template": "{\"created_at\":0,\"kind\":10002,\"tags\":[[\"opaque\",\"unknown-value\",\"complete-last-value\"]],\"content\":\"\"}",
+      "expected_preflight": "accept",
+      "expected_roles": [
+        "relay-list replacement",
+        "withdraw all when empty",
+        "not DM relay list"
+      ],
+      "expected_original_values": "Every decoded content/tag field and extension must be fully indexed and inspectable; no product-produced expected output.",
+      "expected_effects_before_failure": null
+    },
+    {
+      "id": "kind10002-known-prefix-suffix",
+      "kind": 10002,
+      "template": "{\"created_at\":0,\"kind\":10002,\"tags\":[[\"r\",\"wss://relay.example\",\"read\",\"suffix\"]],\"content\":\"\"}",
+      "expected_preflight": "accept",
+      "expected_roles": [
+        "relay-list replacement",
+        "withdraw all when empty",
+        "not DM relay list"
+      ],
+      "expected_original_values": "Every decoded content/tag field and extension must be fully indexed and inspectable; no product-produced expected output.",
+      "expected_effects_before_failure": null
+    },
+    {
+      "id": "kind10002-tag-count-32",
+      "kind": 10002,
+      "template": "{\"created_at\":0,\"kind\":10002,\"tags\":[[\"opaque\",\"0\"],[\"opaque\",\"1\"],[\"opaque\",\"2\"],[\"opaque\",\"3\"],[\"opaque\",\"4\"],[\"opaque\",\"5\"],[\"opaque\",\"6\"],[\"opaque\",\"7\"],[\"opaque\",\"8\"],[\"opaque\",\"9\"],[\"opaque\",\"10\"],[\"opaque\",\"11\"],[\"opaque\",\"12\"],[\"opaque\",\"13\"],[\"opaque\",\"14\"],[\"opaque\",\"15\"],[\"opaque\",\"16\"],[\"opaque\",\"17\"],[\"opaque\",\"18\"],[\"opaque\",\"19\"],[\"opaque\",\"20\"],[\"opaque\",\"21\"],[\"opaque\",\"22\"],[\"opaque\",\"23\"],[\"opaque\",\"24\"],[\"opaque\",\"25\"],[\"opaque\",\"26\"],[\"opaque\",\"27\"],[\"opaque\",\"28\"],[\"opaque\",\"29\"],[\"opaque\",\"30\"],[\"opaque\",\"31\"]],\"content\":\"\"}",
+      "expected_preflight": "accept",
+      "expected_roles": [
+        "relay-list replacement",
+        "withdraw all when empty",
+        "not DM relay list"
+      ],
+      "expected_original_values": "Every decoded content/tag field and extension must be fully indexed and inspectable; no product-produced expected output.",
+      "expected_effects_before_failure": null,
+      "error_layer": null
+    },
+    {
+      "id": "kind10002-tag-count-33",
+      "kind": 10002,
+      "template": "{\"created_at\":0,\"kind\":10002,\"tags\":[[\"opaque\",\"0\"],[\"opaque\",\"1\"],[\"opaque\",\"2\"],[\"opaque\",\"3\"],[\"opaque\",\"4\"],[\"opaque\",\"5\"],[\"opaque\",\"6\"],[\"opaque\",\"7\"],[\"opaque\",\"8\"],[\"opaque\",\"9\"],[\"opaque\",\"10\"],[\"opaque\",\"11\"],[\"opaque\",\"12\"],[\"opaque\",\"13\"],[\"opaque\",\"14\"],[\"opaque\",\"15\"],[\"opaque\",\"16\"],[\"opaque\",\"17\"],[\"opaque\",\"18\"],[\"opaque\",\"19\"],[\"opaque\",\"20\"],[\"opaque\",\"21\"],[\"opaque\",\"22\"],[\"opaque\",\"23\"],[\"opaque\",\"24\"],[\"opaque\",\"25\"],[\"opaque\",\"26\"],[\"opaque\",\"27\"],[\"opaque\",\"28\"],[\"opaque\",\"29\"],[\"opaque\",\"30\"],[\"opaque\",\"31\"],[\"opaque\",\"32\"]],\"content\":\"\"}",
+      "expected_preflight": "reject",
+      "expected_roles": [],
+      "expected_original_values": "Every decoded content/tag field and extension must be fully indexed and inspectable; no product-produced expected output.",
+      "expected_effects_before_failure": {
+        "approval": 0,
+        "entropy": 0,
+        "sign": 0,
+        "output": false
+      },
+      "error_layer": "parser"
+    },
+    {
+      "id": "kind10002-review-capacity",
+      "kind": 10002,
+      "template": "{\"created_at\":0,\"kind\":10002,\"tags\":[],\"content\":\"\"}",
+      "expected_preflight": "reject",
+      "expected_roles": [],
+      "expected_original_values": "Every decoded content/tag field and extension must be fully indexed and inspectable; no product-produced expected output.",
+      "expected_effects_before_failure": {
+        "approval": 0,
+        "entropy": 0,
+        "sign": 0,
+        "output": false
+      },
+      "error_layer": "semantic",
+      "local_review_page_limit": 2
+    }
+  ],
+  "additional_required_controls": "Metadata depth8/9, nodes128/129, members64/65 and arrays64/65; all scalar/relay/coordinate/kind-specific catalog edges, owner/entropy/clock/rawverify/output/memory controls remain required. This70-row corpus does not substitute those groups."
+}
