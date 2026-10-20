@@ -1,0 +1,45 @@
+   Compiling k01-engine-final-link v0.0.0 (/home/tux/nsealr/.restart-tools/goal/k01-current-implementation/docs/restart/implementation/K01/probes/final-link)
+error[E0277]: the trait bound `[u8]: AuxiliarySource` is not satisfied
+   --> src/main.rs:110:59
+    |
+110 |     let _ = owner.sign_approved("probe", &mut || Some(0), output);
+    |                                                           ^^^^^^ the trait `AuxiliarySource` is not implemented for `[u8]`
+    |
+help: the following other types implement trait `AuxiliarySource`
+   --> src/main.rs:25:1
+    |
+ 25 | impl AuxiliarySource for Fixture {
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ `Fixture`
+...
+ 32 | impl AuxiliarySource for Missing {
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ `Missing`
+    = note: required for the cast from `&mut [u8]` to `&mut dyn AuxiliarySource`
+
+error[E0277]: the size for values of type `[u8]` cannot be known at compilation time
+   --> src/main.rs:110:59
+    |
+110 |     let _ = owner.sign_approved("probe", &mut || Some(0), output);
+    |                                                           ^^^^^^ doesn't have a size known at compile-time
+    |
+    = help: the trait `Sized` is not implemented for `[u8]`
+    = note: required for the cast from `&mut [u8]` to `&mut dyn AuxiliarySource`
+
+error[E0061]: this method takes 4 arguments but 3 arguments were supplied
+   --> src/main.rs:110:19
+    |
+110 |     let _ = owner.sign_approved("probe", &mut || Some(0), output);
+    |                   ^^^^^^^^^^^^^---------------------------------- argument #4 of type `&mut [u8]` is missing
+    |
+note: method defined here
+   --> /home/tux/nsealr/.restart-tools/goal/k01-current-implementation/crates/nsealr-core/src/authorization.rs:627:12
+    |
+627 |     pub fn sign_approved(
+    |            ^^^^^^^^^^^^^
+help: provide the argument
+    |
+110 |     let _ = owner.sign_approved("probe", &mut || Some(0), output, /* &mut [u8] */);
+    |                                                                 +++++++++++++++++
+
+Some errors have detailed explanations: E0061, E0277.
+For more information about an error, try `rustc --explain E0061`.
+error: could not compile `k01-engine-final-link` (bin "k01-engine-final-link") due to 3 previous errors

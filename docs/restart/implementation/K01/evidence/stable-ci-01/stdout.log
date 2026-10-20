@@ -1,0 +1,1079 @@
+python3 scripts/verify_repo.py
+nSealr consolidated product structure passed
+python3 scripts/validate_restart_plan.py
+Restart plan valid: 47 tasks; ready: 
+Structural check only; hardware, review quality and security remain evidence gates.
+python3 scripts/verify_evidence.py
+{"closed_files": 1508, "current_contracts": 5, "current_navigation_files": 18, "frozen_source": "f2ef70f522af4977e15f81554a8c6eadcdbe8097"}
+python3 scripts/verify_contracts.py
+{"artifact": "nsealr-contracts-v1", "artifact_format": 2, "artifact_tree": "b629e75d18190ded2403ffabe965b595a9bcf6a6", "consumers": ["bridge", "engine", "pi"], "files": 255, "records": 266, "retired": 11, "source_commit": "45f8b6ff1123f3f55be4ce457fd1008e91043cc2"}
+python3 -m unittest discover -s scripts -p 'test_contracts.py'
+{"actual_git_index_mode": "100644", "approved_git_mode": "100755", "control": "owner_execution_mode", "expected_accept": false, "observed_POSIX_permissions": "0o645"}
+{"actual_git_index_mode": "100644", "approved_git_mode": "100755", "control": "owner_execution_mode", "expected_accept": false, "observed_POSIX_permissions": "0o654"}
+{"actual_git_index_mode": "100644", "approved_git_mode": "100755", "control": "owner_execution_mode", "expected_accept": false, "observed_POSIX_permissions": "0o644"}
+{"actual_git_index_mode": "100755", "approved_git_mode": "100755", "control": "owner_execution_mode", "expected_accept": true, "observed_POSIX_permissions": "0o744"}
+{"actual_git_index_mode": "100755", "approved_git_mode": "100755", "control": "owner_execution_mode", "expected_accept": true, "observed_POSIX_permissions": "0o760"}
+{"actual_git_index_mode": "100644", "approved_git_mode": "100644", "control": "nonowner_permissions_not_git_mode", "expected_accept": true, "observed_POSIX_permissions": "0o645"}
+{"actual_git_index_mode": "100644", "approved_git_mode": "100644", "control": "nonowner_permissions_not_git_mode", "expected_accept": true, "observed_POSIX_permissions": "0o654"}
+{"actual_git_index_mode": "100644", "approved_git_mode": "100644", "control": "nonowner_permissions_not_git_mode", "expected_accept": true, "observed_POSIX_permissions": "0o600"}
+{"actual_git_index_mode": "100644", "approved_git_mode": "100644", "control": "nonowner_permissions_not_git_mode", "expected_accept": true, "observed_POSIX_permissions": "0o664"}
+{"actual_git_index_mode": "100644", "approved_git_mode": "100644", "control": "nonowner_permissions_not_git_mode", "expected_accept": true, "observed_POSIX_permissions": "0o644"}
+{"adopted_baseline": "9ca59c8942cdd51b8caed549a422f587d4a6757b", "adopted_source": "6308dd90d1b4fc05a42bf333ce05f0307d1aa597", "all_four_old_commit_cat_file_exits": 128, "approved_subtree": "b669a1df5c280bb5362d7ddd057b79600b3ac79f", "control": "actual_rebase_cold_main_only", "extra_remote_alternate_shallow_or_graft": false, "old_author": "d90db3cad45b7d5f16a9ce98f1ae2f47e81c08be", "old_baseline": "60fce767fa3d657cb7a37bbe7a4f49d92981fecc", "old_candidate": "9e7e216024d241d01b65b98643933a8199ce53c3", "old_import_metadata": "46178661a2dc422f4cacc6258dbeef9dff500259", "only_ref": "refs/heads/main", "original_and_baseline_whole_trees_equal": true, "rebased_main": "4e0f5ec210af1ff72207309ff270819ec241e10c", "subtree_equal_before_after_actual_rebase": true, "subtree_reachable_from_main": true, "valid_then_tamper_then_restore": [5, "REJECT", 5]}
+python3 -m unittest discover -s scripts -p 'test_evidence.py'
+python3 -m unittest discover -s scripts -p 'test_validate_restart_plan.py'
+python3 -m unittest discover -s scripts -p 'test_verify_repo.py'
+python3 -m unittest discover -s tools/baseline -p 'test_*.py'
+negative: ['/home/tux/nsealr/.restart-tools/goal/r00/tools/baseline/.work/final/.tools/python/bin/python3', '-c', 'import sys; print("out"); print("diagnostic", file=sys.stderr); sys.exit(7)']
+diagnostic
+out
+download file:///home/tux/nsealr/.restart-tools/goal/r00/tools/baseline/.work/final/.tools/tmp/tmp9greqod8/source
+nsealr-init: ['git', 'init', '/home/tux/nsealr/.restart-tools/goal/r00/tools/baseline/.work/final/.tools/tmp/tmpts5yr6qe/nsealr']
+Initialized empty Git repository in /home/tux/nsealr/.restart-tools/goal/r00/tools/baseline/.work/final/.tools/tmp/tmpts5yr6qe/nsealr/.git/
+nsealr-fetch: ['git', 'fetch', '--no-tags', '/home/tux/nsealr/.restart-tools/goal/r00/tools/baseline/.work/final/.tools/tmp/tmpts5yr6qe/source', 'fc93f64b2bea139ade9577ce752c845a6bc4c88f']
+From /home/tux/nsealr/.restart-tools/goal/r00/tools/baseline/.work/final/.tools/tmp/tmpts5yr6qe/source
+ * branch            fc93f64b2bea139ade9577ce752c845a6bc4c88f -> FETCH_HEAD
+nsealr-checkout: ['git', 'checkout', '--detach', 'FETCH_HEAD']
+HEAD is now at fc93f64 public
+nsealr-init: ['git', 'init', '/home/tux/nsealr/.restart-tools/goal/r00/tools/baseline/.work/final/.tools/tmp/tmpvxphpkk0/nsealr']
+Initialized empty Git repository in /home/tux/nsealr/.restart-tools/goal/r00/tools/baseline/.work/final/.tools/tmp/tmpvxphpkk0/nsealr/.git/
+nsealr-fetch: ['git', 'fetch', '--no-tags', '/home/tux/nsealr/.restart-tools/goal/r00/tools/baseline/.work/final/.tools/tmp/tmpvxphpkk0/source', '0000000000000000000000000000000000000000']
+fatal: git upload-pack: not our ref 0000000000000000000000000000000000000000
+fatal: remote error: upload-pack: not our ref 0000000000000000000000000000000000000000
+python3 scripts/verify_repo.py
+nSealr consolidated product structure passed
+python3 -m compileall -q scripts
+python3 scripts/verify_repo.py
+nSealr consolidated product structure passed
+python3 scripts/validate_firmware.py
+nSealr firmware board-profile validation passed
+python3 scripts/verify_repo.py
+nSealr consolidated product structure passed
+python3 scripts/validate_firmware.py
+nSealr firmware board-profile validation passed
+cargo fmt --all --check
+cargo fmt --manifest-path apps/desktop-simulator/Cargo.toml --all --check
+cargo clippy --all-targets -- -D warnings -D dead_code
+cargo clippy --all-targets --all-features -- -D warnings -D dead_code
+cargo clippy --manifest-path apps/desktop-simulator/Cargo.toml --all-targets --all-features -- -D warnings -D dead_code
+cargo test --workspace
+
+running 255 tests
+test base64url::tests::decode_known_pairs_and_canonical_edges ... ok
+test base64url::tests::decode_rejects_invalid_characters ... ok
+test base64url::tests::decode_rejects_non_zero_trailing_bits ... ok
+test base64url::tests::encode_known_pairs ... ok
+test base64url::tests::is_payload_matches_cpp_predicate ... ok
+test base64url::tests::length_helpers_are_exact ... ok
+test base64url::tests::reports_output_too_small ... ok
+test authorization::tests::s03_every_event_mutation_changes_authorized_operation ... ok
+test base64url::tests::round_trips_across_all_tail_lengths ... ok
+test base64url::tests::specs_vector_basic_envelope_canonical_round_trip ... ok
+test base64url::tests::specs_vector_padded_payload_is_rejected ... ok
+test bip39::tests::all_zero_twelve_words_is_valid_checksum ... ok
+test bip39::tests::buffer_too_small_paths ... ok
+test bip39::tests::entropy_and_mnemonic_propagate_validation_errors ... ok
+test bip39::tests::from_slice_bounds ... ok
+test bip39::tests::is_valid_word_count_matches_cpp ... ok
+test bip39::tests::parser_matches_shared_nip06_vector ... ok
+test bip39::tests::require_valid_indexes_paths ... ok
+test bip39::tests::word_at_bounds ... ok
+test bip39::tests::word_index_rejects_overlong_and_unknown ... ok
+test authorization::tests::s03_unicode_decode_is_lossless_or_rejected ... ok
+test board_profile_tests::t_display_s3_button_logic_classifies_debounced_short_and_long_presses ... ok
+test authorization::tests::s03_nip01_bytes_match_independent_oracle ... ok
+test board_profile_tests::t_display_s3_raster_has_stable_boot_and_review_pixels ... ok
+test bip39::tests::wordlist_integrity_count_order_and_digest ... ok
+test board_profile_tests::t_display_s3_serial_input_drains_after_overlong_frame ... ok
+test authorization::tests::s03_integer_tokens_and_kinds_are_exact ... ok
+test authorization::tests::s03_rejects_duplicate_and_incomplete_json ... ok
+test authorization::tests::s03_malformed_known_semantics_never_fall_back ... ok
+test authorization::tests::k01_serialization_and_metadata_callback_failures_return_no_partial_object ... ok
+test authorization::tests::s03_failed_or_skipped_display_cannot_approve ... ok
+test authorization::tests::s03_review_has_complete_indexed_coverage ... ok
+test authorization::tests::s03_capability_or_retired_status_never_enables_product_signing ... ok
+test bip39::tests::parse_rejects_empty_and_whitespace_only ... ok
+test hash::tests::block_boundary_padding_paths ... ok
+test hash::tests::nist_known_answer_vectors ... ok
+test hash::tests::raw_digest_bytes ... ok
+test hash::tests::specs_vector_sha256_over_decoded_base64url_payload ... ok
+test nip19::tests::decode_rejects_non_canonical_and_invalid_scalar ... ok
+test nip19::tests::decode_rejects_wrong_length ... ok
+test nip19::tests::encode_rejects_invalid_scalar_and_small_buffer ... ok
+test nip19::tests::is_valid_secret_key_bounds ... ok
+test nip19::tests::oversized_input_is_malformed ... ok
+test nip19::tests::decoder_matches_shared_vector ... ok
+test policy::approval_gate::tests::reject_ignores_mismatched_request_and_default_is_pending ... ok
+test policy::approval_gate::tests::requires_matching_approval ... ok
+test policy::policy_change_review::tests::error_messages_match_cpp_text ... ok
+test policy::policy_change_review::tests::rejects_companion_authority_or_secret_material ... ok
+test hash::tests::incremental_updates_match_one_shot ... ok
+test policy::policy_change_review::tests::grant_id_list_pushes_and_rejects_overflow ... ok
+test board_profile_tests::t_display_s3_status_frames_keep_non_signing_copy_stable ... ok
+test policy::policy_change_review::tests::flow_guards_and_transcript_bounds ... ok
+test policy::policy_change_review::tests::rejects_each_invalid_proposal_field ... ok
+test policy::policy_change_review::tests::replays_custom_hardware_wallet_fixture ... ok
+test policy::policy_change_review::tests::matches_shared_vector ... ok
+test protocol::tests::rejects_invalid_sign_event_request_shape ... ok
+test policy::policy_change_review::tests::flow_requires_device_approval ... ok
+test protocol::tests::rejects_invalid_dynamic_request_metadata ... ok
+test protocol::tests::binds_configured_signer_identity ... ok
+test protocol::tests::rejects_params_for_parameterless_methods ... ok
+test protocol::tests::exposes_review_frame_before_disabled_signing_response ... ok
+test protocol::tests::exposes_review_session_for_manual_display_navigation ... ok
+test protocol::tests::echoes_dynamic_request_ids ... ok
+test protocol::tests::rejects_unknown_top_level_request_fields ... ok
+test protocol::tests::reports_development_public_key ... ok
+test qr::envelope::tests::animated_digest_and_length_rejections ... ok
+test protocol::tests::reports_scaffold_capabilities ... ok
+test protocol::tests::retired_signing_status_is_rejected ... ok
+test protocol::tests::rejects_signing_while_disabled ... ok
+test protocol::tests::error_display_response_frame_and_scanner_grammar ... ok
+test protocol::tests::transport_and_metadata_rejection_branches ... ok
+test protocol::tests::review_preserves_json_unicode_escapes ... ok
+test qr::envelope::tests::animated_encoder_rejects_too_many_frames_and_bad_payloads ... ok
+test policy::policy_change_review::tests::optional_label_and_label_escaping_shape_the_digest ... ok
+test qr::envelope::tests::animated_frame_set_rejections ... ok
+test qr::envelope::tests::animated_frames_accepted_out_of_order ... ok
+test qr::envelope::tests::animated_structural_rejections ... ok
+test qr::envelope::tests::helper_contracts ... ok
+test qr::envelope::tests::animated_qr_envelope_rejections ... ok
+test qr::envelope::tests::content_over_limit_within_request_budget ... ok
+test qr::envelope::tests::animated_qr_envelope_decodes_shared_vector ... ok
+test qr::envelope::tests::qr_envelope_decodes_shared_vector ... ok
+test qr::envelope::tests::long_events_many_tags_shared_vector_parses ... ok
+test qr::envelope::tests::qr_envelope_parses_event_template_fields ... ok
+test qr::envelope::tests::qr_envelope_encoder_rejections ... ok
+test qr::envelope::tests::qr_envelope_rejects_shared_invalid_qr_vectors ... ok
+test qr::envelope::tests::qr_limits_match_shared_profile ... ok
+test qr::envelope::tests::qr_envelope_extracts_event_template_boundary ... ok
+test qr::envelope::tests::qr_envelope_rejections ... ok
+test qr::envelope::tests::qr_envelope_parses_sign_event_request_metadata ... ok
+test qr::envelope::tests::qr_signing_request_preserves_json_unicode_escapes ... ok
+test qr::envelope::tests::qr_signing_request_tolerates_escaped_event_content ... ok
+test qr::envelope::tests::request_limit_rejections ... ok
+test qr::envelope::tests::qr_envelope_encodes_signed_response_vectors_without_signing ... ok
+test qr::envelope::tests::tag_field_limit_uses_decoded_bytes ... ok
+test qr::envelope::tests::qr_signing_request_rejections ... ok
+test qr::envelope::tests::static_encoder_and_container_shapes ... ok
+test qr::envelope::tests::request_parser_grammar_rejections ... ok
+test qr::envelope::tests::request_parser_tolerances ... ok
+test qr::response_display::tests::allows_nested_json_unicode_escapes ... ok
+test qr::envelope::tests::animated_payload_content_rejections ... ok
+test qr::response_display::tests::builds_static_frame_for_small_response ... ok
+test qr::envelope::tests::undersized_output_buffers ... ok
+test qr::envelope::tests::qr_signing_request_rejects_shared_invalid_request_vectors ... ok
+test qr::response_display::tests::animated_response_fixture_replay ... ok
+test qr::response_display::tests::request_id_rule_matches_shared_charset ... ok
+test qr::response_display::tests::rejects_non_response_payload_shapes ... ok
+test qr::response_display::tests::rejects_invalid_json_and_bad_cycles ... ok
+test qr::response_display::tests::rejects_shared_top_level_invalid_response_vectors ... ok
+test qr::response_display::tests::shows_static_frame_once ... ok
+test qr::response_display::tests::scanner_tolerances_and_rejections ... ok
+test review::buttons::tests::unchanged_levels_produce_no_event ... ok
+test qr::response_display::tests::scanner_structural_rejections ... ok
+test review::controls::tests::allow_backward_navigation_before_terminal_decision ... ok
+test review::controls::tests::allow_early_rejection ... ok
+test review::controls::tests::are_terminal_after_decision ... ok
+test review::controls::tests::require_page_traversal_before_approval ... ok
+test review::controls::tests::zero_pages_rejected_and_messages_match_cpp ... ok
+test review::display::tests::matches_shared_long_content_frame_vector ... ok
+test review::display::tests::matches_shared_utf8_boundary_frame_vector ... ok
+test qr::response_display::tests::io_single_cycle_animated ... ok
+test review::display::tests::preserves_logical_page_indicator_and_body_styles ... ok
+test review::display::tests::rejects_unsafe_frame_bounds ... ok
+test review::display::tests::renders_navigation_frame ... ok
+test review::display::tests::renders_decision_frame ... ok
+test review::display::tests::truncate_helper_direct_paths ... ok
+test qr::response_display::tests::static_animated_threshold_boundary ... ok
+test review::display::tests::wraps_and_truncates_long_body_lines ... ok
+test review::display::tests::wraps_utf8_without_splitting_codepoints ... ok
+test review::display::tests::validation_branches_and_messages ... ok
+test review::qr::tests::display_pages_escape_non_ascii_for_display_safety ... ok
+test review::qr::tests::display_pages_group_logical_sections_with_compact_styles ... ok
+test review::qr::tests::display_pages_preserve_supported_ascii_punctuation ... ok
+test review::qr::tests::display_pages_render_control_escapes_visibly ... ok
+test review::qr::tests::display_pages_show_full_tag_values_without_ellipsis ... ok
+test review::qr::tests::display_pages_split_full_long_content_without_ellipsis ... ok
+test review::qr::tests::review_pages_match_shared_tagged_vector ... ok
+test review::qr::tests::display_pages_use_scroll_line_indicators_for_long_sections ... ok
+test review::qr::tests::review_pages_match_shared_basic_vector ... ok
+test review::qr::tests::signing_request_unicode_escapes_render_escaped_review_pages ... ok
+test review::qr::tests::trusted_review_request_matches_shared_basic_vector ... ok
+test review::qr::tests::review_binds_configured_signer_identity ... ok
+test review::qr::tests::display_pages_match_shared_detail_page_vectors ... ok
+test review::qr::tests::trusted_review_request_matches_shared_tagged_vector ... ok
+test review::qr::tests::trusted_review_session_binds_qr_digest_and_navigation ... ok
+test qr::response_display::tests::cycles_animated_frames_for_large_response ... ok
+test review::qr_flow::tests::flow_rejects_mixed_scanned_request_frames ... ok
+test review::qr_flow::tests::empty_and_foreign_scans_report_envelope_errors ... ok
+test review::qr_flow::tests::flow_drives_scanned_qr_without_signing_backend ... ok
+test review::qr_flow::tests::error_messages_capacity_and_frame_bounds ... ok
+test review::qr_flow::tests::flow_rejects_unsafe_scanned_qr ... ok
+test review::qr_flow::tests::io_flow_requires_nonzero_step_limit ... ok
+test review::qr::tests::validation_capacity_and_escaping_branches ... ok
+test review::qr_flow::tests::flow_accepts_animated_scanned_request_frames ... ok
+test review::serial::tests::error_messages_and_flow_accessors ... ok
+test review::qr_flow::tests::io_flow_rejects_non_terminal_button_stream ... ok
+test review::qr_flow::tests::transcript_records_display_and_approval_steps ... ok
+test review::qr_flow::tests::io_flow_drives_scanner_display_and_buttons_without_signing ... ok
+test review::qr_flow::tests::transcript_records_early_rejection ... ok
+test review::qr_flow::tests::transcript_matches_shared_detail_scroll_vector ... ok
+test review::qr_flow::tests::flow_binds_selected_session_account_identity ... ok
+test review::signer_identity::tests::development_fixture_is_valid_and_matches_constant ... ok
+test authorization::tests::s03_host_and_transcript_cannot_mint_authority ... ok
+test review::signer_identity::tests::require_valid_rejects_bad_key_with_cpp_message ... ok
+test review::signer_identity::tests::validates_lowercase_hex_public_key ... ok
+test review::trusted::tests::keeps_rejection_terminal ... ok
+test review::trusted::tests::constructor_validation_and_messages ... ok
+test review::serial::tests::review_session_uses_full_scroll_display_pages ... ok
+test review::trusted::tests::accessor_render_error_and_logical_terminal_lock ... ok
+test review::serial::tests::io_flow_drives_request_display_and_buttons_without_signing ... ok
+test review::serial::tests::io_flow_step_limit_branches ... ok
+test review::serial::tests::sign_event_review_matches_shared_review_contract ... ok
+test review::serial::tests::review_binds_configured_signer_identity ... ok
+test review::trusted::tests::binds_display_navigation_and_approval ... ok
+test review::trusted::tests::allows_backward_review_before_approval ... ok
+test review::types::tests::line_list_pushes_and_rejects_overflow ... ok
+test review::serial::tests::review_session_uses_two_axis_navigation_for_scroll_windows ... ok
+test seedqr::tests::compact_length_rules ... ok
+test review::types::tests::style_list_pushes_and_rejects_overflow ... ok
+test seedqr::tests::standard_empty_and_shape_errors ... ok
+test seedqr::tests::decoders_match_shared_vector ... ok
+test review::types::tests::page_list_pushes_and_rejects_overflow ... ok
+test serial::frame::tests::decode_structural_rejections ... ok
+test serial::frame::tests::encode_rejects_bad_payload_and_small_buffer ... ok
+test serial::frame::tests::encode_rejects_payload_that_overflows_checksum_scratch ... ok
+test serial::frame::tests::decode_line_ending_variants ... ok
+test serial::frame::tests::frame_type_tokens_round_trip_all_variants ... ok
+test serial::frame::tests::serial_frame_rejections ... ok
+test serial::frame::tests::encodes_response_and_error_frames_that_round_trip ... ok
+test serial::frame::tests::serial_frame_rejects_shared_invalid_vectors ... ok
+test serial::input::tests::rejects_invalid_max_frame_bytes ... ok
+test serial::frame::tests::serial_frame_round_trip ... ok
+test session::account::tests::context_builder_rejects_hand_built_invalid_identity ... ok
+test session::account::tests::does_not_satisfy_public_key_proof_gate ... ok
+test session::account::tests::consumes_shared_source_public_key_proof_metadata_without_derivation ... ok
+test session::import_flow::tests::rejection_does_not_load_keyring ... ok
+test session::account::tests::validates_source_route_and_recovery_shape ... ok
+test session::account::tests::binds_qr_review_identity_without_derivation ... ok
+test session::import_flow::tests::requires_local_approval_before_loading_keyring ... ok
+test session::import_review::tests::replays_nip06_account_0_leader_fixture ... ok
+test session::keyring::tests::accepts_parsed_key_sources ... ok
+test session::import_review::tests::hides_secret_material ... ok
+test session::keyring::tests::consumed_source_revalidates_corrupted_internal_seed ... ok
+test session::import_flow::tests::blocks_early_or_nonterminal_approval ... ok
+test session::keyring::tests::add_source_revalidates_both_kinds ... ok
+test session::import_flow::tests::zero_steps_full_keyring_and_transcript_bounds ... ok
+test session::keyring::tests::transfer_and_live_wipe ... ok
+test session::keyring::tests::clear_wipes_active_sources ... ok
+test session::keyring::tests::rejects_invalid_sources ... ok
+test session::source_backup::tests::flow_guards_max_steps_and_non_terminal_streams ... ok
+test authorization::tests::s03_review_escape_spelling_is_injective ... ok
+test session::source_backup::tests::flow_reveals_only_after_local_approval ... ok
+test session::source_backup::tests::payload_rejects_unsupported_word_counts_and_bad_checksums ... ok
+test session::source_generation::tests::rejects_invalid_entropy ... ok
+test session::source_backup::tests::io_rejection_or_timeout_does_not_emit_payload ... ok
+test session::source_backup::tests::transcript_bounds_and_rejects_overflow ... ok
+test session::source_backup::tests::io_reveals_only_after_displayed_approval ... ok
+test session::source_backup::tests::review_matches_shared_danger_zone_vectors ... ok
+test session::source_backup::tests::payload_matches_shared_secret_payloads ... ok
+test session::source_generation::tests::uses_ram_only_source_boundary ... ok
+test session::source_qr::tests::compact_seedqr_import_flow_loads_after_review_approval ... ok
+test session::source_qr::tests::import_flow_loads_only_after_review_approval ... ok
+test session::source_qr::tests::import_flow_error_wrapping_branches ... ok
+test session::source_qr::tests::import_flow_rejects_without_keyring_load ... ok
+test tests::harness_runs ... ok
+test session::source_qr::tests::parses_ram_only_sources ... ok
+test text::tests::rejects_overflow_and_keeps_contents ... ok
+test session::source_qr::tests::rejects_invalid_inputs ... ok
+test text::tests::wipe_zeroes_buffer_and_length ... ok
+test text::tests::builds_appends_and_compares ... ok
+test unicode::tests::json_escape_bmp_and_surrogate_pairs ... ok
+test unicode::tests::encode_utf8_widths_and_rejection ... ok
+test unicode::tests::is_valid_utf8_accepts_and_rejects ... ok
+test unicode::tests::parse_code_unit_paths ... ok
+test unicode::tests::decode_next_codepoint_direct ... ok
+test unicode::tests::scalar_boundaries ... ok
+test authorization::tests::s03_identity_is_derived_from_consumed_custody ... ok
+test authorization::tests::k01_reference_coordinates_and_reaction_coherence_have_no_raw_fallback ... ok
+test authorization::tests::k01_all_prepared_semantic_negatives_have_zero_effects ... ok
+test authorization::tests::k01_original_recovery_bytes_and_scoped_backend_witnesses ... ok
+test authorization::tests::s03_first_attempt_is_irrevocable ... ok
+test authorization::tests::s03_old_session_aliases_and_time_fail_closed ... ok
+test authorization::tests::s03_two_attempts_and_cancel_linearize_once ... ok
+test authorization::tests::k01_auxiliary_errors_wipe_whole_destination_and_burn_attempt ... ok
+test authorization::tests::k01_consumes_before_clock_and_checks_fresh_completion_before_output ... ok
+test authorization::tests::s03_kind1_interprets_exact_reference_subset ... ok
+test authorization::tests::s03_independent_event_id_and_signature_agree ... ok
+test authorization::tests::s03_each_lifecycle_event_invalidates_pending_work ... ok
+test authorization::tests::k01_repost_borrowed_original_fields_and_failures_are_checked ... ok
+test authorization::tests::k01_prepared_catalog_preflights_and_rejects_exact_semantic_inputs ... ok
+test authorization::tests::s03_attempt_binds_context_and_consumes_mismatch ... ok
+test authorization::tests::k01_actual_engine_outputs_match_all_prepared_independent_cases ... ok
+test authorization::tests::s03_all_limits_bound_storage_and_work ... ok
+test authorization::tests::k01_metadata_exact_types_duplicate_keys_and_finite_boundaries ... ok
+test authorization::tests::k01_seventy_cases_have_actual_complete_review_or_exact_zero_effect_failure ... ok
+
+test result: ok. 255 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.15s
+
+
+running 10 tests
+test local_verification_and_availability_do_not_collapse ... ok
+test profile_layout_and_request_storage_are_accounted_separately ... ok
+test common_profile_manifests_are_conformance_only_and_match_typed_profile_designs ... ok
+test checked_expansion_rejects_before_allocation_at_independent_boundaries ... ok
+test pi_boot_limitation_requires_its_own_evidence ... ok
+test reported_axes_remain_distinct_and_contradictions_reject ... ok
+test finite_limits_keep_local_caps_and_zero_disabled_queues ... ok
+test required_component_and_custody_never_fall_back ... ok
+test synthetic_evidence_cannot_qualify_production ... ok
+test exact_profiles_and_each_independent_required_group ... ok
+
+test result: ok. 10 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+
+running 4 tests
+test local_scalar_intake_clears_input_on_success_and_failure ... ok
+test malformed_seed_is_rejected_at_owned_insertion ... ok
+test owned_types_have_fixed_redacted_formatting ... ok
+test cancelled_and_failed_import_or_backup_has_no_retained_output ... ok
+
+test result: ok. 4 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+
+running 15 tests
+test crates/nsealr-core/src/session/source_backup.rs - session::source_backup::SessionSourceBackupPayload (line 70) - compile fail ... ok
+test crates/nsealr-core/src/bip39/mod.rs - bip39::WordIndexes (line 70) - compile fail ... ok
+test crates/nsealr-core/src/session/keyring.rs - session::keyring::SessionKeySource (line 107) - compile fail ... ok
+test crates/nsealr-core/src/session/keyring.rs - session::keyring::SessionKeySource (line 102) - compile fail ... ok
+test crates/nsealr-core/src/session/keyring.rs - session::keyring::StatelessSessionKeyring::add_source (line 283) - compile fail ... ok
+test crates/nsealr-core/src/session/source_backup.rs - session::source_backup::SessionSourceBackupPayload (line 66) - compile fail ... ok
+test crates/nsealr-core/src/authorization.rs - authorization::AuthorizationSession (line 186) - compile fail ... ok
+test crates/nsealr-core/src/session/keyring.rs - session::keyring::SessionKeySource (line 97) - compile fail ... ok
+test crates/nsealr-core/src/bip39/mod.rs - bip39::WordIndexes (line 65) - compile fail ... ok
+test crates/nsealr-core/src/session/source_backup.rs - session::source_backup::SessionSourceBackupPayload (line 61) - compile fail ... ok
+test crates/nsealr-core/src/authorization.rs - authorization::AuthorizationSession (line 182) - compile fail ... ok
+test crates/nsealr-core/src/authorization.rs - authorization::AuthorizationSession (line 192) - compile fail ... ok
+test crates/nsealr-core/src/nip19.rs - nip19::SecretKey (line 41) - compile fail ... ok
+test crates/nsealr-core/src/nip19.rs - nip19::SecretKey (line 36) - compile fail ... ok
+test crates/nsealr-core/src/authorization.rs - authorization::AuthorizationSession (line 177) - compile fail ... ok
+
+test result: ok. 15 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.03s
+
+cargo test -p nsealr-core --features std
+
+running 256 tests
+test base64url::tests::decode_known_pairs_and_canonical_edges ... ok
+test base64url::tests::decode_rejects_invalid_characters ... ok
+test base64url::tests::decode_rejects_non_zero_trailing_bits ... ok
+test base64url::tests::encode_known_pairs ... ok
+test base64url::tests::is_payload_matches_cpp_predicate ... ok
+test base64url::tests::length_helpers_are_exact ... ok
+test base64url::tests::reports_output_too_small ... ok
+test base64url::tests::round_trips_across_all_tail_lengths ... ok
+test authorization::tests::s03_every_event_mutation_changes_authorized_operation ... ok
+test base64url::tests::specs_vector_basic_envelope_canonical_round_trip ... ok
+test base64url::tests::specs_vector_padded_payload_is_rejected ... ok
+test bip39::tests::all_zero_twelve_words_is_valid_checksum ... ok
+test bip39::tests::buffer_too_small_paths ... ok
+test bip39::tests::entropy_and_mnemonic_propagate_validation_errors ... ok
+test bip39::tests::from_slice_bounds ... ok
+test bip39::tests::is_valid_word_count_matches_cpp ... ok
+test bip39::tests::parse_rejects_empty_and_whitespace_only ... ok
+test bip39::tests::parser_matches_shared_nip06_vector ... ok
+test bip39::tests::require_valid_indexes_paths ... ok
+test bip39::tests::word_at_bounds ... ok
+test bip39::tests::word_index_rejects_overlong_and_unknown ... ok
+test board_profile_tests::t_display_s3_button_logic_classifies_debounced_short_and_long_presses ... ok
+test authorization::tests::s03_unicode_decode_is_lossless_or_rejected ... ok
+test authorization::tests::s03_nip01_bytes_match_independent_oracle ... ok
+test board_profile_tests::t_display_s3_raster_has_stable_boot_and_review_pixels ... ok
+test board_profile_tests::t_display_s3_status_frames_keep_non_signing_copy_stable ... ok
+test hash::tests::block_boundary_padding_paths ... ok
+test board_profile_tests::t_display_s3_serial_input_drains_after_overlong_frame ... ok
+test hash::tests::nist_known_answer_vectors ... ok
+test hash::tests::raw_digest_bytes ... ok
+test hash::tests::specs_vector_sha256_over_decoded_base64url_payload ... ok
+test nip19::tests::decode_rejects_non_canonical_and_invalid_scalar ... ok
+test authorization::tests::s03_rejects_duplicate_and_incomplete_json ... ok
+test bip39::tests::wordlist_integrity_count_order_and_digest ... ok
+test authorization::tests::s03_integer_tokens_and_kinds_are_exact ... ok
+test nip19::tests::decoder_matches_shared_vector ... ok
+test nip19::tests::encode_rejects_invalid_scalar_and_small_buffer ... ok
+test nip19::tests::decode_rejects_wrong_length ... ok
+test hash::tests::incremental_updates_match_one_shot ... ok
+test nip19::tests::oversized_input_is_malformed ... ok
+test policy::approval_gate::tests::reject_ignores_mismatched_request_and_default_is_pending ... ok
+test nip19::tests::is_valid_secret_key_bounds ... ok
+test policy::approval_gate::tests::requires_matching_approval ... ok
+test policy::policy_change_review::tests::error_messages_match_cpp_text ... ok
+test policy::policy_change_review::tests::rejects_companion_authority_or_secret_material ... ok
+test policy::policy_change_review::tests::grant_id_list_pushes_and_rejects_overflow ... ok
+test policy::policy_change_review::tests::flow_guards_and_transcript_bounds ... ok
+test authorization::tests::s03_malformed_known_semantics_never_fall_back ... ok
+test policy::policy_change_review::tests::rejects_each_invalid_proposal_field ... ok
+test policy::policy_change_review::tests::matches_shared_vector ... ok
+test policy::policy_change_review::tests::replays_custom_hardware_wallet_fixture ... ok
+test policy::policy_change_review::tests::flow_requires_device_approval ... ok
+test authorization::tests::s03_failed_or_skipped_display_cannot_approve ... ok
+test protocol::tests::echoes_dynamic_request_ids ... ok
+test authorization::tests::k01_serialization_and_metadata_callback_failures_return_no_partial_object ... ok
+test protocol::tests::binds_configured_signer_identity ... ok
+test authorization::tests::s03_review_has_complete_indexed_coverage ... ok
+test protocol::tests::exposes_review_frame_before_disabled_signing_response ... ok
+test protocol::tests::rejects_params_for_parameterless_methods ... ok
+test policy::policy_change_review::tests::optional_label_and_label_escaping_shape_the_digest ... ok
+test protocol::tests::rejects_invalid_dynamic_request_metadata ... ok
+test protocol::tests::rejects_unknown_top_level_request_fields ... ok
+test protocol::tests::reports_development_public_key ... ok
+test protocol::tests::rejects_invalid_sign_event_request_shape ... ok
+test protocol::tests::exposes_review_session_for_manual_display_navigation ... ok
+test protocol::tests::retired_signing_status_is_rejected ... ok
+test protocol::tests::reports_scaffold_capabilities ... ok
+test protocol::tests::rejects_signing_while_disabled ... ok
+test qr::envelope::tests::animated_digest_and_length_rejections ... ok
+test qr::envelope::tests::animated_encoder_rejects_too_many_frames_and_bad_payloads ... ok
+test protocol::tests::error_display_response_frame_and_scanner_grammar ... ok
+test protocol::tests::review_preserves_json_unicode_escapes ... ok
+test authorization::tests::s03_capability_or_retired_status_never_enables_product_signing ... ok
+test qr::envelope::tests::animated_frame_set_rejections ... ok
+test qr::envelope::tests::animated_frames_accepted_out_of_order ... ok
+test qr::envelope::tests::content_over_limit_within_request_budget ... ok
+test qr::envelope::tests::helper_contracts ... ok
+test qr::envelope::tests::animated_structural_rejections ... ok
+test protocol::tests::transport_and_metadata_rejection_branches ... ok
+test qr::envelope::tests::qr_envelope_decodes_shared_vector ... ok
+test qr::envelope::tests::animated_qr_envelope_rejections ... ok
+test qr::envelope::tests::long_events_many_tags_shared_vector_parses ... ok
+test qr::envelope::tests::animated_qr_envelope_decodes_shared_vector ... ok
+test qr::envelope::tests::qr_envelope_encoder_rejections ... ok
+test qr::envelope::tests::qr_envelope_parses_event_template_fields ... ok
+test qr::envelope::tests::qr_envelope_extracts_event_template_boundary ... ok
+test qr::envelope::tests::qr_envelope_rejects_shared_invalid_qr_vectors ... ok
+test qr::envelope::tests::qr_envelope_rejections ... ok
+test qr::envelope::tests::qr_signing_request_preserves_json_unicode_escapes ... ok
+test qr::envelope::tests::qr_limits_match_shared_profile ... ok
+test qr::envelope::tests::qr_envelope_parses_sign_event_request_metadata ... ok
+test qr::envelope::tests::qr_signing_request_tolerates_escaped_event_content ... ok
+test qr::envelope::tests::request_limit_rejections ... ok
+test qr::envelope::tests::static_encoder_and_container_shapes ... ok
+test qr::envelope::tests::request_parser_grammar_rejections ... ok
+test qr::envelope::tests::qr_signing_request_rejections ... ok
+test qr::envelope::tests::qr_envelope_encodes_signed_response_vectors_without_signing ... ok
+test qr::envelope::tests::tag_field_limit_uses_decoded_bytes ... ok
+test qr::envelope::tests::undersized_output_buffers ... ok
+test qr::envelope::tests::request_parser_tolerances ... ok
+test qr::envelope::tests::qr_signing_request_rejects_shared_invalid_request_vectors ... ok
+test qr::response_display::tests::rejects_invalid_json_and_bad_cycles ... ok
+test qr::response_display::tests::rejects_non_response_payload_shapes ... ok
+test qr::response_display::tests::rejects_shared_top_level_invalid_response_vectors ... ok
+test qr::response_display::tests::request_id_rule_matches_shared_charset ... ok
+test qr::envelope::tests::animated_payload_content_rejections ... ok
+test qr::response_display::tests::builds_static_frame_for_small_response ... ok
+test qr::response_display::tests::scanner_structural_rejections ... ok
+test qr::response_display::tests::allows_nested_json_unicode_escapes ... ok
+test qr::response_display::tests::animated_response_fixture_replay ... ok
+test qr::response_display::tests::scanner_tolerances_and_rejections ... ok
+test qr::response_display::tests::shows_static_frame_once ... ok
+test qr::response_display::tests::io_single_cycle_animated ... ok
+test review::buttons::tests::unchanged_levels_produce_no_event ... ok
+test review::controls::tests::allow_early_rejection ... ok
+test review::controls::tests::allow_backward_navigation_before_terminal_decision ... ok
+test review::controls::tests::require_page_traversal_before_approval ... ok
+test review::controls::tests::are_terminal_after_decision ... ok
+test review::controls::tests::zero_pages_rejected_and_messages_match_cpp ... ok
+test qr::response_display::tests::static_animated_threshold_boundary ... ok
+test review::display::tests::matches_shared_long_content_frame_vector ... ok
+test review::display::tests::matches_shared_utf8_boundary_frame_vector ... ok
+test review::display::tests::preserves_logical_page_indicator_and_body_styles ... ok
+test review::display::tests::rejects_unsafe_frame_bounds ... ok
+test review::display::tests::renders_decision_frame ... ok
+test review::display::tests::wraps_and_truncates_long_body_lines ... ok
+test review::display::tests::renders_navigation_frame ... ok
+test review::display::tests::truncate_helper_direct_paths ... ok
+test review::display::tests::validation_branches_and_messages ... ok
+test review::display::tests::wraps_utf8_without_splitting_codepoints ... ok
+test review::qr::tests::display_pages_escape_non_ascii_for_display_safety ... ok
+test review::qr::tests::display_pages_group_logical_sections_with_compact_styles ... ok
+test review::qr::tests::display_pages_preserve_supported_ascii_punctuation ... ok
+test qr::response_display::tests::cycles_animated_frames_for_large_response ... ok
+test review::qr::tests::display_pages_render_control_escapes_visibly ... ok
+test review::qr::tests::display_pages_show_full_tag_values_without_ellipsis ... ok
+test review::qr::tests::display_pages_split_full_long_content_without_ellipsis ... ok
+test review::qr::tests::review_pages_match_shared_basic_vector ... ok
+test review::qr::tests::review_pages_match_shared_tagged_vector ... ok
+test review::qr::tests::display_pages_use_scroll_line_indicators_for_long_sections ... ok
+test review::qr::tests::review_binds_configured_signer_identity ... ok
+test review::qr::tests::signing_request_unicode_escapes_render_escaped_review_pages ... ok
+test review::qr::tests::trusted_review_request_matches_shared_basic_vector ... ok
+test review::qr::tests::trusted_review_request_matches_shared_tagged_vector ... ok
+test review::qr::tests::trusted_review_session_binds_qr_digest_and_navigation ... ok
+test review::qr_flow::tests::flow_drives_scanned_qr_without_signing_backend ... ok
+test review::qr::tests::display_pages_match_shared_detail_page_vectors ... ok
+test review::qr_flow::tests::flow_rejects_mixed_scanned_request_frames ... ok
+test review::qr_flow::tests::empty_and_foreign_scans_report_envelope_errors ... ok
+test review::qr_flow::tests::flow_rejects_unsafe_scanned_qr ... ok
+test review::qr_flow::tests::io_flow_requires_nonzero_step_limit ... ok
+test review::qr::tests::validation_capacity_and_escaping_branches ... ok
+test review::qr_flow::tests::error_messages_capacity_and_frame_bounds ... ok
+test review::qr_flow::tests::io_flow_rejects_non_terminal_button_stream ... ok
+test review::qr_flow::tests::flow_binds_selected_session_account_identity ... ok
+test review::qr_flow::tests::io_flow_drives_scanner_display_and_buttons_without_signing ... ok
+test review::qr_flow::tests::flow_accepts_animated_scanned_request_frames ... ok
+test review::qr_flow::tests::transcript_matches_shared_detail_scroll_vector ... ok
+test review::signer_identity::tests::development_fixture_is_valid_and_matches_constant ... ok
+test review::signer_identity::tests::require_valid_rejects_bad_key_with_cpp_message ... ok
+test review::qr_flow::tests::transcript_records_display_and_approval_steps ... ok
+test review::serial::tests::error_messages_and_flow_accessors ... ok
+test review::signer_identity::tests::validates_lowercase_hex_public_key ... ok
+test review::qr_flow::tests::transcript_records_early_rejection ... ok
+test review::serial::tests::review_session_uses_full_scroll_display_pages ... ok
+test review::trusted::tests::allows_backward_review_before_approval ... ok
+test review::serial::tests::io_flow_drives_request_display_and_buttons_without_signing ... ok
+test review::trusted::tests::binds_display_navigation_and_approval ... ok
+test review::serial::tests::sign_event_review_matches_shared_review_contract ... ok
+test review::serial::tests::io_flow_step_limit_branches ... ok
+test review::serial::tests::review_binds_configured_signer_identity ... ok
+test review::trusted::tests::accessor_render_error_and_logical_terminal_lock ... ok
+test review::trusted::tests::constructor_validation_and_messages ... ok
+test review::types::tests::line_list_pushes_and_rejects_overflow ... ok
+test review::serial::tests::review_session_uses_two_axis_navigation_for_scroll_windows ... ok
+test review::types::tests::page_list_pushes_and_rejects_overflow ... ok
+test review::types::tests::style_list_pushes_and_rejects_overflow ... ok
+test seedqr::tests::compact_length_rules ... ok
+test review::trusted::tests::keeps_rejection_terminal ... ok
+test serial::frame::tests::decode_line_ending_variants ... ok
+test seedqr::tests::decoders_match_shared_vector ... ok
+test serial::frame::tests::serial_frame_rejections ... ok
+test serial::frame::tests::decode_structural_rejections ... ok
+test seedqr::tests::standard_empty_and_shape_errors ... ok
+test serial::frame::tests::serial_frame_rejects_shared_invalid_vectors ... ok
+test serial::input::tests::rejects_invalid_max_frame_bytes ... ok
+test serial::frame::tests::serial_frame_round_trip ... ok
+test serial::frame::tests::encode_rejects_bad_payload_and_small_buffer ... ok
+test serial::frame::tests::encode_rejects_payload_that_overflows_checksum_scratch ... ok
+test serial::frame::tests::frame_type_tokens_round_trip_all_variants ... ok
+test serial::frame::tests::encodes_response_and_error_frames_that_round_trip ... ok
+test session::account::tests::context_builder_rejects_hand_built_invalid_identity ... ok
+test session::account::tests::does_not_satisfy_public_key_proof_gate ... ok
+test session::account::tests::consumes_shared_source_public_key_proof_metadata_without_derivation ... ok
+test session::account::tests::validates_source_route_and_recovery_shape ... ok
+test session::import_flow::tests::rejection_does_not_load_keyring ... ok
+test session::account::tests::binds_qr_review_identity_without_derivation ... ok
+test session::import_review::tests::replays_nip06_account_0_leader_fixture ... ok
+test session::import_flow::tests::requires_local_approval_before_loading_keyring ... ok
+test authorization::tests::s03_host_and_transcript_cannot_mint_authority ... ok
+test session::keyring::tests::accepts_parsed_key_sources ... ok
+test session::import_flow::tests::blocks_early_or_nonterminal_approval ... ok
+test session::import_review::tests::hides_secret_material ... ok
+test session::keyring::tests::clear_wipes_active_sources ... ok
+test session::keyring::tests::add_source_revalidates_both_kinds ... ok
+test session::import_flow::tests::zero_steps_full_keyring_and_transcript_bounds ... ok
+test session::keyring::tests::transfer_and_live_wipe ... ok
+test session::keyring::tests::consumed_source_revalidates_corrupted_internal_seed ... ok
+test session::source_backup::tests::flow_guards_max_steps_and_non_terminal_streams ... ok
+test session::source_backup::tests::transcript_bounds_and_rejects_overflow ... ok
+test session::source_backup::tests::payload_rejects_unsupported_word_counts_and_bad_checksums ... ok
+test session::source_backup::tests::io_rejection_or_timeout_does_not_emit_payload ... ok
+test session::keyring::tests::rejects_invalid_sources ... ok
+test session::source_backup::tests::flow_reveals_only_after_local_approval ... ok
+test session::source_backup::tests::io_reveals_only_after_displayed_approval ... ok
+test session::source_backup::tests::review_matches_shared_danger_zone_vectors ... ok
+test session::source_generation::tests::rejects_invalid_entropy ... ok
+test session::source_backup::tests::payload_matches_shared_secret_payloads ... ok
+test tests::harness_runs ... ok
+test session::source_qr::tests::rejects_invalid_inputs ... ok
+test session::source_qr::tests::import_flow_rejects_without_keyring_load ... ok
+test session::source_qr::tests::compact_seedqr_import_flow_loads_after_review_approval ... ok
+test session::source_qr::tests::import_flow_error_wrapping_branches ... ok
+test tests::std_feature_links_std_facade ... ok
+test session::source_generation::tests::uses_ram_only_source_boundary ... ok
+test session::source_qr::tests::import_flow_loads_only_after_review_approval ... ok
+test text::tests::builds_appends_and_compares ... ok
+test session::source_qr::tests::parses_ram_only_sources ... ok
+test text::tests::wipe_zeroes_buffer_and_length ... ok
+test unicode::tests::decode_next_codepoint_direct ... ok
+test unicode::tests::encode_utf8_widths_and_rejection ... ok
+test unicode::tests::is_valid_utf8_accepts_and_rejects ... ok
+test unicode::tests::json_escape_bmp_and_surrogate_pairs ... ok
+test unicode::tests::parse_code_unit_paths ... ok
+test text::tests::rejects_overflow_and_keeps_contents ... ok
+test unicode::tests::scalar_boundaries ... ok
+test authorization::tests::s03_review_escape_spelling_is_injective ... ok
+test authorization::tests::k01_reference_coordinates_and_reaction_coherence_have_no_raw_fallback ... ok
+test authorization::tests::k01_auxiliary_errors_wipe_whole_destination_and_burn_attempt ... ok
+test authorization::tests::k01_original_recovery_bytes_and_scoped_backend_witnesses ... ok
+test authorization::tests::s03_identity_is_derived_from_consumed_custody ... ok
+test authorization::tests::k01_all_prepared_semantic_negatives_have_zero_effects ... ok
+test authorization::tests::s03_two_attempts_and_cancel_linearize_once ... ok
+test authorization::tests::s03_old_session_aliases_and_time_fail_closed ... ok
+test authorization::tests::s03_first_attempt_is_irrevocable ... ok
+test authorization::tests::s03_kind1_interprets_exact_reference_subset ... ok
+test authorization::tests::k01_consumes_before_clock_and_checks_fresh_completion_before_output ... ok
+test authorization::tests::s03_each_lifecycle_event_invalidates_pending_work ... ok
+test authorization::tests::k01_repost_borrowed_original_fields_and_failures_are_checked ... ok
+test authorization::tests::k01_prepared_catalog_preflights_and_rejects_exact_semantic_inputs ... ok
+test authorization::tests::s03_independent_event_id_and_signature_agree ... ok
+test authorization::tests::s03_attempt_binds_context_and_consumes_mismatch ... ok
+test authorization::tests::k01_actual_engine_outputs_match_all_prepared_independent_cases ... ok
+test authorization::tests::s03_all_limits_bound_storage_and_work ... ok
+test authorization::tests::k01_metadata_exact_types_duplicate_keys_and_finite_boundaries ... ok
+test authorization::tests::k01_seventy_cases_have_actual_complete_review_or_exact_zero_effect_failure ... ok
+
+test result: ok. 256 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.15s
+
+
+running 10 tests
+test local_verification_and_availability_do_not_collapse ... ok
+test profile_layout_and_request_storage_are_accounted_separately ... ok
+test common_profile_manifests_are_conformance_only_and_match_typed_profile_designs ... ok
+test checked_expansion_rejects_before_allocation_at_independent_boundaries ... ok
+test pi_boot_limitation_requires_its_own_evidence ... ok
+test reported_axes_remain_distinct_and_contradictions_reject ... ok
+test required_component_and_custody_never_fall_back ... ok
+test synthetic_evidence_cannot_qualify_production ... ok
+test finite_limits_keep_local_caps_and_zero_disabled_queues ... ok
+test exact_profiles_and_each_independent_required_group ... ok
+
+test result: ok. 10 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+
+running 4 tests
+test local_scalar_intake_clears_input_on_success_and_failure ... ok
+test malformed_seed_is_rejected_at_owned_insertion ... ok
+test owned_types_have_fixed_redacted_formatting ... ok
+test cancelled_and_failed_import_or_backup_has_no_retained_output ... ok
+
+test result: ok. 4 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+
+running 15 tests
+test crates/nsealr-core/src/session/source_backup.rs - session::source_backup::SessionSourceBackupPayload (line 70) - compile fail ... ok
+test crates/nsealr-core/src/session/keyring.rs - session::keyring::SessionKeySource (line 107) - compile fail ... ok
+test crates/nsealr-core/src/authorization.rs - authorization::AuthorizationSession (line 182) - compile fail ... ok
+test crates/nsealr-core/src/session/keyring.rs - session::keyring::SessionKeySource (line 102) - compile fail ... ok
+test crates/nsealr-core/src/session/keyring.rs - session::keyring::StatelessSessionKeyring::add_source (line 283) - compile fail ... ok
+test crates/nsealr-core/src/bip39/mod.rs - bip39::WordIndexes (line 70) - compile fail ... ok
+test crates/nsealr-core/src/nip19.rs - nip19::SecretKey (line 41) - compile fail ... ok
+test crates/nsealr-core/src/session/keyring.rs - session::keyring::SessionKeySource (line 97) - compile fail ... ok
+test crates/nsealr-core/src/authorization.rs - authorization::AuthorizationSession (line 192) - compile fail ... ok
+test crates/nsealr-core/src/authorization.rs - authorization::AuthorizationSession (line 177) - compile fail ... ok
+test crates/nsealr-core/src/session/source_backup.rs - session::source_backup::SessionSourceBackupPayload (line 61) - compile fail ... ok
+test crates/nsealr-core/src/bip39/mod.rs - bip39::WordIndexes (line 65) - compile fail ... ok
+test crates/nsealr-core/src/nip19.rs - nip19::SecretKey (line 36) - compile fail ... ok
+test crates/nsealr-core/src/session/source_backup.rs - session::source_backup::SessionSourceBackupPayload (line 66) - compile fail ... ok
+test crates/nsealr-core/src/authorization.rs - authorization::AuthorizationSession (line 186) - compile fail ... ok
+
+test result: ok. 15 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.03s
+
+cargo build -p nsealr-core --target riscv32imafc-unknown-none-elf
+cargo test --manifest-path apps/desktop-simulator/Cargo.toml --locked --offline
+
+running 1 test
+test replay::session_reviews::tests::backup_mismatch_does_not_echo_secret_output ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+
+running 21 tests
+test completeness_rule_every_category_is_classified ... ok
+test completeness_rule_every_invalid_file_is_classified ... ok
+test replay_limits ... ok
+test replay_keys ... ok
+test replay_nip19 ... ok
+test replay_policies ... ok
+test replay_devices ... ok
+test replay_review_display_frames ... ok
+test replay_seedqr ... ok
+test replay_source_public_key_proofs ... ok
+test replay_review_screens ... ok
+test replay_review ... ok
+test replay_policy_changes ... ok
+test replay_session_import_reviews ... ok
+test replay_session_source_backups ... ok
+test replay_accounts ... ok
+test replay_review_detail_pages ... ok
+test replay_transports ... ok
+test replay_invalid ... ok
+test replay_review_transcripts ... ok
+test device_replay_rejects_missing_fields_and_a_false_expected_identity ... ok
+
+test result: ok. 21 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+cargo deny check
+advisories ok, bans ok, licenses ok, sources ok
+cargo deny --manifest-path apps/desktop-simulator/Cargo.toml --config deny.toml check
+advisories ok, bans ok, licenses ok, sources ok
+cargo llvm-cov --workspace --all-features --summary-only --json --output-path build/rust-core-coverage.json
+
+running 256 tests
+test authorization::tests::s03_every_event_mutation_changes_authorized_operation ... ok
+test authorization::tests::s03_nip01_bytes_match_independent_oracle ... ok
+test base64url::tests::decode_rejects_non_zero_trailing_bits ... ok
+test base64url::tests::encode_known_pairs ... ok
+test base64url::tests::is_payload_matches_cpp_predicate ... ok
+test base64url::tests::length_helpers_are_exact ... ok
+test base64url::tests::reports_output_too_small ... ok
+test base64url::tests::round_trips_across_all_tail_lengths ... ok
+test base64url::tests::specs_vector_basic_envelope_canonical_round_trip ... ok
+test base64url::tests::specs_vector_padded_payload_is_rejected ... ok
+test bip39::tests::all_zero_twelve_words_is_valid_checksum ... ok
+test authorization::tests::s03_malformed_known_semantics_never_fall_back ... ok
+test authorization::tests::k01_serialization_and_metadata_callback_failures_return_no_partial_object ... ok
+test bip39::tests::buffer_too_small_paths ... ok
+test base64url::tests::decode_rejects_invalid_characters ... ok
+test bip39::tests::entropy_and_mnemonic_propagate_validation_errors ... ok
+test bip39::tests::from_slice_bounds ... ok
+test bip39::tests::parse_rejects_empty_and_whitespace_only ... ok
+test bip39::tests::require_valid_indexes_paths ... ok
+test bip39::tests::is_valid_word_count_matches_cpp ... ok
+test bip39::tests::parser_matches_shared_nip06_vector ... ok
+test bip39::tests::word_index_rejects_overlong_and_unknown ... ok
+test bip39::tests::word_at_bounds ... ok
+test board_profile_tests::t_display_s3_button_logic_classifies_debounced_short_and_long_presses ... ok
+test authorization::tests::s03_unicode_decode_is_lossless_or_rejected ... ok
+test board_profile_tests::t_display_s3_serial_input_drains_after_overlong_frame ... ok
+test board_profile_tests::t_display_s3_raster_has_stable_boot_and_review_pixels ... ok
+test board_profile_tests::t_display_s3_status_frames_keep_non_signing_copy_stable ... ok
+test base64url::tests::decode_known_pairs_and_canonical_edges ... ok
+test hash::tests::block_boundary_padding_paths ... ok
+test hash::tests::nist_known_answer_vectors ... ok
+test nip19::tests::decode_rejects_non_canonical_and_invalid_scalar ... ok
+test hash::tests::raw_digest_bytes ... ok
+test nip19::tests::decode_rejects_wrong_length ... ok
+test nip19::tests::encode_rejects_invalid_scalar_and_small_buffer ... ok
+test nip19::tests::is_valid_secret_key_bounds ... ok
+test nip19::tests::decoder_matches_shared_vector ... ok
+test policy::approval_gate::tests::reject_ignores_mismatched_request_and_default_is_pending ... ok
+test policy::policy_change_review::tests::error_messages_match_cpp_text ... ok
+test nip19::tests::oversized_input_is_malformed ... ok
+test bip39::tests::wordlist_integrity_count_order_and_digest ... ok
+test policy::approval_gate::tests::requires_matching_approval ... ok
+test hash::tests::specs_vector_sha256_over_decoded_base64url_payload ... ok
+test authorization::tests::s03_rejects_duplicate_and_incomplete_json ... ok
+test hash::tests::incremental_updates_match_one_shot ... ok
+test authorization::tests::s03_integer_tokens_and_kinds_are_exact ... ok
+test policy::policy_change_review::tests::grant_id_list_pushes_and_rejects_overflow ... ok
+test policy::policy_change_review::tests::rejects_each_invalid_proposal_field ... ok
+test policy::policy_change_review::tests::flow_guards_and_transcript_bounds ... ok
+test policy::policy_change_review::tests::replays_custom_hardware_wallet_fixture ... ok
+test policy::policy_change_review::tests::rejects_companion_authority_or_secret_material ... ok
+test policy::policy_change_review::tests::matches_shared_vector ... ok
+test protocol::tests::binds_configured_signer_identity ... ok
+test policy::policy_change_review::tests::flow_requires_device_approval ... ok
+test protocol::tests::echoes_dynamic_request_ids ... ok
+test protocol::tests::rejects_invalid_sign_event_request_shape ... ok
+test protocol::tests::rejects_invalid_dynamic_request_metadata ... ok
+test policy::policy_change_review::tests::optional_label_and_label_escaping_shape_the_digest ... ok
+test protocol::tests::exposes_review_frame_before_disabled_signing_response ... ok
+test protocol::tests::exposes_review_session_for_manual_display_navigation ... ok
+test protocol::tests::rejects_unknown_top_level_request_fields ... ok
+test protocol::tests::reports_development_public_key ... ok
+test qr::envelope::tests::animated_digest_and_length_rejections ... ok
+test qr::envelope::tests::animated_encoder_rejects_too_many_frames_and_bad_payloads ... ok
+test protocol::tests::reports_scaffold_capabilities ... ok
+test protocol::tests::rejects_signing_while_disabled ... ok
+test protocol::tests::review_preserves_json_unicode_escapes ... ok
+test qr::envelope::tests::animated_frame_set_rejections ... ok
+test protocol::tests::retired_signing_status_is_rejected ... ok
+test protocol::tests::transport_and_metadata_rejection_branches ... ok
+test qr::envelope::tests::animated_frames_accepted_out_of_order ... ok
+test protocol::tests::error_display_response_frame_and_scanner_grammar ... ok
+test qr::envelope::tests::animated_payload_content_rejections ... ok
+test qr::envelope::tests::helper_contracts ... ok
+test qr::envelope::tests::content_over_limit_within_request_budget ... ok
+test qr::envelope::tests::animated_structural_rejections ... ok
+test qr::envelope::tests::animated_qr_envelope_decodes_shared_vector ... ok
+test qr::envelope::tests::qr_envelope_decodes_shared_vector ... ok
+test qr::envelope::tests::animated_qr_envelope_rejections ... ok
+test protocol::tests::rejects_params_for_parameterless_methods ... ok
+test qr::envelope::tests::long_events_many_tags_shared_vector_parses ... ok
+test qr::envelope::tests::qr_envelope_encoder_rejections ... ok
+test qr::envelope::tests::qr_envelope_parses_sign_event_request_metadata ... ok
+test qr::envelope::tests::qr_envelope_extracts_event_template_boundary ... ok
+test qr::envelope::tests::qr_envelope_rejections ... ok
+test qr::envelope::tests::qr_envelope_parses_event_template_fields ... ok
+test qr::envelope::tests::qr_envelope_rejects_shared_invalid_qr_vectors ... ok
+test qr::envelope::tests::qr_signing_request_preserves_json_unicode_escapes ... ok
+test qr::envelope::tests::qr_envelope_encodes_signed_response_vectors_without_signing ... ok
+test qr::envelope::tests::qr_signing_request_tolerates_escaped_event_content ... ok
+test qr::envelope::tests::request_limit_rejections ... ok
+test qr::envelope::tests::qr_signing_request_rejections ... ok
+test qr::envelope::tests::qr_signing_request_rejects_shared_invalid_request_vectors ... ok
+test qr::envelope::tests::qr_limits_match_shared_profile ... ok
+test qr::response_display::tests::builds_static_frame_for_small_response ... ok
+test qr::envelope::tests::static_encoder_and_container_shapes ... ok
+test qr::response_display::tests::allows_nested_json_unicode_escapes ... ok
+test qr::envelope::tests::tag_field_limit_uses_decoded_bytes ... ok
+test qr::envelope::tests::request_parser_grammar_rejections ... ok
+test qr::envelope::tests::request_parser_tolerances ... ok
+test qr::response_display::tests::rejects_invalid_json_and_bad_cycles ... ok
+test qr::envelope::tests::undersized_output_buffers ... ok
+test qr::response_display::tests::rejects_non_response_payload_shapes ... ok
+test qr::response_display::tests::scanner_structural_rejections ... ok
+test qr::response_display::tests::request_id_rule_matches_shared_charset ... ok
+test qr::response_display::tests::rejects_shared_top_level_invalid_response_vectors ... ok
+test qr::response_display::tests::shows_static_frame_once ... ok
+test qr::response_display::tests::scanner_tolerances_and_rejections ... ok
+test qr::response_display::tests::io_single_cycle_animated ... ok
+test review::buttons::tests::unchanged_levels_produce_no_event ... ok
+test review::controls::tests::allow_backward_navigation_before_terminal_decision ... ok
+test review::controls::tests::are_terminal_after_decision ... ok
+test review::controls::tests::require_page_traversal_before_approval ... ok
+test review::controls::tests::zero_pages_rejected_and_messages_match_cpp ... ok
+test review::display::tests::matches_shared_long_content_frame_vector ... ok
+test review::display::tests::matches_shared_utf8_boundary_frame_vector ... ok
+test review::display::tests::preserves_logical_page_indicator_and_body_styles ... ok
+test review::display::tests::rejects_unsafe_frame_bounds ... ok
+test qr::response_display::tests::animated_response_fixture_replay ... ok
+test review::display::tests::renders_decision_frame ... ok
+test review::display::tests::renders_navigation_frame ... ok
+test review::display::tests::truncate_helper_direct_paths ... ok
+test review::display::tests::wraps_and_truncates_long_body_lines ... ok
+test review::display::tests::validation_branches_and_messages ... ok
+test review::display::tests::wraps_utf8_without_splitting_codepoints ... ok
+test review::controls::tests::allow_early_rejection ... ok
+test review::qr::tests::display_pages_escape_non_ascii_for_display_safety ... ok
+test review::qr::tests::display_pages_preserve_supported_ascii_punctuation ... ok
+test qr::response_display::tests::static_animated_threshold_boundary ... ok
+test review::qr::tests::display_pages_match_shared_detail_page_vectors ... ok
+test review::qr::tests::display_pages_group_logical_sections_with_compact_styles ... ok
+test review::qr::tests::display_pages_render_control_escapes_visibly ... ok
+test qr::response_display::tests::cycles_animated_frames_for_large_response ... ok
+test review::qr::tests::display_pages_show_full_tag_values_without_ellipsis ... ok
+test review::qr::tests::display_pages_split_full_long_content_without_ellipsis ... ok
+test review::qr::tests::display_pages_use_scroll_line_indicators_for_long_sections ... ok
+test review::qr::tests::review_binds_configured_signer_identity ... ok
+test review::qr::tests::review_pages_match_shared_basic_vector ... ok
+test review::qr::tests::signing_request_unicode_escapes_render_escaped_review_pages ... ok
+test review::qr::tests::review_pages_match_shared_tagged_vector ... ok
+test review::qr::tests::trusted_review_request_matches_shared_basic_vector ... ok
+test review::qr::tests::trusted_review_request_matches_shared_tagged_vector ... ok
+test review::qr::tests::trusted_review_session_binds_qr_digest_and_navigation ... ok
+test review::qr_flow::tests::error_messages_capacity_and_frame_bounds ... ok
+test review::qr::tests::validation_capacity_and_escaping_branches ... ok
+test review::qr_flow::tests::empty_and_foreign_scans_report_envelope_errors ... ok
+test review::qr_flow::tests::flow_rejects_mixed_scanned_request_frames ... ok
+test review::qr_flow::tests::flow_rejects_unsafe_scanned_qr ... ok
+test review::qr_flow::tests::flow_drives_scanned_qr_without_signing_backend ... ok
+test review::qr_flow::tests::io_flow_rejects_non_terminal_button_stream ... ok
+test review::qr_flow::tests::io_flow_drives_scanner_display_and_buttons_without_signing ... ok
+test review::qr_flow::tests::io_flow_requires_nonzero_step_limit ... ok
+test review::qr_flow::tests::flow_accepts_animated_scanned_request_frames ... ok
+test review::qr_flow::tests::flow_binds_selected_session_account_identity ... ok
+test review::serial::tests::io_flow_drives_request_display_and_buttons_without_signing ... ok
+test review::qr_flow::tests::transcript_records_display_and_approval_steps ... ok
+test review::serial::tests::io_flow_step_limit_branches ... ok
+test review::qr_flow::tests::transcript_matches_shared_detail_scroll_vector ... ok
+test review::qr_flow::tests::transcript_records_early_rejection ... ok
+test review::signer_identity::tests::development_fixture_is_valid_and_matches_constant ... ok
+test review::signer_identity::tests::validates_lowercase_hex_public_key ... ok
+test review::signer_identity::tests::require_valid_rejects_bad_key_with_cpp_message ... ok
+test review::serial::tests::error_messages_and_flow_accessors ... ok
+test review::trusted::tests::accessor_render_error_and_logical_terminal_lock ... ok
+test review::serial::tests::review_session_uses_full_scroll_display_pages ... ok
+test review::trusted::tests::binds_display_navigation_and_approval ... ok
+test review::trusted::tests::allows_backward_review_before_approval ... ok
+test review::serial::tests::review_binds_configured_signer_identity ... ok
+test review::serial::tests::sign_event_review_matches_shared_review_contract ... ok
+test review::trusted::tests::keeps_rejection_terminal ... ok
+test review::trusted::tests::constructor_validation_and_messages ... ok
+test review::types::tests::style_list_pushes_and_rejects_overflow ... ok
+test review::serial::tests::review_session_uses_two_axis_navigation_for_scroll_windows ... ok
+test seedqr::tests::compact_length_rules ... ok
+test review::types::tests::page_list_pushes_and_rejects_overflow ... ok
+test serial::frame::tests::decode_structural_rejections ... ok
+test review::types::tests::line_list_pushes_and_rejects_overflow ... ok
+test seedqr::tests::standard_empty_and_shape_errors ... ok
+test serial::frame::tests::encode_rejects_bad_payload_and_small_buffer ... ok
+test seedqr::tests::decoders_match_shared_vector ... ok
+test serial::frame::tests::decode_line_ending_variants ... ok
+test serial::frame::tests::encode_rejects_payload_that_overflows_checksum_scratch ... ok
+test serial::frame::tests::frame_type_tokens_round_trip_all_variants ... ok
+test serial::frame::tests::encodes_response_and_error_frames_that_round_trip ... ok
+test serial::frame::tests::serial_frame_rejections ... ok
+test serial::input::tests::rejects_invalid_max_frame_bytes ... ok
+test serial::frame::tests::serial_frame_rejects_shared_invalid_vectors ... ok
+test serial::frame::tests::serial_frame_round_trip ... ok
+test session::account::tests::consumes_shared_source_public_key_proof_metadata_without_derivation ... ok
+test session::account::tests::does_not_satisfy_public_key_proof_gate ... ok
+test session::account::tests::context_builder_rejects_hand_built_invalid_identity ... ok
+test session::account::tests::validates_source_route_and_recovery_shape ... ok
+test session::import_flow::tests::rejection_does_not_load_keyring ... ok
+test session::import_flow::tests::blocks_early_or_nonterminal_approval ... ok
+test session::account::tests::binds_qr_review_identity_without_derivation ... ok
+test session::import_flow::tests::requires_local_approval_before_loading_keyring ... ok
+test session::import_review::tests::replays_nip06_account_0_leader_fixture ... ok
+test session::keyring::tests::consumed_source_revalidates_corrupted_internal_seed ... ok
+test session::keyring::tests::clear_wipes_active_sources ... ok
+test session::keyring::tests::accepts_parsed_key_sources ... ok
+test session::import_review::tests::hides_secret_material ... ok
+test session::keyring::tests::add_source_revalidates_both_kinds ... ok
+test session::import_flow::tests::zero_steps_full_keyring_and_transcript_bounds ... ok
+test session::keyring::tests::rejects_invalid_sources ... ok
+test session::keyring::tests::transfer_and_live_wipe ... ok
+test session::source_backup::tests::flow_guards_max_steps_and_non_terminal_streams ... ok
+test session::source_backup::tests::flow_reveals_only_after_local_approval ... ok
+test session::source_backup::tests::io_reveals_only_after_displayed_approval ... ok
+test session::source_backup::tests::io_rejection_or_timeout_does_not_emit_payload ... ok
+test session::source_backup::tests::payload_rejects_unsupported_word_counts_and_bad_checksums ... ok
+test session::source_backup::tests::payload_matches_shared_secret_payloads ... ok
+test session::source_backup::tests::review_matches_shared_danger_zone_vectors ... ok
+test session::source_backup::tests::transcript_bounds_and_rejects_overflow ... ok
+test session::source_generation::tests::rejects_invalid_entropy ... ok
+test session::source_qr::tests::rejects_invalid_inputs ... ok
+test session::source_qr::tests::compact_seedqr_import_flow_loads_after_review_approval ... ok
+test session::source_qr::tests::import_flow_loads_only_after_review_approval ... ok
+test session::source_qr::tests::import_flow_error_wrapping_branches ... ok
+test session::source_generation::tests::uses_ram_only_source_boundary ... ok
+test session::source_qr::tests::import_flow_rejects_without_keyring_load ... ok
+test text::tests::builds_appends_and_compares ... ok
+test text::tests::rejects_overflow_and_keeps_contents ... ok
+test text::tests::wipe_zeroes_buffer_and_length ... ok
+test tests::harness_runs ... ok
+test unicode::tests::decode_next_codepoint_direct ... ok
+test tests::std_feature_links_std_facade ... ok
+test session::source_qr::tests::parses_ram_only_sources ... ok
+test unicode::tests::is_valid_utf8_accepts_and_rejects ... ok
+test unicode::tests::json_escape_bmp_and_surrogate_pairs ... ok
+test unicode::tests::parse_code_unit_paths ... ok
+test unicode::tests::scalar_boundaries ... ok
+test unicode::tests::encode_utf8_widths_and_rejection ... ok
+test authorization::tests::s03_capability_or_retired_status_never_enables_product_signing ... ok
+test authorization::tests::k01_all_prepared_semantic_negatives_have_zero_effects ... ok
+test authorization::tests::s03_failed_or_skipped_display_cannot_approve ... ok
+test authorization::tests::s03_review_has_complete_indexed_coverage ... ok
+test authorization::tests::s03_host_and_transcript_cannot_mint_authority ... ok
+test authorization::tests::k01_reference_coordinates_and_reaction_coherence_have_no_raw_fallback ... ok
+test authorization::tests::s03_identity_is_derived_from_consumed_custody ... ok
+test authorization::tests::k01_original_recovery_bytes_and_scoped_backend_witnesses ... ok
+test authorization::tests::k01_prepared_catalog_preflights_and_rejects_exact_semantic_inputs ... ok
+test authorization::tests::s03_two_attempts_and_cancel_linearize_once ... ok
+test authorization::tests::s03_old_session_aliases_and_time_fail_closed ... ok
+test authorization::tests::s03_first_attempt_is_irrevocable ... ok
+test authorization::tests::s03_review_escape_spelling_is_injective ... ok
+test authorization::tests::k01_auxiliary_errors_wipe_whole_destination_and_burn_attempt ... ok
+test authorization::tests::s03_independent_event_id_and_signature_agree ... ok
+test authorization::tests::k01_repost_borrowed_original_fields_and_failures_are_checked ... ok
+test authorization::tests::s03_kind1_interprets_exact_reference_subset ... ok
+test authorization::tests::k01_consumes_before_clock_and_checks_fresh_completion_before_output ... ok
+test authorization::tests::s03_each_lifecycle_event_invalidates_pending_work ... ok
+test authorization::tests::k01_actual_engine_outputs_match_all_prepared_independent_cases ... ok
+test authorization::tests::s03_attempt_binds_context_and_consumes_mismatch ... ok
+test authorization::tests::k01_metadata_exact_types_duplicate_keys_and_finite_boundaries ... ok
+test authorization::tests::s03_all_limits_bound_storage_and_work ... ok
+test authorization::tests::k01_seventy_cases_have_actual_complete_review_or_exact_zero_effect_failure ... ok
+
+test result: ok. 256 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.44s
+
+
+running 10 tests
+test local_verification_and_availability_do_not_collapse ... ok
+test profile_layout_and_request_storage_are_accounted_separately ... ok
+test common_profile_manifests_are_conformance_only_and_match_typed_profile_designs ... ok
+test pi_boot_limitation_requires_its_own_evidence ... ok
+test checked_expansion_rejects_before_allocation_at_independent_boundaries ... ok
+test reported_axes_remain_distinct_and_contradictions_reject ... ok
+test required_component_and_custody_never_fall_back ... ok
+test finite_limits_keep_local_caps_and_zero_disabled_queues ... ok
+test synthetic_evidence_cannot_qualify_production ... ok
+test exact_profiles_and_each_independent_required_group ... ok
+
+test result: ok. 10 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+
+running 4 tests
+test local_scalar_intake_clears_input_on_success_and_failure ... ok
+test malformed_seed_is_rejected_at_owned_insertion ... ok
+test owned_types_have_fixed_redacted_formatting ... ok
+test cancelled_and_failed_import_or_backup_has_no_retained_output ... ok
+
+test result: ok. 4 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+cargo llvm-cov --manifest-path apps/desktop-simulator/Cargo.toml --workspace --all-features --summary-only --json --output-path build/rust-host-coverage.json
+
+running 1 test
+test replay::session_reviews::tests::backup_mismatch_does_not_echo_secret_output ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+
+running 21 tests
+test completeness_rule_every_invalid_file_is_classified ... ok
+test completeness_rule_every_category_is_classified ... ok
+test replay_limits ... ok
+test replay_keys ... ok
+test replay_nip19 ... ok
+test replay_policies ... ok
+test replay_seedqr ... ok
+test replay_devices ... ok
+test replay_review_display_frames ... ok
+test replay_source_public_key_proofs ... ok
+test replay_review ... ok
+test replay_accounts ... ok
+test replay_review_screens ... ok
+test replay_session_import_reviews ... ok
+test replay_session_source_backups ... ok
+test device_replay_rejects_missing_fields_and_a_false_expected_identity ... ok
+test replay_policy_changes ... ok
+test replay_transports ... ok
+test replay_invalid ... ok
+test replay_review_detail_pages ... ok
+test replay_review_transcripts ... ok
+
+test result: ok. 21 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+python3 ci/check_coverage_ratchet.py build/rust-core-coverage.json ci/ratchet.json build/rust-host-coverage.json
+package                        measured   floor   status
+----------------------------------------------------------
+desktop-simulator                77.69%   76.70%  ok
+nsealr-core                     100.00%  100.00%  ok
+
+coverage-ratchet ok: all packages meet their floor.
+bash ci/repro_build.sh
+repro-build: same-tree clean build A
+repro-build: same-tree clean build B
+repro-build: cross-path clean build X (second checkout at a different path)
+repro-build: byte-identity results
+  OK   desktop-simulator (same-tree A==B)         9122aa0bbf8f708e2b886107bfdbe4bd87b70ca3ffb956b18f6ad6a7807f075d
+  OK   nsealr-core rlib (same-tree A==B)          a43d9650fbf91dc81760d997d07599bb989e6b03b058bc189c30cd0b424021fa
+  OK   nsealr-core rlib (cross-path A==X)         a43d9650fbf91dc81760d997d07599bb989e6b03b058bc189c30cd0b424021fa
+repro-build: PASS
+  path-independent device artifact:
+    nsealr-core riscv32imafc-unknown-none-elf release rlib  sha256 = a43d9650fbf91dc81760d997d07599bb989e6b03b058bc189c30cd0b424021fa
+  desktop-simulator release binary (same-tree) sha256 = 9122aa0bbf8f708e2b886107bfdbe4bd87b70ca3ffb956b18f6ad6a7807f075d
+make -C protocols/contracts/v1 ci
+make[1]: Entering directory '/home/tux/nsealr/.restart-tools/goal/k01-current-implementation/protocols/contracts/v1'
+python3 scripts/verify_specs.py
+nSealr specs v0 verification passed
+python3 -B -m unittest discover -s tests -v
+python3 scripts/verify_repo.py
+Component structure and license verified independently of checkout name
+make[1]: Leaving directory '/home/tux/nsealr/.restart-tools/goal/k01-current-implementation/protocols/contracts/v1'
+pnpm run ci
+
+> @nsealr/bridge-workspace@0.1.0 ci /home/tux/nsealr/.restart-tools/goal/k01-current-implementation
+> pnpm build && pnpm typecheck && pnpm test && pnpm consumer-smoke && pnpm examples-smoke && pnpm readme-examples:check && pnpm api-docs:check && pnpm api-review:check && pnpm package-registry:check && pnpm browser-runtime-imports:check && pnpm browser-runtime-bundle:check && pnpm browser-extension-security:check && pnpm public-imports:check && pnpm release-plan:check && pnpm release-artifacts:safety && pnpm pack-smoke && pnpm product-boundaries:check && pnpm current-guides:check
+
+
+> @nsealr/bridge-workspace@0.1.0 build /home/tux/nsealr/.restart-tools/goal/k01-current-implementation
+> node tools/bridge/build_packages.mjs
+
+ ERR_PNPM_RECURSIVE_EXEC_FIRST_FAIL  Command "tsc" not found
+ ELIFECYCLE  Command failed with exit code 254.
+ ELIFECYCLE  Command failed with exit code 254.

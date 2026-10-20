@@ -1,0 +1,105 @@
+{
+  "source_head": "1bccafc0a22cb8373dcf75455fa334aff5827153",
+  "source_tree": "c99cc6b83671aaaea0854106f1f66496a3d99529",
+  "environment_sha256": "5b0f773e07fc90aa4a2b7d62c102bbc7b824b6bab135002ee0a01ad90a0ef001",
+  "overrides": {
+    "CARGO_TARGET_DIR": "/home/tux/nsealr/.restart-tools/goal/k01-current-implementation/target/k01-final-link"
+  },
+  "commands": [
+    {
+      "argv": [
+        "cargo",
+        "rustc",
+        "--manifest-path",
+        "docs/restart/implementation/K01/probes/final-link/Cargo.toml",
+        "--locked",
+        "--offline",
+        "--release",
+        "--target",
+        "riscv32imafc-unknown-none-elf",
+        "--",
+        "-C",
+        "link-arg=--entry=_start",
+        "-C",
+        "link-arg=-Map=/home/tux/nsealr/.restart-tools/goal/k01-current-implementation/target/k01-final-link/k01-engine.map"
+      ],
+      "exit": 0,
+      "expected_exit": 0,
+      "elapsed_seconds": 3.44,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "189a12f61f6f63d3accace1ed51f25378effc45ede7dcf9ab47f2d164669c918"
+    },
+    {
+      "argv": [
+        "readelf",
+        "-W",
+        "-h",
+        "-S",
+        "-s",
+        "/home/tux/nsealr/.restart-tools/goal/k01-current-implementation/target/k01-final-link/riscv32imafc-unknown-none-elf/release/k01-engine-final-link"
+      ],
+      "exit": 0,
+      "expected_exit": 0,
+      "elapsed_seconds": 0.003,
+      "stdout_sha256": "ec4165d9bc49019258eca13207ac4e6ed0d7e53ed04bb745fc328a67db7a8c60",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "argv": [
+        "nm",
+        "-u",
+        "/home/tux/nsealr/.restart-tools/goal/k01-current-implementation/target/k01-final-link/riscv32imafc-unknown-none-elf/release/k01-engine-final-link"
+      ],
+      "exit": 0,
+      "expected_exit": 0,
+      "elapsed_seconds": 0.018,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "argv": [
+        "size",
+        "-A",
+        "/home/tux/nsealr/.restart-tools/goal/k01-current-implementation/target/k01-final-link/riscv32imafc-unknown-none-elf/release/k01-engine-final-link"
+      ],
+      "exit": 0,
+      "expected_exit": 0,
+      "elapsed_seconds": 0.002,
+      "stdout_sha256": "752813ff6ff2a8286259435f1394b599e2a52d479fb1cb0b2946defdb954666b",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "argv": [
+        "cargo",
+        "rustc",
+        "--manifest-path",
+        "docs/restart/implementation/K01/probes/final-link/Cargo.toml",
+        "--locked",
+        "--offline",
+        "--release",
+        "--target",
+        "riscv32imafc-unknown-none-elf",
+        "--",
+        "--cfg",
+        "k01_missing_provider",
+        "-C",
+        "link-arg=--entry=_start"
+      ],
+      "exit": 101,
+      "expected_exit": 101,
+      "elapsed_seconds": 0.067,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "840f804ae16ca6f3f4b5070d5b8af71ac232671f10ed3c77ea71170a740b6633"
+    }
+  ],
+  "elf_sha256": "9e478e354dfe1a5caabf5ed91408785b6309607fa8e91742cac0c105161af610",
+  "elf_bytes": 154268,
+  "map_sha256": "73bd0b4c8e18d69395f4e46f6b964d15dfa0e6020ccc80e64723cadf108f3256",
+  "actual_elf32_retained_type_sizes": {
+    "AuthorizationSession": 5872,
+    "EventTemplate": 5224,
+    "InspectionFrame": 472,
+    "SIGNED_EVENT_BYTES": 9216
+  },
+  "limitations": "Actual no_std target compile/link/inspection only; ELF never executed/flashed, no startup/memory-map/stack/latency/device/entropy qualification. Missing provider actual target compile must refuse; host runtime refusal separately executed."
+}
