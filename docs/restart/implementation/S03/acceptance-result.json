@@ -1,0 +1,991 @@
+{
+  "schema_version": 1,
+  "task": "S03",
+  "artifact_kind": "implementation_acceptance_candidate",
+  "created_utc": "2026-10-18T18:08:17.662420+00:00",
+  "source_input": "3cbd818a0bcd4016eb8983dad7605cb57280d913",
+  "specification_commit": "e63165d95f6094877b031f4baccce32831a50d68",
+  "specification_approval_commit": "55f1f5c561f91a8829c89f3271e1db52e218c49a",
+  "approval_artifact": "../reviews/S03-spec.json",
+  "baseline_oracle_commit": "b2a9bb6918151556ed1cc7d80a920444aa5c93a7",
+  "behavior_commit": "e6747615f13734f8fce3724bc03c7c5b98c90f07",
+  "source_commit": "271bb88cf8a3efef71a01f2130897ab098e537a5",
+  "evidence_commit_resolution": "The Git commit containing this artifact is the complete review candidate; source_commit is immutable product/source input. The final evidence commit changes only this task directory.",
+  "status": "author acceptance complete; independent exact-final review pending; not merged or profile-qualified",
+  "scope_reconciliation": {
+    "mechanical_consumer_authorization": "Root explicitly authorized only doc/import/call render_review_page to render_preview_page substitutions in session/source_backup.rs and board_profile_tests.rs.",
+    "source_backup_lines": [
+      9,
+      19,
+      590
+    ],
+    "board_test_lines": [
+      22,
+      536,
+      597
+    ],
+    "before_after_behavior": "Existing recovery payload ownership, local reveal/cancel logic, zeroization, frame rendering and raster expectations are unchanged. The same renderer implementation is called under its diagnostic preview name. No backup or secret authorization added.",
+    "execution_handle": "Private Execution borrows its originating mutable AuthorizationSession. It is neither public, cloneable nor detachable. Old completion cannot select a reconstructed owner. Root approved this as the existing one-owner invariant.",
+    "wire_contract": "Existing numeric version1 retained. Strict exact schema and fail-closed malformed-request errors replace historical experimental tolerances. T01 numeric2 migration remains outside this candidate."
+  },
+  "case_results": [
+    {
+      "id": "I01",
+      "requirements": [
+        "S03-0",
+        "PROD-01",
+        "AUTH-05"
+      ],
+      "source_gaps": [
+        "G03",
+        "G12"
+      ],
+      "test_name": "s03_identity_is_derived_from_consumed_custody",
+      "test_path": "crates/nsealr-core/src/authorization/tests.rs:152",
+      "implementation_anchors": [
+        "crates/nsealr-core/src/authorization.rs:233",
+        "crates/nsealr-core/src/nip19.rs:36"
+      ],
+      "observed": "Actual consumed scalar 1, 3 and n-3 imports derive independently known x-only keys; input buffers clear. Zero and curve order reject. Original odd-Y n-3 becomes normalized backend scalar 3; original import is not recoverable from this execution owner.",
+      "result": "PASS_portable_candidate",
+      "evidence": [
+        "evidence/targeted.log",
+        "evidence/make-ci.log",
+        "evidence/oracle-check.json",
+        "evidence/observed-events.json",
+        "evidence/observed-events.keys.json"
+      ]
+    },
+    {
+      "id": "P01",
+      "requirements": [
+        "S03-2",
+        "PROD-05",
+        "PROD-09"
+      ],
+      "source_gaps": [
+        "G04",
+        "G05"
+      ],
+      "test_name": "s03_rejects_duplicate_and_incomplete_json",
+      "test_path": "crates/nsealr-core/src/authorization/tests.rs:208",
+      "implementation_anchors": [
+        "crates/nsealr-core/src/event.rs:359",
+        "crates/nsealr-core/src/event.rs:550",
+        "crates/nsealr-core/src/protocol.rs",
+        "crates/nsealr-core/src/qr/envelope.rs"
+      ],
+      "observed": "Decoded duplicate members, unknown/missing members, malformed delimiters and trailing data reject in the shared parser and actual serial/QR adapter entry points; valid reordered member control succeeds.",
+      "result": "PASS_portable_candidate",
+      "evidence": [
+        "evidence/targeted.log",
+        "evidence/make-ci.log",
+        "evidence/oracle-check.json",
+        "evidence/observed-events.json",
+        "evidence/observed-events.keys.json"
+      ]
+    },
+    {
+      "id": "P02",
+      "requirements": [
+        "S03-0",
+        "S03-2",
+        "PROD-09"
+      ],
+      "source_gaps": [
+        "G04",
+        "G05"
+      ],
+      "test_name": "s03_integer_tokens_and_kinds_are_exact",
+      "test_path": "crates/nsealr-core/src/authorization/tests.rs:270",
+      "implementation_anchors": [
+        "crates/nsealr-core/src/event.rs:519"
+      ],
+      "observed": "Canonical unsigned token and range controls cover version/kind/timestamp. Valid but unsupported kinds parse separately and cannot receive authority.",
+      "result": "PASS_portable_candidate",
+      "evidence": [
+        "evidence/targeted.log",
+        "evidence/make-ci.log",
+        "evidence/oracle-check.json",
+        "evidence/observed-events.json",
+        "evidence/observed-events.keys.json"
+      ]
+    },
+    {
+      "id": "P03",
+      "requirements": [
+        "S03-2",
+        "PROD-05"
+      ],
+      "source_gaps": [
+        "G04",
+        "G05",
+        "G07"
+      ],
+      "test_name": "s03_unicode_decode_is_lossless_or_rejected",
+      "test_path": "crates/nsealr-core/src/authorization/tests.rs:336",
+      "implementation_anchors": [
+        "crates/nsealr-core/src/event.rs:477",
+        "crates/nsealr-core/src/unicode.rs"
+      ],
+      "observed": "Valid raw/escaped scalar sequences agree without normalization; overlong/truncated/out-of-range/surrogate UTF-8 and malformed surrogate escapes reject across parser and adapters.",
+      "result": "PASS_portable_candidate",
+      "evidence": [
+        "evidence/targeted.log",
+        "evidence/make-ci.log",
+        "evidence/oracle-check.json",
+        "evidence/observed-events.json",
+        "evidence/observed-events.keys.json"
+      ]
+    },
+    {
+      "id": "C01",
+      "requirements": [
+        "S03-0",
+        "S03-3",
+        "AUTH-05"
+      ],
+      "source_gaps": [
+        "G06"
+      ],
+      "test_name": "s03_nip01_bytes_match_independent_oracle",
+      "test_path": "crates/nsealr-core/src/authorization/tests.rs:387",
+      "implementation_anchors": [
+        "crates/nsealr-core/src/event.rs:228",
+        "crates/nsealr-core/src/event.rs:313"
+      ],
+      "observed": "Eight expected canonical byte sequences and SHA256 IDs generated independently before implementation match the actual serializer, including all required escapes, non-ASCII, supplementary scalars and ordered duplicate tags.",
+      "result": "PASS_portable_candidate",
+      "evidence": [
+        "evidence/targeted.log",
+        "evidence/make-ci.log",
+        "evidence/oracle-check.json",
+        "evidence/observed-events.json",
+        "evidence/observed-events.keys.json"
+      ]
+    },
+    {
+      "id": "C02",
+      "requirements": [
+        "S03-1",
+        "S03-3",
+        "AUTH-02",
+        "AUTH-05"
+      ],
+      "source_gaps": [
+        "G06",
+        "G01"
+      ],
+      "test_name": "s03_every_event_mutation_changes_authorized_operation",
+      "test_path": "crates/nsealr-core/src/authorization/tests.rs:414",
+      "implementation_anchors": [
+        "crates/nsealr-core/src/event.rs:280",
+        "crates/nsealr-core/src/authorization.rs:335"
+      ],
+      "observed": "Changing each signed field, author or ordered tag/content data changes the canonical digest; request correlation is additionally covered by A02 rather than being part of NIP01 bytes.",
+      "result": "PASS_portable_candidate",
+      "evidence": [
+        "evidence/targeted.log",
+        "evidence/make-ci.log",
+        "evidence/oracle-check.json",
+        "evidence/observed-events.json",
+        "evidence/observed-events.keys.json"
+      ]
+    },
+    {
+      "id": "KIND01",
+      "requirements": [
+        "S03-1",
+        "PROD-05"
+      ],
+      "source_gaps": [
+        "G07"
+      ],
+      "test_name": "s03_kind1_interprets_exact_reference_subset",
+      "test_path": "crates/nsealr-core/src/authorization/tests.rs:438",
+      "implementation_anchors": [
+        "crates/nsealr-core/src/review/event.rs:168",
+        "crates/nsealr-core/src/review/event.rs:190"
+      ],
+      "observed": "Admitted plain/reference/reply/quote forms produce complete indexed roles; invalid e/p/q, curve keys, markers and unsupported kinds reject before review. Unknown suffixes stay explicitly uninterpreted and fully visible.",
+      "result": "PASS_portable_candidate",
+      "evidence": [
+        "evidence/targeted.log",
+        "evidence/make-ci.log"
+      ]
+    },
+    {
+      "id": "KIND02",
+      "requirements": [
+        "S03-1",
+        "PROD-05"
+      ],
+      "source_gaps": [
+        "G07"
+      ],
+      "test_name": "s03_malformed_known_semantics_never_fall_back",
+      "test_path": "crates/nsealr-core/src/authorization/tests.rs:499",
+      "implementation_anchors": [
+        "crates/nsealr-core/src/review/event.rs:111",
+        "crates/nsealr-core/src/review/event.rs:190"
+      ],
+      "observed": "Conservative ws/wss grammar preserves admitted exact bytes and rejects bad authority, port, IPv4, labels, escapes, query, fragment, Unicode and IPv6; KIND01 covers the accompanying malformed-known-tag matrix.",
+      "result": "PASS_portable_candidate",
+      "evidence": [
+        "evidence/targeted.log",
+        "evidence/make-ci.log"
+      ]
+    },
+    {
+      "id": "R01",
+      "requirements": [
+        "S03-1",
+        "S03-2",
+        "AUTH-01",
+        "PROD-05"
+      ],
+      "source_gaps": [
+        "G02",
+        "G07",
+        "G08"
+      ],
+      "test_name": "s03_review_has_complete_indexed_coverage",
+      "test_path": "crates/nsealr-core/src/authorization/tests.rs:552",
+      "implementation_anchors": [
+        "crates/nsealr-core/src/review/event.rs:275",
+        "crates/nsealr-core/src/review/event.rs:471"
+      ],
+      "observed": "Reconstructed complete fields equal independently escaped source strings, including empty strings, repeated tags, suffixes and Unicode. All full roles, wrapped values and page positions fit configured total geometry.",
+      "result": "PASS_portable_candidate",
+      "evidence": [
+        "evidence/targeted.log",
+        "evidence/make-ci.log"
+      ]
+    },
+    {
+      "id": "R02",
+      "requirements": [
+        "S03-2",
+        "PROD-05"
+      ],
+      "source_gaps": [
+        "G07"
+      ],
+      "test_name": "s03_review_escape_spelling_is_injective",
+      "test_path": "crates/nsealr-core/src/authorization/tests.rs:593",
+      "implementation_anchors": [
+        "crates/nsealr-core/src/review/event.rs:275"
+      ],
+      "observed": "Narrow 16-column inspection preserves each complete escape token and exact suffix after long shared prefixes. Literal backslash escapes and actual control/non-ASCII scalars remain distinguishable; R01 independently checks injectivity.",
+      "result": "PASS_portable_candidate",
+      "evidence": [
+        "evidence/targeted.log",
+        "evidence/make-ci.log"
+      ]
+    },
+    {
+      "id": "R03",
+      "requirements": [
+        "S03-1",
+        "AUTH-01"
+      ],
+      "source_gaps": [
+        "G02",
+        "G08"
+      ],
+      "test_name": "s03_failed_or_skipped_display_cannot_approve",
+      "test_path": "crates/nsealr-core/src/authorization/tests.rs:628",
+      "implementation_anchors": [
+        "crates/nsealr-core/src/authorization.rs:409",
+        "crates/nsealr-core/src/review/event.rs:461"
+      ],
+      "observed": "Every incomplete traversal prefix remains unapproved; failed display never acknowledges a page, early Approve invalidates, Back cannot extend deadline, and duplicate consent is rejected. Page-count/geometry failure rejects preflight.",
+      "result": "PASS_portable_candidate",
+      "evidence": [
+        "evidence/targeted.log",
+        "evidence/make-ci.log"
+      ]
+    },
+    {
+      "id": "A01",
+      "requirements": [
+        "S03-1",
+        "AUTH-01",
+        "PROD-04"
+      ],
+      "source_gaps": [
+        "G01",
+        "G02",
+        "G09"
+      ],
+      "test_name": "s03_host_and_transcript_cannot_mint_authority",
+      "test_path": "crates/nsealr-core/src/authorization/tests.rs:676",
+      "implementation_anchors": [
+        "crates/nsealr-core/src/authorization.rs:172",
+        "crates/nsealr-core/src/authorization.rs:409",
+        "crates/nsealr-core/src/policy/approval_gate.rs"
+      ],
+      "observed": "Seven host authority-like fields reject via parser and both adapters. Fabricated legacy preview decision and copied Approved status cannot execute. Only a fresh local complete traversal reaches private consent.",
+      "result": "PASS_portable_candidate",
+      "evidence": [
+        "evidence/targeted.log",
+        "evidence/make-ci.log"
+      ]
+    },
+    {
+      "id": "A02",
+      "requirements": [
+        "S03-1",
+        "AUTH-02",
+        "PROD-04"
+      ],
+      "source_gaps": [
+        "G01",
+        "G03",
+        "G06"
+      ],
+      "test_name": "s03_attempt_binds_context_and_consumes_mismatch",
+      "test_path": "crates/nsealr-core/src/authorization/tests.rs:717",
+      "implementation_anchors": [
+        "crates/nsealr-core/src/authorization.rs:444",
+        "crates/nsealr-core/src/authorization.rs:464",
+        "crates/nsealr-core/src/authorization.rs:501"
+      ],
+      "observed": "28 private operation/context/review mutations invoke backend zero times, consume the attempt and reject retry. Wrong request ID consumes. Three altered completion-handle fields reject and leave no retry authority.",
+      "result": "PASS_portable_candidate",
+      "evidence": [
+        "evidence/targeted.log",
+        "evidence/make-ci.log"
+      ]
+    },
+    {
+      "id": "A03",
+      "requirements": [
+        "S03-1",
+        "AUTH-03",
+        "PROD-04"
+      ],
+      "source_gaps": [
+        "G01",
+        "G09"
+      ],
+      "test_name": "s03_first_attempt_is_irrevocable",
+      "test_path": "crates/nsealr-core/src/authorization/tests.rs:804",
+      "implementation_anchors": [
+        "crates/nsealr-core/src/authorization.rs:464",
+        "crates/nsealr-core/src/authorization.rs:501"
+      ],
+      "observed": "First successful signature, failed backend, invalid signature, valid wrong-author signature and double-hash signature each call backend exactly once; only the correct raw digest/key returns output. Retry never calls backend.",
+      "result": "PASS_portable_candidate",
+      "evidence": [
+        "evidence/targeted.log",
+        "evidence/make-ci.log"
+      ]
+    },
+    {
+      "id": "A04",
+      "requirements": [
+        "S03-1",
+        "AUTH-04",
+        "PROD-04"
+      ],
+      "source_gaps": [
+        "G01",
+        "G10",
+        "G12"
+      ],
+      "test_name": "s03_each_lifecycle_event_invalidates_pending_work",
+      "test_path": "crates/nsealr-core/src/authorization/tests.rs:854",
+      "implementation_anchors": [
+        "crates/nsealr-core/src/authorization.rs:204",
+        "crates/nsealr-core/src/authorization.rs:244",
+        "crates/nsealr-core/src/authorization.rs:279"
+      ],
+      "observed": "Reviewing/Approved/Executing crossed with nine cancellation, lock, reset, account, policy, limit/geometry and expiry invalidations; all old completions/attempts fail. Explicit Reject invalidates and lock/reset drop selected key.",
+      "result": "PASS_portable_candidate",
+      "evidence": [
+        "evidence/targeted.log",
+        "evidence/make-ci.log"
+      ]
+    },
+    {
+      "id": "A05",
+      "requirements": [
+        "S03-1",
+        "AUTH-03",
+        "AUTH-04"
+      ],
+      "source_gaps": [
+        "G01",
+        "G10"
+      ],
+      "test_name": "s03_two_attempts_and_cancel_linearize_once",
+      "test_path": "crates/nsealr-core/src/authorization/tests.rs:900",
+      "implementation_anchors": [
+        "crates/nsealr-core/src/authorization.rs:464",
+        "crates/nsealr-core/src/authorization.rs:501"
+      ],
+      "observed": "Two host threads behind the actual shared Mutex/barrier produce exactly one execution. Deterministic execute/cancel schedules test both orders; cancellation after private start discards a valid stale signature.",
+      "result": "PASS_portable_candidate",
+      "evidence": [
+        "evidence/targeted.log",
+        "evidence/make-ci.log"
+      ]
+    },
+    {
+      "id": "A06",
+      "requirements": [
+        "S03-1",
+        "AUTH-02",
+        "AUTH-04"
+      ],
+      "source_gaps": [
+        "G10"
+      ],
+      "test_name": "s03_old_session_aliases_and_time_fail_closed",
+      "test_path": "crates/nsealr-core/src/authorization/tests.rs:993",
+      "implementation_anchors": [
+        "crates/nsealr-core/src/authorization.rs:212",
+        "crates/nsealr-core/src/authorization.rs:279",
+        "crates/nsealr-core/src/authorization.rs:501"
+      ],
+      "observed": "Deadline 99 succeeds while 100/101 expire; unavailable/rollback/overflow clock and operation-counter exhaustion fail closed. Reset and new operation cannot revive an old completion. Private execution handle borrows its original owner, so reconstructed owners expose no callback transfer path.",
+      "result": "PASS_portable_candidate",
+      "evidence": [
+        "evidence/targeted.log",
+        "evidence/make-ci.log"
+      ]
+    },
+    {
+      "id": "L01",
+      "requirements": [
+        "S03-2",
+        "PROD-09"
+      ],
+      "source_gaps": [
+        "G04",
+        "G05",
+        "G08",
+        "G10"
+      ],
+      "test_name": "s03_all_limits_bound_storage_and_work",
+      "test_path": "crates/nsealr-core/src/authorization/tests.rs:1067",
+      "implementation_anchors": [
+        "crates/nsealr-core/src/event.rs:64",
+        "crates/nsealr-core/src/event.rs:152",
+        "crates/nsealr-core/src/review/event.rs:275",
+        "crates/nsealr-core/src/authorization.rs:568"
+      ],
+      "observed": "Below/at/above tests cover all locally configured capacities, total rendering geometry and a single busy slot. A 32x8-tag operation with 2048-byte content succeeds within aggregate2304 and fails at2303. Fixed-size retained owner/pending assertions compile on host and firmware target.",
+      "result": "PASS_portable_candidate",
+      "evidence": [
+        "evidence/targeted.log",
+        "evidence/make-ci.log"
+      ]
+    },
+    {
+      "id": "D01",
+      "requirements": [
+        "S03-4",
+        "AUTH-01",
+        "PROD-04",
+        "PROD-11"
+      ],
+      "source_gaps": [
+        "G05",
+        "G09",
+        "G11"
+      ],
+      "test_name": "s03_legacy_status_never_enables_product_signing",
+      "test_path": "crates/nsealr-core/src/authorization/tests.rs:1211",
+      "implementation_anchors": [
+        "crates/nsealr-core/src/authorization.rs:557",
+        "crates/nsealr-core/src/protocol.rs",
+        "crates/nsealr-core/src/policy/approval_gate.rs"
+      ],
+      "observed": "All legacy readiness flags true still cannot grant the new owner authority. Production attempt is disabled and consuming. Both transports preserve numeric wire version1 and return signing_disabled; stricter adapter budgets reject before preview. No runtime signing flag exists.",
+      "result": "PASS_portable_candidate",
+      "evidence": [
+        "evidence/targeted.log",
+        "evidence/make-ci.log"
+      ]
+    },
+    {
+      "id": "V01",
+      "requirements": [
+        "S03-0",
+        "S03-3",
+        "AUTH-05",
+        "PROD-10"
+      ],
+      "source_gaps": [
+        "G03",
+        "G06"
+      ],
+      "test_name": "s03_independent_event_id_and_signature_agree",
+      "test_path": "crates/nsealr-core/src/authorization/tests.rs:1276",
+      "implementation_anchors": [
+        "crates/nsealr-core/src/event.rs:280",
+        "crates/nsealr-core/src/authorization.rs:501"
+      ],
+      "observed": "Actual owner review/consent/private raw-digest signing emits eight expected signatures checked by pinned independent BIP340 verifier; three actual imports include odd/even-Y. Official positive/negative verifier controls and field/ID/signature/key/double-hash mutations reject as expected.",
+      "result": "PASS_portable_candidate",
+      "evidence": [
+        "evidence/targeted.log",
+        "evidence/make-ci.log",
+        "evidence/oracle-check.json",
+        "evidence/observed-events.json",
+        "evidence/observed-events.keys.json"
+      ]
+    }
+  ],
+  "acceptance_mapping": [
+    {
+      "index": 0,
+      "cases": [
+        "I01",
+        "P02",
+        "C01",
+        "V01"
+      ]
+    },
+    {
+      "index": 1,
+      "cases": [
+        "A01",
+        "A02",
+        "A03",
+        "A04",
+        "A05",
+        "A06",
+        "R01",
+        "R03",
+        "KIND01",
+        "KIND02"
+      ]
+    },
+    {
+      "index": 2,
+      "cases": [
+        "P01",
+        "P02",
+        "P03",
+        "R01",
+        "R02",
+        "L01"
+      ]
+    },
+    {
+      "index": 3,
+      "cases": [
+        "C01",
+        "C02",
+        "V01"
+      ]
+    },
+    {
+      "index": 4,
+      "cases": [
+        "D01",
+        "A05",
+        "A06"
+      ],
+      "limit": "Portable negative tests only; physical UI/input/peripheral isolation remains each actual profile task."
+    }
+  ],
+  "retained_memory": {
+    "measurement": "x86_64 rustc1.95 size_of; const assertions also built for riscv32imafc-unknown-none-elf",
+    "EventTemplate_bytes": 5232,
+    "Pending_bytes": 5728,
+    "Pending_cap": 8192,
+    "AuthorizationSession_bytes": 6016,
+    "AuthorizationSession_cap": 16384,
+    "SigningKey_bytes": 136,
+    "Option_SigningKey_bytes": 136,
+    "Execution_transient_bytes": 112,
+    "InspectionFrame_transient_bytes": 496,
+    "retained_string_arena": 4096,
+    "retained_canonical_copies": 0,
+    "retained_page_list": false,
+    "pending_slots": 1,
+    "key_counting": "Option<SigningKey>136 and Pending5728 are already included once in AuthorizationSession6016, not additive.",
+    "separate_inventory": [
+      "Caller input slice <=4096 bytes; transport adapters retain their own smaller framing buffers.",
+      "Optional caller canonical-output buffer <=8192 bytes; event_id uses streaming hash and retains no canonical copy.",
+      "One InspectionFrame496 bytes plus bounded rendering scratch, local numeric/hex buffers and hash state; no full page list.",
+      "Parser/move/return temporary copies of the5232-byte arena or larger ParsedRequest are compiler dependent; no whole-program stack or peak-RAM measurement.",
+      "Borrowed execution record112 bytes is transient; backend/library hash/arithmetic scratch and register/move spills are not qualified or proved erased."
+    ],
+    "work_bound": "Schema-directed fixed-depth parser; no general recursion or heap. Max4096 input,8192 canonical bytes,1024 complete frames. Each frame lookup recomputes a bounded plan; complete review may do quadratic-in-page-count work within these hard ceilings. Actual-device timing remains unqualified.",
+    "evidence": [
+      "evidence/targeted.log",
+      "evidence/backend-key-size.json",
+      "evidence/make-ci.log"
+    ]
+  },
+  "dependencies": {
+    "direct_runtime": "k256=0.14.0; default-features=false; schnorr only",
+    "dev_only": "serde_json=1.0.151",
+    "runtime_feature_evidence": "evidence/runtime-features.log",
+    "feature_limit": "No alloc/std/serde/ECDH feature or runtime RNG fallback enabled for new owner. ecdsa-core is pulled by k256 arithmetic internals; no ECDSA signing capability is exposed by this task.",
+    "new_vendored_packages": [
+      {
+        "path": "vendor/autocfg",
+        "package": "autocfg",
+        "version": "1.5.1",
+        "cargo_checksum_manifest_sha256": "5db7ec75093eb5d5217141d6d03fd4cfc6549e34ae8785bf7d25d8fbe60b63b5",
+        "registry_package_checksum": "f2032f911046de80f0a198e0901378627c33f59ea0ac00e363d481118bd70a53"
+      },
+      {
+        "path": "vendor/base16ct",
+        "package": "base16ct",
+        "version": "1.0.0",
+        "cargo_checksum_manifest_sha256": "a873ada34f20959cb36889a060bbf69fe72678410bc3bb0352de2013f1fafe7c",
+        "registry_package_checksum": "fd307490d624467aa6f74b0eabb77633d1f758a7b25f12bceb0b22e08d9726f6"
+      },
+      {
+        "path": "vendor/cmov",
+        "package": "cmov",
+        "version": "0.5.4",
+        "cargo_checksum_manifest_sha256": "48a49b70cf5b249a8ae38cb3583c1f078be576d1471dc99ad895b1af304d79a1",
+        "registry_package_checksum": "0c9ea0ac24bc397ab3c98583a3c9ba74fa56b09a4449bbe172b9b1ddb016027a"
+      },
+      {
+        "path": "vendor/const-oid",
+        "package": "const-oid",
+        "version": "0.10.2",
+        "cargo_checksum_manifest_sha256": "4c5947ebe010cacf2888943293a8ba6347b112d679c474b3ef94a761bec70861",
+        "registry_package_checksum": "a6ef517f0926dd24a1582492c791b6a4818a4d94e789a334894aa15b0d12f55c"
+      },
+      {
+        "path": "vendor/cpubits",
+        "package": "cpubits",
+        "version": "0.1.1",
+        "cargo_checksum_manifest_sha256": "1f727409a077f8c6afccd81d1763025c49fb08eb1d778316a533957166fed7d2",
+        "registry_package_checksum": "15b85f9c39137c3a891689859392b1bd49812121d0d61c9caf00d46ed5ce06ae"
+      },
+      {
+        "path": "vendor/crypto-bigint",
+        "package": "crypto-bigint",
+        "version": "0.7.5",
+        "cargo_checksum_manifest_sha256": "94a6d432b80c5dbcb580c279234fb681fa28667bb3b4226279e8fd53a340d232",
+        "registry_package_checksum": "1a52aa3fcda4e6302a9f48734f234d35d4721b96f8fe07d073f07ce9df4f0271"
+      },
+      {
+        "path": "vendor/ctutils",
+        "package": "ctutils",
+        "version": "0.4.3",
+        "cargo_checksum_manifest_sha256": "ce1d5d759eaa40590dc3f161171d9db651f94e224208aba46f7d4c34159471ac",
+        "registry_package_checksum": "03bb0e1cc970d482d121d9a1744999169b69a07470b3d644a7894e53fcaf4574"
+      },
+      {
+        "path": "vendor/der",
+        "package": "der",
+        "version": "0.8.2",
+        "cargo_checksum_manifest_sha256": "f5b66a06a83b9ec2f9bdb5e435dee453cae0c2a80781960885335017b5f7ba94",
+        "registry_package_checksum": "a878c850e9e421b20262e9b41f9c860e4785fa07541c266b62ff9d1ef998a80a"
+      },
+      {
+        "path": "vendor/ecdsa",
+        "package": "ecdsa",
+        "version": "0.17.0",
+        "cargo_checksum_manifest_sha256": "9ced300428c83d26c8893f21825c7731e646906858345323cee9e310e5937dfe",
+        "registry_package_checksum": "c0681a4fc24c767085329728d8dfba959af91228aa4610cca4f8ce317ba46ae0"
+      },
+      {
+        "path": "vendor/elliptic-curve",
+        "package": "elliptic-curve",
+        "version": "0.14.1",
+        "cargo_checksum_manifest_sha256": "8f53e83d5274213d0da195f126df411d99eddbc783d394df0f21478b1344b39a",
+        "registry_package_checksum": "9d65aa39b3a5c1c9c1b745c9a019234bb7a21b77abcb4f4d266d706e2d577d65"
+      },
+      {
+        "path": "vendor/ff",
+        "package": "ff",
+        "version": "0.14.0",
+        "cargo_checksum_manifest_sha256": "da23a27bbbabc8cb8390958895647018ab21883a0d966ddb808092aaf801aeab",
+        "registry_package_checksum": "a1f686ab92a9fb0eaf188f6c6c87b89490baa6fdb0db4544ba4dc47f7942489f"
+      },
+      {
+        "path": "vendor/group",
+        "package": "group",
+        "version": "0.14.0",
+        "cargo_checksum_manifest_sha256": "847c75140c58e0ffd38712075e352e913b147cb3c022815f0bbefe809af5fe02",
+        "registry_package_checksum": "7fd1a1c7a5206c5b7a3f5a0d7ccd3ff85d0c8f5133d62a02680255b0004af5f4"
+      },
+      {
+        "path": "vendor/k256",
+        "package": "k256",
+        "version": "0.14.0",
+        "cargo_checksum_manifest_sha256": "19413232f5be2906da2a5488f6f6c365009378c498cf8b718278b03a758a388e",
+        "registry_package_checksum": "93f50113171a713f4a4231ef82eb26703607139b35dcb56241f0ceab2ae1f7d8"
+      },
+      {
+        "path": "vendor/num-traits",
+        "package": "num-traits",
+        "version": "0.2.19",
+        "cargo_checksum_manifest_sha256": "f3a71413c6fbec0b5a94a407c1d2ccc80807a6f511d1823b7204ea3627b7f27e",
+        "registry_package_checksum": "071dfc062690e90b734c0b2273ce72ad0ffa95f0c74596bc250dcfd960262841"
+      },
+      {
+        "path": "vendor/primefield",
+        "package": "primefield",
+        "version": "0.14.0",
+        "cargo_checksum_manifest_sha256": "e89b8322315734080aa1453cff48323b6feb3f4df18445b9aa0c6951a329834f",
+        "registry_package_checksum": "c555a6e4eb7d4e158fcb028c835c3b8642206ddc279b5c6b202ef9a8bdb592f4"
+      },
+      {
+        "path": "vendor/primeorder",
+        "package": "primeorder",
+        "version": "0.14.0",
+        "cargo_checksum_manifest_sha256": "70fdb49c8aa0abb092bc2d88a0679d217e70e52a217f1fe5f88b2db3ddec10e7",
+        "registry_package_checksum": "5c9f42978c78a00e3d68f69fc03e57a234debae69da4020a4fb588fcdcd07b06"
+      },
+      {
+        "path": "vendor/rand_core",
+        "package": "rand_core",
+        "version": "0.10.1",
+        "cargo_checksum_manifest_sha256": "8f48dac750bf584313dead40c0ce820389a26055f5bfc1a255b086e73bf36480",
+        "registry_package_checksum": "63b8176103e19a2643978565ca18b50549f6101881c443590420e4dc998a3c69"
+      },
+      {
+        "path": "vendor/sec1",
+        "package": "sec1",
+        "version": "0.8.1",
+        "cargo_checksum_manifest_sha256": "a350f2cb9ac853c07a915ef92ae2ce3e538a0806099880c23f87db3499fc3a5d",
+        "registry_package_checksum": "d56d437c2f19203ce5f7122e507831de96f3d2d4d3be5af44a0b0a09d8a80e4d"
+      },
+      {
+        "path": "vendor/signature",
+        "package": "signature",
+        "version": "3.0.0",
+        "cargo_checksum_manifest_sha256": "b7fc13c5b7bbb0627c0a71f38a0648cbb086973a308fd861bc73d570fa66b81d",
+        "registry_package_checksum": "28d567dcbaf0049cb8ac2608a76cd95ff9e4412e1899d389ee400918ca7537f5"
+      },
+      {
+        "path": "vendor/subtle",
+        "package": "subtle",
+        "version": "2.6.1",
+        "cargo_checksum_manifest_sha256": "aee741a571157c69d3ac1c379af8a77f8dd2a54ab7ce64d6210b4956ea3135f7",
+        "registry_package_checksum": "13c2bddecc57b384dee18652358fb23172facb8a2c51ccc10d74c157bdea3292"
+      },
+      {
+        "path": "vendor/wnaf",
+        "package": "wnaf",
+        "version": "0.14.1",
+        "cargo_checksum_manifest_sha256": "cc54e19688900ca0b5cc5905bd1169025a8ad82020a8e89a30d42f53bcb6075f",
+        "registry_package_checksum": "795ca18b3fdb5e62bf982199278341ddcf7ebf7d32e25e212ad05d496e95f6fa"
+      }
+    ],
+    "license_advisory_gate": "cargo deny passed in full make ci; vendor trees are cargo-vendor content with checksums/licenses, no private history"
+  },
+  "key_normalization": {
+    "actual_fixtures": [
+      "1",
+      "3",
+      "n-3"
+    ],
+    "observation": "k256 retains the even-Y normalized scalar; n-3 and3 have the same x-only identity and fixture signature. Conversion consumes/wipes the S02 raw owner and cannot reconstruct original nsec bytes.",
+    "policy": "This ephemeral execution owner is not recovery custody and establishes no nsec import/export canonicalization policy. Future D02/K01 custody must preserve original imported source before consuming this conversion, with independently reviewed non-copying ownership design.",
+    "NIP44": "Pinned NIP44 specifies x-coordinate ECDH. Algebraic inference: d to n-d negates shared point and preserves x. This is not NIP44 implementation or qualification evidence.",
+    "evidence": [
+      "evidence/key-normalization-source.json",
+      "evidence/observed-events.keys.json",
+      "evidence/oracle-check.log"
+    ]
+  },
+  "baseline_and_failures": {
+    "before_fix": "Six intended behavioral failures retained from unchanged product3cbd818, before any implementation or generated-observation comparison.",
+    "after_fix_mapping": {
+      "duplicate_kind": "P01",
+      "kind65536": "P02",
+      "leading_zero_time": "P02",
+      "reusable_gate": "A01/A03/A05; old ApprovalGate API removed",
+      "unshown_constructed_review": "A01/R03; preview cannot execute",
+      "truncation_as_complete_review": "R01/R02/R03; old renderer explicitly preview only"
+    },
+    "interim_failures": [
+      {
+        "log": "evidence/interim-strict-adapter-failures.log",
+        "reason": "14 historical lenient/error-precedence expectations failed after replacing scanners; updated to strict rejection or unsupported-frame behavior. Existing valid wire/fixture expectations retained. This log comes from uncommitted intermediate state and is not final source acceptance."
+      },
+      {
+        "log": "evidence/interim-unused-fixture-failure.log",
+        "reason": "Clippy correctly rejected unused KEY_ONE test constant; removed unused constant without suppressing lint."
+      },
+      {
+        "log": "evidence/observation-path-failure.log",
+        "reason": "Relative S03_OBSERVED path resolved from Cargo crate cwd and failed two file writes. No signature/parser assertions failed; corrected to absolute path and reran20/20."
+      }
+    ],
+    "additional_preflight_notes": [
+      "Two multiline closure coverage gaps were resolved by exercising the actual page-limit error path and naming a side-effect-only legacy counting callback; error propagation remains checked. Closure argument lifetimes required explicit &str/style types. No coverage exclusions or floor changes.",
+      "Final inspection corrected contradictory legacy module comments after the first full CI pass; a second full make ci against source_commit is retained. No behavioral change after e674761."
+    ]
+  },
+  "source_reconciliation": "evidence/source-reconciliation.json",
+  "product_files": [
+    {
+      "path": "Cargo.lock",
+      "sha256": "43c715a3808484b0cfe0bdccce35a4b33645cf216a0c27e998bdcd6995e48f75"
+    },
+    {
+      "path": "apps/desktop-simulator/src/replay/review.rs",
+      "sha256": "1dcdb0121ce8fa5417039e76b5f5f4a63a95af4b354927a794f2b0731a194d83"
+    },
+    {
+      "path": "crates/nsealr-core/Cargo.toml",
+      "sha256": "b2e833736f8e22df8fc7631df9c5d2663af927617e680e4a10f296310fda3ace"
+    },
+    {
+      "path": "crates/nsealr-core/src/authorization.rs",
+      "sha256": "d17e1e893fd403da3eba9c0de69decf014e123d0f1524c310d526b37b05f1ab1"
+    },
+    {
+      "path": "crates/nsealr-core/src/authorization/tests.rs",
+      "sha256": "09a3bbe29f6610b50950a4d68dcdcac1c6c3c50e87fcfe4d4f9f08311a9f726b"
+    },
+    {
+      "path": "crates/nsealr-core/src/board_profile_tests.rs",
+      "sha256": "93dd7a3b17ef6d2fba22ae5770b68a543ae6b432e513e7dce5be69d51bef1ac8"
+    },
+    {
+      "path": "crates/nsealr-core/src/event.rs",
+      "sha256": "8ef028b817652721e096352e85b23e01e23cd3a726acca9ebea723226fbb024d"
+    },
+    {
+      "path": "crates/nsealr-core/src/lib.rs",
+      "sha256": "9d1b64a436ef8d743666799ac3d7fe0ff19ce649c7e672cee1bad6a6c1120bf8"
+    },
+    {
+      "path": "crates/nsealr-core/src/policy/approval_gate.rs",
+      "sha256": "d60ee60d73842471f072c70bcd79e4a0306a30ceffcec4543f92dd186c61675a"
+    },
+    {
+      "path": "crates/nsealr-core/src/policy/policy_change_review.rs",
+      "sha256": "ca66968ba706e20e37787a027c16d98038e641290588f61eb63b7748cefe49fb"
+    },
+    {
+      "path": "crates/nsealr-core/src/protocol.rs",
+      "sha256": "70855ce24448bf773fba78ce8ba8de4e449806b7543834fcbc507886763014c2"
+    },
+    {
+      "path": "crates/nsealr-core/src/qr/envelope.rs",
+      "sha256": "e7a53675701c687e0be6842608152b4743dc3e41f0b185e607831bea59a4d068"
+    },
+    {
+      "path": "crates/nsealr-core/src/review/display.rs",
+      "sha256": "8a6f6c016bd315f38a1cb2c84dfb9463863c621ae50f373ef9f0c07e899016de"
+    },
+    {
+      "path": "crates/nsealr-core/src/review/event.rs",
+      "sha256": "4aa72a550b37fc2387bc8bd9c4050e18c5bd32568dd8f68583b343fe7d1eb734"
+    },
+    {
+      "path": "crates/nsealr-core/src/review/mod.rs",
+      "sha256": "10101fa09ff8048e2da7c927527f8ea66e4f8c5d057ebd66aa2780ae1406e3c4"
+    },
+    {
+      "path": "crates/nsealr-core/src/review/qr.rs",
+      "sha256": "e0d7269c7aa2d7006af83b81a35eafda0877592c50363bd1cfa7554557661943"
+    },
+    {
+      "path": "crates/nsealr-core/src/review/qr_flow.rs",
+      "sha256": "ac8a6682b70ed624cfae920f534771f93cf7a923fa52025f6fc4c4ff24981487"
+    },
+    {
+      "path": "crates/nsealr-core/src/review/serial.rs",
+      "sha256": "4a395887e378971304eded7456a53f30a09155f09195627259970b1914201702"
+    },
+    {
+      "path": "crates/nsealr-core/src/review/trusted.rs",
+      "sha256": "a3af479a264e0f780e6dccefefac9f40c8bec883419ff68c15b13bf829611d9b"
+    },
+    {
+      "path": "crates/nsealr-core/src/review/types.rs",
+      "sha256": "03bb7370158db87dd613cab39fd6df545670800d8d1e1d166eacdb0744cab814"
+    },
+    {
+      "path": "crates/nsealr-core/src/session/source_backup.rs",
+      "sha256": "697391075a49e66585eaec20c79cf047b51b68928bbceb68f7066d3bea2ed34e"
+    }
+  ],
+  "remaining_owners": {
+    "K01": "Remaining public catalog reviewers, production signing and output binding/verification, provider scratch and actual signing dependency final link; retest all S03 semantics at integrated output boundary.",
+    "T01": "Qualified per-profile capability/limit/readiness schemas and host routing replacement; no universal bool or persistent_grants flag grants consent.",
+    "C02": "DM/relay-auth context and catalog; cannot borrow public-note grants.",
+    "device_tasks": "Real screen/input, monotonic lifetime/reset, entropy/custody/memory/timing/peripheral isolation and receiver behavior.",
+    "P02": "Per-profile compatibility/adoption/usability gates, including actual readable Unicode review with exact inspection, jointly with device qualification. Owned renderer changes must be reviewed."
+  },
+  "limitations": [
+    "actual physical button origin",
+    "device clock trust",
+    "qualified entropy invocation",
+    "physical memory erasure",
+    "target stack/peak RAM/latency",
+    "full public catalog",
+    "production output enabled",
+    "external security certification",
+    "public-profile Unicode readability or usability from the ASCII conformance cursor",
+    "Current production attempt has no signing provider; completion-time, entropy and real output integration must be re-proved by K01 at actual output boundary.",
+    "ASCII conformance cursor does not establish product Unicode usability; readable Unicode plus exact inspection requires owned renderer/device/P02 acceptance.",
+    "No new recovery export or NIP44 service; no original-scalar reconstruction from normalized execution key."
+  ],
+  "integration_conditions": [
+    "Distinct reviewer inspects exact candidate diff and independently exercises hostile transitions/oracle.",
+    "Root coordinates A02 selected-source/layout adoption; do not overwrite this branch from historical source3cbd818.",
+    "T01 migrates strict parser/protocol only after this frozen API is reconciled; descriptors/host grants never become local consent.",
+    "No task graph edits, merge or completion/profile/catalog claim by this author."
+  ],
+  "verification": {
+    "commands": "evidence/commands.json",
+    "oracle_command": "evidence/oracle-check.json",
+    "environment": "evidence/environment.json",
+    "full_ci_exit": 0,
+    "full_ci_source_commit": "271bb88cf8a3efef71a01f2130897ab098e537a5",
+    "targeted_families": 20,
+    "public_contract_doctests": 15,
+    "core_unit_tests_std": 247,
+    "existing_secret_boundary_tests": 4,
+    "simulator_vector_groups": 20,
+    "coverage": {
+      "desktop-simulator": {
+        "covered": 1245,
+        "count": 1622,
+        "floor_percent": 76.7,
+        "percent": 76.75709001233045
+      },
+      "nsealr-core": {
+        "covered": 12042,
+        "count": 12042,
+        "floor_percent": 100.0,
+        "percent": 100.0
+      }
+    },
+    "coverage_summary": "evidence/coverage-summary.json",
+    "reproducible_artifacts": {
+      "desktop_simulator": {
+        "path": "target/repro-a/release/desktop-simulator",
+        "sha256": "bf3435b762ce36df8fc4442e1a196750f0dbb8eb00dc9cb58bfd89a4e245afac",
+        "bytes": 1006520
+      },
+      "device_rlib": {
+        "path": "target/repro-a/riscv32imafc-unknown-none-elf/release/libnsealr_core.rlib",
+        "sha256": "a5c17e9a518ccd6f110a2c96638d197b393b2896889882e7f102f2d71ec69260",
+        "bytes": 2271580
+      }
+    },
+    "independent_results": {
+      "verified_events": 8,
+      "official_verifier_controls": 7,
+      "actual_key_imports_checked": 3,
+      "strict_parser_negative_controls": 9,
+      "signature_byte_mutations_rejected": 512,
+      "event_id_byte_mutations_rejected": 256,
+      "canonical_field_mutations_rejected": 32,
+      "wrong_key_mutations_rejected": 8,
+      "double_hash_mutations_rejected": 8
+    },
+    "observed_source_equivalence": "Observed outputs and targeted tests captured at e674761;271bb88 changes only approval_gate.rs comments. All product behavior/tests/oracle/fixtures remain byte-identical. Full CI covers271bb88."
+  }
+}

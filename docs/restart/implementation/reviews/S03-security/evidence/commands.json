@@ -1,0 +1,314 @@
+[
+  {
+    "name": "environment",
+    "argv": [
+      "rustc",
+      "-Vv"
+    ],
+    "cwd": "/home/tux/nsealr/.restart-tools/goal/s03-security-review",
+    "candidate": "2d7d465a291c4d4a1324d90595fc45a2fdbefca5",
+    "started_utc": "2026-10-18T18:16:42.434371+00:00",
+    "finished_utc": "2026-10-18T18:16:42.456131+00:00",
+    "exit_code": 0,
+    "log": "docs/restart/implementation/reviews/S03-security/evidence/environment.log",
+    "log_sha256": "4fdff2578428e9c5c08ddd7a0d3079c1a106b1cdaa46e73e46f7cd32b0fb9cad",
+    "env_override": {
+      "CARGO_TARGET_DIR": "/home/tux/nsealr/.restart-tools/goal/s03-security-review/docs/restart/implementation/reviews/S03-security/build"
+    }
+  },
+  {
+    "name": "runtime-features",
+    "argv": [
+      "cargo",
+      "tree",
+      "--locked",
+      "--offline",
+      "-p",
+      "nsealr-core",
+      "--no-default-features",
+      "-e",
+      "features,no-dev"
+    ],
+    "cwd": "/home/tux/nsealr/.restart-tools/goal/s03-security-review",
+    "candidate": "2d7d465a291c4d4a1324d90595fc45a2fdbefca5",
+    "started_utc": "2026-10-18T18:16:42.456320+00:00",
+    "finished_utc": "2026-10-18T18:16:42.505350+00:00",
+    "exit_code": 0,
+    "log": "docs/restart/implementation/reviews/S03-security/evidence/runtime-features.log",
+    "log_sha256": "dfbdf934d32b95b05786445735c7fabf33813c5c6a562c65321f4fa8f479ed35",
+    "env_override": {
+      "CARGO_TARGET_DIR": "/home/tux/nsealr/.restart-tools/goal/s03-security-review/docs/restart/implementation/reviews/S03-security/build"
+    }
+  },
+  {
+    "name": "author-affected",
+    "argv": [
+      "cargo",
+      "test",
+      "--locked",
+      "--offline",
+      "-p",
+      "nsealr-core",
+      "s03_",
+      "--",
+      "--nocapture"
+    ],
+    "cwd": "/home/tux/nsealr/.restart-tools/goal/s03-security-review",
+    "candidate": "2d7d465a291c4d4a1324d90595fc45a2fdbefca5",
+    "started_utc": "2026-10-18T18:16:42.505603+00:00",
+    "finished_utc": "2026-10-18T18:16:46.191175+00:00",
+    "exit_code": 0,
+    "log": "docs/restart/implementation/reviews/S03-security/evidence/author-affected.log",
+    "log_sha256": "40de03ba9ce90df18eabaafd9cb124cbabdfa8b7e1f1b36bc4f0b09782fd1fbb",
+    "env_override": {
+      "CARGO_TARGET_DIR": "/home/tux/nsealr/.restart-tools/goal/s03-security-review/docs/restart/implementation/reviews/S03-security/build",
+      "S03_OBSERVED": "/home/tux/nsealr/.restart-tools/goal/s03-security-review/docs/restart/implementation/reviews/S03-security/evidence/observed-events.json"
+    }
+  },
+  {
+    "name": "author-public-contract",
+    "argv": [
+      "cargo",
+      "test",
+      "--locked",
+      "--offline",
+      "-p",
+      "nsealr-core",
+      "--doc"
+    ],
+    "cwd": "/home/tux/nsealr/.restart-tools/goal/s03-security-review",
+    "candidate": "2d7d465a291c4d4a1324d90595fc45a2fdbefca5",
+    "started_utc": "2026-10-18T18:16:46.191489+00:00",
+    "finished_utc": "2026-10-18T18:16:46.323333+00:00",
+    "exit_code": 0,
+    "log": "docs/restart/implementation/reviews/S03-security/evidence/author-public-contract.log",
+    "log_sha256": "2e1df05f10cc9db40dcd588b4ac6a1c78b47358a0a7d0fae7bfabcddbffcbeac",
+    "env_override": {
+      "CARGO_TARGET_DIR": "/home/tux/nsealr/.restart-tools/goal/s03-security-review/docs/restart/implementation/reviews/S03-security/build"
+    }
+  },
+  {
+    "name": "oracle-actual-rerun",
+    "argv": [
+      "python3",
+      "docs/restart/implementation/S03/oracle.py",
+      "--check",
+      "--fixtures",
+      "docs/restart/implementation/S03/vectors.json",
+      "--observed",
+      "/home/tux/nsealr/.restart-tools/goal/s03-security-review/docs/restart/implementation/reviews/S03-security/evidence/observed-events.json"
+    ],
+    "cwd": "/home/tux/nsealr/.restart-tools/goal/s03-security-review",
+    "candidate": "2d7d465a291c4d4a1324d90595fc45a2fdbefca5",
+    "started_utc": "2026-10-18T18:16:46.323563+00:00",
+    "finished_utc": "2026-10-18T18:17:26.772288+00:00",
+    "exit_code": 0,
+    "log": "docs/restart/implementation/reviews/S03-security/evidence/oracle-actual-rerun.log",
+    "log_sha256": "7d2fbf1d29aa16aec133ef9014af9c6b0dffd5766d7016ba8949d503fa884ad2",
+    "env_override": {
+      "CARGO_TARGET_DIR": "/home/tux/nsealr/.restart-tools/goal/s03-security-review/docs/restart/implementation/reviews/S03-security/build",
+      "PYTHONDONTWRITEBYTECODE": "1"
+    }
+  },
+  {
+    "name": "no-std-target",
+    "argv": [
+      "cargo",
+      "build",
+      "--locked",
+      "--offline",
+      "-p",
+      "nsealr-core",
+      "--release",
+      "--target",
+      "riscv32imafc-unknown-none-elf"
+    ],
+    "cwd": "/home/tux/nsealr/.restart-tools/goal/s03-security-review",
+    "candidate": "2d7d465a291c4d4a1324d90595fc45a2fdbefca5",
+    "started_utc": "2026-10-18T18:17:26.772595+00:00",
+    "finished_utc": "2026-10-18T18:17:30.163002+00:00",
+    "exit_code": 0,
+    "log": "docs/restart/implementation/reviews/S03-security/evidence/no-std-target.log",
+    "log_sha256": "60d69773d9af6f24ce6ddccf615201f9d70c3b6327a41372436c84bd82f75f0d",
+    "env_override": {
+      "CARGO_TARGET_DIR": "/home/tux/nsealr/.restart-tools/goal/s03-security-review/docs/restart/implementation/reviews/S03-security/build"
+    }
+  },
+  {
+    "name": "probe-lock",
+    "argv": [
+      "cargo",
+      "generate-lockfile",
+      "--offline",
+      "--manifest-path",
+      "/home/tux/nsealr/.restart-tools/goal/s03-security-review/docs/restart/implementation/reviews/S03-security/probe/Cargo.toml"
+    ],
+    "cwd": "/home/tux/nsealr/.restart-tools/goal/s03-security-review",
+    "candidate": "2d7d465a291c4d4a1324d90595fc45a2fdbefca5",
+    "started_utc": "2026-10-18T18:17:30.163345+00:00",
+    "finished_utc": "2026-10-18T18:17:30.192916+00:00",
+    "exit_code": 0,
+    "log": "docs/restart/implementation/reviews/S03-security/evidence/probe-lock.log",
+    "log_sha256": "b8756896912d736962b0131f3aac3318de4dd76ea06437cb84dd706a984c1be3",
+    "env_override": {
+      "CARGO_TARGET_DIR": "/home/tux/nsealr/.restart-tools/goal/s03-security-review/docs/restart/implementation/reviews/S03-security/build"
+    }
+  },
+  {
+    "name": "independent-lifecycle",
+    "argv": [
+      "cargo",
+      "test",
+      "--locked",
+      "--offline",
+      "--manifest-path",
+      "/home/tux/nsealr/.restart-tools/goal/s03-security-review/docs/restart/implementation/reviews/S03-security/probe/Cargo.toml",
+      "--",
+      "--nocapture"
+    ],
+    "cwd": "/home/tux/nsealr/.restart-tools/goal/s03-security-review",
+    "candidate": "2d7d465a291c4d4a1324d90595fc45a2fdbefca5",
+    "started_utc": "2026-10-18T18:17:30.193163+00:00",
+    "finished_utc": "2026-10-18T18:17:30.962119+00:00",
+    "exit_code": 0,
+    "log": "docs/restart/implementation/reviews/S03-security/evidence/independent-lifecycle.log",
+    "log_sha256": "b64ecc456e80548d3baa2505edf37cc99bd81c138822830aa73513ea454a322c",
+    "env_override": {
+      "CARGO_TARGET_DIR": "/home/tux/nsealr/.restart-tools/goal/s03-security-review/docs/restart/implementation/reviews/S03-security/build"
+    }
+  },
+  {
+    "name": "independent-build",
+    "argv": [
+      "cargo",
+      "build",
+      "--locked",
+      "--offline",
+      "--manifest-path",
+      "/home/tux/nsealr/.restart-tools/goal/s03-security-review/docs/restart/implementation/reviews/S03-security/probe/Cargo.toml"
+    ],
+    "cwd": "/home/tux/nsealr/.restart-tools/goal/s03-security-review",
+    "candidate": "2d7d465a291c4d4a1324d90595fc45a2fdbefca5",
+    "started_utc": "2026-10-18T18:17:30.962445+00:00",
+    "finished_utc": "2026-10-18T18:17:31.135871+00:00",
+    "exit_code": 0,
+    "log": "docs/restart/implementation/reviews/S03-security/evidence/independent-build.log",
+    "log_sha256": "3d1d342220f4f741165ba8f6c6d9326a6ce54b1e02f90917c039458b7f54cf52",
+    "env_override": {
+      "CARGO_TARGET_DIR": "/home/tux/nsealr/.restart-tools/goal/s03-security-review/docs/restart/implementation/reviews/S03-security/build"
+    }
+  },
+  {
+    "name": "independent-adversarial",
+    "argv": [
+      "python3",
+      "/home/tux/nsealr/.restart-tools/goal/s03-security-review/docs/restart/implementation/reviews/S03-security/adversarial.py"
+    ],
+    "cwd": "/home/tux/nsealr/.restart-tools/goal/s03-security-review",
+    "candidate": "2d7d465a291c4d4a1324d90595fc45a2fdbefca5",
+    "started_utc": "2026-10-18T18:21:13.541571+00:00",
+    "finished_utc": "2026-10-18T18:21:14.386599+00:00",
+    "exit_code": 0,
+    "log": "docs/restart/implementation/reviews/S03-security/evidence/independent-adversarial.log",
+    "log_sha256": "f9cfa8ad6eba58484e83f1aa3b6f412f91e4ea71adb45f012913816a2ef22dee",
+    "env_override": {
+      "CARGO_TARGET_DIR": "/home/tux/nsealr/.restart-tools/goal/s03-security-review/docs/restart/implementation/reviews/S03-security/build",
+      "PYTHONDONTWRITEBYTECODE": "1"
+    }
+  },
+  {
+    "name": "shipping-surface",
+    "argv": [
+      "python3",
+      "-c",
+      "import pathlib,subprocess,json,hashlib\nroot=pathlib.Path.cwd(); own=root/'docs/restart/implementation/reviews/S03-security'; lib=own/'build/riscv32imafc-unknown-none-elf/release/libnsealr_core.rlib'; data=lib.read_bytes()\nfor forbidden in [b'S03_OBSERVED',b's03_independent_event_id_and_signature_agree',b's03_first_attempt_is_irrevocable']: assert forbidden not in data, forbidden\nsource=(root/'crates/nsealr-core/src/authorization.rs').read_text()\nassert '#[cfg(test)]\\nmod tests;' in source\nassert 'pub fn execute' not in source and 'pub fn start_execution' not in source and 'pub fn finish_execution' not in source\nassert 'sign_raw(' not in source\nprint(json.dumps({'library':str(lib.relative_to(root)),'sha256':hashlib.sha256(data).hexdigest(),'bytes':len(data),'fixture_markers_absent':True,'raw_signing_call_absent_from_product_source':True,'test_module_cfg_test_only':True,'private_execution_functions':True},indent=2))"
+    ],
+    "cwd": "/home/tux/nsealr/.restart-tools/goal/s03-security-review",
+    "candidate": "2d7d465a291c4d4a1324d90595fc45a2fdbefca5",
+    "started_utc": "2026-10-18T18:21:14.386859+00:00",
+    "finished_utc": "2026-10-18T18:21:14.406930+00:00",
+    "exit_code": 0,
+    "log": "docs/restart/implementation/reviews/S03-security/evidence/shipping-surface.log",
+    "log_sha256": "70bdb7dad276bb235660a778744de8546ea3609a00eb6346be1ef6ec50f91027",
+    "env_override": {
+      "CARGO_TARGET_DIR": "/home/tux/nsealr/.restart-tools/goal/s03-security-review/docs/restart/implementation/reviews/S03-security/build"
+    }
+  },
+  {
+    "name": "independent-adversarial-final",
+    "argv": [
+      "python3",
+      "/home/tux/nsealr/.restart-tools/goal/s03-security-review/docs/restart/implementation/reviews/S03-security/adversarial.py"
+    ],
+    "cwd": "/home/tux/nsealr/.restart-tools/goal/s03-security-review",
+    "candidate": "2d7d465a291c4d4a1324d90595fc45a2fdbefca5",
+    "started_utc": "2026-10-18T18:22:43.236304+00:00",
+    "finished_utc": "2026-10-18T18:22:44.105951+00:00",
+    "exit_code": 0,
+    "log": "docs/restart/implementation/reviews/S03-security/evidence/independent-adversarial-final.log",
+    "log_sha256": "f9cfa8ad6eba58484e83f1aa3b6f412f91e4ea71adb45f012913816a2ef22dee",
+    "env_override": {
+      "CARGO_TARGET_DIR": "/home/tux/nsealr/.restart-tools/goal/s03-security-review/docs/restart/implementation/reviews/S03-security/build",
+      "PYTHONDONTWRITEBYTECODE": "1"
+    }
+  },
+  {
+    "name": "input-main-reconciliation",
+    "argv": [
+      "python3",
+      "/home/tux/nsealr/.restart-tools/goal/s03-security-review/docs/restart/implementation/reviews/S03-security/audit_inputs.py"
+    ],
+    "cwd": "/home/tux/nsealr/.restart-tools/goal/s03-security-review",
+    "candidate": "2d7d465a291c4d4a1324d90595fc45a2fdbefca5",
+    "started_utc": "2026-10-18T18:22:44.106355+00:00",
+    "finished_utc": "2026-10-18T18:22:44.237280+00:00",
+    "exit_code": 0,
+    "log": "docs/restart/implementation/reviews/S03-security/evidence/input-main-reconciliation.log",
+    "log_sha256": "0a654cb4788fe2489edcf66b83b5e29dd4d6bb0bf196d18e6bd80ff9ad59186b",
+    "env_override": {
+      "CARGO_TARGET_DIR": "/home/tux/nsealr/.restart-tools/goal/s03-security-review/docs/restart/implementation/reviews/S03-security/build",
+      "PYTHONDONTWRITEBYTECODE": "1"
+    }
+  },
+  {
+    "name": "independent-lifecycle-final",
+    "argv": [
+      "cargo",
+      "test",
+      "--locked",
+      "--offline",
+      "--manifest-path",
+      "/home/tux/nsealr/.restart-tools/goal/s03-security-review/docs/restart/implementation/reviews/S03-security/probe/Cargo.toml",
+      "--",
+      "--nocapture"
+    ],
+    "cwd": "/home/tux/nsealr/.restart-tools/goal/s03-security-review",
+    "candidate": "2d7d465a291c4d4a1324d90595fc45a2fdbefca5",
+    "started_utc": "2026-10-18T18:23:19.620165+00:00",
+    "finished_utc": "2026-10-18T18:23:19.800724+00:00",
+    "exit_code": 0,
+    "log": "docs/restart/implementation/reviews/S03-security/evidence/independent-lifecycle-final.log",
+    "log_sha256": "9e7bdedb96ab6deae8a5e5c2e2353a1db0080c1ae87338f8285792f36ce326c0",
+    "env_override": {
+      "CARGO_TARGET_DIR": "/home/tux/nsealr/.restart-tools/goal/s03-security-review/docs/restart/implementation/reviews/S03-security/build"
+    }
+  },
+  {
+    "name": "shipping-surface-final",
+    "argv": [
+      "python3",
+      "/home/tux/nsealr/.restart-tools/goal/s03-security-review/docs/restart/implementation/reviews/S03-security/audit_shipping.py"
+    ],
+    "cwd": "/home/tux/nsealr/.restart-tools/goal/s03-security-review",
+    "candidate": "2d7d465a291c4d4a1324d90595fc45a2fdbefca5",
+    "started_utc": "2026-10-18T18:23:19.801126+00:00",
+    "finished_utc": "2026-10-18T18:23:19.820127+00:00",
+    "exit_code": 0,
+    "log": "docs/restart/implementation/reviews/S03-security/evidence/shipping-surface-final.log",
+    "log_sha256": "70bcb536d5b4e592e3371d3ad06b22f3e305d83e64d08a0a1386472113ed3f51",
+    "env_override": {
+      "CARGO_TARGET_DIR": "/home/tux/nsealr/.restart-tools/goal/s03-security-review/docs/restart/implementation/reviews/S03-security/build",
+      "PYTHONDONTWRITEBYTECODE": "1"
+    }
+  }
+]
