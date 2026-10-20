@@ -23,9 +23,12 @@ T01's [source and delivery](T01/delivery/README.md) now bind the reviewed versio
 capability/routing cutover, decoded QR/serial projections and independent fixed
 inputs. [Root accepted actual T01 main7f](reviews/T01-final-delivery/adoption/actual-main-acceptance.json)
 after normal protected PR37, full resulting-main CI and clean main-only source
-checks. K01's already reviewed specification was reconciled once to that API;
-its existing owner now has a separate bounded implementation admission and
-issue38, recorded in the graph. K01 remains incomplete. Preserve independent event
+checks. K01's specification was reconciled once to that API. Its [portable engine
+delivery proposal](K01/delivery/README.md) preserves the accepted source1aa,
+distinct engine and target-link reviews, actual runtime/test evidence and all
+original failures. The integrated graph state is a branch proposal pending root's
+exact final metadata review, protected PR and actual-main gates. No device,
+provider, real-key or transport release follows. Preserve independent event
 vectors and all retained rejection obligations. Custom-PCB
 research stays independent. The maintainer reports three test kits and Tropic
 development boards in the existing resource records; exact variants, components,

@@ -9576,7 +9576,7 @@
       "id": "K01",
       "title": "Implement the portable Nostr signing engine",
       "stage": "portfolio_v2",
-      "status": "running",
+      "status": "integrated",
       "owner_role": "device_security",
       "depends_on": [
         "S02",
@@ -9605,11 +9605,1556 @@
       "required_resources": [],
       "assignee": "/root/b01_final_review",
       "candidate_commits": {
-        "nSealr/nsealr": "a64a2090d317b1ad07b6293c9f9211b2a1371c0f"
+        "nSealr/nsealr": "1aa144e9410c014cf55cf0694e24ef1fcddcf729"
       },
-      "reviewer": null,
-      "review_verdict": null,
-      "result_artifacts": [],
+      "reviewer": "/root",
+      "review_verdict": "pass",
+      "result_artifacts": [
+        {
+          "path": "docs/restart/implementation/K01/README.md",
+          "sha256": "0e0f380b261fc44df93d16abf63056eee1eb576f21d069eea99218d7cf72102e"
+        },
+        {
+          "path": "docs/restart/implementation/K01/acceptance-plan.json",
+          "sha256": "2d9f06b24fd11b217c5aaca73f1cb5e539edd76201ce1d570d4aae90017907c7"
+        },
+        {
+          "path": "docs/restart/implementation/K01/brief.md",
+          "sha256": "68a3f71c980af7e9a1a66d11cdf6a9b1cec1107ada828d8228322846f545122b"
+        },
+        {
+          "path": "docs/restart/implementation/K01/catalog.md",
+          "sha256": "a8913f9f19a198138f09dfcc10d9f16e83006e8c43343741f0cd9540863234ce"
+        },
+        {
+          "path": "docs/restart/implementation/K01/check_observed.py",
+          "sha256": "19f3c2cea5325aec83b939d8c425a2f6f2e9f8c959d99b2405b0c4011884240a"
+        },
+        {
+          "path": "docs/restart/implementation/K01/delivery/README.md",
+          "sha256": "344c99a0a1e31a2304a4042d0c44b796c25da606e5f89a2d8c9ff5fc0852ff8e"
+        },
+        {
+          "path": "docs/restart/implementation/K01/delivery/artifact-manifest.json",
+          "sha256": "e151f9618c18039c7bfb1ab3227fe605e27edc5a52f08195e2628d0dcc204c40"
+        },
+        {
+          "path": "docs/restart/implementation/K01/delivery/composition-observation.json",
+          "sha256": "4ad37c6b10d190b845999c2e29e1346dca6b04bf3980a108f3a0e830253feae6"
+        },
+        {
+          "path": "docs/restart/implementation/K01/delivery/copy-inventory.json",
+          "sha256": "cd4e2c0f42b210b5afc86863bfbbc939e28a4b616a3d808474b28e02a1d2b3aa"
+        },
+        {
+          "path": "docs/restart/implementation/K01/delivery/reconciliation.json",
+          "sha256": "dd1892d9082b5a6d66507c00761a6b677d74f09615264c82b6674a56c710d10c"
+        },
+        {
+          "path": "docs/restart/implementation/K01/delivery/result.json",
+          "sha256": "bec88a3fb82eaf66cc140ad01267b9e7533b48aba83d8792ea01c0ea532a61f9"
+        },
+        {
+          "path": "docs/restart/implementation/K01/delivery/source-scope.json",
+          "sha256": "5df43b66f1c1c5a842ee0379c1e67e071241e4c9451ba50fef4e41337e44d3e3"
+        },
+        {
+          "path": "docs/restart/implementation/K01/evidence/admission/admission.json",
+          "sha256": "8e505d5e0b70793980c5f743e98b79d824772d2d8fdd9787c0ee57dec4cf8bb5"
+        },
+        {
+          "path": "docs/restart/implementation/K01/evidence/admission/api-review.json",
+          "sha256": "c4a189d8a5a0ae695808a2aeb0c5331fbce62985faeaa64dbb76284095861d78"
+        },
+        {
+          "path": "docs/restart/implementation/K01/evidence/admission/copy-binding.json",
+          "sha256": "1bdef127f9bbf37240308b2e3e2cf0512d344d6ad7c784618504369971c459a6"
+        },
+        {
+          "path": "docs/restart/implementation/K01/evidence/artifact-manifest.json",
+          "sha256": "8a37176db5cfbdced336cf2bddaaf5436331f3acf6cc27acf0b2a81dfa8e2bb7"
+        },
+        {
+          "path": "docs/restart/implementation/K01/evidence/auxiliary-prefix-observed.json",
+          "sha256": "525caa1b9e9ba349d86181d460cc800d597a6e5e3023d04d1c52b58d3e7e15f4"
+        },
+        {
+          "path": "docs/restart/implementation/K01/evidence/catalog-development-01/command.json",
+          "sha256": "718eef3511f5e12816054265d6dd12ed140658979f1c9c089006188b257cd5fb"
+        },
+        {
+          "path": "docs/restart/implementation/K01/evidence/catalog-development-01/stderr.log",
+          "sha256": "56553a6ac63c4b7b806dbd99d12bc7587c5404b847018e789313a838a9f9a255"
+        },
+        {
+          "path": "docs/restart/implementation/K01/evidence/catalog-development-01/stdout.log",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "path": "docs/restart/implementation/K01/evidence/catalog-development-02/command.json",
+          "sha256": "cb06a8f2bea5c8cc62237c21745dc9c1399ef2c467c4218e5f1ddefa89329294"
+        },
+        {
+          "path": "docs/restart/implementation/K01/evidence/catalog-development-02/stderr.log",
+          "sha256": "928d3ec940128ef465d8fc6696cc5f429e4a9f0bf1c21d2a18f4c7b42d9671fe"
+        },
+        {
+          "path": "docs/restart/implementation/K01/evidence/catalog-development-02/stdout.log",
+          "sha256": "5ff2b8c4823024fc6e8f3a3b8c7b8b89df5128d9371fe29b01a3af249a601b86"
+        },
+        {
+          "path": "docs/restart/implementation/K01/evidence/catalog-preflight-red/command.json",
+          "sha256": "85a0d39dcf38c208e15282e89ac41c7da7969e7f283c7ab29d1dd7b9baba85e0"
+        },
+        {
+          "path": "docs/restart/implementation/K01/evidence/catalog-preflight-red/stderr.log",
+          "sha256": "625b9a87b10028d9b9dc1219ee74ec0d300ae2e94bc4de6006999656a5ea510e"
+        },
+        {
+          "path": "docs/restart/implementation/K01/evidence/catalog-preflight-red/stdout.log",
+          "sha256": "50e18b24da6f05f8307e44730d39dd742867edc3608c11aeeda151c7d5928994"
+        },
+        {
+          "path": "docs/restart/implementation/K01/evidence/catalog-preflight-red/whitespace.json",
+          "sha256": "b4feae40de888eafa426c7e7112249d4d38cb813ecb634b3f2aa5fd671e9ecdf"
+        },
+        {
+          "path": "docs/restart/implementation/K01/evidence/checker-controls-01/command.json",
+          "sha256": "33a0099e3b634afe7694ccf536dd01bb90defcff94f50fb5170b113566045697"
+        },
+        {
+          "path": "docs/restart/implementation/K01/evidence/checker-controls-01/controls/actual-canonical_hex.input.json",
+          "sha256": "c912c81274ba0d53960ac119f12f6be0e246cab4e829ebb8c6eb4de65e53eb08"
+        },
+        {
+          "path": "docs/restart/implementation/K01/evidence/checker-controls-01/controls/actual-canonical_hex.stderr.log",
+          "sha256": "7067d647fe346ebec1ac7cbc8ea43625d213c805f41030649b4684e99fe45140"
+        },
+        {
+          "path": "docs/restart/implementation/K01/evidence/checker-controls-01/controls/actual-canonical_hex.stdout.log",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "path": "docs/restart/implementation/K01/evidence/checker-controls-01/controls/actual-event_id.input.json",
+          "sha256": "a362fb493180fe7ba021637b71811f5841ba5d2da1e8a84b016bc3ab86f66fc6"
+        },
+        {
+          "path": "docs/restart/implementation/K01/evidence/checker-controls-01/controls/actual-event_id.stderr.log",
+          "sha256": "2283efd03907bf5ac67de00fd6e3b5fca198ac9684bc988f49e7538362ed37c2"
+        },
+        {
+          "path": "docs/restart/implementation/K01/evidence/checker-controls-01/controls/actual-event_id.stdout.log",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "path": "docs/restart/implementation/K01/evidence/checker-controls-01/controls/actual-pubkey.input.json",
+          "sha256": "9211e9b2ca4d592da312849ad776920eed08f75919762dbbc33b7b1c0e350109"
+        },
+        {
+          "path": "docs/restart/implementation/K01/evidence/checker-controls-01/controls/actual-pubkey.stderr.log",
+          "sha256": "2283efd03907bf5ac67de00fd6e3b5fca198ac9684bc988f49e7538362ed37c2"
+        },
+        {
+          "path": "docs/restart/implementation/K01/evidence/checker-controls-01/controls/actual-pubkey.stdout.log",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "path": "docs/restart/implementation/K01/evidence/checker-controls-01/controls/actual-signature.input.json",
+          "sha256": "b1494da40aa68c9003c38a2929f024e11830788eb33f176aa6f1f6ac0c661cfb"
+        },
+        {
+          "path": "docs/restart/implementation/K01/evidence/checker-controls-01/controls/actual-signature.stderr.log",
+          "sha256": "2283efd03907bf5ac67de00fd6e3b5fca198ac9684bc988f49e7538362ed37c2"
+        },
+        {
+          "path": "docs/restart/implementation/K01/evidence/checker-controls-01/controls/actual-signature.stdout.log",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "path": "docs/restart/implementation/K01/evidence/checker-controls-01/controls/decoded-duplicate.input.json",
+          "sha256": "bb58a4232803aac8970983ced164fe368037ea463fee1dc3419e3b8a293a5318"
+        },
+        {
+          "path": "docs/restart/implementation/K01/evidence/checker-controls-01/controls/decoded-duplicate.stderr.log",
+          "sha256": "fba1b651cd55ae3f4e3873b56ba6df2dba7efc515b22c359f2c2c8e6ef1babc2"
+        },
+        {
+          "path": "docs/restart/implementation/K01/evidence/checker-controls-01/controls/decoded-duplicate.stdout.log",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "path": "docs/restart/implementation/K01/evidence/checker-controls-01/controls/expected-auxiliary.input.json",
+          "sha256": "82fb4bc9715803b395e3bdb707158e5ae105456f50b44334c0b801216a7db65c"
+        },
+        {
+          "path": "docs/restart/implementation/K01/evidence/checker-controls-01/controls/expected-auxiliary.stderr.log",
+          "sha256": "9ba607fc1bcf755d8362a2013c8bf1d933804e46b5dbbc5a91ad9e6590ce841e"
+        },
+        {
+          "path": "docs/restart/implementation/K01/evidence/checker-controls-01/controls/expected-auxiliary.stdout.log",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "path": "docs/restart/implementation/K01/evidence/checker-controls-01/controls/identities-duplicate.input.json",
+          "sha256": "d66e81dc81475d337c99bddee9794e923b7584d4761975999efdefbe8aedf26d"
+        },
+        {
+          "path": "docs/restart/implementation/K01/evidence/checker-controls-01/controls/identities-duplicate.stderr.log",
+          "sha256": "5e3c71ec51868c89f5868cd248f440f4d9754f87959546a3fbb3210a84a50afe"
+        },
+        {
+          "path": "docs/restart/implementation/K01/evidence/checker-controls-01/controls/identities-duplicate.stdout.log",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "path": "docs/restart/implementation/K01/evidence/checker-controls-01/controls/identities-missing.input.json",
+          "sha256": "d64d8674f642a3526b45ecd446d1fc3fbf1b9717244d57adafdbed8863c697f0"
+        },
+        {
+          "path": "docs/restart/implementation/K01/evidence/checker-controls-01/controls/identities-missing.stderr.log",
+          "sha256": "5e3c71ec51868c89f5868cd248f440f4d9754f87959546a3fbb3210a84a50afe"
+        },
+        {
+          "path": "docs/restart/implementation/K01/evidence/checker-controls-01/controls/identities-missing.stdout.log",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "path": "docs/restart/implementation/K01/evidence/checker-controls-01/controls/identity-normalized.input.json",
+          "sha256": "e818cfc37a9af15a71ac82f3e2e46ce209ee9b277c1e3605cbc8224342b04999"
+        },
+        {
+          "path": "docs/restart/implementation/K01/evidence/checker-controls-01/controls/identity-normalized.stderr.log",
+          "sha256": "f96e727eac5b56c71d485366b4c677d7227735a0a1fb759cbb1bd06e13bfd614"
+        },
+        {
+          "path": "docs/restart/implementation/K01/evidence/checker-controls-01/controls/identity-normalized.stdout.log",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "path": "docs/restart/implementation/K01/evidence/checker-controls-01/controls/identity-original.input.json",
+          "sha256": "c87636826b3a668f5af9093593d032d627d84e25a52e924508aabec192c7408f"
+        },
+        {
+          "path": "docs/restart/implementation/K01/evidence/checker-controls-01/controls/identity-original.stderr.log",
+          "sha256": "10fe2ca4ae794dbf0691a841e630879d5ae23fac575995dd2b54220de3b673ca"
+        },
+        {
+          "path": "docs/restart/implementation/K01/evidence/checker-controls-01/controls/identity-original.stdout.log",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "path": "docs/restart/implementation/K01/evidence/checker-controls-01/controls/malformed-json.input.json",
+          "sha256": "245843abef9e72e7efac30138a994bf6301e7e1d7d7042a33d42e863d2638811"
+        },
+        {
+          "path": "docs/restart/implementation/K01/evidence/checker-controls-01/controls/malformed-json.stderr.log",
+          "sha256": "3c128b06da2587cda8dcf9fa381b91283973e450f38d2375ba84b77e7b80b07d"
+        },
+        {
+          "path": "docs/restart/implementation/K01/evidence/checker-controls-01/controls/malformed-json.stdout.log",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "path": "docs/restart/implementation/K01/evidence/checker-controls-01/controls/observed-duplicate.input.json",
+          "sha256": "84a58334adc88705027c90756b75860c7970b1fccce7ca23f82ac47754f13071"
+        },
+        {
+          "path": "docs/restart/implementation/K01/evidence/checker-controls-01/controls/observed-duplicate.stderr.log",
+          "sha256": "99c2a14cbd6c1c82bc35182ce227967e9913d004d676f3d20df6420db0fc3f18"
+        },
+        {
+          "path": "docs/restart/implementation/K01/evidence/checker-controls-01/controls/observed-duplicate.stdout.log",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "path": "docs/restart/implementation/K01/evidence/checker-controls-01/controls/observed-extra-ID.input.json",
+          "sha256": "422d3d8bb38fc296e5f9d6ffeb1904e424ba7d2a3da04d7efd06f78db56e6a7c"
+        },
+        {
+          "path": "docs/restart/implementation/K01/evidence/checker-controls-01/controls/observed-extra-ID.stderr.log",
+          "sha256": "0e85bf863a00c58bf5e27a45c75241bdd145c716c65657ac60a6576d18d90c7a"
+        },
+        {
+          "path": "docs/restart/implementation/K01/evidence/checker-controls-01/controls/observed-extra-ID.stdout.log",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "path": "docs/restart/implementation/K01/evidence/checker-controls-01/controls/observed-missing.input.json",
+          "sha256": "08e5774d6f996cd9ef0b42debecd596b7bfcd05056220cfeb0d0c459b083d842"
+        },
+        {
+          "path": "docs/restart/implementation/K01/evidence/checker-controls-01/controls/observed-missing.stderr.log",
+          "sha256": "99c2a14cbd6c1c82bc35182ce227967e9913d004d676f3d20df6420db0fc3f18"
+        },
+        {
+          "path": "docs/restart/implementation/K01/evidence/checker-controls-01/controls/observed-missing.stdout.log",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "path": "docs/restart/implementation/K01/evidence/checker-controls-01/controls/rejection-approval_calls.input.json",
+          "sha256": "132dda0f782b61305b3ce63259be952429f2877da01d6e2bb4a3fcd88948f64a"
+        },
+        {
+          "path": "docs/restart/implementation/K01/evidence/checker-controls-01/controls/rejection-approval_calls.stderr.log",
+          "sha256": "df1bab0ca6047bdc5e0b1d7baf9abf2d2eda344283b0cdb5892c461c1b1d544c"
+        },
+        {
+          "path": "docs/restart/implementation/K01/evidence/checker-controls-01/controls/rejection-approval_calls.stdout.log",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "path": "docs/restart/implementation/K01/evidence/checker-controls-01/controls/rejection-bool-counter.input.json",
+          "sha256": "e566dbf8644af42bb68a920c6e3e4fbb4adc1c9123f176deac7799d0a081459f"
+        },
+        {
+          "path": "docs/restart/implementation/K01/evidence/checker-controls-01/controls/rejection-bool-counter.stderr.log",
+          "sha256": "df1bab0ca6047bdc5e0b1d7baf9abf2d2eda344283b0cdb5892c461c1b1d544c"
+        },
+        {
+          "path": "docs/restart/implementation/K01/evidence/checker-controls-01/controls/rejection-bool-counter.stdout.log",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "path": "docs/restart/implementation/K01/evidence/checker-controls-01/controls/rejection-entropy_calls.input.json",
+          "sha256": "92112c716c5e31a4e7e97e109e9da2743438846b0108a0ca440837e9519c9ed1"
+        },
+        {
+          "path": "docs/restart/implementation/K01/evidence/checker-controls-01/controls/rejection-entropy_calls.stderr.log",
+          "sha256": "df1bab0ca6047bdc5e0b1d7baf9abf2d2eda344283b0cdb5892c461c1b1d544c"
+        },
+        {
+          "path": "docs/restart/implementation/K01/evidence/checker-controls-01/controls/rejection-entropy_calls.stdout.log",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "path": "docs/restart/implementation/K01/evidence/checker-controls-01/controls/rejection-layer.input.json",
+          "sha256": "f1305bf949231dc606a37ac8e8f8c6f147acef50b885ff0512a0bdcb858d0533"
+        },
+        {
+          "path": "docs/restart/implementation/K01/evidence/checker-controls-01/controls/rejection-layer.stderr.log",
+          "sha256": "e0910be88336802911289e5c96637a47ef308d6af0cb220e0e6e05ca715d5ec4"
+        },
+        {
+          "path": "docs/restart/implementation/K01/evidence/checker-controls-01/controls/rejection-layer.stdout.log",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "path": "docs/restart/implementation/K01/evidence/checker-controls-01/controls/rejection-output.input.json",
+          "sha256": "0e06e1aff95a8139c55a343c0f9d7ddda97ed48b317ad37b5a80fa69d622ddc9"
+        },
+        {
+          "path": "docs/restart/implementation/K01/evidence/checker-controls-01/controls/rejection-output.stderr.log",
+          "sha256": "91a69105c58ccb57fdfaf7173f1d5a2075523e93273d0f2e7c996eb14fa43db2"
+        },
+        {
+          "path": "docs/restart/implementation/K01/evidence/checker-controls-01/controls/rejection-output.stdout.log",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "path": "docs/restart/implementation/K01/evidence/checker-controls-01/controls/rejection-sign_calls.input.json",
+          "sha256": "091acd73e1df4195ebb461ea4ec03f297d587279e5d5ae1e5745be65a0b09bfe"
+        },
+        {
+          "path": "docs/restart/implementation/K01/evidence/checker-controls-01/controls/rejection-sign_calls.stderr.log",
+          "sha256": "df1bab0ca6047bdc5e0b1d7baf9abf2d2eda344283b0cdb5892c461c1b1d544c"
+        },
+        {
+          "path": "docs/restart/implementation/K01/evidence/checker-controls-01/controls/rejection-sign_calls.stdout.log",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "path": "docs/restart/implementation/K01/evidence/checker-controls-01/controls/rejections-duplicate.input.json",
+          "sha256": "519bab95c7eebdd255dd7823e6c627cbfdddbf49dc9d175de548ba53b0303b67"
+        },
+        {
+          "path": "docs/restart/implementation/K01/evidence/checker-controls-01/controls/rejections-duplicate.stderr.log",
+          "sha256": "8e60c90d4b557155c4d4a34370f75842d94fc6e349583634a1380494b151e39c"
+        },
+        {
+          "path": "docs/restart/implementation/K01/evidence/checker-controls-01/controls/rejections-duplicate.stdout.log",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "path": "docs/restart/implementation/K01/evidence/checker-controls-01/controls/rejections-extra-ID.input.json",
+          "sha256": "6aea06aaba5249e30669048bacc5634f35d4104e32abfa427514266dbce4de2b"
+        },
+        {
+          "path": "docs/restart/implementation/K01/evidence/checker-controls-01/controls/rejections-extra-ID.stderr.log",
+          "sha256": "b0b10bc201de44157d770ad68384d36d5b5d6988ccc63e25c9c2c051280f49b7"
+        },
+        {
+          "path": "docs/restart/implementation/K01/evidence/checker-controls-01/controls/rejections-extra-ID.stdout.log",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "path": "docs/restart/implementation/K01/evidence/checker-controls-01/controls/rejections-missing.input.json",
+          "sha256": "2ec9cb604f2fdda66215a69b97b0d75406574dcb7c64a7895915037317f9ad76"
+        },
+        {
+          "path": "docs/restart/implementation/K01/evidence/checker-controls-01/controls/rejections-missing.stderr.log",
+          "sha256": "8e60c90d4b557155c4d4a34370f75842d94fc6e349583634a1380494b151e39c"
+        },
+        {
+          "path": "docs/restart/implementation/K01/evidence/checker-controls-01/controls/rejections-missing.stdout.log",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "path": "docs/restart/implementation/K01/evidence/checker-controls-01/controls/result.json",
+          "sha256": "2711212427c9a5a75f070ac959bfc7a20a697e65f9063bfb59342a21152a5783"
+        },
+        {
+          "path": "docs/restart/implementation/K01/evidence/checker-controls-01/controls/serialized-content.input.json",
+          "sha256": "a17a417b9aa18cd32d4f6cdba1695e136a4aab9ad29be22b86027333d73a9641"
+        },
+        {
+          "path": "docs/restart/implementation/K01/evidence/checker-controls-01/controls/serialized-content.stderr.log",
+          "sha256": "afa08d0994cabbe9100615ad12dc592de4948e517f7be1a020b107fe1eb18b1e"
+        },
+        {
+          "path": "docs/restart/implementation/K01/evidence/checker-controls-01/controls/serialized-content.stdout.log",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "path": "docs/restart/implementation/K01/evidence/checker-controls-01/controls/serialized-created_at.input.json",
+          "sha256": "9c4e60df828fa427b19c97be4c1879eed3c2e24be3a9a33b13d4c732b31f6551"
+        },
+        {
+          "path": "docs/restart/implementation/K01/evidence/checker-controls-01/controls/serialized-created_at.stderr.log",
+          "sha256": "afa08d0994cabbe9100615ad12dc592de4948e517f7be1a020b107fe1eb18b1e"
+        },
+        {
+          "path": "docs/restart/implementation/K01/evidence/checker-controls-01/controls/serialized-created_at.stdout.log",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "path": "docs/restart/implementation/K01/evidence/checker-controls-01/controls/serialized-id.input.json",
+          "sha256": "209fe0a0b06830419ec8654fb0b7cbbe5a570948ace729d1ec6f5a86522b0b70"
+        },
+        {
+          "path": "docs/restart/implementation/K01/evidence/checker-controls-01/controls/serialized-id.stderr.log",
+          "sha256": "045f18b7665c95ade6cd45d51edda82f90c81e93ce57adb261319d7844ef8ffc"
+        },
+        {
+          "path": "docs/restart/implementation/K01/evidence/checker-controls-01/controls/serialized-id.stdout.log",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "path": "docs/restart/implementation/K01/evidence/checker-controls-01/controls/serialized-kind.input.json",
+          "sha256": "e5580515966524a10d2ac429af02cff4411756ef8f33e36a78772f7cb2a43290"
+        },
+        {
+          "path": "docs/restart/implementation/K01/evidence/checker-controls-01/controls/serialized-kind.stderr.log",
+          "sha256": "afa08d0994cabbe9100615ad12dc592de4948e517f7be1a020b107fe1eb18b1e"
+        },
+        {
+          "path": "docs/restart/implementation/K01/evidence/checker-controls-01/controls/serialized-kind.stdout.log",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "path": "docs/restart/implementation/K01/evidence/checker-controls-01/controls/serialized-pubkey.input.json",
+          "sha256": "e899f07b14de041b39506cc948bc001fcf5721bf16e683bfe29a81db7fefd85c"
+        },
+        {
+          "path": "docs/restart/implementation/K01/evidence/checker-controls-01/controls/serialized-pubkey.stderr.log",
+          "sha256": "afa08d0994cabbe9100615ad12dc592de4948e517f7be1a020b107fe1eb18b1e"
+        },
+        {
+          "path": "docs/restart/implementation/K01/evidence/checker-controls-01/controls/serialized-pubkey.stdout.log",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "path": "docs/restart/implementation/K01/evidence/checker-controls-01/controls/serialized-sig.input.json",
+          "sha256": "b7d9fe6c697f452182795af8a19c45727338fadb521d53d5786f785f7c4ccc26"
+        },
+        {
+          "path": "docs/restart/implementation/K01/evidence/checker-controls-01/controls/serialized-sig.stderr.log",
+          "sha256": "045f18b7665c95ade6cd45d51edda82f90c81e93ce57adb261319d7844ef8ffc"
+        },
+        {
+          "path": "docs/restart/implementation/K01/evidence/checker-controls-01/controls/serialized-sig.stdout.log",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "path": "docs/restart/implementation/K01/evidence/checker-controls-01/controls/serialized-tags.input.json",
+          "sha256": "3d424108e17ae0c1e65b30b8a78830a692a65c7f6d46444eb982210f3a5d66fd"
+        },
+        {
+          "path": "docs/restart/implementation/K01/evidence/checker-controls-01/controls/serialized-tags.stderr.log",
+          "sha256": "afa08d0994cabbe9100615ad12dc592de4948e517f7be1a020b107fe1eb18b1e"
+        },
+        {
+          "path": "docs/restart/implementation/K01/evidence/checker-controls-01/controls/serialized-tags.stdout.log",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "path": "docs/restart/implementation/K01/evidence/checker-controls-01/stderr.log",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "path": "docs/restart/implementation/K01/evidence/checker-controls-01/stdout.log",
+          "sha256": "21b3f5bddf6907a935d08c9f6012bd17aa87c0ce74f9381b20146b2ea387fb1b"
+        },
+        {
+          "path": "docs/restart/implementation/K01/evidence/content-role-green/command.json",
+          "sha256": "c4f89edaaa997451e5e228584db67376c0fe700349aa5d6a6007cccb6320a717"
+        },
+        {
+          "path": "docs/restart/implementation/K01/evidence/content-role-green/source.diff",
+          "sha256": "0f8b0721d8260c6dfa6f0f863b14f80d4c70983dea94ea34bad69f05767aa04a"
+        },
+        {
+          "path": "docs/restart/implementation/K01/evidence/content-role-green/stderr.log",
+          "sha256": "91600e68979b1626fe263aa5b27d7378e5dab440b2138b42d5a6f4aeab8ccc7a"
+        },
+        {
+          "path": "docs/restart/implementation/K01/evidence/content-role-green/stdout.log",
+          "sha256": "9b88aae7d4268a5a0ee6b93ce46472562ff30ccc0476899066e2a1d595025359"
+        },
+        {
+          "path": "docs/restart/implementation/K01/evidence/content-role-red/command.json",
+          "sha256": "8d817db4b5d2dbb41c19141f09548af1bb1981ada851c8278c23dcf72e8263c1"
+        },
+        {
+          "path": "docs/restart/implementation/K01/evidence/content-role-red/source.diff",
+          "sha256": "5e564686e05d48690183c82306b24daa4ba38c03c8d8a7b8aa16a296942b628a"
+        },
+        {
+          "path": "docs/restart/implementation/K01/evidence/content-role-red/stderr.log",
+          "sha256": "7e510c05e9a3b349fdeccb601f17c064ad78f9adf4f308eb31362525c0c54a22"
+        },
+        {
+          "path": "docs/restart/implementation/K01/evidence/content-role-red/stdout.log",
+          "sha256": "5779dd7ab2dce166b17659ec36459115ee50dedbc2e92178abc7f438ca77013e"
+        },
+        {
+          "path": "docs/restart/implementation/K01/evidence/core-development-01/command.json",
+          "sha256": "ac2072a82991378e29bc5f581cfbfbd31451db9a33709c62d4d5cfba05453c9d"
+        },
+        {
+          "path": "docs/restart/implementation/K01/evidence/core-development-01/stderr.log",
+          "sha256": "516358dc0bea74575fc18a3ca4ab5860281610f7c12b3b33932d4fbc2c729ecf"
+        },
+        {
+          "path": "docs/restart/implementation/K01/evidence/core-development-01/stdout.log",
+          "sha256": "bbba438a747c02f4f94a45a679b3312497c334c28e12edd2c2c4c41358fefd10"
+        },
+        {
+          "path": "docs/restart/implementation/K01/evidence/coverage-development-01/command.json",
+          "sha256": "806cab2065bad6589d7fd47d2099469de2b7b6047ba10c865f805e73cba1570f"
+        },
+        {
+          "path": "docs/restart/implementation/K01/evidence/coverage-development-01/stderr.log",
+          "sha256": "12fb33209b7d33d01e7baccce2f4e693c54641ce2e837e593b57c74efeea5a28"
+        },
+        {
+          "path": "docs/restart/implementation/K01/evidence/coverage-development-01/stdout.log",
+          "sha256": "956e04f9efa8928d20cfb00c039d71d18227839558a77270e98f55b0cf8890b9"
+        },
+        {
+          "path": "docs/restart/implementation/K01/evidence/coverage-development-02/command.json",
+          "sha256": "7bc91670cd755bb1e12c32ac828c0042fc5c4afd79f8fd3b5ae38b1d13c5b94a"
+        },
+        {
+          "path": "docs/restart/implementation/K01/evidence/coverage-development-02/stderr.log",
+          "sha256": "0f58191aae2851ce48ee74ea6bda34e544d026750711abe047128b8a4666bbec"
+        },
+        {
+          "path": "docs/restart/implementation/K01/evidence/coverage-development-02/stdout.log",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "path": "docs/restart/implementation/K01/evidence/coverage-development-03/command.json",
+          "sha256": "16cb9feb6ecddcf58a5073c72480dae8be0deaf72fa20a2c8c72bbee533b3aa2"
+        },
+        {
+          "path": "docs/restart/implementation/K01/evidence/coverage-development-03/source.diff",
+          "sha256": "f63c4d919c5383238bfd9cf57b0df0f4284ae7bd45a9260d1b0859d022a88b98"
+        },
+        {
+          "path": "docs/restart/implementation/K01/evidence/coverage-development-03/stderr.log",
+          "sha256": "e0e0a55fcdf0bedefde80f8d9b2a24aae4e4bb1466e568b534f874431d74eb8f"
+        },
+        {
+          "path": "docs/restart/implementation/K01/evidence/coverage-development-03/stdout.log",
+          "sha256": "2bacf1b805d6057354862a1c99d9dc2da341e2e8e80186c1f1ac709153b25801"
+        },
+        {
+          "path": "docs/restart/implementation/K01/evidence/coverage-development-04/command.json",
+          "sha256": "02269f66ae789f1fe174919d441714a4133c7b1ed06ffb6cc043d6e1758de7b1"
+        },
+        {
+          "path": "docs/restart/implementation/K01/evidence/coverage-development-04/source.diff",
+          "sha256": "75471d21a0f740f3ec9bdca07255cadf8990d4e2d4dc9b69ad1e608d08a4434c"
+        },
+        {
+          "path": "docs/restart/implementation/K01/evidence/coverage-development-04/stderr.log",
+          "sha256": "df179681ce34f10489a188038c4975e99479e97fb21d7b637221960691047ea0"
+        },
+        {
+          "path": "docs/restart/implementation/K01/evidence/coverage-development-04/stdout.log",
+          "sha256": "0a91c1b098d42c68e15d42bc6ca2b7432e9dacee60eea4e37ccbf948dc4c7b7a"
+        },
+        {
+          "path": "docs/restart/implementation/K01/evidence/coverage-development-05/command.json",
+          "sha256": "f8f98980dac9c8203e4b0ea8f6f176d2994b79d320400c712b11e8ef377e7e4e"
+        },
+        {
+          "path": "docs/restart/implementation/K01/evidence/coverage-development-05/source.diff",
+          "sha256": "12da80c7dbcca091ca6a3f484d95cb0474f15e2d89c0b0f71373ddb8d24c64a2"
+        },
+        {
+          "path": "docs/restart/implementation/K01/evidence/coverage-development-05/stderr.log",
+          "sha256": "3f66fbf20d2eca74bcfc699d4b51422fa425d2ea4880070bfe47c6884939af48"
+        },
+        {
+          "path": "docs/restart/implementation/K01/evidence/coverage-development-05/stdout.log",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "path": "docs/restart/implementation/K01/evidence/coverage-development-06/command.json",
+          "sha256": "a43c17bf3833524d7cab7fee2954a70d21aa93f4daf6da51a1ca6541af640b67"
+        },
+        {
+          "path": "docs/restart/implementation/K01/evidence/coverage-development-06/source.diff",
+          "sha256": "df0085151cdce6219c391542628390e7b388663e76663348d5daca9e4bdbd51e"
+        },
+        {
+          "path": "docs/restart/implementation/K01/evidence/coverage-development-06/stderr.log",
+          "sha256": "3fdc833d623728fe334f52b6f1cef62da9d9b3cf46194c2c39542065896d9cf2"
+        },
+        {
+          "path": "docs/restart/implementation/K01/evidence/coverage-development-06/stdout.log",
+          "sha256": "ee2690054a9187e98cc49b64077584fe5896351ad8a864bee9f87fca51e0aa20"
+        },
+        {
+          "path": "docs/restart/implementation/K01/evidence/coverage-development-07/command.json",
+          "sha256": "3d14654955e8f312b4def92a876d1f8c88dd869bab1868c70629a760f790d064"
+        },
+        {
+          "path": "docs/restart/implementation/K01/evidence/coverage-development-07/source.diff",
+          "sha256": "239d24e25198a8c42c276d9229ea2f92041648640ead6478a0ea2a26af8b23b4"
+        },
+        {
+          "path": "docs/restart/implementation/K01/evidence/coverage-development-07/stderr.log",
+          "sha256": "3fdc833d623728fe334f52b6f1cef62da9d9b3cf46194c2c39542065896d9cf2"
+        },
+        {
+          "path": "docs/restart/implementation/K01/evidence/coverage-development-07/stdout.log",
+          "sha256": "85617786d7a3ea3907930a5d75b90215bb2885e3218f6e1ecd22b80b201627ca"
+        },
+        {
+          "path": "docs/restart/implementation/K01/evidence/coverage-development-08/command.json",
+          "sha256": "c07cdf01900033afe015311efea7994e13e7e8b12863eddaed645fef575e0f6b"
+        },
+        {
+          "path": "docs/restart/implementation/K01/evidence/coverage-development-08/source.diff",
+          "sha256": "e78cd24c2ff4227b7b75ef54051bf78f14a44a7ba4bea0e56eaa50b56ad10795"
+        },
+        {
+          "path": "docs/restart/implementation/K01/evidence/coverage-development-08/stderr.log",
+          "sha256": "e0e0a55fcdf0bedefde80f8d9b2a24aae4e4bb1466e568b534f874431d74eb8f"
+        },
+        {
+          "path": "docs/restart/implementation/K01/evidence/coverage-development-08/stdout.log",
+          "sha256": "8f808dc45b69d796ce75890c44a21968a8b6b0918f351f51617547ed9506a535"
+        },
+        {
+          "path": "docs/restart/implementation/K01/evidence/coverage-development-09/command.json",
+          "sha256": "c7b14bbbcc2cb169643b57d9989ff396c1dbfe80425aa60e57cc3625e17857e5"
+        },
+        {
+          "path": "docs/restart/implementation/K01/evidence/coverage-development-09/source.diff",
+          "sha256": "3af5628ae8401b1ac0402369df4df3ca19d6a1c835bdf2ba8c268a5a06b25264"
+        },
+        {
+          "path": "docs/restart/implementation/K01/evidence/coverage-development-09/stderr.log",
+          "sha256": "3fdc833d623728fe334f52b6f1cef62da9d9b3cf46194c2c39542065896d9cf2"
+        },
+        {
+          "path": "docs/restart/implementation/K01/evidence/coverage-development-09/stdout.log",
+          "sha256": "1d2552558803f9c5bc6db55233e720351c0b76acb664c52e70e18ace2afd1098"
+        },
+        {
+          "path": "docs/restart/implementation/K01/evidence/coverage-development-10/command.json",
+          "sha256": "811d95e4ab375fc65de9a95abada669505e4145f3ac9e95b47f88d739cdcf305"
+        },
+        {
+          "path": "docs/restart/implementation/K01/evidence/coverage-development-10/source.diff",
+          "sha256": "dd5862cb5f54a3df69e4ab0a063440305c30d49ba57e8cd6587d1369639368d9"
+        },
+        {
+          "path": "docs/restart/implementation/K01/evidence/coverage-development-10/stderr.log",
+          "sha256": "68446779898b8df1681d2c6d4e2c0662b10703a6dbdd099fe55ef764faf3b993"
+        },
+        {
+          "path": "docs/restart/implementation/K01/evidence/coverage-development-10/stdout.log",
+          "sha256": "7df026fd68c295e330a7ec6caad0d7746a84d647349ad8a7f58dd25a52943772"
+        },
+        {
+          "path": "docs/restart/implementation/K01/evidence/coverage-development-11/command.json",
+          "sha256": "1f1fbf9d3be361a8e164603f21333fe75e9cac97bc967db08de1a75b38e125b9"
+        },
+        {
+          "path": "docs/restart/implementation/K01/evidence/coverage-development-11/source.diff",
+          "sha256": "7f8686e5986600a6e68a4817b00457a1f42714ec86f903f56c833324042292cf"
+        },
+        {
+          "path": "docs/restart/implementation/K01/evidence/coverage-development-11/stderr.log",
+          "sha256": "3fdc833d623728fe334f52b6f1cef62da9d9b3cf46194c2c39542065896d9cf2"
+        },
+        {
+          "path": "docs/restart/implementation/K01/evidence/coverage-development-11/stdout.log",
+          "sha256": "4c8f458db2749e827d4b3b1173b3165c2f8f4178ebb862b79669f8db2459ebdd"
+        },
+        {
+          "path": "docs/restart/implementation/K01/evidence/development-notes.md",
+          "sha256": "0baa4c0f4ee37368dc3df1b44ce08f41c6ef72a527f69cef64cd16393825d0ad"
+        },
+        {
+          "path": "docs/restart/implementation/K01/evidence/final-metadata-checks/0-stderr.log",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "path": "docs/restart/implementation/K01/evidence/final-metadata-checks/0-stdout.log",
+          "sha256": "3b56280069c11e033b4797835a8b01cf075aff51ec898aa5b4bdf7c75233bad2"
+        },
+        {
+          "path": "docs/restart/implementation/K01/evidence/final-metadata-checks/1-stderr.log",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "path": "docs/restart/implementation/K01/evidence/final-metadata-checks/1-stdout.log",
+          "sha256": "5980d15f4ebd04675b98682ab9d1335eebe5835ac675e152b1261db501d9d3e4"
+        },
+        {
+          "path": "docs/restart/implementation/K01/evidence/final-metadata-checks/2-stderr.log",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "path": "docs/restart/implementation/K01/evidence/final-metadata-checks/2-stdout.log",
+          "sha256": "138790849cdcf7f3e23898c363e56fd327728e56d6e357aa838c9a78472114c5"
+        },
+        {
+          "path": "docs/restart/implementation/K01/evidence/final-metadata-checks/3-stderr.log",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "path": "docs/restart/implementation/K01/evidence/final-metadata-checks/3-stdout.log",
+          "sha256": "ebee34db24d57ed8c081c3b704a0f84f912e319a5a3397e4ebd487661dc0347d"
+        },
+        {
+          "path": "docs/restart/implementation/K01/evidence/final-metadata-checks/4-stderr.log",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "path": "docs/restart/implementation/K01/evidence/final-metadata-checks/4-stdout.log",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "path": "docs/restart/implementation/K01/evidence/final-metadata-checks/commands.json",
+          "sha256": "75fa1dd37772fcad774180c71f43f71c5979b533b11be6c9112670b067a357df"
+        },
+        {
+          "path": "docs/restart/implementation/K01/evidence/final-whitespace.json",
+          "sha256": "543122ecb34eb2e75fa9d1af6242554d652f3b2d7560a8bfcd4b04bab296b67a"
+        },
+        {
+          "path": "docs/restart/implementation/K01/evidence/first-runtime-source.json",
+          "sha256": "5e2b792af5e8cf9d3f0e8f0aca7917137f0905f506982003011623b6caf68a4b"
+        },
+        {
+          "path": "docs/restart/implementation/K01/evidence/first-runtime-whitespace.json",
+          "sha256": "b76d9a2362bb3a25ca1dc07e46a67ef7a0907c82c6235a4822efe7fbad160ff3"
+        },
+        {
+          "path": "docs/restart/implementation/K01/evidence/handoff.md",
+          "sha256": "78c5f701a2a7b931ee7d8930b863e6821ae5134e83b1a2ac136d1f7f38798ff5"
+        },
+        {
+          "path": "docs/restart/implementation/K01/evidence/identity-operation-observed.json",
+          "sha256": "885605494373acd0d533466558ab965171c45145ae867ef1c458290d519ce4a3"
+        },
+        {
+          "path": "docs/restart/implementation/K01/evidence/independent-check-01/command.json",
+          "sha256": "a27d289ac7bb60be7ade7340b3cc821c65fd827e90dbc9409adf303de479c6ca"
+        },
+        {
+          "path": "docs/restart/implementation/K01/evidence/independent-check-01/stderr.log",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "path": "docs/restart/implementation/K01/evidence/independent-check-01/stdout.log",
+          "sha256": "5b8d094a0fb6a83275c9b64f2b25fb4221a83f361a994dbb5efabc4c7016175e"
+        },
+        {
+          "path": "docs/restart/implementation/K01/evidence/independent-final/0-stderr.log",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "path": "docs/restart/implementation/K01/evidence/independent-final/0-stdout.log",
+          "sha256": "5b8d094a0fb6a83275c9b64f2b25fb4221a83f361a994dbb5efabc4c7016175e"
+        },
+        {
+          "path": "docs/restart/implementation/K01/evidence/independent-final/1-stderr.log",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "path": "docs/restart/implementation/K01/evidence/independent-final/1-stdout.log",
+          "sha256": "7d2fbf1d29aa16aec133ef9014af9c6b0dffd5766d7016ba8949d503fa884ad2"
+        },
+        {
+          "path": "docs/restart/implementation/K01/evidence/independent-final/commands.json",
+          "sha256": "abdc9d6aed7415c5fad707d2717a7a5f64be30dc92604b9b0bb95820be2bbeeb"
+        },
+        {
+          "path": "docs/restart/implementation/K01/evidence/independent-reuse.json",
+          "sha256": "8db527509c7980e7280c4fa304ec685936d805d7c2220db18bb00119f3fa7587"
+        },
+        {
+          "path": "docs/restart/implementation/K01/evidence/lint-development-01/command.json",
+          "sha256": "b4d6c5c64698995efa5529dfd6f2658e7406a58d603510f7e45d5d2335a30b73"
+        },
+        {
+          "path": "docs/restart/implementation/K01/evidence/lint-development-01/source.diff",
+          "sha256": "6957984f9f10a45a4f5976552a5b5eac003f3f33f0a72e4c26ec82326ea0bc28"
+        },
+        {
+          "path": "docs/restart/implementation/K01/evidence/lint-development-01/stderr.log",
+          "sha256": "02a8a636aa0b09cb7157d1eabc81004b24937064c6cbaf990c62fd9b6f57820a"
+        },
+        {
+          "path": "docs/restart/implementation/K01/evidence/lint-development-01/stdout.log",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "path": "docs/restart/implementation/K01/evidence/lint-development-02/command.json",
+          "sha256": "313b25d58b166d53c84fb3634eda867dbcd91d998c7e130222c284a3d44df616"
+        },
+        {
+          "path": "docs/restart/implementation/K01/evidence/lint-development-02/source.diff",
+          "sha256": "375c38668454073f2ce39e9ce039819633199bbd07f3cf59b74832b540678eb6"
+        },
+        {
+          "path": "docs/restart/implementation/K01/evidence/lint-development-02/stderr.log",
+          "sha256": "91506521c5cac89becfadcb53838da03f289b6625fd34d033cde50e3a2cb1ba9"
+        },
+        {
+          "path": "docs/restart/implementation/K01/evidence/lint-development-02/stdout.log",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "path": "docs/restart/implementation/K01/evidence/metadata-boundaries.json",
+          "sha256": "5093fe225a881de3cd29c41434e508ebba42c3fcbfc1d1e6725fe90ca90fb603"
+        },
+        {
+          "path": "docs/restart/implementation/K01/evidence/metadata-format-observation.json",
+          "sha256": "ca3b90662a7af9c3dcebb3025489bd6b07eb6f7b227c3c5d2c49937a53acd175"
+        },
+        {
+          "path": "docs/restart/implementation/K01/evidence/observed-events.json",
+          "sha256": "5f9f64c60304e69767c88959e4aed63bb23b4962a0e0bd75dd4398c45c87d1d7"
+        },
+        {
+          "path": "docs/restart/implementation/K01/evidence/observed-identities.json",
+          "sha256": "16aaf5f1017f67bd538b7a96715605768c6129037dae697b0dc72370a10eaabe"
+        },
+        {
+          "path": "docs/restart/implementation/K01/evidence/observed-rejections.json",
+          "sha256": "948d38eca77f2b1c3ef6c19beae6e59d1534969c25be3302b892d35361a592d1"
+        },
+        {
+          "path": "docs/restart/implementation/K01/evidence/proof-final-core/0-stderr.log",
+          "sha256": "516358dc0bea74575fc18a3ca4ab5860281610f7c12b3b33932d4fbc2c729ecf"
+        },
+        {
+          "path": "docs/restart/implementation/K01/evidence/proof-final-core/0-stdout.log",
+          "sha256": "5da35a5e0a3ef9ad4fe3e99ba1914affb91903ef9e0ab68cfec8d0da80db2015"
+        },
+        {
+          "path": "docs/restart/implementation/K01/evidence/proof-final-core/1-stderr.log",
+          "sha256": "09e03cd0a41ed1b02d40b1d9d6d13540dadaf517463145594814ab96fd7da63b"
+        },
+        {
+          "path": "docs/restart/implementation/K01/evidence/proof-final-core/1-stdout.log",
+          "sha256": "51c9e9acecf86e9a8fd9447f1563588c929bcca3480e936be74e5cccd4fb7003"
+        },
+        {
+          "path": "docs/restart/implementation/K01/evidence/proof-final-core/2-stderr.log",
+          "sha256": "5ea5f83f6a162a1f976c08f04dc2ea51263998ee352a22fffa912f40f77cbe4e"
+        },
+        {
+          "path": "docs/restart/implementation/K01/evidence/proof-final-core/2-stdout.log",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "path": "docs/restart/implementation/K01/evidence/proof-final-core/3-stderr.log",
+          "sha256": "e3ca011d24badbc55f094b7b33a7a2377892989ea921ef402c93bc11f466288e"
+        },
+        {
+          "path": "docs/restart/implementation/K01/evidence/proof-final-core/3-stdout.log",
+          "sha256": "fb3ccb10e18ed8ad1cc9aa6fe0fe20cfb473eb1dc79d92505debfcb49139e280"
+        },
+        {
+          "path": "docs/restart/implementation/K01/evidence/proof-final-core/4-stderr.log",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "path": "docs/restart/implementation/K01/evidence/proof-final-core/4-stdout.log",
+          "sha256": "7d1973d0160a5d0a70fd51f0242c0c429fa036b5bd61ecc7b4262dcda6fc35bb"
+        },
+        {
+          "path": "docs/restart/implementation/K01/evidence/proof-final-core/commands.json",
+          "sha256": "77130628fa18b0e449859f631635ae0b0498088b74e7eaaf0af46b860f76a69d"
+        },
+        {
+          "path": "docs/restart/implementation/K01/evidence/proof-final-core/core-coverage.json",
+          "sha256": "6cca0bc58f10cfb84d450ca6f59aeb8164f3b3006bd2557c710fd36af94dd939"
+        },
+        {
+          "path": "docs/restart/implementation/K01/evidence/proof-final-core/host-coverage-from-bf51.json",
+          "sha256": "1064ef8203bde0eba12c2879ddfa98e89f18d6337628732185da7561ca05deb8"
+        },
+        {
+          "path": "docs/restart/implementation/K01/evidence/result.json",
+          "sha256": "7687165d40d72fa4bcbe7f6af059b592f8ebf16ee852bbf0a24255291a981d2a"
+        },
+        {
+          "path": "docs/restart/implementation/K01/evidence/retained-family-map.json",
+          "sha256": "c5957419e56c591418602e190624680b473e36d64fde1af4c1030fc1bf082c4a"
+        },
+        {
+          "path": "docs/restart/implementation/K01/evidence/review-proof-addendum-01/command.json",
+          "sha256": "4ecec3d127c1d155a9968c6affdc0de076cab622180abcfc3420df369652a6f8"
+        },
+        {
+          "path": "docs/restart/implementation/K01/evidence/review-proof-addendum-01/source-binding.json",
+          "sha256": "361c3fd47087ad05eba05d5aaf9ead0f8ad90bc7029b958c2a73fce99949a464"
+        },
+        {
+          "path": "docs/restart/implementation/K01/evidence/review-proof-addendum-01/source.diff",
+          "sha256": "afdb47a2a76945c9e127b5950f402cd51a14793bae2b51b55610c903f8651b95"
+        },
+        {
+          "path": "docs/restart/implementation/K01/evidence/review-proof-addendum-01/stderr.log",
+          "sha256": "d9b17a03dd9a59accaceff7966da3316b2c105745a533ef4955238248de07ae9"
+        },
+        {
+          "path": "docs/restart/implementation/K01/evidence/review-proof-addendum-01/stdout.log",
+          "sha256": "517622ac2c49261951e8339204b1e7668b77948e6a157881fd3606582ec3a54e"
+        },
+        {
+          "path": "docs/restart/implementation/K01/evidence/runtime-design.md",
+          "sha256": "f076fb05b6958688dce4803c0fc0eace29d3b5e14cb7a3f16bcead5419b366ec"
+        },
+        {
+          "path": "docs/restart/implementation/K01/evidence/s03-observed-events.json",
+          "sha256": "a169cbc5c1e16c0e6217fd6cea7b5f7a081fee32b0454cc8d7d4a1bc334e3d4d"
+        },
+        {
+          "path": "docs/restart/implementation/K01/evidence/s03-observed-events.keys.json",
+          "sha256": "fe063dd350348def408b071f6299d8c5a4fe2432e32eea84930f2009108963ae"
+        },
+        {
+          "path": "docs/restart/implementation/K01/evidence/second-runtime-whitespace.json",
+          "sha256": "0f3ee88b4831f86c0778840baef283dc1939c1515dbf4872a8de40e6b0dd7ac5"
+        },
+        {
+          "path": "docs/restart/implementation/K01/evidence/semantic-development-04/command.json",
+          "sha256": "2fb65e6505aeb2e194216bb5e656ece4fa5f27893accc3d35875956093535cc8"
+        },
+        {
+          "path": "docs/restart/implementation/K01/evidence/semantic-development-04/source.diff",
+          "sha256": "6957984f9f10a45a4f5976552a5b5eac003f3f33f0a72e4c26ec82326ea0bc28"
+        },
+        {
+          "path": "docs/restart/implementation/K01/evidence/semantic-development-04/stderr.log",
+          "sha256": "a6780e90663d0cce3485020795c870dd23d690b05874bae5f82261b4703c5a8b"
+        },
+        {
+          "path": "docs/restart/implementation/K01/evidence/semantic-development-04/stdout.log",
+          "sha256": "da40c99e8f72e74090d6b8e09b1a8e58036733aee4da14b90a89667642eb937f"
+        },
+        {
+          "path": "docs/restart/implementation/K01/evidence/semantic-matrix-observed.json",
+          "sha256": "5ac3732e20eeff0b41e8ab7717a32b6c32841a403eb243348cf9f63f9b222203"
+        },
+        {
+          "path": "docs/restart/implementation/K01/evidence/semantic-matrix.json",
+          "sha256": "cc3d8d0dcee46d7b1662e642a98c00a3bb228c71b74f913e1e96e8ca12e84992"
+        },
+        {
+          "path": "docs/restart/implementation/K01/evidence/signing-development-01/command.json",
+          "sha256": "a376828ee35d4ef00102d6dc77b550da2d4f620b8484b86f272f52ddae3f9057"
+        },
+        {
+          "path": "docs/restart/implementation/K01/evidence/signing-development-01/stderr.log",
+          "sha256": "8df184f314e200efdd48baf87603108050bbfdb5f587768bc3afd143c00b3524"
+        },
+        {
+          "path": "docs/restart/implementation/K01/evidence/signing-development-01/stdout.log",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "path": "docs/restart/implementation/K01/evidence/signing-development-02/command.json",
+          "sha256": "2bb15972874430382a1c7b1bdcba18f9d29e17e73ad19fbad20d4df8d9cdd41c"
+        },
+        {
+          "path": "docs/restart/implementation/K01/evidence/signing-development-02/stderr.log",
+          "sha256": "9c4d7248bc0c59c49ae09c61a4fc2b289fb68c6f88312dd8cfb84f32bc1d5fe9"
+        },
+        {
+          "path": "docs/restart/implementation/K01/evidence/signing-development-02/stdout.log",
+          "sha256": "3b006861710a4c04351a3eaf9c23e5b1ba47a6645ffb67b3a0f69be71b9945e1"
+        },
+        {
+          "path": "docs/restart/implementation/K01/evidence/signing-development-03/command.json",
+          "sha256": "8c1707dffe7831e4e50fcefc82d08ca25b995f4944c3e2ac7ccfe9665d7b96ec"
+        },
+        {
+          "path": "docs/restart/implementation/K01/evidence/signing-development-03/stderr.log",
+          "sha256": "9499db21b7b545aa4ccee87a4c7b01ef5fc9ce2a6ea1924554b6beb0f99f63c8"
+        },
+        {
+          "path": "docs/restart/implementation/K01/evidence/signing-development-03/stdout.log",
+          "sha256": "d97f9e5d6066d500d94dc9dffa2117d7615691294392698e6e262e27dc477a1e"
+        },
+        {
+          "path": "docs/restart/implementation/K01/evidence/source-scope.json",
+          "sha256": "7a534e443ff40d80d5d69dc05eca0c15b8a91800f9052a6dc47df26cb6d4a1c3"
+        },
+        {
+          "path": "docs/restart/implementation/K01/evidence/stable-ci-01/command.json",
+          "sha256": "cce5d8b88e062dc99ee0dc74bdaac14a8acfba1357445d63812390a0fc611c99"
+        },
+        {
+          "path": "docs/restart/implementation/K01/evidence/stable-ci-01/stderr.log",
+          "sha256": "09d4ac89e575dc46812bd5b1e8b5d7614fae4c6bdb4a95e61c4b4ba526820267"
+        },
+        {
+          "path": "docs/restart/implementation/K01/evidence/stable-ci-01/stdout.log",
+          "sha256": "63d65b496e031acd94261ebcdcbf48a0553022775dd53e66832cd84d96363478"
+        },
+        {
+          "path": "docs/restart/implementation/K01/evidence/stable-ci-02/command.json",
+          "sha256": "d4a4448489e162fc7bdf82a66adb879957d3090e57c779992e6ef0d3dad0aaa1"
+        },
+        {
+          "path": "docs/restart/implementation/K01/evidence/stable-ci-02/stderr.log",
+          "sha256": "9c14125eb9a514057d0d6c3a2c6f2acace008e00dea0af2b9668aa62c33938f7"
+        },
+        {
+          "path": "docs/restart/implementation/K01/evidence/stable-ci-02/stdout.log",
+          "sha256": "8088ff46193d5bc8254f2b12d302042f1016797af92679bebb2f3d5035fead1d"
+        },
+        {
+          "path": "docs/restart/implementation/K01/evidence/stable-ci-03/command.json",
+          "sha256": "16c1fefbc31427177aff39dd98c7df5a832bd72443b697116217dd14b97d801e"
+        },
+        {
+          "path": "docs/restart/implementation/K01/evidence/stable-ci-03/core-coverage.json",
+          "sha256": "6cca0bc58f10cfb84d450ca6f59aeb8164f3b3006bd2557c710fd36af94dd939"
+        },
+        {
+          "path": "docs/restart/implementation/K01/evidence/stable-ci-03/host-coverage.json",
+          "sha256": "1064ef8203bde0eba12c2879ddfa98e89f18d6337628732185da7561ca05deb8"
+        },
+        {
+          "path": "docs/restart/implementation/K01/evidence/stable-ci-03/stderr.log",
+          "sha256": "6fd6364c009eff5493a1450cebd8f32d03bb48283fb2ade08013a67434d834ea"
+        },
+        {
+          "path": "docs/restart/implementation/K01/evidence/stable-ci-03/stdout.log",
+          "sha256": "a7e7a634a543fd3811fba9bbd193b420518264bab61a53c70e1b548fb0380541"
+        },
+        {
+          "path": "docs/restart/implementation/K01/evidence/target-development-01/0-stderr.log",
+          "sha256": "5d1f6cc637ff808e183fd23bfcfbcb038c241ebdd9b843f500ba85e5eb8b011a"
+        },
+        {
+          "path": "docs/restart/implementation/K01/evidence/target-development-01/0-stdout.log",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "path": "docs/restart/implementation/K01/evidence/target-development-01/1-stderr.log",
+          "sha256": "27667d166e7633af3d54206fe6dc7530c5965b67249177b7125a2cedaf03e6ce"
+        },
+        {
+          "path": "docs/restart/implementation/K01/evidence/target-development-01/1-stdout.log",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "path": "docs/restart/implementation/K01/evidence/target-development-01/commands.json",
+          "sha256": "6025e6a4a86dd8945006f52b339211ddeb1ed358770d0c9050c17dd3bc59cbf3"
+        },
+        {
+          "path": "docs/restart/implementation/K01/evidence/target-development-02/0-stderr.log",
+          "sha256": "ed515805731b3a9c4c0a476a9ab4602921c6dd4be1484223bceb7fd400b49f15"
+        },
+        {
+          "path": "docs/restart/implementation/K01/evidence/target-development-02/0-stdout.log",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "path": "docs/restart/implementation/K01/evidence/target-development-02/1-stderr.log",
+          "sha256": "4dd069e3ccd1d20a7dd8a861ccdd519aa6e9abe6ceee4c351e8fddf810daff62"
+        },
+        {
+          "path": "docs/restart/implementation/K01/evidence/target-development-02/1-stdout.log",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "path": "docs/restart/implementation/K01/evidence/target-development-02/commands.json",
+          "sha256": "ffabdeb7a0c13699e5044a55757be9edeb2a893407ad4498191a44a2ed4c09cc"
+        },
+        {
+          "path": "docs/restart/implementation/K01/evidence/target-final-label-correction/0-stderr.log",
+          "sha256": "99b7b1299cc77b2072c0855887e3b92bd0dbbf5ffbb468e8f4bf97ad3f1c63ab"
+        },
+        {
+          "path": "docs/restart/implementation/K01/evidence/target-final-label-correction/0-stdout.log",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "path": "docs/restart/implementation/K01/evidence/target-final-label-correction/1-stderr.log",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "path": "docs/restart/implementation/K01/evidence/target-final-label-correction/1-stdout.log",
+          "sha256": "67c019465f4cea506b132dc92141e3b87a301e4636b0e3139c10256a0342c74f"
+        },
+        {
+          "path": "docs/restart/implementation/K01/evidence/target-final-label-correction/2-stderr.log",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "path": "docs/restart/implementation/K01/evidence/target-final-label-correction/2-stdout.log",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "path": "docs/restart/implementation/K01/evidence/target-final-label-correction/3-stderr.log",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "path": "docs/restart/implementation/K01/evidence/target-final-label-correction/3-stdout.log",
+          "sha256": "5d33ff57f80eac02d20e22d5bf3e66c5c9b8e3cb80983b2ef22e4a67f6f46256"
+        },
+        {
+          "path": "docs/restart/implementation/K01/evidence/target-final-label-correction/4-stderr.log",
+          "sha256": "840f804ae16ca6f3f4b5070d5b8af71ac232671f10ed3c77ea71170a740b6633"
+        },
+        {
+          "path": "docs/restart/implementation/K01/evidence/target-final-label-correction/4-stdout.log",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "path": "docs/restart/implementation/K01/evidence/target-final-label-correction/commands.json",
+          "sha256": "bada3f97996472d7020d6758d60b692132335da1466ac1fb98678cbf7897ef4c"
+        },
+        {
+          "path": "docs/restart/implementation/K01/evidence/target-final-label-correction/engine.map",
+          "sha256": "1bc02aeb73ba690bed6bea10959c77cb2471075bcdb18daa3c962d8672ac0e52"
+        },
+        {
+          "path": "docs/restart/implementation/K01/evidence/target-final/0-stderr.log",
+          "sha256": "189a12f61f6f63d3accace1ed51f25378effc45ede7dcf9ab47f2d164669c918"
+        },
+        {
+          "path": "docs/restart/implementation/K01/evidence/target-final/0-stdout.log",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "path": "docs/restart/implementation/K01/evidence/target-final/1-stderr.log",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "path": "docs/restart/implementation/K01/evidence/target-final/1-stdout.log",
+          "sha256": "ec4165d9bc49019258eca13207ac4e6ed0d7e53ed04bb745fc328a67db7a8c60"
+        },
+        {
+          "path": "docs/restart/implementation/K01/evidence/target-final/2-stderr.log",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "path": "docs/restart/implementation/K01/evidence/target-final/2-stdout.log",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "path": "docs/restart/implementation/K01/evidence/target-final/3-stderr.log",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "path": "docs/restart/implementation/K01/evidence/target-final/3-stdout.log",
+          "sha256": "752813ff6ff2a8286259435f1394b599e2a52d479fb1cb0b2946defdb954666b"
+        },
+        {
+          "path": "docs/restart/implementation/K01/evidence/target-final/4-stderr.log",
+          "sha256": "840f804ae16ca6f3f4b5070d5b8af71ac232671f10ed3c77ea71170a740b6633"
+        },
+        {
+          "path": "docs/restart/implementation/K01/evidence/target-final/4-stdout.log",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "path": "docs/restart/implementation/K01/evidence/target-final/commands.json",
+          "sha256": "b526be0a0fc7d9fa8d4b03e01b03085c52b713c1195f11d49c3a42c59c9ce751"
+        },
+        {
+          "path": "docs/restart/implementation/K01/evidence/target-final/engine.map",
+          "sha256": "73bd0b4c8e18d69395f4e46f6b964d15dfa0e6020ccc80e64723cadf108f3256"
+        },
+        {
+          "path": "docs/restart/implementation/K01/evidence/worktree-setup/command.json",
+          "sha256": "a444f62b1d7157025fad1364b982af04b24c973fb2c2d7b9f4a1829eddfceaa7"
+        },
+        {
+          "path": "docs/restart/implementation/K01/evidence/worktree-setup/stderr.log",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "path": "docs/restart/implementation/K01/evidence/worktree-setup/stdout.log",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "path": "docs/restart/implementation/K01/independent-inputs.json",
+          "sha256": "887ee851eac781f3014db68db79148d63e339c65efa057b89db7b5bec4c29b29"
+        },
+        {
+          "path": "docs/restart/implementation/K01/preparation-checks.json",
+          "sha256": "5c70a195933f79c66840853d34d90a0a50d38d99cec6cd2d26a3747757540ce1"
+        },
+        {
+          "path": "docs/restart/implementation/K01/probes/checker-negative.py",
+          "sha256": "3783d7dd1f0dfea2ded8b56fbff364dde8f2e67f6cdce6781d5c5fe72bf5074f"
+        },
+        {
+          "path": "docs/restart/implementation/K01/probes/final-link/Cargo.lock",
+          "sha256": "334f866815e83c8476fe1c82b53ec7e744f879c09dc449d2720f5771af4d73ef"
+        },
+        {
+          "path": "docs/restart/implementation/K01/probes/final-link/Cargo.toml",
+          "sha256": "d1b50b843c94654afac57f1dfd500fa8e072cc111182469bb0e46c30b4d16503"
+        },
+        {
+          "path": "docs/restart/implementation/K01/probes/final-link/src/main.rs",
+          "sha256": "1353b645cb8b321c7f2809dfed9e28dc2cebfcf9a1b9f304d6342df504247149"
+        },
+        {
+          "path": "docs/restart/implementation/K01/reconciliation/api-reconciliation.json",
+          "sha256": "2aad380ffac43e3bc99e93b5e465a6e09806d0b586348360c3d2ff494395047d"
+        },
+        {
+          "path": "docs/restart/implementation/K01/reconciliation/checks.json",
+          "sha256": "19d567ca6b253c5569abd00cbfaf656a5b87bae7f465f4778efc732f369f58ce"
+        },
+        {
+          "path": "docs/restart/implementation/K01/reconciliation/copy-inventory.json",
+          "sha256": "66a1c8dc1c826058e5507e8c9ecd32d7c7dddd40a997f226a928dd709b9b384d"
+        },
+        {
+          "path": "docs/restart/implementation/K01/reconciliation/spec-review/report.md",
+          "sha256": "682ab58666b1ede28c42ded6831d0bb919f2968c04049ffaaf20b86c3c24da87"
+        },
+        {
+          "path": "docs/restart/implementation/K01/reconciliation/spec-review/review.json",
+          "sha256": "f64c9e6d2122c37017e3ca2c10e97dafa4715725faec521f70a3e714a56bd580"
+        },
+        {
+          "path": "docs/restart/implementation/K01/source-inputs.json",
+          "sha256": "8b7cd763e42e8c0d774f4befa6f62b2c409f0a04548aa4904ef0778a08d290b6"
+        },
+        {
+          "path": "docs/restart/implementation/R00/evidence/final/environment.json",
+          "sha256": "5b0f773e07fc90aa4a2b7d62c102bbc7b824b6bab135002ee0a01ad90a0ef001"
+        },
+        {
+          "path": "docs/restart/implementation/reviews/K01-engine-security/acceptance-components.json",
+          "sha256": "a3da94b6dc5db1920c78e59441a520d3512cd4474228ed0fcc1365c1085a074d"
+        },
+        {
+          "path": "docs/restart/implementation/reviews/K01-engine-security/final-receipt-correspondence.json",
+          "sha256": "60e05aed523e97a6026c680142fecabbbd3032edc85b8b6aadc2ddee9cf68ade"
+        },
+        {
+          "path": "docs/restart/implementation/reviews/K01-engine-security/report.md",
+          "sha256": "443fee6ed1dfb5d6cd95c55b3c8c6d3c6803135ba5675c7821915e57f9fff014"
+        },
+        {
+          "path": "docs/restart/implementation/reviews/K01-engine-security/review-checks.json",
+          "sha256": "86de46d423d550cf69f2ed4c5dc6d9d3d9b18649ae10a1edf9ba0d279f37fbc9"
+        },
+        {
+          "path": "docs/restart/implementation/reviews/K01-engine-security/review.json",
+          "sha256": "4638fe86a4f707bb7f38125c73a3af0127da892fdc36234778661e74ab9a1ac4"
+        },
+        {
+          "path": "docs/restart/implementation/reviews/K01-engine-security/source-reading.json",
+          "sha256": "27d8afa70ce9413fd93a862c5b0df4ebcf610fb29085306d17d01becffd40e42"
+        },
+        {
+          "path": "docs/restart/implementation/reviews/K01-engine-security/source-reading.md",
+          "sha256": "7f85948bf36e5b152cd6dfc204813e3e02cd7a5beaa2879bb243490769941407"
+        },
+        {
+          "path": "docs/restart/implementation/reviews/K01-engine-security/target-component-receipt.json",
+          "sha256": "f0de3f19b07f653e2c734b70b4e915e6f73aa0872e8de7e52d230b01a81c30a8"
+        },
+        {
+          "path": "docs/restart/implementation/reviews/K01-engine-security/verify-final-receipts.py",
+          "sha256": "a7654f84ad5fe89d3939bb7cced5536caf6efed11129b4256ddac7256ad55e0d"
+        },
+        {
+          "path": "docs/restart/implementation/reviews/K01-target-component/bindings.json",
+          "sha256": "2dac5d79c125c8a5c0351c8f060e3c3992f06942bb5f238061bd13e17cd28285"
+        },
+        {
+          "path": "docs/restart/implementation/reviews/K01-target-component/copy-inventory.json",
+          "sha256": "652f746f7ab9158c07d65a32a448a7dc8a83a912ea1b187bd2f2a0eb3a7245ec"
+        },
+        {
+          "path": "docs/restart/implementation/reviews/K01-target-component/inspection/0-stderr.log",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "path": "docs/restart/implementation/reviews/K01-target-component/inspection/0-stdout.log",
+          "sha256": "0fc914b55773907650fa24ec9f4a5a032ced7dbd1ed489658346a9a95b6d5652"
+        },
+        {
+          "path": "docs/restart/implementation/reviews/K01-target-component/inspection/1-stderr.log",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "path": "docs/restart/implementation/reviews/K01-target-component/inspection/1-stdout.log",
+          "sha256": "d5b464108e5b8dfa03a67fa242595bf9fbdda989246491bf66a08b9bfb13bad6"
+        },
+        {
+          "path": "docs/restart/implementation/reviews/K01-target-component/inspection/2-stderr.log",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "path": "docs/restart/implementation/reviews/K01-target-component/inspection/2-stdout.log",
+          "sha256": "18d3b4fcdd64c7a4d8a234b6d903f094e037fef3459c4f072caa3ed468c0f6ce"
+        },
+        {
+          "path": "docs/restart/implementation/reviews/K01-target-component/inspection/3-stderr.log",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "path": "docs/restart/implementation/reviews/K01-target-component/inspection/3-stdout.log",
+          "sha256": "b9e97f087eef83cb219be7b3ed5c82a1463ca6de28998981d8b12ccbec78a1a5"
+        },
+        {
+          "path": "docs/restart/implementation/reviews/K01-target-component/inspection/4-stderr.log",
+          "sha256": "325afb1dd8956505f0c525664452996f2926f48b9d1fca08f2adbba92d370d13"
+        },
+        {
+          "path": "docs/restart/implementation/reviews/K01-target-component/inspection/4-stdout.log",
+          "sha256": "0dbbd54f51287b4401e826803df570840063ec78a23eec8782569fdef1b1d730"
+        },
+        {
+          "path": "docs/restart/implementation/reviews/K01-target-component/inspection/5-stderr.log",
+          "sha256": "555f6745eba592817136ce915d21842f4e286ade26c83b453122333f84227e9c"
+        },
+        {
+          "path": "docs/restart/implementation/reviews/K01-target-component/inspection/5-stdout.log",
+          "sha256": "0dbbd54f51287b4401e826803df570840063ec78a23eec8782569fdef1b1d730"
+        },
+        {
+          "path": "docs/restart/implementation/reviews/K01-target-component/inspection/6-stderr.log",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "path": "docs/restart/implementation/reviews/K01-target-component/inspection/6-stdout.log",
+          "sha256": "21e8bd2c496426663cb54b13b392197a846c8a870ce663d38c9739aa7d0d7930"
+        },
+        {
+          "path": "docs/restart/implementation/reviews/K01-target-component/inspection/7-stderr.log",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "path": "docs/restart/implementation/reviews/K01-target-component/inspection/7-stdout.log",
+          "sha256": "775c917bfca3c6f346c1cc0ae4a4ecbfb73841c2ff880bbea93fcdca9b6bb6fb"
+        },
+        {
+          "path": "docs/restart/implementation/reviews/K01-target-component/inspection/build-metadata/.rustc_info.json",
+          "sha256": "0ae9cca2b3a172f101532834d0d2e8b98696279616559c640fcc30ce5b888271"
+        },
+        {
+          "path": "docs/restart/implementation/reviews/K01-target-component/inspection/build-metadata/environment.json",
+          "sha256": "5b0f773e07fc90aa4a2b7d62c102bbc7b824b6bab135002ee0a01ad90a0ef001"
+        },
+        {
+          "path": "docs/restart/implementation/reviews/K01-target-component/inspection/build-metadata/riscv32imafc-unknown-none-elf/release/.fingerprint/base16ct-4a22209c62937a14/lib-base16ct.json",
+          "sha256": "b92b5bdc1fc0a7fec6dce3d04ca9debfc9efe2e8e2ffe3328ad7e1445fce7d1f"
+        },
+        {
+          "path": "docs/restart/implementation/reviews/K01-target-component/inspection/build-metadata/riscv32imafc-unknown-none-elf/release/.fingerprint/block-buffer-e13e384f36b7a170/lib-block_buffer.json",
+          "sha256": "307f0cd745f562cd08423ceab793923cc576a4504e564c20ab7c71b404a99c68"
+        },
+        {
+          "path": "docs/restart/implementation/reviews/K01-target-component/inspection/build-metadata/riscv32imafc-unknown-none-elf/release/.fingerprint/cfg-if-4cc92f1bb2dbc3a1/lib-cfg_if.json",
+          "sha256": "e816e50fa2ef78a077a476082618dd5819eae8842285a07fb20c84a4247c2363"
+        },
+        {
+          "path": "docs/restart/implementation/reviews/K01-target-component/inspection/build-metadata/riscv32imafc-unknown-none-elf/release/.fingerprint/cmov-2e98c5621c210a78/lib-cmov.json",
+          "sha256": "5914e5f89ccb9e3b813981ad88a11b05f16b15f651038c83b7cf51340fb835da"
+        },
+        {
+          "path": "docs/restart/implementation/reviews/K01-target-component/inspection/build-metadata/riscv32imafc-unknown-none-elf/release/.fingerprint/const-oid-40263cffe6f80518/lib-const_oid.json",
+          "sha256": "333c44bffd3ba4a705321c9df807b058401eb672d1ec20c93a937bd92ad65d23"
+        },
+        {
+          "path": "docs/restart/implementation/reviews/K01-target-component/inspection/build-metadata/riscv32imafc-unknown-none-elf/release/.fingerprint/cpubits-c07f5a22031ef1c3/lib-cpubits.json",
+          "sha256": "9f15310a8c27279eb7ac1bd316c526b7399bccf639135f84dbf542aecc6719f2"
+        },
+        {
+          "path": "docs/restart/implementation/reviews/K01-target-component/inspection/build-metadata/riscv32imafc-unknown-none-elf/release/.fingerprint/crypto-bigint-716e75c5481c0e17/lib-crypto_bigint.json",
+          "sha256": "207130cf0e0bb3390323040b5adf62aa916a9c1dde9938f5feedac7cae41732b"
+        },
+        {
+          "path": "docs/restart/implementation/reviews/K01-target-component/inspection/build-metadata/riscv32imafc-unknown-none-elf/release/.fingerprint/crypto-common-429942f89e4dc5a0/lib-crypto_common.json",
+          "sha256": "d18dd115a40cb2d30a8a627eec99e2be41484ab2870b4748405f6e91cf5fd256"
+        },
+        {
+          "path": "docs/restart/implementation/reviews/K01-target-component/inspection/build-metadata/riscv32imafc-unknown-none-elf/release/.fingerprint/ctutils-329eb2cc36e9a173/lib-ctutils.json",
+          "sha256": "5150ecb0733cc5b67acc20b847dd8523ce7b7d7d9ff5a6392f151b610c564a44"
+        },
+        {
+          "path": "docs/restart/implementation/reviews/K01-target-component/inspection/build-metadata/riscv32imafc-unknown-none-elf/release/.fingerprint/der-f63feabc16839942/lib-der.json",
+          "sha256": "05dd5697633d5bd8b17b64525fb0f5c37bb806548807442081953aaa60f01bf5"
+        },
+        {
+          "path": "docs/restart/implementation/reviews/K01-target-component/inspection/build-metadata/riscv32imafc-unknown-none-elf/release/.fingerprint/digest-4ac46765f6e5f972/lib-digest.json",
+          "sha256": "d28aefcaf2c9ad11c08acc1fceed3da53cdc5db5818b3c82a739da5ab5520800"
+        },
+        {
+          "path": "docs/restart/implementation/reviews/K01-target-component/inspection/build-metadata/riscv32imafc-unknown-none-elf/release/.fingerprint/ecdsa-6fabb4140df36dde/lib-ecdsa.json",
+          "sha256": "44937e4923c46919330e55106092296374fa7b178b39e5e5fd6ee826eec7bc66"
+        },
+        {
+          "path": "docs/restart/implementation/reviews/K01-target-component/inspection/build-metadata/riscv32imafc-unknown-none-elf/release/.fingerprint/elliptic-curve-9e6c63a68d537ba4/lib-elliptic_curve.json",
+          "sha256": "cb33b4d293a90d1e46921b778f63f231aca7266802095e0a3ce4508442499b84"
+        },
+        {
+          "path": "docs/restart/implementation/reviews/K01-target-component/inspection/build-metadata/riscv32imafc-unknown-none-elf/release/.fingerprint/ff-de6db9cabc1d9dc2/lib-ff.json",
+          "sha256": "d041a017ce23524260298aef180074a586cdec6dd8ad33aec40f3547a533217a"
+        },
+        {
+          "path": "docs/restart/implementation/reviews/K01-target-component/inspection/build-metadata/riscv32imafc-unknown-none-elf/release/.fingerprint/group-d20c2678b2c08219/lib-group.json",
+          "sha256": "a22f955c474a82dce1294e3b371e98cefc2764e2eb4932eb35a4effe0199df70"
+        },
+        {
+          "path": "docs/restart/implementation/reviews/K01-target-component/inspection/build-metadata/riscv32imafc-unknown-none-elf/release/.fingerprint/hybrid-array-699aa669b905fd51/lib-hybrid_array.json",
+          "sha256": "4dd9420a76e20d9c6b1787892db9285c5543c8edee86e525656559557df386ee"
+        },
+        {
+          "path": "docs/restart/implementation/reviews/K01-target-component/inspection/build-metadata/riscv32imafc-unknown-none-elf/release/.fingerprint/k01-engine-final-link-5f4f80d51b3be2b1/bin-k01-engine-final-link.json",
+          "sha256": "234796cbf19f316d0e45fc51b7150f661062a4c7c55ea498a8fec9e78d6e75ad"
+        },
+        {
+          "path": "docs/restart/implementation/reviews/K01-target-component/inspection/build-metadata/riscv32imafc-unknown-none-elf/release/.fingerprint/k256-2c31895720a41b33/lib-k256.json",
+          "sha256": "94f2c14928f68cfd23ccd53d5b671d315914467d30e355567d6f03cf28d56574"
+        },
+        {
+          "path": "docs/restart/implementation/reviews/K01-target-component/inspection/build-metadata/riscv32imafc-unknown-none-elf/release/.fingerprint/nsealr-core-7f9c4a62c0abbcaa/run-build-script-build-script-build.json",
+          "sha256": "ee91c4d06fa77cf6cb4bf1258401e95465b8f6d8e8cd9a655ea8150fb4f5f27b"
+        },
+        {
+          "path": "docs/restart/implementation/reviews/K01-target-component/inspection/build-metadata/riscv32imafc-unknown-none-elf/release/.fingerprint/nsealr-core-913be1f7b09b1574/lib-nsealr_core.json",
+          "sha256": "8bf8e0e37e90458eb27fe88556999e37b3d6181433152cb82af6cb40ae215ebd"
+        },
+        {
+          "path": "docs/restart/implementation/reviews/K01-target-component/inspection/build-metadata/riscv32imafc-unknown-none-elf/release/.fingerprint/num-traits-27f62de1fc2a6aac/run-build-script-build-script-build.json",
+          "sha256": "5d22ae0f80b2f55ad9431448c3232e8f60993456185550025cba5ee90dd8fd18"
+        },
+        {
+          "path": "docs/restart/implementation/reviews/K01-target-component/inspection/build-metadata/riscv32imafc-unknown-none-elf/release/.fingerprint/num-traits-e40a22c62840d153/lib-num_traits.json",
+          "sha256": "22a1cff66e26bf4bc8d5ffb59a458360391e2078f0abc84963047496df0f8f36"
+        },
+        {
+          "path": "docs/restart/implementation/reviews/K01-target-component/inspection/build-metadata/riscv32imafc-unknown-none-elf/release/.fingerprint/primefield-6fc560ad02e04164/lib-primefield.json",
+          "sha256": "7e9bdbe48c738dd04bf76ffafd5dcdfe3a0d42aaedd287b817755b7a4a7cd278"
+        },
+        {
+          "path": "docs/restart/implementation/reviews/K01-target-component/inspection/build-metadata/riscv32imafc-unknown-none-elf/release/.fingerprint/primeorder-da67e3a32454f7e4/lib-primeorder.json",
+          "sha256": "56fdeb236f85c1bcbaafe7bf264fa9fba49d63bebcbaa0ab651165cbc5940fb5"
+        },
+        {
+          "path": "docs/restart/implementation/reviews/K01-target-component/inspection/build-metadata/riscv32imafc-unknown-none-elf/release/.fingerprint/rand_core-a94938e8002def76/lib-rand_core.json",
+          "sha256": "fcf6c8c105113f8fc151cefc5c5dacaa636fe54d6679ec9d2aac91a32f8a2698"
+        },
+        {
+          "path": "docs/restart/implementation/reviews/K01-target-component/inspection/build-metadata/riscv32imafc-unknown-none-elf/release/.fingerprint/sec1-f449c3d2f1dd5f23/lib-sec1.json",
+          "sha256": "368500a6d1406b8817ef2137875d4a6e03022e0d91bdc0279e07b4a21f483e12"
+        },
+        {
+          "path": "docs/restart/implementation/reviews/K01-target-component/inspection/build-metadata/riscv32imafc-unknown-none-elf/release/.fingerprint/sha2-2d8a1050aca5ce67/lib-sha2.json",
+          "sha256": "9facca411dcfdd33125f74af1735b7db64bd52eda6d596cff774e567ee5468ff"
+        },
+        {
+          "path": "docs/restart/implementation/reviews/K01-target-component/inspection/build-metadata/riscv32imafc-unknown-none-elf/release/.fingerprint/signature-25f7f9bd30246421/lib-signature.json",
+          "sha256": "eedd467db9e0b48429312e7c4cab6310b52ca58fec9582d0f71a9066ce713a20"
+        },
+        {
+          "path": "docs/restart/implementation/reviews/K01-target-component/inspection/build-metadata/riscv32imafc-unknown-none-elf/release/.fingerprint/subtle-fef96682e5cea089/lib-subtle.json",
+          "sha256": "b7314415c45e17f84fb7af093b73e521bed70f263707cd6875f22e22d10c9f53"
+        },
+        {
+          "path": "docs/restart/implementation/reviews/K01-target-component/inspection/build-metadata/riscv32imafc-unknown-none-elf/release/.fingerprint/typenum-e36e2c41a5bcdc40/lib-typenum.json",
+          "sha256": "b668efd6fce4ff1f51bc31b6cb4b07062cdb05d35158cc8505d6997bad6563c6"
+        },
+        {
+          "path": "docs/restart/implementation/reviews/K01-target-component/inspection/build-metadata/riscv32imafc-unknown-none-elf/release/.fingerprint/wnaf-2f8609b024ca5a1f/lib-wnaf.json",
+          "sha256": "1be9e4cc3b26378b2c72b5267e769f3c6409c3ca28e23e65e875c713397f4cd1"
+        },
+        {
+          "path": "docs/restart/implementation/reviews/K01-target-component/inspection/build-metadata/riscv32imafc-unknown-none-elf/release/.fingerprint/zeroize-c6eb42ca5c97e522/lib-zeroize.json",
+          "sha256": "09e9ddf93f3a5e5549daff7eb85efd8b3a2a9bff4066391894fa34d705f4a86f"
+        },
+        {
+          "path": "docs/restart/implementation/reviews/K01-target-component/inspection/build-metadata/riscv32imafc-unknown-none-elf/release/k01-engine-final-link.d",
+          "sha256": "63efb614409c86c8a357d96f8394602952570b7bcae88b7acabd63ccb47a68e0"
+        },
+        {
+          "path": "docs/restart/implementation/reviews/K01-target-component/inspection/commands.json",
+          "sha256": "839d670db15e1a3bb2aa2b8dc3a4f789d514b70426906c48e7020eb79b2fcca3"
+        },
+        {
+          "path": "docs/restart/implementation/reviews/K01-target-component/inspection/engine-link-only.elf",
+          "sha256": "9453dc280c97132455fcde4e1bf3f830eb572dca1238e04166a8aad772fbf9fd"
+        },
+        {
+          "path": "docs/restart/implementation/reviews/K01-target-component/observations.json",
+          "sha256": "041815a8a695bf1d122fcd88a37e7bde45ea5fcd8afff42aed2963f84888ee57"
+        },
+        {
+          "path": "docs/restart/implementation/reviews/K01-target-component/report.md",
+          "sha256": "08980943cfb239e1b4cb3dceb8be2f1622a06e7be209e2081f9f28dbba21b2f7"
+        },
+        {
+          "path": "docs/restart/implementation/reviews/K01-target-component/review.json",
+          "sha256": "70de49c0e1f504fe1f88e8a84c1852edcc412c4f10eb29de05fe5cc45856a71d"
+        },
+        {
+          "path": "docs/restart/implementation/reviews/K01-target-component/validation/0-stderr.log",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "path": "docs/restart/implementation/reviews/K01-target-component/validation/0-stdout.log",
+          "sha256": "b57068805f891beff5f319234a6507eb4613f99b41147d62d2e32eb8ea61dc79"
+        },
+        {
+          "path": "docs/restart/implementation/reviews/K01-target-component/validation/1-stderr.log",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "path": "docs/restart/implementation/reviews/K01-target-component/validation/1-stdout.log",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "path": "docs/restart/implementation/reviews/K01-target-component/validation/commands.json",
+          "sha256": "70eda4c491fdb0f638635f6188d1c540cd66ad15c9331e535fd644448fccba58"
+        }
+      ],
       "requires_physical_evidence": false,
       "input_commits": {
         "nSealr/nsealr": "7f00138902526a63dc590ad4cd09dc40ab9b9700"
@@ -9617,18 +11162,46 @@
       "assignment_record": "https://github.com/nSealr/nsealr/issues/38",
       "github_issue": "https://github.com/nSealr/nsealr/issues/38",
       "current_checkpoint": {
-        "state": "BOUNDED_IMPLEMENTATION_ASSIGNED_INCOMPLETE",
-        "root_admission": {
-          "repository": "nSealr/nsealr",
-          "commit": "939da2f3e6eeba925426e8acdd124c4914093eb3",
-          "source_path": "docs/restart/implementation/reviews/K01-admission/admission.json",
-          "sha256": "8e505d5e0b70793980c5f743e98b79d824772d2d8fdd9787c0ee57dec4cf8bb5",
-          "source_url": "https://github.com/nSealr/nsealr/blob/939da2f3e6eeba925426e8acdd124c4914093eb3/docs/restart/implementation/reviews/K01-admission/admission.json"
+        "state": "PORTABLE_ENGINE_SOURCE_ACCEPTED_BRANCH_ADOPTION_PROPOSAL_PENDING_METADATA_PR_MAIN_GATES",
+        "reviewed_source": "1aa144e9410c014cf55cf0694e24ef1fcddcf729",
+        "runtime_source": "bf51d414f9dfc5f23c863dff51c3128dffa2dcad",
+        "latest_test_source": "4bab1c86c0145a44bc5fefdd2f38d80e3336bcfb",
+        "source_acceptance": "4c0d43ba83a029b23c3ba0771f4bd4d64697c2ed",
+        "target_component_review": "714aa19c3e5a841850ac4309de71bd04845bf030",
+        "actual_delivery_base": "b159425e7fdb0111bed904e69381dafd23ade6e4",
+        "owner_branch": "delivery/k01-portable-engine",
+        "owner_worktree": "/home/tux/nsealr/.restart-tools/goal/k01-current-delivery",
+        "prior_assignment": {
+          "state": "BOUNDED_IMPLEMENTATION_ASSIGNED_INCOMPLETE",
+          "root_admission": {
+            "repository": "nSealr/nsealr",
+            "commit": "939da2f3e6eeba925426e8acdd124c4914093eb3",
+            "source_path": "docs/restart/implementation/reviews/K01-admission/admission.json",
+            "sha256": "8e505d5e0b70793980c5f743e98b79d824772d2d8fdd9787c0ee57dec4cf8bb5",
+            "source_url": "https://github.com/nSealr/nsealr/blob/939da2f3e6eeba925426e8acdd124c4914093eb3/docs/restart/implementation/reviews/K01-admission/admission.json"
+          },
+          "owner_branch": "implementation/k01-engine",
+          "owner_worktree": "/home/tux/nsealr/.restart-tools/goal/k01-current-implementation",
+          "starting_checkpoint": "a64a2090d317b1ad07b6293c9f9211b2a1371c0f",
+          "meaning": "Factual bounded implementation assignment; incomplete. Starting checkpoint is not an acceptance candidate, no current runtime behavior/result/review or physical/resource claim. B01 exclusively owns implementation; root controls final review and hosted delivery."
         },
-        "owner_branch": "implementation/k01-engine",
-        "owner_worktree": "/home/tux/nsealr/.restart-tools/goal/k01-current-implementation",
-        "starting_checkpoint": "a64a2090d317b1ad07b6293c9f9211b2a1371c0f",
-        "meaning": "Factual bounded implementation assignment; incomplete. Starting checkpoint is not an acceptance candidate, no current runtime behavior/result/review or physical/resource claim. B01 exclusively owns implementation; root controls final review and hosted delivery."
+        "meaning": "Source criteria accepted by distinct engine/target reviewers. This branch only proposes integrated metadata; root exact final metadata review and complete protected PR/normal merge/actual-main gates remain. No device/provider/real-key/transport release."
+      },
+      "reviewed_candidate_commits": {
+        "nSealr/nsealr": "1aa144e9410c014cf55cf0694e24ef1fcddcf729"
+      },
+      "reviewed_input_commits": {
+        "nSealr/nsealr": "7f00138902526a63dc590ad4cd09dc40ab9b9700"
+      },
+      "result_manifest": "docs/restart/implementation/K01/delivery/result.json",
+      "integration": {
+        "state": "BRANCH_PORTABLE_ENGINE_ADOPTION_PROPOSAL_NOT_CANONICAL",
+        "reviewed_source": "1aa144e9410c014cf55cf0694e24ef1fcddcf729",
+        "source_review": "4c0d43ba83a029b23c3ba0771f4bd4d64697c2ed",
+        "actual_base": "b159425e7fdb0111bed904e69381dafd23ade6e4",
+        "metadata_review": "PENDING_ROOT_EXACT_FINAL_CANDIDATE",
+        "protected_K01_PR_and_main_gates": "PENDING; no PR/CI/merge result invented",
+        "runtime_device_release_claim": false
       }
     },
     {
@@ -10498,7 +12071,7 @@
       "requires_physical_evidence": true
     }
   ],
-  "revision": 21,
+  "revision": 22,
   "scope_document": "repositories.md",
   "active_profiles": [
     "esp32_no_se",
