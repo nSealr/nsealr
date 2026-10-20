@@ -1,0 +1,36 @@
+{
+  "checked_utc": "2026-10-20T19:21:06.944144+00:00",
+  "scope": "Finite C ABI/ctypes vs CPython-extension facts only; no renewed hardware survey",
+  "sources": [
+    {
+      "url": "https://docs.python.org/3.12/library/ctypes.html",
+      "authority": "Python3.12 official documentation, matching observed3.12.15 host",
+      "supports": "C-compatible library calls/signatures/callbacks; retain callback references; CDLL releases GIL; unsafe raw memory is not isolation."
+    },
+    {
+      "url": "https://docs.python.org/3.12/extending/extending.html",
+      "authority": "Python3.12 official extension guide",
+      "supports": "CPython-specific extension C API, Python.h and Python-object/reference/error handling; ctypes suggested for calling a C library."
+    },
+    {
+      "url": "https://doc.rust-lang.org/reference/linkage.html",
+      "authority": "Official current Rust reference",
+      "supports": "cdylib output is for another language, unlike Rust dylib/rlib."
+    },
+    {
+      "url": "https://doc.rust-lang.org/nomicon/ffi.html#ffi-and-unwinding",
+      "authority": "Official Rust FFI guidance",
+      "supports": "C ABI and borrowed pointers/callbacks need explicit lifetime; unwinding boundaries differ from abort/foreign exceptions."
+    },
+    {
+      "url": "https://doc.rust-lang.org/std/panic/fn.catch_unwind.html",
+      "authority": "Official current standard-library documentation; online version1.99.1 is not relabelled as observed1.95",
+      "supports": "catch_unwind catches Rust unwinding only, not abort; panic hooks/payload destructors have limits."
+    }
+  ],
+  "fetch_limits": [
+    "The versioned1.95 catch_unwind URL was unavailable through the browser. Actual pinned1.95 compilation confirms this API; general FFI/panic guidance is cited with its current version role.",
+    "Initial generic Python page resolved3.15, then3.11 was inspected; neither is the selected host source. The actual3.12.15 version was read before selecting matching3.12 documentation."
+  ],
+  "decision_inference": "The C ABI/ctypes mode is enough for this bounded observed exchange and avoids introducing CPython object bindings. This does not qualify a target or remove Python from the trusted computing base."
+}

@@ -1,0 +1,4 @@
+{"label": "existing-native-reference-ABI", "argv": ["python3", "-c", "import sys,json,hashlib,pathlib,ctypes,_ctypes,secp256k1; modules={name:module.__file__ for name,module in sys.modules.items() if name.startswith(\"secp256k1\") and str(getattr(module,\"__file__\",\"\")).endswith(\".so\")}; assert len(modules)==1,modules; print(json.dumps({\"secp256k1_native\":[{\"module\":name,\"path\":path,\"sha256\":hashlib.sha256(pathlib.Path(path).read_bytes()).hexdigest()} for name,path in modules.items()],\"ctypes_native\":{\"path\":_ctypes.__file__,\"sha256\":hashlib.sha256(pathlib.Path(_ctypes.__file__).read_bytes()).hexdigest()}},indent=2))"], "cwd": "/home/tux/nsealr/.restart-tools/goal/qp01-engine-boundary", "started": "2026-10-20T19:21:46.657036+00:00", "log": "01-existing-native-reference-ABI.log"}
+Traceback (most recent call last):
+  File "<string>", line 1, in <module>
+AttributeError: module '_ctypes' has no attribute '__file__'. Did you mean: '__name__'?

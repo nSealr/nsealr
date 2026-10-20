@@ -23,18 +23,30 @@ T01's [source and delivery](T01/delivery/README.md) now bind the reviewed versio
 capability/routing cutover, decoded QR/serial projections and independent fixed
 inputs. [Root accepted actual T01 main7f](reviews/T01-final-delivery/adoption/actual-main-acceptance.json)
 after normal protected PR37, full resulting-main CI and clean main-only source
-checks. K01's specification was reconciled once to that API. Its [portable engine
-delivery proposal](K01/delivery/README.md) preserves the accepted source1aa,
+checks. K01's specification was reconciled once to that API. Its [original
+portable engine proposal](K01/delivery/README.md) preserves source1aa,
 distinct engine and target-link reviews, actual runtime/test evidence and all
-original failures. The integrated graph state is a branch proposal pending root's
-exact final metadata review, protected PR and actual-main gates. No device,
-provider, real-key or transport release follows. Preserve independent event
-vectors and all retained rejection obligations. Custom-PCB
+original failures. [K01 is now accepted on actual main5d](reviews/K01-current-delivery/adoption/actual-main-acceptance.json)
+after normal protected PR40, full PR CI39478676631, full actual-main CI39480230426
+and fresh main-only source checks. Issue38 is closed; dated pending fields in
+its original proposal are historical. No device, provider, real-key or transport
+release follows. Preserve independent event vectors and all retained rejection
+obligations. Custom-PCB
 research stays independent. The maintainer reports three test kits and Tropic
 development boards in the existing resource records; exact variants, components,
 operator/access and bench tools are not established by that report. The Pi QR
 kit is the proposed first complete physical prototype, without closing other
 profiles or inheriting another project's qualification.
+
+The [QP01 preparation entry](QP01/README.md) combines the exact source/physical
+procedure packet3330972 with the reviewed fixed-public-identity host boundary
+experimentb4581236 and their distinct limited reviews. QP01 remains planned and
+all three criteria remain incomplete; all six Q02 criteria remain incomplete.
+No persistent import/user-key adapter, ARM/image build, actual optical/UI test,
+entropy/provider or no-persistence qualification is admitted by this delivery.
+Its current source/copy/metadata package awaits root's exact final review and
+normal protected PR/resulting-main gates. Reuse the source-matched canary and
+K01 proof; do not repeat them merely to update navigation or timestamps.
 
 The sole task authority is [plan/work-items.json](../../../plan/work-items.json).
 Use existing commands, targeted source reads, one CI observer and applicable
