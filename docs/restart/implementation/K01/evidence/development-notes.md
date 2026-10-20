@@ -63,3 +63,34 @@ original70-case source/RED component received distinct review2aaed50ae7c47a303ce
 PASS_independent_expectation_component_only; that verdict does not accept later
 runtime or full K01. The subsequent current-base Q01 delta is documentary only;
 no mid-development rebase or inheritance of a later source acceptance is claimed.
+
+The first complete make-ci attempt, stable-ci-01, preserves its actual missing-tsc
+failure after successful Rust/audit/coverage/reproduction/contract steps. The new
+worktree lacked the ordinary frozen dependency installation. worktree-setup
+records pnpm install --frozen-lockfile --offline, exit0, unchanged lock; actual
+TypeScript6.0.3 was then present. stable-ci-02 passes the complete17-step campaign
+on exact1bcc,291.331s. This is not a pass for another candidate.
+
+Author final inspection found that one blanket raw-content label still said
+plain text for every kind. Root agreed to the bounded catalog-role correction.
+content-role-red/source.diff and its first commit4b477565 preserve the prior
+assertions/failure (30 actual role mismatches) before the renderer change.
+bf51d414 implements only explicit profile/repost JSON, deletion-reason, reaction
+and additional uninterpreted roles; kind1's label, exact values, mathematical
+fixtures and semantic matrix are unchanged. content-role-green executes the
+actual local screens successfully. stable-ci-03 is the distinct complete PASS
+on that exact runtime,294.800s; target-final-label-correction is its fresh actual
+ELF/map/readelf/nm/size and intentionally failing missing-provider target compile.
+
+Root's frozen-source reading then identified three missing proof obligations,
+without claiming a product defect. The batched test-only4bab1c86 addition actually
+covers every written auxiliary prefix0..32, four provider errors plus short and
+oversized reports (198 records); three fresh complete operations per1/3/n-3 owner
+with test-only original nsec re-encoding/decoding (nine records); and contiguous
+whole-frame order, selected key/time/kind, all indexed known-prefix versus
+uninterpreted suffix roles, address remainder colons and18 literal nested-profile
+entries. The preexisting same-x-only replacement/epoch case is reused unchanged.
+review-proof-addendum-01 preserves the actual focused command/source; the latest
+complete core default/std/clippy/coverage and ratchet calls are proof-final-core.
+No production file changed after bf51, so its full product/target proof is reused
+by exact blob/input bindings; no later full make-ci invocation is invented.

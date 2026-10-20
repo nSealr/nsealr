@@ -1,90 +1,44 @@
-# K01 current preparation after the T01 merge
+# K01 portable signing engine candidate
 
-Owner `/root/b01_final_review`. This package reconciles the accepted K01
-specification once against actual main
-`7f00138902526a63dc590ad4cd09dc40ab9b9700`, tree
-`484c277bf3ebd884645d4ce85e1786f94ae23fbd`. It contains no runtime changes,
-new fixture expectations, checker implementation or K01 test/build execution.
-Runtime remains forbidden until root supplies completed actual-main/fresh-main
-gate evidence and explicit bounded implementation admission.
+Owner `/root/b01_final_review`; branch `implementation/k01-engine`. Runtime
+source is frozen at `bf51d414f9dfc5f23c863dff51c3128dffa2dcad`, on actual adopted
+T01 main `7f00138902526a63dc590ad4cd09dc40ab9b9700`. The final test-only proof
+addition is `4bab1c86c0145a44bc5fefdd2f38d80e3336bcfb`; its three production
+files are byte-identical to that runtime source. Root admission
+`939da2f3e6eeba925426e8acdd124c4914093eb3` and its once-only API review are copied
+exactly in [evidence/admission/](evidence/admission/). This is an authored source
+candidate; distinct final review and normal protected PR/resulting-main gates
+remain required. No task graph, transport readiness or device release is enabled.
 
-The six original preparation files are exact copies from
+The engine now retains original scalar custody, consumes local consent before
+fresh clock/provider calls, requires exactly32 fallible auxiliary bytes, signs
+and release-verifies the raw event ID, and stages a separately bounded complete
+signed result. Its seven-kind inspector renders complete values and roles.
+[Runtime design and limits](evidence/runtime-design.md) records actual ownership,
+copy/scratch/cleanup and device obligations. The original transport entry point
+still consumes and returns SigningUnavailable.
+
+Read [evidence/result.json](evidence/result.json) for the final local command,
+source, criterion and artifact bindings, and [evidence/handoff.md](evidence/handoff.md)
+for delivery/review scope. Source-bound raw failures and their dispositions remain
+in [development notes](evidence/development-notes.md). Public scalar fixtures,
+local display simulations, static target sizes and link-only ELF are not physical
+confirmation, entropy, stack/latency, bootability or real-key qualification.
+
+The six accepted preparation files are exact copies from
 `822c6390a929d3c490e9fa02f6e17191e84958c5`. Their dated dbad/T01-pending/review
-statements remain historical. The distinct root review
-`a0ad781346dd4fe5319397c3461db8bc705441f6` accepted that specification only;
-its complete two-file pair is preserved in [reconciliation/spec-review/](reconciliation/spec-review/).
-The earlier REQUEST_CHANGES/reproducer remain bound by the original preparation
-receipt. No historical result is rewritten as a new success.
+statements remain historical, including K01-SPEC-01 and its corrected checker
+instructions. The distinct specification review
+`a0ad781346dd4fe5319397c3461db8bc705441f6` remains in
+[reconciliation/spec-review/](reconciliation/spec-review/). The once-needed
+[API reconciliation](reconciliation/api-reconciliation.json) and
+[copy inventory](reconciliation/copy-inventory.json) preserve exact old roles;
+they are source-preparation observations, not runtime acceptance.
 
-Read the [accepted brief](brief.md), [catalog](catalog.md) and
-[acceptance plan](acceptance-plan.json) with the current
-[API reconciliation](reconciliation/api-reconciliation.json). The
-[copy inventory](reconciliation/copy-inventory.json) preserves every original
-commit/path/mode/blob/hash role. This is an API/source clarification, not another
-task graph or a replacement specification.
-
-Fifteen of the17 selected source bindings are byte-identical. The graph changed
-through intervening work, but the entire K01 record—including all six criteria,
-dependencies and planned status—is identical; no older graph is imported.
-The other change is event.rs: ParsedRequest now accepts numeric2, removes
-SigningStatus and retains only sign_event/get_capabilities/get_public_key.
-Its signature, template grammar/canonicalization and existing finite ceilings
-remain unchanged. Eight independent S03 vectors, the oracle/reference, original
-13 K01 mathematical rows, three identity witnesses,27 negative expectations,
-seven-kind catalog, backend selection and original-scalar decisions remain exact.
-No mathematical or protocol research is repeated.
-
-Six of nine whole Git inputs are identical, including both locks, vendor,
-source replacement, toolchain and frozen evidence index. The three changed
-inputs are the175-entry projection configuration (the original170 plus five
-T01 data rows), the two provenance checker/test scripts, and the reviewed b629
-artifact. These are read-only inputs for K01. No new artifact version, SSOT,
-dependency, gate, feature or threshold is proposed.
-
-The only required adopted-API adjustments to the future work are bounded:
-
-- Future wire harnesses use numeric2 and128-character bounded correlation;
-  numeric1 and get_signing_status remain rejection controls. Template-only
-  canonical/signature expectations need no change.
-- All20 original S03 families retain their security meanings. D01 now maps to
-  `s03_capability_or_retired_status_never_enables_product_signing`; the19 other
-  names remain exact. K01's already accepted identity/catalog/backend extensions
-  remain deliberate extensions, not discarded negatives.
-- Current attempt_sign accepts a timestamp value and remains disabled. The
-  accepted K01 first-attempt path must burn consent before calling its fresh
-  clock/provider and validate a fresh completion clock; the current API is not
-  evidence that this future callback order is implemented.
-- Extend the same existing owner with original-scalar custody, one scoped k256
-  conversion, exact32-byte fallible auxiliary input, raw-ID signing and release
-  verification, complete seven-kind inspection and separately bounded output.
-  This is the accepted K01 implementation work, not a T01 regression fix.
-- Keep stricter T01 route/method/transport limits. A separately bounded9216-byte
-  engine result does not increase current704-byte Bridge limits or QR/serial
-  ceilings. Conformance manifests/provider_missing, reported-versus-local
-  verification and serial/QR production-disabled behavior remain unchanged.
-- No host application currently calls AuthorizationSession/attempt_sign, so this
-  T01 reconciliation requires no extra host runtime edit. The existing generic
-  projector and artifact remain untouched; scoped test-only inclusion can read
-  the already accepted K01 independent input file directly where needed.
-
-The finite future edit proposal in api-reconciliation.json stays inside the
-accepted brief: the existing authorization owner/tests, event parser/reviewer,
-lib registration, a necessary crate-private nip19 intake adjustment and optional
-private signing adapter; only the already accepted scoped checker, evidence and
-actual-engine final-link harness are added afterward. No implementation starts
-from this document. Original S03 oracle/check commands and the corrected future
-K01 checker contract remain separate. All stable gates, independent exact review
-and normal protected delivery are still required after implementation.
-
-At assignment, root reported protected PR37 CI39461417280 successful and actual
-main CI39463503467 running, with fresh-main-only verification next. This records
-that supplied checkpoint; this author neither polls nor infers later success.
-Completed root gate evidence can authorize the already reconciled immutable API
-tuple without repeating unchanged API/source research. A genuinely changed
-runtime/API input would require only its affected delta to be examined.
-
-Backend scratch/move erasure, real entropy/provider behavior, actual target
-stack/RAM/timing, UI/custody and physical qualification remain open as specified.
-The common no_std/final-link milestone does not qualify a bootable device,
-release, production RNG or real-key deployment. [Reconciliation checks](reconciliation/checks.json)
-cover documentary/source integrity only.
+Original8 S03 and new13 K01 independent mathematical controls stay separate.
+The immutable70-case expected-input/first-RED component received distinct review
+`2aaed50ae7c47a303ce79d3e0deae5d98a1d365b`,
+[PASS_independent_expectation_component_only](https://github.com/nSealr/nsealr/blob/2aaed50ae7c47a303ce79d3e0deae5d98a1d365b/docs/restart/implementation/reviews/K01-independent-cases/review.json).
+Later actual role/layer/effect assertions do not relabel that admission-only RED.
+The original S03 oracle, vectors, T01 artifact/projections/checkers, locks,
+vendor, P01, frozen1508, global gates and thresholds remain unchanged.
