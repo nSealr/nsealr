@@ -1,0 +1,61 @@
+{
+  "candidate": "50d32a08e3e5fd245b4c8c8179c3619874b66076",
+  "observed_utc": "2026-10-18T19:37:14.210558+00:00",
+  "additional_bodies_read": [
+    {
+      "research_relative_path": "coracle/src/engine/core.ts",
+      "bytes": 10175,
+      "sha256": "c73f0c09334b369b1d77e9f49ca5e368430f0f1cd671b080092e280926f31ba9",
+      "method": "Additional relevant local source body read; matching client commit or package provenance identified in review."
+    },
+    {
+      "research_relative_path": "coracle/src/engine/utils/events.ts",
+      "bytes": 3366,
+      "sha256": "0e6b3b0fcab96913dbbd3927e2c49de8c60213669760c231160a4226b103c98d",
+      "method": "Additional relevant local source body read; matching client commit or package provenance identified in review."
+    },
+    {
+      "research_relative_path": "dependencies/welshman-app/package/dist/app/src/plugins/publisher.js",
+      "bytes": 15165,
+      "sha256": "57ffdc7c3ee721ef5e51be09c057ea15b7deed3a5a39dcbd9501647ecfa06d1f",
+      "method": "Additional relevant local source body read; matching client commit or package provenance identified in review."
+    }
+  ],
+  "independently_fetched_additional_packages": [
+    {
+      "package": "@welshman/domain",
+      "version": "0.13.0",
+      "url": "https://registry.npmjs.org/@welshman/domain/-/domain-0.13.0.tgz",
+      "sha256": "a4e3d415766443460ef45e4c6909c2e6a6775b15a3614d7e2248edd5857fb996",
+      "sri": "sha512-+y3ODmiZR2KuF/sYNDCcKzuveOGDtm9bJcY34+bd0QVcdrmNkL97BVVPDGkz2Fv5oJt5OjZLgk6guSMBsO7NHA==",
+      "body": "package/dist/domain/src/kinds/Comment.js",
+      "body_sha256": "caa3933b10a5578bd3f0be31f01e19f1598612fcc1143d9967f887810e99e451",
+      "result": "Official metadata integrity and computed tarball SHA512 equal selected Coracle lock. Comment export constructs KindFactory with COMMENT and CommentWriter; index exports that module."
+    },
+    {
+      "package": "applesauce-core",
+      "version": "0.0.0-next-20261014162338",
+      "url": "https://registry.npmjs.org/applesauce-core/-/applesauce-core-0.0.0-next-20261014162338.tgz",
+      "sha256": "9c6de94b5b03d2948197ba6fdce197bea6de322b87686a1e233430d0db6367a0",
+      "sri": "sha512-vdJxJtNxGPbgA82lTcoaRseTV8+AbWVxuTAQUWfgrk/9U19kzZskj6ulWvpgix7l0hErwT2npSkpnAwhDUniyA==",
+      "body": "package/dist/operations/encrypted-content.js",
+      "body_sha256": "b795c35d8f3b4d41458d43299162d1e30ff2cfbb75a52996134c50e4efbf322d",
+      "result": "Official metadata integrity and computed tarball SHA512 equal selected noStrudel lock. setEncryptedContent selects methods with the supplied signer and calls encrypt(pubkey, content) before placing returned ciphertext in the draft."
+    }
+  ],
+  "additional_fetch_procedure": "Python urllib.request to exact official npm version metadata and tarball; SHA512/base64 compared with yaml.safe_load of selected pnpm-lock.yaml packages entry; tarfile over io.BytesIO read relevant JS body without extraction, installation or execution. Both commands exited 0. Metadata browser tool could not open npm domain URL; direct official HTTPS fetch succeeded. No upstream contents published.",
+  "qualification_finding": {
+    "id": "P02-review-F01",
+    "blocking_for_planning": false,
+    "owner": "C01",
+    "scenario": "P02-C02",
+    "issue": {
+      "body": "P02's independent source review found a qualification risk specifically in Coracle's **client-generated nostrconnect** path. The selected broker is constructed without a pre-bound signer key. Its waitForNostrconnect handler accepts a result of `ack` instead of requiring the connection secret, then adopts the response event's public key. Fetching a subsequent user key from that adopted signer does not independently confirm the physical device's expected identity.\n\nExact source: [Coracle8f4d34c LoginBunker.svelte](https://github.com/coracle-social/coracle/blob/8f4d34cc16bfb4380208923d26307fab561a867d/src/app/views/LoginBunker.svelte), lines76\u201399 and31\u201336. Library: official [@welshman/signer0.13.0 tarball](https://registry.npmjs.org/@welshman/signer/-/signer-0.13.0.tgz), `package/dist/signer/src/signers/nip46.js`, waitForNostrconnect lines290\u2013320, acceptance/assignment297\u2013300. The package matched the exact client lockfile SRI; body SHA-256 `019e3aa41b95d1fd937d3ef776ea79e8293a6d5098429f49454d280dea209412`.\n\nC01 owns an adversarial run using a controlled fixture relay: unexpected-peer response containing ack, wrong/missing secret, stale/unrelated correlation and competing responses, plus the valid secret-bound control. Require correct transport/session binding and independent full expected user-key confirmation, with no signature authority from pairing. Qualify a corrected client integration or explicitly leave this path unsupported. The general P02-C02 wrong-peer/identity cases already require this boundary; this issue makes the observed variant concrete.\n\nThis is **source-backed risk identification**, not a demonstrated runtime exploit. Do not generalize it to the known-peer bunker-URL path: that separate path parses the expected signer key from the supplied URI and still needs its own authenticated-peer/correlation tests. No current nSealr compatibility, whole-client exploitability or device qualification is asserted.\n",
+      "state": "OPEN",
+      "title": "Qualify Coracle nostrconnect against unbound legacy ack responses",
+      "url": "https://github.com/nSealr/nsealr/issues/27"
+    },
+    "runtime_reproduced": false
+  },
+  "limits": "Source-backed supplementary reads only. Additional package captures are recorded from successful independent one-time fetches; they are not candidate author observations or client runtime results."
+}

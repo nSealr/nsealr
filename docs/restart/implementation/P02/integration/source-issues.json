@@ -1,0 +1,32 @@
+[
+  {
+    "API": "https://api.github.com/repos/nSealr/nsealr/issues/26",
+    "observed_utc": "2026-10-20T11:43:39.438116+00:00",
+    "full_API_response_sha256": "a3b63543ccd9b8d6e7aba81ae5620d2d9f616acc903b8a307329ea9aaf036e6b",
+    "selected_public_record": {
+      "number": 26,
+      "title": "Firefox extension target lacks a supported background context",
+      "state": "open",
+      "body": "The selected Bridge source emits a Manifest V3 `background` containing only `service_worker` plus `type: module`. Its `firefox` target adds the Gecko extension ID and returns the same background. Current Mozilla compatibility data marks `background.service_worker` unsupported in Firefox, while `background.scripts` is supported. The Firefox package therefore has a source-backed background configuration gap despite successful package/mock tests.\n\nExact input: [companion6787969 manifest.ts](https://github.com/nSealr/companion/blob/678796900e462f5504e47fe934e2e5f23d85824f/apps/browser-extension/src/manifest.ts#L160-L216). Primary compatibility input: [MDN data0416078 background.json](https://github.com/mdn/browser-compat-data/blob/0416078da7a1eafd7b308b37366eeac492bc1e46/webextensions/manifest/background.json) and [Mozilla background documentation](https://developer.mozilla.org/en-US/docs/Mozilla/Add-ons/WebExtensions/manifest.json/background), read2026-10-18.\n\nC01 owns repair and real-browser qualification. First reproduce the actual packaged extension load/background/native-message behavior on the selected Firefox158.0 executable, saving the exact manifest, binary/build/package hashes and error/lifecycle observations. Implement the appropriate event-page/scripts or reviewed cross-browser background representation, checking that the emitted module and APIs work in that environment. Exercise injection, origin controls, native host communication, pending cancellation, restart and idle lifecycle on both Firefox and the separately selected Chromium-family browser. A manifest-only text assertion is insufficient.\n\nThis issue records **source inspection and official browser compatibility data**; no installed-Firefox reproduction is claimed yet. It does not block A02 from migrating the existing selected behavior. A02 must preserve the useful checks and explicit limitation, without introducing a Firefox interoperability announcement. No mobile/Safari/other Chromium browser support is implied.\n",
+      "html_url": "https://github.com/nSealr/nsealr/issues/26",
+      "updated_at": "2026-10-18T19:11:01Z"
+    },
+    "qualification_boundary": "Existing source-backed C01 risk,not a runtime reproduction or exploit/client/device qualification.",
+    "selected_body_sha256": "ba9c768512ff96b7607689f294798a2567789e1903b8e724848ff34b434a3113"
+  },
+  {
+    "API": "https://api.github.com/repos/nSealr/nsealr/issues/27",
+    "observed_utc": "2026-10-20T11:43:39.844191+00:00",
+    "full_API_response_sha256": "9e5525e12edc5b9e6499272ba9cde28820cdb3be2ab5c70a453b4acbeb91784a",
+    "selected_public_record": {
+      "number": 27,
+      "title": "Qualify Coracle nostrconnect against unbound legacy ack responses",
+      "state": "open",
+      "body": "P02's independent source review found a qualification risk specifically in Coracle's **client-generated nostrconnect** path. The selected broker is constructed without a pre-bound signer key. Its waitForNostrconnect handler accepts a result of `ack` instead of requiring the connection secret, then adopts the response event's public key. Fetching a subsequent user key from that adopted signer does not independently confirm the physical device's expected identity.\n\nExact source: [Coracle8f4d34c LoginBunker.svelte](https://github.com/coracle-social/coracle/blob/8f4d34cc16bfb4380208923d26307fab561a867d/src/app/views/LoginBunker.svelte), lines76\u201399 and31\u201336. Library: official [@welshman/signer0.13.0 tarball](https://registry.npmjs.org/@welshman/signer/-/signer-0.13.0.tgz), `package/dist/signer/src/signers/nip46.js`, waitForNostrconnect lines290\u2013320, acceptance/assignment297\u2013300. The package matched the exact client lockfile SRI; body SHA-256 `019e3aa41b95d1fd937d3ef776ea79e8293a6d5098429f49454d280dea209412`.\n\nC01 owns an adversarial run using a controlled fixture relay: unexpected-peer response containing ack, wrong/missing secret, stale/unrelated correlation and competing responses, plus the valid secret-bound control. Require correct transport/session binding and independent full expected user-key confirmation, with no signature authority from pairing. Qualify a corrected client integration or explicitly leave this path unsupported. The general P02-C02 wrong-peer/identity cases already require this boundary; this issue makes the observed variant concrete.\n\nThis is **source-backed risk identification**, not a demonstrated runtime exploit. Do not generalize it to the known-peer bunker-URL path: that separate path parses the expected signer key from the supplied URI and still needs its own authenticated-peer/correlation tests. No current nSealr compatibility, whole-client exploitability or device qualification is asserted.\n",
+      "html_url": "https://github.com/nSealr/nsealr/issues/27",
+      "updated_at": "2026-10-18T19:36:15Z"
+    },
+    "qualification_boundary": "Existing source-backed C01 risk,not a runtime reproduction or exploit/client/device qualification.",
+    "selected_body_sha256": "9061aadeb38e9ad050259b464b91f3f9c1ee5f4753e4c9e3ba5fdad80ae425ef"
+  }
+]
