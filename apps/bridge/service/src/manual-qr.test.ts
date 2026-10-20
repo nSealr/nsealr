@@ -305,4 +305,42 @@ describe("service manual QR port through the existing client lifecycle", () => {
     expect(await run(state)).toMatchObject({ ok: false, error: { code: "signer_transport_failed" } });
     expect(state.counts.opens).toBe(1);
   });
+
+  it("reserves the factory before currentness callbacks can reenter through another actual client context", async () => {
+    const state = setup(); const actualDispatch = state.context.signerDispatcher!;
+    const actualProvider = state.context.signerCompatibility!;
+    const entered = deferred<void>(), finish = deferred<void>();
+    let insideAdapter = false, triggered = false;
+    let nested: ReturnType<typeof handleLocalServiceRequestAsync> | undefined;
+    state.context.signerDispatcher = (dispatch) => {
+      insideAdapter = true;
+      try { return actualDispatch(dispatch); }
+      finally { insideAdapter = false; }
+    };
+    state.context.signerCompatibility = (route, request) => {
+      // Preflight provider calls are outside the adapter. Reenter only from
+      // its currentness callback; a separate context bypasses context-local
+      // pending capacity but must never bypass the physical factory owner.
+      if (insideAdapter && !triggered) {
+        triggered = true;
+        nested = handleLocalServiceRequestAsync(state.envelope, { ...state.context });
+      }
+      return actualProvider(route, request);
+    };
+    state.openHook = async (control) => { entered.resolve(); await finish.promise; return state.port(control); };
+    const outer = run(state);
+    try {
+      await entered.promise;
+      expect(triggered).toBe(true); expect(nested).toBeDefined();
+      expect(state.counts.opens).toBe(1);
+    } finally {
+      finish.resolve();
+      await Promise.allSettled([outer, nested]);
+    }
+    expect(await nested).toMatchObject({ ok: false, error: { code: "signer_transport_failed" } });
+    expect((await outer).ok).toBe(true);
+    state.openHook = undefined;
+    expect((await run(state)).ok).toBe(true);
+    expect(state.counts.opens).toBe(2);
+  });
 });
