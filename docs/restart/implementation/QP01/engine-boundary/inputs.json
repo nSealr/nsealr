@@ -1,0 +1,65 @@
+{
+  "schema_version": 1,
+  "role": "Fixed public canary expectations selected before wrapper implementation; no user secret/key/request API.",
+  "recorded_utc": "2026-10-20T19:12:21.526350+00:00",
+  "core_source": "5d047b5d3150d58a1a45caf00c8946b7f18364bb",
+  "core_tree": "87a54f18d45591c21bd97c24a1f3e47b64f77777",
+  "independent_source": {
+    "path": "docs/restart/implementation/K01/independent-inputs.json",
+    "commit": "5d047b5d3150d58a1a45caf00c8946b7f18364bb",
+    "sha256": "887ee851eac781f3014db68db79148d63e339c65efa057b89db7b5bec4c29b29",
+    "selected_row_id": "profile-empty",
+    "generation": "Existing pre-runtime K01 Python/hashlib/BIP340 reference row; copied exact row, never defined by this canary output."
+  },
+  "expected_row": {
+    "id": "profile-empty",
+    "template": "{\"created_at\":1710000000,\"kind\":0,\"tags\":[],\"content\":\"{}\"}",
+    "public_fixture_scalar": 3,
+    "aux_hex": "0000000000000000000000000000000000000000000000000000000000000000",
+    "pubkey": "f9308a019258c31049344f85f89d5229b531c845836f99b08601f113bce036f9",
+    "canonical_hex": "5b302c2266393330386130313932353863333130343933343466383566383964353232396235333163383435383336663939623038363031663131336263653033366639222c313731303030303030302c302c5b5d2c227b7d225d",
+    "event_id": "e82eb58c5a8aaf5b49520572a93b9f79b26e47a14401e35e98f691229edd5c14",
+    "signature": "4240ce5a522fd83d3d7b365b732d2779685de9c57c7eb38dc0f2d93aefd491c9a2d53ea3d8fdf925a8aabc058fbb70997a4bde5d01390e0dfcb65c6d617ebe6b",
+    "expected_review_roles": [
+      "profile replacement",
+      "empty metadata object",
+      "no verified profile identity"
+    ],
+    "status": "independent expected input generated before runtime edits; not observed K01 output"
+  },
+  "request_path": "request.json",
+  "request_sha256": "a0016100a3f25176b662248ea476ef0010720185347100e6cd21a25d01b8c96e",
+  "host_geometry": {
+    "columns": 32,
+    "lines": 8,
+    "physical_fit_qualified": false
+  },
+  "cases": [
+    {
+      "id": "approve-complete",
+      "script": "Return Next for every Data callback, Approve only for separate Decision callback.",
+      "expect": "All frame indexes in order0..total-1 including final decision; nonzero signed event exactly matching independent row event fields, ID and signature; existing Python verifier accepts."
+    },
+    {
+      "id": "reject-local",
+      "script": "Return Reject on first actual Data frame.",
+      "expect": "Core becomes Spent; actual sign_approved refuses InvalidState, provider uncalled, written0 and all9216caller bytes zero."
+    },
+    {
+      "id": "approve-premature",
+      "script": "Return Approve on first Data frame.",
+      "expect": "Core review_step refuses InvalidState; written0 and all caller bytes zero."
+    },
+    {
+      "id": "callback-exception",
+      "script": "Catch a simulated Python display exception and return explicit display error.",
+      "expect": "Rust receives display failure; cancels owner, written0/all zero; no exception crosses C ABI."
+    },
+    {
+      "id": "reentry",
+      "script": "During the first approve-complete Data callback call the same export once with separate output; then complete normal review.",
+      "expect": "Nested call returns Busy before constructing owner or calling UI; output0/all zero; outer positive unaffected."
+    }
+  ],
+  "limits": "Host simulated UI/public deterministic provider only. No ARM/image/physical/entropy/session-persistence/admission claim; three QP01 and six Q02 criteria remain incomplete."
+}
