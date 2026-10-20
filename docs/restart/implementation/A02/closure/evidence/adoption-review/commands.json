@@ -1,0 +1,103 @@
+{
+  "schema_version": 1,
+  "candidate_commit": "a5f7b9f2e087c9538495a16706644f3390e6b01c",
+  "recorded_utc": "2026-10-20T10:24:33.707238+00:00",
+  "cwd": "/home/tux/nsealr/.restart-tools/goal/a02-adoption-review",
+  "environment": {
+    "python_executable": "/usr/bin/python3",
+    "python_version": "3.13.5 (main, Aug 10 2026, 12:06:59) [GCC 14.2.0]",
+    "platform": "Linux-6.12.101+deb13-amd64-x86_64-with-glibc2.41",
+    "git": "git version 2.47.3",
+    "explicit_environment": {
+      "PYTHONDONTWRITEBYTECODE": "1 for affected make/migration commands"
+    }
+  },
+  "commands": [
+    {
+      "argv": [
+        "make",
+        "docs",
+        "test"
+      ],
+      "exit_code": 0,
+      "log": {
+        "path": "docs/restart/implementation/reviews/A02-adoption/affected-docs-test.log",
+        "bytes": 2655,
+        "sha256": "0a2e3706f91417e859449df31ca3154678a9ce819836d314ba0c1857e1644086"
+      },
+      "observed_unit_groups": [
+        20,
+        14,
+        18,
+        5,
+        8
+      ]
+    },
+    {
+      "argv": [
+        "python3",
+        "-B",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "tools/migration",
+        "-p",
+        "test_*.py",
+        "-v"
+      ],
+      "exit_code": 0,
+      "log": {
+        "path": "docs/restart/implementation/reviews/A02-adoption/migration-controls.log",
+        "bytes": 6270,
+        "sha256": "2e543e26d21ecebd12a6a95a6143d63977d20827c25f3b7234c240d1b346778b"
+      },
+      "cases": 48
+    },
+    {
+      "argv": [
+        "python3",
+        "-B",
+        "docs/restart/implementation/reviews/A02-adoption/probe.py"
+      ],
+      "exit_code": 0,
+      "result": {
+        "path": "docs/restart/implementation/reviews/A02-adoption/probe-result.json",
+        "bytes": 14665,
+        "sha256": "bc29fa1d7f43be78dc75f0bae098a5b9a7186407f4bebc92fc13b1eee42a8ec6"
+      },
+      "prior_reviewer_expectation_failures": "docs/restart/implementation/reviews/A02-adoption/probe-initial-failure.json"
+    },
+    {
+      "argv": [
+        "git",
+        "diff",
+        "--check",
+        "daf8ba03a9eb820f99b0f1bf5c4f553a7961e008",
+        "a5f7b9f2e087c9538495a16706644f3390e6b01c"
+      ],
+      "exit_code": 2,
+      "log": {
+        "path": "docs/restart/implementation/reviews/A02-adoption/candidate-whitespace.log",
+        "bytes": 5098,
+        "sha256": "326f05854a6a9e481d1c70326f49d84f677ad84ef22515686af93067bfee8779"
+      },
+      "meaning": "Preserved raw log warnings, including whitespace-check observation log itself."
+    },
+    {
+      "argv": [
+        "git",
+        "diff",
+        "--check",
+        "daf8ba03a9eb820f99b0f1bf5c4f553a7961e008",
+        "a5f7b9f2e087c9538495a16706644f3390e6b01c",
+        "--",
+        ".",
+        ":(exclude)*.log"
+      ],
+      "exit_code": 0,
+      "meaning": "All non-log source has no whitespace warnings."
+    }
+  ],
+  "not_run": "No complete product CI, real replay/restoration, build/binary equivalence, pause pipeline, main mutation or physical operation."
+}

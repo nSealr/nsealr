@@ -1,0 +1,199 @@
+[
+  {
+    "command": [
+      "git",
+      "-c",
+      "init.templateDir=",
+      "init",
+      "-q",
+      "--initial-branch=intake",
+      "/tmp/a02-independent-cold-r34i1f4y/repository"
+    ],
+    "cwd": "$COLD",
+    "exit_code": 0,
+    "stdout": "",
+    "stderr": ""
+  },
+  {
+    "command": [
+      "git",
+      "fetch",
+      "--no-tags",
+      "--no-write-fetch-head",
+      "https://github.com/nSealr/nsealr.git",
+      "951ed2ad1bb7c7d85a6eaa735a5286022e8fce36:refs/heads/candidate"
+    ],
+    "cwd": "$COLD",
+    "exit_code": 0,
+    "stdout": "",
+    "stderr": "From https://github.com/nSealr/nsealr\n * [new ref]         951ed2ad1bb7c7d85a6eaa735a5286022e8fce36 -> candidate\n"
+  },
+  {
+    "command": [
+      "git",
+      "checkout",
+      "-q",
+      "candidate"
+    ],
+    "cwd": "$COLD",
+    "exit_code": 0,
+    "stdout": "",
+    "stderr": ""
+  },
+  {
+    "command": [
+      "git",
+      "cat-file",
+      "-e",
+      "86569e073da4faec0811d67137bbb0fd4f74c7c6^{commit}"
+    ],
+    "cwd": "$COLD",
+    "exit_code": 128,
+    "stdout": "",
+    "stderr": "fatal: Not a valid object name 86569e073da4faec0811d67137bbb0fd4f74c7c6^{commit}\n"
+  },
+  {
+    "command": [
+      "git",
+      "cat-file",
+      "-e",
+      "5cb16cbaffc6b90ca9dfbb1ce7a5388e731d1ae0^{commit}"
+    ],
+    "cwd": "$COLD",
+    "exit_code": 128,
+    "stdout": "",
+    "stderr": "fatal: Not a valid object name 5cb16cbaffc6b90ca9dfbb1ce7a5388e731d1ae0^{commit}\n"
+  },
+  {
+    "command": [
+      "git",
+      "cat-file",
+      "-e",
+      "68508ea1eea1e07b0064fadd65b33433d72701f8^{commit}"
+    ],
+    "cwd": "$COLD",
+    "exit_code": 0,
+    "stdout": "",
+    "stderr": ""
+  },
+  {
+    "command": [
+      "git",
+      "merge-base",
+      "--is-ancestor",
+      "68508ea1eea1e07b0064fadd65b33433d72701f8",
+      "951ed2ad1bb7c7d85a6eaa735a5286022e8fce36"
+    ],
+    "cwd": "$COLD",
+    "exit_code": 0,
+    "stdout": "",
+    "stderr": ""
+  },
+  {
+    "command": [
+      "git",
+      "cat-file",
+      "-e",
+      "59653fcc15c4cbc21a39d0a0dd5548abe46165b0^{commit}"
+    ],
+    "cwd": "$COLD",
+    "exit_code": 0,
+    "stdout": "",
+    "stderr": ""
+  },
+  {
+    "command": [
+      "git",
+      "merge-base",
+      "--is-ancestor",
+      "59653fcc15c4cbc21a39d0a0dd5548abe46165b0",
+      "951ed2ad1bb7c7d85a6eaa735a5286022e8fce36"
+    ],
+    "cwd": "$COLD",
+    "exit_code": 0,
+    "stdout": "",
+    "stderr": ""
+  },
+  {
+    "command": [
+      "git",
+      "cat-file",
+      "-e",
+      "f2ef70f522af4977e15f81554a8c6eadcdbe8097^{commit}"
+    ],
+    "cwd": "$COLD",
+    "exit_code": 0,
+    "stdout": "",
+    "stderr": ""
+  },
+  {
+    "command": [
+      "git",
+      "merge-base",
+      "--is-ancestor",
+      "f2ef70f522af4977e15f81554a8c6eadcdbe8097",
+      "951ed2ad1bb7c7d85a6eaa735a5286022e8fce36"
+    ],
+    "cwd": "$COLD",
+    "exit_code": 0,
+    "stdout": "",
+    "stderr": ""
+  },
+  {
+    "command": [
+      "git",
+      "fsck",
+      "--full",
+      "--strict",
+      "--no-reflogs"
+    ],
+    "cwd": "$COLD",
+    "exit_code": 0,
+    "stdout": "",
+    "stderr": ""
+  },
+  {
+    "command": [
+      "git",
+      "status",
+      "--porcelain"
+    ],
+    "cwd": "$COLD",
+    "exit_code": 0,
+    "stdout": "",
+    "stderr": ""
+  },
+  {
+    "command": [
+      "/usr/bin/python3",
+      "-B",
+      "scripts/verify_contracts.py"
+    ],
+    "cwd": "$COLD",
+    "exit_code": 0,
+    "stdout": "{\"artifact\": \"nsealr-contracts-v1\", \"consumers\": [\"bridge\", \"engine\", \"pi\"], \"files\": 251, \"source_commit\": \"45f8b6ff1123f3f55be4ce457fd1008e91043cc2\"}\n",
+    "stderr": ""
+  },
+  {
+    "command": [
+      "/usr/bin/python3",
+      "-B",
+      "scripts/verify_evidence.py"
+    ],
+    "cwd": "$COLD",
+    "exit_code": 0,
+    "stdout": "{\"closed_files\": 1508, \"current_contracts\": 5, \"current_navigation_files\": 18, \"frozen_source\": \"f2ef70f522af4977e15f81554a8c6eadcdbe8097\"}\n",
+    "stderr": ""
+  },
+  {
+    "command": [
+      "git",
+      "status",
+      "--porcelain"
+    ],
+    "cwd": "$COLD",
+    "exit_code": 0,
+    "stdout": "",
+    "stderr": ""
+  }
+]

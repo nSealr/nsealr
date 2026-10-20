@@ -1,0 +1,24 @@
+{
+  "scope": "Reviewer probe schema assumption; no candidate change",
+  "script_sha256": "e47d1af8a6123e63bad53f92be79235493cbdd036108fcd07183171547314083",
+  "exit_code": 1,
+  "error": "KeyError: sha256 at copy-row before preimage check",
+  "cause": "Copy inventory preimage binds mode/blob; prospective inventory separately binds SHA256/bytes. The probe wrongly expected duplicated SHA256 in copy-row before.",
+  "correction": "Compare mode/blob at copy preimage, verify prospective preimage hash/length against actual original blob separately. Preserve exact candidate bytes.",
+  "followup": {
+    "script_sha256": "01ad695aa5238cbeb82d94284834ffcfafb332f004897d55677d57ac66a84c21",
+    "exit_code": 1,
+    "cause": "The real mode/blob preimage also contains kind=blob; include that explicit type in the comparison. No candidate defect."
+  },
+  "metadata_whitelist_correction": {
+    "script_sha256": "0f132e5d39ad091a293e093d37e0b988928c151181ab0c7982c57252418121bd",
+    "exit_code": 1,
+    "cause": "Probe omitted the explicit S04 blocker metadata field. Inspection confirms it records required terminal platform/source gates; add that permitted assignment metadata field, not an acceptance/behavior change."
+  },
+  "final_whitespace_snapshot_observation": {
+    "exit_code": 1,
+    "cause": "Final committed diff also includes the raw whitespace-check log itself; its captured lines reproduce trailing whitespace. Historical staged observation listed12 files before appending that log. Final set has13 log files, source exit0 unchanged.",
+    "expected_extra_file": "docs/restart/implementation/A02/coordinator-adoption/validation-03/00-complete-staged-whitespace-observation.log",
+    "disposition": "Precisely verify the one self-recording extra log and retain final raw diff output; no candidate or log editing."
+  }
+}
