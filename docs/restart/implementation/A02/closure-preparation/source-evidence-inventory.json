@@ -1,0 +1,986 @@
+{
+  "schema_version": 1,
+  "phase": "Preparation only; not a task result or another tracker",
+  "recorded_utc": "2026-10-20T11:09:58.772256+00:00",
+  "preparation_base": {
+    "commit": "d931277bebbc5f43514b0e8438d65fb60603fa35",
+    "tree": "e67b1337eaea5cfe3242fe4d83845881764ea5f0",
+    "A02_status_observed": "running",
+    "A02_result_artifacts_count": 0,
+    "plan_sha256": "e6ca36b38c09ce44e48567cd58383616a5dc0f8ce5e03175c0a7047e01f1d4c2"
+  },
+  "accepted_migration_input_commits": {
+    "nSealr/companion": "678796900e462f5504e47fe934e2e5f23d85824f",
+    "nSealr/lab": "3303ab17a28ed32419576627d5abb93db3999635",
+    "nSealr/nsealr": "f2ef70f522af4977e15f81554a8c6eadcdbe8097",
+    "nSealr/raspberry": "d1534d9dcfba8fe4a35cea2ed3529e32a5003dc6",
+    "nSealr/specs": "45f8b6ff1123f3f55be4ce457fd1008e91043cc2"
+  },
+  "chain": [
+    {
+      "role": "Original author package",
+      "commit": "bb033619b5346302833d717eb501bfa4e3653a1b",
+      "tree": "281184f5d2dc81a3bfca717082c5a0379f394871",
+      "package_sha256": "38b2fb69ef3f1e8a2414d168b005d6f674e2eabebe84d252f2239494cea0917e"
+    },
+    {
+      "role": "Isolated reviewed product",
+      "commit": "daf8ba03a9eb820f99b0f1bf5c4f553a7961e008",
+      "tree": "db0687a5ec15228e944360e00e391a4fff863f5d"
+    },
+    {
+      "role": "Distinct final rehearsal review",
+      "commit": "0b55449aeea6b296805b786fd4822fc625ba74dd",
+      "verdict": "pass_final_rehearsal_review"
+    },
+    {
+      "role": "Materialized adoption",
+      "commit": "a5f7b9f2e087c9538495a16706644f3390e6b01c",
+      "tree": "e67b1337eaea5cfe3242fe4d83845881764ea5f0"
+    },
+    {
+      "role": "Distinct final adoption review",
+      "commit": "249d2cf85b2c69276174f32dc6d24c092e290a67",
+      "verdict": "PASS_materialized_adoption_candidate_only"
+    },
+    {
+      "role": "Protected PR31 CI",
+      "run_id": 39406783194,
+      "head": "a5f7b9f2e087c9538495a16706644f3390e6b01c",
+      "status": "completed",
+      "conclusion": "success",
+      "url": "https://github.com/nSealr/nsealr/actions/runs/39406783194"
+    },
+    {
+      "role": "Actual normal PR31 rebase integration",
+      "commit": "d931277bebbc5f43514b0e8438d65fb60603fa35",
+      "tree": "e67b1337eaea5cfe3242fe4d83845881764ea5f0",
+      "same_tree_as_adoption": true,
+      "PR": 31
+    },
+    {
+      "role": "Actual failed main CI",
+      "run_id": 39408038674,
+      "head": "d931277bebbc5f43514b0e8438d65fb60603fa35",
+      "conclusion": "failure",
+      "logs_zip_sha256": "0c074b0fdd3253b5518683cd5ba853db58b0c095c264167f87cdb0c2f7fe291d"
+    },
+    {
+      "role": "Repair delivery candidate",
+      "commit": "951ed2ad1bb7c7d85a6eaa735a5286022e8fce36",
+      "tree": "0014d51b24ea0b58650d3dee3a5a8616367e6769",
+      "PR": 32
+    },
+    {
+      "role": "Distinct exact final repair review",
+      "commit": "5f3714dc55ab99d41352cc7ad33fa3630b2f0a29",
+      "verdict": "PASS_final_repair_candidate_only",
+      "gate": "Actual exact final repair review read and root accepted; not A02 closure approval",
+      "review_json_sha256": "499ad5796285d84dbd6f81f7670249358a3c6900bd22f709e0c61ae44c5f8cdd"
+    },
+    {
+      "role": "Protected repair PR32 full CI",
+      "run_id": 39411242641,
+      "head": "951ed2ad1bb7c7d85a6eaa735a5286022e8fce36",
+      "accepted_conclusion": "success",
+      "gate": "Actual success verified by coordinator; preserve exact API/log captures in admitted closure",
+      "status": "completed"
+    },
+    {
+      "role": "Actual repaired-main integration",
+      "commit": "b1c90139a651895284b2624da7d12903cf16bc9d",
+      "tree": "0014d51b24ea0b58650d3dee3a5a8616367e6769",
+      "gate": "Actual normal protected rebase output observed by coordinator, permanent anchors independently checked here",
+      "same_tree_as_repair": true,
+      "PR": 32
+    },
+    {
+      "role": "Corrected-main full CI",
+      "run_id": 39412818666,
+      "head": "b1c90139a651895284b2624da7d12903cf16bc9d",
+      "conclusion": null,
+      "gate": "Actual run in progress at coordinator update; not PASS. Mandatory before closure admission",
+      "status": "in_progress"
+    },
+    {
+      "role": "Distinct closure candidate/metadata review",
+      "commit": null,
+      "verdict": null,
+      "gate": "not yet admitted"
+    }
+  ],
+  "historical_index": {
+    "source_commit": "f2ef70f522af4977e15f81554a8c6eadcdbe8097",
+    "sha256": "8c562c3b45c000f809aed4557b2d1ea15284bf0645215a30c227668f0158f75b",
+    "unique_frozen_files": 1508,
+    "closed_tasks": [
+      {
+        "id": "R00",
+        "record_sha256": "54ef525c6557a3564b1efdd83b53304fe1dc6ed50155410e5844117ea6d9fddb"
+      },
+      {
+        "id": "P01",
+        "record_sha256": "1aa734c846738d1567e10b0d25d847a4a4de880f8b250263351033ab13d52f88"
+      },
+      {
+        "id": "S01",
+        "record_sha256": "406ac7b22d4368ff8ad14068b15825a412bcc4fa6c3e59184efb98aab3cbdaf7"
+      },
+      {
+        "id": "S02",
+        "record_sha256": "d0f48f7fe6731a6332306a775d434193c03013865fcd0fc21680e1945b4ddd5c"
+      },
+      {
+        "id": "E01",
+        "record_sha256": "0ec50b1d8863eba9e1a7c8a1102287f3f469c92efaba8ec3fb21b49064bf58cb"
+      },
+      {
+        "id": "A01",
+        "record_sha256": "40d1a81fe98f0b61bea60db35c1ba30dd87c1cdf7716d594bda4f847d8fabc3e"
+      },
+      {
+        "id": "O01",
+        "record_sha256": "df9c9d2b29f8788e6b5e1de19326ae1627fdde0b10c848a9184c8c92dc05eb17"
+      }
+    ],
+    "must_remain_byte_exact": true,
+    "extension_rule": "New A02 underlying result_artifacts belong only to its graph record and result manifest. No extra rows in the f2 historical equivalence index."
+  },
+  "source_evidence": [
+    {
+      "source_commit": "bb033619b5346302833d717eb501bfa4e3653a1b",
+      "source_path": "docs/restart/implementation/A02/final-source-map.json",
+      "mode": "100644",
+      "blob": "67cbbef74092ec91b66e3395d74bef703a9fe9f5",
+      "sha256": "eb734f28f580cc04ae1eb4ffaf6c3de4e16eed92579a742775894ccfffbce2a0",
+      "bytes": 5439950,
+      "role": "Original reviewed underlying criterion evidence",
+      "criteria": [
+        0
+      ],
+      "same_bytes_at_preparation_base": true,
+      "available_base_path": "docs/restart/implementation/A02/final-source-map.json",
+      "proposed_future_artifact_path": "docs/restart/implementation/A02/final-source-map.json",
+      "url": "https://github.com/nSealr/nsealr/blob/bb033619b5346302833d717eb501bfa4e3653a1b/docs/restart/implementation/A02/final-source-map.json"
+    },
+    {
+      "source_commit": "bb033619b5346302833d717eb501bfa4e3653a1b",
+      "source_path": "docs/restart/implementation/A02/final-tree.json",
+      "mode": "100644",
+      "blob": "50396c43655952bd78a3160192b812b7f3daf6a7",
+      "sha256": "86dfdc092ff2a2d0a455881225cb000441e06990df510484a1238a447d61d64c",
+      "bytes": 2374570,
+      "role": "Original reviewed underlying criterion evidence",
+      "criteria": [
+        0
+      ],
+      "same_bytes_at_preparation_base": true,
+      "available_base_path": "docs/restart/implementation/A02/final-tree.json",
+      "proposed_future_artifact_path": "docs/restart/implementation/A02/final-tree.json",
+      "url": "https://github.com/nSealr/nsealr/blob/bb033619b5346302833d717eb501bfa4e3653a1b/docs/restart/implementation/A02/final-tree.json"
+    },
+    {
+      "source_commit": "bb033619b5346302833d717eb501bfa4e3653a1b",
+      "source_path": "docs/restart/implementation/A02/source-references.json",
+      "mode": "100644",
+      "blob": "4460b073b021845ade2668d07a432871c96b96a1",
+      "sha256": "404cb074b6b9882816810284a386caade1857d4eb5c348cb164ad905da466ff1",
+      "bytes": 8059,
+      "role": "Original reviewed underlying criterion evidence",
+      "criteria": [
+        0
+      ],
+      "same_bytes_at_preparation_base": true,
+      "available_base_path": "docs/restart/implementation/A02/source-references.json",
+      "proposed_future_artifact_path": "docs/restart/implementation/A02/source-references.json",
+      "url": "https://github.com/nSealr/nsealr/blob/bb033619b5346302833d717eb501bfa4e3653a1b/docs/restart/implementation/A02/source-references.json"
+    },
+    {
+      "source_commit": "bb033619b5346302833d717eb501bfa4e3653a1b",
+      "source_path": "docs/restart/implementation/A02/execution/initial-import-map.json",
+      "mode": "100644",
+      "blob": "e064c6ccb8a6943cf63f5d92fae4fe4495dc225d",
+      "sha256": "9e4384a9535651b63736be7908dfcbdfd3b0f0d3b772801f7265139159c64cfd",
+      "bytes": 2517265,
+      "role": "Original reviewed underlying criterion evidence",
+      "criteria": [
+        0
+      ],
+      "same_bytes_at_preparation_base": true,
+      "available_base_path": "docs/restart/implementation/A02/execution/initial-import-map.json",
+      "proposed_future_artifact_path": "docs/restart/implementation/A02/execution/initial-import-map.json",
+      "url": "https://github.com/nSealr/nsealr/blob/bb033619b5346302833d717eb501bfa4e3653a1b/docs/restart/implementation/A02/execution/initial-import-map.json"
+    },
+    {
+      "source_commit": "bb033619b5346302833d717eb501bfa4e3653a1b",
+      "source_path": "docs/restart/implementation/A02/execution/rehearsal-04/result.json",
+      "mode": "100644",
+      "blob": "30307432b89dd0af4b02eb01aa265fa021847852",
+      "sha256": "401f1aabb540febc2201a7d6b1de2afd6c0328134f021ce4ad845588d405a971",
+      "bytes": 3020,
+      "role": "Original reviewed underlying criterion evidence",
+      "criteria": [
+        0
+      ],
+      "same_bytes_at_preparation_base": true,
+      "available_base_path": "docs/restart/implementation/A02/execution/rehearsal-04/result.json",
+      "proposed_future_artifact_path": "docs/restart/implementation/A02/execution/rehearsal-04/result.json",
+      "url": "https://github.com/nSealr/nsealr/blob/bb033619b5346302833d717eb501bfa4e3653a1b/docs/restart/implementation/A02/execution/rehearsal-04/result.json"
+    },
+    {
+      "source_commit": "bb033619b5346302833d717eb501bfa4e3653a1b",
+      "source_path": "docs/restart/implementation/A02/execution/cold-product-03/evidence/suites/result.json",
+      "mode": "100644",
+      "blob": "188b0c86eaf60d341b066577086e32619b0040b7",
+      "sha256": "af5d9c452ca7ed680d521c812d6d188e9706d213dea9ce36b9c447b09bbdeea2",
+      "bytes": 270,
+      "role": "Original reviewed underlying criterion evidence",
+      "criteria": [
+        1,
+        2,
+        4
+      ],
+      "same_bytes_at_preparation_base": true,
+      "available_base_path": "docs/restart/implementation/A02/execution/cold-product-03/evidence/suites/result.json",
+      "proposed_future_artifact_path": "docs/restart/implementation/A02/execution/cold-product-03/evidence/suites/result.json",
+      "url": "https://github.com/nSealr/nsealr/blob/bb033619b5346302833d717eb501bfa4e3653a1b/docs/restart/implementation/A02/execution/cold-product-03/evidence/suites/result.json"
+    },
+    {
+      "source_commit": "bb033619b5346302833d717eb501bfa4e3653a1b",
+      "source_path": "docs/restart/implementation/A02/execution/cold-product-03/evidence/suites/00-product-ci.log",
+      "mode": "100644",
+      "blob": "71e0290c0c1992835a119ebd0104c1e3e5ac4089",
+      "sha256": "c6a214cf4a339a5364c4ccba29937704d99b69b1d482f2049da72f8d738d788e",
+      "bytes": 218119,
+      "role": "Original reviewed underlying criterion evidence",
+      "criteria": [
+        1
+      ],
+      "same_bytes_at_preparation_base": true,
+      "available_base_path": "docs/restart/implementation/A02/execution/cold-product-03/evidence/suites/00-product-ci.log",
+      "proposed_future_artifact_path": "docs/restart/implementation/A02/execution/cold-product-03/evidence/suites/00-product-ci.log",
+      "url": "https://github.com/nSealr/nsealr/blob/bb033619b5346302833d717eb501bfa4e3653a1b/docs/restart/implementation/A02/execution/cold-product-03/evidence/suites/00-product-ci.log"
+    },
+    {
+      "source_commit": "bb033619b5346302833d717eb501bfa4e3653a1b",
+      "source_path": "docs/restart/implementation/A02/execution/model-policy-execution-01/result.json",
+      "mode": "100644",
+      "blob": "d7369aeb0280c0d3de144b7eafa97e47e3e62ca8",
+      "sha256": "0abd3dce50a6682e78eefae2c940ad3cc3603fee7aba7386cf689503da5f3a63",
+      "bytes": 415,
+      "role": "Original reviewed underlying criterion evidence",
+      "criteria": [
+        1
+      ],
+      "same_bytes_at_preparation_base": true,
+      "available_base_path": "docs/restart/implementation/A02/execution/model-policy-execution-01/result.json",
+      "proposed_future_artifact_path": "docs/restart/implementation/A02/execution/model-policy-execution-01/result.json",
+      "url": "https://github.com/nSealr/nsealr/blob/bb033619b5346302833d717eb501bfa4e3653a1b/docs/restart/implementation/A02/execution/model-policy-execution-01/result.json"
+    },
+    {
+      "source_commit": "bb033619b5346302833d717eb501bfa4e3653a1b",
+      "source_path": "docs/restart/implementation/A02/execution/case-reconciliation-execution-01/case-correspondence.json",
+      "mode": "100644",
+      "blob": "af71111d682477ecd38b92114247ee967fb6a427",
+      "sha256": "e360f5d86760eccca91afb4e04948ec22f0c65dbd67cd5ad36b9147b129323c1",
+      "bytes": 854886,
+      "role": "Original reviewed underlying criterion evidence",
+      "criteria": [
+        2
+      ],
+      "same_bytes_at_preparation_base": true,
+      "available_base_path": "docs/restart/implementation/A02/execution/case-reconciliation-execution-01/case-correspondence.json",
+      "proposed_future_artifact_path": "docs/restart/implementation/A02/execution/case-reconciliation-execution-01/case-correspondence.json",
+      "url": "https://github.com/nSealr/nsealr/blob/bb033619b5346302833d717eb501bfa4e3653a1b/docs/restart/implementation/A02/execution/case-reconciliation-execution-01/case-correspondence.json"
+    },
+    {
+      "source_commit": "bb033619b5346302833d717eb501bfa4e3653a1b",
+      "source_path": "docs/restart/implementation/A02/execution/bridge-named-execution-02/case-correspondence.json",
+      "mode": "100644",
+      "blob": "8468fdb611d13d215a9302c8388d123d9641979e",
+      "sha256": "556dbd50cf85dabd7effdb88334f4f2f1fd06b4206e95bc5a99ea007be0744db",
+      "bytes": 671594,
+      "role": "Original reviewed underlying criterion evidence",
+      "criteria": [
+        2
+      ],
+      "same_bytes_at_preparation_base": true,
+      "available_base_path": "docs/restart/implementation/A02/execution/bridge-named-execution-02/case-correspondence.json",
+      "proposed_future_artifact_path": "docs/restart/implementation/A02/execution/bridge-named-execution-02/case-correspondence.json",
+      "url": "https://github.com/nSealr/nsealr/blob/bb033619b5346302833d717eb501bfa4e3653a1b/docs/restart/implementation/A02/execution/bridge-named-execution-02/case-correspondence.json"
+    },
+    {
+      "source_commit": "bb033619b5346302833d717eb501bfa4e3653a1b",
+      "source_path": "docs/restart/implementation/A02/failure-removal-ledger.md",
+      "mode": "100644",
+      "blob": "6c3b3de5b56413509ec05871d10c4306b74a18d4",
+      "sha256": "e936cf59b4225d00306fa438a3bf329c0d47bbc5b3e81dd97a0fd9c9be4e2f39",
+      "bytes": 15585,
+      "role": "Original reviewed underlying criterion evidence",
+      "criteria": [
+        2
+      ],
+      "same_bytes_at_preparation_base": true,
+      "available_base_path": "docs/restart/implementation/A02/failure-removal-ledger.md",
+      "proposed_future_artifact_path": "docs/restart/implementation/A02/failure-removal-ledger.md",
+      "url": "https://github.com/nSealr/nsealr/blob/bb033619b5346302833d717eb501bfa4e3653a1b/docs/restart/implementation/A02/failure-removal-ledger.md"
+    },
+    {
+      "source_commit": "bb033619b5346302833d717eb501bfa4e3653a1b",
+      "source_path": "docs/restart/implementation/A02/draft-source-notices.md",
+      "mode": "100644",
+      "blob": "57721646b258aeeba7f3aeeb931f104fa1acb95f",
+      "sha256": "f768c4d9fbcdf19b77d3176e9e29bc6711d25686ddd85f15afbc277a2a95607a",
+      "bytes": 4582,
+      "role": "Original reviewed underlying criterion evidence",
+      "criteria": [
+        3
+      ],
+      "same_bytes_at_preparation_base": true,
+      "available_base_path": "docs/restart/implementation/A02/draft-source-notices.md",
+      "proposed_future_artifact_path": "docs/restart/implementation/A02/draft-source-notices.md",
+      "url": "https://github.com/nSealr/nsealr/blob/bb033619b5346302833d717eb501bfa4e3653a1b/docs/restart/implementation/A02/draft-source-notices.md"
+    },
+    {
+      "source_commit": "bb033619b5346302833d717eb501bfa4e3653a1b",
+      "source_path": "docs/restart/implementation/A02/interoperability-handoff.md",
+      "mode": "100644",
+      "blob": "8c815792d6fb8024db9afb1c86706ff216e44a3e",
+      "sha256": "1badbd211caa26604c67909b098b94ff7bc87e3715d7f5fda8b6214f53234e6e",
+      "bytes": 5550,
+      "role": "Original reviewed underlying criterion evidence",
+      "criteria": [
+        3
+      ],
+      "same_bytes_at_preparation_base": true,
+      "available_base_path": "docs/restart/implementation/A02/interoperability-handoff.md",
+      "proposed_future_artifact_path": "docs/restart/implementation/A02/interoperability-handoff.md",
+      "url": "https://github.com/nSealr/nsealr/blob/bb033619b5346302833d717eb501bfa4e3653a1b/docs/restart/implementation/A02/interoperability-handoff.md"
+    },
+    {
+      "source_commit": "bb033619b5346302833d717eb501bfa4e3653a1b",
+      "source_path": "docs/restart/implementation/A02/execution/final-package-validation-04/result.json",
+      "mode": "100644",
+      "blob": "ce9b09bf32d9296bf576da16b8df062b3a6dddcd",
+      "sha256": "ad3ece5f1103c142069616a3b83d1ccbf356fd5297093911a83b352740ae60ac",
+      "bytes": 1248,
+      "role": "Original reviewed underlying criterion evidence",
+      "criteria": [
+        3
+      ],
+      "same_bytes_at_preparation_base": true,
+      "available_base_path": "docs/restart/implementation/A02/execution/final-package-validation-04/result.json",
+      "proposed_future_artifact_path": "docs/restart/implementation/A02/execution/final-package-validation-04/result.json",
+      "url": "https://github.com/nSealr/nsealr/blob/bb033619b5346302833d717eb501bfa4e3653a1b/docs/restart/implementation/A02/execution/final-package-validation-04/result.json"
+    },
+    {
+      "source_commit": "bb033619b5346302833d717eb501bfa4e3653a1b",
+      "source_path": "docs/restart/implementation/A02/execution/external-hardware-execution-01/commands.json",
+      "mode": "100644",
+      "blob": "00d09e919d261e16f7bbcf2c482a8edbb48e19e1",
+      "sha256": "2bb8756d5d4235eab289efbe2995f05cdb4d1d37273524a83d9ceaadc3470aa2",
+      "bytes": 4059,
+      "role": "Original reviewed underlying criterion evidence",
+      "criteria": [
+        4
+      ],
+      "same_bytes_at_preparation_base": true,
+      "available_base_path": "docs/restart/implementation/A02/execution/external-hardware-execution-01/commands.json",
+      "proposed_future_artifact_path": "docs/restart/implementation/A02/execution/external-hardware-execution-01/commands.json",
+      "url": "https://github.com/nSealr/nsealr/blob/bb033619b5346302833d717eb501bfa4e3653a1b/docs/restart/implementation/A02/execution/external-hardware-execution-01/commands.json"
+    },
+    {
+      "source_commit": "bb033619b5346302833d717eb501bfa4e3653a1b",
+      "source_path": "docs/restart/implementation/A02/final-review-package.json",
+      "mode": "100644",
+      "blob": "359fd0eb6aec661cdb66d7020c76d950d42179d9",
+      "sha256": "38b2fb69ef3f1e8a2414d168b005d6f674e2eabebe84d252f2239494cea0917e",
+      "bytes": 220932,
+      "role": "Exact final author package/source/failure/rollback binding",
+      "criteria": [
+        0,
+        1,
+        2,
+        3,
+        4
+      ],
+      "same_bytes_at_preparation_base": true,
+      "available_base_path": "docs/restart/implementation/A02/final-review-package.json",
+      "proposed_future_artifact_path": "docs/restart/implementation/A02/final-review-package.json",
+      "url": "https://github.com/nSealr/nsealr/blob/bb033619b5346302833d717eb501bfa4e3653a1b/docs/restart/implementation/A02/final-review-package.json"
+    },
+    {
+      "source_commit": "bb033619b5346302833d717eb501bfa4e3653a1b",
+      "source_path": "docs/restart/implementation/A02/final-report.md",
+      "mode": "100644",
+      "blob": "10df856d793b82d6f42e1b86c570365ebe76dcac",
+      "sha256": "f3f3b3f0f692f7c8d2f0131be82cf8848711e2f6e3d8f7fb049a8697293a5d8c",
+      "bytes": 15192,
+      "role": "Exact final author package/source/failure/rollback binding",
+      "criteria": [
+        0,
+        1,
+        2,
+        3,
+        4
+      ],
+      "same_bytes_at_preparation_base": true,
+      "available_base_path": "docs/restart/implementation/A02/final-report.md",
+      "proposed_future_artifact_path": "docs/restart/implementation/A02/final-report.md",
+      "url": "https://github.com/nSealr/nsealr/blob/bb033619b5346302833d717eb501bfa4e3653a1b/docs/restart/implementation/A02/final-report.md"
+    },
+    {
+      "source_commit": "bb033619b5346302833d717eb501bfa4e3653a1b",
+      "source_path": "docs/restart/implementation/A02/admission-inputs.json",
+      "mode": "100644",
+      "blob": "df6a76a6853bbffdba1fd2e0988e9a8d47f5cd98",
+      "sha256": "8c003e5dd30734e78b970b95dd79097acb63b5f4c93f35b4e6d8393146bd960a",
+      "bytes": 53745,
+      "role": "Exact final author package/source/failure/rollback binding",
+      "criteria": [],
+      "same_bytes_at_preparation_base": true,
+      "available_base_path": "docs/restart/implementation/A02/admission-inputs.json",
+      "proposed_future_artifact_path": "docs/restart/implementation/A02/admission-inputs.json",
+      "url": "https://github.com/nSealr/nsealr/blob/bb033619b5346302833d717eb501bfa4e3653a1b/docs/restart/implementation/A02/admission-inputs.json"
+    },
+    {
+      "source_commit": "bb033619b5346302833d717eb501bfa4e3653a1b",
+      "source_path": "docs/restart/implementation/A02/failure-observations.json",
+      "mode": "100644",
+      "blob": "697c0583132fb2e3cec8a40dec1862b2bda23cde",
+      "sha256": "f52dde3d3db4bbc4aebb8d718b84519b38ba6d0336bf61c537d809f4e262288a",
+      "bytes": 13819,
+      "role": "Exact final author package/source/failure/rollback binding",
+      "criteria": [],
+      "same_bytes_at_preparation_base": true,
+      "available_base_path": "docs/restart/implementation/A02/failure-observations.json",
+      "proposed_future_artifact_path": "docs/restart/implementation/A02/failure-observations.json",
+      "url": "https://github.com/nSealr/nsealr/blob/bb033619b5346302833d717eb501bfa4e3653a1b/docs/restart/implementation/A02/failure-observations.json"
+    },
+    {
+      "source_commit": "bb033619b5346302833d717eb501bfa4e3653a1b",
+      "source_path": "tools/migration/patches/series.json",
+      "mode": "100644",
+      "blob": "9b0d8bffe9f205453fa43616858745aed651f3b8",
+      "sha256": "603021e43af926c371ceebd5bc2a5dc5a0d7b6ca6a76fb8c4769e4a218aef84d",
+      "bytes": 6801,
+      "role": "39 immutable declared pre/postimage transitions",
+      "criteria": [
+        0,
+        2
+      ],
+      "same_bytes_at_preparation_base": true,
+      "available_base_path": "tools/migration/patches/series.json",
+      "proposed_future_artifact_path": "tools/migration/patches/series.json",
+      "url": "https://github.com/nSealr/nsealr/blob/bb033619b5346302833d717eb501bfa4e3653a1b/tools/migration/patches/series.json"
+    },
+    {
+      "source_commit": "0b55449aeea6b296805b786fd4822fc625ba74dd",
+      "source_path": "docs/restart/implementation/reviews/A02-final/review.json",
+      "mode": "100644",
+      "blob": "2d982d38133476a04f202e5a3b659c0333eed849",
+      "sha256": "b7a9041beb8ed93f24e3a42988055e9f4ed9e1614b776e92a7a77cedd615f9c9",
+      "bytes": 11679,
+      "role": "Distinct final rehearsal review binding exact authorbb/productdaf8",
+      "criteria": [
+        0,
+        1,
+        2,
+        3,
+        4
+      ],
+      "same_bytes_at_preparation_base": true,
+      "available_base_path": "docs/restart/implementation/reviews/A02-final/review.json",
+      "proposed_future_artifact_path": "docs/restart/implementation/reviews/A02-final/review.json",
+      "url": "https://github.com/nSealr/nsealr/blob/0b55449aeea6b296805b786fd4822fc625ba74dd/docs/restart/implementation/reviews/A02-final/review.json"
+    },
+    {
+      "source_commit": "a5f7b9f2e087c9538495a16706644f3390e6b01c",
+      "source_path": "docs/restart/implementation/A02/coordinator-adoption/receipt.json",
+      "mode": "100644",
+      "blob": "5697b4750dd2d47513ad49482f3f7de48a168c8e",
+      "sha256": "3caa75164c91f0ee4b5a3abbc02a31204d6443c96030aaff04b7b387e0e2abc8",
+      "bytes": 8105,
+      "role": "Materialized adoption exact append/frozen/source-review correspondence",
+      "criteria": [
+        0,
+        2,
+        4
+      ],
+      "same_bytes_at_preparation_base": true,
+      "available_base_path": "docs/restart/implementation/A02/coordinator-adoption/receipt.json",
+      "proposed_future_artifact_path": "docs/restart/implementation/A02/coordinator-adoption/receipt.json",
+      "url": "https://github.com/nSealr/nsealr/blob/a5f7b9f2e087c9538495a16706644f3390e6b01c/docs/restart/implementation/A02/coordinator-adoption/receipt.json"
+    },
+    {
+      "source_commit": "a5f7b9f2e087c9538495a16706644f3390e6b01c",
+      "source_path": "docs/restart/implementation/A02/coordinator-adoption/payload-copy.json",
+      "mode": "100644",
+      "blob": "b0a4eb467b7600060709b0d4461b152bf9f27784",
+      "sha256": "46fcf0f7d370ef0ced02425cb1e747276be9646e1c5a186f793fbd678c003e2e",
+      "bytes": 552080,
+      "role": "Materialized adoption exact append/frozen/source-review correspondence",
+      "criteria": [
+        0,
+        2,
+        4
+      ],
+      "same_bytes_at_preparation_base": true,
+      "available_base_path": "docs/restart/implementation/A02/coordinator-adoption/payload-copy.json",
+      "proposed_future_artifact_path": "docs/restart/implementation/A02/coordinator-adoption/payload-copy.json",
+      "url": "https://github.com/nSealr/nsealr/blob/a5f7b9f2e087c9538495a16706644f3390e6b01c/docs/restart/implementation/A02/coordinator-adoption/payload-copy.json"
+    },
+    {
+      "source_commit": "a5f7b9f2e087c9538495a16706644f3390e6b01c",
+      "source_path": "docs/restart/implementation/A02/coordinator-adoption/source-review-copy.json",
+      "mode": "100644",
+      "blob": "5adb1202d17c61de33445e466b09d478f386a5da",
+      "sha256": "a68008530b40d6739b59370ff2bb9f1e67c2b262433c28ec7a150419f716fd11",
+      "bytes": 80056,
+      "role": "Materialized adoption exact append/frozen/source-review correspondence",
+      "criteria": [
+        0,
+        2,
+        4
+      ],
+      "same_bytes_at_preparation_base": true,
+      "available_base_path": "docs/restart/implementation/A02/coordinator-adoption/source-review-copy.json",
+      "proposed_future_artifact_path": "docs/restart/implementation/A02/coordinator-adoption/source-review-copy.json",
+      "url": "https://github.com/nSealr/nsealr/blob/a5f7b9f2e087c9538495a16706644f3390e6b01c/docs/restart/implementation/A02/coordinator-adoption/source-review-copy.json"
+    },
+    {
+      "source_commit": "a5f7b9f2e087c9538495a16706644f3390e6b01c",
+      "source_path": "docs/restart/implementation/A02/coordinator-adoption/verification.json",
+      "mode": "100644",
+      "blob": "c682bfeac71a660f8b114e214bd7d7fcb37cd6a8",
+      "sha256": "b653169006d20ad230efe304535c5dc39d1219e18e6bb73b7525cfd00ad3b143",
+      "bytes": 1455,
+      "role": "Materialized adoption exact append/frozen/source-review correspondence",
+      "criteria": [
+        0,
+        2,
+        4
+      ],
+      "same_bytes_at_preparation_base": true,
+      "available_base_path": "docs/restart/implementation/A02/coordinator-adoption/verification.json",
+      "proposed_future_artifact_path": "docs/restart/implementation/A02/coordinator-adoption/verification.json",
+      "url": "https://github.com/nSealr/nsealr/blob/a5f7b9f2e087c9538495a16706644f3390e6b01c/docs/restart/implementation/A02/coordinator-adoption/verification.json"
+    },
+    {
+      "source_commit": "249d2cf85b2c69276174f32dc6d24c092e290a67",
+      "source_path": "docs/restart/implementation/reviews/A02-adoption/review.json",
+      "mode": "100644",
+      "blob": "3ce1f0332a832ccbea822ac8adace210fb818b35",
+      "sha256": "9a8d73af423da043cc3798720ab6b032eeedbb08bd2b3741467bf4dfe185b439",
+      "bytes": 11059,
+      "role": "Distinct exact adoption review; future byte-exact public copy needed",
+      "criteria": [
+        0,
+        1,
+        2,
+        3,
+        4
+      ],
+      "same_bytes_at_preparation_base": false,
+      "available_base_path": null,
+      "proposed_future_artifact_path": "docs/restart/implementation/A02/closure/evidence/adoption-review/review.json",
+      "url": "https://github.com/nSealr/nsealr/blob/249d2cf85b2c69276174f32dc6d24c092e290a67/docs/restart/implementation/reviews/A02-adoption/review.json"
+    },
+    {
+      "source_commit": "249d2cf85b2c69276174f32dc6d24c092e290a67",
+      "source_path": "docs/restart/implementation/reviews/A02-adoption/report.md",
+      "mode": "100644",
+      "blob": "0bd9bb652bf28e2248cc95847b3a927e67ca8f40",
+      "sha256": "12a97acac6e22ae7287f3c7b722dac147a5df042860131be1d8e4906ab9c6a5d",
+      "bytes": 8099,
+      "role": "Distinct exact adoption review; future byte-exact public copy needed",
+      "criteria": [
+        0,
+        1,
+        2,
+        3,
+        4
+      ],
+      "same_bytes_at_preparation_base": false,
+      "available_base_path": null,
+      "proposed_future_artifact_path": "docs/restart/implementation/A02/closure/evidence/adoption-review/report.md",
+      "url": "https://github.com/nSealr/nsealr/blob/249d2cf85b2c69276174f32dc6d24c092e290a67/docs/restart/implementation/reviews/A02-adoption/report.md"
+    },
+    {
+      "source_commit": "249d2cf85b2c69276174f32dc6d24c092e290a67",
+      "source_path": "docs/restart/implementation/reviews/A02-adoption/probe-result.json",
+      "mode": "100644",
+      "blob": "be243013a56b1e6028ebc92bb53dae2e5417cb66",
+      "sha256": "bc29fa1d7f43be78dc75f0bae098a5b9a7186407f4bebc92fc13b1eee42a8ec6",
+      "bytes": 14665,
+      "role": "Distinct exact adoption review; future byte-exact public copy needed",
+      "criteria": [
+        0,
+        1,
+        2,
+        3,
+        4
+      ],
+      "same_bytes_at_preparation_base": false,
+      "available_base_path": null,
+      "proposed_future_artifact_path": "docs/restart/implementation/A02/closure/evidence/adoption-review/probe-result.json",
+      "url": "https://github.com/nSealr/nsealr/blob/249d2cf85b2c69276174f32dc6d24c092e290a67/docs/restart/implementation/reviews/A02-adoption/probe-result.json"
+    },
+    {
+      "source_commit": "249d2cf85b2c69276174f32dc6d24c092e290a67",
+      "source_path": "docs/restart/implementation/reviews/A02-adoption/commands.json",
+      "mode": "100644",
+      "blob": "7c4ae5ddb1ab9dd2523a7a2c676e16eacf45afc2",
+      "sha256": "ccc2806dedbe7d98c985503ed2d86576fc5da29747e6d8241f689e0d6bb7de46",
+      "bytes": 3013,
+      "role": "Distinct exact adoption review; future byte-exact public copy needed",
+      "criteria": [
+        0,
+        1,
+        2,
+        3,
+        4
+      ],
+      "same_bytes_at_preparation_base": false,
+      "available_base_path": null,
+      "proposed_future_artifact_path": "docs/restart/implementation/A02/closure/evidence/adoption-review/commands.json",
+      "url": "https://github.com/nSealr/nsealr/blob/249d2cf85b2c69276174f32dc6d24c092e290a67/docs/restart/implementation/reviews/A02-adoption/commands.json"
+    },
+    {
+      "source_commit": "951ed2ad1bb7c7d85a6eaa735a5286022e8fce36",
+      "source_path": "docs/restart/implementation/A02/post-rebase-repair/result.json",
+      "mode": "100644",
+      "blob": "4c67bb567dbdf0cf32a624abcdfa6237e3b1460a",
+      "sha256": "a5af0532afaf4f153ecac7c6f0d411ac8d2c635fb5bd233bbb178d56d0470640",
+      "bytes": 3861,
+      "role": "Repair/failure/cold candidate proof; not a corrected-main or final-review result",
+      "criteria": [
+        0,
+        2,
+        4
+      ],
+      "same_bytes_at_preparation_base": false,
+      "available_base_path": null,
+      "proposed_future_artifact_path": "docs/restart/implementation/A02/post-rebase-repair/result.json",
+      "url": "https://github.com/nSealr/nsealr/blob/951ed2ad1bb7c7d85a6eaa735a5286022e8fce36/docs/restart/implementation/A02/post-rebase-repair/result.json"
+    },
+    {
+      "source_commit": "951ed2ad1bb7c7d85a6eaa735a5286022e8fce36",
+      "source_path": "docs/restart/implementation/A02/post-rebase-repair/final-coherence.json",
+      "mode": "100644",
+      "blob": "ce799b029f986a2869f821be071137369ca6f7cd",
+      "sha256": "a4342d02a6e493461030be5534e9826860a1e2e2d4cf78ba31ba599282f2bfa0",
+      "bytes": 838,
+      "role": "Repair/failure/cold candidate proof; not a corrected-main or final-review result",
+      "criteria": [
+        0,
+        2,
+        4
+      ],
+      "same_bytes_at_preparation_base": false,
+      "available_base_path": null,
+      "proposed_future_artifact_path": "docs/restart/implementation/A02/post-rebase-repair/final-coherence.json",
+      "url": "https://github.com/nSealr/nsealr/blob/951ed2ad1bb7c7d85a6eaa735a5286022e8fce36/docs/restart/implementation/A02/post-rebase-repair/final-coherence.json"
+    },
+    {
+      "source_commit": "951ed2ad1bb7c7d85a6eaa735a5286022e8fce36",
+      "source_path": "docs/restart/implementation/A02/post-rebase-repair/scope-invariants.json",
+      "mode": "100644",
+      "blob": "1d84871d191957c6ea99c8db1d527edcba3a6bdb",
+      "sha256": "eaa6d082f67fa0041faa8c3a4b217824c5ef9efd7a5d8a25c9b6385b78449376",
+      "bytes": 2871,
+      "role": "Repair/failure/cold candidate proof; not a corrected-main or final-review result",
+      "criteria": [
+        0,
+        2,
+        4
+      ],
+      "same_bytes_at_preparation_base": false,
+      "available_base_path": null,
+      "proposed_future_artifact_path": "docs/restart/implementation/A02/post-rebase-repair/scope-invariants.json",
+      "url": "https://github.com/nSealr/nsealr/blob/951ed2ad1bb7c7d85a6eaa735a5286022e8fce36/docs/restart/implementation/A02/post-rebase-repair/scope-invariants.json"
+    },
+    {
+      "source_commit": "951ed2ad1bb7c7d85a6eaa735a5286022e8fce36",
+      "source_path": "docs/restart/implementation/A02/post-rebase-repair/cold-candidate-green/summary.json",
+      "mode": "100644",
+      "blob": "d9465667300597d5dd9d3a20418472df8adf1e98",
+      "sha256": "858be3e13fcf373541b12aecd2c95966a88522141dcbb6f3fe0ea92433e000bc",
+      "bytes": 1367,
+      "role": "Repair/failure/cold candidate proof; not a corrected-main or final-review result",
+      "criteria": [
+        0,
+        2,
+        4
+      ],
+      "same_bytes_at_preparation_base": false,
+      "available_base_path": null,
+      "proposed_future_artifact_path": "docs/restart/implementation/A02/post-rebase-repair/cold-candidate-green/summary.json",
+      "url": "https://github.com/nSealr/nsealr/blob/951ed2ad1bb7c7d85a6eaa735a5286022e8fce36/docs/restart/implementation/A02/post-rebase-repair/cold-candidate-green/summary.json"
+    },
+    {
+      "source_commit": "951ed2ad1bb7c7d85a6eaa735a5286022e8fce36",
+      "source_path": "docs/restart/implementation/A02/post-rebase-repair/failed-main-CI/capture.json",
+      "mode": "100644",
+      "blob": "a6a5e38a5b3511f545eb90aa34af6ca238b3b2e2",
+      "sha256": "46534720a13fee7c8cede3ae40bb28ff3ce76f1d8bc24e44395e069d2a34efea",
+      "bytes": 2801,
+      "role": "Repair/failure/cold candidate proof; not a corrected-main or final-review result",
+      "criteria": [
+        0,
+        2,
+        4
+      ],
+      "same_bytes_at_preparation_base": false,
+      "available_base_path": null,
+      "proposed_future_artifact_path": "docs/restart/implementation/A02/post-rebase-repair/failed-main-CI/capture.json",
+      "url": "https://github.com/nSealr/nsealr/blob/951ed2ad1bb7c7d85a6eaa735a5286022e8fce36/docs/restart/implementation/A02/post-rebase-repair/failed-main-CI/capture.json"
+    },
+    {
+      "source_commit": "951ed2ad1bb7c7d85a6eaa735a5286022e8fce36",
+      "source_path": "docs/restart/implementation/A02/post-rebase-repair/failed-main-CI/run.json",
+      "mode": "100644",
+      "blob": "8e0c32ef371d3bcd88171374785943bcc11cb73a",
+      "sha256": "d5254a8cedab5612512eb57020941be20c7641b4f454eaf139cafcc817a9111c",
+      "bytes": 13159,
+      "role": "Repair/failure/cold candidate proof; not a corrected-main or final-review result",
+      "criteria": [
+        0,
+        2,
+        4
+      ],
+      "same_bytes_at_preparation_base": false,
+      "available_base_path": null,
+      "proposed_future_artifact_path": "docs/restart/implementation/A02/post-rebase-repair/failed-main-CI/run.json",
+      "url": "https://github.com/nSealr/nsealr/blob/951ed2ad1bb7c7d85a6eaa735a5286022e8fce36/docs/restart/implementation/A02/post-rebase-repair/failed-main-CI/run.json"
+    },
+    {
+      "source_commit": "951ed2ad1bb7c7d85a6eaa735a5286022e8fce36",
+      "source_path": "docs/restart/implementation/A02/post-rebase-repair/failed-main-CI/jobs.json",
+      "mode": "100644",
+      "blob": "91a749f2affc0ac6212acbe2adc02c5218d36c21",
+      "sha256": "0ef64cc6e54d1e2bafefd4f89e8e93535a97fb368c25408e70e1c7dffd1c41bb",
+      "bytes": 3314,
+      "role": "Repair/failure/cold candidate proof; not a corrected-main or final-review result",
+      "criteria": [
+        0,
+        2,
+        4
+      ],
+      "same_bytes_at_preparation_base": false,
+      "available_base_path": null,
+      "proposed_future_artifact_path": "docs/restart/implementation/A02/post-rebase-repair/failed-main-CI/jobs.json",
+      "url": "https://github.com/nSealr/nsealr/blob/951ed2ad1bb7c7d85a6eaa735a5286022e8fce36/docs/restart/implementation/A02/post-rebase-repair/failed-main-CI/jobs.json"
+    },
+    {
+      "source_commit": "951ed2ad1bb7c7d85a6eaa735a5286022e8fce36",
+      "source_path": "docs/restart/implementation/A02/post-rebase-repair/failed-main-CI/logs.zip",
+      "mode": "100644",
+      "blob": "daf1ff9787b0e0bc6b68efdaa7f6ef533807efc9",
+      "sha256": "0c074b0fdd3253b5518683cd5ba853db58b0c095c264167f87cdb0c2f7fe291d",
+      "bytes": 92396,
+      "role": "Repair/failure/cold candidate proof; not a corrected-main or final-review result",
+      "criteria": [
+        0,
+        2,
+        4
+      ],
+      "same_bytes_at_preparation_base": false,
+      "available_base_path": null,
+      "proposed_future_artifact_path": "docs/restart/implementation/A02/post-rebase-repair/failed-main-CI/logs.zip",
+      "url": "https://github.com/nSealr/nsealr/blob/951ed2ad1bb7c7d85a6eaa735a5286022e8fce36/docs/restart/implementation/A02/post-rebase-repair/failed-main-CI/logs.zip"
+    },
+    {
+      "source_commit": "d931277bebbc5f43514b0e8438d65fb60603fa35",
+      "source_path": "scripts/validate_restart_plan.py",
+      "mode": "100644",
+      "blob": "42b5a92ecb460f443ad61ff12012b659a1be70bd",
+      "sha256": "c72ffb386a46748c3929a650e262c9f6fa62d302b37eb9090f3001c635dc258c",
+      "bytes": 11218,
+      "role": "Current closure schema/frozen historical-index authority; inspect and preserve",
+      "criteria": [],
+      "same_bytes_at_preparation_base": true,
+      "available_base_path": "scripts/validate_restart_plan.py",
+      "proposed_future_artifact_path": "scripts/validate_restart_plan.py",
+      "url": "https://github.com/nSealr/nsealr/blob/d931277bebbc5f43514b0e8438d65fb60603fa35/scripts/validate_restart_plan.py"
+    },
+    {
+      "source_commit": "d931277bebbc5f43514b0e8438d65fb60603fa35",
+      "source_path": "scripts/verify_evidence.py",
+      "mode": "100644",
+      "blob": "b5f5fc060ee720ccf2897012b03689bdf34726e0",
+      "sha256": "5af622ba895df228b14915282df2bec9a413fff6a3e34b877e99a6290a0cd226",
+      "bytes": 7442,
+      "role": "Current closure schema/frozen historical-index authority; inspect and preserve",
+      "criteria": [],
+      "same_bytes_at_preparation_base": true,
+      "available_base_path": "scripts/verify_evidence.py",
+      "proposed_future_artifact_path": "scripts/verify_evidence.py",
+      "url": "https://github.com/nSealr/nsealr/blob/d931277bebbc5f43514b0e8438d65fb60603fa35/scripts/verify_evidence.py"
+    },
+    {
+      "source_commit": "d931277bebbc5f43514b0e8438d65fb60603fa35",
+      "source_path": "scripts/test_validate_restart_plan.py",
+      "mode": "100644",
+      "blob": "6ba0b123bd449408a802112a2b482997a1167d10",
+      "sha256": "ddf7e8827de92c31f208c75f8c422f6625de952df2e89b5722dad04707233ae4",
+      "bytes": 8490,
+      "role": "Current closure schema/frozen historical-index authority; inspect and preserve",
+      "criteria": [],
+      "same_bytes_at_preparation_base": true,
+      "available_base_path": "scripts/test_validate_restart_plan.py",
+      "proposed_future_artifact_path": "scripts/test_validate_restart_plan.py",
+      "url": "https://github.com/nSealr/nsealr/blob/d931277bebbc5f43514b0e8438d65fb60603fa35/scripts/test_validate_restart_plan.py"
+    },
+    {
+      "source_commit": "d931277bebbc5f43514b0e8438d65fb60603fa35",
+      "source_path": "scripts/test_evidence.py",
+      "mode": "100644",
+      "blob": "e41796dbc41cab16ba7160e932256dd42f6df5e0",
+      "sha256": "3cfcbe180a0f2b6c631630ea3a365b41c527959cfb862ba30d48bb1937ec7bc3",
+      "bytes": 5724,
+      "role": "Current closure schema/frozen historical-index authority; inspect and preserve",
+      "criteria": [],
+      "same_bytes_at_preparation_base": true,
+      "available_base_path": "scripts/test_evidence.py",
+      "proposed_future_artifact_path": "scripts/test_evidence.py",
+      "url": "https://github.com/nSealr/nsealr/blob/d931277bebbc5f43514b0e8438d65fb60603fa35/scripts/test_evidence.py"
+    },
+    {
+      "source_commit": "d931277bebbc5f43514b0e8438d65fb60603fa35",
+      "source_path": "plan/evidence-index.json",
+      "mode": "100644",
+      "blob": "a8e472044e14f93235c15e1079f2a17f22cd1630",
+      "sha256": "8c562c3b45c000f809aed4557b2d1ea15284bf0645215a30c227668f0158f75b",
+      "bytes": 1167015,
+      "role": "Current closure schema/frozen historical-index authority; inspect and preserve",
+      "criteria": [],
+      "same_bytes_at_preparation_base": true,
+      "available_base_path": "plan/evidence-index.json",
+      "proposed_future_artifact_path": "plan/evidence-index.json",
+      "url": "https://github.com/nSealr/nsealr/blob/d931277bebbc5f43514b0e8438d65fb60603fa35/plan/evidence-index.json"
+    },
+    {
+      "source_commit": "5f3714dc55ab99d41352cc7ad33fa3630b2f0a29",
+      "source_path": "docs/restart/implementation/reviews/A02-contract-repair/review.json",
+      "mode": "100644",
+      "blob": "75c3e531b87544c2a7cc30d19a32560feb32886e",
+      "sha256": "499ad5796285d84dbd6f81f7670249358a3c6900bd22f709e0c61ae44c5f8cdd",
+      "bytes": 8266,
+      "role": "Actual distinct final repair review, accepted candidate951 only; future exact public copy needed",
+      "criteria": [
+        0,
+        1,
+        2,
+        3,
+        4
+      ],
+      "same_bytes_at_preparation_base": false,
+      "available_base_path": null,
+      "proposed_future_artifact_path": "docs/restart/implementation/A02/closure/evidence/repair-review/review.json",
+      "url": "https://github.com/nSealr/nsealr/blob/5f3714dc55ab99d41352cc7ad33fa3630b2f0a29/docs/restart/implementation/reviews/A02-contract-repair/review.json"
+    },
+    {
+      "source_commit": "5f3714dc55ab99d41352cc7ad33fa3630b2f0a29",
+      "source_path": "docs/restart/implementation/reviews/A02-contract-repair/report.md",
+      "mode": "100644",
+      "blob": "ab31af7ba6c667533c6af6f84a67bae6201db276",
+      "sha256": "a3dbe6a30fc58449501bd2e841934a109e3ad4ed169e08fab89342e504456fe3",
+      "bytes": 8186,
+      "role": "Actual distinct final repair review, accepted candidate951 only; future exact public copy needed",
+      "criteria": [
+        0,
+        1,
+        2,
+        3,
+        4
+      ],
+      "same_bytes_at_preparation_base": false,
+      "available_base_path": null,
+      "proposed_future_artifact_path": "docs/restart/implementation/A02/closure/evidence/repair-review/report.md",
+      "url": "https://github.com/nSealr/nsealr/blob/5f3714dc55ab99d41352cc7ad33fa3630b2f0a29/docs/restart/implementation/reviews/A02-contract-repair/report.md"
+    },
+    {
+      "source_commit": "5f3714dc55ab99d41352cc7ad33fa3630b2f0a29",
+      "source_path": "docs/restart/implementation/reviews/A02-contract-repair/probe-result.json",
+      "mode": "100644",
+      "blob": "2a9663c9d5f1922ec000297d3e848813300afbda",
+      "sha256": "6aed4deeec1b842d8f00adfdeeb0503252f3913dc6a6e3af07d9b14c66cacbae",
+      "bytes": 8529,
+      "role": "Actual distinct final repair review, accepted candidate951 only; future exact public copy needed",
+      "criteria": [
+        0,
+        1,
+        2,
+        3,
+        4
+      ],
+      "same_bytes_at_preparation_base": false,
+      "available_base_path": null,
+      "proposed_future_artifact_path": "docs/restart/implementation/A02/closure/evidence/repair-review/probe-result.json",
+      "url": "https://github.com/nSealr/nsealr/blob/5f3714dc55ab99d41352cc7ad33fa3630b2f0a29/docs/restart/implementation/reviews/A02-contract-repair/probe-result.json"
+    },
+    {
+      "source_commit": "5f3714dc55ab99d41352cc7ad33fa3630b2f0a29",
+      "source_path": "docs/restart/implementation/reviews/A02-contract-repair/commands.json",
+      "mode": "100644",
+      "blob": "6644aac33a8d709c3e42400698811f1d53fac44d",
+      "sha256": "374452d1d2d3fb6f337c5c482fe6f35c6b4543ca8f895a00c0888bb64285dda1",
+      "bytes": 1672,
+      "role": "Actual distinct final repair review, accepted candidate951 only; future exact public copy needed",
+      "criteria": [
+        0,
+        1,
+        2,
+        3,
+        4
+      ],
+      "same_bytes_at_preparation_base": false,
+      "available_base_path": null,
+      "proposed_future_artifact_path": "docs/restart/implementation/A02/closure/evidence/repair-review/commands.json",
+      "url": "https://github.com/nSealr/nsealr/blob/5f3714dc55ab99d41352cc7ad33fa3630b2f0a29/docs/restart/implementation/reviews/A02-contract-repair/commands.json"
+    }
+  ],
+  "future_required_captures": [
+    {
+      "role": "Actual distinct final repair review",
+      "source_commit": "5f3714dc55ab99d41352cc7ad33fa3630b2f0a29",
+      "source_path": "docs/restart/implementation/reviews/A02-contract-repair/review.json",
+      "sha256": "499ad5796285d84dbd6f81f7670249358a3c6900bd22f709e0c61ae44c5f8cdd",
+      "source_verdict": "PASS_final_repair_candidate_only",
+      "capture_state": "actual review known; exact public scoped copy after admission"
+    },
+    {
+      "role": "Actual full protected PR32 CI evidence and source/tested-tree identity",
+      "run_id": 39411242641,
+      "source_commit": "951ed2ad1bb7c7d85a6eaa735a5286022e8fce36",
+      "captured_files": null,
+      "sha256": null,
+      "actual_conclusion": "success",
+      "capture_state": "root captured full actual PR32 API/logs; select exact copies after admission"
+    },
+    {
+      "role": "Actual corrected-main CI capture with logs/API/source tree",
+      "run_id": 39412818666,
+      "source_commit": "b1c90139a651895284b2624da7d12903cf16bc9d",
+      "captured_files": null,
+      "sha256": null,
+      "status": "in_progress",
+      "capture_state": "actual full corrected-main outcome pending"
+    },
+    {
+      "role": "Fresh corrected-main-only Git reachability/contract/frozen evidence/closure-candidate checks",
+      "source_commit": null,
+      "commands": null,
+      "sha256": null
+    },
+    {
+      "role": "Distinct exact closure diff review",
+      "source_commit": null,
+      "source_path": null,
+      "sha256": null
+    }
+  ],
+  "future_intake_rule": "After separate admission, append only exact public project evidence with source paths/hashes and preserve paired relative filenames. Reconcile against actual repaired main; do not apply this old-base branch or replace current graph wholesale. No source Git histories, runtime repositories, caches or private manuals in public closure evidence.",
+  "coordinator_update": "Final repair review and full PR32 CI succeeded, normal PR32 merged as b1c90139 with exact951 tree. Corrected-main run39412818666 in progress, A02 unclosed; preparation remains on original d931 base."
+}
