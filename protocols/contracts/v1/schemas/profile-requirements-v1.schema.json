@@ -1,0 +1,70 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://nsealr.dev/schemas/profile-requirements-v1.schema.json",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "format",
+    "requirements_id",
+    "profile",
+    "required_groups",
+    "custody_mode",
+    "consent",
+    "automation",
+    "secure_element"
+  ],
+  "properties": {
+    "format": {
+      "const": "nsealr.profile-requirements.v1"
+    },
+    "requirements_id": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 128,
+      "pattern": "^[A-Za-z0-9._:-]+$"
+    },
+    "profile": {
+      "enum": [
+        "esp32_no_se",
+        "pi_qr",
+        "p4_qr",
+        "custom_board"
+      ]
+    },
+    "required_groups": {
+      "type": "array",
+      "minItems": 8,
+      "maxItems": 9,
+      "uniqueItems": true,
+      "items": {
+        "enum": [
+          "R-ID",
+          "R-AUTH",
+          "R-CATALOG",
+          "R-SECRET",
+          "R-BOUNDS",
+          "R-RECOVERY",
+          "R-LIFECYCLE",
+          "R-RELEASE",
+          "R-MSG"
+        ]
+      }
+    },
+    "custody_mode": {
+      "enum": [
+        "volatile_session",
+        "mcu_wrapped_persistent",
+        "custom_se_assisted_persistent"
+      ]
+    },
+    "consent": {
+      "const": "manual_local"
+    },
+    "automation": {
+      "const": "unavailable"
+    },
+    "secure_element": {
+      "$ref": "capabilities-v1.schema.json#/$defs/secure_element"
+    }
+  }
+}

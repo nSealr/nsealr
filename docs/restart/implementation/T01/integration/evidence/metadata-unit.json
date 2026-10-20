@@ -1,0 +1,89 @@
+{
+  "task": "T01",
+  "scope": "Strict reported metadata/finite limits component; legacy wire and consumers remain active pending atomic cutover. No full acceptance or production/device qualification.",
+  "semantic_source": "bb20fe12",
+  "case_count": 42,
+  "original42_cases_preserved": true,
+  "actual_checks": {
+    "metadata-unit-01": "PASS 9 focused metadata/limits/message tests",
+    "metadata-build-01": "PASS",
+    "metadata-typecheck-01": "FAIL before required package build; missing dist module declarations, no capabilities.ts errors",
+    "metadata-typecheck-02": "PASS after package build"
+  },
+  "inputs": [
+    {
+      "path": "packages/protocol/src/capabilities.ts",
+      "sha256": "c44361af434d4e66bf23f81f22a81757f1a04a6a5665c1ede3b9139bfa10dc59"
+    },
+    {
+      "path": "packages/protocol/src/capabilities.test.ts",
+      "sha256": "4d78d0666d082ad8f32644d6187bbea04ac169d4cf3dc1e101152993b1a563ae"
+    },
+    {
+      "path": "protocols/contracts/v1/schemas/error-v0.schema.json",
+      "sha256": "b268a3089fa8032a53220719091eb677bef8632264932840f7b0df197f6ece6d"
+    },
+    {
+      "path": "protocols/contracts/v1/examples/profile-manifests/custom_board-conformance-v1.json",
+      "sha256": "3666ffa111327ccc1321c977a3454c171923b37dde285b30c3c1218b41b19b71"
+    },
+    {
+      "path": "protocols/contracts/v1/examples/profile-manifests/esp32_no_se-conformance-v1.json",
+      "sha256": "5fc2e218a25efb2312c163680d65483c36b069e2813e281e95cecb00e52a0143"
+    },
+    {
+      "path": "protocols/contracts/v1/examples/profile-manifests/p4_qr-conformance-v1.json",
+      "sha256": "281849b2ad1b80810ab1c9a850ba815c8946fd150c784f5afc86efd605825486"
+    },
+    {
+      "path": "protocols/contracts/v1/examples/profile-manifests/pi_qr-conformance-v1.json",
+      "sha256": "35af3e7389ba8345d51f6a4d52711c66891b17b206b4cf1c23d6bc9e54887414"
+    },
+    {
+      "path": "protocols/contracts/v1/schemas/account-v1.schema.json",
+      "sha256": "da58d65ec350a7238cd7629fdf427468830744ae6720691bdce33400207d6d3e"
+    },
+    {
+      "path": "protocols/contracts/v1/schemas/capabilities-v1.schema.json",
+      "sha256": "27577089d08ccd3e1fd7b035a17ae0b21e579507fd7b70174d307e0663618026"
+    },
+    {
+      "path": "protocols/contracts/v1/schemas/implementation-profile-v1.schema.json",
+      "sha256": "2e832d526fa14251fd9edb3e9efe670db060772e963f401bec8b0b73d4c0dca0"
+    },
+    {
+      "path": "protocols/contracts/v1/schemas/limits-v1.schema.json",
+      "sha256": "76b0065a63137f10e7ccb96e881deb31167684d617aa3f028f53f3357ff9d8a7"
+    },
+    {
+      "path": "protocols/contracts/v1/schemas/profile-requirements-v1.schema.json",
+      "sha256": "ecafc1f6c02c508756101e2cf2821f8b6d918f6027776b47d79fb9a9ac173ed9"
+    },
+    {
+      "path": "protocols/contracts/v1/schemas/route-selection-v1.schema.json",
+      "sha256": "4230a455ca6908472affdc899770fd87cb9e8286209f376e1b71376298423ab6"
+    },
+    {
+      "path": "protocols/contracts/v1/schemas/signing-request-v2.schema.json",
+      "sha256": "6901de23e132573d12c0ab86ab7f8958e6017882c88a0fd8ec372eac1f674460"
+    },
+    {
+      "path": "protocols/contracts/v1/schemas/signing-response-v2.schema.json",
+      "sha256": "dcc673e11d59d0adc6c84d09e6cc93dfb76303a4930153b1870afe5a9f9b6bac"
+    },
+    {
+      "path": "protocols/contracts/v1/vectors/profile-capabilities/cases-v1.json",
+      "sha256": "6403ac0d853c148929e3cf20ecb4f33f3e7cb6b2d21a6e3938a50f6f34361979"
+    },
+    {
+      "path": "protocols/contracts/v1/protocols/signing-v2.md",
+      "sha256": "21ff4843c22353a2a65cf9db3aa0a5ae1950c7c2145bd3f1480f518ec464dc41"
+    },
+    {
+      "path": "protocols/contracts/v1/protocols/profile-capabilities-v1.md",
+      "sha256": "68ba826218d16653a1645734374756b0f549bad78c88980a63fb228bbb47c00d"
+    }
+  ],
+  "schema_parse_count": 13,
+  "limits": "Original caps retained; all examples explicitly conformance-only. Account methods list is selected account routing intent, client resolves full report via existing protocol dependency. No dependency/lock edits."
+}

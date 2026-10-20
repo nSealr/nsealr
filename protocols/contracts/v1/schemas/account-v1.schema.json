@@ -1,0 +1,398 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://nsealr.dev/schemas/account-v1.schema.json",
+  "oneOf": [
+    {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "format",
+        "account_id",
+        "label",
+        "public_key",
+        "policy_profile_id",
+        "recovery",
+        "signer_route",
+        "profile",
+        "implementation_id",
+        "limits_id",
+        "capabilities"
+      ],
+      "properties": {
+        "format": {
+          "const": "nsealr.account.v1"
+        },
+        "account_id": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[A-Za-z0-9._:-]+$"
+        },
+        "label": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128
+        },
+        "public_key": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$"
+        },
+        "policy_profile_id": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[A-Za-z0-9._:-]+$"
+        },
+        "recovery": {
+          "$ref": "#/$defs/recovery"
+        },
+        "signer_route": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "type",
+            "transport",
+            "custody",
+            "trusted_review",
+            "policy_support"
+          ],
+          "properties": {
+            "type": {
+              "enum": [
+                "raspberry_qr_vault",
+                "esp32_qr_vault",
+                "esp32_usb_nip46",
+                "custom_hardware_wallet"
+              ]
+            },
+            "repository": {
+              "const": "nsealr"
+            },
+            "transport": {
+              "enum": [
+                "qr",
+                "usb",
+                "nip46_relay"
+              ]
+            },
+            "custody": {
+              "enum": [
+                "volatile_session",
+                "mcu_wrapped_persistent",
+                "custom_se_assisted_persistent",
+                "external_signer"
+              ]
+            },
+            "trusted_review": {
+              "enum": [
+                "device_display",
+                "external_review",
+                "external_policy"
+              ]
+            },
+            "policy_support": {
+              "enum": [
+                "manual_only",
+                "external"
+              ]
+            }
+          }
+        },
+        "profile": {
+          "enum": [
+            "esp32_no_se",
+            "pi_qr",
+            "p4_qr",
+            "custom_board"
+          ]
+        },
+        "implementation_id": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[A-Za-z0-9._:-]+$"
+        },
+        "limits_id": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[A-Za-z0-9._:-]+$"
+        },
+        "capabilities": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "methods"
+          ],
+          "properties": {
+            "methods": {
+              "type": "array",
+              "minItems": 1,
+              "maxItems": 16,
+              "uniqueItems": true,
+              "items": {
+                "enum": [
+                  "get_capabilities",
+                  "get_public_key",
+                  "sign_event"
+                ]
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "format",
+        "account_id",
+        "label",
+        "public_key",
+        "policy_profile_id",
+        "recovery",
+        "signer_route",
+        "profile",
+        "implementation_id",
+        "limits_id",
+        "capabilities"
+      ],
+      "properties": {
+        "format": {
+          "const": "nsealr.account.v1"
+        },
+        "account_id": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[A-Za-z0-9._:-]+$"
+        },
+        "label": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128
+        },
+        "public_key": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$"
+        },
+        "policy_profile_id": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[A-Za-z0-9._:-]+$"
+        },
+        "recovery": {
+          "$ref": "#/$defs/recovery"
+        },
+        "signer_route": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "type",
+            "transport",
+            "custody",
+            "trusted_review",
+            "policy_support"
+          ],
+          "properties": {
+            "type": {
+              "const": "external_nip46"
+            },
+            "repository": {
+              "const": "nsealr"
+            },
+            "transport": {
+              "enum": [
+                "qr",
+                "usb",
+                "nip46_relay"
+              ]
+            },
+            "custody": {
+              "enum": [
+                "volatile_session",
+                "mcu_wrapped_persistent",
+                "custom_se_assisted_persistent",
+                "external_signer"
+              ]
+            },
+            "trusted_review": {
+              "enum": [
+                "device_display",
+                "external_review",
+                "external_policy"
+              ]
+            },
+            "policy_support": {
+              "enum": [
+                "manual_only",
+                "external"
+              ]
+            }
+          }
+        },
+        "profile": {
+          "type": "null"
+        },
+        "implementation_id": {
+          "type": "null"
+        },
+        "limits_id": {
+          "type": "null"
+        },
+        "capabilities": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "methods"
+          ],
+          "properties": {
+            "methods": {
+              "type": "array",
+              "minItems": 1,
+              "maxItems": 16,
+              "uniqueItems": true,
+              "items": {
+                "enum": [
+                  "get_capabilities",
+                  "get_public_key",
+                  "sign_event"
+                ]
+              }
+            }
+          }
+        }
+      }
+    }
+  ],
+  "$defs": {
+    "recovery": {
+      "oneOf": [
+        {
+          "additionalProperties": false,
+          "properties": {
+            "account": {
+              "minimum": 0,
+              "type": "integer"
+            },
+            "path": {
+              "pattern": "^m/44'/1237'/",
+              "type": "string"
+            },
+            "source_fingerprint": {
+              "pattern": "^[0-9a-f]{16}$",
+              "type": "string"
+            },
+            "source_vector": {
+              "minLength": 1,
+              "type": "string"
+            },
+            "type": {
+              "const": "nip06"
+            }
+          },
+          "required": [
+            "type",
+            "path",
+            "account",
+            "source_vector",
+            "source_fingerprint"
+          ],
+          "type": "object"
+        },
+        {
+          "additionalProperties": false,
+          "properties": {
+            "backup_required": {
+              "type": "boolean"
+            },
+            "slot_id": {
+              "minLength": 1,
+              "type": "string"
+            },
+            "type": {
+              "const": "device_slot"
+            }
+          },
+          "required": [
+            "type",
+            "slot_id",
+            "backup_required"
+          ],
+          "type": "object"
+        },
+        {
+          "additionalProperties": false,
+          "properties": {
+            "backup_required": {
+              "type": "boolean"
+            },
+            "card_id": {
+              "minLength": 1,
+              "type": "string"
+            },
+            "slot_id": {
+              "minLength": 1,
+              "type": "string"
+            },
+            "type": {
+              "const": "card_slot"
+            }
+          },
+          "required": [
+            "type",
+            "card_id",
+            "slot_id",
+            "backup_required"
+          ],
+          "type": "object"
+        },
+        {
+          "additionalProperties": false,
+          "properties": {
+            "backup_required": {
+              "type": "boolean"
+            },
+            "device_id": {
+              "minLength": 1,
+              "type": "string"
+            },
+            "slot_id": {
+              "minLength": 1,
+              "type": "string"
+            },
+            "type": {
+              "const": "hardware_wallet_slot"
+            }
+          },
+          "required": [
+            "type",
+            "device_id",
+            "slot_id",
+            "backup_required"
+          ],
+          "type": "object"
+        },
+        {
+          "additionalProperties": false,
+          "properties": {
+            "external_signer_id": {
+              "minLength": 1,
+              "type": "string"
+            },
+            "type": {
+              "const": "external_signer"
+            }
+          },
+          "required": [
+            "type",
+            "external_signer_id"
+          ],
+          "type": "object"
+        }
+      ]
+    }
+  }
+}
