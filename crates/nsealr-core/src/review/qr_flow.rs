@@ -121,7 +121,7 @@ pub struct QrReviewTranscriptStep {
     pub button: ReviewButton,
     /// The terminal decision, if this step produced one.
     pub decision: Option<bool>,
-    /// Whether the flow was approved for signing after this step.
+    /// Diagnostic preview outcome after this step; grants no signing authority.
     pub review_approved: bool,
 }
 
@@ -197,7 +197,7 @@ pub struct QrReviewIoFlowResult {
     pub approval_digest: TrustedReviewApprovalDigest,
     /// The terminal decision.
     pub decision: Option<bool>,
-    /// Whether the flow ended approved for signing.
+    /// Diagnostic terminal preview outcome; grants no signing authority.
     pub review_approved: bool,
     /// The recorded steps.
     pub transcript: QrReviewTranscript,
@@ -331,8 +331,8 @@ impl QrReviewFlow {
         self.session.decision()
     }
 
-    /// Whether the review was approved for signing. Mirrors the C++
-    /// `review_approved` (`session.review_approved()`).
+    /// Whether this diagnostic preview reached its approved state.
+    /// This observation is not one-use authorization to execute or sign.
     #[must_use]
     pub fn review_approved(&self) -> bool {
         self.session.review_approved()
