@@ -2,7 +2,8 @@
 
 Current coordinator source refresh: protected main `b1c90139a651895284b2624da7d12903cf16bc9d`, tree
 `0014d51b24ea0b58650d3dee3a5a8616367e6769`. Actual corrected-main [CI39412818666](https://github.com/nSealr/nsealr/actions/runs/39412818666)
-is in_progress at this observation; no implementation is admitted.
+completed **successfully** on the exact main commit; distinct source/specification
+acceptance remains pending and no product implementation is admitted.
 [The exact source-pin addendum](source-pin-addendum.json) classifies every
 repair delta and all30 context bindings. The original preparation below is
 historical; its target21 paths and all746 target preimages are unchanged.
@@ -12,12 +13,13 @@ product patch, dependency resolution, backend change, fixture generation or
 product execution. The preparation worktree is based on A02 adoption candidate
 `a5f7b9f2e087c9538495a16706644f3390e6b01c`, tree
 `e67b1337eaea5cfe3242fe4d83845881764ea5f0`. That candidate remains immutable.
-The coordinator subsequently reported normally integrated A02 main
+Historical preparation observation: the coordinator subsequently reported normally integrated A02 main
 `d931277bebbc5f43514b0e8438d65fb60603fa35`; read-only Git inspection confirms its
 tree equals the preparation base. Exact push CI [39408038674](https://github.com/nSealr/nsealr/actions/runs/39408038674)
 was initially observed `in_progress`. Its completed result is **failure**:
 the cold main-only checkout cannot resolve intermediate provenance commit IDs
-rewritten by the protected rebase. A bounded forward repair is under review.
+rewritten by the protected rebase. That bounded forward repair was subsequently adopted as `b1c90139`;
+its actual-main CI passed, as recorded in the current source-pin addendum.
 S03 implementation remains held until corrected actual-main input, successful
 CI and distinct source-pin/specification acceptance are supplied.
 
