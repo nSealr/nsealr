@@ -1,0 +1,66 @@
+{
+  "schema_version": 1,
+  "task": "P02",
+  "source_commit": "97602b74a1366208969e7fff592ef47d942e65a0",
+  "observed_utc": "2026-10-18T19:30:04.226585+00:00",
+  "procedure": "Executed private verify-research.py; compare registered public Git objects/modes/digests, locked-package metadata and previously SRI-verified extracted bodies, browser observations, immutable preparation/review copies and live local links.",
+  "command": [
+    "python3",
+    "/home/tux/nsealr/.restart-tools/goal/p02-research/verify-research.py"
+  ],
+  "script_sha256": "cf04e4c31c50a9430c1b746fd5aa261e54a11591c6dd481e40071ec13017bde6",
+  "environment": {
+    "python": "3.13.5",
+    "git": "git version 2.47.3"
+  },
+  "verified_source_ids": [
+    "G-N-package",
+    "G-N-lock",
+    "G-N-login",
+    "G-N-pair",
+    "G-N-permissions",
+    "G-N-dm-send",
+    "G-N-dm-relays",
+    "G-N-dm-setup",
+    "G-C-package",
+    "G-C-lock",
+    "G-C-login",
+    "G-C-pair",
+    "G-C-permissions",
+    "G-C-dm-send",
+    "G-C-reply",
+    "G-C-state",
+    "G-B-manifest",
+    "G-P-requirements",
+    "D-AS-nip46",
+    "D-AC-actions",
+    "D-AC-seal",
+    "D-AC-factory",
+    "D-AC-user",
+    "D-AC-decrypt",
+    "D-WS-nip46",
+    "D-WS-nip59",
+    "D-WS-timeout",
+    "D-WA-wraps",
+    "D-WA-relays",
+    "D-WU-kind"
+  ],
+  "counts": {
+    "immutable_git_files": 18,
+    "published_dependency_files": 12,
+    "previously_SRI_verified_tarball_metadata": 7,
+    "clean_client_trees": 2,
+    "official_browser_observations": 2,
+    "pinned_Mozilla_compatibility_body": 1,
+    "unchanged_preparation_files": 3,
+    "byte_exact_distinct_review_files": 4,
+    "resolving_local_links": 5
+  },
+  "result": "PASS source observation correspondence and document navigation; no runtime behavioral claim",
+  "reproduction": "Fetch exact public Git objects and npm tarballs listed in source-register.json, verify locked SRI and body digests, then compare candidate versions. The private one-time capture helper is not a public build prerequisite.",
+  "limits": [
+    "Tarball SRI verification occurred during recorded collection; this check binds that metadata and extracted bytes without claiming a second fetch or package execution.",
+    "No client build, browser/device session, product suite, participant, optical test or market validation was executed for this documentation task.",
+    "Substantive exact final review and post-A02 integration remain required."
+  ]
+}

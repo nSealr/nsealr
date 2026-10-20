@@ -1,0 +1,165 @@
+{
+  "schema_version": 1,
+  "task": "P02",
+  "scope": "Source-backed compatibility and adoption planning, not runtime/device/market qualification",
+  "author": "/root",
+  "assignment": "https://github.com/nSealr/nsealr/issues/24",
+  "observed_utc": "2026-10-18T19:31:23.263803+00:00",
+  "research_source_commit": "97602b74a1366208969e7fff592ef47d942e65a0",
+  "initial_input": "f2ef70f522af4977e15f81554a8c6eadcdbe8097",
+  "specification_candidate": "79f238e3273bf2279f203b7566488609707db65d",
+  "distinct_specification_review": {
+    "commit": "b02ae0b4767ec41f42b1ea4202a192be6eca8189",
+    "copied_commit": "2ab9a0eccfd7ebab830e404bf2479093d749aa45",
+    "path": "docs/restart/implementation/reviews/P02-spec/review.md",
+    "sha256": "b0f699064e8c5c04c11387eaf2315b50e5290ca6a2aa666f4be2ebf8e20f658c"
+  },
+  "artifacts": [
+    {
+      "path": "docs/restart/implementation/P02/brief.md",
+      "sha256": "01a00e25add2708cbc2dea62c4c051c21c1dd336d8f2335ba4bc8de14a0db31b"
+    },
+    {
+      "path": "docs/restart/implementation/P02/input-notes.json",
+      "sha256": "7e588ae41cd7540a9a791970386559737d9fbdcd5cde4f18ad3a6f94b5fac7ce"
+    },
+    {
+      "path": "docs/restart/implementation/P02/acceptance-plan.json",
+      "sha256": "5f93307baafc14fffec48e3c7335d4f1a423a306e0f9e19f5d00d647afcd65d5"
+    },
+    {
+      "path": "docs/restart/implementation/P02/source-register.json",
+      "sha256": "4821e650802388610faa72e44f51465963caecd9c63366338b190e45a2374cb7"
+    },
+    {
+      "path": "docs/restart/implementation/P02/compatibility-plan.md",
+      "sha256": "7e0ceee92f2297da02a218a53ab232a8df4eab28d9cc7615b4f3a8be1d1d7089"
+    },
+    {
+      "path": "docs/restart/implementation/P02/research-protocols.md",
+      "sha256": "3de5ea8f020226628d58ddfeb4c4d1fffefa5bc4dd0d76e4523d8c2645497cb2"
+    },
+    {
+      "path": "docs/restart/implementation/P02/source-verification.json",
+      "sha256": "735a8bc7b0948125622c535fc6231891859c45cd4829fd9f68e58a5bf6be41ba"
+    }
+  ],
+  "criteria": [
+    {
+      "index": 0,
+      "acceptance": "Choose initial client/version candidates and record source-backed protocol support and known gaps; this is test planning rather than completion of every profile integration.",
+      "author_assessment": "Documentary outputs ready for distinct final review",
+      "evidence": [
+        "source-register.json clients/candidate_selection/OBS-01 through OBS-14",
+        "compatibility-plan.md First candidates"
+      ]
+    },
+    {
+      "index": 1,
+      "acceptance": "Define separate connected, QR and Board-developer evidence requirements and success measures; actual client timing/interactions/pilots belong to the corresponding implementation/release tasks.",
+      "author_assessment": "Documentary outputs ready for distinct final review",
+      "evidence": [
+        "compatibility-plan.md five-profile map and all31 positive/negative/inconclusive scenarios",
+        "research-protocols.md Scripts A through D"
+      ]
+    },
+    {
+      "index": 2,
+      "acceptance": "Prepare opt-in research scripts; participant recruitment and identification of an independent Board developer are performed by the profile that needs them, not a universal prerequisite.",
+      "author_assessment": "Documentary outputs ready for distinct final review",
+      "evidence": [
+        "research-protocols.md consent, withdrawal, local recovery, connected/QR and independent-developer procedures",
+        "compatibility-plan.md per-profile implementation/release owners"
+      ]
+    },
+    {
+      "index": 3,
+      "acceptance": "No release waits for observations or a participant from an unrelated profile.",
+      "author_assessment": "Documentary outputs ready for distinct final review",
+      "evidence": [
+        "compatibility-plan.md independent profile gates and generic Board path",
+        "research-protocols.md per-profile recruitment and evidence boundaries"
+      ]
+    },
+    {
+      "index": 4,
+      "acceptance": "Use client-qualification.md as initial source-backed candidates, reconcile source/lockfiles before execution and test desktop browser versions. Source support is not actual interoperability; pilot numerical goals are hypotheses, not market validation.",
+      "author_assessment": "Documentary outputs ready for distinct final review",
+      "evidence": [
+        "source-register.json exact source/locks/tarball SRI/browser observations",
+        "compatibility-plan.md prospective source-build/browser/timeout/relay tests and hypothesis limits"
+      ]
+    }
+  ],
+  "scenarios": [
+    "P02-G01",
+    "P02-G02",
+    "P02-G03",
+    "P02-G04",
+    "P02-G05",
+    "P02-G06",
+    "P02-G07",
+    "P02-G08",
+    "P02-C01",
+    "P02-C02",
+    "P02-C03",
+    "P02-C04",
+    "P02-M01",
+    "P02-M02",
+    "P02-M03",
+    "P02-M04",
+    "P02-M05",
+    "P02-M06",
+    "P02-M07",
+    "P02-M08",
+    "P02-Q01",
+    "P02-Q02",
+    "P02-Q03",
+    "P02-Q04",
+    "P02-Q05",
+    "P02-B01",
+    "P02-B02",
+    "P02-B03",
+    "P02-B04",
+    "P02-B05",
+    "P02-B06"
+  ],
+  "counts": {
+    "profile_plans": 5,
+    "planned_scenarios": 31,
+    "source_observations": 14,
+    "immutable_Git_files": 18,
+    "published_runtime_files": 12,
+    "lock_SRI_verified_tarballs": 7,
+    "selected_clients": 2,
+    "selected_browser_products": 2
+  },
+  "actual_checks": [
+    "Exact public source commits/trees/file blobs/modes/SHA256s read; both research client checkouts remain clean.",
+    "Seven official npm tarballs matched frozen-lock SHA512 SRI and package identity/version before runtime-body reading; no installation or scripts.",
+    "Official browser version APIs captured, pinned Mozilla background compatibility body read, and recorded byte digests checked.",
+    "Three approved preparation files and four copied distinct-review files remain byte-exact; source correspondence and local links verified.",
+    "git diff --check passed for the complete preparation/research delta."
+  ],
+  "source_findings": [
+    "Both clients expose source NIP07/NIP46 paths and request deprecated NIP04; no deprecated fallback is admitted.",
+    "Stock encryption/seal-signing and bare decryption calls still need C02 device-owned binding/context qualification; no impossible-integration or new-standard claim.",
+    "noStrudel DM mailbox fallback, Coracle kind1111 replies, source30/60-second waiting behavior and exact fresh receiving/AUTH paths need their named qualification experiments.",
+    "Existing Firefox background gap filed as issue26, owned by C01; source inspection, not installed-browser reproduction."
+  ],
+  "known_harness_correction": "The initially assumed standalone applesauce-factory package is absent from the lock; actual factories belong to applesauce-common. Failed private collection is preserved; actual common factory/operation bodies resolve the trace.",
+  "external_issues": [
+    "https://github.com/nSealr/nsealr/issues/26"
+  ],
+  "unperformed": [
+    "No client source build or installed browser/extension/native-host interaction.",
+    "No actual relay/device/physical consent/QR/recovery/entropy/lifecycle session.",
+    "No participant recruitment/contact/observation, independent Board physical example, market validation or release admission."
+  ],
+  "integration_requirements": [
+    "Distinct final reviewer must assess source conclusions and plan adequacy at the exact final candidate, not only counts or hashes.",
+    "Main remains frozen for A02; reconcile actual adopted layout/current requirements and update the single canonical graph through reviewed coordinator integration. No frozen evidence rewrite or second task tracker.",
+    "C01/C02, relevant Q/device releases and B03 execute their respective future scenarios. Each applies existing parent/release criteria; no unrelated profile wait or softened safety gate."
+  ],
+  "task_completion_claimed": false
+}
