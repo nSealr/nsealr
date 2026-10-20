@@ -122,9 +122,7 @@ type ParsedAnimatedFrame = {
 };
 
 function parseAnimatedFrame(frame: string): ParsedAnimatedFrame {
-  if (frame.length > MAX_ANIMATED_FRAME_CHARS) {
-    throw new Error("animated QR frame exceeds bounded frame length");
-  }
+  // The sole caller preflights every whole frame before parsing any of them.
   if (!frame.startsWith(ANIMATED_QR_ENVELOPE_PREFIX)) {
     throw new Error("animated QR frame requires nsealr1a prefix");
   }
@@ -170,6 +168,9 @@ export function decodeAnimatedQrEnvelopeFrames(frames: string[]): unknown {
   const rawCharacterBudget = MAX_ANIMATED_PAYLOAD_CHARS + frames.length * MAX_ANIMATED_FRAME_OVERHEAD;
   let rawCharacters = 0;
   for (const frame of frames) {
+    if (frame.length > MAX_ANIMATED_FRAME_CHARS) {
+      throw new Error("animated QR frame exceeds bounded frame length");
+    }
     rawCharacters += frame.length;
     if (rawCharacters > rawCharacterBudget) {
       throw new Error("animated QR decoded JSON exceeds max_animated_qr_decoded_json_bytes");
