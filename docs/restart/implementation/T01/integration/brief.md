@@ -76,10 +76,16 @@ checks; parsing JSON into an object first cannot preserve duplicate evidence.
 All 170 A02 projection obligations and their original hashes/pointers/preimages
 are recorded. Thirty-eight rows contain potentially affected version/status
 material. Retaining their obligations does not imply a numeric 1 positive request
-can remain an accepted numeric 2 fixture. Before code, distinct review must approve
-each affected row's exact source-transition disposition, new independent expected
-bytes or historical rejection role. Do not silently drop rows, change pointers,
-compute answers from implementation or leave an old active snapshot. Unaffected
+can remain an accepted numeric 2 fixture. The source JSON now gives each of the
+38 rows a semantic disposition derived from the original T01 cases: migrate
+valid envelopes to numeric 2, preserve each malformed field's rejection under
+numeric 2, replace the discovery example with the strict conformance descriptor,
+or retain retired status data solely as historical rejection input. Define those
+independent semantic expectations before the corresponding runtime changes.
+Final serialized bytes/hashes follow when the artifact is stable; they are not
+prerequisites to begin the admitted implementation. Preserve all original
+preimages and projection obligations; no silent row/pointer removal, expected
+answer generation from runtime output or second active snapshot. Unaffected
 values remain unchanged. The three generated helpers remain data projections.
 
 The eight independent S03 vectors contain event templates/canonical bytes/IDs/
@@ -92,7 +98,7 @@ Numeric1 rejection and numeric 2 success need new explicit transition controls.
 Production remains `SigningUnavailable`/`signing_disabled`; no raw-secret callback,
 fixture backend exposure, provider, recovery/export or original-scalar claim.
 
-## Minimal provenance transition proposed for review
+## Selected provenance transition and strict manifest format
 
 Current `scripts/verify_contracts.py` pins historical import86569, permanent
 original-source68508ea and immutable postimage59653fc, plus exact manifest and
@@ -103,36 +109,66 @@ an implementation plan; old import identities must not be reassigned to authored
 wire2 expectations. Historical templates, patches, index and frozen results stay
 byte exact.
 
-Two viable minimal approaches are distinguished in the JSON. The preferred
-proposal pins a separately reviewed **artifact subtree Git OID** as a literal
+Root has selected alternative A: pin the independently reviewed **artifact
+subtree Git OID** as a literal
 in the root checker, outside that subtree. It reads the approved expected
 manifest/data/consumer bytes from that immutable object, never from current HEAD
 or an untrusted manifest's claimed baseline. Tree/blob identities survive normal
 commit rebase; the actual 5cb16cb/59653fc artifact subtree equality is recorded.
-The other approach uses a newly adopted permanent-main commit, requiring a
-separate reviewed staging/adoption before its identity exists and careful
-avoidance of a second active artifact. Trusting mutable HEAD/manifest is rejected.
-No future commit or tree SHA is invented here.
+Alternative B's separate staging/adoption is not selected; trusting mutable
+HEAD/manifest is rejected. No extra staging phase, registry or future SHA is
+required. The literal is filled from the real stable artifact before adoption.
 
-The proposed tree approach extends the existing Git mechanism without another
-registry, service or expected-data snapshot. Before approval, specify the exact
-strict manifest representation for retained/imported/modified/new/retired files:
-keep 86569/45f8/68508ea/59653fc as historical provenance; validate old originals
-against 68508ea and independently reviewed new postimages against the new pinned
-tree; never fabricate original hashes for new files. Exact manifest field/format
-changes remain an explicit addendum decision. Review independent expected vectors
-before runtime output exists, then bind all postimage modes/hashes and complete
-consumer coverage. The pinned tree must be reachable in a real main-only cold
-fetch after rebase with old author commit IDs absent. Valid source passes;
-missing/wrong anchors, forgedHEAD/manifest, new unreviewed commits, file/mode/
-hidden-extra/consumer tampering reject, and exact restoration passes. Do not
-repeat PR31's transient-commit-anchor failure.
+Manifest **`artifact_format: 2`** versions the changed inventory schema;
+`artifact_id: "nsealr-contracts-v1"` and the directory remain unchanged and
+separate from `nsealr.signing.v2`/numeric 2. The source JSON embeds the strict
+schema: retain the existing top-level identity/coverage/generation/retirement/
+wire-version fields and replace each `files` row with exactly
+`path, disposition, original, baseline, current, adaptation`. Each non-null
+digest record is exactly `{mode, sha256}`; regular modes are `100644`/`100755`,
+and hashes are lowercase SHA256. Four dispositions have these meanings:
+
+| Disposition | Original at 68508ea | Baseline at 59653fc | Current postimage |
+| --- | --- | --- | --- |
+| `maintained` | Required, exact original mode/hash | Required, exact adopted mode/hash | Exactly baseline |
+| `modified_t01` | Required, unchanged historical binding | Required, unchanged historical binding | New reviewed mode/hash; differs from baseline |
+| `authored_t01` | `null`; path absent there | `null`; path absent there | New reviewed mode/hash |
+| `retired_t01` | Required, preserved | Required, preserved | `null`; path absent from active data |
+
+Every baseline data path occurs exactly once, including tombstones, plus each
+new authored path. Historical pre-A02 card retirements remain in the unchanged
+historical adaptation record; they are not invented T01 deletions. `adaptation`
+preserves the old baseline row's value for maintained files and states the
+declared T01 change for other dispositions. Keep historical source45f8/import86569
+identities literal. Original and baseline records are checked against their
+permanent 68508ea/59653fc sources, never fabricated for a new file. The manifest
+does not contain its own subtree OID or hash. Its exact bytes and mode, all active
+data and metadata, and `consumers.json` are bound by the externally pinned tree.
+Reject duplicate/unknown fields and paths, unsafe paths, wrong modes/hashes,
+unclassified/hidden/nonregular entries, missing retired paths' tombstones and
+missing/extra/stale consumer coverage. No second active artifact is introduced.
+
+The normal sequence is approval of these four documents and the actual S03 input
+tuple, then implementation under that scope with requirement-derived semantic
+expectations and the 38 dispositions established before affected runtime edits.
+Once the artifact/candidate is stable, bind its actual postimage modes/hashes,
+complete consumers and literal subtree OID; distinct final review approves those
+real bytes and the candidate before protected adoption. Routine edits inside the
+approved semantics do not each require a new admission. Preserve source/tamper
+controls and run rewritten-history/main-only regression before adoption, then
+check actual main-only reachability after the real normal rebase. Old author
+commit IDs may be absent; the approved tree and permanent 68508ea/59653fc anchors
+must remain available. Valid source passes; missing/wrong anchors, forged
+HEAD/manifest or a new commit over tampered data, byte/mode/hidden-extra/consumer
+tampering reject; exact restoration passes. Do not repeat PR31's transient-anchor
+failure. Final hashes/OID are intentionally pending, not an implementation gate.
 
 ## Proposed future edit set; no permission granted here
 
 This preparation writes only these four integration documents. A separate root
-admission after exact S03 acceptance must approve the following concrete edit
-set and each normative postimage before implementation:
+admission after exact S03 acceptance approves the concrete edit set and semantic
+transition below. Final normative postimage hashes and the subtree OID are
+reviewed on the stable candidate before adoption, not required before coding:
 
 * Core: new `src/capabilities.rs` and `tests/profile_capabilities.rs`;
   `src/{lib,event,protocol}.rs`, `src/policy/{mod,signing_policy}.rs`,
@@ -193,11 +229,14 @@ second broad acceptance pipeline is needed.
 
 Before implementation: retain the actual S03 distinct review PASS, complete its
 normal adoption and actual-main CI; let root choose the full actual source tuple;
-approve this current
-map, exact writable list, projection deltas and provenance alternative/addendum.
-Then save meaningful current behavioral repros, review independent expectations,
-implement the atomic cutover, run focused and complete affected acceptance on a
-stable candidate, and obtain distinct exact delivery review/protected PR/main CI.
+approve this four-document map, writable scope, semantic projection dispositions
+and format-2/tree-anchor mechanism in one distinct preparation review.
+Then save meaningful current behavioral repros, establish independent semantic
+expectations before affected runtime edits, implement the atomic cutover, and
+pin the actual stable artifact bytes/modes/OID for distinct exact delivery review
+before protected PR/adoption. Run focused and complete affected acceptance on
+that candidate and verify actual resulting-main CI/reachability. No separate
+staging adoption or admission for every in-scope edit is introduced.
 No T01 criterion closes in preparation. Resource/physical inventory and every
 device qualification remain with their actual owners.
 

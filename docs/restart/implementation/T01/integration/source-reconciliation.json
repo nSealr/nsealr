@@ -2124,7 +2124,9 @@
       "nsealr1:",
       "nsealr1a:"
     ],
-    "unchanged_enclosing_contracts": "Native/browser/local-service envelopes keep their own declared revisions unless separately justified. Only nested device payloads change to numeric2; no global version1 replacement. Nostr/NIP07/46/44 meanings and independent crypto expectations stay unchanged."
+    "unchanged_enclosing_contracts": "Native/browser/local-service envelopes keep their own declared revisions unless separately justified. Only nested device payloads change to numeric2; no global version1 replacement. Nostr/NIP07/46/44 meanings and independent crypto expectations stay unchanged.",
+    "proposed_T01_artifact_format": 2,
+    "artifact_format_reason": "Explicitly version strict typed provenance inventory schema; does not change directory/idv1 or internal authdomainv1 and is not the numeric2 wire selector."
   },
   "SSOT_projection_reconciliation": [
     {
@@ -2662,7 +2664,20 @@
         "url": "https://github.com/nSealr/nsealr/blob/503719d5c607bdbcd1da30a89b0c3c6f5983c01b/protocols/contracts/v1/examples/request-get-capabilities.json"
       },
       "potential_wire_status_cutover_collision": true,
-      "required_disposition": "Retain original mapping identity/obligation and frozen preimage; any intentional wire2/status replacement requires an independently reviewed per-row delta. No removal, recomputed expected answer or silent pointer substitution."
+      "required_disposition": "MIGRATE_DISCOVERY_REQUEST_TO_WIRE2",
+      "T01_semantic_transition": {
+        "status": "PROPOSED_REQUIREMENT_DERIVED_FOR_THIS_DISTINCT_SPEC_REVIEW_NOT_EXECUTED",
+        "independent_original_cases": [
+          "S-04",
+          "S-05",
+          "S-01",
+          "S-07"
+        ],
+        "independent_expected_semantics": "Numeric2 get_capabilities request succeeds as bounded discovery with original request binding and no params; no consent or active operation inferred. Full/compact response semantics are separately constrained by accepted T01.",
+        "original_mapping_and_preimage": "All original mapping fields/current projected SHA256/bytes/source binding remain unchanged in this preparation. Preserve historical provenance even when active source bytes change.",
+        "active_mapping_plan": "Keep current artifact_path/pointer/encoding/output identity for this row; replace only declared active source semantics or classify frozen legacy status as rejection-only. No unlisted pointer substitution.",
+        "final_serialized_postimage": "Pending stable artifact; record real bytes/mode/hash and final source-only versus active disposition in exact final inventory before adoption, not as a prerequisite to begin admitted runtime work."
+      }
     },
     {
       "mapping": {
@@ -2683,7 +2698,25 @@
         "url": "https://github.com/nSealr/nsealr/blob/503719d5c607bdbcd1da30a89b0c3c6f5983c01b/protocols/contracts/v1/examples/response-get-capabilities-esp32-s3-scaffold.json"
       },
       "potential_wire_status_cutover_collision": true,
-      "required_disposition": "Retain original mapping identity/obligation and frozen preimage; any intentional wire2/status replacement requires an independently reviewed per-row delta. No removal, recomputed expected answer or silent pointer substitution."
+      "required_disposition": "REPLACE_LEGACY_DISCOVERY_WITH_STRICT_WIRE2_CONFORMANCE_DESCRIPTOR",
+      "T01_semantic_transition": {
+        "status": "PROPOSED_REQUIREMENT_DERIVED_FOR_THIS_DISTINCT_SPEC_REVIEW_NOT_EXECUTED",
+        "independent_original_cases": [
+          "S-04",
+          "S-05",
+          "A-01",
+          "A-02",
+          "A-03",
+          "P-01",
+          "S-01",
+          "S-02",
+          "S-07"
+        ],
+        "independent_expected_semantics": "Numeric2 response uses accepted nsealr.capabilities.v1 full/compact semantics with explicit support/configuration/availability and bounded method/catalog/algorithm/custody/profile/manifest/codec/limits. Remove legacy universal booleans and get_signing_status; synthetic values are conformance_only, not a fake working MCU or release assertion. Wire verified/approved/security state never confers authority.",
+        "original_mapping_and_preimage": "All original mapping fields/current projected SHA256/bytes/source binding remain unchanged in this preparation. Preserve historical provenance even when active source bytes change.",
+        "active_mapping_plan": "Keep current artifact_path/pointer/encoding/output identity for this row; replace only declared active source semantics or classify frozen legacy status as rejection-only. No unlisted pointer substitution.",
+        "final_serialized_postimage": "Pending stable artifact; record real bytes/mode/hash and final source-only versus active disposition in exact final inventory before adoption, not as a prerequisite to begin admitted runtime work."
+      }
     },
     {
       "mapping": {
@@ -2704,7 +2737,21 @@
         "url": "https://github.com/nSealr/nsealr/blob/503719d5c607bdbcd1da30a89b0c3c6f5983c01b/protocols/contracts/v1/examples/request-kind-1-basic.json"
       },
       "potential_wire_status_cutover_collision": true,
-      "required_disposition": "Retain original mapping identity/obligation and frozen preimage; any intentional wire2/status replacement requires an independently reviewed per-row delta. No removal, recomputed expected answer or silent pointer substitution."
+      "required_disposition": "MIGRATE_VALID_REQUEST_TO_WIRE2_KEEP_OPERATION_PAYLOAD",
+      "T01_semantic_transition": {
+        "status": "PROPOSED_REQUIREMENT_DERIVED_FOR_THIS_DISTINCT_SPEC_REVIEW_NOT_EXECUTED",
+        "independent_original_cases": [
+          "S-04",
+          "S-05",
+          "R-01",
+          "R-02",
+          "A-03"
+        ],
+        "independent_expected_semantics": "Numeric2 outer request with original request ID, method and operation/event-template payload unchanged; public discovery/request parsing may succeed within actual limits, but sign_event cannot create local authorization or enable production signing. Frozen numeric1 preimage rejects with no retry.",
+        "original_mapping_and_preimage": "All original mapping fields/current projected SHA256/bytes/source binding remain unchanged in this preparation. Preserve historical provenance even when active source bytes change.",
+        "active_mapping_plan": "Keep current artifact_path/pointer/encoding/output identity for this row; replace only declared active source semantics or classify frozen legacy status as rejection-only. No unlisted pointer substitution.",
+        "final_serialized_postimage": "Pending stable artifact; record real bytes/mode/hash and final source-only versus active disposition in exact final inventory before adoption, not as a prerequisite to begin admitted runtime work."
+      }
     },
     {
       "mapping": {
@@ -2725,7 +2772,20 @@
         "url": "https://github.com/nSealr/nsealr/blob/503719d5c607bdbcd1da30a89b0c3c6f5983c01b/protocols/contracts/v1/examples/response-sign-event-disabled-esp32-s3-scaffold.json"
       },
       "potential_wire_status_cutover_collision": true,
-      "required_disposition": "Retain original mapping identity/obligation and frozen preimage; any intentional wire2/status replacement requires an independently reviewed per-row delta. No removal, recomputed expected answer or silent pointer substitution."
+      "required_disposition": "MIGRATE_DISABLED_RESPONSE_TO_WIRE2_PRESERVE_NO_SIGNING",
+      "T01_semantic_transition": {
+        "status": "PROPOSED_REQUIREMENT_DERIVED_FOR_THIS_DISTINCT_SPEC_REVIEW_NOT_EXECUTED",
+        "independent_original_cases": [
+          "S-04",
+          "S-05",
+          "A-03",
+          "R-06"
+        ],
+        "independent_expected_semantics": "Numeric2 disabled response preserves explicit nonretrying signing_disabled/SigningUnavailable refusal. No signature, fixture backend, readiness boolean or device approval is introduced; original request/response binding stays exact.",
+        "original_mapping_and_preimage": "All original mapping fields/current projected SHA256/bytes/source binding remain unchanged in this preparation. Preserve historical provenance even when active source bytes change.",
+        "active_mapping_plan": "Keep current artifact_path/pointer/encoding/output identity for this row; replace only declared active source semantics or classify frozen legacy status as rejection-only. No unlisted pointer substitution.",
+        "final_serialized_postimage": "Pending stable artifact; record real bytes/mode/hash and final source-only versus active disposition in exact final inventory before adoption, not as a prerequisite to begin admitted runtime work."
+      }
     },
     {
       "mapping": {
@@ -2746,7 +2806,20 @@
         "url": "https://github.com/nSealr/nsealr/blob/503719d5c607bdbcd1da30a89b0c3c6f5983c01b/protocols/contracts/v1/examples/request-get-signing-status.json"
       },
       "potential_wire_status_cutover_collision": true,
-      "required_disposition": "Retain original mapping identity/obligation and frozen preimage; any intentional wire2/status replacement requires an independently reviewed per-row delta. No removal, recomputed expected answer or silent pointer substitution."
+      "required_disposition": "KEEP_FROZEN_WIRE1_BYTES_AS_HISTORICAL_REJECTION_ONLY",
+      "T01_semantic_transition": {
+        "status": "PROPOSED_REQUIREMENT_DERIVED_FOR_THIS_DISTINCT_SPEC_REVIEW_NOT_EXECUTED",
+        "independent_original_cases": [
+          "S-04",
+          "S-05",
+          "A-03",
+          "S-06"
+        ],
+        "independent_expected_semantics": "Keep this exact legacy projection/preimage as negative historical data: numeric1/legacy status payload rejects, no get_signing_status handler or readiness authority. Also hand-author numeric2 get_signing_status unsupported-method control under S-04, so version rejection cannot mask method retirement; old response signing_enabled/missing_gates/development_accepted_gates never form current consumer availability.",
+        "original_mapping_and_preimage": "All original mapping fields/current projected SHA256/bytes/source binding remain unchanged in this preparation. Preserve historical provenance even when active source bytes change.",
+        "active_mapping_plan": "Keep current artifact_path/pointer/encoding/output identity for this row; replace only declared active source semantics or classify frozen legacy status as rejection-only. No unlisted pointer substitution.",
+        "final_serialized_postimage": "Pending stable artifact; record real bytes/mode/hash and final source-only versus active disposition in exact final inventory before adoption, not as a prerequisite to begin admitted runtime work."
+      }
     },
     {
       "mapping": {
@@ -2767,7 +2840,20 @@
         "url": "https://github.com/nSealr/nsealr/blob/503719d5c607bdbcd1da30a89b0c3c6f5983c01b/protocols/contracts/v1/examples/response-get-signing-status-esp32-s3-scaffold.json"
       },
       "potential_wire_status_cutover_collision": true,
-      "required_disposition": "Retain original mapping identity/obligation and frozen preimage; any intentional wire2/status replacement requires an independently reviewed per-row delta. No removal, recomputed expected answer or silent pointer substitution."
+      "required_disposition": "KEEP_FROZEN_WIRE1_BYTES_AS_HISTORICAL_REJECTION_ONLY",
+      "T01_semantic_transition": {
+        "status": "PROPOSED_REQUIREMENT_DERIVED_FOR_THIS_DISTINCT_SPEC_REVIEW_NOT_EXECUTED",
+        "independent_original_cases": [
+          "S-04",
+          "S-05",
+          "A-03",
+          "S-06"
+        ],
+        "independent_expected_semantics": "Keep this exact legacy projection/preimage as negative historical data: numeric1/legacy status payload rejects, no get_signing_status handler or readiness authority. Also hand-author numeric2 get_signing_status unsupported-method control under S-04, so version rejection cannot mask method retirement; old response signing_enabled/missing_gates/development_accepted_gates never form current consumer availability.",
+        "original_mapping_and_preimage": "All original mapping fields/current projected SHA256/bytes/source binding remain unchanged in this preparation. Preserve historical provenance even when active source bytes change.",
+        "active_mapping_plan": "Keep current artifact_path/pointer/encoding/output identity for this row; replace only declared active source semantics or classify frozen legacy status as rejection-only. No unlisted pointer substitution.",
+        "final_serialized_postimage": "Pending stable artifact; record real bytes/mode/hash and final source-only versus active disposition in exact final inventory before adoption, not as a prerequisite to begin admitted runtime work."
+      }
     },
     {
       "mapping": {
@@ -2788,7 +2874,21 @@
         "url": "https://github.com/nSealr/nsealr/blob/503719d5c607bdbcd1da30a89b0c3c6f5983c01b/protocols/contracts/v1/examples/request-get-public-key.json"
       },
       "potential_wire_status_cutover_collision": true,
-      "required_disposition": "Retain original mapping identity/obligation and frozen preimage; any intentional wire2/status replacement requires an independently reviewed per-row delta. No removal, recomputed expected answer or silent pointer substitution."
+      "required_disposition": "MIGRATE_VALID_REQUEST_TO_WIRE2_KEEP_OPERATION_PAYLOAD",
+      "T01_semantic_transition": {
+        "status": "PROPOSED_REQUIREMENT_DERIVED_FOR_THIS_DISTINCT_SPEC_REVIEW_NOT_EXECUTED",
+        "independent_original_cases": [
+          "S-04",
+          "S-05",
+          "R-01",
+          "R-02",
+          "A-03"
+        ],
+        "independent_expected_semantics": "Numeric2 outer request with original request ID, method and operation/event-template payload unchanged; public discovery/request parsing may succeed within actual limits, but sign_event cannot create local authorization or enable production signing. Frozen numeric1 preimage rejects with no retry.",
+        "original_mapping_and_preimage": "All original mapping fields/current projected SHA256/bytes/source binding remain unchanged in this preparation. Preserve historical provenance even when active source bytes change.",
+        "active_mapping_plan": "Keep current artifact_path/pointer/encoding/output identity for this row; replace only declared active source semantics or classify frozen legacy status as rejection-only. No unlisted pointer substitution.",
+        "final_serialized_postimage": "Pending stable artifact; record real bytes/mode/hash and final source-only versus active disposition in exact final inventory before adoption, not as a prerequisite to begin admitted runtime work."
+      }
     },
     {
       "mapping": {
@@ -2809,7 +2909,20 @@
         "url": "https://github.com/nSealr/nsealr/blob/503719d5c607bdbcd1da30a89b0c3c6f5983c01b/protocols/contracts/v1/examples/response-get-public-key.json"
       },
       "potential_wire_status_cutover_collision": true,
-      "required_disposition": "Retain original mapping identity/obligation and frozen preimage; any intentional wire2/status replacement requires an independently reviewed per-row delta. No removal, recomputed expected answer or silent pointer substitution."
+      "required_disposition": "MIGRATE_PUBLIC_KEY_RESPONSE_TO_WIRE2_KEEP_KEY",
+      "T01_semantic_transition": {
+        "status": "PROPOSED_REQUIREMENT_DERIVED_FOR_THIS_DISTINCT_SPEC_REVIEW_NOT_EXECUTED",
+        "independent_original_cases": [
+          "S-04",
+          "S-05",
+          "A-04",
+          "R-06"
+        ],
+        "independent_expected_semantics": "Numeric2 response keeps exact independent public-key bytes and request binding. Public metadata alone proves neither custody nor hardware identity; preserve expected selected key verification.",
+        "original_mapping_and_preimage": "All original mapping fields/current projected SHA256/bytes/source binding remain unchanged in this preparation. Preserve historical provenance even when active source bytes change.",
+        "active_mapping_plan": "Keep current artifact_path/pointer/encoding/output identity for this row; replace only declared active source semantics or classify frozen legacy status as rejection-only. No unlisted pointer substitution.",
+        "final_serialized_postimage": "Pending stable artifact; record real bytes/mode/hash and final source-only versus active disposition in exact final inventory before adoption, not as a prerequisite to begin admitted runtime work."
+      }
     },
     {
       "mapping": {
@@ -2906,7 +3019,19 @@
         "url": "https://github.com/nSealr/nsealr/blob/503719d5c607bdbcd1da30a89b0c3c6f5983c01b/protocols/contracts/v1/vectors/invalid/request-unknown-top-level-field.json"
       },
       "potential_wire_status_cutover_collision": true,
-      "required_disposition": "Retain original mapping identity/obligation and frozen preimage; any intentional wire2/status replacement requires an independently reviewed per-row delta. No removal, recomputed expected answer or silent pointer substitution."
+      "required_disposition": "MIGRATE_INVALID_ENVELOPE_TO_WIRE2_KEEP_ORIGINAL_REJECTION",
+      "T01_semantic_transition": {
+        "status": "PROPOSED_REQUIREMENT_DERIVED_FOR_THIS_DISTINCT_SPEC_REVIEW_NOT_EXECUTED",
+        "independent_original_cases": [
+          "S-04",
+          "S-05",
+          "S-03"
+        ],
+        "independent_expected_semantics": "Use numeric2 outer envelope while preserving exactly the original offending field/type/limit condition; reject for the original requirement: unknown top-level fields. Do not let unsupported-version rejection mask the malformed field. Frozen numeric1 preimage also remains a historical unsupported-version control.",
+        "original_mapping_and_preimage": "All original mapping fields/current projected SHA256/bytes/source binding remain unchanged in this preparation. Preserve historical provenance even when active source bytes change.",
+        "active_mapping_plan": "Keep current artifact_path/pointer/encoding/output identity for this row; replace only declared active source semantics or classify frozen legacy status as rejection-only. No unlisted pointer substitution.",
+        "final_serialized_postimage": "Pending stable artifact; record real bytes/mode/hash and final source-only versus active disposition in exact final inventory before adoption, not as a prerequisite to begin admitted runtime work."
+      }
     },
     {
       "mapping": {
@@ -2929,7 +3054,19 @@
         "url": "https://github.com/nSealr/nsealr/blob/503719d5c607bdbcd1da30a89b0c3c6f5983c01b/protocols/contracts/v1/vectors/invalid/request-get-capabilities-params.json"
       },
       "potential_wire_status_cutover_collision": true,
-      "required_disposition": "Retain original mapping identity/obligation and frozen preimage; any intentional wire2/status replacement requires an independently reviewed per-row delta. No removal, recomputed expected answer or silent pointer substitution."
+      "required_disposition": "MIGRATE_INVALID_ENVELOPE_TO_WIRE2_KEEP_ORIGINAL_REJECTION",
+      "T01_semantic_transition": {
+        "status": "PROPOSED_REQUIREMENT_DERIVED_FOR_THIS_DISTINCT_SPEC_REVIEW_NOT_EXECUTED",
+        "independent_original_cases": [
+          "S-04",
+          "S-05",
+          "S-03"
+        ],
+        "independent_expected_semantics": "Use numeric2 outer envelope while preserving exactly the original offending field/type/limit condition; reject for the original requirement: get_capabilities must not include params. Do not let unsupported-version rejection mask the malformed field. Frozen numeric1 preimage also remains a historical unsupported-version control.",
+        "original_mapping_and_preimage": "All original mapping fields/current projected SHA256/bytes/source binding remain unchanged in this preparation. Preserve historical provenance even when active source bytes change.",
+        "active_mapping_plan": "Keep current artifact_path/pointer/encoding/output identity for this row; replace only declared active source semantics or classify frozen legacy status as rejection-only. No unlisted pointer substitution.",
+        "final_serialized_postimage": "Pending stable artifact; record real bytes/mode/hash and final source-only versus active disposition in exact final inventory before adoption, not as a prerequisite to begin admitted runtime work."
+      }
     },
     {
       "mapping": {
@@ -2952,7 +3089,19 @@
         "url": "https://github.com/nSealr/nsealr/blob/503719d5c607bdbcd1da30a89b0c3c6f5983c01b/protocols/contracts/v1/vectors/invalid/request-get-public-key-params.json"
       },
       "potential_wire_status_cutover_collision": true,
-      "required_disposition": "Retain original mapping identity/obligation and frozen preimage; any intentional wire2/status replacement requires an independently reviewed per-row delta. No removal, recomputed expected answer or silent pointer substitution."
+      "required_disposition": "MIGRATE_INVALID_ENVELOPE_TO_WIRE2_KEEP_ORIGINAL_REJECTION",
+      "T01_semantic_transition": {
+        "status": "PROPOSED_REQUIREMENT_DERIVED_FOR_THIS_DISTINCT_SPEC_REVIEW_NOT_EXECUTED",
+        "independent_original_cases": [
+          "S-04",
+          "S-05",
+          "S-03"
+        ],
+        "independent_expected_semantics": "Use numeric2 outer envelope while preserving exactly the original offending field/type/limit condition; reject for the original requirement: get_public_key must not include params. Do not let unsupported-version rejection mask the malformed field. Frozen numeric1 preimage also remains a historical unsupported-version control.",
+        "original_mapping_and_preimage": "All original mapping fields/current projected SHA256/bytes/source binding remain unchanged in this preparation. Preserve historical provenance even when active source bytes change.",
+        "active_mapping_plan": "Keep current artifact_path/pointer/encoding/output identity for this row; replace only declared active source semantics or classify frozen legacy status as rejection-only. No unlisted pointer substitution.",
+        "final_serialized_postimage": "Pending stable artifact; record real bytes/mode/hash and final source-only versus active disposition in exact final inventory before adoption, not as a prerequisite to begin admitted runtime work."
+      }
     },
     {
       "mapping": {
@@ -2975,7 +3124,19 @@
         "url": "https://github.com/nSealr/nsealr/blob/503719d5c607bdbcd1da30a89b0c3c6f5983c01b/protocols/contracts/v1/vectors/invalid/request-event-template-pubkey.json"
       },
       "potential_wire_status_cutover_collision": true,
-      "required_disposition": "Retain original mapping identity/obligation and frozen preimage; any intentional wire2/status replacement requires an independently reviewed per-row delta. No removal, recomputed expected answer or silent pointer substitution."
+      "required_disposition": "MIGRATE_INVALID_ENVELOPE_TO_WIRE2_KEEP_ORIGINAL_REJECTION",
+      "T01_semantic_transition": {
+        "status": "PROPOSED_REQUIREMENT_DERIVED_FOR_THIS_DISTINCT_SPEC_REVIEW_NOT_EXECUTED",
+        "independent_original_cases": [
+          "S-04",
+          "S-05",
+          "S-03"
+        ],
+        "independent_expected_semantics": "Use numeric2 outer envelope while preserving exactly the original offending field/type/limit condition; reject for the original requirement: event_template contains forbidden fields. Do not let unsupported-version rejection mask the malformed field. Frozen numeric1 preimage also remains a historical unsupported-version control.",
+        "original_mapping_and_preimage": "All original mapping fields/current projected SHA256/bytes/source binding remain unchanged in this preparation. Preserve historical provenance even when active source bytes change.",
+        "active_mapping_plan": "Keep current artifact_path/pointer/encoding/output identity for this row; replace only declared active source semantics or classify frozen legacy status as rejection-only. No unlisted pointer substitution.",
+        "final_serialized_postimage": "Pending stable artifact; record real bytes/mode/hash and final source-only versus active disposition in exact final inventory before adoption, not as a prerequisite to begin admitted runtime work."
+      }
     },
     {
       "mapping": {
@@ -3137,7 +3298,19 @@
         "url": "https://github.com/nSealr/nsealr/blob/503719d5c607bdbcd1da30a89b0c3c6f5983c01b/protocols/contracts/v1/examples/response-kind-1-basic.json"
       },
       "potential_wire_status_cutover_collision": true,
-      "required_disposition": "Retain original mapping identity/obligation and frozen preimage; any intentional wire2/status replacement requires an independently reviewed per-row delta. No removal, recomputed expected answer or silent pointer substitution."
+      "required_disposition": "MIGRATE_TEST_RESPONSE_TO_WIRE2_KEEP_INDEPENDENT_EVENT_BYTES",
+      "T01_semantic_transition": {
+        "status": "PROPOSED_REQUIREMENT_DERIVED_FOR_THIS_DISTINCT_SPEC_REVIEW_NOT_EXECUTED",
+        "independent_original_cases": [
+          "S-04",
+          "S-05",
+          "R-06"
+        ],
+        "independent_expected_semantics": "Only accepted outer device envelope becomes numeric2; signed event/pubkey/canonical ID/signature remain byte-identical independent fixture data. Treat as test response, not enabled production signing or physical approval; expected-key/request and independent signature verification remain.",
+        "original_mapping_and_preimage": "All original mapping fields/current projected SHA256/bytes/source binding remain unchanged in this preparation. Preserve historical provenance even when active source bytes change.",
+        "active_mapping_plan": "Keep current artifact_path/pointer/encoding/output identity for this row; replace only declared active source semantics or classify frozen legacy status as rejection-only. No unlisted pointer substitution.",
+        "final_serialized_postimage": "Pending stable artifact; record real bytes/mode/hash and final source-only versus active disposition in exact final inventory before adoption, not as a prerequisite to begin admitted runtime work."
+      }
     },
     {
       "mapping": {
@@ -3231,7 +3404,20 @@
         "url": "https://github.com/nSealr/nsealr/blob/503719d5c607bdbcd1da30a89b0c3c6f5983c01b/protocols/contracts/v1/vectors/invalid/request-content-over-limit.json"
       },
       "potential_wire_status_cutover_collision": true,
-      "required_disposition": "Retain original mapping identity/obligation and frozen preimage; any intentional wire2/status replacement requires an independently reviewed per-row delta. No removal, recomputed expected answer or silent pointer substitution."
+      "required_disposition": "MIGRATE_INVALID_ENVELOPE_TO_WIRE2_KEEP_ORIGINAL_REJECTION",
+      "T01_semantic_transition": {
+        "status": "PROPOSED_REQUIREMENT_DERIVED_FOR_THIS_DISTINCT_SPEC_REVIEW_NOT_EXECUTED",
+        "independent_original_cases": [
+          "S-04",
+          "S-05",
+          "S-03",
+          "L-01"
+        ],
+        "independent_expected_semantics": "Use numeric2 outer envelope while preserving exactly the original offending field/type/limit condition; reject for the original requirement: event_template content exceeds max_content_utf8_bytes. Do not let unsupported-version rejection mask the malformed field. Frozen numeric1 preimage also remains a historical unsupported-version control.",
+        "original_mapping_and_preimage": "All original mapping fields/current projected SHA256/bytes/source binding remain unchanged in this preparation. Preserve historical provenance even when active source bytes change.",
+        "active_mapping_plan": "Keep current artifact_path/pointer/encoding/output identity for this row; replace only declared active source semantics or classify frozen legacy status as rejection-only. No unlisted pointer substitution.",
+        "final_serialized_postimage": "Pending stable artifact; record real bytes/mode/hash and final source-only versus active disposition in exact final inventory before adoption, not as a prerequisite to begin admitted runtime work."
+      }
     },
     {
       "mapping": {
@@ -3277,7 +3463,19 @@
         "url": "https://github.com/nSealr/nsealr/blob/503719d5c607bdbcd1da30a89b0c3c6f5983c01b/protocols/contracts/v1/vectors/invalid/request-created-at-float.json"
       },
       "potential_wire_status_cutover_collision": true,
-      "required_disposition": "Retain original mapping identity/obligation and frozen preimage; any intentional wire2/status replacement requires an independently reviewed per-row delta. No removal, recomputed expected answer or silent pointer substitution."
+      "required_disposition": "MIGRATE_INVALID_ENVELOPE_TO_WIRE2_KEEP_ORIGINAL_REJECTION",
+      "T01_semantic_transition": {
+        "status": "PROPOSED_REQUIREMENT_DERIVED_FOR_THIS_DISTINCT_SPEC_REVIEW_NOT_EXECUTED",
+        "independent_original_cases": [
+          "S-04",
+          "S-05",
+          "S-03"
+        ],
+        "independent_expected_semantics": "Use numeric2 outer envelope while preserving exactly the original offending field/type/limit condition; reject for the original requirement: event_template created_at must be a non-negative safe integer. Do not let unsupported-version rejection mask the malformed field. Frozen numeric1 preimage also remains a historical unsupported-version control.",
+        "original_mapping_and_preimage": "All original mapping fields/current projected SHA256/bytes/source binding remain unchanged in this preparation. Preserve historical provenance even when active source bytes change.",
+        "active_mapping_plan": "Keep current artifact_path/pointer/encoding/output identity for this row; replace only declared active source semantics or classify frozen legacy status as rejection-only. No unlisted pointer substitution.",
+        "final_serialized_postimage": "Pending stable artifact; record real bytes/mode/hash and final source-only versus active disposition in exact final inventory before adoption, not as a prerequisite to begin admitted runtime work."
+      }
     },
     {
       "mapping": {
@@ -3323,7 +3521,19 @@
         "url": "https://github.com/nSealr/nsealr/blob/503719d5c607bdbcd1da30a89b0c3c6f5983c01b/protocols/contracts/v1/vectors/invalid/request-created-at-negative.json"
       },
       "potential_wire_status_cutover_collision": true,
-      "required_disposition": "Retain original mapping identity/obligation and frozen preimage; any intentional wire2/status replacement requires an independently reviewed per-row delta. No removal, recomputed expected answer or silent pointer substitution."
+      "required_disposition": "MIGRATE_INVALID_ENVELOPE_TO_WIRE2_KEEP_ORIGINAL_REJECTION",
+      "T01_semantic_transition": {
+        "status": "PROPOSED_REQUIREMENT_DERIVED_FOR_THIS_DISTINCT_SPEC_REVIEW_NOT_EXECUTED",
+        "independent_original_cases": [
+          "S-04",
+          "S-05",
+          "S-03"
+        ],
+        "independent_expected_semantics": "Use numeric2 outer envelope while preserving exactly the original offending field/type/limit condition; reject for the original requirement: event_template created_at must be a non-negative safe integer. Do not let unsupported-version rejection mask the malformed field. Frozen numeric1 preimage also remains a historical unsupported-version control.",
+        "original_mapping_and_preimage": "All original mapping fields/current projected SHA256/bytes/source binding remain unchanged in this preparation. Preserve historical provenance even when active source bytes change.",
+        "active_mapping_plan": "Keep current artifact_path/pointer/encoding/output identity for this row; replace only declared active source semantics or classify frozen legacy status as rejection-only. No unlisted pointer substitution.",
+        "final_serialized_postimage": "Pending stable artifact; record real bytes/mode/hash and final source-only versus active disposition in exact final inventory before adoption, not as a prerequisite to begin admitted runtime work."
+      }
     },
     {
       "mapping": {
@@ -3369,7 +3579,19 @@
         "url": "https://github.com/nSealr/nsealr/blob/503719d5c607bdbcd1da30a89b0c3c6f5983c01b/protocols/contracts/v1/vectors/invalid/request-created-at-string.json"
       },
       "potential_wire_status_cutover_collision": true,
-      "required_disposition": "Retain original mapping identity/obligation and frozen preimage; any intentional wire2/status replacement requires an independently reviewed per-row delta. No removal, recomputed expected answer or silent pointer substitution."
+      "required_disposition": "MIGRATE_INVALID_ENVELOPE_TO_WIRE2_KEEP_ORIGINAL_REJECTION",
+      "T01_semantic_transition": {
+        "status": "PROPOSED_REQUIREMENT_DERIVED_FOR_THIS_DISTINCT_SPEC_REVIEW_NOT_EXECUTED",
+        "independent_original_cases": [
+          "S-04",
+          "S-05",
+          "S-03"
+        ],
+        "independent_expected_semantics": "Use numeric2 outer envelope while preserving exactly the original offending field/type/limit condition; reject for the original requirement: event_template created_at must be a non-negative safe integer. Do not let unsupported-version rejection mask the malformed field. Frozen numeric1 preimage also remains a historical unsupported-version control.",
+        "original_mapping_and_preimage": "All original mapping fields/current projected SHA256/bytes/source binding remain unchanged in this preparation. Preserve historical provenance even when active source bytes change.",
+        "active_mapping_plan": "Keep current artifact_path/pointer/encoding/output identity for this row; replace only declared active source semantics or classify frozen legacy status as rejection-only. No unlisted pointer substitution.",
+        "final_serialized_postimage": "Pending stable artifact; record real bytes/mode/hash and final source-only versus active disposition in exact final inventory before adoption, not as a prerequisite to begin admitted runtime work."
+      }
     },
     {
       "mapping": {
@@ -3415,7 +3637,19 @@
         "url": "https://github.com/nSealr/nsealr/blob/503719d5c607bdbcd1da30a89b0c3c6f5983c01b/protocols/contracts/v1/vectors/invalid/request-created-at-unsafe-integer.json"
       },
       "potential_wire_status_cutover_collision": true,
-      "required_disposition": "Retain original mapping identity/obligation and frozen preimage; any intentional wire2/status replacement requires an independently reviewed per-row delta. No removal, recomputed expected answer or silent pointer substitution."
+      "required_disposition": "MIGRATE_INVALID_ENVELOPE_TO_WIRE2_KEEP_ORIGINAL_REJECTION",
+      "T01_semantic_transition": {
+        "status": "PROPOSED_REQUIREMENT_DERIVED_FOR_THIS_DISTINCT_SPEC_REVIEW_NOT_EXECUTED",
+        "independent_original_cases": [
+          "S-04",
+          "S-05",
+          "S-03"
+        ],
+        "independent_expected_semantics": "Use numeric2 outer envelope while preserving exactly the original offending field/type/limit condition; reject for the original requirement: event_template created_at exceeds max_safe_integer. Do not let unsupported-version rejection mask the malformed field. Frozen numeric1 preimage also remains a historical unsupported-version control.",
+        "original_mapping_and_preimage": "All original mapping fields/current projected SHA256/bytes/source binding remain unchanged in this preparation. Preserve historical provenance even when active source bytes change.",
+        "active_mapping_plan": "Keep current artifact_path/pointer/encoding/output identity for this row; replace only declared active source semantics or classify frozen legacy status as rejection-only. No unlisted pointer substitution.",
+        "final_serialized_postimage": "Pending stable artifact; record real bytes/mode/hash and final source-only versus active disposition in exact final inventory before adoption, not as a prerequisite to begin admitted runtime work."
+      }
     },
     {
       "mapping": {
@@ -3461,7 +3695,19 @@
         "url": "https://github.com/nSealr/nsealr/blob/503719d5c607bdbcd1da30a89b0c3c6f5983c01b/protocols/contracts/v1/vectors/invalid/request-event-template-id.json"
       },
       "potential_wire_status_cutover_collision": true,
-      "required_disposition": "Retain original mapping identity/obligation and frozen preimage; any intentional wire2/status replacement requires an independently reviewed per-row delta. No removal, recomputed expected answer or silent pointer substitution."
+      "required_disposition": "MIGRATE_INVALID_ENVELOPE_TO_WIRE2_KEEP_ORIGINAL_REJECTION",
+      "T01_semantic_transition": {
+        "status": "PROPOSED_REQUIREMENT_DERIVED_FOR_THIS_DISTINCT_SPEC_REVIEW_NOT_EXECUTED",
+        "independent_original_cases": [
+          "S-04",
+          "S-05",
+          "S-03"
+        ],
+        "independent_expected_semantics": "Use numeric2 outer envelope while preserving exactly the original offending field/type/limit condition; reject for the original requirement: event_template contains forbidden fields. Do not let unsupported-version rejection mask the malformed field. Frozen numeric1 preimage also remains a historical unsupported-version control.",
+        "original_mapping_and_preimage": "All original mapping fields/current projected SHA256/bytes/source binding remain unchanged in this preparation. Preserve historical provenance even when active source bytes change.",
+        "active_mapping_plan": "Keep current artifact_path/pointer/encoding/output identity for this row; replace only declared active source semantics or classify frozen legacy status as rejection-only. No unlisted pointer substitution.",
+        "final_serialized_postimage": "Pending stable artifact; record real bytes/mode/hash and final source-only versus active disposition in exact final inventory before adoption, not as a prerequisite to begin admitted runtime work."
+      }
     },
     {
       "mapping": {
@@ -3507,7 +3753,19 @@
         "url": "https://github.com/nSealr/nsealr/blob/503719d5c607bdbcd1da30a89b0c3c6f5983c01b/protocols/contracts/v1/vectors/invalid/request-event-template-missing.json"
       },
       "potential_wire_status_cutover_collision": true,
-      "required_disposition": "Retain original mapping identity/obligation and frozen preimage; any intentional wire2/status replacement requires an independently reviewed per-row delta. No removal, recomputed expected answer or silent pointer substitution."
+      "required_disposition": "MIGRATE_INVALID_ENVELOPE_TO_WIRE2_KEEP_ORIGINAL_REJECTION",
+      "T01_semantic_transition": {
+        "status": "PROPOSED_REQUIREMENT_DERIVED_FOR_THIS_DISTINCT_SPEC_REVIEW_NOT_EXECUTED",
+        "independent_original_cases": [
+          "S-04",
+          "S-05",
+          "S-03"
+        ],
+        "independent_expected_semantics": "Use numeric2 outer envelope while preserving exactly the original offending field/type/limit condition; reject for the original requirement: event_template must be an object. Do not let unsupported-version rejection mask the malformed field. Frozen numeric1 preimage also remains a historical unsupported-version control.",
+        "original_mapping_and_preimage": "All original mapping fields/current projected SHA256/bytes/source binding remain unchanged in this preparation. Preserve historical provenance even when active source bytes change.",
+        "active_mapping_plan": "Keep current artifact_path/pointer/encoding/output identity for this row; replace only declared active source semantics or classify frozen legacy status as rejection-only. No unlisted pointer substitution.",
+        "final_serialized_postimage": "Pending stable artifact; record real bytes/mode/hash and final source-only versus active disposition in exact final inventory before adoption, not as a prerequisite to begin admitted runtime work."
+      }
     },
     {
       "mapping": {
@@ -3553,7 +3811,19 @@
         "url": "https://github.com/nSealr/nsealr/blob/503719d5c607bdbcd1da30a89b0c3c6f5983c01b/protocols/contracts/v1/vectors/invalid/request-event-template-not-object.json"
       },
       "potential_wire_status_cutover_collision": true,
-      "required_disposition": "Retain original mapping identity/obligation and frozen preimage; any intentional wire2/status replacement requires an independently reviewed per-row delta. No removal, recomputed expected answer or silent pointer substitution."
+      "required_disposition": "MIGRATE_INVALID_ENVELOPE_TO_WIRE2_KEEP_ORIGINAL_REJECTION",
+      "T01_semantic_transition": {
+        "status": "PROPOSED_REQUIREMENT_DERIVED_FOR_THIS_DISTINCT_SPEC_REVIEW_NOT_EXECUTED",
+        "independent_original_cases": [
+          "S-04",
+          "S-05",
+          "S-03"
+        ],
+        "independent_expected_semantics": "Use numeric2 outer envelope while preserving exactly the original offending field/type/limit condition; reject for the original requirement: event_template must be an object. Do not let unsupported-version rejection mask the malformed field. Frozen numeric1 preimage also remains a historical unsupported-version control.",
+        "original_mapping_and_preimage": "All original mapping fields/current projected SHA256/bytes/source binding remain unchanged in this preparation. Preserve historical provenance even when active source bytes change.",
+        "active_mapping_plan": "Keep current artifact_path/pointer/encoding/output identity for this row; replace only declared active source semantics or classify frozen legacy status as rejection-only. No unlisted pointer substitution.",
+        "final_serialized_postimage": "Pending stable artifact; record real bytes/mode/hash and final source-only versus active disposition in exact final inventory before adoption, not as a prerequisite to begin admitted runtime work."
+      }
     },
     {
       "mapping": {
@@ -3622,7 +3892,19 @@
         "url": "https://github.com/nSealr/nsealr/blob/503719d5c607bdbcd1da30a89b0c3c6f5983c01b/protocols/contracts/v1/vectors/invalid/request-event-template-sig.json"
       },
       "potential_wire_status_cutover_collision": true,
-      "required_disposition": "Retain original mapping identity/obligation and frozen preimage; any intentional wire2/status replacement requires an independently reviewed per-row delta. No removal, recomputed expected answer or silent pointer substitution."
+      "required_disposition": "MIGRATE_INVALID_ENVELOPE_TO_WIRE2_KEEP_ORIGINAL_REJECTION",
+      "T01_semantic_transition": {
+        "status": "PROPOSED_REQUIREMENT_DERIVED_FOR_THIS_DISTINCT_SPEC_REVIEW_NOT_EXECUTED",
+        "independent_original_cases": [
+          "S-04",
+          "S-05",
+          "S-03"
+        ],
+        "independent_expected_semantics": "Use numeric2 outer envelope while preserving exactly the original offending field/type/limit condition; reject for the original requirement: event_template contains forbidden fields. Do not let unsupported-version rejection mask the malformed field. Frozen numeric1 preimage also remains a historical unsupported-version control.",
+        "original_mapping_and_preimage": "All original mapping fields/current projected SHA256/bytes/source binding remain unchanged in this preparation. Preserve historical provenance even when active source bytes change.",
+        "active_mapping_plan": "Keep current artifact_path/pointer/encoding/output identity for this row; replace only declared active source semantics or classify frozen legacy status as rejection-only. No unlisted pointer substitution.",
+        "final_serialized_postimage": "Pending stable artifact; record real bytes/mode/hash and final source-only versus active disposition in exact final inventory before adoption, not as a prerequisite to begin admitted runtime work."
+      }
     },
     {
       "mapping": {
@@ -3714,7 +3996,20 @@
         "url": "https://github.com/nSealr/nsealr/blob/503719d5c607bdbcd1da30a89b0c3c6f5983c01b/protocols/contracts/v1/vectors/invalid/request-json-over-limit.json"
       },
       "potential_wire_status_cutover_collision": true,
-      "required_disposition": "Retain original mapping identity/obligation and frozen preimage; any intentional wire2/status replacement requires an independently reviewed per-row delta. No removal, recomputed expected answer or silent pointer substitution."
+      "required_disposition": "MIGRATE_INVALID_ENVELOPE_TO_WIRE2_KEEP_ORIGINAL_REJECTION",
+      "T01_semantic_transition": {
+        "status": "PROPOSED_REQUIREMENT_DERIVED_FOR_THIS_DISTINCT_SPEC_REVIEW_NOT_EXECUTED",
+        "independent_original_cases": [
+          "S-04",
+          "S-05",
+          "S-03",
+          "L-01"
+        ],
+        "independent_expected_semantics": "Use numeric2 outer envelope while preserving exactly the original offending field/type/limit condition; reject for the original requirement: decoded request JSON exceeds max_decoded_request_json_bytes. Do not let unsupported-version rejection mask the malformed field. Frozen numeric1 preimage also remains a historical unsupported-version control.",
+        "original_mapping_and_preimage": "All original mapping fields/current projected SHA256/bytes/source binding remain unchanged in this preparation. Preserve historical provenance even when active source bytes change.",
+        "active_mapping_plan": "Keep current artifact_path/pointer/encoding/output identity for this row; replace only declared active source semantics or classify frozen legacy status as rejection-only. No unlisted pointer substitution.",
+        "final_serialized_postimage": "Pending stable artifact; record real bytes/mode/hash and final source-only versus active disposition in exact final inventory before adoption, not as a prerequisite to begin admitted runtime work."
+      }
     },
     {
       "mapping": {
@@ -3760,7 +4055,19 @@
         "url": "https://github.com/nSealr/nsealr/blob/503719d5c607bdbcd1da30a89b0c3c6f5983c01b/protocols/contracts/v1/vectors/invalid/request-kind-float.json"
       },
       "potential_wire_status_cutover_collision": true,
-      "required_disposition": "Retain original mapping identity/obligation and frozen preimage; any intentional wire2/status replacement requires an independently reviewed per-row delta. No removal, recomputed expected answer or silent pointer substitution."
+      "required_disposition": "MIGRATE_INVALID_ENVELOPE_TO_WIRE2_KEEP_ORIGINAL_REJECTION",
+      "T01_semantic_transition": {
+        "status": "PROPOSED_REQUIREMENT_DERIVED_FOR_THIS_DISTINCT_SPEC_REVIEW_NOT_EXECUTED",
+        "independent_original_cases": [
+          "S-04",
+          "S-05",
+          "S-03"
+        ],
+        "independent_expected_semantics": "Use numeric2 outer envelope while preserving exactly the original offending field/type/limit condition; reject for the original requirement: event_template kind must be a non-negative safe integer. Do not let unsupported-version rejection mask the malformed field. Frozen numeric1 preimage also remains a historical unsupported-version control.",
+        "original_mapping_and_preimage": "All original mapping fields/current projected SHA256/bytes/source binding remain unchanged in this preparation. Preserve historical provenance even when active source bytes change.",
+        "active_mapping_plan": "Keep current artifact_path/pointer/encoding/output identity for this row; replace only declared active source semantics or classify frozen legacy status as rejection-only. No unlisted pointer substitution.",
+        "final_serialized_postimage": "Pending stable artifact; record real bytes/mode/hash and final source-only versus active disposition in exact final inventory before adoption, not as a prerequisite to begin admitted runtime work."
+      }
     },
     {
       "mapping": {
@@ -3806,7 +4113,19 @@
         "url": "https://github.com/nSealr/nsealr/blob/503719d5c607bdbcd1da30a89b0c3c6f5983c01b/protocols/contracts/v1/vectors/invalid/request-kind-negative.json"
       },
       "potential_wire_status_cutover_collision": true,
-      "required_disposition": "Retain original mapping identity/obligation and frozen preimage; any intentional wire2/status replacement requires an independently reviewed per-row delta. No removal, recomputed expected answer or silent pointer substitution."
+      "required_disposition": "MIGRATE_INVALID_ENVELOPE_TO_WIRE2_KEEP_ORIGINAL_REJECTION",
+      "T01_semantic_transition": {
+        "status": "PROPOSED_REQUIREMENT_DERIVED_FOR_THIS_DISTINCT_SPEC_REVIEW_NOT_EXECUTED",
+        "independent_original_cases": [
+          "S-04",
+          "S-05",
+          "S-03"
+        ],
+        "independent_expected_semantics": "Use numeric2 outer envelope while preserving exactly the original offending field/type/limit condition; reject for the original requirement: event_template kind must be a non-negative safe integer. Do not let unsupported-version rejection mask the malformed field. Frozen numeric1 preimage also remains a historical unsupported-version control.",
+        "original_mapping_and_preimage": "All original mapping fields/current projected SHA256/bytes/source binding remain unchanged in this preparation. Preserve historical provenance even when active source bytes change.",
+        "active_mapping_plan": "Keep current artifact_path/pointer/encoding/output identity for this row; replace only declared active source semantics or classify frozen legacy status as rejection-only. No unlisted pointer substitution.",
+        "final_serialized_postimage": "Pending stable artifact; record real bytes/mode/hash and final source-only versus active disposition in exact final inventory before adoption, not as a prerequisite to begin admitted runtime work."
+      }
     },
     {
       "mapping": {
@@ -3852,7 +4171,19 @@
         "url": "https://github.com/nSealr/nsealr/blob/503719d5c607bdbcd1da30a89b0c3c6f5983c01b/protocols/contracts/v1/vectors/invalid/request-kind-string.json"
       },
       "potential_wire_status_cutover_collision": true,
-      "required_disposition": "Retain original mapping identity/obligation and frozen preimage; any intentional wire2/status replacement requires an independently reviewed per-row delta. No removal, recomputed expected answer or silent pointer substitution."
+      "required_disposition": "MIGRATE_INVALID_ENVELOPE_TO_WIRE2_KEEP_ORIGINAL_REJECTION",
+      "T01_semantic_transition": {
+        "status": "PROPOSED_REQUIREMENT_DERIVED_FOR_THIS_DISTINCT_SPEC_REVIEW_NOT_EXECUTED",
+        "independent_original_cases": [
+          "S-04",
+          "S-05",
+          "S-03"
+        ],
+        "independent_expected_semantics": "Use numeric2 outer envelope while preserving exactly the original offending field/type/limit condition; reject for the original requirement: event_template kind must be a non-negative safe integer. Do not let unsupported-version rejection mask the malformed field. Frozen numeric1 preimage also remains a historical unsupported-version control.",
+        "original_mapping_and_preimage": "All original mapping fields/current projected SHA256/bytes/source binding remain unchanged in this preparation. Preserve historical provenance even when active source bytes change.",
+        "active_mapping_plan": "Keep current artifact_path/pointer/encoding/output identity for this row; replace only declared active source semantics or classify frozen legacy status as rejection-only. No unlisted pointer substitution.",
+        "final_serialized_postimage": "Pending stable artifact; record real bytes/mode/hash and final source-only versus active disposition in exact final inventory before adoption, not as a prerequisite to begin admitted runtime work."
+      }
     },
     {
       "mapping": {
@@ -3898,7 +4229,19 @@
         "url": "https://github.com/nSealr/nsealr/blob/503719d5c607bdbcd1da30a89b0c3c6f5983c01b/protocols/contracts/v1/vectors/invalid/request-kind-unsafe-integer.json"
       },
       "potential_wire_status_cutover_collision": true,
-      "required_disposition": "Retain original mapping identity/obligation and frozen preimage; any intentional wire2/status replacement requires an independently reviewed per-row delta. No removal, recomputed expected answer or silent pointer substitution."
+      "required_disposition": "MIGRATE_INVALID_ENVELOPE_TO_WIRE2_KEEP_ORIGINAL_REJECTION",
+      "T01_semantic_transition": {
+        "status": "PROPOSED_REQUIREMENT_DERIVED_FOR_THIS_DISTINCT_SPEC_REVIEW_NOT_EXECUTED",
+        "independent_original_cases": [
+          "S-04",
+          "S-05",
+          "S-03"
+        ],
+        "independent_expected_semantics": "Use numeric2 outer envelope while preserving exactly the original offending field/type/limit condition; reject for the original requirement: event_template kind exceeds max_safe_integer. Do not let unsupported-version rejection mask the malformed field. Frozen numeric1 preimage also remains a historical unsupported-version control.",
+        "original_mapping_and_preimage": "All original mapping fields/current projected SHA256/bytes/source binding remain unchanged in this preparation. Preserve historical provenance even when active source bytes change.",
+        "active_mapping_plan": "Keep current artifact_path/pointer/encoding/output identity for this row; replace only declared active source semantics or classify frozen legacy status as rejection-only. No unlisted pointer substitution.",
+        "final_serialized_postimage": "Pending stable artifact; record real bytes/mode/hash and final source-only versus active disposition in exact final inventory before adoption, not as a prerequisite to begin admitted runtime work."
+      }
     },
     {
       "mapping": {
@@ -3944,7 +4287,19 @@
         "url": "https://github.com/nSealr/nsealr/blob/503719d5c607bdbcd1da30a89b0c3c6f5983c01b/protocols/contracts/v1/vectors/invalid/request-sign-event-missing-params.json"
       },
       "potential_wire_status_cutover_collision": true,
-      "required_disposition": "Retain original mapping identity/obligation and frozen preimage; any intentional wire2/status replacement requires an independently reviewed per-row delta. No removal, recomputed expected answer or silent pointer substitution."
+      "required_disposition": "MIGRATE_INVALID_ENVELOPE_TO_WIRE2_KEEP_ORIGINAL_REJECTION",
+      "T01_semantic_transition": {
+        "status": "PROPOSED_REQUIREMENT_DERIVED_FOR_THIS_DISTINCT_SPEC_REVIEW_NOT_EXECUTED",
+        "independent_original_cases": [
+          "S-04",
+          "S-05",
+          "S-03"
+        ],
+        "independent_expected_semantics": "Use numeric2 outer envelope while preserving exactly the original offending field/type/limit condition; reject for the original requirement: sign_event requires params. Do not let unsupported-version rejection mask the malformed field. Frozen numeric1 preimage also remains a historical unsupported-version control.",
+        "original_mapping_and_preimage": "All original mapping fields/current projected SHA256/bytes/source binding remain unchanged in this preparation. Preserve historical provenance even when active source bytes change.",
+        "active_mapping_plan": "Keep current artifact_path/pointer/encoding/output identity for this row; replace only declared active source semantics or classify frozen legacy status as rejection-only. No unlisted pointer substitution.",
+        "final_serialized_postimage": "Pending stable artifact; record real bytes/mode/hash and final source-only versus active disposition in exact final inventory before adoption, not as a prerequisite to begin admitted runtime work."
+      }
     },
     {
       "mapping": {
@@ -3990,7 +4345,19 @@
         "url": "https://github.com/nSealr/nsealr/blob/503719d5c607bdbcd1da30a89b0c3c6f5983c01b/protocols/contracts/v1/vectors/invalid/request-sign-event-params-not-object.json"
       },
       "potential_wire_status_cutover_collision": true,
-      "required_disposition": "Retain original mapping identity/obligation and frozen preimage; any intentional wire2/status replacement requires an independently reviewed per-row delta. No removal, recomputed expected answer or silent pointer substitution."
+      "required_disposition": "MIGRATE_INVALID_ENVELOPE_TO_WIRE2_KEEP_ORIGINAL_REJECTION",
+      "T01_semantic_transition": {
+        "status": "PROPOSED_REQUIREMENT_DERIVED_FOR_THIS_DISTINCT_SPEC_REVIEW_NOT_EXECUTED",
+        "independent_original_cases": [
+          "S-04",
+          "S-05",
+          "S-03"
+        ],
+        "independent_expected_semantics": "Use numeric2 outer envelope while preserving exactly the original offending field/type/limit condition; reject for the original requirement: sign_event requires params. Do not let unsupported-version rejection mask the malformed field. Frozen numeric1 preimage also remains a historical unsupported-version control.",
+        "original_mapping_and_preimage": "All original mapping fields/current projected SHA256/bytes/source binding remain unchanged in this preparation. Preserve historical provenance even when active source bytes change.",
+        "active_mapping_plan": "Keep current artifact_path/pointer/encoding/output identity for this row; replace only declared active source semantics or classify frozen legacy status as rejection-only. No unlisted pointer substitution.",
+        "final_serialized_postimage": "Pending stable artifact; record real bytes/mode/hash and final source-only versus active disposition in exact final inventory before adoption, not as a prerequisite to begin admitted runtime work."
+      }
     },
     {
       "mapping": {
@@ -4036,7 +4403,19 @@
         "url": "https://github.com/nSealr/nsealr/blob/503719d5c607bdbcd1da30a89b0c3c6f5983c01b/protocols/contracts/v1/vectors/invalid/request-sign-event-unknown-param.json"
       },
       "potential_wire_status_cutover_collision": true,
-      "required_disposition": "Retain original mapping identity/obligation and frozen preimage; any intentional wire2/status replacement requires an independently reviewed per-row delta. No removal, recomputed expected answer or silent pointer substitution."
+      "required_disposition": "MIGRATE_INVALID_ENVELOPE_TO_WIRE2_KEEP_ORIGINAL_REJECTION",
+      "T01_semantic_transition": {
+        "status": "PROPOSED_REQUIREMENT_DERIVED_FOR_THIS_DISTINCT_SPEC_REVIEW_NOT_EXECUTED",
+        "independent_original_cases": [
+          "S-04",
+          "S-05",
+          "S-03"
+        ],
+        "independent_expected_semantics": "Use numeric2 outer envelope while preserving exactly the original offending field/type/limit condition; reject for the original requirement: sign_event params contain unknown fields. Do not let unsupported-version rejection mask the malformed field. Frozen numeric1 preimage also remains a historical unsupported-version control.",
+        "original_mapping_and_preimage": "All original mapping fields/current projected SHA256/bytes/source binding remain unchanged in this preparation. Preserve historical provenance even when active source bytes change.",
+        "active_mapping_plan": "Keep current artifact_path/pointer/encoding/output identity for this row; replace only declared active source semantics or classify frozen legacy status as rejection-only. No unlisted pointer substitution.",
+        "final_serialized_postimage": "Pending stable artifact; record real bytes/mode/hash and final source-only versus active disposition in exact final inventory before adoption, not as a prerequisite to begin admitted runtime work."
+      }
     },
     {
       "mapping": {
@@ -4082,7 +4461,20 @@
         "url": "https://github.com/nSealr/nsealr/blob/503719d5c607bdbcd1da30a89b0c3c6f5983c01b/protocols/contracts/v1/vectors/invalid/request-tag-field-too-long.json"
       },
       "potential_wire_status_cutover_collision": true,
-      "required_disposition": "Retain original mapping identity/obligation and frozen preimage; any intentional wire2/status replacement requires an independently reviewed per-row delta. No removal, recomputed expected answer or silent pointer substitution."
+      "required_disposition": "MIGRATE_INVALID_ENVELOPE_TO_WIRE2_KEEP_ORIGINAL_REJECTION",
+      "T01_semantic_transition": {
+        "status": "PROPOSED_REQUIREMENT_DERIVED_FOR_THIS_DISTINCT_SPEC_REVIEW_NOT_EXECUTED",
+        "independent_original_cases": [
+          "S-04",
+          "S-05",
+          "S-03",
+          "L-01"
+        ],
+        "independent_expected_semantics": "Use numeric2 outer envelope while preserving exactly the original offending field/type/limit condition; reject for the original requirement: event_template tag field exceeds max_tag_field_utf8_bytes. Do not let unsupported-version rejection mask the malformed field. Frozen numeric1 preimage also remains a historical unsupported-version control.",
+        "original_mapping_and_preimage": "All original mapping fields/current projected SHA256/bytes/source binding remain unchanged in this preparation. Preserve historical provenance even when active source bytes change.",
+        "active_mapping_plan": "Keep current artifact_path/pointer/encoding/output identity for this row; replace only declared active source semantics or classify frozen legacy status as rejection-only. No unlisted pointer substitution.",
+        "final_serialized_postimage": "Pending stable artifact; record real bytes/mode/hash and final source-only versus active disposition in exact final inventory before adoption, not as a prerequisite to begin admitted runtime work."
+      }
     },
     {
       "mapping": {
@@ -4128,7 +4520,19 @@
         "url": "https://github.com/nSealr/nsealr/blob/503719d5c607bdbcd1da30a89b0c3c6f5983c01b/protocols/contracts/v1/vectors/invalid/request-tag-item-not-string.json"
       },
       "potential_wire_status_cutover_collision": true,
-      "required_disposition": "Retain original mapping identity/obligation and frozen preimage; any intentional wire2/status replacement requires an independently reviewed per-row delta. No removal, recomputed expected answer or silent pointer substitution."
+      "required_disposition": "MIGRATE_INVALID_ENVELOPE_TO_WIRE2_KEEP_ORIGINAL_REJECTION",
+      "T01_semantic_transition": {
+        "status": "PROPOSED_REQUIREMENT_DERIVED_FOR_THIS_DISTINCT_SPEC_REVIEW_NOT_EXECUTED",
+        "independent_original_cases": [
+          "S-04",
+          "S-05",
+          "S-03"
+        ],
+        "independent_expected_semantics": "Use numeric2 outer envelope while preserving exactly the original offending field/type/limit condition; reject for the original requirement: must be a string. Do not let unsupported-version rejection mask the malformed field. Frozen numeric1 preimage also remains a historical unsupported-version control.",
+        "original_mapping_and_preimage": "All original mapping fields/current projected SHA256/bytes/source binding remain unchanged in this preparation. Preserve historical provenance even when active source bytes change.",
+        "active_mapping_plan": "Keep current artifact_path/pointer/encoding/output identity for this row; replace only declared active source semantics or classify frozen legacy status as rejection-only. No unlisted pointer substitution.",
+        "final_serialized_postimage": "Pending stable artifact; record real bytes/mode/hash and final source-only versus active disposition in exact final inventory before adoption, not as a prerequisite to begin admitted runtime work."
+      }
     },
     {
       "mapping": {
@@ -4174,7 +4578,19 @@
         "url": "https://github.com/nSealr/nsealr/blob/503719d5c607bdbcd1da30a89b0c3c6f5983c01b/protocols/contracts/v1/vectors/invalid/request-tags-not-array.json"
       },
       "potential_wire_status_cutover_collision": true,
-      "required_disposition": "Retain original mapping identity/obligation and frozen preimage; any intentional wire2/status replacement requires an independently reviewed per-row delta. No removal, recomputed expected answer or silent pointer substitution."
+      "required_disposition": "MIGRATE_INVALID_ENVELOPE_TO_WIRE2_KEEP_ORIGINAL_REJECTION",
+      "T01_semantic_transition": {
+        "status": "PROPOSED_REQUIREMENT_DERIVED_FOR_THIS_DISTINCT_SPEC_REVIEW_NOT_EXECUTED",
+        "independent_original_cases": [
+          "S-04",
+          "S-05",
+          "S-03"
+        ],
+        "independent_expected_semantics": "Use numeric2 outer envelope while preserving exactly the original offending field/type/limit condition; reject for the original requirement: event_template tags must be an array. Do not let unsupported-version rejection mask the malformed field. Frozen numeric1 preimage also remains a historical unsupported-version control.",
+        "original_mapping_and_preimage": "All original mapping fields/current projected SHA256/bytes/source binding remain unchanged in this preparation. Preserve historical provenance even when active source bytes change.",
+        "active_mapping_plan": "Keep current artifact_path/pointer/encoding/output identity for this row; replace only declared active source semantics or classify frozen legacy status as rejection-only. No unlisted pointer substitution.",
+        "final_serialized_postimage": "Pending stable artifact; record real bytes/mode/hash and final source-only versus active disposition in exact final inventory before adoption, not as a prerequisite to begin admitted runtime work."
+      }
     },
     {
       "mapping": {
@@ -4220,7 +4636,20 @@
         "url": "https://github.com/nSealr/nsealr/blob/503719d5c607bdbcd1da30a89b0c3c6f5983c01b/protocols/contracts/v1/vectors/invalid/request-too-many-tags.json"
       },
       "potential_wire_status_cutover_collision": true,
-      "required_disposition": "Retain original mapping identity/obligation and frozen preimage; any intentional wire2/status replacement requires an independently reviewed per-row delta. No removal, recomputed expected answer or silent pointer substitution."
+      "required_disposition": "MIGRATE_INVALID_ENVELOPE_TO_WIRE2_KEEP_ORIGINAL_REJECTION",
+      "T01_semantic_transition": {
+        "status": "PROPOSED_REQUIREMENT_DERIVED_FOR_THIS_DISTINCT_SPEC_REVIEW_NOT_EXECUTED",
+        "independent_original_cases": [
+          "S-04",
+          "S-05",
+          "S-03",
+          "L-01"
+        ],
+        "independent_expected_semantics": "Use numeric2 outer envelope while preserving exactly the original offending field/type/limit condition; reject for the original requirement: event_template tags exceeds max_tag_count. Do not let unsupported-version rejection mask the malformed field. Frozen numeric1 preimage also remains a historical unsupported-version control.",
+        "original_mapping_and_preimage": "All original mapping fields/current projected SHA256/bytes/source binding remain unchanged in this preparation. Preserve historical provenance even when active source bytes change.",
+        "active_mapping_plan": "Keep current artifact_path/pointer/encoding/output identity for this row; replace only declared active source semantics or classify frozen legacy status as rejection-only. No unlisted pointer substitution.",
+        "final_serialized_postimage": "Pending stable artifact; record real bytes/mode/hash and final source-only versus active disposition in exact final inventory before adoption, not as a prerequisite to begin admitted runtime work."
+      }
     },
     {
       "mapping": {
@@ -4313,7 +4742,19 @@
         "url": "https://github.com/nSealr/nsealr/blob/503719d5c607bdbcd1da30a89b0c3c6f5983c01b/protocols/contracts/v1/vectors/invalid/response-error-with-result.json"
       },
       "potential_wire_status_cutover_collision": true,
-      "required_disposition": "Retain original mapping identity/obligation and frozen preimage; any intentional wire2/status replacement requires an independently reviewed per-row delta. No removal, recomputed expected answer or silent pointer substitution."
+      "required_disposition": "MIGRATE_INVALID_ENVELOPE_TO_WIRE2_KEEP_ORIGINAL_REJECTION",
+      "T01_semantic_transition": {
+        "status": "PROPOSED_REQUIREMENT_DERIVED_FOR_THIS_DISTINCT_SPEC_REVIEW_NOT_EXECUTED",
+        "independent_original_cases": [
+          "S-04",
+          "S-05",
+          "S-03"
+        ],
+        "independent_expected_semantics": "Use numeric2 outer envelope while preserving exactly the original offending field/type/limit condition; reject for the original requirement: error response must not include result. Do not let unsupported-version rejection mask the malformed field. Frozen numeric1 preimage also remains a historical unsupported-version control.",
+        "original_mapping_and_preimage": "All original mapping fields/current projected SHA256/bytes/source binding remain unchanged in this preparation. Preserve historical provenance even when active source bytes change.",
+        "active_mapping_plan": "Keep current artifact_path/pointer/encoding/output identity for this row; replace only declared active source semantics or classify frozen legacy status as rejection-only. No unlisted pointer substitution.",
+        "final_serialized_postimage": "Pending stable artifact; record real bytes/mode/hash and final source-only versus active disposition in exact final inventory before adoption, not as a prerequisite to begin admitted runtime work."
+      }
     },
     {
       "mapping": {
@@ -4359,7 +4800,19 @@
         "url": "https://github.com/nSealr/nsealr/blob/503719d5c607bdbcd1da30a89b0c3c6f5983c01b/protocols/contracts/v1/vectors/invalid/response-request-id-invalid.json"
       },
       "potential_wire_status_cutover_collision": true,
-      "required_disposition": "Retain original mapping identity/obligation and frozen preimage; any intentional wire2/status replacement requires an independently reviewed per-row delta. No removal, recomputed expected answer or silent pointer substitution."
+      "required_disposition": "MIGRATE_INVALID_ENVELOPE_TO_WIRE2_KEEP_ORIGINAL_REJECTION",
+      "T01_semantic_transition": {
+        "status": "PROPOSED_REQUIREMENT_DERIVED_FOR_THIS_DISTINCT_SPEC_REVIEW_NOT_EXECUTED",
+        "independent_original_cases": [
+          "S-04",
+          "S-05",
+          "S-03"
+        ],
+        "independent_expected_semantics": "Use numeric2 outer envelope while preserving exactly the original offending field/type/limit condition; reject for the original requirement: request_id is invalid. Do not let unsupported-version rejection mask the malformed field. Frozen numeric1 preimage also remains a historical unsupported-version control.",
+        "original_mapping_and_preimage": "All original mapping fields/current projected SHA256/bytes/source binding remain unchanged in this preparation. Preserve historical provenance even when active source bytes change.",
+        "active_mapping_plan": "Keep current artifact_path/pointer/encoding/output identity for this row; replace only declared active source semantics or classify frozen legacy status as rejection-only. No unlisted pointer substitution.",
+        "final_serialized_postimage": "Pending stable artifact; record real bytes/mode/hash and final source-only versus active disposition in exact final inventory before adoption, not as a prerequisite to begin admitted runtime work."
+      }
     },
     {
       "mapping": {
@@ -4405,7 +4858,19 @@
         "url": "https://github.com/nSealr/nsealr/blob/503719d5c607bdbcd1da30a89b0c3c6f5983c01b/protocols/contracts/v1/vectors/invalid/response-unknown-top-level-field.json"
       },
       "potential_wire_status_cutover_collision": true,
-      "required_disposition": "Retain original mapping identity/obligation and frozen preimage; any intentional wire2/status replacement requires an independently reviewed per-row delta. No removal, recomputed expected answer or silent pointer substitution."
+      "required_disposition": "MIGRATE_INVALID_ENVELOPE_TO_WIRE2_KEEP_ORIGINAL_REJECTION",
+      "T01_semantic_transition": {
+        "status": "PROPOSED_REQUIREMENT_DERIVED_FOR_THIS_DISTINCT_SPEC_REVIEW_NOT_EXECUTED",
+        "independent_original_cases": [
+          "S-04",
+          "S-05",
+          "S-03"
+        ],
+        "independent_expected_semantics": "Use numeric2 outer envelope while preserving exactly the original offending field/type/limit condition; reject for the original requirement: unknown top-level response fields. Do not let unsupported-version rejection mask the malformed field. Frozen numeric1 preimage also remains a historical unsupported-version control.",
+        "original_mapping_and_preimage": "All original mapping fields/current projected SHA256/bytes/source binding remain unchanged in this preparation. Preserve historical provenance even when active source bytes change.",
+        "active_mapping_plan": "Keep current artifact_path/pointer/encoding/output identity for this row; replace only declared active source semantics or classify frozen legacy status as rejection-only. No unlisted pointer substitution.",
+        "final_serialized_postimage": "Pending stable artifact; record real bytes/mode/hash and final source-only versus active disposition in exact final inventory before adoption, not as a prerequisite to begin admitted runtime work."
+      }
     },
     {
       "mapping": {
@@ -4555,7 +5020,21 @@
         "url": "https://github.com/nSealr/nsealr/blob/503719d5c607bdbcd1da30a89b0c3c6f5983c01b/protocols/contracts/v1/examples/request-kind-1-tags.json"
       },
       "potential_wire_status_cutover_collision": true,
-      "required_disposition": "Retain original mapping identity/obligation and frozen preimage; any intentional wire2/status replacement requires an independently reviewed per-row delta. No removal, recomputed expected answer or silent pointer substitution."
+      "required_disposition": "MIGRATE_VALID_REQUEST_TO_WIRE2_KEEP_OPERATION_PAYLOAD",
+      "T01_semantic_transition": {
+        "status": "PROPOSED_REQUIREMENT_DERIVED_FOR_THIS_DISTINCT_SPEC_REVIEW_NOT_EXECUTED",
+        "independent_original_cases": [
+          "S-04",
+          "S-05",
+          "R-01",
+          "R-02",
+          "A-03"
+        ],
+        "independent_expected_semantics": "Numeric2 outer request with original request ID, method and operation/event-template payload unchanged; public discovery/request parsing may succeed within actual limits, but sign_event cannot create local authorization or enable production signing. Frozen numeric1 preimage rejects with no retry.",
+        "original_mapping_and_preimage": "All original mapping fields/current projected SHA256/bytes/source binding remain unchanged in this preparation. Preserve historical provenance even when active source bytes change.",
+        "active_mapping_plan": "Keep current artifact_path/pointer/encoding/output identity for this row; replace only declared active source semantics or classify frozen legacy status as rejection-only. No unlisted pointer substitution.",
+        "final_serialized_postimage": "Pending stable artifact; record real bytes/mode/hash and final source-only versus active disposition in exact final inventory before adoption, not as a prerequisite to begin admitted runtime work."
+      }
     },
     {
       "mapping": {
@@ -6209,10 +6688,10 @@
     "old_rows": 170,
     "current_config_matches_S03_proposal": true,
     "potential_wire_status_cutover_collisions": 38,
-    "required_gate": "Retain all170 original obligations and immutable preimages; cutover cannot promise old numeric1 positive expected bytes still pass a numeric2-only parser. Exact reviewed per-row substitutions/negative historical cases must be approved before editing active expected data. No obligations silently dropped."
+    "required_gate": "All170 obligations/frozen preimages remain. Each of38 collision rows now carries a proposed independent semantic disposition from original T01 cases for this one review. Establish those semantics before affected runtime changes; final source bytes/modes/hashes/OID are fixed on the stable artifact and independently reviewed before adoption, not required before implementation. No silent row/pointer removal or implementation-generated oracle."
   },
   "provenance_transition_proposal": {
-    "status": "PROPOSAL_REQUIRES_ROOT_AND_DISTINCT_REVIEW_BEFORE_CODE",
+    "status": "ROOT_SELECTED_A_FORMAT2_SPEC_FOR_ONE_DISTINCT_PREPARATION_REVIEW_NO_CODE_ADMISSION",
     "observed_current_mechanism": {
       "checker": {
         "commit": "503719d5c607bdbcd1da30a89b0c3c6f5983c01b",
@@ -6260,15 +6739,17 @@
         "id": "A",
         "proposal": "Pin an independently reviewed immutable protocol-artifact Git subtree OID as a literal in root scripts/verify_contracts.py, outside the pinned subtree; read expected manifest/data/consumer scope from that object, never from HEAD or mutable manifest metadata.",
         "rebase": "Tree/blob content IDs remain unchanged under normal commit rebase; actual historical5cb/permanent596 artifact-tree identity above demonstrates the property. Candidate author commit ID is provenance only, not a runtime lookup anchor.",
-        "source_transition": "Keep artifact directory/id and historical import identities. Add an explicitly reviewed typed provenance discrimination for T01-authored rows; imported original hashes still validate against685, modified postimages against the approved new tree,retired sources remain historically bound. Exact manifest representation/format is a mandatory reviewed addendum, not silently chosen here.",
+        "source_transition": "Manifest artifact_format2 uses the strict embedded schema and four disposition rules below. Permanent source685 and baseline596 remain historical byte/mode authorities for paths that existed; new authored paths have null original/baseline. Current active bytes/metadata/consumer scope are independently reviewed against one literal subtree OID outside the artifact.",
         "required_controls": "Actual rewritten-history main-only cold fetch with old author commits absent; approved tree reachable from retained main ancestry; valid source passes; missing/wrong tree,forged HEAD/manifest/new commit,byte/mode/hidden-extra/consumer tamper reject; restore exact bytes passes.",
-        "new_anchor_oid": null
+        "new_anchor_oid": null,
+        "disposition": "SELECTED_BY_ROOT; final real subtree OID is fixed on stable source before adoption, not before implementation."
       },
       {
         "id": "B",
         "proposal": "Use a new normally adopted protected-main ancestor commit as the immutable T01 source-baseline before later runtime cutover.",
         "coordination": "Requires separately reviewed staging/adoption and actual-main CI before that SHA exists. Any staged source must be immutable non-active proof, never a second active contract or generated oracle; avoid two live SSOTs and unknown future commit constants.",
-        "new_anchor_commit": null
+        "new_anchor_commit": null,
+        "disposition": "NOT_SELECTED_BY_ROOT; no separate staging/adoption phase is required."
       },
       {
         "id": "C",
@@ -6277,15 +6758,327 @@
       }
     ],
     "preferred": "A",
-    "reason": "Direct extension of existing content-addressed Git checks,one authoritative artifact,no extra source snapshot/service/two-phase live contract,stable under protected rebase. This is a proposed mechanism,not approved implementation.",
-    "must_approve_before_implementation": [
-      "Exact provenance row/retirement representation and strict manifest field schema",
-      "Independent normative fixture expectations and full per-file postimages/modes/consumer coverage",
-      "Reviewed literal artifact subtree OID once real source is authored; no prospective SHA",
-      "Cold main-only acceptance preserving current source/tamper negatives",
-      "Exact adopted S03 API/mainCI and root-approved complete implementation tuple"
+    "reason": "One authoritative artifact and existing Git source-check mechanism; content tree identity survives normal protected rebase. Root selected A; no B staging/adoption, new registry, mutable HEAD baseline or admission per routine in-scope edit.",
+    "historical_migration_templates_patches_and1508_index": "READ_ONLY; never rewrite older replay/evidence to make new source look historically accepted.",
+    "selected": "A",
+    "selection_authority": "Root explicit bounded follow-up on 2026-10-20: choose A, specify minimal strict manifest, semantic expectations precede affected runtime edits; bind actual stable hashes/OID and obtain independent approval before adoption. This does not admit implementation.",
+    "strict_manifest_format": {
+      "artifact_format": 2,
+      "artifact_id": "nsealr-contracts-v1",
+      "directory": "protocols/contracts/v1/",
+      "identity_separation": "Manifest inventory schema format2 is distinct from artifact directory/id v1, numeric device wire2/nsealr.signing.v2 and internal nsealr.authorization.v1.",
+      "json_schema": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "artifact_format",
+          "artifact_id",
+          "source_commit",
+          "initial_import_commit",
+          "consumer_coverage",
+          "generation",
+          "retirement",
+          "wire_versions",
+          "files"
+        ],
+        "properties": {
+          "artifact_format": {
+            "const": 2
+          },
+          "artifact_id": {
+            "const": "nsealr-contracts-v1"
+          },
+          "source_commit": {
+            "const": "45f8b6ff1123f3f55be4ce457fd1008e91043cc2"
+          },
+          "initial_import_commit": {
+            "const": "86569e073da4faec0811d67137bbb0fd4f74c7c6"
+          },
+          "consumer_coverage": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "python",
+              "rust",
+              "typescript"
+            ],
+            "properties": {
+              "python": {
+                "type": "string",
+                "minLength": 1
+              },
+              "rust": {
+                "type": "string",
+                "minLength": 1
+              },
+              "typescript": {
+                "type": "string",
+                "minLength": 1
+              }
+            }
+          },
+          "generation": {
+            "type": "string",
+            "minLength": 1
+          },
+          "retirement": {
+            "type": "string",
+            "minLength": 1
+          },
+          "wire_versions": {
+            "type": "string",
+            "minLength": 1
+          },
+          "files": {
+            "type": "array",
+            "minItems": 1,
+            "items": {
+              "$ref": "#/$defs/file"
+            }
+          }
+        },
+        "$defs": {
+          "digest": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "mode",
+              "sha256"
+            ],
+            "properties": {
+              "mode": {
+                "enum": [
+                  "100644",
+                  "100755"
+                ]
+              },
+              "sha256": {
+                "type": "string",
+                "pattern": "^[0-9a-f]{64}$"
+              }
+            }
+          },
+          "file": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "path",
+              "disposition",
+              "original",
+              "baseline",
+              "current",
+              "adaptation"
+            ],
+            "properties": {
+              "path": {
+                "type": "string",
+                "pattern": "^(protocols|schemas|vectors|examples)/[^\\\\]+$"
+              },
+              "disposition": {
+                "enum": [
+                  "maintained",
+                  "modified_t01",
+                  "authored_t01",
+                  "retired_t01"
+                ]
+              },
+              "original": {
+                "oneOf": [
+                  {
+                    "type": "null"
+                  },
+                  {
+                    "$ref": "#/$defs/digest"
+                  }
+                ]
+              },
+              "baseline": {
+                "oneOf": [
+                  {
+                    "type": "null"
+                  },
+                  {
+                    "$ref": "#/$defs/digest"
+                  }
+                ]
+              },
+              "current": {
+                "oneOf": [
+                  {
+                    "type": "null"
+                  },
+                  {
+                    "$ref": "#/$defs/digest"
+                  }
+                ]
+              },
+              "adaptation": {
+                "oneOf": [
+                  {
+                    "type": "null"
+                  },
+                  {
+                    "type": "string",
+                    "minLength": 1
+                  }
+                ]
+              }
+            },
+            "oneOf": [
+              {
+                "properties": {
+                  "disposition": {
+                    "const": "maintained"
+                  },
+                  "original": {
+                    "$ref": "#/$defs/digest"
+                  },
+                  "baseline": {
+                    "$ref": "#/$defs/digest"
+                  },
+                  "current": {
+                    "$ref": "#/$defs/digest"
+                  }
+                }
+              },
+              {
+                "properties": {
+                  "disposition": {
+                    "const": "modified_t01"
+                  },
+                  "original": {
+                    "$ref": "#/$defs/digest"
+                  },
+                  "baseline": {
+                    "$ref": "#/$defs/digest"
+                  },
+                  "current": {
+                    "$ref": "#/$defs/digest"
+                  },
+                  "adaptation": {
+                    "type": "string",
+                    "minLength": 1
+                  }
+                }
+              },
+              {
+                "properties": {
+                  "disposition": {
+                    "const": "authored_t01"
+                  },
+                  "original": {
+                    "type": "null"
+                  },
+                  "baseline": {
+                    "type": "null"
+                  },
+                  "current": {
+                    "$ref": "#/$defs/digest"
+                  },
+                  "adaptation": {
+                    "type": "string",
+                    "minLength": 1
+                  }
+                }
+              },
+              {
+                "properties": {
+                  "disposition": {
+                    "const": "retired_t01"
+                  },
+                  "original": {
+                    "$ref": "#/$defs/digest"
+                  },
+                  "baseline": {
+                    "$ref": "#/$defs/digest"
+                  },
+                  "current": {
+                    "type": "null"
+                  },
+                  "adaptation": {
+                    "type": "string",
+                    "minLength": 1
+                  }
+                }
+              }
+            ]
+          }
+        }
+      },
+      "raw_parsing": "Reject duplicate decoded object keys at every level, malformed/non-UTF8 JSON and trailing data before schema validation; no coercion. Exact approved manifest bytes/mode are independently bound by the tree, not merely by schema validity.",
+      "historical_anchor_mapping": {
+        "source_commit": "ORIGIN historical specs identity, literal45f8",
+        "initial_import_commit": "INITIAL_IMPORT historical86569 metadata; never required as runtime Git object",
+        "original": "Exact same artifact-relative path at permanent SOURCE_POSTIMAGE68508ea",
+        "baseline": "Exact same artifact-relative path at permanent BASELINE59653fc",
+        "current": "Exact approved postimage from literal ARTIFACT_TREE_OID in root checker outside artifact"
+      },
+      "disposition_rules": [
+        {
+          "disposition": "maintained",
+          "original": "Required exact source685 mode/SHA256",
+          "baseline": "Required exact baseline596 mode/SHA256",
+          "current": "Required and equal baseline mode/SHA256, including pre-existing A02 adaptations",
+          "adaptation": "Exact old baseline manifest adaptation value, which may be null"
+        },
+        {
+          "disposition": "modified_t01",
+          "original": "Required exact source685 mode/SHA256",
+          "baseline": "Required exact baseline596 mode/SHA256",
+          "current": "Required exact independently reviewed T01 postimage mode/SHA256; differs from baseline in mode or bytes",
+          "adaptation": "Nonempty declared T01 source/semantic change; old A02 adaptation remains durably available at596"
+        },
+        {
+          "disposition": "authored_t01",
+          "original": null,
+          "baseline": null,
+          "current": "Required exact independently reviewed new authored postimage mode/SHA256; path must be absent at685 and596",
+          "adaptation": "Nonempty declared T01 authorship/purpose; never fabricate original_sha256 or import provenance"
+        },
+        {
+          "disposition": "retired_t01",
+          "original": "Required exact source685 mode/SHA256",
+          "baseline": "Required exact baseline596 mode/SHA256",
+          "current": null,
+          "adaptation": "Nonempty declared retirement/replacement obligation; active data path must be absent, including symlink/hidden aliases"
+        }
+      ],
+      "cross_record_and_git_rules": [
+        "Paths are unique, case-sensitive, artifact-relative, within existing four DATA_DIRS. Reject empty/dot/dotdot components, absolute paths, backslashes, NUL/control bytes and noncanonical separators; no unsafe path normalization.",
+        "Every path listed by baseline596 manifest appears exactly once as maintained/modified_t01/retired_t01. Additional paths are authored_t01 only, absent at both685/596. No disappearing baseline row or disguised re-import.",
+        "Active physical data inventory equals rows with non-null current, including dotfiles. Retired rows are tombstones, never expected active files. All original/baseline records resolve exact regular Git mode and hash at permanent anchors.",
+        "Prior A02 card retirements remain historically bound by existing adaptation/proof; do not reconstruct or rewrite old retirements as T01 changes.",
+        "Read the expected manifest and entire artifact tree from the literal approved subtree OID; compare working source bytes/regular modes and exact path set, including metadata/test/oracle/license/hidden entries. No symlinks, gitlinks, special files or unclassified extras. Manifest does not store its own tree OID/hash, avoiding self-reference.",
+        "consumers.json exact bytes/mode are bound by that same tree; keep exact bridge/engine/pi groups, nonempty unique patterns, every pattern matching active inventory, explicit retained coverage/exclusions and no stale duplicate loader snapshot. Do not weaken current independent language completeness checks.",
+        "Top-level historical source_commit and initial_import_commit remain exact45f8/86569. SOURCE_POSTIMAGE685 and BASELINE596 remain permanent checker constants and mandatory original/baseline authorities, not renamed wire2 origins.",
+        "No accepted original_sha256 field exists in format2; original.sha256 is populated only from real685 bytes. Schema unknown fields or disposition-dependent null/digest violations reject."
+      ],
+      "pending_real_values": {
+        "artifact_subtree_oid": null,
+        "final_postimage_inventory": null,
+        "meaning": "Intentionally unavailable until real artifact/candidate stabilizes; fill during admitted implementation and independently approve exact bytes/OID before adoption. Absence now does not block preparation review or later root implementation admission."
+      }
+    },
+    "implementation_to_adoption_sequence": [
+      {
+        "when": "Before implementation admission",
+        "required": "One distinct review of this four-document current-source specification, including chosen A/format2, concrete writable scope and requirement-derived semantic expectations/dispositions; actual adopted S03/mainCI and root-approved source tuple. Original T01 five criteria/42 cases remain the criterion; no new staging phase."
+      },
+      {
+        "when": "Before corresponding runtime changes within admitted implementation",
+        "required": "Establish independent semantic expectations and each affected projection disposition from approved T01 cases; the38 proposed dispositions below are part of this review. Hand-author concrete expected vectors from those requirements before checking runtime output, never regenerate expected answers from implementation. No final OID or every final serialized postimage required to start."
+      },
+      {
+        "when": "When artifact and candidate are stable, before adoption",
+        "required": "Finish per-file current bytes/modes/hashes, source/retirement records, all170 obligations and consumers. Compute actual artifact subtree OID from stable Git content and pin it as a literal in the external checker; retain historical685/596 anchors. Run focused/full acceptance and rewritten-history/main-only negative regression; distinct exact final review approves the real artifact, OID, code and proof together before normal protected adoption."
+      },
+      {
+        "when": "After actual normal protected rebase/adoption",
+        "required": "Actual main-only cold fetch with no extra refs/alternates/old author history must reach the identical approved subtree and permanent685/596 sources; verify source/consumer guards and actual resulting-main CI. No author/intermediate commit is a required lookup anchor."
+      }
     ],
-    "historical_migration_templates_patches_and1508_index": "READ_ONLY; never rewrite older replay/evidence to make new source look historically accepted."
+    "routine_in_scope_changes": "No separate new admission for each edit or each final hash. Review scope/requirements contradictions when concrete; final exact candidate review covers actual postimages/OID under the admitted original T01 transition."
   },
   "latest_observation_utc": "2026-10-20T12:33:50.111669+00:00",
   "current_declared_inventory_observation": {
@@ -6312,5 +7105,10 @@
     "coordination_priority": "Pi QR is proposed first real end-to-end path because a complete kit is declared; S03->T01->K01 remains common software dependency. Other releases and custom PCB remain independent.",
     "T01_scope_expanded": false,
     "physical_or_release_claim": false
+  },
+  "latest_design_revision": {
+    "recorded_utc": "2026-10-20T12:41:31.217118+00:00",
+    "root_decision": "A selected; strict format2 specified; semantic expectations/dispositions precede corresponding runtime changes, real final bytes/hashes/OID pinned and independently approved before adoption. No implementation authorized by this revision.",
+    "scope": "Same four preparation docs; original source/result records retained; original criteria/cases/resources/floors and current products unchanged."
   }
 }
