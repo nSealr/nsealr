@@ -285,6 +285,53 @@ impl EventTemplate {
         })?;
         Ok(hash.finalize())
     }
+
+    pub(crate) fn write_signed(
+        &self,
+        public_key: &[u8; 32],
+        id: &[u8; 32],
+        signature: &[u8; 64],
+        out: &mut [u8],
+    ) -> Result<usize, EventError> {
+        let mut at = 0usize;
+        let mut emit = |bytes: &[u8]| {
+            let end = at.checked_add(bytes.len()).ok_or(EventError::Limit)?;
+            out.get_mut(at..end)
+                .ok_or(EventError::Limit)?
+                .copy_from_slice(bytes);
+            at = end;
+            Ok(())
+        };
+        emit(b"{\"pubkey\":\"")?;
+        emit(&hex::<32, 64>(public_key))?;
+        emit(b"\",\"created_at\":")?;
+        let mut number = [0; 20];
+        emit(decimal(self.created_at, &mut number))?;
+        emit(b",\"kind\":")?;
+        emit(decimal(u64::from(self.kind), &mut number))?;
+        emit(b",\"tags\":[")?;
+        for tag in 0..self.tag_count() {
+            if tag != 0 {
+                emit(b",")?;
+            }
+            emit(b"[")?;
+            for (index, text) in self.tag(tag).ok_or(EventError::Shape)?.enumerate() {
+                if index != 0 {
+                    emit(b",")?;
+                }
+                json_string(text, &mut emit)?;
+            }
+            emit(b"]")?;
+        }
+        emit(b"],\"content\":")?;
+        json_string(self.content(), &mut emit)?;
+        emit(b",\"id\":\"")?;
+        emit(&hex::<32, 64>(id))?;
+        emit(b"\",\"sig\":\"")?;
+        emit(&hex::<64, 128>(signature))?;
+        emit(b"\"}")?;
+        Ok(at)
+    }
 }
 
 pub(crate) fn decimal(mut value: u64, out: &mut [u8; 20]) -> &[u8] {
@@ -572,5 +619,438 @@ impl<'a> Reader<'a> {
             }
             self.take(b',')?;
         }
+    }
+}
+
+pub(crate) struct MetadataItem<'a> {
+    pub node: usize,
+    pub parent: usize,
+    pub index: usize,
+    pub kind: &'static str,
+    pub text: &'a str,
+}
+
+#[derive(Clone, Copy, Default)]
+struct MetadataFrame {
+    object: bool,
+    node: u8,
+    count: u8,
+    state: u8,
+}
+
+/// Fixed-cursor metadata inspection. The bounded key table stores only source
+/// offsets and parent IDs, never a retained DOM or another copy of the content.
+pub(crate) fn inspect_metadata(
+    input: &str,
+    mut emit: impl FnMut(MetadataItem<'_>) -> Result<(), EventError>,
+) -> Result<usize, EventError> {
+    let mut limits = OperationLimits::conformance();
+    limits.input_bytes = 2048;
+    let mut reader = Reader::new(input.as_bytes(), limits)?;
+    reader.ws();
+    if reader.input.get(reader.at) != Some(&b'{') {
+        return Err(EventError::Shape);
+    }
+    let mut stack = [MetadataFrame::default(); 8];
+    let mut depth = 0;
+    let mut nodes = 0usize;
+    let mut keys = [(0u16, 0u8); 128];
+    let mut key_count = 0;
+    let mut decoded = [0; 2048];
+    let mut previous = [0; 2048];
+    let mut pending = Some((0usize, 0usize));
+    loop {
+        if let Some((parent, index)) = pending.take() {
+            reader.ws();
+            if depth == 8 {
+                return Err(EventError::Limit);
+            }
+            if nodes == 128 {
+                return Err(EventError::Limit);
+            }
+            let node = nodes;
+            nodes += 1;
+            let byte = *reader.input.get(reader.at).ok_or(EventError::Syntax)?;
+            match byte {
+                b'{' | b'[' => {
+                    if depth == stack.len() {
+                        return Err(EventError::Limit);
+                    }
+                    reader.at += 1;
+                    stack[depth] = MetadataFrame {
+                        object: byte == b'{',
+                        node: node as u8,
+                        count: 0,
+                        state: 0,
+                    };
+                    depth += 1;
+                    emit(MetadataItem {
+                        node,
+                        parent,
+                        index,
+                        kind: if byte == b'{' { "object" } else { "array" },
+                        text: "start",
+                    })?;
+                }
+                b'"' => {
+                    let len = reader.string(&mut decoded)?;
+                    let text =
+                        core::str::from_utf8(&decoded[..len]).map_err(|_| EventError::Syntax)?;
+                    emit(MetadataItem {
+                        node,
+                        parent,
+                        index,
+                        kind: "string",
+                        text,
+                    })?;
+                }
+                b't' | b'f' | b'n' => {
+                    let (literal, kind): (&[u8], _) = match byte {
+                        b't' => (b"true", "boolean"),
+                        b'f' => (b"false", "boolean"),
+                        _ => (b"null", "null"),
+                    };
+                    if !reader.input[reader.at..].starts_with(literal) {
+                        return Err(EventError::Syntax);
+                    }
+                    reader.at += literal.len();
+                    emit(MetadataItem {
+                        node,
+                        parent,
+                        index,
+                        kind,
+                        text: core::str::from_utf8(literal).expect("literal ASCII"),
+                    })?;
+                }
+                _ => {
+                    let start = reader.at;
+                    if reader.input.get(reader.at) == Some(&b'-') {
+                        reader.at += 1;
+                    }
+                    match reader.input.get(reader.at) {
+                        Some(b'0') => reader.at += 1,
+                        Some(b'1'..=b'9') => {
+                            while reader.input.get(reader.at).is_some_and(u8::is_ascii_digit) {
+                                reader.at += 1;
+                            }
+                        }
+                        _ => return Err(EventError::Syntax),
+                    }
+                    if reader.input.get(reader.at) == Some(&b'.') {
+                        reader.at += 1;
+                        let first = reader.at;
+                        while reader.input.get(reader.at).is_some_and(u8::is_ascii_digit) {
+                            reader.at += 1;
+                        }
+                        if first == reader.at {
+                            return Err(EventError::Syntax);
+                        }
+                    }
+                    if reader
+                        .input
+                        .get(reader.at)
+                        .is_some_and(|b| matches!(b, b'e' | b'E'))
+                    {
+                        reader.at += 1;
+                        if reader
+                            .input
+                            .get(reader.at)
+                            .is_some_and(|b| matches!(b, b'+' | b'-'))
+                        {
+                            reader.at += 1;
+                        }
+                        let first = reader.at;
+                        while reader.input.get(reader.at).is_some_and(u8::is_ascii_digit) {
+                            reader.at += 1;
+                        }
+                        if first == reader.at {
+                            return Err(EventError::Syntax);
+                        }
+                    }
+                    let text = core::str::from_utf8(&reader.input[start..reader.at])
+                        .map_err(|_| EventError::Syntax)?;
+                    emit(MetadataItem {
+                        node,
+                        parent,
+                        index,
+                        kind: "number (exact token)",
+                        text,
+                    })?;
+                }
+            }
+            continue;
+        }
+        if depth == 0 {
+            reader.end()?;
+            return Ok(nodes);
+        }
+        let mut frame = stack[depth - 1];
+        let end = if frame.object { b'}' } else { b']' };
+        if frame.state != 2 && reader.eat(end) {
+            emit(MetadataItem {
+                node: usize::from(frame.node),
+                parent: usize::from(frame.node),
+                index: usize::from(frame.count),
+                kind: "container end; child count",
+                text: "end",
+            })?;
+            depth -= 1;
+            continue;
+        }
+        if frame.state == 1 {
+            reader.take(b',')?;
+            frame.state = 2;
+            stack[depth - 1] = frame;
+            continue;
+        }
+        if frame.count == 64 {
+            return Err(EventError::Limit);
+        }
+        if frame.object {
+            reader.ws();
+            let start = reader.at;
+            let len = reader.string(&mut decoded)?;
+            for (at, parent) in &keys[..key_count] {
+                if *parent == frame.node {
+                    let mut old = Reader {
+                        input: reader.input,
+                        at: usize::from(*at),
+                    };
+                    let old_len = old.string(&mut previous)?;
+                    if decoded[..len] == previous[..old_len] {
+                        return Err(EventError::Shape);
+                    }
+                }
+            }
+            if key_count == keys.len() {
+                return Err(EventError::Limit);
+            }
+            keys[key_count] = (start as u16, frame.node);
+            key_count += 1;
+            emit(MetadataItem {
+                node: usize::from(frame.node),
+                parent: usize::from(frame.node),
+                index: usize::from(frame.count),
+                kind: "member key",
+                text: core::str::from_utf8(&decoded[..len]).map_err(|_| EventError::Syntax)?,
+            })?;
+            reader.take(b':')?;
+        }
+        pending = Some((usize::from(frame.node), usize::from(frame.count)));
+        frame.count += 1;
+        frame.state = 1;
+        stack[depth - 1] = frame;
+    }
+}
+
+fn fixed_hex<const N: usize>(text: &[u8]) -> Result<[u8; N], EventError> {
+    if text.len() != N * 2 {
+        return Err(EventError::Shape);
+    }
+    let digit = |b| match b {
+        b'0'..=b'9' => Ok(b - b'0'),
+        b'a'..=b'f' => Ok(b - b'a' + 10),
+        _ => Err(EventError::Shape),
+    };
+    let mut result = [0; N];
+    for (dst, pair) in result.iter_mut().zip(text.chunks_exact(2)) {
+        *dst = digit(pair[0])? * 16 + digit(pair[1])?;
+    }
+    Ok(result)
+}
+
+/// A borrowed original-event view: source spans plus public scalars only. The
+/// parent content owns all strings; no second full event arena is retained.
+pub(crate) struct SignedOriginal<'a> {
+    input: &'a [u8],
+    limits: OperationLimits,
+    pub public_key: [u8; 32],
+    pub id: [u8; 32],
+    pub signature: [u8; 64],
+    pub created_at: u64,
+    pub kind: u16,
+    tags: (usize, usize),
+    content: (usize, usize),
+}
+impl<'a> SignedOriginal<'a> {
+    pub fn parse(input: &'a str, mut limits: OperationLimits) -> Result<Self, EventError> {
+        limits.input_bytes = limits.input_bytes.min(2048);
+        let mut reader = Reader::new(input.as_bytes(), limits)?;
+        let mut result = Self {
+            input: input.as_bytes(),
+            limits,
+            public_key: [0; 32],
+            id: [0; 32],
+            signature: [0; 64],
+            created_at: 0,
+            kind: 0,
+            tags: (0, 0),
+            content: (0, 0),
+        };
+        let mut buffer = [0; 2048];
+        let mut text_bytes = 0;
+        reader.object(
+            &[
+                "pubkey",
+                "created_at",
+                "kind",
+                "tags",
+                "content",
+                "id",
+                "sig",
+            ],
+            |reader, key| {
+                match key {
+                    0 => {
+                        let len = reader.string(&mut buffer[..64])?;
+                        result.public_key = fixed_hex(&buffer[..len])?;
+                    }
+                    1 => result.created_at = reader.number(9_007_199_254_740_991)?,
+                    2 => result.kind = reader.number(65535)? as u16,
+                    3 => {
+                        reader.ws();
+                        let start = reader.at;
+                        Self::walk_tags(reader, limits, |_, _, text| {
+                            text_bytes += text.len();
+                            Ok(())
+                        })?;
+                        result.tags = (start, reader.at);
+                    }
+                    4 => {
+                        reader.ws();
+                        let start = reader.at;
+                        let len = reader.string(&mut buffer[..limits.content_bytes])?;
+                        text_bytes += len;
+                        result.content = (start, reader.at);
+                    }
+                    5 => {
+                        let len = reader.string(&mut buffer[..64])?;
+                        result.id = fixed_hex(&buffer[..len])?;
+                    }
+                    _ => {
+                        let len = reader.string(&mut buffer[..128])?;
+                        result.signature = fixed_hex(&buffer[..len])?;
+                    }
+                }
+                Ok(())
+            },
+        )?;
+        reader.end()?;
+        if result.kind != 1 || text_bytes > limits.text_bytes {
+            return Err(EventError::Shape);
+        }
+        Ok(result)
+    }
+    fn walk_tags(
+        reader: &mut Reader<'_>,
+        limits: OperationLimits,
+        mut emit: impl FnMut(usize, usize, &str) -> Result<(), EventError>,
+    ) -> Result<(), EventError> {
+        reader.take(b'[')?;
+        let mut tag = 0;
+        if reader.eat(b']') {
+            return Ok(());
+        }
+        loop {
+            if tag == limits.tags {
+                return Err(EventError::Limit);
+            }
+            reader.take(b'[')?;
+            if reader.eat(b']') {
+                return Err(EventError::Shape);
+            }
+            let mut field = 0;
+            loop {
+                if field == limits.fields_per_tag {
+                    return Err(EventError::Limit);
+                }
+                let mut buffer = [0; 256];
+                let len = reader.string(&mut buffer[..limits.field_bytes])?;
+                if field == 0 && len == 0 {
+                    return Err(EventError::Shape);
+                }
+                emit(
+                    tag,
+                    field,
+                    core::str::from_utf8(&buffer[..len]).map_err(|_| EventError::Syntax)?,
+                )?;
+                field += 1;
+                if reader.eat(b']') {
+                    break;
+                }
+                reader.take(b',')?;
+            }
+            tag += 1;
+            if reader.eat(b']') {
+                return Ok(());
+            }
+            reader.take(b',')?;
+        }
+    }
+    pub fn visit_tags(
+        &self,
+        emit: impl FnMut(usize, usize, &str) -> Result<(), EventError>,
+    ) -> Result<(), EventError> {
+        let mut reader = Reader::new(&self.input[self.tags.0..self.tags.1], self.limits)?;
+        Self::walk_tags(&mut reader, self.limits, emit)?;
+        reader.end()
+    }
+    pub fn visit_content(
+        &self,
+        mut emit: impl FnMut(&str) -> Result<(), EventError>,
+    ) -> Result<(), EventError> {
+        let mut reader = Reader::new(&self.input[self.content.0..self.content.1], self.limits)?;
+        let mut buffer = [0; 2048];
+        let len = reader.string(&mut buffer[..self.limits.content_bytes])?;
+        reader.end()?;
+        emit(core::str::from_utf8(&buffer[..len]).map_err(|_| EventError::Syntax)?)
+    }
+    pub fn verify(&self) -> Result<(), EventError> {
+        let key = k256::schnorr::VerifyingKey::from_slice(&self.public_key)
+            .map_err(|_| EventError::Shape)?;
+        let mut hash = Sha256::new();
+        let mut count = 0usize;
+        let mut emit = |bytes: &[u8]| {
+            count = count.checked_add(bytes.len()).ok_or(EventError::Limit)?;
+            if count > self.limits.canonical_bytes {
+                return Err(EventError::Limit);
+            }
+            hash.update(bytes);
+            Ok(())
+        };
+        emit(b"[0,\"")?;
+        emit(&hex::<32, 64>(&self.public_key))?;
+        emit(b"\",")?;
+        let mut number = [0; 20];
+        emit(decimal(self.created_at, &mut number))?;
+        emit(b",")?;
+        emit(decimal(u64::from(self.kind), &mut number))?;
+        emit(b",[")?;
+        let mut previous_tag = None;
+        self.visit_tags(|tag, field, text| {
+            if previous_tag != Some(tag) {
+                if previous_tag.is_some() {
+                    emit(b"],")?;
+                }
+                emit(b"[")?;
+                previous_tag = Some(tag);
+            } else if field > 0 {
+                emit(b",")?;
+            }
+            json_string(text, &mut emit)
+        })?;
+        if previous_tag.is_some() {
+            emit(b"]")?;
+        }
+        emit(b"],")?;
+        self.visit_content(|text| json_string(text, &mut emit))?;
+        emit(b"]")?;
+        if hash.finalize() != self.id {
+            return Err(EventError::Shape);
+        }
+        let signature = k256::schnorr::Signature::try_from(self.signature.as_slice())
+            .map_err(|_| EventError::Shape)?;
+        key.verify_raw(&self.id, &signature)
+            .map_err(|_| EventError::Shape)
     }
 }

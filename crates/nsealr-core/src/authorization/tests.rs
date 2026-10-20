@@ -1,5 +1,5 @@
 use super::*;
-use crate::event::EventTemplate;
+use crate::{event::EventTemplate, review::event::validate_kind1};
 use serde_json::{json, Value};
 use std::{
     format,
@@ -158,12 +158,13 @@ fn s03_identity_is_derived_from_consumed_custody() {
         hex(&one.public_key().unwrap()),
         "79be667ef9dcbbac55a06295ce870b07029bfcdb2dce28d959f2815b16f81798"
     );
-    // Odd-Y n-3 imports the opposite point but k256 retains the normalized scalar 3.
+    // Odd-Y n-3 keeps its original recovery scalar; the scoped backend normalizes to 3.
     let mut odd = [0xff; 32];
     odd.copy_from_slice(&[
         255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 254, 186, 174,
         220, 230, 175, 72, 160, 59, 191, 210, 94, 140, 208, 54, 65, 62,
     ]);
+    let original = odd;
     s.begin_request(request(EMPTY).as_bytes(), Some(0)).unwrap();
     approve(&mut s);
     let generation = s.account;
@@ -174,7 +175,10 @@ fn s03_identity_is_derived_from_consumed_custody() {
     assert_eq!(hex(&s.public_key().unwrap()), KEY);
     assert_eq!(s.state(), AuthorizationState::Idle);
     assert!(s.attempt_sign("r", Some(0)).is_err());
-    let normalized = s.key.as_ref().unwrap().to_bytes();
+    assert_eq!(s.key.as_ref().unwrap().as_bytes(), &original);
+    let normalized = SigningKey::from_slice(s.key.as_ref().unwrap().as_bytes())
+        .unwrap()
+        .to_bytes();
     assert_eq!(normalized[31], 3);
     assert!(normalized[..31].iter().all(|b| *b == 0));
     s.begin_request(request(EMPTY).as_bytes(), Some(0)).unwrap();
@@ -188,8 +192,8 @@ fn s03_identity_is_derived_from_consumed_custody() {
     }
     if let Ok(path) = std::env::var("S03_OBSERVED") {
         let rows = json!([
-            {"scalar":"1","pubkey":hex(&one.public_key().unwrap()),"normalized_backend":hex(&one.key.as_ref().unwrap().to_bytes())},
-            {"scalar":"3","pubkey":hex(&even.public_key().unwrap()),"normalized_backend":hex(&even.key.as_ref().unwrap().to_bytes())},
+            {"scalar":"1","pubkey":hex(&one.public_key().unwrap()),"normalized_backend":hex(&SigningKey::from_slice(one.key.as_ref().unwrap().as_bytes()).unwrap().to_bytes())},
+            {"scalar":"3","pubkey":hex(&even.public_key().unwrap()),"normalized_backend":hex(&SigningKey::from_slice(even.key.as_ref().unwrap().as_bytes()).unwrap().to_bytes())},
             {"scalar":"n-3","pubkey":hex(&s.public_key().unwrap()),"normalized_backend":hex(&normalized),"empty_event_signature":hex(&sig)}]);
         std::fs::write(
             std::path::Path::new(&path).with_extension("keys.json"),
@@ -398,10 +402,16 @@ fn k01_prepared_catalog_preflights_and_rejects_exact_semantic_inputs() {
         }
         let mut owner = AuthorizationSession::new(bounds, geometry()).unwrap();
         owner.select_key(secret(3)).unwrap();
-        let result = owner.begin_request(&request(row["template"].as_str().unwrap()).into_bytes(), Some(0));
+        let result = owner.begin_request(
+            &request(row["template"].as_str().unwrap()).into_bytes(),
+            Some(0),
+        );
         let expected = row["expected_preflight"] == "accept";
         if result.is_ok() != expected {
-            mismatches.push(format!("{} expected accept={} got {:?}", row["id"], expected, result));
+            mismatches.push(format!(
+                "{} expected accept={} got {:?}",
+                row["id"], expected, result
+            ));
         }
         assert_ne!(owner.state(), AuthorizationState::Approved);
     }
@@ -515,7 +525,12 @@ fn s03_kind1_interprets_exact_reference_subset() {
     for kind in [0, 3, 4, 5, 7, 9735, 10002, 1059, 22242, 30023, 65535] {
         let t = EMPTY.replace("\"kind\":1", &format!("\"kind\":{kind}"));
         let mut s = session();
-        assert!(s.begin_request(request(&t).as_bytes(), Some(0)).is_err());
+        // Deliberate K01 catalog extension: empty whole-list replacements are
+        // meaningful kind3/10002 operations, not an opaque raw fallback.
+        assert_eq!(
+            s.begin_request(request(&t).as_bytes(), Some(0)).is_ok(),
+            matches!(kind, 3 | 10002)
+        );
     }
 }
 
@@ -750,7 +765,7 @@ fn s03_attempt_binds_context_and_consumes_mismatch() {
             5 => s.review_version += 1,
             6 => s.geometry.columns -= 1,
             7 => s.limits.content_bytes -= 1,
-            8 => s.key = Some(SigningKey::from_slice(secret(1).as_bytes()).unwrap()),
+            8 => s.key = Some(secret(1)),
             n => {
                 let p = s.pending.as_mut().unwrap();
                 match n {
@@ -810,7 +825,10 @@ fn s03_attempt_binds_context_and_consumes_mismatch() {
     for mutation in 0..3 {
         let mut s = approved(EMPTY);
         let mut execution = s.start_execution("r", Some(0)).unwrap();
-        let result = sign(execution.owner.key.as_ref().unwrap(), &execution.event_id);
+        let result = sign(
+            &SigningKey::from_slice(execution.owner.key.as_ref().unwrap().as_bytes()).unwrap(),
+            &execution.event_id,
+        );
         match mutation {
             0 => execution.binding[0] ^= 1,
             1 => execution.event_id[0] ^= 1,
@@ -962,7 +980,10 @@ fn s03_two_attempts_and_cancel_linearize_once() {
         } else {
             let execution = s.start_execution("r", Some(0)).unwrap();
             calls += 1;
-            let result = sign(execution.owner.key.as_ref().unwrap(), &execution.event_id);
+            let result = sign(
+                &SigningKey::from_slice(execution.owner.key.as_ref().unwrap().as_bytes()).unwrap(),
+                &execution.event_id,
+            );
             execution.owner.cancel();
             assert_eq!(
                 AuthorizationSession::finish_execution(execution, result, Some(0)),
@@ -1302,5 +1323,467 @@ fn s03_independent_event_id_and_signature_agree() {
     }
     if let Ok(path) = std::env::var("S03_OBSERVED") {
         std::fs::write(path, serde_json::to_vec_pretty(&observed).unwrap()).unwrap();
+    }
+}
+
+std::thread_local! {
+    static K01_BACKEND_CALLS: core::cell::Cell<usize> = const { core::cell::Cell::new(0) };
+}
+pub(super) fn observe_backend_attempt() {
+    K01_BACKEND_CALLS.with(|n| n.set(n.get() + 1));
+}
+fn backend_calls() -> usize {
+    K01_BACKEND_CALLS.with(core::cell::Cell::get)
+}
+fn k01_inputs() -> Value {
+    serde_json::from_str(include_str!(concat!(
+        env!("CARGO_MANIFEST_DIR"),
+        "/../../docs/restart/implementation/K01/independent-inputs.json"
+    )))
+    .unwrap()
+}
+struct Aux {
+    byte: u8,
+    result: Result<usize, AuxiliaryError>,
+    calls: usize,
+}
+impl Aux {
+    fn valid(byte: u8) -> Self {
+        Self {
+            byte,
+            result: Ok(32),
+            calls: 0,
+        }
+    }
+}
+impl AuxiliarySource for Aux {
+    fn fill(&mut self, destination: &mut [u8; 32]) -> Result<usize, AuxiliaryError> {
+        assert_eq!(destination, &[0; 32]);
+        self.calls += 1;
+        destination.fill(self.byte);
+        self.result
+    }
+}
+fn observed_value(io: &Io, prefix: &str) -> String {
+    io.pages
+        .iter()
+        .filter(|p| p.0.starts_with(prefix))
+        .map(|p| p.1.replace('\n', ""))
+        .collect()
+}
+fn inspection_quote(text: &str) -> String {
+    let mut s = String::from("\"");
+    for c in text.chars() {
+        match c {
+            '"' => s.push_str("\\\""),
+            '\\' => s.push_str("\\\\"),
+            '\n' => s.push_str("\\n"),
+            '\r' => s.push_str("\\r"),
+            '\t' => s.push_str("\\t"),
+            '\x08' => s.push_str("\\b"),
+            '\x0c' => s.push_str("\\f"),
+            ' '..='~' => s.push(c),
+            _ => s.push_str(&format!("\\u{{{:X}}}", c as u32)),
+        }
+    }
+    s.push('"');
+    s
+}
+
+#[test]
+fn k01_actual_engine_outputs_match_all_prepared_independent_cases() {
+    let mut observed = Vec::new();
+    for v in k01_inputs()["vectors"].as_array().unwrap() {
+        let mut s = session();
+        s.begin_request(request(v["template"].as_str().unwrap()).as_bytes(), Some(0))
+            .unwrap();
+        let p = s.pending.as_ref().unwrap();
+        let mut bytes = [0; 8192];
+        let len = p
+            .request
+            .event
+            .as_ref()
+            .unwrap()
+            .write_canonical(&p.public_key, &mut bytes)
+            .unwrap();
+        let canonical = hex(&bytes[..len]);
+        let id = hex(&p.event_id);
+        let key = hex(&p.public_key);
+        let io = approve(&mut s);
+        let event: Value = serde_json::from_str(v["template"].as_str().unwrap()).unwrap();
+        assert_eq!(
+            observed_value(&io, "Signed content"),
+            inspection_quote(event["content"].as_str().unwrap())
+        );
+        for (tag, fields) in event["tags"].as_array().unwrap().iter().enumerate() {
+            for (field, text) in fields.as_array().unwrap().iter().enumerate() {
+                assert_eq!(
+                    observed_value(&io, &format!("Signed tag {tag} field {field}:")),
+                    inspection_quote(text.as_str().unwrap())
+                );
+            }
+        }
+        let mut output = [0xa5; SIGNED_EVENT_BYTES];
+        let mut ticks = 0;
+        let mut clock = || {
+            ticks += 1;
+            Some(0)
+        };
+        let mut aux = Aux::valid(if v["aux_hex"].as_str().unwrap().ends_with("01") {
+            1
+        } else {
+            0
+        });
+        // Prepared auxiliary-one is 31 zero bytes followed by one, not 32 ones.
+        struct ExactAux<'a>(&'a mut Aux);
+        impl AuxiliarySource for ExactAux<'_> {
+            fn fill(&mut self, out: &mut [u8; 32]) -> Result<usize, AuxiliaryError> {
+                let byte = self.0.byte;
+                self.0.byte = 0;
+                let result = self.0.fill(out);
+                out[31] = byte;
+                result
+            }
+        }
+        let before = backend_calls();
+        let n = s
+            .sign_approved("r", &mut clock, &mut ExactAux(&mut aux), &mut output)
+            .unwrap();
+        assert_eq!(ticks, 2);
+        assert_eq!(aux.calls, 1);
+        assert_eq!(backend_calls(), before + 1);
+        assert_eq!(s.state(), AuthorizationState::Spent);
+        assert!(s.pending.is_none());
+        assert!(output[n..].iter().all(|b| *b == 0));
+        let signed: Value = serde_json::from_slice(&output[..n]).unwrap();
+        assert_eq!(signed.as_object().unwrap().len(), 7);
+        for field in ["created_at", "kind", "tags", "content"] {
+            assert_eq!(signed[field], event[field]);
+        }
+        assert_eq!(canonical, v["canonical_hex"]);
+        assert_eq!(id, v["event_id"]);
+        assert_eq!(key, v["pubkey"]);
+        assert_eq!(signed["id"], id);
+        assert_eq!(signed["pubkey"], key);
+        assert_eq!(signed["sig"], v["signature"]);
+        observed.push(json!({"id":v["id"],"pubkey":key,"canonical_hex":canonical,"event_id":id,"signature":signed["sig"],"signed_event_json":core::str::from_utf8(&output[..n]).unwrap()}));
+        assert!(s
+            .sign_approved("r", &mut || panic!("spent clock"), &mut aux, &mut output)
+            .is_err());
+        assert!(output.iter().all(|b| *b == 0));
+        assert_eq!(aux.calls, 1);
+    }
+    if let Ok(path) = std::env::var("K01_OBSERVED") {
+        std::fs::write(path, serde_json::to_vec_pretty(&observed).unwrap()).unwrap();
+    }
+}
+
+#[test]
+fn k01_original_recovery_bytes_and_scoped_backend_witnesses() {
+    let mut actual = Vec::new();
+    for row in k01_inputs()["identity_expectations"].as_array().unwrap() {
+        let encoded = row["original_scalar_hex"].as_str().unwrap();
+        let mut bytes = [0u8; 32];
+        for (i, byte) in bytes.iter_mut().enumerate() {
+            *byte = u8::from_str_radix(&encoded[i * 2..i * 2 + 2], 16).unwrap();
+        }
+        let mut s = session();
+        s.select_key(SecretKey::take_from(&mut bytes).unwrap())
+            .unwrap();
+        assert_eq!(bytes, [0; 32]);
+        let original = hex(s.key.as_ref().unwrap().as_bytes());
+        let normalized = hex(&SigningKey::from_slice(s.key.as_ref().unwrap().as_bytes())
+            .unwrap()
+            .to_bytes());
+        assert_eq!(original, row["original_scalar_hex"]);
+        assert_eq!(normalized, row["normalized_backend_hex"]);
+        let key = hex(&s.public_key().unwrap());
+        assert_eq!(key, row["pubkey"]);
+        s.begin_request(request(EMPTY).as_bytes(), Some(0)).unwrap();
+        approve(&mut s);
+        assert_eq!(hex(s.key.as_ref().unwrap().as_bytes()), original);
+        s.sign_approved(
+            "r",
+            &mut || Some(0),
+            &mut Aux::valid(0),
+            &mut [0; SIGNED_EVENT_BYTES],
+        )
+        .unwrap();
+        assert_eq!(hex(s.key.as_ref().unwrap().as_bytes()), original);
+        actual.push(json!({"scalar":row["public_fixture_scalar"],"original_scalar":original,"normalized_backend":normalized,"pubkey":key}));
+        s.lock().unwrap();
+        assert!(s.key.is_none());
+        assert!(s.public_key().is_none());
+    }
+    if let Ok(path) = std::env::var("K01_IDENTITIES") {
+        std::fs::write(path, serde_json::to_vec_pretty(&actual).unwrap()).unwrap();
+    }
+}
+
+#[test]
+fn k01_all_prepared_semantic_negatives_have_zero_effects() {
+    let mut actual = Vec::new();
+    for row in k01_inputs()["negative_expectations"].as_array().unwrap() {
+        let mut s = session();
+        let before = backend_calls();
+        let error = s
+            .begin_request(
+                request(row["template"].as_str().unwrap()).as_bytes(),
+                Some(0),
+            )
+            .unwrap_err();
+        let layer = match error {
+            AuthorizationError::Parse(_) => "parser",
+            AuthorizationError::Inspection(_) => "semantic",
+            _ => panic!("unexpected {error:?}"),
+        };
+        assert_eq!(layer, row["layer"], "{}: {error:?}", row["id"]);
+        let mut aux = Aux::valid(0);
+        let mut out = [0xa5; SIGNED_EVENT_BYTES];
+        assert!(s
+            .sign_approved("r", &mut || panic!("unapproved clock"), &mut aux, &mut out)
+            .is_err());
+        assert!(out.iter().all(|b| *b == 0));
+        assert_eq!(aux.calls, 0);
+        assert_eq!(backend_calls(), before);
+        actual.push(json!({"id":row["id"],"layer":layer,"error":format!("{error:?}"),"approval_calls":0,"entropy_calls":aux.calls,"sign_calls":backend_calls()-before,"output":false}));
+    }
+    if let Ok(path) = std::env::var("K01_REJECTIONS") {
+        std::fs::write(path, serde_json::to_vec_pretty(&actual).unwrap()).unwrap();
+    }
+}
+
+#[test]
+fn k01_auxiliary_errors_wipe_whole_destination_and_burn_attempt() {
+    for result in [
+        Err(AuxiliaryError::Unavailable),
+        Err(AuxiliaryError::Interrupted),
+        Err(AuxiliaryError::Health),
+        Err(AuxiliaryError::Provider),
+        Ok(0),
+        Ok(1),
+        Ok(31),
+        Ok(33),
+        Ok(usize::MAX),
+    ] {
+        let mut aux = Aux {
+            byte: 0xa5,
+            result,
+            calls: 0,
+        };
+        let mut destination = [0x55; 32];
+        assert_eq!(
+            fill_auxiliary(&mut aux, &mut destination),
+            Err(AuthorizationError::Auxiliary)
+        );
+        assert_eq!(destination, [0; 32]);
+        assert_eq!(aux.calls, 1);
+        let mut s = approved(EMPTY);
+        let before = backend_calls();
+        let mut output = [0xa5; SIGNED_EVENT_BYTES];
+        let mut clock_calls = 0;
+        assert_eq!(
+            s.sign_approved(
+                "r",
+                &mut || {
+                    clock_calls += 1;
+                    Some(0)
+                },
+                &mut aux,
+                &mut output
+            ),
+            Err(AuthorizationError::Auxiliary)
+        );
+        assert_eq!(clock_calls, 2);
+        assert_eq!(backend_calls(), before);
+        assert_eq!(aux.calls, 2);
+        assert_eq!(s.state(), AuthorizationState::Spent);
+        assert!(s.pending.is_none());
+        assert_eq!(output, [0; SIGNED_EVENT_BYTES]);
+        assert!(s
+            .sign_approved("r", &mut || panic!("retry clock"), &mut aux, &mut output)
+            .is_err());
+        assert_eq!(aux.calls, 2);
+    }
+    let mut destination = [0x55; 32];
+    let mut aux = Aux::valid(0xa5);
+    fill_auxiliary(&mut aux, &mut destination).unwrap();
+    assert_eq!(destination, [0xa5; 32]);
+}
+
+#[test]
+fn k01_consumes_before_clock_and_checks_fresh_completion_before_output() {
+    // Inspect the private state exactly where the public API crosses into its
+    // fresh-clock callback: the same consume helper has already changed state.
+    let mut s = approved(EMPTY);
+    s.consume_approval().unwrap();
+    assert_eq!(s.state(), AuthorizationState::Spent);
+    assert_eq!(s.consume_approval(), Err(AuthorizationError::InvalidState));
+    let mut s = approved(EMPTY);
+    let mut aux = Aux::valid(0);
+    let before = backend_calls();
+    let result = std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| {
+        s.sign_approved(
+            "r",
+            &mut || panic!("observe state after first clock callback unwinds"),
+            &mut aux,
+            &mut [0; SIGNED_EVENT_BYTES],
+        )
+    }));
+    assert!(result.is_err());
+    assert_eq!(s.state(), AuthorizationState::Spent);
+    assert_eq!(aux.calls, 0);
+    assert_eq!(backend_calls(), before);
+    assert!(s
+        .sign_approved(
+            "r",
+            &mut || panic!("consent must already be burned"),
+            &mut aux,
+            &mut [0; SIGNED_EVENT_BYTES]
+        )
+        .is_err());
+    for id in ["r", "wrong"] {
+        for tick in [None, Some(100), Some(101)] {
+            let mut s = approved(EMPTY);
+            let before = backend_calls();
+            let mut aux = Aux::valid(0);
+            let mut out = [0xa5; SIGNED_EVENT_BYTES];
+            let mut calls = 0;
+            assert!(s
+                .sign_approved(
+                    id,
+                    &mut || {
+                        calls += 1;
+                        tick
+                    },
+                    &mut aux,
+                    &mut out
+                )
+                .is_err());
+            assert_eq!(calls, 1);
+            assert_eq!(aux.calls, 0);
+            assert_eq!(backend_calls(), before);
+            assert_eq!(out, [0; SIGNED_EVENT_BYTES]);
+            assert_eq!(s.state(), AuthorizationState::Spent);
+        }
+    }
+    let mut s = approved(EMPTY);
+    let mut aux = Aux::valid(0);
+    let mut calls = 0;
+    let mut out = [0xa5; SIGNED_EVENT_BYTES];
+    assert_eq!(
+        s.sign_approved(
+            "wrong",
+            &mut || {
+                calls += 1;
+                Some(0)
+            },
+            &mut aux,
+            &mut out
+        ),
+        Err(AuthorizationError::Binding)
+    );
+    assert_eq!(calls, 1);
+    assert_eq!(aux.calls, 0);
+    for end in [None, Some(9), Some(110), Some(111)] {
+        let mut s = session();
+        s.begin_request(request(EMPTY).as_bytes(), Some(10))
+            .unwrap();
+        approve_at(&mut s, 10);
+        let before = backend_calls();
+        let mut calls = 0;
+        let mut aux = Aux::valid(0);
+        let mut out = [0xa5; SIGNED_EVENT_BYTES];
+        assert!(s
+            .sign_approved(
+                "r",
+                &mut || {
+                    calls += 1;
+                    if calls == 1 {
+                        Some(10)
+                    } else {
+                        end
+                    }
+                },
+                &mut aux,
+                &mut out
+            )
+            .is_err());
+        assert_eq!(calls, 2);
+        assert_eq!(aux.calls, 1);
+        assert_eq!(backend_calls(), before + 1);
+        assert_eq!(out, [0; SIGNED_EVENT_BYTES]);
+        assert_eq!(s.state(), AuthorizationState::Spent);
+    }
+    let mut s = approved(EMPTY);
+    let mut out = [0xa5; 1];
+    let mut aux = Aux::valid(0);
+    assert_eq!(
+        s.sign_approved("r", &mut || Some(0), &mut aux, &mut out),
+        Err(AuthorizationError::Output)
+    );
+    assert_eq!(out, [0]);
+    assert_eq!(s.state(), AuthorizationState::Spent);
+}
+fn approve_at(s: &mut AuthorizationSession, tick: u64) {
+    let mut io = Io {
+        tick,
+        ..Io::default()
+    };
+    while s.state() == AuthorizationState::Reviewing {
+        s.review_step(&mut io).unwrap();
+    }
+    assert_eq!(s.state(), AuthorizationState::Approved);
+}
+
+#[test]
+fn k01_metadata_exact_types_duplicate_keys_and_finite_boundaries() {
+    let cases: Value = serde_json::from_str(include_str!(concat!(
+        env!("CARGO_MANIFEST_DIR"),
+        "/../../docs/restart/implementation/K01/evidence/metadata-boundaries.json"
+    )))
+    .unwrap();
+    for row in cases["cases"].as_array().unwrap() {
+        let input =
+            json!({"kind":0,"created_at":0,"tags":[],"content":row["metadata_json"]}).to_string();
+        let mut s = session();
+        let result = s.begin_request(request(&input).as_bytes(), Some(0));
+        assert_eq!(
+            result.is_ok(),
+            row["expected_accept"].as_bool().unwrap(),
+            "{} {result:?}",
+            row["id"]
+        );
+        if result.is_ok() {
+            approve(&mut s);
+        }
+    }
+    let raw = r#"{"empty":{},"list":[null,false,"雪",-0.50e+002,{"x":true}]}"#;
+    let input = json!({"kind":0,"created_at":0,"tags":[],"content":raw}).to_string();
+    let mut s = approved(&input);
+    // Full nested values/types and raw numeric spelling are actually presented.
+    s.cancel();
+    s.begin_request(request(&input).as_bytes(), Some(0))
+        .unwrap();
+    let io = approve(&mut s);
+    assert!(io
+        .pages
+        .iter()
+        .any(|p| p.0.contains("number (exact token)") && p.1 == "\"-0.50e+002\""));
+    for kind in [
+        "object",
+        "array",
+        "null",
+        "boolean",
+        "string",
+        "member key",
+        "container end",
+    ] {
+        assert!(
+            io.pages
+                .iter()
+                .any(|p| p.0.starts_with("Profile node") && p.0.contains(kind)),
+            "{kind}"
+        );
     }
 }
