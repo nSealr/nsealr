@@ -1,3 +1,5 @@
+import base64
+import hashlib
 import json
 import subprocess
 import sys
@@ -524,6 +526,72 @@ class Wire2ReferenceTests(unittest.TestCase):
                     self.assertFalse(response["ok"])
                     self.assertEqual(response["error"]["code"], "invalid_request")
                     signer.assert_not_called()
+
+
+class Wire2RawQrTests(unittest.TestCase):
+    @staticmethod
+    def original_byte_frames(raw: bytes) -> tuple[str, list[str]]:
+        # Independent input construction from the unchanged normative framing
+        # formula, never a production encoder or an expected product response.
+        payload = base64.urlsafe_b64encode(raw).decode("ascii").rstrip("=")
+        digest = hashlib.sha256(raw).hexdigest()
+        chunks = [payload[index:index + 64] for index in range(0, len(payload), 64)]
+        frames = []
+        for index, chunk in enumerate(chunks, 1):
+            frame = f"nsealr1a:{digest}:{index}/{len(chunks)}:{chunk}"
+            frames.append(frame + ":" + hashlib.sha256(frame.encode("ascii")).hexdigest()[:16])
+        return "nsealr1:" + payload, frames
+
+    def test_original_static_and_animated_invalid_json_reject_before_signer(self) -> None:
+        fixed = json.dumps(BASIC_REQUEST, ensure_ascii=False, separators=(",", ":"))
+        invalid = {
+            "duplicate-kind": fixed.replace('"kind":1', '"kind":0,"kind":1'),
+            "escaped-key-alias": fixed.replace('"kind":1', '"kind":0,"\\u006bind":1'),
+            "negative-zero": fixed.replace('"created_at":1710000000', '"created_at":-0'),
+            "negative-integer": fixed.replace('"created_at":1710000000', '"created_at":-1'),
+            "fraction": fixed.replace('"created_at":1710000000', '"created_at":1.0'),
+            "exponent": fixed.replace('"created_at":1710000000', '"created_at":1e0'),
+            "unsafe-integer": fixed.replace('"created_at":1710000000', '"created_at":9007199254740992'),
+            "nan": fixed.replace('"created_at":1710000000', '"created_at":NaN'),
+            "infinity": fixed.replace('"created_at":1710000000', '"created_at":Infinity'),
+            "negative-infinity": fixed.replace('"created_at":1710000000', '"created_at":-Infinity'),
+            "unpaired-high-scalar": fixed.replace(json.dumps(BASIC_REQUEST["params"]["event_template"]["content"]), '"\\ud800"'),
+            "unpaired-low-scalar": fixed.replace(json.dumps(BASIC_REQUEST["params"]["event_template"]["content"]), '"\\udc00"'),
+            "invalid-key-scalar": fixed.replace('"method":', '"\\ud800":0,"method":'),
+        }
+        raw_cases = [(name, text.encode("utf-8")) for name, text in invalid.items()]
+        raw_cases.append(("invalid-utf8", b'{"invalid":"\xc0\xaf"}'))
+        for name, raw in raw_cases:
+            self.assertNotEqual(raw, fixed.encode("utf-8"))
+            envelope, frames = self.original_byte_frames(raw)
+            for transport, decode, value in (
+                ("static", decode_qr_envelope, envelope),
+                ("animated", decode_animated_qr_envelope_frames, frames),
+            ):
+                with self.subTest(case=name, transport=transport), patch(__name__ + ".sign_request") as signer:
+                    with self.assertRaises(ValueError):
+                        request = decode(value)
+                        signer(request, KEY["secret_key"], approved=True)
+                    signer.assert_not_called()
+
+    def test_original_static_and_animated_valid_json_preserve_values(self) -> None:
+        unicode_request = json.loads(json.dumps(BASIC_REQUEST))
+        unicode_request["params"]["event_template"]["content"] = "😀 e\u0301\n\t"
+        max_time = json.loads(json.dumps(BASIC_REQUEST))
+        max_time["params"]["event_template"]["created_at"] = 9007199254740991
+        controls = [
+            (json.dumps(BASIC_REQUEST, separators=(",", ":")), BASIC_REQUEST),
+            (json.dumps(unicode_request, ensure_ascii=False, separators=(",", ":")), unicode_request),
+            (json.dumps(unicode_request, ensure_ascii=True, separators=(",", ":")), unicode_request),
+            (" \r\n\t" + json.dumps(BASIC_REQUEST, sort_keys=True, separators=(",", ":")) + " \t", BASIC_REQUEST),
+            (json.dumps(max_time, separators=(",", ":")), max_time),
+            ('{"version":2,"request_id":"pi-json-types","ok":false,"error":{"retryable":true,"message":"x","code":"invalid_request"},"context":null}', {"version": 2, "request_id": "pi-json-types", "ok": False, "error": {"retryable": True, "message": "x", "code": "invalid_request"}, "context": None}),
+        ]
+        for index, (raw, expected) in enumerate(controls):
+            envelope, frames = self.original_byte_frames(raw.encode("utf-8"))
+            with self.subTest(control=index):
+                self.assertEqual(decode_qr_envelope(envelope), expected)
+                self.assertEqual(decode_animated_qr_envelope_frames(frames), expected)
 
 
 class VaultCoreTests(unittest.TestCase):
