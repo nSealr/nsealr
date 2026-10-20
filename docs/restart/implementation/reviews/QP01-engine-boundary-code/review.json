@@ -1,0 +1,146 @@
+{
+  "schema_version": 1,
+  "task": "QP01",
+  "reviewer": "/root/b01_final_review",
+  "author": "/root/a02_sol",
+  "model_policy": "gpt-6.1-sol xhigh",
+  "recorded_utc": "2026-10-20T19:31:17.153609+00:00",
+  "candidate": "b45812362e2f8340572aaaffd0384a9662fc6fb2",
+  "tree": "bfa3923cbbd79037fd9b2a1ef8105b7935468c10",
+  "actual_input": "5d047b5d3150d58a1a45caf00c8946b7f18364bb",
+  "executed_probe_source": "7c755299e27a8affb5defa42fe318dfab4e2ff1c",
+  "independent_expectation_source": "c9c83bf45159ac7b3fc32e4657763c2b70a2115e",
+  "verdict": "PASS_canary_component_only",
+  "findings": [],
+  "review_scope": "New fixed-public-fixture Rust cdylib/C ABI/ctypes component and actual source-bound command/library/callback/output/error proof. No new audit or acceptance of unchanged K01/core, hardware documentation or the global preparation decision.",
+  "prior_core_review_reuse": {
+    "engine": "a08619bb029c369babc27f498f8877be0408d1a8",
+    "target": "714aa19c3e5a841850ac4309de71bd04845bf030",
+    "combined": "4c0d43ba83a029b23c3ba0771f4bd4d64697c2ed",
+    "actual_main_acceptance": "74ab189f49ec2d0e09f4049d26f55d082338f49d",
+    "reason": "Unchanged core is a previously independently accepted dependency. This boundary reviewer authored K01 and does not self-review its security here."
+  },
+  "source_reading": [
+    {
+      "path": "docs/restart/implementation/QP01/engine-boundary/probe/src/lib.rs",
+      "lines": "18-80,83-154",
+      "conclusion": "Exactly one private core owner, fixed original scalar3, include_bytes raw request, real review callback/LocalInput and sign_approved; no stored/fabricated result or diagnostic approval shortcut."
+    },
+    {
+      "path": "docs/restart/implementation/QP01/engine-boundary/probe/src/lib.rs",
+      "lines": "166-210",
+      "conclusion": "Unsafe caller pointer validity/nonalias/lifetime contract; basic argument checks and zeroing precede atomic Busy refusal. Catch_unwind and Active Drop contain ordinary Rust unwind/owner reservation only; no invalid-pointer/abort/foreign-unwind guarantee."
+    },
+    {
+      "path": "docs/restart/implementation/QP01/engine-boundary/canary.py",
+      "lines": "42-45,67-132",
+      "conclusion": "Explicit C signatures, strong callback references, copies of real public frame byte spans; separate buffers on actual nested reentry; caught simulated Python failure returns explicit error."
+    },
+    {
+      "path": "docs/restart/implementation/QP01/engine-boundary/canary.py",
+      "lines": "134-177",
+      "conclusion": "Actual ordered complete callback sequence, exact independent event fields, canonical hash/libsecp verification, full-capacity zero error outputs, fresh owner recovery; distinct result written even on assertion failure."
+    }
+  ],
+  "binding_checks": {
+    "actual_execution_context_source_hashes": 8,
+    "focused_source_binding_rows": 23,
+    "original_command_raw_pairs_verified": 5,
+    "existing_registry_package_identities": 31,
+    "new_registry_identities": 0,
+    "exact_expected_profile_empty_row_before_implementation": true,
+    "request_before_implementation_exact": true,
+    "evidence_sha256": "a9fb0f877463a7da33048207e2308e7cf2c835981c861d865bdbf7c14a33ab0b",
+    "author_manifest_sha256": "967843b2ef1fe592b1060eff6f0ae0b5f8eb614db5aaab7caa179800e730064d",
+    "author_manifest_members_declared": 43,
+    "manifest_verification_scope": "Exact manifest digest and focused component bindings; root owns complete preparation/global closure integrity review.",
+    "archived_library_sha256": "3291c34290ce2a96eb692ee191e976ebf6451221a4a6192e00f7dc09438d7a4c",
+    "archived_library_bytes": 493312
+  },
+  "actual_targeted_rerun": {
+    "command": "runtime-canary/command.json",
+    "exit": 0,
+    "seconds": 0.042,
+    "rebuilt": false,
+    "library": "Exact archived original x86_64 fixture cdylib",
+    "frames": 33,
+    "output_bytes": 344,
+    "new_trace_equals_original_cases_frames_actions_outputs": true,
+    "independent_Python_verification": true,
+    "controls": {
+      "reject_after_actual_core_refusal": -3,
+      "premature_approve": -4,
+      "caught_python_display_exception": -5,
+      "nested_reentry": -2,
+      "nested_UI_calls": 0,
+      "all_failure_buffer_bytes_zero": 9216,
+      "fresh_call_recovery": true
+    }
+  },
+  "not_proven": [
+    "Memory safety for arbitrary/aliased/dangling caller pointers or callback function pointers; the export is unsafe and caller allocations/lifetimes remain obligations.",
+    "Rust panic injection, abort/foreign fault/exception-handler failure or process-wide secret cleanup.",
+    "Hard deadlines, bounded callback time, asynchronous cancellation or a persistent owner/import/user-key ABI.",
+    "ARM/Pi build/link/run, target Python/libffi/native ABI, complete app/transport/device integration.",
+    "Physical display/input/QR, persistence, real entropy/provider health, backend scratch erasure or device/resource qualification."
+  ],
+  "retained_gates": {
+    "QP01_all_three_criteria_incomplete": true,
+    "Q02_all_six_criteria_incomplete": true,
+    "product_adapter_or_user_key_API_approved": false,
+    "production_provider_or_transport_enabled": false,
+    "physical_release_qualified": false
+  },
+  "execution_limits": {
+    "whole_CI_or_crypto_corpus": false,
+    "hosted_CI_observation": false,
+    "new_public_probe_framework_or_verifier": false,
+    "author_source_modification": false,
+    "resource_question": false
+  },
+  "artifacts": [
+    {
+      "path": "docs/restart/implementation/reviews/QP01-engine-boundary-code/bindings.json",
+      "mode": "100644",
+      "bytes": 14488,
+      "sha256": "e45361bf7c51429e96566449ebc5203f9a90772b224a5cb87315b4ba1b82babb"
+    },
+    {
+      "path": "docs/restart/implementation/reviews/QP01-engine-boundary-code/report.md",
+      "mode": "100644",
+      "bytes": 5018,
+      "sha256": "a5bf1423b48c6c3b89ab3e762e3cd60dd23e69d3016898ff4c706a7b1e637e5a"
+    },
+    {
+      "path": "docs/restart/implementation/reviews/QP01-engine-boundary-code/runtime-canary/command.json",
+      "mode": "100644",
+      "bytes": 1665,
+      "sha256": "b3282705818c320f351f00138a2ee3d82aa768619335e66ee09798aa11dc9158"
+    },
+    {
+      "path": "docs/restart/implementation/reviews/QP01-engine-boundary-code/runtime-canary/comparison.json",
+      "mode": "100644",
+      "bytes": 1397,
+      "sha256": "63e00cbebed03cf5cd9cf8f310b8227c318e39dd8b86ff410e5bf9c898833354"
+    },
+    {
+      "path": "docs/restart/implementation/reviews/QP01-engine-boundary-code/runtime-canary/result.json",
+      "mode": "100644",
+      "bytes": 32948,
+      "sha256": "ba6b731ed3dad90e2f5efa078c593ee9840462aebb5b7d7173dba86c80a6376b"
+    },
+    {
+      "path": "docs/restart/implementation/reviews/QP01-engine-boundary-code/runtime-canary/stderr.log",
+      "mode": "100644",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "docs/restart/implementation/reviews/QP01-engine-boundary-code/runtime-canary/stdout.log",
+      "mode": "100644",
+      "bytes": 459,
+      "sha256": "724ae30ea1d1ed6ea1787391333bad783a0996374348c9ed773b49d94d6c0377"
+    }
+  ],
+  "self_binding": "This review commit and returned SHA256 bind review.json without a self-hash; all paired proof remains under this review-only prefix."
+}
