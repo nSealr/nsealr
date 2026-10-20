@@ -1,0 +1,65 @@
+   Compiling nsealr-core v0.0.0 (/home/tux/nsealr/.restart-tools/goal/t01-current-integration/crates/nsealr-core)
+warning: constant `SIGNING_STATUS_REQUEST_JSON` is never used
+   --> crates/nsealr-core/src/protocol.rs:388:11
+    |
+388 |     const SIGNING_STATUS_REQUEST_JSON: &str = include_str!(concat!(
+    |           ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    |
+    = note: `#[warn(dead_code)]` (part of `#[warn(unused)]`) on by default
+
+warning: constant `SIGNING_STATUS_RESPONSE_JSON` is never used
+   --> crates/nsealr-core/src/protocol.rs:392:11
+    |
+392 |     const SIGNING_STATUS_RESPONSE_JSON: &str = include_str!(concat!(
+    |           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+warning: `nsealr-core` (lib test) generated 2 warnings
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 1.67s
+     Running unittests src/lib.rs (target/t01-development/debug/deps/nsealr_core-b57575797bdc162b)
+
+thread 'base64url::tests::specs_vector_basic_envelope_canonical_round_trip' (3489110) panicked at crates/nsealr-core/src/base64url.rs:272:9:
+assertion failed: decoded.starts_with(br#"{"version":1,"#)
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+
+thread 'authorization::tests::s03_integer_tokens_and_kinds_are_exact' (3489092) panicked at crates/nsealr-core/src/authorization/tests.rs:325:9:
+assertion failed: ParsedRequest::parse(request(EMPTY).replace("\"version\":2",
+                &format!("\"version\":{version}")).as_bytes(),
+        limits()).is_err()
+
+thread 'qr::response_display::tests::allows_nested_json_unicode_escapes' (3489196) panicked at crates/nsealr-core/src/qr/response_display.rs:824:87:
+called `Result::unwrap()` on an `Err` value: BadVersion
+
+thread 'qr::response_display::tests::builds_static_frame_for_small_response' (3489198) panicked at crates/nsealr-core/src/qr/response_display.rs:645:87:
+called `Result::unwrap()` on an `Err` value: BadVersion
+
+thread 'qr::response_display::tests::cycles_animated_frames_for_large_response' (3489199) panicked at crates/nsealr-core/src/qr/response_display.rs:659:55:
+called `Result::unwrap()` on an `Err` value: BadVersion
+
+thread 'qr::response_display::tests::io_single_cycle_animated' (3489200) panicked at crates/nsealr-core/src/qr/response_display.rs:1039:84:
+called `Result::unwrap()` on an `Err` value: BadVersion
+
+thread 'qr::response_display::tests::animated_response_fixture_replay' (3489197) panicked at crates/nsealr-core/src/qr/response_display.rs:841:79:
+called `Result::unwrap()` on an `Err` value: BadVersion
+
+thread 'qr::response_display::tests::rejects_invalid_json_and_bad_cycles' (3489201) panicked at crates/nsealr-core/src/qr/response_display.rs:708:9:
+assertion `left == right` failed
+  left: BadVersion
+ right: Envelope(ExceedsAnimatedJsonBytes)
+
+thread 'qr::response_display::tests::request_id_rule_matches_shared_charset' (3489204) panicked at crates/nsealr-core/src/qr/response_display.rs:988:44:
+called `Result::unwrap()` on an `Err` value: BadVersion
+
+thread 'qr::response_display::tests::rejects_non_response_payload_shapes' (3489202) panicked at crates/nsealr-core/src/qr/response_display.rs:745:9:
+assertion `left == right` failed
+  left: BadVersion
+ right: SuccessWithoutResultObject
+
+thread 'qr::response_display::tests::scanner_tolerances_and_rejections' (3489206) panicked at crates/nsealr-core/src/qr/response_display.rs:858:44:
+called `Result::unwrap()` on an `Err` value: BadVersion
+
+thread 'qr::response_display::tests::shows_static_frame_once' (3489207) panicked at crates/nsealr-core/src/qr/response_display.rs:695:10:
+called `Result::unwrap()` on an `Err` value: BadVersion
+
+thread 'qr::response_display::tests::static_animated_threshold_boundary' (3489208) panicked at crates/nsealr-core/src/qr/response_display.rs:1017:83:
+called `Result::unwrap()` on an `Err` value: BadVersion
+error: test failed, to rerun pass `-p nsealr-core --lib`

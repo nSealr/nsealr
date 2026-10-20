@@ -1,3 +1,4 @@
+import { readBoundedJson, validateReportedCapabilities } from "./capabilities.js";
 import {
   compactJsonUtf8ByteLength,
   NSEALR_V0_LIMITS,
@@ -9,22 +10,7 @@ export type ValidationResult = {
   error?: string;
 };
 
-const PARAMETERLESS_METHODS = ["get_capabilities", "get_signing_status", "get_public_key"] as const;
-const CAPABILITY_METHODS = [...PARAMETERLESS_METHODS, "sign_event"] as const;
-const SIGNING_STATUS_GATES = [
-  "runtime_signing_feature",
-  "parser_limits",
-  "trusted_review_display",
-  "physical_approval_controls",
-  "approval_digest_binding",
-  "unicode_review_rendering",
-  "key_provisioning",
-  "source_public_key_proof",
-  "secure_boot",
-  "flash_encryption",
-  "debug_lock",
-  "companion_signed_output_verification"
-] as const;
+const PARAMETERLESS_METHODS = ["get_capabilities", "get_public_key"] as const;
 
 function isRecord(value: unknown): value is Record<string, unknown> {
   return typeof value === "object" && value !== null && !Array.isArray(value);
@@ -118,10 +104,12 @@ function validateEventTemplate(value: unknown): ValidationResult {
 
 export function validateRequest(value: unknown): ValidationResult {
   if (!isRecord(value)) return { ok: false, error: "request must be an object" };
+  try { readBoundedJson(JSON.stringify(value), NSEALR_V0_LIMITS.max_decoded_request_json_bytes); }
+  catch (error) { return { ok: false, error: error instanceof Error ? error.message : "invalid request JSON" }; }
   if (compactJsonUtf8ByteLength(value) > NSEALR_V0_LIMITS.max_decoded_request_json_bytes) {
     return { ok: false, error: "decoded request JSON exceeds max_decoded_request_json_bytes" };
   }
-  if (value.version !== 1) return { ok: false, error: "version must be 1" };
+  if (value.version !== 2) return { ok: false, error: "version must be 2" };
   if (!isRequestId(value.request_id)) return { ok: false, error: "request_id is invalid" };
   if (typeof value.method === "string" && (PARAMETERLESS_METHODS as readonly string[]).includes(value.method)) {
     if ("params" in value) return { ok: false, error: `${value.method} must not include params` };
@@ -163,69 +151,22 @@ function validateSignedEvent(value: unknown): ValidationResult {
 }
 
 function validateCapabilities(value: unknown): ValidationResult {
-  if (!isRecord(value)) return { ok: false, error: "capabilities must be an object" };
-  if (!isRecord(value.device)) return { ok: false, error: "capabilities device must be an object" };
-  for (const field of ["name", "firmware", "hardware"]) {
-    if (typeof value.device[field] !== "string" || value.device[field].length === 0) {
-      return { ok: false, error: `capabilities device ${field} is required` };
-    }
-  }
-  for (const field of ["protocols", "methods", "transports"]) {
-    const values = value[field];
-    if (!Array.isArray(values) || values.length === 0 || !values.every((item) => typeof item === "string" && item.length > 0)) {
-      return { ok: false, error: `capabilities ${field} must be a non-empty string array` };
-    }
-  }
-  for (const method of value.methods as string[]) {
-    if (!(CAPABILITY_METHODS as readonly string[]).includes(method)) {
-      return { ok: false, error: `unsupported capability method: ${method}` };
-    }
-  }
-  if (typeof value.signing_enabled !== "boolean") return { ok: false, error: "signing_enabled must be boolean" };
-  if (typeof value.requires_physical_approval !== "boolean") {
-    return { ok: false, error: "requires_physical_approval must be boolean" };
-  }
-  return { ok: true };
-}
-
-function validateSigningStatus(value: unknown): ValidationResult {
-  if (!isRecord(value)) return { ok: false, error: "signing_status must be an object" };
-  const extra = unknownFields(value, ["signing_enabled", "missing_gates", "development_accepted_gates"]);
-  if (extra.length > 0) return { ok: false, error: `signing_status contains unknown fields: ${extra.join(", ")}` };
-  if (typeof value.signing_enabled !== "boolean") return { ok: false, error: "signing_status signing_enabled must be boolean" };
-  const missingGates = validateSigningStatusGateList(value.missing_gates, "missing");
-  if (!missingGates.ok) return missingGates;
-  if (value.signing_enabled === true && Array.isArray(value.missing_gates) && value.missing_gates.length > 0) {
-    return { ok: false, error: "signing_status signing_enabled true requires empty missing_gates" };
-  }
-  if (value.signing_enabled === false && Array.isArray(value.missing_gates) && value.missing_gates.length === 0) {
-    return { ok: false, error: "signing_status signing_enabled false requires at least one missing gate" };
-  }
-  return validateSigningStatusGateList(value.development_accepted_gates, "development_accepted");
-}
-
-function validateSigningStatusGateList(value: unknown, label: string): ValidationResult {
-  if (!Array.isArray(value)) return { ok: false, error: `signing_status ${label}_gates must be an array` };
-  const seen = new Set<string>();
-  for (const gate of value) {
-    if (typeof gate !== "string" || !(SIGNING_STATUS_GATES as readonly string[]).includes(gate)) {
-      return { ok: false, error: `unsupported signing_status ${label} gate: ${String(gate)}` };
-    }
-    if (seen.has(gate)) return { ok: false, error: `duplicate signing_status ${label} gate: ${gate}` };
-    seen.add(gate);
-  }
-  return { ok: true };
+  try { validateReportedCapabilities(value); return { ok: true }; }
+  catch (error) { return { ok: false, error: error instanceof Error ? error.message : "invalid reported capabilities" }; }
 }
 
 export function validateResponse(value: unknown): ValidationResult {
   if (!isRecord(value)) return { ok: false, error: "response must be an object" };
+  try { readBoundedJson(JSON.stringify(value), 8192); }
+  catch (error) { return { ok: false, error: error instanceof Error ? error.message : "invalid response JSON" }; }
   const extra = unknownFields(value, ["version", "request_id", "ok", "result", "error"]);
   if (extra.length > 0) return { ok: false, error: `unknown top-level response fields: ${extra.join(", ")}` };
-  if (value.version !== 1) return { ok: false, error: "version must be 1" };
+  if (value.version !== 2) return { ok: false, error: "version must be 2" };
   if (!isRequestId(value.request_id)) return { ok: false, error: "request_id is invalid" };
   if (value.ok === false) {
     if ("result" in value) return { ok: false, error: "error response must not include result" };
     if (!isRecord(value.error)) return { ok: false, error: "error response requires error object" };
+    if (unknownFields(value.error, ["code", "message", "retryable"]).length) return { ok: false, error: "unknown error fields" };
     if (typeof value.error.code !== "string") return { ok: false, error: "error code is required" };
     if (typeof value.error.message !== "string" || value.error.message.length === 0) return { ok: false, error: "error message is required" };
     if (typeof value.error.retryable !== "boolean") return { ok: false, error: "error retryable flag is required" };
@@ -235,14 +176,13 @@ export function validateResponse(value: unknown): ValidationResult {
     if ("error" in value) return { ok: false, error: "successful response must not include error" };
     if (!isRecord(value.result)) return { ok: false, error: "successful response requires result" };
     const result = value.result;
-    const resultExtra = unknownFields(result, ["capabilities", "signing_status", "public_key", "event"]);
+    const resultExtra = unknownFields(result, ["capabilities", "public_key", "event"]);
     if (resultExtra.length > 0) return { ok: false, error: `successful response result contains unknown fields: ${resultExtra.join(", ")}` };
-    const resultFields = ["capabilities", "signing_status", "public_key", "event"].filter((field) => field in result);
+    const resultFields = ["capabilities", "public_key", "event"].filter((field) => field in result);
     if (resultFields.length !== 1) {
       return { ok: false, error: "successful response result must contain exactly one result field" };
     }
     if ("capabilities" in result) return validateCapabilities(result.capabilities);
-    if ("signing_status" in result) return validateSigningStatus(result.signing_status);
     if ("public_key" in result) {
       return isLowerHex(result.public_key, 64) ? { ok: true } : { ok: false, error: "public_key is invalid" };
     }
@@ -250,4 +190,21 @@ export function validateResponse(value: unknown): ValidationResult {
     return { ok: false, error: "successful response result is empty" };
   }
   return { ok: false, error: "ok must be true or false" };
+}
+
+/** Parse original request bytes before object validation loses duplicate/token evidence. */
+export function parseSigningRequest(input: string | Uint8Array): unknown {
+  const value = readBoundedJson(input, NSEALR_V0_LIMITS.max_decoded_request_json_bytes);
+  const result = validateRequest(value);
+  if (!result.ok) throw new Error(result.error);
+  return value;
+}
+
+/** Parse original response bytes under the applicable local byte ceiling. */
+export function parseSigningResponse(input: string | Uint8Array, maxBytes = 8192): unknown {
+  if (!Number.isSafeInteger(maxBytes) || maxBytes < 1 || maxBytes > 8192) throw new Error("invalid response byte ceiling");
+  const value = readBoundedJson(input, maxBytes);
+  const result = validateResponse(value);
+  if (!result.ok) throw new Error(result.error);
+  return value;
 }

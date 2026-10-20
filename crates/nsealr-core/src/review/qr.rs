@@ -1204,7 +1204,7 @@ mod tests {
     #[test]
     fn display_pages_escape_non_ascii_for_display_safety() {
         let request = parse(
-            "{\"version\":1,\"request_id\":\"req-unicode-display\",\"method\":\"sign_event\",\"params\":{\"event_template\":{\"created_at\":1710000300,\"kind\":1,\"tags\":[[\"t\",\"topic-\u{e8}\"],[\"emoji\",\"\u{1f600}\"]],\"content\":\"cafe \u{e8} \u{1f600}\"}}}",
+            "{\"version\":2,\"request_id\":\"req-unicode-display\",\"method\":\"sign_event\",\"params\":{\"event_template\":{\"created_at\":1710000300,\"kind\":1,\"tags\":[[\"t\",\"topic-\u{e8}\"],[\"emoji\",\"\u{1f600}\"]],\"content\":\"cafe \u{e8} \u{1f600}\"}}}",
         );
 
         let pages =
@@ -1223,7 +1223,7 @@ mod tests {
     #[test]
     fn display_pages_render_control_escapes_visibly() {
         let request = parse(
-            "{\"version\":1,\"request_id\":\"req-control-escapes-display\",\"method\":\"sign_event\",\"params\":{\"event_template\":{\"created_at\":1710000480,\"kind\":1,\"tags\":[[\"t\",\"line\\nbreak\"],[\"subject\",\"tab\\tvalue\",\"carriage\\rreturn\"]],\"content\":\"line 1\\nline 2\\tTabbed\\rCarriage\\bBackspace\\fFormfeed\"}}}",
+            "{\"version\":2,\"request_id\":\"req-control-escapes-display\",\"method\":\"sign_event\",\"params\":{\"event_template\":{\"created_at\":1710000480,\"kind\":1,\"tags\":[[\"t\",\"line\\nbreak\"],[\"subject\",\"tab\\tvalue\",\"carriage\\rreturn\"]],\"content\":\"line 1\\nline 2\\tTabbed\\rCarriage\\bBackspace\\fFormfeed\"}}}",
         );
 
         let pages =
@@ -1252,7 +1252,7 @@ mod tests {
     fn display_pages_preserve_supported_ascii_punctuation() {
         let content = "hello, nostr! #tag? @alice & key=value `code` ^caret";
         let request = parse(
-            "{\"version\":1,\"request_id\":\"req-ascii-punctuation-display\",\"method\":\"sign_event\",\"params\":{\"event_template\":{\"created_at\":1710000360,\"kind\":1,\"tags\":[[\"client\",\"nsealr/esp32-v0\"],[\"subject\",\"a+b=c?\"]],\"content\":\"hello, nostr! #tag? @alice & key=value `code` ^caret\"}}}",
+            "{\"version\":2,\"request_id\":\"req-ascii-punctuation-display\",\"method\":\"sign_event\",\"params\":{\"event_template\":{\"created_at\":1710000360,\"kind\":1,\"tags\":[[\"client\",\"nsealr/esp32-v0\"],[\"subject\",\"a+b=c?\"]],\"content\":\"hello, nostr! #tag? @alice & key=value `code` ^caret\"}}}",
         );
 
         let pages =
@@ -1279,7 +1279,7 @@ mod tests {
             long_content.push('x');
         }
         let mut json = String::from(
-            "{\"version\":1,\"request_id\":\"req-long-display\",\"method\":\"sign_event\",\"params\":{\"event_template\":{\"created_at\":1710000120,\"kind\":1,\"tags\":[],\"content\":\"",
+            "{\"version\":2,\"request_id\":\"req-long-display\",\"method\":\"sign_event\",\"params\":{\"event_template\":{\"created_at\":1710000120,\"kind\":1,\"tags\":[],\"content\":\"",
         );
         json.push_str(&long_content);
         json.push_str("\"}}}");
@@ -1313,7 +1313,7 @@ mod tests {
             long_content.push((b'a' + (index % 26) as u8) as char);
         }
         let mut json = String::from(
-            "{\"version\":1,\"request_id\":\"req-scroll-display\",\"method\":\"sign_event\",\"params\":{\"event_template\":{\"created_at\":1710000240,\"kind\":1,\"tags\":[[\"t\",\"tag0\"],[\"t\",\"tag1\"],[\"t\",\"tag2\"],[\"t\",\"tag3\"],[\"t\",\"tag4\"],[\"t\",\"tag5\"]],\"content\":\"",
+            "{\"version\":2,\"request_id\":\"req-scroll-display\",\"method\":\"sign_event\",\"params\":{\"event_template\":{\"created_at\":1710000240,\"kind\":1,\"tags\":[[\"t\",\"tag0\"],[\"t\",\"tag1\"],[\"t\",\"tag2\"],[\"t\",\"tag3\"],[\"t\",\"tag4\"],[\"t\",\"tag5\"]],\"content\":\"",
         );
         json.push_str(&long_content);
         json.push_str("\"}}}");
@@ -1400,7 +1400,7 @@ mod tests {
     #[test]
     fn signing_request_unicode_escapes_render_escaped_review_pages() {
         let request = parse(
-            "{\"version\":1,\"request_id\":\"req-unicode-escapes\",\"method\":\"sign_event\",\"params\":{\"event_template\":{\"created_at\":1710000400,\"kind\":1,\"tags\":[[\"t\",\"caf\\u00e8\"],[\"emoji\",\"\\uD83D\\uDE00\"]],\"content\":\"caf\\u00e8 \\uD83D\\uDE00\"}}}",
+            "{\"version\":2,\"request_id\":\"req-unicode-escapes\",\"method\":\"sign_event\",\"params\":{\"event_template\":{\"created_at\":1710000400,\"kind\":1,\"tags\":[[\"t\",\"caf\\u00e8\"],[\"emoji\",\"\\uD83D\\uDE00\"]],\"content\":\"caf\\u00e8 \\uD83D\\uDE00\"}}}",
         );
 
         // The parser half (asserted again here as the C++ case did).
@@ -1485,7 +1485,7 @@ mod tests {
 
         // Empty tags now reject at intake. A fabricated diagnostic preview
         // record still renders its explicit empty-tag fallback; it is not authority.
-        let invalid = "{\"version\":1,\"request_id\":\"r\",\"method\":\"sign_event\",\"params\":{\"event_template\":{\"created_at\":0,\"kind\":1,\"tags\":[[]],\"content\":\"x\"}}}";
+        let invalid = "{\"version\":2,\"request_id\":\"r\",\"method\":\"sign_event\",\"params\":{\"event_template\":{\"created_at\":0,\"kind\":1,\"tags\":[[]],\"content\":\"x\"}}}";
         assert!(parse_qr_signing_request(invalid.as_bytes()).is_err());
         let mut empty_tag_request = parse(&invalid.replace("[[]]", "[]"));
         empty_tag_request.event_template.tag_count = 1;
@@ -1504,7 +1504,7 @@ mod tests {
 
         // Empty content renders the "empty content" meta line.
         let empty_content_request = parse(
-            "{\"version\":1,\"request_id\":\"req-empty-content\",\"method\":\"sign_event\",\"params\":{\"event_template\":{\"created_at\":1710000520,\"kind\":1,\"tags\":[],\"content\":\"\"}}}",
+            "{\"version\":2,\"request_id\":\"req-empty-content\",\"method\":\"sign_event\",\"params\":{\"event_template\":{\"created_at\":1710000520,\"kind\":1,\"tags\":[],\"content\":\"\"}}}",
         );
         let display = build_qr_display_review_pages(
             &empty_content_request,
@@ -1528,7 +1528,7 @@ mod tests {
             "plain",
         ] {
             let mut json = String::from(
-                "{\"version\":1,\"request_id\":\"req-escape\",\"method\":\"sign_event\",\"params\":{\"event_template\":{\"created_at\":1710000540,\"kind\":1,\"tags\":[],\"content\":\"",
+                "{\"version\":2,\"request_id\":\"req-escape\",\"method\":\"sign_event\",\"params\":{\"event_template\":{\"created_at\":1710000540,\"kind\":1,\"tags\":[],\"content\":\"",
             );
             json.push_str(content);
             json.push_str("\"}}}");
@@ -1591,7 +1591,7 @@ mod tests {
             tags.push_str("[\"a\",\"b\",\"c\",\"d\",\"e\",\"f\",\"g\",\"h\"]");
         }
         let mut json = String::from(
-            "{\"version\":1,\"request_id\":\"req-too-many-pages\",\"method\":\"sign_event\",\"params\":{\"event_template\":{\"created_at\":1710000560,\"kind\":1,\"tags\":[",
+            "{\"version\":2,\"request_id\":\"req-too-many-pages\",\"method\":\"sign_event\",\"params\":{\"event_template\":{\"created_at\":1710000560,\"kind\":1,\"tags\":[",
         );
         json.push_str(&tags);
         json.push_str("],\"content\":\"x\"}}}");
@@ -1604,7 +1604,7 @@ mod tests {
         // A long content at a two-character compact width overflows inside the
         // Content section (its call-site error propagation).
         let mut long_json = String::from(
-            "{\"version\":1,\"request_id\":\"req-narrow-content\",\"method\":\"sign_event\",\"params\":{\"event_template\":{\"created_at\":1710000580,\"kind\":1,\"tags\":[],\"content\":\"",
+            "{\"version\":2,\"request_id\":\"req-narrow-content\",\"method\":\"sign_event\",\"params\":{\"event_template\":{\"created_at\":1710000580,\"kind\":1,\"tags\":[],\"content\":\"",
         );
         for _ in 0..300 {
             long_json.push('y');
@@ -1630,7 +1630,7 @@ mod tests {
         // lines on the single C++ Tags page) reports Capacity (no C++
         // analogue: unbounded vectors).
         let mut many_tags = String::from(
-            "{\"version\":1,\"request_id\":\"req-many-tags-summary\",\"method\":\"sign_event\",\"params\":{\"event_template\":{\"created_at\":1710000600,\"kind\":1,\"tags\":[",
+            "{\"version\":2,\"request_id\":\"req-many-tags-summary\",\"method\":\"sign_event\",\"params\":{\"event_template\":{\"created_at\":1710000600,\"kind\":1,\"tags\":[",
         );
         for index in 0..16 {
             if index > 0 {
@@ -1648,13 +1648,13 @@ mod tests {
         // Raw request bytes with invalid UTF-8 (only reachable outside the
         // envelope decode paths) now reject in the shared reader before review.
         let mut invalid_content = Vec::from(
-            &b"{\"version\":1,\"request_id\":\"req-bad-utf8\",\"method\":\"sign_event\",\"params\":{\"event_template\":{\"created_at\":1710000620,\"kind\":1,\"tags\":[],\"content\":\""[..],
+            &b"{\"version\":2,\"request_id\":\"req-bad-utf8\",\"method\":\"sign_event\",\"params\":{\"event_template\":{\"created_at\":1710000620,\"kind\":1,\"tags\":[],\"content\":\""[..],
         );
         invalid_content.push(0xff);
         invalid_content.extend_from_slice(b"\"}}}");
         assert!(parse_qr_signing_request(&invalid_content).is_err());
         let mut invalid_tag = Vec::from(
-            &b"{\"version\":1,\"request_id\":\"req-bad-utf8-tag\",\"method\":\"sign_event\",\"params\":{\"event_template\":{\"created_at\":1710000640,\"kind\":1,\"tags\":[[\"t\",\""[..],
+            &b"{\"version\":2,\"request_id\":\"req-bad-utf8-tag\",\"method\":\"sign_event\",\"params\":{\"event_template\":{\"created_at\":1710000640,\"kind\":1,\"tags\":[[\"t\",\""[..],
         );
         invalid_tag.push(0xfe);
         invalid_tag.extend_from_slice(b"\"]],\"content\":\"ok\"}}}");

@@ -699,7 +699,7 @@ pub fn parse_qr_signing_request(payload_json: &[u8]) -> Result<QrSigningRequest,
         .as_ref()
         .ok_or(QrEnvelopeError::RequestEventTemplateRequired)?;
     let mut request = QrSigningRequest {
-        version: 1,
+        version: 2,
         request_id: [0; MAX_REQUEST_ID_LENGTH],
         request_id_len: parsed.request_id().len(),
         has_params: true,
@@ -911,7 +911,7 @@ pub(crate) mod tests {
     fn qr_envelope_parses_sign_event_request_metadata() {
         let (_, json) = decode_static(KIND1_BASIC_ENVELOPE).unwrap();
         let request = parse_qr_signing_request(&json).unwrap();
-        assert_eq!(request.version, 1);
+        assert_eq!(request.version, 2);
         assert_eq!(
             request.request_id(),
             include_bytes!(concat!(
@@ -959,7 +959,7 @@ pub(crate) mod tests {
     // C++ test_qr_signing_request_tolerates_escaped_event_content.
     #[test]
     fn qr_signing_request_tolerates_escaped_event_content() {
-        let json = br#"{"version":1,"request_id":"req-kind-1-basic","method":"sign_event","params":{"event_template":{"created_at":1710000000,"kind":1,"tags":[],"content":"Quote: \"nostr\"\nNext line"}}}"#;
+        let json = br#"{"version":2,"request_id":"req-kind-1-basic","method":"sign_event","params":{"event_template":{"created_at":1710000000,"kind":1,"tags":[],"content":"Quote: \"nostr\"\nNext line"}}}"#;
         let request = parse_qr_signing_request(json).unwrap();
         assert!(request.has_event_template);
         assert_eq!(request.content(), b"Quote: \"nostr\"\nNext line");
@@ -978,7 +978,7 @@ pub(crate) mod tests {
         // The C++ fed a raw string, so the JSON carries the *escape sequences*
         // (backslash-u00e8, backslash-uD83D backslash-uDE00) literally; the
         // parser decodes them to UTF-8.
-        let json = br#"{"version":1,"request_id":"req-unicode-escapes","method":"sign_event","params":{"event_template":{"created_at":1710000400,"kind":1,"tags":[["t","caf\u00e8"],["emoji","\uD83D\uDE00"]],"content":"caf\u00e8 \uD83D\uDE00"}}}"#;
+        let json = br#"{"version":2,"request_id":"req-unicode-escapes","method":"sign_event","params":{"event_template":{"created_at":1710000400,"kind":1,"tags":[["t","caf\u00e8"],["emoji","\uD83D\uDE00"]],"content":"caf\u00e8 \uD83D\uDE00"}}}"#;
         let request = parse_qr_signing_request(json).unwrap();
         assert_eq!(request.content(), "caf\u{e8} \u{1f600}".as_bytes());
         assert_eq!(request.event_template.tag_count, 2);
@@ -1142,59 +1142,59 @@ pub(crate) mod tests {
                 QrEnvelopeError::RequestJsonMalformed,
             ),
             (
-                br#"{"version":1,"request_id":"bad id","method":"sign_event","params":{}}"#,
+                br#"{"version":2,"request_id":"bad id","method":"sign_event","params":{}}"#,
                 QrEnvelopeError::RequestJsonMalformed,
             ),
             (
-                br#"{"version":1,"request_id":"req-kind-1-basic","method":"get_public_key"}"#,
+                br#"{"version":2,"request_id":"req-kind-1-basic","method":"get_public_key"}"#,
                 QrEnvelopeError::RequestBadMethod,
             ),
             (
-                br#"{"version":1,"request_id":"req-kind-1-basic","method":"sign_event"}"#,
+                br#"{"version":2,"request_id":"req-kind-1-basic","method":"sign_event"}"#,
                 QrEnvelopeError::RequestJsonMalformed,
             ),
             (
-                br#"{"version":1,"request_id":"req-kind-1-basic","method":"sign_event","params":{}}"#,
+                br#"{"version":2,"request_id":"req-kind-1-basic","method":"sign_event","params":{}}"#,
                 QrEnvelopeError::RequestJsonMalformed,
             ),
             (
-                br#"{"version":1,"request_id":"req-kind-1-basic","method":"sign_event","params":{"event_template":[]}}"#,
+                br#"{"version":2,"request_id":"req-kind-1-basic","method":"sign_event","params":{"event_template":[]}}"#,
                 QrEnvelopeError::RequestJsonMalformed,
             ),
             (
-                br#"{"version":1,"request_id":"req-kind-1-basic","method":"sign_event","params":{"event_template":{"created_at":1710000000,"kind":1,"tags":[],"content":"","id":"00"}}}"#,
+                br#"{"version":2,"request_id":"req-kind-1-basic","method":"sign_event","params":{"event_template":{"created_at":1710000000,"kind":1,"tags":[],"content":"","id":"00"}}}"#,
                 QrEnvelopeError::RequestJsonMalformed,
             ),
             (
-                br#"{"version":1,"request_id":"req-kind-1-basic","method":"sign_event","params":{"event_template":{"created_at":1710000000,"kind":1,"tags":[],"content":"","pubkey":"00"}}}"#,
+                br#"{"version":2,"request_id":"req-kind-1-basic","method":"sign_event","params":{"event_template":{"created_at":1710000000,"kind":1,"tags":[],"content":"","pubkey":"00"}}}"#,
                 QrEnvelopeError::RequestJsonMalformed,
             ),
             (
-                br#"{"version":1,"request_id":"req-kind-1-basic","method":"sign_event","params":{"event_template":{"created_at":1710000000,"kind":1,"tags":[],"content":"","sig":"00"}}}"#,
+                br#"{"version":2,"request_id":"req-kind-1-basic","method":"sign_event","params":{"event_template":{"created_at":1710000000,"kind":1,"tags":[],"content":"","sig":"00"}}}"#,
                 QrEnvelopeError::RequestJsonMalformed,
             ),
             (
-                br#"{"version":1,"request_id":"req-kind-1-basic","method":"sign_event","params":{"event_template":{"kind":1,"tags":[],"content":""}}}"#,
+                br#"{"version":2,"request_id":"req-kind-1-basic","method":"sign_event","params":{"event_template":{"kind":1,"tags":[],"content":""}}}"#,
                 QrEnvelopeError::RequestJsonMalformed,
             ),
             (
-                br#"{"version":1,"request_id":"req-kind-1-basic","method":"sign_event","params":{"event_template":{"created_at":1710000000,"kind":"1","tags":[],"content":""}}}"#,
+                br#"{"version":2,"request_id":"req-kind-1-basic","method":"sign_event","params":{"event_template":{"created_at":1710000000,"kind":"1","tags":[],"content":""}}}"#,
                 QrEnvelopeError::RequestJsonMalformed,
             ),
             (
-                br#"{"version":1,"request_id":"req-kind-1-basic","method":"sign_event","params":{"event_template":{"created_at":1710000000,"kind":1,"tags":{},"content":""}}}"#,
+                br#"{"version":2,"request_id":"req-kind-1-basic","method":"sign_event","params":{"event_template":{"created_at":1710000000,"kind":1,"tags":{},"content":""}}}"#,
                 QrEnvelopeError::RequestJsonMalformed,
             ),
             (
-                br#"{"version":1,"request_id":"req-kind-1-basic","method":"sign_event","params":{"event_template":{"created_at":1710000000,"kind":1,"tags":[]}}}"#,
+                br#"{"version":2,"request_id":"req-kind-1-basic","method":"sign_event","params":{"event_template":{"created_at":1710000000,"kind":1,"tags":[]}}}"#,
                 QrEnvelopeError::RequestJsonMalformed,
             ),
             (
-                br#"{"version":1,"request_id":"req-invalid-unicode","method":"sign_event","params":{"event_template":{"created_at":1710000000,"kind":1,"tags":[],"content":"\uD83D"}}}"#,
+                br#"{"version":2,"request_id":"req-invalid-unicode","method":"sign_event","params":{"event_template":{"created_at":1710000000,"kind":1,"tags":[],"content":"\uD83D"}}}"#,
                 QrEnvelopeError::RequestJsonMalformed,
             ),
             (
-                br#"{"version":1,"request_id":"req-invalid-unicode","method":"sign_event","params":{"event_template":{"created_at":1710000000,"kind":1,"tags":[],"content":"\uDE00"}}}"#,
+                br#"{"version":2,"request_id":"req-invalid-unicode","method":"sign_event","params":{"event_template":{"created_at":1710000000,"kind":1,"tags":[],"content":"\uDE00"}}}"#,
                 QrEnvelopeError::RequestJsonMalformed,
             ),
         ];
@@ -1724,14 +1724,14 @@ pub(crate) mod tests {
     #[test]
     fn request_parser_tolerances() {
         // Whitespace everywhere; escape set \" \\ \/ \b \f \n \r \t in content.
-        let json = b" { \"version\" : 1 , \"request_id\" : \"req-ws\" , \"method\" : \"sign_event\" , \"params\" : { \"event_template\" : { \"created_at\" : 1 , \"kind\" : 0 , \"tags\" : [ ] , \"content\" : \"q\\\"b\\\\s\\/f\\bg\\fh\\nn\\rr\\tt\" } } } ";
+        let json = b" { \"version\" : 2 , \"request_id\" : \"req-ws\" , \"method\" : \"sign_event\" , \"params\" : { \"event_template\" : { \"created_at\" : 1 , \"kind\" : 0 , \"tags\" : [ ] , \"content\" : \"q\\\"b\\\\s\\/f\\bg\\fh\\nn\\rr\\tt\" } } } ";
         let request = parse_qr_signing_request(json).unwrap();
         assert_eq!(request.content(), b"q\"b\\s/f\x08g\x0ch\nn\rr\tt");
         assert_eq!(request.event_template.kind, 0);
 
         // Nested containers inside strings are data; a nested object inside content
         // passes untouched (C++ parse_simple_json_string semantics).
-        let json = br#"{"version":1,"request_id":"req-nested","method":"sign_event","params":{"event_template":{"created_at":1710000000,"kind":1,"tags":[["a","{[not json}"]],"content":"{\"nested\":[1,2,{}]}"}}}"#;
+        let json = br#"{"version":2,"request_id":"req-nested","method":"sign_event","params":{"event_template":{"created_at":1710000000,"kind":1,"tags":[["a","{[not json}"]],"content":"{\"nested\":[1,2,{}]}"}}}"#;
         let request = parse_qr_signing_request(json).unwrap();
         assert_eq!(request.event_template.tag_count, 1);
 
@@ -1745,7 +1745,7 @@ pub(crate) mod tests {
         // unknown-field check still fires.
         assert_eq!(
             parse_qr_signing_request(
-                br#"{"version":1,"request_id":"r","method":"sign_event","params":{},"extra":null}"#
+                br#"{"version":2,"request_id":"r","method":"sign_event","params":{},"extra":null}"#
             )
             .unwrap_err(),
             QrEnvelopeError::RequestJsonMalformed,
@@ -1754,7 +1754,7 @@ pub(crate) mod tests {
         // A key longer than any known member name is an unknown field (the
         // decoder rejects it at the known-key bound).
         assert_eq!(
-            parse_qr_signing_request(br#"{"version":1,"a_key_longer_than_any_known_member":1}"#)
+            parse_qr_signing_request(br#"{"version":2,"a_key_longer_than_any_known_member":1}"#)
                 .unwrap_err(),
             QrEnvelopeError::RequestJsonMalformed,
         );
@@ -1772,18 +1772,18 @@ pub(crate) mod tests {
         );
         assert_eq!(
             parse_qr_signing_request(
-                br#"{"version":1,"request_id":"r","method":"sign_event","params":"x"}"#
+                br#"{"version":2,"request_id":"r","method":"sign_event","params":"x"}"#
             )
             .unwrap_err(),
             QrEnvelopeError::RequestJsonMalformed,
         );
         assert_eq!(
-            parse_qr_signing_request(br#"{"version":1,"extra":"v"}"#).unwrap_err(),
+            parse_qr_signing_request(br#"{"version":2,"extra":"v"}"#).unwrap_err(),
             QrEnvelopeError::RequestJsonMalformed,
         );
         assert_eq!(
             parse_qr_signing_request(
-                br#"{"version":1,"request_id":"r","method":"sign_event","params":{"event_template":{"created_at":1,"kind":1,"tags":[],"content":"","extra":"v"}}}"#
+                br#"{"version":2,"request_id":"r","method":"sign_event","params":{"event_template":{"created_at":1,"kind":1,"tags":[],"content":"","extra":"v"}}}"#
             )
             .unwrap_err(),
             QrEnvelopeError::RequestJsonMalformed,
@@ -1792,7 +1792,7 @@ pub(crate) mod tests {
         // A method value longer than the comparison buffer is just a mismatch.
         assert_eq!(
             parse_qr_signing_request(
-                br#"{"version":1,"request_id":"r","method":"a_method_longer_than_the_buffer","params":{}}"#
+                br#"{"version":2,"request_id":"r","method":"a_method_longer_than_the_buffer","params":{}}"#
             )
             .unwrap_err(),
             QrEnvelopeError::RequestJsonMalformed,
@@ -1801,7 +1801,7 @@ pub(crate) mod tests {
         // params with an unknown member (event_template present too).
         assert_eq!(
             parse_qr_signing_request(
-                br#"{"version":1,"request_id":"r","method":"sign_event","params":{"event_template":{"created_at":1,"kind":1,"tags":[],"content":""},"other":1}}"#
+                br#"{"version":2,"request_id":"r","method":"sign_event","params":{"event_template":{"created_at":1,"kind":1,"tags":[],"content":""},"other":1}}"#
             )
             .unwrap_err(),
             QrEnvelopeError::RequestJsonMalformed,
@@ -1810,7 +1810,7 @@ pub(crate) mod tests {
         // event_template with an unknown (non-forbidden) member.
         assert_eq!(
             parse_qr_signing_request(
-                br#"{"version":1,"request_id":"r","method":"sign_event","params":{"event_template":{"created_at":1,"kind":1,"tags":[],"content":"","extra":1}}}"#
+                br#"{"version":2,"request_id":"r","method":"sign_event","params":{"event_template":{"created_at":1,"kind":1,"tags":[],"content":"","extra":1}}}"#
             )
             .unwrap_err(),
             QrEnvelopeError::RequestJsonMalformed,
@@ -1823,11 +1823,11 @@ pub(crate) mod tests {
             b"[]",                          // not an object
             b"",                            // empty
             b"{\"version\"1}",              // missing ':'
-            b"{\"version\":1 \"x\":2}",     // bad separator
+            b"{\"version\":2 \"x\":2}",     // bad separator
             b"{\"version\":}",              // missing value
             b"{\"version\":either}",        // bad literal
             b"{\"version\":-}",             // bad number
-            b"{\"version\":1}extra",        // trailing data
+            b"{\"version\":2}extra",        // trailing data
             b"{\"unterminated",             // unterminated key string
             b"{\"bad\\escape\":1}",         // invalid escape
             b"{\"trunc\\",                  // truncated escape
@@ -1835,7 +1835,7 @@ pub(crate) mod tests {
             b"{\"k\":{\"unterminated\":1}", // unterminated container
             b"{\"k\":[1",                   // unterminated array container
             b"{\"k\":",                     // value missing at end of input
-            b"{\"version\":1,\"request_id\":\"r\",\"method\":\"sign_event\",\"params\":{\"event_template\":{\"created_at\":18446744073709551616,\"kind\":1,\"tags\":[],\"content\":\"\"}}}", // u64 overflow
+            b"{\"version\":2,\"request_id\":\"r\",\"method\":\"sign_event\",\"params\":{\"event_template\":{\"created_at\":18446744073709551616,\"kind\":1,\"tags\":[],\"content\":\"\"}}}", // u64 overflow
         ];
         for (index, json) in cases.iter().enumerate() {
             assert!(
@@ -1849,32 +1849,32 @@ pub(crate) mod tests {
         // container skip only depth-checks, so the sub-parse reports it).
         assert_eq!(
             parse_qr_signing_request(
-                br#"{"version":1,"request_id":"\q","method":"sign_event","params":{}}"#
+                br#"{"version":2,"request_id":"\q","method":"sign_event","params":{}}"#
             )
             .unwrap_err(),
             QrEnvelopeError::RequestJsonMalformed,
         );
         assert_eq!(
             parse_qr_signing_request(
-                br#"{"version":1,"request_id":"r","method":"\q","params":{}}"#
+                br#"{"version":2,"request_id":"r","method":"\q","params":{}}"#
             )
             .unwrap_err(),
             QrEnvelopeError::RequestJsonMalformed,
         );
         assert_eq!(
-            parse_qr_signing_request(br#"{"version":1,"request_id":"r","method":"sign_event","params":{"event_template" 1}}"#)
+            parse_qr_signing_request(br#"{"version":2,"request_id":"r","method":"sign_event","params":{"event_template" 1}}"#)
                 .unwrap_err(),
             QrEnvelopeError::RequestJsonMalformed,
         );
         assert_eq!(
-            parse_qr_signing_request(br#"{"version":1,"request_id":"r","method":"sign_event","params":{"event_template":{"created_at" 1}}}"#)
+            parse_qr_signing_request(br#"{"version":2,"request_id":"r","method":"sign_event","params":{"event_template":{"created_at" 1}}}"#)
                 .unwrap_err(),
             QrEnvelopeError::RequestJsonMalformed,
         );
         // A bad literal as the content value: invisible to the outer container
         // skip (which only validates strings/depth), caught by the sub-parse.
         assert_eq!(
-            parse_qr_signing_request(br#"{"version":1,"request_id":"r","method":"sign_event","params":{"event_template":{"created_at":1,"kind":1,"tags":[],"content":nope}}}"#)
+            parse_qr_signing_request(br#"{"version":2,"request_id":"r","method":"sign_event","params":{"event_template":{"created_at":1,"kind":1,"tags":[],"content":nope}}}"#)
                 .unwrap_err(),
             QrEnvelopeError::RequestJsonMalformed,
         );
@@ -1882,14 +1882,14 @@ pub(crate) mod tests {
         // Tag element that is not an array, and a bad separator between fields.
         assert_eq!(
             parse_qr_signing_request(
-                br#"{"version":1,"request_id":"r","method":"sign_event","params":{"event_template":{"created_at":1,"kind":1,"tags":["x"],"content":""}}}"#
+                br#"{"version":2,"request_id":"r","method":"sign_event","params":{"event_template":{"created_at":1,"kind":1,"tags":["x"],"content":""}}}"#
             )
             .unwrap_err(),
             QrEnvelopeError::RequestJsonMalformed,
         );
         assert_eq!(
             parse_qr_signing_request(
-                br#"{"version":1,"request_id":"r","method":"sign_event","params":{"event_template":{"created_at":1,"kind":1,"tags":[["a" "b"]],"content":""}}}"#
+                br#"{"version":2,"request_id":"r","method":"sign_event","params":{"event_template":{"created_at":1,"kind":1,"tags":[["a" "b"]],"content":""}}}"#
             )
             .unwrap_err(),
             QrEnvelopeError::RequestJsonMalformed,
@@ -1897,7 +1897,7 @@ pub(crate) mod tests {
         // content that is not a string.
         assert_eq!(
             parse_qr_signing_request(
-                br#"{"version":1,"request_id":"r","method":"sign_event","params":{"event_template":{"created_at":1,"kind":1,"tags":[],"content":7}}}"#
+                br#"{"version":2,"request_id":"r","method":"sign_event","params":{"event_template":{"created_at":1,"kind":1,"tags":[],"content":7}}}"#
             )
             .unwrap_err(),
             QrEnvelopeError::RequestJsonMalformed,
@@ -1905,7 +1905,7 @@ pub(crate) mod tests {
         // kind fits u64 and MAX_SAFE_INTEGER but exceeds i32::MAX -> kind invalid.
         assert_eq!(
             parse_qr_signing_request(
-                br#"{"version":1,"request_id":"r","method":"sign_event","params":{"event_template":{"created_at":1,"kind":2147483648,"tags":[],"content":""}}}"#
+                br#"{"version":2,"request_id":"r","method":"sign_event","params":{"event_template":{"created_at":1,"kind":2147483648,"tags":[],"content":""}}}"#
             )
             .unwrap_err(),
             QrEnvelopeError::RequestJsonMalformed,
@@ -1914,7 +1914,7 @@ pub(crate) mod tests {
         // separator is invalid").
         assert_eq!(
             parse_qr_signing_request(
-                br#"{"version":1,"request_id":"r","method":"sign_event","params":{"event_template":{"created_at":1,"kind":1,"tags":[["a"];["b"]],"content":""}}}"#
+                br#"{"version":2,"request_id":"r","method":"sign_event","params":{"event_template":{"created_at":1,"kind":1,"tags":[["a"];["b"]],"content":""}}}"#
             )
             .unwrap_err(),
             QrEnvelopeError::RequestJsonMalformed,
@@ -1924,7 +1924,7 @@ pub(crate) mod tests {
     #[test]
     fn request_limit_rejections() {
         // request_id over MAX_REQUEST_ID_LENGTH.
-        let mut long_id = String::from(r#"{"version":1,"request_id":""#);
+        let mut long_id = String::from(r#"{"version":2,"request_id":""#);
         long_id.extend(core::iter::repeat_n('a', MAX_REQUEST_ID_LENGTH + 1));
         long_id.push_str(r#"","method":"sign_event","params":{}}"#);
         assert_eq!(
@@ -1934,7 +1934,7 @@ pub(crate) mod tests {
 
         // Request JSON over MAX_DECODED_REQUEST_JSON_BYTES (checked before parsing).
         let mut over = String::from(
-            r#"{"version":1,"request_id":"r","method":"sign_event","params":{"filler":""#,
+            r#"{"version":2,"request_id":"r","method":"sign_event","params":{"filler":""#,
         );
         over.extend(core::iter::repeat_n('x', MAX_DECODED_REQUEST_JSON_BYTES));
         over.push_str(r#""}}"#);
@@ -1946,7 +1946,7 @@ pub(crate) mod tests {
         // Tag fields per tag over the limit (9 fields).
         assert_eq!(
             parse_qr_signing_request(
-                br#"{"version":1,"request_id":"r","method":"sign_event","params":{"event_template":{"created_at":1,"kind":1,"tags":[["1","2","3","4","5","6","7","8","9"]],"content":""}}}"#
+                br#"{"version":2,"request_id":"r","method":"sign_event","params":{"event_template":{"created_at":1,"kind":1,"tags":[["1","2","3","4","5","6","7","8","9"]],"content":""}}}"#
             )
             .unwrap_err(),
             QrEnvelopeError::RequestJsonMalformed,
@@ -1960,7 +1960,7 @@ pub(crate) mod tests {
     #[test]
     fn content_over_limit_within_request_budget() {
         let mut json = String::from(
-            r#"{"version":1,"request_id":"r","method":"sign_event","params":{"event_template":{"created_at":1,"kind":1,"tags":[],"content":""#,
+            r#"{"version":2,"request_id":"r","method":"sign_event","params":{"event_template":{"created_at":1,"kind":1,"tags":[],"content":""#,
         );
         json.extend(core::iter::repeat_n('x', MAX_CONTENT_UTF8_BYTES + 1));
         json.push_str(r#""}}}"#);
@@ -2025,7 +2025,7 @@ pub(crate) mod tests {
     #[test]
     fn tag_field_limit_uses_decoded_bytes() {
         let mut json = String::from(
-            r#"{"version":1,"request_id":"r","method":"sign_event","params":{"event_template":{"created_at":1,"kind":1,"tags":[["t",""#,
+            r#"{"version":2,"request_id":"r","method":"sign_event","params":{"event_template":{"created_at":1,"kind":1,"tags":[["t",""#,
         );
         for _ in 0..33 {
             json.push_str("\\u00e8");

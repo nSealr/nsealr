@@ -412,7 +412,7 @@ mod tests {
         let alternate_identity = SignerIdentity {
             public_key: alternate_pubkey,
         };
-        let request_json = "{\"version\":1,\"request_id\":\"req-alt-author\",\"method\":\"sign_event\",\"params\":{\"event_template\":{\"created_at\":1710000000,\"kind\":1,\"tags\":[],\"content\":\"alternate author\"}}}";
+        let request_json = "{\"version\":2,\"request_id\":\"req-alt-author\",\"method\":\"sign_event\",\"params\":{\"event_template\":{\"created_at\":1710000000,\"kind\":1,\"tags\":[],\"content\":\"alternate author\"}}}";
 
         let default_review =
             build_serial_sign_event_trusted_review_request(request_json, dev()).unwrap();
@@ -464,7 +464,7 @@ mod tests {
             tags_json.push_str("000000000000\"]");
         }
         let mut request_json = String::from(
-            "{\"version\":1,\"request_id\":\"req-many-tags-nav\",\"method\":\"sign_event\",\"params\":{\"event_template\":{\"created_at\":1710000180,\"kind\":1,\"tags\":[",
+            "{\"version\":2,\"request_id\":\"req-many-tags-nav\",\"method\":\"sign_event\",\"params\":{\"event_template\":{\"created_at\":1710000180,\"kind\":1,\"tags\":[",
         );
         request_json.push_str(&tags_json);
         request_json.push_str("],\"content\":\"many tags navigation\"}}}");
