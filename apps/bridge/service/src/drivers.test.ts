@@ -196,7 +196,7 @@ describe("service route drivers", () => {
   });
 
   it("R-01/R-05: actual service and serial driver bind the selected account before open and again before write", async () => {
-    for (const stale of [false, true]) {
+    for (const stale of ["none", "generation", "geometry", "context", "pages"]) {
       const common = JSON.parse(readFileSync(resolve(specsRoot, "vectors/profile-capabilities/cases-v1.json"), "utf8"));
       const implementation = JSON.parse(readFileSync(resolve(specsRoot, common.implementation_examples.esp32_no_se), "utf8"));
       const adapter = structuredClone(implementation);
@@ -209,7 +209,10 @@ describe("service route drivers", () => {
       const dispatcher = createServiceRouteDispatcher(parseServiceRouteDriverStore(routeDriverStore()), {
         openSerialLinePort: async () => {
           opens++;
-          if (stale) snapshot.generation++;
+          if (stale === "generation") snapshot.generation++;
+          else if (stale === "geometry") snapshot.review_plan!.geometry_id = "changed.geometry";
+          else if (stale === "context") snapshot.review_plan!.context_id = "changed.context";
+          else if (stale === "pages") snapshot.review_plan!.pages++;
           return { writeLine: async (line) => { written.push(line); }, readLine: async () => encodeSerialFrame({ type: "response", payload: response }), close: async () => { closes++; } };
         }
       });
@@ -221,9 +224,9 @@ describe("service route drivers", () => {
         grants: [{ client_id: clientIdForIdentity(dispatchRequest.client), origin: dispatchRequest.client.origin, surface: dispatchRequest.client.surface, allowed_operations: ["dispatch_signer_request"] }],
         signerCompatibility: () => snapshot, signerDispatcher: dispatcher
       });
-      expect(result).toMatchObject({ ok: !stale });
+      expect(result).toMatchObject({ ok: stale === "none" });
       expect(opens).toBe(1); expect(closes).toBe(1);
-      expect(written).toEqual(stale ? [] : [encodeSerialFrame({ type: "request", payload: request })]);
+      expect(written).toEqual(stale === "none" ? [encodeSerialFrame({ type: "request", payload: request })] : []);
     }
   });
 

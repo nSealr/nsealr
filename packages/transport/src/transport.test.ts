@@ -36,6 +36,17 @@ const publicKeyVector = JSON.parse(
 const basicEventVector = JSON.parse(readFileSync(resolve(specsRoot, "vectors/events/kind-1-basic.json"), "utf8"));
 
 describe("transport adapters", () => {
+  it("L-04: cumulative tiny-line work is bounded and a failed connection cannot accumulate retries", async () => {
+    let reads = 0, writes = 0;
+    const transport = new SerialLineTransport({ maxIgnoredLines: 128, maxWorkBytes: 1024, responseTimeoutMs: 100,
+      port: { writeLine: async () => { writes++; }, readLine: async () => { reads++; return "x".repeat(100) + "\n"; } }
+    });
+    await expect(transport.exchange(capabilitiesRequest)).rejects.toThrow(/cumulative byte\/work/);
+    expect(reads).toBeLessThanOrEqual(11); expect(writes).toBe(1);
+    await expect(transport.exchange(capabilitiesRequest)).rejects.toThrow(/reopening/);
+    expect(writes).toBe(1);
+  });
+
   it("moves request and response JSON through files", async () => {
     const tempRoot = mkdtempSync(join(tmpdir(), "nsealr-file-"));
     const requestPath = join(tempRoot, "request.json");

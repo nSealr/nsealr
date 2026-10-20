@@ -86,7 +86,7 @@ import * as sdk from "@nsealr/sdk";
 import * as browser from "@nsealr/sdk/browser";
 import * as node from "@nsealr/sdk/node";
 const identity:sdk.client.LocalClientIdentity={surface:"browser_extension",origin:"https://example.com",app_name:"Types"};
-const request: sdk.core.SignEventRequest={version:1,request_id:"types",method:"sign_event",params:{event_template:{created_at:1,kind:1,tags:[],content:"types"}}};
+const request: sdk.core.SignEventRequest={version:2,request_id:"types",method:"sign_event",params:{event_template:{created_at:1,kind:1,tags:[],content:"types"}}};
 const provider:browser.browserProvider.Nip07Provider=browser.browserProvider.createNip07Provider({client:identity,backend:{getPublicKey:async()=>"1".repeat(64),signEventRequest:async()=>{throw new Error("no signer");}},nextRequestId:()=>request.request_id});
 void provider;void node.client.parseLocalGrantStore;void node.nip46.decideNip46BridgeAction;
 `);
