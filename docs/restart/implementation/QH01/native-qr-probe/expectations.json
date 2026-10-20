@@ -1,0 +1,79 @@
+{
+  "schema_version": 1,
+  "scope": "Host native geometry feasibility only, frozen before implementation/execution",
+  "source": "d41a37e25cd0a86d3a47294f8d0ba24913128a21",
+  "independent_derivation": "Python stdlib json compact order from fixed existing public source objects, base64.urlsafe_b64encode, unpadded prefix. No app QR encoder/render/decode under test used. Kind1request independently matches existing fixed transport vector envelope.",
+  "cases": [
+    {
+      "name": "request-get-public-key",
+      "source_commit": "d41a37e25cd0a86d3a47294f8d0ba24913128a21",
+      "source_path": "protocols/contracts/v1/examples/request-get-public-key.json",
+      "source_mode": "100644",
+      "source_blob": "6dda4d48f8df7acbf1d893ef4a58e4080edf3752",
+      "source_sha256": "8da4d8cba4b948304b938afe5d8d5e6b77909fd88fad14ccb69f67065520f4e0",
+      "compact_path": "docs/restart/implementation/QH01/native-qr-probe/expected/request-get-public-key.json",
+      "compact_bytes": 67,
+      "compact_sha256": "3a16e6a011331bf8e3e0fdfa1b89f7fab5a78e6219d8c4790bdc4ce93cf47e1f",
+      "envelope_path": "docs/restart/implementation/QH01/native-qr-probe/expected/request-get-public-key.envelope",
+      "envelope_bytes": 98,
+      "envelope_sha256": "106e9aa18d82b767fd7d6c4c073c1d80ba9c9c32e180654fc9c7776092496a37",
+      "expected": "Exact original envelope bytes returned from native decoder; no dictionary reserialization."
+    },
+    {
+      "name": "response-get-public-key",
+      "source_commit": "d41a37e25cd0a86d3a47294f8d0ba24913128a21",
+      "source_path": "protocols/contracts/v1/examples/response-get-public-key.json",
+      "source_mode": "100644",
+      "source_blob": "196bf0967066808bd97cf768bc3a5cba33b28b79",
+      "source_sha256": "ec333e4ec4cea4b889d12fd6b927870cc7096d5f553685584fd91f866c97190c",
+      "compact_path": "docs/restart/implementation/QH01/native-qr-probe/expected/response-get-public-key.json",
+      "compact_bytes": 142,
+      "compact_sha256": "e19cd860ef075a4aa90f39b9add99503f50e8ca4fc38871388f6970479d38dff",
+      "envelope_path": "docs/restart/implementation/QH01/native-qr-probe/expected/response-get-public-key.envelope",
+      "envelope_bytes": 198,
+      "envelope_sha256": "dae39f12a7744d3c82e2d3e1050b02948a3b72612e5835c237054dabc3d8f3cf",
+      "expected": "Exact original envelope bytes returned from native decoder; no dictionary reserialization."
+    },
+    {
+      "name": "request-kind-1-basic",
+      "source_commit": "d41a37e25cd0a86d3a47294f8d0ba24913128a21",
+      "source_path": "protocols/contracts/v1/examples/request-kind-1-basic.json",
+      "source_mode": "100644",
+      "source_blob": "c0132d9b7701ee3a962b455558b73021958f68e0",
+      "source_sha256": "f569e5b2f5bc0a3aa8586cba4b8afdeb96a0b93353e8d44212897fbc388c8377",
+      "compact_path": "docs/restart/implementation/QH01/native-qr-probe/expected/request-kind-1-basic.json",
+      "compact_bytes": 188,
+      "compact_sha256": "8a1009c875dbaaf43998b08cdc1e4edb174372374b66d2d84e672b37fa39c231",
+      "envelope_path": "docs/restart/implementation/QH01/native-qr-probe/expected/request-kind-1-basic.envelope",
+      "envelope_bytes": 259,
+      "envelope_sha256": "88a16190a1b1ed033fc9bebe5452af70e9a9783fd6b92305add2ac7134039ff7",
+      "expected": "Exact original envelope bytes returned from native decoder; no dictionary reserialization."
+    },
+    {
+      "name": "response-kind-1-basic",
+      "source_commit": "d41a37e25cd0a86d3a47294f8d0ba24913128a21",
+      "source_path": "protocols/contracts/v1/examples/response-kind-1-basic.json",
+      "source_mode": "100644",
+      "source_blob": "4054e7953122df6754c032e6a487e3592d468a89",
+      "source_sha256": "3a398947e46c715a6ceaaeaa7198455ac840727c7f0f78dd079a1de8742350a1",
+      "compact_path": "docs/restart/implementation/QH01/native-qr-probe/expected/response-kind-1-basic.json",
+      "compact_bytes": 452,
+      "compact_sha256": "26c599bfc28d515e6cdedcf09347556b97de283029ef4086dc62eb513287f191",
+      "envelope_path": "docs/restart/implementation/QH01/native-qr-probe/expected/response-kind-1-basic.envelope",
+      "envelope_bytes": 611,
+      "envelope_sha256": "f27dbe54785a9510e43f05d27dbb67c488c77def150e0110d51264762cdeec1b",
+      "expected": "Exact original envelope bytes returned from native decoder; no dictionary reserialization."
+    }
+  ],
+  "fixed_configuration": {
+    "width": 240,
+    "height": 240,
+    "renderer": "Existing PythonQrcodeMatrixRenderer, default border0 and default library ECC; no ECC/cap modifications",
+    "presenter": "Existing PillowSt7789DrawTarget + SeedSignerSt7789ResponseQrDisplay, default quiet zone4; actual framebuffer callback saves host PNG instead of physical SPI",
+    "decoder": "Existing PyzbarQrDecoder with real pyzbar/nativeZBar; compare bytes, not parsed/reencoded dictionary",
+    "negative": "One blank240x240RGB Pillow framebuffer must decodeNone"
+  },
+  "success_condition": "Exactly four fixed public image byte-roundtrips plus blank negative OR reproducible native/geometry blocker; any decode/fit failure is preserved, no threshold/ECC retuning.",
+  "excluded": "No camera/ARM/Pi/display/optical readability/realclientdeadline/nativehostileinputbounds/framingfreeze/key/custody/provider/physical/QH/QPcompletion",
+  "before_execution": true
+}

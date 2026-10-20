@@ -1,0 +1,45 @@
+{
+  "execution_source": "426eb1fd0d9cacb9743db16c85e156d96da418eb",
+  "observations": "execution-01/observations.json",
+  "isolated_native_packages_loaded": [
+    {
+      "package": "libzbar0t64",
+      "version": "0.23.93-8",
+      "archive_sha256": "9772d577f18473c0bed698e2d68dc4ae98668c3fe38cfb70598b6fab181df26f",
+      "archive_origin": "https://deb.debian.org/debian/pool/main/z/zbar/libzbar0t64_0.23.93-8_amd64.deb",
+      "actual_loaded_ELF": {
+        "path": "/home/tux/nsealr/.restart-tools/goal/qh01-native-qr-probe/docs/restart/implementation/QH01/native-qr-probe/.runtime/native/usr/lib/x86_64-linux-gnu/libzbar.so.0.3.0",
+        "bytes": 260208,
+        "sha256": "3e58162a44b7b7b8c113b353275a4a71ca8b19f4ea20f7258cc269ed43fe380d"
+      },
+      "evidence": "Actual executed probe /proc/self/maps after real decode, not only find_library or ldd."
+    },
+    {
+      "package": "libv4l-0t64",
+      "version": "1.30.1-1",
+      "archive_sha256": "840ea0cf83afe4737311e6fb65783b65113f31974e7fd2f439ad1e9c33662b13",
+      "archive_origin": "https://deb.debian.org/debian/pool/main/v/v4l-utils/libv4l-0t64_1.30.1-1_amd64.deb",
+      "actual_loaded_ELF": {
+        "path": "/home/tux/nsealr/.restart-tools/goal/qh01-native-qr-probe/docs/restart/implementation/QH01/native-qr-probe/.runtime/native/usr/lib/x86_64-linux-gnu/libv4l2.so.0.0.0",
+        "bytes": 59720,
+        "sha256": "e3d3d1668a9da62748beda7afe240bd032e0c720f4fbe1b99e05805175b39c7f"
+      },
+      "evidence": "Actual executed probe /proc/self/maps after real decode, not only find_library or ldd."
+    },
+    {
+      "package": "libv4lconvert0t64",
+      "version": "1.30.1-1",
+      "archive_sha256": "187cec8d6436246ad129089389e7d3e6babce1a5fb6ce0dbcfb6766629e836a1",
+      "archive_origin": "https://deb.debian.org/debian/pool/main/v/v4l-utils/libv4lconvert0t64_1.30.1-1_amd64.deb",
+      "actual_loaded_ELF": {
+        "path": "/home/tux/nsealr/.restart-tools/goal/qh01-native-qr-probe/docs/restart/implementation/QH01/native-qr-probe/.runtime/native/usr/lib/x86_64-linux-gnu/libv4lconvert.so.0.0.0",
+        "bytes": 170280,
+        "sha256": "44039959ab51593d1f1b0b672a2844ccd880cdeb50344b856a43c7a0de01f24d"
+      },
+      "evidence": "Actual executed probe /proc/self/maps after real decode, not only find_library or ldd."
+    }
+  ],
+  "all_loaded_ELF_file_hashes": "execution-01/observations.json.loaded_ELF_files (32 actual files)",
+  "resolved_dependency_observation": "setup/native-linkage-local.stdout.log and process maps; earlier setup/native-linkage.stdout.log precedes local LD_LIBRARY_PATH and is explicitly not readiness proof.",
+  "scope": "Exact amd64 binary/package identity on host; no proof of reproducible native build, ARM/Pi compatibility or decoder safety."
+}

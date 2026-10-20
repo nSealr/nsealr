@@ -57,7 +57,7 @@ integrity/parser checks and framing. Root's
 task remains planned. The shared delivery wrapper distinguishes this runtime correction from QP01 preparation;
 it does not admit a complete Bridge optical/client workflow or physical release.
 
-The next [manual QR service component](QH01/delivery/README.md) copies B01's
+The [manual QR service component](QH01/delivery/README.md) copies B01's
 exact138276c9 packet onto actuald41, retaining preparation input2da as a
 separate identical-tree source. Runtime7d1/package/lock are unchanged; final
 testac8 supplies actual dispatcher-entry/recovery proof after the old invalid
@@ -66,10 +66,27 @@ all failed logs remain. Root's [original runtime review](reviews/QH01-manual-por
 atbfc6 and [affected test/proof reviews](reviews/QH01-manual-port-test-correction/packet-review.json)
 at1c7 retain separate source roles. The injected port uses the existing client
 lifecycle, with two new TypeScript files and two workspace links only. Exact
-final metadata/protected adoption gates remain pending.
+final metadata review and normal protected PR42/full PR CI39496534498 passed.
+[Root accepted actual main0985](reviews/QH01-current-delivery/adoption/actual-main-acceptance.json)
+after full actual-main CI39498445243/check118889477515 and fresh main-only
+source checks. The original proposal and dated pending receipts remain historical.
 It enables no default route/readiness or key/provider path. All five QH01
 criteria remain incomplete; native/physical scan/display, real-client timing,
 framing/UR and the actual Pi/P4 resource gates remain open.
+
+The [native QR evidence delivery](QH01/native-qr-delivery/README.md) preserves
+exact author13949e4e and distinct root89280721 proof. There was one author and
+one root native execution: four fixed public240x240 framebuffer/PNG roundtrips
+and a white blank,32matching loadedELFs and14byte-identical output assets.
+Original base d41/executed probe426eb retain their roles; five input bindings
+match0985, which is source correspondence rather than another measurement.
+The unchanged default ECC_M/quietzone4 and observed4/3/3/2pixel scaling do not
+select a threshold or framing. No native hostile-image memory/work/latency,
+camera/ARM/Pi/optical/physical qualification follows. All5QH01/3QP01/6Q02
+criteria stay incomplete and QP01 preparation remains unchanged. Only final
+stable metadata gates run for this delivery, pending distinct root source/metadata
+review and later protected integration. Separate decoder-decision research is
+outside this packet and does not block its review.
 
 The sole task authority is [plan/work-items.json](../../../plan/work-items.json).
 Use existing commands, targeted source reads, one CI observer and applicable

@@ -1,0 +1,108 @@
+[
+  {
+    "label": "venv",
+    "argv": [
+      "/home/tux/nsealr/.restart-tools/goal/r00/tools/baseline/.work/final/.tools/python/bin/python3",
+      "-m",
+      "venv",
+      "/home/tux/nsealr/.restart-tools/goal/qh01-native-qr-probe/docs/restart/implementation/QH01/native-qr-probe/.venv"
+    ],
+    "cwd": "/home/tux/nsealr/.restart-tools/goal/qh01-native-qr-probe",
+    "exit": 0,
+    "elapsed_seconds": 0.998,
+    "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "label": "native-download",
+    "argv": [
+      "apt-get",
+      "download",
+      "libzbar0t64=0.23.93-8",
+      "libv4l-0t64=1.30.1-1",
+      "libv4lconvert0t64=1.30.1-1"
+    ],
+    "cwd": "/home/tux/nsealr/.restart-tools/goal/qh01-native-qr-probe/docs/restart/implementation/QH01/native-qr-probe/.runtime/debs",
+    "exit": 0,
+    "elapsed_seconds": 0.215,
+    "stdout_sha256": "603c548d79e40fb68abf336818a46e3588c5f77521605a00195dd256a5523355",
+    "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "label": "extract-libv4l-0t64",
+    "argv": [
+      "dpkg-deb",
+      "-x",
+      "/home/tux/nsealr/.restart-tools/goal/qh01-native-qr-probe/docs/restart/implementation/QH01/native-qr-probe/.runtime/debs/libv4l-0t64_1.30.1-1_amd64.deb",
+      "/home/tux/nsealr/.restart-tools/goal/qh01-native-qr-probe/docs/restart/implementation/QH01/native-qr-probe/.runtime/native"
+    ],
+    "cwd": "/home/tux/nsealr/.restart-tools/goal/qh01-native-qr-probe",
+    "exit": 0,
+    "elapsed_seconds": 0.004,
+    "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "label": "extract-libv4lconvert0t64",
+    "argv": [
+      "dpkg-deb",
+      "-x",
+      "/home/tux/nsealr/.restart-tools/goal/qh01-native-qr-probe/docs/restart/implementation/QH01/native-qr-probe/.runtime/debs/libv4lconvert0t64_1.30.1-1_amd64.deb",
+      "/home/tux/nsealr/.restart-tools/goal/qh01-native-qr-probe/docs/restart/implementation/QH01/native-qr-probe/.runtime/native"
+    ],
+    "cwd": "/home/tux/nsealr/.restart-tools/goal/qh01-native-qr-probe",
+    "exit": 0,
+    "elapsed_seconds": 0.005,
+    "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "label": "extract-libzbar0t64",
+    "argv": [
+      "dpkg-deb",
+      "-x",
+      "/home/tux/nsealr/.restart-tools/goal/qh01-native-qr-probe/docs/restart/implementation/QH01/native-qr-probe/.runtime/debs/libzbar0t64_0.23.93-8_amd64.deb",
+      "/home/tux/nsealr/.restart-tools/goal/qh01-native-qr-probe/docs/restart/implementation/QH01/native-qr-probe/.runtime/native"
+    ],
+    "cwd": "/home/tux/nsealr/.restart-tools/goal/qh01-native-qr-probe",
+    "exit": 0,
+    "elapsed_seconds": 0.005,
+    "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "label": "install-isolated",
+    "argv": [
+      "/home/tux/nsealr/.restart-tools/goal/qh01-native-qr-probe/docs/restart/implementation/QH01/native-qr-probe/.venv/bin/python",
+      "-m",
+      "pip",
+      "install",
+      "--no-index",
+      "--no-deps",
+      "/home/tux/nsealr/.restart-tools/goal/qh01-native-qr-probe/docs/restart/implementation/QH01/native-qr-probe/.runtime/wheels/qrcode-8.2-py3-none-any.whl",
+      "/home/tux/nsealr/.restart-tools/goal/qh01-native-qr-probe/docs/restart/implementation/QH01/native-qr-probe/.runtime/wheels/pillow-11.1.0-cp312-cp312-manylinux_2_28_x86_64.whl",
+      "/home/tux/nsealr/.restart-tools/goal/qh01-native-qr-probe/docs/restart/implementation/QH01/native-qr-probe/.runtime/wheels/pyzbar-0.1.9-py2.py3-none-any.whl",
+      "/home/tux/nsealr/.restart-tools/goal/r00/tools/baseline/.work/final/.tools/wheels/mnemonic-0.21-py3-none-any.whl",
+      "/home/tux/nsealr/.restart-tools/goal/r00/tools/baseline/.work/final/.tools/wheels/secp256k1-0.14.0-cp312-cp312-manylinux_2_17_x86_64.manylinux2014_x86_64.whl",
+      "/home/tux/nsealr/.restart-tools/goal/r00/tools/baseline/.work/final/.tools/wheels/cffi-2.1.1-cp312-cp312-manylinux2014_x86_64.manylinux_2_17_x86_64.whl",
+      "/home/tux/nsealr/.restart-tools/goal/r00/tools/baseline/.work/final/.tools/wheels/pycparser-3.11-py3-none-any.whl"
+    ],
+    "cwd": "/home/tux/nsealr/.restart-tools/goal/qh01-native-qr-probe",
+    "exit": 0,
+    "elapsed_seconds": 0.511,
+    "stdout_sha256": "ae3ae104934a77a8e4b7bb83bed87f1c0d22a198e0e9b2cb3fac7385ce99d243",
+    "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "label": "native-linkage",
+    "argv": [
+      "ldd",
+      "/home/tux/nsealr/.restart-tools/goal/qh01-native-qr-probe/docs/restart/implementation/QH01/native-qr-probe/.runtime/native/usr/lib/x86_64-linux-gnu/libzbar.so.0"
+    ],
+    "cwd": "/home/tux/nsealr/.restart-tools/goal/qh01-native-qr-probe",
+    "exit": 0,
+    "elapsed_seconds": 0.006,
+    "stdout_sha256": "9f961be8e21f095972749503d8e4435f08ca41a2e5b5af52f89e20681cb15bcc",
+    "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  }
+]
