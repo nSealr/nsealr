@@ -21,11 +21,11 @@ No device UI/input, entropy, isolation, timing, erasure or release is qualified.
 
 T01's [source and delivery](T01/delivery/README.md) now bind the reviewed version2
 capability/routing cutover, decoded QR/serial projections and independent fixed
-inputs. Its integrated graph record is an adoption proposal until normal
-protected integration, actual resulting-main full CI and clean cold-main source
-checks pass. Confirm those external observations before admitting K01 runtime.
-Then reconcile K01's already reviewed specification against that actual API and
-implement its bounded portable signing provider. Preserve independent event
+inputs. [Root accepted actual T01 main7f](reviews/T01-final-delivery/adoption/actual-main-acceptance.json)
+after normal protected PR37, full resulting-main CI and clean main-only source
+checks. K01's already reviewed specification was reconciled once to that API;
+its existing owner now has a separate bounded implementation admission and
+issue38, recorded in the graph. K01 remains incomplete. Preserve independent event
 vectors and all retained rejection obligations. Custom-PCB
 research stays independent. The maintainer reports three test kits and Tropic
 development boards in the existing resource records; exact variants, components,
@@ -41,7 +41,7 @@ proposals are not active instructions or another task tracker.
 
 ## Recover the actual state
 
-Q01's [documentary delivery](Q01/delivery/brief.md) pairs the unchanged offline requirements with their distinct specification review. Its Q01 checkpoint is review-only; it does not complete Q01, admit runtime, select framing or qualify either Pi/P4 kit. Its source is reconciled once to actual T01 merge7f; wait for root's actual resulting-main/source PASS before downstream admission.
+Q01's [documentary closure proposal](Q01/delivery/closure/handoff.md) preserves the original requirements/specification review and the separately accepted exact delivery source05a. T01 main7f is now accepted. Q01's integrated graph state is only a branch adoption proposal pending exact final metadata review, normal protected PR and actual resulting-main gates. It does not admit runtime, select framing or qualify either Pi/P4 kit. The separate factual K01 assignment is not a Q01 runtime or physical result.
 
 1. Read the repository `AGENTS.md`, `docs/restart/README.md`, `execution.md` and the task in `plan/work-items.json`.
 2. Run `git status --short`, `git log -5 --oneline`, `git worktree list` and `python3 scripts/validate_restart_plan.py`. Check remote branch and PR heads before assuming a local candidate is current.

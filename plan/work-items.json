@@ -9576,7 +9576,7 @@
       "id": "K01",
       "title": "Implement the portable Nostr signing engine",
       "stage": "portfolio_v2",
-      "status": "planned",
+      "status": "running",
       "owner_role": "device_security",
       "depends_on": [
         "S02",
@@ -9603,12 +9603,33 @@
         "independent security review"
       ],
       "required_resources": [],
-      "assignee": null,
-      "candidate_commits": {},
+      "assignee": "/root/b01_final_review",
+      "candidate_commits": {
+        "nSealr/nsealr": "a64a2090d317b1ad07b6293c9f9211b2a1371c0f"
+      },
       "reviewer": null,
       "review_verdict": null,
       "result_artifacts": [],
-      "requires_physical_evidence": false
+      "requires_physical_evidence": false,
+      "input_commits": {
+        "nSealr/nsealr": "7f00138902526a63dc590ad4cd09dc40ab9b9700"
+      },
+      "assignment_record": "https://github.com/nSealr/nsealr/issues/38",
+      "github_issue": "https://github.com/nSealr/nsealr/issues/38",
+      "current_checkpoint": {
+        "state": "BOUNDED_IMPLEMENTATION_ASSIGNED_INCOMPLETE",
+        "root_admission": {
+          "repository": "nSealr/nsealr",
+          "commit": "939da2f3e6eeba925426e8acdd124c4914093eb3",
+          "source_path": "docs/restart/implementation/reviews/K01-admission/admission.json",
+          "sha256": "8e505d5e0b70793980c5f743e98b79d824772d2d8fdd9787c0ee57dec4cf8bb5",
+          "source_url": "https://github.com/nSealr/nsealr/blob/939da2f3e6eeba925426e8acdd124c4914093eb3/docs/restart/implementation/reviews/K01-admission/admission.json"
+        },
+        "owner_branch": "implementation/k01-engine",
+        "owner_worktree": "/home/tux/nsealr/.restart-tools/goal/k01-current-implementation",
+        "starting_checkpoint": "a64a2090d317b1ad07b6293c9f9211b2a1371c0f",
+        "meaning": "Factual bounded implementation assignment; incomplete. Starting checkpoint is not an acceptance candidate, no current runtime behavior/result/review or physical/resource claim. B01 exclusively owns implementation; root controls final review and hosted delivery."
+      }
     },
     {
       "id": "D01",
@@ -9735,7 +9756,7 @@
       "id": "Q01",
       "title": "Define shared offline custody and transport requirements",
       "stage": "portfolio_v2",
-      "status": "review",
+      "status": "integrated",
       "owner_role": "hardware_firmware",
       "depends_on": [
         "P01",
@@ -9758,18 +9779,74 @@
       "required_resources": [],
       "assignee": "/root/a02_sol",
       "candidate_commits": {
-        "nSealr/nsealr": "5d8eef3302a2def61bc646a313e321087cf95e0a"
+        "nSealr/nsealr": "05a1b4c8e7e0cab9fa4c08e3358cc3ef72d97896"
       },
       "reviewer": "/root",
-      "review_verdict": null,
+      "review_verdict": "pass",
       "result_artifacts": [
+        {
+          "path": "docs/restart/implementation/Q01/acceptance-plan.json",
+          "sha256": "6102cec4d1ade71471bcfe4d0ad9b45b6cb9f0e0b92d44b7df1827997929c7b5"
+        },
         {
           "path": "docs/restart/implementation/Q01/brief.md",
           "sha256": "727c1fbca3f2695b1fea0b1fccebf5693acc7aa9b2afaf67414e35a476d174f7"
         },
         {
-          "path": "docs/restart/implementation/Q01/acceptance-plan.json",
-          "sha256": "6102cec4d1ade71471bcfe4d0ad9b45b6cb9f0e0b92d44b7df1827997929c7b5"
+          "path": "docs/restart/implementation/Q01/delivery/brief.md",
+          "sha256": "070ee4110573baeb97c8600344b3fe51caa32f1783415098208fba527443bbe5"
+        },
+        {
+          "path": "docs/restart/implementation/Q01/delivery/check-context.json",
+          "sha256": "f03ac327a26cf444c9b3549d800ad30377ebcf1a7bd29b2d0d1a4be71c821b31"
+        },
+        {
+          "path": "docs/restart/implementation/Q01/delivery/checks/00-q01-docs-root-checks.log",
+          "sha256": "7e018e1df36355c618ace669eec40591c5bec42343bc584dfd353d6f1fb3f709"
+        },
+        {
+          "path": "docs/restart/implementation/Q01/delivery/checks/commands.json",
+          "sha256": "3d68c99cdf444eace067189ac0bdace8a32d30e7d3ea6fc7d47c297eaac501e2"
+        },
+        {
+          "path": "docs/restart/implementation/Q01/delivery/checks-reconciled/00-q01-reconciled-docs.log",
+          "sha256": "889ff61d789f158b6c9b8bc98058eb40d323ab15a57fecde4e7d0f380bee1ad0"
+        },
+        {
+          "path": "docs/restart/implementation/Q01/delivery/checks-reconciled/01-q01-reconciled-plan.log",
+          "sha256": "21adfe4ea073c5a208ed9510ca871239a593aad95c7cdda92dbb7903b140bfc5"
+        },
+        {
+          "path": "docs/restart/implementation/Q01/delivery/checks-reconciled/02-q01-reconciled-frozen-evidence.log",
+          "sha256": "c4dad79f5c61ca9f1c30e50c1372b1c8093752cc29a64aaca839ce6384eb49b9"
+        },
+        {
+          "path": "docs/restart/implementation/Q01/delivery/checks-reconciled/commands.json",
+          "sha256": "c380d59df99fc1de2967df19f256d6cb71c019a1a7ecae0f52d3b272f06ae590"
+        },
+        {
+          "path": "docs/restart/implementation/Q01/delivery/checks-whitespace/00-full-raw-diff.log",
+          "sha256": "27d2c2d8cfab5877b74e420776b62ec312b733ef2eeef7f4f1667249c2967cee"
+        },
+        {
+          "path": "docs/restart/implementation/Q01/delivery/checks-whitespace/01-metadata-excluding-rawlogs.log",
+          "sha256": "8e8856e77a02780b4e83038849bb12bcb2e7f88fc4d3191208d308266f980443"
+        },
+        {
+          "path": "docs/restart/implementation/Q01/delivery/checks-whitespace/commands.json",
+          "sha256": "61f7ad6506e0aabe41fb898f8e6659b0246bccfdafc8a7edb433c5aa1f2a6162"
+        },
+        {
+          "path": "docs/restart/implementation/Q01/delivery/result.json",
+          "sha256": "ebca78062134fa018d5f7917ffcf43278a5f9128077d520fde573c30349b13ec"
+        },
+        {
+          "path": "docs/restart/implementation/Q01/delivery/source-copy-map.json",
+          "sha256": "3c7ad2cd313547a27ce2b6ddc1d8ef04baecb2499c2b1c66bfa07a80bc9b58e7"
+        },
+        {
+          "path": "docs/restart/implementation/Q01/delivery/validation.json",
+          "sha256": "f51427598700c9f46ad547bdb24a140036d5c49b218ef7bf6bf0f3d489e2c0f5"
         },
         {
           "path": "docs/restart/implementation/reviews/Q01-specification/report.md",
@@ -9780,16 +9857,92 @@
           "sha256": "1eb4ec4ce9d4a6113b9814f7ac9713ca56d03caf66f4c5fea971c06208ba3e66"
         },
         {
-          "path": "docs/restart/implementation/Q01/delivery/brief.md",
-          "sha256": "070ee4110573baeb97c8600344b3fe51caa32f1783415098208fba527443bbe5"
+          "path": "docs/restart/implementation/Q01/delivery/checks-metadata-01/00-q01-verdict-docs.log",
+          "sha256": "0b25578012f49961489fb570a141d4e2fe3d4b6882374bc66ba0747c724c7e02"
         },
         {
-          "path": "docs/restart/implementation/Q01/delivery/source-copy-map.json",
-          "sha256": "3c7ad2cd313547a27ce2b6ddc1d8ef04baecb2499c2b1c66bfa07a80bc9b58e7"
+          "path": "docs/restart/implementation/Q01/delivery/checks-metadata-01/01-q01-verdict-plan.log",
+          "sha256": "b5b628197db17c5aee85e878ad649963eefad9fb0f097e6dc65795ea3332c88e"
         },
         {
-          "path": "docs/restart/implementation/Q01/delivery/result.json",
-          "sha256": "ebca78062134fa018d5f7917ffcf43278a5f9128077d520fde573c30349b13ec"
+          "path": "docs/restart/implementation/Q01/delivery/checks-metadata-01/02-q01-verdict-metadata-whitespace.log",
+          "sha256": "4ab126372477e408bd5e18ffc0bed06adcc6ae3134e0154d5f378ea8f7ac241b"
+        },
+        {
+          "path": "docs/restart/implementation/Q01/delivery/checks-metadata-01/commands.json",
+          "sha256": "c95a3cf01d939aed71526131eb921402e06d38de0309b657a17f8be71ebfa154"
+        },
+        {
+          "path": "docs/restart/implementation/Q01/delivery/artifact-manifest.json",
+          "sha256": "881c19c6f7271ac8f393ce23275c04a8fe852816d191aee79742bad246416fc9"
+        },
+        {
+          "path": "docs/restart/implementation/reviews/Q01-current-delivery/bindings.json",
+          "sha256": "03290f29b813790b171deca46af03557e5c074d5c3bfa7abba0311d2dd50c6c2"
+        },
+        {
+          "path": "docs/restart/implementation/reviews/Q01-current-delivery/corrections/review.json",
+          "sha256": "5c0da8d5824b5f0c95762fdb942a87946866aed1bc91aba4329f4e6ea61a7756"
+        },
+        {
+          "path": "docs/restart/implementation/reviews/Q01-current-delivery/report.md",
+          "sha256": "44157d8efdeb04275448900e5c20cdddc876dd0b859a69d2ae57c124990a16a8"
+        },
+        {
+          "path": "docs/restart/implementation/reviews/Q01-current-delivery/review.json",
+          "sha256": "b9f63c33d2369d0cc3f0eac2c661ca19c1a129fbc668be8980927aca3734684f"
+        },
+        {
+          "path": "docs/restart/implementation/reviews/T01-final-delivery/adoption/CI-39461417280/capture.json",
+          "sha256": "d313f35716a0df3bef35508fdb6642b74f97bbdbae0ced2545e0022d3cbac761"
+        },
+        {
+          "path": "docs/restart/implementation/reviews/T01-final-delivery/adoption/CI-39463503467/capture.json",
+          "sha256": "f0ad4c79e5dc2d10d49c0a1e73f6d0da103ea7ab15da6c96d8425bdc7896194c"
+        },
+        {
+          "path": "docs/restart/implementation/reviews/T01-final-delivery/adoption/actual-main-acceptance.json",
+          "sha256": "4409704a261fc23f86660ddd956ffcca4987a0d3e966934be9bdd4604b181abe"
+        },
+        {
+          "path": "docs/restart/implementation/reviews/T01-final-delivery/adoption/actual-main-cold-review.json",
+          "sha256": "da65a2c1407f8dbdf9a949711e8533e2d72dae73a73aeed23386f983babec938"
+        },
+        {
+          "path": "docs/restart/implementation/reviews/T01-final-delivery/adoption/actual-main-cold.command.json",
+          "sha256": "e62a74a357f339671d1d7ffac30f8ee7ee9bfb8b86717b6943acb18fe0e68a13"
+        },
+        {
+          "path": "docs/restart/implementation/reviews/T01-final-delivery/adoption/actual-main-cold.py",
+          "sha256": "4dfb51fa44110c6ff422c71757ef4e26ebf9a2429c4c519dba7e5dd17c0cc7ed"
+        },
+        {
+          "path": "docs/restart/implementation/reviews/T01-final-delivery/adoption/actual-main-cold.stderr",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "path": "docs/restart/implementation/reviews/T01-final-delivery/adoption/actual-main-cold.stdout",
+          "sha256": "3f8b836d5b5b8019ee840c62d4755960cbd0128deabb46f32ead06842e32301f"
+        },
+        {
+          "path": "docs/restart/implementation/reviews/T01-final-delivery/adoption/main-source-correspondence.json",
+          "sha256": "10603de85daa6916131778c50c7cee7fdfefcb7b5a43eaaebcf98b1edae64952"
+        },
+        {
+          "path": "docs/restart/implementation/reviews/T01-final-delivery/adoption/pr-acceptance.json",
+          "sha256": "e7e2bbbd6331ac3c57467446e45281c54f7b24eaadbb33ea43479c63c99d2cd8"
+        },
+        {
+          "path": "docs/restart/implementation/Q01/delivery/closure/source-copy-map.json",
+          "sha256": "23cab3d32a30b1116526d740a8f14292e490f07a66dd568f080814dabbf32830"
+        },
+        {
+          "path": "docs/restart/implementation/Q01/delivery/closure/handoff.md",
+          "sha256": "fe8c92cb919480ea1361e02b03a2cfcfb8bef618e46e56e748bd0ceee61a13ef"
+        },
+        {
+          "path": "docs/restart/implementation/Q01/delivery/closure/result.json",
+          "sha256": "fdbb074cfc0eb4e71ffeb333c11d2e02cd1ecdc440978bfa675d8ad8c1177308"
         }
       ],
       "requires_physical_evidence": false,
@@ -9797,7 +9950,7 @@
         "nSealr/nsealr": "7f00138902526a63dc590ad4cd09dc40ab9b9700"
       },
       "current_checkpoint": {
-        "state": "DOCUMENTARY_DELIVERY_REVIEW_ONLY_ACTUAL_MAIN_CI_PENDING",
+        "state": "DOCUMENTARY_INTEGRATED_BRANCH_PROPOSAL_PENDING_FINAL_METADATA_PR_MAIN_GATES",
         "requirements_source": "5d8eef3302a2def61bc646a313e321087cf95e0a",
         "requirements_review": "f1e9f06e6b2b790e8097dfb10d2736ea502faadc",
         "requirements_review_scope": "PASS_specifica_soltanto; no runtime/physical/task closure",
@@ -9809,14 +9962,38 @@
           "tree": "484c277bf3ebd884645d4ce85e1786f94ae23fbd",
           "actual_main_CI": {
             "id": 39463503467,
-            "status": "IN_PROGRESS_ROOT_REPORTED_NOT_PASS"
+            "status": "SUCCESS_ROOT_ACCEPTED",
+            "verify_job_and_check": 118768686184
           },
-          "actual_fresh_main_source_checks": "PENDING_ROOT_CONFIRMATION"
+          "actual_fresh_main_source_checks": "9 PASS_ROOT_ACCEPTED; only actual main/ref, permanent685/596 ancestors, six old commits absent, no remote/alternate/shallow/graft",
+          "root_acceptance": {
+            "commit": "939da2f3e6eeba925426e8acdd124c4914093eb3",
+            "path": "docs/restart/implementation/reviews/T01-final-delivery/adoption/actual-main-acceptance.json"
+          }
         },
         "implementation_admission": false,
         "physical_qualification": false,
-        "next_step": "Root distinct exact metadata review; actual-main fullCI/source PASS before any runtime/closure. No further source reconciliation unless a real source delta appears.",
-        "source_reconciliation": "One-time proposed1e6\u2192actual7f; whole base tree and original normative/source bindings identical"
+        "next_step": "Root exact final metadata review, normal protected PR and actual resulting-main gates before canonical Q01 adoption. K01 runs under its separate explicit root admission; no Q01/device/client runtime admission follows from this proposal.",
+        "source_reconciliation": "One-time proposed1e6\u2192actual7f; whole base tree and original normative/source bindings identical",
+        "documentary_delivery_source": "05a1b4c8e7e0cab9fa4c08e3358cc3ef72d97896",
+        "documentary_delivery_source_review": "eab6d815b714903103d80ade1306e443f59dc4c8",
+        "closure_result": "docs/restart/implementation/Q01/delivery/closure/result.json"
+      },
+      "reviewed_candidate_commits": {
+        "nSealr/nsealr": "05a1b4c8e7e0cab9fa4c08e3358cc3ef72d97896"
+      },
+      "reviewed_input_commits": {
+        "nSealr/nsealr": "7f00138902526a63dc590ad4cd09dc40ab9b9700"
+      },
+      "result_manifest": "docs/restart/implementation/Q01/delivery/closure/result.json",
+      "integration": {
+        "state": "BRANCH_DOCUMENTARY_ADOPTION_PROPOSAL_NOT_CANONICAL",
+        "reviewed_source": "05a1b4c8e7e0cab9fa4c08e3358cc3ef72d97896",
+        "source_review": "eab6d815b714903103d80ade1306e443f59dc4c8",
+        "actual_dependency_main": "7f00138902526a63dc590ad4cd09dc40ab9b9700",
+        "metadata_review": "PENDING_ROOT_EXACT_FINAL_CANDIDATE",
+        "protected_Q01_PR_and_main_gates": "PENDING; no PR/CI/merge result invented",
+        "runtime_device_release_claim": false
       }
     },
     {
@@ -10321,7 +10498,7 @@
       "requires_physical_evidence": true
     }
   ],
-  "revision": 20,
+  "revision": 21,
   "scope_document": "repositories.md",
   "active_profiles": [
     "esp32_no_se",
