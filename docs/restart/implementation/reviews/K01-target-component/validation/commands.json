@@ -1,0 +1,49 @@
+{
+  "commands": [
+    {
+      "argv": [
+        "git",
+        "diff",
+        "--cached",
+        "--check"
+      ],
+      "exit": 2,
+      "stdout": {
+        "path": "validation/0-stdout.log",
+        "bytes": 4739,
+        "sha256": "b57068805f891beff5f319234a6507eb4613f99b41147d62d2e32eb8ea61dc79"
+      },
+      "stderr": {
+        "path": "validation/0-stderr.log",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "argv": [
+        "git",
+        "diff",
+        "--cached",
+        "--check",
+        "--",
+        "docs/restart/implementation/reviews/K01-target-component/report.md",
+        "docs/restart/implementation/reviews/K01-target-component/review.json",
+        "docs/restart/implementation/reviews/K01-target-component/bindings.json",
+        "docs/restart/implementation/reviews/K01-target-component/observations.json",
+        "docs/restart/implementation/reviews/K01-target-component/copy-inventory.json"
+      ],
+      "exit": 0,
+      "stdout": {
+        "path": "validation/1-stdout.log",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stderr": {
+        "path": "validation/1-stderr.log",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    }
+  ],
+  "classification": "Full diff-check exits2 solely for unmodified readelf raw output trailing spaces/terminal blank lines. Prose/JSON diff-check exits0. Raw outputs are preserved byte-exact; no checker/product/threshold change."
+}
