@@ -1,0 +1,30 @@
+{
+  "checks": [
+    {
+      "argv": [
+        "git",
+        "diff",
+        "--cached",
+        "--check"
+      ],
+      "exit_code": 2,
+      "stdout": "docs/restart/implementation/K01/evidence/catalog-preflight-red/stdout.log:11: new blank line at EOF.\n",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "git",
+        "diff",
+        "--cached",
+        "--check",
+        "--",
+        ".",
+        ":(exclude)**/*.log"
+      ],
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ""
+    }
+  ],
+  "disposition": "Preserve actual cargo failure raw bytes including final blank line; source/nonlogcheck0; no functional failure hidden."
+}

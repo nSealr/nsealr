@@ -380,6 +380,33 @@ fn s03_unicode_decode_is_lossless_or_rejected() {
 fn vectors() -> Value {
     serde_json::from_str(include_str!(concat!(env!("OUT_DIR"), "/s03-vectors.json"))).unwrap()
 }
+
+// Independent K01 semantic input/role decisions were committed before runtime edits.
+// This direct test-only inclusion neither changes the T01 artifact nor generates expectations.
+#[test]
+fn k01_prepared_catalog_preflights_and_rejects_exact_semantic_inputs() {
+    let corpus: Value = serde_json::from_str(include_str!(concat!(
+        env!("CARGO_MANIFEST_DIR"),
+        "/../../docs/restart/implementation/K01/evidence/semantic-matrix.json"
+    )))
+    .unwrap();
+    let mut mismatches = Vec::new();
+    for row in corpus["rows"].as_array().unwrap() {
+        let mut bounds = limits();
+        if let Some(pages) = row["local_review_page_limit"].as_u64() {
+            bounds.review_pages = pages as usize;
+        }
+        let mut owner = AuthorizationSession::new(bounds, geometry()).unwrap();
+        owner.select_key(secret(3)).unwrap();
+        let result = owner.begin_request(&request(row["template"].as_str().unwrap()).into_bytes(), Some(0));
+        let expected = row["expected_preflight"] == "accept";
+        if result.is_ok() != expected {
+            mismatches.push(format!("{} expected accept={} got {:?}", row["id"], expected, result));
+        }
+        assert_ne!(owner.state(), AuthorizationState::Approved);
+    }
+    assert!(mismatches.is_empty(), "{}", mismatches.join("\n"));
+}
 #[test]
 fn s03_nip01_bytes_match_independent_oracle() {
     let key = session().public_key().unwrap();
