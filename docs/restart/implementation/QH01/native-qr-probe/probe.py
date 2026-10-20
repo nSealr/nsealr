@@ -116,7 +116,9 @@ def main() -> int:
         blank.save(out / 'blank.png', format='PNG'); (out / 'blank.rgb').write_bytes(blank.tobytes())
         start = time.perf_counter_ns(); result = decoder.decode_qr(blank)
         report['blank'] = {'native_decode_ns': time.perf_counter_ns() - start,
-                           'decoded': result, 'PNG': file_record(out / 'blank.png'),
+                           'decoded_none': result is None, 'decoded_type': type(result).__name__,
+                           'unexpected_decoded_sha256': digest(result) if isinstance(result, bytes) else None,
+                           'PNG': file_record(out / 'blank.png'),
                            'framebuffer': file_record(out / 'blank.rgb')}
         assert result is None
         report['status'] = 'PASS_HOST_FIXED_IMAGE_FEASIBILITY_ONLY'
