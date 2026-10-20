@@ -1,0 +1,358 @@
+{
+  "phase": "Independent expected provenance semantics fixed before two-script edits",
+  "recorded_utc": "2026-10-20T15:16:34.888109+00:00",
+  "base": "793b4d4e800f3e18c1a625b074c0293dc5d974ab",
+  "transfer_sha256": "9d4974ebdac1484bb32ecbe33bc6ad1b1cc39c786fc48f2e9f54831c32c2cd1e",
+  "accepted_specification": "cb39bb026d4008b7f3d7abf358b604c79e3b699d",
+  "source_preimages": [
+    {
+      "path": "scripts/verify_contracts.py",
+      "mode": "100644",
+      "blob": "231b897a4ec145dceb5fdc5e8a89b0910772c6d9",
+      "bytes": 5548,
+      "sha256": "f2d7bcd0227e1cfa65a4e1ea3f5bf1aba82adef985af70d4f01777c4ea2a8aea"
+    },
+    {
+      "path": "scripts/test_contracts.py",
+      "mode": "100644",
+      "blob": "e4bcd4b78b2efab902a22d933d4f8c7b927a6684",
+      "bytes": 11945,
+      "sha256": "cecf5fe2e9b91e647f7e443bce6abca54cbf1391825ef4daf44075034f5a39d4"
+    }
+  ],
+  "schema_source_path": "docs/restart/implementation/T01/integration/source-reconciliation.json#/provenance_transition_proposal/strict_manifest_format",
+  "schema_source_file_sha256": "ad876b5596da8dd0fe187aa5ccb6f509745664504e132c4ca8611aa3b8c05fa0",
+  "selected_format": {
+    "artifact_format": 2,
+    "artifact_id": "nsealr-contracts-v1",
+    "directory": "protocols/contracts/v1/",
+    "identity_separation": "Manifest inventory schema format2 is distinct from artifact directory/id v1, numeric device wire2/nsealr.signing.v2 and internal nsealr.authorization.v1.",
+    "json_schema": {
+      "$schema": "https://json-schema.org/draft/2020-12/schema",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "artifact_format",
+        "artifact_id",
+        "source_commit",
+        "initial_import_commit",
+        "consumer_coverage",
+        "generation",
+        "retirement",
+        "wire_versions",
+        "files"
+      ],
+      "properties": {
+        "artifact_format": {
+          "const": 2
+        },
+        "artifact_id": {
+          "const": "nsealr-contracts-v1"
+        },
+        "source_commit": {
+          "const": "45f8b6ff1123f3f55be4ce457fd1008e91043cc2"
+        },
+        "initial_import_commit": {
+          "const": "86569e073da4faec0811d67137bbb0fd4f74c7c6"
+        },
+        "consumer_coverage": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "python",
+            "rust",
+            "typescript"
+          ],
+          "properties": {
+            "python": {
+              "type": "string",
+              "minLength": 1
+            },
+            "rust": {
+              "type": "string",
+              "minLength": 1
+            },
+            "typescript": {
+              "type": "string",
+              "minLength": 1
+            }
+          }
+        },
+        "generation": {
+          "type": "string",
+          "minLength": 1
+        },
+        "retirement": {
+          "type": "string",
+          "minLength": 1
+        },
+        "wire_versions": {
+          "type": "string",
+          "minLength": 1
+        },
+        "files": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "$ref": "#/$defs/file"
+          }
+        }
+      },
+      "$defs": {
+        "digest": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "mode",
+            "sha256"
+          ],
+          "properties": {
+            "mode": {
+              "enum": [
+                "100644",
+                "100755"
+              ]
+            },
+            "sha256": {
+              "type": "string",
+              "pattern": "^[0-9a-f]{64}$"
+            }
+          }
+        },
+        "file": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "path",
+            "disposition",
+            "original",
+            "baseline",
+            "current",
+            "adaptation"
+          ],
+          "properties": {
+            "path": {
+              "type": "string",
+              "pattern": "^(protocols|schemas|vectors|examples)/[^\\\\]+$"
+            },
+            "disposition": {
+              "enum": [
+                "maintained",
+                "modified_t01",
+                "authored_t01",
+                "retired_t01"
+              ]
+            },
+            "original": {
+              "oneOf": [
+                {
+                  "type": "null"
+                },
+                {
+                  "$ref": "#/$defs/digest"
+                }
+              ]
+            },
+            "baseline": {
+              "oneOf": [
+                {
+                  "type": "null"
+                },
+                {
+                  "$ref": "#/$defs/digest"
+                }
+              ]
+            },
+            "current": {
+              "oneOf": [
+                {
+                  "type": "null"
+                },
+                {
+                  "$ref": "#/$defs/digest"
+                }
+              ]
+            },
+            "adaptation": {
+              "oneOf": [
+                {
+                  "type": "null"
+                },
+                {
+                  "type": "string",
+                  "minLength": 1
+                }
+              ]
+            }
+          },
+          "oneOf": [
+            {
+              "properties": {
+                "disposition": {
+                  "const": "maintained"
+                },
+                "original": {
+                  "$ref": "#/$defs/digest"
+                },
+                "baseline": {
+                  "$ref": "#/$defs/digest"
+                },
+                "current": {
+                  "$ref": "#/$defs/digest"
+                }
+              }
+            },
+            {
+              "properties": {
+                "disposition": {
+                  "const": "modified_t01"
+                },
+                "original": {
+                  "$ref": "#/$defs/digest"
+                },
+                "baseline": {
+                  "$ref": "#/$defs/digest"
+                },
+                "current": {
+                  "$ref": "#/$defs/digest"
+                },
+                "adaptation": {
+                  "type": "string",
+                  "minLength": 1
+                }
+              }
+            },
+            {
+              "properties": {
+                "disposition": {
+                  "const": "authored_t01"
+                },
+                "original": {
+                  "type": "null"
+                },
+                "baseline": {
+                  "type": "null"
+                },
+                "current": {
+                  "$ref": "#/$defs/digest"
+                },
+                "adaptation": {
+                  "type": "string",
+                  "minLength": 1
+                }
+              }
+            },
+            {
+              "properties": {
+                "disposition": {
+                  "const": "retired_t01"
+                },
+                "original": {
+                  "$ref": "#/$defs/digest"
+                },
+                "baseline": {
+                  "$ref": "#/$defs/digest"
+                },
+                "current": {
+                  "type": "null"
+                },
+                "adaptation": {
+                  "type": "string",
+                  "minLength": 1
+                }
+              }
+            }
+          ]
+        }
+      }
+    },
+    "raw_parsing": "Reject duplicate decoded object keys at every level, malformed/non-UTF8 JSON and trailing data before schema validation; no coercion. Exact approved manifest bytes/mode are independently bound by the tree, not merely by schema validity.",
+    "historical_anchor_mapping": {
+      "source_commit": "ORIGIN historical specs identity, literal45f8",
+      "initial_import_commit": "INITIAL_IMPORT historical86569 metadata; never required as runtime Git object",
+      "original": "Exact same artifact-relative path at permanent SOURCE_POSTIMAGE68508ea",
+      "baseline": "Exact same artifact-relative path at permanent BASELINE59653fc",
+      "current": "Exact approved postimage from literal ARTIFACT_TREE_OID in root checker outside artifact"
+    },
+    "disposition_rules": [
+      {
+        "disposition": "maintained",
+        "original": "Required exact source685 mode/SHA256",
+        "baseline": "Required exact baseline596 mode/SHA256",
+        "current": "Required and equal baseline mode/SHA256, including pre-existing A02 adaptations",
+        "adaptation": "Exact old baseline manifest adaptation value, which may be null"
+      },
+      {
+        "disposition": "modified_t01",
+        "original": "Required exact source685 mode/SHA256",
+        "baseline": "Required exact baseline596 mode/SHA256",
+        "current": "Required exact independently reviewed T01 postimage mode/SHA256; differs from baseline in mode or bytes",
+        "adaptation": "Nonempty declared T01 source/semantic change; old A02 adaptation remains durably available at596"
+      },
+      {
+        "disposition": "authored_t01",
+        "original": null,
+        "baseline": null,
+        "current": "Required exact independently reviewed new authored postimage mode/SHA256; path must be absent at685 and596",
+        "adaptation": "Nonempty declared T01 authorship/purpose; never fabricate original_sha256 or import provenance"
+      },
+      {
+        "disposition": "retired_t01",
+        "original": "Required exact source685 mode/SHA256",
+        "baseline": "Required exact baseline596 mode/SHA256",
+        "current": null,
+        "adaptation": "Nonempty declared retirement/replacement obligation; active data path must be absent, including symlink/hidden aliases"
+      }
+    ],
+    "cross_record_and_git_rules": [
+      "Paths are unique, case-sensitive, artifact-relative, within existing four DATA_DIRS. Reject empty/dot/dotdot components, absolute paths, backslashes, NUL/control bytes and noncanonical separators; no unsafe path normalization.",
+      "Every path listed by baseline596 manifest appears exactly once as maintained/modified_t01/retired_t01. Additional paths are authored_t01 only, absent at both685/596. No disappearing baseline row or disguised re-import.",
+      "Active physical data inventory equals rows with non-null current, including dotfiles. Retired rows are tombstones, never expected active files. All original/baseline records resolve exact regular Git mode and hash at permanent anchors.",
+      "Prior A02 card retirements remain historically bound by existing adaptation/proof; do not reconstruct or rewrite old retirements as T01 changes.",
+      "Read the expected manifest and entire artifact tree from the literal approved subtree OID; compare working source bytes/regular modes and exact path set, including metadata/test/oracle/license/hidden entries. No symlinks, gitlinks, special files or unclassified extras. Manifest does not store its own tree OID/hash, avoiding self-reference.",
+      "consumers.json exact bytes/mode are bound by that same tree; keep exact bridge/engine/pi groups, nonempty unique patterns, every pattern matching active inventory, explicit retained coverage/exclusions and no stale duplicate loader snapshot. Do not weaken current independent language completeness checks.",
+      "Top-level historical source_commit and initial_import_commit remain exact45f8/86569. SOURCE_POSTIMAGE685 and BASELINE596 remain permanent checker constants and mandatory original/baseline authorities, not renamed wire2 origins.",
+      "No accepted original_sha256 field exists in format2; original.sha256 is populated only from real685 bytes. Schema unknown fields or disposition-dependent null/digest violations reject."
+    ],
+    "pending_real_values": {
+      "artifact_subtree_oid": null,
+      "final_postimage_inventory": null,
+      "meaning": "Intentionally unavailable until real artifact/candidate stabilizes; fill during admitted implementation and independently approve exact bytes/OID before adoption. Absence now does not block preparation review or later root implementation admission."
+    }
+  },
+  "old24_obligations_retained": [
+    "test_complete_artifact_counts_hidden_file",
+    "test_missing_manifest_rejects_before_iteration",
+    "test_missing_manifest_and_versioned_vector_rejects",
+    "test_missing_normal_and_hidden_files_reject_even_with_forged_inventory",
+    "test_extra_normal_and_hidden_files_reject_even_with_forged_inventory",
+    "test_tampered_normal_and_hidden_files_reject_forged_digests",
+    "test_new_git_commit_and_forged_manifest_cannot_replace_frozen_source",
+    "test_wrong_source_pin_or_inventory_rejects",
+    "test_malformed_or_nonobject_manifest_rejects",
+    "test_missing_directory_rejects",
+    "test_symlinked_data_manifest_and_root_reject",
+    "test_symlinked_directory_rejects",
+    "test_committed_nonregular_file_rejects",
+    "test_duplicate_path_manifest_rejects",
+    "test_wrong_original_hash_rejects",
+    "test_missing_partial_consumer_scope_rejects",
+    "test_reduced_consumer_scope_rejects",
+    "test_unmatched_declared_consumer_pattern_rejects",
+    "test_stale_snapshot_is_rejected",
+    "test_fully_valid_control_after_mutation_is_restored",
+    "test_rewritten_history_validates_from_only_cold_main_with_historical_metadata",
+    "test_missing_runtime_source_or_postimage_anchor_rejects",
+    "test_wrong_runtime_source_bytes_reject_even_when_current_data_is_valid",
+    "test_wrong_runtime_postimage_manifest_rejects_current_valid_manifest"
+  ],
+  "independent_fixture_design": {
+    "historical": "Real Git original regular data5paths inclhidden -> immutable baseline v1 manifest. Historical import identity retained as metadata, separately adopted source/postimage anchors.",
+    "current": "maintained3/modified1/retired1/authored1 rows:6records,5active; metadata/consumers separately bound by full literal artifact tree. Expected fixture counts/dispositions set before implementation.",
+    "raw_and_schema": "Duplicate/escaped alias/unknown fields/types/null/disposition/hash/mode/path/retired/fakeauthored omissions reject even if the test-only approved fixture tree is deliberately rebound to malformed data. No production override.",
+    "tree_working": "Entire working tree paths/regularmodes/bytes equal one literal expected tree, including metadata/hidden/empty-directory/symlink/specialfile negatives. NewHEAD/manifest/commit never self-approve.",
+    "history": "Actual divergent branch rebase onto main preserving approved subtree; cold fetch onlymain, no refs/alternates/shallow/grafts/oldhistorical or oldauthor objects. Correct retained source/baseline anchors + exacttree pass, missing/wrong rejects, restore exact passes.",
+    "pin_pending": "Production ARTIFACT_TREE_OID is None, must failclosed before untrusted artifact reads. Only tests patch constants to immutable fixture objects; no env/HEAD/self-derived parameter trust.",
+    "scope": "Only2scripts and scopedproof. All170 mappings/3helpers remain a02-owned existing source/completeness obligations, not waived or reported passed by synthetic provenance tests."
+  }
+}
