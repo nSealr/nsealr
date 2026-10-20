@@ -1,0 +1,12 @@
+bash ci/repro_build.sh
+repro-build: same-tree clean build A
+repro-build: same-tree clean build B
+repro-build: cross-path clean build X (second checkout at a different path)
+repro-build: byte-identity results
+  OK   desktop-simulator (same-tree A==B)         cba96019e6b57869ab3c59a3f3b1fde1127f712dafbf7c25e7d2a57a7d1d68fe
+  OK   nsealr-core rlib (same-tree A==B)          590e38bc45a96e78ff81b83b130e4dac31576b4d8e5c58705c5734b96cca2ee5
+  OK   nsealr-core rlib (cross-path A==X)         590e38bc45a96e78ff81b83b130e4dac31576b4d8e5c58705c5734b96cca2ee5
+repro-build: PASS
+  path-independent device artifact:
+    nsealr-core riscv32imafc-unknown-none-elf release rlib  sha256 = 590e38bc45a96e78ff81b83b130e4dac31576b4d8e5c58705c5734b96cca2ee5
+  desktop-simulator release binary (same-tree) sha256 = cba96019e6b57869ab3c59a3f3b1fde1127f712dafbf7c25e7d2a57a7d1d68fe
