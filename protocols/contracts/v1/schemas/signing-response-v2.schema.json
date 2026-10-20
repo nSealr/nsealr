@@ -1,0 +1,170 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://nsealr.dev/schemas/signing-response-v2.schema.json",
+  "title": "nSealr Signing Response v2",
+  "type": "object",
+  "oneOf": [
+    {
+      "required": [
+        "version",
+        "request_id",
+        "ok",
+        "result"
+      ],
+      "properties": {
+        "version": {
+          "const": 2
+        },
+        "request_id": {
+          "$ref": "#/$defs/request_id"
+        },
+        "ok": {
+          "const": true
+        },
+        "result": {
+          "type": "object",
+          "required": [
+            "capabilities"
+          ],
+          "properties": {
+            "capabilities": {
+              "$ref": "#/$defs/capabilities"
+            }
+          },
+          "additionalProperties": false
+        }
+      },
+      "additionalProperties": false
+    },
+    {
+      "required": [
+        "version",
+        "request_id",
+        "ok",
+        "result"
+      ],
+      "properties": {
+        "version": {
+          "const": 2
+        },
+        "request_id": {
+          "$ref": "#/$defs/request_id"
+        },
+        "ok": {
+          "const": true
+        },
+        "result": {
+          "type": "object",
+          "required": [
+            "public_key"
+          ],
+          "properties": {
+            "public_key": {
+              "$ref": "#/$defs/hex32"
+            }
+          },
+          "additionalProperties": false
+        }
+      },
+      "additionalProperties": false
+    },
+    {
+      "required": [
+        "version",
+        "request_id",
+        "ok",
+        "result"
+      ],
+      "properties": {
+        "version": {
+          "const": 2
+        },
+        "request_id": {
+          "$ref": "#/$defs/request_id"
+        },
+        "ok": {
+          "const": true
+        },
+        "result": {
+          "type": "object",
+          "required": [
+            "event"
+          ],
+          "properties": {
+            "event": {
+              "$ref": "#/$defs/signed_event"
+            }
+          },
+          "additionalProperties": false
+        }
+      },
+      "additionalProperties": false
+    },
+    {
+      "$ref": "error-v0.schema.json"
+    }
+  ],
+  "$defs": {
+    "request_id": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 128,
+      "pattern": "^[A-Za-z0-9._:-]+$"
+    },
+    "hex32": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "hex64": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{128}$"
+    },
+    "capabilities": {
+      "$ref": "capabilities-v1.schema.json"
+    },
+    "signed_event": {
+      "type": "object",
+      "required": [
+        "id",
+        "pubkey",
+        "created_at",
+        "kind",
+        "tags",
+        "content",
+        "sig"
+      ],
+      "properties": {
+        "id": {
+          "$ref": "#/$defs/hex32"
+        },
+        "pubkey": {
+          "$ref": "#/$defs/hex32"
+        },
+        "created_at": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "kind": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "tags": {
+          "type": "array",
+          "items": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        },
+        "content": {
+          "type": "string"
+        },
+        "sig": {
+          "$ref": "#/$defs/hex64"
+        }
+      },
+      "additionalProperties": false
+    }
+  }
+}

@@ -1,0 +1,1050 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://nsealr.dev/schemas/capabilities-v1.schema.json",
+  "title": "Device-reported capabilities,not evidence or authority",
+  "oneOf": [
+    {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "format",
+        "form",
+        "profile",
+        "requirements_id",
+        "implementation_id",
+        "limits_id",
+        "device",
+        "custody",
+        "secure_element",
+        "consent",
+        "methods",
+        "transports",
+        "messages"
+      ],
+      "properties": {
+        "format": {
+          "const": "nsealr.capabilities.v1"
+        },
+        "form": {
+          "const": "full"
+        },
+        "profile": {
+          "enum": [
+            "esp32_no_se",
+            "pi_qr",
+            "p4_qr",
+            "custom_board"
+          ]
+        },
+        "requirements_id": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[A-Za-z0-9._:-]+$"
+        },
+        "implementation_id": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[A-Za-z0-9._:-]+$"
+        },
+        "limits_id": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[A-Za-z0-9._:-]+$"
+        },
+        "device": {
+          "$ref": "capabilities-v1.schema.json#/$defs/device"
+        },
+        "custody": {
+          "$ref": "capabilities-v1.schema.json#/$defs/custody"
+        },
+        "secure_element": {
+          "$ref": "capabilities-v1.schema.json#/$defs/secure_element"
+        },
+        "consent": {
+          "const": "manual_local"
+        },
+        "methods": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 16,
+          "uniqueItems": true,
+          "items": {
+            "$ref": "capabilities-v1.schema.json#/$defs/method"
+          }
+        },
+        "transports": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 4,
+          "uniqueItems": true,
+          "items": {
+            "$ref": "capabilities-v1.schema.json#/$defs/transport"
+          }
+        },
+        "messages": {
+          "$ref": "capabilities-v1.schema.json#/$defs/messages"
+        }
+      }
+    },
+    {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "format",
+        "form",
+        "profile",
+        "implementation_id",
+        "runtime"
+      ],
+      "properties": {
+        "format": {
+          "const": "nsealr.capabilities.v1"
+        },
+        "form": {
+          "const": "reference"
+        },
+        "profile": {
+          "enum": [
+            "esp32_no_se",
+            "pi_qr",
+            "p4_qr",
+            "custom_board"
+          ]
+        },
+        "implementation_id": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[A-Za-z0-9._:-]+$"
+        },
+        "runtime": {
+          "type": "array",
+          "minItems": 0,
+          "maxItems": 16,
+          "uniqueItems": true,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "method_id",
+              "configuration",
+              "availability",
+              "reason"
+            ],
+            "properties": {
+              "method_id": {
+                "enum": [
+                  "get_capabilities",
+                  "get_public_key",
+                  "sign_event",
+                  "nip44_encrypt",
+                  "nip44_decrypt"
+                ]
+              },
+              "configuration": {
+                "enum": [
+                  "configured",
+                  "unconfigured",
+                  "unavailable",
+                  "unknown"
+                ]
+              },
+              "availability": {
+                "enum": [
+                  "available",
+                  "unavailable",
+                  "unknown"
+                ]
+              },
+              "reason": {
+                "oneOf": [
+                  {
+                    "type": "null"
+                  },
+                  {
+                    "enum": [
+                      "locked",
+                      "provider_missing",
+                      "busy",
+                      "not_implemented",
+                      "unknown"
+                    ]
+                  }
+                ]
+              }
+            }
+          }
+        }
+      }
+    }
+  ],
+  "$defs": {
+    "identifier": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 128,
+      "pattern": "^[A-Za-z0-9._:-]+$"
+    },
+    "device": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "name",
+        "firmware",
+        "hardware"
+      ],
+      "properties": {
+        "name": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128
+        },
+        "firmware": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128
+        },
+        "hardware": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128
+        }
+      }
+    },
+    "custody": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "mode",
+        "configuration_id"
+      ],
+      "properties": {
+        "mode": {
+          "enum": [
+            "volatile_session",
+            "mcu_wrapped_persistent",
+            "custom_se_assisted_persistent"
+          ]
+        },
+        "configuration_id": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[A-Za-z0-9._:-]+$"
+        }
+      }
+    },
+    "secure_element": {
+      "oneOf": [
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "state"
+          ],
+          "properties": {
+            "state": {
+              "const": "absent"
+            }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "state"
+          ],
+          "properties": {
+            "state": {
+              "const": "unknown"
+            }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "state",
+            "configuration_id"
+          ],
+          "properties": {
+            "state": {
+              "const": "required"
+            },
+            "configuration_id": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 128,
+              "pattern": "^[A-Za-z0-9._:-]+$"
+            }
+          }
+        }
+      ]
+    },
+    "feature": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "support",
+        "configuration",
+        "availability",
+        "reason"
+      ],
+      "properties": {
+        "support": {
+          "enum": [
+            "supported",
+            "unavailable",
+            "unknown"
+          ]
+        },
+        "configuration": {
+          "enum": [
+            "configured",
+            "unconfigured",
+            "unavailable",
+            "unknown"
+          ]
+        },
+        "availability": {
+          "enum": [
+            "available",
+            "unavailable",
+            "unknown"
+          ]
+        },
+        "reason": {
+          "oneOf": [
+            {
+              "type": "null"
+            },
+            {
+              "enum": [
+                "locked",
+                "provider_missing",
+                "busy",
+                "not_implemented",
+                "unknown"
+              ]
+            }
+          ]
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "configuration": {
+                "const": "configured"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "support": {
+                "const": "supported"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "availability": {
+                "const": "available"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "support": {
+                "const": "supported"
+              },
+              "configuration": {
+                "const": "configured"
+              },
+              "reason": {
+                "type": "null"
+              }
+            }
+          },
+          "else": {
+            "properties": {
+              "reason": {
+                "enum": [
+                  "locked",
+                  "provider_missing",
+                  "busy",
+                  "not_implemented",
+                  "unknown"
+                ]
+              }
+            }
+          }
+        }
+      ]
+    },
+    "method": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "revision",
+        "operation_id",
+        "algorithm_ids",
+        "execution_location",
+        "limits_id",
+        "support",
+        "configuration",
+        "availability",
+        "reason"
+      ],
+      "properties": {
+        "id": {
+          "enum": [
+            "get_capabilities",
+            "get_public_key",
+            "sign_event",
+            "nip44_encrypt",
+            "nip44_decrypt"
+          ]
+        },
+        "revision": {
+          "const": 1
+        },
+        "operation_id": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[A-Za-z0-9._:-]+$"
+        },
+        "algorithm_ids": {
+          "type": "array",
+          "minItems": 0,
+          "maxItems": 4,
+          "uniqueItems": true,
+          "items": {
+            "enum": [
+              "bip340.secp256k1.v1",
+              "nip44.v2"
+            ]
+          }
+        },
+        "execution_location": {
+          "enum": [
+            "mcu",
+            "se",
+            "host_os",
+            "unknown"
+          ]
+        },
+        "limits_id": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[A-Za-z0-9._:-]+$"
+        },
+        "support": {
+          "enum": [
+            "supported",
+            "unavailable",
+            "unknown"
+          ]
+        },
+        "configuration": {
+          "enum": [
+            "configured",
+            "unconfigured",
+            "unavailable",
+            "unknown"
+          ]
+        },
+        "availability": {
+          "enum": [
+            "available",
+            "unavailable",
+            "unknown"
+          ]
+        },
+        "reason": {
+          "oneOf": [
+            {
+              "type": "null"
+            },
+            {
+              "enum": [
+                "locked",
+                "provider_missing",
+                "busy",
+                "not_implemented",
+                "unknown"
+              ]
+            }
+          ]
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "configuration": {
+                "const": "configured"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "support": {
+                "const": "supported"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "availability": {
+                "const": "available"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "support": {
+                "const": "supported"
+              },
+              "configuration": {
+                "const": "configured"
+              },
+              "reason": {
+                "type": "null"
+              }
+            }
+          },
+          "else": {
+            "properties": {
+              "reason": {
+                "enum": [
+                  "locked",
+                  "provider_missing",
+                  "busy",
+                  "not_implemented",
+                  "unknown"
+                ]
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "availability": {
+                "const": "available"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "execution_location": {
+                "enum": [
+                  "mcu",
+                  "se",
+                  "host_os"
+                ]
+              }
+            }
+          }
+        }
+      ]
+    },
+    "transport": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "codec_id",
+        "limits_id",
+        "support",
+        "configuration",
+        "availability",
+        "reason"
+      ],
+      "properties": {
+        "id": {
+          "enum": [
+            "usb",
+            "qr"
+          ]
+        },
+        "codec_id": {
+          "enum": [
+            "nsealr.serial-frame.v0",
+            "nsealr.qr-envelope.v0"
+          ]
+        },
+        "limits_id": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[A-Za-z0-9._:-]+$"
+        },
+        "support": {
+          "enum": [
+            "supported",
+            "unavailable",
+            "unknown"
+          ]
+        },
+        "configuration": {
+          "enum": [
+            "configured",
+            "unconfigured",
+            "unavailable",
+            "unknown"
+          ]
+        },
+        "availability": {
+          "enum": [
+            "available",
+            "unavailable",
+            "unknown"
+          ]
+        },
+        "reason": {
+          "oneOf": [
+            {
+              "type": "null"
+            },
+            {
+              "enum": [
+                "locked",
+                "provider_missing",
+                "busy",
+                "not_implemented",
+                "unknown"
+              ]
+            }
+          ]
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "configuration": {
+                "const": "configured"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "support": {
+                "const": "supported"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "availability": {
+                "const": "available"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "support": {
+                "const": "supported"
+              },
+              "configuration": {
+                "const": "configured"
+              },
+              "reason": {
+                "type": "null"
+              }
+            }
+          },
+          "else": {
+            "properties": {
+              "reason": {
+                "enum": [
+                  "locked",
+                  "provider_missing",
+                  "busy",
+                  "not_implemented",
+                  "unknown"
+                ]
+              }
+            }
+          }
+        }
+      ]
+    },
+    "messages": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "nip44_v2_primitive",
+        "verified_message_context_v1",
+        "nip17_59_one_to_one_text_v1"
+      ],
+      "properties": {
+        "nip44_v2_primitive": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "support",
+            "configuration",
+            "availability",
+            "reason",
+            "workflow_id"
+          ],
+          "properties": {
+            "support": {
+              "enum": [
+                "supported",
+                "unavailable",
+                "unknown"
+              ]
+            },
+            "configuration": {
+              "enum": [
+                "configured",
+                "unconfigured",
+                "unavailable",
+                "unknown"
+              ]
+            },
+            "availability": {
+              "enum": [
+                "available",
+                "unavailable",
+                "unknown"
+              ]
+            },
+            "reason": {
+              "oneOf": [
+                {
+                  "type": "null"
+                },
+                {
+                  "enum": [
+                    "locked",
+                    "provider_missing",
+                    "busy",
+                    "not_implemented",
+                    "unknown"
+                  ]
+                }
+              ]
+            },
+            "workflow_id": {
+              "oneOf": [
+                {
+                  "type": "null"
+                },
+                {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 128,
+                  "pattern": "^[A-Za-z0-9._:-]+$"
+                }
+              ]
+            }
+          },
+          "allOf": [
+            {
+              "if": {
+                "properties": {
+                  "configuration": {
+                    "const": "configured"
+                  }
+                }
+              },
+              "then": {
+                "properties": {
+                  "support": {
+                    "const": "supported"
+                  }
+                }
+              }
+            },
+            {
+              "if": {
+                "properties": {
+                  "availability": {
+                    "const": "available"
+                  }
+                }
+              },
+              "then": {
+                "properties": {
+                  "support": {
+                    "const": "supported"
+                  },
+                  "configuration": {
+                    "const": "configured"
+                  },
+                  "reason": {
+                    "type": "null"
+                  }
+                }
+              },
+              "else": {
+                "properties": {
+                  "reason": {
+                    "enum": [
+                      "locked",
+                      "provider_missing",
+                      "busy",
+                      "not_implemented",
+                      "unknown"
+                    ]
+                  }
+                }
+              }
+            }
+          ]
+        },
+        "verified_message_context_v1": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "support",
+            "configuration",
+            "availability",
+            "reason",
+            "workflow_id"
+          ],
+          "properties": {
+            "support": {
+              "enum": [
+                "supported",
+                "unavailable",
+                "unknown"
+              ]
+            },
+            "configuration": {
+              "enum": [
+                "configured",
+                "unconfigured",
+                "unavailable",
+                "unknown"
+              ]
+            },
+            "availability": {
+              "enum": [
+                "available",
+                "unavailable",
+                "unknown"
+              ]
+            },
+            "reason": {
+              "oneOf": [
+                {
+                  "type": "null"
+                },
+                {
+                  "enum": [
+                    "locked",
+                    "provider_missing",
+                    "busy",
+                    "not_implemented",
+                    "unknown"
+                  ]
+                }
+              ]
+            },
+            "workflow_id": {
+              "oneOf": [
+                {
+                  "type": "null"
+                },
+                {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 128,
+                  "pattern": "^[A-Za-z0-9._:-]+$"
+                }
+              ]
+            }
+          },
+          "allOf": [
+            {
+              "if": {
+                "properties": {
+                  "configuration": {
+                    "const": "configured"
+                  }
+                }
+              },
+              "then": {
+                "properties": {
+                  "support": {
+                    "const": "supported"
+                  }
+                }
+              }
+            },
+            {
+              "if": {
+                "properties": {
+                  "availability": {
+                    "const": "available"
+                  }
+                }
+              },
+              "then": {
+                "properties": {
+                  "support": {
+                    "const": "supported"
+                  },
+                  "configuration": {
+                    "const": "configured"
+                  },
+                  "reason": {
+                    "type": "null"
+                  }
+                }
+              },
+              "else": {
+                "properties": {
+                  "reason": {
+                    "enum": [
+                      "locked",
+                      "provider_missing",
+                      "busy",
+                      "not_implemented",
+                      "unknown"
+                    ]
+                  }
+                }
+              }
+            }
+          ]
+        },
+        "nip17_59_one_to_one_text_v1": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "support",
+            "configuration",
+            "availability",
+            "reason",
+            "workflow_id"
+          ],
+          "properties": {
+            "support": {
+              "enum": [
+                "supported",
+                "unavailable",
+                "unknown"
+              ]
+            },
+            "configuration": {
+              "enum": [
+                "configured",
+                "unconfigured",
+                "unavailable",
+                "unknown"
+              ]
+            },
+            "availability": {
+              "enum": [
+                "available",
+                "unavailable",
+                "unknown"
+              ]
+            },
+            "reason": {
+              "oneOf": [
+                {
+                  "type": "null"
+                },
+                {
+                  "enum": [
+                    "locked",
+                    "provider_missing",
+                    "busy",
+                    "not_implemented",
+                    "unknown"
+                  ]
+                }
+              ]
+            },
+            "workflow_id": {
+              "oneOf": [
+                {
+                  "type": "null"
+                },
+                {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 128,
+                  "pattern": "^[A-Za-z0-9._:-]+$"
+                }
+              ]
+            }
+          },
+          "allOf": [
+            {
+              "if": {
+                "properties": {
+                  "configuration": {
+                    "const": "configured"
+                  }
+                }
+              },
+              "then": {
+                "properties": {
+                  "support": {
+                    "const": "supported"
+                  }
+                }
+              }
+            },
+            {
+              "if": {
+                "properties": {
+                  "availability": {
+                    "const": "available"
+                  }
+                }
+              },
+              "then": {
+                "properties": {
+                  "support": {
+                    "const": "supported"
+                  },
+                  "configuration": {
+                    "const": "configured"
+                  },
+                  "reason": {
+                    "type": "null"
+                  }
+                }
+              },
+              "else": {
+                "properties": {
+                  "reason": {
+                    "enum": [
+                      "locked",
+                      "provider_missing",
+                      "busy",
+                      "not_implemented",
+                      "unknown"
+                    ]
+                  }
+                }
+              }
+            }
+          ]
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,172 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://nsealr.dev/schemas/route-selection-v1.schema.json",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "format",
+    "account_id",
+    "profile",
+    "implementation_id",
+    "contract",
+    "method",
+    "method_revision",
+    "operation_id",
+    "algorithm_id",
+    "transport",
+    "codec_id",
+    "custody",
+    "limits_id",
+    "contains_secret_material",
+    "public_key",
+    "route_type",
+    "trusted_review",
+    "policy_support",
+    "policy_profile_id"
+  ],
+  "properties": {
+    "format": {
+      "const": "nsealr.route-selection.v1"
+    },
+    "account_id": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 128,
+      "pattern": "^[A-Za-z0-9._:-]+$"
+    },
+    "profile": {
+      "oneOf": [
+        {
+          "enum": [
+            "esp32_no_se",
+            "pi_qr",
+            "p4_qr",
+            "custom_board"
+          ]
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "implementation_id": {
+      "oneOf": [
+        {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[A-Za-z0-9._:-]+$"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "contract": {
+      "enum": [
+        "nsealr.signing.v2",
+        "nip46"
+      ]
+    },
+    "method": {
+      "enum": [
+        "get_capabilities",
+        "get_public_key",
+        "sign_event",
+        "nip44_encrypt",
+        "nip44_decrypt"
+      ]
+    },
+    "method_revision": {
+      "const": 1
+    },
+    "operation_id": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 128,
+      "pattern": "^[A-Za-z0-9._:-]+$"
+    },
+    "algorithm_id": {
+      "oneOf": [
+        {
+          "enum": [
+            "bip340.secp256k1.v1",
+            "nip44.v2"
+          ]
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "transport": {
+      "enum": [
+        "usb",
+        "qr",
+        "nip46_relay"
+      ]
+    },
+    "codec_id": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 128,
+      "pattern": "^[A-Za-z0-9._:-]+$"
+    },
+    "custody": {
+      "enum": [
+        "volatile_session",
+        "mcu_wrapped_persistent",
+        "custom_se_assisted_persistent",
+        "external_signer"
+      ]
+    },
+    "limits_id": {
+      "oneOf": [
+        {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[A-Za-z0-9._:-]+$"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "contains_secret_material": {
+      "const": false
+    },
+    "public_key": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "route_type": {
+      "enum": [
+        "raspberry_qr_vault",
+        "esp32_qr_vault",
+        "esp32_usb_nip46",
+        "custom_hardware_wallet",
+        "external_nip46"
+      ]
+    },
+    "repository": {
+      "const": "nsealr"
+    },
+    "trusted_review": {
+      "enum": [
+        "device_display",
+        "external_policy"
+      ]
+    },
+    "policy_support": {
+      "enum": [
+        "manual_only",
+        "external"
+      ]
+    },
+    "policy_profile_id": {
+      "type": "string",
+      "pattern": "^policy-[A-Za-z0-9._:-]{1,121}$"
+    }
+  }
+}
