@@ -857,5 +857,177 @@
         "fallback_or_generic_ECC_promotion": false
       }
     }
-  ]
+  ],
+  "requirements": [
+    {
+      "format": "nsealr.profile-requirements.v1",
+      "requirements_id": "nsealr.profile-requirements.esp32_no_se.v1",
+      "profile": "esp32_no_se",
+      "required_groups": [
+        "R-ID",
+        "R-AUTH",
+        "R-CATALOG",
+        "R-SECRET",
+        "R-BOUNDS",
+        "R-RECOVERY",
+        "R-LIFECYCLE",
+        "R-RELEASE",
+        "R-MSG"
+      ],
+      "custody_mode": "mcu_wrapped_persistent",
+      "consent": "manual_local",
+      "automation": "unavailable",
+      "secure_element": {
+        "state": "absent"
+      }
+    },
+    {
+      "format": "nsealr.profile-requirements.v1",
+      "requirements_id": "nsealr.profile-requirements.pi_qr.v1",
+      "profile": "pi_qr",
+      "required_groups": [
+        "R-ID",
+        "R-AUTH",
+        "R-CATALOG",
+        "R-SECRET",
+        "R-BOUNDS",
+        "R-RECOVERY",
+        "R-LIFECYCLE",
+        "R-RELEASE"
+      ],
+      "custody_mode": "volatile_session",
+      "consent": "manual_local",
+      "automation": "unavailable",
+      "secure_element": {
+        "state": "absent"
+      }
+    },
+    {
+      "format": "nsealr.profile-requirements.v1",
+      "requirements_id": "nsealr.profile-requirements.p4_qr.v1",
+      "profile": "p4_qr",
+      "required_groups": [
+        "R-ID",
+        "R-AUTH",
+        "R-CATALOG",
+        "R-SECRET",
+        "R-BOUNDS",
+        "R-RECOVERY",
+        "R-LIFECYCLE",
+        "R-RELEASE"
+      ],
+      "custody_mode": "volatile_session",
+      "consent": "manual_local",
+      "automation": "unavailable",
+      "secure_element": {
+        "state": "absent"
+      }
+    },
+    {
+      "format": "nsealr.profile-requirements.v1",
+      "requirements_id": "nsealr.profile-requirements.custom_board.v1",
+      "profile": "custom_board",
+      "required_groups": [
+        "R-ID",
+        "R-AUTH",
+        "R-CATALOG",
+        "R-SECRET",
+        "R-BOUNDS",
+        "R-RECOVERY",
+        "R-LIFECYCLE",
+        "R-RELEASE",
+        "R-MSG"
+      ],
+      "custody_mode": "custom_se_assisted_persistent",
+      "consent": "manual_local",
+      "automation": "unavailable",
+      "secure_element": {
+        "state": "unknown"
+      }
+    }
+  ],
+  "limits_manifest": {
+    "format": "nsealr.limits.v1",
+    "limits_id": "nsealr.limits.conformance.v1",
+    "methods": [
+      {
+        "method_id": "get_capabilities",
+        "scope": "discovery",
+        "request_json_bytes": 704,
+        "parse_work": 8192,
+        "retained_bytes": 16384,
+        "pending_requests": 1,
+        "deadline_ms": 100,
+        "queued_operations": 0,
+        "cached_responses": 0,
+        "response_json_bytes": 8192
+      },
+      {
+        "method_id": "get_public_key",
+        "scope": "discovery",
+        "request_json_bytes": 704,
+        "parse_work": 8192,
+        "retained_bytes": 16384,
+        "pending_requests": 1,
+        "deadline_ms": 100,
+        "queued_operations": 0,
+        "cached_responses": 0,
+        "response_json_bytes": 704
+      },
+      {
+        "method_id": "sign_event",
+        "scope": "sign_event",
+        "request_json_bytes": 704,
+        "parse_work": 8192,
+        "retained_bytes": 16384,
+        "pending_requests": 1,
+        "deadline_ms": 100,
+        "queued_operations": 0,
+        "cached_responses": 0,
+        "response_json_bytes": 704,
+        "content_utf8_bytes": 512,
+        "tag_count": 16,
+        "tag_fields": 8,
+        "tag_field_utf8_bytes": 64,
+        "aggregate_tag_utf8_bytes": 4096,
+        "canonical_bytes": 8192,
+        "review_pages": 12
+      }
+    ],
+    "transports": [
+      {
+        "transport_id": "usb",
+        "scope": "transport",
+        "frame_bytes": 1024,
+        "frame_count": 1,
+        "reassembly_bytes": 704,
+        "parse_work": 8192,
+        "retained_bytes": 16384,
+        "pending_requests": 1,
+        "deadline_ms": 100,
+        "queued_frames": 0
+      },
+      {
+        "transport_id": "qr",
+        "scope": "transport",
+        "frame_bytes": 947,
+        "frame_count": 64,
+        "reassembly_bytes": 4096,
+        "parse_work": 8192,
+        "retained_bytes": 16384,
+        "pending_requests": 1,
+        "deadline_ms": 100,
+        "queued_frames": 0,
+        "static_decoded_json_bytes": 704,
+        "chunk_payload_chars": 256
+      }
+    ]
+  },
+  "implementation_examples": {
+    "esp32_no_se": "examples/profile-manifests/esp32_no_se-conformance-v1.json",
+    "pi_qr": "examples/profile-manifests/pi_qr-conformance-v1.json",
+    "p4_qr": "examples/profile-manifests/p4_qr-conformance-v1.json",
+    "custom_board": "examples/profile-manifests/custom_board-conformance-v1.json"
+  },
+  "budget_scope": "Conformance-only metadata records; 8192-byte discovery storage and separately accounted parser/typed sizes. Existing704 request/1024 serial limits and S03 hard limits/owner lifetime remain unchanged. Transport feasibility is checked jointly for the actual operation; full discovery need not fit constrained serial,known complete reference must fit or discovery/dispatch is unavailable. No actual MCU memory/timing qualification."
 }

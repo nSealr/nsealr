@@ -1,0 +1,97 @@
+{
+  "format": "nsealr.implementation-profile.v1",
+  "profile": "esp32_no_se",
+  "requirements_id": "nsealr.profile-requirements.esp32_no_se.v1",
+  "implementation_id": "nsealr.conformance.esp32_no_se.v1",
+  "limits_id": "nsealr.limits.conformance.v1",
+  "device": {
+    "name": "Conformance only esp32_no_se",
+    "firmware": "not-a-release",
+    "hardware": "unidentified"
+  },
+  "custody": {
+    "mode": "mcu_wrapped_persistent",
+    "configuration_id": "conformance_only.unqualified"
+  },
+  "secure_element": {
+    "state": "absent"
+  },
+  "consent": "manual_local",
+  "methods": [
+    {
+      "id": "get_capabilities",
+      "revision": 1,
+      "operation_id": "nsealr.discovery.v1",
+      "algorithm_ids": [],
+      "execution_location": "mcu",
+      "limits_id": "nsealr.limits.conformance.v1",
+      "support": "supported",
+      "configuration": "configured",
+      "availability": "available",
+      "reason": null
+    },
+    {
+      "id": "get_public_key",
+      "revision": 1,
+      "operation_id": "nostr.public-key.v1",
+      "algorithm_ids": [
+        "bip340.secp256k1.v1"
+      ],
+      "execution_location": "mcu",
+      "limits_id": "nsealr.limits.conformance.v1",
+      "support": "supported",
+      "configuration": "unconfigured",
+      "availability": "unavailable",
+      "reason": "provider_missing"
+    },
+    {
+      "id": "sign_event",
+      "revision": 1,
+      "operation_id": "nostr.sign-event.v1",
+      "algorithm_ids": [
+        "bip340.secp256k1.v1"
+      ],
+      "execution_location": "mcu",
+      "limits_id": "nsealr.limits.conformance.v1",
+      "support": "supported",
+      "configuration": "unconfigured",
+      "availability": "unavailable",
+      "reason": "provider_missing"
+    }
+  ],
+  "transports": [
+    {
+      "id": "usb",
+      "codec_id": "nsealr.serial-frame.v0",
+      "limits_id": "nsealr.limits.conformance.v1",
+      "support": "supported",
+      "configuration": "configured",
+      "availability": "available",
+      "reason": null
+    }
+  ],
+  "messages": {
+    "nip44_v2_primitive": {
+      "support": "unavailable",
+      "configuration": "unavailable",
+      "availability": "unavailable",
+      "reason": "not_implemented",
+      "workflow_id": null
+    },
+    "verified_message_context_v1": {
+      "support": "unavailable",
+      "configuration": "unavailable",
+      "availability": "unavailable",
+      "reason": "not_implemented",
+      "workflow_id": null
+    },
+    "nip17_59_one_to_one_text_v1": {
+      "support": "unavailable",
+      "configuration": "unavailable",
+      "availability": "unavailable",
+      "reason": "not_implemented",
+      "workflow_id": null
+    }
+  },
+  "conformance_only": true
+}

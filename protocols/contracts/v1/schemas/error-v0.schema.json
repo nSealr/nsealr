@@ -3,19 +3,32 @@
   "$id": "https://nsealr.dev/schemas/error-v0.schema.json",
   "title": "nSealr Error Response v0",
   "type": "object",
-  "required": ["version", "request_id", "ok", "error"],
+  "required": [
+    "version",
+    "request_id",
+    "ok",
+    "error"
+  ],
   "properties": {
-    "version": { "const": 1 },
+    "version": {
+      "const": 2
+    },
     "request_id": {
       "type": "string",
       "minLength": 1,
       "maxLength": 128,
       "pattern": "^[A-Za-z0-9._:-]+$"
     },
-    "ok": { "const": false },
+    "ok": {
+      "const": false
+    },
     "error": {
       "type": "object",
-      "required": ["code", "message", "retryable"],
+      "required": [
+        "code",
+        "message",
+        "retryable"
+      ],
       "properties": {
         "code": {
           "type": "string",
@@ -41,4 +54,3 @@
   },
   "additionalProperties": false
 }
-
