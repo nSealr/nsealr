@@ -8,8 +8,11 @@ product execution. The preparation worktree is based on A02 adoption candidate
 The coordinator subsequently reported normally integrated A02 main
 `d931277bebbc5f43514b0e8438d65fb60603fa35`; read-only Git inspection confirms its
 tree equals the preparation base. Exact push CI [39408038674](https://github.com/nSealr/nsealr/actions/runs/39408038674)
-was observed `in_progress`, with no successful conclusion. This observation
-does not admit S03 implementation or close its source-pin/specification gate.
+was initially observed `in_progress`. Its completed result is **failure**:
+the cold main-only checkout cannot resolve intermediate provenance commit IDs
+rewritten by the protected rebase. A bounded forward repair is under review.
+S03 implementation remains held until corrected actual-main input, successful
+CI and distinct source-pin/specification acceptance are supplied.
 
 The [source reconciliation](source-reconciliation.json) binds every one of the
 746 changes between original S03 input `3cbd818a0bcd4016eb8983dad7605cb57280d913`
