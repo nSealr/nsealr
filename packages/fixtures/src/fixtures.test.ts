@@ -79,7 +79,7 @@ describe("fixture loading", () => {
     const fixtures = loadSpecsFixtures(resolveSpecsRoot());
     expect(fixtures.reviewScreens.map((screen) => screen.name)).toEqual(expect.arrayContaining(["kind-1-basic", "kind-1-tags"]));
     expect(fixtures.reviewScreens[0].screen_review.approval_digest).toBe(
-      "a09ddd564e439fdd4756da6863156eddcfc50c295af453af1c78c35986c303a5"
+      "def9f38f77e8087c7200bbd6821ebba33ca0ff867549411d20e945ff8d8e245c"
     );
   });
 

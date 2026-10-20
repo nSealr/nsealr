@@ -50,7 +50,7 @@ import * as sdkBrowser from "@nsealr/sdk/browser";
 import { exchangeSerialLineRequest, type SerialLinePort } from "@nsealr/transport";
 
 const request: SignEventRequest = {
-  version: 1,
+  version: 2,
   request_id: "req-kind-1-basic",
   method: "sign_event",
   params: {
@@ -64,7 +64,7 @@ const request: SignEventRequest = {
 };
 
 const response: SignEventResponse = {
-  version: 1,
+  version: 2,
   request_id: "req-kind-1-basic",
   ok: true,
   result: {
@@ -319,7 +319,7 @@ async function transportExample(): Promise<void> {
       return encodeSerialFrame({
         type: "response",
         payload: {
-          version: 1,
+          version: 2,
           request_id: request.request_id,
           ok: false,
           error: {
@@ -356,7 +356,7 @@ function sdkFacadeExample(): void {
 
   assert.equal(identity.origin, "https://example.com");
   assert.equal(sdk.protocol.validateRequest({
-    version: 1,
+    version: 2,
     request_id: "sdk-facade-get-public-key",
     method: "get_public_key"
   }).ok, true);
@@ -371,7 +371,7 @@ function sdkFacadeExample(): void {
   assert.equal(sdkBrowser.client.NATIVE_HOST_NAME, NATIVE_HOST_NAME);
   assert.equal(typeof sdkBrowser.browserProvider.createNip07Provider, "function");
   assert.equal(sdkBrowser.protocol.validateRequest({
-    version: 1,
+    version: 2,
     request_id: "sdk-browser-facade-get-public-key",
     method: "get_public_key"
   }).ok, true);

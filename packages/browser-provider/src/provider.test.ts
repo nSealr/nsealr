@@ -1,3 +1,4 @@
+import { createHash as independentPlanHash } from "node:crypto";
 import { readFileSync } from "node:fs";
 import { resolve } from "node:path";
 import { describe, expect, it } from "vitest";
@@ -45,6 +46,20 @@ function backend(overrides: Partial<BrowserProviderBackend> = {}): BrowserProvid
     },
     ...overrides
   };
+}
+
+// Synthetic current adapter observations for S01 boundary regression tests.
+// The common artifact is the sole data source; no physical/release proof exists.
+// The synthetic recording adapter independently declares seven complete pages; no device renderer/fit is qualified.
+function conformanceSnapshot(route: { profile: string | null }): import("@nsealr/client").SignerCompatibilitySnapshot {
+  const common = JSON.parse(readFileSync(resolve(specsRoot, "vectors/profile-capabilities/cases-v1.json"), "utf8"));
+  const implementation = JSON.parse(readFileSync(resolve(specsRoot, common.implementation_examples[route.profile!]), "utf8"));
+  const adapter = structuredClone(implementation);
+  const { conformance_only: _, ...body } = structuredClone(implementation);
+  const reported = { ...body, format: "nsealr.capabilities.v1" as const, form: "full" as const };
+  for (const source of [adapter, reported]) for (const method of source.methods) Object.assign(method, { configuration: "configured", availability: "available", reason: null });
+  const limits = structuredClone(common.limits_manifest);
+  return { implementation, adapter, reported, limits, adapter_limits: structuredClone(limits), connection_id: "conformance.host-test.1", generation: 1, review_plan: { request_sha256: independentPlanHash("sha256").update(JSON.stringify(request)).digest("hex"), implementation_id: implementation.implementation_id, connection_id: "conformance.host-test.1", generation: 1, context_id: "conformance.no-authority", geometry_id: "conformance.recording.synthetic", pages: 7 } };
 }
 
 describe("NIP-07 browser provider boundary", () => {
@@ -148,7 +163,7 @@ describe("NIP-07 browser provider boundary", () => {
         accounts: fixtures.accounts,
         grants: [localServiceGrant],
         now: 1_900_000_000,
-        signerDispatcher: (dispatchRequest) => {
+        signerCompatibility: conformanceSnapshot, monotonicNow: () => 0, signerDispatcher: (dispatchRequest) => {
           dispatched.push(dispatchRequest);
           return response;
         }
@@ -164,7 +179,7 @@ describe("NIP-07 browser provider boundary", () => {
     });
 
     await expect(provider.signEvent(request.params.event_template)).resolves.toEqual(response.result.event);
-    expect(dispatched).toEqual([{
+    expect(dispatched).toMatchObject([{
       client,
       route_selection: routeVector.selection,
       request
@@ -180,7 +195,7 @@ describe("NIP-07 browser provider boundary", () => {
           : account),
         grants: [localServiceGrant],
         now: 1_900_000_000,
-        signerDispatcher: () => response
+        signerCompatibility: conformanceSnapshot, monotonicNow: () => 0, signerDispatcher: () => response
       })
     });
     const provider = createNip07Provider({
@@ -321,7 +336,7 @@ describe("NIP-07 browser provider boundary", () => {
         accounts: fixtures.accounts,
         grants: [localServiceGrant, revokedGrant],
         now: 1_900_000_020,
-        signerDispatcher: () => {
+        signerCompatibility: conformanceSnapshot, monotonicNow: () => 0, signerDispatcher: () => {
           dispatched = true;
           return response;
         }

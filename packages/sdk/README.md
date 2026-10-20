@@ -37,7 +37,7 @@ const provider = browserProvider.createNip07Provider({
 
 assert.equal(await provider.getPublicKey(), "1".repeat(64));
 assert.equal(protocol.validateRequest({
-  version: 1,
+  version: 2,
   request_id: "readme-sdk-request",
   method: "get_public_key"
 }).ok, true);
@@ -56,17 +56,17 @@ const identity = client.parseLocalClientIdentity({
 
 assert.equal(browserProvider.NATIVE_HOST_NAME, client.NATIVE_HOST_NAME);
 assert.equal(protocol.validateRequest({
-  version: 1,
+  version: 2,
   request_id: "readme-sdk-browser-request",
   method: "get_public_key"
 }).ok, true);
 assert.equal(identity.origin, "https://example.com");
 assert.deepEqual(qr.decodeQrEnvelope(qr.encodeQrEnvelope({
-  version: 1,
+  version: 2,
   request_id: "readme-sdk-browser-qr",
   method: "get_public_key"
 })), {
-  version: 1,
+  version: 2,
   request_id: "readme-sdk-browser-qr",
   method: "get_public_key"
 });

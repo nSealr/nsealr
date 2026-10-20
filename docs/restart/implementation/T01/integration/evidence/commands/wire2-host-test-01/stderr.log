@@ -1,0 +1,1467 @@
+error: unknown command 'smartcard-sim-sign'
+stderr | packages/nip46/src/session-security.test.ts > S01 identity, replay and cancellation regressions > limits pending requests before publish and clears them on close
+Promise returned by `expect(actual).rejects.toThrow(expected)` was not awaited. Vitest currently auto-awaits hanging assertions at the end of the test, but this will cause the test to fail in the next Vitest major. Please remember to await the assertion.
+    at /home/tux/nsealr/.restart-tools/goal/t01-current-integration/packages/nip46/src/session-security.test.ts:296:55
+
+stderr | packages/nip46/src/session-security.test.ts > S01 identity, replay and cancellation regressions > limits pending requests before publish and clears them on close
+Promise returned by `expect(actual).rejects.toThrow(expected)` was not awaited. Vitest currently auto-awaits hanging assertions at the end of the test, but this will cause the test to fail in the next Vitest major. Please remember to await the assertion.
+    at /home/tux/nsealr/.restart-tools/goal/t01-current-integration/packages/nip46/src/session-security.test.ts:295:54
+
+(node:3557054) PromiseRejectionHandledWarning: Promise rejection was handled asynchronously (rejection id: 57)
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+⎯⎯⎯⎯⎯⎯ Failed Tests 84 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  packages/browser-provider/src/provider.test.ts > NIP-07 browser provider boundary > can back NIP-07 signEvent with an explicit local-service signer dispatcher
+AssertionError: promise rejected "Error: NIP-07 signEvent rejected: current…" instead of resolving
+ ❯ packages/browser-provider/src/provider.test.ts:166:68
+    164|     });
+    165|
+    166|     await expect(provider.signEvent(request.params.event_template)).re…
+       |                                                                    ^
+    167|     expect(dispatched).toEqual([{
+    168|       client,
+
+Caused by: Error: NIP-07 signEvent rejected: current local adapter observations are not configured
+ ❯ signedEventFromResponse packages/browser-provider/src/provider.ts:118:11
+ ❯ Object.signEvent packages/browser-provider/src/provider.ts:221:14
+ ❯ packages/browser-provider/src/provider.test.ts:166:5
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/84]⎯
+
+ FAIL  packages/browser-provider/src/provider.test.ts > NIP-07 browser provider boundary > rejects wrong-route signer responses before browser callers trust signatures
+AssertionError: expected [Function] to throw error matching /signer response public key does not …/u but got 'NIP-07 signEvent rejected: current lo…'
+
+- Expected:
+/signer response public key does not match selected route/u
+
++ Received:
+"NIP-07 signEvent rejected: current local adapter observations are not configured"
+
+ ❯ packages/browser-provider/src/provider.test.ts:195:68
+    193|     });
+    194|
+    195|     await expect(provider.signEvent(request.params.event_template)).re…
+       |                                                                    ^
+    196|       /signer response public key does not match selected route/u
+    197|     );
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/84]⎯
+
+ FAIL  packages/fixtures/src/fixtures.test.ts > fixture loading > loads trusted review-screen vectors from the specs repository
+AssertionError: expected 'def9f38f77e8087c7200bbd6821ebba33ca0f…' to be 'a09ddd564e439fdd4756da6863156eddcfc50…' // Object.is equality
+
+Expected: "a09ddd564e439fdd4756da6863156eddcfc50c295af453af1c78c35986c303a5"
+Received: "def9f38f77e8087c7200bbd6821ebba33ca0ff867549411d20e945ff8d8e245c"
+
+ ❯ packages/fixtures/src/fixtures.test.ts:81:69
+     79|     const fixtures = loadSpecsFixtures(resolveSpecsRoot());
+     80|     expect(fixtures.reviewScreens.map((screen) => screen.name)).toEqua…
+     81|     expect(fixtures.reviewScreens[0].screen_review.approval_digest).to…
+       |                                                                     ^
+     82|       "a09ddd564e439fdd4756da6863156eddcfc50c295af453af1c78c35986c303a…
+     83|     );
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/84]⎯
+
+ FAIL  packages/nip46/src/nip46.test.ts > NIP-46 bridge payloads > maps a decrypted sign_event request to a nSealr signing request
+Error: version must be 2
+ ❯ assertValidNSealrRequest packages/nip46/src/nip46.ts:584:25
+    582| function assertValidNSealrRequest(request: NSealrBridgeRequest): void {
+    583|   const result = validateRequest(request);
+    584|   if (!result.ok) throw new Error(result.error ?? "invalid nSealr requ…
+       |                         ^
+    585| }
+    586|
+ ❯ nsealrRequestFromNip46 packages/nip46/src/nip46.ts:2044:5
+ ❯ packages/nip46/src/nip46.test.ts:80:21
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/84]⎯
+
+ FAIL  packages/nip46/src/nip46.test.ts > NIP-46 bridge payloads > maps a decrypted get_public_key request to a nSealr public-key request
+Error: version must be 2
+ ❯ assertValidNSealrRequest packages/nip46/src/nip46.ts:584:25
+    582| function assertValidNSealrRequest(request: NSealrBridgeRequest): void {
+    583|   const result = validateRequest(request);
+    584|   if (!result.ok) throw new Error(result.error ?? "invalid nSealr requ…
+       |                         ^
+    585| }
+    586|
+ ❯ nsealrRequestFromNip46 packages/nip46/src/nip46.ts:2031:5
+ ❯ packages/nip46/src/nip46.test.ts:95:7
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[5/84]⎯
+
+ FAIL  packages/nip46/src/nip46.test.ts > NIP-46 bridge payloads > matches shared NIP-46 bridge vectors from the specs repository
+Error: version must be 2
+ ❯ assertValidNSealrRequest packages/nip46/src/nip46.ts:584:25
+    582| function assertValidNSealrRequest(request: NSealrBridgeRequest): void {
+    583|   const result = validateRequest(request);
+    584|   if (!result.ok) throw new Error(result.error ?? "invalid nSealr requ…
+       |                         ^
+    585| }
+    586|
+ ❯ nsealrRequestFromNip46 packages/nip46/src/nip46.ts:2044:5
+ ❯ packages/nip46/src/nip46.test.ts:181:12
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[6/84]⎯
+
+ FAIL  packages/nip46/src/nip46.test.ts > NIP-46 bridge payloads > rejects unsupported or unsafe NIP-46 request payloads
+AssertionError: expected [Function] to throw error matching /event_template contains forbidden fi…/u but got 'version must be 2'
+
+- Expected:
+/event_template contains forbidden fields/u
+
++ Received:
+"version must be 2"
+
+ ❯ packages/nip46/src/nip46.test.ts:227:7
+    225|         params: [JSON.stringify({ created_at: 1710000000, kind: 1, tag…
+    226|       })
+    227|     ).toThrow(/event_template contains forbidden fields/u);
+       |       ^
+    228|   });
+    229|
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[7/84]⎯
+
+ FAIL  packages/nip46/src/nip46.test.ts > NIP-46 bridge payloads > matches shared NIP-46 relay step vectors
+Error: version must be 2
+ ❯ assertValidNSealrRequest packages/nip46/src/nip46.ts:584:25
+    582| function assertValidNSealrRequest(request: NSealrBridgeRequest): void {
+    583|   const result = validateRequest(request);
+    584|   if (!result.ok) throw new Error(result.error ?? "invalid nSealr requ…
+       |                         ^
+    585| }
+    586|
+ ❯ nsealrRequestFromNip46 packages/nip46/src/nip46.ts:2044:5
+ ❯ nip46PermissionRequirementFromRequest packages/nip46/src/nip46.ts:1922:21
+ ❯ decideNip46BridgeAction packages/nip46/src/nip46.ts:1971:23
+ ❯ evaluateNip46RelayRequestStep packages/nip46/src/nip46.ts:847:22
+ ❯ packages/nip46/src/nip46.test.ts:332:11
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[8/84]⎯
+
+ FAIL  packages/nip46/src/nip46.test.ts > NIP-46 bridge payloads > matches shared NIP-46 pending-session request gate vectors
+Error: version must be 2
+ ❯ assertValidNSealrRequest packages/nip46/src/nip46.ts:584:25
+    582| function assertValidNSealrRequest(request: NSealrBridgeRequest): void {
+    583|   const result = validateRequest(request);
+    584|   if (!result.ok) throw new Error(result.error ?? "invalid nSealr requ…
+       |                         ^
+    585| }
+    586|
+ ❯ nsealrRequestFromNip46 packages/nip46/src/nip46.ts:2044:5
+ ❯ nip46PermissionRequirementFromRequest packages/nip46/src/nip46.ts:1922:21
+ ❯ evaluateNip46SessionRequestGate packages/nip46/src/nip46.ts:1886:29
+ ❯ packages/nip46/src/nip46.test.ts:505:22
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[9/84]⎯
+
+ FAIL  packages/nip46/src/nip46.test.ts > NIP-46 bridge payloads > rejects shared invalid NIP-46 hardening vectors deterministically
+AssertionError: nip46-sign-event-param-unsafe-template: expected [Function action] to throw error including 'event_template contains forbidden fie…' but got 'version must be 2'
+
+Expected: "event_template contains forbidden fields"
+Received: "version must be 2"
+
+ ❯ packages/nip46/src/nip46.test.ts:656:35
+    654|         decideNip46BridgeAction(vector.request_message, []);
+    655|       };
+    656|       expect(action, vector.name).toThrow(vector.expected_error);
+       |                                   ^
+    657|     }
+    658|   });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[10/84]⎯
+
+ FAIL  packages/nip46/src/nip46.test.ts > NIP-46 bridge payloads > matches request permissions without granting policy
+Error: version must be 2
+ ❯ assertValidNSealrRequest packages/nip46/src/nip46.ts:584:25
+    582| function assertValidNSealrRequest(request: NSealrBridgeRequest): void {
+    583|   const result = validateRequest(request);
+    584|   if (!result.ok) throw new Error(result.error ?? "invalid nSealr requ…
+       |                         ^
+    585| }
+    586|
+ ❯ nsealrRequestFromNip46 packages/nip46/src/nip46.ts:2044:5
+ ❯ nip46PermissionRequirementFromRequest packages/nip46/src/nip46.ts:1922:21
+ ❯ packages/nip46/src/nip46.test.ts:793:12
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[11/84]⎯
+
+ FAIL  packages/nip46/src/nip46.test.ts > NIP-46 bridge payloads > decides whether a NIP-46 request may reach signer transport
+Error: version must be 2
+ ❯ assertValidNSealrRequest packages/nip46/src/nip46.ts:584:25
+    582| function assertValidNSealrRequest(request: NSealrBridgeRequest): void {
+    583|   const result = validateRequest(request);
+    584|   if (!result.ok) throw new Error(result.error ?? "invalid nSealr requ…
+       |                         ^
+    585| }
+    586|
+ ❯ nsealrRequestFromNip46 packages/nip46/src/nip46.ts:2044:5
+ ❯ nip46PermissionRequirementFromRequest packages/nip46/src/nip46.ts:1922:21
+ ❯ decideNip46BridgeAction packages/nip46/src/nip46.ts:1971:23
+ ❯ packages/nip46/src/nip46.test.ts:840:12
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[12/84]⎯
+
+ FAIL  packages/nip46/src/session-manager.test.ts > Nip46SessionManager > connects and signs an event end-to-end over the in-memory relay
+Error: NIP-46 sign_event request invalid: version must be 2
+ ❯ Nip46SessionManager.signEvent packages/nip46/src/session-manager.ts:138:31
+    136|     const request = { version: 1 as const, request_id: id, method: "si…
+    137|     const validation = validateRequest(request);
+    138|     if (!validation.ok) throw new Error(`NIP-46 sign_event request inv…
+       |                               ^
+    139|     const snapshot = JSON.parse(JSON.stringify(template)) as EventTemp…
+    140|     const selectedUser = this.userPubkeyValue;
+ ❯ packages/nip46/src/session-manager.test.ts:55:29
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[13/84]⎯
+
+ FAIL  packages/nip46/src/session-security.test.ts > S01 authenticated session boundary > discovers the user separately from transport before activation
+Error: NIP-46 sign_event request invalid: version must be 2
+ ❯ Nip46SessionManager.signEvent packages/nip46/src/session-manager.ts:138:31
+    136|     const request = { version: 1 as const, request_id: id, method: "si…
+    137|     const validation = validateRequest(request);
+    138|     if (!validation.ok) throw new Error(`NIP-46 sign_event request inv…
+       |                               ^
+    139|     const snapshot = JSON.parse(JSON.stringify(template)) as EventTemp…
+    140|     const selectedUser = this.userPubkeyValue;
+ ❯ packages/nip46/src/session-security.test.ts:51:27
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[14/84]⎯
+
+ FAIL  packages/nip46/src/session-security.test.ts > S01 authenticated session boundary > rejects a changed user key with a valid event signature
+Error: NIP-46 sign_event request invalid: version must be 2
+ ❯ Nip46SessionManager.signEvent packages/nip46/src/session-manager.ts:138:31
+    136|     const request = { version: 1 as const, request_id: id, method: "si…
+    137|     const validation = validateRequest(request);
+    138|     if (!validation.ok) throw new Error(`NIP-46 sign_event request inv…
+       |                               ^
+    139|     const snapshot = JSON.parse(JSON.stringify(template)) as EventTemp…
+    140|     const selectedUser = this.userPubkeyValue;
+ ❯ packages/nip46/src/session-security.test.ts:62:27
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[15/84]⎯
+
+ FAIL  packages/nip46/src/session-security.test.ts > S01 authenticated session boundary > ignores foreign signed transport authors delivered past adapter filters
+AssertionError: expected [Function] to throw error including 'expected author control' but got 'NIP-46 sign_event request invalid: ve…'
+
+Expected: "expected author control"
+Received: "NIP-46 sign_event request invalid: version must be 2"
+
+ ❯ packages/nip46/src/session-security.test.ts:74:46
+     72|     });
+     73|     await session.connect();
+     74|     await expect(session.signEvent(template)).rejects.toThrow("expecte…
+       |                                              ^
+     75|   });
+     76|
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[16/84]⎯
+
+ FAIL  packages/nip46/src/session-security.test.ts > S01 authenticated session boundary > rejects duplicate wire JSON without consuming the request
+ FAIL  packages/nip46/src/session-security.test.ts > S01 authenticated session boundary > rejects escaped duplicate wire JSON without consuming the request
+ FAIL  packages/nip46/src/session-security.test.ts > S01 authenticated session boundary > rejects trailing wire JSON without consuming the request
+AssertionError: expected [Function] to throw error including 'strict parse control' but got 'NIP-46 sign_event request invalid: ve…'
+
+Expected: "strict parse control"
+Received: "NIP-46 sign_event request invalid: version must be 2"
+
+ ❯ packages/nip46/src/session-security.test.ts:86:46
+     84|     });
+     85|     await session.connect();
+     86|     await expect(session.signEvent(template)).rejects.toThrow("strict …
+       |                                              ^
+     87|   });
+     88|
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[17/84]⎯
+
+ FAIL  packages/nip46/src/session-security.test.ts > S01 authenticated session boundary > rejects nested signed-event duplicate members
+AssertionError: expected [Function] to throw error matching /duplicate|JSON/i but got 'NIP-46 sign_event request invalid: ve…'
+
+- Expected:
+/duplicate|JSON/i
+
++ Received:
+"NIP-46 sign_event request invalid: version must be 2"
+
+ ❯ packages/nip46/src/session-security.test.ts:96:46
+     94|     });
+     95|     await session.connect();
+     96|     await expect(session.signEvent(template)).rejects.toThrow(/duplica…
+       |                                              ^
+     97|   });
+     98|
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[18/84]⎯
+
+ FAIL  packages/nip46/src/session-security.test.ts > S01 authenticated session boundary > does not reuse IDs when the caller RNG repeats
+Error: NIP-46 sign_event request invalid: version must be 2
+ ❯ Nip46SessionManager.signEvent packages/nip46/src/session-manager.ts:138:31
+    136|     const request = { version: 1 as const, request_id: id, method: "si…
+    137|     const validation = validateRequest(request);
+    138|     if (!validation.ok) throw new Error(`NIP-46 sign_event request inv…
+       |                               ^
+    139|     const snapshot = JSON.parse(JSON.stringify(template)) as EventTemp…
+    140|     const selectedUser = this.userPubkeyValue;
+ ❯ packages/nip46/src/session-security.test.ts:110:19
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[19/84]⎯
+
+ FAIL  packages/nip46/src/session-security.test.ts > S01 distinct metadata identities and envelope > permits a signed user result distinct from transport author
+Error: version must be 2
+ ❯ relayResponseResultType packages/nip46/src/nip46.ts:926:11
+    924|   });
+    925|   if (!shape.ok) {
+    926|     throw new Error(shape.error ?? "NIP-46 signed-event response shape…
+       |           ^
+    927|   }
+    928|   if (!isRecord(event) || typeof event.pubkey !== "string" || !X_ONLY_…
+ ❯ evaluateNip46RelayResponseStep packages/nip46/src/nip46.ts:963:7
+ ❯ packages/nip46/src/session-security.test.ts:150:12
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[20/84]⎯
+
+ FAIL  packages/nip46/src/session-security.test.ts > S01 identity, replay and cancellation regressions > also permits a user key equal to the transport key
+Error: NIP-46 sign_event request invalid: version must be 2
+ ❯ Nip46SessionManager.signEvent packages/nip46/src/session-manager.ts:138:31
+    136|     const request = { version: 1 as const, request_id: id, method: "si…
+    137|     const validation = validateRequest(request);
+    138|     if (!validation.ok) throw new Error(`NIP-46 sign_event request inv…
+       |                               ^
+    139|     const snapshot = JSON.parse(JSON.stringify(template)) as EventTemp…
+    140|     const selectedUser = this.userPubkeyValue;
+ ❯ packages/nip46/src/session-security.test.ts:184:27
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[21/84]⎯
+
+ FAIL  packages/nip46/src/session-security.test.ts > S01 identity, replay and cancellation regressions > foreign signed errors cannot consume connect
+ FAIL  packages/nip46/src/session-security.test.ts > S01 identity, replay and cancellation regressions > foreign signed errors cannot consume get_public_key
+ FAIL  packages/nip46/src/session-security.test.ts > S01 identity, replay and cancellation regressions > foreign signed errors cannot consume sign_event
+AssertionError: promise rejected "Error: NIP-46 sign_event request invalid:…" instead of resolving
+ ❯ packages/nip46/src/session-security.test.ts:193:46
+    191|     });
+    192|     await session.connect();
+    193|     await expect(session.signEvent(template)).resolves.toMatchObject({…
+       |                                              ^
+    194|   });
+    195|
+
+Caused by: Error: NIP-46 sign_event request invalid: version must be 2
+ ❯ Nip46SessionManager.signEvent packages/nip46/src/session-manager.ts:138:31
+ ❯ packages/nip46/src/session-security.test.ts:193:26
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[22/84]⎯
+
+ FAIL  packages/nip46/src/session-security.test.ts > S01 identity, replay and cancellation regressions > ignores replayed completed and other-manager responses
+Error: NIP-46 sign_event request invalid: version must be 2
+ ❯ Nip46SessionManager.signEvent packages/nip46/src/session-manager.ts:138:31
+    136|     const request = { version: 1 as const, request_id: id, method: "si…
+    137|     const validation = validateRequest(request);
+    138|     if (!validation.ok) throw new Error(`NIP-46 sign_event request inv…
+       |                               ^
+    139|     const snapshot = JSON.parse(JSON.stringify(template)) as EventTemp…
+    140|     const selectedUser = this.userPubkeyValue;
+ ❯ packages/nip46/src/session-security.test.ts:219:21
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[23/84]⎯
+
+ FAIL  packages/nip46/src/session-security.test.ts > S01 identity, replay and cancellation regressions > snapshots the submitted template before asynchronous work
+AssertionError: promise rejected "Error: NIP-46 sign_event request invalid:…" instead of resolving
+ ❯ packages/nip46/src/session-security.test.ts:237:26
+    235|     original.content = "changed";
+    236|     original.tags[0][1] = "changed";
+    237|     await expect(signing).resolves.toMatchObject({ content: template.c…
+       |                          ^
+    238|   });
+    239|
+
+Caused by: Error: NIP-46 sign_event request invalid: version must be 2
+ ❯ Nip46SessionManager.signEvent packages/nip46/src/session-manager.ts:138:31
+ ❯ packages/nip46/src/session-security.test.ts:234:29
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[24/84]⎯
+
+ FAIL  packages/nip46/src/session-security.test.ts > S01 identity, replay and cancellation regressions > rejects malformed correlated replies and preserves remote rejection
+AssertionError: expected [Function] to throw error matching /unsupported|unknown/i but got 'NIP-46 sign_event request invalid: ve…'
+
+- Expected:
+/unsupported|unknown/i
+
++ Received:
+"NIP-46 sign_event request invalid: version must be 2"
+
+ ❯ packages/nip46/src/session-security.test.ts:247:46
+    245|     });
+    246|     await session.connect();
+    247|     await expect(session.signEvent(template)).rejects.toThrow(/unsuppo…
+       |                                              ^
+    248|     malformed = false;
+    249|     await expect(session.signEvent(template)).rejects.toThrow("user ca…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[25/84]⎯
+
+ FAIL  packages/nip46/src/session-security.test.ts > S01 identity, replay and cancellation regressions > limits pending requests before publish and clears them on close
+AssertionError: expected [Function] to throw error matching /pending request limit/ but got 'NIP-46 sign_event request invalid: ve…'
+
+- Expected:
+/pending request limit/
+
++ Received:
+"NIP-46 sign_event request invalid: version must be 2"
+
+ ❯ packages/nip46/src/session-security.test.ts:297:46
+    295|     const first = expect(session.signEvent(template)).rejects.toThrow(…
+    296|     const second = expect(session.signEvent(template)).rejects.toThrow…
+    297|     await expect(session.signEvent(template)).rejects.toThrow(/pending…
+       |                                              ^
+    298|     expect(messages.filter(m => m.method === "sign_event")).toHaveLeng…
+    299|     await session.close();
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[26/84]⎯
+
+ FAIL  packages/nip46/src/session-security.test.ts > S01 unsettled adapter operation bounds > retains an unsettled publication slot across timeout and reclaims it on settlement
+AssertionError: expected [Function] to throw error matching /timed out/ but got 'NIP-46 sign_event request invalid: ve…'
+
+- Expected:
+/timed out/
+
++ Received:
+"NIP-46 sign_event request invalid: version must be 2"
+
+ ❯ packages/nip46/src/session-security.test.ts:348:54
+    346|     let finishPublish: () => void = () => undefined;
+    347|     transport.publish = () => new Promise<void>(resolve => { finishPub…
+    348|     const first = expect(session.signEvent(template)).rejects.toThrow(…
+       |                                                      ^
+    349|     await vi.advanceTimersByTimeAsync(11);
+    350|     await first;
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[27/84]⎯
+
+ FAIL  packages/nip46/src/session-security.test.ts > S01 signed content and bounded envelope > rejects a response with wrong template
+ FAIL  packages/nip46/src/session-security.test.ts > S01 signed content and bounded envelope > rejects a response with wrong id
+ FAIL  packages/nip46/src/session-security.test.ts > S01 signed content and bounded envelope > rejects a response with wrong signature
+AssertionError: expected [Function] to throw error matching /verification/ but got 'NIP-46 sign_event request invalid: ve…'
+
+- Expected:
+/verification/
+
++ Received:
+"NIP-46 sign_event request invalid: version must be 2"
+
+ ❯ packages/nip46/src/session-security.test.ts:388:46
+    386|     });
+    387|     await session.connect();
+    388|     await expect(session.signEvent(template)).rejects.toThrow(/verific…
+       |                                              ^
+    389|   });
+    390|
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[28/84]⎯
+
+ FAIL  packages/nip46/src/session-security.test.ts > S01 signed content and bounded envelope > ignores an invalid outer signature and raw over-limit JSON before a valid response
+AssertionError: expected [Function] to throw error including 'bounded control' but got 'NIP-46 sign_event request invalid: ve…'
+
+Expected: "bounded control"
+Received: "NIP-46 sign_event request invalid: version must be 2"
+
+ ❯ packages/nip46/src/session-security.test.ts:398:46
+    396|     });
+    397|     await session.connect();
+    398|     await expect(session.signEvent(template)).rejects.toThrow("bounded…
+       |                                              ^
+    399|     const event = buildNip46RequestEvent(remote, getPublicKey(client),…
+    400|     expect(() => decryptNip46Event(client, { ...event, sig: "0".repeat…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[29/84]⎯
+
+ FAIL  apps/bridge/cli/src/index.test.ts > nsealr CLI > creates parameterless device requests with caller supplied request ids
+AssertionError: expected { version: 2, …(2) } to deeply equal { version: 1, …(2) }
+
+- Expected
++ Received
+
+  {
+    "method": "get_capabilities",
+    "request_id": "req-cli-capabilities",
+-   "version": 1,
++   "version": 2,
+  }
+
+ ❯ apps/bridge/cli/src/index.test.ts:108:23
+    106|
+    107|       const request = loadJson(requestPath);
+    108|       expect(request).toEqual({
+       |                       ^
+    109|         version: 1,
+    110|         request_id: requestId,
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[30/84]⎯
+
+ FAIL  apps/bridge/cli/src/index.test.ts > nsealr CLI > rejects invalid caller supplied request ids before writing device requests
+AssertionError: expected [Function] to throw error including 'request_id is invalid' but got 'unsupported request method: get-signi…'
+
+Expected: "request_id is invalid"
+Received: "unsupported request method: get-signing-status"
+
+ ❯ apps/bridge/cli/src/index.test.ts:123:6
+    121|     await expect(
+    122|       runCli(["request", "get-signing-status", "--request-id", "invali…
+    123|     ).rejects.toThrow("request_id is invalid");
+       |      ^
+    124|
+    125|     expect(existsSync(requestPath)).toBe(false);
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[31/84]⎯
+
+ FAIL  apps/bridge/cli/src/index.test.ts > nsealr CLI > verifies all event fixtures from the specs repository
+Error: version must be 2
+ ❯ validateNip46BridgeDecisionFixtures apps/bridge/cli/src/index.ts:444:7
+    442|     }
+    443|     assertJsonEqual(
+    444|       decideNip46BridgeAction(fixture.request_message, check.granted_p…
+       |       ^
+    445|       check.decision,
+    446|       `invalid NIP-46 fixture ${name}: bridge decision mismatch at ${i…
+ ❯ validateNip46PayloadFixture apps/bridge/cli/src/index.ts:459:3
+ ❯ Command.<anonymous> apps/bridge/cli/src/index.ts:756:9
+ ❯ Command.listener [as _actionHandler] node_modules/.pnpm/commander@14.0.2/node_modules/commander/lib/command.js:568:17
+ ❯ node_modules/.pnpm/commander@14.0.2/node_modules/commander/lib/command.js:1604:14
+ ❯ Command._chainOrCall node_modules/.pnpm/commander@14.0.2/node_modules/commander/lib/command.js:1488:12
+ ❯ Command._parseCommand node_modules/.pnpm/commander@14.0.2/node_modules/commander/lib/command.js:1603:27
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[32/84]⎯
+
+ FAIL  apps/bridge/cli/src/index.test.ts > nsealr CLI > verifies event and trusted-review fixtures from the specs repository
+AssertionError: promise rejected "Error: version must be 2" instead of resolving
+ ❯ apps/bridge/cli/src/index.test.ts:238:80
+
+
+Caused by: Error: version must be 2
+ ❯ validateNip46BridgeDecisionFixtures apps/bridge/cli/src/index.ts:444:7
+ ❯ validateNip46PayloadFixture apps/bridge/cli/src/index.ts:459:3
+ ❯ Command.<anonymous> apps/bridge/cli/src/index.ts:756:9
+ ❯ Command.listener [as _actionHandler] node_modules/.pnpm/commander@14.0.2/node_modules/commander/lib/command.js:568:17
+ ❯ node_modules/.pnpm/commander@14.0.2/node_modules/commander/lib/command.js:1604:14
+ ❯ Command._chainOrCall node_modules/.pnpm/commander@14.0.2/node_modules/commander/lib/command.js:1488:12
+ ❯ Command._parseCommand node_modules/.pnpm/commander@14.0.2/node_modules/commander/lib/command.js:1603:27
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[33/84]⎯
+
+ FAIL  apps/bridge/cli/src/index.test.ts > nsealr CLI > S01 metadata fixture comparison ignores object key order
+AssertionError: promise rejected "Error: version must be 2" instead of resolving
+ ❯ apps/bridge/cli/src/index.test.ts:255:74
+    253|     vector.expected_step = reverseKeys(vector.expected_step) as Record…
+    254|     writeFileSync(path, JSON.stringify(vector));
+    255|     await expect(runCli(["fixture", "verify", "--specs", tempSpecsRoot…
+       |                                                                          ^
+    256|   });
+    257|
+
+Caused by: Error: version must be 2
+ ❯ validateNip46BridgeDecisionFixtures apps/bridge/cli/src/index.ts:444:7
+ ❯ validateNip46PayloadFixture apps/bridge/cli/src/index.ts:459:3
+ ❯ Command.<anonymous> apps/bridge/cli/src/index.ts:756:9
+ ❯ Command.listener [as _actionHandler] node_modules/.pnpm/commander@14.0.2/node_modules/commander/lib/command.js:568:17
+ ❯ node_modules/.pnpm/commander@14.0.2/node_modules/commander/lib/command.js:1604:14
+ ❯ Command._chainOrCall node_modules/.pnpm/commander@14.0.2/node_modules/commander/lib/command.js:1488:12
+ ❯ Command._parseCommand node_modules/.pnpm/commander@14.0.2/node_modules/commander/lib/command.js:1603:27
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[34/84]⎯
+
+ FAIL  apps/bridge/cli/src/index.test.ts > nsealr CLI > S01 metadata fixture comparison rejects changed value
+ FAIL  apps/bridge/cli/src/index.test.ts > nsealr CLI > S01 metadata fixture comparison rejects changed type
+ FAIL  apps/bridge/cli/src/index.test.ts > nsealr CLI > S01 metadata fixture comparison rejects changed extra
+ FAIL  apps/bridge/cli/src/index.test.ts > nsealr CLI > S01 metadata fixture comparison rejects changed missing
+ FAIL  apps/bridge/cli/src/index.test.ts > nsealr CLI > S01 metadata fixture comparison rejects changed array order
+AssertionError: expected [Function] to throw error matching /relay step fixture.*step mismatch/ but got 'version must be 2'
+
+- Expected:
+/relay step fixture.*step mismatch/
+
++ Received:
+"version must be 2"
+
+ ❯ apps/bridge/cli/src/index.test.ts:270:74
+    268|     if (mutation === "array order") (expected.relay_urls as string[]).…
+    269|     writeFileSync(path, JSON.stringify(vector));
+    270|     await expect(runCli(["fixture", "verify", "--specs", tempSpecsRoot…
+       |                                                                          ^
+    271|   });
+    272|
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[35/84]⎯
+
+ FAIL  apps/bridge/cli/src/index.test.ts > nsealr CLI > rejects policy decision fixture drift
+AssertionError: expected [Function] to throw error matching /policy decision mismatch/u but got 'version must be 2'
+
+- Expected:
+/policy decision mismatch/u
+
++ Received:
+"version must be 2"
+
+ ❯ apps/bridge/cli/src/index.test.ts:284:74
+    282|     writeFileSync(vectorPath, `${JSON.stringify(vector, null, 2)}\n`, …
+    283|
+    284|     await expect(runCli(["fixture", "verify", "--specs", tempSpecsRoot…
+       |                                                                          ^
+    285|       /policy decision mismatch/u
+    286|     );
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[36/84]⎯
+
+ FAIL  apps/bridge/cli/src/index.test.ts > nsealr CLI > rejects NIP-46 permission policy fixture drift
+AssertionError: expected [Function] to throw error matching /permission check mismatch/u but got 'version must be 2'
+
+- Expected:
+/permission check mismatch/u
+
++ Received:
+"version must be 2"
+
+ ❯ apps/bridge/cli/src/index.test.ts:363:74
+    361|     writeFileSync(vectorPath, `${JSON.stringify(vector, null, 2)}\n`, …
+    362|
+    363|     await expect(runCli(["fixture", "verify", "--specs", tempSpecsRoot…
+       |                                                                          ^
+    364|       /permission check mismatch/u
+    365|     );
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[37/84]⎯
+
+ FAIL  apps/bridge/cli/src/index.test.ts > nsealr CLI > rejects NIP-46 bridge decision fixture drift
+AssertionError: expected [Function] to throw error matching /bridge decision mismatch/u but got 'version must be 2'
+
+- Expected:
+/bridge decision mismatch/u
+
++ Received:
+"version must be 2"
+
+ ❯ apps/bridge/cli/src/index.test.ts:379:74
+    377|     writeFileSync(vectorPath, `${JSON.stringify(vector, null, 2)}\n`, …
+    378|
+    379|     await expect(runCli(["fixture", "verify", "--specs", tempSpecsRoot…
+       |                                                                          ^
+    380|       /bridge decision mismatch/u
+    381|     );
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[38/84]⎯
+
+ FAIL  apps/bridge/cli/src/index.test.ts > nsealr CLI > rejects NIP-46 policy-file fixture drift
+AssertionError: expected [Function] to throw error matching /NIP-46 policy-file fixture/u but got 'version must be 2'
+
+- Expected:
+/NIP-46 policy-file fixture/u
+
++ Received:
+"version must be 2"
+
+ ❯ apps/bridge/cli/src/index.test.ts:427:74
+    425|     writeFileSync(policyPath, `${JSON.stringify(policy, null, 2)}\n`, …
+    426|
+    427|     await expect(runCli(["fixture", "verify", "--specs", tempSpecsRoot…
+       |                                                                          ^
+    428|       /NIP-46 policy-file fixture/u
+    429|     );
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[39/84]⎯
+
+ FAIL  apps/bridge/cli/src/index.test.ts > nsealr CLI > writes NIP-46 bridge decisions without opening relay or signer transports
+ FAIL  apps/bridge/cli/src/index.test.ts > nsealr CLI > can read NIP-46 approved permissions from an explicit policy file
+Error: version must be 2
+ ❯ Command.<anonymous> apps/bridge/cli/src/index.ts:1591:30
+    1589|         ? readNip46PolicyPermissions(options.policyFile)
+    1590|         : parseNip46ApprovedPermissions(options.permissions);
+    1591|       writeJson(options.out, decideNip46BridgeAction(message, permissi…
+       |                              ^
+    1592|     });
+    1593|
+ ❯ Command.listener [as _actionHandler] node_modules/.pnpm/commander@14.0.2/node_modules/commander/lib/command.js:568:17
+ ❯ node_modules/.pnpm/commander@14.0.2/node_modules/commander/lib/command.js:1604:14
+ ❯ Command._chainOrCall node_modules/.pnpm/commander@14.0.2/node_modules/commander/lib/command.js:1488:12
+ ❯ Command._parseCommand node_modules/.pnpm/commander@14.0.2/node_modules/commander/lib/command.js:1603:27
+ ❯ node_modules/.pnpm/commander@14.0.2/node_modules/commander/lib/command.js:1367:27
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[40/84]⎯
+
+ FAIL  apps/bridge/cli/src/index.test.ts > nsealr CLI > rejects invalid NIP-46 decisions before writing output
+AssertionError: expected [Function] to throw error including 'event_template contains forbidden fie…' but got 'version must be 2'
+
+Expected: "event_template contains forbidden fields"
+Received: "version must be 2"
+
+ ❯ apps/bridge/cli/src/index.test.ts:817:6
+    815|     await expect(
+    816|       runCli(["nip46", "decide", "--message", messagePath, "--permissi…
+    817|     ).rejects.toThrow("event_template contains forbidden fields");
+       |      ^
+    818|     expect(existsSync(decisionPath)).toBe(false);
+    819|   });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[41/84]⎯
+
+ FAIL  apps/bridge/cli/src/index.test.ts > nsealr CLI > rejects invalid original requests before verifying responses
+AssertionError: expected [Function] to throw error including 'unknown top-level fields' but got 'version must be 2'
+
+Expected: "unknown top-level fields"
+Received: "version must be 2"
+
+ ❯ apps/bridge/cli/src/index.test.ts:918:100
+    916|     );
+    917|
+    918|     await expect(runCli(["verify-response", "--request", requestPath, …
+       |                                                                                                    ^
+    919|       "unknown top-level fields"
+    920|     );
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[42/84]⎯
+
+ FAIL  apps/bridge/cli/src/index.test.ts > nsealr CLI > rejects invalid serial line requests before opening a port or writing output
+AssertionError: expected [Function] to throw error including 'request_id is invalid' but got 'version must be 2'
+
+Expected: "request_id is invalid"
+Received: "version must be 2"
+
+ ❯ apps/bridge/cli/src/index.test.ts:1038:6
+    1036|         from: "user"
+    1037|       })
+    1038|     ).rejects.toThrow("request_id is invalid");
+       |      ^
+    1039|     expect(opened).toBe(false);
+    1040|     expect(existsSync(responsePath)).toBe(false);
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[43/84]⎯
+
+ FAIL  apps/bridge/browser-extension/src/background-browser.test.ts > browser extension background browser entrypoint > installs runtime message handling over explicit browser-like runtime dependencies
+AssertionError: expected [ { …(5) } ] to deeply equal [ { …(5) } ]
+
+- Expected
++ Received
+
+  [
+    {
+-     "ok": true,
++     "error": {
++       "code": "provider_request_failed",
++       "message": "browser provider get_public_key failed",
++       "retryable": false,
++     },
++     "ok": false,
+      "protocol": "nsealr-browser-extension-v0",
+      "request_id": "background-browser-get-public-key",
+-     "result": {
+-       "pubkey": "4f355bdcb7cc0af728ef3cceb9615d90684bb5b2ca5f859ab0f0b704075871aa",
+-     },
+      "version": 1,
+    },
+  ]
+
+ ❯ apps/bridge/browser-extension/src/background-browser.test.ts:261:23
+    259|     await flushAsyncListeners();
+    260|
+    261|     expect(responses).toEqual([{
+       |                       ^
+    262|       protocol: BROWSER_EXTENSION_MESSAGE_PROTOCOL,
+    263|       version: 1,
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[44/84]⎯
+
+ FAIL  apps/bridge/browser-extension/src/background.test.ts > browser extension background controller boundary > composes request handling and pairing intent over the same native-messaging boundary
+AssertionError: expected { …(5) } to deeply equal { …(5) }
+
+- Expected
++ Received
+
+  {
+-   "ok": true,
++   "error": {
++     "code": "provider_request_failed",
++     "message": "browser provider get_public_key failed",
++     "retryable": false,
++   },
++   "ok": false,
+    "protocol": "nsealr-browser-extension-v0",
+    "request_id": "background-get-public-key",
+-   "result": {
+-     "pubkey": "4f355bdcb7cc0af728ef3cceb9615d90684bb5b2ca5f859ab0f0b704075871aa",
+-   },
+    "version": 1,
+  }
+
+ ❯ apps/bridge/browser-extension/src/background.test.ts:151:16
+    149|       request_id: "background-get-public-key",
+    150|       method: "get_public_key"
+    151|     }, sender)).resolves.toEqual({
+       |                ^
+    152|       protocol: BROWSER_EXTENSION_MESSAGE_PROTOCOL,
+    153|       version: 1,
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[45/84]⎯
+
+ FAIL  apps/bridge/browser-extension/src/content-script.test.ts > browser extension content-script bridge boundary > bridges page envelopes to an injected background requester with sender binding
+AssertionError: expected { …(5) } to deeply equal { …(5) }
+
+- Expected
++ Received
+
+  {
+    "direction": "extension_to_page",
+    "protocol": "nsealr-page-bridge-v0",
+    "request_id": "content-script-get-public-key",
+    "response": {
+-     "ok": true,
++     "error": {
++       "code": "provider_request_failed",
++       "message": "browser provider get_public_key failed",
++       "retryable": false,
++     },
++     "ok": false,
+      "protocol": "nsealr-browser-extension-v0",
+      "request_id": "content-script-get-public-key",
+-     "result": {
+-       "pubkey": "4f355bdcb7cc0af728ef3cceb9615d90684bb5b2ca5f859ab0f0b704075871aa",
+-     },
+      "version": 1,
+    },
+    "version": 1,
+  }
+
+ ❯ apps/bridge/browser-extension/src/content-script.test.ts:107:8
+    105|       sender,
+    106|       requestBackground: (request, requestSender, options) => controll…
+    107|     })).resolves.toEqual({
+       |        ^
+    108|       protocol: BROWSER_EXTENSION_PAGE_BRIDGE_PROTOCOL,
+    109|       version: 1,
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[46/84]⎯
+
+ FAIL  apps/bridge/browser-extension/src/content-window.test.ts > browser extension content-window bridge boundary > accepts page bridge events only from the expected source and origin
+AssertionError: expected { …(5) } to deeply equal { …(5) }
+
+- Expected
++ Received
+
+  {
+    "direction": "extension_to_page",
+    "protocol": "nsealr-page-bridge-v0",
+    "request_id": "content-window-get-public-key",
+    "response": {
+-     "ok": true,
++     "error": {
++       "code": "provider_request_failed",
++       "message": "browser provider get_public_key failed",
++       "retryable": false,
++     },
++     "ok": false,
+      "protocol": "nsealr-browser-extension-v0",
+      "request_id": "content-window-get-public-key",
+-     "result": {
+-       "pubkey": "4f355bdcb7cc0af728ef3cceb9615d90684bb5b2ca5f859ab0f0b704075871aa",
+-     },
+      "version": 1,
+    },
+    "version": 1,
+  }
+
+ ❯ apps/bridge/browser-extension/src/content-window.test.ts:199:8
+    197|       sender,
+    198|       requestBackground: (request, requestSender, options) => controll…
+    199|     })).resolves.toEqual({
+       |        ^
+    200|       protocol: BROWSER_EXTENSION_PAGE_BRIDGE_PROTOCOL,
+    201|       version: 1,
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[47/84]⎯
+
+ FAIL  apps/bridge/browser-extension/src/content-window.test.ts > browser extension content-window bridge boundary > installs an injected window listener and posts accepted bridge responses
+AssertionError: expected [ { response: { …(5) }, …(1) } ] to deeply equal [ { response: { …(5) }, …(1) } ]
+
+- Expected
++ Received
+
+@@ -3,16 +3,18 @@
+      "response": {
+        "direction": "extension_to_page",
+        "protocol": "nsealr-page-bridge-v0",
+        "request_id": "content-window-listener",
+        "response": {
+-         "ok": true,
++         "error": {
++           "code": "provider_request_failed",
++           "message": "browser provider get_public_key failed",
++           "retryable": false,
++         },
++         "ok": false,
+          "protocol": "nsealr-browser-extension-v0",
+          "request_id": "content-window-listener",
+-         "result": {
+-           "pubkey": "4f355bdcb7cc0af728ef3cceb9615d90684bb5b2ca5f859ab0f0b704075871aa",
+-         },
+          "version": 1,
+        },
+        "version": 1,
+      },
+      "target": {
+
+ ❯ apps/bridge/browser-extension/src/content-window.test.ts:337:23
+    335|     await flushAsyncListeners();
+    336|
+    337|     expect(responses).toEqual([{
+       |                       ^
+    338|       response: {
+    339|         protocol: BROWSER_EXTENSION_PAGE_BRIDGE_PROTOCOL,
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[48/84]⎯
+
+ FAIL  apps/bridge/browser-extension/src/local-service.test.ts > browser extension native-messaging local-service provider selector > routes sender-derived identity to the native-messaging local service before returning a public key
+AssertionError: expected { …(5) } to deeply equal { …(5) }
+
+- Expected
++ Received
+
+  {
+-   "ok": true,
++   "error": {
++     "code": "provider_request_failed",
++     "message": "browser provider get_public_key failed",
++     "retryable": false,
++   },
++   "ok": false,
+    "protocol": "nsealr-browser-extension-v0",
+    "request_id": "browser-native-get-public-key",
+-   "result": {
+-     "pubkey": "4f355bdcb7cc0af728ef3cceb9615d90684bb5b2ca5f859ab0f0b704075871aa",
+-   },
+    "version": 1,
+  }
+
+ ❯ apps/bridge/browser-extension/src/local-service.test.ts:90:8
+     88|         nextServiceRequestId: () => "native-route-selection"
+     89|       })
+     90|     })).resolves.toEqual({
+       |        ^
+     91|       protocol: BROWSER_EXTENSION_MESSAGE_PROTOCOL,
+     92|       version: 1,
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[49/84]⎯
+
+ FAIL  apps/bridge/browser-extension/src/nsealr-entrypoints.test.ts > packaged browser extension entrypoints > wires the background packaged entrypoint through browser.runtime and secretless route config
+AssertionError: expected [ { …(5) } ] to deeply equal [ { …(5) } ]
+
+- Expected
++ Received
+
+  [
+    {
+-     "ok": true,
++     "error": {
++       "code": "provider_request_failed",
++       "message": "browser provider get_public_key failed",
++       "retryable": false,
++     },
++     "ok": false,
+      "protocol": "nsealr-browser-extension-v0",
+      "request_id": "packaged-background-get-public-key",
+-     "result": {
+-       "pubkey": "4f355bdcb7cc0af728ef3cceb9615d90684bb5b2ca5f859ab0f0b704075871aa",
+-     },
+      "version": 1,
+    },
+  ]
+
+ ❯ apps/bridge/browser-extension/src/nsealr-entrypoints.test.ts:421:23
+    419|     await flushAsyncListeners();
+    420|
+    421|     expect(responses).toEqual([getPublicKeyResponse("packaged-backgrou…
+       |                       ^
+    422|     expect(runtime.nativeMessages).toEqual([{
+    423|       hostName: NATIVE_HOST_NAME,
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[50/84]⎯
+
+ FAIL  apps/bridge/browser-extension/src/package-build-cli.test.ts > browser extension package-build CLI > writes a Chromium package build from explicit args
+Error: browser extension package out-dir must be outside the companion source tree or a child of release-artifacts/browser-extension/
+ ❯ requireSafePackageOutputPath apps/bridge/browser-extension/src/package-build.ts:147:11
+    145|   }
+    146|   if (isPathInside(COMPANION_ROOT, outDir) && !isReviewedRepoOutputPat…
+    147|     throw new Error(
+       |           ^
+    148|       "browser extension package out-dir must be outside the companion…
+    149|     );
+ ❯ requireOutDir apps/bridge/browser-extension/src/package-build.ts:159:10
+ ❯ buildBrowserExtensionPackage apps/bridge/browser-extension/src/package-build.ts:1069:18
+ ❯ browserExtensionPackageBuildJsonFromArgs apps/bridge/browser-extension/src/package-build-cli.ts:156:24
+ ❯ apps/bridge/browser-extension/src/package-build-cli.test.ts:195:39
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[51/84]⎯
+
+ FAIL  apps/bridge/browser-extension/src/package-build-cli.test.ts > browser extension package-build CLI > rejects package verification against a different reviewed package plan
+Error: browser extension package out-dir must be outside the companion source tree or a child of release-artifacts/browser-extension/
+ ❯ requireSafePackageOutputPath apps/bridge/browser-extension/src/package-build.ts:147:11
+    145|   }
+    146|   if (isPathInside(COMPANION_ROOT, outDir) && !isReviewedRepoOutputPat…
+    147|     throw new Error(
+       |           ^
+    148|       "browser extension package out-dir must be outside the companion…
+    149|     );
+ ❯ requireOutDir apps/bridge/browser-extension/src/package-build.ts:159:10
+ ❯ buildBrowserExtensionPackage apps/bridge/browser-extension/src/package-build.ts:1069:18
+ ❯ browserExtensionPackageBuildJsonFromArgs apps/bridge/browser-extension/src/package-build-cli.ts:156:24
+ ❯ buildChromiumEmbeddedPackage apps/bridge/browser-extension/src/package-build-cli.test.ts:122:27
+ ❯ apps/bridge/browser-extension/src/package-build-cli.test.ts:285:28
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[52/84]⎯
+
+ FAIL  apps/bridge/browser-extension/src/package-build-cli.test.ts > browser extension package-build CLI > rejects package artifacts with unexpected output files
+Error: browser extension package out-dir must be outside the companion source tree or a child of release-artifacts/browser-extension/
+ ❯ requireSafePackageOutputPath apps/bridge/browser-extension/src/package-build.ts:147:11
+    145|   }
+    146|   if (isPathInside(COMPANION_ROOT, outDir) && !isReviewedRepoOutputPat…
+    147|     throw new Error(
+       |           ^
+    148|       "browser extension package out-dir must be outside the companion…
+    149|     );
+ ❯ requireOutDir apps/bridge/browser-extension/src/package-build.ts:159:10
+ ❯ buildBrowserExtensionPackage apps/bridge/browser-extension/src/package-build.ts:1069:18
+ ❯ browserExtensionPackageBuildJsonFromArgs apps/bridge/browser-extension/src/package-build-cli.ts:156:24
+ ❯ buildChromiumEmbeddedPackage apps/bridge/browser-extension/src/package-build-cli.test.ts:122:27
+ ❯ apps/bridge/browser-extension/src/package-build-cli.test.ts:308:28
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[53/84]⎯
+
+ FAIL  apps/bridge/browser-extension/src/package-build-cli.test.ts > browser extension package-build CLI > writes a Chromium package build with extension-storage origin approval
+Error: browser extension package out-dir must be outside the companion source tree or a child of release-artifacts/browser-extension/
+ ❯ requireSafePackageOutputPath apps/bridge/browser-extension/src/package-build.ts:147:11
+    145|   }
+    146|   if (isPathInside(COMPANION_ROOT, outDir) && !isReviewedRepoOutputPat…
+    147|     throw new Error(
+       |           ^
+    148|       "browser extension package out-dir must be outside the companion…
+    149|     );
+ ❯ requireOutDir apps/bridge/browser-extension/src/package-build.ts:159:10
+ ❯ buildBrowserExtensionPackage apps/bridge/browser-extension/src/package-build.ts:1069:18
+ ❯ browserExtensionPackageBuildJsonFromArgs apps/bridge/browser-extension/src/package-build-cli.ts:156:24
+ ❯ apps/bridge/browser-extension/src/package-build-cli.test.ts:341:39
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[54/84]⎯
+
+ FAIL  apps/bridge/browser-extension/src/package-build-cli.test.ts > browser extension package-build CLI > writes a Firefox package build from explicit args
+Error: browser extension package out-dir must be outside the companion source tree or a child of release-artifacts/browser-extension/
+ ❯ requireSafePackageOutputPath apps/bridge/browser-extension/src/package-build.ts:147:11
+    145|   }
+    146|   if (isPathInside(COMPANION_ROOT, outDir) && !isReviewedRepoOutputPat…
+    147|     throw new Error(
+       |           ^
+    148|       "browser extension package out-dir must be outside the companion…
+    149|     );
+ ❯ requireOutDir apps/bridge/browser-extension/src/package-build.ts:159:10
+ ❯ buildBrowserExtensionPackage apps/bridge/browser-extension/src/package-build.ts:1069:18
+ ❯ browserExtensionPackageBuildJsonFromArgs apps/bridge/browser-extension/src/package-build-cli.ts:156:24
+ ❯ apps/bridge/browser-extension/src/package-build-cli.test.ts:395:39
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[55/84]⎯
+
+ FAIL  apps/bridge/browser-extension/src/package-build-cli.test.ts > browser extension package-build CLI > rejects unsupported or incomplete package-build args before output
+AssertionError: expected [Function] to throw error matching /browser-dispatchable/u but got 'browser extension package out-dir mus…'
+
+- Expected:
+/browser-dispatchable/u
+
++ Received:
+"browser extension package out-dir must be outside the companion source tree or a child of release-artifacts/browser-extension/"
+
+ ❯ apps/bridge/browser-extension/src/package-build-cli.test.ts:526:10
+    524|         "--route-config-approval",
+    525|         approvalPath
+    526|       ])).rejects.toThrow(/browser-dispatchable/u);
+       |          ^
+    527|       await expect(browserExtensionPackageBuildJsonFromArgs([
+    528|         "--target",
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[56/84]⎯
+
+ FAIL  apps/bridge/browser-extension/src/package-build.test.ts > browser extension package build > writes a deterministic secretless package artifact to a new output directory
+Error: browser extension package out-dir must be outside the companion source tree or a child of release-artifacts/browser-extension/
+ ❯ requireSafePackageOutputPath apps/bridge/browser-extension/src/package-build.ts:147:11
+    145|   }
+    146|   if (isPathInside(COMPANION_ROOT, outDir) && !isReviewedRepoOutputPat…
+    147|     throw new Error(
+       |           ^
+    148|       "browser extension package out-dir must be outside the companion…
+    149|     );
+ ❯ requireOutDir apps/bridge/browser-extension/src/package-build.ts:159:10
+ ❯ buildBrowserExtensionPackage apps/bridge/browser-extension/src/package-build.ts:1069:18
+ ❯ apps/bridge/browser-extension/src/package-build.test.ts:181:28
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[57/84]⎯
+
+ FAIL  apps/bridge/browser-extension/src/package-build.test.ts > browser extension package build > verifies package-build reports against the written artifact directory
+Error: browser extension package out-dir must be outside the companion source tree or a child of release-artifacts/browser-extension/
+ ❯ requireSafePackageOutputPath apps/bridge/browser-extension/src/package-build.ts:147:11
+    145|   }
+    146|   if (isPathInside(COMPANION_ROOT, outDir) && !isReviewedRepoOutputPat…
+    147|     throw new Error(
+       |           ^
+    148|       "browser extension package out-dir must be outside the companion…
+    149|     );
+ ❯ requireOutDir apps/bridge/browser-extension/src/package-build.ts:159:10
+ ❯ buildBrowserExtensionPackage apps/bridge/browser-extension/src/package-build.ts:1069:18
+ ❯ apps/bridge/browser-extension/src/package-build.test.ts:287:28
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[58/84]⎯
+
+ FAIL  apps/bridge/browser-extension/src/package-build.test.ts > browser extension package build > rejects manifest drift even when package-build file hashes are updated
+Error: browser extension package out-dir must be outside the companion source tree or a child of release-artifacts/browser-extension/
+ ❯ requireSafePackageOutputPath apps/bridge/browser-extension/src/package-build.ts:147:11
+    145|   }
+    146|   if (isPathInside(COMPANION_ROOT, outDir) && !isReviewedRepoOutputPat…
+    147|     throw new Error(
+       |           ^
+    148|       "browser extension package out-dir must be outside the companion…
+    149|     );
+ ❯ requireOutDir apps/bridge/browser-extension/src/package-build.ts:159:10
+ ❯ buildBrowserExtensionPackage apps/bridge/browser-extension/src/package-build.ts:1069:18
+ ❯ apps/bridge/browser-extension/src/package-build.test.ts:329:28
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[59/84]⎯
+
+ FAIL  apps/bridge/browser-extension/src/package-build.test.ts > browser extension package build > rejects background route drift even when package-build file hashes are updated
+Error: browser extension package out-dir must be outside the companion source tree or a child of release-artifacts/browser-extension/
+ ❯ requireSafePackageOutputPath apps/bridge/browser-extension/src/package-build.ts:147:11
+    145|   }
+    146|   if (isPathInside(COMPANION_ROOT, outDir) && !isReviewedRepoOutputPat…
+    147|     throw new Error(
+       |           ^
+    148|       "browser extension package out-dir must be outside the companion…
+    149|     );
+ ❯ requireOutDir apps/bridge/browser-extension/src/package-build.ts:159:10
+ ❯ buildBrowserExtensionPackage apps/bridge/browser-extension/src/package-build.ts:1069:18
+ ❯ apps/bridge/browser-extension/src/package-build.test.ts:361:28
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[60/84]⎯
+
+ FAIL  apps/bridge/browser-extension/src/package-build.test.ts > browser extension package build > rejects popup mode drift even when package-build file hashes are updated
+Error: browser extension package out-dir must be outside the companion source tree or a child of release-artifacts/browser-extension/
+ ❯ requireSafePackageOutputPath apps/bridge/browser-extension/src/package-build.ts:147:11
+    145|   }
+    146|   if (isPathInside(COMPANION_ROOT, outDir) && !isReviewedRepoOutputPat…
+    147|     throw new Error(
+       |           ^
+    148|       "browser extension package out-dir must be outside the companion…
+    149|     );
+ ❯ requireOutDir apps/bridge/browser-extension/src/package-build.ts:159:10
+ ❯ buildBrowserExtensionPackage apps/bridge/browser-extension/src/package-build.ts:1069:18
+ ❯ apps/bridge/browser-extension/src/package-build.test.ts:393:28
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[61/84]⎯
+
+ FAIL  apps/bridge/browser-extension/src/package-build.test.ts > browser extension package build > rejects popup HTML drift even when package-build file hashes are updated
+Error: browser extension package out-dir must be outside the companion source tree or a child of release-artifacts/browser-extension/
+ ❯ requireSafePackageOutputPath apps/bridge/browser-extension/src/package-build.ts:147:11
+    145|   }
+    146|   if (isPathInside(COMPANION_ROOT, outDir) && !isReviewedRepoOutputPat…
+    147|     throw new Error(
+       |           ^
+    148|       "browser extension package out-dir must be outside the companion…
+    149|     );
+ ❯ requireOutDir apps/bridge/browser-extension/src/package-build.ts:159:10
+ ❯ buildBrowserExtensionPackage apps/bridge/browser-extension/src/package-build.ts:1069:18
+ ❯ apps/bridge/browser-extension/src/package-build.test.ts:425:28
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[62/84]⎯
+
+ FAIL  apps/bridge/browser-extension/src/package-build.test.ts > browser extension package build > rejects origin approval popup drift even when package-build file hashes are updated
+Error: browser extension package out-dir must be outside the companion source tree or a child of release-artifacts/browser-extension/
+ ❯ requireSafePackageOutputPath apps/bridge/browser-extension/src/package-build.ts:147:11
+    145|   }
+    146|   if (isPathInside(COMPANION_ROOT, outDir) && !isReviewedRepoOutputPat…
+    147|     throw new Error(
+       |           ^
+    148|       "browser extension package out-dir must be outside the companion…
+    149|     );
+ ❯ requireOutDir apps/bridge/browser-extension/src/package-build.ts:159:10
+ ❯ buildBrowserExtensionPackage apps/bridge/browser-extension/src/package-build.ts:1069:18
+ ❯ apps/bridge/browser-extension/src/package-build.test.ts:460:28
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[63/84]⎯
+
+ FAIL  apps/bridge/browser-extension/src/package-build.test.ts > browser extension package build > rejects content-script drift even when package-build file hashes are updated
+Error: browser extension package out-dir must be outside the companion source tree or a child of release-artifacts/browser-extension/
+ ❯ requireSafePackageOutputPath apps/bridge/browser-extension/src/package-build.ts:147:11
+    145|   }
+    146|   if (isPathInside(COMPANION_ROOT, outDir) && !isReviewedRepoOutputPat…
+    147|     throw new Error(
+       |           ^
+    148|       "browser extension package out-dir must be outside the companion…
+    149|     );
+ ❯ requireOutDir apps/bridge/browser-extension/src/package-build.ts:159:10
+ ❯ buildBrowserExtensionPackage apps/bridge/browser-extension/src/package-build.ts:1069:18
+ ❯ apps/bridge/browser-extension/src/package-build.test.ts:495:28
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[64/84]⎯
+
+ FAIL  apps/bridge/browser-extension/src/package-build.test.ts > browser extension package build > rejects page-script drift even when package-build file hashes are updated
+Error: browser extension package out-dir must be outside the companion source tree or a child of release-artifacts/browser-extension/
+ ❯ requireSafePackageOutputPath apps/bridge/browser-extension/src/package-build.ts:147:11
+    145|   }
+    146|   if (isPathInside(COMPANION_ROOT, outDir) && !isReviewedRepoOutputPat…
+    147|     throw new Error(
+       |           ^
+    148|       "browser extension package out-dir must be outside the companion…
+    149|     );
+ ❯ requireOutDir apps/bridge/browser-extension/src/package-build.ts:159:10
+ ❯ buildBrowserExtensionPackage apps/bridge/browser-extension/src/package-build.ts:1069:18
+ ❯ apps/bridge/browser-extension/src/package-build.test.ts:529:28
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[65/84]⎯
+
+ FAIL  apps/bridge/browser-extension/src/package-build.test.ts > browser extension package build > writes a Firefox package artifact with explicit browser settings
+Error: browser extension package out-dir must be outside the companion source tree or a child of release-artifacts/browser-extension/
+ ❯ requireSafePackageOutputPath apps/bridge/browser-extension/src/package-build.ts:147:11
+    145|   }
+    146|   if (isPathInside(COMPANION_ROOT, outDir) && !isReviewedRepoOutputPat…
+    147|     throw new Error(
+       |           ^
+    148|       "browser extension package out-dir must be outside the companion…
+    149|     );
+ ❯ requireOutDir apps/bridge/browser-extension/src/package-build.ts:159:10
+ ❯ buildBrowserExtensionPackage apps/bridge/browser-extension/src/package-build.ts:1069:18
+ ❯ apps/bridge/browser-extension/src/package-build.test.ts:564:28
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[66/84]⎯
+
+ FAIL  apps/bridge/browser-extension/src/package-build.test.ts > browser extension package build > rejects source-tree artifact paths during package verification
+Error: browser extension package out-dir must be outside the companion source tree or a child of release-artifacts/browser-extension/
+ ❯ requireSafePackageOutputPath apps/bridge/browser-extension/src/package-build.ts:147:11
+    145|   }
+    146|   if (isPathInside(COMPANION_ROOT, outDir) && !isReviewedRepoOutputPat…
+    147|     throw new Error(
+       |           ^
+    148|       "browser extension package out-dir must be outside the companion…
+    149|     );
+ ❯ requireOutDir apps/bridge/browser-extension/src/package-build.ts:159:10
+ ❯ buildBrowserExtensionPackage apps/bridge/browser-extension/src/package-build.ts:1069:18
+ ❯ apps/bridge/browser-extension/src/package-build.test.ts:660:28
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[67/84]⎯
+
+ FAIL  apps/bridge/browser-extension/src/package-build.test.ts > browser extension package build > writes an explicit storage-backed origin approval package artifact
+Error: browser extension package out-dir must be outside the companion source tree or a child of release-artifacts/browser-extension/
+ ❯ requireSafePackageOutputPath apps/bridge/browser-extension/src/package-build.ts:147:11
+    145|   }
+    146|   if (isPathInside(COMPANION_ROOT, outDir) && !isReviewedRepoOutputPat…
+    147|     throw new Error(
+       |           ^
+    148|       "browser extension package out-dir must be outside the companion…
+    149|     );
+ ❯ requireOutDir apps/bridge/browser-extension/src/package-build.ts:159:10
+ ❯ buildBrowserExtensionPackage apps/bridge/browser-extension/src/package-build.ts:1069:18
+ ❯ apps/bridge/browser-extension/src/package-build.test.ts:684:28
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[68/84]⎯
+
+ FAIL  apps/bridge/browser-extension/src/package-build.test.ts > browser extension package build > rejects ambiguous or unsafe package builds before writing output
+Error: browser extension package out-dir must be outside the companion source tree or a child of release-artifacts/browser-extension/
+ ❯ requireSafePackageOutputPath apps/bridge/browser-extension/src/package-build.ts:147:11
+    145|   }
+    146|   if (isPathInside(COMPANION_ROOT, outDir) && !isReviewedRepoOutputPat…
+    147|     throw new Error(
+       |           ^
+    148|       "browser extension package out-dir must be outside the companion…
+    149|     );
+ ❯ requireOutDir apps/bridge/browser-extension/src/package-build.ts:159:10
+ ❯ buildBrowserExtensionPackage apps/bridge/browser-extension/src/package-build.ts:1069:18
+ ❯ apps/bridge/browser-extension/src/package-build.test.ts:738:13
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[69/84]⎯
+
+ FAIL  apps/bridge/browser-extension/src/page-window.test.ts > browser extension page-window bridge exchange > round-trips page bridge messages through the injected window and content listener
+AssertionError: expected { …(5) } to deeply equal { …(5) }
+
+- Expected
++ Received
+
+  {
+-   "ok": true,
++   "error": {
++     "code": "provider_request_failed",
++     "message": "browser provider get_public_key failed",
++     "retryable": false,
++   },
++   "ok": false,
+    "protocol": "nsealr-browser-extension-v0",
+    "request_id": "page-window-get-public-key",
+-   "result": {
+-     "pubkey": "4f355bdcb7cc0af728ef3cceb9615d90684bb5b2ca5f859ab0f0b704075871aa",
+-   },
+    "version": 1,
+  }
+
+ ❯ apps/bridge/browser-extension/src/page-window.test.ts:142:91
+    140|     });
+    141|
+    142|     await expect(requestBackground(getPublicKeyRequest("page-window-ge…
+       |                                                                                           ^
+    143|       protocol: BROWSER_EXTENSION_MESSAGE_PROTOCOL,
+    144|       version: 1,
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[70/84]⎯
+
+ FAIL  apps/bridge/browser-extension/src/runtime-message.test.ts > browser extension runtime message boundary > bridges runtime messages through the background controller without browser APIs
+AssertionError: expected { …(5) } to deeply equal { …(5) }
+
+- Expected
++ Received
+
+  {
+-   "ok": true,
++   "error": {
++     "code": "provider_request_failed",
++     "message": "browser provider get_public_key failed",
++     "retryable": false,
++   },
++   "ok": false,
+    "protocol": "nsealr-browser-extension-v0",
+    "request_id": "runtime-get-public-key",
+-   "result": {
+-     "pubkey": "4f355bdcb7cc0af728ef3cceb9615d90684bb5b2ca5f859ab0f0b704075871aa",
+-   },
+    "version": 1,
+  }
+
+ ❯ apps/bridge/browser-extension/src/runtime-message.test.ts:179:7
+    177|       },
+    178|       { controller }
+    179|     )).resolves.toEqual({
+       |       ^
+    180|       protocol: BROWSER_EXTENSION_MESSAGE_PROTOCOL,
+    181|       version: 1,
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[71/84]⎯
+
+ FAIL  apps/bridge/browser-extension/src/runtime-message.test.ts > browser extension runtime message boundary > emits secretless pending request state around accepted runtime messages
+AssertionError: expected { …(5) } to match object { …(2) }
+(6 matching properties omitted from actual)
+
+- Expected
++ Received
+
+  {
+-   "ok": true,
++   "ok": false,
+    "request_id": "runtime-pending-get-public-key",
+  }
+
+ ❯ apps/bridge/browser-extension/src/runtime-message.test.ts:228:7
+    226|         pendingRequests
+    227|       }
+    228|     )).resolves.toMatchObject({
+       |       ^
+    229|       request_id: "runtime-pending-get-public-key",
+    230|       ok: true
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[72/84]⎯
+
+ FAIL  apps/bridge/browser-extension/src/runtime-message.test.ts > browser extension runtime message boundary > installs an injected runtime message listener and sends accepted responses
+AssertionError: expected [ { …(5) } ] to deeply equal [ { …(5) } ]
+
+- Expected
++ Received
+
+  [
+    {
+-     "ok": true,
++     "error": {
++       "code": "provider_request_failed",
++       "message": "browser provider get_public_key failed",
++       "retryable": false,
++     },
++     "ok": false,
+      "protocol": "nsealr-browser-extension-v0",
+      "request_id": "runtime-listener-get-public-key",
+-     "result": {
+-       "pubkey": "4f355bdcb7cc0af728ef3cceb9615d90684bb5b2ca5f859ab0f0b704075871aa",
+-     },
+      "version": 1,
+    },
+  ]
+
+ ❯ apps/bridge/browser-extension/src/runtime-message.test.ts:727:23
+    725|     await flushAsyncListeners();
+    726|
+    727|     expect(responses).toEqual([{
+       |                       ^
+    728|       protocol: BROWSER_EXTENSION_MESSAGE_PROTOCOL,
+    729|       version: 1,
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[73/84]⎯
+
+⎯⎯⎯⎯⎯⎯ Unhandled Errors ⎯⎯⎯⎯⎯⎯
+
+Vitest caught 3 unhandled errors during the test run.
+This might cause false positive tests. Resolve unhandled errors to make sure your tests are not affected.
+
+⎯⎯⎯⎯ Unhandled Rejection ⎯⎯⎯⎯⎯
+AssertionError: expected [Function] to throw error matching /closed/ but got 'NIP-46 sign_event request invalid: ve…'
+ ❯ _Assertion.__VITEST_REJECTS__ node_modules/.pnpm/@vitest+expect@4.1.5/node_modules/@vitest/expect/dist/index.js:1747:17
+ ❯ _Assertion.propertyGetter node_modules/.pnpm/chai@6.2.2/node_modules/chai/index.js:1570:27
+ ❯ Object.proxyGetter [as get] node_modules/.pnpm/chai@6.2.2/node_modules/chai/index.js:1659:22
+ ❯ packages/nip46/src/session-security.test.ts:295:54
+    293|     const { session, messages } = harness((message, deliver) => { if (…
+    294|     await session.connect();
+    295|     const first = expect(session.signEvent(template)).rejects.toThrow(…
+       |                                                      ^
+    296|     const second = expect(session.signEvent(template)).rejects.toThrow…
+    297|     await expect(session.signEvent(template)).rejects.toThrow(/pending…
+ ❯ node_modules/.pnpm/@vitest+runner@4.1.5/node_modules/@vitest/runner/dist/chunk-artifact.js:1903:20
+
+This error originated in "packages/nip46/src/session-security.test.ts" test file. It doesn't mean the error was thrown inside the file itself, but while it was running.
+The latest test that might've caused the error is "rejects retry while a timed-out subscription acquisition remains unresolved". It might mean one of the following:
+- The error was thrown, while Vitest was running this test.
+- If the error occurred after the test had been completed, this was the last documented test before it was thrown.
+
+⎯⎯⎯⎯ Unhandled Rejection ⎯⎯⎯⎯⎯
+AssertionError: expected [Function] to throw error matching /closed/ but got 'NIP-46 sign_event request invalid: ve…'
+ ❯ _Assertion.__VITEST_REJECTS__ node_modules/.pnpm/@vitest+expect@4.1.5/node_modules/@vitest/expect/dist/index.js:1747:17
+ ❯ _Assertion.propertyGetter node_modules/.pnpm/chai@6.2.2/node_modules/chai/index.js:1570:27
+ ❯ Object.proxyGetter [as get] node_modules/.pnpm/chai@6.2.2/node_modules/chai/index.js:1659:22
+ ❯ packages/nip46/src/session-security.test.ts:296:55
+    294|     await session.connect();
+    295|     const first = expect(session.signEvent(template)).rejects.toThrow(…
+    296|     const second = expect(session.signEvent(template)).rejects.toThrow…
+       |                                                       ^
+    297|     await expect(session.signEvent(template)).rejects.toThrow(/pending…
+    298|     expect(messages.filter(m => m.method === "sign_event")).toHaveLeng…
+ ❯ node_modules/.pnpm/@vitest+runner@4.1.5/node_modules/@vitest/runner/dist/chunk-artifact.js:1903:20
+
+This error originated in "packages/nip46/src/session-security.test.ts" test file. It doesn't mean the error was thrown inside the file itself, but while it was running.
+The latest test that might've caused the error is "rejects retry while a timed-out subscription acquisition remains unresolved". It might mean one of the following:
+- The error was thrown, while Vitest was running this test.
+- If the error occurred after the test had been completed, this was the last documented test before it was thrown.
+
+⎯⎯⎯⎯ Unhandled Rejection ⎯⎯⎯⎯⎯
+AssertionError: expected [Function] to throw error matching /timed out/ but got 'NIP-46 sign_event request invalid: ve…'
+ ❯ _Assertion.__VITEST_REJECTS__ node_modules/.pnpm/@vitest+expect@4.1.5/node_modules/@vitest/expect/dist/index.js:1747:17
+ ❯ _Assertion.propertyGetter node_modules/.pnpm/chai@6.2.2/node_modules/chai/index.js:1570:27
+ ❯ Object.proxyGetter [as get] node_modules/.pnpm/chai@6.2.2/node_modules/chai/index.js:1659:22
+ ❯ packages/nip46/src/session-security.test.ts:348:54
+    346|     let finishPublish: () => void = () => undefined;
+    347|     transport.publish = () => new Promise<void>(resolve => { finishPub…
+    348|     const first = expect(session.signEvent(template)).rejects.toThrow(…
+       |                                                      ^
+    349|     await vi.advanceTimersByTimeAsync(11);
+    350|     await first;
+ ❯ node_modules/.pnpm/@vitest+runner@4.1.5/node_modules/@vitest/runner/dist/chunk-artifact.js:1903:20
+
+This error originated in "packages/nip46/src/session-security.test.ts" test file. It doesn't mean the error was thrown inside the file itself, but while it was running.
+The latest test that might've caused the error is "retains an unsettled publication slot across timeout and reclaims it on settlement". It might mean one of the following:
+- The error was thrown, while Vitest was running this test.
+- If the error occurred after the test had been completed, this was the last documented test before it was thrown.
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯
+

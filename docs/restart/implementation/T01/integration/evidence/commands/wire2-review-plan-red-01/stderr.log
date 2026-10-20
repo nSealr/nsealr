@@ -1,0 +1,22 @@
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  packages/client/src/profile-dispatch.test.ts > actual local service to recording adapter compatibility > L-01/R-05: complete local review-plan observations bind request, implementation, connection, context and geometry
+AssertionError: expected true to be false // Object.is equality
+
+- Expected
++ Received
+
+- false
++ true
+
+ ❯ packages/client/src/profile-dispatch.test.ts:202:88
+    200|       if (change === undefined) delete state.live.review_plan;
+    201|       else Object.assign(state.live.review_plan!, change);
+    202|       expect((await handleLocalServiceRequestAsync(state.envelope, sta…
+       |                                                                                        ^
+    203|       expect(state.writes).toHaveLength(0);
+    204|     }
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+

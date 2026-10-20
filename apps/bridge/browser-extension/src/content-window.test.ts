@@ -1,3 +1,6 @@
+import { readFileSync as readT01Fixture } from "node:fs";
+import { resolve as resolveT01Fixture } from "node:path";
+import { resolveSpecsRoot as t01SpecsRoot } from "@nsealr/fixtures";
 import { describe, expect, it } from "vitest";
 import { handleLocalServiceRequest, type LocalServiceRequest } from "@nsealr/client";
 import { type BrowserNativeMessageSender } from "@nsealr/browser-provider";
@@ -26,6 +29,7 @@ const sender = {
   page_url: "https://example.com/app"
 };
 
+const t01Selection = JSON.parse(readT01Fixture(resolveT01Fixture(t01SpecsRoot(), "vectors/route-selections/esp32-usb-sign-event-slot-0.json"), "utf8")).selection;
 function routeSelectionResponse(request: LocalServiceRequest): unknown {
   return {
     version: 1,
@@ -33,20 +37,9 @@ function routeSelectionResponse(request: LocalServiceRequest): unknown {
     ok: true,
     result: {
       route_selection: {
-        format: "nsealr-route-selection-v0",
+        ...t01Selection,
         account_id: routeRequest.account_id,
-        public_key: publicKey,
-        route_type: "esp32_usb_nip46",
-        repository: "nsealr",
-        transport: "usb",
-        custody: "device_persistent",
-        trusted_review: "device_display",
-        policy_support: "scoped_automation",
-        policy_profile_id: "policy-manual-only-persistent-device",
-        physical_review: true,
-        physical_approval: true,
-        persistent_grants: true,
-        contains_secret_material: false
+        public_key: publicKey
       }
     }
   };

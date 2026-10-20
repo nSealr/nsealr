@@ -66,5 +66,115 @@
     "secure_element": {
       "$ref": "capabilities-v1.schema.json#/$defs/secure_element"
     }
-  }
+  },
+  "allOf": [
+    {
+      "properties": {
+        "required_groups": {
+          "contains": {
+            "const": "R-ID"
+          }
+        }
+      }
+    },
+    {
+      "properties": {
+        "required_groups": {
+          "contains": {
+            "const": "R-AUTH"
+          }
+        }
+      }
+    },
+    {
+      "properties": {
+        "required_groups": {
+          "contains": {
+            "const": "R-CATALOG"
+          }
+        }
+      }
+    },
+    {
+      "properties": {
+        "required_groups": {
+          "contains": {
+            "const": "R-SECRET"
+          }
+        }
+      }
+    },
+    {
+      "properties": {
+        "required_groups": {
+          "contains": {
+            "const": "R-BOUNDS"
+          }
+        }
+      }
+    },
+    {
+      "properties": {
+        "required_groups": {
+          "contains": {
+            "const": "R-RECOVERY"
+          }
+        }
+      }
+    },
+    {
+      "properties": {
+        "required_groups": {
+          "contains": {
+            "const": "R-LIFECYCLE"
+          }
+        }
+      }
+    },
+    {
+      "properties": {
+        "required_groups": {
+          "contains": {
+            "const": "R-RELEASE"
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "profile": {
+            "enum": [
+              "esp32_no_se",
+              "custom_board"
+            ]
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "required_groups": {
+            "minItems": 9,
+            "maxItems": 9,
+            "contains": {
+              "const": "R-MSG"
+            }
+          }
+        }
+      },
+      "else": {
+        "properties": {
+          "required_groups": {
+            "minItems": 8,
+            "maxItems": 8,
+            "not": {
+              "contains": {
+                "const": "R-MSG"
+              }
+            }
+          }
+        }
+      }
+    }
+  ]
 }

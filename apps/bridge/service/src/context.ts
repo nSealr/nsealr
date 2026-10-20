@@ -31,6 +31,10 @@ export type ServiceContextFileOptions = {
   routeDriverStorePath?: string;
   storageApprovalPath?: string;
   openSerialLinePort?: SerialLinePortOpener;
+  /** An application-owned current adapter/session observation provider. Paths
+   * and a static account store alone do not establish current compatibility. */
+  signerCompatibility?: LocalServiceContext["signerCompatibility"];
+  monotonicNow?: LocalServiceContext["monotonicNow"];
   now?: number;
 };
 
@@ -183,6 +187,8 @@ export function loadServiceContextFromFiles(options: ServiceContextFileOptions):
     throw new Error("service route driver store requires an explicit serial-line opener");
   }
   return {
+    ...(options.signerCompatibility ? { signerCompatibility: options.signerCompatibility } : {}),
+    ...(options.monotonicNow ? { monotonicNow: options.monotonicNow } : {}),
     ...(accountStore !== undefined ? { accounts: accountStore.accounts } : {}),
     ...(grantStore !== undefined ? { grants: grantStore.grants } : {}),
     ...(routeDriverStore !== undefined && options.openSerialLinePort !== undefined

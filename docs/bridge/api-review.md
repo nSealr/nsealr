@@ -1,9 +1,9 @@
 # Public SDK API review
 
-API surface digest: `sha256:5c52df25ed47ae16d0e090507b3c38b571e92e85fec76f19260f3944b731d94f`
+API surface digest: `sha256:f9b54ad5243e155aa0cafb037f5b2d368cb9e86d8da15f429d06e0ea1b774b25`
 
 Source: [generated API](api.md). This migration records a proposed pre-release
-surface for distinct A02 review. It does not claim a new production-security,
+surface with the T01 wire2/profile cutover proposed for distinct review. It does not claim a new production-security,
 physical-device, live-relay or browser qualification.
 
 ## @nsealr/sdk
@@ -76,3 +76,30 @@ hidden-import rejection are mandatory. Browser-like VM execution is not installe
 Firefox or Chromium qualification. Live relay and attached-device checks remain
 explicitly resource gated. npm publication and trusted-publishing configuration
 require the coordinator's later adoption; no package is published by this review.
+
+The current device wire is `nsealr.signing.v2` with numeric2. Account and route
+records use `nsealr.account.v1` and `nsealr.route-selection.v1`; local pairing,
+external NIP46 and authorization domains retain their own revisions. Numeric1,
+old account/route records and `get_signing_status` reject without fallback.
+`parseReportedCapabilities` preserves bounded original-byte spelling and decoded
+duplicate evidence. `resolveReportedCapabilities` uses only the exact locally
+selected implementation manifest; full/reference forms cannot add immutable
+semantics or omit necessary state to fit a transport. `parseLimitsManifest` and
+`intersectMethodLimits` enforce finite applicable dimensions and aggregate bounds.
+
+Support, configuration, availability and local verification stay distinct. No
+wire field becomes evidence, physical review, approval or a production release.
+The local service requires an application-owned current compatibility provider
+for local dispatch, intersects actual adapter/device limits, binds selected
+account/connection generation, and checks again before the operation write and
+after response. Expiry/cancellation revokes the binding. Missing providers fail
+closed; this API adds no automatic device attestation or provider scaffolding.
+NIP44 primitive, verified context and the named NIP17/59 workflow are separate
+eligibility axes; no compound message execution API is introduced.
+
+For sign-event feasibility, a current local complete-page observation binds the
+exact request digest, implementation, connection generation, review context and
+geometry ID. Missing/stale/changed observations reject before writing, including
+after opening a port. Four logical preview sections cannot stand in for this
+count. The host does not duplicate the renderer, infer consent or qualify display
+fit; the device/S03 owner retains complete inspection and its own bounds.

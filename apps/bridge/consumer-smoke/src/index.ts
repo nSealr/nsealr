@@ -52,7 +52,7 @@ const sdk = await import("@nsealr/sdk");
 const sdkBrowser = await import("@nsealr/sdk/browser");
 
 assert.equal(protocol.validateRequest({
-  version: 1,
+  version: 2,
   request_id: "consumer-smoke-get-public-key",
   method: "get_public_key"
 }).ok, true);
@@ -90,7 +90,7 @@ const provider = browserProvider.createNip07Provider({
 });
 assert.equal(await provider.getPublicKey(), "1".repeat(64));
 assert.equal(sdk.protocol.validateRequest({
-  version: 1,
+  version: 2,
   request_id: "consumer-smoke-sdk-get-public-key",
   method: "get_public_key"
 }).ok, true);
@@ -103,18 +103,26 @@ assert.equal(sdk.core.computeEventId({
 }).length, 64);
 assert.equal(sdkBrowser.client.NATIVE_HOST_NAME, browserProvider.NATIVE_HOST_NAME);
 assert.equal(sdkBrowser.protocol.validateRequest({
-  version: 1,
+  version: 2,
   request_id: "consumer-smoke-sdk-browser-get-public-key",
   method: "get_public_key"
 }).ok, true);
 assert.deepEqual(sdkBrowser.qr.decodeQrEnvelope(sdkBrowser.qr.encodeQrEnvelope({
-  version: 1,
+  version: 2,
   request_id: "consumer-smoke-sdk-browser-qr",
   method: "get_public_key"
 })), {
-  version: 1,
+  version: 2,
   request_id: "consumer-smoke-sdk-browser-qr",
   method: "get_public_key"
 });
 
+// Root/browser expose the same current typed metadata surface. It is diagnostic
+// data; importing a helper creates no signer provider or authorization.
+for (const entry of [sdk.protocol, sdkBrowser.protocol]) {
+  assert.equal(typeof entry.parseReportedCapabilities, "function");
+  assert.equal(typeof entry.parseImplementationProfile, "function");
+  assert.equal(typeof entry.parseLimitsManifest, "function");
+  assert.equal(entry.validateRequest({ version: 1, request_id: "consumer-legacy", method: "get_public_key" }).ok, false);
+}
 console.log("nSealr package consumer smoke passed");

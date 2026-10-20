@@ -65,7 +65,7 @@ const provider = createNip07Provider({
   backend: {
     getPublicKey: async () => publicKey,
     signEventRequest: async (request) => ({
-      version: 1,
+      version: 2,
       request_id: request.request_id,
       ok: false,
       error: {

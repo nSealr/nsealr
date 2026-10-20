@@ -5,6 +5,8 @@ import {
   decodeBase64Url,
   encodeBase64Url,
   jsonToUtf8Bytes,
+  parseSigningPayload,
+  parseStrictJson,
   NSEALR_V0_LIMITS
 } from "@nsealr/protocol";
 
@@ -17,6 +19,12 @@ export type AnimatedQrEnvelopeOptions = {
 
 const TEXT_ENCODER = new TextEncoder();
 const TEXT_DECODER = new TextDecoder("utf-8", { fatal: true });
+
+function parsePayload(json: string, maximum: number, original: Uint8Array): unknown {
+  const value = parseStrictJson(json, maximum);
+  if (typeof value === "object" && value !== null && "version" in value && "request_id" in value && ("method" in value || "ok" in value)) return parseSigningPayload(original, maximum);
+  return value;
+}
 
 function assertBase64Url(value: string): void {
   assertBase64UrlPayload(value, {
@@ -80,6 +88,7 @@ export function decodeQrEnvelope(envelope: string): unknown {
   }
   assertBase64Url(payload);
   const decoded = decodeBase64Url(payload, "QR envelope payload must be base64url");
+  if (encodeBase64Url(decoded) !== payload) throw new Error("QR envelope payload has invalid trailing bits");
   if (decoded.byteLength > NSEALR_V0_LIMITS.max_static_qr_decoded_json_bytes) {
     throw new Error("QR decoded JSON exceeds max_static_qr_decoded_json_bytes");
   }
@@ -90,7 +99,7 @@ export function decodeQrEnvelope(envelope: string): unknown {
     throw new Error("QR envelope payload must be valid UTF-8", { cause: error });
   }
   try {
-    return JSON.parse(json);
+    return parsePayload(json, NSEALR_V0_LIMITS.max_static_qr_decoded_json_bytes, decoded);
   } catch (error) {
     throw new Error("QR envelope payload is not valid JSON", { cause: error });
   }
@@ -144,6 +153,7 @@ export function decodeAnimatedQrEnvelopeFrames(frames: string[]): unknown {
   if (frames.length === 0) {
     throw new Error("animated QR requires at least one frame");
   }
+  if (frames.length > NSEALR_V0_LIMITS.max_animated_qr_frame_count) throw new Error("animated QR frame count exceeds max_animated_qr_frame_count");
   const parsed = frames.map(parseAnimatedFrame);
   const digest = parsed[0].digest;
   const total = parsed[0].total;
@@ -169,6 +179,7 @@ export function decodeAnimatedQrEnvelopeFrames(frames: string[]): unknown {
     chunks.push(frame.chunk);
   }
   const decoded = decodeBase64Url(chunks.join(""), "animated QR payload must be base64url");
+  if (encodeBase64Url(decoded) !== chunks.join("")) throw new Error("animated QR payload has invalid trailing bits");
   if (decoded.byteLength > NSEALR_V0_LIMITS.max_animated_qr_decoded_json_bytes) {
     throw new Error("animated QR decoded JSON exceeds max_animated_qr_decoded_json_bytes");
   }
@@ -182,7 +193,7 @@ export function decodeAnimatedQrEnvelopeFrames(frames: string[]): unknown {
     throw new Error("animated QR payload must be valid UTF-8", { cause: error });
   }
   try {
-    return JSON.parse(json);
+    return parsePayload(json, NSEALR_V0_LIMITS.max_animated_qr_decoded_json_bytes, decoded);
   } catch (error) {
     throw new Error("animated QR payload is not valid JSON", { cause: error });
   }

@@ -1,0 +1,276 @@
+{
+  "schema_version": 1,
+  "task": "T01",
+  "component": "Pi independent reference consumer, corrected forward delivery",
+  "author": "/root/b01_final_review",
+  "model": "gpt-6.1-sol xhigh",
+  "status": "AUTHOR_READY_FOR_DISTINCT_ROOT_REVIEW",
+  "base": "65d289f7ec35d07f575ce8cac5c27cb046af2878",
+  "product_candidate": "8c44b722bd48dbe502ba138108d92e32335c6d5e",
+  "product_tree": "6403845d3925ae05782b3e4cc21cf0bc2b5d472e",
+  "final_delivery_binding": "External final proof-only commit plus result.json hash bind this document; no self-hash.",
+  "scope": {
+    "product_paths": [
+      "apps/pi/app/nsealr_vault/limits.py",
+      "apps/pi/app/nsealr_vault/signer.py",
+      "apps/pi/app/nsealr_vault/qr.py",
+      "apps/pi/tests/test_seed_signer_hardware.py",
+      "apps/pi/tests/test_vault_core.py"
+    ],
+    "only_new_proof": "docs/restart/implementation/T01/integration/pi-consumer/",
+    "all_other_nonproof_paths_unchanged": true,
+    "admission_addendum": "pi-qr-raw-ingress-addendum.json",
+    "admission_SHA256": "d7d0fe3553caa681b7f3f7cbbdb42e3eb164f0f21fd8af7e860cf28f455f4b37",
+    "no_extra_scope_or_new_framework": true
+  },
+  "historical_delivery": {
+    "commit": "819b836ca57b7bdd0f8e0e6dffb20e2431f9ed74",
+    "product": "67c77a12545c2db13fdfed1a358d988e3410072b",
+    "proof_files_preserved_byte_exact": 30,
+    "prior_result_sha256": "cd0523c4ceb5f4af2bb69ca079c776e9be1ab30e6f3f4b33a22961d17ea772ec",
+    "prior_result_disposition": "Historical OPEN raw-gap author result, not changed to green or used as current acceptance. Its exact commit/hash bind all paired prior artifacts.",
+    "prior751_preread": "e554a785242e3de08ec3c1568f7a4327e1444b09 unchanged; not a review of this author code."
+  },
+  "corrections": [
+    {
+      "id": "T01-PI-RAW-01",
+      "requirement": "Unchanged T01 S-03 duplicate/escaped-alias, canonical unsigned safe integers and decoded Unicode scalar checks before any signer invocation.",
+      "actual_before": "Three original static cases reached real reference signing; new static/animated regression26negativefailures before QR edit. Original raw logs/input observations retained.",
+      "change": "One shared private stdlib json.loads hook helper and two intake-call substitutions in qr.py. Numeric/Unicode validation work bounded by unchanged byte ceilings; framing/base64/checksums/caps unchanged.",
+      "actual_after": "All28raw negative controls reject and12positive controls preserve values across static/animated; same3original failed payloads reobserved as6pre-signer rejections.",
+      "status": "AUTHOR_OBSERVED_CORRECTED_PENDING_DISTINCT_REVIEW"
+    },
+    {
+      "id": "T01-PI-02",
+      "requirement": "Malformed nonstring methods return bounded wire2 errors without throwing or entering key/crypto.",
+      "root_finding": "root-method-finding-bindings.json",
+      "actual_before": "List/dict TypeErrors; four other nonstring cases wrong invalid_request disposition, preserved RED.",
+      "change": "String type guard before method set membership; unknown strings remain unsupported_method. Signer docstring updated to strictQR/directCLI distinction.",
+      "actual_after": "Six malformed method controls reject before both key and crypto functions.",
+      "status": "AUTHOR_OBSERVED_CORRECTED_PENDING_DISTINCT_REVIEW"
+    },
+    {
+      "id": "PI-OFFLINE-WORKFLOW",
+      "requirement": "Fixed P-06/D-05/D-06/D-07 prohibit offline DM/setup/AUTH or blind-seal fallback through generic sign_event.",
+      "actual_before": "Six accepted generic kinds4/13/14/1059/10050/22242, preserved before-offline-kind-guard RED.",
+      "change": "Narrow pi_qr profile eligibility guard in already-owned signer.py, invalid_request before key/crypto. No core Nostr parsing/canonicalization or transport-key change.",
+      "actual_after": "All6blocked; historical general reference review inputs retained.",
+      "status": "AUTHOR_OBSERVED_CORRECTED_PENDING_DISTINCT_REVIEW"
+    }
+  ],
+  "actual_checks": [
+    {
+      "evidence": "before-raw-fix/command.json",
+      "exit_code": 1,
+      "negative_failures": 26,
+      "role": "Before QR edit, tests/expectations committed93e042ea."
+    },
+    {
+      "evidence": "before-method-guard/command.json",
+      "exit_code": 1,
+      "errors": 2,
+      "failures": 4
+    },
+    {
+      "evidence": "before-offline-kind-guard/command.json",
+      "exit_code": 1,
+      "failures": 6
+    },
+    {
+      "evidence": "focused-green/command.json",
+      "exit_code": 0,
+      "test_methods": 15,
+      "role": "Affected raw/type controls before later offline-kind guard."
+    },
+    {
+      "evidence": "restoration/command.json",
+      "exit_code": 0,
+      "same_original_input_observations": 6,
+      "signer_invocations": 0,
+      "role": "Same3original payloads,bothintakes; QR/sourcecontrol bytes unaffected by later kind guard."
+    },
+    {
+      "evidence": "pi-ci-green/command.json",
+      "exit_code": 0,
+      "test_methods": 161,
+      "role": "Intermediate fullPi success before offline guard, not finalsuite."
+    },
+    {
+      "evidence": "pi-ci-final/command.json",
+      "exit_code": 0,
+      "test_methods": 162,
+      "role": "Stable final5producthashes match8c44b722; setup/install/structure/compileall/pipcheck/docs PASS, no skips."
+    },
+    {
+      "evidence": "source-invariants.json",
+      "role": "Exact5sourcebindings,allotherpathsunchanged,30historicalproofbytesexact,framingASTexcepttwoJSONcallsidentical,147originalmethodsretained+12new."
+    },
+    {
+      "evidence": "whitespace.json",
+      "source_exit_code": 0,
+      "staged_proof_exit_code": 0,
+      "raw_logs_preserved": true
+    }
+  ],
+  "command_binding_limit": "Captured commands accurately retain93e042ea+their dirty diff and source hashes. They are not relabelled clean8c44b722 executions. Final fullPi receipt binds all5actual committed product bytes.",
+  "independent_expectations": "Original42caseJSONvalues/92pairedpostimages/sixdiagnosticliteralexpectations remain unchanged and recoverable through prior source-bound proof. New raw/type/offline regression semantics were fixed from the unchanged contract/rootfinding before corresponding affected runtime edits. No expected answer is derived from product output.",
+  "acceptance_and_limits": {
+    "self_review_or_final_T01_acceptance": false,
+    "all42_cases_passed_here": false,
+    "graph_criteria_resources_releases_or_taskclosure_changed": false,
+    "main_author_consolidation": "Requires root distinct exactsource/proof review and explicit ownership hand-back.",
+    "physical_production_or_shared_engine_qualification": false,
+    "raw_cli_or_arbitrary_direct_dict_ingress_conformance": false,
+    "remaining_boundary": "Excluded directdict/CLIJSONreaders cannot establish originalbyte evidence. Q02 must pass original bytes to actual sharedRust core without permissive roundtrip. This reference correction grants no production authority.",
+    "K01_runtime_started": false,
+    "hosted_CI_merge_or_main_adoption_claimed": false
+  },
+  "paired_correction_artifacts_excluding_this_JSON": [
+    {
+      "path": "README.md",
+      "bytes": 5702,
+      "sha256": "b38187a56f592fda479e11ee349d91c2ae01c8d6cf8b2ace4a78332dae0631f3"
+    },
+    {
+      "path": "before-method-guard/command.json",
+      "bytes": 1630,
+      "sha256": "fa14d1ce1026d0f1a7604dd28ad8bed1edbdacd8f4e9e363e8c40ec58defc5c5"
+    },
+    {
+      "path": "before-method-guard/stderr.log",
+      "bytes": 5434,
+      "sha256": "ff0bee35c252a31a11733c152e8396eff8485db2711cbeb32c9663915cde767b"
+    },
+    {
+      "path": "before-method-guard/stdout.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "before-offline-kind-guard/command.json",
+      "bytes": 1788,
+      "sha256": "1737df8e82b9342a44d8d5251d4ed440d2a8a653f764989f1663512011a0c767"
+    },
+    {
+      "path": "before-offline-kind-guard/stderr.log",
+      "bytes": 3733,
+      "sha256": "a3b837a9f606cd48c39fd855dfd5b76d6b8eea52f48171fd7c292519cccf7744"
+    },
+    {
+      "path": "before-offline-kind-guard/stdout.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "before-raw-fix/command.json",
+      "bytes": 1516,
+      "sha256": "92033eb67b6171d466a96c984e3716ddcf80fd37eaaf9a7f3c1f94cf16e3deb8"
+    },
+    {
+      "path": "before-raw-fix/stderr.log",
+      "bytes": 18147,
+      "sha256": "ab369db9d4a435a6e23cb912f623d09257a0714412492eddcd1aa9655c3b9cd0"
+    },
+    {
+      "path": "before-raw-fix/stdout.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "expectations.json",
+      "bytes": 1793,
+      "sha256": "8ddb9eb027327b2c19e6a8fbe695de56159f11d7cb83170cbc576d5b104b4063"
+    },
+    {
+      "path": "focused-green/command.json",
+      "bytes": 2238,
+      "sha256": "d894f959d732912200405d5aa6442184c520c3206fe623f8c899acb18b975bc6"
+    },
+    {
+      "path": "focused-green/stderr.log",
+      "bytes": 114,
+      "sha256": "3efc3bd5f9b54b089f852ad6b401ee5c3dafa5c72c296e25c9c78023519d5286"
+    },
+    {
+      "path": "focused-green/stdout.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "observe-restoration.py",
+      "bytes": 1806,
+      "sha256": "01bdb40fc16da3e971516be04fb89684d1ce2c218a123255df893102bfaa3bf8"
+    },
+    {
+      "path": "pi-ci-final/command.json",
+      "bytes": 1755,
+      "sha256": "dfa753747c60df7c8283c1d9336869ea98e2c6069a0ecab0eea63bcbd6a43443"
+    },
+    {
+      "path": "pi-ci-final/stderr.log",
+      "bytes": 262,
+      "sha256": "b196a38e0357008c957ca6c4b9022b0ece5d4c1d3956211f65b6014d2136e2fc"
+    },
+    {
+      "path": "pi-ci-final/stdout.log",
+      "bytes": 3666,
+      "sha256": "9714b3898570af85016a241614f250a71d3d64d3321c22f3cc351bbad15b65ca"
+    },
+    {
+      "path": "pi-ci-green/command.json",
+      "bytes": 1755,
+      "sha256": "538b9b2866a7abfee48fde1b8fe75f57055fe195a797e4694692999c61da225c"
+    },
+    {
+      "path": "pi-ci-green/stderr.log",
+      "bytes": 261,
+      "sha256": "11f7bcb2f57929a674b10fa17b48d14e6dbd5258aa2345164b0151052e1460a6"
+    },
+    {
+      "path": "pi-ci-green/stdout.log",
+      "bytes": 3666,
+      "sha256": "2b7ffaa3657a40f142ff6f587ff30e00c2a183972dd36fcaf1a2f5a3ea089159"
+    },
+    {
+      "path": "pi-qr-raw-ingress-addendum.json",
+      "bytes": 3790,
+      "sha256": "d7d0fe3553caa681b7f3f7cbbdb42e3eb164f0f21fd8af7e860cf28f455f4b37"
+    },
+    {
+      "path": "restoration/command.json",
+      "bytes": 1468,
+      "sha256": "30971320fb70ca840509b7daf318a8689d460fffc9c7ce1f0cfc97d7ba1c48b2"
+    },
+    {
+      "path": "restoration/stderr.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "restoration/stdout.log",
+      "bytes": 73,
+      "sha256": "70dc1c797e6c73fe7e5bcbb0bbe3ccc7d3a61b61f6e5f13fcaba059fdf3f035b"
+    },
+    {
+      "path": "restoration-observations.json",
+      "bytes": 3552,
+      "sha256": "b77d6bcc4750f182f0fe45d9bd59e1eb5b20aa013e88986fc31dfc6abc4b6aa0"
+    },
+    {
+      "path": "root-method-finding-bindings.json",
+      "bytes": 2637,
+      "sha256": "55a7265d48ee24018191422558b6e1ffb22a815e6addea1e2219e88d5208dace"
+    },
+    {
+      "path": "source-invariants.json",
+      "bytes": 5217,
+      "sha256": "79cb39d382912e57a4e5493149a3148ed85ca1c608fc787d8310e04fe1197cc9"
+    },
+    {
+      "path": "whitespace.json",
+      "bytes": 481,
+      "sha256": "39ecad348e50870b083c443d3215a10bf05208694f94d1bad2a12a99980c0b0b"
+    }
+  ],
+  "self_binding": "External final commit/resultSHA, no self-hash."
+}

@@ -12,26 +12,22 @@ function load(rel: string): unknown {
 }
 
 describe("protocol validation", () => {
-  it("accepts valid v0 sign_event requests and responses", () => {
+  it("accepts valid wire2 sign_event requests and responses", () => {
     expect(validateRequest(load("examples/request-kind-1-basic.json")).ok).toBe(true);
     expect(validateResponse(load("examples/response-kind-1-basic.json")).ok).toBe(true);
   });
 
-  it("accepts valid v0 capability requests and ESP32-S3 scaffold responses", () => {
+  it("accepts valid wire2 capability requests and ESP32-S3 scaffold responses", () => {
     expect(validateRequest(load("examples/request-get-capabilities.json")).ok).toBe(true);
     expect(validateResponse(load("examples/response-get-capabilities-esp32-s3-scaffold.json")).ok).toBe(true);
   });
 
-  it("accepts valid v0 signing-status requests and ESP32-S3 scaffold responses", () => {
-    expect(validateRequest(load("examples/request-get-signing-status.json")).ok).toBe(true);
-    expect(validateResponse(load("examples/response-get-signing-status-esp32-s3-scaffold.json")).ok).toBe(true);
-    expect(load("vectors/devices/esp32-s3-signing-status-disabled.json")).toMatchObject({
-      request: load("examples/request-get-signing-status.json"),
-      response: load("examples/response-get-signing-status-esp32-s3-scaffold.json")
-    });
+  it("rejects the retired signing-status request and universal status fields", () => {
+    expect(validateRequest(load("examples/request-get-signing-status.json")).ok).toBe(false);
+    expect(validateResponse(load("examples/response-get-signing-status-esp32-s3-scaffold.json")).ok).toBe(false);
   });
 
-  it("accepts valid v0 public-key requests and responses", () => {
+  it("accepts valid wire2 public-key requests and responses", () => {
     expect(validateRequest(load("examples/request-get-public-key.json")).ok).toBe(true);
     expect(validateResponse(load("examples/response-get-public-key.json")).ok).toBe(true);
     expect(load("vectors/devices/esp32-s3-get-public-key-dev.json")).toMatchObject({
@@ -44,12 +40,12 @@ describe("protocol validation", () => {
     expect(validateResponse(load("examples/response-sign-event-disabled-esp32-s3-scaffold.json")).ok).toBe(true);
   });
 
-  it("rejects invalid v0 requests", () => {
+  it("rejects invalid wire2 requests", () => {
     expect(validateRequest(load("examples/invalid/request-sign-event-with-pubkey.json")).ok).toBe(false);
     expect(validateRequest(load("examples/invalid/request-unknown-method.json")).ok).toBe(false);
   });
 
-  it("mirrors the shared nSealr v0 implementation limits", () => {
+  it("mirrors the shared historical limits inventory (independent of wire2)", () => {
     const fixtures = loadSpecsFixtures(specsRoot);
 
     expect(NSEALR_V0_LIMITS).toEqual(fixtures.limits.limits);

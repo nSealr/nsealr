@@ -7,7 +7,6 @@ from unittest.mock import patch
 
 from scripts.verify_specs import (
     check_access_surface_vector,
-    check_device_security_profile_vector,
     check_feature_matrix_vector,
     check_review_detail_page_vector,
     check_review_transcript_vector,
@@ -46,7 +45,6 @@ from scripts.verify_specs import (
     source_public_key_proof_vector_names,
     access_surface_vector_names,
     display_safe_text,
-    device_security_profile_vector_names,
     feature_matrix_vector_names,
 )
 import scripts.verify_specs as verify_specs
@@ -674,20 +672,12 @@ class VerifySpecsTests(unittest.TestCase):
         self.assertIn("must not contain secret field client.secret_key", joined)
         self.assertIn("safety boundary mismatch", joined)
 
-    def test_device_security_profile_vectors_are_discovered_from_directory(self) -> None:
-        names = device_security_profile_vector_names()
-
-        expected = sorted(path.stem for path in (ROOT / "vectors/devices").glob("*security-profile-*.json"))
-        self.assertEqual(names, expected)
-        self.assertIn("esp32-s3-security-profile-development", names)
-
-    def test_device_security_profile_vectors_validate_hardening_boundary(self) -> None:
-        for name in device_security_profile_vector_names():
-            errors: list[str] = []
-
-            check_device_security_profile_vector(name, errors)
-
-            self.assertEqual(errors, [], name)
+    def test_retired_universal_security_profile_is_not_current(self) -> None:
+        self.assertEqual(list((ROOT / "vectors/devices").glob("*security-profile-*.json")), [])
+        common = load_json("vectors/profile-capabilities/cases-v1.json")
+        errors: list[str] = []
+        verify_specs.check_profile_contract(common, errors)
+        self.assertEqual(errors, [])
 
     def test_feature_matrix_rejects_shared_feature_contract_drift(self) -> None:
         matrix = deepcopy(load_json("vectors/features/signer-feature-matrix-v0.json"))
@@ -894,7 +884,7 @@ class VerifySpecsTests(unittest.TestCase):
             errors,
         )
 
-        self.assertIn("external NIP-46 routes must not claim nSealr persistent grants", "\n".join(errors))
+        self.assertIn("capabilities has unknown fields", "\n".join(errors))
 
     def test_account_descriptors_reject_policy_route_mismatch(self) -> None:
         account = deepcopy(load_json("vectors/accounts/esp32-qr-nip06-account-0.json"))
@@ -1002,85 +992,19 @@ class VerifySpecsTests(unittest.TestCase):
         self.assertIn("requested_by.label must be a non-empty string", joined)
 
     def test_identity_policy_schemas_declare_required_contracts(self) -> None:
-        account_schema = load_json("schemas/account-descriptor-v0.schema.json")
+        account_schema = load_json("schemas/account-v1.schema.json")
         policy_schema = load_json("schemas/policy-profile-v0.schema.json")
         grant_schema = load_json("schemas/grant-descriptor-v0.schema.json")
         policy_change_schema = load_json("schemas/policy-change-review-v0.schema.json")
         policy_decision_schema = load_json("schemas/policy-decision-vector-v0.schema.json")
-        route_selection_schema = load_json("schemas/route-selection-vector-v0.schema.json")
-
-        self.assertEqual(account_schema["title"], "nSealr Account Descriptor v0")
-        self.assertIn("signer_route", account_schema["required"])
-        self.assertNotIn("secret_key", account_schema["properties"])
-        self.assertFalse(account_schema["additionalProperties"])
-        self.assertFalse(account_schema["properties"]["signer_route"]["additionalProperties"])
-        self.assertFalse(account_schema["properties"]["capabilities"]["additionalProperties"])
-        self.assertEqual(account_schema["properties"]["policy_profile_id"]["pattern"], "^policy-[A-Za-z0-9._:-]{1,121}$")
-        account_route_semantics = account_schema["allOf"]
-        self.assertEqual(len(account_route_semantics), 5)
-        self.assertIn({
-            "if": {
-                "properties": {
-                    "signer_route": {
-                        "properties": {"type": {"const": "esp32_usb_nip46"}},
-                        "required": ["type"],
-                    }
-                },
-                "required": ["signer_route"],
-            },
-            "then": {
-                "properties": {
-                    "signer_route": {
-                        "required": ["repository"],
-                        "properties": {
-                            "repository": {"const": "nsealr"},
-                            "transport": {"const": "usb"},
-                            "custody": {"const": "device_persistent"},
-                            "trusted_review": {"const": "device_display"},
-                            "policy_support": {"const": "scoped_automation"},
-                        },
-                    },
-                    "capabilities": {
-                        "properties": {
-                            "physical_review": {"const": True},
-                            "physical_approval": {"const": True},
-                            "persistent_grants": {"const": True},
-                        }
-                    },
-                },
-            },
-        }, account_route_semantics)
-        self.assertIn({
-            "if": {
-                "properties": {
-                    "signer_route": {
-                        "properties": {"type": {"const": "external_nip46"}},
-                        "required": ["type"],
-                    }
-                },
-                "required": ["signer_route"],
-            },
-            "then": {
-                "properties": {
-                    "signer_route": {
-                        "not": {"required": ["repository"]},
-                        "properties": {
-                            "transport": {"const": "nip46_relay"},
-                            "custody": {"const": "external_signer"},
-                            "trusted_review": {"const": "external_policy"},
-                            "policy_support": {"const": "external"},
-                        },
-                    },
-                    "capabilities": {
-                        "properties": {
-                            "physical_review": {"const": False},
-                            "physical_approval": {"const": False},
-                            "persistent_grants": {"const": False},
-                        }
-                    },
-                },
-            },
-        }, account_route_semantics)
+        route_selection_schema = load_json("schemas/route-selection-v1.schema.json")
+        for account in account_schema["oneOf"]:
+            self.assertFalse(account["additionalProperties"])
+            self.assertEqual(account["properties"]["format"]["const"], "nsealr.account.v1")
+            self.assertNotIn("physical_review", account["properties"]["capabilities"]["properties"])
+            self.assertFalse(account["properties"]["capabilities"]["additionalProperties"])
+        self.assertFalse(route_selection_schema["additionalProperties"])
+        self.assertEqual(route_selection_schema["properties"]["format"]["const"], "nsealr.route-selection.v1")
         self.assertEqual(policy_schema["title"], "nSealr Policy Profile v0")
         self.assertIn("grants_allowed", policy_schema["required"])
         self.assertFalse(policy_schema["additionalProperties"])
@@ -1133,49 +1057,6 @@ class VerifySpecsTests(unittest.TestCase):
             policy_decision_schema["properties"]["request"]["properties"]["grant_ids"]["items"]["pattern"],
             "^grant-[A-Za-z0-9._:-]{1,122}$",
         )
-        self.assertEqual(
-            route_selection_schema["properties"]["selection"]["properties"]["policy_profile_id"]["pattern"],
-            "^policy-[A-Za-z0-9._:-]{1,121}$",
-        )
-        route_selection_semantics = route_selection_schema["properties"]["selection"]["allOf"]
-        self.assertEqual(len(route_selection_semantics), 5)
-        self.assertIn({
-            "if": {
-                "properties": {"route_type": {"const": "esp32_usb_nip46"}},
-                "required": ["route_type"],
-            },
-            "then": {
-                "required": ["repository"],
-                "properties": {
-                    "repository": {"const": "nsealr"},
-                    "transport": {"const": "usb"},
-                    "custody": {"const": "device_persistent"},
-                    "trusted_review": {"const": "device_display"},
-                    "policy_support": {"const": "scoped_automation"},
-                    "physical_review": {"const": True},
-                    "physical_approval": {"const": True},
-                    "persistent_grants": {"const": True},
-                },
-            },
-        }, route_selection_semantics)
-        self.assertIn({
-            "if": {
-                "properties": {"route_type": {"const": "external_nip46"}},
-                "required": ["route_type"],
-            },
-            "then": {
-                "not": {"required": ["repository"]},
-                "properties": {
-                    "transport": {"const": "nip46_relay"},
-                    "custody": {"const": "external_signer"},
-                    "trusted_review": {"const": "external_policy"},
-                    "policy_support": {"const": "external"},
-                    "physical_review": {"const": False},
-                    "physical_approval": {"const": False},
-                    "persistent_grants": {"const": False},
-                },
-            },
-        }, route_selection_semantics)
 
 
     def test_nip46_session_active_vector_names_are_discovered_from_directory(self) -> None:

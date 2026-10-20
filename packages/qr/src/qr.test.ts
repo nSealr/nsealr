@@ -1,4 +1,5 @@
 import { readFileSync } from "node:fs";
+import { createHash } from "node:crypto";
 import { resolve } from "node:path";
 import { describe, expect, it } from "vitest";
 import { resolveSpecsRoot } from "@nsealr/fixtures";
@@ -13,6 +14,20 @@ import {
 } from "./qr.js";
 
 const specsRoot = resolveSpecsRoot();
+
+describe("original QR signer byte grammar", () => {
+  it("checks duplicate/Unicode/number/BOM evidence in static and animated ingress", () => {
+    const valid = '{"version":2,"request_id":"r","method":"get_public_key"}';
+    const hash = (value: string | Uint8Array) => createHash("sha256").update(value).digest("hex");
+    for (const raw of [valid.replace(':2,', ':2.0,'), valid.replace(':2,', ':2,"version":2,'), valid.replace('"r"', '"\\ud800"'), '\ufeff' + valid, valid + '{}']) {
+      const bytes = Buffer.from(raw), payload = bytes.toString("base64url");
+      expect(() => decodeQrEnvelope(`nsealr1:${payload}`)).toThrow();
+      const body = `nsealr1a:${hash(bytes)}:1/1:${payload}`;
+      expect(() => decodeAnimatedQrEnvelopeFrames([`${body}:${hash(body).slice(0, 16)}`])).toThrow();
+    }
+    expect(decodeQrEnvelope(`nsealr1:${Buffer.from(valid).toString("base64url")}`)).toEqual(JSON.parse(valid));
+  });
+});
 const signEventRequest = JSON.parse(readFileSync(resolve(specsRoot, "examples/request-kind-1-basic.json"), "utf8"));
 const qrVector = JSON.parse(readFileSync(resolve(specsRoot, "vectors/transports/qr-envelope-kind-1-basic.json"), "utf8"));
 const animatedQrVector = JSON.parse(readFileSync(resolve(specsRoot, "vectors/transports/qr-animated-response-kind-1-basic.json"), "utf8"));

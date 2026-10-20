@@ -16,7 +16,7 @@ import { encodeSerialFrame } from "@nsealr/framing";
 import { exchangeSerialLineRequest, type SerialLinePort } from "@nsealr/transport";
 
 const request = {
-  version: 1,
+  version: 2,
   request_id: "readme-transport",
   method: "get_public_key"
 };
@@ -26,7 +26,7 @@ const port: SerialLinePort = {
     return encodeSerialFrame({
       type: "response",
       payload: {
-        version: 1,
+        version: 2,
         request_id: request.request_id,
         ok: false,
         error: {

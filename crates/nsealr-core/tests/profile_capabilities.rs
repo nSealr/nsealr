@@ -1,5 +1,36 @@
 //! Requirement-derived profile diagnostics, using the one independent artifact.
 use nsealr_core::capabilities::*;
+
+#[test]
+fn common_profile_manifests_are_conformance_only_and_match_typed_profile_designs() {
+    let inputs = [
+        include_str!(concat!(env!("OUT_DIR"), "/t01-profile-esp32_no_se.json")),
+        include_str!(concat!(env!("OUT_DIR"), "/t01-profile-pi_qr.json")),
+        include_str!(concat!(env!("OUT_DIR"), "/t01-profile-p4_qr.json")),
+        include_str!(concat!(env!("OUT_DIR"), "/t01-profile-custom_board.json")),
+    ];
+    for input in inputs {
+        let value: serde_json::Value = serde_json::from_str(input).unwrap();
+        let profile = Profile::from_id(value["profile"].as_str().unwrap()).unwrap();
+        assert_eq!(value["conformance_only"], true);
+        let custody = match profile.custody() {
+            Custody::VolatileSession => "volatile_session",
+            Custody::McuWrappedPersistent => "mcu_wrapped_persistent",
+            Custody::CustomSeAssistedPersistent => "custom_se_assisted_persistent",
+        };
+        assert_eq!(value["custody"]["mode"], custody);
+        let sign = value["methods"]
+            .as_array()
+            .unwrap()
+            .iter()
+            .find(|method| method["id"] == "sign_event")
+            .unwrap();
+        assert_eq!(sign["support"], "supported");
+        assert_eq!(sign["configuration"], "unconfigured");
+        assert_eq!(sign["availability"], "unavailable");
+        assert_eq!(sign["reason"], "provider_missing");
+    }
+}
 use serde_json::Value;
 
 fn case(id: &str) -> Value {
@@ -430,5 +461,20 @@ fn checked_expansion_rejects_before_allocation_at_independent_boundaries() {
     assert_eq!(
         checked_expansion(1, 100, 1, 0, 0),
         Err(LimitError::ZeroRequired)
+    );
+}
+
+#[test]
+fn profile_layout_and_request_storage_are_accounted_separately() {
+    use core::mem::size_of;
+    use nsealr_core::event::{EventTemplate, ParsedRequest};
+    // Portable host-layout observations, not target stack/RAM measurements.
+    // Existing S03 operation backing capacities remain separate from metadata.
+    assert!(size_of::<ParsedRequest>() <= 8192);
+    assert!(size_of::<EventTemplate>() <= 8192);
+    assert!(size_of::<ProfileAssessment>() <= MAX_DIAGNOSTICS * size_of::<Option<Blocker>>() + 16);
+    println!(
+        "T01 host-layout bytes: Profile={} ReportedFeature={} Identifier={} FiniteLimits={} LocalObservations={} ProfileAssessment={} ParsedRequest={} EventTemplate={}; operation raw input<=4096/canonical caller scratch<=8192 unchanged; JSON metadata parsed by bounded host/Pi intake, not a second portable parser; no MCU stack/RAM/latency claim",
+        size_of::<Profile>(), size_of::<ReportedFeature>(), size_of::<Identifier>(), size_of::<FiniteLimits>(), size_of::<LocalObservations>(), size_of::<ProfileAssessment>(), size_of::<ParsedRequest>(), size_of::<EventTemplate>()
     );
 }

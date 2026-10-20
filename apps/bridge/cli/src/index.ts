@@ -116,8 +116,6 @@ const PARAMETERLESS_REQUEST_METHODS: Record<string, { protocolMethod: string; de
   "get-capabilities": { protocolMethod: "get_capabilities", defaultRequestId: "req-capabilities-1" },
   pubkey: { protocolMethod: "get_public_key", defaultRequestId: "req-pubkey-1" },
   "get-public-key": { protocolMethod: "get_public_key", defaultRequestId: "req-public-key-1" },
-  "signing-status": { protocolMethod: "get_signing_status", defaultRequestId: "req-signing-status-1" },
-  "get-signing-status": { protocolMethod: "get_signing_status", defaultRequestId: "req-signing-status-1" }
 };
 
 function readJson(path: string): unknown {
@@ -761,8 +759,8 @@ export function buildCli(options: BuildCliOptions = {}): Command {
         validateNip46PolicyFileFixture(nip46PolicyFile.name, nip46PolicyFile);
       }
       for (const account of fixtures.accounts) {
-        if (account.signer_route.type.endsWith("_qr_vault") && account.capabilities.persistent_grants !== false) {
-          throw new Error(`invalid account descriptor ${account.account_id}: QR vaults must not support persistent grants`);
+        if (account.signer_route.type.endsWith("_qr_vault") && (account.signer_route.custody !== "volatile_session" || account.signer_route.policy_support !== "manual_only")) {
+          throw new Error(`invalid account descriptor ${account.account_id}: QR vaults require volatile custody and manual-only consent`);
         }
       }
       for (const policy of fixtures.policyProfiles) {
@@ -976,7 +974,7 @@ export function buildCli(options: BuildCliOptions = {}): Command {
       const parameterlessMethod = PARAMETERLESS_REQUEST_METHODS[method];
       if (parameterlessMethod) {
         const request = {
-          version: 1,
+          version: 2,
           request_id: options.requestId ?? parameterlessMethod.defaultRequestId,
           method: parameterlessMethod.protocolMethod
         };
@@ -988,7 +986,7 @@ export function buildCli(options: BuildCliOptions = {}): Command {
       if (method === "sign-event") {
         if (!options.eventTemplate) throw new Error("--event-template is required for sign-event");
         const request = {
-          version: 1,
+          version: 2,
           request_id: options.requestId ?? "req-sign-event-1",
           method: "sign_event",
           params: {

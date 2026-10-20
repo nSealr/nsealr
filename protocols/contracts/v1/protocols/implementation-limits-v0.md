@@ -16,7 +16,7 @@ The canonical machine-readable profile is:
 | Limit | Value | Applies to |
 | --- | ---: | --- |
 | `max_request_id_length` | 128 | Signing request and NIP-46 request ids. |
-| `max_decoded_request_json_bytes` | 704 | Compact UTF-8 decoded nSealr request JSON. |
+| `max_decoded_request_json_bytes` | 704 | Original UTF-8 decoded request JSON, including whitespace before parsing. |
 | `max_static_qr_decoded_json_bytes` | 704 | Static QR envelope decoded UTF-8 JSON payloads. |
 | `max_animated_qr_decoded_json_bytes` | 4096 | Reassembled animated QR decoded UTF-8 JSON payloads before schema validation. |
 | `max_animated_qr_frame_payload_chars` | 256 | Base64url chunk characters inside one animated QR frame. |
@@ -28,13 +28,15 @@ The canonical machine-readable profile is:
 | `max_tag_fields_per_tag` | 8 | Fields in each tag array. |
 | `max_tag_field_utf8_bytes` | 64 | Each individual tag string field. |
 | `max_total_tag_utf8_bytes` | 4096 | Sum of UTF-8 bytes across all tag string fields. |
-| `max_safe_integer` | 9007199254740991 | Integer safety bound for `created_at` and `kind`. |
+| `max_safe_integer` | 9007199254740991 | Representational safety ceiling; current kind grammar is additionally 0–65535. |
 
 ## Integer Policy
 
 `created_at` and `kind` must be JSON integers, must not be booleans, must be
 greater than or equal to `0`, and must be less than or equal to
-`max_safe_integer`.
+`max_safe_integer`. The S03 parser additionally restricts `kind` to 0–65535;
+wire2 preserves that grammar. The historical numeric profile is an upper bound,
+not permission to bypass a narrower parser or adapter.
 
 Floats, strings, negative values, and integers above the safe-integer bound are
 rejected before review or signing.
@@ -48,3 +50,16 @@ Changing these values requires:
 3. Updating companion, Raspberry, and ESP32 conformance tests.
 4. Keeping ESP32 production signing disabled until all affected parser,
    display-review, physical-approval, custody, and verification gates pass.
+
+## Current finite operation manifests
+
+Wire2 uses the discriminated [limits-v1.schema.json](../schemas/limits-v1.schema.json)
+contract and independently authored bounded conformance inputs in
+[vectors/profile-capabilities/cases-v1.json](../vectors/profile-capabilities/cases-v1.json).
+Method/transport limits intersect with actual local adapter ceilings before any
+write. Unknown/missing dimensions reject; zero explicitly disables queue/cache
+retention. Request/response bytes, aggregate tag storage, frame counts, pending
+operations, work, retained bytes and absolute deadlines remain finite. Descriptor
+reference encoding cannot increase the existing frame or decoded-input ceilings.
+The conformance metadata budget is separate from operation capacity and parser
+scratch/caller storage. None of these synthetic bounds measure MCU RAM or latency.

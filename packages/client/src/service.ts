@@ -66,6 +66,8 @@ export type SignerDispatchRequest = {
   before_write?: () => void;
   /** Diagnostic local intersection, never physical approval or device authority. */
   effective_limits?: EffectiveSignerLimits;
+  /** Local cancellation/deadline signal; never serialized into device JSON. */
+  abort_signal?: AbortSignal;
 };
 
 /** Explicit current adapter observations, supplied locally, never from a wire
@@ -78,6 +80,18 @@ export type SignerCompatibilitySnapshot = {
   adapter_limits: LimitsManifest;
   connection_id: string;
   generation: number;
+  /** Locally observed complete review plan for this exact request/implementation,
+   * connection generation and relevant review context/geometry. Never wire data,
+   * a four-section preview count, consent, attestation or a physical-fit claim. */
+  review_plan?: {
+    request_sha256: string;
+    implementation_id: string;
+    connection_id: string;
+    generation: number;
+    context_id: string;
+    geometry_id: string;
+    pages: number;
+  };
 };
 export type EffectiveSignerLimits = { method: MethodLimits; transport: TransportLimits };
 
@@ -124,6 +138,9 @@ export function assessSignerCompatibility(route: RouteSelection, request: unknow
   const localTransport = own.transports.find((entry) => entry.transport_id === route.transport);
   if (!peerMethod || !localMethod || !peerTransport || !localTransport) compatibilityError("limits_unknown", "applicable limit dimensions are missing");
   const method = intersectMethodLimits(localMethod, peerMethod);
+  // The existing transport's local 30s default remains an independent ceiling.
+  // A peer/local metadata record cannot overflow or extend the actual timer.
+  method.deadline_ms = Math.min(method.deadline_ms, 30_000);
   method.request_json_bytes = Math.min(method.request_json_bytes, NSEALR_V0_LIMITS.max_decoded_request_json_bytes);
   if (method.scope === "sign_event") {
     method.content_utf8_bytes = Math.min(method.content_utf8_bytes!, NSEALR_V0_LIMITS.max_content_utf8_bytes);
@@ -136,6 +153,7 @@ export function assessSignerCompatibility(route: RouteSelection, request: unknow
   if (Object.keys(localTransport).sort().join() !== Object.keys(peerTransport).sort().join()) compatibilityError("limits_unknown", "transport dimensions/units differ");
   for (const key of Object.keys(localTransport)) if (typeof transport[key] === "number") transport[key] = Math.min(Number(transport[key]), Number((peerTransport as unknown as Record<string, unknown>)[key]));
   const boundTransport = transport as unknown as TransportLimits;
+  boundTransport.deadline_ms = Math.min(boundTransport.deadline_ms, 30_000);
   if (route.transport === "usb") boundTransport.frame_bytes = Math.min(boundTransport.frame_bytes, NSEALR_V0_LIMITS.max_serial_frame_bytes);
   else {
     boundTransport.reassembly_bytes = Math.min(boundTransport.reassembly_bytes, NSEALR_V0_LIMITS.max_animated_qr_decoded_json_bytes);
@@ -153,6 +171,7 @@ export function assessSignerCompatibility(route: RouteSelection, request: unknow
   if (route.transport === "qr" && bytes > boundTransport.static_decoded_json_bytes!) compatibilityError("limit_exceeded", "static QR request exceeds actual decoded capacity");
   if (method.scope === "sign_event") {
     const event = (request.params as {event_template: {created_at: number; kind: number; content: string; tags: string[][]}}).event_template;
+    if ([4, 13, 14, 1059, 10050, 22242].includes(event.kind)) compatibilityError("workflow_not_admitted", "user-message/setup/AUTH events require their separately admitted context/workflow; generic signing is not a blind-sign route");
     const encoder = new TextEncoder(); let tags = 0;
     if (encoder.encode(event.content).length > method.content_utf8_bytes! || event.tags.length > method.tag_count!) compatibilityError("limit_exceeded", "event exceeds effective content/tag capacity");
     for (const tag of event.tags) {
@@ -167,7 +186,13 @@ export function assessSignerCompatibility(route: RouteSelection, request: unknow
     const encodedOutput = route.transport === "usb" ? "nsealr1f:response::0000000000000000\n".length + encodedBytes(output) : "nsealr1:".length + encodedBytes(output);
     if (output > method.response_json_bytes || output > boundTransport.reassembly_bytes || encodedOutput > boundTransport.frame_bytes) compatibilityError("limit_exceeded", "complete response cannot fit effective capacity");
     const canonicalBytes = compactJsonUtf8ByteLength([0, route.public_key, event.created_at, event.kind, event.tags, event.content]);
-    if (canonicalBytes > method.canonical_bytes! || 4 > method.review_pages!) compatibilityError("limit_exceeded", "canonical/review capacity is insufficient");
+    const plan = snapshot.review_plan;
+    if (!plan || !Number.isSafeInteger(plan.pages) || plan.pages < 1 ||
+      plan.request_sha256 !== sha256Utf8Hex(JSON.stringify(request)) ||
+      plan.implementation_id !== route.implementation_id || plan.connection_id !== snapshot.connection_id || plan.generation !== snapshot.generation ||
+      typeof plan.context_id !== "string" || !/^[A-Za-z0-9._:-]{1,128}$/u.test(plan.context_id) ||
+      typeof plan.geometry_id !== "string" || !/^[A-Za-z0-9._:-]{1,128}$/u.test(plan.geometry_id)) compatibilityError("runtime_unavailable", "current complete local review plan is missing or stale");
+    if (canonicalBytes > method.canonical_bytes! || plan.pages > method.review_pages!) compatibilityError("limit_exceeded", "canonical/complete-review capacity is insufficient");
   }
   return { method, transport: boundTransport };
 }
@@ -215,7 +240,7 @@ export type LocalServiceContext = {
   now?: number;
   signerDispatcher?: SignerRequestDispatcher;
   /** Current locally selected adapter state. Absence blocks local dispatch. */
-  signerCompatibility?: (route: RouteSelection) => SignerCompatibilitySnapshot;
+  signerCompatibility?: (route: RouteSelection, request: unknown) => SignerCompatibilitySnapshot;
   /** Local monotonic milliseconds; peer clocks cannot extend the deadline. */
   monotonicNow?: () => number | undefined;
 };
@@ -351,6 +376,7 @@ type PreparedSignerDispatch =
       dispatchRequest: SignerDispatchRequest;
       release: () => void;
       checkCurrent: () => void;
+      timeout_ms?: number;
     }
   | {
       ok: false;
@@ -1038,12 +1064,14 @@ function prepareSignerDispatch(
     request: structuredClone(request.params.request)
   };
   let active = true;
+  const cancellation = new AbortController();
+  let timeoutMs: number | undefined;
   let current = (): void => { if (!active) compatibilityError("runtime_unavailable", "operation is no longer active"); };
   if (routeSelection.contract === "nsealr.signing.v2") {
     try {
       if (!context.signerCompatibility) compatibilityError("runtime_unavailable", "current local adapter observations are not configured");
       const provider = context.signerCompatibility;
-      const snapshot = provider(routeSelection);
+      const snapshot = provider(routeSelection, dispatchRequest.request);
       const effective = assessSignerCompatibility(routeSelection, dispatchRequest.request, snapshot);
       const maximum = Math.min(effective.method.pending_requests, effective.transport.pending_requests);
       if ((pendingDispatches.get(context) ?? 0) >= maximum) compatibilityError("runtime_unavailable", "pending operation capacity is exhausted");
@@ -1051,9 +1079,11 @@ function prepareSignerDispatch(
       const start = clock();
       if (start === undefined || !Number.isFinite(start) || start < 0 || start > Number.MAX_SAFE_INTEGER) compatibilityError("runtime_unavailable", "local monotonic clock is unavailable");
       const duration = Math.min(effective.method.deadline_ms, effective.transport.deadline_ms);
+      timeoutMs = duration;
       const deadline = start + duration;
       if (!Number.isFinite(deadline) || deadline > Number.MAX_SAFE_INTEGER) compatibilityError("runtime_unavailable", "local deadline overflow");
-      const original = sha256Utf8Hex(JSON.stringify([snapshot, routeSelection, dispatchRequest.request]));
+      const selectedAccount = () => (context.accounts ?? []).find((account) => account.account_id === routeSelection.account_id);
+      const original = sha256Utf8Hex(JSON.stringify([snapshot, routeSelection, dispatchRequest.request, selectedAccount()]));
       let last = start;
       current = () => {
         if (!active) compatibilityError("runtime_unavailable", "operation is no longer active");
@@ -1061,12 +1091,13 @@ function prepareSignerDispatch(
         if (now === undefined || !Number.isFinite(now) || now < last || now >= deadline) compatibilityError("runtime_unavailable", "local deadline expired or clock rolled back/unavailable");
         last = now;
         const accountRoute = selectAccountRoute(context.accounts ?? [], routeRequest);
-        const live = provider(accountRoute);
+        const live = provider(accountRoute, dispatchRequest.request);
         assessSignerCompatibility(accountRoute, dispatchRequest.request, live);
-        if (sha256Utf8Hex(JSON.stringify([live, accountRoute, dispatchRequest.request])) !== original) compatibilityError("runtime_unavailable", "account, capabilities, connection or limits changed; select again");
+        if (sha256Utf8Hex(JSON.stringify([live, accountRoute, dispatchRequest.request, selectedAccount()])) !== original) compatibilityError("runtime_unavailable", "account, capabilities, connection or limits changed; select again");
       };
       dispatchRequest.before_write = current;
       dispatchRequest.effective_limits = effective;
+      dispatchRequest.abort_signal = cancellation.signal;
       pendingDispatches.set(context, (pendingDispatches.get(context) ?? 0) + 1);
     } catch (error) {
       return { ok: false, response: dispatchFailureResponse(request, error) };
@@ -1078,9 +1109,11 @@ function prepareSignerDispatch(
     dispatcher: context.signerDispatcher,
     dispatchRequest,
     checkCurrent: current,
+    timeout_ms: timeoutMs,
     release: () => {
       if (!active) return;
       active = false;
+      cancellation.abort();
       if (dispatchRequest.effective_limits) pendingDispatches.set(context, Math.max(0, (pendingDispatches.get(context) ?? 1) - 1));
     }
   };
@@ -1123,6 +1156,13 @@ function dispatchSuccessResponse(
   };
 }
 
+function checkDispatchResponseCapacity(dispatch: SignerDispatchRequest, response: unknown): void {
+  const effective = dispatch.effective_limits;
+  if (!effective) return;
+  const bytes = compactJsonUtf8ByteLength(response);
+  if (bytes > effective.method.response_json_bytes || bytes > effective.transport.reassembly_bytes) compatibilityError("limit_exceeded", "response exceeds effective capacity");
+}
+
 function dispatchSignerRequest(
   request: Extract<LocalServiceRequest, { operation: "dispatch_signer_request" }>,
   context: LocalServiceContext
@@ -1135,6 +1175,7 @@ function dispatchSignerRequest(
     prepared.checkCurrent();
     signerResponse = prepared.dispatcher(prepared.dispatchRequest);
     prepared.checkCurrent();
+    if (!isPromiseLike(signerResponse)) checkDispatchResponseCapacity(prepared.dispatchRequest, signerResponse);
   } catch (error) {
     return dispatchFailureResponse(request, error);
   } finally {
@@ -1160,15 +1201,22 @@ async function dispatchSignerRequestAsync(
   if (!prepared.ok) return prepared.response;
 
   let signerResponse: unknown;
+  let timer: ReturnType<typeof setTimeout> | undefined;
   try {
     prepared.checkCurrent();
-    signerResponse = await prepared.dispatcher(prepared.dispatchRequest);
+    const operation = prepared.dispatcher(prepared.dispatchRequest);
+    signerResponse = prepared.timeout_ms === undefined ? await operation : await Promise.race([
+      operation,
+      new Promise<never>((_resolve, reject) => {
+        timer = setTimeout(() => reject(new SignerTransportError("signer_transport_timeout", "local operation deadline expired")), prepared.timeout_ms);
+      })
+    ]);
     prepared.checkCurrent();
-    const effective = prepared.dispatchRequest.effective_limits;
-    if (effective && (compactJsonUtf8ByteLength(signerResponse) > effective.method.response_json_bytes || compactJsonUtf8ByteLength(signerResponse) > effective.transport.reassembly_bytes)) compatibilityError("limit_exceeded", "response exceeds effective capacity");
+    checkDispatchResponseCapacity(prepared.dispatchRequest, signerResponse);
   } catch (error) {
     return dispatchFailureResponse(request, error);
   } finally {
+    if (timer !== undefined) clearTimeout(timer);
     prepared.release();
   }
   return dispatchSuccessResponse(request, prepared.dispatchRequest.route_selection, signerResponse);

@@ -77,6 +77,7 @@ pub const IN_SCOPE_CATEGORIES: &[&str] = &[
 /// completeness rule can prove that every on-disk category is consciously
 /// classified, never silently skipped.
 pub const EXCLUDED_CATEGORIES: &[&str] = &[
+    "profile-capabilities", // T01 typed profile core tests + Bridge/Pi raw metadata/routing suites; no second simulator model.
     "access-surfaces", // browser NIP-07 access-surface contract (companion).
     "custody",         // persistent-custody declarations (companion/hardware).
     "events",          // event-template fixtures (companion/specs suites).

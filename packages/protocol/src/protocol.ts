@@ -36,6 +36,7 @@ function validateSafeIntegerField(field: "created_at" | "kind", value: unknown):
   if (!Number.isSafeInteger(value) || value > NSEALR_V0_LIMITS.max_safe_integer) {
     return { ok: false, error: `event_template ${field} exceeds max_safe_integer` };
   }
+  if (field === "kind" && value > 65535) return { ok: false, error: "event_template kind exceeds 65535" };
   return { ok: true };
 }
 
@@ -46,6 +47,7 @@ function validateSignedEventIntegerField(field: "created_at" | "kind", value: un
   if (!Number.isSafeInteger(value) || value > NSEALR_V0_LIMITS.max_safe_integer) {
     return { ok: false, error: `signed event ${field} exceeds max_safe_integer` };
   }
+  if (field === "kind" && value > 65535) return { ok: false, error: "signed event kind exceeds 65535" };
   return { ok: true };
 }
 
@@ -104,8 +106,6 @@ function validateEventTemplate(value: unknown): ValidationResult {
 
 export function validateRequest(value: unknown): ValidationResult {
   if (!isRecord(value)) return { ok: false, error: "request must be an object" };
-  try { readBoundedJson(JSON.stringify(value), NSEALR_V0_LIMITS.max_decoded_request_json_bytes); }
-  catch (error) { return { ok: false, error: error instanceof Error ? error.message : "invalid request JSON" }; }
   if (compactJsonUtf8ByteLength(value) > NSEALR_V0_LIMITS.max_decoded_request_json_bytes) {
     return { ok: false, error: "decoded request JSON exceeds max_decoded_request_json_bytes" };
   }
@@ -125,6 +125,8 @@ export function validateRequest(value: unknown): ValidationResult {
     if (paramExtra.length > 0) return { ok: false, error: `sign_event params contain unknown fields: ${paramExtra.join(", ")}` };
     const result = validateEventTemplate(value.params.event_template);
     if (!result.ok) return result;
+    try { readBoundedJson(JSON.stringify(value), NSEALR_V0_LIMITS.max_decoded_request_json_bytes); }
+    catch (error) { return { ok: false, error: error instanceof Error ? error.message : "invalid request JSON" }; }
     return { ok: true };
   }
   return { ok: false, error: "unsupported method" };
@@ -147,6 +149,8 @@ function validateSignedEvent(value: unknown): ValidationResult {
     return { ok: false, error: "signed event content exceeds max_content_utf8_bytes" };
   }
   if (!isLowerHex(value.sig, 128)) return { ok: false, error: "event sig must be 64-byte lowercase hex" };
+  try { readBoundedJson(JSON.stringify(value), 8192); }
+  catch (error) { return { ok: false, error: error instanceof Error ? error.message : "invalid signed event JSON" }; }
   return { ok: true };
 }
 
@@ -157,8 +161,6 @@ function validateCapabilities(value: unknown): ValidationResult {
 
 export function validateResponse(value: unknown): ValidationResult {
   if (!isRecord(value)) return { ok: false, error: "response must be an object" };
-  try { readBoundedJson(JSON.stringify(value), 8192); }
-  catch (error) { return { ok: false, error: error instanceof Error ? error.message : "invalid response JSON" }; }
   const extra = unknownFields(value, ["version", "request_id", "ok", "result", "error"]);
   if (extra.length > 0) return { ok: false, error: `unknown top-level response fields: ${extra.join(", ")}` };
   if (value.version !== 2) return { ok: false, error: "version must be 2" };
@@ -193,6 +195,11 @@ export function validateResponse(value: unknown): ValidationResult {
 }
 
 /** Parse original request bytes before object validation loses duplicate/token evidence. */
+export function parseSigningPayload(input: string | Uint8Array, maxBytes = 8192): unknown {
+  return readBoundedJson(input, maxBytes);
+}
+
+/** Parse original request bytes under the actual Bridge operation ceiling. */
 export function parseSigningRequest(input: string | Uint8Array): unknown {
   const value = readBoundedJson(input, NSEALR_V0_LIMITS.max_decoded_request_json_bytes);
   const result = validateRequest(value);
