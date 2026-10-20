@@ -1,0 +1,358 @@
+[
+  {
+    "command": [
+      "git",
+      "-c",
+      "init.templateDir=",
+      "init",
+      "--initial-branch=intake",
+      "/home/tux/nsealr/.restart-tools/goal/a02-contract-repair/tools/migration/.runtime/repair-cold-candidate-01/candidate"
+    ],
+    "cwd": "/home/tux/nsealr/.restart-tools/goal/a02-contract-repair/tools/migration/.runtime/repair-cold-candidate-01",
+    "ended_utc": "2026-10-20T10:52:02.091374+00:00",
+    "environment_sha256": "1329698bcbfb60c23fcd6617913d050c6e9d7e2f46108c49c01bb2a19625fae5",
+    "exit_code": 0,
+    "explicit_environment_sha256": "58268a3cfad14cc92431551bddfbf23b59d069f291cd72b0ba7af27d2458dcb1",
+    "label": "absent-destination-init",
+    "log": "00-absent-destination-init.log",
+    "sha256": "3b6e3c5b92d5e50c148b300e328a73266906ee9242dbddf7973165b26de16f0c",
+    "started_utc": "2026-10-20T10:52:02.087825+00:00"
+  },
+  {
+    "command": [
+      "git",
+      "fetch",
+      "--no-tags",
+      "--no-write-fetch-head",
+      "https://github.com/nSealr/nsealr.git",
+      "63ada7b48432119c932a35224978f48057e5a99c:refs/heads/candidate"
+    ],
+    "cwd": "/home/tux/nsealr/.restart-tools/goal/a02-contract-repair/tools/migration/.runtime/repair-cold-candidate-01/candidate",
+    "ended_utc": "2026-10-20T10:52:03.765012+00:00",
+    "environment_sha256": "1329698bcbfb60c23fcd6617913d050c6e9d7e2f46108c49c01bb2a19625fae5",
+    "exit_code": 0,
+    "explicit_environment_sha256": "58268a3cfad14cc92431551bddfbf23b59d069f291cd72b0ba7af27d2458dcb1",
+    "label": "public-exact-candidate-only-fetch",
+    "log": "01-public-exact-candidate-only-fetch.log",
+    "sha256": "e3cd565e6378ff4806c2a7ebc2351a0a111717c8d6095d72a1c21f7265238831",
+    "started_utc": "2026-10-20T10:52:02.091476+00:00"
+  },
+  {
+    "command": [
+      "git",
+      "checkout",
+      "candidate"
+    ],
+    "cwd": "/home/tux/nsealr/.restart-tools/goal/a02-contract-repair/tools/migration/.runtime/repair-cold-candidate-01/candidate",
+    "ended_utc": "2026-10-20T10:52:03.954326+00:00",
+    "environment_sha256": "1329698bcbfb60c23fcd6617913d050c6e9d7e2f46108c49c01bb2a19625fae5",
+    "exit_code": 0,
+    "explicit_environment_sha256": "58268a3cfad14cc92431551bddfbf23b59d069f291cd72b0ba7af27d2458dcb1",
+    "label": "candidate-checkout",
+    "log": "02-candidate-checkout.log",
+    "sha256": "2b19e8110f9cac71fecce166937f95ad395e85219aa3a74fc90a2a19bb2b44f2",
+    "started_utc": "2026-10-20T10:52:03.765181+00:00"
+  },
+  {
+    "command": [
+      "git",
+      "rev-parse",
+      "HEAD",
+      "HEAD^{tree}"
+    ],
+    "cwd": "/home/tux/nsealr/.restart-tools/goal/a02-contract-repair/tools/migration/.runtime/repair-cold-candidate-01/candidate",
+    "ended_utc": "2026-10-20T10:52:03.956225+00:00",
+    "environment_sha256": "1329698bcbfb60c23fcd6617913d050c6e9d7e2f46108c49c01bb2a19625fae5",
+    "exit_code": 0,
+    "explicit_environment_sha256": "58268a3cfad14cc92431551bddfbf23b59d069f291cd72b0ba7af27d2458dcb1",
+    "label": "actual-head-tree",
+    "log": "03-actual-head-tree.log",
+    "sha256": "e36e14b6c89b25db20673b8c049fdc82ff33219d63ee8b970d59237f2352789a",
+    "started_utc": "2026-10-20T10:52:03.954555+00:00"
+  },
+  {
+    "command": [
+      "git",
+      "for-each-ref",
+      "--format=%(refname) %(objectname)"
+    ],
+    "cwd": "/home/tux/nsealr/.restart-tools/goal/a02-contract-repair/tools/migration/.runtime/repair-cold-candidate-01/candidate",
+    "ended_utc": "2026-10-20T10:52:03.957754+00:00",
+    "environment_sha256": "1329698bcbfb60c23fcd6617913d050c6e9d7e2f46108c49c01bb2a19625fae5",
+    "exit_code": 0,
+    "explicit_environment_sha256": "58268a3cfad14cc92431551bddfbf23b59d069f291cd72b0ba7af27d2458dcb1",
+    "label": "only-selected-ref",
+    "log": "04-only-selected-ref.log",
+    "sha256": "5f80dc5a4b682323b194a82b67b2b72cb079e37288fa8a240883330e34d0194d",
+    "started_utc": "2026-10-20T10:52:03.956488+00:00"
+  },
+  {
+    "command": [
+      "git",
+      "remote"
+    ],
+    "cwd": "/home/tux/nsealr/.restart-tools/goal/a02-contract-repair/tools/migration/.runtime/repair-cold-candidate-01/candidate",
+    "ended_utc": "2026-10-20T10:52:03.959005+00:00",
+    "environment_sha256": "1329698bcbfb60c23fcd6617913d050c6e9d7e2f46108c49c01bb2a19625fae5",
+    "exit_code": 0,
+    "explicit_environment_sha256": "58268a3cfad14cc92431551bddfbf23b59d069f291cd72b0ba7af27d2458dcb1",
+    "label": "no-configured-remotes",
+    "log": "05-no-configured-remotes.log",
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "started_utc": "2026-10-20T10:52:03.957916+00:00"
+  },
+  {
+    "command": [
+      "git",
+      "status",
+      "--porcelain"
+    ],
+    "cwd": "/home/tux/nsealr/.restart-tools/goal/a02-contract-repair/tools/migration/.runtime/repair-cold-candidate-01/candidate",
+    "ended_utc": "2026-10-20T10:52:04.086303+00:00",
+    "environment_sha256": "1329698bcbfb60c23fcd6617913d050c6e9d7e2f46108c49c01bb2a19625fae5",
+    "exit_code": 0,
+    "explicit_environment_sha256": "58268a3cfad14cc92431551bddfbf23b59d069f291cd72b0ba7af27d2458dcb1",
+    "label": "clean-source-before",
+    "log": "06-clean-source-before.log",
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "started_utc": "2026-10-20T10:52:03.959194+00:00"
+  },
+  {
+    "command": [
+      "git",
+      "cat-file",
+      "-e",
+      "86569e073da4faec0811d67137bbb0fd4f74c7c6^{commit}"
+    ],
+    "cwd": "/home/tux/nsealr/.restart-tools/goal/a02-contract-repair/tools/migration/.runtime/repair-cold-candidate-01/candidate",
+    "ended_utc": "2026-10-20T10:52:04.087892+00:00",
+    "environment_sha256": "1329698bcbfb60c23fcd6617913d050c6e9d7e2f46108c49c01bb2a19625fae5",
+    "exit_code": 128,
+    "explicit_environment_sha256": "58268a3cfad14cc92431551bddfbf23b59d069f291cd72b0ba7af27d2458dcb1",
+    "label": "historical-86569e0-absent",
+    "log": "07-historical-86569e0-absent.log",
+    "sha256": "aa70e60d239f599653e267725784122bbfe33e649e6703382bf0d4cc70b60aa9",
+    "started_utc": "2026-10-20T10:52:04.086576+00:00"
+  },
+  {
+    "command": [
+      "git",
+      "cat-file",
+      "-e",
+      "5cb16cbaffc6b90ca9dfbb1ce7a5388e731d1ae0^{commit}"
+    ],
+    "cwd": "/home/tux/nsealr/.restart-tools/goal/a02-contract-repair/tools/migration/.runtime/repair-cold-candidate-01/candidate",
+    "ended_utc": "2026-10-20T10:52:04.089390+00:00",
+    "environment_sha256": "1329698bcbfb60c23fcd6617913d050c6e9d7e2f46108c49c01bb2a19625fae5",
+    "exit_code": 128,
+    "explicit_environment_sha256": "58268a3cfad14cc92431551bddfbf23b59d069f291cd72b0ba7af27d2458dcb1",
+    "label": "historical-5cb16cb-absent",
+    "log": "08-historical-5cb16cb-absent.log",
+    "sha256": "7df8ef7c383dd2b29c9529c54adc98533b4dd7d51ee7657cfe4e9f97f0947877",
+    "started_utc": "2026-10-20T10:52:04.088164+00:00"
+  },
+  {
+    "command": [
+      "git",
+      "cat-file",
+      "-e",
+      "68508ea1eea1e07b0064fadd65b33433d72701f8^{commit}"
+    ],
+    "cwd": "/home/tux/nsealr/.restart-tools/goal/a02-contract-repair/tools/migration/.runtime/repair-cold-candidate-01/candidate",
+    "ended_utc": "2026-10-20T10:52:04.090640+00:00",
+    "environment_sha256": "1329698bcbfb60c23fcd6617913d050c6e9d7e2f46108c49c01bb2a19625fae5",
+    "exit_code": 0,
+    "explicit_environment_sha256": "58268a3cfad14cc92431551bddfbf23b59d069f291cd72b0ba7af27d2458dcb1",
+    "label": "permanent-68508ea-present",
+    "log": "09-permanent-68508ea-present.log",
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "started_utc": "2026-10-20T10:52:04.089584+00:00"
+  },
+  {
+    "command": [
+      "git",
+      "merge-base",
+      "--is-ancestor",
+      "68508ea1eea1e07b0064fadd65b33433d72701f8",
+      "63ada7b48432119c932a35224978f48057e5a99c"
+    ],
+    "cwd": "/home/tux/nsealr/.restart-tools/goal/a02-contract-repair/tools/migration/.runtime/repair-cold-candidate-01/candidate",
+    "ended_utc": "2026-10-20T10:52:04.091993+00:00",
+    "environment_sha256": "1329698bcbfb60c23fcd6617913d050c6e9d7e2f46108c49c01bb2a19625fae5",
+    "exit_code": 0,
+    "explicit_environment_sha256": "58268a3cfad14cc92431551bddfbf23b59d069f291cd72b0ba7af27d2458dcb1",
+    "label": "permanent-68508ea-ancestor",
+    "log": "10-permanent-68508ea-ancestor.log",
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "started_utc": "2026-10-20T10:52:04.090789+00:00"
+  },
+  {
+    "command": [
+      "git",
+      "cat-file",
+      "-e",
+      "59653fcc15c4cbc21a39d0a0dd5548abe46165b0^{commit}"
+    ],
+    "cwd": "/home/tux/nsealr/.restart-tools/goal/a02-contract-repair/tools/migration/.runtime/repair-cold-candidate-01/candidate",
+    "ended_utc": "2026-10-20T10:52:04.093051+00:00",
+    "environment_sha256": "1329698bcbfb60c23fcd6617913d050c6e9d7e2f46108c49c01bb2a19625fae5",
+    "exit_code": 0,
+    "explicit_environment_sha256": "58268a3cfad14cc92431551bddfbf23b59d069f291cd72b0ba7af27d2458dcb1",
+    "label": "permanent-59653fc-present",
+    "log": "11-permanent-59653fc-present.log",
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "started_utc": "2026-10-20T10:52:04.092146+00:00"
+  },
+  {
+    "command": [
+      "git",
+      "merge-base",
+      "--is-ancestor",
+      "59653fcc15c4cbc21a39d0a0dd5548abe46165b0",
+      "63ada7b48432119c932a35224978f48057e5a99c"
+    ],
+    "cwd": "/home/tux/nsealr/.restart-tools/goal/a02-contract-repair/tools/migration/.runtime/repair-cold-candidate-01/candidate",
+    "ended_utc": "2026-10-20T10:52:04.094231+00:00",
+    "environment_sha256": "1329698bcbfb60c23fcd6617913d050c6e9d7e2f46108c49c01bb2a19625fae5",
+    "exit_code": 0,
+    "explicit_environment_sha256": "58268a3cfad14cc92431551bddfbf23b59d069f291cd72b0ba7af27d2458dcb1",
+    "label": "permanent-59653fc-ancestor",
+    "log": "12-permanent-59653fc-ancestor.log",
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "started_utc": "2026-10-20T10:52:04.093196+00:00"
+  },
+  {
+    "command": [
+      "git",
+      "cat-file",
+      "-e",
+      "f2ef70f522af4977e15f81554a8c6eadcdbe8097^{commit}"
+    ],
+    "cwd": "/home/tux/nsealr/.restart-tools/goal/a02-contract-repair/tools/migration/.runtime/repair-cold-candidate-01/candidate",
+    "ended_utc": "2026-10-20T10:52:04.095323+00:00",
+    "environment_sha256": "1329698bcbfb60c23fcd6617913d050c6e9d7e2f46108c49c01bb2a19625fae5",
+    "exit_code": 0,
+    "explicit_environment_sha256": "58268a3cfad14cc92431551bddfbf23b59d069f291cd72b0ba7af27d2458dcb1",
+    "label": "permanent-f2ef70f-present",
+    "log": "13-permanent-f2ef70f-present.log",
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "started_utc": "2026-10-20T10:52:04.094431+00:00"
+  },
+  {
+    "command": [
+      "git",
+      "merge-base",
+      "--is-ancestor",
+      "f2ef70f522af4977e15f81554a8c6eadcdbe8097",
+      "63ada7b48432119c932a35224978f48057e5a99c"
+    ],
+    "cwd": "/home/tux/nsealr/.restart-tools/goal/a02-contract-repair/tools/migration/.runtime/repair-cold-candidate-01/candidate",
+    "ended_utc": "2026-10-20T10:52:04.096496+00:00",
+    "environment_sha256": "1329698bcbfb60c23fcd6617913d050c6e9d7e2f46108c49c01bb2a19625fae5",
+    "exit_code": 0,
+    "explicit_environment_sha256": "58268a3cfad14cc92431551bddfbf23b59d069f291cd72b0ba7af27d2458dcb1",
+    "label": "permanent-f2ef70f-ancestor",
+    "log": "14-permanent-f2ef70f-ancestor.log",
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "started_utc": "2026-10-20T10:52:04.095476+00:00"
+  },
+  {
+    "command": [
+      "git",
+      "cat-file",
+      "--batch-all-objects",
+      "--batch-check=%(objectname)"
+    ],
+    "cwd": "/home/tux/nsealr/.restart-tools/goal/a02-contract-repair/tools/migration/.runtime/repair-cold-candidate-01/candidate",
+    "ended_utc": "2026-10-20T10:52:04.099574+00:00",
+    "environment_sha256": "1329698bcbfb60c23fcd6617913d050c6e9d7e2f46108c49c01bb2a19625fae5",
+    "exit_code": 0,
+    "explicit_environment_sha256": "58268a3cfad14cc92431551bddfbf23b59d069f291cd72b0ba7af27d2458dcb1",
+    "label": "all-fetched-object-identities",
+    "log": "15-all-fetched-object-identities.log",
+    "sha256": "722130d2e31d8c1a3f9e7def1ca46b485b89fc8d6c89194b8010b57c3dfcb9c0",
+    "started_utc": "2026-10-20T10:52:04.097032+00:00"
+  },
+  {
+    "command": [
+      "git",
+      "rev-list",
+      "--objects",
+      "63ada7b48432119c932a35224978f48057e5a99c"
+    ],
+    "cwd": "/home/tux/nsealr/.restart-tools/goal/a02-contract-repair/tools/migration/.runtime/repair-cold-candidate-01/candidate",
+    "ended_utc": "2026-10-20T10:52:04.108725+00:00",
+    "environment_sha256": "1329698bcbfb60c23fcd6617913d050c6e9d7e2f46108c49c01bb2a19625fae5",
+    "exit_code": 0,
+    "explicit_environment_sha256": "58268a3cfad14cc92431551bddfbf23b59d069f291cd72b0ba7af27d2458dcb1",
+    "label": "only-candidate-reachable-objects",
+    "log": "16-only-candidate-reachable-objects.log",
+    "sha256": "d831a56438a30b5a332c18ea2da66704a63c496ea6c52b2c5240c13faf48384d",
+    "started_utc": "2026-10-20T10:52:04.100644+00:00"
+  },
+  {
+    "command": [
+      "git",
+      "fsck",
+      "--full",
+      "--strict"
+    ],
+    "cwd": "/home/tux/nsealr/.restart-tools/goal/a02-contract-repair/tools/migration/.runtime/repair-cold-candidate-01/candidate",
+    "ended_utc": "2026-10-20T10:52:04.380958+00:00",
+    "environment_sha256": "1329698bcbfb60c23fcd6617913d050c6e9d7e2f46108c49c01bb2a19625fae5",
+    "exit_code": 0,
+    "explicit_environment_sha256": "58268a3cfad14cc92431551bddfbf23b59d069f291cd72b0ba7af27d2458dcb1",
+    "label": "strict-object-integrity",
+    "log": "17-strict-object-integrity.log",
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "started_utc": "2026-10-20T10:52:04.111773+00:00"
+  },
+  {
+    "command": [
+      "/home/tux/nsealr/.restart-tools/goal/r00/tools/baseline/.work/final/.tools/python/bin/python3",
+      "-B",
+      "scripts/verify_contracts.py"
+    ],
+    "cwd": "/home/tux/nsealr/.restart-tools/goal/a02-contract-repair/tools/migration/.runtime/repair-cold-candidate-01/candidate",
+    "ended_utc": "2026-10-20T10:52:05.543454+00:00",
+    "environment_sha256": "1329698bcbfb60c23fcd6617913d050c6e9d7e2f46108c49c01bb2a19625fae5",
+    "exit_code": 0,
+    "explicit_environment_sha256": "58268a3cfad14cc92431551bddfbf23b59d069f291cd72b0ba7af27d2458dcb1",
+    "label": "corrected-actual-artifact-checker-GREEN",
+    "log": "18-corrected-actual-artifact-checker-GREEN.log",
+    "sha256": "5a55b9297524922045d80ae336a70c873b1def09daa7e38fe09572142b4911e3",
+    "started_utc": "2026-10-20T10:52:04.383224+00:00"
+  },
+  {
+    "command": [
+      "/home/tux/nsealr/.restart-tools/goal/r00/tools/baseline/.work/final/.tools/python/bin/python3",
+      "-B",
+      "scripts/verify_evidence.py"
+    ],
+    "cwd": "/home/tux/nsealr/.restart-tools/goal/a02-contract-repair/tools/migration/.runtime/repair-cold-candidate-01/candidate",
+    "ended_utc": "2026-10-20T10:52:05.703131+00:00",
+    "environment_sha256": "1329698bcbfb60c23fcd6617913d050c6e9d7e2f46108c49c01bb2a19625fae5",
+    "exit_code": 0,
+    "explicit_environment_sha256": "58268a3cfad14cc92431551bddfbf23b59d069f291cd72b0ba7af27d2458dcb1",
+    "label": "remaining-historical-evidence-anchor-GREEN",
+    "log": "19-remaining-historical-evidence-anchor-GREEN.log",
+    "sha256": "138790849cdcf7f3e23898c363e56fd327728e56d6e357aa838c9a78472114c5",
+    "started_utc": "2026-10-20T10:52:05.543734+00:00"
+  },
+  {
+    "command": [
+      "git",
+      "status",
+      "--porcelain"
+    ],
+    "cwd": "/home/tux/nsealr/.restart-tools/goal/a02-contract-repair/tools/migration/.runtime/repair-cold-candidate-01/candidate",
+    "ended_utc": "2026-10-20T10:52:05.713978+00:00",
+    "environment_sha256": "1329698bcbfb60c23fcd6617913d050c6e9d7e2f46108c49c01bb2a19625fae5",
+    "exit_code": 0,
+    "explicit_environment_sha256": "58268a3cfad14cc92431551bddfbf23b59d069f291cd72b0ba7af27d2458dcb1",
+    "label": "clean-source-after",
+    "log": "20-clean-source-after.log",
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "started_utc": "2026-10-20T10:52:05.703508+00:00"
+  }
+]
