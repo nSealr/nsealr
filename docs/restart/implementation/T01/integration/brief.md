@@ -10,9 +10,10 @@ verify118619497395, successful. That accepts the A02 input, not T01 or S03.
 Author `/root/a02_sol` uses the current Sol6.1 xhigh assignment policy.
 
 S03 candidate `c358229777d2582964a4f326ce8d15709841a395`, product checkpoint
-`7eee22fbc269033756e53020b1370fc6671da3ab`, is a separately pinned **unaccepted
-proposal**, absent from this main. Its final review/adoption and actual-main CI
-remain prerequisites. Root has not selected the complete T01 implementation
+`7eee22fbc269033756e53020b1370fc6671da3ab`, is a separately pinned **reviewed source proposal**, absent from this main.
+Distinct final review `23d76b2c15d8dd41627f58c7b2018e06d40e821c` now passes all
+five portable criteria on that exact candidate. Normal adoption and successful
+actual-main CI remain prerequisites. Root has not selected the complete T01 implementation
 tuple or admitted product edits. This preparation grants no brief PASS or task
 acceptance and starts no package, browser, MCU, SDK or hardware implementation.
 
@@ -190,11 +191,21 @@ includes both Rust workspaces, Bridge/Pi/common contracts, audits, unchanged
 100.00/76.70 floors, reproduction, SDK/pack checks and all 17 product steps; no
 second broad acceptance pipeline is needed.
 
-Before implementation: complete S03's distinct exact review, normal adoption and
-actual-main CI; let root choose the full actual source tuple; approve this current
+Before implementation: retain the actual S03 distinct review PASS, complete its
+normal adoption and actual-main CI; let root choose the full actual source tuple;
+approve this current
 map, exact writable list, projection deltas and provenance alternative/addendum.
 Then save meaningful current behavioral repros, review independent expectations,
 implement the atomic cutover, run focused and complete affected acceptance on a
 stable candidate, and obtain distinct exact delivery review/protected PR/main CI.
 No T01 criterion closes in preparation. Resource/physical inventory and every
 device qualification remain with their actual owners.
+
+The maintainer now declares an ESP32-S3 with two buttons, a Waveshare P4 with
+camera/battery/touch, a Pi Zero SeedSigner kit with240x240 display/three buttons/
+joystick/camera, and Tropic development boards. Exact models, revisions, tools
+and operator access remain unidentified. This supersedes an inference of wholly
+unknown inventory; original historical preparation declarations remain preserved
+under their own source identity. Pi QR is proposed as the first real end-to-end
+path with a declared complete kit; this adds no T01 scope and does not block
+independent profiles or PCB work. No physical property is qualified.
