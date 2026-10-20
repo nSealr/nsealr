@@ -233,6 +233,37 @@ describe("actual local service to recording adapter compatibility", () => {
     expect((await handleLocalServiceRequestAsync(state.envelope, state.context)).ok).toBe(true);
   });
 
+  it("L-04: pending compact discovery blocks further discovery and operations until settlement", async () => {
+    const state = setup();
+    state.live.reported = compactReportedCapabilities(state.live.reported as FullCapabilities, state.live.implementation, 704);
+    const discovery = load("examples/request-get-capabilities.json");
+    const envelope = { ...state.envelope, params: { ...state.envelope.params,
+      route_request: { account_id: state.account.account_id, method: "get_capabilities" }, request: discovery } };
+    const response = { version: 2, request_id: discovery.request_id, ok: true, result: { capabilities: state.live.reported } };
+    let started = 0, finish!: (response: unknown) => void;
+    state.context.signerDispatcher = (dispatch) => {
+      started++; dispatch.before_write!(); state.writes.push("discovery-request");
+      return new Promise((resolve) => { finish = resolve; });
+    };
+    const pending = handleLocalServiceRequestAsync(envelope, state.context);
+    expect(started).toBe(1);
+    for (const input of [discovery, load("examples/request-get-public-key.json"), request]) {
+      const retry = { ...envelope, params: { ...envelope.params,
+        route_request: { account_id: state.account.account_id, method: input.method }, request: structuredClone(input) } };
+      expect(await handleLocalServiceRequestAsync(retry, state.context)).toMatchObject({ ok: false, error: { code: "runtime_unavailable" } });
+      expect(started).toBe(1);
+      expect(state.writes).toEqual(["discovery-request"]);
+    }
+    finish(response);
+    expect(await pending).toMatchObject({ ok: true, result: { signer_response: response } });
+    state.context.signerDispatcher = (dispatch) => {
+      started++; dispatch.before_write!(); state.writes.push("recovered-discovery-request"); return response;
+    };
+    expect((await handleLocalServiceRequestAsync(envelope, state.context)).ok).toBe(true);
+    expect(started).toBe(2);
+    expect(state.writes).toEqual(["discovery-request", "recovered-discovery-request"]);
+  });
+
   it("L-04/L-06: an unresolved adapter reaches the absolute local deadline and its stale write hook is revoked", async () => {
     vi.useFakeTimers();
     try {
