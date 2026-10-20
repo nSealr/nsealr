@@ -57,6 +57,27 @@ function routeDriverStore(route: Record<string, unknown> = {}): Record<string, u
 }
 
 describe("service route drivers", () => {
+  it("applies the effective serial frame ceiling to actual peer errors as well as positive responses", async () => {
+    const request = JSON.parse(readFileSync(resolve(specsRoot, "examples/request-get-public-key.json"), "utf8"));
+    const positive = JSON.parse(readFileSync(resolve(specsRoot, "examples/response-get-public-key.json"), "utf8"));
+    const error = { version: 2, request_id: request.request_id, ok: false,
+      error: { code: "user_rejected", message: "x".repeat(200), retryable: false } };
+    expect(JSON.stringify(error).length).toBeLessThan(704);
+    for (const response of [positive, error]) {
+      let writes = 0, closes = 0;
+      const dispatcher = createServiceRouteDispatcher(parseServiceRouteDriverStore(routeDriverStore()), {
+        openSerialLinePort: () => ({ writeLine: async () => { writes++; },
+          readLine: async () => encodeSerialFrame({ type: "response", payload: response }), close: () => { closes++; } })
+      });
+      const effective = structuredClone(dispatchRequest.effective_limits!);
+      effective.transport.frame_bytes = 226;
+      const operation = dispatcher({ ...dispatchRequest, request, effective_limits: effective });
+      if (response === positive) await expect(operation).resolves.toEqual(positive);
+      else await expect(operation).rejects.toMatchObject({ code: "signer_transport_protocol_error" });
+      expect({ writes, closes }).toEqual({ writes: 1, closes: 1 });
+    }
+  });
+
   it("parses explicit secretless serial-line route driver stores", () => {
     expect(parseServiceRouteDriverStore(routeDriverStore())).toEqual({
       format: SERVICE_ROUTE_DRIVER_STORE_FORMAT,

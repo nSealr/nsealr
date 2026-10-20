@@ -1,0 +1,281 @@
+diff --git a/apps/bridge/service/src/drivers.test.ts b/apps/bridge/service/src/drivers.test.ts
+index 377bb77e..c87a9740 100644
+--- a/apps/bridge/service/src/drivers.test.ts
++++ b/apps/bridge/service/src/drivers.test.ts
+@@ -196,7 +196,7 @@ describe("service route drivers", () => {
+   });
+ 
+   it("R-01/R-05: actual service and serial driver bind the selected account before open and again before write", async () => {
+-    for (const stale of [false, true]) {
++    for (const stale of ["none", "generation", "geometry", "context", "pages"]) {
+       const common = JSON.parse(readFileSync(resolve(specsRoot, "vectors/profile-capabilities/cases-v1.json"), "utf8"));
+       const implementation = JSON.parse(readFileSync(resolve(specsRoot, common.implementation_examples.esp32_no_se), "utf8"));
+       const adapter = structuredClone(implementation);
+@@ -209,7 +209,10 @@ describe("service route drivers", () => {
+       const dispatcher = createServiceRouteDispatcher(parseServiceRouteDriverStore(routeDriverStore()), {
+         openSerialLinePort: async () => {
+           opens++;
+-          if (stale) snapshot.generation++;
++          if (stale === "generation") snapshot.generation++;
++          else if (stale === "geometry") snapshot.review_plan!.geometry_id = "changed.geometry";
++          else if (stale === "context") snapshot.review_plan!.context_id = "changed.context";
++          else if (stale === "pages") snapshot.review_plan!.pages++;
+           return { writeLine: async (line) => { written.push(line); }, readLine: async () => encodeSerialFrame({ type: "response", payload: response }), close: async () => { closes++; } };
+         }
+       });
+@@ -221,9 +224,9 @@ describe("service route drivers", () => {
+         grants: [{ client_id: clientIdForIdentity(dispatchRequest.client), origin: dispatchRequest.client.origin, surface: dispatchRequest.client.surface, allowed_operations: ["dispatch_signer_request"] }],
+         signerCompatibility: () => snapshot, signerDispatcher: dispatcher
+       });
+-      expect(result).toMatchObject({ ok: !stale });
++      expect(result).toMatchObject({ ok: stale === "none" });
+       expect(opens).toBe(1); expect(closes).toBe(1);
+-      expect(written).toEqual(stale ? [] : [encodeSerialFrame({ type: "request", payload: request })]);
++      expect(written).toEqual(stale === "none" ? [encodeSerialFrame({ type: "request", payload: request })] : []);
+     }
+   });
+ 
+diff --git a/packages/client/src/profile-dispatch.test.ts b/packages/client/src/profile-dispatch.test.ts
+index d4d49089..a254f3e1 100644
+--- a/packages/client/src/profile-dispatch.test.ts
++++ b/packages/client/src/profile-dispatch.test.ts
+@@ -6,10 +6,10 @@ import { resolveSpecsRoot } from "@nsealr/fixtures";
+ import { encodeSerialFrame } from "@nsealr/framing";
+ import { encodeQrEnvelope } from "@nsealr/qr";
+ import { parseAccountDescriptor, selectAccountRoute } from "@nsealr/policy";
+-import { parseImplementationProfile, parseLimitsManifest, type FullCapabilities } from "@nsealr/protocol";
++import { compactReportedCapabilities, parseImplementationProfile, parseLimitsManifest, parseSigningRequest, type FullCapabilities } from "@nsealr/protocol";
+ import {
+   assessSignerCompatibility, clientIdForIdentity, createRouteDispatcher,
+-  handleLocalServiceRequestAsync, type LocalServiceContext,
++  handleLocalServiceRequest, handleLocalServiceRequestAsync, type LocalServiceContext,
+   type SignerCompatibilitySnapshot, type SignerDispatchRequest
+ } from "./service.js";
+ 
+@@ -145,6 +145,63 @@ describe("actual local service to recording adapter compatibility", () => {
+     }
+   });
+ 
++  it("L-01: each actual operation dimension uses independent bytes/counts at below/exact/above boundaries", () => {
++    const req = load("examples/request-kind-1-tags.json"), res = load("examples/response-kind-1-tags.json");
++    const event = req.params.event_template;
++    const jsonBytes = (value: unknown) => Buffer.byteLength(JSON.stringify(value), "utf8");
++    const input = jsonBytes(req), output = jsonBytes(res);
++    // Fixed wire grammar and independently retained Nostr canonical fixture;
++    // no runtime framing/canonical/signing output supplies expected limits.
++    const frame = (type: string, value: unknown) => Buffer.byteLength(`nsealr1f:${type}:${Buffer.from(JSON.stringify(value)).toString("base64url")}:0000000000000000\n`);
++    const incomingFrame = frame("response", res), outgoingFrame = frame("request", req);
++    const dimensions: Array<["method" | "transport", string, number]> = [
++      ["method", "request_json_bytes", input], ["method", "response_json_bytes", output],
++      ["method", "content_utf8_bytes", Buffer.byteLength(event.content)], ["method", "tag_count", event.tags.length],
++      ["method", "tag_fields", Math.max(...event.tags.map((tag: string[]) => tag.length))],
++      ["method", "tag_field_utf8_bytes", Math.max(...event.tags.flat().map((field: string) => Buffer.byteLength(field)))],
++      ["method", "aggregate_tag_utf8_bytes", event.tags.flat().reduce((sum: number, field: string) => sum + Buffer.byteLength(field), 0)],
++      ["method", "canonical_bytes", Buffer.byteLength(load("vectors/events/kind-1-tags.json").canonical_serialization)],
++      ["method", "review_pages", 7], ["method", "parse_work", incomingFrame + outgoingFrame],
++      ["transport", "frame_bytes", Math.max(incomingFrame, outgoingFrame)], ["transport", "reassembly_bytes", Math.max(input, output)],
++      ["transport", "parse_work", incomingFrame + outgoingFrame]
++    ];
++    for (const [group, field, exact] of dimensions) for (const offset of [-1, 0, 1]) {
++      const state = setup();
++      state.live.review_plan!.request_sha256 = independentPlanHash("sha256").update(JSON.stringify(req)).digest("hex");
++      const row = group === "method" ? state.live.adapter_limits.methods[2] : state.live.adapter_limits.transports[0];
++      Object.assign(row, { [field]: exact + offset });
++      const route = selectAccountRoute([state.account], { account_id: state.account.account_id, method: "sign_event" });
++      if (offset < 0) expect(() => assessSignerCompatibility(route, req, state.live), `${group}.${field}`).toThrow();
++      else expect(() => assessSignerCompatibility(route, req, state.live), `${group}.${field}`).not.toThrow();
++    }
++    const raw = JSON.stringify(request), bytes = Buffer.byteLength(raw);
++    expect(parseSigningRequest(" ".repeat(704 - bytes) + raw)).toEqual(request);
++    expect(() => parseSigningRequest(" ".repeat(705 - bytes) + raw)).toThrow();
++    const multibyte = structuredClone(request); multibyte.params.event_template.content = "é".repeat(256);
++    expect(() => parseSigningRequest(JSON.stringify(multibyte))).not.toThrow();
++    multibyte.params.event_template.content += "é";
++    expect(() => parseSigningRequest(JSON.stringify(multibyte))).toThrow();
++  });
++
++  it("L-01/L-05: public-key and exact full/reference discovery responses must fit before any I/O", async () => {
++    for (const ceiling of [1, 704]) {
++      const state = setup(); const req = load("examples/request-get-public-key.json"), res = load("examples/response-get-public-key.json");
++      state.envelope.params.request = req; state.envelope.params.route_request.method = "get_public_key";
++      state.live.adapter_limits.methods[1].response_json_bytes = ceiling;
++      state.context.signerDispatcher = (dispatch) => { dispatch.before_write!(); state.writes.push("public-key-write"); return res; };
++      expect((await handleLocalServiceRequestAsync(state.envelope, state.context)).ok).toBe(ceiling !== 1);
++      expect(state.writes.length).toBe(ceiling === 1 ? 0 : 1);
++    }
++    for (const form of ["full", "reference"]) {
++      const state = setup(); const req = load("examples/request-get-capabilities.json");
++      state.envelope.params.request = req; state.envelope.params.route_request.method = "get_capabilities";
++      if (form === "reference") state.live.reported = compactReportedCapabilities(state.live.reported as FullCapabilities, state.live.implementation, 704);
++      state.context.signerDispatcher = (dispatch) => { dispatch.before_write!(); state.writes.push("discovery-write"); return { version: 2, request_id: req.request_id, ok: true, result: { capabilities: state.live.reported } }; };
++      expect((await handleLocalServiceRequestAsync(state.envelope, state.context)).ok).toBe(form === "reference");
++      expect(state.writes.length).toBe(form === "reference" ? 1 : 0);
++    }
++  });
++
+   it("L-04/L-06: exact expiry, rollback and missing clocks refuse writes and release pending state", async () => {
+     for (const time of [99, 100, 101]) {
+       const state = setup(); state.beforeWrite = () => { state.now = time; };
+@@ -194,6 +251,38 @@ describe("actual local service to recording adapter compatibility", () => {
+     } finally { vi.useRealTimers(); }
+   });
+ 
++  it("L-04: a timed-out unsettled adapter keeps its finite slot until actual settlement", async () => {
++    vi.useFakeTimers();
++    try {
++      const state = setup(); const finish: Array<(response: unknown) => void> = []; let calls = 0;
++      state.context.signerDispatcher = () => { calls++; return new Promise((resolve) => { finish.push(resolve); }); };
++      const pending = handleLocalServiceRequestAsync(state.envelope, state.context);
++      await vi.advanceTimersByTimeAsync(100);
++      expect(await pending).toMatchObject({ ok: false, error: { code: "signer_transport_timeout" } });
++      const retry = handleLocalServiceRequestAsync(state.envelope, state.context);
++      expect(calls).toBe(1);
++      expect(await retry).toMatchObject({ ok: false, error: { code: "runtime_unavailable" } });
++      finish[0](structuredClone(response)); await Promise.resolve(); await Promise.resolve();
++      state.context.signerDispatcher = () => structuredClone(response);
++      expect((await handleLocalServiceRequestAsync(state.envelope, state.context)).ok).toBe(true);
++    } finally { vi.useRealTimers(); }
++  });
++
++  it("L-04: sync API rejects an async dispatcher while preserving its unsettled slot and revoking writes", async () => {
++    const state = setup(); let finish!: (response: unknown) => void; let captured!: SignerDispatchRequest; let calls = 0;
++    state.context.signerDispatcher = (dispatch) => { calls++; captured = dispatch; return new Promise((resolve) => { finish = resolve; }); };
++    expect(handleLocalServiceRequest(state.envelope, state.context)).toMatchObject({ ok: false, error: { code: "signer_dispatch_failed", message: "async signer dispatcher requires handleLocalServiceRequestAsync" } });
++    expect(() => captured.before_write!()).toThrow(/no longer active/);
++    expect(handleLocalServiceRequest(state.envelope, state.context)).toMatchObject({ ok: false, error: { code: "runtime_unavailable" } });
++    expect(calls).toBe(1);
++    finish(structuredClone(response)); await Promise.resolve(); await Promise.resolve();
++    state.context.signerDispatcher = () => { throw new Error("settled throw control"); };
++    expect(handleLocalServiceRequest(state.envelope, state.context)).toMatchObject({ ok: false, error: { code: "signer_dispatch_failed" } });
++    state.context.signerDispatcher = () => structuredClone(response);
++    expect(handleLocalServiceRequest(state.envelope, state.context).ok).toBe(true);
++    expect(handleLocalServiceRequest(state.envelope, state.context).ok).toBe(true);
++  });
++
+   it("L-01/R-05: complete local review-plan observations bind request, implementation, connection, context and geometry", async () => {
+     for (const change of [undefined, { pages: 0 }, { pages: Number.NaN }, { request_sha256: "0".repeat(64) }, { implementation_id: "wrong" }, { connection_id: "wrong" }, { generation: 2 }, { geometry_id: "" }, { context_id: "" }]) {
+       const state = setup();
+diff --git a/packages/client/src/service.ts b/packages/client/src/service.ts
+index 675b8a95..937002e5 100644
+--- a/packages/client/src/service.ts
++++ b/packages/client/src/service.ts
+@@ -169,6 +169,7 @@ export function assessSignerCompatibility(route: RouteSelection, request: unknow
+   const frameBytes = route.transport === "usb" ? "nsealr1f:request::0000000000000000\n".length + encodedBytes(bytes) : "nsealr1:".length + encodedBytes(bytes);
+   if (frameBytes > boundTransport.frame_bytes) compatibilityError("limit_exceeded", "complete encoded request exceeds frame capacity");
+   if (route.transport === "qr" && bytes > boundTransport.static_decoded_json_bytes!) compatibilityError("limit_exceeded", "static QR request exceeds actual decoded capacity");
++  let responseShape: unknown;
+   if (method.scope === "sign_event") {
+     const event = (request.params as {event_template: {created_at: number; kind: number; content: string; tags: string[][]}}).event_template;
+     if ([4, 13, 14, 1059, 10050, 22242].includes(event.kind)) compatibilityError("workflow_not_admitted", "user-message/setup/AUTH events require their separately admitted context/workflow; generic signing is not a blind-sign route");
+@@ -181,10 +182,7 @@ export function assessSignerCompatibility(route: RouteSelection, request: unknow
+     if (tags > method.aggregate_tag_utf8_bytes!) compatibilityError("limit_exceeded", "tags exceed aggregate capacity");
+     // Output sizes use the fixed wire shape and fixed-width public fields;
+     // this is capacity planning, never a computed crypto expected answer.
+-    const response = { version: 2, request_id: request.request_id, ok: true, result: { event: { id: "0".repeat(64), pubkey: route.public_key, ...event, sig: "0".repeat(128) } } };
+-    const output = compactJsonUtf8ByteLength(response);
+-    const encodedOutput = route.transport === "usb" ? "nsealr1f:response::0000000000000000\n".length + encodedBytes(output) : "nsealr1:".length + encodedBytes(output);
+-    if (output > method.response_json_bytes || output > boundTransport.reassembly_bytes || encodedOutput > boundTransport.frame_bytes) compatibilityError("limit_exceeded", "complete response cannot fit effective capacity");
++    responseShape = { version: 2, request_id: request.request_id, ok: true, result: { event: { id: "0".repeat(64), pubkey: route.public_key, ...event, sig: "0".repeat(128) } } };
+     const canonicalBytes = compactJsonUtf8ByteLength([0, route.public_key, event.created_at, event.kind, event.tags, event.content]);
+     const plan = snapshot.review_plan;
+     if (!plan || !Number.isSafeInteger(plan.pages) || plan.pages < 1 ||
+@@ -193,7 +191,14 @@ export function assessSignerCompatibility(route: RouteSelection, request: unknow
+       typeof plan.context_id !== "string" || !/^[A-Za-z0-9._:-]{1,128}$/u.test(plan.context_id) ||
+       typeof plan.geometry_id !== "string" || !/^[A-Za-z0-9._:-]{1,128}$/u.test(plan.geometry_id)) compatibilityError("runtime_unavailable", "current complete local review plan is missing or stale");
+     if (canonicalBytes > method.canonical_bytes! || plan.pages > method.review_pages!) compatibilityError("limit_exceeded", "canonical/complete-review capacity is insufficient");
+-  }
++  } else {
++    responseShape = { version: 2, request_id: request.request_id, ok: true, result: request.method === "get_capabilities" ? { capabilities: snapshot.reported } : { public_key: route.public_key } };
++  }
++  const output = compactJsonUtf8ByteLength(responseShape);
++  const encodedOutput = route.transport === "usb" ? "nsealr1f:response::0000000000000000\n".length + encodedBytes(output) : "nsealr1:".length + encodedBytes(output);
++  if (output > method.response_json_bytes || output > boundTransport.reassembly_bytes || encodedOutput > boundTransport.frame_bytes) compatibilityError("limit_exceeded", "complete response cannot fit effective capacity");
++  const exchangeWork = frameBytes + encodedOutput;
++  if (!Number.isSafeInteger(exchangeWork) || exchangeWork > method.parse_work || exchangeWork > boundTransport.parse_work) compatibilityError("limit_exceeded", "complete exchange exceeds effective byte/work capacity");
+   return { method, transport: boundTransport };
+ }
+ 
+@@ -375,6 +380,7 @@ type PreparedSignerDispatch =
+       dispatcher: SignerRequestDispatcher;
+       dispatchRequest: SignerDispatchRequest;
+       release: () => void;
++      trackPending: (operation: unknown) => Promise<unknown>;
+       checkCurrent: () => void;
+       timeout_ms?: number;
+     }
+@@ -1064,6 +1070,13 @@ function prepareSignerDispatch(
+     request: structuredClone(request.params.request)
+   };
+   let active = true;
++  let unsettled = false;
++  let reservationReleased = false;
++  const releaseReservation = () => {
++    if (reservationReleased) return;
++    reservationReleased = true;
++    if (dispatchRequest.effective_limits) pendingDispatches.set(context, Math.max(0, (pendingDispatches.get(context) ?? 1) - 1));
++  };
+   const cancellation = new AbortController();
+   let timeoutMs: number | undefined;
+   let current = (): void => { if (!active) compatibilityError("runtime_unavailable", "operation is no longer active"); };
+@@ -1110,11 +1123,21 @@ function prepareSignerDispatch(
+     dispatchRequest,
+     checkCurrent: current,
+     timeout_ms: timeoutMs,
++    trackPending: (operation) => {
++      // An uncooperative adapter cannot be forcibly settled by a timeout. Keep
++      // its existing finite reservation; abort/revocation still happen now.
++      unsettled = true;
++      const settled = () => { unsettled = false; if (!active) releaseReservation(); };
++      return Promise.resolve(operation).then(
++        (value) => { settled(); return value; },
++        (error: unknown) => { settled(); throw error; }
++      );
++    },
+     release: () => {
+       if (!active) return;
+       active = false;
+       cancellation.abort();
+-      if (dispatchRequest.effective_limits) pendingDispatches.set(context, Math.max(0, (pendingDispatches.get(context) ?? 1) - 1));
++      if (!unsettled) releaseReservation();
+     }
+   };
+ }
+@@ -1174,6 +1197,7 @@ function dispatchSignerRequest(
+   try {
+     prepared.checkCurrent();
+     signerResponse = prepared.dispatcher(prepared.dispatchRequest);
++    if (isPromiseLike(signerResponse)) signerResponse = prepared.trackPending(signerResponse);
+     prepared.checkCurrent();
+     if (!isPromiseLike(signerResponse)) checkDispatchResponseCapacity(prepared.dispatchRequest, signerResponse);
+   } catch (error) {
+@@ -1204,7 +1228,7 @@ async function dispatchSignerRequestAsync(
+   let timer: ReturnType<typeof setTimeout> | undefined;
+   try {
+     prepared.checkCurrent();
+-    const operation = prepared.dispatcher(prepared.dispatchRequest);
++    const operation = prepared.trackPending(prepared.dispatcher(prepared.dispatchRequest));
+     signerResponse = prepared.timeout_ms === undefined ? await operation : await Promise.race([
+       operation,
+       new Promise<never>((_resolve, reject) => {
+diff --git a/packages/transport/src/transport.test.ts b/packages/transport/src/transport.test.ts
+index 0f969db4..59331ba6 100644
+--- a/packages/transport/src/transport.test.ts
++++ b/packages/transport/src/transport.test.ts
+@@ -36,6 +36,17 @@ const publicKeyVector = JSON.parse(
+ const basicEventVector = JSON.parse(readFileSync(resolve(specsRoot, "vectors/events/kind-1-basic.json"), "utf8"));
+ 
+ describe("transport adapters", () => {
++  it("L-04: cumulative tiny-line work is bounded and a failed connection cannot accumulate retries", async () => {
++    let reads = 0, writes = 0;
++    const transport = new SerialLineTransport({ maxIgnoredLines: 128, maxWorkBytes: 1024, responseTimeoutMs: 100,
++      port: { writeLine: async () => { writes++; }, readLine: async () => { reads++; return "x".repeat(100) + "\n"; } }
++    });
++    await expect(transport.exchange(capabilitiesRequest)).rejects.toThrow(/cumulative byte\/work/);
++    expect(reads).toBeLessThanOrEqual(11); expect(writes).toBe(1);
++    await expect(transport.exchange(capabilitiesRequest)).rejects.toThrow(/reopening/);
++    expect(writes).toBe(1);
++  });
++
+   it("moves request and response JSON through files", async () => {
+     const tempRoot = mkdtempSync(join(tmpdir(), "nsealr-file-"));
+     const requestPath = join(tempRoot, "request.json");

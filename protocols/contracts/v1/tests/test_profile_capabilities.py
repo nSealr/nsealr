@@ -129,6 +129,21 @@ class ProfileContractTests(unittest.TestCase):
         for name in ("signing-request-v0", "signing-response-v0", "account-descriptor-v0", "route-selection-vector-v0"):
             self.assertFalse((ROOT / "schemas" / f"{name}.schema.json").exists())
 
+    def test_retired_card_recovery_rejects_without_losing_supported_forms(self) -> None:
+        account = v.load_json("vectors/accounts/esp32-usb-device-slot-0.json")
+        errors: list[str] = []
+        v.check_account_descriptor_shape("public-device-slot", account, errors)
+        self.assertEqual(errors, [])
+        retired = deepcopy(account)
+        retired["recovery"] = {"type": "card_slot", "card_id": "public-test-card", "slot_id": "public-test-slot", "backup_required": True}
+        errors = []
+        v.check_account_descriptor_shape("retired-card", retired, errors)
+        self.assertIn("retired-card: recovery.type is unknown", errors)
+        schema = v.load_json("schemas/account-v1.schema.json")
+        forms = [branch["properties"]["type"]["const"] for branch in schema["$defs"]["recovery"]["oneOf"]]
+        self.assertEqual(set(forms), {"nip06", "device_slot", "hardware_wallet_slot", "external_signer"})
+        self.assertEqual(len(forms), 4)
+
     def test_finite_dimensions_checked_before_aggregate_retention(self) -> None:
         limits = deepcopy(COMMON["limits_manifest"])
         self.assertEqual(v.validate_limits_data(limits), limits)

@@ -1,0 +1,251 @@
+{
+  "schema_version": 1,
+  "state": "AFFECTED_REVIEW_REQUIRED_NOT_FINAL_T01_ACCEPTANCE",
+  "source_preimage": "104f5e369244dcdc3afe87bb91074067c6ad8ac7",
+  "findings": {
+    "T01-ARTIFACT-01": {
+      "change": "Remove only retired card_slot recovery from new account schema and independent reference; preserve four supported alternatives. Add negative and exact schema recovery-alternative assertion.",
+      "reference_tests": 99,
+      "schema_engine_run": false,
+      "schema_control": "Existing unittest asserts exact supported recovery branch set; no JSON Schema dependency/engine added."
+    },
+    "T01-SERVICE-01": {
+      "change": "Async dispatch calls the existing authorizeClient before preparation/observations/adapter.",
+      "regression": "Same four denied cases on sync+async have zero observations and adapter calls; authorized controls succeed. Reused actual driver witness confirms zero opens/writes/closes denied and one each authorized."
+    },
+    "T01-SERVICE-02": {
+      "change": "Pass effective frame_bytes into serial transport; enforce positive integer <= existing1024global bound, actual UTF8 frame bytes checked before write or incoming decode. Existing work ceiling remains independent.",
+      "regression": "Fixed67/142 compact JSON bytes imply125/226 byte frames using unchanged nine-character prefix/checksum; below/exact/above tests and oversized valid peer error via actual narrowed driver. H01 actual431 frame rejected under226 cap with one write and close."
+    },
+    "T01-SERVICE-03": {
+      "change": "Attach observer to wrapped sync promise immediately before post-dispatch revalidation can return early. Reservation tracks actual settlement; hooks revoked immediately.",
+      "regression": "Inline generation change, late rejection, no unhandledRejection; blocked retry before settlement and successful recovery afterward."
+    }
+  },
+  "test_totals": {
+    "service_component_focused": 85,
+    "reference": 99
+  },
+  "meaningful_failures_preserved": [
+    "Reference accepted retired recovery before correction.",
+    "Async unpaired request reached dispatch before correction.",
+    "Narrowed actual frame cap ignored before correction.",
+    "Late sync rejection emitted actual unhandledRejection before correction."
+  ],
+  "harness_and_compilation_corrections": [
+    "First boundary expectation miscounted nsealr1f: as eight rather than nine characters: request125, response226 from independent UTF8/base64url framing. Original failed log retained.",
+    "First implementation build lost TypeScript unknown narrowing after assignment; use typed pendingResponse local, with failure retained.",
+    "First frame guard message classified as existing I/O code; use serial frame wording so existing protocol-error mapping applies, no permissive test weakening.",
+    "Adapted H01 source service import plus driver public package import created duplicate SignerTransportError constructor identities; public @nsealr/client import now shared. Original mixed-module witness and both failed logs retained. A first string replacement used wrong relative-depth count and made no change; its receipt remains."
+  ],
+  "commands": [
+    {
+      "name": "wire2-retired-recovery-red-01",
+      "receipt": "docs/restart/implementation/T01/integration/evidence/commands/wire2-retired-recovery-red-01/command.json",
+      "sha256": "6b51c73e13cd65da84b6a0da0db2486909ebfdf74ef86ff90972b6df07b63135",
+      "exit_code": 2
+    },
+    {
+      "name": "wire2-retired-recovery-green-02",
+      "receipt": "docs/restart/implementation/T01/integration/evidence/commands/wire2-retired-recovery-green-02/command.json",
+      "sha256": "bdc4152dc0adcc85b1b90a6c3e03485c4c13ff02c3d9e8266b98903c836c109d",
+      "exit_code": 0
+    },
+    {
+      "name": "wire2-service-authorization-red-01",
+      "receipt": "docs/restart/implementation/T01/integration/evidence/commands/wire2-service-authorization-red-01/command.json",
+      "sha256": "9ded76d390666cf8099a1a4155785610469f0b515db96b878cb0c20c858010a6",
+      "exit_code": 1
+    },
+    {
+      "name": "wire2-service-frame-cap-red-01",
+      "receipt": "docs/restart/implementation/T01/integration/evidence/commands/wire2-service-frame-cap-red-01/command.json",
+      "sha256": "195b27bee7931b59d2d1bd32ec177d967ce4a876330b4df74478e7cc0eb90f9c",
+      "exit_code": 1
+    },
+    {
+      "name": "wire2-service-frame-cap-red-02",
+      "receipt": "docs/restart/implementation/T01/integration/evidence/commands/wire2-service-frame-cap-red-02/command.json",
+      "sha256": "f70a99c177efc6a90853d250182d9ad1c0057458b72534d0f8a03214b8ca50a1",
+      "exit_code": 1
+    },
+    {
+      "name": "wire2-sync-stale-rejection-red-01",
+      "receipt": "docs/restart/implementation/T01/integration/evidence/commands/wire2-sync-stale-rejection-red-01/command.json",
+      "sha256": "4b780642aa2284df2f70d8db6b3c8927a7fffd6fd1f3ffe805f089d9e4936076",
+      "exit_code": 1
+    },
+    {
+      "name": "wire2-service-corrections-unit-green-01",
+      "receipt": "docs/restart/implementation/T01/integration/evidence/commands/wire2-service-corrections-unit-green-01/command.json",
+      "sha256": "16f5ecf17620c369c9ce4f0f2230b0eb7a8eedea3f293fe62fec7e5f0f7e6921",
+      "exit_code": 1
+    },
+    {
+      "name": "wire2-service-corrections-unit-green-02",
+      "receipt": "docs/restart/implementation/T01/integration/evidence/commands/wire2-service-corrections-unit-green-02/command.json",
+      "sha256": "3256d9265c9c34688c4e55103bcb012a4a156fadc8becaa8ed08ae6c26c73e6b",
+      "exit_code": 0
+    },
+    {
+      "name": "wire2-service-corrections-build-16",
+      "receipt": "docs/restart/implementation/T01/integration/evidence/commands/wire2-service-corrections-build-16/command.json",
+      "sha256": "aca7d60776c5cd3612f818855e705f3fb4f2ec3dddbdf3259cbab1a31f5ec329",
+      "exit_code": 2
+    },
+    {
+      "name": "wire2-service-corrections-build-17",
+      "receipt": "docs/restart/implementation/T01/integration/evidence/commands/wire2-service-corrections-build-17/command.json",
+      "sha256": "12808ea3b9cb03ed0c9d786c007c41cdd1379409ca536d2342c274828934c1e6",
+      "exit_code": 0
+    },
+    {
+      "name": "wire2-service-corrections-build-18",
+      "receipt": "docs/restart/implementation/T01/integration/evidence/commands/wire2-service-corrections-build-18/command.json",
+      "sha256": "5c16b630721df0335684eb917f394e76acde45f911e647adaf16759cc6b2bb34",
+      "exit_code": 0
+    },
+    {
+      "name": "wire2-service-corrections-typecheck-09",
+      "receipt": "docs/restart/implementation/T01/integration/evidence/commands/wire2-service-corrections-typecheck-09/command.json",
+      "sha256": "e8b5c7998b46c4dfd48a801619b61778a8397ff37fa95a6f50ee3e6dd2efd226",
+      "exit_code": 0
+    },
+    {
+      "name": "wire2-service-capacity-lifecycle-green-02",
+      "receipt": "docs/restart/implementation/T01/integration/evidence/commands/wire2-service-capacity-lifecycle-green-02/command.json",
+      "sha256": "044f29eebbd9c99ac152c0916366fc205986c241c7b8632482dd68bb94c430dd",
+      "exit_code": 1
+    },
+    {
+      "name": "wire2-service-capacity-lifecycle-green-03",
+      "receipt": "docs/restart/implementation/T01/integration/evidence/commands/wire2-service-capacity-lifecycle-green-03/command.json",
+      "sha256": "bcb67aaad68a2bd2c1ee2ae1cc56872dbe29608d3c0163ee58963cc78d006bf3",
+      "exit_code": 1
+    },
+    {
+      "name": "wire2-service-capacity-lifecycle-green-04",
+      "receipt": "docs/restart/implementation/T01/integration/evidence/commands/wire2-service-capacity-lifecycle-green-04/command.json",
+      "sha256": "0aaf42cdb4bea520904168f5e567b14ddd4c5caf4a4c9e4a196584989510def3",
+      "exit_code": 0
+    },
+    {
+      "name": "wire2-service-authorization-recording-green-02",
+      "receipt": "docs/restart/implementation/T01/integration/evidence/commands/wire2-service-authorization-recording-green-02/command.json",
+      "sha256": "2644c4142fa4dd0d37eea0f2f7e83eef4e7e3a5f8d9bbf87014eadc92001ae0a",
+      "exit_code": 0
+    },
+    {
+      "name": "wire2-service-authorization-recording-green-03",
+      "receipt": "docs/restart/implementation/T01/integration/evidence/commands/wire2-service-authorization-recording-green-03/command.json",
+      "sha256": "352dbb5b564ad27be160c5018fb067e9bf29bb50b20ec87b1409087368e191ef",
+      "exit_code": 0
+    },
+    {
+      "name": "wire2-service-authorization-recording-green-04",
+      "receipt": "docs/restart/implementation/T01/integration/evidence/commands/wire2-service-authorization-recording-green-04/command.json",
+      "sha256": "897c01ac90ea591f80db32b46d19e08b1da2d315d4393b08759f986e6132ef41",
+      "exit_code": 0
+    },
+    {
+      "name": "wire2-service-corrections-api-docs-03",
+      "receipt": "docs/restart/implementation/T01/integration/evidence/commands/wire2-service-corrections-api-docs-03/command.json",
+      "sha256": "72100b9ed8e6a8a04a40462b5fc80d804b8be572cdae2dea30109debcfd51d88",
+      "exit_code": 0
+    },
+    {
+      "name": "wire2-recovery-lint-01",
+      "receipt": "docs/restart/implementation/T01/integration/evidence/commands/wire2-recovery-lint-01/command.json",
+      "sha256": "c7dbb2c144fb9afa52d2b449204500b6c6104b1c0de0b651f1c3a2b195d6df21",
+      "exit_code": 0
+    }
+  ],
+  "source_bindings": [
+    {
+      "path": "protocols/contracts/v1/schemas/account-v1.schema.json",
+      "mode": "100644",
+      "sha256": "8af67529846d6a8ad8875e1c71db909e5b89d0fb97c4479a2f617df4f550fefa",
+      "preimage_commit": "104f5e369244dcdc3afe87bb91074067c6ad8ac7",
+      "preimage_sha256": "da58d65ec350a7238cd7629fdf427468830744ae6720691bdce33400207d6d3e"
+    },
+    {
+      "path": "protocols/contracts/v1/scripts/verify_specs.py",
+      "mode": "100644",
+      "sha256": "f25226ebb30d0d5a9bdf7df850517313d9300ab04d8d44069a98a4f95ab59b06",
+      "preimage_commit": "104f5e369244dcdc3afe87bb91074067c6ad8ac7",
+      "preimage_sha256": "c7b1f3ab3514316ba18ab45132c3d73b7d9a5d38428feef5dd409f1b7d3a4816"
+    },
+    {
+      "path": "protocols/contracts/v1/tests/test_profile_capabilities.py",
+      "mode": "100644",
+      "sha256": "9c81c16db4dfd89a0dd9e31afa2d9424d3d5e9591b1316e5acf183aabdafcaa7",
+      "preimage_commit": "104f5e369244dcdc3afe87bb91074067c6ad8ac7",
+      "preimage_sha256": "1c1a00d75f2c924b8a0d9027537c4ec3df6a0cad07c22f20ce6b4343cf0b0137"
+    },
+    {
+      "path": "protocols/contracts/v1/manifest.json",
+      "mode": "100644",
+      "sha256": "2ec0097c6426b754dcf0446057f5c95bf104b9691dccb27d32870c6a55c0b54a",
+      "preimage_commit": "104f5e369244dcdc3afe87bb91074067c6ad8ac7",
+      "preimage_sha256": "e113f38ff4d10517bca17abbf38d5d1592e966fbcff6b3e5a343d93a0c0f6de3"
+    },
+    {
+      "path": "packages/client/src/service.ts",
+      "mode": "100644",
+      "sha256": "d230d65ec2eb505afd940951c792c6ed0ac93a13e781ca70116db464ff59c509",
+      "preimage_commit": "104f5e369244dcdc3afe87bb91074067c6ad8ac7",
+      "preimage_sha256": "c5256dcb5785faac5ece6501d415808c0762fa892da8a579311019b822489e79"
+    },
+    {
+      "path": "packages/client/src/service.test.ts",
+      "mode": "100644",
+      "sha256": "1b99c7d0cdca81c828e0f918b50276f6abdb68128da04d42de0e528db3ba0a6f",
+      "preimage_commit": "104f5e369244dcdc3afe87bb91074067c6ad8ac7",
+      "preimage_sha256": "092c81eda106970ca9c7361878d174eda889cf14cb60a129f3f82294958a8c1b"
+    },
+    {
+      "path": "packages/client/src/profile-dispatch.test.ts",
+      "mode": "100644",
+      "sha256": "72a48210a3c7d5d313e69056fcc3144a9196cc348af5533b591b1632da07c24b",
+      "preimage_commit": "104f5e369244dcdc3afe87bb91074067c6ad8ac7",
+      "preimage_sha256": "589e8dc19917af7fcd12932fd636b752127d089ca98ab7f9035bd7c4506046e9"
+    },
+    {
+      "path": "apps/bridge/service/src/drivers.ts",
+      "mode": "100644",
+      "sha256": "f70e910981e6acbc209384efff42afdb7216e715330b761bd65a912a5a58f47f",
+      "preimage_commit": "104f5e369244dcdc3afe87bb91074067c6ad8ac7",
+      "preimage_sha256": "187340570a90ad9e89d8bb76926729ca8da9eefe2fc15b99d3e154c149c51bd7"
+    },
+    {
+      "path": "apps/bridge/service/src/drivers.test.ts",
+      "mode": "100644",
+      "sha256": "86f4a120d1bf976768f43a202b418e83e56871c57f17574a39e26ed57b0a528a",
+      "preimage_commit": "104f5e369244dcdc3afe87bb91074067c6ad8ac7",
+      "preimage_sha256": "7ce4be38459e6095f2231425428c2b3deb1b8555e6b8b96d90e5a3f27ff993a3"
+    },
+    {
+      "path": "packages/transport/src/transport.ts",
+      "mode": "100644",
+      "sha256": "7fe362335c90b277d49da8455beaf221f15ab4deebc4361ace2b75a1244f37a2",
+      "preimage_commit": "104f5e369244dcdc3afe87bb91074067c6ad8ac7",
+      "preimage_sha256": "db83c7265878dad7a3763197be22360f6c727d3565ce10a2e8a8944a44e27a2c"
+    },
+    {
+      "path": "packages/transport/src/transport.test.ts",
+      "mode": "100644",
+      "sha256": "4ba4b00f94ef8a76d251ebdf328a266c2adf52db44d64bc3655d370ad8b12ece",
+      "preimage_commit": "104f5e369244dcdc3afe87bb91074067c6ad8ac7",
+      "preimage_sha256": "682b2e4ef20a506d19f1ee542e572cf93a56a5bd1a15afc02e56dded1d2c2646"
+    }
+  ],
+  "pending": [
+    "Distinct affected artifact pin review and explicit literal approval",
+    "Distinct affected service review",
+    "Full stable required gates/floors/all17 integration",
+    "Actual rewritten/main-only Git candidate checks",
+    "Distinct final exact T01 review and protected delivery/main CI"
+  ],
+  "production_signing_disabled": true,
+  "physical_measurements_performed": false
+}
