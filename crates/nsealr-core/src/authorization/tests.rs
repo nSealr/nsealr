@@ -1796,6 +1796,7 @@ fn k01_seventy_cases_have_actual_complete_review_or_exact_zero_effect_failure() 
     )))
     .unwrap();
     let mut actual = Vec::new();
+    let mut role_errors = Vec::new();
     for row in corpus["rows"].as_array().unwrap() {
         let mut bounds = limits();
         if let Some(p) = row["local_review_page_limit"].as_u64() {
@@ -1846,6 +1847,30 @@ fn k01_seventy_cases_have_actual_complete_review_or_exact_zero_effect_failure() 
             }
         }
         let kind = event["kind"].as_u64().unwrap();
+        // P01/catalog role expectation, asserted against actual displayed data
+        // before correcting the old blanket plain-text label. Values stay exact.
+        let content_role = match kind {
+            0 => "Signed content: profile metadata JSON",
+            1 => "Signed content (plain text)",
+            3 | 10002 => "Signed content: additional uninterpreted data",
+            5 => "Signed content: deletion reason",
+            6 => "Signed content: original event JSON",
+            7 => "Signed content: reaction value",
+            _ => panic!("unexpected kind"),
+        };
+        let actual_role = &io
+            .pages
+            .iter()
+            .find(|p| p.0.starts_with("Signed content"))
+            .unwrap()
+            .0;
+        if !actual_role.starts_with(&format!("{content_role} / fragment ")) {
+            role_errors.push(format!(
+                "{} expected role {content_role}, actual {actual_role}",
+                row["id"]
+            ));
+        }
+
         let effect = observed_value(&io, "Operation and consequences");
         for role in match kind {
             0 => &[
@@ -1924,8 +1949,9 @@ fn k01_seventy_cases_have_actual_complete_review_or_exact_zero_effect_failure() 
         }
         assert_eq!(owner.state(), AuthorizationState::Approved);
         assert_eq!(backend_calls(), before);
-        actual.push(json!({"id":row["id"],"disposition":"actual complete local simulation and exact field/role assertions","data_pages":io.pages.len(),"approval_calls":1,"entropy_calls":0,"sign_calls":0,"output":false}));
+        actual.push(json!({"id":row["id"],"disposition":"actual complete local simulation and exact field/role assertions","data_pages":io.pages.len(),"content_role":actual_role,"approval_calls":1,"entropy_calls":0,"sign_calls":0,"output":false}));
     }
+    assert!(role_errors.is_empty(), "{}", role_errors.join("\n"));
     if let Ok(path) = std::env::var("K01_MATRIX_OBSERVED") {
         std::fs::write(path, serde_json::to_vec_pretty(&actual).unwrap()).unwrap();
     }
