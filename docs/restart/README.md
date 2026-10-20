@@ -1,4 +1,4 @@
-> **Explicit pause — 2026-10-18.** Development is stopped. Read [the durable pause handoff](implementation/PAUSE-HANDOFF.md) before any work; only a new explicit maintainer request can resume it. This checkpoint does not close implementation or release gates.
+> **Resumed by explicit user instruction, 2026-10-20:** the goal is active. Read `docs/restart/implementation/resume-2026-10-20/handoff.md`. The pause checkpoint remains historical; A02 source freeze and all acceptance gates still apply.
 
 # nSealr restart and execution
 

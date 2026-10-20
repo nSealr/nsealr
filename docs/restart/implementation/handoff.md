@@ -1,4 +1,4 @@
-> **Later explicit pause checkpoint, 2026-10-18:** [read PAUSE-HANDOFF.md](PAUSE-HANDOFF.md). Do not resume development without a new explicit maintainer request. The earlier handoff below remains historical.
+> **Resumed by explicit user instruction, 2026-10-20:** the goal is active. Read `docs/restart/implementation/resume-2026-10-20/handoff.md`. The pause checkpoint remains historical; A02 source freeze and all acceptance gates still apply.
 
 # Execution handoff — first implementation tranche
 

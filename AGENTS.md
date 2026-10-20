@@ -1,4 +1,4 @@
-> **Explicit project pause, 2026-10-18:** development is suspended until the maintainer explicitly resumes. Read `docs/restart/implementation/PAUSE-HANDOFF.md`. This branch is a checkpoint; preserve the A02 source freeze and do not infer execution authority from task eligibility.
+> **Resumed by explicit user instruction, 2026-10-20:** the goal is active. Read `docs/restart/implementation/resume-2026-10-20/handoff.md`. The pause checkpoint remains historical; A02 source freeze and all acceptance gates still apply.
 
 # Working on nSealr
 
