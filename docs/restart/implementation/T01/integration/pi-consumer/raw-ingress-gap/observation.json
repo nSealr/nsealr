@@ -1,0 +1,33 @@
+{
+  "scope": "Excluded independent Pi reference decoder; not the shared Rust engine or a qualified signer",
+  "source_boundary": "apps/pi/app/nsealr_vault/qr.py:94 json.loads(decoded) loses duplicate aliases and numeric spelling; signer.py receives only a dict",
+  "fixed_case_obligation": "T01 S-03 retains original-byte duplicate and unsigned integer grammar rejection; this reference path does not satisfy it",
+  "rows": [
+    {
+      "case": "duplicate-kind",
+      "original_json": "{\"version\":2,\"request_id\":\"req-kind-1-basic\",\"method\":\"sign_event\",\"params\":{\"event_template\":{\"created_at\":1710000000,\"kind\":0,\"kind\":1,\"tags\":[],\"content\":\"nSealr fixture: basic kind 1 event.\"}}}",
+      "expected_strict_ingress": "REJECT before operation",
+      "actual_reference_response_ok": true,
+      "actual_error_code": null,
+      "disposition": "OPEN_RAW_REFERENCE_GAP"
+    },
+    {
+      "case": "escaped-key-alias",
+      "original_json": "{\"version\":2,\"request_id\":\"req-kind-1-basic\",\"method\":\"sign_event\",\"params\":{\"event_template\":{\"created_at\":1710000000,\"kind\":0,\"\\u006bind\":1,\"tags\":[],\"content\":\"nSealr fixture: basic kind 1 event.\"}}}",
+      "expected_strict_ingress": "REJECT before operation",
+      "actual_reference_response_ok": true,
+      "actual_error_code": null,
+      "disposition": "OPEN_RAW_REFERENCE_GAP"
+    },
+    {
+      "case": "negative-zero-spelling",
+      "original_json": "{\"version\":2,\"request_id\":\"req-kind-1-basic\",\"method\":\"sign_event\",\"params\":{\"event_template\":{\"created_at\":-0,\"kind\":1,\"tags\":[],\"content\":\"nSealr fixture: basic kind 1 event.\"}}}",
+      "expected_strict_ingress": "REJECT before operation",
+      "actual_reference_response_ok": true,
+      "actual_error_code": null,
+      "disposition": "OPEN_RAW_REFERENCE_GAP"
+    }
+  ],
+  "unresolved": true,
+  "required_shared_engine_boundary": "Q02 must submit original bytes to the core without a permissive JSON roundtrip. No excluded file is edited or negative obligation waived here."
+}
