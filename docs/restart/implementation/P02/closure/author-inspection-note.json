@@ -1,0 +1,6 @@
+{
+  "scope": "Root metadata preflight only; no product or acceptance failure",
+  "initial_exit_code": 1,
+  "cause": "After staging new closure files, a read-only name-list assertion incorrectly expected git diff BASE to include only the modified graph; staged added files are included too. Actual docs/plan/frozen checks had already passed.",
+  "correction": "Check name-status: only existing modification is plan/work-items.json; all other additions are scoped closure files. No source/gate or old artifact changed."
+}
