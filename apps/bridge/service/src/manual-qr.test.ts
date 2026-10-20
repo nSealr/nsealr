@@ -167,6 +167,60 @@ describe("service manual QR port through the existing client lifecycle", () => {
     expect(result.ok).toBe(delta >= 0); expect(state.counts.opens).toBe(delta < 0 ? 0 : 1);
   });
 
+  it.each(["frame", "decoded", "response", "reassembly", "work"].flatMap((dimension) =>
+    [-1, 0, 1].map((delta) => ({ dimension, delta }))))("bounds the actual error response at $dimension capacity delta$delta", async ({ dimension, delta }) => {
+    const state = setup(); const peerError = errorResponse(state);
+    const jsonBytes = Buffer.byteLength(JSON.stringify(peerError), "utf8");
+    const raw = rawQr(peerError); state.scanned = raw;
+    const method = state.snapshot.adapter_limits.methods[1];
+    const transport = state.snapshot.adapter_limits.transports.find((entry) => entry.transport_id === "qr")!;
+    if (dimension === "frame") transport.frame_bytes = raw.length + delta;
+    else if (dimension === "decoded") transport.static_decoded_json_bytes = jsonBytes + delta;
+    else if (dimension === "response") method.response_json_bytes = jsonBytes + delta;
+    else if (dimension === "reassembly") transport.reassembly_bytes = jsonBytes + delta;
+    else method.parse_work = rawQr(state.request).length + raw.length + delta;
+    const decode = vi.spyOn(qr, "decodeQrEnvelope");
+    try {
+      const result = await run(state);
+      if (delta < 0) {
+        expect(result).toMatchObject({ ok: false, error: { code: "signer_transport_protocol_error" } });
+        expect(decode).not.toHaveBeenCalled();
+      } else {
+        expect(result).toMatchObject({ ok: true, result: { signer_response: peerError } });
+        expect(decode).toHaveBeenCalledTimes(1);
+      }
+      // Client's independently planned public-key response fits every row.
+      // Thus the actual scanned-response boundary is exercised after opening.
+      expect(state.counts).toEqual({ opens: 1, scans: 1, closes: 1 });
+    } finally { decode.mockRestore(); }
+  });
+
+  it("requires the trusted delayed presenter to revalidate at the actual effect", async () => {
+    const state = setup();
+    state.openHook = (control) => ({ ...state.port(control), present: async (envelope) => {
+      await Promise.resolve(); state.snapshot.generation++;
+      control.before_present(); state.presented.push(envelope);
+    } });
+    expect(await run(state)).toMatchObject({ ok: false, error: { code: "runtime_unavailable" } });
+    expect(state.presented).toEqual([]);
+    expect(state.counts).toEqual({ opens: 1, scans: 0, closes: 1 });
+  });
+
+  it("discards an uncooperative late scan before decoding original bytes", async () => {
+    vi.useFakeTimers(); const decode = vi.spyOn(qr, "decodeQrEnvelope");
+    try {
+      const state = setup(); const entered = deferred<void>(); const finish = deferred<string>();
+      state.openHook = (control) => ({ ...state.port(control), scan: async () => {
+        entered.resolve(); return await finish.promise;
+      } });
+      const operation = run(state); await entered.promise;
+      await vi.advanceTimersByTimeAsync(100);
+      expect(await operation).toMatchObject({ ok: false, error: { code: "signer_transport_timeout" } });
+      finish.resolve("not-a-valid-or-current-envelope"); await vi.advanceTimersByTimeAsync(0);
+      expect(decode).not.toHaveBeenCalled(); expect(state.counts.closes).toBe(1);
+    } finally { decode.mockRestore(); vi.useRealTimers(); }
+  });
+
   it("uses one terminal scan, with no repeated-scan retry or cached approval", async () => {
     const state = setup(); const previous = { ...state.response, request_id: "old-operation" }; let reads = 0;
     state.openHook = (control) => ({ ...state.port(control), scan: async () => {
