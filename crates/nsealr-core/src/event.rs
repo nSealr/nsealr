@@ -342,8 +342,6 @@ pub enum RequestMethod {
     SignEvent,
     /// Diagnostic capabilities.
     Capabilities,
-    /// Diagnostic signing status.
-    SigningStatus,
     /// Public identity query.
     PublicKey,
 }
@@ -355,7 +353,7 @@ pub struct ParsedRequest {
     pub(crate) raw_template: (usize, usize),
 }
 impl ParsedRequest {
-    /// Strict legacy v1 envelope parse, shared by serial and QR adapters.
+    /// Strict signing v2 envelope parse, shared by serial and QR adapters.
     pub fn parse(input: &[u8], limits: OperationLimits) -> Result<Self, EventError> {
         let mut r = Reader::new(input, limits)?;
         let mut result = Self {
@@ -369,7 +367,7 @@ impl ParsedRequest {
             r.object_optional(&["version", "request_id", "method", "params"], |r, key| {
                 match key {
                     0 => {
-                        if r.number(1)? != 1 {
+                        if r.number(2)? != 2 {
                             return Err(EventError::Range);
                         }
                     }
@@ -394,7 +392,6 @@ impl ParsedRequest {
                         result.method = match &buf[..len] {
                             b"sign_event" => RequestMethod::SignEvent,
                             b"get_capabilities" => RequestMethod::Capabilities,
-                            b"get_signing_status" => RequestMethod::SigningStatus,
                             b"get_public_key" => RequestMethod::PublicKey,
                             _ => return Err(EventError::Shape),
                         };

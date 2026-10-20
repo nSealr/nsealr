@@ -4,8 +4,9 @@
 //! `include/nsealr/device_protocol.hpp` for behaviour parity: the same
 //! signer-identity gate at entry, the same request-frame decode, the same
 //! strict shared JSON reader (decoded duplicate keys and trailing data reject),
-//! `get_capabilities`/`get_public_key`/`get_signing_status`/`sign_event`
-//! dispatch with byte-identical response JSON, the same
+//! Current T01 `get_capabilities`/`get_public_key`/`sign_event`
+//! dispatch uses numeric wire2 and a bounded conformance reference; the retired
+//! universal status method rejects. The port retains the same
 //! `{"error":"unsupported_request"}` error frame for every rejected request,
 //! and the same trusted-review preview (frame + session) on `sign_event`.
 //!
@@ -25,9 +26,6 @@
 //! that error, so the divergence is unobservable in any output.
 
 use crate::base64url::{decode_base64url, encode_base64url, encoded_len, Base64UrlError};
-use crate::policy::signing_policy::{
-    evaluate_signing_readiness, SigningGateNames, SigningReadiness,
-};
 use crate::qr::limits::{MAX_DECODED_REQUEST_JSON_BYTES, MAX_SERIAL_FRAME_BYTES};
 use crate::review::display::{ReviewDisplayFrame, ReviewDisplayLimits};
 use crate::review::serial::{begin_serial_sign_event_trusted_review, SerialReviewError};
@@ -189,9 +187,9 @@ pub fn handle_serial_frame_with_review_preview(
     match metadata.parsed.method() {
         crate::event::RequestMethod::Capabilities => {
             let mut json = ResponseJson::new();
-            json.push(r#"{"version":1,"request_id":""#);
+            json.push(r#"{"version":2,"request_id":""#);
             json.push_bytes(metadata.request_id());
-            json.push(r#"","ok":true,"result":{"capabilities":{"device":{"name":"nSealr ESP32-S3 USB Signer Scaffold","firmware":"nsealr-esp32-s3-usb-signer","hardware":"esp32-s3-devkitc-1"},"protocols":["nsealr.signing.v0","nsealr.serial-frame.v0"],"methods":["get_capabilities","get_signing_status","get_public_key","sign_event"],"transports":["usb-serial-jtag"],"signing_enabled":false,"requires_physical_approval":true}}}"#);
+            json.push(r#"","ok":true,"result":{"capabilities":{"format":"nsealr.capabilities.v1","form":"reference","profile":"esp32_no_se","implementation_id":"nsealr.conformance.esp32_no_se.v1","runtime":[{"method_id":"get_capabilities","configuration":"configured","availability":"available","reason":null},{"method_id":"get_public_key","configuration":"configured","availability":"available","reason":null}]}}}"#);
             respond(&json)
         }
         crate::event::RequestMethod::PublicKey => {
@@ -199,23 +197,11 @@ pub fn handle_serial_frame_with_review_preview(
             // `public_key_response_json`; the entry gate above already proved
             // the same property for the same identity.
             let mut json = ResponseJson::new();
-            json.push(r#"{"version":1,"request_id":""#);
+            json.push(r#"{"version":2,"request_id":""#);
             json.push_bytes(metadata.request_id());
             json.push(r#"","ok":true,"result":{"public_key":""#);
             json.push(context.signer_identity.public_key);
             json.push(r#""}}"#);
-            respond(&json)
-        }
-        crate::event::RequestMethod::SigningStatus => {
-            let status = evaluate_signing_readiness(&scaffold_signing_readiness());
-            let mut json = ResponseJson::new();
-            json.push(r#"{"version":1,"request_id":""#);
-            json.push_bytes(metadata.request_id());
-            json.push(r#"","ok":true,"result":{"signing_status":{"signing_enabled":false,"missing_gates":["#);
-            push_gates_json(&mut json, &status.missing_gates);
-            json.push(r#"],"development_accepted_gates":["#);
-            push_gates_json(&mut json, &status.development_accepted_gates);
-            json.push(r#"]}}}"#);
             respond(&json)
         }
         crate::event::RequestMethod::SignEvent => {
@@ -236,7 +222,7 @@ pub fn handle_serial_frame_with_review_preview(
                 .current_frame()
                 .map_err(|error| DeviceProtocolError::Review(SerialReviewError::Display(error)))?;
             let mut json = ResponseJson::new();
-            json.push(r#"{"version":1,"request_id":""#);
+            json.push(r#"{"version":2,"request_id":""#);
             json.push_bytes(metadata.request_id());
             json.push(r#"","ok":false,"error":{"code":"signing_disabled","message":"Signing is disabled until trusted review and physical approval are implemented.","retryable":false}}"#);
             let mut result = respond(&json)?;
@@ -244,41 +230,6 @@ pub fn handle_serial_frame_with_review_preview(
             result.review_session = Some(session);
             Ok(result)
         }
-    }
-}
-
-/// The scaffold signing readiness (parser limits + digest binding satisfied,
-/// four development-accepted gates). Mirrors the C++
-/// `scaffold_signing_readiness`.
-fn scaffold_signing_readiness() -> SigningReadiness {
-    let mut development_accepted_gates = SigningGateNames::new();
-    for gate in [
-        "parser_limits",
-        "trusted_review_display",
-        "physical_approval_controls",
-        "approval_digest_binding",
-    ] {
-        development_accepted_gates
-            .try_push(gate)
-            .expect("four fixed gates fit the list");
-    }
-    SigningReadiness {
-        parser_limits_enforced: true,
-        approval_digest_binding_verified: true,
-        development_accepted_gates,
-        ..SigningReadiness::default()
-    }
-}
-
-/// Appends the `"a","b"` gate list body. Mirrors the C++ `gates_json`.
-fn push_gates_json(json: &mut ResponseJson, gates: &SigningGateNames) {
-    for (index, gate) in gates.as_slice().iter().enumerate() {
-        if index > 0 {
-            json.push(",");
-        }
-        json.push("\"");
-        json.push(gate.as_str());
-        json.push("\"");
     }
 }
 
@@ -583,7 +534,7 @@ mod tests {
 
         let public_key_response = handle_serial_frame(
             &request_frame_for_test(
-                r#"{"version":1,"request_id":"req-context-pubkey","method":"get_public_key"}"#,
+                r#"{"version":2,"request_id":"req-context-pubkey","method":"get_public_key"}"#,
             ),
             &context,
         )
@@ -591,14 +542,14 @@ mod tests {
         assert_eq!(
             public_key_response.as_bytes(),
             response_frame_for_test(
-                r#"{"version":1,"request_id":"req-context-pubkey","ok":true,"result":{"public_key":"cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc"}}"#,
+                r#"{"version":2,"request_id":"req-context-pubkey","ok":true,"result":{"public_key":"cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc"}}"#,
             )
             .as_slice(),
         );
 
         let result = handle_serial_frame_with_review_preview(
             &request_frame_for_test(
-                r#"{"version":1,"request_id":"req-context-sign","method":"sign_event","params":{"event_template":{"created_at":1710000000,"kind":1,"tags":[],"content":"context identity"}}}"#,
+                r#"{"version":2,"request_id":"req-context-sign","method":"sign_event","params":{"event_template":{"created_at":1710000000,"kind":1,"tags":[],"content":"context identity"}}}"#,
             ),
             &context,
             crate::review::test_fixtures::t_display_s3_review_limits(),
@@ -614,7 +565,7 @@ mod tests {
         assert_eq!(
             handle_serial_frame(
                 &request_frame_for_test(
-                    r#"{"version":1,"request_id":"req-bad-context","method":"get_public_key"}"#,
+                    r#"{"version":2,"request_id":"req-bad-context","method":"get_public_key"}"#,
                 ),
                 &DeviceProtocolContext {
                     signer_identity: SignerIdentity { public_key: "bad" },
@@ -628,27 +579,39 @@ mod tests {
         );
     }
 
-    // Port of the C++ `test_device_protocol_reports_signing_status_gates`.
     #[test]
-    fn reports_signing_status_gates() {
-        let response =
-            handle_serial_frame(&request_frame_for_test(SIGNING_STATUS_REQUEST_JSON), &dev())
-                .unwrap();
-
+    fn retired_signing_status_is_rejected() {
+        let context = development_device_protocol_context();
+        let response = handle_serial_frame(
+            &request_frame_for_test(
+                r#"{"version":2,"request_id":"retired","method":"get_signing_status"}"#,
+            ),
+            &context,
+        )
+        .unwrap();
         assert_eq!(
-            response.as_bytes(),
-            response_frame_for_test(SIGNING_STATUS_RESPONSE_JSON).as_slice(),
+            decode_serial_frame(response.as_bytes()).unwrap().frame_type,
+            FrameType::Error
         );
-        let (frame_type, _) = decoded_frame(&response);
-        assert_eq!(frame_type, FrameType::Response);
+        let historical = handle_serial_frame(
+            &request_frame_for_test(SIGNING_STATUS_REQUEST_JSON),
+            &context,
+        )
+        .unwrap();
+        assert_eq!(
+            decode_serial_frame(historical.as_bytes())
+                .unwrap()
+                .frame_type,
+            FrameType::Error
+        );
+        assert!(SIGNING_STATUS_RESPONSE_JSON.contains("signing_status"));
     }
 
-    // Port of the C++ `test_device_protocol_echoes_dynamic_request_ids`.
     #[test]
     fn echoes_dynamic_request_ids() {
         let capability_response = handle_serial_frame(
             &request_frame_for_test(
-                r#"{"version":1,"request_id":"req-alt-capabilities","method":"get_capabilities"}"#,
+                r#"{"version":2,"request_id":"req-alt-capabilities","method":"get_capabilities"}"#,
             ),
             &dev(),
         )
@@ -656,29 +619,14 @@ mod tests {
         assert_eq!(
             capability_response.as_bytes(),
             response_frame_for_test(
-                r#"{"version":1,"request_id":"req-alt-capabilities","ok":true,"result":{"capabilities":{"device":{"name":"nSealr ESP32-S3 USB Signer Scaffold","firmware":"nsealr-esp32-s3-usb-signer","hardware":"esp32-s3-devkitc-1"},"protocols":["nsealr.signing.v0","nsealr.serial-frame.v0"],"methods":["get_capabilities","get_signing_status","get_public_key","sign_event"],"transports":["usb-serial-jtag"],"signing_enabled":false,"requires_physical_approval":true}}}"#,
-            )
-            .as_slice(),
-        );
-
-        let signing_status_response = handle_serial_frame(
-            &request_frame_for_test(
-                r#"{"version":1,"request_id":"req-alt-signing-status","method":"get_signing_status"}"#,
-            ),
-            &dev(),
-        )
-        .unwrap();
-        assert_eq!(
-            signing_status_response.as_bytes(),
-            response_frame_for_test(
-                r#"{"version":1,"request_id":"req-alt-signing-status","ok":true,"result":{"signing_status":{"signing_enabled":false,"missing_gates":["runtime_signing_feature","trusted_review_display","physical_approval_controls","unicode_review_rendering","key_provisioning","source_public_key_proof","secure_boot","flash_encryption","debug_lock","companion_signed_output_verification"],"development_accepted_gates":["parser_limits","trusted_review_display","physical_approval_controls","approval_digest_binding"]}}}"#,
+                r#"{"version":2,"request_id":"req-alt-capabilities","ok":true,"result":{"capabilities":{"format":"nsealr.capabilities.v1","form":"reference","profile":"esp32_no_se","implementation_id":"nsealr.conformance.esp32_no_se.v1","runtime":[{"method_id":"get_capabilities","configuration":"configured","availability":"available","reason":null},{"method_id":"get_public_key","configuration":"configured","availability":"available","reason":null}]}}}"#,
             )
             .as_slice(),
         );
 
         let public_key_response = handle_serial_frame(
             &request_frame_for_test(
-                r#"{"version":1,"request_id":"req-alt-pubkey","method":"get_public_key"}"#,
+                r#"{"version":2,"request_id":"req-alt-pubkey","method":"get_public_key"}"#,
             ),
             &dev(),
         )
@@ -686,14 +634,14 @@ mod tests {
         assert_eq!(
             public_key_response.as_bytes(),
             response_frame_for_test(
-                r#"{"version":1,"request_id":"req-alt-pubkey","ok":true,"result":{"public_key":"4f355bdcb7cc0af728ef3cceb9615d90684bb5b2ca5f859ab0f0b704075871aa"}}"#,
+                r#"{"version":2,"request_id":"req-alt-pubkey","ok":true,"result":{"public_key":"4f355bdcb7cc0af728ef3cceb9615d90684bb5b2ca5f859ab0f0b704075871aa"}}"#,
             )
             .as_slice(),
         );
 
         let disabled_response = handle_serial_frame(
             &request_frame_for_test(
-                r#"{"version":1,"request_id":"req-alt-sign","method":"sign_event","params":{"event_template":{"created_at":1710000000,"kind":1,"tags":[],"content":"alt"}}}"#,
+                r#"{"version":2,"request_id":"req-alt-sign","method":"sign_event","params":{"event_template":{"created_at":1710000000,"kind":1,"tags":[],"content":"alt"}}}"#,
             ),
             &dev(),
         )
@@ -701,7 +649,7 @@ mod tests {
         assert_eq!(
             disabled_response.as_bytes(),
             response_frame_for_test(
-                r#"{"version":1,"request_id":"req-alt-sign","ok":false,"error":{"code":"signing_disabled","message":"Signing is disabled until trusted review and physical approval are implemented.","retryable":false}}"#,
+                r#"{"version":2,"request_id":"req-alt-sign","ok":false,"error":{"code":"signing_disabled","message":"Signing is disabled until trusted review and physical approval are implemented.","retryable":false}}"#,
             )
             .as_slice(),
         );
@@ -729,7 +677,7 @@ mod tests {
         assert_eq!(
             handle_serial_frame(
                 &request_frame_for_test(
-                    r#"{"version":1,"request_id":"bad id","method":"get_public_key"}"#,
+                    r#"{"version":2,"request_id":"bad id","method":"get_public_key"}"#,
                 ),
                 &dev(),
             )
@@ -786,7 +734,7 @@ mod tests {
                 env!("OUT_DIR"),
                 "/field-bfb321d6d7c2a5aa3703dd9c.txt"
             )),
-            r#"{"version":1,"request_id":"invalid-signing-status-params","method":"get_signing_status","params":{}}"#,
+            r#"{"version":2,"request_id":"invalid-signing-status-params","method":"get_signing_status","params":{}}"#,
         ] {
             assert_eq!(
                 handle_serial_frame(&request_frame_for_test(request_json), &dev())
@@ -819,7 +767,7 @@ mod tests {
     fn review_preserves_json_unicode_escapes() {
         let result = handle_serial_frame_with_review_preview(
             &request_frame_for_test(
-                "{\"version\":1,\"request_id\":\"req-unicode-serial\",\"method\":\"sign_event\",\"params\":{\"event_template\":{\"created_at\":1710000400,\"kind\":1,\"tags\":[[\"t\",\"caf\\u00e8\"],[\"emoji\",\"\\uD83D\\uDE00\"]],\"content\":\"caf\\u00e8 \\uD83D\\uDE00\"}}}",
+                "{\"version\":2,\"request_id\":\"req-unicode-serial\",\"method\":\"sign_event\",\"params\":{\"event_template\":{\"created_at\":1710000400,\"kind\":1,\"tags\":[[\"t\",\"caf\\u00e8\"],[\"emoji\",\"\\uD83D\\uDE00\"]],\"content\":\"caf\\u00e8 \\uD83D\\uDE00\"}}}",
             ),
             &dev(),
             crate::review::test_fixtures::t_display_s3_review_limits(),
@@ -829,7 +777,7 @@ mod tests {
         assert_eq!(
             result.response_frame.as_bytes(),
             response_frame_for_test(
-                r#"{"version":1,"request_id":"req-unicode-serial","ok":false,"error":{"code":"signing_disabled","message":"Signing is disabled until trusted review and physical approval are implemented.","retryable":false}}"#,
+                r#"{"version":2,"request_id":"req-unicode-serial","ok":false,"error":{"code":"signing_disabled","message":"Signing is disabled until trusted review and physical approval are implemented.","retryable":false}}"#,
             )
             .as_slice(),
         );
@@ -863,7 +811,7 @@ mod tests {
         );
         // Every invalid request receives the same unsupported frame after strict parsing.
         assert_eq!(
-            handle_serial_frame(&request_frame_for_test("{\"version\":1,"), &dev())
+            handle_serial_frame(&request_frame_for_test("{\"version\":2,"), &dev())
                 .unwrap()
                 .as_bytes(),
             error_frame_for_test(UNSUPPORTED_RESPONSE_JSON).as_slice(),
@@ -882,7 +830,7 @@ mod tests {
         assert_eq!(
             handle_serial_frame(
                 &request_frame_for_test(
-                    r#"{"version":1,"request_id":"req-unknown","method":"get_entropy"}"#,
+                    r#"{"version":2,"request_id":"req-unknown","method":"get_entropy"}"#,
                 ),
                 &dev(),
             )
@@ -892,7 +840,7 @@ mod tests {
         );
         // An oversized (decoded) request JSON is answered with the error frame.
         let mut big = String::from(
-            r#"{"version":1,"request_id":"req-big","method":"get_public_key","pad":""#,
+            r#"{"version":2,"request_id":"req-big","method":"get_public_key","pad":""#,
         );
         while big.len() <= MAX_DECODED_REQUEST_JSON_BYTES {
             big.push('x');
@@ -971,7 +919,7 @@ mod tests {
         // An over-long request_id (varies per escape) can never validate; an
         // over-long method can never match — both answered with the error
         // frame (the C++ built unbounded strings and failed the same checks).
-        let mut long_id = String::from(r#"{"version":1,"request_id":""#);
+        let mut long_id = String::from(r#"{"version":2,"request_id":""#);
         for _ in 0..(128 + 1) {
             long_id.push('a');
         }
@@ -983,7 +931,7 @@ mod tests {
             error_frame_for_test(UNSUPPORTED_RESPONSE_JSON).as_slice(),
         );
         let mut long_method =
-            String::from(r#"{"version":1,"request_id":"req-long-method","method":""#);
+            String::from(r#"{"version":2,"request_id":"req-long-method","method":""#);
         for _ in 0..(24 + 1) {
             long_method.push('m');
         }
@@ -997,7 +945,7 @@ mod tests {
 
         // Whitespace-tolerant metadata (skip_ws), decoded string escapes in
         // the request id (rejected by the id charset), and a params array.
-        let spaced = " {\n\t\"version\" : 1 , \"request_id\" : \"esc\\\"\\\\\\/\\b\\f\\n\\r\\t\" , \"method\" : \"get_public_key\" , \"params\" : [ 1 , true ] } ";
+        let spaced = " {\n\t\"version\" : 2 , \"request_id\" : \"esc\\\"\\\\\\/\\b\\f\\n\\r\\t\" , \"method\" : \"get_public_key\" , \"params\" : [ 1 , true ] } ";
         assert_eq!(
             handle_serial_frame(&request_frame_for_test(spaced), &dev())
                 .unwrap()
@@ -1032,7 +980,7 @@ mod tests {
             // Array separator invalid.
             "{\"params\":[1 2]}",
             // Object left unterminated after members.
-            "{\"version\":1",
+            "{\"version\":2",
             // Method value is not a string.
             "{\"method\":123}",
         ] {
@@ -1068,7 +1016,7 @@ mod tests {
         assert_eq!(
             handle_serial_frame(
                 &request_frame_for_test(
-                    r#"{"version":1,"request_id":"req-long-key","method":"get_public_key","this_key_is_longer_than_16_bytes":1}"#,
+                    r#"{"version":2,"request_id":"req-long-key","method":"get_public_key","this_key_is_longer_than_16_bytes":1}"#,
                 ),
                 &dev(),
             )

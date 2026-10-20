@@ -31,7 +31,7 @@ fn secret(n: u8) -> SecretKey {
 }
 fn request(template: &str) -> String {
     format!(
-        r#"{{"version":1,"request_id":"r","method":"sign_event","params":{{"event_template":{template}}}}}"#
+        r#"{{"version":2,"request_id":"r","method":"sign_event","params":{{"event_template":{template}}}}}"#
     )
 }
 fn template(content: &str, tags: Value) -> String {
@@ -114,7 +114,7 @@ fn sign(key: &SigningKey, id: &[u8; 32]) -> Result<[u8; 64], AuthorizationError>
 }
 fn request_bytes(template: &[u8]) -> Vec<u8> {
     let mut out =
-        br#"{"version":1,"request_id":"r","method":"sign_event","params":{"event_template":"#
+        br#"{"version":2,"request_id":"r","method":"sign_event","params":{"event_template":"#
             .to_vec();
     out.extend_from_slice(template);
     out.extend_from_slice(b"}}");
@@ -210,7 +210,7 @@ fn s03_rejects_duplicate_and_incomplete_json() {
     assert_eq!(request_bytes(EMPTY.as_bytes()), good.as_bytes());
     assert!(!serial_rejects(good.as_bytes()));
     let bad = [
-        good.replace("\"version\":1", "\"version\":1,\"v\\u0065rsion\":1"),
+        good.replace("\"version\":2", "\"version\":2,\"v\\u0065rsion\":1"),
         good.replace("\"kind\":1", "\"kind\":1,\"k\\u0069nd\":2"),
         good.replace(
             "\"event_template\":",
@@ -239,7 +239,7 @@ fn s03_rejects_duplicate_and_incomplete_json() {
         assert!(crate::qr::envelope::parse_qr_signing_request(input.as_bytes()).is_err());
         assert!(serial_rejects(input.as_bytes()));
     }
-    let reordered=r#" {"params":{"event_template":{"content":"","tags":[],"kind":1,"created_at":0}},"method":"sign_event","request_id":"r","version":1} \n"#.replace("\\n","\n");
+    let reordered=r#" {"params":{"event_template":{"content":"","tags":[],"kind":1,"created_at":0}},"method":"sign_event","request_id":"r","version":2} \n"#.replace("\\n","\n");
     let a = ParsedRequest::parse(good.as_bytes(), limits()).unwrap();
     let b = ParsedRequest::parse(reordered.as_bytes(), limits()).unwrap();
     assert_eq!(
@@ -293,7 +293,7 @@ fn s03_integer_tokens_and_kinds_are_exact() {
         }
         assert!(ParsedRequest::parse(
             request(EMPTY)
-                .replace("\"version\":1", &format!("\"version\":{token}"))
+                .replace("\"version\":2", &format!("\"version\":{token}"))
                 .as_bytes(),
             limits()
         )
@@ -321,10 +321,10 @@ fn s03_integer_tokens_and_kinds_are_exact() {
         limits()
     )
     .is_err());
-    for version in [0, 2] {
+    for version in [0, 1, 3] {
         assert!(ParsedRequest::parse(
             request(EMPTY)
-                .replace("\"version\":1", &format!("\"version\":{version}"))
+                .replace("\"version\":2", &format!("\"version\":{version}"))
                 .as_bytes(),
             limits()
         )
@@ -689,7 +689,7 @@ fn s03_host_and_transcript_cannot_mint_authority() {
     let mut diagnostic = session();
     assert_eq!(
         diagnostic.begin_request(
-            br#"{"version":1,"request_id":"r","method":"get_capabilities"}"#,
+            br#"{"version":2,"request_id":"r","method":"get_capabilities"}"#,
             Some(0)
         ),
         Err(AuthorizationError::InvalidState)
@@ -1205,26 +1205,7 @@ fn s03_all_limits_bound_storage_and_work() {
 }
 
 #[test]
-fn s03_legacy_status_never_enables_product_signing() {
-    use crate::policy::signing_policy::{
-        evaluate_signing_readiness, SigningGateNames, SigningReadiness,
-    };
-    let claim = SigningReadiness {
-        runtime_signing_feature_enabled: true,
-        parser_limits_enforced: true,
-        trusted_review_display_accepted: true,
-        physical_approval_controls_accepted: true,
-        approval_digest_binding_verified: true,
-        unicode_review_rendering_accepted: true,
-        key_provisioning_ready: true,
-        source_public_key_proof_ready: true,
-        secure_boot_enabled: true,
-        flash_encryption_enabled: true,
-        debug_locked: true,
-        companion_signed_output_verification_ready: true,
-        development_accepted_gates: SigningGateNames::new(),
-    };
-    assert!(evaluate_signing_readiness(&claim).signing_enabled);
+fn s03_capability_or_retired_status_never_enables_product_signing() {
     let mut s = approved(EMPTY);
     assert_eq!(
         s.attempt_sign("r", Some(0)),
@@ -1244,7 +1225,7 @@ fn s03_legacy_status_never_enables_product_signing() {
         let json = if method == "sign_event" {
             request(EMPTY)
         } else {
-            format!(r#"{{"version":1,"request_id":"r","method":"{method}"}}"#)
+            format!(r#"{{"version":2,"request_id":"r","method":"{method}"}}"#)
         };
         let payload = encode_base64url(json.as_bytes(), &mut payload).unwrap();
         let line = encode_serial_frame(FrameType::Request, payload, &mut line).unwrap();
@@ -1255,7 +1236,7 @@ fn s03_legacy_status_never_enables_product_signing() {
         assert!(text.contains(if method == "sign_event" {
             "signing_disabled"
         } else {
-            "\"signing_enabled\":false"
+            "unsupported_request"
         }));
         assert!(!text.contains("\"sig\""));
     }

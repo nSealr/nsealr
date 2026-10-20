@@ -433,46 +433,21 @@ mod tests {
         ));
     }
 
-    // Port of the C++
-    // `test_session_account_selection_does_not_satisfy_public_key_proof_gate`:
-    // even with every other runtime gate satisfied, a selected account never
-    // satisfies the source public-key proof gate (the M-T3.5
-    // `evaluate_signing_readiness` consumes the always-false selection flag).
+    // Selecting public account metadata never proves custody-derived identity.
     #[test]
     fn does_not_satisfy_public_key_proof_gate() {
-        use crate::policy::signing_policy::{
-            evaluate_signing_readiness, SigningGateNames, SigningReadiness,
-        };
-
         let keyring = nip06_keyring();
         let selected =
             select_session_account(&keyring, &esp32_qr_nip06_account_0_descriptor()).unwrap();
-
-        let readiness = SigningReadiness {
-            runtime_signing_feature_enabled: true,
-            parser_limits_enforced: true,
-            trusted_review_display_accepted: true,
-            physical_approval_controls_accepted: true,
-            approval_digest_binding_verified: true,
-            unicode_review_rendering_accepted: true,
-            key_provisioning_ready: true,
-            source_public_key_proof_ready: selected.source_public_key_proof_verified,
-            secure_boot_enabled: true,
-            flash_encryption_enabled: true,
-            debug_locked: true,
-            companion_signed_output_verification_ready: true,
-            development_accepted_gates: SigningGateNames::new(),
-        };
-        let status = evaluate_signing_readiness(&readiness);
-
-        assert!(!status.signing_enabled);
-        assert_eq!(status.missing_gates.len(), 1);
+        assert!(!selected.source_public_key_proof_verified);
+        // Keep this original projected diagnostic name as historical data,
+        // without exposing the retired universal readiness API.
         assert_eq!(
-            status.missing_gates.as_slice()[0],
             include_str!(concat!(
                 env!("OUT_DIR"),
                 "/field-b0db970c9c0a12565d003468.txt"
-            ))
+            )),
+            "source_public_key_proof"
         );
     }
 

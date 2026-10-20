@@ -8,10 +8,12 @@ export type RouteType =
   | "custom_hardware_wallet"
   | "external_nip46";
 
+export type ProfileId = "esp32_no_se" | "pi_qr" | "p4_qr" | "custom_board";
+
 export type RouteCustody =
-  | "stateless_session"
-  | "device_persistent"
-  | "custom_hardware_persistent"
+  | "volatile_session"
+  | "mcu_wrapped_persistent"
+  | "custom_se_assisted_persistent"
   | "external_signer";
 
 export type SignerRoute = {
@@ -24,18 +26,16 @@ export type SignerRoute = {
 };
 
 export type AccountDescriptor = {
-  format: "nsealr-account-descriptor-v0";
+  format: "nsealr.account.v1";
   account_id: string;
   label: string;
   public_key: string;
+  profile: ProfileId | null;
+  implementation_id: string | null;
+  limits_id: string | null;
   signer_route: SignerRoute;
   recovery: Record<string, unknown>;
-  capabilities: {
-    methods: string[];
-    physical_review: boolean;
-    physical_approval: boolean;
-    persistent_grants: boolean;
-  };
+  capabilities: { methods: string[] };
   policy_profile_id: string;
 };
 
@@ -173,22 +173,38 @@ export type RouteSelectionRequest = {
   account_id: string;
   method: string;
   route_type?: RouteType;
+  profile?: ProfileId | null;
+  implementation_id?: string | null;
+  contract?: string;
+  method_revision?: number;
+  operation_id?: string;
+  algorithm_id?: string | null;
+  transport?: SignerRoute["transport"];
+  codec_id?: string;
+  custody?: RouteCustody;
+  limits_id?: string | null;
 };
 
 export type RouteSelection = {
-  format: "nsealr-route-selection-v0";
+  format: "nsealr.route-selection.v1";
   account_id: string;
   public_key: string;
   route_type: RouteType;
   repository?: SignerRoute["repository"];
   transport: SignerRoute["transport"];
-  custody: SignerRoute["custody"];
+  custody: RouteCustody;
   trusted_review: SignerRoute["trusted_review"];
   policy_support: SignerRoute["policy_support"];
   policy_profile_id: string;
-  physical_review: boolean;
-  physical_approval: boolean;
-  persistent_grants: boolean;
+  profile: ProfileId | null;
+  implementation_id: string | null;
+  limits_id: string | null;
+  contract: "nsealr.signing.v2" | "nip46";
+  method: string;
+  method_revision: 1;
+  operation_id: string;
+  algorithm_id: "bip340.secp256k1.v1" | null;
+  codec_id: "nsealr.serial-frame.v0" | "nsealr.qr-envelope.v0" | "nip46";
   contains_secret_material: false;
 };
 
@@ -208,9 +224,9 @@ const ROUTE_REPOSITORIES = new Map<RouteType, string>([
 ]);
 const ROUTE_TRANSPORTS = new Set(["qr", "usb", "nip46_relay", "embedded"]);
 const CUSTODY_MODES = new Set([
-  "stateless_session",
-  "device_persistent",
-  "custom_hardware_persistent",
+  "volatile_session",
+  "mcu_wrapped_persistent",
+  "custom_se_assisted_persistent",
   "external_signer"
 ]);
 const REVIEW_MODES = new Set(["device_display", "external_review", "external_policy"]);
@@ -235,7 +251,7 @@ const POLICY_FORBIDDEN_PERMISSIONS = new Set([
 ]);
 const POLICY_RISK_NAMES = new Set(["decrypt", "delete", "kind:1", "policy_change", "profile", "sign_event", "unknown"]);
 const POLICY_RISK_TIERS = new Set(["device_review", "external_policy", "external_review", "low_scoped", "manual"]);
-const DEVICE_METHODS = new Set(["get_capabilities", "get_signing_status", "get_public_key", "sign_event"]);
+const DEVICE_METHODS = new Set(["get_capabilities", "get_public_key", "sign_event"]);
 const DECRYPT_METHODS = new Set(["nip04_decrypt", "nip44_decrypt"]);
 const POLICY_DECISION_ROUTE_TYPES = new Set<RouteType>([
   "esp32_usb_nip46",
@@ -438,116 +454,54 @@ function validateRecovery(recovery: unknown): Record<string, unknown> {
   throw new Error("recovery.type is unknown");
 }
 
-function validateRouteSemantics(
-  route: SignerRoute,
-  capabilities: AccountDescriptor["capabilities"],
-  source: unknown
-): void {
-  if (QR_ROUTE_TYPES.has(route.type)) {
-    const serialized = JSON.stringify(source) ?? "";
-    if (serialized.toLowerCase().includes("tropic01")) {
-      throw new Error("stateless QR vault descriptors must not reference TROPIC01");
-    }
-    if (route.transport !== "qr") throw new Error("stateless QR vault routes must use qr transport");
-    if (route.custody !== "stateless_session") {
-      throw new Error("stateless QR vault routes must use stateless_session custody");
-    }
-    if (route.policy_support !== "manual_only") {
-      throw new Error("stateless QR vault routes must use manual_only policy support");
-    }
-    if (capabilities.persistent_grants !== false) {
-      throw new Error("stateless QR vault routes must not support persistent grants");
-    }
-    return;
-  }
+const PROFILE_BY_ROUTE: Partial<Record<RouteType, ProfileId>> = {
+  raspberry_qr_vault: "pi_qr", esp32_qr_vault: "p4_qr",
+  esp32_usb_nip46: "esp32_no_se", custom_hardware_wallet: "custom_board"
+};
+const CUSTODY_BY_PROFILE: Record<ProfileId, RouteCustody> = {
+  pi_qr: "volatile_session", p4_qr: "volatile_session",
+  esp32_no_se: "mcu_wrapped_persistent", custom_board: "custom_se_assisted_persistent"
+};
 
-  if (route.type === "esp32_usb_nip46") {
-    if (route.transport !== "usb") throw new Error("ESP32 USB/NIP-46 routes must use usb transport");
-    if (route.custody !== "device_persistent") {
-      throw new Error("ESP32 USB/NIP-46 routes must use device_persistent custody");
-    }
-    if (route.trusted_review !== "device_display") throw new Error("ESP32 USB/NIP-46 routes must use device_display review");
-    if (route.policy_support !== "scoped_automation") {
-      throw new Error("ESP32 USB/NIP-46 routes must use scoped_automation policy support");
-    }
-    if (!capabilities.physical_review || !capabilities.physical_approval) {
-      throw new Error("ESP32 USB/NIP-46 routes require physical review and approval");
-    }
-    if (!capabilities.persistent_grants) throw new Error("ESP32 USB/NIP-46 routes require persistent grant support");
-    return;
-  }
-
-  if (route.type === "custom_hardware_wallet") {
-    if (route.transport !== "usb") throw new Error("custom hardware-wallet routes must use usb transport in v0");
-    if (route.custody !== "custom_hardware_persistent") {
-      throw new Error("custom hardware-wallet routes must use custom_hardware_persistent custody");
-    }
-    if (route.trusted_review !== "device_display") throw new Error("custom hardware-wallet routes must use device_display review");
-    if (route.policy_support !== "scoped_automation") {
-      throw new Error("custom hardware-wallet routes must use scoped_automation policy support");
-    }
-    if (!capabilities.physical_review || !capabilities.physical_approval) {
-      throw new Error("custom hardware-wallet routes require physical review and approval");
-    }
-    if (!capabilities.persistent_grants) throw new Error("custom hardware-wallet routes require persistent grant support");
-    return;
-  }
-
+function validateRouteSemantics(route: SignerRoute, profile: ProfileId | null): void {
   if (route.type === "external_nip46") {
-    if (route.transport !== "nip46_relay") throw new Error("external NIP-46 routes must use nip46_relay transport");
-    if (route.custody !== "external_signer") throw new Error("external NIP-46 routes must use external_signer custody");
-    if (route.trusted_review !== "external_policy") throw new Error("external NIP-46 routes must use external_policy review");
-    if (route.policy_support !== "external") throw new Error("external NIP-46 routes must use external policy support");
-    if (capabilities.physical_review || capabilities.physical_approval) {
-      throw new Error("external NIP-46 routes must not claim nSealr physical review or approval");
+    if (profile !== null || route.transport !== "nip46_relay" || route.custody !== "external_signer" || route.trusted_review !== "external_policy" || route.policy_support !== "external") {
+      throw new Error("profile_mismatch: external NIP46 route must not claim a nSealr profile, custody or consent");
     }
-    if (capabilities.persistent_grants) {
-      throw new Error("external NIP-46 routes must not claim nSealr persistent grants");
-    }
+    return;
   }
+  if (profile !== PROFILE_BY_ROUTE[route.type]) throw new Error("profile_mismatch: account route/profile do not match");
+  if (route.custody !== CUSTODY_BY_PROFILE[profile!]) throw new Error("custody_mismatch: no custody fallback is allowed");
+  if (route.transport !== (QR_ROUTE_TYPES.has(route.type) ? "qr" : "usb")) throw new Error("transport_mismatch: profile transport differs");
+  if (route.trusted_review !== "device_display" || route.policy_support !== "manual_only") throw new Error("runtime_unavailable: initial routes require manual local consent without automation");
 }
 
 export function parseAccountDescriptor(value: unknown): AccountDescriptor {
   rejectSecretFields(value);
   assertRecord(value, "account descriptor");
-  assertOnlyKeys(value, [
-    "format",
-    "account_id",
-    "label",
-    "public_key",
-    "signer_route",
-    "recovery",
-    "capabilities",
-    "policy_profile_id"
-  ], "account descriptor");
-  if (value.format !== "nsealr-account-descriptor-v0") throw new Error("account descriptor format mismatch");
+  const fields = ["format", "account_id", "label", "public_key", "profile", "implementation_id", "limits_id", "signer_route", "recovery", "capabilities", "policy_profile_id"];
+  assertOnlyKeys(value, fields, "account descriptor");
+  if (fields.some((field) => !Object.hasOwn(value, field)) || value.format !== "nsealr.account.v1") throw new Error("account descriptor format mismatch");
   const route = parseSignerRoute(value.signer_route);
+  const external = route.type === "external_nip46";
+  const profile = external ? null : requireString(value.profile, "profile") as ProfileId;
+  if (external && (value.profile !== null || value.implementation_id !== null || value.limits_id !== null)) throw new Error("profile_mismatch: external signer has no nSealr manifest");
+  const implementation = external ? null : requireStringId(value.implementation_id, "implementation_id");
+  const limits = external ? null : requireStringId(value.limits_id, "limits_id");
+  validateRouteSemantics(route, profile);
   assertRecord(value.capabilities, "capabilities");
-  assertOnlyKeys(
-    value.capabilities,
-    ["methods", "physical_review", "physical_approval", "persistent_grants"],
-    "capabilities"
-  );
+  assertOnlyKeys(value.capabilities, ["methods"], "capabilities");
   const methods = requireStringArray(value.capabilities.methods, "capabilities.methods");
-  const unknownMethod = methods.find((method) => !DEVICE_METHODS.has(method));
-  if (unknownMethod !== undefined) throw new Error(`capabilities.methods contains unknown method ${unknownMethod}`);
-  const descriptor: AccountDescriptor = {
-    format: "nsealr-account-descriptor-v0",
-    account_id: requireStringId(value.account_id, "account_id"),
-    label: requireString(value.label, "label"),
-    public_key: requireXOnlyPubkey(value.public_key, "public_key"),
-    signer_route: route,
-    recovery: validateRecovery(value.recovery),
-    capabilities: {
-      methods,
-      physical_review: requireBoolean(value.capabilities.physical_review, "capabilities.physical_review"),
-      physical_approval: requireBoolean(value.capabilities.physical_approval, "capabilities.physical_approval"),
-      persistent_grants: requireBoolean(value.capabilities.persistent_grants, "capabilities.persistent_grants")
-    },
+  if (methods.length < 1 || methods.length > 16 || new Set(methods).size !== methods.length || methods.some((method) => !DEVICE_METHODS.has(method))) throw new Error("unsupported_method: account methods must be bounded, unique current methods");
+  const label = requireString(value.label, "label");
+  if (new TextEncoder().encode(label).byteLength > 128 || /[\uD800-\uDFFF]/u.test(label.replace(/[\uD800-\uDBFF][\uDC00-\uDFFF]/gu, ""))) throw new Error("account label must be bounded Unicode scalars");
+  return {
+    format: "nsealr.account.v1", account_id: requireStringId(value.account_id, "account_id"), label,
+    public_key: requireXOnlyPubkey(value.public_key, "public_key"), profile,
+    implementation_id: implementation, limits_id: limits, signer_route: route,
+    recovery: validateRecovery(value.recovery), capabilities: { methods },
     policy_profile_id: requirePolicyId(value.policy_profile_id, "policy_profile_id")
   };
-  validateRouteSemantics(route, descriptor.capabilities, value);
-  return descriptor;
 }
 
 export function parsePolicyProfile(value: unknown): PolicyProfile {
@@ -1147,131 +1101,73 @@ export function parsePolicyChangeReviewVector(value: unknown, contextValue?: unk
   };
 }
 
-function routeSelectionFromAccount(account: AccountDescriptor): RouteSelection {
+function operation(method: string): { operation_id: string; algorithm_id: RouteSelection["algorithm_id"] } {
+  if (method === "get_capabilities") return { operation_id: "nsealr.discovery.v1", algorithm_id: null };
+  if (method === "get_public_key") return { operation_id: "nostr.public-key.v1", algorithm_id: "bip340.secp256k1.v1" };
+  if (method === "sign_event") return { operation_id: "nostr.sign-event.v1", algorithm_id: "bip340.secp256k1.v1" };
+  throw new Error("unsupported_method: unknown current operation catalog");
+}
+
+function routeSelectionFromAccount(account: AccountDescriptor, method: string): RouteSelection {
+  const route = account.signer_route;
   return {
-    format: "nsealr-route-selection-v0",
-    account_id: account.account_id,
-    public_key: account.public_key,
-    route_type: account.signer_route.type,
-    ...(account.signer_route.repository !== undefined ? { repository: account.signer_route.repository } : {}),
-    transport: account.signer_route.transport,
-    custody: account.signer_route.custody,
-    trusted_review: account.signer_route.trusted_review,
-    policy_support: account.signer_route.policy_support,
-    policy_profile_id: account.policy_profile_id,
-    physical_review: account.capabilities.physical_review,
-    physical_approval: account.capabilities.physical_approval,
-    persistent_grants: account.capabilities.persistent_grants,
+    format: "nsealr.route-selection.v1", account_id: account.account_id, public_key: account.public_key,
+    route_type: route.type, ...(route.repository !== undefined ? { repository: route.repository } : {}),
+    transport: route.transport, custody: route.custody, trusted_review: route.trusted_review,
+    policy_support: route.policy_support, policy_profile_id: account.policy_profile_id,
+    profile: account.profile, implementation_id: account.implementation_id, limits_id: account.limits_id,
+    contract: route.type === "external_nip46" ? "nip46" : "nsealr.signing.v2", method, method_revision: 1,
+    ...operation(method), codec_id: route.transport === "qr" ? "nsealr.qr-envelope.v0" : route.transport === "usb" ? "nsealr.serial-frame.v0" : "nip46",
     contains_secret_material: false
   };
 }
 
 export function parseRouteSelection(value: unknown): RouteSelection {
-  rejectSecretFields(value);
-  assertRecord(value, "route selection");
-  assertOnlyKeys(value, [
-    "format",
-    "account_id",
-    "public_key",
-    "route_type",
-    "repository",
-    "transport",
-    "custody",
-    "trusted_review",
-    "policy_support",
-    "policy_profile_id",
-    "physical_review",
-    "physical_approval",
-    "persistent_grants",
-    "contains_secret_material"
-  ], "route selection");
-  if (value.format !== "nsealr-route-selection-v0") throw new Error("route selection format mismatch");
-  const routeType = requireRouteType(value.route_type, "route selection route_type");
-  const expectedRepository = ROUTE_REPOSITORIES.get(routeType);
-  if (expectedRepository !== undefined && value.repository !== expectedRepository) {
-    throw new Error("route selection repository does not match route_type");
+  rejectSecretFields(value); assertRecord(value, "route selection");
+  const fields = ["format", "account_id", "public_key", "route_type", "repository", "transport", "custody", "trusted_review", "policy_support", "policy_profile_id", "profile", "implementation_id", "limits_id", "contract", "method", "method_revision", "operation_id", "algorithm_id", "codec_id", "contains_secret_material"];
+  assertOnlyKeys(value, fields, "route selection");
+  if (fields.filter((key) => key !== "repository").some((key) => !Object.hasOwn(value, key)) || value.format !== "nsealr.route-selection.v1" || value.contains_secret_material !== false) throw new Error("route selection format mismatch");
+  const route = parseSignerRoute({ type: value.route_type, ...(value.repository !== undefined ? { repository: value.repository } : {}), transport: value.transport, custody: value.custody, trusted_review: value.trusted_review, policy_support: value.policy_support });
+  validateRouteSemantics(route, value.profile as ProfileId | null);
+  if (value.method_revision !== 1) throw new Error("unsupported_method: unknown method revision");
+  const catalog = operation(String(value.method));
+  if (value.operation_id !== catalog.operation_id) throw new Error("unsupported_method: operation catalog mismatch");
+  if (value.algorithm_id !== catalog.algorithm_id) throw new Error("unsupported_algorithm: exact algorithm required");
+  const expectedContract = route.type === "external_nip46" ? "nip46" : "nsealr.signing.v2";
+  if (value.contract !== expectedContract) throw new Error("unsupported_contract: route contract mismatch");
+  const codec = route.transport === "qr" ? "nsealr.qr-envelope.v0" : route.transport === "usb" ? "nsealr.serial-frame.v0" : "nip46";
+  if (value.codec_id !== codec) throw new Error("transport_mismatch: route codec mismatch");
+  if (route.type === "external_nip46") {
+    if (value.implementation_id !== null || value.limits_id !== null) throw new Error("profile_mismatch: external manifests must be null");
+  } else {
+    requireStringId(value.implementation_id, "implementation_id"); requireStringId(value.limits_id, "limits_id");
   }
-  if (expectedRepository === undefined && "repository" in value) {
-    throw new Error("external route selections must not claim a nSealr repository");
-  }
-  const transport = requireString(value.transport, "route selection transport");
-  if (!ROUTE_TRANSPORTS.has(transport)) throw new Error("route selection transport is unknown");
-  const custody = requireString(value.custody, "route selection custody");
-  if (!CUSTODY_MODES.has(custody)) throw new Error("route selection custody is unknown");
-  const trustedReview = requireString(value.trusted_review, "route selection trusted_review");
-  if (!REVIEW_MODES.has(trustedReview)) throw new Error("route selection trusted_review is unknown");
-  const policySupport = requireString(value.policy_support, "route selection policy_support");
-  if (!POLICY_SUPPORT_MODES.has(policySupport)) throw new Error("route selection policy_support is unknown");
-  const routeSelection: RouteSelection = {
-    format: "nsealr-route-selection-v0",
-    account_id: requireStringId(value.account_id, "route selection account_id"),
-    public_key: requireXOnlyPubkey(value.public_key, "route selection public_key"),
-    route_type: routeType,
-    ...(typeof value.repository === "string" ? { repository: value.repository as RouteSelection["repository"] } : {}),
-    transport: transport as RouteSelection["transport"],
-    custody: custody as RouteSelection["custody"],
-    trusted_review: trustedReview as RouteSelection["trusted_review"],
-    policy_support: policySupport as RouteSelection["policy_support"],
-    policy_profile_id: requirePolicyId(value.policy_profile_id, "route selection policy_profile_id"),
-    physical_review: requireBoolean(value.physical_review, "route selection physical_review"),
-    physical_approval: requireBoolean(value.physical_approval, "route selection physical_approval"),
-    persistent_grants: requireBoolean(value.persistent_grants, "route selection persistent_grants"),
-    contains_secret_material: false
-  };
-  if (value.contains_secret_material !== false) {
-    throw new Error("route selection contains_secret_material must be false");
-  }
-  const routeSelectionCapabilities: AccountDescriptor["capabilities"] = {
-    // Route-selection responses do not carry method lists; route request parsing
-    // checks method support before a response is produced.
-    methods: [],
-    physical_review: routeSelection.physical_review,
-    physical_approval: routeSelection.physical_approval,
-    persistent_grants: routeSelection.persistent_grants
-  };
-  validateRouteSemantics(routeSelectionToSignerRoute(routeSelection), routeSelectionCapabilities, value);
-  return routeSelection;
+  requireStringId(value.account_id, "account_id"); requireXOnlyPubkey(value.public_key, "public_key"); requirePolicyId(value.policy_profile_id, "policy_profile_id");
+  return structuredClone(value) as RouteSelection;
 }
 
-function routeSelectionToSignerRoute(routeSelection: RouteSelection): SignerRoute {
-  return {
-    type: routeSelection.route_type,
-    ...(routeSelection.repository !== undefined ? { repository: routeSelection.repository } : {}),
-    transport: routeSelection.transport,
-    custody: routeSelection.custody,
-    trusted_review: routeSelection.trusted_review,
-    policy_support: routeSelection.policy_support
-  };
+function routeSelectionToSignerRoute(route: RouteSelection): SignerRoute {
+  return { type: route.route_type, ...(route.repository !== undefined ? { repository: route.repository } : {}), transport: route.transport, custody: route.custody, trusted_review: route.trusted_review, policy_support: route.policy_support };
 }
 
 export function parseRouteSelectionRequest(value: unknown): RouteSelectionRequest {
   assertRecord(value, "route selection request");
-  assertOnlyKeys(value, ["account_id", "method", "route_type"], "route selection request");
-  const accountId = requireStringId(value.account_id, "route selection account_id");
-  const method = requireString(value.method, "route selection method");
-  const routeType = value.route_type === undefined
-    ? undefined
-    : requireRouteType(value.route_type, "route selection route_type");
-  return routeType === undefined
-    ? { account_id: accountId, method }
-    : { account_id: accountId, method, route_type: routeType };
+  assertOnlyKeys(value, ["account_id", "method", "route_type", "profile", "implementation_id", "contract", "method_revision", "operation_id", "algorithm_id", "transport", "codec_id", "custody", "limits_id"], "route selection request");
+  requireStringId(value.account_id, "route selection account_id"); requireString(value.method, "route selection method");
+  if (value.route_type !== undefined) requireRouteType(value.route_type);
+  return structuredClone(value) as RouteSelectionRequest;
 }
 
 export function selectAccountRoute(accounts: AccountDescriptor[], request: RouteSelectionRequest): RouteSelection {
   if (!Array.isArray(accounts)) throw new Error("route selection accounts must be an array");
-  const parsedRequest = parseRouteSelectionRequest(request);
-  const accountId = parsedRequest.account_id;
-  const method = parsedRequest.method;
-  const routeType = parsedRequest.route_type;
-  const matches = accounts.filter((account) => account.account_id === accountId);
-  if (matches.length === 0) throw new Error("route selection account_id is unknown");
-  if (matches.length > 1) throw new Error("route selection account_id is ambiguous");
-  const account = matches[0];
-  if (routeType !== undefined && account.signer_route.type !== routeType) {
-    throw new Error("route selection route_type does not match account");
+  const parsed = parseRouteSelectionRequest(request);
+  const matches = accounts.filter((account) => account.account_id === parsed.account_id);
+  if (matches.length !== 1) throw new Error(matches.length ? "route selection account_id is ambiguous" : "route selection account_id is unknown");
+  const account = parseAccountDescriptor(matches[0]);
+  if (!account.capabilities.methods.includes(parsed.method)) throw new Error("unsupported_method: route selection method is unsupported by account");
+  const selected = parseRouteSelection(routeSelectionFromAccount(account, parsed.method));
+  for (const key of Object.keys(parsed).filter((key) => !["account_id", "method"].includes(key))) {
+    if ((parsed as Record<string, unknown>)[key] !== (selected as unknown as Record<string, unknown>)[key]) throw new Error(`${key === "algorithm_id" ? "unsupported_algorithm" : key === "custody" ? "custody_mismatch" : key === "profile" ? "profile_mismatch" : key === "contract" ? "unsupported_contract" : key === "transport" || key === "codec_id" ? "transport_mismatch" : key === "limits_id" ? "limits_unknown" : "unsupported_method"}: route selection ${key} does not match account/operation`);
   }
-  if (!account.capabilities.methods.includes(method)) {
-    throw new Error("route selection method is unsupported by account");
-  }
-  return parseRouteSelection(routeSelectionFromAccount(account));
+  return Object.freeze(selected);
 }

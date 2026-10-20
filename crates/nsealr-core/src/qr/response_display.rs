@@ -10,7 +10,7 @@
 //!   tokens accept full JSON numbers (fraction/exponent), and nested
 //!   objects/arrays are structurally walked (`skip_json_value`). The top level
 //!   must be an object with only `version`/`request_id`/`ok`/`result`/`error`;
-//!   `version` must be the token `1`, `request_id` must match the shared
+//!   `version` must be the token `2`, `request_id` must match the shared
 //!   request-id charset/length rule, `ok` must be a boolean; `ok:true` requires a
 //!   `result` object and no `error`, `ok:false` requires an `error` object and no
 //!   `result`.
@@ -51,7 +51,7 @@ pub enum QrResponseDisplayError {
     ResponseJsonMalformed,
     /// C++: "QR response display response contains unknown top-level field".
     UnknownTopLevelField,
-    /// C++: "QR response display response version must be 1".
+    /// C++: "QR response display response version must be 2".
     BadVersion,
     /// C++: "QR response display response request_id is invalid".
     BadRequestId,
@@ -336,7 +336,7 @@ impl<'j> Scanner<'j> {
 
 /// The scanned top-level response shape. Mirrors the C++ `ResponseJsonMetadata`.
 struct ResponseMetadata {
-    version_one: bool,
+    version_two: bool,
     ok_seen: bool,
     ok: bool,
     has_result: bool,
@@ -358,7 +358,7 @@ fn parse_response_json_metadata(json: &[u8]) -> Result<ResponseMetadata, QrRespo
     }
     scanner.offset += 1;
     let mut metadata = ResponseMetadata {
-        version_one: false,
+        version_two: false,
         ok_seen: false,
         ok: false,
         has_result: false,
@@ -393,7 +393,7 @@ fn parse_response_json_metadata(json: &[u8]) -> Result<ResponseMetadata, QrRespo
                 b"version" => {
                     let start = scanner.offset;
                     scanner.skip_value()?;
-                    metadata.version_one = &json[start..scanner.offset] == b"1";
+                    metadata.version_two = &json[start..scanner.offset] == b"2";
                 }
                 b"request_id" => {
                     let mut len = 0usize;
@@ -459,7 +459,7 @@ fn require_response_json_for_display(response_json: &[u8]) -> Result<(), QrRespo
     if metadata.has_unknown_top_level_field {
         return Err(QrResponseDisplayError::UnknownTopLevelField);
     }
-    if !metadata.version_one {
+    if !metadata.version_two {
         return Err(QrResponseDisplayError::BadVersion);
     }
     if metadata.request_id_overflow
@@ -629,7 +629,7 @@ mod tests {
     /// The C++ test helper response_json_with_content_bytes.
     fn response_json_with_content_bytes(content_bytes: usize) -> Vec<u8> {
         let mut json = Vec::from(
-            &br#"{"version":1,"request_id":"req-response-display","ok":true,"result":{"content":""#
+            &br#"{"version":2,"request_id":"req-response-display","ok":true,"result":{"content":""#
                 [..],
         );
         json.extend(core::iter::repeat_n(b'a', content_bytes));
@@ -641,7 +641,7 @@ mod tests {
     #[test]
     fn builds_static_frame_for_small_response() {
         let response_json =
-            br#"{"version":1,"request_id":"req-static-response","ok":true,"result":{}}"#;
+            br#"{"version":2,"request_id":"req-static-response","ok":true,"result":{}}"#;
         let frames = build_to_vec(response_json, MAX_ANIMATED_QR_FRAME_PAYLOAD_CHARS).unwrap();
         assert_eq!(frames.len(), 1);
         let mut buf = [0u8; 2048];
@@ -684,7 +684,7 @@ mod tests {
     // C++ test_qr_response_display_shows_static_frame_once.
     #[test]
     fn shows_static_frame_once() {
-        let response_json = br#"{"version":1,"request_id":"req-static-response","ok":false,"error":{"code":"signing_disabled","message":"Signing is disabled.","retryable":false}}"#;
+        let response_json = br#"{"version":2,"request_id":"req-static-response","ok":false,"error":{"code":"signing_disabled","message":"Signing is disabled.","retryable":false}}"#;
         let mut io = RecordingIo { frames: Vec::new() };
         let displayed = run_qr_response_display_io(
             &mut io,
@@ -709,7 +709,7 @@ mod tests {
             build_to_vec(&response_json_with_content_bytes(5000), 64).unwrap_err(),
             QrResponseDisplayError::Envelope(QrEnvelopeError::ExceedsAnimatedJsonBytes),
         );
-        let ok = br#"{"version":1,"request_id":"req","ok":true,"result":{}}"#;
+        let ok = br#"{"version":2,"request_id":"req","ok":true,"result":{}}"#;
         let mut io = RecordingIo { frames: Vec::new() };
         assert_eq!(
             run_qr_response_display_io(&mut io, b"not json", 64, 1).unwrap_err(),
@@ -736,7 +736,7 @@ mod tests {
         );
         assert_eq!(
             build_to_vec(
-                br#"{"version":1,"request_id":"req-response-display","ok":true,"result":{},"extra":true}"#,
+                br#"{"version":2,"request_id":"req-response-display","ok":true,"result":{},"extra":true}"#,
                 chunk,
             )
             .unwrap_err(),
@@ -744,7 +744,7 @@ mod tests {
         );
         assert_eq!(
             build_to_vec(
-                br#"{"version":1,"request_id":"req-response-display","ok":true}"#,
+                br#"{"version":2,"request_id":"req-response-display","ok":true}"#,
                 chunk,
             )
             .unwrap_err(),
@@ -752,7 +752,7 @@ mod tests {
         );
         assert_eq!(
             build_to_vec(
-                br#"{"version":1,"request_id":"req-response-display","ok":false,"result":{},"error":{}}"#,
+                br#"{"version":2,"request_id":"req-response-display","ok":false,"result":{},"error":{}}"#,
                 chunk,
             )
             .unwrap_err(),
@@ -760,7 +760,7 @@ mod tests {
         );
         assert_eq!(
             build_to_vec(
-                br#"{"version":1,"request_id":"req-response-display","ok":true,"result":{"bad":?}}"#,
+                br#"{"version":2,"request_id":"req-response-display","ok":true,"result":{"bad":?}}"#,
                 chunk,
             )
             .unwrap_err(),
@@ -820,7 +820,7 @@ mod tests {
         // The C++ fed a raw string: the JSON carries the escape sequence
         // backslash-u2603 literally; the scanner validates it (collapsing to `?`
         // internally) and the encoded envelope preserves it byte-for-byte.
-        let response_json = br#"{"version":1,"request_id":"req-response-display","ok":true,"result":{"content":"snowman \u2603"}}"#;
+        let response_json = br#"{"version":2,"request_id":"req-response-display","ok":true,"result":{"content":"snowman \u2603"}}"#;
         let frames = build_to_vec(response_json, MAX_ANIMATED_QR_FRAME_PAYLOAD_CHARS).unwrap();
         assert_eq!(frames.len(), 1);
         let (_, json) = decode_static(&frames[0].0).unwrap();
@@ -850,13 +850,13 @@ mod tests {
         let chunk = MAX_ANIMATED_QR_FRAME_PAYLOAD_CHARS;
         // Whitespace + nested arrays/objects/numbers with fraction+exponent +
         // literals inside result are all fine.
-        let ok = br#" { "version" : 1 , "request_id" : "req-ws" , "ok" : true , "result" : { "nested" : [ 1.5e-3 , { "deep" : [ true , null , "s" ] } , -0.25E+2 ] } } "#;
+        let ok = br#" { "version" : 2 , "request_id" : "req-ws" , "ok" : true , "result" : { "nested" : [ 1.5e-3 , { "deep" : [ true , null , "s" ] } , -0.25E+2 ] } } "#;
         assert_eq!(build_to_vec(ok, chunk).unwrap().len(), 1);
 
         // Escapes in skipped strings: standard escapes ok, bad \u rejected.
-        let ok = br#"{"version":1,"request_id":"req-esc","ok":true,"result":{"s":"a\"b\\c\/d\be\ff\ng\rh\ti"}}"#;
+        let ok = br#"{"version":2,"request_id":"req-esc","ok":true,"result":{"s":"a\"b\\c\/d\be\ff\ng\rh\ti"}}"#;
         assert_eq!(build_to_vec(ok, chunk).unwrap().len(), 1);
-        let bad = br#"{"version":1,"request_id":"req-esc","ok":true,"result":{"s":"\uZZZZ"}}"#;
+        let bad = br#"{"version":2,"request_id":"req-esc","ok":true,"result":{"s":"\uZZZZ"}}"#;
         assert_eq!(
             build_to_vec(bad, chunk).unwrap_err(),
             QrResponseDisplayError::ResponseJsonMalformed,
@@ -879,7 +879,7 @@ mod tests {
         // ok not a boolean.
         assert_eq!(
             build_to_vec(
-                br#"{"version":1,"request_id":"r","ok":"yes","result":{}}"#,
+                br#"{"version":2,"request_id":"r","ok":"yes","result":{}}"#,
                 chunk
             )
             .unwrap_err(),
@@ -887,12 +887,12 @@ mod tests {
         );
         // ok:false shapes.
         assert_eq!(
-            build_to_vec(br#"{"version":1,"request_id":"r","ok":false}"#, chunk).unwrap_err(),
+            build_to_vec(br#"{"version":2,"request_id":"r","ok":false}"#, chunk).unwrap_err(),
             QrResponseDisplayError::ErrorWithoutErrorObject,
         );
         assert_eq!(
             build_to_vec(
-                br#"{"version":1,"request_id":"r","ok":false,"error":[]}"#,
+                br#"{"version":2,"request_id":"r","ok":false,"error":[]}"#,
                 chunk
             )
             .unwrap_err(),
@@ -901,7 +901,7 @@ mod tests {
         // ok:true with error present.
         assert_eq!(
             build_to_vec(
-                br#"{"version":1,"request_id":"r","ok":true,"result":{},"error":{}}"#,
+                br#"{"version":2,"request_id":"r","ok":true,"result":{},"error":{}}"#,
                 chunk,
             )
             .unwrap_err(),
@@ -910,7 +910,7 @@ mod tests {
         // ok:true with non-object result.
         assert_eq!(
             build_to_vec(
-                br#"{"version":1,"request_id":"r","ok":true,"result":[]}"#,
+                br#"{"version":2,"request_id":"r","ok":true,"result":[]}"#,
                 chunk
             )
             .unwrap_err(),
@@ -925,14 +925,14 @@ mod tests {
         // decoder truncates it past the known-key buffer).
         assert_eq!(
             build_to_vec(
-                br#"{"version":1,"request_id":"r","ok":true,"result":{},"a_key_longer_than_any_known":1}"#,
+                br#"{"version":2,"request_id":"r","ok":true,"result":{},"a_key_longer_than_any_known":1}"#,
                 chunk,
             )
             .unwrap_err(),
             QrResponseDisplayError::UnknownTopLevelField,
         );
         // ok:false with a well-formed error object is a valid error shape.
-        let ok = br#"{"version":1,"request_id":"r","ok":false,"error":{"code":"user_rejected","message":"no","retryable":false}}"#;
+        let ok = br#"{"version":2,"request_id":"r","ok":false,"error":{"code":"user_rejected","message":"no","retryable":false}}"#;
         assert_eq!(build_to_vec(ok, chunk).unwrap().len(), 1);
     }
 
@@ -941,10 +941,10 @@ mod tests {
         let chunk = MAX_ANIMATED_QR_FRAME_PAYLOAD_CHARS;
         let cases: &[&[u8]] = &[
             b"",                         // empty -> not an object
-            b"{\"version\":1",           // unterminated object
+            b"{\"version\":2",           // unterminated object
             b"{\"version\"1}",           // missing ':'
-            b"{\"version\":1 \"x\":2}",  // bad member separator
-            b"{\"version\":1}trailing",  // trailing data
+            b"{\"version\":2 \"x\":2}",  // bad member separator
+            b"{\"version\":2}trailing",  // trailing data
             b"{\"k\":\"unterminated}",   // unterminated string
             b"{\"k\":\"bad\\zescape\"}", // unsupported escape
             b"{\"k\":\"trunc\\",         // truncated escape
@@ -984,18 +984,18 @@ mod tests {
     fn request_id_rule_matches_shared_charset() {
         let chunk = MAX_ANIMATED_QR_FRAME_PAYLOAD_CHARS;
         // Allowed charset: A-Z a-z 0-9 . _ : -
-        let ok = br#"{"version":1,"request_id":"AZaz09._:-","ok":true,"result":{}}"#;
+        let ok = br#"{"version":2,"request_id":"AZaz09._:-","ok":true,"result":{}}"#;
         assert_eq!(build_to_vec(ok, chunk).unwrap().len(), 1);
         // Empty and over-long are invalid.
         assert_eq!(
             build_to_vec(
-                br#"{"version":1,"request_id":"","ok":true,"result":{}}"#,
+                br#"{"version":2,"request_id":"","ok":true,"result":{}}"#,
                 chunk
             )
             .unwrap_err(),
             QrResponseDisplayError::BadRequestId,
         );
-        let mut long_id = String::from(r#"{"version":1,"request_id":""#);
+        let mut long_id = String::from(r#"{"version":2,"request_id":""#);
         long_id.extend(core::iter::repeat_n('a', MAX_REQUEST_ID_LENGTH + 1));
         long_id.push_str(r#"","ok":true,"result":{}}"#);
         assert_eq!(
