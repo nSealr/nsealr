@@ -1,0 +1,17 @@
+Historical post-run summary-reader error; copied from tool output, not a product/test failure.
+Source6db89f48, both runtime receipts already exit0. Reader parsed the14 early JSON records,
+then indexed r['phase'] on the no-worker FG0 owner_settlement. JSON.stringify omits an
+undefined property, so the unused record correctly has no phase key.
+
+Original command fragment:
+if 'owner_settlement'in row:
+ r=row['owner_settlement']; t=r['terminal']; print(json.dumps({'O':r['pid'],'Ocode':r['code'],'statusbytes':r['status_bytes'],'outcome':t['outcome'],'W':t['worker_pid'],'wait':t['worker_wait'],'IO':t['worker_io'],'timing':t['timing'],'fds':r['phase']['fds'] if r['phase'] else None},sort_keys=True))
+
+Original tool output:
+early-01 JSON records 14
+Traceback (most recent call last):
+  File "<stdin>", line 14, in <module>
+KeyError: 'phase'
+
+Correction is reader-only: use r.get('phase') for the explicit no-worker variant.
+No source, expectation, threshold or runtime output changed and neither run repeated.
