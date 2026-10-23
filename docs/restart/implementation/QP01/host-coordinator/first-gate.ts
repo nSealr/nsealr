@@ -2,7 +2,7 @@
 import assert from "node:assert/strict";
 import { spawn } from "node:child_process";
 import { createHash } from "node:crypto";
-import { readFileSync } from "node:fs";
+import { readFileSync, writeFileSync } from "node:fs";
 import { resolve } from "node:path";
 import type { Readable, Writable } from "node:stream";
 import { clientIdForIdentity, handleLocalServiceRequestAsync, type LocalServiceContext,
@@ -108,7 +108,7 @@ async function prepareOwner(root: string, contract: any, syntheticArgv?: string[
   const started = process.hrtime.bigint();
   const command = child.stdio[3] as Writable, readyStream = child.stdio[4] as Readable, statusStream = child.stdio[5] as Readable;
   let output = Buffer.alloc(0), diagnostic = Buffer.alloc(0), readyBytes = Buffer.alloc(0), status = Buffer.alloc(0);
-  let statusEOF = false, readyEOF = false, outEOF = false, errEOF = false, collected = false;
+  let statusEOF = false, readyEOF = false, readyAccepted = false, outEOF = false, errEOF = false, collected = false;
   let cancelled = false, presented = false, ack = false, unused = false, seenBytes = 0, lines = 0;
   let fault: unknown, phase: any, terminal: any;
   let onPhase: (() => void) | undefined;
@@ -140,7 +140,7 @@ async function prepareOwner(root: string, contract: any, syntheticArgv?: string[
   });
   readyStream.on("end", () => {
     readyEOF = true;
-    if (readyBytes.equals(Buffer.from("R")) && !fault && !collected) readyYes();
+    if (readyBytes.equals(Buffer.from("R")) && !fault && !collected) { readyAccepted = true; readyYes(); }
     else fail(new Error("missing O readiness/EOF"));
   }); readyStream.on("error", fail);
   statusStream.on("data", (chunk: Buffer) => {
@@ -172,7 +172,7 @@ async function prepareOwner(root: string, contract: any, syntheticArgv?: string[
   const settle = () => settlement ??= (async () => {
     const end = await ended;
     const observation = { pid: child.pid, ...end, ready_hex: readyBytes.toString("hex"),
-      readyEOF, statusEOF, outEOF, errEOF, status_bytes: seenBytes, commands, phase, terminal,
+      readyEOF, readyAccepted, statusEOF, outEOF, errEOF, status_bytes: seenBytes, commands, phase, terminal,
       output_bytes: output.length, output_sha256: output.length ? hash(output) : null,
       diagnostic_base64: diagnostic.toString("base64"), elapsed_ns: String(process.hrtime.bigint() - started),
       protocol_error: fault ? String(fault) : null, synthetic_no_W_helper: !!syntheticArgv,
@@ -216,7 +216,7 @@ async function prepareOwner(root: string, contract: any, syntheticArgv?: string[
 }
 
 export async function runFirstGate({ prepareNative, basic, root }: {
-  prepareNative(): Promise<Native>; basic: any; root: string;
+  prepareNative(hold?: boolean, env?: NodeJS.ProcessEnv, syntheticArgv?: string[]): Promise<Native>; basic: any; root: string;
 }) {
   const contract = JSON.parse(readFileSync(new URL("control-contract.json", import.meta.url), "utf8"));
   if (process.argv.includes("--owner-malformed-controls")) { await malformedHelpers(root, contract); return; }
@@ -225,10 +225,14 @@ export async function runFirstGate({ prepareNative, basic, root }: {
   assert.equal(image.length, 172800); assert.equal(hash(image), contract.independent_oracle.image_sha256);
   assert.equal(expected.length, 259); assert.equal(hash(expected), contract.independent_oracle.decoded_frame_sha256);
   assert.equal(basic.response.result.event.sig, contract.independent_oracle.expected_signature);
-  const preparePair = async () => {
+  const preparePair = async (env = process.env, syntheticArgv?: string[]) => {
     const owner = await prepareOwner(root, contract);
-    try { return { owner, native: await prepareNative() }; }
-    catch (error) { await owner.disposeUnused(); throw error; }
+    try { return { owner, native: await prepareNative(false, env, syntheticArgv) }; }
+    catch (error) {
+      const result = await owner.disposeUnused();
+      assert.equal(result.terminal.worker_pid, null); assert.equal(result.terminal.outcome, "unused");
+      assert(owner.isCollected()); throw error;
+    }
   };
   // FIRST actual initialization/disposal. No P/RGB/W/native request.
   {
@@ -238,10 +242,20 @@ export async function runFirstGate({ prepareNative, basic, root }: {
     assert.equal(native.inputBytes(), 0); assert(owner.isCollected() && native.isCollected());
     console.log(JSON.stringify({ case: "FG0_startup_unused", pass: true, W_spawned: 0, C_input_bytes: 0 }));
   }
+  await assert.rejects(preparePair({ ...process.env, NSEALR_QP01_LIBRARY_SHA256: "0".repeat(64) }), /SHA256 mismatch/);
+  console.log(JSON.stringify({ case: "FG0_C_library_ready_failure", pass: true, W_spawned: 0, C_input_bytes: 0 }));
+  await assert.rejects(preparePair(process.env, ["-c", "import os; os.write(4,b'RX'); os.close(4); os.read(0,1)"]), /invalid readiness token/);
+  console.log(JSON.stringify({ case: "FG0_C_handshake_failure", pass: true, W_spawned: 0, C_input_bytes: 0, synthetic_C_helper: true }));
+  await assert.rejects(async () => {
+    const { owner, native } = await preparePair();
+    try { assert.fail("controlled pre-presentation assertion"); }
+    finally { await Promise.all([owner.disposeUnused(), native.dispose()]); assert(owner.isCollected() && native.isCollected()); }
+  }, /controlled pre-presentation assertion/);
+  console.log(JSON.stringify({ case: "FG0_pre_presentation_assertion", pass: true, W_spawned: 0, C_input_bytes: 0 }));
   // The frozen early smoke stays in its original source/receipt; the stable
   // sequence below includes normal first, then only the admitted fault groups.
   type Mode = "normal" | "timeout-preG" | "timeout-late" | "cancel-preG" | "cancel-late" |
-    "generation" | "Cdeath" | "control-eof";
+    "generation" | "Cdeath" | "control-eof" | "preadmission";
   async function exchangeCase(mode: Mode, id: string) {
     let owner: Awaited<ReturnType<typeof prepareOwner>>, native: Native;
     const load = (path: string) => JSON.parse(readFileSync(resolve(root, "protocols/contracts/v1", path), "utf8"));
@@ -334,6 +348,10 @@ export async function runFirstGate({ prepareNative, basic, root }: {
         allowed_operations: ["dispatch_signer_request"] }], signerCompatibility: () => snapshot, signerDispatcher: dispatcher };
     const envelope = { version: 1 as const, request_id: "qp01.local.fixture", operation: "dispatch_signer_request" as const,
       params: { client: identity, route_request: { account_id: account.account_id, method: "sign_event" }, request } };
+    if (mode === "preadmission") {
+      const method = snapshot.adapter.methods.find((entry) => entry.id === "sign_event"); assert(method);
+      Object.assign(method, { availability: "unavailable", reason: "provider_missing" });
+    }
     const run = () => handleLocalServiceRequestAsync(envelope, context);
     ({ owner, native } = await preparePair());
     void native.ended.then(() => { if (!owner.isCollected()) localCancel("C_actual_close"); });
@@ -341,6 +359,14 @@ export async function runFirstGate({ prepareNative, basic, root }: {
     let result: any, ownerResult: Awaited<ReturnType<typeof owner.settle>> | undefined;
     try {
       const operation = run();
+      if (mode === "preadmission") {
+        result = await operation; assert.equal(result.ok, false); assert.equal(opens, 0);
+        ownerResult = await owner.disposeUnused(); await native.dispose();
+        assert.equal(ownerResult.terminal.worker_pid, null); assert.equal(native.inputBytes(), 0);
+        assert(owner.isCollected() && native.isCollected());
+        console.log(JSON.stringify({ case: id, pass: true, actual_client: result, opens, W_spawned: 0, C_input_bytes: 0 }));
+        return;
+      }
       if (mode.startsWith("timeout")) {
         await Promise.race([held, operation.then(() => { throw new Error("operation ended before held phase"); })]);
         assert.equal((await run() as any).error.code, "runtime_unavailable");
@@ -391,6 +417,7 @@ export async function runFirstGate({ prepareNative, basic, root }: {
     }
     console.log(JSON.stringify({ case: id, pass: true, all_collected: true }));
   }
+  await exchangeCase("preadmission", "FG0_actual_pre_admission_refusal");
   await exchangeCase("normal", "FG1_normal259");
   await exchangeCase("timeout-preG", "FG2_timeout_preG");
   await exchangeCase("timeout-late", "FG2_timeout_late");
@@ -432,7 +459,8 @@ async function malformedHelpers(root: string, contract: any) {
     const script = String.raw`import os,json,time
 mode=${JSON.stringify(mode)}
 os.write(4,b'RX' if mode=='ready-extra' else b'' if mode=='ready-missing' else b'R');os.close(4)
-os.read(3,1)
+command=os.read(3,1)
+assert command==(b'X' if mode.startswith('ready-') else b'Q')
 n=time.monotonic_ns()
 r={'v':1,'kind':'terminal','owner_pid':os.getpid(),'outcome':'unused','ownership':'settled','worker_pid':None,'worker_wait':None,'worker_io':{'stdin_closed':None,'stdout_eof':None,'stderr_eof':None,'owned_fds_closed':True},'session_policy_verified':False,'input_bytes_received':0,'input_sha256':None,'G_bytes':0,'image_bytes_sent':0,'stdout_observed':0,'stdout_retained':0,'stderr_observed':0,'stderr_retained':0,'worker_stderr_base64':'','result_bytes':0,'result_sha256':None,'final_worker_eligible':False,'cancel_observed':False,'timing':{'begin_ns':None,'invalidated_ns':str(n),'cleanup_deadline_ns':str(n+4000000000),'settled_ns':str(n),'final_admission_ns':str(n)}}
 if mode=='wrong-owner':r['owner_pid']+=1
@@ -449,6 +477,13 @@ if mode.startswith('ready-'):wire=b''
 try:os.write(5,wire)
 except BrokenPipeError:pass
 `;
+    const exportDir = process.env.NSEALR_QP01_HELPER_EXPORT;
+    if (exportDir) {
+      const path = resolve(exportDir, `${mode}.py`);
+      writeFileSync(path, script, { flag: "wx" });
+      console.log(JSON.stringify({ helper_export: mode, path, sha256: hash(script), intended_command: mode.startsWith("ready-") ? "X" : "Q" }));
+      continue;
+    }
     let observation: any;
     await assert.rejects(async () => {
       const owner = await prepareOwner(root, contract, ["-B", "-c", script], (value) => { observation = value; });
@@ -463,7 +498,7 @@ except BrokenPipeError:pass
       assert.equal(observation.ready_hex, mode === "ready-extra" ? "5258" : "");
       assert.equal(observation.status_bytes, 0); assert(observation.protocol_error);
     } else {
-      assert.equal(observation.ready_hex, "52");
+      assert.equal(observation.ready_hex, "52"); assert.equal(observation.readyAccepted, true);
       if (mode === "status-missing") { assert.equal(observation.status_bytes, 0); assert.equal(observation.terminal, undefined); }
       if (mode === "status-truncated") { assert(observation.status_bytes > 0); assert(observation.unconsumed_status_bytes > 0); assert.equal(observation.terminal, undefined); }
       if (mode === "status-overflow") { assert.equal(observation.status_bytes, 4097); assert.match(observation.protocol_error, /status capacity/); }
