@@ -217,6 +217,38 @@ class OwnerAdapterLifecycleTests(unittest.TestCase):
         self.finish("control_EOF_preG", op)
         self.assertEqual(op.observation()["terminal"]["image_bytes_sent"], 0)
 
+    def test_10_normal259_release_once(self):
+        case = "normal259_release_once"
+        op = self.begin(case)
+        self.phase(case, op)
+        op.acknowledge()
+        until(case, op, lambda: op.state == "settled")
+        observation = op.observation()
+        self.assertEqual(observation["owner_wait_raw"], 0)
+        self.assertEqual(observation["owner_exit_code"], 0)
+        self.assertEqual(observation["EOF"], [1, 2, 4, 5])
+        self.assertEqual(observation["parent_owned_fds"], [])
+        self.assertEqual(observation["terminal"]["worker_wait"]["exit_code"], 0)
+        with self.assertRaises(ChildProcessError):
+            os.wait4(observation["owner_pid"], os.WNOHANG)
+        raw, parsed = op.take_result()
+        self.assertEqual(raw, ENVELOPE.read_bytes())
+        self.assertEqual(digest(raw), EXPECTATIONS["automatic_positive_case"]["expected_result_sha256"])
+        vector = json.loads((ROOT / "protocols/contracts/v1/vectors/transports/qr-envelope-kind-1-basic.json").read_text())
+        self.assertEqual(parsed, vector["decoded"])
+        self.assertIs(type(parsed["version"]), int)
+        self.assertEqual(parsed["version"], 2)
+        with self.assertRaises(ValueError):
+            op.take_result()
+        with self.assertRaises(ValueError):
+            self.runtime.reserve(*self.worker)
+        save(case, "released", "actual_O_W_positive_single_use", op,
+             caller_released_bytes=259, second_take_refused=True, reservation_before_close_refused=True)
+        op.close()
+        replacement = self.runtime.reserve(*self.worker)
+        self.assertIsNone(replacement._child)
+        replacement.close()  # Fresh admission only after actual prior collection/close.
+
 
 class OwnerAdapterWireHelperTests(unittest.TestCase):
     def cleanup_known_no_W_helper(self, case, op):
