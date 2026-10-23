@@ -1,37 +1,23 @@
 {
   "schema_version": 1,
-  "role": "Required API review and observed capability refusal, no fallback",
-  "primary_documentation": [
+  "role": "CurrentexplicitreadmittedAPIstrategy; historicalbindingspreservedseparately",
+  "readmission_commit": "a94c24e7306c255725dfd080a1b91c38e5d4211e",
+  "readmission_sha256": "01569445717668dd29fc380a2ec15fdc45b5db3eb9d1c2f4043642202ebc7202",
+  "primary_sources": [
     {
-      "url": "https://docs.python.org/3.12/library/os.html#os.posix_spawn",
-      "read": "path/argv/env, fd actions CLOSE/DUP2, setsid optional support and NotImplementedError; no unconditional portability guarantee"
+      "url": "https://docs.python.org/3.12/library/os.html#os.setsid",
+      "fact": "Direct Unix setsid API is distinct from optional posix_spawn setsid flag; actual support/success must beobserved."
     },
     {
-      "url": "https://docs.python.org/3.12/library/os.html#os.wait4",
-      "read": "directPID/WNOHANG result and rawstatus/rusage; no defaultreturncode0 credit"
+      "url": "https://docs.python.org/3.12/library/os.html#os.getsid",
+      "fact": "Parent queries actual session forpositiveownedPID; no selfreportedreadyformat."
+    },
+    {
+      "url": "https://man7.org/linux/man-pages/man2/setsid.2.html",
+      "fact": "Successful caller becomes session/group leader withSID/PGIDequalPID; alreadygroupleader givesEPERM. No setpgroup0 is requested. Exec preserves inheritedsession until child call."
     }
   ],
-  "actual_interpreter_capability": "Python exposes posix_spawn/wait4/fd_actions/prlimit, but the first actual posix_spawn call with requiredsetsid=True raised NotImplementedError. Attribute existence is not usable setsid support. No wait4/prlimit runtime property was exercised.",
-  "local_pyconfig": {
-    "path": "/home/tux/nsealr/.restart-tools/goal/r00/tools/baseline/.work/final/.tools/python/include/python3.12/pyconfig.h",
-    "bytes": 55933,
-    "sha256": "3a9546822f3c1b28caaedabf93cc862215f4cbff25a8d209edc08a21b908beba",
-    "static_lines": [
-      {
-        "line": 906,
-        "value": "#define HAVE_POSIX_SPAWN 1"
-      },
-      {
-        "line": 909,
-        "value": "#define HAVE_POSIX_SPAWNP 1"
-      },
-      {
-        "line": 1107,
-        "value": "#define HAVE_SETSID 1"
-      }
-    ],
-    "limit": "These separate function macros do not prove the posix_spawn setsid flag. No compile/build/install or R00 alteration was performed."
-  },
-  "root_admission_commit": "e287c938973770d8c8c2bb63d2c9693c50e84a84",
-  "source_original285_preserved": true
+  "observed": "Plainposix_spawn withfixedfd_actions works onpinnedR00. Trustedchild os.setsid succeededforpositive; parent queriedactualkernelidentities beforepolicy/data. Explicitno-sessionfixturewasrefused0data. Directwait4 returnedactualstatus/rusage; controlledloststatus gaveECHILD. No alternatecallroute or elevatedprivileges.",
+  "historical_optional_flag_blocker": "historical-blocker-api-bindings.json",
+  "API_limits": "No atomicspawn/session or bootstrapbudget proof; docsAPIexistence isnotruntimecapability. Source/ABI/executable/modulehashes in eachrun environment.json."
 }
