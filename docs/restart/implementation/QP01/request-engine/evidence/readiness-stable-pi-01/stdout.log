@@ -1,0 +1,38 @@
+python3 -B docs/restart/implementation/QP01/request-engine/exchange.py --ci apps/pi
+{"role": "public fixture build, not hardware qualification", "argv": ["cargo", "build", "-p", "nsealr-pi-engine-fixture", "--locked", "--offline", "--release", "--message-format=json"], "source": {"Cargo.toml": "97475b27f26bbfa1c2d46508c4e719edb3713ea5c76da5987ef5283b9d7245eb", "Cargo.lock": "2b62ce3fe11650d36ffc015344aa6f9f04b5ef22d6bc05dae218a96d07c8e811", "crates/nsealr-pi-engine-fixture/Cargo.toml": "6199f807c29406405b839ed71f1791ffb44359e34dff3db5bf8591361a2fb30d", "crates/nsealr-pi-engine-fixture/src/lib.rs": "7840133113a54d58f81e808e2037e0b5e999d148920f6bf4fea5212fa9a5425a"}, "library": "/home/tux/nsealr/.restart-tools/goal/qp01-request-engine-correction-runtime/target/release/libnsealr_pi_engine_fixture.so", "sha256": "1ae2cf24fca1ec59224d3da702b05c44c8466622c1d0bade6d9399a66af0977e", "CARGO_TARGET_DIR": "/home/tux/nsealr/.restart-tools/goal/qp01-request-engine-correction-runtime/target"}
+make[1]: Entering directory '/home/tux/nsealr/.restart-tools/goal/qp01-request-engine-correction/apps/pi'
+python3 -m venv .venv
+.venv/bin/python -m pip install --disable-pip-version-check -r requirements.txt
+Looking in links: /home/tux/nsealr/.restart-tools/goal/r00/tools/baseline/.work/final/.tools/wheels
+Processing /home/tux/nsealr/.restart-tools/goal/r00/tools/baseline/.work/final/.tools/wheels/mnemonic-0.21-py3-none-any.whl (from -r requirements.txt (line 1))
+Processing /home/tux/nsealr/.restart-tools/goal/r00/tools/baseline/.work/final/.tools/wheels/secp256k1-0.14.0-cp312-cp312-manylinux_2_17_x86_64.manylinux2014_x86_64.whl (from -r requirements.txt (line 2))
+Processing /home/tux/nsealr/.restart-tools/goal/r00/tools/baseline/.work/final/.tools/wheels/cffi-2.1.1-cp312-cp312-manylinux2014_x86_64.manylinux_2_17_x86_64.whl (from secp256k1==0.14.0->-r requirements.txt (line 2))
+Processing /home/tux/nsealr/.restart-tools/goal/r00/tools/baseline/.work/final/.tools/wheels/pycparser-3.11-py3-none-any.whl (from cffi>=1.3.0->secp256k1==0.14.0->-r requirements.txt (line 2))
+Installing collected packages: pycparser, mnemonic, cffi, secp256k1
+Successfully installed cffi-2.1.1 mnemonic-0.21 pycparser-3.11 secp256k1-0.14.0
+PIP_IN_TREE_BUILD="$( .venv/bin/python -m pip install --use-feature=in-tree-build --help >/dev/null 2>&1 && printf '%s' '--use-feature=in-tree-build' || true )"; \
+.venv/bin/python -m pip install --disable-pip-version-check $PIP_IN_TREE_BUILD .
+Looking in links: /home/tux/nsealr/.restart-tools/goal/r00/tools/baseline/.work/final/.tools/wheels
+Processing /home/tux/nsealr/.restart-tools/goal/qp01-request-engine-correction/apps/pi
+  Installing build dependencies: started
+  Installing build dependencies: finished with status 'done'
+  Getting requirements to build wheel: started
+  Getting requirements to build wheel: finished with status 'done'
+  Preparing metadata (pyproject.toml): started
+  Preparing metadata (pyproject.toml): finished with status 'done'
+Requirement already satisfied: mnemonic==0.21 in ./.venv/lib/python3.12/site-packages (from nsealr-vault==0.1.0) (0.21)
+Requirement already satisfied: secp256k1==0.14.0 in ./.venv/lib/python3.12/site-packages (from nsealr-vault==0.1.0) (0.14.0)
+Requirement already satisfied: cffi>=1.3.0 in ./.venv/lib/python3.12/site-packages (from secp256k1==0.14.0->nsealr-vault==0.1.0) (2.1.1)
+Requirement already satisfied: pycparser in ./.venv/lib/python3.12/site-packages (from cffi>=1.3.0->secp256k1==0.14.0->nsealr-vault==0.1.0) (3.11)
+Building wheels for collected packages: nsealr-vault
+  Building wheel for nsealr-vault (pyproject.toml): started
+  Building wheel for nsealr-vault (pyproject.toml): finished with status 'done'
+  Created wheel for nsealr-vault: filename=nsealr_vault-0.1.0-py3-none-any.whl size=47378 sha256=bb29825b18d5f6748e5cb793c6ae402939f02e394394532697519e49edf42f18
+  Stored in directory: /home/tux/nsealr/.restart-tools/goal/qp01-request-engine-correction-runtime/pip-ephem-wheel-cache-ze9_cfyt/wheels/7a/cc/33/b00d1d1623aba0ab1dabfc111cea98e839dcca47e162804536
+Successfully built nsealr-vault
+Installing collected packages: nsealr-vault
+Successfully installed nsealr-vault-0.1.0
+.venv/bin/python scripts/verify_repo.py
+Component structure and license verified independently of checkout name
+.venv/bin/python -m unittest discover -s tests
+make[1]: Leaving directory '/home/tux/nsealr/.restart-tools/goal/qp01-request-engine-correction/apps/pi'

@@ -1,0 +1,81 @@
+   Compiling subtle v2.6.1
+   Compiling zeroize v1.9.1
+   Compiling typenum v1.20.1
+   Compiling rand_core v0.10.1
+   Compiling autocfg v1.5.1
+   Compiling const-oid v0.10.2
+   Compiling cmov v0.5.4
+   Compiling cpubits v0.1.1
+   Compiling base16ct v1.0.0
+   Compiling cpufeatures v0.3.1
+   Compiling cfg-if v1.0.5
+   Compiling nsealr-core v0.0.0 (/home/tux/nsealr/.restart-tools/goal/qp01-request-engine-correction/crates/nsealr-core)
+   Compiling ff v0.14.0
+   Compiling der v0.8.2
+   Compiling group v0.14.0
+   Compiling ctutils v0.4.4
+   Compiling num-traits v0.2.19
+   Compiling hybrid-array v0.4.15
+   Compiling crypto-common v0.2.2
+   Compiling block-buffer v0.12.1
+   Compiling crypto-bigint v0.7.5
+   Compiling sec1 v0.8.1
+   Compiling digest v0.11.3
+   Compiling signature v3.0.0
+   Compiling sha2 v0.11.0
+   Compiling primefield v0.14.0
+   Compiling elliptic-curve v0.14.1
+   Compiling wnaf v0.14.1
+   Compiling primeorder v0.14.0
+   Compiling ecdsa v0.17.0
+   Compiling k256 v0.14.0
+   Compiling nsealr-pi-engine-fixture v0.0.0 (/home/tux/nsealr/.restart-tools/goal/qp01-request-engine-correction/crates/nsealr-pi-engine-fixture)
+    Finished `release` profile [optimized] target(s) in 3.82s
+..............F..............................................................................................................................................................................
+======================================================================
+FAIL: test_actual_driver_orders_full_pi_then_client_with_same_library (test_engine_adapter.ProvisioningControls.test_actual_driver_orders_full_pi_then_client_with_same_library)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/tux/nsealr/.restart-tools/goal/qp01-request-engine-correction/apps/pi/tests/test_engine_adapter.py", line 323, in test_actual_driver_orders_full_pi_then_client_with_same_library
+    self.assertEqual(calls, ["build", ["make", "-C", str(ROOT / "apps/pi"), "ci"],
+AssertionError: Lists differ: ['bui[269 chars]e.ts', '--readiness-controls'], ['node', '--im[151 chars]ts']] != ['bui[269 chars]e.ts']]
+
+First differing element 2:
+['nod[125 chars]P01/request-engine/client-exchange.ts', '--readiness-controls']
+['nod[125 chars]P01/request-engine/client-exchange.ts']
+
+First list contains 1 additional elements.
+First extra element 3:
+['node', '--import', 'tsx/esm', '/home/tux/nsealr/.restart-tools/goal/qp01-request-engine-correction/docs/restart/implementation/QP01/request-engine/client-exchange.ts']
+
+  ['build',
+   ['make',
+    '-C',
+    '/home/tux/nsealr/.restart-tools/goal/qp01-request-engine-correction/apps/pi',
+    'ci'],
+   ['node',
+    '--import',
+    'tsx/esm',
+-   '/home/tux/nsealr/.restart-tools/goal/qp01-request-engine-correction/docs/restart/implementation/QP01/request-engine/client-exchange.ts',
+-   '--readiness-controls'],
+-  ['node',
+-   '--import',
+-   'tsx/esm',
+    '/home/tux/nsealr/.restart-tools/goal/qp01-request-engine-correction/docs/restart/implementation/QP01/request-engine/client-exchange.ts']]
+
+----------------------------------------------------------------------
+Ran 189 tests in 1.307s
+
+FAILED (failures=1)
+make[1]: *** [Makefile:14: test] Error 1
+Traceback (most recent call last):
+  File "/home/tux/nsealr/.restart-tools/goal/qp01-request-engine-correction/docs/restart/implementation/QP01/request-engine/exchange.py", line 112, in <module>
+    main()
+  File "/home/tux/nsealr/.restart-tools/goal/qp01-request-engine-correction/docs/restart/implementation/QP01/request-engine/exchange.py", line 106, in main
+    ci(args.ci)
+  File "/home/tux/nsealr/.restart-tools/goal/qp01-request-engine-correction/docs/restart/implementation/QP01/request-engine/exchange.py", line 56, in ci
+    subprocess.run(["make", "-C", str(pi), "ci"], cwd=ROOT, env=env, check=True)
+  File "/home/tux/nsealr/.restart-tools/goal/r00/tools/baseline/.work/final/.tools/python/lib/python3.12/subprocess.py", line 571, in run
+    raise CalledProcessError(retcode, process.args,
+subprocess.CalledProcessError: Command '['make', '-C', '/home/tux/nsealr/.restart-tools/goal/qp01-request-engine-correction/apps/pi', 'ci']' returned non-zero exit status 2.
+make: *** [Makefile:87: pi-ci] Error 1

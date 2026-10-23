@@ -17137,12 +17137,40 @@
         {
           "path": "docs/restart/implementation/QP01/request-engine/delivery/descriptor.json",
           "sha256": "3d312e3f47cad526107d83bbaf1e9ecc0c176a1269089b9d7316f41dbc9225ab"
+        },
+        {
+          "path": "docs/restart/implementation/QP01/request-engine/readiness-result.json",
+          "sha256": "82e8808c7247ba0934f64a549df473367601d5be99939f357804751dc400bcba"
+        },
+        {
+          "path": "docs/restart/implementation/QP01/request-engine/readiness-result.md",
+          "sha256": "0d9b0d34e1c31edc9f900211cf888764e8037f472c2893235302ea5d68bb79e0"
+        },
+        {
+          "path": "docs/restart/implementation/QP01/request-engine/readiness-correction.json",
+          "sha256": "e33bfe66331bc9628700b040660239a4797dbfb1090c7ae36468861dfa1951b0"
+        },
+        {
+          "path": "docs/restart/implementation/QP01/request-engine/readiness-correction.md",
+          "sha256": "36dc978d5466cbe47801cdb9938aaebdb60f40f31c03b73ec89472d14f10939e"
+        },
+        {
+          "path": "docs/restart/implementation/QP01/request-engine/readiness-regression.py",
+          "sha256": "3691f183242e9735e87984204e65c5ffa69e27d189c7be1403ccae98af737542"
+        },
+        {
+          "path": "docs/restart/implementation/reviews/QP01-readiness-contract/report.md",
+          "sha256": "bee8e629f177ad331ebd8ccc7829d91d6af52475902ee24f407bd30a35b0882b"
+        },
+        {
+          "path": "docs/restart/implementation/reviews/QP01-readiness-contract/review.json",
+          "sha256": "53d31c230fb164c086a5f8d0a1b5a96fd91e64827a16056dda2086e97cf51e85"
         }
       ],
       "profile": "pi_qr",
       "requires_physical_evidence": true,
       "current_checkpoint": {
-        "state": "LIMITED_REVIEWED_HOST_FIXTURE_ENGINE_PHYSICAL_TASK_INCOMPLETE",
+        "state": "HOST_FIXTURE_READINESS_CORRECTION_PENDING_DISTINCT_REVIEW_PHYSICAL_TASK_INCOMPLETE",
         "source_preparation": "3330972dd7cc4f36be2622cdafdcfbe8c81adec4",
         "host_boundary_preparation": "b45812362e2f8340572aaaffd0384a9662fc6fb2",
         "limited_reviews": [
@@ -17180,7 +17208,7 @@
         "physical_criteria_complete": 0,
         "QP01_all3_and_Q02_all6_incomplete": true,
         "runtime_or_physical_admission": false,
-        "meaning": "Reviewed source preparation, probe correction and request-aware public-fixture host engineering component only. QP01 stays planned with all3 criteria incomplete; no task-level reviewer/verdict, physical availability, product/default route or device qualification. Original source timestamps/pending fields remain historical.",
+        "meaning": "Earlier reviewed public-fixture component and original reports retain their source roles. The current two-file harness readiness correction has source-bound local evidence and awaits distinct affected review/integration; QP01 stays planned with all3 criteria incomplete and no device/physical qualification.",
         "current_adoption": {
           "commit": "3e3d02aecc72c9218c8339e7c28093fc17357ca4",
           "path": "docs/restart/implementation/reviews/QP01-current-delivery/adoption/actual-main-acceptance.json",
@@ -17277,7 +17305,19 @@
             "source": "e44f957bc20c79d443f6e29ac0ba8c611f4787bd",
             "current_plan_is_only_author_postimage_exception": true
           },
-          "assembly_runtime_executions": 0
+          "assembly_runtime_executions": 0,
+          "readiness_correction": {
+            "base": "5c701113bc2ac2d7b596f7d3fb76574a7cff24b3",
+            "executed_source": "b75db930d89a7dfbd9c28036c3d345c81aecd1ac",
+            "result": {
+              "path": "docs/restart/implementation/QP01/request-engine/readiness-result.json",
+              "sha256": "82e8808c7247ba0934f64a549df473367601d5be99939f357804751dc400bcba"
+            },
+            "state": "AUTHOR_LOCAL_PASS_PENDING_B01_AFFECTED_REVIEW_AND_ROOT_INTEGRATION",
+            "original_manifests_are_source_specific": true,
+            "criteria_completed": 0,
+            "physical_releases": 0
+          }
         }
       }
     },
