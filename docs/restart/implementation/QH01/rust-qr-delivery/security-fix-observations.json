@@ -1,0 +1,10 @@
+{
+  "schema_version": 1,
+  "role": "Assembly verifier observation; not a source/product/test failure",
+  "initial_exit_code": 1,
+  "initial_trace": "File <stdin>, line8: TypeError: object of type int has no len()",
+  "cause": "The manifest inspector treated ctutils artifact-manifest.members as a sequence; this format has integer members count and files list.",
+  "correction": "Inspect field types first, then use files list for ctutils80 and audit83. No source/manifest/raw bytes changed.",
+  "occurred_before_source_transfer": true,
+  "runtime_or_gate_reruns_caused": 0
+}

@@ -1,0 +1,137 @@
+{
+  "schema_version": 1,
+  "role": "Frozen before vendor/lock edits or new compatibility executions",
+  "source_commit": "1be80c8114583627a8eef1952a0cd939f40b84ec",
+  "authority": "Root remediation assignment and explicit host-lock addendum; no Cargo.toml change authorized unless compatibility requires prior explanation.",
+  "preimages": {
+    "Cargo.lock": {
+      "sha256": "9d20d9ab99625c9dc2c8ea5a2dccb43a84cb2daa9a57c57565c3e8fbb426cd88",
+      "blob": "7ac6a6fc9bbe201a824bf1c31c7091791c56ca29"
+    },
+    "apps/desktop-simulator/Cargo.lock": {
+      "sha256": "700ec5a1e8cdc94324028d7540c1d6c1dee28fd76228a08feaf589cc5ca46eb9",
+      "blob": "e99b6a84d3952303cf3e4f4fe329bc9085d5a943"
+    },
+    "Cargo.toml": {
+      "sha256": "e977c767184bee2074c445d0052daf3d0a181558c988447a76c96394f7732c2e",
+      "blob": "f438331d7d80ae41a37e725847c779afc4282b84"
+    },
+    "apps/desktop-simulator/Cargo.toml": {
+      "sha256": "85b4044d4f235da5e043ca317d09a393716fd8d74d4a5e2c0c8c9cfd2748500a",
+      "blob": "851a3d23e4986ce4bd1f02009d724cc23837962f"
+    },
+    "crates/nsealr-core/Cargo.toml": {
+      "sha256": "663d098eaba6a56eb465890da8352b9ca80f53d147f0bec0045de0847297b280",
+      "blob": "401fd5ae47a9ab26994b6e7712410b8e48c6c6ec"
+    },
+    "deny.toml": {
+      "sha256": "c826e2765ff488b0f9ad1d7842553ecf90cad7d40c25951200daf0ee735a8029",
+      "blob": "c9594e7207128636438c897f69ab9b634a17c1a0"
+    },
+    "Makefile": {
+      "sha256": "4871ba473079604214e68f96588c7af1583f430802f600133c59a4f7c95d259b",
+      "blob": "f663c9849623d031f81dbdc3562df2a104aab671"
+    },
+    ".cargo/config.toml": {
+      "sha256": "98e1cf108d2b5aa2ff9d9fb6f58df4d0332df3a85411cf8c1249c615edecf625",
+      "blob": "45b3191a534a276dc461b7d286687565777b331b"
+    },
+    "rust-toolchain.toml": {
+      "sha256": "6e90f2cf35aad6218e0d99f319101783cf5ce91cc62349dec0c7b357a420dabc",
+      "blob": "50cbb4a515c844a1bdff5f675687e55f3d615945"
+    }
+  },
+  "two_product_graphs": {
+    "Cargo.lock": {
+      "ctutils": {
+        "name": "ctutils",
+        "version": "0.4.3",
+        "source": "registry+https://github.com/rust-lang/crates.io-index",
+        "checksum": "03bb0e1cc970d482d121d9a1744999169b69a07470b3d644a7894e53fcaf4574",
+        "dependencies": [
+          "cmov",
+          "subtle"
+        ]
+      },
+      "immediate_reverse_dependencies": [
+        {
+          "name": "crypto-bigint",
+          "version": "0.7.5"
+        },
+        {
+          "name": "sec1",
+          "version": "0.8.1"
+        }
+      ],
+      "package_count": 43
+    },
+    "apps/desktop-simulator/Cargo.lock": {
+      "ctutils": {
+        "name": "ctutils",
+        "version": "0.4.3",
+        "source": "registry+https://github.com/rust-lang/crates.io-index",
+        "checksum": "03bb0e1cc970d482d121d9a1744999169b69a07470b3d644a7894e53fcaf4574",
+        "dependencies": [
+          "cmov",
+          "subtle"
+        ]
+      },
+      "immediate_reverse_dependencies": [
+        {
+          "name": "crypto-bigint",
+          "version": "0.7.5"
+        },
+        {
+          "name": "sec1",
+          "version": "0.8.1"
+        }
+      ],
+      "package_count": 47
+    }
+  },
+  "expected_minimum_patch": {
+    "package": "ctutils",
+    "from": "0.4.3",
+    "to": "0.4.4",
+    "archive_sha256": "12218662ccac37d9714f2191252553d67585b97df8c839cbe49e0bde278dc865",
+    "unchanged_runtime_dependency_versions": [
+      "cmov0.5.4",
+      "subtle2.6.1"
+    ],
+    "edition": "2024",
+    "MSRV": "1.87",
+    "license": "Apache-2.0 OR MIT"
+  },
+  "expectations": [
+    {
+      "id": "OLD-ADVISORY-RED",
+      "expected": "Preserve actual failed CI vulnerability excerpt, without calling this a locally reproduced side-channel exploit."
+    },
+    {
+      "id": "MINIMAL-CLOSURE",
+      "expected": "Only ctutils version/checksum change in each product lock; every other package object identical; only vendor/ctutils postimages generated from exact official archive."
+    },
+    {
+      "id": "FUNCTIONAL",
+      "expected": "Complete existing root default/all-features tests and standalone host tests pass locked/offline; independently validate new observed S03/K01 cryptographic outputs against unchanged independent fixtures."
+    },
+    {
+      "id": "NO-STD32",
+      "expected": "Existing production core with explicit no-default features builds locked/offline on existing32-bit RISC-V target; no execution/constant-time/hardware claim."
+    },
+    {
+      "id": "UPSTREAM-FIX",
+      "expected": "Source diff matches masks and32-bit u128 correction; preserve licenses unchanged and functional boundary tests if feasible from exact source, not a timing proof."
+    },
+    {
+      "id": "GATES",
+      "expected": "Relevant existing clippy/coverage checks keep unchanged thresholds; final both-graph cargo-deny depends on corrected feed from A02 and must not conceal index-failure."
+    }
+  ],
+  "open_limits": [
+    "No exploit or whole-target constant-time proof",
+    "No historical source/probe locks changed",
+    "No PR/main/task/physical acceptance",
+    "No yanked check result for the36 missing index entries"
+  ]
+}

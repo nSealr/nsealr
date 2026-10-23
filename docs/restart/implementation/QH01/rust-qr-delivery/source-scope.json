@@ -1,10 +1,10 @@
 {
   "schema_version": 1,
-  "task": "QH01",
-  "role": "Final selected-file source/evidence candidate; distinct delivery review and actual integration gates pending",
+  "task": "QH01/QP01/R00",
+  "role": "Local amended PR44 source/evidence candidate with both distinct security component reviews; pending final assembly review and authorized push",
   "base_commit": "994a8b682ed6cd52bb46608b90794c02d2a9d3cb",
   "base_tree": "a477c08387e937771d047fe96f2885c6d7c7c186",
-  "exact_source_copy_count": 595,
+  "exact_source_copy_count": 796,
   "source_groups": [
     {
       "source_commit": "1b457aed4218231b951adacc961f5dc7359f75ef",
@@ -93,6 +93,53 @@
       "source_commit": "7f7a32617d8f5a7340a014f8a72914b9a6cc677e",
       "prefix": "docs/restart/implementation/reviews/QP01-probe-readiness/",
       "count": 9
+    },
+    {
+      "source_commit": "1d10e7a1c2986a5d244807624377e22ad562a110",
+      "paths": [
+        "Cargo.lock",
+        "apps/desktop-simulator/Cargo.lock",
+        "vendor/ctutils/.cargo-checksum.json",
+        "vendor/ctutils/.cargo_vcs_info.json",
+        "vendor/ctutils/CHANGELOG.md",
+        "vendor/ctutils/Cargo.lock",
+        "vendor/ctutils/Cargo.toml",
+        "vendor/ctutils/Cargo.toml.orig",
+        "vendor/ctutils/src/choice.rs",
+        "vendor/ctutils/src/traits/ct_gt.rs",
+        "vendor/ctutils/src/traits/ct_lt.rs",
+        "vendor/ctutils/tests/proptests.rs"
+      ],
+      "count": 12
+    },
+    {
+      "source_commit": "1d10e7a1c2986a5d244807624377e22ad562a110",
+      "prefix": "docs/restart/implementation/R00/ctutils-remediation/",
+      "count": 81
+    },
+    {
+      "source_commit": "87918b96b7498de6b4bddf5da52566e11916e4b9",
+      "paths": [
+        "Makefile",
+        "scripts/audit_rust.py",
+        "scripts/check_product_gates.py"
+      ],
+      "count": 3
+    },
+    {
+      "source_commit": "87918b96b7498de6b4bddf5da52566e11916e4b9",
+      "prefix": "docs/restart/implementation/R00/audit-data/",
+      "count": 81
+    },
+    {
+      "source_commit": "21f65fcd541bd856844ea70d6db0eabcae18dee3",
+      "prefix": "docs/restart/implementation/reviews/R00-ctutils-remediation/",
+      "count": 12
+    },
+    {
+      "source_commit": "d13f4f8df64baec65d81d3ee9e8a0c46e267ad6c",
+      "prefix": "docs/restart/implementation/reviews/R00-audit-data/",
+      "count": 12
     }
   ],
   "existing_paths_allowed_now": [
@@ -100,29 +147,43 @@
     "docs/restart/implementation/handoff.md",
     "plan/work-items.json",
     "apps/pi/app/nsealr_vault/hardware_probe.py",
-    "apps/pi/tests/test_seed_signer_hardware.py"
+    "apps/pi/tests/test_seed_signer_hardware.py",
+    "Cargo.lock",
+    "apps/desktop-simulator/Cargo.lock",
+    "vendor/ctutils/.cargo-checksum.json",
+    "vendor/ctutils/.cargo_vcs_info.json",
+    "vendor/ctutils/CHANGELOG.md",
+    "vendor/ctutils/Cargo.lock",
+    "vendor/ctutils/Cargo.toml",
+    "vendor/ctutils/Cargo.toml.orig",
+    "vendor/ctutils/src/choice.rs",
+    "vendor/ctutils/src/traits/ct_gt.rs",
+    "vendor/ctutils/src/traits/ct_lt.rs",
+    "vendor/ctutils/tests/proptests.rs",
+    "Makefile",
+    "scripts/check_product_gates.py"
   ],
   "new_wrapper_prefix": "docs/restart/implementation/QH01/rust-qr-delivery/",
   "graph_fields_allowed_now": [
     "QH01.result_artifacts",
     "QH01.current_checkpoint",
-    "QP01.result_artifacts",
-    "QP01.current_checkpoint"
+    "R00.result_artifacts",
+    "R00.current_checkpoint"
   ],
   "invariants": [
-    "All47 task states, acceptance requirements, dependencies, required resources and release gates unchanged",
-    "All45 other task records exact, including Q02",
-    "All562 prior selected public files and all original source-specific receipts unchanged",
-    "All previous main source/evidence bytes exact except three current navigation/graph paths and two accepted Pi postimages",
-    "Frozen1508 evidence and P01/T01 contracts retained",
-    "No dependency/CI/R00 or canonical main mutation; no ignored runtime/cache/target copied"
+    "All47 task states, acceptance requirements, dependencies, required resources and release data unchanged versus994 and1be",
+    "Other45 full task records unchanged versus1be; other44 full records unchanged versus994 (R00/QH01/QP01 evidence-only changes)",
+    "All595 earlier selected postimages and16 original structural/format receipts unchanged",
+    "All5QH01/3QP01/6Q02 criteria incomplete, zero physical releases",
+    "No RGB or optical-flow-map import, private history, ignored cache/runtime or unrelated source",
+    "Toolchain, deny policy, feature/target scope, coverage floors, protocol/frozen evidence unchanged"
   ],
   "pending_Pi": null,
-  "execution": "Exactly one final structural docs/plan/frozen/contracts gate set after accepted input change. No new full Pi/native/crypto/corpus/build/install execution.",
+  "execution": "Exactly one new final four-command structural docs/plan/frozen/contracts set after both security reviews; no full product, audit-data fetch, native/crypto/Pi/corpus/build/install repeat.",
   "privacy": "Selected tracked public files only; exclude ignored runtime/cache/target, private Git histories and original private manuals.",
   "self_binding": "External artifact-manifest inventories final changed paths except itself; final Git commit binds it without a hash cycle.",
-  "new_exact_copy_count": 593,
-  "existing_exact_postimages": 2,
+  "new_exact_copy_count": 780,
+  "existing_exact_postimages": 16,
   "accepted_Pi": {
     "candidate": "4ab6e46e3f6e332d38bb049ed4988bec9f3550cf",
     "review": "7f7a32617d8f5a7340a014f8a72914b9a6cc677e",
@@ -133,5 +194,45 @@
     "tested_source": "69a090254738cbf6368b37c2ebb820a99bf83ea4",
     "overwrite_authorization": "Explicit coordinator assignment after distinct component acceptance"
   },
-  "preparation_checkpoint": "660d73caf2dda71999dac901e65c0e042bfdf37f"
+  "preparation_checkpoint": "660d73caf2dda71999dac901e65c0e042bfdf37f",
+  "amendment_base": "1be80c8114583627a8eef1952a0cd939f40b84ec",
+  "security_fix": {
+    "amendment_base": "1be80c8114583627a8eef1952a0cd939f40b84ec",
+    "prior_candidate_proof_ref": "refs/proofs/pr44/1be-before-security-fix",
+    "failed_PR": 44,
+    "failed_CI": 39945073403,
+    "failure": "One RUSTSEC-2026-0385 vulnerability on ctutils0.4.3 plus36 index-failure warnings; missing index warnings were not proof of non-yanked state.",
+    "ctutils_candidate": "1d10e7a1c2986a5d244807624377e22ad562a110",
+    "ctutils_tested_source": "f089a20098523f07193f15cf472bdf1b973b7318",
+    "audit_candidate": "87918b96b7498de6b4bddf5da52566e11916e4b9",
+    "audit_tested_source": "b3ab2f568cc49f37a8feede1915e3f1b917f7e98",
+    "distinct_reviews": {
+      "ctutils": {
+        "commit": "21f65fcd541bd856844ea70d6db0eabcae18dee3",
+        "path": "docs/restart/implementation/reviews/R00-ctutils-remediation/review.json",
+        "sha256": "f3830179c3edf269e968ff2346ca6d0bea6c64006590f05bb19bfa1cfa9c4417",
+        "verdict": "PASS_scoped_official_ctutils_patch_and_functional_compatibility_only",
+        "findings": []
+      },
+      "audit_data": {
+        "commit": "d13f4f8df64baec65d81d3ee9e8a0c46e267ad6c",
+        "path": "docs/restart/implementation/reviews/R00-audit-data/review.json",
+        "sha256": "127749fbb921e9213e0f0ff715cc5c193d56d32c6483b30b70609b89ad8119b4",
+        "verdict": "PASS_scoped_audit_data_gate_only",
+        "findings": []
+      }
+    },
+    "test_only_combined_source": "d250d1302fb88487e14b6883463386fe66aa7fc7",
+    "exact_combined_postimages": 16,
+    "same_data_checks": "Receipts15/16: two complete corrected graphs GREEN on unchanged retained45 cache files and DBf7b2, distinct from old-lock RED.",
+    "fresh_gate": "Receipt17: source/time/logs bound fresh acquisition in disposable temporary data, both graphs GREEN. Exact data snapshot not retained; not labelled f7b2. Future CI is another fresh observation.",
+    "assembly_runtime_reruns": 0,
+    "four_new_tests": "Actual4 wrapper tests run separately in cargo-deny; existing115 helper-suite count is not forced or changed.",
+    "limits": [
+      "Official patch and finite functional compatibility only; no universal target constant-time/attack-resistance or physical side-channel guarantee",
+      "Audit metadata/data availability correction only; no actual yanked-version or permission-denied fixture claimed",
+      "No full product/CI rerun or physical/task/release qualification in this assembly"
+    ],
+    "integration": "LOCAL_ONLY_PENDING_DISTINCT_FINAL_REVIEW_AND_COORDINATOR_PUSH_AUTHORIZATION"
+  }
 }

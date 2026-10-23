@@ -52,8 +52,8 @@ cargo-test:
 	cargo build -p nsealr-core --target $(RISCV_TARGET)
 
 cargo-deny:
-	cargo deny check
-	cargo deny --manifest-path $(HOST_MANIFEST) --config deny.toml check
+	python3 -B -m unittest discover -s docs/restart/implementation/R00/audit-data -p 'test_audit_rust.py'
+	python3 scripts/audit_rust.py
 
 # The desktop-simulator parity oracle: exhaustively replays every in-scope
 # specs/vectors/<category>/*.json file through nsealr-core's public API and
