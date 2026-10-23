@@ -65,8 +65,10 @@ def packet(sock, value):
         raise RuntimeError('partial control message')
 
 
-def receive(sock):
+def receive(sock, allow_eof=False):
     data, _anc, flags, _addr = sock.recvmsg(4096)
+    if not data and allow_eof:
+        return None
     if flags & socket.MSG_TRUNC or not data:
         raise RuntimeError('control message truncated/closed')
     return json.loads(data)
@@ -115,6 +117,14 @@ def coordinator(module, case, mode, sock, out, deadline):
         with journal.open('a') as stream:
             stream.write(json.dumps(event) + '\n')
     def trace(frame, event, _arg):
+        if (mode == 'early-exit' and event == 'line' and
+                frame.f_code is module.supervise.__code__ and frame.f_lineno == 108):
+            record = frame.f_locals['record']
+            # Disk receipt is inspected AFTER kernel adoption, never used to find W.
+            write(out / 'early-exit.json', dict(kind='early-exit-before-late-handoff',
+                  pid=frame.f_locals['pid'], fault_at=time.monotonic(),
+                  control_bytes=record['control_bytes'], image_bytes=record['image_bytes']))
+            os._exit(73)  # Real C exit; no supervisor finally, no W PID message to O.
         if event == 'line' and frame.f_code is module.supervise.__code__ and frame.f_lineno == 160:
             record = frame.f_locals['record']
             message = dict(kind='policy', pid=frame.f_locals['pid'], policy=record['policy'],
@@ -122,7 +132,25 @@ def coordinator(module, case, mode, sock, out, deadline):
             log(message)
             packet(sock, message)
             sock.settimeout(max(0.001, deadline - time.monotonic()))
-            if receive(sock) != {'kind': 'continue'}:
+            instruction = receive(sock)
+            if mode == 'held-kill' and instruction == {'kind': 'collect-stop'}:
+                while time.monotonic() < deadline:
+                    got, status, usage = os.wait4(message['pid'], os.WNOHANG | os.WUNTRACED)
+                    if got:
+                        if got != message['pid'] or not os.WIFSTOPPED(status) or os.WSTOPSIG(status) != signal.SIGSTOP:
+                            raise RuntimeError('actual worker SIGSTOP status missing')
+                        stopped = dict(kind='stopped', pid=got, raw_status=status,
+                                       stop_signal=os.WSTOPSIG(status),
+                                       user_seconds=usage.ru_utime, system_seconds=usage.ru_stime,
+                                       control_bytes=record['control_bytes'], image_bytes=record['image_bytes'])
+                        log(stopped)
+                        packet(sock, stopped)
+                        # C is terminated here by O; no G/image ever sent in this mode.
+                        receive(sock)
+                        raise RuntimeError('held coordinator unexpectedly resumed')
+                    time.sleep(0.002)
+                raise RuntimeError('stop observation exceeded activation deadline')
+            if mode != 'normal' or instruction != {'kind': 'continue'}:
                 raise RuntimeError('unexpected test instruction')
         return trace
     try:
@@ -156,6 +184,9 @@ class Observer:
         self.cpid = None
         self.wpid = None
         self.events = []
+        self.reservation = module.base.Owner()
+        if not self.reservation.acquire():
+            raise RuntimeError('observer reservation unavailable')
 
     def event(self, kind, **details):
         item = dict(kind=kind, elapsed=time.monotonic() - self.started, **details)
@@ -177,10 +208,16 @@ class Observer:
         self.event('initial-owned-handle', pid=pid, role=role, identity=after, pidfd=fd)
         return self.owned[pid]
 
-    def invalidate(self, reason):
+    def refuse_reuse(self, phase):
+        if self.reservation.acquire():
+            raise RuntimeError('unsafe observer reservation reuse')
+        self.event('reuse-refused', phase=phase, quarantined=self.reservation.quarantined)
+
+    def invalidate(self, reason, fault_at=None):
         self.quarantined = True
+        self.reservation.settle(False)
         if self.cleanup_deadline is None:
-            self.cleanup_deadline = time.monotonic() + self.module.P['cleanup_observation_window']
+            self.cleanup_deadline = (time.monotonic() if fault_at is None else fault_at) + self.module.P['cleanup_observation_window']
             self.event('invalidated-no-reuse', reason=reason, cleanup_deadline=self.cleanup_deadline)
 
     def signal_owned(self, pid, sig):
@@ -233,7 +270,9 @@ class Observer:
                    executable_sha256=ELF_HASH, policy=readback)
 
     def cleanup(self):
-        self.invalidate('final-settlement')
+        if self.cleanup_deadline is None:
+            self.cleanup_deadline = time.monotonic() + self.module.P['cleanup_observation_window']
+            self.event('final-settlement-window', cleanup_deadline=self.cleanup_deadline)
         # C first: its exit makes any pre-handoff W adoptable. Keep one deadline.
         if self.cpid in self.owned and self.owned[self.cpid]['wait'] is None:
             self.signal_owned(self.cpid, signal.SIGKILL)
@@ -243,6 +282,7 @@ class Observer:
                 if pid != self.cpid and row['wait'] is None and not row['collected_by_C']:
                     self.signal_owned(pid, signal.SIGKILL)
             if state == 'empty' and all(r['wait'] or r['collected_by_C'] for r in self.owned.values()):
+                self.reservation.settle(True)
                 self.event('actual-ECHILD-all-known-statuses-settled')
                 return True
             time.sleep(0.002)
@@ -274,37 +314,91 @@ def run(mode, out):
         observer.cpid = pid
         child.close()
         observer.adopt_handle(pid, 'coordinator', os.getpid())
+        observer.refuse_reuse('live-coordinator-before-start')
         packet(parent, {'kind': 'start'})
-        complete = False
+        stopped = None
+        channel_open = True
         while time.monotonic() < observer.deadline:
             observer.discover_and_collect()
             if observer.owned[pid]['wait']:
                 break
-            if select.select([parent], [], [], 0.002)[0]:
-                msg = receive(parent)
+            if select.select([parent] if channel_open else [], [], [], 0.002)[0]:
+                msg = receive(parent, allow_eof=True)
+                if msg is None:
+                    channel_open = False
+                    observer.event('control-EOF-not-terminal-status')
+                    continue
                 observer.event('control-message', message=msg)
                 if msg['kind'] == 'policy':
                     observer.check_policy(msg)
-                    packet(parent, {'kind': 'continue'})
+                    if mode == 'held-kill':
+                        observer.signal_owned(observer.wpid, signal.SIGSTOP)
+                        packet(parent, {'kind': 'collect-stop'})
+                    elif mode == 'normal':
+                        packet(parent, {'kind': 'continue'})
+                    else:
+                        raise RuntimeError('early case reached late handoff')
+                elif msg['kind'] == 'stopped' and mode == 'held-kill':
+                    if (msg['pid'] != observer.wpid or not os.WIFSTOPPED(msg['raw_status'])
+                            or os.WSTOPSIG(msg['raw_status']) != signal.SIGSTOP
+                            or msg['control_bytes'] != 0 or msg['image_bytes'] != 0):
+                        raise RuntimeError('stopped witness invalid')
+                    now_identity = identity(observer.wpid)
+                    if (now_identity['ppid'], now_identity['sid'], now_identity['pgid'], now_identity['state']) != (pid, observer.wpid, observer.wpid, 'T'):
+                        raise RuntimeError('held identity changed before coordinator kill')
+                    stopped = msg
+                    observer.invalidate('controlled-coordinator-kill')
+                    observer.signal_owned(pid, signal.SIGKILL)
+                    break
                 elif msg['kind'] == 'complete':
-                    complete = msg['passed']
                     # Wait for actual C status, not socket EOF.
                     break
                 else:
                     raise RuntimeError('unexpected message')
-        while time.monotonic() < observer.deadline and observer.owned[pid]['wait'] is None:
+        until = observer.cleanup_deadline or observer.deadline
+        while time.monotonic() < until and observer.owned[pid]['wait'] is None:
             observer.discover_and_collect()
             time.sleep(0.002)
-        record = json.loads((out / (case['id'] + '.json')).read_text())
-        if (not record['passed'] or record['owner_wait']['exitcode'] != 0
-                or record['pid'] != observer.wpid or record['control_bytes'] != 1
-                or record['image_bytes'] != 172800 or record['stdout_observed'] != 198
-                or record['input_sha256'] != INPUT_HASH or not record['parent_FDs_restored']
-                or not record['actual_status_acquired'] or record['owner_quarantined']
-                or digest(out / (case['id'] + '.stdout.bin')) != OUTPUT_HASH
-                or observer.owned[pid]['wait']['exitcode'] != 0):
-            raise RuntimeError('normal smoke evidence failed')
-        observer.owned[observer.wpid]['collected_by_C'] = record['owner_wait']
+        if observer.owned[pid]['wait'] is None:
+            raise RuntimeError('coordinator status missing')
+        if mode == 'normal':
+            record = json.loads((out / (case['id'] + '.json')).read_text())
+            if (not record['passed'] or record['owner_wait']['exitcode'] != 0
+                    or record['pid'] != observer.wpid or record['control_bytes'] != 1
+                    or record['image_bytes'] != 172800 or record['stdout_observed'] != 198
+                    or record['input_sha256'] != INPUT_HASH or not record['parent_FDs_restored']
+                    or not record['actual_status_acquired'] or record['owner_quarantined']
+                    or digest(out / (case['id'] + '.stdout.bin')) != OUTPUT_HASH
+                    or observer.owned[pid]['wait']['exitcode'] != 0):
+                raise RuntimeError('normal smoke evidence failed')
+            observer.owned[observer.wpid]['collected_by_C'] = record['owner_wait']
+        elif mode == 'early-exit':
+            proof = json.loads((out / 'early-exit.json').read_text())
+            observer.invalidate('early-coordinator-exit', proof['fault_at'])
+            while time.monotonic() < observer.cleanup_deadline and len(observer.owned) < 2:
+                observer.discover_and_collect()
+                if len(observer.owned) < 2:
+                    time.sleep(0.002)
+            adopted = [p for p in observer.owned if p != pid]
+            if (observer.owned[pid]['wait']['exitcode'] != 73 or adopted != [proof['pid']]
+                    or proof['control_bytes'] != 0 or proof['image_bytes'] != 0
+                    or any(e['kind'] == 'pre-G-executable-session-policy-verified' for e in observer.events)):
+                raise RuntimeError('early exit/adoption witness failed')
+            observer.refuse_reuse('early-exit-invalidated')
+            observer.event('early-exit-kernel-adoption-verified', proof=proof, adopted=adopted)
+        else:
+            if stopped is None or observer.owned[pid]['wait']['exitcode'] != -signal.SIGKILL:
+                raise RuntimeError('held coordinator kill not exercised')
+            observer.discover_and_collect()
+            wrow = observer.owned[observer.wpid]
+            live = wrow['wait'] is None
+            state = identity(observer.wpid) if live else None
+            if state is not None and state['ppid'] != os.getpid():
+                raise RuntimeError('held worker not adopted')
+            observer.refuse_reuse('C-collected-W-not-yet-cleaned')
+            observer.event('discriminant', coordinator_collected=True, worker_terminal_status=wrow['wait'],
+                           worker_still_live=live, worker_identity=state,
+                           pidfd_readable=bool(select.select([wrow['fd']], [], [], 0)[0]))
         success = True
     except BaseException:
         error = traceback.format_exc()
@@ -314,6 +408,16 @@ def run(mode, out):
         parent.close()
         child.close()
         try:
+            # Preserve actual status written by the unchanged supervisor even if
+            # another harness assertion failed after its wait/IO settlement.
+            record_path = out / (case['id'] + '.json')
+            if observer.wpid in observer.owned and record_path.exists():
+                status_record = json.loads(record_path.read_text())
+                waited = status_record.get('owner_wait')
+                if (status_record.get('actual_status_acquired') and waited
+                        and waited['pid'] == observer.wpid and status_record['pid'] == observer.wpid
+                        and (os.WIFEXITED(waited['raw_status']) or os.WIFSIGNALED(waited['raw_status']))):
+                    observer.owned[observer.wpid]['collected_by_C'] = waited
             cleaned = observer.cleanup()
         except BaseException:
             cleaned = False
@@ -329,6 +433,8 @@ def run(mode, out):
             os.close(row['fd'])
     final_fds = module.base.open_fds()
     checks = dict(case_outcome=success, actual_child_settlement=cleaned,
+                  exactly_C_and_W=len(observer.owned) == 2,
+                  single_threaded=len(list(Path('/proc/self/task').iterdir())) == 1,
                   no_remaining_children=peek()[0] == 'empty', FDs_restored=final_fds == baseline,
                   parent_identity_unchanged=(os.getsid(0), os.getpgrp()) == (context['initial_sid'], context['initial_pgid']),
                   parent_limits_unchanged={str(k): list(resource.getrlimit(k)) for k in module.base.LIMITS} == context['initial_limits'])
@@ -342,7 +448,7 @@ def run(mode, out):
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument('--case', choices=['normal'], required=True)
+    parser.add_argument('--case', choices=['normal', 'early-exit', 'held-kill'], required=True)
     parser.add_argument('--out', type=Path, required=True)
     args = parser.parse_args()
     raise SystemExit(run(args.case, args.out))
