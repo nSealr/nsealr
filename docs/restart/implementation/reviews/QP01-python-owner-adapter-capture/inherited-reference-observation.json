@@ -1,0 +1,19 @@
+{
+  "role": "Reviewer scope error exposed an inherited historical graph reference, not a newly changed candidate artifact",
+  "attempt": 2,
+  "exit_code": 1,
+  "location": "source-checks.py:106, unconditional current-byte check of all legacy Q01/QP01 graph result_artifacts",
+  "exception": "AssertionError",
+  "path": "docs/restart/implementation/QP01/host-coordinator/brief.md",
+  "graph_sha256": "3060010135a2ab5979c9bfd6d8256d7353461396bae14a449a231e79a526da6e",
+  "current_sha256": "9c6189baebec1b9bb36ba480a8a800b731b554e48e441faf1755969dc5ccd0aa",
+  "unchanged_in": [
+    "actual8f",
+    "preparationc1d",
+    "candidate77"
+  ],
+  "historical_source": "7996b15d34766e0de1b8c395fb7bcc0b02079935",
+  "correction": "Bind this unchanged old graph row to its exact historical source and current brief to actual8f; do not call all legacy refs current-byte exact. Every new/changed ref and all remaining Q01/QP01 refs still require exact current hashes.",
+  "parent_notified": true,
+  "output_before_failure": "No source-checks.json or PASS from this attempt."
+}
