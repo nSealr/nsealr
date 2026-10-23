@@ -1,0 +1,33 @@
+{
+  "schema_version": 1,
+  "candidate": "31df3027a6e0903d8efa183dd3d4f964ebdf3949",
+  "tree": "f947516fd455abf8e8d19aa9a51bd10000294e43",
+  "reviewer": "/root",
+  "scope": "Git provenance, manifest, immutable history and recorded trace correspondence only; no worker execution or code/runtime approval",
+  "verdict": "PASS_PACKET_CORRESPONDENCE_ONLY_RUNTIME_REVIEW_SEPARATE",
+  "checked": {
+    "manifest_members": 150,
+    "owned_paths": 151,
+    "changes_from_readmission": {
+      "A": 135,
+      "M": 6
+    },
+    "original_focused_files": 8,
+    "historical_metadata_copies": 5,
+    "command_summary_source_bindings": 5,
+    "stable_recorded_rows": 22,
+    "recorded_owned_children": 16,
+    "frozen_expectations_parameters_amendment_exact": true,
+    "R00_public_fixture_stdlib_executable_hashes_exact": true,
+    "plan_byte_identical_to_actual_main": true
+  },
+  "independent_worker_executions": 0,
+  "verifier_corrections": [
+    "First metadata-only invocation failed at scope assertion: it incorrectly expected all 151 final paths to be additions against a94, which already contains 16 original experiment paths. Actual git diff is 135 additions and six modifications, all inside the owned prefix; ten prior files remain unchanged. Manifest membership remains independently checked at 150 plus itself.",
+    "Second metadata-only invocation reached trace checks and failed KeyError retained: six no-spawn refusal traces intentionally have no stream-retention fields. Inspected every affected trace; validate zero control/image bytes, no status and no signals on this branch. Spawned traces retain the <=512 stream checks. No product code, threshold or case changed."
+  ],
+  "limitations": [
+    "Author 22 PASS rows are recorded historical observations, not independent acceptance.",
+    "Known blocking independent code finding QH-WORKER-RUNTIME-01 prevents adoption; see distinct runtime review."
+  ]
+}

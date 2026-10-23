@@ -1,0 +1,42 @@
+{
+  "schema_version": 1,
+  "task": "QH01",
+  "role": "Explicit same-experiment readmission after optional binding capability refusal",
+  "original_failed_packet": "edd7ac5fc0cb1688643dedd0c91fd797fa41f076",
+  "original_focused_source": "37d112e10ce5ddc14fee8389b25139eba4f0d744",
+  "original_stop_and_NOT_EXERCISED_results": "Preserve all original focused-01 files and source identities exactly; no reinterpretation as successful runtime.",
+  "original_numeric_admission": "e287c938973770d8c8c2bb63d2c9693c50e84a84",
+  "original_admission_sha256": "2a2ea4eb6ab01cf976ae53730d4fe26516a537e9e5d9980723aa29ee8fe1e784",
+  "revised_single_strategy": "Plain os.posix_spawn without its unsupported setsid flag and without setpgroup=0; the fixed trusted worker bootstrap calls os.setsid before reading control/image or initializing a decoder. Parent uses bounded supervision and kernel getsid(pid)/getpgid(pid) rendezvous before prlimit/readback and before any control/image write. Direct wait4 ownership remains.",
+  "why_allowed": "The original refusal was an unavailable optional Python spawn flag before child creation. This does not establish an OS authorization denial. The independently exposed standard setsid call may be evaluated without privilege changes. No strategy switch is permitted in response to a kernel denial; no supported-operation success is presumed.",
+  "primary_sources": [
+    "https://docs.python.org/3.12/library/os.html#os.posix_spawn",
+    "https://docs.python.org/3.12/library/os.html#os.setsid",
+    "https://docs.python.org/3.12/library/os.html#os.getsid",
+    "https://man7.org/linux/man-pages/man2/setsid.2.html"
+  ],
+  "required_before_code": [
+    "Commit a concise exact strategy amendment, source bindings and one additional gate expectation before changing/running the revised implementation.",
+    "Keep original21 frozen rows/13baseline parameters and seven overlays byte-identical; additive gate row only in a new file. No AS/CPU/time/IO/profile changes or installs/R00 rebuilds."
+  ],
+  "required_strategy_properties": [
+    "New strategy is selected explicitly in source; never try unsupported setsid=True and automatically fall back. No preexec_fn, Popen private API or alternate framework.",
+    "Only the child bootstrap may call setsid. The coordinator/controller session/group and parent/global limits remain unchanged. Do not request setpgroup=0 before that call: the child must not already be a group leader.",
+    "Parent admits no G/image bytes until actual kernel SID==ownedPID and PGID==ownedPID, positive PID distinct from coordinator group, then finite policy set+readback. A self-reported marker is not session proof.",
+    "Use the existing bounded/nonblocking stdout/stderr and existing finite monotonic eligibility/cleanup windows while rendezvousing. No new unbounded control channel, buffering, per-poll trace list, busy loop or unbounded startup wait.",
+    "If setsid is absent, raises NotImplementedError/EPERM/other error, or parent cannot confirm identity, first positive remains NOT_EXERCISED/failed; collect owned process/IO and stop dependent execution. No privilege elevation, ignoring denial or further alternate creation route.",
+    "Abort before session establishment may clean up the explicitly owned PID with zero data; it does not claim a session was established. Session-at-spawn-return, atomic launch isolation and all-time bootstrap bounds remain unqualified.",
+    "Preserve all other limit/cause isolation, actual status, byte caps, ownership/quarantine and no-secret/no-decoder/no-physical requirements from the original admission."
+  ],
+  "additional_precode_gate_case": {
+    "id": "policy-session-not-established",
+    "group": "policy",
+    "helper_behavior": "Controlled trusted fixture intentionally omits setsid and waits for control; it performs no image/CPU/large-memory work. This is a declared negative fixture, never fallback behavior.",
+    "expected": "Parent observes kernel SID/PGID still not ownedPID, sends zero control/image bytes, rejects before admission at the existing finite startup eligibility deadline, collects only ownedPID/IO, then proves known cleanup/reuse. Do not conflate this expected negative with a real setsid permission failure in the positive route.",
+    "original_cases_unchanged": 21,
+    "new_total_expected_rows": 22
+  },
+  "execution_order": "After amendment/code commit, one focused positive on the revised strategy must establish actual fresh identity+policy+eligible output+acquired wait/IO settlement. If it fails at the capability/permission gate, stop. Otherwise focus changed startup/abort/new negative gate rows, then one complete stable22row campaign with unchanged numerical inputs. Preserve real failures/corrections and use NOT_EXERCISED for masking.",
+  "scope": "Same owned worktree/branch and new-prefix-only prototype scope; no new product/graph/CI/dependency/daemon/framework/decoder/hardware claim. Author may fast-forward exact coordinator review/readmission files before own new-prefix edits. Root distinct full source/runtime review remains mandatory before any acceptance.",
+  "secrecy_and_physical_claims": false
+}

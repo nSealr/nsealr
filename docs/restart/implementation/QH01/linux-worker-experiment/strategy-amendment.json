@@ -1,0 +1,46 @@
+{
+  "schema_version": 1,
+  "role": "Pre-code explicit strategy amendment; no newexecution yet",
+  "readmission_commit": "a94c24e7306c255725dfd080a1b91c38e5d4211e",
+  "readmission_path": "docs/restart/implementation/reviews/QH01-linux-worker-blocker/readmission.json",
+  "readmission_sha256": "01569445717668dd29fc380a2ec15fdc45b5db3eb9d1c2f4043642202ebc7202",
+  "preserved_failed_packet": "edd7ac5fc0cb1688643dedd0c91fd797fa41f076",
+  "new_strategy": "Plain os.posix_spawn, no setsidflag or setpgroup0. Trusted child calls os.setsid before boundedGread. Parent polls actual kernelSID/PGID with existingboundednonblockingstdio supervision; must equalownedPID beforepolicy and everycontrol/imagewrite. No alternate strategy ifsetsidfails.",
+  "source_bindings": [
+    {
+      "url": "https://docs.python.org/3.12/library/os.html#os.setsid",
+      "fact": "Direct Unix setsid API is distinct from optional posix_spawn setsid flag; actual support/success must beobserved."
+    },
+    {
+      "url": "https://docs.python.org/3.12/library/os.html#os.getsid",
+      "fact": "Parent queries actual session forpositiveownedPID; no selfreportedreadyformat."
+    },
+    {
+      "url": "https://man7.org/linux/man-pages/man2/setsid.2.html",
+      "fact": "Successful caller becomes session/group leader withSID/PGIDequalPID; alreadygroupleader givesEPERM. No setpgroup0 is requested. Exec preserves inheritedsession until child call."
+    }
+  ],
+  "unchanged": "Originalexpectations.json/parameters.json,21rows/13baseline/7overlays and allfocused-01 bytes staybyteidentical. Addedgate in separatefile only.",
+  "new_total_rows": 22,
+  "extra_case": {
+    "id": "policy-session-not-established",
+    "group": "policy",
+    "worker_mode": "no-session",
+    "expected": "controlled_no_session_negative_zero_control_and_imagebytes_until_existing8s_deadline_then_actualcleanup_and_knownreuse",
+    "helper_behavior": "Intentionally omitsetsid and waitboundedGread; noimage/CPU/allocationwork. Never a fallback.",
+    "actual_kernel_expectation": "SID/PGIDremainnotownedPID; parent rejects beforeprlimit/G/image; deadline aloneisnotpermissionerror."
+  },
+  "execution_order": [
+    "Onefocusedpositive establishesactualfreshsession+policy+exactoutput+acquiredwait/settledIO. Ifcapability/permissionfails STOP.",
+    "Focuschangedstartup/abort/newnegativegate afterpositivePASS.",
+    "ONEstablecomplete22rowcampaign afterfocusedcheckscoherent."
+  ],
+  "unqualified": [
+    "session-at-spawn-return",
+    "atomiclaunchisolation",
+    "bootstrapall-timebounds",
+    "Popenuninterruptiblespawn",
+    "secretisolation",
+    "QRdecoder/ARM/Pi/physical"
+  ]
+}

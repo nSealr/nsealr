@@ -1,0 +1,66 @@
+{
+  "schema_version": 1,
+  "task": "QH01",
+  "author": "/root/b01_final_review",
+  "reviewer": "/root/a02_resume",
+  "model_policy": "gpt-6.1-sol xhigh",
+  "candidate": "31df3027a6e0903d8efa183dd3d4f964ebdf3949",
+  "tree": "f947516fd455abf8e8d19aa9a51bd10000294e43",
+  "stable_author_source": "2ba9b73c70b5502130ebd9ec60ca01a7829b79f8",
+  "harness_sha256": "e90e6365453b908df084e3fc4636d7e30d7da4c759250a09f07bf48f0d2ab599",
+  "verdict": "BLOCKED_SOURCE_RUNTIME_NOT_EXECUTED",
+  "scope": "Complete 694-line trusted helper/controller/owner and 22-case validator source review; independent runtime intentionally not launched after significant source finding. Coordinator separately owns packet/manifest/provenance audit.",
+  "findings": [
+    {
+      "id": "QH-WORKER-RUNTIME-01",
+      "severity": "blocking for admitted experiment correctness",
+      "path": "docs/restart/implementation/QH01/linux-worker-experiment/experiment.py",
+      "primary_line": 599,
+      "related_lines": [
+        441,
+        442,
+        454,
+        478,
+        479,
+        578,
+        580,
+        600,
+        628
+      ],
+      "title": "Successful result admission does not recheck monotonic eligibility after wait and settlement",
+      "basis": "Accepted brief requires expiry to invalidate output; wall case requires delayed completion to stay ineligible. The lack of a universal hard return-time guarantee does not waive that result-currentness requirement.",
+      "witness": "deadline-witness.json",
+      "witness_kind": "Static control-flow scheduling counterexample, not an executed delayed runtime trace",
+      "required_resolution": "Author correction at final success admission with a narrowly scoped deterministic delayed-completion/settlement control; unchanged limits/cleanup/quarantine and preserved original proof, coordinated before affected runtime review."
+    }
+  ],
+  "runtime": {
+    "independent_campaigns": 0,
+    "reviewer_workers_created": 0,
+    "reason": "The complete source pass found a concrete stale-result admission gap. Root explicitly directed source finding delivery without campaign on this candidate.",
+    "author_observation": "One stable 22 PASS / 0 masked campaign on exact 2ba9 remains historical author evidence; no reviewer runtime PASS is claimed."
+  },
+  "review_inputs_verified": "source-validation.json",
+  "artifact_bindings": [
+    {
+      "path": "docs/restart/implementation/reviews/QH01-linux-worker-runtime/deadline-witness.json",
+      "sha256": "4f64ae08e069f47480d30c7811573c0dd7ecea61a510d6780afb249b9c28dace"
+    },
+    {
+      "path": "docs/restart/implementation/reviews/QH01-linux-worker-runtime/report.md",
+      "sha256": "c7cd13f3c6d9d44fa8d1a60fe1a0a0c169dfc6b89ecaaa240d5eafca793558cb"
+    },
+    {
+      "path": "docs/restart/implementation/reviews/QH01-linux-worker-runtime/source-validation.json",
+      "sha256": "5decee35b79edcd1ca232f9ad4f950a154aca8894d43f140f10732e5be3b7482"
+    }
+  ],
+  "independence": "No source authored in the reviewed experiment; all new changes are restricted to this review prefix. No author harness/test/threshold/environment/dependency/R00/graph modification.",
+  "limits": [
+    "No independent kernel-session/resource/IPC runtime acceptance in this review",
+    "No actual QR decoding, keys/secrets, arbitrary-process containment, RSS/cumulative allocation or logical decoder-work qualification",
+    "No hard wall-time/kill/reap guarantee, TypeScript port, camera/ARM/Pi or physical qualification",
+    "All 47 criteria and QH01/QP01/Q02 completion states unchanged"
+  ],
+  "next_action": "Coordinator delivers the single complete finding set to B01; review exact repair and affected evidence before any independent stable campaign or runtime adoption."
+}

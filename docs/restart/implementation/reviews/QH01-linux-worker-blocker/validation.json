@@ -1,0 +1,21 @@
+{
+  "candidate": "edd7ac5fc0cb1688643dedd0c91fd797fa41f076",
+  "base": "e287c938973770d8c8c2bb63d2c9693c50e84a84",
+  "new_prefix_paths": 16,
+  "manifest_members_mode_bytes_hash_verified": 15,
+  "expectations_and_parameters_exact_precode_source": "78372015d42efcdf84f3e9996dac5ee7439996a5",
+  "executed_harness_bytes_equal": "37d112e10ce5ddc14fee8389b25139eba4f0d744",
+  "actual_first_controller_exit": 1,
+  "observed_exception": {
+    "message": "posix_spawn: setsid unavailable on this platform",
+    "type": "NotImplementedError"
+  },
+  "actual_created_workers_control_image_signals": 0,
+  "all_parent_FDs_restored": true,
+  "all21_cases_NOT_EXERCISED": true,
+  "stable_campaigns": 0,
+  "pyconfig_exact_source_and_three_function_macros_verified": true,
+  "code_review_scope": "Worker entry and spawn/initial-policy path inspected to classify the early failure; remaining prototype/runtime safety is not accepted.",
+  "independent_symbol_check": "Same pinned3.12.15 exposes callable setsid/getsid/getpgid and posix_spawn/wait4. No worker/session/limit/signal executed by that inspection. Symbol presence is not proof of kernel permission.",
+  "classification": "Observed optional spawn-binding capability refusal before process creation, not an observed kernel setsid permission denial or automatic safety-review rejection. Original stop was correct; no failed case receives PASS."
+}

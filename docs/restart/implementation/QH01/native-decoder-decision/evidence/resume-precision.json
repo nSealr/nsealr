@@ -1,0 +1,16 @@
+{
+  "date": "2026-10-23",
+  "historical_wip": "6a082647d289f16762449c5c81a2fe8f88d484ef",
+  "scope": "Analysis correction only, no upstream source or runtime change",
+  "issue": "WIP described ImageBuffer as if a wrapper could directly implement it. Pinned rqrr root exports PreparedImage only; prepare module is private and ImageBuffer is not re-exported.",
+  "source": "rqrr0.11.0 src/lib.rs37..50 and src/prepare.rs34..40; evidence/rqrr-source.json ids rqrr-std-reference/rqrr-clone-and-buffer",
+  "correction": "External no-img callers use public prepare_from_* helpers, which allocate library-owned storage. The optional img blanket implementation is not a per-call allocation/work hook. Final full-contract NO is unchanged.",
+  "other_precision": [
+    "Trial image/cache clones are per candidate attempt and temporary; do not claim all trial clones retained concurrently.",
+    "Source-level finite counts and image dimensions differ from complete caller byte/work bounds; no universal mathematical impossibility asserted.",
+    "rqrr computed version1..40 check alone is not a complete BitGrid geometry precondition proof."
+  ],
+  "source_slices": 33,
+  "build_probe_test_corpus_executed": 0,
+  "original_export_error": "evidence/packaging-observation.json retained unchanged"
+}

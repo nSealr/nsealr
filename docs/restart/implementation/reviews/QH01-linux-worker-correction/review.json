@@ -1,0 +1,110 @@
+{
+  "schema_version": 1,
+  "reviewed_utc": "2026-10-23T09:46:20.217398+00:00",
+  "reviewer": "/root/a02_resume",
+  "author": "/root/b01_final_review",
+  "candidate_commit": "06d213fd46e654bfe2ac43e4a88963a346d35973",
+  "candidate_tree": "c7a11c42776edabe3ca22226dce8c05c8460f850",
+  "harness_path": "docs/restart/implementation/QH01/linux-worker-experiment/experiment.py",
+  "harness_sha256": "97fa6da85a1f83c5535050f6c77c588800a069a26ed9a7cd7470f616352a76eb",
+  "author_executed_source": "0d29f42eda4a59c93c98ef361af6bf81c4eef028",
+  "verdict": "PASS_corrected_host_IPC_resource_experiment_only",
+  "findings": [],
+  "resolved_findings": [
+    {
+      "id": "QH-WORKER-RUNTIME-01",
+      "prior_review": "33799c83e1d4fb67b79092aa68c3bd07c28a0111",
+      "old_candidate": "31df3027a6e0903d8efa183dd3d4f964ebdf3949",
+      "resolution": "Fresh final monotonic admission sample after actual status/IO/owner settlement; independent real delayed-controller regression rejects expired result with owner still reusable.",
+      "old_candidate_verdict_preserved": "BLOCKED_SOURCE_RUNTIME_NOT_EXECUTED"
+    }
+  ],
+  "source_review": {
+    "reused_complete_review": "33799c83e1d4fb67b79092aa68c3bd07c28a0111",
+    "affected_source_added_lines": 11,
+    "affected_source_removed_lines": 1,
+    "external_regression_lines": 95,
+    "scope": "Affected controller decision and full external regression; unchanged prior full helper/controller/validator review retained.",
+    "whole_packet_inventory_review_owner": "/root",
+    "independent_observations": "runtime-analysis.json",
+    "separate_root_provenance_review": "00c93399804b83410440c8f4fe3383ff62dc63e3"
+  },
+  "reviewer_executions": {
+    "regression": {
+      "count": 1,
+      "exit_code": 0,
+      "real_pause_seconds": 8.250305970199406,
+      "admission_elapsed_seconds": 8.276367386803031,
+      "eligible": false,
+      "boundary": "wall-at-admission",
+      "known_owner_reusable": true,
+      "original_positive_disposition": "NOT_EXERCISED_expected_for_intentionally_expired_positive",
+      "command": "regression-command.json",
+      "witness": "regression-01/regression.json"
+    },
+    "complete_campaign": {
+      "count": 1,
+      "exit_code": 0,
+      "pass": 22,
+      "fail": 0,
+      "not_exercised": 0,
+      "duration_seconds": 26.29255726467818,
+      "workers_created": 16,
+      "all_collected": true,
+      "final_owner_quarantined_expected": true,
+      "command": "stable-command.json",
+      "summary": "stable-01/summary.json"
+    },
+    "independent_trace_checks": 37,
+    "owned_children_total": 17,
+    "post_run_owned_child_and_controller_proc_entries_absent": true,
+    "extra_campaigns": 0,
+    "author_source_mutations": 0,
+    "builds_installs_R00_changes_CI_PR": 0
+  },
+  "historical_evidence_preserved": {
+    "original_author_stable_01": "22 PASS historical on old source; no delayed-admission case",
+    "original_creation_failure": "focused-01 unsupported posix_spawn setsid flag; no worker and 21 NOT_EXERCISED",
+    "author_delayed_RED": "Actual old-source failure exit1 preserved, not rerun by reviewer",
+    "author_delayed_GREEN": "Actual corrected-source pass exit0 preserved",
+    "author_stable_02": "22 PASS historical author run distinct from reviewer campaign"
+  },
+  "limits": [
+    "Host Linux x86_64 trusted helper/public fixture experiment only; fixed budgets are experimental inputs, not selected device defaults.",
+    "Logical result-admission time, not hard return or real-time scheduling guarantee.",
+    "No RSS/cumulative allocation/work/arbitrary descendant containment/secrets-isolation guarantee.",
+    "No actual QR decoder, keys, crypto, product/TypeScript port, ARM/Pi/target, camera, real client latency or physical qualification.",
+    "All47 criteria/dependencies/resources/releases unchanged; no task completion or release acceptance.",
+    "Whole packet provenance/claims review and later integration decision belong to root."
+  ],
+  "artifacts": {
+    "report.md": {
+      "path": "docs/restart/implementation/reviews/QH01-linux-worker-correction/report.md",
+      "sha256": "4e3f59b174164a73e7bed04d9fe053e5e64effdf83c5b46d74888ba7deb2cb03"
+    },
+    "source-validation.json": {
+      "path": "docs/restart/implementation/reviews/QH01-linux-worker-correction/source-validation.json",
+      "sha256": "995c2bdb6cdb4add3d2d4d5257c922b6c28ff9d1a112b2647af4194339480cdd"
+    },
+    "runtime-analysis.json": {
+      "path": "docs/restart/implementation/reviews/QH01-linux-worker-correction/runtime-analysis.json",
+      "sha256": "bc0f119979576a704158827d5e86a5c71cc9ecb298a7e80d3742dd8614de2904"
+    },
+    "regression-command.json": {
+      "path": "docs/restart/implementation/reviews/QH01-linux-worker-correction/regression-command.json",
+      "sha256": "b237e7202f48295772a5498940d6fc31711328069265dc5f3d44aa1d414c883e"
+    },
+    "stable-command.json": {
+      "path": "docs/restart/implementation/reviews/QH01-linux-worker-correction/stable-command.json",
+      "sha256": "2b9f75aedf3285f67476b4d0b403d1721446e4f83896b8ee3c6d73cfd157d117"
+    },
+    "regression-01/regression.json": {
+      "path": "docs/restart/implementation/reviews/QH01-linux-worker-correction/regression-01/regression.json",
+      "sha256": "a04db836a7282708d99bec94b979d2e22e5f12dd970f1f467a857cbe4cc6b340"
+    },
+    "stable-01/summary.json": {
+      "path": "docs/restart/implementation/reviews/QH01-linux-worker-correction/stable-01/summary.json",
+      "sha256": "c7855bc667bbe51d09c7c7e6afe6bca2189f3f27c0fdbbbd625ec8d12b364bdf"
+    }
+  }
+}

@@ -1,0 +1,7 @@
+# Host Rust QR worker experiment
+
+Implement exactly one keyless host experiment using pinned rqrr0.11.0 without default features. It is a candidate for this experiment, not a product decoder selection. Reuse the corrected06d process supervisor mechanisms with explicit source correspondence; session/policy/gate precede image/detector work, and final monotonic admission follows actual status/IO settlement.
+
+Five existing13949 RGB240×240 assets remain in their original paths. Three must produce original98/259/198-byte envelopes exactly; the611-byte response must refuse at the512-byte writer cap before appending the513th byte, with zero stdout. Blank must refuse noQR with zero stdout. Decode via decode_to into fixed bounded staging; publish only after complete successful decode. No decode-to-String intermediate, fabricated output, QR bytes in argv/env, framing/cap/profile change or extra corpus.
+
+Use immutable R00 Rust, isolated experiment Cargo project/cache/target and exact official transitive checksums/licenses. Fixed13baseline numbers remain unchanged. Start with response198; failure stops dependentexecution. Then focusedfive and ONEstablefive; preserve every significantfailure. No app/route/default activation, decoderfork, newframework, keys/crypto, parentsecret/sandbox/arbitrarydescendant guarantee, no_std/P4/ARM/Pi/physical or task completion. Full upstream allocation/workAPI bound remains NO; this measures fixed public images inside the host process boundary only.

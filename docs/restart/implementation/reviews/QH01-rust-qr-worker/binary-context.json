@@ -1,0 +1,143 @@
+{
+  "schema_version": 1,
+  "checked_utc": "2026-10-23T10:08:34.665940+00:00",
+  "commands": [
+    {
+      "name": "rustc",
+      "argv": [
+        "rustc",
+        "-vV"
+      ],
+      "cwd": "/home/tux",
+      "exit_code": 0
+    },
+    {
+      "name": "cargo",
+      "argv": [
+        "cargo",
+        "-V"
+      ],
+      "cwd": "/home/tux",
+      "exit_code": 0
+    },
+    {
+      "name": "features",
+      "argv": [
+        "cargo",
+        "tree",
+        "--locked",
+        "--offline",
+        "-e",
+        "features",
+        "--manifest-path",
+        "/home/tux/nsealr/.restart-tools/goal/qh01-linux-worker-runtime-review/docs/restart/implementation/QH01/rust-qr-worker/Cargo.toml"
+      ],
+      "cwd": "/home/tux",
+      "exit_code": 0
+    },
+    {
+      "name": "ELF",
+      "argv": [
+        "readelf",
+        "-h",
+        "-l",
+        "-d",
+        "/home/tux/nsealr/.restart-tools/goal/qh01-linux-worker-runtime-review/docs/restart/implementation/reviews/QH01-rust-qr-worker/.runtime/target/release/nsealr-qh01-rust-qr-worker"
+      ],
+      "cwd": "/home/tux",
+      "exit_code": 0
+    },
+    {
+      "name": "ELF-version",
+      "argv": [
+        "readelf",
+        "--version-info",
+        "-p",
+        ".comment",
+        "/home/tux/nsealr/.restart-tools/goal/qh01-linux-worker-runtime-review/docs/restart/implementation/reviews/QH01-rust-qr-worker/.runtime/target/release/nsealr-qh01-rust-qr-worker"
+      ],
+      "cwd": "/home/tux",
+      "exit_code": 0
+    },
+    {
+      "name": "link",
+      "argv": [
+        "ldd",
+        "/home/tux/nsealr/.restart-tools/goal/qh01-linux-worker-runtime-review/docs/restart/implementation/reviews/QH01-rust-qr-worker/.runtime/target/release/nsealr-qh01-rust-qr-worker"
+      ],
+      "cwd": "/home/tux",
+      "exit_code": 0
+    },
+    {
+      "name": "cc",
+      "argv": [
+        "cc",
+        "--version"
+      ],
+      "cwd": "/home/tux",
+      "exit_code": 0
+    },
+    {
+      "name": "linker",
+      "argv": [
+        "cc",
+        "-print-prog-name=ld"
+      ],
+      "cwd": "/home/tux",
+      "exit_code": 0
+    }
+  ],
+  "environment_reuse": "build-command.json",
+  "binary": {
+    "path": "/home/tux/nsealr/.restart-tools/goal/qh01-linux-worker-runtime-review/docs/restart/implementation/reviews/QH01-rust-qr-worker/.runtime/target/release/nsealr-qh01-rust-qr-worker",
+    "resolved": "/home/tux/nsealr/.restart-tools/goal/qh01-linux-worker-runtime-review/docs/restart/implementation/reviews/QH01-rust-qr-worker/.runtime/target/release/nsealr-qh01-rust-qr-worker",
+    "bytes": 669136,
+    "sha256": "b794d46b724cfa0dbd1fd2dfb8b36a27624325ed2cd73f4e77972b97a06a1eaf",
+    "mode": "0o775",
+    "uid": 1000,
+    "gid": 1000,
+    "setuid_or_setgid": false,
+    "file_capability_present": false
+  },
+  "resolved_library_and_link_tool_bindings": [
+    {
+      "path": "/lib/x86_64-linux-gnu/libgcc_s.so.1",
+      "resolved": "/usr/lib/x86_64-linux-gnu/libgcc_s.so.1",
+      "sha256": "30c61ab012a4241bed033725a09b61f5fdd3bb7df95ee852d0b096520524c7af",
+      "bytes": 182856
+    },
+    {
+      "path": "/lib/x86_64-linux-gnu/libc.so.6",
+      "resolved": "/usr/lib/x86_64-linux-gnu/libc.so.6",
+      "sha256": "9792e3cbb541c8f44c7acf5f14f4022ea62998ecc787d326bed4d8b6547dfd92",
+      "bytes": 1995216
+    },
+    {
+      "path": "/lib64/ld-linux-x86-64.so.2",
+      "resolved": "/usr/lib/x86_64-linux-gnu/ld-linux-x86-64.so.2",
+      "sha256": "c8438e4fde1934e61c88311633f00949ff645d5c04cdb8671fa3d78164d2f307",
+      "bytes": 225672
+    },
+    {
+      "path": "/usr/bin/cc",
+      "resolved": "/usr/bin/x86_64-linux-gnu-gcc-14",
+      "sha256": "a23ecab8ff08f09ad8c80602c2c5df7f49e09c25905cb8975902e101bf72635f",
+      "bytes": 1162264
+    },
+    {
+      "path": "/usr/bin/ld",
+      "resolved": "/usr/bin/x86_64-linux-gnu-ld.bfd",
+      "sha256": "d2766988b6a1b1d1518cdc09242e726d1f24e151e16410ada3092b11ffd9081b",
+      "bytes": 1861256
+    },
+    {
+      "path": "/usr/bin/readelf",
+      "resolved": "/usr/bin/x86_64-linux-gnu-readelf",
+      "sha256": "4a387d80a70e6e97ef940a666fab59d5c38e7cf19ff907192fa983cb8505a7de",
+      "bytes": 777864
+    }
+  ],
+  "author_binary_sha256": "d0bd5e36d9303cab7c33aebf868e5f52394265b95f3b851a3366f2a8203db559",
+  "same_hash_as_author": false,
+  "limits": "One independent fresh-target build with unchanged flags. ELF/link metadata and current host ldd resolution; no actual linker execve trace, general reproducibility, static-runtime or target claim."
+}

@@ -1,0 +1,23 @@
+{
+  "schema_version": 1,
+  "role": "CurrentexplicitreadmittedAPIstrategy; historicalbindingspreservedseparately",
+  "readmission_commit": "a94c24e7306c255725dfd080a1b91c38e5d4211e",
+  "readmission_sha256": "01569445717668dd29fc380a2ec15fdc45b5db3eb9d1c2f4043642202ebc7202",
+  "primary_sources": [
+    {
+      "url": "https://docs.python.org/3.12/library/os.html#os.setsid",
+      "fact": "Direct Unix setsid API is distinct from optional posix_spawn setsid flag; actual support/success must beobserved."
+    },
+    {
+      "url": "https://docs.python.org/3.12/library/os.html#os.getsid",
+      "fact": "Parent queries actual session forpositiveownedPID; no selfreportedreadyformat."
+    },
+    {
+      "url": "https://man7.org/linux/man-pages/man2/setsid.2.html",
+      "fact": "Successful caller becomes session/group leader withSID/PGIDequalPID; alreadygroupleader givesEPERM. No setpgroup0 is requested. Exec preserves inheritedsession until child call."
+    }
+  ],
+  "observed": "Plainposix_spawn withfixedfd_actions works onpinnedR00. Trustedchild os.setsid succeededforpositive; parent queriedactualkernelidentities beforepolicy/data. Explicitno-sessionfixturewasrefused0data. Directwait4 returnedactualstatus/rusage; controlledloststatus gaveECHILD. No alternatecallroute or elevatedprivileges.",
+  "historical_optional_flag_blocker": "historical-blocker-api-bindings.json",
+  "API_limits": "No atomicspawn/session or bootstrapbudget proof; docsAPIexistence isnotruntimecapability. Source/ABI/executable/modulehashes in eachrun environment.json."
+}
