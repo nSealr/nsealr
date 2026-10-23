@@ -273,7 +273,14 @@ impl Choice {
     #[inline]
     #[must_use]
     pub const fn from_u128_le(x: u128, y: u128) -> Self {
-        Self::from_u128_lsb(bitle!(x, y, u128::BITS))
+        #[cfg(target_pointer_width = "32")]
+        {
+            Self::from_u128_lt(y, x).not()
+        }
+        #[cfg(not(target_pointer_width = "32"))]
+        {
+            Self::from_u128_lsb(bitle!(x, y, u128::BITS))
+        }
     }
 
     /// Initialize from the least significant bit of a `u128`.
@@ -287,7 +294,29 @@ impl Choice {
     #[inline]
     #[must_use]
     pub const fn from_u128_lt(x: u128, y: u128) -> Self {
-        Self::from_u128_lsb(bitlt!(x, y, u128::BITS))
+        #[cfg(target_pointer_width = "32")]
+        {
+            Self::from_u128_lt_halves(x, y)
+        }
+        #[cfg(not(target_pointer_width = "32"))]
+        {
+            Self::from_u128_lsb(bitlt!(x, y, u128::BITS))
+        }
+    }
+
+    #[cfg(any(target_pointer_width = "32", test))]
+    #[inline]
+    #[allow(clippy::cast_possible_truncation)]
+    const fn from_u128_lt_halves(x: u128, y: u128) -> Self {
+        // Full-width subtraction can introduce conditional borrow propagation.
+        // Keep the half-width predicates opaque so LLVM cannot combine them into a short-circuiting
+        // multiword comparison.
+        let x_hi = (x >> 64) as u64;
+        let y_hi = (y >> 64) as u64;
+        let hi_lt = Self::from_u64_lt(x_hi, y_hi).to_u8();
+        let hi_eq = Self::from_u64_eq(x_hi, y_hi).to_u8();
+        let lo_lt = Self::from_u64_lt(x as u64, y as u64).to_u8();
+        Self::from_u8_lsb(hi_lt | (hi_eq & lo_lt))
     }
 
     /// Returns [`Choice::TRUE`] if `value != 0`, and [`Choice::FALSE`] otherwise.
@@ -429,7 +458,7 @@ impl Choice {
     #[inline]
     #[must_use]
     pub const fn to_u8_mask(self) -> u8 {
-        self.0.wrapping_neg()
+        self.to_u8().wrapping_neg()
     }
 
     /// Create a `u16` bitmask.
@@ -440,7 +469,7 @@ impl Choice {
     #[inline]
     #[must_use]
     pub const fn to_u16_mask(self) -> u16 {
-        (self.0 as u16).wrapping_neg()
+        (self.to_u8() as u16).wrapping_neg()
     }
 
     /// Create a `u32` bitmask.
@@ -451,7 +480,7 @@ impl Choice {
     #[inline]
     #[must_use]
     pub const fn to_u32_mask(self) -> u32 {
-        (self.0 as u32).wrapping_neg()
+        (self.to_u8() as u32).wrapping_neg()
     }
 
     /// Create a `u64` bitmask.
@@ -462,7 +491,7 @@ impl Choice {
     #[inline]
     #[must_use]
     pub const fn to_u64_mask(self) -> u64 {
-        (self.0 as u64).wrapping_neg()
+        (self.to_u8() as u64).wrapping_neg()
     }
 
     /// Create a `u128` bitmask.
@@ -473,7 +502,7 @@ impl Choice {
     #[inline]
     #[must_use]
     pub const fn to_u128_mask(self) -> u128 {
-        (self.0 as u128).wrapping_neg()
+        (self.to_u8() as u128).wrapping_neg()
     }
 }
 
@@ -622,7 +651,7 @@ impl subtle::ConstantTimeEq for Choice {
 #[cfg(test)]
 mod tests {
     use super::Choice;
-    use crate::{CtEq, CtSelect};
+    use crate::{CtEq, CtGt, CtLt, CtSelect};
 
     #[test]
     fn ct_eq() {
@@ -855,6 +884,38 @@ mod tests {
         assert!(Choice::from_u128_lt(1, 0).eq(Choice::FALSE).to_bool());
         assert!(Choice::from_u128_lt(1, 1).eq(Choice::FALSE).to_bool());
         assert!(Choice::from_u128_lt(1, 2).eq(Choice::TRUE).to_bool());
+    }
+
+    #[test]
+    fn from_u128_comparison_boundaries() {
+        const LT: Choice = Choice::from_u128_lt_halves((1 << 96) - 1, 1 << 96);
+        const LE: Choice = Choice::from_u128_le(1 << 64, 1 << 64);
+        assert!(LT.to_bool());
+        assert!(LE.to_bool());
+
+        let values = [
+            0,
+            1,
+            (1 << 32) - 1,
+            1 << 32,
+            (1 << 64) - 1,
+            1 << 64,
+            (1 << 64) + 1,
+            (1 << 96) - 1,
+            1 << 96,
+            u128::MAX - 1,
+            u128::MAX,
+        ];
+
+        for x in values {
+            for y in values {
+                assert_eq!(x < y, Choice::from_u128_lt_halves(x, y).to_bool());
+                assert_eq!(x < y, Choice::from_u128_lt(x, y).to_bool());
+                assert_eq!(x <= y, Choice::from_u128_le(x, y).to_bool());
+                assert_eq!(x < y, x.ct_lt(&y).to_bool());
+                assert_eq!(x > y, x.ct_gt(&y).to_bool());
+            }
+        }
     }
 
     #[test]
