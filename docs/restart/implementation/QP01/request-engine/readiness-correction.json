@@ -1,0 +1,109 @@
+{
+  "schema_version": 1,
+  "role": "Finite proposed correction of the existing QP01 engineering harness; pre-code checkpoint, not implementation approval or another task plan",
+  "base_commit": "5c701113bc2ac2d7b596f7d3fb76574a7cff24b3",
+  "base_tree": "866c12d4569f4ad18df4adb2f496c11818c666af",
+  "author_preserved": "e44f957bc20c79d443f6e29ac0ba8c611f4787bd",
+  "CI_failure": {
+    "run": 39976046826,
+    "check": 120490782049,
+    "head": "5c701113bc2ac2d7b596f7d3fb76574a7cff24b3",
+    "capture": "docs/restart/implementation/QP01/request-engine/evidence/pr45-red-01/capture.json",
+    "capture_sha256": "8b99fa0255bb18e9dd2a3218823aba755b60cad626824d5997d9da07616b4b3e",
+    "complete_private_original_archive": "/home/tux/nsealr/.restart-tools/goal/a02-ci-2026-10-20/run-39976046826/logs.zip",
+    "archive_sha256": "a79b04d99f2e149234f2d74a5e00f6b956e1e5384ff2577054e2eacc4d46ef37",
+    "original_zip_members": 9,
+    "selected_member": "verify/5_Complete product acceptance.txt",
+    "selected_raw": "docs/restart/implementation/QP01/request-engine/evidence/pr45-red-01/complete-product-acceptance.log",
+    "selected_raw_sha256": "6fc6a447edf8cf8538cba2335493cf8a4628516f09a72623c7414f6f12bdd356",
+    "observation": "Pi189 PASS, then first positive actual client assertion at client-exchange.ts:132 receives signer_transport_timeout. No completed campaign or later case result follows.",
+    "classification": "Harness initialization/operation-boundary defect; no evidence here of an incorrect core/provider/client timeout implementation",
+    "unknown": "The CI log does not measure separate spawn/import/hash/CDLL/sign/settlement costs or prove initialization alone caused the overrun"
+  },
+  "source_bindings": [
+    {
+      "path": "docs/restart/implementation/QP01/request-engine/exchange.py",
+      "sha256": "a6a8aa3e908401727fe83fa5ec42dee09e5dd7e58164a0ce3eea1541d907029c"
+    },
+    {
+      "path": "docs/restart/implementation/QP01/request-engine/client-exchange.ts",
+      "sha256": "dc59a9189a245f8b45961e3bb1e1d6f349396989db37acd9053d89f4df0b9456"
+    },
+    {
+      "path": "apps/pi/app/nsealr_vault/engine_adapter.py",
+      "sha256": "c7d7778e538dc787e328295c67f9702473b87cb7c35d7576d37eab06a51137c7"
+    },
+    {
+      "path": "packages/client/src/service.ts",
+      "sha256": "d230d65ec2eb505afd940951c792c6ed0ac93a13e781ca70116db464ff59c509"
+    },
+    {
+      "path": "apps/bridge/service/src/manual-qr.ts",
+      "sha256": "d2c9aa73f723739a5682f0a2a4b6c88f4b319a70d879766fe7b8f862ee5e82f9"
+    },
+    {
+      "path": "protocols/contracts/v1/vectors/profile-capabilities/cases-v1.json",
+      "sha256": "6403ac0d853c148929e3cf20ecb4f33f3e7cb6b2d21a6e3938a50f6f34361979"
+    }
+  ],
+  "unchanged_limits": {
+    "source": "protocols/contracts/v1/vectors/profile-capabilities/cases-v1.json",
+    "selector": "limits_manifest (inline object, not a path)",
+    "all_method_and_transport_deadline_ms": 100,
+    "client_real_timer": "packages/client/src/service.ts:1237-1245; original setTimeout with prepared.timeout_ms",
+    "synthetic_ticks": "Context monotonicNow()->ticks remains unchanged; it does not disable the real Node timer",
+    "child_safety_ms": 5000,
+    "frame_bytes": 947,
+    "trace_bytes": 262144,
+    "native_core_lifetime_ticks": 100,
+    "separate_image_worker_output_bytes": 512
+  },
+  "proposed_edit_set": [
+    "docs/restart/implementation/QP01/request-engine/exchange.py",
+    "docs/restart/implementation/QP01/request-engine/client-exchange.ts"
+  ],
+  "readiness_protocol": {
+    "channel": "Dedicated child inherited readiness pipe; Node fd4, Python --ready-fd explicitly supplied",
+    "message": "Exactly one ASCII R byte followed by readiness-pipe close; missing, malformed, extra or late-to-exit handshake is failure",
+    "emit_after": [
+      "Python interpreter/module imports",
+      "EngineAdapter actual path/hash validation, ctypes CDLL load, native symbol/type binding and post-load hash check"
+    ],
+    "emit_before": [
+      "Any stdin request read",
+      "Any actual native request call, review/action callback, auxiliary callback or signing"
+    ],
+    "parent_before_dispatch": [
+      "Spawn and bind finite owned child with original environment/library hash",
+      "Observe exact readiness and live child; no request bytes are sent",
+      "Only then invoke the unchanged actual client handleLocalServiceRequestAsync"
+    ],
+    "controlled_present": "Call control.before_present(), verify original outgoing frame, then send that frame once to the ready owned child. No request is passed to readiness preparation; no response replay or signing preflight.",
+    "scope_of_budget": "Interpreter/import/hash/load/readiness setup is before actual client invocation and outside its100ms timer. Existing synchronous client preparation and initial dispatcher prefix precede timer creation; final synchronous signer-response verification follows timer clearing. They remain unchanged and are not newly claimed inside the timer. The asynchronous port exchange, actual request/review/signing, stream output, child close and dispatcher settlement stay within the existing timed wait. No target latency, hard real-time guarantee or unmeasured phase duration is claimed.",
+    "safety": "Keep the existing absolute5000ms child timer from spawn through actual close; never refresh, raise, freeze or patch timers. A readiness failure stops that case/dependents and collects the child.",
+    "ownership": "One fresh child per real exchange; never queue/reuse an unsettled child. Idle/prepared or failed children must be closed and actually collected even if an assertion or pre-presentation dispatch check fails.",
+    "held_child": "Same post-native held child, actual100ms timeout, same-context refusal, separate-context refusal, no early close/reuse, explicit release, actual close/dispatcher settlement, then a freshly initialized child. Expected complete campaign remains14children/14collected."
+  },
+  "precode_regression": {
+    "path": "docs/restart/implementation/QP01/request-engine/readiness-regression.py",
+    "first_red": "ready_without_request on unchanged5c: request the proposed readiness interface, never send a frame, require exact ready token. Existing argparse rejects the absent interface. This is a missing-readiness-path RED, not a synthetic reproduction or timing attribution of hosted timeout.",
+    "later_controls": [
+      "Real hash-verified library initialization can report ready with no stdin request and no response/review trace; idle EOF is collected as refusal without a signature",
+      "Wrong expected library hash emits no readiness or response and exits; no fallback."
+    ],
+    "no_signing_or_warmup": true,
+    "existing_author_ELF_reuse": "Only source/hash-bound existing public-fixture ELF; no build/install/fetch or native request in precode RED"
+  },
+  "post_approval_validation": [
+    "Minimal readiness regression on corrected source, preserving original RED",
+    "Affected actual-client campaign with unchanged2 positives/5 verifier negatives/5 currentness negatives/held timeout and fresh reuse; no deadline/case relaxation",
+    "One final entire Pi CI plus actual client through existing provisioning/default recipe, after source stabilizes; source-identical Rust/core/Bridge proof reused where closure unchanged",
+    "Affected placement/structural gates on stable final packet; root owns hosted CI and B01 distinct affected review"
+  ],
+  "historical_binding_rule": "Original author171-member and delivery223-member manifests/results retain their original sources unchanged. This addendum covers correction; no direct graph artifact row exists for either harness file at5c. Any necessary current QP01 checkpoint/artifact reference requires root approval.",
+  "not_claimed": [
+    "No camera/optical path, real keys/entropy/custody, physical consent, ARM/Pi/P4/no_std, secret isolation, task/profile completion or physical release",
+    "No new coordinator/service/framework, warmup signature, replay response, modified actual client/Bridge/core/provider/fixture/limit manifest",
+    "No positive correction outcome until implementation and actual evidence exist"
+  ]
+}
