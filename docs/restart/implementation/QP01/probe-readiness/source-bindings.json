@@ -1,0 +1,66 @@
+{
+  "schema_version": 1,
+  "scope": "Finiteprimaryresearchonly; no newinventory/device/OScomparison",
+  "primary_sources": [
+    {
+      "url": "https://www.raspberrypi.com/documentation/computers/config_txt.html",
+      "read": "Fileformat/comments,include,conditionals/[all],camera_auto_detect,98charlimit",
+      "retrieval": "Officialwebtool successful2026-10-23; separate rawHTMLarchival attempt403preserved, no archivehashclaimed."
+    },
+    {
+      "url": "https://www.raspberrypi.com/documentation/computers/configuration.html",
+      "read": "DTparameters/multipleassignments/overlayscope andolder80charlimit",
+      "retrieval": "Officialwebtool successful2026-10-23, no rawarchivehashclaimed."
+    },
+    {
+      "url": "https://www.freedesktop.org/software/systemd/man/latest/systemctl.html",
+      "read": "systemd262 is-enabled table, is-active, ACTIVE states and exitstatustable/imperfectLSBmapping",
+      "retrieval": "Officialwebtool successful2026-10-23, no rawarchivehashclaimed."
+    }
+  ],
+  "decisions": {
+    "boot": "Commentsarenotdirectives; include insertsunreadcontent, conditionalfilters selecthardware-dependentsections, dtparammayapplyinoverlayscope. Supportonlyshortsimpleunconditionaltargetdirectives plus[all]/comments; unresolvedforms block. Contradictoryrepeatedtargetassignments blockratherthanclaimingcompletefirmwareoverrideevaluation. Configfileisnotcurrentactiveorphysicalproof.",
+    "line_limit": "Canonicalconfigdoc says98chars, linkedDTdoc says80. Conservative supportedsubset blocksnoncommententriesover80; no physicalcapacity orfirmwarecompatibilityclaim.",
+    "systemctl": "Useexactstdoutstate+knownreturncode+emptystderr. Onlyis-enabled(disabled/masked/masked-runtime,rc1) andis-active(inactive,rc3) qualifythetwoqueriedunits; otherstates/exitpairs blockunlesspositivelyunsafe. Unsafeenabled/linked/aliasoractive/transitioningstatesrefuseevenifcontradictorydiagnostics. Fullresponsesretained, nofirstline-onlytrust.",
+    "coverage_limit": "Onlyssh/sshdunitsqueried; notsockets/otherSSH/generalremoteabsence. No boot/service/devicewrites."
+  },
+  "source_files": [
+    {
+      "commit": "994a8b682ed6cd52bb46608b90794c02d2a9d3cb",
+      "path": "apps/pi/app/nsealr_vault/hardware_probe.py",
+      "mode": "100644",
+      "blob": "6e79a6887c09af35142439c73d02a8ef37e7fe5b",
+      "bytes": 9735,
+      "sha256": "cd8ec412dcf8fb6f4804a19b2dc858f9d12240c0d5bdea19cb0dceaf69efabb9",
+      "role": "Editableproduct/test"
+    },
+    {
+      "commit": "994a8b682ed6cd52bb46608b90794c02d2a9d3cb",
+      "path": "apps/pi/tests/test_seed_signer_hardware.py",
+      "mode": "100644",
+      "blob": "5c7996ead30c028aa870889f252d22eb1f35ba7c",
+      "bytes": 26843,
+      "sha256": "a0b9cafa13dae1ca16d2df8c286ca34e347373fc1a856084e247a6b00d36be78",
+      "role": "Editableproduct/test"
+    },
+    {
+      "commit": "994a8b682ed6cd52bb46608b90794c02d2a9d3cb",
+      "path": "apps/pi/tests/test_vault_core.py",
+      "mode": "100644",
+      "blob": "9e1df9ecdf925fa44d6dbc4e5c8b4cdf72f6a2ce",
+      "bytes": 137940,
+      "sha256": "10327e8580fb45a3a9caffe5c2fd2480e0616162ecd46fcc85e9320424bdee25",
+      "role": "Read-onlyexistingtests/gates"
+    },
+    {
+      "commit": "994a8b682ed6cd52bb46608b90794c02d2a9d3cb",
+      "path": "apps/pi/Makefile",
+      "mode": "100644",
+      "blob": "16ce0de4e478738f5a2705fdcd0cdce8e0303a8f",
+      "bytes": 690,
+      "sha256": "58e15e7e370b16b658019fe4ae835143a375cce38882ef37ffe0b814fc1aafc3",
+      "role": "Read-onlyexistingtests/gates"
+    }
+  ],
+  "model": "gpt-6.1-sol xhigh; no subagent/override"
+}
