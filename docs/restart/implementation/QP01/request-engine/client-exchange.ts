@@ -188,7 +188,10 @@ async function setup(vector = basic, mutation?: Mutation, changed?: string, hold
   return { run: () => handleLocalServiceRequestAsync(envelope, context),
     separate: () => handleLocalServiceRequestAsync(envelope, { ...context }), held, settled: settledPromise,
     counts: () => ({ opens, scans, closes }),
-    refuseBeforeRun: () => Object.assign(snapshot.adapter.methods[1], { availability: "unavailable", reason: "provider_missing" }),
+    refuseBeforeRun: () => {
+      const method = snapshot.adapter.methods.find((entry) => entry.id === "sign_event");
+      assert(method); Object.assign(method, { availability: "unavailable", reason: "provider_missing" });
+    },
     prepareFresh: async () => { assert(worker.isCollected()); worker = await prepareNative(); pending = undefined; },
     dispose: async () => { await worker.dispose(); if (pending) await pending.catch(() => {});
       await new Promise<void>((yes) => setImmediate(yes)); }
