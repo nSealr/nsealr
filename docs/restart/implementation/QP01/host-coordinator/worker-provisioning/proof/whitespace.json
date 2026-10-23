@@ -1,0 +1,31 @@
+{
+  "recorded_utc": "2026-10-23T19:23:38.336913+00:00",
+  "full_check": {
+    "argv": [
+      "git",
+      "diff",
+      "--cached",
+      "--check"
+    ],
+    "exit_code": 2,
+    "stdout": "docs/restart/implementation/QP01/host-coordinator/worker-provisioning/proof/05-audit-snapshot.stderr.log:3: new blank line at EOF.\ndocs/restart/implementation/QP01/host-coordinator/worker-provisioning/proof/07-elf-header.stdout.log:2: trailing whitespace.\n+  Magic:   7f 45 4c 46 02 01 01 00 00 00 00 00 00 00 00 00 \ndocs/restart/implementation/QP01/host-coordinator/worker-provisioning/proof/08-elf-dynamic.stdout.log:37: trailing whitespace.\n+   00     \ndocs/restart/implementation/QP01/host-coordinator/worker-provisioning/proof/08-elf-dynamic.stdout.log:38: trailing whitespace.\n+   01     .interp \ndocs/restart/implementation/QP01/host-coordinator/worker-provisioning/proof/08-elf-dynamic.stdout.log:39: trailing whitespace.\n+   02     .interp .note.ABI-tag .note.gnu.build-id .dynsym .gnu.version .gnu.version_r .gnu.hash .dynstr .rela.dyn .rela.plt .rodata .gcc_except_table .eh_frame_hdr .eh_frame \ndocs/restart/implementation/QP01/host-coordinator/worker-provisioning/proof/08-elf-dynamic.stdout.log:40: trailing whitespace.\n+   03     .text .init .fini .plt \ndocs/restart/implementation/QP01/host-coordinator/worker-provisioning/proof/08-elf-dynamic.stdout.log:41: trailing whitespace.\n+   04     .tdata .fini_array .init_array .data.rel.ro .dynamic .got .got.plt .relro_padding \ndocs/restart/implementation/QP01/host-coordinator/worker-provisioning/proof/08-elf-dynamic.stdout.log:42: trailing whitespace.\n+   05     .tm_clone_table .data .bss \ndocs/restart/implementation/QP01/host-coordinator/worker-provisioning/proof/08-elf-dynamic.stdout.log:43: trailing whitespace.\n+   06     .tdata .tbss \ndocs/restart/implementation/QP01/host-coordinator/worker-provisioning/proof/08-elf-dynamic.stdout.log:44: trailing whitespace.\n+   07     .dynamic \ndocs/restart/implementation/QP01/host-coordinator/worker-provisioning/proof/08-elf-dynamic.stdout.log:45: trailing whitespace.\n+   08     .tdata .fini_array .init_array .data.rel.ro .dynamic .got .got.plt .relro_padding \ndocs/restart/implementation/QP01/host-coordinator/worker-provisioning/proof/08-elf-dynamic.stdout.log:46: trailing whitespace.\n+   09     .eh_frame_hdr \ndocs/restart/implementation/QP01/host-coordinator/worker-provisioning/proof/08-elf-dynamic.stdout.log:47: trailing whitespace.\n+   10     \ndocs/restart/implementation/QP01/host-coordinator/worker-provisioning/proof/08-elf-dynamic.stdout.log:48: trailing whitespace.\n+   11     .note.ABI-tag .note.gnu.build-id \n",
+    "stderr": ""
+  },
+  "findings": 14,
+  "meaning": "All findings are original byte-preserved audit/readelf raw logs. They are not trimmed or rewritten. The initial packaging helper expected zero for the full check and stopped; validation now distinguishes raw receipts from authored files explicitly.",
+  "authored_files_check": {
+    "argv": [
+      "git",
+      "diff",
+      "--cached",
+      "--check",
+      "--",
+      ".",
+      ":(exclude)**/proof/*.log"
+    ],
+    "exit_code": 0,
+    "stdout": "",
+    "stderr": ""
+  },
+  "no_repo_configuration_or_policy_changed": true
+}
