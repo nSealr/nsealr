@@ -1,0 +1,70 @@
+{
+  "source": "f2862baa",
+  "source_rule": "Same74 exact review/scope postimages and assembly record; this report is proof-only",
+  "metadata_commands": [
+    {
+      "argv": [
+        "python3",
+        "scripts/verify_repo.py"
+      ],
+      "exit_code": 0
+    },
+    {
+      "argv": [
+        "python3",
+        "scripts/validate_restart_plan.py"
+      ],
+      "exit_code": 0
+    },
+    {
+      "argv": [
+        "python3",
+        "scripts/verify_evidence.py"
+      ],
+      "exit_code": 0
+    },
+    {
+      "argv": [
+        "python3",
+        "scripts/verify_contracts.py"
+      ],
+      "exit_code": 0
+    },
+    {
+      "argv": [
+        "python3",
+        "scripts/validate_firmware.py"
+      ],
+      "exit_code": 0
+    }
+  ],
+  "author_make_test_audit_docs_exit": 0,
+  "full_whitespace_exit": 2,
+  "authored_whitespace_exit": 0,
+  "raw_exclusions": [
+    "docs/restart/implementation/reviews/QP01-owner-cold/audit-controls-01/stderr.log",
+    "docs/restart/implementation/reviews/QP01-owner-cold/audit-controls-01/stdout.log",
+    "docs/restart/implementation/reviews/QP01-owner-cold/execution-checks.log",
+    "docs/restart/implementation/reviews/QP01-owner-cold/node-build-01/stderr.log",
+    "docs/restart/implementation/reviews/QP01-owner-cold/node-build-01/stdout.log",
+    "docs/restart/implementation/reviews/QP01-owner-cold/node-install-01/stderr.log",
+    "docs/restart/implementation/reviews/QP01-owner-cold/node-install-01/stdout.log",
+    "docs/restart/implementation/reviews/QP01-owner-cold/owner-matrix-01/stderr.log",
+    "docs/restart/implementation/reviews/QP01-owner-cold/owner-matrix-01/stdout.log",
+    "docs/restart/implementation/reviews/QP01-owner-cold/producer-controls-01/stderr.log",
+    "docs/restart/implementation/reviews/QP01-owner-cold/producer-controls-01/stdout.log",
+    "docs/restart/implementation/reviews/QP01-owner-cold/provision-01/cargo-1.stdout.jsonl",
+    "docs/restart/implementation/reviews/QP01-owner-cold/provision-01/cargo-2.stdout.jsonl",
+    "docs/restart/implementation/reviews/QP01-owner-cold/provision-01/elf-1.txt",
+    "docs/restart/implementation/reviews/QP01-owner-cold/provision-01/elf-2.txt",
+    "docs/restart/implementation/reviews/QP01-owner-cold/provision-01/stderr.log",
+    "docs/restart/implementation/reviews/QP01-owner-cold/provision-01/stdout.log",
+    "docs/restart/implementation/reviews/QP01-owner-cold/verifier-initial/execution-checks.log",
+    "docs/restart/implementation/reviews/QP01-owner-cold/whitespace-full.log"
+  ],
+  "raw_whitespace_reason": "Original ELF text and the original saved diff diagnostic itself contain trailing whitespace. Bytes remain identical to reviewed source; source-authored files pass. Initial coordinator check missed that generated diagnostic and correctly failed; invoker lacked fail-fast and committed source-exact files before the reader error was handled. No acceptance was made from that error.",
+  "full_whitespace_sha256": "c1cff40c8b03d05218388d59154887d254c31e5f772076057ac06d06127a792c",
+  "metadata_gate_log_sha256": "1b4e008a45b75ee1252e9be0a2da5142aa814ee809ce5fd50724c1de391cd2a2",
+  "no_product_inputs_changed": true,
+  "CI_and_protected_adoption_pending": true
+}
