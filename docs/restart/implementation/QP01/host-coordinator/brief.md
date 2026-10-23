@@ -95,7 +95,14 @@ belong to the request phase. O accepts exactly172800 RGB888 bytes and returns th
 original decoded frame≤512 only after exit0, bounded streams/EOF, acquired status
 and final monotonic eligibility. The driver compares these exact bytes with the
 actual presented request; mismatch refuses before C input. Then pass the original
-frame to C without JSON/base64 reconstruction. W is already collected before any
+frame to C without JSON/base64 reconstruction, **only after calling the same
+control.before_present() again immediately before the C write**. present() must
+remain async/pending across decode and W/IO/O settlement, keeping Bridge's
+presenting flag active for that second call. There is no await, deferred callback
+or external work between the final guard and writing the259 bytes to C. Abort,
+timeout or changed currentness during decode means zero C input, even if W
+finished successfully within8s; worker eligibility is not client currentness.
+Local adapter cancellation also irrevocably forbids the C write. W is already collected before any
 native request begins. C's real response remains≤947, and the unchanged real client
 independently checks key/request/template/ID/signature. The return scan is explicitly
 software-injected; no decoded611 response image or complete optical loop is claimed.
@@ -126,8 +133,9 @@ hard real time, secret isolation or physical latency follows from these limits.
 
 ## First proof gate, before the rest of the coordinator
 
-Freeze the finite control/settlement record, malformed/EOF behavior and exact
-effect expectations before implementing O or changing the injected adapter. A
+The proposed [control contract](control-contract.json) freezes the first gate's
+finite control/settlement record, malformed/EOF behavior and independent effect
+expectations; it still needs admission before O or adapter implementation. A
 control message must be bounded and tied to this operation/owned W; losing it
 must not free the port. The following gate uses the actual client, C/library and
 selected W; source-only unit doubles cannot substitute for these observations.
@@ -136,8 +144,8 @@ selected W; source-only unit doubles cannot substitute for these observations.
 | --- | --- |
 | Startup / unused / failure | C exact real-library R+EOF, O initialized, zero W/request/G/image/native request before presentation; unused/readiness failure actually closes both started children with no late spawn. |
 | Request / response | Original basic RGB → real W259 → exact original C input → real fixture signature/response → actual client acceptance under unchanged100ms. Record worker PID/status/IO, C ELF/input/output, ordered phases and all closes. No cached expected response. |
-| Timeout / no early reuse | Hold a real owned operation at a source-bound phase; actual100ms timeout revokes success. Same-context and shared-port attempts remain refused while W/IO or C is held. Release only after actual collection, then a fresh operation can proceed. Never freeze clocks or extend deadlines. |
-| Cancel | Before W spawn: zero W/G/image/C request. During W session/input: stop input and acquire status/IO with zero later C request. After C starts: discard late output and await C; do not assert no already-started backend effect. |
+| Timeout / no early reuse | Hold a real owned operation at a source-bound phase; actual100ms timeout revokes success. Cancellation/timeout while decode is pending or after W settlement but before the final guard requires zero C input. Same-context and shared-port attempts remain refused while W/IO or C is held. Release only after actual collection, then a fresh operation can proceed. Never freeze clocks or extend deadlines. |
+| Cancel / late currentness | Before W spawn: zero W/G/image/C request. During W session/input: stop input and acquire status/IO with zero later C request. A changed generation during decode must be rejected by the second same before_present call before C input, even for a valid decoded259-byte result. After C starts: discard late output and await C; do not assert no already-started backend effect. |
 | C death | Exercise early C exit and actual C SIGKILL while W is demonstrably owned/live (e.g. controlled pre-G stop). O must remain alive with W handles, acquire terminal status and settle IO; Node cannot resolve aggregate close from C's event. Cover the pre-W/setup interval too. Keep the existing5000ms target and record whether an observed kill was injected or timer-caused. |
 | Close / uncertainty | Prove bounded raw/error paths, no partial publication, one cleanup window, actual FD/status settlement and refusal on unknown/stolen status. Test-only held phases may expose the boundary; ECHILD without a known status is never zero. No dependent run when cleanup ownership is unresolved. |
 
