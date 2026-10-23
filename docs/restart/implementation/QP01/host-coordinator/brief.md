@@ -1,140 +1,162 @@
-# Host image/request coordinator — pre-code contract
+# Host image/request ownership — operational pre-code revision
 
-Source candidate: `5c701113bc2ac2d7b596f7d3fb76574a7cff24b3`, tree `866c12d4569f4ad18df4adb2f496c11818c666af`.
-This is PR45 delivery source, not a claim of resulting-main adoption or code admission.
-Root must reconcile the actual adopted source once before assigning implementation; no gate is waived here.
-Deliver one fixture-only host coordinator connecting the explicitly selected RGB922 worker below to the reviewed `EngineAdapter`.
-It must sign the actual incoming request, present Rust-owned review through injected display/input, render the response and exercise the actual client.
-The response-to-client leg is explicitly software-injected; no complete optical return611 or physical consent is claimed.
-All47 task criteria/status/dependency/resource/release sets remain untouched; all QP01/QH01/Q02 criteria remain incomplete.
+**Proposal for independent admission; no implementation or experiment is admitted
+by this file.** Base is actual main `bd892b70b88aeaf72b10ad5e9152bc36674513b9`,
+tree `05e9848ebe9633fdb62c018fb565a579b1ee64d6`. The
+[7996 brief](https://github.com/nSealr/nsealr/blob/7996b15d34766e0de1b8c395fb7bcc0b02079935/docs/restart/implementation/QP01/host-coordinator/brief.md)
+remains an unmerged historical proposal based on5c. Its full branch is not
+imported. This revision resolves only ownership at the current client/child seam;
+its wider UI/renderer/coordinator scope and HC01–12 remain unimplemented inputs,
+not granted product APIs or completed criteria. Exact source roles/hashes are in
+[source-decision.json](source-decision.json).
 
-## Exact source facts and missing seam
+## What the actual path currently owns
 
-The selected RGB922 worker accepts240×240 RGB888/stride720/raw172800, waits for session/policy/G, applies its reviewed fixed-point grayscale conversion, then uses rqrr `decode_to` with private512 staging.
-It returns original QR-symbol bytes only after successful decoding; it has no key or JSON/signing API.
-`rust-qr-worker/controller.py:13–24,28–42,238–255` imports the corpus/base experiment, reads expected files and judges expected outputs.
-Its `supervise(case, owner, directory)` returns a test record, has no cancel input, and acquires before fallible file reads outside its cleanup region.
-`linux-worker-experiment/experiment.py:24–39` also loads experiment expectations; importing that module does not provide a clean operational boundary.
-Therefore neither harness is an application API; the old corpus is not a runtime dependency or an output oracle for the coordinator.
-The precise missing implementation is one operational supervisor accepting explicit bytes/binary identity and proving cancellation/settlement before return.
-Derive its mechanisms from the reviewed source, bind the correspondence in implementation evidence and keep both historical harnesses byte-identical.
-There must be only one active supervision implementation for the new path, used by its coordinator and focused integration driver.
-Do not create another pending/session engine, generic process framework or second active loop in the driver.
+The Node engineering exchange directly spawns Python **C**, starts its unchanged
+absolute5000ms SIGKILL timer at that spawn, and accepts exact R+EOF only after
+the real EngineAdapter library/symbol initialization. Only controlled present()
+sends the native request frame, at most947 bytes; C reads948 to detect oversize.
+C has no RGB worker. The wrapper waits for C's actual close and its streams,
+then returns the response. Port close currently awaits that same C-only pending
+promise; prepareFresh checks C only. These facts are valid for native-only8b/bd892,
+not a nested-worker ownership guarantee.
 
-The current `engine_adapter.py:67–138` already accepts the original frame, owns buffers/callback lifetimes and enters the real Rust owner.
-The current engineering exchange instead supplies synthetic Next/Approve (`request-engine/exchange.py:68–76`).
-The older `hardware_flow.py:115–152` still decodes into Python review/signing; it must not be used or modified for this path.
-The manual service already supplies before-presentation currentness, effective limits and abort, then verifies scanned response/currentness and cleanup.
-Its route-store remains serial-only: this package adds no store entry, default wiring, advertised capability or availability promotion.
+The actual client keeps its real100ms Promise.race, aborts/revokes on completion
+or timeout, and retains its pending reservation until the underlying dispatcher
+settles. Bridge keeps the manual port busy until close confirms reuse; a failed
+close preserves quarantine. Neither layer acquires a grandchild's wait status.
+The current fixture C supplies `cancel=lambda: False`; a client timeout cannot
+be described as cancellation of an already-started native call. Late output must
+be discarded; a provider operation already begun cannot be recalled.
 
-## Proposed finite API and output
+The a16 ownership experiment observed C collected while W remained stopped/live;
+O separately killed/reaped W. Its C was a supervisor fixture, not the current
+native exchange; the invalid inference matters if W is nested in that exchange.
+Its source is34e77697, early smoke af15, package
+`a16fa6aae19a98066a206328d20578ce328f34d2`. Distinct review
+`672335344e25b48eca37b9b5f37ca35d80062d8e` and root component acceptance
+`a325acb770aebdd20dfc1b7e119474ee2ba2d189` are now frozen. They accept only the
+bounded experiment; the separate selective assembly remains under review, not
+integrated. The experimental subreaper is not an adopted product owner, and no
+current native-path leak is reported.
 
-Add `apps/pi/app/nsealr_vault/qr_worker.py` for the single operational supervisor and `host_coordinator.py` for orchestration.
-The constructor takes explicit trusted worker path/SHA256 and an explicitly provisioned source-matched fixture `EngineAdapter`.
-It also takes injected `render_review(Presentation)`, `read_action()`, `render_response(static_frame)`, monotonic clock, auxiliary and cancellation callbacks.
-No key/import/owner handle, seed/session-source namespace, detached approval, selected page or diagnostic digest is accepted.
-The API is synchronous: `run_request_image(rgb: bytes) -> bytes` returns the full original response frame only after its required operations settle.
-Input is exactly172800 bytes with fixed240×240/RGB888/stride720; reuse RGB922 conversion unchanged, adding no file/JPEG parser, capture API, resize, palette or different conversion.
-Callers own acquisition/allocation before this interface; this contract does not bound a camera or image-loader allocation.
-The worker returns a bounded frame of at most512 bytes; pass those exact bytes to `EngineAdapter` without JSON/base64 roundtrip or request reconstruction.
-There is no expected-response file or fixture-response lookup in the operational supervisor.
-Publish a successful decode only for actual acquired exit0, settled IO, no overflow/error and a fresh final eligibility sample; partial decode stays private.
-Blank/noQR, ambiguous detection, decoder error and output overflow are distinct closed failures, with no engine invocation; different RGB channels are not themselves an error.
+## Two bounded choices
 
-For each Rust `Presentation`, first pass all original label/body/position bytes and index/total to `render_review`; only after it settles call `read_action`.
-Use the existing action meanings0Next/1Approve/2Reject/3Back/4None; invalid actions and callback exceptions fail closed.
-There is no default approving UI, automatic traversal or reuse of Python `screen_review_for_request`/`ReviewControlSession`/`sign_request`.
-Rust retains review cursor, complete traversal, consuming approval, fixture owner and raw-ID signing/completion checks.
-The explicit identity remains public test-key-1, scalar11×32/public key4f35…71aa; this is not the old scalar3/f930 canary or a production provider.
-Clock/aux callbacks preserve the reviewed fallible contract, exact32 bytes and no fallback; injected public aux fixtures prove no entropy quality.
+| Choice | Ownership and consequence |
+| --- | --- |
+| **A — proposed:** Node keeps C and a finite Python supervisor **O** as separate direct children; O alone spawns **W** | C stays under the exact existing5000ms timer. O owns W's stdin/stdout/stderr and actual wait4 from spawn through settlement, and survives C termination. No orphan transfer or late FD handoff is needed. One additional per-exchange process, no daemon/service. |
+| B — retain C→W and add a subreaper guardian | A16 supplies a useful baseline, but the guardian must also own or receive all W IO handles and cover C death before PID/FD handoff. Merely acquiring an adopted PID is insufficient for the new data path. This adds adoption/handoff states while still needing an owner outside the5000ms kill target; not selected. |
 
-After successful engine settlement, recheck cancellation before response presentation; decode only the ASCII frame to the renderer's existing text interface.
-Reuse `SeedSignerSt7789ResponseQrDisplay`/`PythonQrcodeMatrixRenderer` with injected draw target and already-selected optional host prerequisites.
-Preserve the returned frame bytes; the renderer must not reserialize JSON, choose multipart, change scale/ECC to pass, or supply authorization.
-Record the actual renderer/callback source and host output; its successful return is trusted software settlement, not proof of screen visibility.
-The injected Bridge port checks `control.before_present()` immediately before exposing its outbound request and honors existing limits/abort.
-Its scan supplies the coordinator's exact response frame directly to the unchanged actual client verifier: label this leg software-injected in every result.
-No descriptor, constructor, success boolean or source hash is evidence that physical resources were actually used or quiesced.
+Choose A for the first host path. The Node adapter composes existing lifecycle
+promises; it is not a new pending/session engine. C never spawns W. O has one
+active operational worker-supervision loop derived from reviewed922/06d mechanisms,
+with explicit bytes/binary identity and cancellation. Historical corpus harnesses
+stay unchanged and supply neither expected-response files nor an application API.
+No new Rust code, dependency, driver or general process framework is proposed.
 
-## Ownership, resource limits and cancellation
+```mermaid
+flowchart TD
+    N[Existing Node client / injected manual port] -->|existing5000ms safety| C[Existing native fixture C]
+    N -->|bounded request / cancel / settlement| O[Finite Python worker owner O]
+    O -->|owned pipes and actual wait4| W[Unchanged RGB922 worker W]
+```
 
-Reserve one coordinator owner before any external callback or fallible operation; every pre-spawn failure is inside a cleanup/finally path.
-Validate bytes/relationships and trusted executable identity before spawn; failure with no child releases cleanly and invokes neither engine nor renderer.
-The worker suboperation uses that owner; do not release the whole coordinator merely because the child exits while IO remains pending.
-Preserve plain `os.posix_spawn`, trusted worker `setsid`, kernel SID==PID/PGID==PID and parent prlimit/readback before G or any image byte.
-Only owned/verified PID targets may be signalled; never PID0/-1, the coordinator group, unknown/reused identities or arbitrary descendants.
-Retain nonblocking bounded stdin/stdout/stderr, actual `os.wait4` acquisition and final monotonic admission after status/IO settlement.
-Missing/stolen status cannot become success via a default return code; unknown status or uncertain cleanup quarantines and retains ownership.
-Cancel must be implemented and tested as a cooperative input, not attributed to the old Rust corpus controller.
-Pre-spawn cancellation creates zero child/control/image bytes; after spawn, stop input and terminate only the owned child, then acquire status and settle IO.
-Deadline/cancel refusal alone is not cleanup; no fresh operation starts until real settlement is known, otherwise quarantine persists.
-Once native engine execution starts, retain ownership until it actually returns; a blocked display/input/aux callback cannot be forcibly interrupted.
-After cancellation, discard any late result; signing/provider effects may already have occurred and cannot be recalled.
-Renderer failure may have partial display effects; do not report success or automatic safe retry if renderer quiescence is unknown.
-Ordinary returned errors allow reuse only after all begun child/native/callback/render operations are settled; no automatic retry or cached approval.
+O's lifetime is not C's lifetime. No5000ms timer or overflow handler may blindly
+kill O while W is unsettled. C close, C SIGKILL, readiness failure, client abort
+or adapter disposal must invalidate O through its explicit control input; O stops
+input, kills only its owned verified W when necessary, acquires actual status
+and settles/closes all IO. O retains ownership/quarantine if that cannot be proved.
+Node must retain O and its listeners rather than unref/detach it. Unexpected O
+death without W settlement is an unknown outcome and quarantines the port; O's
+close alone is not W evidence. O-crash survival/hostile descendants are not proven
+by this choice and must not be silently promoted into a guarantee.
 
-Keep all13 worker baseline entries, not just the image dimensions: maximum width/height240, pixels57600, raw172800 and RGB888/3/stride720;
-AS268435456 bytes, CPU soft1/hard2 seconds, wall eligibility8 seconds, cleanup observation4 seconds, stdout512/stderr512 and IO chunk4096.
-These are fixed host experiment parameters, not hardware capacities; RLIMIT_CORE0 remains unchanged.
-AS bounds virtual address space, not RSS/cumulative allocation; CPU seconds are not wall time, hard real time or logical parse_work.
-Spawn/bootstrap and arbitrary trusted callback execution are not forcibly time-bounded; cleanup observation expiry is not proof of cessation.
-Ordinary Linux processes/rlimits are not a sandbox protecting parent memory/files/secrets or controlling arbitrary compromised-worker descendants.
-The worker8-second eligibility window and engine100-tick conformance lifetime are distinct; neither is a new whole-session/client deadline.
-Client deadlines/currentness and pending ownership remain in the existing client/manual service, never replaced by this coordinator.
+The aggregate operation/port.close must await C **and** O/W/IO settlement even
+when C fails first. A Promise.race that rejects on C close and releases the port
+while O is pending is forbidden. Only confirmed complete cleanup may permit a
+fresh operation; stale eligibility remains revoked. Unknown W status, lost IO or
+unconfirmed O termination cannot become a default zero status or a successful
+close. Keep a live cleanup owner when possible; otherwise fail closed/quarantine,
+no automatic retry or invented recovery. Retain the same port owner/factory;
+recreating it must not reset quarantine for an unresolved operation.
 
-## Required independent cases and focused delivery proof
+## Request path and immutable budgets
 
-Freeze literal inputs, expected outputs, effects and intended failure layer before runtime edits; preserve genuine RED and corrections.
-Use original13949 assets, the already-frozen RGB922 in-memory tint and exact nonce-amended expectations, not output learned from a new encoder/decoder/native result.
-- HC01: getkey image98 -> exact frame/identity response198; no review/provider, actual worker status/IO settled.
-- HC02: real sign-request image259 -> every actual Rust review frame/action -> exact independent event/ID/signature response611 -> actual client acceptance.
-- HC03: render that response611 with the existing renderer; direct software injection to the client is explicit, never described as a decoded response image.
-- HC04: blank/noQR and original response611 image/512 overflow refuse before engine/render; zero partial public output, distinct statuses.
-- HC05: raw length/format/relationship errors and wrong/missing executable/hash refuse at their intended pre-spawn boundary; zero child/engine/render effects.
-- HC06: reuse the frozen tint (black→0/16/0, white→240/255/255; other original values refuse preparation), derived SHA256 `47929068f16631b1a6624b95fed8fde8db3f2b50483e89a24529e0fee8ae210c`, and require exact198-byte output. Preserve/reuse the selected function's all256-grays and arithmetic controls by exact source; no new corpus or camera/all-input qualification.
-- HC07: cancel before spawn, during session/policy/input and after decode; prove the phase reached, no later engine/output and actual owned-child collection/IO settlement.
-- HC08: wall/IO-overflow/unknown-status and failure before spawn preserve owner cleanup/quarantine; final eligibility is checked after status/IO, including controller delay.
-- HC09: Reject, premature Approve, invalid action and display/input/clock/aux BaseException refuse; every shown byte precedes its corresponding action.
-- HC10: cancellation during auxiliary/native completion refuses publication without asserting no backend effect; no retry authority survives.
-- HC11: reentry from cancellation/presentation and a deliberately held callback refuse concurrent ownership until actual release; unknown native/render settlement quarantines.
-- HC12: wrong response request/key/template/ID/signature reach the unchanged client's intended verifier; late/currentness failure cannot return a stale success.
-Tests must assert counters, actual boundaries/status/IO/byte hashes and ordered presentation/effects, not names or prose presence.
-Use controlled finite helpers only for otherwise unreachable supervisor error/status/held-IO paths; no new decoder, corpus or whole22 replay by default.
-Add focused tests in `apps/pi/tests/test_qr_worker.py` and `test_host_coordinator.py`; do not rewrite historical tests/proofs or weaken negative inputs.
-Default unit tests may inject explicit IO/process boundaries, but must not count those as actual rqrr/native/client execution.
-The scoped host integration driver under this prefix must invoke the one operational supervisor, real pinned worker and real `EngineAdapter` for HC01–04/HC12.
-Use selected RGB922 source/unchanged lock and its pinned local build closure; explicit path/SHA provisioning is a prerequisite, not a hidden fetch, fallback or default route.
-No new registry dependency, library/backend selection, lock/vendor/policy/toolchain change or assumption of preinstalled worker is authorized by this brief.
-If that exact provisioning is unavailable, report the missing input before dependent runs; never skip or fabricate a native result.
-After focused checks, run the default full Pi CI and actual client exchange using the existing `request-engine/exchange.py --ci apps/pi` provisioning/order.
-That existing command does not itself provision/exercise the new worker: preserve the separate real host-integration receipt and do not mislabel Pi unit coverage.
-The client conformance wait remains the real100ms. Readiness contract `aca364addf102abc86b37aac5623f4018255d249`, reviewed at `6dcc792b7a021191079eb61fa67836b086626262`, allows process/library initialization before client invocation, with fd4 exactlyR+EOF after real initialization and before any request read/native operation; the uninterrupted5000ms child safety remains.
-That is pre-code scope acceptance, not acceptance of the readiness implementation. Reconcile its actually accepted source before using it; do not assume the correction passed or extend its permission to request work.
-Image/QR/request processing, actual review/signing and asynchronous exchange/child/dispatcher settlement stay within the existing request wait. Existing synchronous preparation/dispatcher prefix before timer creation and response verification after clearing are not newly moved or claimed timed.
-Worker8s/engine100ticks do not extend client100ms or prove end-to-end hardware latency; retain actual timeout/currentness/held-child negatives without threshold changes.
-Preserve full setup/test/lint/audit/docs, Bridge prerequisite, all17 integration obligations, existing coverage floors/checkers and mandatory protected PR/resulting-main gates.
-Reuse source-identical core/S03/K01/old corpus evidence explicitly; no blanket full suite rerun, audit feed fetch or hosted CI polling for this preparation.
+Before actual client invocation, prepare C with its existing native readiness
+contract and initialize O's fixed source/executable identity/control channel.
+There is no request/image processing, W spawn, engine call, review or signing
+during this preparation. Record these startup costs separately; do not call them
+measured client latency. Readiness failure/unused disposal must collect every
+process actually started, preserving its real exit status rather than assuming0.
 
-## Units, remaining physical dependency and source bindings
+On controlled present(), recheck before_present immediately before exposing the
+fixed RGB bytes to O. W bootstrap, session/policy/G, image transfer and decode all
+belong to the request phase. O accepts exactly172800 RGB888 bytes and returns the
+original decoded frame≤512 only after exit0, bounded streams/EOF, acquired status
+and final monotonic eligibility. The driver compares these exact bytes with the
+actual presented request; mismatch refuses before C input. Then pass the original
+frame to C without JSON/base64 reconstruction, **only after calling the same
+control.before_present() again immediately before the C write**. present() must
+remain async/pending across decode and W/IO/O settlement, keeping Bridge's
+presenting flag active for that second call. There is no await, deferred callback
+or external work between the final guard and writing the259 bytes to C. Abort,
+timeout or changed currentness during decode means zero C input, even if W
+finished successfully within8s; worker eligibility is not client currentness.
+Local adapter cancellation also irrevocably forbids the C write. W is already collected before any
+native request begins. C's real response remains≤947, and the unchanged real client
+independently checks key/request/template/ID/signature. The return scan is explicitly
+software-injected; no decoded611 response image or complete optical loop is claimed.
 
-Codec/engine input and response limit704 is JSON bytes; one static frame can require947 ASCII bytes. Worker512 bounds the entire decoded QR-symbol frame.
-Original67/188/142/452 JSON bytes correspond to98/259/198/611 static frame bytes. The611 return remains outside this worker experiment.
-This package changes none of512/704/947, framing, checksums, multipart support or effective manual-port accounting, and promises no complete optical loop.
-Physical comparison and actual client/screen/camera timing still decide framing/decoder/profile; synthetic renderer output is not legibility evidence.
-Exact kit/revision, SoC/userspace ABI/OS image, camera interface/pixel format, display/buttons, operator/access remain unidentified; root's question is already pending.
-Before real deployment, those inputs and native target provisioning must be reconciled; no ARM/Pi/P4/no_std, real-key/provider/custody/release qualification follows.
+The original request-kind-1-basic RGB image remains172800 bytes; its known
+259-byte envelope is byte-identical to the current basic client request encoding.
+This was checked by reading the frozen data, not a new decode/signing run. Use
+the nonce-amended independent expectations for native output, never the historical
+legacy signature as the zero-aux signing oracle. No warmup or replay response.
 
-The following historical mechanism paths are bound to source5c above; the separately selected RGB tuple follows. Hashes identify sources, not execution on a future coordinator:
-- `docs/restart/implementation/QH01/rust-qr-worker/controller.py` lines13–42,92–155,175–255: `81a1b8c2a607f6aa918a62af98c1d6a2e9ec110dce6a4f5c076b02255b1cc142`.
-- `docs/restart/implementation/QH01/linux-worker-experiment/experiment.py` lines24–39,127–159,231–240: `97fa6da85a1f83c5535050f6c77c588800a069a26ed9a7cd7470f616352a76eb`.
-- `docs/restart/implementation/QH01/rust-qr-worker/src/main.rs` lines9–12,38–100: `d4fb28a16316907abec5f3d20a79baf61ce70e67a4ff8858752d60534218fdde`.
-- Worker `parameters.json` SHA256 `ef85f58625943dc831158700d9fbf7df342eef1eb79e51e11398c285b73db52f`; existing `Cargo.lock` SHA256 `eb00e1c6ebaa1e241e64574a62902a7ede995c7582cf11bc9d4620bfb4baf243` in that same subtree.
-- `apps/pi/app/nsealr_vault/engine_adapter.py` lines47–138: `c7d7778e538dc787e328295c67f9702473b87cb7c35d7576d37eab06a51137c7`.
-- `apps/pi/app/nsealr_vault/seed_signer_hardware.py` lines323–375,473–557: `c9d2fb3f4c5b17d1e12083b759bed02e22d2676e04041edba15dbb02c64001d3`.
-- `apps/bridge/service/src/manual-qr.ts` lines57–171: `d2c9aa73f723739a5682f0a2a4b6c88f4b319a70d879766fe7b8f862ee5e82f9`.
-- `docs/restart/implementation/QP01/request-engine/exchange.py` lines16–87: `a6a8aa3e908401727fe83fa5ec42dee09e5dd7e58164a0ce3eea1541d907029c`.
-- Its `client-exchange.ts` lines28–65,68–169: `dc59a9189a245f8b45961e3bb1e1d6f349396989db37acd9053d89f4df0b9456`.
-Select `docs/restart/implementation/QH01/rgb-input/src/main.rs` from `9220db123eb7ab9c02ef0d407dc6fc8fa3927bf2`, executed source `5b69e1655c461624218b6df0e3d112b3dc726114`, SHA256 `e60b3bc2baec2eded7ee474e101cfa8debd1a88be76d6d7cffce31b4e3e1dcf1` (conversion14–19/66–69; tests113–150).
-Its Cargo.toml/lock are byte-identical to5fa (lock SHA256 `eb00e1c6ebaa1e241e64574a62902a7ede995c7582cf11bc9d4620bfb4baf243`); same11 dependencies, no new registry closure. Reuse exact review `10d8c65725a73fe3d55cb962644da9d291af8674` and root acceptance `c3f39b5a9e45a3ca5354961767e879944258334a`: three arithmetic tests and six fixed host images, not product/target/camera adoption or general decoder proof.
-Retain corrected supervisor06d reviews, request-engine review025b and root delivery review0aa88190 in their original roles; selecting RGB does not make its corpus controller the new operational API.
-The actual API, cancellation and new coordinator correspondence still require implementation, measured focused evidence and distinct review; no current harness supplies those guarantees by declaration.
+Keep client100ms and C5000ms unchanged: do not reset C's timer at readiness,
+presentation or W completion. A100ms timeout can return before cleanup; existing
+pending/busy ownership must remain held until real settlement. O's worker8s
+eligibility is an upper bound, not permission to extend the client request;
+cancellation can invalidate it earlier. Use one shared4s cleanup-observation window
+from invalidation, never separate renewed observation/teardown windows. Expiry is
+not cessation and does not authorize killing the last owner or releasing resources.
+
+All13 worker parameters remain width240, height240, pixels57600, raw172800,
+RGB888/3/stride720, AS268435456, CPU soft1/hard2 seconds, eligibility8s,
+cleanup4s, stdout512, stderr512, chunk4096; CORE0 also remains. Preserve plain
+posix_spawn/trusted setsid, parent kernel SID/PGID==W and actual prlimit/readback
+before G/image, positive owned targets, bounded nonblocking IO, actual wait4 and
+fresh final admission. Keep JSON704/static947 and existing client capacity/currentness
+checks separate. C's native948 read/947 response/262144 diagnostic bound is never
+reused as the172800-byte worker channel. No claim of RSS, cumulative allocation,
+hard real time, secret isolation or physical latency follows from these limits.
+
+## First proof gate, before the rest of the coordinator
+
+The proposed [control contract](control-contract.json) freezes the first gate's
+finite control/settlement record, malformed/EOF behavior and independent effect
+expectations; it still needs admission before O or adapter implementation. A
+control message must be bounded and tied to this operation/owned W; losing it
+must not free the port. The following gate uses the actual client, C/library and
+selected W; source-only unit doubles cannot substitute for these observations.
+
+| Case | Required discriminating evidence |
+| --- | --- |
+| Startup / unused / failure | C exact real-library R+EOF, O initialized, zero W/request/G/image/native request before presentation; unused/readiness failure actually closes both started children with no late spawn. |
+| Request / response | Original basic RGB → real W259 → exact original C input → real fixture signature/response → actual client acceptance under unchanged100ms. Record worker PID/status/IO, C ELF/input/output, ordered phases and all closes. No cached expected response. |
+| Timeout / no early reuse | Hold a real owned operation at a source-bound phase; actual100ms timeout revokes success. Cancellation/timeout while decode is pending or after W settlement but before the final guard requires zero C input. Same-context and shared-port attempts remain refused while W/IO or C is held. Release only after actual collection, then a fresh operation can proceed. Never freeze clocks or extend deadlines. |
+| Cancel / late currentness | Before W spawn: zero W/G/image/C request. During W session/input: stop input and acquire status/IO with zero later C request. A changed generation during decode must be rejected by the second same before_present call before C input, even for a valid decoded259-byte result. After C starts: discard late output and await C; do not assert no already-started backend effect. |
+| C death | Exercise early C exit and actual C SIGKILL while W is demonstrably owned/live (e.g. controlled pre-G stop). O must remain alive with W handles, acquire terminal status and settle IO; Node cannot resolve aggregate close from C's event. Cover the pre-W/setup interval too. Keep the existing5000ms target and record whether an observed kill was injected or timer-caused. |
+| Close / uncertainty | Prove bounded raw/error paths, no partial publication, one cleanup window, actual FD/status settlement and refusal on unknown/stolen status. Test-only held phases may expose the boundary; ECHILD without a known status is never zero. No dependent run when cleanup ownership is unresolved. |
+
+Reuse the existing5 readiness controls,14 actual-client cases and source-identical
+Rust/Bridge proofs in their original roles. Do not broaden into the old22 worker
+campaign, Pi suite, a new corpus or build research for this documentary decision.
+The complete UI/renderer work, fresh provisioning/integration checks and their
+affected tests follow only after this ownership gate is admitted and proven.
+
+Missing now: independent admission of this choice and the executable
+O/aggregate-close proof above. The exact RGB ELF is
+available and hash-verified, but this is not distribution/target provisioning.
+There is no new product code, build, test, experiment, signal or CI observation in
+this revision; all task/status/resource/release sets and physical unknowns remain.

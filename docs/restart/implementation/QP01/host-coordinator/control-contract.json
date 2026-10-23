@@ -1,0 +1,412 @@
+{
+  "schema_version": 1,
+  "status": "PROPOSED_FIRST_GATE_CONTRACT_NOT_ADMITTED_NOT_EXECUTED",
+  "parent_contract": "36ec94613c6094526de3da756438dcfc6381fe3d",
+  "actual_main": "bd892b70b88aeaf72b10ad5e9152bc36674513b9",
+  "scope": "One finite experimental Node adapter and one operational Python O, parent/FD owner/actual waiter of unchanged W. C remains existing separate direct Node child. No public API, dependency, daemon, generic process framework or product UI/renderer extension.",
+  "identities": {
+    "worker_source": "9220db123eb7ab9c02ef0d407dc6fc8fa3927bf2",
+    "worker_elf_sha256": "1a4af26b3c738807fb0f1a2e6fb7fcca9d480057642150357ad3c5bf774e6542",
+    "controller_source_sha256": "548ddea7c7344956a8aaca86db7bfa280e9e525401b9d7ba47f2d2b7b4a7d0b2",
+    "native_C": "Existing request-engine/exchange.py and source-matched fixture ELF; actual ELF path/hash supplied by existing provisioning, not invented here.",
+    "binding": "Each O and C is used once. Records belong only to their actual ChildProcess/FD set; owner_pid must match O.pid. No file/replay receipt substitutes for the live channel."
+  },
+  "fixed_worker_parameters": {
+    "maximum_width": 240,
+    "maximum_height": 240,
+    "maximum_pixels": 57600,
+    "raw_input_bytes": 172800,
+    "stride_and_pixel_format": {
+      "format": "RGB888",
+      "bytes_per_pixel": 3,
+      "stride": 720
+    },
+    "worker_AS_bytes": 268435456,
+    "CPU_soft_seconds": 1,
+    "CPU_hard_seconds": 2,
+    "wall_eligibility_deadline": 8,
+    "cleanup_observation_window": 4,
+    "stdout_bytes": 512,
+    "stderr_bytes": 512,
+    "fixed_IO_chunk_bytes": 4096
+  },
+  "other_unchanged_bounds": {
+    "worker_CORE_bytes": 0,
+    "client_real_deadline_ms": 100,
+    "C_safety_from_spawn_ms": 5000,
+    "native_input_max_frame_bytes": 947,
+    "native_read_sentinel_bytes": 948,
+    "native_output_max_frame_bytes": 947,
+    "native_stderr_max_bytes": 262144,
+    "decoded_JSON_max_bytes": 704
+  },
+  "channels": [
+    {
+      "fd": 0,
+      "direction": "Node->O",
+      "kind": "binary image only",
+      "bound": {
+        "retained_bytes": 172800,
+        "read_chunk_max": 4096,
+        "overrun_probe_bytes": 1
+      },
+      "rule": "No bytes before accepted P and no W before the exact172800 bytes plus EOF are validated. Read nonblocking with control priority; retain at most172800, any extra byte or short EOF invalidates before W spawn. No path, JSON, header, image parser or expected-response input."
+    },
+    {
+      "fd": 1,
+      "direction": "O->Node",
+      "kind": "private decoded frame",
+      "bound": {
+        "retained_bytes": 512,
+        "overrun_probe_bytes": 1
+      },
+      "rule": "Empty unless outcome=decoded after actual W status0/IO/final admission. In decoded case original frame bytes only, then EOF. Node buffers privately and never forwards before the full settlement and late currentness checks."
+    },
+    {
+      "fd": 2,
+      "direction": "O->Node",
+      "kind": "bounded O diagnostic only",
+      "bound": {
+        "retained_bytes": 512,
+        "overrun_probe_bytes": 1
+      },
+      "rule": "Success emits no O diagnostic. A diagnostic is not status evidence; original W stderr bytes are separately retained in the terminal record. Excess invalidates; do not kill O blindly."
+    },
+    {
+      "fd": 3,
+      "direction": "Node->O",
+      "kind": "one-byte control opcodes",
+      "bound": {
+        "cumulative_accepted_bytes": 3,
+        "overrun_probe_bytes": 1
+      },
+      "opcodes_hex": {
+        "P": "50",
+        "G": "47",
+        "X": "58",
+        "Q": "51"
+      },
+      "valid_sequences": [
+        "P",
+        "PG",
+        "PX",
+        "PGX",
+        "X",
+        "Q"
+      ],
+      "rule": "P admits one presentation; G acknowledges the one actual worker_ready/pre-G record; X irrevocably cancels; Q disposes unused O. G before that actual phase, duplicate/opcode/out-of-order/extra commands invalidate. Node coalesces cancellation causes into one X. P only after first same control.before_present and before image bytes; G only with that W identity, live C and no local/AbortSignal cancellation. Q/X before P forbids W. Keep control open while active; premature EOF without X/Q is control_lost and invalidates. After complete terminal record late write failure/EOF is interpreted against real settlement; no false cancellation or cleanup claim."
+    },
+    {
+      "fd": 4,
+      "direction": "O->Node",
+      "kind": "readiness",
+      "bound": {
+        "exact_bytes": 1
+      },
+      "expected_hex": "52",
+      "required_EOF": true,
+      "rule": "Exactly R then EOF after source/worker identity and fixed configuration initialization, with zero W/G/image/request. This means O ready, not C library readiness or W session/policy. C retains its separate existing R+EOF channel. Extra/missing/malformed readiness refuses presentation and initiates owned cleanup."
+    },
+    {
+      "fd": 5,
+      "direction": "O->Node",
+      "kind": "bounded worker_ready phase then one terminal/quarantine JSON record",
+      "bound": {
+        "cumulative_bytes_including_LFs": 4096,
+        "maximum_records": 2,
+        "overrun_probe_bytes": 1
+      },
+      "rule": "Canonical ASCII compact JSON records with one LF each. At most one worker_ready record before exactly one terminal record; a failure before verified policy emits only terminal. No other record/bytes. Worker_ready is sent before G/data; O remains responsive to cancel/deadline while awaiting G acknowledgment. Settled terminal followed by EOF and actual O exit; quarantine terminal may close this channel but O stays alive retaining handles. A phase or channel EOF is not terminal proof."
+    }
+  ],
+  "worker_ready_record": {
+    "fixed_key_order": [
+      "v",
+      "kind",
+      "owner_pid",
+      "worker_pid",
+      "ppid",
+      "sid",
+      "pgid",
+      "exe_sha256",
+      "limits",
+      "G_bytes",
+      "image_bytes_sent"
+    ],
+    "v": 1,
+    "kind": "worker_ready",
+    "identity_rule": "owner_pid must equal O.pid, ppid=owner_pid, worker_pid>1, sid=pgid=worker_pid, actual /proc/exe SHA equals frozen worker; all recorded after kernel readback, not spawn-return inherited identity.",
+    "limits": {
+      "AS": [
+        268435456,
+        268435456
+      ],
+      "CPU": [
+        1,
+        2
+      ],
+      "CORE": [
+        0,
+        0
+      ]
+    },
+    "G_bytes": 0,
+    "image_bytes_sent": 0,
+    "node_action": "Bind the one actual W to this O operation, then send one G only if C is still live and operation has not been cancelled. Never send G on readiness alone. For admitted negative phase tests withhold this acknowledgment while O continues its real wait/IO/deadline loop; no fake clock, stopped O or request warmup."
+  },
+  "terminal_record": {
+    "version": 1,
+    "fixed_key_order": [
+      "v",
+      "kind",
+      "owner_pid",
+      "outcome",
+      "ownership",
+      "worker_pid",
+      "worker_wait",
+      "worker_io",
+      "session_policy_verified",
+      "input_bytes_received",
+      "input_sha256",
+      "G_bytes",
+      "image_bytes_sent",
+      "stdout_observed",
+      "stdout_retained",
+      "stderr_observed",
+      "stderr_retained",
+      "worker_stderr_base64",
+      "result_bytes",
+      "result_sha256",
+      "final_worker_eligible",
+      "cancel_observed",
+      "timing"
+    ],
+    "outcome_enum": [
+      "decoded",
+      "unused",
+      "cancelled",
+      "input_invalid",
+      "control_lost",
+      "control_malformed",
+      "setup_error",
+      "worker_error",
+      "wall",
+      "cleanup_unknown"
+    ],
+    "ownership_enum": [
+      "settled",
+      "quarantined"
+    ],
+    "types": {
+      "v": "exact integer1",
+      "owner_pid": "safe positive integer equal to actual O.pid",
+      "worker_pid": "null if no spawn; otherwise actual owned positive PID>1",
+      "worker_wait": "null only for no worker or quarantined unknown status; otherwise exact object keys raw_status,exit_code,collector_pid. raw_status integer0..65535 must be terminal (neither stopped nor continued), exit_code is the corresponding POSIX exited code or negative terminating signal; collector_pid=owner_pid, obtained from actual positive-PID wait4, never defaulted.",
+      "worker_io": "object keys stdin_closed,stdout_eof,stderr_eof,owned_fds_closed; first3 null if no worker, otherwise booleans; owned_fds_closed boolean covers every created worker pipe even a failed spawn",
+      "session_policy_verified": "boolean; decoded requires true; no inherited SID/PGID credited",
+      "counts": "nonnegative safe integers; input_bytes_received<=172801; G_bytes<=1; image_bytes_sent<=172800; stdout_retained/stderr_retained<=512; result_bytes<=512; observed counts are actual counts, not invented retained fill",
+      "hashes": "lowercase64hex, or null for no complete input/result; result_sha256 only when result_bytes>0",
+      "worker_stderr_base64": "canonical base64 of exact retained W stderr, decoded length=stderr_retained<=512; empty string if no worker stderr",
+      "flags": "final_worker_eligible/cancel_observed boolean",
+      "timing": "exact object keys begin_ns,invalidated_ns,cleanup_deadline_ns,settled_ns,final_admission_ns; unsigned64 monotonic nanoseconds as canonical decimal strings of1..20digits or null, O clock only. For decoded: settled_ns<=final_admission_ns<begin_ns+8000000000. Cleanup deadline if any equals first invalidated_ns+4000000000 and is never renewed.",
+      "kind": "exact string terminal"
+    },
+    "canonical_validation": "Before parsing retain at most4096 cumulative channel bytes plus one overrun sentinel. ASCII only, at most two complete LF records, no trailing bytes. Standard JSON.parse per record, exact fixed key sets/order/types/relations for phase or terminal and nested objects; JSON.stringify(parsed)+LF must equal original record bytes. Reject duplicate keys/noncanonical forms without a new parser/library. If a phase exists, terminal worker_pid must match; no new/replaced worker.",
+    "decoded_requirements": {
+      "ownership": "settled",
+      "worker_exit_code": 0,
+      "G_bytes": 1,
+      "image_bytes_sent": 172800,
+      "input_bytes_received": 172800,
+      "all_worker_IO": true,
+      "final_worker_eligible": true,
+      "cancel_observed": false,
+      "O_exit_code": 0,
+      "fd1_bytes_equal_result_count_and_hash": true,
+      "O_diagnostic_bytes": 0,
+      "prior_actual_worker_ready_and_G_ack": true
+    },
+    "other_settled_outcomes": "No decoded bytes on fd1; actual terminal statuses retained, or explicit no-worker nulls; worker owned_fds_closed=true. Q unused ends O0; other known-clean refusals end O2. Exit0 by itself never implies decoded/settled.",
+    "quarantine": "ownership=quarantined, outcome=cleanup_unknown, no fd1 output; missing actual status stays null, IO flags stay factual. O remains alive with handles, serves no new request and has no watchdog exit. Node preserves the same port/factory quarantine; no fresh C/O/W operation or successful close.",
+    "unexpected_O_close": "Missing/truncated/malformed/contradictory settlement record or an unexpected exit/signal cannot establish W cleanup, even with O exit0. Quarantine, retain known handles/live owner if any; no automatic O restart or PID rediscovery/signalling."
+  },
+  "state_and_timing": [
+    "Reserve O before fallible setup; install listeners/cleanup before any child effect. O INIT verifies configuration/executable then emits R+EOF; C initialization is unchanged. Before present: zero W/G/image/native request; no warmup.",
+    "P starts the single O8s eligibility period, including bounded image ingress; no reset at W spawn or G acknowledgment. Control has priority. Validate exact image size/EOF, then spawn only W with reviewed session/policy mechanics. Emit one real worker_ready phase before G; await one G ACK in the same responsive loop, then send W G/image. No G ACK before phase, no late G after invalidation, no additional acknowledgment timeout or changed budget. Every partial setup remains owned.",
+    "First invalidation observed by O starts its one4s cleanup-observation window before kill/teardown. Subsequent X/EOF/errors or transitions never renew it. Node records its earlier cause/notification time separately:4s is not a hard bound on control delivery or whole client cleanup, and clocks are not assumed to share an epoch.",
+    "C close/kill, control.abort_signal, or explicit local adapter disposal coalesces one X, stops new RGB writes and irrevocably forbids C input. Explicit disposal is a private fixture operation, not a newly invented public client cancellation API.",
+    "On invalidation O stops stdin, kills only its owned verified W if needed, obtains actual terminal status and settles bounded stdout/stderr and all worker FDs. No process-group/0/-1/foreign signals; no synthetic wait0 on ECHILD. Uncertain cleanup retains O/quarantine after4s.",
+    "A decoded record may already have committed before a late X arrives. Node must still discard that private result on cancellation/currentness failure; no retroactive rewrite of the factual O receipt.",
+    "Node never applies C5000ms kill to O. C timer starts once at actual C spawn and stays active through readiness/worker work; client100ms remains its real existing timer. W8s cannot extend either.",
+    "After validated terminal/EOF and O close, no O/W request can restart. After X/Q no P/G is admitted; after decoded terminal a late X cannot rewrite past output but Node still rejects invalid C exposure."
+  ],
+  "present_and_close_contract": {
+    "present_async": true,
+    "order": [
+      "first control.before_present immediately before P/RGB",
+      "receive and verify actual worker_ready/pre-G phase; ACK one G only with live C and no local/AbortSignal cancellation; await decode plus W/IO settlement, terminal record, stream EOF and actual O close",
+      "compare decoded bytes exactly with the actual presented request",
+      "refuse if local operation invalidated or C already failed",
+      "call the SAME control.before_present again while Bridge presenting flag is still true",
+      "synchronously start existing C.send of those exact bytes; no await/deferred work/external callback between final guard and write",
+      "scan awaits actual C return/close; unchanged client verifier and currentness decide acceptance"
+    ],
+    "forbidden": "Do not return from present() and later invoke before_present in a background continuation: Bridge clears presenting on return. Do not let valid worker8s eligibility replace the second client guard.",
+    "late_invalid_expected": {
+      "C_input_bytes": 0,
+      "C_native_request": "No nonempty frame; zero native call is source-bound to the unchanged empty-input guard, not inferred merely from absent logs.",
+      "O_result": "May be clean cancelled/refused or a late private decoded259; never forwarded after invalidation."
+    },
+    "close": "One aggregate close waits for actual C close and O/W/IO known cleanup, regardless of which phase failed. On known clean refusal, close may complete without making the request successful. On unknown cleanup, close fails or remains pending and the same factory remains quarantined; never resolve it merely from C close or a generic allSettled result.",
+    "unconsumed_C": "Use existing no-request EOF/disposal; record its actual exit, do not require/invent0. If native C already started, await it or its unchanged safety kill, discard late output and claim no recall of backend effects."
+  },
+  "independent_oracle": {
+    "image_path": "docs/restart/implementation/QH01/native-qr-probe/execution-01/request-kind-1-basic.rgb",
+    "image_bytes": 172800,
+    "image_sha256": "64d9be602c821c31c0dfd6e952199a328325acdbf9a7e1b3494921942a11055f",
+    "decoded_frame_path": "docs/restart/implementation/QH01/native-qr-probe/expected/request-kind-1-basic.envelope",
+    "decoded_frame_bytes": 259,
+    "decoded_frame_sha256": "88a16190a1b1ed033fc9bebe5452af70e9a9783fd6b92305add2ac7134039ff7",
+    "decoded_frame_ascii": "nsealr1:eyJ2ZXJzaW9uIjoyLCJyZXF1ZXN0X2lkIjoicmVxLWtpbmQtMS1iYXNpYyIsIm1ldGhvZCI6InNpZ25fZXZlbnQiLCJwYXJhbXMiOnsiZXZlbnRfdGVtcGxhdGUiOnsiY3JlYXRlZF9hdCI6MTcxMDAwMDAwMCwia2luZCI6MSwidGFncyI6W10sImNvbnRlbnQiOiJuU2VhbHIgZml4dHVyZTogYmFzaWMga2luZCAxIGV2ZW50LiJ9fX0",
+    "native_expectation_source": "docs/restart/implementation/QP01/request-engine/expectations.json#independent_positive_expectations/basic",
+    "native_expectation_source_sha256": "313a3b96792d9e9fea644df95fb4c56439df5cfcb091af159281e858801f4f7d",
+    "expected_request_id": "req-kind-1-basic",
+    "expected_pubkey": "4f355bdcb7cc0af728ef3cceb9615d90684bb5b2ca5f859ab0f0b704075871aa",
+    "expected_event_id": "2977f107ad2668dbd9f09b8594eff3b5276e21bfe098e60ae3e905e3c861e4d3",
+    "expected_signature": "d8f39a159fd833bb1f0663c7f03b2ff1c19b27867442a5a372779fe6998a8a28b26c623fed74896a5065b1a6739d1953b9d386d2d57e24cf1f7c1cc353a82635",
+    "expected_complete_event": {
+      "id": "2977f107ad2668dbd9f09b8594eff3b5276e21bfe098e60ae3e905e3c861e4d3",
+      "pubkey": "4f355bdcb7cc0af728ef3cceb9615d90684bb5b2ca5f859ab0f0b704075871aa",
+      "created_at": 1710000000,
+      "kind": 1,
+      "tags": [],
+      "content": "nSealr fixture: basic kind 1 event.",
+      "sig": "d8f39a159fd833bb1f0663c7f03b2ff1c19b27867442a5a372779fe6998a8a28b26c623fed74896a5065b1a6739d1953b9d386d2d57e24cf1f7c1cc353a82635"
+    },
+    "expected_native_response_frame_bytes": 611,
+    "oracle_rule": "Existing independently frozen zero-aux expectation; exact event/signature and actual client verification, no new signing invocation or learned output. Original legacy response envelope/signature is not the zero-aux golden. O receives only RGB, never expected frame/signature."
+  },
+  "first_gate_cases": [
+    {
+      "id": "FG0_startup_unused",
+      "input": "Real C readiness and real O R+EOF, then Q with no P/image; also existing pre-presentation refusal/disposal",
+      "expected": {
+        "W_spawned": 0,
+        "G_bytes": 0,
+        "W_image_bytes": 0,
+        "C_input_bytes": 0,
+        "O_outcome": "unused",
+        "O_result_bytes": 0,
+        "both_processes_actually_collected": true
+      }
+    },
+    {
+      "id": "FG1_normal259",
+      "input": "P plus exact independent image and input EOF; verify actual pre-G worker_ready then G; control remains open until terminal. Actual current client/basic request.",
+      "expected": {
+        "W_exit_code": 0,
+        "W_G_bytes": 1,
+        "W_image_bytes": 172800,
+        "O_result_bytes": 259,
+        "O_exit_code": 0,
+        "C_input_bytes": 259,
+        "C_exit_code": 0,
+        "C_response_frame_bytes": 611,
+        "actual_client_success": true,
+        "all_status_IO_and_processes_settled": true
+      }
+    },
+    {
+      "id": "FG2_real_timeout",
+      "input": "Real client100ms: withhold G after actual worker_ready so real W waits at pre-G; separate placement holds the Node continuation after valid O/W settlement but before second guard. Release only after actual timeout is observed.",
+      "expected": {
+        "actual_client_error": "signer_transport_timeout",
+        "C_input_bytes": 0,
+        "no_early_shared_port_reuse": true,
+        "late_decoded_result_never_forwarded": true,
+        "actual_cleanup_required": true
+      },
+      "cause_rule": "No clock fake or threshold change. Record the actual hold/abort/cleanup phases; both placements distinguish timeout from W8s eligibility."
+    },
+    {
+      "id": "FG3_local_cancel_during_decode",
+      "input": "Private fixture disposal sends one X after actual worker_ready with G withheld; pre-P X verifies zero W. A separate late placement cancels after valid O/W settlement before the final C-write guard, requiring private259 discard/zero C input. No public client-cancel API invented; record actual source/cause.",
+      "expected": {
+        "C_input_bytes": 0,
+        "O_result_bytes_when_X_observed_before_commit": 0,
+        "pre_P_W_spawned": 0,
+        "actual_cleanup_required": true
+      },
+      "cause_rule": "Record X receipt and real worker status/IO. A timeout alone cannot be labelled explicit local cancellation."
+    },
+    {
+      "id": "FG4_currentness_changed_during_decode",
+      "input": "After actual worker_ready, send G then synchronously change the actual compatibility generation while present remains pending; allow real W to complete valid259, then require the second before_present to refuse. No mock predicate.",
+      "expected": {
+        "worker_result_may_be_eligible": true,
+        "decoded_bytes": 259,
+        "second_before_present_refuses": true,
+        "C_input_bytes": 0,
+        "actual_cleanup_required": true
+      },
+      "cause_rule": "Same control closure/current snapshot, not a mock predicate; no C write before the final guard."
+    },
+    {
+      "id": "FG5_C_death",
+      "input": "Early C exit before P; separately actual C SIGKILL after worker_ready while G ACK is withheld and real W waits pre-G. O must remain responsive and own all W pipes/status.",
+      "expected": {
+        "early_W_spawned": 0,
+        "C_input_bytes": 0,
+        "O_survives_C": true,
+        "O_collects_W_and_IO": true,
+        "C_close_alone_does_not_close_port": true
+      },
+      "cause_rule": "Record actual C code/signal, W PID/session/policy/stop/status and O cleanup. Distinguish injected SIGKILL from an actually elapsed5000ms safety timer; never assert timer firing without it."
+    },
+    {
+      "id": "FG6_Node_control_failure",
+      "input": [
+        "invalid opcode hex5a before P",
+        "duplicate P before image validation",
+        "premature G before real worker_ready",
+        "control EOF without X/Q after worker_ready while W waits pre-G"
+      ],
+      "expected": {
+        "C_input_bytes": 0,
+        "before_valid_P_W_spawned": 0,
+        "partial_result_forwarded": false,
+        "owned_worker_cleanup_or_quarantine": true
+      }
+    },
+    {
+      "id": "FG7_ready_terminal_validation",
+      "input": [
+        "R plus extra byte",
+        "missing R/EOF",
+        "missing/truncated/over4096 phase+terminal channel",
+        "wrong owner_pid/worker_pid/contradictory wait-or-IO fields/noncanonical duplicate keys/duplicate or terminal-before-phase-then-extra-record"
+      ],
+      "expected": {
+        "C_input_bytes": 0,
+        "successful_close_without_known_settlement": false
+      },
+      "role": "Bounded no-W control helpers only for unreachable malformed O channels; explicitly separate from real-worker FG1-6. They cannot supply a native/worker PASS."
+    }
+  ],
+  "required_records": [
+    "Frozen source/ELF/toolchain bindings and input/independent expected hashes before execution",
+    "Actual Node/O/C/W identities/owned handles; readiness bytes/EOF; P/G-ACK/X/Q and image counters/times; actual worker_ready phase before any W G/image",
+    "Actual worker SID/PGID/prlimit, G/write/read counters, retained stdout/stderr, raw wait4/status/IO and final admission",
+    "First and second same before_present outcome; abort/currentness/local invalidation cause; exact C input byte count/hash",
+    "Actual client result, C code/signal/output/ELF proof; O terminal bytes/code/streams; no early reuse and final close/quarantine",
+    "All failures original; no PID-existence, kill return, C close, timeout or receipt phrase substituted for W status"
+  ],
+  "execution_authorized": false,
+  "claims_excluded": [
+    "No product coordinator/UI/render extension",
+    "No new image/corpus/decoder/dependency",
+    "No O-death recovery/hostile descendants/sandbox/secrets/physical/ARM/Pi/P4/target timing/task or release qualification",
+    "No new fullPi/Bridge/Rust/22-case campaign, hostedCI or PR action",
+    "Client logical QR/frame accounting is not a bound on RGB acquisition or aggregate Node/O heap; worker AS is not parent RSS/cumulative allocation."
+  ]
+}
