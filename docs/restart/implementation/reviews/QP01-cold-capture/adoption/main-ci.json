@@ -1,0 +1,134 @@
+{
+  "generic_completed_capture": {
+    "run": 40026678359,
+    "source_head": "8f0c4bc54f72ea62e201fdf19be9380f4b20c877",
+    "actual_checkout_and_bootstrap_head": "8f0c4bc54f72ea62e201fdf19be9380f4b20c877",
+    "verify_job_check": 120664493012,
+    "app": 15368,
+    "conclusion": "success",
+    "all_job_steps_success": true,
+    "all10_archive_members_verified": true,
+    "actual17_steps_in_order_and_success": true,
+    "actual_helper115_and_product_controls10": true,
+    "coverage": {
+      "nsealr-core": {
+        "actual_percent": 100.0,
+        "unchanged_floor": 100.0
+      },
+      "desktop-simulator": {
+        "actual_percent": 77.69,
+        "unchanged_floor": 76.7
+      }
+    },
+    "repro_A_B_X": true,
+    "capture_sha256": "ac2323364e4d2e8d3d75dea2da55a9673b24e5c6b98b5b70f292bd8d36822012",
+    "limits": "CI/archive/check/checkout/bootstrap binding only. Actual Git parents/tree/protection/clean integration and device gates are independently required."
+  },
+  "source_aware_addon": {
+    "run": 40026678359,
+    "source_head": "8f0c4bc54f72ea62e201fdf19be9380f4b20c877",
+    "product_log_sha256": "419d0ab93389bc1fee80b581734dd0f619cbdce9316b8ff6788713b509fef850",
+    "native_build": {
+      "role": "public fixture build, not hardware qualification",
+      "argv": [
+        "cargo",
+        "build",
+        "-p",
+        "nsealr-pi-engine-fixture",
+        "--locked",
+        "--offline",
+        "--release",
+        "--message-format=json"
+      ],
+      "source": {
+        "Cargo.toml": "97475b27f26bbfa1c2d46508c4e719edb3713ea5c76da5987ef5283b9d7245eb",
+        "Cargo.lock": "2b62ce3fe11650d36ffc015344aa6f9f04b5ef22d6bc05dae218a96d07c8e811",
+        "crates/nsealr-pi-engine-fixture/Cargo.toml": "6199f807c29406405b839ed71f1791ffb44359e34dff3db5bf8591361a2fb30d",
+        "crates/nsealr-pi-engine-fixture/src/lib.rs": "7840133113a54d58f81e808e2037e0b5e999d148920f6bf4fea5212fa9a5425a"
+      },
+      "library": "/home/runner/work/_temp/nsealr-product/nsealr/target/release/libnsealr_pi_engine_fixture.so",
+      "sha256": "93e6f3522920748531184d4fdb224076a8fbfc4398a02d0ef01fb36f5d4602a0",
+      "CARGO_TARGET_DIR": null
+    },
+    "native_source_bindings": 4,
+    "actual_full_Pi_tests": 194,
+    "automatic_readiness_controls": {
+      "scope": "readiness_controls",
+      "readiness_controls": 5,
+      "request_bytes_sent": 0,
+      "native_reports": 0,
+      "children": 5,
+      "collected": 5
+    },
+    "client": {
+      "scope": "actual client + public-fixture host adapter only",
+      "positive": 2,
+      "valid_shape_verifier_negatives": 5,
+      "post_native_currentness_negatives": 5,
+      "actual_unsettled_child_timeout_no_early_reuse_then_fresh": true,
+      "children": 14,
+      "collected": 14
+    },
+    "all14_native_observations_match_actual_provisioned_library": true,
+    "fixture_coverage_actual_and_floor": [
+      100.0,
+      100.0
+    ],
+    "additional_audit_controls": 4,
+    "three_complete_fresh_audits": true,
+    "audit_commands": [
+      "cargo deny --locked --config /home/runner/work/_temp/nsealr-product/nsealr/deny.toml --manifest-path /home/runner/work/_temp/nsealr-product/nsealr/Cargo.toml fetch index db",
+      "cargo deny --locked --config /home/runner/work/_temp/nsealr-product/nsealr/deny.toml --manifest-path /home/runner/work/_temp/nsealr-product/nsealr/apps/desktop-simulator/Cargo.toml fetch index",
+      "cargo deny --locked --config /home/runner/work/_temp/nsealr-product/nsealr/deny.toml --manifest-path /home/runner/work/_temp/nsealr-product/nsealr/apps/pi/qr-worker/Cargo.toml fetch index",
+      "cargo deny --locked --config /home/runner/work/_temp/nsealr-product/nsealr/deny.toml --manifest-path /home/runner/work/_temp/nsealr-product/nsealr/Cargo.toml --offline check --deny index-failure",
+      "cargo deny --locked --config /home/runner/work/_temp/nsealr-product/nsealr/deny.toml --manifest-path /home/runner/work/_temp/nsealr-product/nsealr/apps/desktop-simulator/Cargo.toml --offline check --deny index-failure",
+      "cargo deny --locked --config /home/runner/work/_temp/nsealr-product/nsealr/deny.toml --manifest-path /home/runner/work/_temp/nsealr-product/nsealr/apps/pi/qr-worker/Cargo.toml --offline check --deny index-failure"
+    ],
+    "limits": "Original completed CI source/build/trace binding only; the ELF itself is not downloaded, no cdylib reproducibility or target/device/custody/physical qualification claim. The original17-step/check/bootstrap/capture verifier remains separately mandatory.",
+    "worker_build": {
+      "role": "public RGB worker build, initialization v2, not hardware qualification",
+      "argv": [
+        "cargo",
+        "build",
+        "--manifest-path",
+        "apps/pi/qr-worker/Cargo.toml",
+        "--locked",
+        "--offline",
+        "--release",
+        "--message-format=json"
+      ],
+      "source": {
+        "apps/pi/qr-worker/Cargo.toml": "a0c4db1b67499608914d07df5c5d8a54bfc69970e4559829f4c5573858068e91",
+        "apps/pi/qr-worker/Cargo.lock": "d4dadbe7162e838039ef6a53dcd7addc71a32520836b2ddc189070fbe79c091a",
+        "apps/pi/qr-worker/src/main.rs": "e60b3bc2baec2eded7ee474e101cfa8debd1a88be76d6d7cffce31b4e3e1dcf1",
+        "apps/pi/qr-worker/rust-toolchain.toml": "6e90f2cf35aad6218e0d99f319101783cf5ce91cc62349dec0c7b357a420dabc",
+        ".cargo/config.toml": "98e1cf108d2b5aa2ff9d9fb6f58df4d0332df3a85411cf8c1249c615edecf625",
+        "rust-toolchain.toml": "6e90f2cf35aad6218e0d99f319101783cf5ce91cc62349dec0c7b357a420dabc"
+      },
+      "worker": "/home/runner/work/_temp/nsealr-product/nsealr/apps/pi/qr-worker/target/release/nsealr-qr-worker",
+      "sha256": "0d0ecd6e0d83e709601492bc0c750d2df726f4298f999f2e68701cd5d84c34f7",
+      "CARGO_TARGET_DIR": null
+    },
+    "first_owner_cases": 39,
+    "first_owner_actual_children": 64,
+    "first_owner_W": 11,
+    "first_owner_native_reports": 3,
+    "trusted_initialization_version": 2,
+    "source_exact_five_added_Pi_unit_controls": true,
+    "real_synchronous_deadline_guard": {
+      "type": "CapabilityError",
+      "reason": "runtime_unavailable",
+      "message": "local deadline expired or clock rolled back/unavailable",
+      "signal_aborted": false,
+      "hold_begin_ms": 4255.947764,
+      "hold_end_ms": 4365.985482,
+      "actual_hold_ms": 110.0377180000005,
+      "operation_elapsed_ms": 136.32695200000035,
+      "W_O_collected": true,
+      "private_decoded_bytes": 259,
+      "C_input_bytes": 0
+    },
+    "generic_completed_capture_checker_remains_separately_mandatory": true,
+    "proof_role": "completed_capture_source_addon_requires_generic_receipt_job_check_verifier"
+  }
+}
