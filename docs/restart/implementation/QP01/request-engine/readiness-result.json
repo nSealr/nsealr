@@ -1,0 +1,621 @@
+{
+  "schema_version": 1,
+  "verdict": "AUTHOR_PASS_host_harness_readiness_correction_PENDING_DISTINCT_B01_REVIEW",
+  "base_commit": "5c701113bc2ac2d7b596f7d3fb76574a7cff24b3",
+  "executed_product_source": "b75db930d89a7dfbd9c28036c3d345c81aecd1ac",
+  "executed_product_tree": "46eab63f28e40a7c70f230e1d78b20fca306e50b",
+  "precode_commit": "61796c7f8bfd134c8e9fea83ab9462a9d1a1b7dd",
+  "approved_precode_checkpoint": "aca364addf102abc86b37aac5623f4018255d249",
+  "root_scope_review_commit": "6dcc792b7a021191079eb61fa67836b086626262",
+  "root_scope_review": {
+    "path": "docs/restart/implementation/reviews/QP01-readiness-contract/review.json",
+    "sha256": "53d31c230fb164c086a5f8d0a1b5a96fd91e64827a16056dda2086e97cf51e85"
+  },
+  "contract": {
+    "path": "docs/restart/implementation/QP01/request-engine/readiness-correction.json",
+    "sha256": "e33bfe66331bc9628700b040660239a4797dbfb1090c7ae36468861dfa1951b0"
+  },
+  "product_delta": [
+    {
+      "path": "docs/restart/implementation/QP01/request-engine/exchange.py",
+      "sha256": "0f135a20850ce2a9049b844e40d7b3473d70e3e0a3267f938111b6f75d2ea30f"
+    },
+    {
+      "path": "docs/restart/implementation/QP01/request-engine/client-exchange.ts",
+      "sha256": "e217320b0152bd480cbab30fdee78add62d3268a9ebdb960c595709b7b32fc9a"
+    }
+  ],
+  "scope": "Initialize one fresh owned child/library before calling the unchanged actual client; send original frame only in controlled present. Actual100ms client timer/absolute5000ms child safety/947 frame/262144 trace and original cases unchanged.",
+  "results": {
+    "Python_readiness_controls": {
+      "cases": 2,
+      "native_requests": 0,
+      "meaning": "Exact real hash/CDLL readiness then no-request EOF collection, and actual wrong-hash refusal before readiness",
+      "receipts": [
+        "readiness-green-01",
+        "readiness-green-02"
+      ],
+      "source_correspondence": [
+        {
+          "function": "exchange",
+          "sha256": "17495356937792bdd3591052a7646b937a540f321acc1d2ae5b1683a02aa99e5",
+          "sources": [
+            "fa93346c3dfe7eaf829424c3b0c41c9c077633b5",
+            "b75db930d89a7dfbd9c28036c3d345c81aecd1ac"
+          ]
+        },
+        {
+          "function": "main",
+          "sha256": "243ab8eb618ab35d969b1fcb8999c0f09458c78c5b4169cf97d24202460a6f8d",
+          "sources": [
+            "fa93346c3dfe7eaf829424c3b0c41c9c077633b5",
+            "b75db930d89a7dfbd9c28036c3d345c81aecd1ac"
+          ]
+        }
+      ]
+    },
+    "Node_readiness_controls": {
+      "cases": 5,
+      "children": 5,
+      "collected": 5,
+      "sent_requests": 0,
+      "native_reports": 0,
+      "roles": [
+        "real initialized unused child",
+        "real initialized child with selected-method pre-admission refusal",
+        "real initialized child disposed after controlled assertion",
+        "actual wrong-hash failure",
+        "synthetic malformed RX handshake child, no native library"
+      ],
+      "receipt": "readiness-controls-04",
+      "source": "b75db930d89a7dfbd9c28036c3d345c81aecd1ac",
+      "current_client_harness_byte_exact": true,
+      "default_driver_executes_these_five": true,
+      "default_execution": "Inside the same single Node entrypoint: runScope(true) then runScope(false); separate lexical counters and no readiness request/signing"
+    },
+    "Pi_and_actual_client": {
+      "argv": [
+        "make",
+        "-o",
+        "bridge-ci",
+        "pi-ci"
+      ],
+      "receipt": "readiness-stable-pi-03",
+      "Pi_tests": 189,
+      "positives": 2,
+      "valid_shape_verifier_negatives": 5,
+      "post_native_currentness_negatives": 5,
+      "held_timeout_no_early_reuse_then_fresh": true,
+      "children": 14,
+      "collected": 14,
+      "all_ready_R_before_send": true,
+      "all_collected_exit0": true,
+      "known_19_control_and_campaign_PIDs_absent_after_runs": true,
+      "Bridge_prerequisite_reused_not_reexecuted": true,
+      "meaning": "Existing pi-ci recipe/provisioner, entire Pi CI and one Node invocation containing automatic readiness controls plus the original client campaign. This is not a new Bridge or whole default CI run; future hosted CI must run all prerequisites without -o.",
+      "readiness_scope": {
+        "children": 5,
+        "collected": 5,
+        "request_bytes_sent": 0,
+        "native_reports": 0
+      },
+      "actual_client_scope": {
+        "children": 14,
+        "collected": 14
+      },
+      "total_node_children_in_two_disjoint_scopes": 19
+    }
+  },
+  "readiness_timing_boundary": "Interpreter/import/hash/load/readiness setup is before actual client invocation and outside its100ms timer. Existing synchronous client preparation and initial dispatcher prefix precede timer creation; final synchronous signer-response verification follows timer clearing. They remain unchanged and are not newly claimed inside the timer. The asynchronous port exchange, actual request/review/signing, stream output, child close and dispatcher settlement stay within the existing timed wait. No target latency, hard real-time guarantee or unmeasured phase duration is claimed.",
+  "timing_observations": "Per-child actual initialization and request-to-close nanoseconds are raw observations only; held child remains blocked beyond the real100ms until explicit release. No performance/target/hard-return guarantee.",
+  "compiled_native": {
+    "provision_record": {
+      "role": "public fixture build, not hardware qualification",
+      "argv": [
+        "cargo",
+        "build",
+        "-p",
+        "nsealr-pi-engine-fixture",
+        "--locked",
+        "--offline",
+        "--release",
+        "--message-format=json"
+      ],
+      "source": {
+        "Cargo.toml": "97475b27f26bbfa1c2d46508c4e719edb3713ea5c76da5987ef5283b9d7245eb",
+        "Cargo.lock": "2b62ce3fe11650d36ffc015344aa6f9f04b5ef22d6bc05dae218a96d07c8e811",
+        "crates/nsealr-pi-engine-fixture/Cargo.toml": "6199f807c29406405b839ed71f1791ffb44359e34dff3db5bf8591361a2fb30d",
+        "crates/nsealr-pi-engine-fixture/src/lib.rs": "7840133113a54d58f81e808e2037e0b5e999d148920f6bf4fea5212fa9a5425a"
+      },
+      "library": "/home/tux/nsealr/.restart-tools/goal/qp01-request-engine-correction-runtime/target/release/libnsealr_pi_engine_fixture.so",
+      "sha256": "1ae2cf24fca1ec59224d3da702b05c44c8466622c1d0bade6d9399a66af0977e",
+      "CARGO_TARGET_DIR": "/home/tux/nsealr/.restart-tools/goal/qp01-request-engine-correction-runtime/target"
+    },
+    "first_build_receipt": "readiness-stable-pi-01",
+    "first_build_source": "3633e8f064668ef53a407ab6a0ad9ac402f04eb2",
+    "final_provision_receipt": "readiness-stable-pi-03",
+    "final_provision_uses_same_cached_artifact_after_only_harness_change": true,
+    "readelf": {
+      "argv": [
+        "readelf",
+        "-h",
+        "/home/tux/nsealr/.restart-tools/goal/qp01-request-engine-correction-runtime/target/release/libnsealr_pi_engine_fixture.so"
+      ],
+      "exit_code": 0,
+      "stdout": "ELF Header:\n  Magic:   7f 45 4c 46 02 01 01 00 00 00 00 00 00 00 00 00 \n  Class:                             ELF64\n  Data:                              2's complement, little endian\n  Version:                           1 (current)\n  OS/ABI:                            UNIX - System V\n  ABI Version:                       0\n  Type:                              DYN (Shared object file)\n  Machine:                           Advanced Micro Devices X86-64\n  Version:                           0x1\n  Entry point address:               0x0\n  Start of program headers:          64 (bytes into file)\n  Start of section headers:          646632 (bytes into file)\n  Flags:                             0x0\n  Size of this header:               64 (bytes)\n  Size of program headers:           56 (bytes)\n  Number of program headers:         11\n  Size of section headers:           64 (bytes)\n  Number of section headers:         33\n  Section header string table index: 31\n",
+      "stderr": "",
+      "stdout_sha256": "8bd54c844ed024876781da471f42736e454d4abf94dd73c79290cf3e9326febd",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "observed_after_source": "c2b174fe1954c72f9ab3a247bdd1e08ae3923f50",
+      "reused_binary_identity": "1ae2cf24fca1ec59224d3da702b05c44c8466622c1d0bade6d9399a66af0977e"
+    },
+    "not_a_reproducibility_claim": true
+  },
+  "Bridge_build_and_reuse": {
+    "actual_fresh_package_build": {
+      "path": "docs/restart/implementation/QP01/request-engine/evidence/readiness-node-build-01/receipt.json",
+      "sha256": "77f606e2fcb935ff9f2cb5bc54a5b0a6db699b986d76457076846aadb40a3e86"
+    },
+    "offline_install": {
+      "path": "docs/restart/implementation/QP01/request-engine/evidence/readiness-node-setup-01/receipt.json",
+      "sha256": "c78d511fbf35bea75d8eb47092aa4a77c740c50830df90256221b1d3f468b184"
+    },
+    "cache_copy_observation": {
+      "path": "docs/restart/implementation/QP01/request-engine/evidence/readiness-node-setup-01/cache-copy-observation.json",
+      "sha256": "eed7e9c7c35ac9e08535d4a7bb0d7e3523c63d9cd993551657ba56364000ea29"
+    },
+    "source_closure": [
+      {
+        "path": "Cargo.toml",
+        "git_object": "6fd14e7212cd0b933bd89829d5915dd022a3310a",
+        "equals_source_5c": true
+      },
+      {
+        "path": "Cargo.lock",
+        "git_object": "30b7c582eedb056fff86ff18955d89a16f25f1a4",
+        "equals_source_5c": true
+      },
+      {
+        "path": "crates",
+        "git_object": "97bda3f330c47d4881b26f0474d50d3cb0320f55",
+        "equals_source_5c": true
+      },
+      {
+        "path": "vendor",
+        "git_object": "8c4ec5ba25b894911825bba1d9fc7938d67935c6",
+        "equals_source_5c": true
+      },
+      {
+        "path": "packages",
+        "git_object": "a9745f13588ee569d98155fc37f1b76fc526f241",
+        "equals_source_5c": true
+      },
+      {
+        "path": "apps/bridge",
+        "git_object": "30313fd9822649fc617603b16c4b0474fda4c866",
+        "equals_source_5c": true
+      },
+      {
+        "path": "apps/pi",
+        "git_object": "b720befa50da4b45633e63e66b04b199b0a4f2ff",
+        "equals_source_5c": true
+      },
+      {
+        "path": "tools/bridge",
+        "git_object": "2851c48396b64d120c9b483352b735e5bcf397ae",
+        "equals_source_5c": true
+      },
+      {
+        "path": "package.json",
+        "git_object": "43ff4a4ec10151b5fbea0d004eccc18c1df5abf2",
+        "equals_source_5c": true
+      },
+      {
+        "path": "pnpm-lock.yaml",
+        "git_object": "b1a21837ca2a8013e8ee951f1546e5ae0e40436a",
+        "equals_source_5c": true
+      },
+      {
+        "path": "pnpm-workspace.yaml",
+        "git_object": "0b5960fedfeffbf1b6021b1304047e36a1eae3e4",
+        "equals_source_5c": true
+      },
+      {
+        "path": "Makefile",
+        "git_object": "cbcfe45faeb9d34355c3fd177d84c6b5ad0084ec",
+        "equals_source_5c": true
+      },
+      {
+        "path": "ci",
+        "git_object": "3850487c0927f145a8fdf5b2e81817743485f688",
+        "equals_source_5c": true
+      },
+      {
+        "path": "scripts/check_product_gates.py",
+        "git_object": "2235414192548f5a77af50ffb612ee4544efd84a",
+        "equals_source_5c": true
+      },
+      {
+        "path": "scripts/test_product_gates.py",
+        "git_object": "da055f63b95e9ecab52aeb482d787616fc4d23c1",
+        "equals_source_5c": true
+      },
+      {
+        "path": "scripts/audit_rust.py",
+        "git_object": "c38afd825da7dfa531a5926348944f095e29a097",
+        "equals_source_5c": true
+      },
+      {
+        "path": "protocols/contracts/v1",
+        "git_object": "b629e75d18190ded2403ffabe965b595a9bcf6a6",
+        "equals_source_5c": true
+      },
+      {
+        "path": "tests/integration",
+        "git_object": "1ab91f77a3937746ba8be21ff400e7513a607c5f",
+        "equals_source_5c": true
+      }
+    ],
+    "resolution_command": {
+      "argv": [
+        "node",
+        "--input-type=module",
+        "-e",
+        "console.log(JSON.stringify([\"@nsealr/client\",\"@nsealr/policy\",\"@nsealr/protocol\"].map(name=>({name,url:import.meta.resolve(name)}))))"
+      ],
+      "exit_code": 0,
+      "stdout": "[{\"name\":\"@nsealr/client\",\"url\":\"file:///home/tux/nsealr/.restart-tools/goal/qp01-request-engine-correction/packages/client/dist/index.js\"},{\"name\":\"@nsealr/policy\",\"url\":\"file:///home/tux/nsealr/.restart-tools/goal/qp01-request-engine-correction/packages/policy/dist/index.js\"},{\"name\":\"@nsealr/protocol\",\"url\":\"file:///home/tux/nsealr/.restart-tools/goal/qp01-request-engine-correction/packages/protocol/dist/index.js\"}]\n",
+      "stderr": "",
+      "environment": {
+        "path": "docs/restart/implementation/R00/evidence/final/environment.json",
+        "sha256": "5b0f773e07fc90aa4a2b7d62c102bbc7b824b6bab135002ee0a01ad90a0ef001"
+      }
+    },
+    "actual_three_top_level_package_imports": [
+      {
+        "name": "@nsealr/client",
+        "url": "file:///home/tux/nsealr/.restart-tools/goal/qp01-request-engine-correction/packages/client/dist/index.js",
+        "path": "packages/client/dist/index.js",
+        "sha256": "8ce011731646b34b72952265f4b9c4bef9dbfeb5069656f918599438d59f4994"
+      },
+      {
+        "name": "@nsealr/policy",
+        "url": "file:///home/tux/nsealr/.restart-tools/goal/qp01-request-engine-correction/packages/policy/dist/index.js",
+        "path": "packages/policy/dist/index.js",
+        "sha256": "d2e4e9d55e2ef3b5111bdda9007b2c9b0b9c3911d6751877ed16b608527f4664"
+      },
+      {
+        "name": "@nsealr/protocol",
+        "url": "file:///home/tux/nsealr/.restart-tools/goal/qp01-request-engine-correction/packages/protocol/dist/index.js",
+        "path": "packages/protocol/dist/index.js",
+        "sha256": "53e1772e96474497db2011dc4fbf16993a52e3ca0c2c66845efdc848b2ceecdd"
+      }
+    ],
+    "compiled_output_inventory_superset": [
+      {
+        "directory": "packages/browser-provider/dist",
+        "files": 4,
+        "sorted_path_sha256_records_sha256": "719877ac0109297a20991307c71fdc2d93d670e75104bde31793ec782a57f311"
+      },
+      {
+        "directory": "packages/client/dist",
+        "files": 20,
+        "sorted_path_sha256_records_sha256": "556c583908372db11912c7484b8f6d3ae47b9edfde77417aa3479cb209150bff"
+      },
+      {
+        "directory": "packages/core/dist",
+        "files": 6,
+        "sorted_path_sha256_records_sha256": "035a24caae5433a7bfe51c665e38ef96cce182a7550db22b2daf64d769e3d03b"
+      },
+      {
+        "directory": "packages/dev-signer/dist",
+        "files": 4,
+        "sorted_path_sha256_records_sha256": "33f9f3234ae952cf5dae3a037b890b9f4c5f8a5603762536b7380e4b51b837e7"
+      },
+      {
+        "directory": "packages/fixtures/dist",
+        "files": 6,
+        "sorted_path_sha256_records_sha256": "d275f416fd16d816a8c701328603559f887d60df29f7136d713948f33f13391f"
+      },
+      {
+        "directory": "packages/framing/dist",
+        "files": 4,
+        "sorted_path_sha256_records_sha256": "928eefb6e66cb4acc8c81ff0503647988bebaa201e879610587f8eeda25edad4"
+      },
+      {
+        "directory": "packages/nip46/dist",
+        "files": 14,
+        "sorted_path_sha256_records_sha256": "6bfcf4330d3142f360ed830b11a9f34b96e51e0317c633817ac1f7f53e794132"
+      },
+      {
+        "directory": "packages/policy/dist",
+        "files": 4,
+        "sorted_path_sha256_records_sha256": "5f280a38a3aa720762ab862fdbcb32491ee45bb88ab16eca529eda2592976e7f"
+      },
+      {
+        "directory": "packages/protocol/dist",
+        "files": 10,
+        "sorted_path_sha256_records_sha256": "a39a8e0749554c59cd22a6b06f552c4859d9fdcf96b975709bf9ecc1445ba52c"
+      },
+      {
+        "directory": "packages/qr/dist",
+        "files": 4,
+        "sorted_path_sha256_records_sha256": "35dee5a18064fd9f5225fd2474ab41030f134951e77b04526fbfc09d26528364"
+      },
+      {
+        "directory": "packages/review/dist",
+        "files": 4,
+        "sorted_path_sha256_records_sha256": "b6ff70f08b9a99ad0e5f101502c005d725c6b51acb0ac9ef8433d3391cdbb84b"
+      },
+      {
+        "directory": "packages/sdk/dist",
+        "files": 41,
+        "sorted_path_sha256_records_sha256": "d89f7284eab5a695ecc870feacf446893f9d9e13947fc6a5f2d84f044ac18b50"
+      },
+      {
+        "directory": "packages/transport/dist",
+        "files": 4,
+        "sorted_path_sha256_records_sha256": "473b74cec770580e584dce3bd863f2b6bcf507a5849fa32962bdfd5b6d22d3ad"
+      }
+    ],
+    "consumed_direct_Bridge_source": {
+      "path": "apps/bridge/service/src/manual-qr.ts",
+      "sha256": "d2c9aa73f723739a5682f0a2a4b6c88f4b319a70d879766fe7b8f862ee5e82f9"
+    },
+    "reused_prior_full_Bridge_receipt": {
+      "path": "docs/restart/implementation/QP01/request-engine/evidence/stable-07-pi-final/receipt.json",
+      "sha256": "2068ced5e10e800eaf3db2850601dff4a71e94f7538bffd79f73957ecd669074"
+    },
+    "meaning": "The current package build uses exact unchanged packages/tools/lock closure; actual client imports resolve into this worktree compiled output, Bridge manual-port source is unchanged. Prior whole Bridge/core/Rust/coverage/audit evidence retains its original source. No new full Bridge run or native cdylib reproducibility is claimed."
+  },
+  "unchanged_active_author_inputs": [
+    {
+      "path": "Cargo.toml",
+      "sha256": "97475b27f26bbfa1c2d46508c4e719edb3713ea5c76da5987ef5283b9d7245eb"
+    },
+    {
+      "path": "Cargo.lock",
+      "sha256": "2b62ce3fe11650d36ffc015344aa6f9f04b5ef22d6bc05dae218a96d07c8e811"
+    },
+    {
+      "path": "Makefile",
+      "sha256": "6c025fc8299088e505e54bfd91f54526a7d5b591b3629381eedb23366be1956d"
+    },
+    {
+      "path": "ci/ratchet.json",
+      "sha256": "5d4ed8b1c6a9c0267ce934108e5d4f02481b0dd17532426e402bb01fb6cf0cde"
+    },
+    {
+      "path": "scripts/check_product_gates.py",
+      "sha256": "5937f49dc314e8b21156bf2d751b13a885b040b7b8866ac96a1f49e62eefe477"
+    },
+    {
+      "path": "crates/nsealr-pi-engine-fixture/Cargo.toml",
+      "sha256": "6199f807c29406405b839ed71f1791ffb44359e34dff3db5bf8591361a2fb30d"
+    },
+    {
+      "path": "crates/nsealr-pi-engine-fixture/src/lib.rs",
+      "sha256": "7840133113a54d58f81e808e2037e0b5e999d148920f6bf4fea5212fa9a5425a"
+    },
+    {
+      "path": "crates/nsealr-pi-engine-fixture/src/tests.rs",
+      "sha256": "a6178d74e20dc350e99d0ce58f187b13c0d3e7131af9bb4da23f6648bcd24342"
+    },
+    {
+      "path": "apps/pi/app/nsealr_vault/engine_adapter.py",
+      "sha256": "c7d7778e538dc787e328295c67f9702473b87cb7c35d7576d37eab06a51137c7"
+    },
+    {
+      "path": "apps/pi/tests/test_engine_adapter.py",
+      "sha256": "0bde30834d219dbebb2f7e13040a089a2c0bda4b3689d3d4653653dc319e0935"
+    }
+  ],
+  "original_failures_preserved": [
+    "HostedPR45 real timeout afterPi189 at5c; full9member capture original and one complete raw step retained",
+    "Precode readiness interface absent: parent1/child2 reaped/0request on61796",
+    "Cache copy default dereference encountered11 dangling project metadata symlinks; offline fixed-lock install passed from copied content, no source cache or lock changed",
+    "readiness-controls-01: syntax transformation failed before spawning any child",
+    "readiness-controls-02: wrong pre-admission method selection caused one actual public-fixture signing;2children collected. Not a no-signing PASS, intentional warmup or expectation source",
+    "readiness-stable-pi-01: existing provisioning test rejected an extra driver subprocess;188/189, no client campaign. Removed added call; frozen test/sequence retained"
+  ],
+  "command_receipts": [
+    {
+      "path": "docs/restart/implementation/QP01/request-engine/evidence/readiness-controls-01/receipt.json",
+      "sha256": "2e6069bdc7b2d977eda112bc8600aab0b44fcc08e73f2c0eeb8d1e379f385525",
+      "source": "fa93346c3dfe7eaf829424c3b0c41c9c077633b5",
+      "exit_code": 1,
+      "argv": [
+        "env",
+        "NSEALR_QP01_PYTHON=/home/tux/nsealr/.restart-tools/goal/r00/tools/baseline/.work/final/.tools/python/bin/python3",
+        "node",
+        "--import",
+        "tsx/esm",
+        "docs/restart/implementation/QP01/request-engine/client-exchange.ts",
+        "--readiness-controls"
+      ]
+    },
+    {
+      "path": "docs/restart/implementation/QP01/request-engine/evidence/readiness-controls-02/receipt.json",
+      "sha256": "19c32d07ea0dce8dfc259799e6c5411054a6a6d87b884f58d5a16159f13f4bb7",
+      "source": "312321a9a3420bcdbba357c3f508d56b344209d4",
+      "exit_code": 1,
+      "argv": [
+        "env",
+        "NSEALR_QP01_PYTHON=/home/tux/nsealr/.restart-tools/goal/r00/tools/baseline/.work/final/.tools/python/bin/python3",
+        "node",
+        "--import",
+        "tsx/esm",
+        "docs/restart/implementation/QP01/request-engine/client-exchange.ts",
+        "--readiness-controls"
+      ]
+    },
+    {
+      "path": "docs/restart/implementation/QP01/request-engine/evidence/readiness-controls-03/receipt.json",
+      "sha256": "2702ea4f703086723225c5578bc3c39b0e9f74e7733b16948de33625416755a7",
+      "source": "3633e8f064668ef53a407ab6a0ad9ac402f04eb2",
+      "exit_code": 0,
+      "argv": [
+        "env",
+        "NSEALR_QP01_PYTHON=/home/tux/nsealr/.restart-tools/goal/r00/tools/baseline/.work/final/.tools/python/bin/python3",
+        "node",
+        "--import",
+        "tsx/esm",
+        "docs/restart/implementation/QP01/request-engine/client-exchange.ts",
+        "--readiness-controls"
+      ]
+    },
+    {
+      "path": "docs/restart/implementation/QP01/request-engine/evidence/readiness-controls-04/receipt.json",
+      "sha256": "ea08b0e1eb8c11700429ea26ff77718b200abd62ac045d465e9492082808dd73",
+      "source": "b75db930d89a7dfbd9c28036c3d345c81aecd1ac",
+      "exit_code": 0,
+      "argv": [
+        "env",
+        "NSEALR_QP01_PYTHON=/home/tux/nsealr/.restart-tools/goal/r00/tools/baseline/.work/final/.tools/python/bin/python3",
+        "node",
+        "--import",
+        "tsx/esm",
+        "docs/restart/implementation/QP01/request-engine/client-exchange.ts",
+        "--readiness-controls"
+      ]
+    },
+    {
+      "path": "docs/restart/implementation/QP01/request-engine/evidence/readiness-green-01/receipt.json",
+      "sha256": "77cdf33ac3ebbc3edd0f7caae02c3ced5515a69a20354153fe5db8af531dba4e",
+      "source": "fa93346c3dfe7eaf829424c3b0c41c9c077633b5",
+      "exit_code": 0,
+      "argv": [
+        "python3",
+        "-B",
+        "docs/restart/implementation/QP01/request-engine/readiness-regression.py",
+        "--case",
+        "ready_without_request"
+      ]
+    },
+    {
+      "path": "docs/restart/implementation/QP01/request-engine/evidence/readiness-green-02/receipt.json",
+      "sha256": "b126044ae7de96fb579f6160f1be86fa566fb7055e0f56cf3ce0a4b14494473c",
+      "source": "fa93346c3dfe7eaf829424c3b0c41c9c077633b5",
+      "exit_code": 0,
+      "argv": [
+        "python3",
+        "-B",
+        "docs/restart/implementation/QP01/request-engine/readiness-regression.py",
+        "--case",
+        "wrong_hash"
+      ]
+    },
+    {
+      "path": "docs/restart/implementation/QP01/request-engine/evidence/readiness-node-build-01/receipt.json",
+      "sha256": "77f606e2fcb935ff9f2cb5bc54a5b0a6db699b986d76457076846aadb40a3e86",
+      "source": "fa93346c3dfe7eaf829424c3b0c41c9c077633b5",
+      "exit_code": 0,
+      "argv": [
+        "pnpm",
+        "run",
+        "build"
+      ]
+    },
+    {
+      "path": "docs/restart/implementation/QP01/request-engine/evidence/readiness-node-setup-01/receipt.json",
+      "sha256": "c78d511fbf35bea75d8eb47092aa4a77c740c50830df90256221b1d3f468b184",
+      "source": "fa93346c3dfe7eaf829424c3b0c41c9c077633b5",
+      "exit_code": 0,
+      "argv": [
+        "pnpm",
+        "install",
+        "--offline",
+        "--frozen-lockfile",
+        "--ignore-scripts"
+      ]
+    },
+    {
+      "path": "docs/restart/implementation/QP01/request-engine/evidence/readiness-red-01/receipt.json",
+      "sha256": "662c82dda54676230ac8bbbc9a542df1f7b529a87f8cf96b6bfe6d183661b316",
+      "source": "61796c7f8bfd134c8e9fea83ab9462a9d1a1b7dd",
+      "exit_code": 1,
+      "argv": [
+        "python3",
+        "-B",
+        "docs/restart/implementation/QP01/request-engine/readiness-regression.py",
+        "--case",
+        "ready_without_request"
+      ]
+    },
+    {
+      "path": "docs/restart/implementation/QP01/request-engine/evidence/readiness-stable-pi-01/receipt.json",
+      "sha256": "cf4bb4f4495d3c593057c7c98eee221e4e9b37b6b3977c9729d8e76538011a40",
+      "source": "3633e8f064668ef53a407ab6a0ad9ac402f04eb2",
+      "exit_code": 2,
+      "argv": [
+        "make",
+        "-o",
+        "bridge-ci",
+        "pi-ci"
+      ]
+    },
+    {
+      "path": "docs/restart/implementation/QP01/request-engine/evidence/readiness-stable-pi-02/receipt.json",
+      "sha256": "f9578d38385f7dfbcd8a491a7b20e5885d5ec44f979038fa55eeb5c4e64b3496",
+      "source": "c2b174fe1954c72f9ab3a247bdd1e08ae3923f50",
+      "exit_code": 0,
+      "argv": [
+        "make",
+        "-o",
+        "bridge-ci",
+        "pi-ci"
+      ]
+    },
+    {
+      "path": "docs/restart/implementation/QP01/request-engine/evidence/readiness-stable-pi-03/receipt.json",
+      "sha256": "70ecdff5b4f75e24d6f304f2bb66198eaea712696b3fcdd2216bff221953b467",
+      "source": "b75db930d89a7dfbd9c28036c3d345c81aecd1ac",
+      "exit_code": 0,
+      "argv": [
+        "make",
+        "-o",
+        "bridge-ci",
+        "pi-ci"
+      ]
+    }
+  ],
+  "graph_scope": {
+    "base": "5c701113bc2ac2d7b596f7d3fb76574a7cff24b3",
+    "only_changes": "QP01.current_checkpoint and QP01.result_artifacts for this static addendum; all other46 task records and all47 formal states/criteria/dependencies/resources/releases unchanged",
+    "no_direct_rows_assumed": "The two changed harness files were indirectly bound; historical manifests and source IDs remain unchanged",
+    "no_hash_cycle": "Graph binds this static result, never final structural receipts/checks/outer correction manifest"
+  },
+  "historical_manifests": {
+    "author": {
+      "path": "docs/restart/implementation/QP01/request-engine/artifact-manifest.json",
+      "sha256": "4975636e98dc091fdf785e650ea6bf4aaad049896cc4ad8c62ecd88e26e664b5"
+    },
+    "delivery": {
+      "path": "docs/restart/implementation/QP01/request-engine/delivery/artifact-manifest.json",
+      "sha256": "7a8fee43491d83734811ee774e0aba91c1e97b72fe419209dec8464267831736"
+    },
+    "rule": "Validate original members at e44 and5c respectively, not against the corrected working tree. Neither manifest/report was rewritten. Only two harness files and current plan differ among original5c postimages."
+  },
+  "limits": [
+    "No camera/optical path, real keys/entropy/custody, physical consent, ARM/Pi/P4/no_std, secret isolation, task/profile completion or physical release",
+    "No new coordinator/service/framework, warmup signature, replay response, modified actual client/Bridge/core/provider/fixture/limit manifest",
+    "No positive correction outcome until implementation and actual evidence exist",
+    "Cooperative cancellation/output refusal cannot recall native backend effects; callbacks remain trusted and synthetic",
+    "All3QP01/5QH01/6Q02 criteria stay incomplete; no physical resource or release change",
+    "Distinct B01 affected review and root final delivery/protected PR/main gates remain pending; no author hosted CI/PR change"
+  ],
+  "prior_success_before_automatic_readiness_controls": {
+    "source": "c2b174fe1954c72f9ab3a247bdd1e08ae3923f50",
+    "receipt": {
+      "path": "docs/restart/implementation/QP01/request-engine/evidence/readiness-stable-pi-02/receipt.json",
+      "sha256": "f9578d38385f7dfbcd8a491a7b20e5885d5ec44f979038fa55eeb5c4e64b3496"
+    },
+    "scope": "Pi189 and original14-child campaign passed; five readiness controls were a separate focused invocation at that source. This original receipt/output is unchanged."
+  },
+  "recovery": {
+    "original_author_and_delivery_branches_preserved": true,
+    "runtime": "/home/tux/nsealr/.restart-tools/goal/qp01-request-engine-correction-runtime",
+    "unpublished_c2_metadata_draft": "/home/tux/nsealr/.restart-tools/goal/qp01-request-engine-correction-runtime/draft-c2",
+    "meaning": "Saved earlier uncommitted draft is recovery context, not another execution or a replacement of the original c2 receipt."
+  }
+}
