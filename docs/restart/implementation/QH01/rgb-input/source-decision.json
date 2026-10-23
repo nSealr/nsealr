@@ -1,0 +1,45 @@
+{
+  "schema_version": 1,
+  "role": "FinitePillow11.1.0primarypropertycheck andexplicitpre-codecoordinatorcorrection",
+  "initial_proposal": "Decimalroundnearest(299R+587G+114B+500)/1000, maximum255500",
+  "actual_Pillow_source": "L24=(19595R+38470G+7471B+32768); rgb2l usesL24>>16",
+  "selected_specification": "Actualfixedpointformulaabove, u32intermediates, maximum16744448; explicitlycorrectedbyrootbeforecode. Notbit-equivalenttodecimalformula.",
+  "counterexample": {
+    "RGB": [
+      0,
+      0,
+      250
+    ],
+    "decimal_proposal": 29,
+    "Pillow_fixedpoint": 28,
+    "fixed_numerator": 1900518
+  },
+  "primary_sources": [
+    {
+      "url": "https://raw.githubusercontent.com/python-pillow/Pillow/11.1.0/src/libImaging/Convert.c",
+      "ranges": [
+        "39..41 coefficients",
+        "214..219 rgb2l"
+      ]
+    },
+    {
+      "url": "https://raw.githubusercontent.com/python-pillow/Pillow/11.1.0/src/PIL/Image.py",
+      "ranges": [
+        "871..875 documenteddecimalITUcoefficients"
+      ]
+    }
+  ],
+  "unavailable_documentation": "Readthedocs11.1 Image pageunavailableviawebtool; no repeat/alternateversions neededbecausetaggedprimarycodeisavailable.",
+  "scope_limit": "Onlythisintegeralgorithm onRGB888, notgeneralPillowmode/wheel/ICC/gamma/colorimetric/cameraquality equivalence",
+  "historical_base": "5fa5ec3afd0cf1f343743fe347b61728a242b15c",
+  "old_bindings": {
+    "docs/restart/implementation/QH01/rust-qr-worker/src/main.rs": "d4fb28a16316907abec5f3d20a79baf61ce70e67a4ff8858752d60534218fdde",
+    "docs/restart/implementation/QH01/rust-qr-worker/controller.py": "81a1b8c2a607f6aa918a62af98c1d6a2e9ec110dce6a4f5c076b02255b1cc142",
+    "docs/restart/implementation/QH01/rust-qr-worker/Cargo.toml": "0f0fd52a1c47054f3b092f84585fe585908ad4aef7e401b59f27aff1b2c96de3",
+    "docs/restart/implementation/QH01/rust-qr-worker/Cargo.lock": "eb00e1c6ebaa1e241e64574a62902a7ede995c7582cf11bc9d4620bfb4baf243",
+    "docs/restart/implementation/QH01/rust-qr-worker/dependency-register.json": "4143abb31ea4265ecbeb2573e8c585bca127947874fb0f298f009c5598535901"
+  },
+  "R00_unchanged": true,
+  "transitive_lock_and11dependencies_unchanged": true,
+  "source_data_calculation_only": "Derivedhash/pixelcountscomputedfromexistingtrustedfixtureinmemory beforecommit; no decoder/unit/build run yet."
+}
