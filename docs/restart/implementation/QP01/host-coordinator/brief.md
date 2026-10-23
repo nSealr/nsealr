@@ -3,14 +3,14 @@
 Source candidate: `5c701113bc2ac2d7b596f7d3fb76574a7cff24b3`, tree `866c12d4569f4ad18df4adb2f496c11818c666af`.
 This is PR45 delivery source, not a claim of resulting-main adoption or code admission.
 Root must reconcile the actual adopted source once before assigning implementation; no gate is waived here.
-Deliver one fixture-only host coordinator connecting the existing supervised equal-channel RGB worker to the reviewed `EngineAdapter`.
+Deliver one fixture-only host coordinator connecting the explicitly selected RGB922 worker below to the reviewed `EngineAdapter`.
 It must sign the actual incoming request, present Rust-owned review through injected display/input, render the response and exercise the actual client.
 The response-to-client leg is explicitly software-injected; no complete optical return611 or physical consent is claimed.
 All47 task criteria/status/dependency/resource/release sets remain untouched; all QP01/QH01/Q02 criteria remain incomplete.
 
 ## Exact source facts and missing seam
 
-The existing worker accepts240×240 RGB888/stride720/raw172800, waits for session/policy/G, requires equal channels, then uses rqrr `decode_to` with private512 staging.
+The selected RGB922 worker accepts240×240 RGB888/stride720/raw172800, waits for session/policy/G, applies its reviewed fixed-point grayscale conversion, then uses rqrr `decode_to` with private512 staging.
 It returns original QR-symbol bytes only after successful decoding; it has no key or JSON/signing API.
 `rust-qr-worker/controller.py:13–24,28–42,238–255` imports the corpus/base experiment, reads expected files and judges expected outputs.
 Its `supervise(case, owner, directory)` returns a test record, has no cancel input, and acquires before fallible file reads outside its cleanup region.
@@ -34,12 +34,12 @@ The constructor takes explicit trusted worker path/SHA256 and an explicitly prov
 It also takes injected `render_review(Presentation)`, `read_action()`, `render_response(static_frame)`, monotonic clock, auxiliary and cancellation callbacks.
 No key/import/owner handle, seed/session-source namespace, detached approval, selected page or diagnostic digest is accepted.
 The API is synchronous: `run_request_image(rgb: bytes) -> bytes` returns the full original response frame only after its required operations settle.
-Input is exactly172800 bytes with fixed240×240/RGB888/stride720; no file/JPEG parser, capture API, resize, palette or RGB conversion is added.
+Input is exactly172800 bytes with fixed240×240/RGB888/stride720; reuse RGB922 conversion unchanged, adding no file/JPEG parser, capture API, resize, palette or different conversion.
 Callers own acquisition/allocation before this interface; this contract does not bound a camera or image-loader allocation.
 The worker returns a bounded frame of at most512 bytes; pass those exact bytes to `EngineAdapter` without JSON/base64 roundtrip or request reconstruction.
 There is no expected-response file or fixture-response lookup in the operational supervisor.
 Publish a successful decode only for actual acquired exit0, settled IO, no overflow/error and a fresh final eligibility sample; partial decode stays private.
-Blank/noQR, ambiguous detection, non-equal-channel input, decoder error and output overflow are distinct closed failures, with no engine invocation.
+Blank/noQR, ambiguous detection, decoder error and output overflow are distinct closed failures, with no engine invocation; different RGB channels are not themselves an error.
 
 For each Rust `Presentation`, first pass all original label/body/position bytes and index/total to `render_review`; only after it settles call `read_action`.
 Use the existing action meanings0Next/1Approve/2Reject/3Back/4None; invalid actions and callback exceptions fail closed.
@@ -85,13 +85,13 @@ Client deadlines/currentness and pending ownership remain in the existing client
 ## Required independent cases and focused delivery proof
 
 Freeze literal inputs, expected outputs, effects and intended failure layer before runtime edits; preserve genuine RED and corrections.
-Use original13949 equal-channel assets and exact nonce-amended expectations, not output learned from a new encoder/decoder/native result.
+Use original13949 assets, the already-frozen RGB922 in-memory tint and exact nonce-amended expectations, not output learned from a new encoder/decoder/native result.
 - HC01: getkey image98 -> exact frame/identity response198; no review/provider, actual worker status/IO settled.
 - HC02: real sign-request image259 -> every actual Rust review frame/action -> exact independent event/ID/signature response611 -> actual client acceptance.
 - HC03: render that response611 with the existing renderer; direct software injection to the client is explicit, never described as a decoded response image.
 - HC04: blank/noQR and original response611 image/512 overflow refuse before engine/render; zero partial public output, distinct statuses.
 - HC05: raw length/format/relationship errors and wrong/missing executable/hash refuse at their intended pre-spawn boundary; zero child/engine/render effects.
-- HC06: genuine non-equal-channel input refuses in the unchanged worker; do not claim this path accepts ordinary camera RGB or import the separate RGB922 experiment.
+- HC06: reuse the frozen tint (black→0/16/0, white→240/255/255; other original values refuse preparation), derived SHA256 `47929068f16631b1a6624b95fed8fde8db3f2b50483e89a24529e0fee8ae210c`, and require exact198-byte output. Preserve/reuse the selected function's all256-grays and arithmetic controls by exact source; no new corpus or camera/all-input qualification.
 - HC07: cancel before spawn, during session/policy/input and after decode; prove the phase reached, no later engine/output and actual owned-child collection/IO settlement.
 - HC08: wall/IO-overflow/unknown-status and failure before spawn preserve owner cleanup/quarantine; final eligibility is checked after status/IO, including controller delay.
 - HC09: Reject, premature Approve, invalid action and display/input/clock/aux BaseException refuse; every shown byte precedes its corresponding action.
@@ -103,11 +103,15 @@ Use controlled finite helpers only for otherwise unreachable supervisor error/st
 Add focused tests in `apps/pi/tests/test_qr_worker.py` and `test_host_coordinator.py`; do not rewrite historical tests/proofs or weaken negative inputs.
 Default unit tests may inject explicit IO/process boundaries, but must not count those as actual rqrr/native/client execution.
 The scoped host integration driver under this prefix must invoke the one operational supervisor, real pinned worker and real `EngineAdapter` for HC01–04/HC12.
-Use existing verified worker source/lock and pinned local build closure; explicit path/SHA provisioning is a prerequisite, not a hidden fetch, fallback or default route.
+Use selected RGB922 source/unchanged lock and its pinned local build closure; explicit path/SHA provisioning is a prerequisite, not a hidden fetch, fallback or default route.
 No new registry dependency, library/backend selection, lock/vendor/policy/toolchain change or assumption of preinstalled worker is authorized by this brief.
 If that exact provisioning is unavailable, report the missing input before dependent runs; never skip or fabricate a native result.
 After focused checks, run the default full Pi CI and actual client exchange using the existing `request-engine/exchange.py --ci apps/pi` provisioning/order.
 That existing command does not itself provision/exercise the new worker: preserve the separate real host-integration receipt and do not mislabel Pi unit coverage.
+The client conformance wait remains the real100ms. Readiness contract `aca364addf102abc86b37aac5623f4018255d249`, reviewed at `6dcc792b7a021191079eb61fa67836b086626262`, allows process/library initialization before client invocation, with fd4 exactlyR+EOF after real initialization and before any request read/native operation; the uninterrupted5000ms child safety remains.
+That is pre-code scope acceptance, not acceptance of the readiness implementation. Reconcile its actually accepted source before using it; do not assume the correction passed or extend its permission to request work.
+Image/QR/request processing, actual review/signing and asynchronous exchange/child/dispatcher settlement stay within the existing request wait. Existing synchronous preparation/dispatcher prefix before timer creation and response verification after clearing are not newly moved or claimed timed.
+Worker8s/engine100ticks do not extend client100ms or prove end-to-end hardware latency; retain actual timeout/currentness/held-child negatives without threshold changes.
 Preserve full setup/test/lint/audit/docs, Bridge prerequisite, all17 integration obligations, existing coverage floors/checkers and mandatory protected PR/resulting-main gates.
 Reuse source-identical core/S03/K01/old corpus evidence explicitly; no blanket full suite rerun, audit feed fetch or hosted CI polling for this preparation.
 
@@ -120,7 +124,7 @@ Physical comparison and actual client/screen/camera timing still decide framing/
 Exact kit/revision, SoC/userspace ABI/OS image, camera interface/pixel format, display/buttons, operator/access remain unidentified; root's question is already pending.
 Before real deployment, those inputs and native target provisioning must be reconciled; no ARM/Pi/P4/no_std, real-key/provider/custody/release qualification follows.
 
-All following paths are bound to source5c above; SHA256 values identify the actual reviewed mechanisms, not an execution on a future coordinator:
+The following historical mechanism paths are bound to source5c above; the separately selected RGB tuple follows. Hashes identify sources, not execution on a future coordinator:
 - `docs/restart/implementation/QH01/rust-qr-worker/controller.py` lines13–42,92–155,175–255: `81a1b8c2a607f6aa918a62af98c1d6a2e9ec110dce6a4f5c076b02255b1cc142`.
 - `docs/restart/implementation/QH01/linux-worker-experiment/experiment.py` lines24–39,127–159,231–240: `97fa6da85a1f83c5535050f6c77c588800a069a26ed9a7cd7470f616352a76eb`.
 - `docs/restart/implementation/QH01/rust-qr-worker/src/main.rs` lines9–12,38–100: `d4fb28a16316907abec5f3d20a79baf61ce70e67a4ff8858752d60534218fdde`.
@@ -130,5 +134,7 @@ All following paths are bound to source5c above; SHA256 values identify the actu
 - `apps/bridge/service/src/manual-qr.ts` lines57–171: `d2c9aa73f723739a5682f0a2a4b6c88f4b319a70d879766fe7b8f862ee5e82f9`.
 - `docs/restart/implementation/QP01/request-engine/exchange.py` lines16–87: `a6a8aa3e908401727fe83fa5ec42dee09e5dd7e58164a0ce3eea1541d907029c`.
 - Its `client-exchange.ts` lines28–65,68–169: `dc59a9189a245f8b45961e3bb1e1d6f349396989db37acd9053d89f4df0b9456`.
-Reuse immutable worker5fa/A02 independent build review, corrected supervisor06d reviews, request-engine review025b and root delivery review0aa88190 in their original roles.
+Select `docs/restart/implementation/QH01/rgb-input/src/main.rs` from `9220db123eb7ab9c02ef0d407dc6fc8fa3927bf2`, executed source `5b69e1655c461624218b6df0e3d112b3dc726114`, SHA256 `e60b3bc2baec2eded7ee474e101cfa8debd1a88be76d6d7cffce31b4e3e1dcf1` (conversion14–19/66–69; tests113–150).
+Its Cargo.toml/lock are byte-identical to5fa (lock SHA256 `eb00e1c6ebaa1e241e64574a62902a7ede995c7582cf11bc9d4620bfb4baf243`); same11 dependencies, no new registry closure. Reuse exact review `10d8c65725a73fe3d55cb962644da9d291af8674` and root acceptance `c3f39b5a9e45a3ca5354961767e879944258334a`: three arithmetic tests and six fixed host images, not product/target/camera adoption or general decoder proof.
+Retain corrected supervisor06d reviews, request-engine review025b and root delivery review0aa88190 in their original roles; selecting RGB does not make its corpus controller the new operational API.
 The actual API, cancellation and new coordinator correspondence still require implementation, measured focused evidence and distinct review; no current harness supplies those guarantees by declaration.
