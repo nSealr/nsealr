@@ -1,0 +1,153 @@
+
+/home/tux/nsealr/.restart-tools/goal/r00/tools/baseline/.work/final/.tools/python/lib/python3.12/site-packages/secp256k1/_libsecp256k1.cpython-312-x86_64-linux-gnu.so:     file format elf64-x86-64
+
+
+Disassembly of section .init:
+
+Disassembly of section .plt:
+
+Disassembly of section .text:
+
+0000000000011790 <nonce_function_bip340>:
+   11790:	41 57                	push   %r15
+   11792:	41 56                	push   %r14
+   11794:	41 55                	push   %r13
+   11796:	41 54                	push   %r12
+   11798:	49 89 f4             	mov    %rsi,%r12
+   1179b:	55                   	push   %rbp
+   1179c:	53                   	push   %rbx
+   1179d:	48 81 ec a8 00 00 00 	sub    $0xa8,%rsp
+   117a4:	48 8b b4 24 e8 00 00 	mov    0xe8(%rsp),%rsi
+   117ab:	00 
+   117ac:	4d 85 c9             	test   %r9,%r9
+   117af:	0f 84 0b 02 00 00    	je     119c0 <nonce_function_bip340+0x230>
+   117b5:	48 89 fd             	mov    %rdi,%rbp
+   117b8:	49 89 d5             	mov    %rdx,%r13
+   117bb:	48 89 cb             	mov    %rcx,%rbx
+   117be:	4d 89 c6             	mov    %r8,%r14
+   117c1:	48 85 f6             	test   %rsi,%rsi
+   117c4:	0f 84 8e 01 00 00    	je     11958 <nonce_function_bip340+0x1c8>
+   117ca:	48 8d 4c 24 38       	lea    0x38(%rsp),%rcx
+   117cf:	ba 20 00 00 00       	mov    $0x20,%edx
+   117d4:	4c 89 4c 24 10       	mov    %r9,0x10(%rsp)
+   117d9:	48 b8 19 32 dd 24 70 	movabs $0x4eba7e7024dd3219,%rax
+   117e0:	7e ba 4e 
+   117e3:	48 89 44 24 38       	mov    %rax,0x38(%rsp)
+   117e8:	48 89 cf             	mov    %rcx,%rdi
+   117eb:	48 b8 b9 ab 0f ca 6d 	movabs $0xfa3166dca0fabb9,%rax
+   117f2:	16 a3 0f 
+   117f5:	48 89 44 24 40       	mov    %rax,0x40(%rsp)
+   117fa:	48 b8 b1 e4 fb 3a 97 	movabs $0x4c44df973afbe4b1,%rax
+   11801:	df 44 4c 
+   11804:	48 89 44 24 48       	mov    %rax,0x48(%rsp)
+   11809:	48 b8 39 27 ac 4a 0a 	movabs $0x249e850a4aac2739,%rax
+   11810:	85 9e 24 
+   11813:	48 89 44 24 50       	mov    %rax,0x50(%rsp)
+   11818:	48 89 0c 24          	mov    %rcx,(%rsp)
+   1181c:	48 c7 84 24 98 00 00 	movq   $0x40,0x98(%rsp)
+   11823:	00 40 00 00 00 
+   11828:	e8 23 d1 ff ff       	call   e950 <secp256k1_sha256_write>
+   1182d:	48 8b 0c 24          	mov    (%rsp),%rcx
+   11831:	4c 8d 44 24 18       	lea    0x18(%rsp),%r8
+   11836:	4c 89 c6             	mov    %r8,%rsi
+   11839:	4c 89 44 24 08       	mov    %r8,0x8(%rsp)
+   1183e:	48 89 cf             	mov    %rcx,%rdi
+   11841:	e8 2a fc ff ff       	call   11470 <secp256k1_sha256_finalize>
+   11846:	4c 8b 44 24 08       	mov    0x8(%rsp),%r8
+   1184b:	48 8b 0c 24          	mov    (%rsp),%rcx
+   1184f:	4c 8b 4c 24 10       	mov    0x10(%rsp),%r9
+   11854:	4c 89 c0             	mov    %r8,%rax
+   11857:	49 89 cf             	mov    %rcx,%r15
+   1185a:	66 0f 1f 44 00 00    	nopw   0x0(%rax,%rax,1)
+   11860:	0f b6 13             	movzbl (%rbx),%edx
+   11863:	30 10                	xor    %dl,(%rax)
+   11865:	48 83 c0 01          	add    $0x1,%rax
+   11869:	48 83 c3 01          	add    $0x1,%rbx
+   1186d:	48 39 c1             	cmp    %rax,%rcx
+   11870:	75 ee                	jne    11860 <nonce_function_bip340+0xd0>
+   11872:	48 83 bc 24 e0 00 00 	cmpq   $0xd,0xe0(%rsp)
+   11879:	00 0d 
+   1187b:	0f 85 18 01 00 00    	jne    11999 <nonce_function_bip340+0x209>
+   11881:	ba 42 00 00 00       	mov    $0x42,%edx
+   11886:	31 c0                	xor    %eax,%eax
+   11888:	48 8d 0d 39 3c 01 00 	lea    0x13c39(%rip),%rcx        # 254c8 <bip340_algo>
+   1188f:	eb 0b                	jmp    1189c <nonce_function_bip340+0x10c>
+   11891:	0f 1f 80 00 00 00 00 	nopl   0x0(%rax)
+   11898:	0f b6 14 01          	movzbl (%rcx,%rax,1),%edx
+   1189c:	41 38 14 01          	cmp    %dl,(%r9,%rax,1)
+   118a0:	0f 85 f3 00 00 00    	jne    11999 <nonce_function_bip340+0x209>
+   118a6:	48 83 c0 01          	add    $0x1,%rax
+   118aa:	48 83 f8 0d          	cmp    $0xd,%rax
+   118ae:	75 e8                	jne    11898 <nonce_function_bip340+0x108>
+   118b0:	48 b8 35 5b 61 46 f7 	movabs $0xf4bfbff746615b35,%rax
+   118b7:	bf bf f4 
+   118ba:	48 c7 84 24 98 00 00 	movq   $0x40,0x98(%rsp)
+   118c1:	00 40 00 00 00 
+   118c6:	48 89 44 24 38       	mov    %rax,0x38(%rsp)
+   118cb:	48 b8 71 c6 8d 9f b3 	movabs $0x83627ab39f8dc671,%rax
+   118d2:	7a 62 83 
+   118d5:	48 89 44 24 40       	mov    %rax,0x40(%rsp)
+   118da:	48 b8 80 71 21 60 61 	movabs $0x5735866160217180,%rax
+   118e1:	86 35 57 
+   118e4:	48 89 44 24 48       	mov    %rax,0x48(%rsp)
+   118e9:	48 b8 54 9e a2 21 4c 	movabs $0x68b07b4c21a29e54,%rax
+   118f0:	7b b0 68 
+   118f3:	48 89 44 24 50       	mov    %rax,0x50(%rsp)
+   118f8:	4c 89 c6             	mov    %r8,%rsi
+   118fb:	4c 89 ff             	mov    %r15,%rdi
+   118fe:	ba 20 00 00 00       	mov    $0x20,%edx
+   11903:	e8 48 d0 ff ff       	call   e950 <secp256k1_sha256_write>
+   11908:	4c 89 f6             	mov    %r14,%rsi
+   1190b:	4c 89 ff             	mov    %r15,%rdi
+   1190e:	ba 20 00 00 00       	mov    $0x20,%edx
+   11913:	e8 38 d0 ff ff       	call   e950 <secp256k1_sha256_write>
+   11918:	4c 89 ea             	mov    %r13,%rdx
+   1191b:	4c 89 e6             	mov    %r12,%rsi
+   1191e:	4c 89 ff             	mov    %r15,%rdi
+   11921:	e8 2a d0 ff ff       	call   e950 <secp256k1_sha256_write>
+   11926:	4c 89 ff             	mov    %r15,%rdi
+   11929:	48 89 ee             	mov    %rbp,%rsi
+   1192c:	e8 3f fb ff ff       	call   11470 <secp256k1_sha256_finalize>
+   11931:	31 c0                	xor    %eax,%eax
+   11933:	4c 89 ff             	mov    %r15,%rdi
+   11936:	b9 0d 00 00 00       	mov    $0xd,%ecx
+   1193b:	f3 48 ab             	rep stos %rax,%es:(%rdi)
+   1193e:	b8 01 00 00 00       	mov    $0x1,%eax
+   11943:	48 81 c4 a8 00 00 00 	add    $0xa8,%rsp
+   1194a:	5b                   	pop    %rbx
+   1194b:	5d                   	pop    %rbp
+   1194c:	41 5c                	pop    %r12
+   1194e:	41 5d                	pop    %r13
+   11950:	41 5e                	pop    %r14
+   11952:	41 5f                	pop    %r15
+   11954:	c3                   	ret
+   11955:	0f 1f 00             	nopl   (%rax)
+   11958:	31 c0                	xor    %eax,%eax
+   1195a:	ba 54 00 00 00       	mov    $0x54,%edx
+   1195f:	4c 8d 44 24 18       	lea    0x18(%rsp),%r8
+   11964:	48 8d 0d 15 39 01 00 	lea    0x13915(%rip),%rcx        # 25280 <ZERO_MASK.2>
+   1196b:	eb 07                	jmp    11974 <nonce_function_bip340+0x1e4>
+   1196d:	0f 1f 00             	nopl   (%rax)
+   11970:	0f b6 14 01          	movzbl (%rcx,%rax,1),%edx
+   11974:	32 14 03             	xor    (%rbx,%rax,1),%dl
+   11977:	41 88 14 00          	mov    %dl,(%r8,%rax,1)
+   1197b:	48 83 c0 01          	add    $0x1,%rax
+   1197f:	48 83 f8 20          	cmp    $0x20,%rax
+   11983:	75 eb                	jne    11970 <nonce_function_bip340+0x1e0>
+   11985:	48 83 bc 24 e0 00 00 	cmpq   $0xd,0xe0(%rsp)
+   1198c:	00 0d 
+   1198e:	4c 8d 7c 24 38       	lea    0x38(%rsp),%r15
+   11993:	0f 84 e8 fe ff ff    	je     11881 <nonce_function_bip340+0xf1>
+   11999:	48 8b 94 24 e0 00 00 	mov    0xe0(%rsp),%rdx
+   119a0:	00 
+   119a1:	4c 89 ce             	mov    %r9,%rsi
+   119a4:	4c 89 ff             	mov    %r15,%rdi
+   119a7:	4c 89 04 24          	mov    %r8,(%rsp)
+   119ab:	e8 60 fb ff ff       	call   11510 <secp256k1_sha256_initialize_tagged>
+   119b0:	4c 8b 04 24          	mov    (%rsp),%r8
+   119b4:	e9 3f ff ff ff       	jmp    118f8 <nonce_function_bip340+0x168>
+   119b9:	0f 1f 80 00 00 00 00 	nopl   0x0(%rax)
+   119c0:	31 c0                	xor    %eax,%eax
+   119c2:	e9 7c ff ff ff       	jmp    11943 <nonce_function_bip340+0x1b3>
+
+Disassembly of section .fini:

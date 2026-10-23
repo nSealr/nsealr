@@ -1,0 +1,227 @@
+{
+  "schema_version": 1,
+  "verdict": "CONTRACT_EXPECTATION_ERROR_PROVEN_NO_AMENDMENT_APPLIED",
+  "scope": "Original e8 expectation/nonce-source investigation only; not A02 implementation review.",
+  "specification_commit_unchanged": "e8ffed4ed4643c1e74b598c742b81ca718118cf4",
+  "source_chain": {
+    "generator": "raw32-byte event ID to binding, no extra tag/hash",
+    "installed_binding_sha256": "fcce0bd7593070a7cdc450d9556570465c9f8e0770331e6b33028b97c42eabf8",
+    "installed_ELF_sha256": "7bf7d7cec3a072f2a21e8464e42537da1fa56fd7476ad7336baa02c8e1b5ef71",
+    "R00_wheel_sha256": "1041694e429eb465123cb742911d2aad5cbd9e0cf2891aaaf794a887938647d1",
+    "installed_binding_and_ELF_equal_archive": true,
+    "ELF_symbol_addresses": {
+      "sign_custom": "0x20360",
+      "nonce_function_bip340": "0x11790",
+      "NULL_branch": "0x11958",
+      "ZERO_MASK": "0x25280"
+    },
+    "ELF_NULL_property": "Default nonce/data NULL leads to key XOR ZERO_MASK; ZERO_MASK equals pinned BIP0340/aux hash(zero32).",
+    "ELF_external_libsecp_dependency": false,
+    "sdist": {
+      "official_PyPI_SHA256": "82c06712d69ef945220c8b53c1a0d424c2ff6a1f64aee609030df79ad8383397",
+      "C_body_sha256": "598f151cc7910908c3a9fb67246756c51ab46e817a1c7903d7f16a089fb9463c",
+      "header_sha256": "ce0ae56b70d1364f26590c7a17e3bbf6deac2d191972f21f67c92eaa44e30382",
+      "NULL_property": "data==NULL bypasses auxiliary mask and uses key bytes directly.",
+      "relationship_to_R00_ELF": "Not demonstrated; known NULL-branch behavior differs, so version0.14.0 is not sufficient source identity."
+    },
+    "historical_legacy_signature_nonce_policy": "Unknown; neither sdist policy nor R00-current default may be assigned as historical provenance."
+  },
+  "independent_reference": {
+    "upstream_commit": "927b6de9915c9262615a6399de51b200f81e5aa4",
+    "source_sha256": "4b1d4ad9e60820df4a6d239733d52b014bc03e4c47afd757a2fe4d3b586d892c",
+    "exact_signing_input": "raw eventID32, public fixture scalar11\u00d732, auxiliary exactlyzero32",
+    "rule": "t = normalized secret bytes XOR tagged_hash(BIP0340/aux,aux); nonce hash depends on t. Verification does not select a nonce or take auxiliary bytes.",
+    "hash_only_calculation": "hash-calculation.json"
+  },
+  "peer_evidence": {
+    "oracle_Rust_two_messages": {
+      "commit": "26e6ab77ba05d8b6ac7c85784a2cdaaeb2fa1eda",
+      "copy": "sources/A02-two-message-diagnostic.json",
+      "sha256": "ce0909de8a04bd1f905a00953e8702fe710022568b241d99aa0e7680f478e46d"
+    },
+    "current_generator_two_messages": {
+      "commit": "4fd9bbf376b76c12fa639a0bf264730bac1b9749",
+      "executed_source": "558bdf1b755f75d6934a233d01088148144cbd66",
+      "copy": "sources/A02-current-generator-replay.json",
+      "sha256": "12aba8e48d7988fffb68ea2cddb2dbd824a33221c39b09674417210efee960c6",
+      "receipt": "sources/A02-current-generator-receipt.json",
+      "result": "Current generator==explicit-zero oracle==Rust, !=legacy; runtime installed/loaded module identities match analyzed R00 bytes."
+    }
+  },
+  "proposed_later_exact_expectations": [
+    {
+      "source_fixture": "protocols/contracts/v1/vectors/events/kind-1-basic.json",
+      "scalar_hex": "1111111111111111111111111111111111111111111111111111111111111111",
+      "raw_event_id": "2977f107ad2668dbd9f09b8594eff3b5276e21bfe098e60ae3e905e3c861e4d3",
+      "pubkey": "4f355bdcb7cc0af728ef3cceb9615d90684bb5b2ca5f859ab0f0b704075871aa",
+      "aux_hex": "0000000000000000000000000000000000000000000000000000000000000000",
+      "proposed_exact_signature": "d8f39a159fd833bb1f0663c7f03b2ff1c19b27867442a5a372779fe6998a8a28b26c623fed74896a5065b1a6739d1953b9d386d2d57e24cf1f7c1cc353a82635",
+      "legacy_signature_preserved": "2eec0351eb1d651140922d4b1f1bd8135f4474aabf42ec5bda7011087c1a072d71be863646dc162e4d96eacf14afeed2618a4acb0e1134a273a2b8e73039e654",
+      "authority": "Independent pinned S03 reference output in A02 diagnostic26e6, not learned from Rust output; proposal only until root amendment.",
+      "peer_zero_aux_equals_native": true,
+      "peer_legacy_verifies": true
+    },
+    {
+      "source_fixture": "protocols/contracts/v1/vectors/events/kind-1-tags.json",
+      "scalar_hex": "1111111111111111111111111111111111111111111111111111111111111111",
+      "raw_event_id": "0bef8491d04976053cdde3cff1903224b94fdee708712adffb00fe754a634543",
+      "pubkey": "4f355bdcb7cc0af728ef3cceb9615d90684bb5b2ca5f859ab0f0b704075871aa",
+      "aux_hex": "0000000000000000000000000000000000000000000000000000000000000000",
+      "proposed_exact_signature": "1336d914499020b678dd43d19e533233cb7a19de5bd25f8e8ec891319d28c4ea0e4a99d800d3525b17c8b411f116c195ac22496a39c4d321340799a6027bb668",
+      "legacy_signature_preserved": "3538c2bf84dd2008a7a0c0011be7d45e3f4f754a3fd67c87fa8815483299060c26b929330e261e6c69947bd16561b6f7ed64dbc80d0f79852167f165f0c703e0",
+      "authority": "Independent pinned S03 reference output in A02 diagnostic26e6, not learned from Rust output; proposal only until root amendment.",
+      "peer_zero_aux_equals_native": true,
+      "peer_legacy_verifies": true
+    }
+  ],
+  "required_later_change": [
+    "Amend only new adapter contract/tests to use explicit-aux independent exact expected signatures; keep rawID/pubkey/template/canonical/correlation and signature mutation controls.",
+    "Retain legacy fixture bytes as valid verification/interoperability goldens; do not rewrite canonical source/corpus or invent original nonce provenance.",
+    "No change to shared core, fallible exact32 provider, no-fallback policy or release requirements.",
+    "Do not downgrade comparison to generic verification-only acceptance. Root owns precise amendment/admission after this investigation."
+  ],
+  "new_activity_by_this_investigator": {
+    "signature_generation": 0,
+    "signature_verification": 0,
+    "adapter_invocations": 0,
+    "builds": 0,
+    "test_suites": 0,
+    "CI_queries": 0,
+    "authorized_tagged_hash_calculations": 1,
+    "authorized_official_fetches": 2,
+    "fetch_scope": "Only PyPI0.14.0 metadata and its sole checksum-verified sdist; no version/library comparison beyond this artifact."
+  },
+  "repo_source_bindings": [
+    {
+      "commit": "e8ffed4ed4643c1e74b598c742b81ca718118cf4",
+      "path": "protocols/contracts/v1/scripts/generate_fixtures.py",
+      "role": "Current generator helper only; its main/output rewriting was not invoked here.",
+      "mode": "100644",
+      "blob": "d79c0ce118681435fc776a56983f034db4f00838",
+      "sha256": "aadf8b86116f6103d71de9ce2d7ea0c5c9979dfc955b0219a0d5b1b496d6519a",
+      "ranges": [
+        {
+          "start": 46,
+          "end": 66,
+          "sha256": "f8c02379c979ce74f210a216d7f772672102458296c75050010a27147ff6ddea"
+        }
+      ]
+    },
+    {
+      "commit": "e8ffed4ed4643c1e74b598c742b81ca718118cf4",
+      "path": "docs/restart/implementation/S03/oracle-source/bip340_reference.py",
+      "role": "Official pinned default signing formula and separate verification domain; only tagged_hash executed here.",
+      "mode": "100644",
+      "blob": "bf8f16203ac2ec96390da2eb19f0cfd6a14a42cd",
+      "sha256": "4b1d4ad9e60820df4a6d239733d52b014bc03e4c47afd757a2fe4d3b586d892c",
+      "ranges": [
+        {
+          "start": 14,
+          "end": 23,
+          "sha256": "122640d4c0ccbda07d93bf12dbe33644dcbb4b6cb8a9d8c34937bd9739f4033f"
+        },
+        {
+          "start": 96,
+          "end": 145,
+          "sha256": "c23b357c16a84cd7f11f7f241ce9d421ca2d84bc8e26f169aeb328856a2a2e6b"
+        }
+      ]
+    },
+    {
+      "commit": "e8ffed4ed4643c1e74b598c742b81ca718118cf4",
+      "path": "docs/restart/implementation/S03/oracle-source/provenance.json",
+      "role": "Independent reference revision/hash/license.",
+      "mode": "100644",
+      "blob": "719a7452557bd29b5ee7bb3e43ec36ec0bcfd6ff",
+      "sha256": "cac4f93d9dd399f6f010cf5f4db6d53bd9668af9da0499620db48a5cb9360f0d",
+      "ranges": [
+        {
+          "start": 1,
+          "end": 20,
+          "sha256": "cac4f93d9dd399f6f010cf5f4db6d53bd9668af9da0499620db48a5cb9360f0d"
+        }
+      ]
+    },
+    {
+      "commit": "e8ffed4ed4643c1e74b598c742b81ca718118cf4",
+      "path": "docs/restart/implementation/K01/check_observed.py",
+      "role": "Existing exact explicit-aux independent comparison requirement.",
+      "mode": "100644",
+      "blob": "91dab7198d6ae7144397635c55d037c0f8352647",
+      "sha256": "19f3c2cea5325aec83b939d8c425a2f6f2e9f8c959d99b2405b0c4011884240a",
+      "ranges": [
+        {
+          "start": 145,
+          "end": 164,
+          "sha256": "08da1ad453d169315f6e8702dee2c4261c4971a34b546f8d77bb5f25da044e4b"
+        }
+      ]
+    },
+    {
+      "commit": "e8ffed4ed4643c1e74b598c742b81ca718118cf4",
+      "path": "tools/baseline/inputs.json",
+      "role": "R00 wheel pin, not a libsecp source-commit identity.",
+      "mode": "100644",
+      "blob": "81b8b7d660f2ad4db811ac6a3457adfce1007e68",
+      "sha256": "72bf18564b8d61b5d61f76d03f7e480c41a1f930560e4a6c6ab20252952755e6",
+      "ranges": [
+        {
+          "start": 46,
+          "end": 54,
+          "sha256": "8c261a31d72a817e2a213cc7164112950a814c5588446a60dad6744024c37a7e"
+        }
+      ]
+    },
+    {
+      "commit": "e8ffed4ed4643c1e74b598c742b81ca718118cf4",
+      "path": "docs/restart/implementation/QP01/request-engine/expectations.json",
+      "role": "Unchanged e8 expectation under investigation; no amendment in this branch.",
+      "mode": "100644",
+      "blob": "92459f97018fede1a1730110aea2061bb3b04e8e",
+      "sha256": "5948a20781042b67cfe7f5ea5f4114baf1563e38bbafff74d61eeb404eedda82",
+      "ranges": [
+        {
+          "start": 1,
+          "end": 475,
+          "sha256": "5948a20781042b67cfe7f5ea5f4114baf1563e38bbafff74d61eeb404eedda82"
+        }
+      ]
+    },
+    {
+      "commit": "e8ffed4ed4643c1e74b598c742b81ca718118cf4",
+      "path": "protocols/contracts/v1/vectors/events/kind-1-basic.json",
+      "role": "Historical valid basic expected event/ID/signature.",
+      "mode": "100644",
+      "blob": "36c4eb3012184a11da5ed212e9311e469b46e57b",
+      "sha256": "17c97043ba47d69bb476b089c6ee72dcb8808e3174812bdcc36394e711657ac3",
+      "ranges": [
+        {
+          "start": 1,
+          "end": 50,
+          "sha256": "17c97043ba47d69bb476b089c6ee72dcb8808e3174812bdcc36394e711657ac3"
+        }
+      ]
+    },
+    {
+      "commit": "e8ffed4ed4643c1e74b598c742b81ca718118cf4",
+      "path": "protocols/contracts/v1/vectors/events/kind-1-tags.json",
+      "role": "Historical valid tagged expected event/ID/signature.",
+      "mode": "100644",
+      "blob": "5b732d83ec3a909035eb786b55ebe09521793b09",
+      "sha256": "964ddff9fc301a0be1a25ca0a074ae500c1baaaf5ec8b0be9ea278a25a1df0b7",
+      "ranges": [
+        {
+          "start": 1,
+          "end": 94,
+          "sha256": "964ddff9fc301a0be1a25ca0a074ae500c1baaaf5ec8b0be9ea278a25a1df0b7"
+        }
+      ]
+    }
+  ],
+  "limits": [
+    "No build provenance for C embedded in wheel beyond installed ELF/archive identity",
+    "No determination of historical fixture origin/aux policy",
+    "No algorithm vulnerability claim or full implementation acceptance",
+    "Original e8/core/provider/fixtures/failed receipts unchanged"
+  ]
+}
