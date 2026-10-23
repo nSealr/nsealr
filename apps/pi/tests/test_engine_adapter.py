@@ -180,7 +180,8 @@ class EngineAdapterTests(unittest.TestCase):
                      frame(raw.replace(b'"version":2', b'"version":2e0')),
                      frame(raw.replace(b'"version":2', b'"version":-0')),
                      frame(raw.replace(b'"version":2', b'"version":2.0')),
-                     frame(raw[:-1] + b',"approved":true}')]
+                     frame(raw[:-1] + b',"approved":true}'),
+                     frame(raw[:-1] + b',"digest":"' + b"00" * 32 + b'"}')]
         for value in malformed:
             with self.subTest(raw=value), self.assertRaises(EngineError) as caught:
                 self.execute(value)
@@ -204,7 +205,7 @@ class EngineAdapterTests(unittest.TestCase):
         raw = frame(compact(vector("kind-1-basic.json")["request"]))
         def failure(*args):
             raise KeyboardInterrupt("explicit callback BaseException")
-        for name, status in [("local_io", -6), ("monotonic_clock", -7), ("auxiliary", -8), ("cancel", -7)]:
+        for name, status in [("local_io", -6), ("monotonic_clock", -7), ("auxiliary", -8), ("cancel", -11)]:
             with self.subTest(callback=name), self.assertRaises(EngineError) as caught:
                 self.execute(raw, **{name: failure})
             self.assertEqual(caught.exception.status, status)
@@ -215,6 +216,15 @@ class EngineAdapterTests(unittest.TestCase):
         with self.assertRaises(EngineError) as caught:
             self.execute(raw, cancel=lambda: True)
         self.assertEqual(caught.exception.status, -11)
+        interrupted, calls = threading.Event(), []
+        def cancelled_in_auxiliary():
+            calls.append(32)
+            interrupted.set()
+            return bytes(32)
+        with self.assertRaises(EngineError) as caught:
+            self.execute(raw, auxiliary=cancelled_in_auxiliary, cancel=interrupted.is_set)
+        self.assertEqual(caught.exception.status, -11)
+        self.assertEqual(calls, [32])
 
     def test_L01_reentrant_first_clock_and_presentation(self):
         raw = frame(compact(vector("kind-1-basic.json")["request"]))
