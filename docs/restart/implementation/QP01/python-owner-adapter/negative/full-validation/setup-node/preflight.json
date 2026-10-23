@@ -1,0 +1,228 @@
+{
+  "role": "Existing baseline prerequisite/version checks plus local resolution after offline frozen install; no product test or new provisioning framework",
+  "source": "dc0b7c81a12bf83d70b6ce9ecd65b49ce55fc082",
+  "baseline_inputs_sha256": "72bf18564b8d61b5d61f76d03f7e480c41a1f930560e4a6c6ab20252952755e6",
+  "versions": [
+    {
+      "name": "python",
+      "argv": [
+        "python3",
+        "--version"
+      ],
+      "exit": 0,
+      "output": "Python 3.12.15\n"
+    },
+    {
+      "name": "pip",
+      "argv": [
+        "python3",
+        "-m",
+        "pip",
+        "--version"
+      ],
+      "exit": 0,
+      "output": "pip 25.3 from /home/tux/nsealr/.restart-tools/goal/r00/tools/baseline/.work/final/.tools/python/lib/python3.12/site-packages/pip (python 3.12)\n"
+    },
+    {
+      "name": "node",
+      "argv": [
+        "node",
+        "--version"
+      ],
+      "exit": 0,
+      "output": "v24.22.0\n"
+    },
+    {
+      "name": "npm",
+      "argv": [
+        "npm",
+        "--version"
+      ],
+      "exit": 0,
+      "output": "11.19.1\n"
+    },
+    {
+      "name": "pnpm",
+      "argv": [
+        "pnpm",
+        "--version"
+      ],
+      "exit": 0,
+      "output": "10.33.4\n"
+    },
+    {
+      "name": "rust",
+      "argv": [
+        "rustc",
+        "--version"
+      ],
+      "exit": 0,
+      "output": "rustc 1.95.0 (59807616e 2026-04-14)\n"
+    },
+    {
+      "name": "cargo",
+      "argv": [
+        "cargo",
+        "--version"
+      ],
+      "exit": 0,
+      "output": "cargo 1.95.0 (f2d3ce0bd 2026-03-21)\n"
+    },
+    {
+      "name": "rustup",
+      "argv": [
+        "rustup",
+        "--version"
+      ],
+      "exit": 0,
+      "output": "rustup 1.29.1 (d95a37b6a 2026-08-13)\ninfo: This is the version for the rustup toolchain manager, not the rustc compiler.\ninfo: the currently active `rustc` version is `rustc 1.95.0 (59807616e 2026-04-14)`\n"
+    },
+    {
+      "name": "cargo-deny",
+      "argv": [
+        "cargo",
+        "deny",
+        "--version"
+      ],
+      "exit": 0,
+      "output": "cargo-deny 0.20.2\n"
+    },
+    {
+      "name": "cargo-llvm-cov",
+      "argv": [
+        "cargo",
+        "llvm-cov",
+        "--version"
+      ],
+      "exit": 0,
+      "output": "cargo-llvm-cov 0.9.1\n"
+    },
+    {
+      "name": "cc",
+      "argv": [
+        "cc",
+        "--version"
+      ],
+      "exit": 0,
+      "output": "cc (Debian 14.2.0-19) 14.2.0\nCopyright (C) 2024 Free Software Foundation, Inc.\nThis is free software; see the source for copying conditions.  There is NO\nwarranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.\n\n"
+    },
+    {
+      "name": "make",
+      "argv": [
+        "make",
+        "--version"
+      ],
+      "exit": 0,
+      "output": "GNU Make 4.4.1\nBuilt for x86_64-pc-linux-gnu\nCopyright (C) 1988-2023 Free Software Foundation, Inc.\nLicense GPLv3+: GNU GPL version 3 or later <https://gnu.org/licenses/gpl.html>\nThis is free software: you are free to change and redistribute it.\nThere is NO WARRANTY, to the extent permitted by law.\n"
+    },
+    {
+      "name": "git",
+      "argv": [
+        "git",
+        "--version"
+      ],
+      "exit": 0,
+      "output": "git version 2.47.3\n"
+    },
+    {
+      "name": "libc",
+      "argv": [
+        "ldd",
+        "--version"
+      ],
+      "exit": 0,
+      "output": "ldd (Debian GLIBC 2.41-12+deb13u4) 2.41\nCopyright (C) 2024 Free Software Foundation, Inc.\nThis is free software; see the source for copying conditions.  There is NO\nwarranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.\nWritten by Roland McGrath and Ulrich Drepper.\n"
+    },
+    {
+      "name": "local-tsc",
+      "argv": [
+        "pnpm",
+        "exec",
+        "tsc",
+        "--version"
+      ],
+      "exit": 0,
+      "output": "Version 6.0.3\n"
+    },
+    {
+      "name": "local-tsx",
+      "argv": [
+        "pnpm",
+        "exec",
+        "tsx",
+        "--version"
+      ],
+      "exit": 0,
+      "output": "tsx v4.21.0\nnode v24.22.0\n"
+    },
+    {
+      "name": "local-esbuild",
+      "argv": [
+        "pnpm",
+        "exec",
+        "esbuild",
+        "--version"
+      ],
+      "exit": 0,
+      "output": "0.27.7\n"
+    },
+    {
+      "name": "local-vitest",
+      "argv": [
+        "pnpm",
+        "exec",
+        "vitest",
+        "--version"
+      ],
+      "exit": 0,
+      "output": "vitest/4.1.5 linux-x64 node-v24.22.0\n"
+    },
+    {
+      "name": "local-typescript-package",
+      "argv": [
+        "pnpm",
+        "exec",
+        "node",
+        "-p",
+        "require.resolve('typescript/package.json')"
+      ],
+      "exit": 0,
+      "output": "/home/tux/nsealr/.restart-tools/goal/qp01-python-owner-adapter-implementation/node_modules/.pnpm/typescript@6.0.3/node_modules/typescript/package.json\n"
+    }
+  ],
+  "expected_version_checks": {
+    "python": "Python 3.12.15",
+    "node": "v24.22.0",
+    "pnpm": "10.33.4",
+    "rust": "rustc 1.95.0 ",
+    "cargo-deny": "cargo-deny 0.20.2",
+    "cargo-llvm-cov": "cargo-llvm-cov 0.9.1",
+    "local-tsc": "Version 6.0.3"
+  },
+  "local_bins": {
+    "tsc": {
+      "path": "/home/tux/nsealr/.restart-tools/goal/qp01-python-owner-adapter-implementation/node_modules/.bin/tsc",
+      "resolved": "/home/tux/nsealr/.restart-tools/goal/qp01-python-owner-adapter-implementation/node_modules/.bin/tsc",
+      "sha256": "586cb6825b0fedd9be8f27f9921cfaf9be6e1151e68e78595713f0ca1173ac60"
+    },
+    "tsx": {
+      "path": "/home/tux/nsealr/.restart-tools/goal/qp01-python-owner-adapter-implementation/node_modules/.bin/tsx",
+      "resolved": "/home/tux/nsealr/.restart-tools/goal/qp01-python-owner-adapter-implementation/node_modules/.bin/tsx",
+      "sha256": "54ec50bc216c554b19ab3908408a9cc85cffdc00ca4ef23166509684ce5dadb3"
+    },
+    "esbuild": {
+      "path": "/home/tux/nsealr/.restart-tools/goal/qp01-python-owner-adapter-implementation/node_modules/.bin/esbuild",
+      "resolved": "/home/tux/nsealr/.restart-tools/goal/qp01-python-owner-adapter-implementation/node_modules/.bin/esbuild",
+      "sha256": "83ada60e20f0a191856a8af350040fffefb5295a8abfd524a0cb8b62b4051a09"
+    },
+    "vitest": {
+      "path": "/home/tux/nsealr/.restart-tools/goal/qp01-python-owner-adapter-implementation/node_modules/.bin/vitest",
+      "resolved": "/home/tux/nsealr/.restart-tools/goal/qp01-python-owner-adapter-implementation/node_modules/.bin/vitest",
+      "sha256": "9096ac11e9a33487a202849714aeb737ed6678152aee975a01b37701b2fc8b19"
+    }
+  },
+  "cached_wheels_present": 9,
+  "constraints_sha256": "bad549b13582f5382209e1a0be02028500d6edb9a8ff2ea5d31fb5c8cca09b2e",
+  "store": "/home/tux/nsealr/.restart-tools/goal/r00/tools/baseline/.work/final/.tools/cache/pnpm",
+  "source_status": ""
+}
