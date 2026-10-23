@@ -4,11 +4,12 @@ use std::{cell::RefCell, sync::Mutex};
 const BASIC: &[u8] = br#"{"version":2,"request_id":"req-kind-1-basic","method":"sign_event","params":{"event_template":{"created_at":1710000000,"kind":1,"tags":[],"content":"nSealr fixture: basic kind 1 event."}}}"#;
 const GET: &[u8] = br#"{"version":2,"request_id":"req-pubkey-1","method":"get_public_key"}"#;
 static SERIAL: Mutex<()> = Mutex::new(());
+type ObservedPage = (u32, u32, u32, Vec<u8>, Vec<u8>, Vec<u8>);
 #[derive(Default)]
 struct State {
     clocks: usize,
     cancel_calls: usize,
-    pages: Vec<(u32, u32, u32, Vec<u8>, Vec<u8>, Vec<u8>)>,
+    pages: Vec<ObservedPage>,
     providers: usize,
     action: Option<i32>,
     fail_clock: usize,
@@ -384,6 +385,23 @@ fn unwind_cleanup_and_internal_error_mapping() {
         let _active = Active::acquire().unwrap();
         assert_eq!(
             settled(&mut out, |out| {
+                let mut scalar = [0x11; 32];
+                let mut owner = Owner(
+                    AuthorizationSession::new(
+                        limits(),
+                        InspectionGeometry {
+                            columns: 32,
+                            lines: 8,
+                        },
+                    )
+                    .unwrap(),
+                );
+                owner
+                    .0
+                    .select_key(SecretKey::take_from(&mut scalar).unwrap())
+                    .unwrap();
+                owner.0.begin_request(BASIC, Some(0)).unwrap();
+                assert_eq!(owner.0.state(), AuthorizationState::Reviewing);
                 out[0] = 7;
                 panic!("controlled internal Rust unwind")
             }),
