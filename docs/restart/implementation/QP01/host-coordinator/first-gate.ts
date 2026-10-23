@@ -98,11 +98,11 @@ function validateTerminal(row: any, pid: number, phase: any, contract: any, outp
   } else { assert.equal(output.length, 0); assert.equal(row.final_worker_eligible, false); }
 }
 
-async function prepareOwner(root: string, contract: any) {
+async function prepareOwner(root: string, contract: any, syntheticArgv?: string[]) {
   const python = process.env.NSEALR_QP01_PYTHON, binary = process.env.NSEALR_QP01_QR_WORKER;
   assert(python && binary);
   assert.equal(hash(readFileSync(binary)), contract.identities.worker_elf_sha256);
-  const argv = ["-B", resolve(root, "apps/pi/app/nsealr_vault/qr_worker.py"),
+  const argv = syntheticArgv ?? ["-B", resolve(root, "apps/pi/app/nsealr_vault/qr_worker.py"),
     "--worker", binary, "--sha256", contract.identities.worker_elf_sha256];
   const child = spawn(python, argv, { cwd: root, env: process.env, stdio: ["pipe", "pipe", "pipe", "pipe", "pipe", "pipe"] });
   const started = process.hrtime.bigint();
@@ -175,7 +175,7 @@ async function prepareOwner(root: string, contract: any) {
       readyEOF, statusEOF, outEOF, errEOF, status_bytes: seenBytes, commands, phase, terminal,
       output_bytes: output.length, output_sha256: output.length ? hash(output) : null,
       diagnostic_base64: diagnostic.toString("base64"), elapsed_ns: String(process.hrtime.bigint() - started),
-      protocol_error: fault ? String(fault) : null } }));
+      protocol_error: fault ? String(fault) : null, synthetic_no_W_helper: !!syntheticArgv } }));
     assert(!fault, String(fault)); assert(readyEOF && statusEOF && outEOF && errEOF);
     assert.equal(status.length, 0); assert(terminal); assert(child.pid); assert.equal(end.signal, null);
     validateTerminal(terminal, child.pid, phase, contract, output);
@@ -187,10 +187,17 @@ async function prepareOwner(root: string, contract: any) {
   console.log(JSON.stringify({ owner_ready: { pid: child.pid, argv, binary_sha256: contract.identities.worker_elf_sha256,
     startup_ns: String(process.hrtime.bigint() - started), W_spawned: 0, request_bytes: 0 } }));
   return { cancel, settle, isCollected: () => collected,
+    rawControl: (bytes: string) => { control(bytes); },
+    controlEOF: () => command.end(),
+    phase: () => phase,
+    acknowledge: () => { assert(phase && !ack && !cancelled); ack = true; control("G"); },
     disposeUnused: async () => { assert(!presented); if (!unused) { unused = true; control("Q"); child.stdin!.end(); } return settle(); },
-    present: async (image: Buffer, live: () => boolean) => {
+    present: async (image: Buffer, live: () => boolean, phaseHook?: (acknowledge: () => void) => void) => {
       assert(!presented && !unused && !cancelled); presented = true;
-      onPhase = () => { if (!cancelled && live()) { ack = true; control("G"); } else cancel(); };
+      onPhase = () => {
+        const acknowledge = () => { assert(!ack); if (!cancelled && live()) { ack = true; control("G"); } else cancel(); };
+        if (phaseHook) phaseHook(acknowledge); else acknowledge();
+      };
       control("P");
       // Bounded write requests; no image is offered before P or after invalidation.
       for (let at = 0; at < image.length && !cancelled; at += 4096) {
@@ -198,9 +205,9 @@ async function prepareOwner(root: string, contract: any) {
           await new Promise<void>((yes) => { child.stdin!.once("drain", yes); child.stdin!.once("close", yes); });
       }
       if (!child.stdin!.destroyed) child.stdin!.end();
-      const result = await settle(); assert(ack); assert.equal(result.terminal.outcome, "decoded");
-      assert.equal(result.terminal.input_sha256, hash(image));
-      return result.output;
+      const result = await settle();
+      if (result.terminal.outcome === "decoded") { assert(ack); assert.equal(result.terminal.input_sha256, hash(image)); }
+      return result;
     }
   };
 }
@@ -227,85 +234,221 @@ export async function runFirstGate({ prepareNative, basic, root }: {
     assert.equal(native.inputBytes(), 0); assert(owner.isCollected() && native.isCollected());
     console.log(JSON.stringify({ case: "FG0_startup_unused", pass: true, W_spawned: 0, C_input_bytes: 0 }));
   }
-  // SECOND actual end-to-end operation, before adding fault instrumentation.
-  let owner: Awaited<ReturnType<typeof prepareOwner>>, native: Native;
-  const load = (path: string) => JSON.parse(readFileSync(resolve(root, "protocols/contracts/v1", path), "utf8"));
-  const cases = load("vectors/profile-capabilities/cases-v1.json");
-  const request = structuredClone(basic.request);
-  const implementation = parseImplementationProfile(load(cases.implementation_examples.pi_qr));
-  const adapter = structuredClone(implementation);
-  const { conformance_only: _, ...data } = structuredClone(implementation);
-  const reported: FullCapabilities = { ...data, format: "nsealr.capabilities.v1", form: "full" };
-  for (const source of [adapter, reported]) for (const entry of source.methods)
-    Object.assign(entry, { configuration: "configured", availability: "available", reason: null });
-  const limits = parseLimitsManifest(structuredClone(cases.limits_manifest));
-  const snapshot: SignerCompatibilitySnapshot = {
-    implementation, adapter, reported, limits, adapter_limits: structuredClone(limits),
-    connection_id: "qp01.synthetic.connection", generation: 1,
-    review_plan: { request_sha256: hash(JSON.stringify(request)), implementation_id: implementation.implementation_id,
-      connection_id: "qp01.synthetic.connection", generation: 1, context_id: "qp01.synthetic.no-consent",
-      geometry_id: "qp01.unqualified.fixture", pages: 7 }
-  };
-  const account = parseAccountDescriptor(load("vectors/accounts/raspberry-qr-nip06-account-0.json"));
-  account.public_key = basic.signed_event.pubkey;
-  const identity = { surface: "cli" as const, origin: "app:qp01-public-fixture", app_name: "QP01 synthetic engineering fixture" };
-  let pending: Promise<string> | undefined, invalidated = false, opens = 0, scans = 0, closes = 0;
-  let settlePort!: () => void; const portSettled = new Promise<void>((yes) => { settlePort = yes; });
-  let abort: (() => void) | undefined, signal: AbortSignal | undefined;
-  const dispatcher = createManualQrRouteDispatcher({ account_id: account.account_id, route_type: "raspberry_qr_vault",
-    openPort: async (control) => {
-      opens++; signal = control.abort_signal;
-      abort = () => { invalidated = true; owner.cancel(); void native.dispose(); };
-      signal.addEventListener("abort", abort, { once: true });
-      return {
-        present: async (frame) => {
-          control.before_present(); assert.equal(frame, expected.toString("ascii"));
-          console.log(JSON.stringify({ first_before_present: true, node_ns: String(process.hrtime.bigint()) }));
-          try {
-            const decoded = await owner.present(image, () => !invalidated && !native.isCollected());
-            assert(decoded.equals(Buffer.from(frame))); assert(!invalidated && !native.isCollected());
-            // SAME guard while Bridge.presenting is still true. No await or external
-            // work intervenes between this call and the existing synchronous C write.
-            control.before_present();
-            pending = native.send(decoded.toString("ascii"));
-            void pending.catch(() => {});
-            console.log(JSON.stringify({ second_before_present: true, C_input_bytes: native.inputBytes() }));
-          } catch (error) { invalidated = true; owner.cancel(); await native.dispose(); throw error; }
-        },
-        scan: async () => { scans++; assert(pending); return pending; },
-        close: async () => {
-          try {
-            await native.dispose();
-            await owner.settle(); // Revalidate actual O/W status, never C close alone.
-            closes++;
-          } finally { if (abort) signal!.removeEventListener("abort", abort); settlePort(); }
-        }
-      };
+  // The frozen early smoke stays in its original source/receipt; the stable
+  // sequence below includes normal first, then only the admitted fault groups.
+  type Mode = "normal" | "timeout-preG" | "timeout-late" | "cancel-preG" | "cancel-late" |
+    "generation" | "Cdeath" | "control-eof";
+  async function exchangeCase(mode: Mode, id: string) {
+    let owner: Awaited<ReturnType<typeof prepareOwner>>, native: Native;
+    const load = (path: string) => JSON.parse(readFileSync(resolve(root, "protocols/contracts/v1", path), "utf8"));
+    const cases = load("vectors/profile-capabilities/cases-v1.json");
+    const request = structuredClone(basic.request);
+    const implementation = parseImplementationProfile(load(cases.implementation_examples.pi_qr));
+    const adapter = structuredClone(implementation);
+    const { conformance_only: _, ...data } = structuredClone(implementation);
+    const reported: FullCapabilities = { ...data, format: "nsealr.capabilities.v1", form: "full" };
+    for (const source of [adapter, reported]) for (const entry of source.methods)
+      Object.assign(entry, { configuration: "configured", availability: "available", reason: null });
+    const limits = parseLimitsManifest(structuredClone(cases.limits_manifest));
+    const snapshot: SignerCompatibilitySnapshot = {
+      implementation, adapter, reported, limits, adapter_limits: structuredClone(limits),
+      connection_id: "qp01.synthetic.connection", generation: 1,
+      review_plan: { request_sha256: hash(JSON.stringify(request)), implementation_id: implementation.implementation_id,
+        connection_id: "qp01.synthetic.connection", generation: 1, context_id: "qp01.synthetic.no-consent",
+        geometry_id: "qp01.unqualified.fixture", pages: 7 }
+    };
+    const account = parseAccountDescriptor(load("vectors/accounts/raspberry-qr-nip06-account-0.json"));
+    account.public_key = basic.signed_event.pubkey;
+    const identity = { surface: "cli" as const, origin: "app:qp01-public-fixture", app_name: "QP01 synthetic engineering fixture" };
+    let pending: Promise<string> | undefined, invalidated = false, opens = 0, scans = 0, closes = 0;
+    let secondGuard = false, privateDecoded = 0, phaseEntered = false;
+    let settlePort!: () => void, reached!: () => void, release!: () => void;
+    let portSettled = new Promise<void>((yes) => { settlePort = yes; });
+    const held = new Promise<void>((yes) => { reached = yes; });
+    const released = new Promise<void>((yes) => { release = yes; });
+    let abort: (() => void) | undefined, signal: AbortSignal | undefined;
+    const causes: { cause: string; node_ns: string; C_input_bytes: number; W_pid: number | null }[] = [];
+    const localCancel = (cause: string) => {
+      invalidated = true;
+      causes.push({ cause, node_ns: String(process.hrtime.bigint()), C_input_bytes: native.inputBytes(),
+        W_pid: owner.phase()?.worker_pid ?? null });
+      owner.cancel(); void native.dispose();
+    };
+    const dispatcher = createManualQrRouteDispatcher({ account_id: account.account_id, route_type: "raspberry_qr_vault",
+      openPort: async (control) => {
+        opens++; signal = control.abort_signal;
+        abort = () => localCancel("actual_abort_signal");
+        signal.addEventListener("abort", abort, { once: true });
+        return {
+          present: async (frame) => {
+            control.before_present(); assert.equal(frame, expected.toString("ascii"));
+            console.log(JSON.stringify({ case: id, first_before_present: true, node_ns: String(process.hrtime.bigint()) }));
+            try {
+              const result = await owner.present(image, () => !invalidated && !native.isCollected(), (acknowledge) => {
+                phaseEntered = true;
+                if (mode === "timeout-preG") reached();
+                else if (mode === "cancel-preG") { localCancel("private_cancel_preG"); reached(); }
+                else if (mode === "Cdeath") {
+                  causes.push({ cause: "injected_C_SIGKILL_not5000ms", node_ns: String(process.hrtime.bigint()),
+                    C_input_bytes: native.inputBytes(), W_pid: owner.phase().worker_pid });
+                  assert(native.killOwned()); reached();
+                } else if (mode === "control-eof") { owner.controlEOF(); reached(); }
+                else { acknowledge(); if (mode === "generation") snapshot.generation++; }
+              });
+              if (result.terminal.outcome !== "decoded") throw new Error(`O refused: ${result.terminal.outcome}`);
+              const decoded = result.output; privateDecoded = decoded.length;
+              assert(decoded.equals(Buffer.from(frame)));
+              if (mode === "timeout-late") { reached(); await released; }
+              if (mode === "cancel-late") localCancel("private_cancel_after_W_settlement");
+              assert(!invalidated && !native.isCollected());
+              // SAME actual guard while Bridge.presenting remains true; never an
+              // asynchronous continuation after present() returned.
+              control.before_present();
+              pending = native.send(decoded.toString("ascii"));
+              secondGuard = true; void pending.catch(() => {});
+            } catch (error) {
+              invalidated = true; owner.cancel(); await native.dispose();
+              throw error;
+            }
+          },
+          scan: async () => { scans++; assert(pending); return pending; },
+          close: async () => {
+            try {
+              await native.dispose();
+              await owner.settle(); // Real O/W status/EOF, never C close alone.
+              // This Node-only hold proves reservation through aggregate close;
+              // it never stops O or defers its actual W/IO cleanup.
+              if (mode === "timeout-preG") await released;
+              closes++;
+            } finally { if (abort) signal!.removeEventListener("abort", abort); settlePort(); }
+          }
+        };
+      }
+    });
+    const context: LocalServiceContext = { accounts: [account], now: 1, monotonicNow: () => 0,
+      grants: [{ client_id: clientIdForIdentity(identity), origin: identity.origin, surface: identity.surface,
+        allowed_operations: ["dispatch_signer_request"] }], signerCompatibility: () => snapshot, signerDispatcher: dispatcher };
+    const envelope = { version: 1 as const, request_id: "qp01.local.fixture", operation: "dispatch_signer_request" as const,
+      params: { client: identity, route_request: { account_id: account.account_id, method: "sign_event" }, request } };
+    const run = () => handleLocalServiceRequestAsync(envelope, context);
+    ({ owner, native } = await preparePair());
+    void native.ended.then(() => { if (!owner.isCollected()) localCancel("C_actual_close"); });
+    const started = process.hrtime.bigint();
+    let result: any, ownerResult: Awaited<ReturnType<typeof owner.settle>> | undefined;
+    try {
+      const operation = run();
+      if (mode.startsWith("timeout")) {
+        await Promise.race([held, operation.then(() => { throw new Error("operation ended before held phase"); })]);
+        assert.equal((await run() as any).error.code, "runtime_unavailable");
+        assert.equal((await handleLocalServiceRequestAsync(envelope, { ...context }) as any).error.code, "signer_transport_failed");
+        result = await operation;
+        assert.equal(result.error.code, "signer_transport_timeout");
+        assert.equal((await run() as any).error.code, "runtime_unavailable");
+        assert.equal((await handleLocalServiceRequestAsync(envelope, { ...context }) as any).error.code, "signer_transport_failed");
+        assert.equal(closes, 0);
+        release();
+      } else result = await operation;
+      await portSettled;
+      ownerResult = await owner.settle();
+      console.log(JSON.stringify({ case: id, actual_client: result, operation_ns: String(process.hrtime.bigint() - started),
+        causes, phaseEntered, secondGuard, privateDecoded, C_input_bytes: native.inputBytes(), opens, scans, closes }));
+      if (mode === "normal") {
+        assert.equal(result.ok, true, JSON.stringify(result)); assert.deepEqual(result.result.signer_response, basic.response);
+        assert.equal(native.inputBytes(), 259); assert.equal(Buffer.byteLength(await pending!), 611);
+        assert.deepEqual({ opens, scans, closes }, { opens: 1, scans: 1, closes: 1 });
+      } else {
+        assert.equal(result.ok, false, JSON.stringify(result)); assert.equal(native.inputBytes(), 0); assert.equal(secondGuard, false);
+        if (mode === "generation" || mode === "timeout-late" || mode === "cancel-late") {
+          assert.equal(privateDecoded, 259); assert.equal(ownerResult.terminal.outcome, "decoded");
+        } else { assert.equal(ownerResult.terminal.result_bytes, 0); assert.equal(ownerResult.terminal.G_bytes, 0); }
+        if (mode === "Cdeath") assert.equal((await native.ended).signal, "SIGKILL");
+        if (mode === "cancel-preG") assert.equal(ownerResult.terminal.cancel_observed, true);
+        if (mode === "control-eof") assert.equal(ownerResult.terminal.outcome, "control_lost");
+      }
+      assert(owner.isCollected() && native.isCollected());
+      await new Promise<void>((yes) => setImmediate(yes));
+      if (mode.startsWith("timeout")) {
+        // Same dispatcher/context after actual aggregate settlement; no factory
+        // recreation to erase busy/quarantine. Fresh C/O/W, same original image.
+        ({ owner, native } = await preparePair());
+        mode = "normal"; invalidated = false; pending = undefined;
+        portSettled = new Promise<void>((yes) => { settlePort = yes; });
+        void native.ended.then(() => { if (!owner.isCollected()) localCancel("C_actual_close"); });
+        const fresh = await run(); assert.equal(fresh.ok, true, JSON.stringify(fresh));
+        await portSettled; assert(owner.isCollected() && native.isCollected());
+        assert.deepEqual(fresh.result.signer_response, basic.response);
+        console.log(JSON.stringify({ case: id, fresh_same_factory_after_actual_collection: true, C_input_bytes: native.inputBytes() }));
+      }
+    } finally {
+      release(); if (!owner.isCollected()) owner.cancel();
+      await native.dispose();
+      if (opens) await portSettled; else await owner.settle();
+      if (pending) await pending.catch(() => {});
     }
-  });
-  const context: LocalServiceContext = { accounts: [account], now: 1, monotonicNow: () => 0,
-    grants: [{ client_id: clientIdForIdentity(identity), origin: identity.origin, surface: identity.surface,
-      allowed_operations: ["dispatch_signer_request"] }], signerCompatibility: () => snapshot, signerDispatcher: dispatcher };
-  const envelope = { version: 1 as const, request_id: "qp01.local.fixture", operation: "dispatch_signer_request" as const,
-    params: { client: identity, route_request: { account_id: account.account_id, method: "sign_event" }, request } };
-  ({ owner, native } = await preparePair());
-  void native.ended.then(() => { if (!owner.isCollected()) owner.cancel(); });
-  const started = process.hrtime.bigint();
-  let result: unknown;
-  try {
-    result = await handleLocalServiceRequestAsync(envelope, context);
-    console.log(JSON.stringify({ actual_client: result, operation_ns: String(process.hrtime.bigint() - started) }));
-    assert.equal((result as any).ok, true, JSON.stringify(result));
-    assert.deepEqual((result as any).result.signer_response, basic.response);
-    assert.equal(native.inputBytes(), 259); assert.equal(Buffer.byteLength(await pending!), 611);
-    assert.deepEqual({ opens, scans, closes }, { opens: 1, scans: 1, closes: 1 });
-  } finally {
-    if (!owner.isCollected()) owner.cancel();
-    await native.dispose();
-    if (opens) await portSettled; else await owner.settle();
-    if (pending) await pending.catch(() => {});
+    console.log(JSON.stringify({ case: id, pass: true, all_collected: true }));
   }
-  assert(owner.isCollected() && native.isCollected());
-  console.log(JSON.stringify({ case: "FG1_normal259", pass: true, C_input_bytes: 259, response_bytes: 611,
-    actual_client: result, all_collected: true, remaining_FG_groups: "NOT_EXECUTED" }));
+  await exchangeCase("normal", "FG1_normal259");
+  await exchangeCase("timeout-preG", "FG2_timeout_preG");
+  await exchangeCase("timeout-late", "FG2_timeout_late");
+  await exchangeCase("cancel-preG", "FG3_cancel_preG");
+  await exchangeCase("cancel-late", "FG3_cancel_late");
+  await exchangeCase("generation", "FG4_generation");
+  await exchangeCase("Cdeath", "FG5_C_SIGKILL_preG");
+  await exchangeCase("control-eof", "FG6_control_EOF_preG");
+  for (const [id, opcode] of [["FG3_cancel_preP", "X"], ["FG6_invalid_opcode", "Z"],
+    ["FG6_duplicate_P", "PP"], ["FG6_premature_G", "G"]] as const) {
+    const { owner, native } = await preparePair();
+    try {
+      owner.rawControl(opcode);
+      const result = await owner.settle(); await native.dispose();
+      assert.equal(result.terminal.worker_pid, null); assert.equal(result.terminal.result_bytes, 0);
+      assert.equal(native.inputBytes(), 0); assert(native.isCollected() && owner.isCollected());
+      assert.equal(result.terminal.outcome, opcode === "X" ? "cancelled" : "control_malformed");
+      console.log(JSON.stringify({ case: id, pass: true, W_spawned: 0, C_input_bytes: 0 }));
+    } finally { if (!owner.isCollected()) owner.cancel(); await Promise.all([owner.settle(), native.dispose()]); }
+  }
+  {
+    const { owner, native } = await preparePair();
+    await native.dispose(); assert(native.isCollected());
+    owner.cancel(); const result = await owner.settle();
+    assert.equal(result.terminal.worker_pid, null); assert.equal(native.inputBytes(), 0);
+    console.log(JSON.stringify({ case: "FG5_C_early_exit_before_P", pass: true, W_spawned: 0, C_input_bytes: 0 }));
+  }
+  await malformedHelpers(root, contract);
+  console.log(JSON.stringify({ scope: "FG0_through_FG7_host_author_only", groups: 8, pass: true,
+    no_component_or_physical_qualification: true }));
+}
+
+async function malformedHelpers(root: string, contract: any) {
+  // These finite stdlib helpers cannot spawn W. They exercise the live channel
+  // parser only; no fake frame/native response or worker-success claim.
+  const modes = ["ready-extra", "ready-missing", "status-missing", "status-truncated", "status-overflow",
+    "wrong-owner", "wrong-worker", "contradictory-IO", "duplicate-key", "duplicate-terminal", "phase-after-terminal"];
+  for (const mode of modes) {
+    const script = `import os,json,time
+mode=${JSON.stringify(mode)}
+os.write(4,b'RX' if mode=='ready-extra' else b'' if mode=='ready-missing' else b'R');os.close(4)
+os.read(3,1)
+n=time.monotonic_ns()
+r={'v':1,'kind':'terminal','owner_pid':os.getpid(),'outcome':'unused','ownership':'settled','worker_pid':None,'worker_wait':None,'worker_io':{'stdin_closed':None,'stdout_eof':None,'stderr_eof':None,'owned_fds_closed':True},'session_policy_verified':False,'input_bytes_received':0,'input_sha256':None,'G_bytes':0,'image_bytes_sent':0,'stdout_observed':0,'stdout_retained':0,'stderr_observed':0,'stderr_retained':0,'worker_stderr_base64':'','result_bytes':0,'result_sha256':None,'final_worker_eligible':False,'cancel_observed':False,'timing':{'begin_ns':None,'invalidated_ns':str(n),'cleanup_deadline_ns':str(n+4000000000),'settled_ns':str(n),'final_admission_ns':str(n)}}
+if mode=='wrong-owner':r['owner_pid']+=1
+if mode=='wrong-worker':r['worker_pid']=99
+if mode=='contradictory-IO':r['worker_io']['owned_fds_closed']=False
+wire=(json.dumps(r,separators=(',',':'))+'\n').encode()
+if mode=='status-missing':wire=b''
+if mode=='status-truncated':wire=wire[:-1]
+if mode=='status-overflow':wire=b'x'*4097
+if mode=='duplicate-key':wire=wire.replace(b'{',b'{"v":1,',1)
+if mode=='duplicate-terminal':wire+=wire
+if mode=='phase-after-terminal':wire+=b'{"kind":"worker_ready"}\n'
+if mode.startswith('ready-'):wire=b''
+try:os.write(5,wire)
+except BrokenPipeError:pass
+`;
+    await assert.rejects(async () => {
+      const owner = await prepareOwner(root, contract, ["-B", "-c", script]);
+      owner.rawControl("Q"); await owner.settle();
+    });
+    console.log(JSON.stringify({ case: `FG7_${mode}`, pass: true, helper_only: true, W_spawned: 0 }));
+  }
 }
