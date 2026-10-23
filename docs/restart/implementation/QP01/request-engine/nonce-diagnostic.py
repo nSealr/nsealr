@@ -9,15 +9,16 @@ from pathlib import Path
 import sys
 
 ROOT = Path(__file__).resolve().parents[5]
-ORACLE = ROOT / "docs/restart/implementation/S03/oracle-source/bip340_reference.py"
+ORACLE = ROOT / "docs/restart/implementation/S03/oracle.py"
 ORACLE_SHA = "f69bd3446fd4dce92106d29a0dfb13bf9fbdf447cbfdcae1b2dcf9e6c0f1cda5"
 
 
 def main():
     assert hashlib.sha256(ORACLE.read_bytes()).hexdigest() == ORACLE_SHA
-    spec = importlib.util.spec_from_file_location("pinned_s03_bip340", ORACLE)
-    bip = importlib.util.module_from_spec(spec)
-    spec.loader.exec_module(bip)
+    spec = importlib.util.spec_from_file_location("pinned_k01_checker", ROOT / "docs/restart/implementation/K01/check_observed.py")
+    checker = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(checker)
+    _, canonical, bip = checker.load_oracle()
     sys.path.insert(0, str(ROOT / "apps/pi/app"))
     from nsealr_vault.engine_adapter import EngineAdapter
     adapter = EngineAdapter(os.environ["NSEALR_QP01_LIBRARY"], os.environ["NSEALR_QP01_LIBRARY_SHA256"])
@@ -49,15 +50,13 @@ def main():
         response = json.loads(base64.urlsafe_b64decode(payload + b"=" * (-len(payload) % 4)))
         actual = response["result"]["event"]
         template = data["event_template"]
-        canonical = json.dumps([0, pubkey.hex(), template["created_at"], template["kind"],
-                                template["tags"], template["content"]], ensure_ascii=False,
-                               separators=(",", ":")).encode()
-        message = hashlib.sha256(canonical).digest()
+        canonical_bytes = canonical(template, pubkey.hex())
+        message = hashlib.sha256(canonical_bytes).digest()
         zero_aux = bip.schnorr_sign(message, scalar, bytes(32))
         legacy = bytes.fromhex(data["signature"])
         actual_signature = bytes.fromhex(actual["sig"])
         row = {"fixture": str(path.relative_to(ROOT)), "fixture_sha256": hashlib.sha256(path.read_bytes()).hexdigest(),
-               "request_id": data["request"]["request_id"], "canonical_hex": canonical.hex(), "event_id": message.hex(),
+               "request_id": data["request"]["request_id"], "canonical_hex": canonical_bytes.hex(), "event_id": message.hex(),
                "pubkey": pubkey.hex(), "legacy_signature": legacy.hex(), "oracle_zero_aux_signature": zero_aux.hex(),
                "actual_signature": actual_signature.hex(), "auxiliary_callbacks": calls, "presentations": pages,
                "actual_response": response, "input_frame_bytes": len(original_frame),
