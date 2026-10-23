@@ -48,6 +48,22 @@ Its [foundation delivery is now accepted on actual main d41](reviews/QP01-curren
 after normal protected PR41/full PR and actual-main CI. Reuse the source-matched canary and
 K01 proof; do not repeat them merely to update navigation or timestamps.
 
+The next reviewed host component is the [request-aware public-fixture engine](QP01/request-engine/delivery/README.md),
+author e44 with distinct [B01 implementation/runtime review](reviews/QP01-request-engine/report.md)
+025b and [root provenance review](reviews/QP01-request-engine-provenance/report.md)
+8b49. Original static requests traverse the actual Rust owner, complete review,
+consuming authorization and v2 response into the unchanged real client verifier.
+Each separate author/reviewer campaign passed the full189-test host Pi suite,
+two client round trips and the bound negative/settlement cases; assembly adds no
+runtime. The public fixture, trusted callbacks and synthetic presentation do not
+qualify real keys/providers, ARM/Pi/P4, camera/UI, custody or physical consent.
+The new cdylib is source/build/hash-bound, not proven reproducible by the existing
+core/desktop check. All tasks/resources/releases remain unchanged. Preserve the
+original e44 manifest against e44: only its plan postimage differs in the new
+metadata delivery, whose outer manifest covers the current graph. Final delivery
+review, publication and protected PR/main checks remain root-owned. The recorded
+inventory and pending targeted Pi identification are not physical test evidence.
+
 That accepted delivery also carries B01's frozen QH01 [QR ingress component](QH01/qr-ingress/handoff.md)
 from557fe975: only `packages/qr/src/qr.ts` and its tests change outside scoped
 proof. Static and animated early length/work guards retain existing codec limits,
@@ -101,20 +117,22 @@ and root70 synthetic cases plus the default missing-command path retain their
 roles; assembly repeats neither. Only the declared text subset and exact
 ssh/sshd replies can pass; legitimate other configurations may remain blocked.
 No loaded-config/socket/other-SSH/radio/global-security or physical attestation
-follows. One final structural metadata gate set applies to the changed assembly.
-The delivery does not rerun native/crypto/corpus evidence or attribute these
-later experiments to old main994. Root owns final distinct delivery review and
-subsequent protected PR/actual-main integration gates; all task states and
-acceptance/dependency/resource/release sets remain unchanged.
+follows. Those source-specific runs retain their identities; they are not
+measurements of old main994. The foundation and security correction were accepted
+on actual main14d5 after PR44 as recorded below; no task or physical release was
+closed by that integration.
 
 PR44's prior1be CI39945073403 failed on ctutils0.4.3 with36 missing-index warnings.
 The same delivery now includes the distinct-reviewed official ctutils0.4.4 and
 audit-data corrections. Old-lock RED and same-retained-data corrected GREEN stay
 separate from the fresh-data wrapper success. No RGB/map, task closure or physical
-qualification is added. The local amended candidate must receive root's final
-review and push authorization before the sole new hosted CI run. Four audit
-controls run separately; no historical helper count or security threshold is
-artificially preserved.
+qualification is added. Root's distinct final review9b69 accepted deliveryf13;
+normal protected rebase PR44 produced actual main14d5 with the same treeb703.
+PR CI39955645727 and actual-main CI39958129922 passed; root's acceptance is
+`b272035cd26c71badb7695848ac0c3d399ff9bb2`. Original pending reports remain dated
+evidence. Four audit controls run separately; no historical helper count or
+security threshold was artificially preserved. Fresh CI audit data is not the
+retained snapshot used for the earlier combined checks. No CI observer is active.
 
 The sole task authority is [plan/work-items.json](../../../plan/work-items.json).
 Use existing commands, targeted source reads, one CI observer and applicable
