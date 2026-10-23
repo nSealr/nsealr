@@ -33,10 +33,12 @@ The a16 ownership experiment observed C collected while W remained stopped/live;
 O separately killed/reaped W. Its C was a supervisor fixture, not the current
 native exchange; the invalid inference matters if W is nested in that exchange.
 Its source is34e77697, early smoke af15, package
-`a16fa6aae19a98066a206328d20578ce328f34d2`. Root reports an independent replay PASS,
-but the final distinct review has not yet been supplied as a frozen reference.
-Do not call that review finalized or the experimental subreaper an adopted product
-owner. No current native-path leak is reported.
+`a16fa6aae19a98066a206328d20578ce328f34d2`. Distinct review
+`672335344e25b48eca37b9b5f37ca35d80062d8e` and root component acceptance
+`a325acb770aebdd20dfc1b7e119474ee2ba2d189` are now frozen. They accept only the
+bounded experiment; the separate selective assembly remains under review, not
+integrated. The experimental subreaper is not an adopted product owner, and no
+current native-path leak is reported.
 
 ## Two bounded choices
 
@@ -145,8 +147,8 @@ campaign, Pi suite, a new corpus or build research for this documentary decision
 The complete UI/renderer work, fresh provisioning/integration checks and their
 affected tests follow only after this ownership gate is admitted and proven.
 
-Missing now: final frozen distinct review of a16, independent admission of this
-choice, and the executable O/aggregate-close proof above. The exact RGB ELF is
+Missing now: independent admission of this choice and the executable
+O/aggregate-close proof above. The exact RGB ELF is
 available and hash-verified, but this is not distribution/target provisioning.
 There is no new product code, build, test, experiment, signal or CI observation in
 this revision; all task/status/resource/release sets and physical unknowns remain.
