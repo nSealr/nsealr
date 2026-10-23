@@ -1,0 +1,239 @@
+{
+  "schema_version": 1,
+  "task": "QH01",
+  "verdict": "AUTHOR_OBSERVED_RGB888_FIXEDPOINT_AND_STABLE6_PASS_PENDING_DISTINCT_REVIEW",
+  "input": "5fa5ec3afd0cf1f343743fe347b61728a242b15c",
+  "precode": "7d8d705ec8792e7f13f3d71cda9b1fce6541b214",
+  "executed_source": "5b69e1655c461624218b6df0e3d112b3dc726114",
+  "source_hashes": {
+    "docs/restart/implementation/QH01/rgb-input/src/main.rs": "e60b3bc2baec2eded7ee474e101cfa8debd1a88be76d6d7cffce31b4e3e1dcf1",
+    "docs/restart/implementation/QH01/rgb-input/controller.py": "548ddea7c7344956a8aaca86db7bfa280e9e525401b9d7ba47f2d2b7b4a7d0b2",
+    "docs/restart/implementation/QH01/rgb-input/Cargo.toml": "0f0fd52a1c47054f3b092f84585fe585908ad4aef7e401b59f27aff1b2c96de3",
+    "docs/restart/implementation/QH01/rgb-input/Cargo.lock": "eb00e1c6ebaa1e241e64574a62902a7ede995c7582cf11bc9d4620bfb4baf243"
+  },
+  "algorithm_decision": "source-decision.json",
+  "selected_algorithm": "Pillow11.1.0Convert.c fixedpoint(19595R+38470G+7471B+32768)>>16,u32; notinitialdecimalformula, notgeneralmode/wheel/color-managementequivalence",
+  "unit_properties": {
+    "command": "build-evidence/unit-command.json",
+    "tests": 3,
+    "passed": 3,
+    "scope": "Black/white,primaries76/150/29,discriminant(0,0,250)->28,tint9/251,256graysandmax16744448/rangeproof; no exhaustiveRGBcorpus"
+  },
+  "metamorphism": {
+    "source_commit": "13949e4e859de1456f3532cb7fbee2b0cda0cf1c",
+    "source_path": "docs/restart/implementation/QH01/native-qr-probe/execution-01/response-get-public-key.rgb",
+    "source_sha256": "1b56f2926382c7da914a877db899494414988d311c65ff459e2f78a8ab4f0216",
+    "black_to": [
+      0,
+      16,
+      0
+    ],
+    "white_to": [
+      240,
+      255,
+      255
+    ],
+    "other_pixel_policy": "Rejectpreparation, donotmap/retuneanythingelse",
+    "source_pixel_counts": {
+      "black": 34569,
+      "white": 23031
+    },
+    "derived_bytes": 172800,
+    "derived_sha256": "47929068f16631b1a6624b95fed8fde8db3f2b50483e89a24529e0fee8ae210c",
+    "derived_saved_to_disk": false,
+    "expected_gray_black": 9,
+    "expected_gray_white": 251,
+    "expected_output": "original198byteenvelopeexact; no newPNG/RGBcorpus"
+  },
+  "actual_runs": [
+    {
+      "directory": "docs/restart/implementation/QH01/rgb-input/first-tint",
+      "command_sha256": "fadda915e0935b55001cd556f9a69d3443751b8241d331be248f7dd4fbde1cd6",
+      "summary_sha256": "9265e9744db84609a0184a1c152c3f0e07fff21ed744c9d7334ed8165e8a6600",
+      "cases": 1,
+      "role": "Requiredfirsttint198beforedependentcases"
+    },
+    {
+      "directory": "docs/restart/implementation/QH01/rgb-input/stable-6",
+      "command_sha256": "20d28a6babe2ee07594e0dae3d8c5c54176d9b6a4656c15c5de24d1cdb455697",
+      "summary_sha256": "5174e0e17f62899e0e48bca98608abca40e9572a91204a3f65be1ee77c2e5079",
+      "cases": 6,
+      "role": "ONEstablefinal6"
+    }
+  ],
+  "stable_cases": [
+    {
+      "id": "tinted-response-get-public-key",
+      "expected": "exact",
+      "passed": true,
+      "eligible": true,
+      "exit": 0,
+      "input_sha256": "47929068f16631b1a6624b95fed8fde8db3f2b50483e89a24529e0fee8ae210c",
+      "input_in_memory": true,
+      "stdout_bytes": 198,
+      "stderr_bytes": 33,
+      "admission_elapsed_seconds": 0.017621814273297787,
+      "trace": "docs/restart/implementation/QH01/rgb-input/stable-6/tinted-response-get-public-key.json",
+      "trace_sha256": "c80590c1d4f41202c3daeafac49d6cdbc0128b75e9c70a0f548459e352d1114a",
+      "stdout_sha256": "dae39f12a7744d3c82e2d3e1050b02948a3b72612e5835c237054dabc3d8f3cf",
+      "stderr_sha256": "072887418c53724049b1ba265fa5f1fa15ea18da05f5e418ec7233c4b89df3b7"
+    },
+    {
+      "id": "response-get-public-key",
+      "expected": "exact",
+      "passed": true,
+      "eligible": true,
+      "exit": 0,
+      "input_sha256": "1b56f2926382c7da914a877db899494414988d311c65ff459e2f78a8ab4f0216",
+      "input_in_memory": false,
+      "stdout_bytes": 198,
+      "stderr_bytes": 33,
+      "admission_elapsed_seconds": 0.017599893733859062,
+      "trace": "docs/restart/implementation/QH01/rgb-input/stable-6/response-get-public-key.json",
+      "trace_sha256": "863438324f72ffd83ba893eb1e1599feef4fcd5baae06ad6acfc61890ff108ef",
+      "stdout_sha256": "dae39f12a7744d3c82e2d3e1050b02948a3b72612e5835c237054dabc3d8f3cf",
+      "stderr_sha256": "072887418c53724049b1ba265fa5f1fa15ea18da05f5e418ec7233c4b89df3b7"
+    },
+    {
+      "id": "request-get-public-key",
+      "expected": "exact",
+      "passed": true,
+      "eligible": true,
+      "exit": 0,
+      "input_sha256": "ae7571ed47a72318dae22b78109f8c282e906380b96ee72fec273dcdf5c0ead5",
+      "input_in_memory": false,
+      "stdout_bytes": 98,
+      "stderr_bytes": 32,
+      "admission_elapsed_seconds": 0.01536222081631422,
+      "trace": "docs/restart/implementation/QH01/rgb-input/stable-6/request-get-public-key.json",
+      "trace_sha256": "fb3b28bef257f7216da582ff1000fa7eace8d73581428bb30ecc5f05eca3aac9",
+      "stdout_sha256": "106e9aa18d82b767fd7d6c4c073c1d80ba9c9c32e180654fc9c7776092496a37",
+      "stderr_sha256": "4a61e0b848d9a8e260f8fcce869657f5afea3a561c4cecda7d71f0d07470b393"
+    },
+    {
+      "id": "request-kind-1-basic",
+      "expected": "exact",
+      "passed": true,
+      "eligible": true,
+      "exit": 0,
+      "input_sha256": "64d9be602c821c31c0dfd6e952199a328325acdbf9a7e1b3494921942a11055f",
+      "input_in_memory": false,
+      "stdout_bytes": 259,
+      "stderr_bytes": 33,
+      "admission_elapsed_seconds": 0.01781747955828905,
+      "trace": "docs/restart/implementation/QH01/rgb-input/stable-6/request-kind-1-basic.json",
+      "trace_sha256": "d285f2da6fe407705dc16ab3bd6f4f118ce790f825230d09264d182329e706d0",
+      "stdout_sha256": "88a16190a1b1ed033fc9bebe5452af70e9a9783fd6b92305add2ac7134039ff7",
+      "stderr_sha256": "f02bf16bc2fe729c2b0e66c8c82b1d0eadd2331477676b3a2d5b8b1f3157780f"
+    },
+    {
+      "id": "response-kind-1-basic",
+      "expected": "output-overflow",
+      "passed": true,
+      "eligible": false,
+      "exit": 42,
+      "input_sha256": "7b6e4b5665a29a13d722e9860ca10af85b7d2d37fe472beca36b327bc551ab89",
+      "input_in_memory": false,
+      "stdout_bytes": 0,
+      "stderr_bytes": 62,
+      "admission_elapsed_seconds": 0.022091006860136986,
+      "trace": "docs/restart/implementation/QH01/rgb-input/stable-6/response-kind-1-basic.json",
+      "trace_sha256": "abd63f617a0f7b4b115114f40a1d292d5f53c96f3a29eaaf25840816e76e63b6",
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "01813232b7246275d7f3abbeb808685f5623e5edeefc056ee711271a10907d92"
+    },
+    {
+      "id": "blank",
+      "expected": "no-qr",
+      "passed": true,
+      "eligible": false,
+      "exit": 20,
+      "input_sha256": "07a38b70bc25eaddf9c4c4184b18fd9015598d321c56e013eac1b284f1eabe9b",
+      "input_in_memory": false,
+      "stdout_bytes": 0,
+      "stderr_bytes": 21,
+      "admission_elapsed_seconds": 0.011807087808847427,
+      "trace": "docs/restart/implementation/QH01/rgb-input/stable-6/blank.json",
+      "trace_sha256": "4df5e057b98cd719b1d006deaad5745ccdcadf3c693af031f3a94e0c602ab10e",
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "06c49eb7694d81001f1b8517784276f65ff378edd00fa4bf64850522216d6f7c"
+    }
+  ],
+  "stable_summary": {
+    "FDs_equal_initial": true,
+    "actual_QR_decode": true,
+    "actual_final_threads": 1,
+    "all_created_PIDs_collected": true,
+    "cases": [
+      {
+        "id": "tinted-response-get-public-key",
+        "passed": true
+      },
+      {
+        "id": "response-get-public-key",
+        "passed": true
+      },
+      {
+        "id": "request-get-public-key",
+        "passed": true
+      },
+      {
+        "id": "request-kind-1-basic",
+        "passed": true
+      },
+      {
+        "id": "response-kind-1-basic",
+        "passed": true
+      },
+      {
+        "id": "blank",
+        "passed": true
+      }
+    ],
+    "no_keys_or_signing": true,
+    "not_exercised": [],
+    "owned_PIDs": [
+      1491040,
+      1491041,
+      1491042,
+      1491043,
+      1491044,
+      1491046
+    ],
+    "parent_identity_unchanged": true,
+    "parent_limits_unchanged": true,
+    "passed": true
+  },
+  "binary": {
+    "path": "docs/restart/implementation/QH01/rgb-input/.runtime/target/release/nsealr-qh01-rust-qr-worker",
+    "bytes": 669072,
+    "sha256": "1a4af26b3c738807fb0f1a2e6fb7fcca9d480057642150357ad3c5bf774e6542",
+    "target": "x86_64-unknown-linux-gnu",
+    "build_command": "build-evidence/candidate-command.json",
+    "ELF_link_evidence": "build-evidence/identity-commands.json",
+    "ignored_local": true
+  },
+  "dependencies": "Cargo.toml/lockbyteexact5fa; same11archives/22licensebodies boundbycache-source.json andoldpublicprefix. Newcache/target, nofetch/install oroldcachemutation.",
+  "execution_totals": {
+    "Rust_unit_invocations": 1,
+    "candidate_release_builds": 1,
+    "controller_runs": 2,
+    "worker_image_jobs": 7,
+    "detect_attempts": 7,
+    "decode_to_invocations": 6,
+    "stable_image_cases": 6,
+    "new_persisted_RGB_PNG_corpus": 0,
+    "old22_PiCI_or_extra_stress_campaigns": 0,
+    "keys_signing_CI_PR_operations": 0
+  },
+  "limits": [
+    "OnlyRGB888integeralgorithm andonefixedtint+fiveexistingdigitalimages, notgenericPillowmodes/ICC/gamma/colorimetry/cameraquality.",
+    "All13hostfixtureparameters remainunchanged; processASnotRSS/cumulativeallocation, CPUsecondsnotlogicaldecoderwork, deadlineisresultadmissionpointnothardreturnguarantee.",
+    "No atomicbootstraplimit/sessionguarantee, compromisedworker/arbitrarydescendant orparentsecret/file/memoryisolation.",
+    "No filecamera-parser/route/adaptor/default, decoderselection, ARM/Pi/P4/no_std/physicalorclientqualification.611remainsexpected512writerlimitation, notdeletedproductrequirement.",
+    "Distinctexactsource/build/runtime/proofreviewpending; no task/criteria/adoptionclosure."
+  ],
+  "workspace": "Trackednewprefixonly. PreviousQP01probe-readiness.runtimecache retaineduntrackedafterbranchswitch, notpartofthiscandidate. Oldbranches andoldRustELF remainimmutable.",
+  "all47criteria_dependencies_resources_releases_unchanged": true,
+  "self_binding": "FinalGitcommit/tree bindsresultandmanifest; no selfhash."
+}

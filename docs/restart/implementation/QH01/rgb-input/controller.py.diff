@@ -1,0 +1,77 @@
+--- 5fa/controller.py
++++ RGB/controller.py
+@@ -1,4 +1,4 @@
+-"""Fixed-five host Rust QR experiment, derived from corrected06d supervision."""
++"""Fixed-six RGB experiment; minimal source copy of verified5fa supervision."""
+ import argparse
+ import hashlib
+ import importlib.util
+@@ -25,7 +25,7 @@
+ BINARY = HERE / '.runtime/target/release/nsealr-qh01-rust-qr-worker'
+ 
+ 
+-def supervise(case, owner, directory):
++def supervise(case, owner, directory, *, image_bytes=None, binary=BINARY):
+     record = {'id': case['id'], 'expected': case['expected'], 'events': [], 'eligible': False,
+               'control_bytes': 0, 'image_bytes': 0, 'owner_wait': None, 'signals': [], 'actual_QR_decode': True}
+     start = time.monotonic()
+@@ -34,7 +34,9 @@
+     if not owner.acquire():
+         raise RuntimeError('owner unavailable')
+     record['owner_generation'] = owner.generation
+-    image = (ROOT / case['image_path']).read_bytes()
++    image = (ROOT / case['image_path']).read_bytes() if image_bytes is None else image_bytes
++    record['input_in_memory'] = image_bytes is not None
++    record['input_sha256'] = base.digest(image)
+     expected = (ROOT / case['expected_path']).read_bytes() if case.get('expected_path') else None
+     if len(image) != 172800 or len(image) > P['raw_input_bytes'] or 240 > P['maximum_width'] or 240 > P['maximum_height'] or 240 * 240 > P['maximum_pixels']:
+         raise RuntimeError('fixed input relation/bounds failed before spawn')
+@@ -99,9 +101,9 @@
+         actions = [(os.POSIX_SPAWN_DUP2, child_in, 0), (os.POSIX_SPAWN_DUP2, child_out, 1), (os.POSIX_SPAWN_DUP2, child_err, 2)]
+         inherited = {fd for fd in initial if fd > 2 and os.get_inheritable(fd)}
+         actions += [(os.POSIX_SPAWN_CLOSE, fd) for fd in sorted(fds | inherited)]
+-        record['argv'] = [str(BINARY)]
++        record['argv'] = [str(binary)]
+         event('spawn-begin')
+-        pid = os.posix_spawn(str(BINARY), record['argv'], base.CHILD_ENV, file_actions=actions,
++        pid = os.posix_spawn(str(binary), record['argv'], base.CHILD_ENV, file_actions=actions,
+                              setsigmask=(), setsigdef=(signal.SIGPIPE, signal.SIGXCPU, signal.SIGTERM))
+         record['pid'] = pid
+         record['initial_kernel_identity'] = {'sid': os.getsid(pid), 'pgid': os.getpgid(pid)}
+@@ -255,6 +257,26 @@
+     return record
+ 
+ 
++def tint_input():
++    metadata = json.loads((HERE / 'expectations.json').read_text())['metamorphism']
++    original = (ROOT / metadata['source_path']).read_bytes()
++    if base.digest(original) != metadata['source_sha256'] or len(original) != 172800:
++        raise RuntimeError('original tint source mismatch')
++    result = bytearray()
++    for at in range(0, len(original), 3):
++        pixel = original[at:at + 3]
++        if pixel == bytes((0, 0, 0)):
++            result.extend((0, 16, 0))
++        elif pixel == bytes((255, 255, 255)):
++            result.extend((240, 255, 255))
++        else:
++            raise RuntimeError('unadmitted original pixel; no transformation fallback')
++    data = bytes(result)
++    if len(data) != metadata['derived_bytes'] or base.digest(data) != metadata['derived_sha256']:
++        raise RuntimeError('independent derived hash mismatch')
++    return data
++
++
+ def main():
+     parser = argparse.ArgumentParser(description=__doc__)
+     parser.add_argument('--out', type=Path, required=True)
+@@ -272,7 +294,8 @@
+     records = []
+     cases = [c for c in CASES if not args.case or c['id'] == args.case]
+     for case in cases:
+-        record = supervise(case, owner, args.out)
++        image = tint_input() if case.get("derived_in_memory") else None
++        record = supervise(case, owner, args.out, image_bytes=image, binary=BINARY)
+         records.append(record)
+         print(case['id'], 'PASS' if record['passed'] else 'NOT_EXERCISED', record['boundary'], flush=True)
+         if not record['passed']:

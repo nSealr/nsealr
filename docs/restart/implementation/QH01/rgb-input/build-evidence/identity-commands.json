@@ -1,0 +1,71 @@
+{
+  "commands": [
+    {
+      "name": "rustc",
+      "argv": [
+        "rustc",
+        "-vV"
+      ],
+      "cwd": "/home/tux",
+      "exit_code": 0
+    },
+    {
+      "name": "features",
+      "argv": [
+        "cargo",
+        "tree",
+        "--locked",
+        "--offline",
+        "-e",
+        "features",
+        "--manifest-path",
+        "/home/tux/nsealr/.restart-tools/goal/qh01-linux-worker-experiment/docs/restart/implementation/QH01/rgb-input/Cargo.toml"
+      ],
+      "cwd": "/home/tux",
+      "exit_code": 0
+    },
+    {
+      "name": "ELF",
+      "argv": [
+        "readelf",
+        "-h",
+        "-l",
+        "-d",
+        "--version-info",
+        "/home/tux/nsealr/.restart-tools/goal/qh01-linux-worker-experiment/docs/restart/implementation/QH01/rgb-input/.runtime/target/release/nsealr-qh01-rust-qr-worker"
+      ],
+      "cwd": "/home/tux",
+      "exit_code": 0
+    },
+    {
+      "name": "link",
+      "argv": [
+        "ldd",
+        "/home/tux/nsealr/.restart-tools/goal/qh01-linux-worker-experiment/docs/restart/implementation/QH01/rgb-input/.runtime/target/release/nsealr-qh01-rust-qr-worker"
+      ],
+      "cwd": "/home/tux",
+      "exit_code": 0
+    }
+  ],
+  "binary_path": "/home/tux/nsealr/.restart-tools/goal/qh01-linux-worker-experiment/docs/restart/implementation/QH01/rgb-input/.runtime/target/release/nsealr-qh01-rust-qr-worker",
+  "binary_bytes": 669072,
+  "binary_sha256": "1a4af26b3c738807fb0f1a2e6fb7fcca9d480057642150357ad3c5bf774e6542",
+  "resolved_libraries": [
+    {
+      "path": "/lib/x86_64-linux-gnu/libgcc_s.so.1",
+      "resolved": "/usr/lib/x86_64-linux-gnu/libgcc_s.so.1",
+      "sha256": "30c61ab012a4241bed033725a09b61f5fdd3bb7df95ee852d0b096520524c7af"
+    },
+    {
+      "path": "/lib/x86_64-linux-gnu/libc.so.6",
+      "resolved": "/usr/lib/x86_64-linux-gnu/libc.so.6",
+      "sha256": "9792e3cbb541c8f44c7acf5f14f4022ea62998ecc787d326bed4d8b6547dfd92"
+    },
+    {
+      "path": "/lib64/ld-linux-x86-64.so.2",
+      "resolved": "/usr/lib/x86_64-linux-gnu/ld-linux-x86-64.so.2",
+      "sha256": "c8438e4fde1934e61c88311633f00949ff645d5c04cdb8671fa3d78164d2f307"
+    }
+  ],
+  "scope": "HostELF/linkcontextonly, noARM/reproducibility/ICCmodeorPillowwheelequivalenceclaim"
+}

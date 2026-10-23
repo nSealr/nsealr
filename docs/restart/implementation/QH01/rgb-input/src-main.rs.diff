@@ -1,0 +1,75 @@
+--- 5fa/src/main.rs
++++ RGB/src/main.rs
+@@ -10,6 +10,13 @@
+ const H: usize = 240;
+ const RAW: usize = W * H * 3;
+ const CAP: usize = 512;
++
++// Pillow11.1.0 Convert.c L24/rgb2l. Coefficients sum65536; for u8
++// inputs the numerator is at most16744448, so u32 cannot overflow and
++// the shifted result is0..255. Not the decimal299/587/114 rounding.
++fn rgb_to_gray(r: u8, g: u8, b: u8) -> u8 {
++    ((19595 * u32::from(r) + 38470 * u32::from(g) + 7471 * u32::from(b) + 32768) >> 16) as u8
++}
+ 
+ struct Bounded {
+     bytes: [u8; CAP],
+@@ -56,11 +63,10 @@
+         eprintln!("status=short_input");
+         return 72;
+     }
+-    if rgb.chunks_exact(3).any(|c| c[0] != c[1] || c[1] != c[2]) {
+-        eprintln!("status=non_greyscale_fixture");
+-        return 73;
+-    }
+-    let mut image = rqrr::PreparedImage::prepare_from_greyscale(W, H, |x, y| rgb[(y * W + x) * 3]);
++    let mut image = rqrr::PreparedImage::prepare_from_greyscale(W, H, |x, y| {
++        let at = (y * W + x) * 3;
++        rgb_to_gray(rgb[at], rgb[at + 1], rgb[at + 2])
++    });
+     let grids = image.detect_grids();
+     if grids.is_empty() {
+         eprintln!("status=no_qr grids=0");
+@@ -103,3 +109,42 @@
+ fn main() -> ExitCode {
+     ExitCode::from(run())
+ }
++
++#[cfg(test)]
++mod tests {
++    use super::rgb_to_gray;
++
++    #[test]
++    fn known_colors_and_rounding_discriminant() {
++        for (r, g, b, expected) in [
++            (0, 0, 0, 0),
++            (255, 255, 255, 255),
++            (255, 0, 0, 76),
++            (0, 255, 0, 150),
++            (0, 0, 255, 29),
++            (0, 0, 250, 28),
++            (0, 16, 0, 9),
++            (240, 255, 255, 251),
++        ] {
++            assert_eq!(rgb_to_gray(r, g, b), expected);
++        }
++    }
++
++    #[test]
++    fn all_256_grays_are_preserved() {
++        for gray in 0..=255 {
++            assert_eq!(rgb_to_gray(gray, gray, gray), gray);
++        }
++    }
++
++    #[test]
++    fn arithmetic_range_bound() {
++        let coefficients: u32 = 19595 + 38470 + 7471;
++        assert_eq!(coefficients, 65536);
++        let max_numerator: u32 = coefficients * 255 + 32768;
++        assert_eq!(max_numerator, 16744448);
++        assert!(max_numerator < u32::MAX);
++        assert_eq!(32768_u32 >> 16, 0);
++        assert_eq!(max_numerator >> 16, 255);
++    }
++}
