@@ -1,0 +1,25 @@
+{
+  "schema_version": 1,
+  "role": "Precise independent regression expectation committedbeforefix/probeexecution",
+  "finding": "QH-WORKER-RUNTIME-01",
+  "review_commit": "33799c83e1d4fb67b79092aa68c3bd07c28a0111",
+  "old_candidate": "31df3027a6e0903d8efa183dd3d4f964ebdf3949",
+  "old_harness_path": "docs/restart/implementation/QH01/linux-worker-experiment/experiment.py",
+  "old_harness_sha256": "e90e6365453b908df084e3fc4636d7e30d7da4c759250a09f07bf48f0d2ab599",
+  "input": "Unchangedpublic172800B RGB / predetermined198B output; actualkeylessworker, realwait4status0 andFDcleanup. Original13parameters/7overlays/21caseexpectations+sessionamendment unchanged.",
+  "budget_seconds": 8.0,
+  "controlled_pause_seconds": 8.25,
+  "probe_method": "Externalstdlib sys.settrace line callback only inactualrun_case, atfinal positive-eligibility assignment. Beforepausing requireactualownedstatus0, completevalidinput/output, parentFDsetrestored andowner released/notquarantined. Sleep8.25 realmonotonicseconds once, recordbefore/after actualclocks and unchanged8sbudget. Resumeunmodified function. No clock substitution, recordmutation, extra worker/thread, productiontesthook or monkeypatch. Trace onlycontroller; actualspawnedworker runsoriginalscript untraced.",
+  "source_anchor": "FindexactAST assignmentrecord[eligible] inrun_case echo-positivebranch bysource/AST. Do notuselearnedoutputor patchthepredicate; failifambiguous.",
+  "expected_RED_old": "RealvalidIOfirst, pause crosses8s, oldcode incorrectlysets eligibleTrue/PASS. Regression requirement ineligible therefore exits1 andpreserves exact trace/raw/clock/source. Thisdoesnotrewritehistorical22PASS.",
+  "expected_GREEN_fixed": "Sameprobe+pause/inputparameters; finaleligibilitychecks currentmonotonic afteractualwait/IOsettlement andsets eligibleFalse, finalexpiryboundary; ownerremainssafelyreusable afterknowncleanup. Regression exits0 while originalpositive-casevalidator correctlymarks thisdelayedpositive NOT_EXERCISED/ineligible.",
+  "gates": [
+    "Freezeexpectationbeforeprobeorfix",
+    "REDonoldbytesbeforefix; preserve significantfailures",
+    "Minimalfinalclockcheck onlyaftersettlement atresultadmission, nohardreturntimeclaim",
+    "GREENsameregression, relevantfocusedchecks, ONEnewstable22campaign onfinalchangedsource",
+    "Copy/hashinventory andoldentrysnapshots, currentpacketfreeze/push fordistinctA02affectedreview"
+  ],
+  "test_hook_justification": "No internalhookisneeded: Pythonstdlib tracing can introduce a real bounded schedulingdelay at an existinglineevent afterallrequiredcleanup. Wrapper isonefinite regression, not a newframework/sessionengine.",
+  "execution_before_commit": 0
+}
