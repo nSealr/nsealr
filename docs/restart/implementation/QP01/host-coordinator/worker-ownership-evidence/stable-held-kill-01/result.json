@@ -1,0 +1,286 @@
+{
+  "checks": {
+    "FDs_restored": true,
+    "actual_child_settlement": true,
+    "case_outcome": true,
+    "exactly_C_and_W": true,
+    "no_remaining_children": true,
+    "parent_identity_unchanged": true,
+    "parent_limits_unchanged": true,
+    "single_threaded": true
+  },
+  "duration_seconds": 0.0201411172747612,
+  "events": [
+    {
+      "elapsed": 0.0005478234961628914,
+      "identity": {
+        "pgid": 1781396,
+        "pid": 1781412,
+        "ppid": 1781409,
+        "sid": 1781396,
+        "start_ticks": 615923170,
+        "state": "R"
+      },
+      "kind": "initial-owned-handle",
+      "pid": 1781412,
+      "pidfd": 4,
+      "role": "coordinator"
+    },
+    {
+      "elapsed": 0.0006696917116641998,
+      "kind": "reuse-refused",
+      "phase": "live-coordinator-before-start",
+      "quarantined": false
+    },
+    {
+      "elapsed": 0.012582809664309025,
+      "kind": "control-message",
+      "message": {
+        "control_bytes": 0,
+        "image_bytes": 0,
+        "kind": "policy",
+        "pid": 1781413,
+        "policy": {
+          "0": {
+            "previous": [
+              -1,
+              -1
+            ],
+            "readback": [
+              1,
+              2
+            ],
+            "requested": [
+              1,
+              2
+            ]
+          },
+          "4": {
+            "previous": [
+              0,
+              -1
+            ],
+            "readback": [
+              0,
+              0
+            ],
+            "requested": [
+              0,
+              0
+            ]
+          },
+          "9": {
+            "previous": [
+              -1,
+              -1
+            ],
+            "readback": [
+              268435456,
+              268435456
+            ],
+            "requested": [
+              268435456,
+              268435456
+            ]
+          }
+        }
+      }
+    },
+    {
+      "elapsed": 0.012682906351983547,
+      "identity": {
+        "pgid": 1781413,
+        "pid": 1781413,
+        "ppid": 1781412,
+        "sid": 1781413,
+        "start_ticks": 615923170,
+        "state": "S"
+      },
+      "kind": "initial-owned-handle",
+      "pid": 1781413,
+      "pidfd": 5,
+      "role": "worker-late-handoff"
+    },
+    {
+      "elapsed": 0.01321799773722887,
+      "executable_sha256": "1a4af26b3c738807fb0f1a2e6fb7fcca9d480057642150357ad3c5bf774e6542",
+      "identity": {
+        "pgid": 1781413,
+        "pid": 1781413,
+        "ppid": 1781412,
+        "sid": 1781413,
+        "start_ticks": 615923170,
+        "state": "S"
+      },
+      "kind": "pre-G-executable-session-policy-verified",
+      "pid": 1781413,
+      "policy": {
+        "0": [
+          1,
+          2
+        ],
+        "4": [
+          0,
+          0
+        ],
+        "9": [
+          268435456,
+          268435456
+        ]
+      }
+    },
+    {
+      "elapsed": 0.01325164083391428,
+      "kind": "signal",
+      "pid": 1781413,
+      "pidfd": 5,
+      "signal": 19
+    },
+    {
+      "elapsed": 0.013394176959991455,
+      "kind": "control-message",
+      "message": {
+        "control_bytes": 0,
+        "image_bytes": 0,
+        "kind": "stopped",
+        "pid": 1781413,
+        "raw_status": 4991,
+        "stop_signal": 19,
+        "system_seconds": 0.0,
+        "user_seconds": 0.000592
+      }
+    },
+    {
+      "cleanup_deadline": 6159235.717752325,
+      "elapsed": 0.013438859954476357,
+      "kind": "invalidated-no-reuse",
+      "reason": "controlled-coordinator-kill"
+    },
+    {
+      "elapsed": 0.013468224555253983,
+      "kind": "signal",
+      "pid": 1781412,
+      "pidfd": 4,
+      "signal": 9
+    },
+    {
+      "elapsed": 0.01561203133314848,
+      "exitcode": -9,
+      "kind": "actual-terminal-wait4",
+      "maxrss_kernel_units": 18488,
+      "pid": 1781412,
+      "raw_status": 9,
+      "system_seconds": 0.0,
+      "user_seconds": 0.002353
+    },
+    {
+      "elapsed": 0.01775554846972227,
+      "kind": "reuse-refused",
+      "phase": "C-collected-W-not-yet-cleaned",
+      "quarantined": true
+    },
+    {
+      "coordinator_collected": true,
+      "elapsed": 0.017792176455259323,
+      "kind": "discriminant",
+      "pidfd_readable": false,
+      "worker_identity": {
+        "pgid": 1781413,
+        "pid": 1781413,
+        "ppid": 1781409,
+        "sid": 1781413,
+        "start_ticks": 615923170,
+        "state": "T"
+      },
+      "worker_still_live": true,
+      "worker_terminal_status": null
+    },
+    {
+      "elapsed": 0.01787450071424246,
+      "kind": "signal",
+      "pid": 1781413,
+      "pidfd": 5,
+      "signal": 9
+    },
+    {
+      "elapsed": 0.020002568140625954,
+      "exitcode": -9,
+      "kind": "actual-terminal-wait4",
+      "maxrss_kernel_units": 17716,
+      "pid": 1781413,
+      "raw_status": 9,
+      "system_seconds": 0.0,
+      "user_seconds": 0.0006889999999999999
+    },
+    {
+      "elapsed": 0.020052623003721237,
+      "kind": "actual-ECHILD-all-known-statuses-settled"
+    }
+  ],
+  "final_FDs": [
+    0,
+    1,
+    2
+  ],
+  "mode": "held-kill",
+  "owned": {
+    "1781412": {
+      "collected_by_C": false,
+      "fd": 4,
+      "initial": {
+        "pgid": 1781396,
+        "pid": 1781412,
+        "ppid": 1781409,
+        "sid": 1781396,
+        "start_ticks": 615923170,
+        "state": "R"
+      },
+      "role": "coordinator",
+      "wait": {
+        "exitcode": -9,
+        "maxrss_kernel_units": 18488,
+        "pid": 1781412,
+        "raw_status": 9,
+        "system_seconds": 0.0,
+        "user_seconds": 0.002353
+      }
+    },
+    "1781413": {
+      "collected_by_C": false,
+      "fd": 5,
+      "initial": {
+        "pgid": 1781413,
+        "pid": 1781413,
+        "ppid": 1781412,
+        "sid": 1781413,
+        "start_ticks": 615923170,
+        "state": "S"
+      },
+      "role": "worker-late-handoff",
+      "verified_policy": {
+        "0": [
+          1,
+          2
+        ],
+        "4": [
+          0,
+          0
+        ],
+        "9": [
+          268435456,
+          268435456
+        ]
+      },
+      "wait": {
+        "exitcode": -9,
+        "maxrss_kernel_units": 17716,
+        "pid": 1781413,
+        "raw_status": 9,
+        "system_seconds": 0.0,
+        "user_seconds": 0.0006889999999999999
+      }
+    }
+  },
+  "passed": true,
+  "quarantined_during_settlement": true
+}
