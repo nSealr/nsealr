@@ -1,0 +1,344 @@
+{
+  "verdict": "AUTHOR_PASS_F1_F2_CORRECTION_ONLY_DISTINCT_AFFECTED_REVIEW_PENDING",
+  "base_candidate": "1ba98c9b6767eba82ed5ff231ae3d35abcf17337",
+  "root_review": "e4807ce2a2757f1058a72ce9c4b32c7720f9a321",
+  "precode": "cba7117d",
+  "executed_source": "8104c5018bc1bded8cf14533214067335748808d",
+  "receipts": [
+    {
+      "name": "parser-focus-01",
+      "source": "8104c5018bc1bded8cf14533214067335748808d",
+      "tree": "eb1b633d97ce555182890f8dab37a92726f79cf4",
+      "argv": [
+        "node",
+        "--import",
+        "tsx/esm",
+        "docs/restart/implementation/QP01/request-engine/client-exchange.ts",
+        "--first-owner-gate",
+        "--owner-correction-parser"
+      ],
+      "receipt_sha256": "769b5c39dce46aca8e52258fe2b0e70d77dcada58d5a521a9b6c8633c25bc90f",
+      "exit": 0,
+      "duration_seconds": 0.13794729579240084
+    },
+    {
+      "name": "deadline-focus-01",
+      "source": "8104c5018bc1bded8cf14533214067335748808d",
+      "tree": "eb1b633d97ce555182890f8dab37a92726f79cf4",
+      "argv": [
+        "node",
+        "--import",
+        "tsx/esm",
+        "docs/restart/implementation/QP01/request-engine/client-exchange.ts",
+        "--first-owner-gate",
+        "--owner-deadline-control"
+      ],
+      "receipt_sha256": "fa846a2072bc1ccdce8e0886f277804eb94a50b643a8296ac4dba5e1857a2b9b",
+      "exit": 0,
+      "duration_seconds": 0.32208622992038727
+    },
+    {
+      "name": "stable-matrix-01",
+      "source": "8104c5018bc1bded8cf14533214067335748808d",
+      "tree": "eb1b633d97ce555182890f8dab37a92726f79cf4",
+      "argv": [
+        "node",
+        "--import",
+        "tsx/esm",
+        "docs/restart/implementation/QP01/request-engine/client-exchange.ts",
+        "--first-owner-gate"
+      ],
+      "receipt_sha256": "8bfaa9a6156efc837789e4eac2b35183cee891c85d3e8537f66f695a0c4efd57",
+      "exit": 0,
+      "duration_seconds": 1.7603299329057336
+    }
+  ],
+  "stable_groups": 8,
+  "stable_subcases": 39,
+  "original29_preserved": [
+    "FG0_C_handshake_failure",
+    "FG0_C_library_ready_failure",
+    "FG0_actual_pre_admission_refusal",
+    "FG0_pre_presentation_assertion",
+    "FG0_startup_unused",
+    "FG1_normal259",
+    "FG2_timeout_late",
+    "FG2_timeout_preG",
+    "FG3_cancel_late",
+    "FG3_cancel_preG",
+    "FG3_cancel_preP",
+    "FG4_generation",
+    "FG5_C_SIGKILL_preG",
+    "FG5_C_early_exit_before_P",
+    "FG6_control_EOF_preG",
+    "FG6_duplicate_P",
+    "FG6_invalid_opcode",
+    "FG6_premature_G",
+    "FG7_contradictory-IO",
+    "FG7_duplicate-key",
+    "FG7_duplicate-terminal",
+    "FG7_phase-after-terminal",
+    "FG7_ready-extra",
+    "FG7_ready-missing",
+    "FG7_status-missing",
+    "FG7_status-overflow",
+    "FG7_status-truncated",
+    "FG7_wrong-owner",
+    "FG7_wrong-worker"
+  ],
+  "new_cases": [
+    "FG2_elapsed_deadline_before_timer_callback",
+    "FG7_relation_decoded-stderr-overflow",
+    "FG7_relation_decoded-stderr-truncation",
+    "FG7_relation_decoded-stdout-count-mismatch",
+    "FG7_relation_decoded-stdout-overflow",
+    "FG7_relation_decoded-stdout-retained-result-mismatch",
+    "FG7_relation_phase-after-Q",
+    "FG7_relation_phase-before-P",
+    "FG7_relation_unused-with-phase",
+    "FG7_relation_unused-with-worker"
+  ],
+  "deadline_witnesses": [
+    {
+      "run": "deadline-focus-01",
+      "synchronous_guard": {
+        "type": "CapabilityError",
+        "reason": "runtime_unavailable",
+        "message": "local deadline expired or clock rolled back/unavailable",
+        "signal_aborted": false,
+        "hold_begin_ms": 163.131374,
+        "hold_end_ms": 273.144399,
+        "actual_hold_ms": 110.01302500000003,
+        "operation_elapsed_ms": 136.442302,
+        "W_O_collected": true,
+        "private_decoded_bytes": 259,
+        "C_input_bytes": 0
+      },
+      "outer_client_result": {
+        "version": 1,
+        "request_id": "qp01.local.fixture",
+        "ok": false,
+        "error": {
+          "code": "signer_transport_timeout",
+          "message": "local operation deadline expired",
+          "retryable": false
+        }
+      },
+      "separate_layer": "Outer Promise.race may time out during real awaited C disposal; not substituted for guard witness."
+    },
+    {
+      "run": "stable-matrix-01",
+      "synchronous_guard": {
+        "type": "CapabilityError",
+        "reason": "runtime_unavailable",
+        "message": "local deadline expired or clock rolled back/unavailable",
+        "signal_aborted": false,
+        "hold_begin_ms": 928.36426,
+        "hold_end_ms": 1038.387644,
+        "actual_hold_ms": 110.02338399999996,
+        "operation_elapsed_ms": 126.01822499999992,
+        "W_O_collected": true,
+        "private_decoded_bytes": 259,
+        "C_input_bytes": 0
+      },
+      "outer_client_result": {
+        "version": 1,
+        "request_id": "qp01.local.fixture",
+        "ok": false,
+        "error": {
+          "code": "signer_transport_timeout",
+          "message": "local operation deadline expired",
+          "retryable": false
+        }
+      },
+      "separate_layer": "Outer Promise.race may time out during real awaited C disposal; not substituted for guard witness."
+    }
+  ],
+  "pure_parser_controls": [
+    {
+      "case": "FG7_relation_phase-before-P",
+      "pass": true,
+      "pure_synthetic_parser_only": true,
+      "expected_relation": "worker_phase_requires_presented_P_not_unused",
+      "kernel_processes_spawned": 0,
+      "C_input_bytes": 0
+    },
+    {
+      "case": "FG7_relation_phase-after-Q",
+      "pass": true,
+      "pure_synthetic_parser_only": true,
+      "expected_relation": "worker_phase_requires_presented_P_not_unused",
+      "kernel_processes_spawned": 0,
+      "C_input_bytes": 0
+    },
+    {
+      "case": "FG7_relation_unused-with-phase",
+      "pass": true,
+      "pure_synthetic_parser_only": true,
+      "expected_relation": "unused_has_no_phase",
+      "kernel_processes_spawned": 0,
+      "C_input_bytes": 0
+    },
+    {
+      "case": "FG7_relation_unused-with-worker",
+      "pass": true,
+      "pure_synthetic_parser_only": true,
+      "expected_relation": "unused_has_no_worker",
+      "kernel_processes_spawned": 0,
+      "C_input_bytes": 0
+    },
+    {
+      "case": "FG7_relation_decoded-stdout-count-mismatch",
+      "pass": true,
+      "pure_synthetic_parser_only": true,
+      "expected_relation": "decoded_stdout_observed_retained_mismatch",
+      "kernel_processes_spawned": 0,
+      "C_input_bytes": 0
+    },
+    {
+      "case": "FG7_relation_decoded-stdout-overflow",
+      "pass": true,
+      "pure_synthetic_parser_only": true,
+      "expected_relation": "decoded_stdout_overflow",
+      "kernel_processes_spawned": 0,
+      "C_input_bytes": 0
+    },
+    {
+      "case": "FG7_relation_decoded-stdout-retained-result-mismatch",
+      "pass": true,
+      "pure_synthetic_parser_only": true,
+      "expected_relation": "decoded_stdout_retained_result_mismatch",
+      "kernel_processes_spawned": 0,
+      "C_input_bytes": 0
+    },
+    {
+      "case": "FG7_relation_decoded-stderr-overflow",
+      "pass": true,
+      "pure_synthetic_parser_only": true,
+      "expected_relation": "decoded_stderr_overflow",
+      "kernel_processes_spawned": 0,
+      "C_input_bytes": 0
+    },
+    {
+      "case": "FG7_relation_decoded-stderr-truncation",
+      "pass": true,
+      "pure_synthetic_parser_only": true,
+      "expected_relation": "decoded_stderr_observed_retained_mismatch",
+      "kernel_processes_spawned": 0,
+      "C_input_bytes": 0
+    }
+  ],
+  "process_accounting": {
+    "scope": "Stable Node descendants only; Node/runner excluded. Dedup W by terminal PID matched to phase and actual wait4/IO. No synthetic parser fields counted as PIDs.",
+    "unique_kernel_descendants": 64,
+    "role_counts": {
+      "C_implementation": 20,
+      "C_handshake_helper": 1,
+      "O_implementation": 21,
+      "W_implementation": 11,
+      "O_no_W_helpers": 11
+    },
+    "role_PID_sets": {
+      "C_implementation": [
+        1862350,
+        1862352,
+        1862356,
+        1862358,
+        1862360,
+        1862363,
+        1862366,
+        1862369,
+        1862372,
+        1862375,
+        1862380,
+        1862383,
+        1862386,
+        1862389,
+        1862392,
+        1862395,
+        1862397,
+        1862399,
+        1862401,
+        1862403
+      ],
+      "C_handshake_helper": [
+        1862354
+      ],
+      "O_implementation": [
+        1862349,
+        1862351,
+        1862353,
+        1862355,
+        1862357,
+        1862359,
+        1862362,
+        1862365,
+        1862368,
+        1862371,
+        1862374,
+        1862379,
+        1862382,
+        1862385,
+        1862388,
+        1862391,
+        1862394,
+        1862396,
+        1862398,
+        1862400,
+        1862402
+      ],
+      "W_implementation": [
+        1862361,
+        1862364,
+        1862367,
+        1862370,
+        1862373,
+        1862376,
+        1862381,
+        1862384,
+        1862387,
+        1862390,
+        1862393
+      ],
+      "O_no_W_helpers": [
+        1862404,
+        1862405,
+        1862406,
+        1862407,
+        1862408,
+        1862409,
+        1862410,
+        1862411,
+        1862412,
+        1862413,
+        1862414
+      ]
+    },
+    "pure_controls_processes": 0,
+    "focus_deadline_additional_distinct_children": 3,
+    "focus_parser_children": 0
+  },
+  "historical_packet_correspondence": {
+    "source": "1ba98c9b6767eba82ed5ff231ae3d35abcf17337",
+    "original_manifest": "docs/restart/implementation/QP01/host-coordinator/first-gate/artifact-manifest.json",
+    "verified_against_original_source": true,
+    "preserved_postimages": 76,
+    "sole_changed_original_postimage": "docs/restart/implementation/QP01/host-coordinator/first-gate.ts",
+    "rule": "Do not treat the historical manifest as a current driver hash; correction manifest covers current delta."
+  },
+  "reuse": {
+    "O_and_units": "unchanged since644a; five-test receipt reused",
+    "C_owner_and_default": "client-exchange.ts/default inputs unchanged since6db;5+14 receipt reused",
+    "eleven_Python_helpers": "String.raw generated source byte-identical to1ba/f494; previous actual-helper py_compile and provenance retained",
+    "plan": "Entire plan byte-identical; no formal/task/resource/release change"
+  },
+  "failures": "No new failure in three correction commands. Original644a FG7 false green, reader errors and rootF1/F2 findings preserved; old actual-timer evidence is not proof of a real monotonic currentness clock.",
+  "claims_excluded": [
+    "No worker O leak alleged",
+    "No live failed-quarantine/O-death recovery qualification",
+    "No fullPi/Bridge/Rust/hostedCI/build/feed/install",
+    "No device/camera/physical/ARM/Pi/P4/default route/secret/provider/task/release qualification",
+    "Cold source provisioning remains separately assigned"
+  ],
+  "active_processes": "none; commands exited and every actual C/O/helper/W status/IO accounted"
+}
