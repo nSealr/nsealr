@@ -1,0 +1,7 @@
+# Pi probe readiness correction
+
+Correct only hardware_probe.py and focused tests added in test_seed_signer_hardware.py. Existing probe results can pass commented/contradictory boot text or unknown systemctl errors. Freeze independent expectations, execute real RED on the original functions, then make the smallest conservative parser/state correction and run focused tests plus existing Pi CI on the stable candidate.
+
+Supported boot evidence is a short, simple, unconditional target-directive subset: whole-line comments are ignored; exact start_x/camera_auto_detect numeric0/1 and dtparam=spi=on/off, optional surrounding whitespace, and [all]. Missing/off fails; contradictory duplicates and unresolved include/conditionals/overlays/multitarget/malformed/other directives or long entries are blocked. This deliberately does not claim to implement firmware semantics or resolve active hardware/configuration.
+
+For each existing ssh/sshd query, require full explicit state/exit agreement and empty diagnostics before accepting disabled-or-masked plus inactive. Active/enabled remains unsafe; errors, unknown/multiple/inconsistent output and unavailable commands block. Other remote paths, sockets and SSH implementations remain outside the property. Keep all checks read-only and other gates unchanged. A text match does not prove SPI, sensor, display, current loaded config or physical readiness. No key, boot, GPIO, service, CLI, hardware-flow, graph/release or dependency changes.

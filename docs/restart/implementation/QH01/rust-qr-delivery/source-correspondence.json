@@ -3,7 +3,7 @@
   "role": "Selected public source correspondence, not a rerun or measurement of delivery base",
   "integration_base": "994a8b682ed6cd52bb46608b90794c02d2a9d3cb",
   "integration_tree": "a477c08387e937771d047fe96f2885c6d7c7c186",
-  "exact_copied_files": 562,
+  "exact_copied_files": 595,
   "current_manifests": [
     {
       "path": "docs/restart/implementation/QH01/native-decoder-decision/artifact-manifest.json",
@@ -38,6 +38,13 @@
       "sha256": "376df02be1848fc9fa1b36dc06581b93aaf463bb5295f106e750acf0da654138",
       "member_field": "members",
       "members_checked": 48,
+      "passed": true
+    },
+    {
+      "path": "docs/restart/implementation/QP01/probe-readiness/artifact-manifest.json",
+      "sha256": "adc63699a5ec1ace077174021b247a83af2ac062b88368c684133278ef903b2a",
+      "member_field": "artifacts",
+      "members_checked": 21,
       "passed": true
     }
   ],
@@ -181,7 +188,90 @@
       "author_ELF_sha256": "d0bd5e36d9303cab7c33aebf868e5f52394265b95f3b851a3366f2a8203db559",
       "independent_ELF_sha256": "b794d46b724cfa0dbd1fd2dfb8b36a27624325ed2cd73f4e77972b97a06a1eaf",
       "reproducibility_claim": false
+    },
+    "Pi_readiness": {
+      "candidate": "4ab6e46e3f6e332d38bb049ed4988bec9f3550cf",
+      "author_executed_source": "69a090254738cbf6368b37c2ebb820a99bf83ea4",
+      "root_review": "7f7a32617d8f5a7340a014f8a72914b9a6cc677e",
+      "current_main_execution_claim": false,
+      "delivery_tests_repeated": 0
     }
   },
-  "Pi_component": "Await accepted author candidate and distinct root review; not copied or executed."
+  "Pi_component": {
+    "candidate": "4ab6e46e3f6e332d38bb049ed4988bec9f3550cf",
+    "tree": "06190f8ed998edf76092baefadc8887fd88b91bd",
+    "tested_source": "69a090254738cbf6368b37c2ebb820a99bf83ea4",
+    "distinct_review": "7f7a32617d8f5a7340a014f8a72914b9a6cc677e",
+    "verdict": "PASS_scoped_Pi_probe_readiness_correction_only",
+    "findings": [],
+    "source_bindings": [
+      {
+        "path": "apps/pi/app/nsealr_vault/hardware_probe.py",
+        "tested_source": "69a090254738cbf6368b37c2ebb820a99bf83ea4",
+        "sha256": "525734ce67618b59d8f30d2e3fcd5dd74c5e956a259f24419cd82857a7d3d0b8",
+        "bytes_and_mode_equal": true
+      },
+      {
+        "path": "apps/pi/tests/test_seed_signer_hardware.py",
+        "tested_source": "69a090254738cbf6368b37c2ebb820a99bf83ea4",
+        "sha256": "b1a07e0ea05eacd15fd9cbb3b6285fd6187e03e31d912934b1bb75154623cbe4",
+        "bytes_and_mode_equal": true
+      },
+      {
+        "path": "apps/pi/Makefile",
+        "tested_source": "69a090254738cbf6368b37c2ebb820a99bf83ea4",
+        "sha256": "58e15e7e370b16b658019fe4ae835143a375cce38882ef37ffe0b814fc1aafc3",
+        "bytes_and_mode_equal": true
+      },
+      {
+        "path": "apps/pi/pyproject.toml",
+        "tested_source": "69a090254738cbf6368b37c2ebb820a99bf83ea4",
+        "sha256": "dbc0a40444aac192cb1f81aac81016c8acdb1fe1ba27517ffa6c72e3f792cc74",
+        "bytes_and_mode_equal": true
+      },
+      {
+        "path": "docs/restart/implementation/R00/evidence/final/environment.json",
+        "tested_source": "69a090254738cbf6368b37c2ebb820a99bf83ea4",
+        "sha256": "5b0f773e07fc90aa4a2b7d62c102bbc7b824b6bab135002ee0a01ad90a0ef001",
+        "bytes_and_mode_equal": true
+      }
+    ],
+    "complete_apps_pi_tree_equals_tested_source": true,
+    "comparison_command": [
+      "git",
+      "diff",
+      "--exit-code",
+      "69a090254738cbf6368b37c2ebb820a99bf83ea4",
+      "--",
+      "apps/pi"
+    ],
+    "comparison_exit_code": 0,
+    "unchanged_original_AST_definitions": {
+      "count": 93,
+      "evidence": "docs/restart/implementation/reviews/QP01-probe-readiness/validation.json",
+      "role": "Root source-audit result reused through exact tested-source correspondence; no duplicate AST test run"
+    },
+    "retained_author_full_Pi_CI": {
+      "source": "69a090254738cbf6368b37c2ebb820a99bf83ea4",
+      "command_receipt": "docs/restart/implementation/QP01/probe-readiness/pi-ci/command.json",
+      "tests": 173,
+      "exit_code": 0,
+      "rerun_by_delivery_author": false
+    },
+    "root_independent_execution": {
+      "matrix_cases": 70,
+      "default_missing_command_path": true,
+      "actual_hardware_or_systemctl_commands": 0,
+      "review": "docs/restart/implementation/reviews/QP01-probe-readiness/review.json",
+      "second_full_Pi_CI": false
+    },
+    "limits": [
+      "Declared small unconditional text subset only; legitimate other configurations may remain blocked",
+      "Only exact supported ssh/sshd service responses; no loaded-config/socket/other-SSH/radio/global-security attestation",
+      "No physical qualification or QP01/Q02/QH01 completion"
+    ],
+    "preserved": "Original synthetic RED failures, HTML archive403, verifier mistakes, source.diff whitespace and old cache notices retain historical roles; no cache copied."
+  },
+  "new_exact_copies": 593,
+  "existing_exact_postimages": 2
 }

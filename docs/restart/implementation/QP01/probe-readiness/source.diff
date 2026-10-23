@@ -1,0 +1,287 @@
+diff --git a/apps/pi/app/nsealr_vault/hardware_probe.py b/apps/pi/app/nsealr_vault/hardware_probe.py
+index 6e79a688..6b4e6057 100644
+--- a/apps/pi/app/nsealr_vault/hardware_probe.py
++++ b/apps/pi/app/nsealr_vault/hardware_probe.py
+@@ -1,6 +1,7 @@
+ from __future__ import annotations
+ 
+ import importlib.util
++import re
+ import subprocess
+ from pathlib import Path
+ from typing import Callable
+@@ -94,60 +95,74 @@ def _boot_config_check(check_id: str, marker_options: tuple[str, ...], read_text
+     path, value = _read_first(BOOT_CONFIG_PATHS, read_text)
+     if value is None or path is None:
+         return _check(check_id, "blocked", "boot config readable", "no supported boot config path found")
+-    normalized = value.replace(" ", "").lower()
+-    matched = [marker for marker in marker_options if marker.replace(" ", "").lower() in normalized]
++    # Deliberately a small unconditional text subset, not a firmware evaluator.
++    values: dict[str, set[str]] = {"start_x": set(), "camera_auto_detect": set(), "dtparam": set()}
++    expected = "supported unconditional boot setting " + " or ".join(marker_options)
++    for number, raw in enumerate(value.split("\n"), 1):
++        line = raw.strip(" \t\r")
++        if not line or line.startswith("#"):
++            continue
++        # Official pages describe80/98-character entry limits. Do not infer
++        # truncated firmware meaning from a longer or non-ASCII entry.
++        if len(raw) > 80 or not line.isascii():
++            return _check(check_id, "blocked", expected, f"{path}:{number}: unsupported boot entry")
++        if line == "[all]":
++            continue
++        camera = re.fullmatch(r"(start_x|camera_auto_detect)[ \t]*=[ \t]*([01])", line)
++        spi = re.fullmatch(r"dtparam[ \t]*=[ \t]*spi[ \t]*=[ \t]*(on|off)", line)
++        if camera:
++            values[camera[1]].add(camera[2])
++        elif spi:
++            values["dtparam"].add("spi=" + spi[1])
++        else:
++            # Includes, filters, overlay scope, multi-parameter forms and other
++            # directives require resolution this read-only probe does not have.
++            return _check(check_id, "blocked", expected, f"{path}:{number}: unresolved boot syntax")
++    options = [marker.split("=", 1) for marker in marker_options]
++    if any(len(values[key]) > 1 for key, _setting in options):
++        return _check(check_id, "blocked", expected, f"{path}: conflicting target directives")
++    matched = [marker for marker, (key, setting) in zip(marker_options, options) if setting in values[key]]
+     return _check(
+         check_id,
+         "pass" if matched else "fail",
+-        "boot config contains " + " or ".join(marker_options),
+-        f"{path}: " + (", ".join(matched) if matched else "required marker missing"),
++        expected,
++        f"{path}: " + (", ".join(matched) if matched else "required supported setting missing or off"),
+     )
+ 
+ 
+-def _command_state(returncode: int, stdout: str, stderr: str) -> str:
+-    detail = (stdout or stderr).strip()
+-    if not detail:
+-        detail = f"exit {returncode}"
+-    return detail.splitlines()[0]
++def _command_state(returncode: int, stdout: str, stderr: str, *, enabled: bool) -> tuple[str, str]:
++    # Keep every response field; a first-line token or a nonzero exit alone
++    # cannot establish that a queried service is disabled/inactive.
++    detail = f"exit={returncode!r}, stdout={stdout!r}, stderr={stderr!r}"
++    if not isinstance(stdout, str) or not isinstance(stderr, str):
++        return "blocked", detail
++    unsafe = {"enabled", "enabled-runtime", "linked", "linked-runtime", "alias"} if enabled else {
++        "active", "reloading", "refreshing", "activating", "deactivating"
++    }
++    if any(line.strip(" \t\r") in unsafe for line in stdout.split("\n")):
++        return "fail", detail
++    state = stdout.strip(" \t\r\n")
++    safe_states = {"disabled", "masked", "masked-runtime"} if enabled else {"inactive"}
++    safe_exit = 1 if enabled else 3
++    if type(returncode) is int and returncode == safe_exit and state in safe_states and not stderr.strip(" \t\r\n"):
++        return "pass", detail
++    return "blocked", detail
+ 
+ 
+ def _remote_access_check(run_command: RunCommand) -> dict[str, str | bool]:
+     observations: list[str] = []
+-    unsafe: list[str] = []
+-    blocked: list[str] = []
+-
++    statuses: list[str] = []
+     for service in REMOTE_ACCESS_SERVICES:
+-        enabled = _command_state(*run_command(("systemctl", "is-enabled", service)))
+-        active = _command_state(*run_command(("systemctl", "is-active", service)))
+-        observations.append(f"{service}: enabled={enabled}; active={active}")
+-
+-        if enabled in {"enabled", "enabled-runtime", "linked", "linked-runtime", "alias"}:
+-            unsafe.append(f"{service} is {enabled}")
+-        if active == "active":
+-            unsafe.append(f"{service} is active")
+-        if (
+-            "No such file or directory" in enabled
+-            or "No such file or directory" in active
+-            or "System has not been booted with systemd" in enabled
+-            or "System has not been booted with systemd" in active
+-        ):
+-            blocked.append(f"{service} systemd state unavailable")
+-
+-    if unsafe:
+-        status = "fail"
+-        observed = "; ".join(unsafe + observations)
+-    elif blocked:
+-        status = "blocked"
+-        observed = "; ".join(blocked + observations)
+-    else:
+-        status = "pass"
+-        observed = "; ".join(observations)
+-
++        enabled_status, enabled = _command_state(*run_command(("systemctl", "is-enabled", service)), enabled=True)
++        active_status, active = _command_state(*run_command(("systemctl", "is-active", service)), enabled=False)
++        statuses.extend((enabled_status, active_status))
++        observations.append(f"{service}: is-enabled ({enabled}); is-active ({active})")
++    status = "fail" if "fail" in statuses else "blocked" if "blocked" in statuses else "pass"
+     return _check(
+         "remote_access_disabled",
+         status,
+-        "ssh/sshd systemd services disabled or inactive before signing",
+-        observed,
++        "queried ssh/sshd units explicitly disabled or masked AND inactive",
++        "; ".join(observations),
+     )
+ 
+ 
+@@ -242,6 +257,8 @@ def run_seed_signer_compatibility_probe(
+         "limitations": [
+             "This is a non-destructive development probe, not a completed hardware acceptance report.",
+             "A passing probe does not prove QR scan quality, trusted display readability, GPIO approval UX, or production security.",
++            "Boot checks cover only a supported unconditional file-text subset, not current loaded configuration, SPI, sensor or display operation.",
++            "Remote checks cover only the ssh/sshd systemd service queries, not sockets, other SSH implementations or all remote-access paths.",
+             "The Raspberry/Pi stateless QR vault remains RAM-only and must not add persistent secret storage or TROPIC01.",
+         ],
+     }
+diff --git a/apps/pi/tests/test_seed_signer_hardware.py b/apps/pi/tests/test_seed_signer_hardware.py
+index 5c7996ea..c70b4259 100644
+--- a/apps/pi/tests/test_seed_signer_hardware.py
++++ b/apps/pi/tests/test_seed_signer_hardware.py
+@@ -3,6 +3,9 @@ from __future__ import annotations
+ import json
+ import unittest
+ from pathlib import Path
++from unittest.mock import patch
++
++from nsealr_vault.hardware_probe import _default_run_command, run_seed_signer_compatibility_probe
+ 
+ from nsealr_vault.seed_signer_hardware import (
+     BOARD_MODE,
+@@ -647,5 +650,136 @@ class SeedSignerHardwareTests(unittest.TestCase):
+             display.emit_response_qr(response_qr)
+ 
+ 
++class ProbeReadinessRegressionTests(unittest.TestCase):
++    @staticmethod
++    def _safe_command(args: tuple[str, ...]) -> tuple[int, str, str]:
++        return (1, "disabled", "") if args[1] == "is-enabled" else (3, "inactive", "")
++
++    def _report(self, config: str = "start_x=1\ndtparam=spi=on\n", command=None) -> dict[str, object]:
++        files = {
++            "/proc/device-tree/model": "Raspberry Pi Zero Rev 1.3\x00",
++            "/boot/config.txt": config,
++            "/proc/swaps": "Filename\tType\tSize\tUsed\tPriority\n",
++        }
++        return run_seed_signer_compatibility_probe(
++            read_text=lambda path: files[str(path)],
++            find_module=lambda name: name in {"RPi.GPIO", "spidev", "picamera"},
++            run_command=command or self._safe_command,
++        )
++
++    def _assert_gate(self, report, gate: str, status: str) -> None:
++        checks = {check["id"]: check for check in report["checks"]}
++        self.assertEqual(checks[gate]["status"], status)
++        if status != "pass":
++            self.assertFalse(report["ready_for_hardware_acceptance"])
++            self.assertIn(gate, report["acceptance_blockers"])
++        self.assertFalse(report["production_signing_enabled"])
++
++    def test_commented_spi_is_not_configuration_evidence(self) -> None:
++        report = self._report("start_x=1\n# dtparam=spi=on\n")
++        self._assert_gate(report, "boot_spi_enabled", "fail")
++
++    def test_later_spi_off_cannot_be_masked_by_earlier_on(self) -> None:
++        report = self._report("start_x=1\ndtparam=spi=on\ndtparam=spi=off\n")
++        self._assert_gate(report, "boot_spi_enabled", "blocked")
++
++    def test_permission_error_is_not_remote_disabled_evidence(self) -> None:
++        report = self._report(command=lambda args: (1, "", "Permission denied"))
++        self._assert_gate(report, "remote_access_disabled", "blocked")
++
++    def test_known_valid_profile_and_supported_whitespace(self) -> None:
++        for config in [
++            "start_x=1\ndtparam=spi=on\n",
++            "[all]\nstart_x = 1\ndtparam = spi = on\n",
++            "camera_auto_detect=1\ndtparam=spi=on\n",
++            "# " + "comment" * 20 + "\nstart_x=1\ndtparam=spi=on\n",
++            "start_x=1\ndtparam=spi=on\ndtparam=spi=on\n",
++        ]:
++            with self.subTest(config=config):
++                self.assertTrue(self._report(config)["ready_for_hardware_acceptance"])
++
++    def test_missing_off_and_commented_camera_do_not_pass(self) -> None:
++        for config, gate in [
++            ("start_x=1\n", "boot_spi_enabled"),
++            ("start_x=1\ndtparam=spi=off\n", "boot_spi_enabled"),
++            ("# start_x=1\n# camera_auto_detect=1\ndtparam=spi=on\n", "boot_camera_enabled"),
++            ("start_x=0\ndtparam=spi=on\n", "boot_camera_enabled"),
++        ]:
++            with self.subTest(config=config):
++                self._assert_gate(self._report(config), gate, "fail")
++
++    def test_unresolved_boot_syntax_is_explicitly_blocked(self) -> None:
++        for suffix in [
++            "[pi4]\n", "[pi4]\n[all]\n", "[none]\n", "include extra.txt\n",
++            "dtoverlay=some-overlay\n", "dtparam=audio=on,spi=on\n",
++            "dtparam=spi=on,spi=off\n", "dtparam=spi=on # inline syntax unsupported\n",
++            "dtparam=spi=onething\n", "other=dtparam=spi=on\n",
++            " " * 99 + "dtparam=spi=on\n", "\u2003dtparam=spi=on\n",
++            "start_x=1\u2028dtparam=spi=on\n",
++        ]:
++            with self.subTest(suffix=suffix):
++                self._assert_gate(self._report("start_x=1\ndtparam=spi=on\n" + suffix), "boot_spi_enabled", "blocked")
++
++    def test_contradictory_camera_or_reverse_spi_duplicates_block(self) -> None:
++        for config, gate in [
++            ("start_x=1\nstart_x=0\ndtparam=spi=on\n", "boot_camera_enabled"),
++            ("camera_auto_detect=1\ncamera_auto_detect=0\ndtparam=spi=on\n", "boot_camera_enabled"),
++            ("start_x=1\ndtparam=spi=off\ndtparam=spi=on\n", "boot_spi_enabled"),
++        ]:
++            with self.subTest(config=config):
++                self._assert_gate(self._report(config), gate, "blocked")
++
++    def test_remote_unknown_error_state_or_exit_cannot_pass(self) -> None:
++        cases = [
++            ("is-enabled", (2, "", "unknown systemctl error")),
++            ("is-enabled", (127, "", "systemctl missing")),
++            ("is-enabled", (127, "disabled", "")),
++            ("is-enabled", (0, "disabled", "")),
++            ("is-enabled", (1, "disabled", "Permission denied")),
++            ("is-enabled", (1, "disabled\nmasked", "")),
++            ("is-enabled", (4, "not-found", "")),
++            ("is-enabled", (0, "static", "")),
++            ("is-enabled", (0, "indirect", "")),
++            ("is-enabled", (0, "generated", "")),
++            ("is-enabled", (0, "transient", "")),
++            ("is-enabled", (1, "", "")),
++            ("is-active", (0, "inactive", "")),
++            ("is-active", (1, "inactive", "")),
++            ("is-active", (3, "inactive", "Permission denied")),
++            ("is-active", (3, "inactive\nunknown", "")),
++            ("is-active", (3, "failed", "")),
++            ("is-active", (4, "unknown", "")),
++        ]
++        for action, result in cases:
++            with self.subTest(action=action, result=result):
++                def command(args):
++                    return result if args[1] == action else self._safe_command(args)
++                self._assert_gate(self._report(command=command), "remote_access_disabled", "blocked")
++
++    def test_explicit_unsafe_states_even_after_first_line_refuse(self) -> None:
++        cases = [("is-enabled", state) for state in ["enabled", "enabled-runtime", "linked", "linked-runtime", "alias", "disabled\nenabled"]]
++        cases += [("is-active", state) for state in ["active", "reloading", "refreshing", "activating", "deactivating", "inactive\nactive"]]
++        for action, state in cases:
++            with self.subTest(action=action, state=state):
++                def command(args):
++                    return (0, state, "") if args[1] == action else self._safe_command(args)
++                self._assert_gate(self._report(command=command), "remote_access_disabled", "fail")
++
++    def test_safe_pair_checks_both_services_and_remains_read_only(self) -> None:
++        for enabled in ["disabled", "masked", "masked-runtime"]:
++            calls = []
++            def command(args):
++                calls.append(args)
++                return (1, enabled, "") if args[1] == "is-enabled" else (3, "inactive", "")
++            self.assertTrue(self._report(command=command)["ready_for_hardware_acceptance"])
++            self.assertEqual(calls, [("systemctl", action, service) for service in ("ssh", "sshd") for action in ("is-enabled", "is-active")])
++
++    def test_default_missing_command_blocks_without_service_actions(self) -> None:
++        with patch("nsealr_vault.hardware_probe.subprocess.run", side_effect=FileNotFoundError("systemctl")) as run:
++            self._assert_gate(self._report(command=_default_run_command), "remote_access_disabled", "blocked")
++        self.assertEqual(run.call_count, 4)
++        self.assertTrue(all(call.args[0][1] in {"is-enabled", "is-active"} for call in run.call_args_list))
++
++
+ if __name__ == "__main__":
+     unittest.main()

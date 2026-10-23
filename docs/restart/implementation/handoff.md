@@ -95,10 +95,16 @@ distinct reviews and preserved failures. The Rust proof uses five original
 equal-channel RGB images:98/259/198 exact,611 refused at the experimental512 cap,
 and blank refused. The independent ELF differs; no general reproducibility,
 color-camera, product decoder/route, ARM/Pi/P4, secrets or physical claim follows.
-This proposal awaits the accepted Pi readiness-probe correction and final
-structural metadata review. It does not rerun native/crypto/corpus evidence or
-attribute these later experiments to old main994. Root owns final distinct review
-and subsequent protected PR/actual-main integration gates; all task states and
+The proposal now includes the [accepted Pi readiness-probe correction](reviews/QP01-probe-readiness/report.md)
+from4ab6, with product/test bytes equal tested69a. Original author full Pi CI173
+and root70 synthetic cases plus the default missing-command path retain their
+roles; assembly repeats neither. Only the declared text subset and exact
+ssh/sshd replies can pass; legitimate other configurations may remain blocked.
+No loaded-config/socket/other-SSH/radio/global-security or physical attestation
+follows. One final structural metadata gate set applies to the changed assembly.
+The delivery does not rerun native/crypto/corpus evidence or attribute these
+later experiments to old main994. Root owns final distinct delivery review and
+subsequent protected PR/actual-main integration gates; all task states and
 acceptance/dependency/resource/release sets remain unchanged.
 
 The sole task authority is [plan/work-items.json](../../../plan/work-items.json).

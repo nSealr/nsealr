@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import importlib.util
+import re
 import subprocess
 from pathlib import Path
 from typing import Callable
@@ -94,60 +95,74 @@ def _boot_config_check(check_id: str, marker_options: tuple[str, ...], read_text
     path, value = _read_first(BOOT_CONFIG_PATHS, read_text)
     if value is None or path is None:
         return _check(check_id, "blocked", "boot config readable", "no supported boot config path found")
-    normalized = value.replace(" ", "").lower()
-    matched = [marker for marker in marker_options if marker.replace(" ", "").lower() in normalized]
+    # Deliberately a small unconditional text subset, not a firmware evaluator.
+    values: dict[str, set[str]] = {"start_x": set(), "camera_auto_detect": set(), "dtparam": set()}
+    expected = "supported unconditional boot setting " + " or ".join(marker_options)
+    for number, raw in enumerate(value.split("\n"), 1):
+        line = raw.strip(" \t\r")
+        if not line or line.startswith("#"):
+            continue
+        # Official pages describe80/98-character entry limits. Do not infer
+        # truncated firmware meaning from a longer or non-ASCII entry.
+        if len(raw) > 80 or not line.isascii():
+            return _check(check_id, "blocked", expected, f"{path}:{number}: unsupported boot entry")
+        if line == "[all]":
+            continue
+        camera = re.fullmatch(r"(start_x|camera_auto_detect)[ \t]*=[ \t]*([01])", line)
+        spi = re.fullmatch(r"dtparam[ \t]*=[ \t]*spi[ \t]*=[ \t]*(on|off)", line)
+        if camera:
+            values[camera[1]].add(camera[2])
+        elif spi:
+            values["dtparam"].add("spi=" + spi[1])
+        else:
+            # Includes, filters, overlay scope, multi-parameter forms and other
+            # directives require resolution this read-only probe does not have.
+            return _check(check_id, "blocked", expected, f"{path}:{number}: unresolved boot syntax")
+    options = [marker.split("=", 1) for marker in marker_options]
+    if any(len(values[key]) > 1 for key, _setting in options):
+        return _check(check_id, "blocked", expected, f"{path}: conflicting target directives")
+    matched = [marker for marker, (key, setting) in zip(marker_options, options) if setting in values[key]]
     return _check(
         check_id,
         "pass" if matched else "fail",
-        "boot config contains " + " or ".join(marker_options),
-        f"{path}: " + (", ".join(matched) if matched else "required marker missing"),
+        expected,
+        f"{path}: " + (", ".join(matched) if matched else "required supported setting missing or off"),
     )
 
 
-def _command_state(returncode: int, stdout: str, stderr: str) -> str:
-    detail = (stdout or stderr).strip()
-    if not detail:
-        detail = f"exit {returncode}"
-    return detail.splitlines()[0]
+def _command_state(returncode: int, stdout: str, stderr: str, *, enabled: bool) -> tuple[str, str]:
+    # Keep every response field; a first-line token or a nonzero exit alone
+    # cannot establish that a queried service is disabled/inactive.
+    detail = f"exit={returncode!r}, stdout={stdout!r}, stderr={stderr!r}"
+    if not isinstance(stdout, str) or not isinstance(stderr, str):
+        return "blocked", detail
+    unsafe = {"enabled", "enabled-runtime", "linked", "linked-runtime", "alias"} if enabled else {
+        "active", "reloading", "refreshing", "activating", "deactivating"
+    }
+    if any(line.strip(" \t\r") in unsafe for line in stdout.split("\n")):
+        return "fail", detail
+    state = stdout.strip(" \t\r\n")
+    safe_states = {"disabled", "masked", "masked-runtime"} if enabled else {"inactive"}
+    safe_exit = 1 if enabled else 3
+    if type(returncode) is int and returncode == safe_exit and state in safe_states and not stderr.strip(" \t\r\n"):
+        return "pass", detail
+    return "blocked", detail
 
 
 def _remote_access_check(run_command: RunCommand) -> dict[str, str | bool]:
     observations: list[str] = []
-    unsafe: list[str] = []
-    blocked: list[str] = []
-
+    statuses: list[str] = []
     for service in REMOTE_ACCESS_SERVICES:
-        enabled = _command_state(*run_command(("systemctl", "is-enabled", service)))
-        active = _command_state(*run_command(("systemctl", "is-active", service)))
-        observations.append(f"{service}: enabled={enabled}; active={active}")
-
-        if enabled in {"enabled", "enabled-runtime", "linked", "linked-runtime", "alias"}:
-            unsafe.append(f"{service} is {enabled}")
-        if active == "active":
-            unsafe.append(f"{service} is active")
-        if (
-            "No such file or directory" in enabled
-            or "No such file or directory" in active
-            or "System has not been booted with systemd" in enabled
-            or "System has not been booted with systemd" in active
-        ):
-            blocked.append(f"{service} systemd state unavailable")
-
-    if unsafe:
-        status = "fail"
-        observed = "; ".join(unsafe + observations)
-    elif blocked:
-        status = "blocked"
-        observed = "; ".join(blocked + observations)
-    else:
-        status = "pass"
-        observed = "; ".join(observations)
-
+        enabled_status, enabled = _command_state(*run_command(("systemctl", "is-enabled", service)), enabled=True)
+        active_status, active = _command_state(*run_command(("systemctl", "is-active", service)), enabled=False)
+        statuses.extend((enabled_status, active_status))
+        observations.append(f"{service}: is-enabled ({enabled}); is-active ({active})")
+    status = "fail" if "fail" in statuses else "blocked" if "blocked" in statuses else "pass"
     return _check(
         "remote_access_disabled",
         status,
-        "ssh/sshd systemd services disabled or inactive before signing",
-        observed,
+        "queried ssh/sshd units explicitly disabled or masked AND inactive",
+        "; ".join(observations),
     )
 
 
@@ -242,6 +257,8 @@ def run_seed_signer_compatibility_probe(
         "limitations": [
             "This is a non-destructive development probe, not a completed hardware acceptance report.",
             "A passing probe does not prove QR scan quality, trusted display readability, GPIO approval UX, or production security.",
+            "Boot checks cover only a supported unconditional file-text subset, not current loaded configuration, SPI, sensor or display operation.",
+            "Remote checks cover only the ssh/sshd systemd service queries, not sockets, other SSH implementations or all remote-access paths.",
             "The Raspberry/Pi stateless QR vault remains RAM-only and must not add persistent secret storage or TROPIC01.",
         ],
     }

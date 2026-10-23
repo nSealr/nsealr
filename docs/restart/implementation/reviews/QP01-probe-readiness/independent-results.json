@@ -1,0 +1,641 @@
+{
+  "candidate": "4ab6e46e3f6e332d38bb049ed4988bec9f3550cf",
+  "product_source_sha256": "525734ce67618b59d8f30d2e3fcd5dd74c5e956a259f24419cd82857a7d3d0b8",
+  "proof_kind": "Actual product function executions with synthetic file/module/command inputs; no Pi, GPIO, service or boot mutation",
+  "cases": [
+    {
+      "name": "known-auto",
+      "expected_ready": true,
+      "observed_ready": true,
+      "boot_camera": "pass",
+      "boot_spi": "pass",
+      "remote": "pass",
+      "readonly_query_sequence_exact": true
+    },
+    {
+      "name": "known-legacy",
+      "expected_ready": true,
+      "observed_ready": true,
+      "boot_camera": "pass",
+      "boot_spi": "pass",
+      "remote": "pass",
+      "readonly_query_sequence_exact": true
+    },
+    {
+      "name": "all-and-whitespace",
+      "expected_ready": true,
+      "observed_ready": true,
+      "boot_camera": "pass",
+      "boot_spi": "pass",
+      "remote": "pass",
+      "readonly_query_sequence_exact": true
+    },
+    {
+      "name": "commented-off-does-not-disable",
+      "expected_ready": true,
+      "observed_ready": true,
+      "boot_camera": "pass",
+      "boot_spi": "pass",
+      "remote": "pass",
+      "readonly_query_sequence_exact": true
+    },
+    {
+      "name": "commented-spi",
+      "expected_ready": false,
+      "observed_ready": false,
+      "boot_camera": "pass",
+      "boot_spi": "fail",
+      "remote": "pass",
+      "readonly_query_sequence_exact": true
+    },
+    {
+      "name": "commented-camera",
+      "expected_ready": false,
+      "observed_ready": false,
+      "boot_camera": "fail",
+      "boot_spi": "pass",
+      "remote": "pass",
+      "readonly_query_sequence_exact": true
+    },
+    {
+      "name": "spi-contrary-after",
+      "expected_ready": false,
+      "observed_ready": false,
+      "boot_camera": "pass",
+      "boot_spi": "blocked",
+      "remote": "pass",
+      "readonly_query_sequence_exact": true
+    },
+    {
+      "name": "spi-contrary-before",
+      "expected_ready": false,
+      "observed_ready": false,
+      "boot_camera": "pass",
+      "boot_spi": "blocked",
+      "remote": "pass",
+      "readonly_query_sequence_exact": true
+    },
+    {
+      "name": "camera-contrary",
+      "expected_ready": false,
+      "observed_ready": false,
+      "boot_camera": "blocked",
+      "boot_spi": "pass",
+      "remote": "pass",
+      "readonly_query_sequence_exact": true
+    },
+    {
+      "name": "substring-is-not-assignment",
+      "expected_ready": false,
+      "observed_ready": false,
+      "boot_camera": "blocked",
+      "boot_spi": "blocked",
+      "remote": "pass",
+      "readonly_query_sequence_exact": true
+    },
+    {
+      "name": "suffix-is-not-value",
+      "expected_ready": false,
+      "observed_ready": false,
+      "boot_camera": "blocked",
+      "boot_spi": "blocked",
+      "remote": "pass",
+      "readonly_query_sequence_exact": true
+    },
+    {
+      "name": "include-unresolved",
+      "expected_ready": false,
+      "observed_ready": false,
+      "boot_camera": "blocked",
+      "boot_spi": "blocked",
+      "remote": "pass",
+      "readonly_query_sequence_exact": true
+    },
+    {
+      "name": "filter-unresolved",
+      "expected_ready": false,
+      "observed_ready": false,
+      "boot_camera": "blocked",
+      "boot_spi": "blocked",
+      "remote": "pass",
+      "readonly_query_sequence_exact": true
+    },
+    {
+      "name": "filter-reset-still-unresolved",
+      "expected_ready": false,
+      "observed_ready": false,
+      "boot_camera": "blocked",
+      "boot_spi": "blocked",
+      "remote": "pass",
+      "readonly_query_sequence_exact": true
+    },
+    {
+      "name": "overlay-unresolved",
+      "expected_ready": false,
+      "observed_ready": false,
+      "boot_camera": "blocked",
+      "boot_spi": "blocked",
+      "remote": "pass",
+      "readonly_query_sequence_exact": true
+    },
+    {
+      "name": "combined-parameters-unresolved",
+      "expected_ready": false,
+      "observed_ready": false,
+      "boot_camera": "blocked",
+      "boot_spi": "blocked",
+      "remote": "pass",
+      "readonly_query_sequence_exact": true
+    },
+    {
+      "name": "unicode-separator",
+      "expected_ready": false,
+      "observed_ready": false,
+      "boot_camera": "blocked",
+      "boot_spi": "blocked",
+      "remote": "pass",
+      "readonly_query_sequence_exact": true
+    },
+    {
+      "name": "long-entry-unresolved",
+      "expected_ready": false,
+      "observed_ready": false,
+      "boot_camera": "blocked",
+      "boot_spi": "blocked",
+      "remote": "pass",
+      "readonly_query_sequence_exact": true
+    },
+    {
+      "name": "ssh-is-enabled-unknown-0",
+      "expected_ready": false,
+      "observed_ready": false,
+      "boot_camera": "pass",
+      "boot_spi": "pass",
+      "remote": "blocked",
+      "readonly_query_sequence_exact": true
+    },
+    {
+      "name": "ssh-is-enabled-unknown-1",
+      "expected_ready": false,
+      "observed_ready": false,
+      "boot_camera": "pass",
+      "boot_spi": "pass",
+      "remote": "blocked",
+      "readonly_query_sequence_exact": true
+    },
+    {
+      "name": "ssh-is-enabled-unknown-2",
+      "expected_ready": false,
+      "observed_ready": false,
+      "boot_camera": "pass",
+      "boot_spi": "pass",
+      "remote": "blocked",
+      "readonly_query_sequence_exact": true
+    },
+    {
+      "name": "ssh-is-enabled-unknown-3",
+      "expected_ready": false,
+      "observed_ready": false,
+      "boot_camera": "pass",
+      "boot_spi": "pass",
+      "remote": "blocked",
+      "readonly_query_sequence_exact": true
+    },
+    {
+      "name": "ssh-is-enabled-unknown-4",
+      "expected_ready": false,
+      "observed_ready": false,
+      "boot_camera": "pass",
+      "boot_spi": "pass",
+      "remote": "blocked",
+      "readonly_query_sequence_exact": true
+    },
+    {
+      "name": "ssh-is-enabled-unknown-5",
+      "expected_ready": false,
+      "observed_ready": false,
+      "boot_camera": "pass",
+      "boot_spi": "pass",
+      "remote": "blocked",
+      "readonly_query_sequence_exact": true
+    },
+    {
+      "name": "ssh-is-enabled-unknown-6",
+      "expected_ready": false,
+      "observed_ready": false,
+      "boot_camera": "pass",
+      "boot_spi": "pass",
+      "remote": "blocked",
+      "readonly_query_sequence_exact": true
+    },
+    {
+      "name": "ssh-is-enabled-unknown-7",
+      "expected_ready": false,
+      "observed_ready": false,
+      "boot_camera": "pass",
+      "boot_spi": "pass",
+      "remote": "blocked",
+      "readonly_query_sequence_exact": true
+    },
+    {
+      "name": "ssh-is-enabled-unknown-8",
+      "expected_ready": false,
+      "observed_ready": false,
+      "boot_camera": "pass",
+      "boot_spi": "pass",
+      "remote": "blocked",
+      "readonly_query_sequence_exact": true
+    },
+    {
+      "name": "ssh-is-enabled-unknown-9",
+      "expected_ready": false,
+      "observed_ready": false,
+      "boot_camera": "pass",
+      "boot_spi": "pass",
+      "remote": "blocked",
+      "readonly_query_sequence_exact": true
+    },
+    {
+      "name": "ssh-is-enabled-unknown-10",
+      "expected_ready": false,
+      "observed_ready": false,
+      "boot_camera": "pass",
+      "boot_spi": "pass",
+      "remote": "blocked",
+      "readonly_query_sequence_exact": true
+    },
+    {
+      "name": "ssh-is-enabled-unknown-11",
+      "expected_ready": false,
+      "observed_ready": false,
+      "boot_camera": "pass",
+      "boot_spi": "pass",
+      "remote": "blocked",
+      "readonly_query_sequence_exact": true
+    },
+    {
+      "name": "ssh-is-enabled-explicit-unsafe",
+      "expected_ready": false,
+      "observed_ready": false,
+      "boot_camera": "pass",
+      "boot_spi": "pass",
+      "remote": "fail",
+      "readonly_query_sequence_exact": true
+    },
+    {
+      "name": "ssh-is-active-unknown-0",
+      "expected_ready": false,
+      "observed_ready": false,
+      "boot_camera": "pass",
+      "boot_spi": "pass",
+      "remote": "blocked",
+      "readonly_query_sequence_exact": true
+    },
+    {
+      "name": "ssh-is-active-unknown-1",
+      "expected_ready": false,
+      "observed_ready": false,
+      "boot_camera": "pass",
+      "boot_spi": "pass",
+      "remote": "blocked",
+      "readonly_query_sequence_exact": true
+    },
+    {
+      "name": "ssh-is-active-unknown-2",
+      "expected_ready": false,
+      "observed_ready": false,
+      "boot_camera": "pass",
+      "boot_spi": "pass",
+      "remote": "blocked",
+      "readonly_query_sequence_exact": true
+    },
+    {
+      "name": "ssh-is-active-unknown-3",
+      "expected_ready": false,
+      "observed_ready": false,
+      "boot_camera": "pass",
+      "boot_spi": "pass",
+      "remote": "blocked",
+      "readonly_query_sequence_exact": true
+    },
+    {
+      "name": "ssh-is-active-unknown-4",
+      "expected_ready": false,
+      "observed_ready": false,
+      "boot_camera": "pass",
+      "boot_spi": "pass",
+      "remote": "blocked",
+      "readonly_query_sequence_exact": true
+    },
+    {
+      "name": "ssh-is-active-unknown-5",
+      "expected_ready": false,
+      "observed_ready": false,
+      "boot_camera": "pass",
+      "boot_spi": "pass",
+      "remote": "blocked",
+      "readonly_query_sequence_exact": true
+    },
+    {
+      "name": "ssh-is-active-unknown-6",
+      "expected_ready": false,
+      "observed_ready": false,
+      "boot_camera": "pass",
+      "boot_spi": "pass",
+      "remote": "blocked",
+      "readonly_query_sequence_exact": true
+    },
+    {
+      "name": "ssh-is-active-unknown-7",
+      "expected_ready": false,
+      "observed_ready": false,
+      "boot_camera": "pass",
+      "boot_spi": "pass",
+      "remote": "blocked",
+      "readonly_query_sequence_exact": true
+    },
+    {
+      "name": "ssh-is-active-unknown-8",
+      "expected_ready": false,
+      "observed_ready": false,
+      "boot_camera": "pass",
+      "boot_spi": "pass",
+      "remote": "blocked",
+      "readonly_query_sequence_exact": true
+    },
+    {
+      "name": "ssh-is-active-unknown-9",
+      "expected_ready": false,
+      "observed_ready": false,
+      "boot_camera": "pass",
+      "boot_spi": "pass",
+      "remote": "blocked",
+      "readonly_query_sequence_exact": true
+    },
+    {
+      "name": "ssh-is-active-unknown-10",
+      "expected_ready": false,
+      "observed_ready": false,
+      "boot_camera": "pass",
+      "boot_spi": "pass",
+      "remote": "blocked",
+      "readonly_query_sequence_exact": true
+    },
+    {
+      "name": "ssh-is-active-unknown-11",
+      "expected_ready": false,
+      "observed_ready": false,
+      "boot_camera": "pass",
+      "boot_spi": "pass",
+      "remote": "blocked",
+      "readonly_query_sequence_exact": true
+    },
+    {
+      "name": "ssh-is-active-explicit-unsafe",
+      "expected_ready": false,
+      "observed_ready": false,
+      "boot_camera": "pass",
+      "boot_spi": "pass",
+      "remote": "fail",
+      "readonly_query_sequence_exact": true
+    },
+    {
+      "name": "sshd-is-enabled-unknown-0",
+      "expected_ready": false,
+      "observed_ready": false,
+      "boot_camera": "pass",
+      "boot_spi": "pass",
+      "remote": "blocked",
+      "readonly_query_sequence_exact": true
+    },
+    {
+      "name": "sshd-is-enabled-unknown-1",
+      "expected_ready": false,
+      "observed_ready": false,
+      "boot_camera": "pass",
+      "boot_spi": "pass",
+      "remote": "blocked",
+      "readonly_query_sequence_exact": true
+    },
+    {
+      "name": "sshd-is-enabled-unknown-2",
+      "expected_ready": false,
+      "observed_ready": false,
+      "boot_camera": "pass",
+      "boot_spi": "pass",
+      "remote": "blocked",
+      "readonly_query_sequence_exact": true
+    },
+    {
+      "name": "sshd-is-enabled-unknown-3",
+      "expected_ready": false,
+      "observed_ready": false,
+      "boot_camera": "pass",
+      "boot_spi": "pass",
+      "remote": "blocked",
+      "readonly_query_sequence_exact": true
+    },
+    {
+      "name": "sshd-is-enabled-unknown-4",
+      "expected_ready": false,
+      "observed_ready": false,
+      "boot_camera": "pass",
+      "boot_spi": "pass",
+      "remote": "blocked",
+      "readonly_query_sequence_exact": true
+    },
+    {
+      "name": "sshd-is-enabled-unknown-5",
+      "expected_ready": false,
+      "observed_ready": false,
+      "boot_camera": "pass",
+      "boot_spi": "pass",
+      "remote": "blocked",
+      "readonly_query_sequence_exact": true
+    },
+    {
+      "name": "sshd-is-enabled-unknown-6",
+      "expected_ready": false,
+      "observed_ready": false,
+      "boot_camera": "pass",
+      "boot_spi": "pass",
+      "remote": "blocked",
+      "readonly_query_sequence_exact": true
+    },
+    {
+      "name": "sshd-is-enabled-unknown-7",
+      "expected_ready": false,
+      "observed_ready": false,
+      "boot_camera": "pass",
+      "boot_spi": "pass",
+      "remote": "blocked",
+      "readonly_query_sequence_exact": true
+    },
+    {
+      "name": "sshd-is-enabled-unknown-8",
+      "expected_ready": false,
+      "observed_ready": false,
+      "boot_camera": "pass",
+      "boot_spi": "pass",
+      "remote": "blocked",
+      "readonly_query_sequence_exact": true
+    },
+    {
+      "name": "sshd-is-enabled-unknown-9",
+      "expected_ready": false,
+      "observed_ready": false,
+      "boot_camera": "pass",
+      "boot_spi": "pass",
+      "remote": "blocked",
+      "readonly_query_sequence_exact": true
+    },
+    {
+      "name": "sshd-is-enabled-unknown-10",
+      "expected_ready": false,
+      "observed_ready": false,
+      "boot_camera": "pass",
+      "boot_spi": "pass",
+      "remote": "blocked",
+      "readonly_query_sequence_exact": true
+    },
+    {
+      "name": "sshd-is-enabled-unknown-11",
+      "expected_ready": false,
+      "observed_ready": false,
+      "boot_camera": "pass",
+      "boot_spi": "pass",
+      "remote": "blocked",
+      "readonly_query_sequence_exact": true
+    },
+    {
+      "name": "sshd-is-enabled-explicit-unsafe",
+      "expected_ready": false,
+      "observed_ready": false,
+      "boot_camera": "pass",
+      "boot_spi": "pass",
+      "remote": "fail",
+      "readonly_query_sequence_exact": true
+    },
+    {
+      "name": "sshd-is-active-unknown-0",
+      "expected_ready": false,
+      "observed_ready": false,
+      "boot_camera": "pass",
+      "boot_spi": "pass",
+      "remote": "blocked",
+      "readonly_query_sequence_exact": true
+    },
+    {
+      "name": "sshd-is-active-unknown-1",
+      "expected_ready": false,
+      "observed_ready": false,
+      "boot_camera": "pass",
+      "boot_spi": "pass",
+      "remote": "blocked",
+      "readonly_query_sequence_exact": true
+    },
+    {
+      "name": "sshd-is-active-unknown-2",
+      "expected_ready": false,
+      "observed_ready": false,
+      "boot_camera": "pass",
+      "boot_spi": "pass",
+      "remote": "blocked",
+      "readonly_query_sequence_exact": true
+    },
+    {
+      "name": "sshd-is-active-unknown-3",
+      "expected_ready": false,
+      "observed_ready": false,
+      "boot_camera": "pass",
+      "boot_spi": "pass",
+      "remote": "blocked",
+      "readonly_query_sequence_exact": true
+    },
+    {
+      "name": "sshd-is-active-unknown-4",
+      "expected_ready": false,
+      "observed_ready": false,
+      "boot_camera": "pass",
+      "boot_spi": "pass",
+      "remote": "blocked",
+      "readonly_query_sequence_exact": true
+    },
+    {
+      "name": "sshd-is-active-unknown-5",
+      "expected_ready": false,
+      "observed_ready": false,
+      "boot_camera": "pass",
+      "boot_spi": "pass",
+      "remote": "blocked",
+      "readonly_query_sequence_exact": true
+    },
+    {
+      "name": "sshd-is-active-unknown-6",
+      "expected_ready": false,
+      "observed_ready": false,
+      "boot_camera": "pass",
+      "boot_spi": "pass",
+      "remote": "blocked",
+      "readonly_query_sequence_exact": true
+    },
+    {
+      "name": "sshd-is-active-unknown-7",
+      "expected_ready": false,
+      "observed_ready": false,
+      "boot_camera": "pass",
+      "boot_spi": "pass",
+      "remote": "blocked",
+      "readonly_query_sequence_exact": true
+    },
+    {
+      "name": "sshd-is-active-unknown-8",
+      "expected_ready": false,
+      "observed_ready": false,
+      "boot_camera": "pass",
+      "boot_spi": "pass",
+      "remote": "blocked",
+      "readonly_query_sequence_exact": true
+    },
+    {
+      "name": "sshd-is-active-unknown-9",
+      "expected_ready": false,
+      "observed_ready": false,
+      "boot_camera": "pass",
+      "boot_spi": "pass",
+      "remote": "blocked",
+      "readonly_query_sequence_exact": true
+    },
+    {
+      "name": "sshd-is-active-unknown-10",
+      "expected_ready": false,
+      "observed_ready": false,
+      "boot_camera": "pass",
+      "boot_spi": "pass",
+      "remote": "blocked",
+      "readonly_query_sequence_exact": true
+    },
+    {
+      "name": "sshd-is-active-unknown-11",
+      "expected_ready": false,
+      "observed_ready": false,
+      "boot_camera": "pass",
+      "boot_spi": "pass",
+      "remote": "blocked",
+      "readonly_query_sequence_exact": true
+    },
+    {
+      "name": "sshd-is-active-explicit-unsafe",
+      "expected_ready": false,
+      "observed_ready": false,
+      "boot_camera": "pass",
+      "boot_spi": "pass",
+      "remote": "fail",
+      "readonly_query_sequence_exact": true
+    }
+  ],
+  "case_count": 70,
+  "all_passed": true,
+  "default_missing_command_path": "blocked; four exact read-only query argument lists; subprocess mocked",
+  "physical_or_global_remote_access_attestation": false
+}
