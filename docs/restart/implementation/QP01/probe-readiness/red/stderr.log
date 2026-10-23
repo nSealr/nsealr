@@ -1,0 +1,47 @@
+test_commented_spi_is_not_configuration_evidence (test_seed_signer_hardware.ProbeReadinessRegressionTests.test_commented_spi_is_not_configuration_evidence) ... FAIL
+test_later_spi_off_cannot_be_masked_by_earlier_on (test_seed_signer_hardware.ProbeReadinessRegressionTests.test_later_spi_off_cannot_be_masked_by_earlier_on) ... FAIL
+test_permission_error_is_not_remote_disabled_evidence (test_seed_signer_hardware.ProbeReadinessRegressionTests.test_permission_error_is_not_remote_disabled_evidence) ... FAIL
+
+======================================================================
+FAIL: test_commented_spi_is_not_configuration_evidence (test_seed_signer_hardware.ProbeReadinessRegressionTests.test_commented_spi_is_not_configuration_evidence)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/tux/nsealr/.restart-tools/goal/qh01-linux-worker-experiment/apps/pi/tests/test_seed_signer_hardware.py", line 680, in test_commented_spi_is_not_configuration_evidence
+    self._assert_gate(report, "boot_spi_enabled", "fail")
+  File "/home/tux/nsealr/.restart-tools/goal/qh01-linux-worker-experiment/apps/pi/tests/test_seed_signer_hardware.py", line 672, in _assert_gate
+    self.assertEqual(checks[gate]["status"], status)
+AssertionError: 'pass' != 'fail'
+- pass
++ fail
+
+
+======================================================================
+FAIL: test_later_spi_off_cannot_be_masked_by_earlier_on (test_seed_signer_hardware.ProbeReadinessRegressionTests.test_later_spi_off_cannot_be_masked_by_earlier_on)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/tux/nsealr/.restart-tools/goal/qh01-linux-worker-experiment/apps/pi/tests/test_seed_signer_hardware.py", line 684, in test_later_spi_off_cannot_be_masked_by_earlier_on
+    self._assert_gate(report, "boot_spi_enabled", "blocked")
+  File "/home/tux/nsealr/.restart-tools/goal/qh01-linux-worker-experiment/apps/pi/tests/test_seed_signer_hardware.py", line 672, in _assert_gate
+    self.assertEqual(checks[gate]["status"], status)
+AssertionError: 'pass' != 'blocked'
+- pass
++ blocked
+
+
+======================================================================
+FAIL: test_permission_error_is_not_remote_disabled_evidence (test_seed_signer_hardware.ProbeReadinessRegressionTests.test_permission_error_is_not_remote_disabled_evidence)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/tux/nsealr/.restart-tools/goal/qh01-linux-worker-experiment/apps/pi/tests/test_seed_signer_hardware.py", line 688, in test_permission_error_is_not_remote_disabled_evidence
+    self._assert_gate(report, "remote_access_disabled", "blocked")
+  File "/home/tux/nsealr/.restart-tools/goal/qh01-linux-worker-experiment/apps/pi/tests/test_seed_signer_hardware.py", line 672, in _assert_gate
+    self.assertEqual(checks[gate]["status"], status)
+AssertionError: 'pass' != 'blocked'
+- pass
++ blocked
+
+
+----------------------------------------------------------------------
+Ran 3 tests in 0.000s
+
+FAILED (failures=3)
