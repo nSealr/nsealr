@@ -1,0 +1,65 @@
+{
+  "schema_version": 1,
+  "status": "CONTRACT_NONCE_ASSUMPTION_INVALIDATED_SCOPED_SPEC_AMENDMENT_AUTHORIZED_RUNTIME_STILL_INCOMPLETE",
+  "utc": "2026-10-23T13:46:13.634242+00:00",
+  "prior_contract": "e8ffed4ed4643c1e74b598c742b81ca718118cf4",
+  "prior_source_review": "20adacc072d79f0ca5c9a37e454ad8af40ea1792",
+  "scope_invalidated": "Only historical exact-signature equality for explicit aux32zero; other bounded ABI/lifecycle/limits/runtime requirements remain unchanged.",
+  "responsibility": "Root approved an unjustified legacy-signature/nonce equivalence; corrected on primary-source and executable evidence, not by weakening the signer.",
+  "implementation_checkpoint": "4fd9bbf376b76c12fa639a0bf264730bac1b9749",
+  "native_library_SHA256": "c9e34aba2fed030305deb423d8ff20ad334020be618b376c80bcd55c9a44fa92",
+  "independent_diagnostic": "26e6ab77ba05d8b6ac7c85784a2cdaaeb2fa1eda",
+  "current_generator_replay": "4fd9bbf376b76c12fa639a0bf264730bac1b9749",
+  "primary_binary_source_investigation": "5740407eeac6a4716be21616695d8f34939b6147",
+  "actual_facts": [
+    "Exactly2 native calls match the existing independent S03/K01 BIP340 signer for explicit32zero auxiliary bytes. One32-byte-zero callback per call was recorded.",
+    "Exactly2 existing R00 generator helper calls, using the pinned binding/actually loaded wheel ELF, match both Rust and independent zero-aux results.",
+    "Both old signatures remain independently valid, but differ from the declared zero-aux signing outputs. Original corpus and all8failing tests remain untouched.",
+    "Actual pinned ELF NULL branch applies ZERO_MASK equal to pinned BIP340 hash(auxzero). Describing this R00 wheel as NULL/no-masking is unsupported and contradicted.",
+    "Official same-version sdist has different NULL behavior; its derivation into the wheel is not proven. Historical legacy signing environment/nonce policy remains unknown."
+  ],
+  "allowed_amendment": [
+    "B01 freezes primary investigation before separate specification commit.",
+    "Only current brief.md, expectations.json and source-bindings.json: two new exact signatures/complete-event.sig from the independent zero-aux result, explicit legacy verification references, preparation hashes and proof links.",
+    "Keep23groups and all prior negative/effect/byte-identity checks. In E01 add one successful aux32=0x42 control, deterministic expected formula from same pinned oracle; evaluate and record expected before the next native call.",
+    "Do not mutate original vectors, core/provider/crypto algorithm, thresholds, old raw failures or historical reports. No generic-valid-signature substitute for exact auxiliary binding."
+  ],
+  "zero_aux_expectations": [
+    {
+      "request_id": "req-kind-1-basic",
+      "event_id": "2977f107ad2668dbd9f09b8594eff3b5276e21bfe098e60ae3e905e3c861e4d3",
+      "public_key": "4f355bdcb7cc0af728ef3cceb9615d90684bb5b2ca5f859ab0f0b704075871aa",
+      "aux_hex": "0000000000000000000000000000000000000000000000000000000000000000",
+      "exact_signature": "d8f39a159fd833bb1f0663c7f03b2ff1c19b27867442a5a372779fe6998a8a28b26c623fed74896a5065b1a6739d1953b9d386d2d57e24cf1f7c1cc353a82635",
+      "legacy_valid_signature_preserved": "2eec0351eb1d651140922d4b1f1bd8135f4474aabf42ec5bda7011087c1a072d71be863646dc162e4d96eacf14afeed2618a4acb0e1134a273a2b8e73039e654"
+    },
+    {
+      "request_id": "req-kind-1-tags",
+      "event_id": "0bef8491d04976053cdde3cff1903224b94fdee708712adffb00fe754a634543",
+      "public_key": "4f355bdcb7cc0af728ef3cceb9615d90684bb5b2ca5f859ab0f0b704075871aa",
+      "aux_hex": "0000000000000000000000000000000000000000000000000000000000000000",
+      "exact_signature": "1336d914499020b678dd43d19e533233cb7a19de5bd25f8e8ec891319d28c4ea0e4a99d800d3525b17c8b411f116c195ac22496a39c4d321340799a6027bb668",
+      "legacy_valid_signature_preserved": "3538c2bf84dd2008a7a0c0011be7d45e3f4f754a3fd67c87fa8815483299060c26b929330e261e6c69947bd16561b6f7ed64dbc80d0f79852167f165f0c703e0"
+    }
+  ],
+  "proof_bindings": [
+    {
+      "path": "docs/restart/implementation/QP01/request-engine/nonce-diagnostic-result.json",
+      "sha256": "ce0909de8a04bd1f905a00953e8702fe710022568b241d99aa0e7680f478e46d"
+    },
+    {
+      "path": "docs/restart/implementation/QP01/request-engine/generator-diagnostic-result.json",
+      "sha256": "12aba8e48d7988fffb68ea2cddb2dbd824a33221c39b09674417210efee960c6"
+    },
+    {
+      "path": "docs/restart/implementation/QP01/request-engine/evidence/nonce-diagnostic-02/stdout.log",
+      "sha256": "6a7e1858c69e3f7d5b22e8151c923443136770f6d098ac38bb956ad75ddbc589"
+    },
+    {
+      "path": "docs/restart/implementation/QP01/request-engine/evidence/generator-diagnostic-01/stdout.log",
+      "sha256": "aaa7686613973f93d1c0188552ad2d864f411d155ed88d61fb45e1dac649d44f"
+    }
+  ],
+  "next_gate": "Root reviews exact amended spec postimages before A02 changes executable expectations and resumes affected checks. No full campaign/hosted CI/runtime/profile acceptance yet.",
+  "qualified_main_unaffected": "14d5e37065329078afe7275c7448884214ea8a9a; all47formal sets and all physical/provider/profile gates unchanged."
+}
