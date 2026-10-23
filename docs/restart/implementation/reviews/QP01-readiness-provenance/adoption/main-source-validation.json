@@ -1,0 +1,60 @@
+{
+  "run": 39989232006,
+  "source_head": "bd892b70b88aeaf72b10ad5e9152bc36674513b9",
+  "product_log_sha256": "ff1005fa8ef67daeccb0c46d4ee456ac0fd7c1bf378d4355fc36ff7aa1fd1a3d",
+  "native_build": {
+    "role": "public fixture build, not hardware qualification",
+    "argv": [
+      "cargo",
+      "build",
+      "-p",
+      "nsealr-pi-engine-fixture",
+      "--locked",
+      "--offline",
+      "--release",
+      "--message-format=json"
+    ],
+    "source": {
+      "Cargo.toml": "97475b27f26bbfa1c2d46508c4e719edb3713ea5c76da5987ef5283b9d7245eb",
+      "Cargo.lock": "2b62ce3fe11650d36ffc015344aa6f9f04b5ef22d6bc05dae218a96d07c8e811",
+      "crates/nsealr-pi-engine-fixture/Cargo.toml": "6199f807c29406405b839ed71f1791ffb44359e34dff3db5bf8591361a2fb30d",
+      "crates/nsealr-pi-engine-fixture/src/lib.rs": "7840133113a54d58f81e808e2037e0b5e999d148920f6bf4fea5212fa9a5425a"
+    },
+    "library": "/home/runner/work/_temp/nsealr-product/nsealr/target/release/libnsealr_pi_engine_fixture.so",
+    "sha256": "93e6f3522920748531184d4fdb224076a8fbfc4398a02d0ef01fb36f5d4602a0",
+    "CARGO_TARGET_DIR": null
+  },
+  "native_source_bindings": 4,
+  "actual_full_Pi_tests": 189,
+  "automatic_readiness_controls": {
+    "scope": "readiness_controls",
+    "readiness_controls": 5,
+    "request_bytes_sent": 0,
+    "native_reports": 0,
+    "children": 5,
+    "collected": 5
+  },
+  "client": {
+    "scope": "actual client + public-fixture host adapter only",
+    "positive": 2,
+    "valid_shape_verifier_negatives": 5,
+    "post_native_currentness_negatives": 5,
+    "actual_unsettled_child_timeout_no_early_reuse_then_fresh": true,
+    "children": 14,
+    "collected": 14
+  },
+  "all14_native_observations_match_actual_provisioned_library": true,
+  "fixture_coverage_actual_and_floor": [
+    100.0,
+    100.0
+  ],
+  "additional_audit_controls": 4,
+  "two_complete_fresh_audits": true,
+  "audit_commands": [
+    "cargo deny --locked --config /home/runner/work/_temp/nsealr-product/nsealr/deny.toml --manifest-path /home/runner/work/_temp/nsealr-product/nsealr/Cargo.toml fetch index db",
+    "cargo deny --locked --config /home/runner/work/_temp/nsealr-product/nsealr/deny.toml --manifest-path /home/runner/work/_temp/nsealr-product/nsealr/apps/desktop-simulator/Cargo.toml fetch index",
+    "cargo deny --locked --config /home/runner/work/_temp/nsealr-product/nsealr/deny.toml --manifest-path /home/runner/work/_temp/nsealr-product/nsealr/Cargo.toml --offline check --deny index-failure",
+    "cargo deny --locked --config /home/runner/work/_temp/nsealr-product/nsealr/deny.toml --manifest-path /home/runner/work/_temp/nsealr-product/nsealr/apps/desktop-simulator/Cargo.toml --offline check --deny index-failure"
+  ],
+  "limits": "Original completed CI source/build/trace binding only; the ELF itself is not downloaded, no cdylib reproducibility or target/device/custody/physical qualification claim. The original17-step/check/bootstrap/capture verifier remains separately mandatory."
+}
