@@ -185,3 +185,10 @@ projection/protected delivery. Known no-W helper collection is test evidence;
 quarantine stays poisoned and is never runtime recovery or admission to reuse.
 No live O is killed or abandoned. Complete source/proof/limits, then stop for
 distinct affected review before integration; no physical/provider layer is added.
+
+Pre-execution erratum to03486: root independently confirmed that closing W stdin
+in O.invalidate82–90 can let pre-G W exit71 (raw18176) before O.poll_wait/kill_owned;
+SIGKILL gives exit-9/raw9. For only cancel_preG/control_EOF_preG/wall8_preG accept
+those two exact actual wait pairs, zero G/W image/result/release and original O
+cause. The original -9-only expectation and root's correction remain recorded;
+no runtime result supplied this amendment, and O/W/budgets are unchanged.

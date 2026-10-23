@@ -26,7 +26,8 @@
       "O_private_bytes": 0,
       "caller_released_bytes": 0,
       "actual_O_collection_and_EOF_required": true,
-      "runtime_reuse_only_after_known_close": true
+      "runtime_reuse_only_after_known_close": true,
+      "O_cancel_observed": false
     },
     {
       "id": "cancel_preP",
@@ -38,7 +39,8 @@
       "O_private_bytes": 0,
       "caller_released_bytes": 0,
       "actual_O_collection_and_EOF_required": true,
-      "runtime_reuse_only_after_known_close": true
+      "runtime_reuse_only_after_known_close": true,
+      "O_cancel_observed": true
     },
     {
       "id": "cancel_preG",
@@ -50,7 +52,19 @@
       "O_private_bytes": 0,
       "caller_released_bytes": 0,
       "actual_O_collection_and_EOF_required": true,
-      "runtime_reuse_only_after_known_close": true
+      "runtime_reuse_only_after_known_close": true,
+      "O_cancel_observed": true,
+      "accepted_W_wait_pairs": [
+        {
+          "exit_code": 71,
+          "raw_status": 18176
+        },
+        {
+          "exit_code": -9,
+          "raw_status": 9
+        }
+      ],
+      "W_exit_field_role": "Original -9-only03486 expectation retained; superseded by these exact source-derived accepted_W_wait_pairs before execution"
     },
     {
       "id": "late_discard",
@@ -62,7 +76,8 @@
       "O_private_bytes": 259,
       "caller_released_bytes": 0,
       "actual_O_collection_and_EOF_required": true,
-      "runtime_reuse_only_after_known_close": true
+      "runtime_reuse_only_after_known_close": true,
+      "O_cancel_observed": false
     },
     {
       "id": "wall8_preG",
@@ -74,7 +89,19 @@
       "O_private_bytes": 0,
       "caller_released_bytes": 0,
       "actual_O_collection_and_EOF_required": true,
-      "runtime_reuse_only_after_known_close": true
+      "runtime_reuse_only_after_known_close": true,
+      "O_cancel_observed": false,
+      "accepted_W_wait_pairs": [
+        {
+          "exit_code": 71,
+          "raw_status": 18176
+        },
+        {
+          "exit_code": -9,
+          "raw_status": 9
+        }
+      ],
+      "W_exit_field_role": "Original -9-only03486 expectation retained; superseded by these exact source-derived accepted_W_wait_pairs before execution"
     },
     {
       "id": "invalid_Z",
@@ -86,7 +113,8 @@
       "O_private_bytes": 0,
       "caller_released_bytes": 0,
       "actual_O_collection_and_EOF_required": true,
-      "runtime_reuse_only_after_known_close": true
+      "runtime_reuse_only_after_known_close": true,
+      "O_cancel_observed": false
     },
     {
       "id": "duplicate_PP",
@@ -98,7 +126,8 @@
       "O_private_bytes": 0,
       "caller_released_bytes": 0,
       "actual_O_collection_and_EOF_required": true,
-      "runtime_reuse_only_after_known_close": true
+      "runtime_reuse_only_after_known_close": true,
+      "O_cancel_observed": false
     },
     {
       "id": "premature_G",
@@ -110,7 +139,8 @@
       "O_private_bytes": 0,
       "caller_released_bytes": 0,
       "actual_O_collection_and_EOF_required": true,
-      "runtime_reuse_only_after_known_close": true
+      "runtime_reuse_only_after_known_close": true,
+      "O_cancel_observed": false
     },
     {
       "id": "control_EOF_preG",
@@ -122,7 +152,19 @@
       "O_private_bytes": 0,
       "caller_released_bytes": 0,
       "actual_O_collection_and_EOF_required": true,
-      "runtime_reuse_only_after_known_close": true
+      "runtime_reuse_only_after_known_close": true,
+      "O_cancel_observed": false,
+      "accepted_W_wait_pairs": [
+        {
+          "exit_code": 71,
+          "raw_status": 18176
+        },
+        {
+          "exit_code": -9,
+          "raw_status": 9
+        }
+      ],
+      "W_exit_field_role": "Original -9-only03486 expectation retained; superseded by these exact source-derived accepted_W_wait_pairs before execution"
     }
   ],
   "wall8_rule": "Actual O invalidated_ns>=begin_ns+8000000000; cleanup_deadline=invalidated_ns+4000000000. No hard whole-call bound, resets, mocked clock, client100ms or C5000ms substitution. Withhold G while continuing actual polling.",
@@ -321,5 +363,16 @@
     "all47criteria",
     "graph/status/resources/release",
     "O/W protocol and13+CORE0/8s/4s/512/704/947/client100/C5000"
-  ]
+  ],
+  "preexecution_erratum": {
+    "original_expectations_commit": "03486e56063fe8495c373dad2369e64e1179db2c",
+    "original_root_confirmation": "Root initially confirmed only -9; independently corrected before any negative execution",
+    "source": "O.invalidate82-90 closes W stdin; run328-336 poll_wait precedes kill_owned. Wmain.rs54-58 EOF beforeG exits71. No timing/clock/budget or O/W edit.",
+    "scope": [
+      "cancel_preG",
+      "control_EOF_preG",
+      "wall8_preG"
+    ],
+    "acceptance": "Only actual exact exit/raw pairs71/18176 or-9/9, collector actualO/directW; zeroG/Wimage/result/release and unchanged initialOreason. No other status learned from runtime."
+  }
 }
