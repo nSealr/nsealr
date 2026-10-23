@@ -55,14 +55,23 @@ def ci(directory):
     # The entire existing setup/test/lint/audit/docs runs ONCE, after provisioning.
     subprocess.run(["make", "-C", str(pi), "ci"], cwd=ROOT, env=env, check=True)
     env["NSEALR_QP01_PYTHON"] = str(pi / ".venv/bin/python")
+    subprocess.run(["node", "--import", "tsx/esm", str(CLIENT), "--readiness-controls"], cwd=ROOT, env=env, check=True)
     subprocess.run(["node", "--import", "tsx/esm", str(CLIENT)], cwd=ROOT, env=env, check=True)
 
 
-def exchange(settlement_fd=None):
+def exchange(settlement_fd=None, ready_fd=None):
+    if ready_fd is not None and (ready_fd < 3 or ready_fd == settlement_fd):
+        raise ValueError("readiness requires its own inherited control descriptor")
     sys.path.insert(0, str(ROOT / "apps/pi/app"))
     from nsealr_vault.engine_adapter import EngineAdapter, MonotonicSeconds
-    incoming = sys.stdin.buffer.read(948)
     adapter = EngineAdapter(os.environ["NSEALR_QP01_LIBRARY"], os.environ["NSEALR_QP01_LIBRARY_SHA256"])
+    if ready_fd is not None:
+        # Initialization only: no stdin read, native request, review or signing.
+        # The parent starts its actual client operation after this exact token.
+        if os.write(ready_fd, b"R") != 1:
+            raise RuntimeError("readiness token was not written")
+        os.close(ready_fd)
+    incoming = sys.stdin.buffer.read(948)
     pages = []
 
     def present(page):
@@ -91,11 +100,12 @@ def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--ci", metavar="DIRECTORY")
     parser.add_argument("--settlement-fd", type=int, choices=[3])
+    parser.add_argument("--ready-fd", type=int)
     args = parser.parse_args()
     if args.ci:
         ci(args.ci)
     else:
-        exchange(args.settlement_fd)
+        exchange(args.settlement_fd, args.ready_fd)
 
 
 if __name__ == "__main__":
