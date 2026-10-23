@@ -98,7 +98,7 @@ function validateTerminal(row: any, pid: number, phase: any, contract: any, outp
   } else { assert.equal(output.length, 0); assert.equal(row.final_worker_eligible, false); }
 }
 
-async function prepareOwner(root: string, contract: any, syntheticArgv?: string[]) {
+async function prepareOwner(root: string, contract: any, syntheticArgv?: string[], onSettled?: (observation: any) => void) {
   const python = process.env.NSEALR_QP01_PYTHON, binary = process.env.NSEALR_QP01_QR_WORKER;
   assert(python && binary);
   assert.equal(hash(readFileSync(binary)), contract.identities.worker_elf_sha256);
@@ -171,11 +171,14 @@ async function prepareOwner(root: string, contract: any, syntheticArgv?: string[
   let settlement: Promise<{ output: Buffer; terminal: any; phase: any }> | undefined;
   const settle = () => settlement ??= (async () => {
     const end = await ended;
-    console.log(JSON.stringify({ owner_settlement: { pid: child.pid, ...end, ready_hex: readyBytes.toString("hex"),
+    const observation = { pid: child.pid, ...end, ready_hex: readyBytes.toString("hex"),
       readyEOF, statusEOF, outEOF, errEOF, status_bytes: seenBytes, commands, phase, terminal,
       output_bytes: output.length, output_sha256: output.length ? hash(output) : null,
       diagnostic_base64: diagnostic.toString("base64"), elapsed_ns: String(process.hrtime.bigint() - started),
-      protocol_error: fault ? String(fault) : null, synthetic_no_W_helper: !!syntheticArgv } }));
+      protocol_error: fault ? String(fault) : null, synthetic_no_W_helper: !!syntheticArgv,
+      complete_status_records: lines, unconsumed_status_bytes: status.length };
+    console.log(JSON.stringify({ owner_settlement: observation }));
+    onSettled?.(observation);
     assert(!fault, String(fault)); assert(readyEOF && statusEOF && outEOF && errEOF);
     assert.equal(status.length, 0); assert(terminal); assert(child.pid); assert.equal(end.signal, null);
     validateTerminal(terminal, child.pid, phase, contract, output);
@@ -216,6 +219,7 @@ export async function runFirstGate({ prepareNative, basic, root }: {
   prepareNative(): Promise<Native>; basic: any; root: string;
 }) {
   const contract = JSON.parse(readFileSync(new URL("control-contract.json", import.meta.url), "utf8"));
+  if (process.argv.includes("--owner-malformed-controls")) { await malformedHelpers(root, contract); return; }
   const image = readFileSync(resolve(root, contract.independent_oracle.image_path));
   const expected = readFileSync(resolve(root, contract.independent_oracle.decoded_frame_path));
   assert.equal(image.length, 172800); assert.equal(hash(image), contract.independent_oracle.image_sha256);
@@ -425,7 +429,7 @@ async function malformedHelpers(root: string, contract: any) {
   const modes = ["ready-extra", "ready-missing", "status-missing", "status-truncated", "status-overflow",
     "wrong-owner", "wrong-worker", "contradictory-IO", "duplicate-key", "duplicate-terminal", "phase-after-terminal"];
   for (const mode of modes) {
-    const script = `import os,json,time
+    const script = String.raw`import os,json,time
 mode=${JSON.stringify(mode)}
 os.write(4,b'RX' if mode=='ready-extra' else b'' if mode=='ready-missing' else b'R');os.close(4)
 os.read(3,1)
@@ -445,10 +449,32 @@ if mode.startswith('ready-'):wire=b''
 try:os.write(5,wire)
 except BrokenPipeError:pass
 `;
+    let observation: any;
     await assert.rejects(async () => {
-      const owner = await prepareOwner(root, contract, ["-B", "-c", script]);
+      const owner = await prepareOwner(root, contract, ["-B", "-c", script], (value) => { observation = value; });
       owner.rawControl("Q"); await owner.settle();
     });
+    // A helper crash/readiness failure cannot satisfy a later malformed-status
+    // case. Require its real successful execution and the intended wire defect.
+    assert(observation); assert.equal(observation.code, 0); assert.equal(observation.signal, null);
+    assert.equal(observation.diagnostic_base64, ""); assert.equal(observation.output_bytes, 0);
+    assert(observation.readyEOF && observation.statusEOF && observation.outEOF && observation.errEOF);
+    if (mode.startsWith("ready-")) {
+      assert.equal(observation.ready_hex, mode === "ready-extra" ? "5258" : "");
+      assert.equal(observation.status_bytes, 0); assert(observation.protocol_error);
+    } else {
+      assert.equal(observation.ready_hex, "52");
+      if (mode === "status-missing") { assert.equal(observation.status_bytes, 0); assert.equal(observation.terminal, undefined); }
+      if (mode === "status-truncated") { assert(observation.status_bytes > 0); assert(observation.unconsumed_status_bytes > 0); assert.equal(observation.terminal, undefined); }
+      if (mode === "status-overflow") { assert.equal(observation.status_bytes, 4097); assert.match(observation.protocol_error, /status capacity/); }
+      if (mode === "wrong-owner") assert.notEqual(observation.terminal.owner_pid, observation.pid);
+      if (mode === "wrong-worker") { assert.equal(observation.terminal.worker_pid, 99); assert.equal(observation.terminal.worker_wait, null); }
+      if (mode === "contradictory-IO") assert.equal(observation.terminal.worker_io.owned_fds_closed, false);
+      if (mode === "duplicate-key") { assert(observation.protocol_error); assert.equal(observation.terminal, undefined); assert.equal(observation.complete_status_records, 1); }
+      if (mode === "duplicate-terminal" || mode === "phase-after-terminal") {
+        assert(observation.protocol_error); assert.equal(observation.terminal.kind, "terminal"); assert.equal(observation.complete_status_records, 2);
+      }
+    }
     console.log(JSON.stringify({ case: `FG7_${mode}`, pass: true, helper_only: true, W_spawned: 0 }));
   }
 }
