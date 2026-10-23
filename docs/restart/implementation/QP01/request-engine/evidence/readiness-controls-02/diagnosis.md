@@ -11,4 +11,5 @@ The minimal test correction selects the existing method by `id == sign_event`
 before changing availability. Original five post-native currentness mutations
 remain unchanged: their snapshot-change check does not depend on denying the
 selected method. No client, provider, key, expected signature or threshold
-changes. This is a new test setup error, not a product defect. Original source,+stdout/stderr and receipt are preserved, including the unexpected execution.
+changes. This is a new test setup error, not a product defect. Original source,
+stdout/stderr and receipt are preserved, including the unexpected execution.
