@@ -83,8 +83,8 @@ contract-ci:
 bridge-ci:
 	pnpm run ci
 
-pi-ci:
-	$(MAKE) -C apps/pi ci
+pi-ci: bridge-ci
+	python3 -B docs/restart/implementation/QP01/request-engine/exchange.py --ci apps/pi
 
 integration-tests:
 	python3 -B -m unittest discover -s tests/integration -p 'test_*.py' -v

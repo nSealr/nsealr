@@ -1,0 +1,95 @@
+#!/usr/bin/env python3
+"""Finite host fixture exchange/provisioner; no device route or camera input."""
+import argparse
+import hashlib
+import json
+import os
+from pathlib import Path
+import subprocess
+import sys
+
+ROOT = Path(__file__).resolve().parents[5]
+SOURCE = ROOT / "crates/nsealr-pi-engine-fixture/src/lib.rs"
+CLIENT = Path(__file__).with_name("client-exchange.ts")
+
+
+def source_binding():
+    paths = ["Cargo.toml", "Cargo.lock", "crates/nsealr-pi-engine-fixture/Cargo.toml",
+             "crates/nsealr-pi-engine-fixture/src/lib.rs"]
+    return {p: hashlib.sha256((ROOT / p).read_bytes()).hexdigest() for p in paths}
+
+
+def provision():
+    before = source_binding()
+    command = ["cargo", "build", "-p", "nsealr-pi-engine-fixture", "--locked", "--offline",
+               "--release", "--message-format=json"]
+    result = subprocess.run(command, cwd=ROOT, check=True, stdout=subprocess.PIPE, text=True)
+    artifacts = []
+    for line in result.stdout.splitlines():
+        record = json.loads(line)
+        if record.get("reason") != "compiler-artifact":
+            continue
+        target = record["target"]
+        if target["name"] == "nsealr_pi_engine_fixture" and "cdylib" in target["kind"]:
+            if Path(target["src_path"]).resolve() != SOURCE:
+                raise RuntimeError("Cargo artifact has wrong source")
+            artifacts.extend(Path(p).resolve(strict=True) for p in record["filenames"] if p.endswith(".so"))
+    if len(artifacts) != 1 or source_binding() != before:
+        raise RuntimeError("missing/ambiguous native artifact or changed build input")
+    library = artifacts[0]
+    binary = library.read_bytes()
+    if binary[:4] != b"\x7fELF":
+        raise RuntimeError("host experiment requires the actual ELF")
+    digest = hashlib.sha256(binary).hexdigest()
+    print(json.dumps({"role": "public fixture build, not hardware qualification", "argv": command,
+                      "source": before, "library": str(library), "sha256": digest,
+                      "CARGO_TARGET_DIR": os.environ.get("CARGO_TARGET_DIR")}), flush=True)
+    return {"NSEALR_QP01_LIBRARY": str(library), "NSEALR_QP01_LIBRARY_SHA256": digest}
+
+
+def ci(directory):
+    pi = (ROOT / directory).resolve()
+    if pi != ROOT / "apps/pi":
+        raise ValueError("--ci requires the actual apps/pi directory")
+    env = dict(os.environ, **provision())
+    # The entire existing setup/test/lint/audit/docs runs ONCE, after provisioning.
+    subprocess.run(["make", "-C", str(pi), "ci"], cwd=ROOT, env=env, check=True)
+    env["NSEALR_QP01_PYTHON"] = str(pi / ".venv/bin/python")
+    subprocess.run(["node", "--import", "tsx/esm", str(CLIENT)], cwd=ROOT, env=env, check=True)
+
+
+def exchange():
+    sys.path.insert(0, str(ROOT / "apps/pi/app"))
+    from nsealr_vault.engine_adapter import EngineAdapter, MonotonicSeconds
+    incoming = sys.stdin.buffer.read(948)
+    adapter = EngineAdapter(os.environ["NSEALR_QP01_LIBRARY"], os.environ["NSEALR_QP01_LIBRARY_SHA256"])
+    pages = []
+
+    def present(page):
+        # Synthetic conformance display/action only: all actual borrowed bytes
+        # are recorded. This is not human/physical consent or a qualified UI.
+        pages.append({"kind": page.kind, "index": page.index, "total": page.total,
+                      "label": page.label.decode("ascii"), "body": page.body.decode("ascii"),
+                      "position": page.position.decode("ascii")})
+        return 1 if page.kind == 1 else 0
+
+    output = adapter.run_request_frame(incoming, present, MonotonicSeconds(), lambda: bytes(32), lambda: False)
+    print(json.dumps({"library": str(adapter.library_path), "sha256": adapter.library_sha256,
+                      "input_bytes": len(incoming), "input_sha256": hashlib.sha256(incoming).hexdigest(),
+                      "output_bytes": len(output), "output_sha256": hashlib.sha256(output).hexdigest(),
+                      "synthetic_complete_review": pages}), file=sys.stderr, flush=True)
+    sys.stdout.buffer.write(output)
+
+
+def main():
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--ci", metavar="DIRECTORY")
+    args = parser.parse_args()
+    if args.ci:
+        ci(args.ci)
+    else:
+        exchange()
+
+
+if __name__ == "__main__":
+    main()
