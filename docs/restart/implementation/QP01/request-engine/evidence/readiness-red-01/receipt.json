@@ -1,0 +1,42 @@
+{
+  "schema_version": 1,
+  "role": "Pre-code missing readiness-path RED; not a repeated hosted timeout campaign",
+  "source_commit": "61796c7f8bfd134c8e9fea83ab9462a9d1a1b7dd",
+  "source_tree": "4233bf1188441a6e0ffc4712f7844b308365c7ab",
+  "original_harness_source": "5c701113bc2ac2d7b596f7d3fb76574a7cff24b3",
+  "argv": [
+    "python3",
+    "-B",
+    "docs/restart/implementation/QP01/request-engine/readiness-regression.py",
+    "--case",
+    "ready_without_request"
+  ],
+  "cwd": "/home/tux/nsealr/.restart-tools/goal/qp01-request-engine-correction",
+  "started_utc": "2026-10-23T15:32:55.334405+00:00",
+  "finished_utc": "2026-10-23T15:32:55.374789+00:00",
+  "elapsed_seconds": 0.03848175425082445,
+  "exit_code": 1,
+  "environment": {
+    "path": "docs/restart/implementation/R00/evidence/final/environment.json",
+    "sha256": "5b0f773e07fc90aa4a2b7d62c102bbc7b824b6bab135002ee0a01ad90a0ef001",
+    "application": "Exact R00 JSON direct map plus only the two explicit existing library bindings",
+    "overlays": {
+      "NSEALR_QP01_LIBRARY": "/home/tux/nsealr/.restart-tools/goal/qp01-request-engine-runtime/target/release/libnsealr_pi_engine_fixture.so",
+      "NSEALR_QP01_LIBRARY_SHA256": "7f05d70fa4c137d6a92e63107474292c6cb0b2bf10f4d501ff3f59f84137392c"
+    }
+  },
+  "regression_sha256": "3691f183242e9735e87984204e65c5ffa69e27d189c7be1403ccae98af737542",
+  "exchange_sha256": "a6a8aa3e908401727fe83fa5ec42dee09e5dd7e58164a0ce3eea1541d907029c",
+  "stdout_sha256": "bdd1f66a1f61dbb246595f4d10c5aa29aada9d181e729908fbd45ada1819839f",
+  "stderr_sha256": "809ae179a16010eaeecce4240c2cb2dd3fb50be4b5fb237b999714f2f1d8a132",
+  "observations": {
+    "missing_readiness_argument": true,
+    "actual_child_exit": 2,
+    "child_collected": true,
+    "request_bytes_sent": 0,
+    "native_request_calls": 0,
+    "signatures": 0,
+    "library_loaded_by_child": false,
+    "meaning": "Original exchange argparse rejects the new interface before adapter initialization. The host CI timeout remains the separate original RED; no timing attribution or correction PASS follows."
+  }
+}
