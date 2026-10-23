@@ -207,10 +207,11 @@
     {
       "id": "rqrr-std-reference",
       "path": "src/lib.rs",
-      "start_line": 38,
-      "end_line": 45,
-      "sha256": "5dff4bc8ae6c083b443793a24663d2dfc9398ae9165304feb6f27f31d928f16d",
-      "text": "pub(crate) use self::detect::{capstones_from_image, CapStone};\npub use self::identify::Point;\npub(crate) use self::identify::SkewedGridLocation;\npub use self::prepare::PreparedImage;\nuse std::error::Error;\nuse std::io::Write;\n\nmod decode;\n"
+      "start_line": 37,
+      "end_line": 50,
+      "sha256": "b9b127318d5225d3d78aa699c4251908c477c11fdf4ec1cd49e449a73353cc36",
+      "text": "pub use self::decode::{MetaData, RawData, Version, MAX_PAYLOAD_SIZE};\npub(crate) use self::detect::{capstones_from_image, CapStone};\npub use self::identify::Point;\npub(crate) use self::identify::SkewedGridLocation;\npub use self::prepare::PreparedImage;\nuse std::error::Error;\nuse std::io::Write;\n\nmod decode;\nmod detect;\npub(crate) mod geometry;\nmod identify;\nmod prepare;\nmod version_db;\n"
     }
-  ]
+  ],
+  "public_visibility": "ImageBuffer is declared pub in private mod prepare but is not re-exported. External callers cannot directly name/implement it. Public prepare_from_* helpers remain available; img feature supplies blanket implementation for image traits. This narrows a WIP analysis claim; source unchanged."
 }
