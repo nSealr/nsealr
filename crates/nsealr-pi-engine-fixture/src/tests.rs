@@ -211,7 +211,7 @@ fn actual_ffi_effects_and_boundaries() {
     assert_eq!(call(&get, FRAME).0, CLOCK);
     reset();
     STATE.with(|s| s.borrow_mut().invalid_cancel = true);
-    assert_eq!(call(&get, FRAME).0, CLOCK);
+    assert_eq!(call(&get, FRAME).0, CANCELLED);
     for (action, expected) in [(1, ENGINE), (2, REJECTED), (4, ENGINE), (99, DISPLAY)] {
         reset();
         STATE.with(|s| s.borrow_mut().action = Some(action));

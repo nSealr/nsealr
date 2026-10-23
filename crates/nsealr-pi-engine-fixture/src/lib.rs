@@ -101,7 +101,7 @@ impl Freshness {
                 }
             }
             1 => CANCELLED,
-            _ => CLOCK,
+            _ => CANCELLED,
         };
         self.failure.set(failure);
         if failure != 0 {
