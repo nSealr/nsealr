@@ -9,3 +9,5 @@ Affected runtime source uses the existing best-effort opaque conversion for mask
 Functional tests and compile checks do not prove constant-time machine code on every architecture or any physical security property. Upstream BINSEC results remain upstream claims. Added upstream proptests are preserved but were not run here. The separately authored audit-data gate requires its distinct review; PR44 and actual-main CI must pass on the final candidate before integration can be accepted. Original failed CI and historical reports stay intact.
 
 See [review.json](review.json) for scope, source correspondence, retained reader observations and precise limits. Local independent executable is ignored under `.runtime/`; no production artifact or corpus was added.
+
+[Whitespace disposition](whitespace.json): complete check2 preserves the upstream test runner final blank line; explicit authored-file check0 excludes only that raw output.
