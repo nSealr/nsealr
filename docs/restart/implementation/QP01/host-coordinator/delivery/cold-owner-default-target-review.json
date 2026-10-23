@@ -1,0 +1,206 @@
+{
+  "verdict": "PASS_scoped_actual_default_Cargo_target_source_cleanliness_correction",
+  "candidate": "8910e65a2033bfa90f6074e99b87764cc1620ba1",
+  "candidate_tree": "9789e20d469adc07cd77dd4e52821046d956e504",
+  "code_candidate": "7b00c4e554606189a20c314d804b27020625d1c7",
+  "original_failed_source": "53f533b998998a74b41cb71eccd6471b4ce2a833",
+  "recorded_utc": "2026-10-23T21:09:24.805631+00:00",
+  "reviewer": "/root/a02_resume",
+  "correction_author": "/root",
+  "findings": [],
+  "scope": "One exact build-output ignore rule plus bounded existing proof; no old product/lifecycle/source review repeated. Independent one actual default Cargo test and source-state observation only.",
+  "source_checks": {
+    "code_only_changed_path": ".gitignore",
+    "exact_appended_rule": "/apps/pi/qr-worker/target/",
+    "gitignore_mode_unchanged": "100644",
+    "all_other_base_tracked_postimages_exact": 9225,
+    "new_proof_members": 6,
+    "new_proof_manifest_self": 1,
+    "qualified_runtime_and_gate_postimages_exact9d": 226,
+    "baseline_guard_byte_exact": true,
+    "baseline_guard_sha256": "0dc0871b57f9ef2f1a2c5124b4fd5486a0b708d2e6c7f29bfc18c2a350deda48",
+    "whole_plan_and_evidence_index_unchanged": true,
+    "all47_task_states_criteria_dependencies_resources_releases_unchanged": true
+  },
+  "author_proofs": {
+    "manifest_path": "docs/restart/implementation/QP01/host-coordinator/delivery/default-target-correction/artifact-manifest.json",
+    "manifest_sha256": "0f880735bdd5dab4a2c634f948d1fda2e80975590d9bfd1d8da7a9886cfdf07e",
+    "red_receipt_sha256": "e76acb5eaa44bba705948bee7fdb9c3717e51aeeabbedfe69b6d240436285575",
+    "green_receipt_sha256": "1a9fe81ae99ad00be30f7028db4644fa85d24e2229d4033809c90118fc4e34f3",
+    "red": "Actual original default build succeeds but leaves exactly the untracked nested target, with tracked diff empty. This is the source-cleanliness RED, not a compiler/test failure.",
+    "green": "Same command from fresh corrected code succeeds and leaves status/diff clean; author actual adjacent-file and tracked-source mutations are visible and restored.",
+    "existing_five_metadata_receipts_verified": 5,
+    "whitespace": {
+      "full_exit": 2,
+      "authored_exit": 0,
+      "full_output": "docs/restart/implementation/QP01/host-coordinator/delivery/default-target-correction/green.log:22: new blank line at EOF.\ndocs/restart/implementation/QP01/host-coordinator/delivery/default-target-correction/red.log:22: new blank line at EOF.\n",
+      "excluded_only": [
+        "docs/restart/implementation/QP01/host-coordinator/delivery/default-target-correction/red.log",
+        "docs/restart/implementation/QP01/host-coordinator/delivery/default-target-correction/green.log"
+      ],
+      "original_logs_preserved_byte_exact": true,
+      "initial_packaging_assertion": "Preserved in result.json as stopping packaging on raw final blank lines; no PASS attributed and no runtime rerun."
+    }
+  },
+  "original_CI_capture": {
+    "run_id": 40022139706,
+    "head": "53f533b998998a74b41cb71eccd6471b4ce2a833",
+    "conclusion": "failure",
+    "capture_json_sha256": "c6ec07291bb84eca22debb653df8b39f45639597828292abaf70176792b653a2",
+    "archive_sha256": "8f070380f95bcfae5da7b16f1f0d34e3ed2d5a6c3e6ca791ec7f62820e530bc3",
+    "archive_members": 9,
+    "observed_member": "verify/5_Complete product acceptance.txt",
+    "member_sha256": "8cf29c874600d17c96018a0e4725bdd8c21396bdbc05511d099799904a86ae20",
+    "exact_diagnostic_lines": [
+      "2026-10-23T20:52:34.6970653Z {\"role\": \"public RGB worker build, initialization v2, not hardware qualification\", \"argv\": [\"cargo\", \"build\", \"--manifest-path\", \"apps/pi/qr-worker/Cargo.toml\", \"--locked\", \"--offline\", \"--release\", \"--message-format=json\"], \"source\": {\"apps/pi/qr-worker/Cargo.toml\": \"a0c4db1b67499608914d07df5c5d8a54bfc69970e4559829f4c5573858068e91\", \"apps/pi/qr-worker/Cargo.lock\": \"d4dadbe7162e838039ef6a53dcd7addc71a32520836b2ddc189070fbe79c091a\", \"apps/pi/qr-worker/src/main.rs\": \"e60b3bc2baec2eded7ee474e101cfa8debd1a88be76d6d7cffce31b4e3e1dcf1\", \"apps/pi/qr-worker/rust-toolchain.toml\": \"6e90f2cf35aad6218e0d99f319101783cf5ce91cc62349dec0c7b357a420dabc\", \".cargo/config.toml\": \"98e1cf108d2b5aa2ff9d9fb6f58df4d0332df3a85411cf8c1249c615edecf625\", \"rust-toolchain.toml\": \"6e90f2cf35aad6218e0d99f319101783cf5ce91cc62349dec0c7b357a420dabc\"}, \"worker\": \"/home/runner/work/_temp/nsealr-product/nsealr/apps/pi/qr-worker/target/release/nsealr-qr-worker\", \"sha256\": \"0d0ecd6e0d83e709601492bc0c750d2df726f4298f999f2e68701cd5d84c34f7\", \"CARGO_TARGET_DIR\": null}",
+      "2026-10-23T20:59:00.4631736Z All 17 retained product integration steps passed. External hardware and optional physical resources are separate.",
+      "2026-10-23T20:59:00.5032801Z {\"failed_commands\": [], \"evidence\": \"/home/runner/work/_temp/nsealr-product/evidence/suites\"}",
+      "2026-10-23T20:59:00.5122722Z ##[error]Process completed with exit code 1."
+    ],
+    "cause_basis": "Unchanged run.py returns bool(failed or changed) after printing failed_commands. Original output has failed_commands[] plus exit1; actual hosted default QR target is visible. The author real smaller RED identifies the generated untracked directory. Prior local author/reviewer external-target passes did not cover this default-path behavior."
+  },
+  "independent_default_build": {
+    "receipt": {
+      "candidate": "8910e65a2033bfa90f6074e99b87764cc1620ba1",
+      "tree": "9789e20d469adc07cd77dd4e52821046d956e504",
+      "recorded_utc": "2026-10-23T21:07:28.451728+00:00",
+      "argv": [
+        "cargo",
+        "test",
+        "--manifest-path",
+        "apps/pi/qr-worker/Cargo.toml",
+        "--locked",
+        "--offline"
+      ],
+      "cwd": "/home/tux/nsealr/.restart-tools/goal/qp01-default-target-review",
+      "environment": {
+        "HOME": "/home/tux",
+        "USER": "tux",
+        "LOGNAME": "tux",
+        "LANG": "C.UTF-8",
+        "LC_ALL": "C.UTF-8",
+        "PATH": "/home/tux/nsealr/.restart-tools/goal/r00/tools/baseline/.work/final/.tools/bin:/home/tux/nsealr/.restart-tools/goal/r00/tools/baseline/.work/final/.tools/python/bin:/home/tux/nsealr/.restart-tools/goal/r00/tools/baseline/.work/final/.tools/node/bin:/home/tux/nsealr/.restart-tools/goal/r00/tools/baseline/.work/final/.tools/cargo/bin:/usr/bin:/bin",
+        "CI": "true",
+        "TZ": "UTC",
+        "PYTHONDONTWRITEBYTECODE": "1",
+        "CARGO_HOME": "/home/tux/nsealr/.restart-tools/goal/qp01-owner-cold-review/docs/restart/implementation/reviews/QP01-owner-cold/.runtime/default-target-review/cargo-home",
+        "RUSTUP_HOME": "/home/tux/nsealr/.restart-tools/goal/r00/tools/baseline/.work/final/.tools/rustup",
+        "XDG_CACHE_HOME": "/home/tux/nsealr/.restart-tools/goal/qp01-owner-cold-review/docs/restart/implementation/reviews/QP01-owner-cold/.runtime/default-target-review/cache",
+        "XDG_CONFIG_HOME": "/home/tux/nsealr/.restart-tools/goal/r00/tools/baseline/.work/final/.tools/config",
+        "XDG_DATA_HOME": "/home/tux/nsealr/.restart-tools/goal/r00/tools/baseline/.work/final/.tools/data",
+        "npm_config_cache": "/home/tux/nsealr/.restart-tools/goal/r00/tools/baseline/.work/final/.tools/cache/npm",
+        "npm_config_store_dir": "/home/tux/nsealr/.restart-tools/goal/r00/tools/baseline/.work/final/.tools/cache/pnpm",
+        "npm_config_userconfig": "/home/tux/nsealr/.restart-tools/goal/r00/tools/baseline/.work/final/.tools/npmrc",
+        "npm_config_globalconfig": "/home/tux/nsealr/.restart-tools/goal/r00/tools/baseline/.work/final/.tools/global-npmrc",
+        "npm_config_loglevel": "error",
+        "npm_config_update_notifier": "false",
+        "PYTHONUSERBASE": "/home/tux/nsealr/.restart-tools/goal/r00/tools/baseline/.work/final/.tools/python-user",
+        "PIP_CONFIG_FILE": "/dev/null",
+        "PIP_CACHE_DIR": "/home/tux/nsealr/.restart-tools/goal/r00/tools/baseline/.work/final/.tools/cache/pip",
+        "PIP_DISABLE_PIP_VERSION_CHECK": "1",
+        "PIP_NO_INDEX": "1",
+        "PIP_FIND_LINKS": "/home/tux/nsealr/.restart-tools/goal/r00/tools/baseline/.work/final/.tools/wheels",
+        "PIP_CONSTRAINT": "/home/tux/nsealr/.restart-tools/goal/r00/tools/baseline/.work/final/.tools/constraints.txt",
+        "TMPDIR": "/home/tux/nsealr/.restart-tools/goal/qp01-owner-cold-review/docs/restart/implementation/reviews/QP01-owner-cold/.runtime/default-target-review/tmp",
+        "CARGO_NET_OFFLINE": "true",
+        "RUSTUP_TOOLCHAIN": "1.95.0"
+      },
+      "target_initially_absent": true,
+      "CARGO_TARGET_DIR_unset": true,
+      "CargoHome_initially_empty": true,
+      "before_status": "",
+      "exit_code": 0,
+      "elapsed_seconds": 1.096834403462708,
+      "after_status": "",
+      "tracked_diff": "",
+      "actual_target_exists": true,
+      "outputs": {
+        "stdout.log": {
+          "bytes": 260,
+          "sha256": "ad6d0a68436a8fb3fc9e641e9d0474a1bdeb1aa2a390e91d33b9ef7e66d66e04"
+        },
+        "stderr.log": {
+          "bytes": 611,
+          "sha256": "0a35b588437c261a041a74bc9b5062caef89554d8b5be84b90530531596fd638"
+        }
+      }
+    },
+    "stdout_exact": "\nrunning 3 tests\ntest tests::all_256_grays_are_preserved ... ok\ntest tests::arithmetic_range_bound ... ok\ntest tests::known_colors_and_rounding_discriminant ... ok\n\ntest result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s\n\n",
+    "stderr_exact": "   Compiling proc-macro2 v1.0.107\n   Compiling unicode-ident v1.0.27\n   Compiling quote v1.0.47\n   Compiling foldhash v0.2.0\n   Compiling g2poly v1.2.2\n   Compiling hashbrown v0.17.1\n   Compiling lru v0.18.5\n   Compiling syn v2.0.119\n   Compiling g2gen v1.2.2\n   Compiling g2p v1.2.2\n   Compiling rqrr v0.11.0\n   Compiling nsealr-qr-worker v0.0.0 (/home/tux/nsealr/.restart-tools/goal/qp01-default-target-review/apps/pi/qr-worker)\n    Finished `test` profile [unoptimized + debuginfo] target(s) in 1.08s\n     Running unittests src/main.rs (apps/pi/qr-worker/target/debug/deps/nsealr_qr_worker-ffff631223075e87)\n",
+    "test_harness_artifact": {
+      "path": "/home/tux/nsealr/.restart-tools/goal/qp01-default-target-review/apps/pi/qr-worker/target/debug/deps/nsealr_qr_worker-ffff631223075e87",
+      "bytes": 7329904,
+      "sha256": "ba068f7229cf07b3bff1f05c75f43cfb5cc78b52a1c424b98a600b107f367e5d",
+      "role": "Actual debug unit-test ELF, not release QR worker or reproducibility proof."
+    },
+    "baseline_check_executed_scope": "Actual same git status/diff predicates after the build; full baseline run.py/makeci was not rerun.",
+    "read_only_ignore_controls": {
+      "source": "/home/tux/nsealr/.restart-tools/goal/qp01-default-target-review",
+      "commands": [
+        {
+          "argv": [
+            "git",
+            "check-ignore",
+            "--no-index",
+            "-v",
+            "apps/pi/qr-worker/target/debug/nsealr-qr-worker"
+          ],
+          "exit": 0,
+          "stdout": ".gitignore:20:/apps/pi/qr-worker/target/\tapps/pi/qr-worker/target/debug/nsealr-qr-worker\n",
+          "stderr": ""
+        },
+        {
+          "argv": [
+            "git",
+            "check-ignore",
+            "--no-index",
+            "-v",
+            "apps/pi/qr-worker/unexpected-review-canary"
+          ],
+          "exit": 1,
+          "stdout": "",
+          "stderr": ""
+        },
+        {
+          "argv": [
+            "git",
+            "check-ignore",
+            "--no-index",
+            "-v",
+            "apps/pi/qr-worker/src/main.rs"
+          ],
+          "exit": 1,
+          "stdout": "",
+          "stderr": ""
+        },
+        {
+          "argv": [
+            "git",
+            "check-ignore",
+            "--no-index",
+            "-v",
+            "apps/pi/qr-worker/target-other/file"
+          ],
+          "exit": 1,
+          "stdout": "",
+          "stderr": ""
+        }
+      ],
+      "rule_scope": "Only actual target subtree matches; adjacent, tracked source and target-other probes are not ignored. These are read-only path queries, not source mutations."
+    }
+  },
+  "reviewer_reader_observation": {
+    "initial_lookup": "git rev-parse 53f",
+    "exit_code": 128,
+    "classification": "Three-character revision shorthand was not resolvable; read-only lookup, no test or source effect.",
+    "correction": "Resolved full53f533b998998a74b41cb71eccd6471b4ce2a833 from existing frozen refs before any source read or execution."
+  },
+  "limits": [
+    "No fullPi/17-suite/old39 campaign repeated. No hostedCI queried or started by reviewer.",
+    "This corrects default output placement only; baseline source guard, dependencies, timers, negative cases, floors and formal task/release criteria are unchanged.",
+    "Original failed hosted run remains failed; new normal protected full PR/main CI and actual-main/cold adoption remain root-owned requirements.",
+    "No physical/ARM/Pi/default product route, new runtime behavior or distribution/reproducibility qualification."
+  ],
+  "criteria_completed": 0,
+  "physical_releases": 0
+}
