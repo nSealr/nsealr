@@ -1,0 +1,11 @@
+Post-run summary-only reader error, not a runtime or test failure:
+The reader selected every row with pass=true and indexed row['case']; the final
+scope summary also has pass=true and has scope instead of case.
+
+Original tool output:
+Traceback (most recent call last):
+  File "<stdin>", line 6, in <module>
+KeyError: 'case'
+
+Correction: inspect category counts and select rows with both case and pass.
+Matrix-02 stdout/stderr/receipt remain byte-exact; no runtime rerun for this reader.
