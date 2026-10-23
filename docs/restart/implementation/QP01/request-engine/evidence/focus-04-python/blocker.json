@@ -1,0 +1,48 @@
+{
+  "status": "BLOCKED_EXACT_SIGNATURE_EXPECTATION_MISMATCH",
+  "source": "a4371ac4dde909607c39ee6a1045c875a98d5089",
+  "observed_basic_event_id": "2977f107ad2668dbd9f09b8594eff3b5276e21bfe098e60ae3e905e3c861e4d3",
+  "observed_basic_signature": "d8f39a159fd833bb1f0663c7f03b2ff1c19b27867442a5a372779fe6998a8a28b26c623fed74896a5065b1a6739d1953b9d386d2d57e24cf1f7c1cc353a82635",
+  "expected_basic_signature": "2eec0351eb1d651140922d4b1f1bd8135f4474aabf42ec5bda7011087c1a072d71be863646dc162e4d96eacf14afeed2618a4acb0e1134a273a2b8e73039e654",
+  "explicit_auxiliary_hex": "0000000000000000000000000000000000000000000000000000000000000000",
+  "library": {
+    "NSEALR_QP01_LIBRARY": "/home/tux/nsealr/.restart-tools/goal/qp01-request-engine-runtime/target/release/libnsealr_pi_engine_fixture.so",
+    "NSEALR_QP01_LIBRARY_SHA256": "c9e34aba2fed030305deb423d8ff20ad334020be618b376c80bcd55c9a44fa92"
+  },
+  "source_sha256": {
+    "crates/nsealr-pi-engine-fixture/src/lib.rs": "b726571dc3c7a1065b17b93b983cb3e6758d0836e343fab26dec3ec51a6e7b35",
+    "crates/nsealr-pi-engine-fixture/src/tests.rs": "6f043bb32113808890875fad398ece28b60063d7b40f3c300b9084add7058160",
+    "apps/pi/app/nsealr_vault/engine_adapter.py": "c7d7778e538dc787e328295c67f9702473b87cb7c35d7576d37eab06a51137c7",
+    "apps/pi/tests/test_engine_adapter.py": "7bee1df72488627b3d47a4522746adaa7ca2e07bae857637e72fded0110cbb22",
+    "crates/nsealr-core/src/authorization.rs": "0d019eeb26b27bff884f2053209356583520330956f389db7db6b81ed67fa3a4",
+    "vendor/k256/src/schnorr/signing.rs": "16a51fd4383ea6faecc0cad3c2faf6fec77947c09abb147813f01d73541f8798",
+    "protocols/contracts/v1/scripts/generate_fixtures.py": "aadf8b86116f6103d71de9ce2d7ea0c5c9979dfc955b0219a0d5b1b496d6519a",
+    "protocols/contracts/v1/vectors/events/kind-1-basic.json": "17c97043ba47d69bb476b089c6ee72dcb8808e3174812bdcc36394e711657ac3",
+    "protocols/contracts/v1/vectors/events/kind-1-tags.json": "964ddff9fc301a0be1a25ca0a074ae500c1baaaf5ec8b0be9ea278a25a1df0b7",
+    "docs/restart/implementation/S03/oracle-source/bip340_reference.py": "4b1d4ad9e60820df4a6d239733d52b014bc03e4c47afd757a2fe4d3b586d892c"
+  },
+  "R00_secp256k1_binding": {
+    "path": "/home/tux/nsealr/.restart-tools/goal/r00/tools/baseline/.work/final/.tools/python/lib/python3.12/site-packages/secp256k1/__init__.py",
+    "sha256": "fcce0bd7593070a7cdc450d9556570465c9f8e0770331e6b33028b97c42eabf8",
+    "lines": [
+      360,
+      373
+    ]
+  },
+  "classification": "The original exact signature equality assertions failed. Key/template/event ID matched. Eight failure records include repeated dependent equality checks, not eight distinct implementation defects. Tagged raw signature was not printed in full by unittest; do not infer its exact value. Source shows original generator passes NULL auxiliary configuration through secp256k1 wrapper, unlike explicit32-zero k256/BIP340 path; runtime cause not independently adjudicated yet.",
+  "stopped": [
+    "new native runs",
+    "client round trips",
+    "full Pi CI",
+    "Rust workspace/coverage/ratchet",
+    "full gate audit/structural acceptance"
+  ],
+  "unchanged": [
+    "original vectors and protocol",
+    "pre-code contract expectations",
+    "core and k256",
+    "explicit32-zero provider",
+    "all task criteria/resources/releases"
+  ],
+  "remaining": "Root/B01 contract adjudication and bounded independent existing-oracle diagnosis before changing any expected signature. Entire23-case completion is not claimed."
+}
