@@ -1,0 +1,161 @@
+{
+  "verdict": "PASS_scoped_host_worker_ownership_experiment_only",
+  "scope_review": "8e53a4f4c876974c5bb876a809d8c83a285be9ef",
+  "precode_amendment": "00c3a271877190e18619e9ad4faf532863998a6c",
+  "early_smoke_source": "af15dbf7ca53973253df311f34805f5bf8d48d44",
+  "stable_source": "34e7769705a2a519908d9dacfec90e3cf9a18624",
+  "stable_tree": "25b2f655b557e8099ad1c9cd30d394e83fd450df",
+  "runner_sha256": "319e857bded1353e0d9bfc4fe298ddffeff6d2263ee12e1e68fe55fc74bdd38f",
+  "review_status": "awaiting distinct affected review",
+  "runs": [
+    {
+      "name": "normal-smoke-01",
+      "role": "early smoke before fault instrumentation",
+      "command": "docs/restart/implementation/QP01/host-coordinator/worker-ownership-evidence/normal-smoke-01-command.json",
+      "command_sha256": "52f39c29066141f5ee3514d3267bb7ac7763d579b79033cc44bd8b301079450a",
+      "result": "docs/restart/implementation/QP01/host-coordinator/worker-ownership-evidence/normal-smoke-01/result.json",
+      "result_sha256": "b9421aed3857551bb4f3b39c927632dcd55a7ec8eef7a839ab579496257dfd48",
+      "source": "af15dbf7ca53973253df311f34805f5bf8d48d44",
+      "passed": true,
+      "children": 2,
+      "actual_terminal_statuses": {
+        "1779474": {
+          "exitcode": 0,
+          "maxrss_kernel_units": 18348,
+          "pid": 1779474,
+          "raw_status": 0,
+          "system_seconds": 0.0,
+          "user_seconds": 0.010437
+        },
+        "1779475": {
+          "exitcode": 0,
+          "maxrss_kernel_units": 17560,
+          "pid": 1779475,
+          "raw_status": 0,
+          "system_seconds": 0.0,
+          "user_seconds": 0.006533
+        }
+      }
+    },
+    {
+      "name": "stable-normal-01",
+      "role": "one stable three-case sequence",
+      "command": "docs/restart/implementation/QP01/host-coordinator/worker-ownership-evidence/stable-normal-01-command.json",
+      "command_sha256": "4d02a7bf690e3b9dce014e3ee50588e3ca319fae247083a3ac0f5b6392e9a36f",
+      "result": "docs/restart/implementation/QP01/host-coordinator/worker-ownership-evidence/stable-normal-01/result.json",
+      "result_sha256": "7702396c8b94b74072f99eda49e7ea41a08b526a749cd47248eccf94b68d7cb2",
+      "source": "34e7769705a2a519908d9dacfec90e3cf9a18624",
+      "passed": true,
+      "children": 2,
+      "actual_terminal_statuses": {
+        "1781404": {
+          "exitcode": 0,
+          "maxrss_kernel_units": 18532,
+          "pid": 1781404,
+          "raw_status": 0,
+          "system_seconds": 0.0,
+          "user_seconds": 0.010979
+        },
+        "1781405": {
+          "exitcode": 0,
+          "maxrss_kernel_units": 17720,
+          "pid": 1781405,
+          "raw_status": 0,
+          "system_seconds": 0.0,
+          "user_seconds": 0.0068639999999999994
+        }
+      }
+    },
+    {
+      "name": "stable-early-exit-01",
+      "role": "one stable three-case sequence",
+      "command": "docs/restart/implementation/QP01/host-coordinator/worker-ownership-evidence/stable-early-exit-01-command.json",
+      "command_sha256": "19b901713fa0b2765f74386e0b3f60c18c96f7b7e2f8ece9197512e4357af16b",
+      "result": "docs/restart/implementation/QP01/host-coordinator/worker-ownership-evidence/stable-early-exit-01/result.json",
+      "result_sha256": "396a25bfc185861d2d45db2880d17e7090ba3ae07d8808a1952f88b21888b986",
+      "source": "34e7769705a2a519908d9dacfec90e3cf9a18624",
+      "passed": true,
+      "children": 2,
+      "actual_terminal_statuses": {
+        "1781407": {
+          "exitcode": 73,
+          "maxrss_kernel_units": 17952,
+          "pid": 1781407,
+          "raw_status": 18688,
+          "system_seconds": 0.0,
+          "user_seconds": 0.002335
+        },
+        "1781408": {
+          "exitcode": 71,
+          "maxrss_kernel_units": 17952,
+          "pid": 1781408,
+          "raw_status": 18176,
+          "system_seconds": 0.0,
+          "user_seconds": 0.0005409999999999999
+        }
+      }
+    },
+    {
+      "name": "stable-held-kill-01",
+      "role": "one stable three-case sequence",
+      "command": "docs/restart/implementation/QP01/host-coordinator/worker-ownership-evidence/stable-held-kill-01-command.json",
+      "command_sha256": "fe0b612dec3d08ca3de54b12bd589188de42662ffd2bfb56d7962d7697ad2fe3",
+      "result": "docs/restart/implementation/QP01/host-coordinator/worker-ownership-evidence/stable-held-kill-01/result.json",
+      "result_sha256": "4889e687ad2244b38ea65ddc4fadfad359f691c6512cc9a2c27cc62e0baf2594",
+      "source": "34e7769705a2a519908d9dacfec90e3cf9a18624",
+      "passed": true,
+      "children": 2,
+      "actual_terminal_statuses": {
+        "1781412": {
+          "exitcode": -9,
+          "maxrss_kernel_units": 18488,
+          "pid": 1781412,
+          "raw_status": 9,
+          "system_seconds": 0.0,
+          "user_seconds": 0.002353
+        },
+        "1781413": {
+          "exitcode": -9,
+          "maxrss_kernel_units": 17716,
+          "pid": 1781413,
+          "raw_status": 9,
+          "system_seconds": 0.0,
+          "user_seconds": 0.0006889999999999999
+        }
+      }
+    }
+  ],
+  "discriminant": {
+    "coordinator_collected": true,
+    "elapsed": 0.017792176455259323,
+    "kind": "discriminant",
+    "pidfd_readable": false,
+    "worker_identity": {
+      "pgid": 1781413,
+      "pid": 1781413,
+      "ppid": 1781409,
+      "sid": 1781413,
+      "start_ticks": 615923170,
+      "state": "T"
+    },
+    "worker_still_live": true,
+    "worker_terminal_status": null
+  },
+  "stable_case_count": 3,
+  "stable_children": 6,
+  "total_runs_including_early_smoke": 4,
+  "total_children": 8,
+  "all_children_terminal_status_acquired": true,
+  "remaining_observer_processes": 0,
+  "failures": "No executed run failed. Earlier source-availability lookup error remains in brief; no runtime failure is inferred from it.",
+  "claim": "C terminal collection did not imply W termination/collection in the held-worker experiment. O retained actual ownership and performed separate teardown.",
+  "limits": [
+    "Dedicated trusted single-threaded Linux observer/coordinator, selected unmodified RGB worker, one immutable public image only.",
+    "Early exit occurs before worker policy installation; no claim those limits were installed in that pre-handoff case.",
+    "No input or QR decode in either fault; normal cases decode the original public QR response. No native request engine, Node, key or signing operation.",
+    "Test reservation refusal is not a production coordinator implementation or API qualification.",
+    "No observer-death/hostile descendants/secret isolation/camera/ARM/Pi/P4/physical latency/task/profile/release claim.",
+    "No hard real-time kill/reap guarantee; unresolved ownership retains live O/quarantine rather than clean exit. This failure path was not exercised.",
+    "Existing native8b never spawns this worker; no defect/leak is attributed to that path."
+  ]
+}

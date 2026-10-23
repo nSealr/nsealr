@@ -1,0 +1,226 @@
+{
+  "checks": {
+    "FDs_restored": true,
+    "actual_child_settlement": true,
+    "case_outcome": true,
+    "exactly_C_and_W": true,
+    "no_remaining_children": true,
+    "parent_identity_unchanged": true,
+    "parent_limits_unchanged": true,
+    "single_threaded": true
+  },
+  "duration_seconds": 0.025614630430936813,
+  "events": [
+    {
+      "elapsed": 0.0005675507709383965,
+      "identity": {
+        "pgid": 1781396,
+        "pid": 1781404,
+        "ppid": 1781402,
+        "sid": 1781396,
+        "start_ticks": 615923155,
+        "state": "R"
+      },
+      "kind": "initial-owned-handle",
+      "pid": 1781404,
+      "pidfd": 4,
+      "role": "coordinator"
+    },
+    {
+      "elapsed": 0.000684310682117939,
+      "kind": "reuse-refused",
+      "phase": "live-coordinator-before-start",
+      "quarantined": false
+    },
+    {
+      "elapsed": 0.012485068291425705,
+      "kind": "control-message",
+      "message": {
+        "control_bytes": 0,
+        "image_bytes": 0,
+        "kind": "policy",
+        "pid": 1781405,
+        "policy": {
+          "0": {
+            "previous": [
+              -1,
+              -1
+            ],
+            "readback": [
+              1,
+              2
+            ],
+            "requested": [
+              1,
+              2
+            ]
+          },
+          "4": {
+            "previous": [
+              0,
+              -1
+            ],
+            "readback": [
+              0,
+              0
+            ],
+            "requested": [
+              0,
+              0
+            ]
+          },
+          "9": {
+            "previous": [
+              -1,
+              -1
+            ],
+            "readback": [
+              268435456,
+              268435456
+            ],
+            "requested": [
+              268435456,
+              268435456
+            ]
+          }
+        }
+      }
+    },
+    {
+      "elapsed": 0.01259651593863964,
+      "identity": {
+        "pgid": 1781405,
+        "pid": 1781405,
+        "ppid": 1781404,
+        "sid": 1781405,
+        "start_ticks": 615923155,
+        "state": "S"
+      },
+      "kind": "initial-owned-handle",
+      "pid": 1781405,
+      "pidfd": 5,
+      "role": "worker-late-handoff"
+    },
+    {
+      "elapsed": 0.013129782862961292,
+      "executable_sha256": "1a4af26b3c738807fb0f1a2e6fb7fcca9d480057642150357ad3c5bf774e6542",
+      "identity": {
+        "pgid": 1781405,
+        "pid": 1781405,
+        "ppid": 1781404,
+        "sid": 1781405,
+        "start_ticks": 615923155,
+        "state": "S"
+      },
+      "kind": "pre-G-executable-session-policy-verified",
+      "pid": 1781405,
+      "policy": {
+        "0": [
+          1,
+          2
+        ],
+        "4": [
+          0,
+          0
+        ],
+        "9": [
+          268435456,
+          268435456
+        ]
+      }
+    },
+    {
+      "elapsed": 0.021018468774855137,
+      "kind": "control-message",
+      "message": {
+        "kind": "complete",
+        "passed": true
+      }
+    },
+    {
+      "elapsed": 0.023242386057972908,
+      "exitcode": 0,
+      "kind": "actual-terminal-wait4",
+      "maxrss_kernel_units": 18532,
+      "pid": 1781404,
+      "raw_status": 0,
+      "system_seconds": 0.0,
+      "user_seconds": 0.010979
+    },
+    {
+      "cleanup_deadline": 6159235.581367668,
+      "elapsed": 0.02550247125327587,
+      "kind": "final-settlement-window"
+    },
+    {
+      "elapsed": 0.025559077039361,
+      "kind": "actual-ECHILD-all-known-statuses-settled"
+    }
+  ],
+  "final_FDs": [
+    0,
+    1,
+    2
+  ],
+  "mode": "normal",
+  "owned": {
+    "1781404": {
+      "collected_by_C": false,
+      "fd": 4,
+      "initial": {
+        "pgid": 1781396,
+        "pid": 1781404,
+        "ppid": 1781402,
+        "sid": 1781396,
+        "start_ticks": 615923155,
+        "state": "R"
+      },
+      "role": "coordinator",
+      "wait": {
+        "exitcode": 0,
+        "maxrss_kernel_units": 18532,
+        "pid": 1781404,
+        "raw_status": 0,
+        "system_seconds": 0.0,
+        "user_seconds": 0.010979
+      }
+    },
+    "1781405": {
+      "collected_by_C": {
+        "exitcode": 0,
+        "maxrss_kernel_units": 17720,
+        "pid": 1781405,
+        "raw_status": 0,
+        "system_seconds": 0.0,
+        "user_seconds": 0.0068639999999999994
+      },
+      "fd": 5,
+      "initial": {
+        "pgid": 1781405,
+        "pid": 1781405,
+        "ppid": 1781404,
+        "sid": 1781405,
+        "start_ticks": 615923155,
+        "state": "S"
+      },
+      "role": "worker-late-handoff",
+      "verified_policy": {
+        "0": [
+          1,
+          2
+        ],
+        "4": [
+          0,
+          0
+        ],
+        "9": [
+          268435456,
+          268435456
+        ]
+      },
+      "wait": null
+    }
+  },
+  "passed": true,
+  "quarantined_during_settlement": false
+}

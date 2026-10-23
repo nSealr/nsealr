@@ -1,0 +1,145 @@
+{
+  "reviewer": "/root/sdk_dependency_probe distinct from ownership author",
+  "candidate": "a16fa6aae19a98066a206328d20578ce328f34d2",
+  "one_independent_sequence_only": true,
+  "cases": [
+    {
+      "case": "normal",
+      "observer_pid": 1787358,
+      "C": {
+        "exitcode": 0,
+        "maxrss_kernel_units": 18784,
+        "pid": 1787359,
+        "raw_status": 0,
+        "system_seconds": 0.0089,
+        "user_seconds": 0.0026509999999999997
+      },
+      "W": {
+        "exitcode": 0,
+        "maxrss_kernel_units": 17980,
+        "pid": 1787360,
+        "raw_status": 0,
+        "system_seconds": 0.004732999999999999,
+        "user_seconds": 0.002366
+      },
+      "O_final_ECHILD_event": {
+        "elapsed": 0.026416881009936333,
+        "kind": "actual-ECHILD-all-known-statuses-settled"
+      },
+      "FDs_restored": true,
+      "signals": [],
+      "duration_seconds": 0.02650108840316534,
+      "normal_bytes": {
+        "G": 1,
+        "RGB": 172800,
+        "output": 198,
+        "stdout_sha256": "dae39f12a7744d3c82e2d3e1050b02948a3b72612e5835c237054dabc3d8f3cf",
+        "actual_W_collection_owner": "C"
+      }
+    },
+    {
+      "case": "early-exit",
+      "observer_pid": 1787361,
+      "C": {
+        "exitcode": 73,
+        "maxrss_kernel_units": 17948,
+        "pid": 1787362,
+        "raw_status": 18688,
+        "system_seconds": 0.0,
+        "user_seconds": 0.002343
+      },
+      "W": {
+        "exitcode": 71,
+        "maxrss_kernel_units": 17948,
+        "pid": 1787363,
+        "raw_status": 18176,
+        "system_seconds": 0.0006129999999999999,
+        "user_seconds": 0.0
+      },
+      "O_final_ECHILD_event": {
+        "elapsed": 0.0031921975314617157,
+        "kind": "actual-ECHILD-all-known-statuses-settled"
+      },
+      "FDs_restored": true,
+      "signals": [],
+      "duration_seconds": 0.0032485025003552437,
+      "early_pre_handoff": {
+        "G": 0,
+        "RGB": 0,
+        "initial_W_parent": 1787361,
+        "limits_installed_not_claimed": true,
+        "single_4s_deadline_from_fault_at": true
+      }
+    },
+    {
+      "case": "held-kill",
+      "observer_pid": 1787364,
+      "C": {
+        "exitcode": -9,
+        "maxrss_kernel_units": 18528,
+        "pid": 1787365,
+        "raw_status": 9,
+        "system_seconds": 0.0,
+        "user_seconds": 0.002595
+      },
+      "W": {
+        "exitcode": -9,
+        "maxrss_kernel_units": 17956,
+        "pid": 1787366,
+        "raw_status": 9,
+        "system_seconds": 0.0,
+        "user_seconds": 0.000712
+      },
+      "O_final_ECHILD_event": {
+        "elapsed": 0.02071000449359417,
+        "kind": "actual-ECHILD-all-known-statuses-settled"
+      },
+      "FDs_restored": true,
+      "signals": [
+        {
+          "pid": 1787366,
+          "signal": 19
+        },
+        {
+          "pid": 1787365,
+          "signal": 9
+        },
+        {
+          "pid": 1787366,
+          "signal": 9
+        }
+      ],
+      "duration_seconds": 0.02076945547014475,
+      "held_discriminant": {
+        "actual_stop_raw": 4991,
+        "actual_stop_signal": 19,
+        "G": 0,
+        "RGB": 0,
+        "witness": {
+          "coordinator_collected": true,
+          "elapsed": 0.018435342237353325,
+          "kind": "discriminant",
+          "pidfd_readable": false,
+          "worker_identity": {
+            "pgid": 1787366,
+            "pid": 1787366,
+            "ppid": 1787364,
+            "sid": 1787366,
+            "start_ticks": 615994041,
+            "state": "T"
+          },
+          "worker_still_live": true,
+          "worker_terminal_status": null
+        },
+        "one_shared_cleanup_window": true,
+        "C_and_W_collected_separately": true
+      }
+    }
+  ],
+  "case_count": 3,
+  "actual_C_W_children_with_terminal_status": 6,
+  "no_remaining_observer_processes": true,
+  "runtime_failures": [],
+  "external_kill_watchdog_used": false,
+  "scope": "Host O/C/W ownership only; no engine/Node/build/hardware/product pipeline rerun."
+}
