@@ -1,0 +1,130 @@
+{
+  "schema_version": 1,
+  "verdict": "PASS_scoped_audit_data_gate_only",
+  "findings": [],
+  "candidate": {
+    "commit": "87918b96b7498de6b4bddf5da52566e11916e4b9",
+    "tree": "e9c0ea67e37033f3e2ebb1b94f32982e3ccf32fd",
+    "base": "1be80c8114583627a8eef1952a0cd939f40b84ec",
+    "branch": "implementation/r00-audit-data",
+    "executed_gate_source": "b3ab2f568cc49f37a8feede1915e3f1b917f7e98",
+    "source_postimages_identical": 4
+  },
+  "reviewer": "/root/b01_final_review",
+  "assignment_policy": "Sol6.1 xhigh; no Astra/escalation/subagents",
+  "scope": {
+    "included": [
+      "Makefile cargo-deny target",
+      "scripts/audit_rust.py",
+      "scripts/check_product_gates.py required-wrapper/test marker",
+      "R00/audit-data/test_audit_rust.py",
+      "83-member component evidence/provenance and test-only combined-copy/audit result"
+    ],
+    "excluded": [
+      "B01 ctutils patch semantic/cryptographic review (root owns it)",
+      "Full workspace/CI/integration/adoption",
+      "New feed fetch or complete audit rerun",
+      "Physical/provider/key-isolation/release qualification"
+    ]
+  },
+  "criteria": [
+    {
+      "id": "AUDIT-1",
+      "status": "PASS",
+      "basis": "Both real graph manifests and42/45 locked registry inventories independently match unchanged component lock objects; union45."
+    },
+    {
+      "id": "AUDIT-2",
+      "status": "PASS",
+      "basis": "Standard official sparse/DB acquisition receipts and retained45 original cache/record checksums, origins, timestamps, tool hash and exact DB commit verified. No new fetch."
+    },
+    {
+      "id": "AUDIT-3",
+      "status": "PASS",
+      "basis": "CLI denies index-failure; actual missing/truncated entries produce explicit Error independent of vulnerability exit. Four-stage orchestration stops on any nonzero. No real permission-denied/yanked fixture claimed."
+    },
+    {
+      "id": "AUDIT-4",
+      "status": "PASS",
+      "basis": "deny.toml/feature+target scope and all existing policy inputs exact. Only stronger missing-index severity override; no advisory ignore or threshold change."
+    },
+    {
+      "id": "AUDIT-5",
+      "status": "PASS_expected_RED",
+      "basis": "Component old ctutils locks still reject the known vulnerability with zero index failures. Test-only combined source is separately0/0 on the same genuine snapshot."
+    },
+    {
+      "id": "AUDIT-6",
+      "status": "PASS",
+      "basis": "Audit cache/environment/cwd differs only for acquisition/data. Build source replacement, both locks, vendor/config/toolchain remain exact; checks use actual manifests/policy locked/offline."
+    },
+    {
+      "id": "AUDIT-7",
+      "status": "PASS_scoped",
+      "basis": "Reviewer executed4+10 controls and placement only; actual data/negative/audit receipts reused by exact source/hash/format instead of duplicated fetch/workspace/CI."
+    },
+    {
+      "id": "AUDIT-8",
+      "status": "PASS_component_delivery",
+      "basis": "Candidate immutable,83 manifest members+result/raw bindings checked; no product integration/task/physical/constant-time acceptance inferred."
+    }
+  ],
+  "independent_execution": {
+    "wrapper_controls": 4,
+    "placement_controls": 10,
+    "placement_command_exit": 0,
+    "raw_receipt": "commands.json",
+    "new_fetches": 0,
+    "new_full_audit_runs": 0,
+    "new_workspace_or_CI_runs": 0
+  },
+  "verified_provenance": {
+    "integrity": "integrity.json",
+    "component_manifest_members": 83,
+    "result_reference_hashes": 20,
+    "actual_command_groups": 17,
+    "raw_outputs": 34,
+    "retained_official_registry_records": 45,
+    "DB_commit": "f7b2f6bc663452200bbe639ebb75e0c762b3422b",
+    "original_CI_zip_member_and_excerpt": "byte exact;36 index-failure warnings/one vulnerability",
+    "old_component_root_and_host": "Expected vulnerability RED; missing metadata errors separately observed",
+    "combined_test_only": {
+      "commit": "d250d1302fb88487e14b6883463386fe66aa7fc7",
+      "tree": "87053e148aebfbd7315229d053e51fa83f9dd188",
+      "gate_overlays": 4,
+      "dependency_correspondence_only": 12,
+      "same_retained_data_checks_exit": [
+        0,
+        0
+      ],
+      "distinct_fresh_wrapper_exit": 0
+    }
+  },
+  "limits": [
+    "Fresh wrapper receipt17 uses distinct disposable data and does not retain exact index/DB content hashes; it must not be labelled the retained f7b2 snapshot.",
+    "Missing/truncated metadata refusal and original vulnerability diagnostics are author actual executions independently inspected here; reviewer performed no feed fetch or audit rerun.",
+    "No actual yanked-version or permission-denied fixture run; yanked deny policy is unchanged and observed records are explicitly not yanked.",
+    "No full CI, integration/adoption or constant-time/hardware conclusion.",
+    "Trusted pinned build environment/tool implementation assumed; no OS network/secret isolation or all-time data guarantee.",
+    "Actual assembled-source protected PR and resulting-main CI remain root-owned and pending."
+  ],
+  "preservation": {
+    "author_source_and_all_raw_evidence": "untouched",
+    "old_unrelated_runtime_caches": "Preserved outside review scope; tracked cleanliness is distinct from whole-checkout cleanliness.",
+    "new_review_outputs": "Only docs/restart/implementation/reviews/R00-audit-data/"
+  },
+  "artifact_bindings": [
+    {
+      "path": "docs/restart/implementation/reviews/R00-audit-data/report.md",
+      "sha256": "88e6be26f7403dff895e8f78e16801ce855c5aecabed54f6d932bf20f17caeb1"
+    },
+    {
+      "path": "docs/restart/implementation/reviews/R00-audit-data/integrity.json",
+      "sha256": "3ba10d9a47298fba79928dc7e3792f4cac4e9ef9bd64b2870915496a2e797877"
+    },
+    {
+      "path": "docs/restart/implementation/reviews/R00-audit-data/commands.json",
+      "sha256": "2cf247694574828767eb45a0f5524f8a50b0443820f503723ade28ff6d2be7ee"
+    }
+  ]
+}
