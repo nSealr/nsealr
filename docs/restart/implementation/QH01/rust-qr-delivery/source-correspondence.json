@@ -3,7 +3,7 @@
   "role": "Selected public source correspondence, not a rerun or measurement of delivery base",
   "integration_base": "994a8b682ed6cd52bb46608b90794c02d2a9d3cb",
   "integration_tree": "a477c08387e937771d047fe96f2885c6d7c7c186",
-  "exact_copied_files": 595,
+  "exact_copied_files": 796,
   "current_manifests": [
     {
       "path": "docs/restart/implementation/QH01/native-decoder-decision/artifact-manifest.json",
@@ -45,6 +45,27 @@
       "sha256": "adc63699a5ec1ace077174021b247a83af2ac062b88368c684133278ef903b2a",
       "member_field": "artifacts",
       "members_checked": 21,
+      "passed": true
+    },
+    {
+      "path": "docs/restart/implementation/R00/ctutils-remediation/artifact-manifest.json",
+      "sha256": "7e2d701246cc5a2231d88013df8b202a4e95d16936c69bb06ea459a16baeee79",
+      "member_field": "files",
+      "members_checked": 80,
+      "passed": true
+    },
+    {
+      "path": "docs/restart/implementation/R00/audit-data/manifest.json",
+      "sha256": "3c7b53e36f3db16719b44416d95ea68a85c0cd7afaa8fe164c648ab0bf1b4d51",
+      "member_field": "files",
+      "members_checked": 83,
+      "passed": true
+    },
+    {
+      "path": "docs/restart/implementation/reviews/R00-audit-data/manifest.json",
+      "sha256": "868dd913273ab17c27cee4c272fa9d243dbe1266ea76566d89ec0973a7cf23c8",
+      "member_field": "files",
+      "members_checked": 11,
       "passed": true
     }
   ],
@@ -195,6 +216,45 @@
       "root_review": "7f7a32617d8f5a7340a014f8a72914b9a6cc677e",
       "current_main_execution_claim": false,
       "delivery_tests_repeated": 0
+    },
+    "security_fix": {
+      "amendment_base": "1be80c8114583627a8eef1952a0cd939f40b84ec",
+      "prior_candidate_proof_ref": "refs/proofs/pr44/1be-before-security-fix",
+      "failed_PR": 44,
+      "failed_CI": 39945073403,
+      "failure": "One RUSTSEC-2026-0385 vulnerability on ctutils0.4.3 plus36 index-failure warnings; missing index warnings were not proof of non-yanked state.",
+      "ctutils_candidate": "1d10e7a1c2986a5d244807624377e22ad562a110",
+      "ctutils_tested_source": "f089a20098523f07193f15cf472bdf1b973b7318",
+      "audit_candidate": "87918b96b7498de6b4bddf5da52566e11916e4b9",
+      "audit_tested_source": "b3ab2f568cc49f37a8feede1915e3f1b917f7e98",
+      "distinct_reviews": {
+        "ctutils": {
+          "commit": "21f65fcd541bd856844ea70d6db0eabcae18dee3",
+          "path": "docs/restart/implementation/reviews/R00-ctutils-remediation/review.json",
+          "sha256": "f3830179c3edf269e968ff2346ca6d0bea6c64006590f05bb19bfa1cfa9c4417",
+          "verdict": "PASS_scoped_official_ctutils_patch_and_functional_compatibility_only",
+          "findings": []
+        },
+        "audit_data": {
+          "commit": "d13f4f8df64baec65d81d3ee9e8a0c46e267ad6c",
+          "path": "docs/restart/implementation/reviews/R00-audit-data/review.json",
+          "sha256": "127749fbb921e9213e0f0ff715cc5c193d56d32c6483b30b70609b89ad8119b4",
+          "verdict": "PASS_scoped_audit_data_gate_only",
+          "findings": []
+        }
+      },
+      "test_only_combined_source": "d250d1302fb88487e14b6883463386fe66aa7fc7",
+      "exact_combined_postimages": 16,
+      "same_data_checks": "Receipts15/16: two complete corrected graphs GREEN on unchanged retained45 cache files and DBf7b2, distinct from old-lock RED.",
+      "fresh_gate": "Receipt17: source/time/logs bound fresh acquisition in disposable temporary data, both graphs GREEN. Exact data snapshot not retained; not labelled f7b2. Future CI is another fresh observation.",
+      "assembly_runtime_reruns": 0,
+      "four_new_tests": "Actual4 wrapper tests run separately in cargo-deny; existing115 helper-suite count is not forced or changed.",
+      "limits": [
+        "Official patch and finite functional compatibility only; no universal target constant-time/attack-resistance or physical side-channel guarantee",
+        "Audit metadata/data availability correction only; no actual yanked-version or permission-denied fixture claimed",
+        "No full product/CI rerun or physical/task/release qualification in this assembly"
+      ],
+      "integration": "LOCAL_ONLY_PENDING_DISTINCT_FINAL_REVIEW_AND_COORDINATOR_PUSH_AUTHORIZATION"
     }
   },
   "Pi_component": {
@@ -272,6 +332,46 @@
     ],
     "preserved": "Original synthetic RED failures, HTML archive403, verifier mistakes, source.diff whitespace and old cache notices retain historical roles; no cache copied."
   },
-  "new_exact_copies": 593,
-  "existing_exact_postimages": 2
+  "new_exact_copies": 780,
+  "existing_exact_postimages": 16,
+  "security_fix": {
+    "amendment_base": "1be80c8114583627a8eef1952a0cd939f40b84ec",
+    "prior_candidate_proof_ref": "refs/proofs/pr44/1be-before-security-fix",
+    "failed_PR": 44,
+    "failed_CI": 39945073403,
+    "failure": "One RUSTSEC-2026-0385 vulnerability on ctutils0.4.3 plus36 index-failure warnings; missing index warnings were not proof of non-yanked state.",
+    "ctutils_candidate": "1d10e7a1c2986a5d244807624377e22ad562a110",
+    "ctutils_tested_source": "f089a20098523f07193f15cf472bdf1b973b7318",
+    "audit_candidate": "87918b96b7498de6b4bddf5da52566e11916e4b9",
+    "audit_tested_source": "b3ab2f568cc49f37a8feede1915e3f1b917f7e98",
+    "distinct_reviews": {
+      "ctutils": {
+        "commit": "21f65fcd541bd856844ea70d6db0eabcae18dee3",
+        "path": "docs/restart/implementation/reviews/R00-ctutils-remediation/review.json",
+        "sha256": "f3830179c3edf269e968ff2346ca6d0bea6c64006590f05bb19bfa1cfa9c4417",
+        "verdict": "PASS_scoped_official_ctutils_patch_and_functional_compatibility_only",
+        "findings": []
+      },
+      "audit_data": {
+        "commit": "d13f4f8df64baec65d81d3ee9e8a0c46e267ad6c",
+        "path": "docs/restart/implementation/reviews/R00-audit-data/review.json",
+        "sha256": "127749fbb921e9213e0f0ff715cc5c193d56d32c6483b30b70609b89ad8119b4",
+        "verdict": "PASS_scoped_audit_data_gate_only",
+        "findings": []
+      }
+    },
+    "test_only_combined_source": "d250d1302fb88487e14b6883463386fe66aa7fc7",
+    "exact_combined_postimages": 16,
+    "same_data_checks": "Receipts15/16: two complete corrected graphs GREEN on unchanged retained45 cache files and DBf7b2, distinct from old-lock RED.",
+    "fresh_gate": "Receipt17: source/time/logs bound fresh acquisition in disposable temporary data, both graphs GREEN. Exact data snapshot not retained; not labelled f7b2. Future CI is another fresh observation.",
+    "assembly_runtime_reruns": 0,
+    "four_new_tests": "Actual4 wrapper tests run separately in cargo-deny; existing115 helper-suite count is not forced or changed.",
+    "limits": [
+      "Official patch and finite functional compatibility only; no universal target constant-time/attack-resistance or physical side-channel guarantee",
+      "Audit metadata/data availability correction only; no actual yanked-version or permission-denied fixture claimed",
+      "No full product/CI rerun or physical/task/release qualification in this assembly"
+    ],
+    "integration": "LOCAL_ONLY_PENDING_DISTINCT_FINAL_REVIEW_AND_COORDINATOR_PUSH_AUTHORIZATION"
+  },
+  "security_fix_correspondence": "docs/restart/implementation/QH01/rust-qr-delivery/security-fix-correspondence.json"
 }

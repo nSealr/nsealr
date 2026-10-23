@@ -107,6 +107,15 @@ later experiments to old main994. Root owns final distinct delivery review and
 subsequent protected PR/actual-main integration gates; all task states and
 acceptance/dependency/resource/release sets remain unchanged.
 
+PR44's prior1be CI39945073403 failed on ctutils0.4.3 with36 missing-index warnings.
+The same delivery now includes the distinct-reviewed official ctutils0.4.4 and
+audit-data corrections. Old-lock RED and same-retained-data corrected GREEN stay
+separate from the fresh-data wrapper success. No RGB/map, task closure or physical
+qualification is added. The local amended candidate must receive root's final
+review and push authorization before the sole new hosted CI run. Four audit
+controls run separately; no historical helper count or security threshold is
+artificially preserved.
+
 The sole task authority is [plan/work-items.json](../../../plan/work-items.json).
 Use existing commands, targeted source reads, one CI observer and applicable
 prior proof as specified in AGENTS.md. Source notices, archival, registry

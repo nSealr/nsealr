@@ -1,0 +1,100 @@
+Cargo plugin to help you manage large dependency graphs
+
+Usage: cargo-deny [OPTIONS] <COMMAND>
+
+Commands:
+  check  Checks a project's crate graph
+  fetch  Fetches remote data
+  init   Creates a cargo-deny config from a template
+  list   Outputs a listing of all licenses and the crates that use them
+  help   Print this message or the help of the given subcommand(s)
+
+Options:
+  -L, --log-level <LOG_LEVEL>
+          The log level for messages.
+          
+          Only messages at or above the level will be emitted
+          
+          [default: warn]
+          [possible values: off, error, warn, info, debug, trace]
+
+  -f, --format <FORMAT>
+          The output format.
+          
+          [default: human]
+          [possible values: human, json, sarif]
+
+  -c, --color <COLOR>
+          Controls output coloring.
+          
+          [env: CARGO_TERM_COLOR=]
+          [default: auto]
+          [possible values: auto, always, never]
+
+      --manifest-path <MANIFEST_PATH>
+          The path of a Cargo.toml to use as the context for the operation.
+          
+          By default, the Cargo.toml in the current working directory is used.
+
+      --metadata-path <METADATA_PATH>
+          Path to cargo metadata json.
+          
+          By default we use `cargo metadata` to generate the metadata json, but you can override that behaviour by providing the path to the output of `cargo metadata`.
+
+      --config <CONFIG_PATH>
+          Path to the config to use.
+          
+          Defaults to <cwd>/deny.toml if not specified.
+
+      --workspace
+          If passed, all workspace packages are used as roots for the crate graph.
+          
+          Automatically assumed if the manifest path points to a virtual manifest.
+          
+          Normally, if you specify a manifest path that is a member of a workspace, that crate will be the sole root of the crate graph, meaning only other workspace members that are dependencies of that workspace crate will be included in the graph. This overrides that behavior to include all workspace members.
+
+      --exclude <CRATE>
+          One or more crates to exclude from the crate graph.
+          
+          NOTE: Unlike cargo, this does not have to be used with the `--workspace` flag.
+
+  -t, --target <CFG>
+          One or more platforms to filter crates by.
+          
+          If a dependency is target specific, it will be ignored if it does not match 1 or more of the specified targets. This option overrides the top-level `targets = []` configuration value.
+
+      --all-features
+          Activate all available features.
+
+      --no-default-features
+          Do not activate the `default` feature.
+
+      --features <FEATURES>
+          List of features to activate
+
+      --frozen
+          Equivalent to specifying both `--locked` and `--offline`.
+
+      --offline
+          Run without accessing the network.
+          
+          Disables fetching crates, advisory databases, and std-replacement-data
+
+      --locked
+          Assert that `Cargo.lock` will remain unchanged.
+
+      --exclude-dev
+          Exclude dev-dependencies for workspace crates.
+
+      --exclude-unpublished
+          Exclude unpublished workspace members from graph roots.
+          
+          Workspace members are considered unpublished if they they are explicitly marked with `publish = false`.
+          
+          Note that the excluded workspace members are still used for the initial dependency resolution by cargo, which might affect the exact version of used dependencies.
+
+  -h, --help
+          Print help (see a summary with '-h')
+
+  -V, --version
+          Print version

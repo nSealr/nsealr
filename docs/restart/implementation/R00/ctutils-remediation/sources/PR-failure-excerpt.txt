@@ -1,0 +1,97 @@
+89: 2026-10-23T11:18:37.7292758Z hint: Names commonly chosen instead of 'master' are 'main', 'trunk' and
+90: 2026-10-23T11:18:37.7293614Z hint: 'development'. The just-created branch can be renamed via this command:
+91: 2026-10-23T11:18:37.7294010Z hint:
+92: 2026-10-23T11:18:37.7294210Z hint: 	git branch -m <name>
+93: 2026-10-23T11:18:37.7294447Z hint:
+94: 2026-10-23T11:18:37.7294788Z hint: Disable this message with "git config set advice.defaultBranchName false"
+95: 2026-10-23T11:18:37.7295514Z Initialized empty Git repository in /home/runner/work/_temp/nsealr-product/.tools/tmp/tmp337iuaky/nsealr/.git/
+96: 2026-10-23T11:18:37.7296955Z nsealr-fetch: ['git', 'fetch', '--no-tags', '/home/runner/work/_temp/nsealr-product/.tools/tmp/tmp337iuaky/source', '0000000000000000000000000000000000000000']
+97: 2026-10-23T11:18:37.7309576Z fatal: git upload-pack: not our ref 0000000000000000000000000000000000000000
+98: 2026-10-23T11:18:37.7310523Z fatal: remote error: upload-pack: not our ref 0000000000000000000000000000000000000000
+99: 2026-10-23T11:18:38.2948913Z ...
+100: 2026-10-23T11:18:38.2949364Z ----------------------------------------------------------------------
+101: 2026-10-23T11:18:38.2949777Z Ran 8 tests in 0.904s
+102: 2026-10-23T11:18:38.2949930Z 
+103: 2026-10-23T11:18:38.2950031Z OK
+104: 2026-10-23T11:18:38.3115700Z python3 scripts/verify_repo.py
+105: 2026-10-23T11:18:38.4000109Z nSealr consolidated product structure passed
+106: 2026-10-23T11:18:38.4042796Z python3 -m compileall -q scripts
+107: 2026-10-23T11:18:38.5646665Z python3 scripts/verify_repo.py
+108: 2026-10-23T11:18:38.6511287Z nSealr consolidated product structure passed
+109: 2026-10-23T11:18:38.6559064Z python3 scripts/validate_firmware.py
+110: 2026-10-23T11:18:38.7457024Z nSealr firmware board-profile validation passed
+111: 2026-10-23T11:18:38.7497908Z python3 scripts/verify_repo.py
+112: 2026-10-23T11:18:38.8364786Z nSealr consolidated product structure passed
+972: 2026-10-23T11:19:23.7183646Z test result: ok. 21 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.01s
+973: 2026-10-23T11:19:23.7184031Z 
+974: 2026-10-23T11:19:23.7185330Z    Doc-tests desktop_simulator
+975: 2026-10-23T11:19:23.7514569Z 
+976: 2026-10-23T11:19:23.7515032Z running 0 tests
+977: 2026-10-23T11:19:23.7515316Z 
+978: 2026-10-23T11:19:23.7515655Z test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+979: 2026-10-23T11:19:23.7516577Z 
+980: 2026-10-23T11:19:23.7547350Z cargo deny check
+981: 2026-10-23T11:19:24.1349961Z error[vulnerability]: Non-constant-time mask generation and `u128` comparisons
+982: 2026-10-23T11:19:24.1356451Z    ┌─ /home/runner/work/_temp/nsealr-product/nsealr/Cargo.lock:11:1
+983: 2026-10-23T11:19:24.1359303Z    │
+984: 2026-10-23T11:19:24.1366850Z 11 │ ctutils 0.4.3 registry+https://github.com/rust-lang/crates.io-index
+985: 2026-10-23T11:19:24.1368636Z    │ ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ security vulnerability detected
+986: 2026-10-23T11:19:24.1369733Z    │
+987: 2026-10-23T11:19:24.1370431Z    ├ ID: RUSTSEC-2026-0385
+988: 2026-10-23T11:19:24.1371424Z    ├ Advisory: https://rustsec.org/advisories/RUSTSEC-2026-0385
+989: 2026-10-23T11:19:24.1372380Z    ├ ## Summary
+990: 2026-10-23T11:19:24.1372991Z      
+991: 2026-10-23T11:19:24.1373830Z      The `ctutils::Choice` type has mask generation functions for each unsigned
+992: 2026-10-23T11:19:24.1375059Z      integer size (`u8`, `u16`, `u32`, `u64`, `u128`). These are `const fn` and
+993: 2026-10-23T11:19:24.1376533Z      therefore can't reuse the `asm!`-backed mask generation in the `cmov` crate
+994: 2026-10-23T11:19:24.1377712Z      that's otherwise used to ensure constant-time.
+995: 2026-10-23T11:19:24.1378513Z      
+1974: 2026-10-23T11:19:24.1844767Z    │
+1975: 2026-10-23T11:19:24.1844963Z 17 │ yanked = "deny"
+1976: 2026-10-23T11:19:24.1845228Z    │           ━━━━ lint level defined here
+1977: 2026-10-23T11:19:24.1845489Z    │
+1978: 2026-10-23T11:19:24.1845720Z    ├ unable to locate index entry for crate
+1979: 2026-10-23T11:19:24.1846003Z    ├ zmij v1.0.23
+1980: 2026-10-23T11:19:24.1846469Z      └── serde_json v1.0.151
+1981: 2026-10-23T11:19:24.1846776Z          └── (dev) nsealr-core v0.0.0
+1982: 2026-10-23T11:19:24.1846951Z 
+1983: 2026-10-23T11:19:24.1847120Z advisories FAILED, bans ok, licenses ok, sources ok
+1984: 2026-10-23T11:19:24.1847448Z make: *** [Makefile:55: cargo-deny] Error 1
+1985: 2026-10-23T11:19:24.1847963Z cargo llvm-cov --workspace --all-features --summary-only --json --output-path build/rust-core-coverage.json
+1986: 2026-10-23T11:19:24.2554117Z info: cargo-llvm-cov currently setting cfg(coverage); you can opt-out it by passing --no-cfg-coverage
+1987: 2026-10-23T11:19:24.3975049Z    Compiling subtle v2.6.1
+1988: 2026-10-23T11:19:24.3976079Z    Compiling zeroize v1.9.1
+1989: 2026-10-23T11:19:24.3976797Z    Compiling typenum v1.20.1
+1990: 2026-10-23T11:19:24.3981222Z    Compiling rand_core v0.10.1
+1991: 2026-10-23T11:19:24.4876708Z    Compiling autocfg v1.5.1
+1992: 2026-10-23T11:19:24.4886926Z    Compiling const-oid v0.10.2
+1993: 2026-10-23T11:19:24.4971576Z    Compiling cmov v0.5.4
+1994: 2026-10-23T11:19:24.6280428Z    Compiling ff v0.14.0
+1995: 2026-10-23T11:19:24.6604363Z    Compiling ctutils v0.4.3
+1996: 2026-10-23T11:19:24.6939766Z    Compiling cpubits v0.1.1
+1997: 2026-10-23T11:19:24.7219147Z    Compiling group v0.14.0
+1998: 2026-10-23T11:19:24.7677219Z    Compiling der v0.8.2
+2786: 2026-10-23T11:21:07.7470161Z [90mstdout[2m | apps/bridge/cli/src/index.test.ts[2m > [22m[2mnsealr CLI[2m > [22m[2mS01 metadata fixture comparison ignores object key order
+2787: 2026-10-23T11:21:07.7502354Z [22m[39mverified 2 event fixtures, 6 review fixtures, 2 review-screen fixtures, 2 review display-frame fixtures, 4 review detail-page fixtures, 3 review transcript fixtures, 6 NIP-46 payload fixtures, 1 NIP-46 policy-file fixture, 2 NIP-46 connection URI fixtures, 1 NIP-46 connection token response fixture, 2 NIP-46 relay event fixtures, 10 NIP-46 relay step fixtures, 1 NIP-46 auth challenge fixture, 1 NIP-46 session fixture, 1 NIP-46 session gate fixture, 5 account descriptors, 4 policy profiles, 2 grant descriptors, 2 policy change vectors, 9 policy decision vectors, 5 route selection vectors, 1 route-refusal contract, 1 access-surface vector, 1 feature matrix, 1 persistent-secret custody contract, and 107 invalid hardening fixtures
+2788: 2026-10-23T11:21:07.7536655Z 
+2789: 2026-10-23T11:21:08.1638250Z  [32m✓[39m apps/bridge/browser-extension/src/pending-control.test.ts [2m([22m[2m9 tests[22m[2m)[22m[32m 37[2mms[22m[39m
+2790: 2026-10-23T11:21:08.4694492Z  [32m✓[39m packages/client/src/profile-dispatch.test.ts [2m([22m[2m19 tests[22m[2m)[22m[33m 664[2mms[22m[39m
+2791: 2026-10-23T11:21:08.7522306Z  [32m✓[39m apps/bridge/browser-extension/src/package-build.test.ts [2m([22m[2m14 tests[22m[2m)[22m[33m 2043[2mms[22m[39m
+2792: 2026-10-23T11:21:08.8190892Z [90mstdout[2m | apps/bridge/cli/src/index.test.ts[2m > [22m[2mnsealr CLI[2m > [22m[2mverifies shared get_public_key responses and rejects mismatched request ids
+2793: 2026-10-23T11:21:08.8217233Z [22m[39mresponse verified
+2794: 2026-10-23T11:21:08.8220964Z 
+2795: 2026-10-23T11:21:08.9811704Z error: unknown command 'smartcard-sim-sign'
+2796: 2026-10-23T11:21:08.9852284Z  [32m✓[39m apps/bridge/cli/src/index.test.ts [2m([22m[2m61 tests[22m[2m)[22m[33m 2091[2mms[22m[39m
+2797: 2026-10-23T11:21:09.3283291Z  [32m✓[39m packages/policy/src/policy.test.ts [2m([22m[2m18 tests[22m[2m)[22m[32m 61[2mms[22m[39m
+2798: 2026-10-23T11:21:09.3458285Z  [32m✓[39m packages/transport/src/transport.test.ts [2m([22m[2m31 tests[22m[2m)[22m[33m 392[2mms[22m[39m
+2799: 2026-10-23T11:21:09.5168235Z  [32m✓[39m apps/bridge/service/src/manual-qr.test.ts [2m([22m[2m58 tests[22m[2m)[22m[33m 769[2mms[22m[39m
+2800: 2026-10-23T11:21:09.9598406Z  [32m✓[39m packages/transport/src/stream-security.test.ts [2m([22m[2m43 tests[22m[2m)[22m[32m 133[2mms[22m[39m
+2801: 2026-10-23T11:21:10.0348911Z  [32m✓[39m packages/fixtures/src/fixtures.test.ts [2m([22m[2m28 tests[22m[2m)[22m[33m 381[2mms[22m[39m
+2802: 2026-10-23T11:21:10.4938763Z  [32m✓[39m apps/bridge/browser-extension/src/background-browser.test.ts [2m([22m[2m9 tests[22m[2m)[22m[32m 45[2mms[22m[39m
+2803: 2026-10-23T11:21:10.5698098Z  [32m✓[39m apps/bridge/browser-extension/src/package-build-cli.test.ts [2m([22m[2m7 tests[22m[2m)[22m[33m 772[2mms[22m[39m
+2804: 2026-10-23T11:21:10.6848001Z  [32m✓[39m apps/bridge/service/src/context.test.ts [2m([22m[2m9 tests[22m[2m)[22m[32m 162[2mms[22m[39m
+2805: 2026-10-23T11:21:10.9372501Z  [32m✓[39m apps/bridge/browser-extension/src/content-window.test.ts [2m([22m[2m12 tests[22m[2m)[22m[32m 32[2mms[22m[39m
+2806: 2026-10-23T11:21:11.1062440Z  [32m✓[39m apps/bridge/browser-extension/src/background.test.ts [2m([22m[2m9 tests[22m[2m)[22m[32m 40[2mms[22m[39m
+2807: 2026-10-23T11:21:11.1758737Z  [32m✓[39m packages/client/src/local-service-client.test.ts [2m([22m[2m8 tests[22m[2m)[22m[32m 163[2mms[22m[39m
+2808: 2026-10-23T11:21:11.3589596Z  [32m✓[39m packages/qr/src/qr.test.ts [2m([22m[2m27 tests[22m[2m)[22m[32m 87[2mms[22m[39m
+2809: 2026-10-23T11:21:11.6887827Z  [32m✓[39m apps/bridge/service/src/drivers.test.ts [2m([22m[2m8 tests[22m[2m)[22m[32m 212[2mms[22m[39m
