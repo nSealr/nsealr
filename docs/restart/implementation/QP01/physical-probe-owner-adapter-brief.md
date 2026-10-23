@@ -136,3 +136,30 @@ original929 contract SHA
 identical). O SHA
 `d7a245a9a558cce3ec8271ec42fc49664c094320c6465a537aa3a49c83558d50`;
 TS observer SHA `711c7ebebfa4c98ebb9334d7e583c77f58ef58491fb983e2f118f5a44885ab67`.
+
+## Root admission — 24 October 2026
+
+ADMITTED: minimal source freeze and **one real worker-only O/W host positive**
+before completing the adapter. Scope and every exclusion above stay exact.
+Root independently checked all current contract/O/TS hashes and the actual
+172800/259-byte files; the original transport vector has identical envelope bytes
+and numeric version2. No worker or signing call produced those expectations.
+
+Preserve existing parent descriptors, including live3/4/5; do not `dup2` into
+those descriptors in the parent. Do not require a globally single-threaded Python
+process through `preexec_fn`: camera libraries may own threads. Use one trusted
+child-only mapping mechanism and prove actual pipe/EOF/descriptor ownership in
+the first real positive. No new selectable bootstrap or frame-derived command.
+
+Make the owning runtime/admission object explicit and strongly retain the active
+or quarantined operation there; no process-global registry, hidden replacement,
+automatic recovery or destructor guarantee. Fresh-operation admission requires
+known prior collection. The single-threaded API concerns calls, not a claim that
+no other Python/library thread exists. Code remains Linux-host diagnostic only.
+
+Use the real current root-vendor producer and actual default target semantics
+(or explicitly demonstrate both relevant default and overridden paths), record
+source status before/after and actual artifact identity, and send the minimal
+frozen source/command/result tuple to root. Do not start the full negative matrix,
+Pi/fullCI or next hardware/capture/display layer until that first result is
+reviewed; this is a finite implementation checkpoint, not new parent acceptance.
