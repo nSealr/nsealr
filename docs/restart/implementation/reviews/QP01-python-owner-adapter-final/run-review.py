@@ -22,7 +22,7 @@ NEGATIVE = ROOT / "docs/restart/implementation/QP01/python-owner-adapter/negativ
 OLD_ROOT = ROOT.parent / "qp01-python-owner-adapter-micro-review"
 MICRO_PREFIX = "docs/restart/implementation/reviews/QP01-python-owner-adapter-micro"
 R00 = ROOT.parent / "r00/tools/baseline/.work/final"
-OUT = HERE / ".runtime/replay-01"
+OUT = HERE / ".runtime/targeted-01"
 
 
 def git(*args, cwd=ROOT):
@@ -114,10 +114,11 @@ for path in ("apps/pi/app/nsealr_vault/qr_owner_adapter.py", "apps/pi/app/nsealr
              "apps/pi/tests/test_qr_owner_adapter.py", "apps/pi/app/nsealr_vault/qr.py"):
     assert blob(BUILD, path) == blob(CANDIDATE, path)
 test_path = "apps/pi/tests/test_qr_owner_adapter_lifecycle.py"
-earlier = methods(blob("975c05a6d7dc1d96e5f5044f640719cb20a7bd87", test_path))
+earlier = methods(blob("76a550d5e1b82027c94505be69ab868ed8a1368a", test_path))
 current = methods(blob(CANDIDATE, test_path))
 assert len(earlier) == 20 and all(current[key] == value for key, value in earlier.items())
 assert set(current) - set(earlier) == {"OwnerAdapterLifecycleTests.test_10_normal259_release_once"}
+assert methods(blob("975c05a6d7dc1d96e5f5044f640719cb20a7bd87", test_path)) == current
 test_files = sorted((ROOT / "apps/pi/tests").glob("test_qr_owner_adapter*.py"))
 assert [p.name for p in test_files] == ["test_qr_owner_adapter.py", "test_qr_owner_adapter_lifecycle.py"]
 counts = {p.name: sum(name.split(".")[-1].startswith("test_") for name in methods(p.read_bytes())) for p in test_files}
