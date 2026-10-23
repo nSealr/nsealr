@@ -111,7 +111,7 @@ def main():
         (output / "cargo-messages.jsonl").write_text(result.stdout)
         return result
 
-    producer.subprocess = SimpleNamespace(run=record_actual_build)
+    producer.subprocess = SimpleNamespace(run=record_actual_build, PIPE=subprocess.PIPE)
     paths = ["apps/pi/qr-worker/" + p for p in ("Cargo.toml", "Cargo.lock", "src/main.rs", "rust-toolchain.toml")]
     paths += [".cargo/config.toml", "rust-toolchain.toml"]
     worker, digest, bindings = producer.build_artifact(command, ROOT / "apps/pi/qr-worker/src/main.rs",
