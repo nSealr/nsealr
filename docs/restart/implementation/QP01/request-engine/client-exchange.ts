@@ -25,7 +25,7 @@ for (const [vector, id] of [[basic, "basic"], [tagged, "tagged"]] as const) {
 const identity = { surface: "cli" as const, origin: "app:qp01-public-fixture", app_name: "QP01 synthetic engineering fixture" };
 const qr = (value: unknown) => `nsealr1:${Buffer.from(JSON.stringify(value)).toString("base64url")}`;
 const decode = (value: string) => JSON.parse(Buffer.from(value.slice(8), "base64url").toString("utf8"));
-async function runScope(readinessControls: boolean) {
+async function runScope(readinessControls: boolean, firstGate = false) {
   let children = 0, collected = 0;
   const reports: unknown[] = [];
 
@@ -44,6 +44,7 @@ async function runScope(readinessControls: boolean) {
     let out = 0, err = 0, overflow = false, notified = false, sent = false, reaped = false, disposing = false;
     let readyBytes = Buffer.alloc(0), readyAt: bigint | undefined, sentAt: bigint | undefined;
     let closedAt: bigint | undefined, spawnError: Error | undefined;
+    let sentBytes: number | undefined;
     let held: ((release: () => void) => void) | undefined;
     let releaseHeld: (() => void) | undefined;
     let readyYes!: () => void, readyNo!: (error: Error) => void;
@@ -105,10 +106,13 @@ async function runScope(readinessControls: boolean) {
     }
     return {
       dispose, isCollected: () => reaped,
+      // Observations for the explicit ownership gate; this remains the sole C owner/timer.
+      ended, pid: child.pid, inputBytes: () => sent ? (sentBytes ?? 0) : 0,
+      killOwned: () => child.kill("SIGKILL"),
       async send(frame: string, onHeld?: (release: () => void) => void): Promise<string> {
         assert(!sent && !reaped && readyAt !== undefined && !overflow);
         assert(Buffer.byteLength(frame) <= 947);
-        sent = true; sentAt = process.hrtime.bigint(); held = onHeld;
+        sent = true; sentBytes = Buffer.byteLength(frame); sentAt = process.hrtime.bigint(); held = onHeld;
         child.stdin!.end(frame);
         const { code, signal } = await ended; // Stream/process settlement precedes port.close.
         assert(code === 0 && signal === null && !overflow && !spawnError,
@@ -124,6 +128,14 @@ async function runScope(readinessControls: boolean) {
         return response;
       }
     };
+  }
+
+  if (firstGate) {
+    const { runFirstGate } = await import("../host-coordinator/first-gate.js");
+    await runFirstGate({ prepareNative, basic, root });
+    assert.equal(children, collected);
+    console.log(JSON.stringify({ scope: "first_owner_gate_C", children, collected, native_reports: reports.length }));
+    return;
   }
 
   type Mutation = "account-key" | "request-id" | "template" | "event-id" | "signature";
@@ -279,5 +291,8 @@ async function runScope(readinessControls: boolean) {
 }
 
 // Independent lexical counters: readiness controls never supply a response to the client scope.
-await runScope(true);
-if (!process.argv.includes("--readiness-controls")) await runScope(false);
+if (process.argv.includes("--first-owner-gate")) await runScope(false, true);
+else {
+  await runScope(true);
+  if (!process.argv.includes("--readiness-controls")) await runScope(false);
+}
