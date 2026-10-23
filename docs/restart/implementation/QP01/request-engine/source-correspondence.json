@@ -1,0 +1,184 @@
+{
+  "base": "14d5e37065329078afe7275c7448884214ea8a9a",
+  "stable_execution_source": "ab0b040e83038e03bc47ceed640a093490c79ef1",
+  "current_active_inputs": [
+    {
+      "path": "Cargo.toml",
+      "sha256": "97475b27f26bbfa1c2d46508c4e719edb3713ea5c76da5987ef5283b9d7245eb"
+    },
+    {
+      "path": "Cargo.lock",
+      "sha256": "2b62ce3fe11650d36ffc015344aa6f9f04b5ef22d6bc05dae218a96d07c8e811"
+    },
+    {
+      "path": "Makefile",
+      "sha256": "6c025fc8299088e505e54bfd91f54526a7d5b591b3629381eedb23366be1956d"
+    },
+    {
+      "path": "ci/ratchet.json",
+      "sha256": "5d4ed8b1c6a9c0267ce934108e5d4f02481b0dd17532426e402bb01fb6cf0cde"
+    },
+    {
+      "path": "scripts/check_product_gates.py",
+      "sha256": "5937f49dc314e8b21156bf2d751b13a885b040b7b8866ac96a1f49e62eefe477"
+    },
+    {
+      "path": "crates/nsealr-pi-engine-fixture/Cargo.toml",
+      "sha256": "6199f807c29406405b839ed71f1791ffb44359e34dff3db5bf8591361a2fb30d"
+    },
+    {
+      "path": "crates/nsealr-pi-engine-fixture/src/lib.rs",
+      "sha256": "7840133113a54d58f81e808e2037e0b5e999d148920f6bf4fea5212fa9a5425a"
+    },
+    {
+      "path": "crates/nsealr-pi-engine-fixture/src/tests.rs",
+      "sha256": "a6178d74e20dc350e99d0ce58f187b13c0d3e7131af9bb4da23f6648bcd24342"
+    },
+    {
+      "path": "apps/pi/app/nsealr_vault/engine_adapter.py",
+      "sha256": "c7d7778e538dc787e328295c67f9702473b87cb7c35d7576d37eab06a51137c7"
+    },
+    {
+      "path": "apps/pi/tests/test_engine_adapter.py",
+      "sha256": "0bde30834d219dbebb2f7e13040a089a2c0bda4b3689d3d4653653dc319e0935"
+    },
+    {
+      "path": "docs/restart/implementation/QP01/request-engine/exchange.py",
+      "sha256": "a6a8aa3e908401727fe83fa5ec42dee09e5dd7e58164a0ce3eea1541d907029c"
+    },
+    {
+      "path": "docs/restart/implementation/QP01/request-engine/client-exchange.ts",
+      "sha256": "dc59a9189a245f8b45961e3bb1e1d6f349396989db37acd9053d89f4df0b9456"
+    }
+  ],
+  "unchanged_source_bindings": [
+    {
+      "path": "crates/nsealr-core",
+      "git_object": "a6b8eaefca2487c8fb5d04ba53620223d64cdbbc",
+      "equals_accepted_main": true
+    },
+    {
+      "path": "vendor",
+      "git_object": "8c4ec5ba25b894911825bba1d9fc7938d67935c6",
+      "equals_accepted_main": true
+    },
+    {
+      "path": "protocols/contracts/v1",
+      "git_object": "b629e75d18190ded2403ffabe965b595a9bcf6a6",
+      "equals_accepted_main": true
+    },
+    {
+      "path": "packages/client",
+      "git_object": "ca2bd24d7fafc594afc7a045936b910c2b6f4b3c",
+      "equals_accepted_main": true
+    },
+    {
+      "path": "apps/bridge/service",
+      "git_object": "de11840ac496f48867bcce67328485658685843e",
+      "equals_accepted_main": true
+    },
+    {
+      "path": "docs/restart/implementation/QP01/engine-boundary",
+      "git_object": "0ec95a880e4cc140971ef6a125c5e00b4966fa27",
+      "equals_accepted_main": true
+    },
+    {
+      "path": "apps/desktop-simulator/Cargo.lock",
+      "git_object": "02d355925c6add7850ba964bf69bb792a9ceeb58",
+      "equals_accepted_main": true
+    },
+    {
+      "path": "ci/check_coverage_ratchet.py",
+      "git_object": "d79f7f248978921482c3df2f350b44dc204d922e",
+      "equals_accepted_main": true
+    },
+    {
+      "path": "tests/integration/run.py",
+      "git_object": "dbf99c9c923b37df993235c956932ed4fe713f50",
+      "equals_accepted_main": true
+    },
+    {
+      "path": "apps/pi/Makefile",
+      "git_object": "16ce0de4e478738f5a2705fdcd0cdce8e0303a8f",
+      "equals_accepted_main": true
+    },
+    {
+      "path": "scripts/audit_rust.py",
+      "git_object": "c38afd825da7dfa531a5926348944f095e29a097",
+      "equals_accepted_main": true
+    }
+  ],
+  "Rust_successful_pre_failure_commands": {
+    "source": "24d0cb1f",
+    "receipt": "evidence/stable-01-rust/receipt.json",
+    "commands": [
+      "cargo-fmt",
+      "cargo-clippy",
+      "cargo-test workspace/std/RISC-V core",
+      "vector-harness"
+    ],
+    "aggregate_exit": 2,
+    "reason": "cargo-deny rejected missing exact version on the new local dependency; no earlier command retroactively relabelled."
+  },
+  "remaining_Rust_commands": {
+    "source": "3112e68e958bbe7f260de54d019ea8504f84d0a9",
+    "receipt": "evidence/stable-02-rust-remaining/receipt.json",
+    "exit": 0,
+    "commands": [
+      "cargo-deny (root and host)",
+      "coverage-ratchet (complete workspace and host)",
+      "repro-build"
+    ]
+  },
+  "closure_reuse": "Only exact version=0.0.0 was added to the same core path/defaultfalse dependency. Root/host lock bytes, all resolved registry inputs and both crate source bytes are identical across the Rust recipe correction. Tests/validation succeeded before that metadata refusal and coverage re-executed the workspace afterwards.",
+  "ratchet_format_only": "After successful coverage, restored original literal \u00a7 in the unchanged about string. Parsed ratchet JSON including all floors is identical to the measured source; no threshold/checker change.",
+  "limits": "Existing repro-build covers core rlib and desktop-simulator only, not fixture cdylib. Hosted integration and B01 distinct final review are pending; no physical/profile/task qualification.",
+  "metadata_reconciliation_source": "0db822fcfd163fbe7247eb8ebdc126dc41c796b7",
+  "final_Rust_commands": {
+    "source": "ab0b040e83038e03bc47ceed640a093490c79ef1",
+    "receipt": "evidence/stable-06-rust-final/receipt.json",
+    "exit": 0,
+    "commands": [
+      "cargo-fmt",
+      "cargo-clippy",
+      "cargo-test workspace/std/RISC-V core",
+      "coverage-ratchet complete workspace and host"
+    ]
+  },
+  "final_Pi_commands": {
+    "source": "ab0b040e83038e03bc47ceed640a093490c79ef1",
+    "receipt": "evidence/stable-07-pi-final/receipt.json",
+    "exit": 0,
+    "command": "make pi-ci: bridge-ci once -> Cargo provisioning -> entire Pi CI189 once -> actual client14children/14collected"
+  },
+  "R00_current_artifact_reconciliation": [
+    {
+      "task": "R00",
+      "path": "Cargo.lock",
+      "preimage_sha256": "3d6b0a359a3dd86f39ba0a2425426b3080c02277f6e185e490c36c72de000d46",
+      "postimage_sha256": "2b62ce3fe11650d36ffc015344aa6f9f04b5ef22d6bc05dae218a96d07c8e811",
+      "postimage_source_commit": "ab0b040e83038e03bc47ceed640a093490c79ef1",
+      "preimage_graph_source": "14d5e37065329078afe7275c7448884214ea8a9a",
+      "role": "Current evidence reference reconciliation only; all historical manifests/reports unchanged"
+    },
+    {
+      "task": "R00",
+      "path": "Makefile",
+      "preimage_sha256": "03c98e06515803f001fa002bc1a7071596577a99488f1d0ed014214cfdd8a8da",
+      "postimage_sha256": "6c025fc8299088e505e54bfd91f54526a7d5b591b3629381eedb23366be1956d",
+      "postimage_source_commit": "ab0b040e83038e03bc47ceed640a093490c79ef1",
+      "preimage_graph_source": "14d5e37065329078afe7275c7448884214ea8a9a",
+      "role": "Current evidence reference reconciliation only; all historical manifests/reports unchanged"
+    },
+    {
+      "task": "R00",
+      "path": "scripts/check_product_gates.py",
+      "preimage_sha256": "7ff29cf5c8f88c07bf6a47321833045afdd6da0cba068c94b97680289912b2ae",
+      "postimage_sha256": "5937f49dc314e8b21156bf2d751b13a885b040b7b8866ac96a1f49e62eefe477",
+      "postimage_source_commit": "ab0b040e83038e03bc47ceed640a093490c79ef1",
+      "preimage_graph_source": "14d5e37065329078afe7275c7448884214ea8a9a",
+      "role": "Current evidence reference reconciliation only; all historical manifests/reports unchanged"
+    }
+  ],
+  "graph_invariants": "Only three authorized R00.result_artifacts.sha256 values differ. All other JSON values, all47 formal/task/resource/release sets and46other full task records equal accepted main14d5. No historical manifest/report changed."
+}
