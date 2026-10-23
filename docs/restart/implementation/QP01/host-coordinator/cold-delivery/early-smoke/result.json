@@ -1,0 +1,3333 @@
+{
+  "verdict": "PASS_EARLY_ROOT_VENDOR_PROVISION_AND_AUTOMATIC_HOST_GATE_ONLY",
+  "source": "0911c4707add71cf6f310fd6c49ac512ca1c18ab",
+  "initial_input_freeze": "f52d2279c313793ecbf6146b928dead8e02b6366",
+  "cold_empty_CARGO_HOME_target_before_initial_build": true,
+  "registry_archives_after_run": 0,
+  "core_producer_builds": [
+    {
+      "role": "public fixture build, not hardware qualification",
+      "argv": [
+        "cargo",
+        "build",
+        "-p",
+        "nsealr-pi-engine-fixture",
+        "--locked",
+        "--offline",
+        "--release",
+        "--message-format=json"
+      ],
+      "source": {
+        "Cargo.toml": "97475b27f26bbfa1c2d46508c4e719edb3713ea5c76da5987ef5283b9d7245eb",
+        "Cargo.lock": "2b62ce3fe11650d36ffc015344aa6f9f04b5ef22d6bc05dae218a96d07c8e811",
+        "crates/nsealr-pi-engine-fixture/Cargo.toml": "6199f807c29406405b839ed71f1791ffb44359e34dff3db5bf8591361a2fb30d",
+        "crates/nsealr-pi-engine-fixture/src/lib.rs": "7840133113a54d58f81e808e2037e0b5e999d148920f6bf4fea5212fa9a5425a"
+      },
+      "library": "/home/tux/nsealr/.restart-tools/goal/qp01-owner-cold-integration-runtime/cold-target/release/libnsealr_pi_engine_fixture.so",
+      "sha256": "7a8a4064b6583b7c0b925365cc07d5096bf1c8faa93507a8eb0ba60ebb082876",
+      "CARGO_TARGET_DIR": "/home/tux/nsealr/.restart-tools/goal/qp01-owner-cold-integration-runtime/cold-target"
+    },
+    {
+      "role": "public RGB worker build, initialization v2, not hardware qualification",
+      "argv": [
+        "cargo",
+        "build",
+        "--manifest-path",
+        "apps/pi/qr-worker/Cargo.toml",
+        "--locked",
+        "--offline",
+        "--release",
+        "--message-format=json"
+      ],
+      "source": {
+        "apps/pi/qr-worker/Cargo.toml": "a0c4db1b67499608914d07df5c5d8a54bfc69970e4559829f4c5573858068e91",
+        "apps/pi/qr-worker/Cargo.lock": "d4dadbe7162e838039ef6a53dcd7addc71a32520836b2ddc189070fbe79c091a",
+        "apps/pi/qr-worker/src/main.rs": "e60b3bc2baec2eded7ee474e101cfa8debd1a88be76d6d7cffce31b4e3e1dcf1",
+        "apps/pi/qr-worker/rust-toolchain.toml": "6e90f2cf35aad6218e0d99f319101783cf5ce91cc62349dec0c7b357a420dabc",
+        ".cargo/config.toml": "98e1cf108d2b5aa2ff9d9fb6f58df4d0332df3a85411cf8c1249c615edecf625",
+        "rust-toolchain.toml": "6e90f2cf35aad6218e0d99f319101783cf5ce91cc62349dec0c7b357a420dabc"
+      },
+      "worker": "/home/tux/nsealr/.restart-tools/goal/qp01-owner-cold-integration-runtime/cold-target/release/nsealr-qr-worker",
+      "sha256": "716ba85b3e55595b81e4225228d866bcaae5b1428a66829fb09ab8cef3f6a369",
+      "CARGO_TARGET_DIR": "/home/tux/nsealr/.restart-tools/goal/qp01-owner-cold-integration-runtime/cold-target"
+    }
+  ],
+  "Bridge_prerequisite": true,
+  "full_Pi_tests": 194,
+  "original_readiness_and_client_children": [
+    5,
+    14
+  ],
+  "original_native_observations": 14,
+  "first_owner_native_observations_separate_key": 3,
+  "first_owner_case_labels": [
+    "FG0_C_handshake_failure",
+    "FG0_C_library_ready_failure",
+    "FG0_actual_pre_admission_refusal",
+    "FG0_pre_presentation_assertion",
+    "FG0_startup_unused",
+    "FG1_normal259",
+    "FG2_elapsed_deadline_before_timer_callback",
+    "FG2_timeout_late",
+    "FG2_timeout_preG",
+    "FG3_cancel_late",
+    "FG3_cancel_preG",
+    "FG3_cancel_preP",
+    "FG4_generation",
+    "FG5_C_SIGKILL_preG",
+    "FG5_C_early_exit_before_P",
+    "FG6_control_EOF_preG",
+    "FG6_duplicate_P",
+    "FG6_invalid_opcode",
+    "FG6_premature_G",
+    "FG7_contradictory-IO",
+    "FG7_duplicate-key",
+    "FG7_duplicate-terminal",
+    "FG7_phase-after-terminal",
+    "FG7_ready-extra",
+    "FG7_ready-missing",
+    "FG7_relation_decoded-stderr-overflow",
+    "FG7_relation_decoded-stderr-truncation",
+    "FG7_relation_decoded-stdout-count-mismatch",
+    "FG7_relation_decoded-stdout-overflow",
+    "FG7_relation_decoded-stdout-retained-result-mismatch",
+    "FG7_relation_phase-after-Q",
+    "FG7_relation_phase-before-P",
+    "FG7_relation_unused-with-phase",
+    "FG7_relation_unused-with-worker",
+    "FG7_status-missing",
+    "FG7_status-overflow",
+    "FG7_status-truncated",
+    "FG7_wrong-owner",
+    "FG7_wrong-worker"
+  ],
+  "first_owner_actual_processes": {
+    "C": 21,
+    "O_including_11_no_W_helpers": 32,
+    "W_from_verified_phase_not_synthetic_bad_terminal": 11,
+    "total": 64
+  },
+  "real_deadline_control": {
+    "type": "CapabilityError",
+    "reason": "runtime_unavailable",
+    "message": "local deadline expired or clock rolled back/unavailable",
+    "signal_aborted": false,
+    "hold_begin_ms": 918.019848,
+    "hold_end_ms": 1028.025422,
+    "actual_hold_ms": 110.00557399999991,
+    "operation_elapsed_ms": 125.91330299999993,
+    "W_O_collected": true,
+    "private_decoded_bytes": 259,
+    "C_input_bytes": 0
+  },
+  "observations": {
+    "phase": [
+      {
+        "v": 1,
+        "kind": "worker_ready",
+        "owner_pid": 1907427,
+        "worker_pid": 1907429,
+        "ppid": 1907427,
+        "sid": 1907429,
+        "pgid": 1907429,
+        "exe_sha256": "716ba85b3e55595b81e4225228d866bcaae5b1428a66829fb09ab8cef3f6a369",
+        "limits": {
+          "AS": [
+            268435456,
+            268435456
+          ],
+          "CPU": [
+            1,
+            2
+          ],
+          "CORE": [
+            0,
+            0
+          ]
+        },
+        "G_bytes": 0,
+        "image_bytes_sent": 0,
+        "fds": [
+          {
+            "fd": 0,
+            "target": "pipe:[224797704]",
+            "dev": "15",
+            "ino": "224797704"
+          },
+          {
+            "fd": 1,
+            "target": "pipe:[224797705]",
+            "dev": "15",
+            "ino": "224797705"
+          },
+          {
+            "fd": 2,
+            "target": "pipe:[224797706]",
+            "dev": "15",
+            "ino": "224797706"
+          }
+        ]
+      },
+      {
+        "v": 1,
+        "kind": "worker_ready",
+        "owner_pid": 1907430,
+        "worker_pid": 1907432,
+        "ppid": 1907430,
+        "sid": 1907432,
+        "pgid": 1907432,
+        "exe_sha256": "716ba85b3e55595b81e4225228d866bcaae5b1428a66829fb09ab8cef3f6a369",
+        "limits": {
+          "AS": [
+            268435456,
+            268435456
+          ],
+          "CPU": [
+            1,
+            2
+          ],
+          "CORE": [
+            0,
+            0
+          ]
+        },
+        "G_bytes": 0,
+        "image_bytes_sent": 0,
+        "fds": [
+          {
+            "fd": 0,
+            "target": "pipe:[224753504]",
+            "dev": "15",
+            "ino": "224753504"
+          },
+          {
+            "fd": 1,
+            "target": "pipe:[224753505]",
+            "dev": "15",
+            "ino": "224753505"
+          },
+          {
+            "fd": 2,
+            "target": "pipe:[224753506]",
+            "dev": "15",
+            "ino": "224753506"
+          }
+        ]
+      },
+      {
+        "v": 1,
+        "kind": "worker_ready",
+        "owner_pid": 1907433,
+        "worker_pid": 1907435,
+        "ppid": 1907433,
+        "sid": 1907435,
+        "pgid": 1907435,
+        "exe_sha256": "716ba85b3e55595b81e4225228d866bcaae5b1428a66829fb09ab8cef3f6a369",
+        "limits": {
+          "AS": [
+            268435456,
+            268435456
+          ],
+          "CPU": [
+            1,
+            2
+          ],
+          "CORE": [
+            0,
+            0
+          ]
+        },
+        "G_bytes": 0,
+        "image_bytes_sent": 0,
+        "fds": [
+          {
+            "fd": 0,
+            "target": "pipe:[224794745]",
+            "dev": "15",
+            "ino": "224794745"
+          },
+          {
+            "fd": 1,
+            "target": "pipe:[224794746]",
+            "dev": "15",
+            "ino": "224794746"
+          },
+          {
+            "fd": 2,
+            "target": "pipe:[224794747]",
+            "dev": "15",
+            "ino": "224794747"
+          }
+        ]
+      },
+      {
+        "v": 1,
+        "kind": "worker_ready",
+        "owner_pid": 1907436,
+        "worker_pid": 1907438,
+        "ppid": 1907436,
+        "sid": 1907438,
+        "pgid": 1907438,
+        "exe_sha256": "716ba85b3e55595b81e4225228d866bcaae5b1428a66829fb09ab8cef3f6a369",
+        "limits": {
+          "AS": [
+            268435456,
+            268435456
+          ],
+          "CPU": [
+            1,
+            2
+          ],
+          "CORE": [
+            0,
+            0
+          ]
+        },
+        "G_bytes": 0,
+        "image_bytes_sent": 0,
+        "fds": [
+          {
+            "fd": 0,
+            "target": "pipe:[224792733]",
+            "dev": "15",
+            "ino": "224792733"
+          },
+          {
+            "fd": 1,
+            "target": "pipe:[224792734]",
+            "dev": "15",
+            "ino": "224792734"
+          },
+          {
+            "fd": 2,
+            "target": "pipe:[224792735]",
+            "dev": "15",
+            "ino": "224792735"
+          }
+        ]
+      },
+      {
+        "v": 1,
+        "kind": "worker_ready",
+        "owner_pid": 1907441,
+        "worker_pid": 1907448,
+        "ppid": 1907441,
+        "sid": 1907448,
+        "pgid": 1907448,
+        "exe_sha256": "716ba85b3e55595b81e4225228d866bcaae5b1428a66829fb09ab8cef3f6a369",
+        "limits": {
+          "AS": [
+            268435456,
+            268435456
+          ],
+          "CPU": [
+            1,
+            2
+          ],
+          "CORE": [
+            0,
+            0
+          ]
+        },
+        "G_bytes": 0,
+        "image_bytes_sent": 0,
+        "fds": [
+          {
+            "fd": 0,
+            "target": "pipe:[224794179]",
+            "dev": "15",
+            "ino": "224794179"
+          },
+          {
+            "fd": 1,
+            "target": "pipe:[224794180]",
+            "dev": "15",
+            "ino": "224794180"
+          },
+          {
+            "fd": 2,
+            "target": "pipe:[224794181]",
+            "dev": "15",
+            "ino": "224794181"
+          }
+        ]
+      },
+      {
+        "v": 1,
+        "kind": "worker_ready",
+        "owner_pid": 1907449,
+        "worker_pid": 1907451,
+        "ppid": 1907449,
+        "sid": 1907451,
+        "pgid": 1907451,
+        "exe_sha256": "716ba85b3e55595b81e4225228d866bcaae5b1428a66829fb09ab8cef3f6a369",
+        "limits": {
+          "AS": [
+            268435456,
+            268435456
+          ],
+          "CPU": [
+            1,
+            2
+          ],
+          "CORE": [
+            0,
+            0
+          ]
+        },
+        "G_bytes": 0,
+        "image_bytes_sent": 0,
+        "fds": [
+          {
+            "fd": 0,
+            "target": "pipe:[224792753]",
+            "dev": "15",
+            "ino": "224792753"
+          },
+          {
+            "fd": 1,
+            "target": "pipe:[224792754]",
+            "dev": "15",
+            "ino": "224792754"
+          },
+          {
+            "fd": 2,
+            "target": "pipe:[224792755]",
+            "dev": "15",
+            "ino": "224792755"
+          }
+        ]
+      },
+      {
+        "v": 1,
+        "kind": "worker_ready",
+        "owner_pid": 1907452,
+        "worker_pid": 1907454,
+        "ppid": 1907452,
+        "sid": 1907454,
+        "pgid": 1907454,
+        "exe_sha256": "716ba85b3e55595b81e4225228d866bcaae5b1428a66829fb09ab8cef3f6a369",
+        "limits": {
+          "AS": [
+            268435456,
+            268435456
+          ],
+          "CPU": [
+            1,
+            2
+          ],
+          "CORE": [
+            0,
+            0
+          ]
+        },
+        "G_bytes": 0,
+        "image_bytes_sent": 0,
+        "fds": [
+          {
+            "fd": 0,
+            "target": "pipe:[224786262]",
+            "dev": "15",
+            "ino": "224786262"
+          },
+          {
+            "fd": 1,
+            "target": "pipe:[224786263]",
+            "dev": "15",
+            "ino": "224786263"
+          },
+          {
+            "fd": 2,
+            "target": "pipe:[224786264]",
+            "dev": "15",
+            "ino": "224786264"
+          }
+        ]
+      },
+      {
+        "v": 1,
+        "kind": "worker_ready",
+        "owner_pid": 1907455,
+        "worker_pid": 1907459,
+        "ppid": 1907455,
+        "sid": 1907459,
+        "pgid": 1907459,
+        "exe_sha256": "716ba85b3e55595b81e4225228d866bcaae5b1428a66829fb09ab8cef3f6a369",
+        "limits": {
+          "AS": [
+            268435456,
+            268435456
+          ],
+          "CPU": [
+            1,
+            2
+          ],
+          "CORE": [
+            0,
+            0
+          ]
+        },
+        "G_bytes": 0,
+        "image_bytes_sent": 0,
+        "fds": [
+          {
+            "fd": 0,
+            "target": "pipe:[224794800]",
+            "dev": "15",
+            "ino": "224794800"
+          },
+          {
+            "fd": 1,
+            "target": "pipe:[224794801]",
+            "dev": "15",
+            "ino": "224794801"
+          },
+          {
+            "fd": 2,
+            "target": "pipe:[224794802]",
+            "dev": "15",
+            "ino": "224794802"
+          }
+        ]
+      },
+      {
+        "v": 1,
+        "kind": "worker_ready",
+        "owner_pid": 1907461,
+        "worker_pid": 1907463,
+        "ppid": 1907461,
+        "sid": 1907463,
+        "pgid": 1907463,
+        "exe_sha256": "716ba85b3e55595b81e4225228d866bcaae5b1428a66829fb09ab8cef3f6a369",
+        "limits": {
+          "AS": [
+            268435456,
+            268435456
+          ],
+          "CPU": [
+            1,
+            2
+          ],
+          "CORE": [
+            0,
+            0
+          ]
+        },
+        "G_bytes": 0,
+        "image_bytes_sent": 0,
+        "fds": [
+          {
+            "fd": 0,
+            "target": "pipe:[224794811]",
+            "dev": "15",
+            "ino": "224794811"
+          },
+          {
+            "fd": 1,
+            "target": "pipe:[224794812]",
+            "dev": "15",
+            "ino": "224794812"
+          },
+          {
+            "fd": 2,
+            "target": "pipe:[224794813]",
+            "dev": "15",
+            "ino": "224794813"
+          }
+        ]
+      },
+      {
+        "v": 1,
+        "kind": "worker_ready",
+        "owner_pid": 1907464,
+        "worker_pid": 1907466,
+        "ppid": 1907464,
+        "sid": 1907466,
+        "pgid": 1907466,
+        "exe_sha256": "716ba85b3e55595b81e4225228d866bcaae5b1428a66829fb09ab8cef3f6a369",
+        "limits": {
+          "AS": [
+            268435456,
+            268435456
+          ],
+          "CPU": [
+            1,
+            2
+          ],
+          "CORE": [
+            0,
+            0
+          ]
+        },
+        "G_bytes": 0,
+        "image_bytes_sent": 0,
+        "fds": [
+          {
+            "fd": 0,
+            "target": "pipe:[224786282]",
+            "dev": "15",
+            "ino": "224786282"
+          },
+          {
+            "fd": 1,
+            "target": "pipe:[224786283]",
+            "dev": "15",
+            "ino": "224786283"
+          },
+          {
+            "fd": 2,
+            "target": "pipe:[224786284]",
+            "dev": "15",
+            "ino": "224786284"
+          }
+        ]
+      },
+      {
+        "v": 1,
+        "kind": "worker_ready",
+        "owner_pid": 1907467,
+        "worker_pid": 1907469,
+        "ppid": 1907467,
+        "sid": 1907469,
+        "pgid": 1907469,
+        "exe_sha256": "716ba85b3e55595b81e4225228d866bcaae5b1428a66829fb09ab8cef3f6a369",
+        "limits": {
+          "AS": [
+            268435456,
+            268435456
+          ],
+          "CPU": [
+            1,
+            2
+          ],
+          "CORE": [
+            0,
+            0
+          ]
+        },
+        "G_bytes": 0,
+        "image_bytes_sent": 0,
+        "fds": [
+          {
+            "fd": 0,
+            "target": "pipe:[224792764]",
+            "dev": "15",
+            "ino": "224792764"
+          },
+          {
+            "fd": 1,
+            "target": "pipe:[224792765]",
+            "dev": "15",
+            "ino": "224792765"
+          },
+          {
+            "fd": 2,
+            "target": "pipe:[224792766]",
+            "dev": "15",
+            "ino": "224792766"
+          }
+        ]
+      }
+    ],
+    "C": [
+      {
+        "scope": "first_owner_gate_C",
+        "pid": 1907418,
+        "code": 1,
+        "signal": null,
+        "synthetic_handshake_control": false,
+        "sent": false,
+        "readiness_hex": "52",
+        "stdout_bytes": 0,
+        "stderr_bytes": 1035,
+        "overflow": false,
+        "initialization_ns": "21505694",
+        "request_to_close_ns": null
+      },
+      {
+        "scope": "first_owner_gate_C",
+        "pid": 1907420,
+        "code": 1,
+        "signal": null,
+        "synthetic_handshake_control": false,
+        "sent": false,
+        "readiness_hex": "",
+        "stdout_bytes": 0,
+        "stderr_bytes": 1007,
+        "overflow": false,
+        "initialization_ns": null,
+        "request_to_close_ns": null
+      },
+      {
+        "scope": "first_owner_gate_C",
+        "pid": 1907422,
+        "code": null,
+        "signal": "SIGKILL",
+        "synthetic_handshake_control": true,
+        "sent": false,
+        "readiness_hex": "",
+        "stdout_bytes": 0,
+        "stderr_bytes": 0,
+        "overflow": false,
+        "initialization_ns": null,
+        "request_to_close_ns": null
+      },
+      {
+        "scope": "first_owner_gate_C",
+        "pid": 1907424,
+        "code": 1,
+        "signal": null,
+        "synthetic_handshake_control": false,
+        "sent": false,
+        "readiness_hex": "52",
+        "stdout_bytes": 0,
+        "stderr_bytes": 1035,
+        "overflow": false,
+        "initialization_ns": "20965103",
+        "request_to_close_ns": null
+      },
+      {
+        "scope": "first_owner_gate_C",
+        "pid": 1907426,
+        "code": 1,
+        "signal": null,
+        "synthetic_handshake_control": false,
+        "sent": false,
+        "readiness_hex": "52",
+        "stdout_bytes": 0,
+        "stderr_bytes": 1035,
+        "overflow": false,
+        "initialization_ns": "21480066",
+        "request_to_close_ns": null
+      },
+      {
+        "scope": "first_owner_gate_C",
+        "pid": 1907428,
+        "code": 0,
+        "signal": null,
+        "synthetic_handshake_control": false,
+        "sent": true,
+        "readiness_hex": "52",
+        "stdout_bytes": 611,
+        "stderr_bytes": 4959,
+        "overflow": false,
+        "initialization_ns": "21128019",
+        "request_to_close_ns": "5245486"
+      },
+      {
+        "scope": "first_owner_gate_C",
+        "pid": 1907431,
+        "code": 1,
+        "signal": null,
+        "synthetic_handshake_control": false,
+        "sent": false,
+        "readiness_hex": "52",
+        "stdout_bytes": 0,
+        "stderr_bytes": 1035,
+        "overflow": false,
+        "initialization_ns": "22358520",
+        "request_to_close_ns": null
+      },
+      {
+        "scope": "first_owner_gate_C",
+        "pid": 1907434,
+        "code": 0,
+        "signal": null,
+        "synthetic_handshake_control": false,
+        "sent": true,
+        "readiness_hex": "52",
+        "stdout_bytes": 611,
+        "stderr_bytes": 4959,
+        "overflow": false,
+        "initialization_ns": "21242503",
+        "request_to_close_ns": "4984899"
+      },
+      {
+        "scope": "first_owner_gate_C",
+        "pid": 1907437,
+        "code": 1,
+        "signal": null,
+        "synthetic_handshake_control": false,
+        "sent": false,
+        "readiness_hex": "52",
+        "stdout_bytes": 0,
+        "stderr_bytes": 1035,
+        "overflow": false,
+        "initialization_ns": "20589953",
+        "request_to_close_ns": null
+      },
+      {
+        "scope": "first_owner_gate_C",
+        "pid": 1907447,
+        "code": 0,
+        "signal": null,
+        "synthetic_handshake_control": false,
+        "sent": true,
+        "readiness_hex": "52",
+        "stdout_bytes": 611,
+        "stderr_bytes": 4959,
+        "overflow": false,
+        "initialization_ns": "20989951",
+        "request_to_close_ns": "5100365"
+      },
+      {
+        "scope": "first_owner_gate_C",
+        "pid": 1907450,
+        "code": 1,
+        "signal": null,
+        "synthetic_handshake_control": false,
+        "sent": false,
+        "readiness_hex": "52",
+        "stdout_bytes": 0,
+        "stderr_bytes": 1035,
+        "overflow": false,
+        "initialization_ns": "21999959",
+        "request_to_close_ns": null
+      },
+      {
+        "scope": "first_owner_gate_C",
+        "pid": 1907453,
+        "code": 1,
+        "signal": null,
+        "synthetic_handshake_control": false,
+        "sent": false,
+        "readiness_hex": "52",
+        "stdout_bytes": 0,
+        "stderr_bytes": 1035,
+        "overflow": false,
+        "initialization_ns": "21584892",
+        "request_to_close_ns": null
+      },
+      {
+        "scope": "first_owner_gate_C",
+        "pid": 1907458,
+        "code": 1,
+        "signal": null,
+        "synthetic_handshake_control": false,
+        "sent": false,
+        "readiness_hex": "52",
+        "stdout_bytes": 0,
+        "stderr_bytes": 1035,
+        "overflow": false,
+        "initialization_ns": "21481670",
+        "request_to_close_ns": null
+      },
+      {
+        "scope": "first_owner_gate_C",
+        "pid": 1907462,
+        "code": 1,
+        "signal": null,
+        "synthetic_handshake_control": false,
+        "sent": false,
+        "readiness_hex": "52",
+        "stdout_bytes": 0,
+        "stderr_bytes": 1035,
+        "overflow": false,
+        "initialization_ns": "21200835",
+        "request_to_close_ns": null
+      },
+      {
+        "scope": "first_owner_gate_C",
+        "pid": 1907465,
+        "code": null,
+        "signal": "SIGKILL",
+        "synthetic_handshake_control": false,
+        "sent": false,
+        "readiness_hex": "52",
+        "stdout_bytes": 0,
+        "stderr_bytes": 0,
+        "overflow": false,
+        "initialization_ns": "20861800",
+        "request_to_close_ns": null
+      },
+      {
+        "scope": "first_owner_gate_C",
+        "pid": 1907468,
+        "code": 1,
+        "signal": null,
+        "synthetic_handshake_control": false,
+        "sent": false,
+        "readiness_hex": "52",
+        "stdout_bytes": 0,
+        "stderr_bytes": 1035,
+        "overflow": false,
+        "initialization_ns": "21315639",
+        "request_to_close_ns": null
+      },
+      {
+        "scope": "first_owner_gate_C",
+        "pid": 1907471,
+        "code": 1,
+        "signal": null,
+        "synthetic_handshake_control": false,
+        "sent": false,
+        "readiness_hex": "52",
+        "stdout_bytes": 0,
+        "stderr_bytes": 1035,
+        "overflow": false,
+        "initialization_ns": "21455551",
+        "request_to_close_ns": null
+      },
+      {
+        "scope": "first_owner_gate_C",
+        "pid": 1907473,
+        "code": 1,
+        "signal": null,
+        "synthetic_handshake_control": false,
+        "sent": false,
+        "readiness_hex": "52",
+        "stdout_bytes": 0,
+        "stderr_bytes": 1035,
+        "overflow": false,
+        "initialization_ns": "21561058",
+        "request_to_close_ns": null
+      },
+      {
+        "scope": "first_owner_gate_C",
+        "pid": 1907475,
+        "code": 1,
+        "signal": null,
+        "synthetic_handshake_control": false,
+        "sent": false,
+        "readiness_hex": "52",
+        "stdout_bytes": 0,
+        "stderr_bytes": 1035,
+        "overflow": false,
+        "initialization_ns": "22678396",
+        "request_to_close_ns": null
+      },
+      {
+        "scope": "first_owner_gate_C",
+        "pid": 1907477,
+        "code": 1,
+        "signal": null,
+        "synthetic_handshake_control": false,
+        "sent": false,
+        "readiness_hex": "52",
+        "stdout_bytes": 0,
+        "stderr_bytes": 1035,
+        "overflow": false,
+        "initialization_ns": "22091700",
+        "request_to_close_ns": null
+      },
+      {
+        "scope": "first_owner_gate_C",
+        "pid": 1907479,
+        "code": 1,
+        "signal": null,
+        "synthetic_handshake_control": false,
+        "sent": false,
+        "readiness_hex": "52",
+        "stdout_bytes": 0,
+        "stderr_bytes": 1035,
+        "overflow": false,
+        "initialization_ns": "21819040",
+        "request_to_close_ns": null
+      }
+    ],
+    "O": [
+      {
+        "pid": 1907417,
+        "code": 0,
+        "signal": null,
+        "ready_hex": "52",
+        "readyEOF": true,
+        "readyAccepted": true,
+        "statusEOF": true,
+        "outEOF": true,
+        "errEOF": true,
+        "status_bytes": 702,
+        "commands": [
+          {
+            "opcode": "Q",
+            "node_ns": "6168586606047288"
+          }
+        ],
+        "terminal": {
+          "v": 1,
+          "kind": "terminal",
+          "owner_pid": 1907417,
+          "outcome": "unused",
+          "ownership": "settled",
+          "worker_pid": null,
+          "worker_wait": null,
+          "worker_io": {
+            "stdin_closed": null,
+            "stdout_eof": null,
+            "stderr_eof": null,
+            "owned_fds_closed": true
+          },
+          "session_policy_verified": false,
+          "input_bytes_received": 0,
+          "input_sha256": null,
+          "G_bytes": 0,
+          "image_bytes_sent": 0,
+          "stdout_observed": 0,
+          "stdout_retained": 0,
+          "stderr_observed": 0,
+          "stderr_retained": 0,
+          "worker_stderr_base64": "",
+          "result_bytes": 0,
+          "result_sha256": null,
+          "final_worker_eligible": false,
+          "cancel_observed": false,
+          "timing": {
+            "begin_ns": null,
+            "invalidated_ns": "6168586606127578",
+            "cleanup_deadline_ns": "6168590606127578",
+            "settled_ns": "6168586606139611",
+            "final_admission_ns": "6168586606140082"
+          }
+        },
+        "output_bytes": 0,
+        "output_sha256": null,
+        "diagnostic_base64": "",
+        "elapsed_ns": "44819499",
+        "protocol_error": null,
+        "synthetic_no_W_helper": false,
+        "complete_status_records": 1,
+        "unconsumed_status_bytes": 0
+      },
+      {
+        "pid": 1907419,
+        "code": 0,
+        "signal": null,
+        "ready_hex": "52",
+        "readyEOF": true,
+        "readyAccepted": true,
+        "statusEOF": true,
+        "outEOF": true,
+        "errEOF": true,
+        "status_bytes": 702,
+        "commands": [
+          {
+            "opcode": "Q",
+            "node_ns": "6168586655368494"
+          }
+        ],
+        "terminal": {
+          "v": 1,
+          "kind": "terminal",
+          "owner_pid": 1907419,
+          "outcome": "unused",
+          "ownership": "settled",
+          "worker_pid": null,
+          "worker_wait": null,
+          "worker_io": {
+            "stdin_closed": null,
+            "stdout_eof": null,
+            "stderr_eof": null,
+            "owned_fds_closed": true
+          },
+          "session_policy_verified": false,
+          "input_bytes_received": 0,
+          "input_sha256": null,
+          "G_bytes": 0,
+          "image_bytes_sent": 0,
+          "stdout_observed": 0,
+          "stdout_retained": 0,
+          "stderr_observed": 0,
+          "stderr_retained": 0,
+          "worker_stderr_base64": "",
+          "result_bytes": 0,
+          "result_sha256": null,
+          "final_worker_eligible": false,
+          "cancel_observed": false,
+          "timing": {
+            "begin_ns": null,
+            "invalidated_ns": "6168586655553249",
+            "cleanup_deadline_ns": "6168590655553249",
+            "settled_ns": "6168586655571573",
+            "final_admission_ns": "6168586655572064"
+          }
+        },
+        "output_bytes": 0,
+        "output_sha256": null,
+        "diagnostic_base64": "",
+        "elapsed_ns": "46550826",
+        "protocol_error": null,
+        "synthetic_no_W_helper": false,
+        "complete_status_records": 1,
+        "unconsumed_status_bytes": 0
+      },
+      {
+        "pid": 1907421,
+        "code": 0,
+        "signal": null,
+        "ready_hex": "52",
+        "readyEOF": true,
+        "readyAccepted": true,
+        "statusEOF": true,
+        "outEOF": true,
+        "errEOF": true,
+        "status_bytes": 702,
+        "commands": [
+          {
+            "opcode": "Q",
+            "node_ns": "6168586684326871"
+          }
+        ],
+        "terminal": {
+          "v": 1,
+          "kind": "terminal",
+          "owner_pid": 1907421,
+          "outcome": "unused",
+          "ownership": "settled",
+          "worker_pid": null,
+          "worker_wait": null,
+          "worker_io": {
+            "stdin_closed": null,
+            "stdout_eof": null,
+            "stderr_eof": null,
+            "owned_fds_closed": true
+          },
+          "session_policy_verified": false,
+          "input_bytes_received": 0,
+          "input_sha256": null,
+          "G_bytes": 0,
+          "image_bytes_sent": 0,
+          "stdout_observed": 0,
+          "stdout_retained": 0,
+          "stderr_observed": 0,
+          "stderr_retained": 0,
+          "worker_stderr_base64": "",
+          "result_bytes": 0,
+          "result_sha256": null,
+          "final_worker_eligible": false,
+          "cancel_observed": false,
+          "timing": {
+            "begin_ns": null,
+            "invalidated_ns": "6168586684355825",
+            "cleanup_deadline_ns": "6168590684355825",
+            "settled_ns": "6168586684362177",
+            "final_admission_ns": "6168586684362428"
+          }
+        },
+        "output_bytes": 0,
+        "output_sha256": null,
+        "diagnostic_base64": "",
+        "elapsed_ns": "25044721",
+        "protocol_error": null,
+        "synthetic_no_W_helper": false,
+        "complete_status_records": 1,
+        "unconsumed_status_bytes": 0
+      },
+      {
+        "pid": 1907423,
+        "code": 0,
+        "signal": null,
+        "ready_hex": "52",
+        "readyEOF": true,
+        "readyAccepted": true,
+        "statusEOF": true,
+        "outEOF": true,
+        "errEOF": true,
+        "status_bytes": 702,
+        "commands": [
+          {
+            "opcode": "Q",
+            "node_ns": "6168586731498427"
+          }
+        ],
+        "terminal": {
+          "v": 1,
+          "kind": "terminal",
+          "owner_pid": 1907423,
+          "outcome": "unused",
+          "ownership": "settled",
+          "worker_pid": null,
+          "worker_wait": null,
+          "worker_io": {
+            "stdin_closed": null,
+            "stdout_eof": null,
+            "stderr_eof": null,
+            "owned_fds_closed": true
+          },
+          "session_policy_verified": false,
+          "input_bytes_received": 0,
+          "input_sha256": null,
+          "G_bytes": 0,
+          "image_bytes_sent": 0,
+          "stdout_observed": 0,
+          "stdout_retained": 0,
+          "stderr_observed": 0,
+          "stderr_retained": 0,
+          "worker_stderr_base64": "",
+          "result_bytes": 0,
+          "result_sha256": null,
+          "final_worker_eligible": false,
+          "cancel_observed": false,
+          "timing": {
+            "begin_ns": null,
+            "invalidated_ns": "6168586731560383",
+            "cleanup_deadline_ns": "6168590731560383",
+            "settled_ns": "6168586731577425",
+            "final_admission_ns": "6168586731577926"
+          }
+        },
+        "output_bytes": 0,
+        "output_sha256": null,
+        "diagnostic_base64": "",
+        "elapsed_ns": "45924426",
+        "protocol_error": null,
+        "synthetic_no_W_helper": false,
+        "complete_status_records": 1,
+        "unconsumed_status_bytes": 0
+      },
+      {
+        "pid": 1907425,
+        "code": 0,
+        "signal": null,
+        "ready_hex": "52",
+        "readyEOF": true,
+        "readyAccepted": true,
+        "statusEOF": true,
+        "outEOF": true,
+        "errEOF": true,
+        "status_bytes": 702,
+        "commands": [
+          {
+            "opcode": "Q",
+            "node_ns": "6168586786380889"
+          }
+        ],
+        "terminal": {
+          "v": 1,
+          "kind": "terminal",
+          "owner_pid": 1907425,
+          "outcome": "unused",
+          "ownership": "settled",
+          "worker_pid": null,
+          "worker_wait": null,
+          "worker_io": {
+            "stdin_closed": null,
+            "stdout_eof": null,
+            "stderr_eof": null,
+            "owned_fds_closed": true
+          },
+          "session_policy_verified": false,
+          "input_bytes_received": 0,
+          "input_sha256": null,
+          "G_bytes": 0,
+          "image_bytes_sent": 0,
+          "stdout_observed": 0,
+          "stdout_retained": 0,
+          "stderr_observed": 0,
+          "stderr_retained": 0,
+          "worker_stderr_base64": "",
+          "result_bytes": 0,
+          "result_sha256": null,
+          "final_worker_eligible": false,
+          "cancel_observed": false,
+          "timing": {
+            "begin_ns": null,
+            "invalidated_ns": "6168586786444949",
+            "cleanup_deadline_ns": "6168590786444949",
+            "settled_ns": "6168586786461240",
+            "final_admission_ns": "6168586786461811"
+          }
+        },
+        "output_bytes": 0,
+        "output_sha256": null,
+        "diagnostic_base64": "",
+        "elapsed_ns": "50584517",
+        "protocol_error": null,
+        "synthetic_no_W_helper": false,
+        "complete_status_records": 1,
+        "unconsumed_status_bytes": 0
+      },
+      {
+        "pid": 1907427,
+        "code": 0,
+        "signal": null,
+        "ready_hex": "52",
+        "readyEOF": true,
+        "readyAccepted": true,
+        "statusEOF": true,
+        "outEOF": true,
+        "errEOF": true,
+        "status_bytes": 1423,
+        "commands": [
+          {
+            "opcode": "P",
+            "node_ns": "6168586842518157"
+          },
+          {
+            "opcode": "G",
+            "node_ns": "6168586845174764"
+          }
+        ],
+        "phase": {
+          "v": 1,
+          "kind": "worker_ready",
+          "owner_pid": 1907427,
+          "worker_pid": 1907429,
+          "ppid": 1907427,
+          "sid": 1907429,
+          "pgid": 1907429,
+          "exe_sha256": "716ba85b3e55595b81e4225228d866bcaae5b1428a66829fb09ab8cef3f6a369",
+          "limits": {
+            "AS": [
+              268435456,
+              268435456
+            ],
+            "CPU": [
+              1,
+              2
+            ],
+            "CORE": [
+              0,
+              0
+            ]
+          },
+          "G_bytes": 0,
+          "image_bytes_sent": 0,
+          "fds": [
+            {
+              "fd": 0,
+              "target": "pipe:[224797704]",
+              "dev": "15",
+              "ino": "224797704"
+            },
+            {
+              "fd": 1,
+              "target": "pipe:[224797705]",
+              "dev": "15",
+              "ino": "224797705"
+            },
+            {
+              "fd": 2,
+              "target": "pipe:[224797706]",
+              "dev": "15",
+              "ino": "224797706"
+            }
+          ]
+        },
+        "terminal": {
+          "v": 1,
+          "kind": "terminal",
+          "owner_pid": 1907427,
+          "outcome": "decoded",
+          "ownership": "settled",
+          "worker_pid": 1907429,
+          "worker_wait": {
+            "raw_status": 0,
+            "exit_code": 0,
+            "collector_pid": 1907427
+          },
+          "worker_io": {
+            "stdin_closed": true,
+            "stdout_eof": true,
+            "stderr_eof": true,
+            "owned_fds_closed": true
+          },
+          "session_policy_verified": true,
+          "input_bytes_received": 172800,
+          "input_sha256": "64d9be602c821c31c0dfd6e952199a328325acdbf9a7e1b3494921942a11055f",
+          "G_bytes": 1,
+          "image_bytes_sent": 172800,
+          "stdout_observed": 259,
+          "stdout_retained": 259,
+          "stderr_observed": 33,
+          "stderr_retained": 33,
+          "worker_stderr_base64": "c3RhdHVzPWRlY29kZWQgZ3JpZHM9MSBieXRlcz0yNTkK",
+          "result_bytes": 259,
+          "result_sha256": "88a16190a1b1ed033fc9bebe5452af70e9a9783fd6b92305add2ac7134039ff7",
+          "final_worker_eligible": true,
+          "cancel_observed": false,
+          "timing": {
+            "begin_ns": "6168586842588048",
+            "invalidated_ns": null,
+            "cleanup_deadline_ns": null,
+            "settled_ns": "6168586851949138",
+            "final_admission_ns": "6168586851950170"
+          }
+        },
+        "output_bytes": 259,
+        "output_sha256": "88a16190a1b1ed033fc9bebe5452af70e9a9783fd6b92305add2ac7134039ff7",
+        "diagnostic_base64": "",
+        "elapsed_ns": "58572411",
+        "protocol_error": null,
+        "synthetic_no_W_helper": false,
+        "complete_status_records": 2,
+        "unconsumed_status_bytes": 0
+      },
+      {
+        "pid": 1907430,
+        "code": 2,
+        "signal": null,
+        "ready_hex": "52",
+        "readyEOF": true,
+        "readyAccepted": true,
+        "statusEOF": true,
+        "outEOF": true,
+        "errEOF": true,
+        "status_bytes": 1335,
+        "commands": [
+          {
+            "opcode": "P",
+            "node_ns": "6168586927072120"
+          },
+          {
+            "opcode": "X",
+            "node_ns": "6168587026010745"
+          }
+        ],
+        "phase": {
+          "v": 1,
+          "kind": "worker_ready",
+          "owner_pid": 1907430,
+          "worker_pid": 1907432,
+          "ppid": 1907430,
+          "sid": 1907432,
+          "pgid": 1907432,
+          "exe_sha256": "716ba85b3e55595b81e4225228d866bcaae5b1428a66829fb09ab8cef3f6a369",
+          "limits": {
+            "AS": [
+              268435456,
+              268435456
+            ],
+            "CPU": [
+              1,
+              2
+            ],
+            "CORE": [
+              0,
+              0
+            ]
+          },
+          "G_bytes": 0,
+          "image_bytes_sent": 0,
+          "fds": [
+            {
+              "fd": 0,
+              "target": "pipe:[224753504]",
+              "dev": "15",
+              "ino": "224753504"
+            },
+            {
+              "fd": 1,
+              "target": "pipe:[224753505]",
+              "dev": "15",
+              "ino": "224753505"
+            },
+            {
+              "fd": 2,
+              "target": "pipe:[224753506]",
+              "dev": "15",
+              "ino": "224753506"
+            }
+          ]
+        },
+        "terminal": {
+          "v": 1,
+          "kind": "terminal",
+          "owner_pid": 1907430,
+          "outcome": "cancelled",
+          "ownership": "settled",
+          "worker_pid": 1907432,
+          "worker_wait": {
+            "raw_status": 9,
+            "exit_code": -9,
+            "collector_pid": 1907430
+          },
+          "worker_io": {
+            "stdin_closed": true,
+            "stdout_eof": true,
+            "stderr_eof": true,
+            "owned_fds_closed": true
+          },
+          "session_policy_verified": true,
+          "input_bytes_received": 172800,
+          "input_sha256": "64d9be602c821c31c0dfd6e952199a328325acdbf9a7e1b3494921942a11055f",
+          "G_bytes": 0,
+          "image_bytes_sent": 0,
+          "stdout_observed": 0,
+          "stdout_retained": 0,
+          "stderr_observed": 0,
+          "stderr_retained": 0,
+          "worker_stderr_base64": "",
+          "result_bytes": 0,
+          "result_sha256": null,
+          "final_worker_eligible": false,
+          "cancel_observed": true,
+          "timing": {
+            "begin_ns": "6168586927094622",
+            "invalidated_ns": "6168587026029600",
+            "cleanup_deadline_ns": "6168591026029600",
+            "settled_ns": "6168587026177687",
+            "final_admission_ns": "6168587026177887"
+          }
+        },
+        "output_bytes": 0,
+        "output_sha256": null,
+        "diagnostic_base64": "",
+        "elapsed_ns": "146797376",
+        "protocol_error": null,
+        "synthetic_no_W_helper": false,
+        "complete_status_records": 2,
+        "unconsumed_status_bytes": 0
+      },
+      {
+        "pid": 1907433,
+        "code": 0,
+        "signal": null,
+        "ready_hex": "52",
+        "readyEOF": true,
+        "readyAccepted": true,
+        "statusEOF": true,
+        "outEOF": true,
+        "errEOF": true,
+        "status_bytes": 1423,
+        "commands": [
+          {
+            "opcode": "P",
+            "node_ns": "6168587075999227"
+          },
+          {
+            "opcode": "G",
+            "node_ns": "6168587078536761"
+          }
+        ],
+        "phase": {
+          "v": 1,
+          "kind": "worker_ready",
+          "owner_pid": 1907433,
+          "worker_pid": 1907435,
+          "ppid": 1907433,
+          "sid": 1907435,
+          "pgid": 1907435,
+          "exe_sha256": "716ba85b3e55595b81e4225228d866bcaae5b1428a66829fb09ab8cef3f6a369",
+          "limits": {
+            "AS": [
+              268435456,
+              268435456
+            ],
+            "CPU": [
+              1,
+              2
+            ],
+            "CORE": [
+              0,
+              0
+            ]
+          },
+          "G_bytes": 0,
+          "image_bytes_sent": 0,
+          "fds": [
+            {
+              "fd": 0,
+              "target": "pipe:[224794745]",
+              "dev": "15",
+              "ino": "224794745"
+            },
+            {
+              "fd": 1,
+              "target": "pipe:[224794746]",
+              "dev": "15",
+              "ino": "224794746"
+            },
+            {
+              "fd": 2,
+              "target": "pipe:[224794747]",
+              "dev": "15",
+              "ino": "224794747"
+            }
+          ]
+        },
+        "terminal": {
+          "v": 1,
+          "kind": "terminal",
+          "owner_pid": 1907433,
+          "outcome": "decoded",
+          "ownership": "settled",
+          "worker_pid": 1907435,
+          "worker_wait": {
+            "raw_status": 0,
+            "exit_code": 0,
+            "collector_pid": 1907433
+          },
+          "worker_io": {
+            "stdin_closed": true,
+            "stdout_eof": true,
+            "stderr_eof": true,
+            "owned_fds_closed": true
+          },
+          "session_policy_verified": true,
+          "input_bytes_received": 172800,
+          "input_sha256": "64d9be602c821c31c0dfd6e952199a328325acdbf9a7e1b3494921942a11055f",
+          "G_bytes": 1,
+          "image_bytes_sent": 172800,
+          "stdout_observed": 259,
+          "stdout_retained": 259,
+          "stderr_observed": 33,
+          "stderr_retained": 33,
+          "worker_stderr_base64": "c3RhdHVzPWRlY29kZWQgZ3JpZHM9MSBieXRlcz0yNTkK",
+          "result_bytes": 259,
+          "result_sha256": "88a16190a1b1ed033fc9bebe5452af70e9a9783fd6b92305add2ac7134039ff7",
+          "final_worker_eligible": true,
+          "cancel_observed": false,
+          "timing": {
+            "begin_ns": "6168587076256748",
+            "invalidated_ns": null,
+            "cleanup_deadline_ns": null,
+            "settled_ns": "6168587085461156",
+            "final_admission_ns": "6168587085462008"
+          }
+        },
+        "output_bytes": 259,
+        "output_sha256": "88a16190a1b1ed033fc9bebe5452af70e9a9783fd6b92305add2ac7134039ff7",
+        "diagnostic_base64": "",
+        "elapsed_ns": "55219152",
+        "protocol_error": null,
+        "synthetic_no_W_helper": false,
+        "complete_status_records": 2,
+        "unconsumed_status_bytes": 0
+      },
+      {
+        "pid": 1907436,
+        "code": 0,
+        "signal": null,
+        "ready_hex": "52",
+        "readyEOF": true,
+        "readyAccepted": true,
+        "statusEOF": true,
+        "outEOF": true,
+        "errEOF": true,
+        "status_bytes": 1423,
+        "commands": [
+          {
+            "opcode": "P",
+            "node_ns": "6168587140984947"
+          },
+          {
+            "opcode": "G",
+            "node_ns": "6168587143205489"
+          }
+        ],
+        "phase": {
+          "v": 1,
+          "kind": "worker_ready",
+          "owner_pid": 1907436,
+          "worker_pid": 1907438,
+          "ppid": 1907436,
+          "sid": 1907438,
+          "pgid": 1907438,
+          "exe_sha256": "716ba85b3e55595b81e4225228d866bcaae5b1428a66829fb09ab8cef3f6a369",
+          "limits": {
+            "AS": [
+              268435456,
+              268435456
+            ],
+            "CPU": [
+              1,
+              2
+            ],
+            "CORE": [
+              0,
+              0
+            ]
+          },
+          "G_bytes": 0,
+          "image_bytes_sent": 0,
+          "fds": [
+            {
+              "fd": 0,
+              "target": "pipe:[224792733]",
+              "dev": "15",
+              "ino": "224792733"
+            },
+            {
+              "fd": 1,
+              "target": "pipe:[224792734]",
+              "dev": "15",
+              "ino": "224792734"
+            },
+            {
+              "fd": 2,
+              "target": "pipe:[224792735]",
+              "dev": "15",
+              "ino": "224792735"
+            }
+          ]
+        },
+        "terminal": {
+          "v": 1,
+          "kind": "terminal",
+          "owner_pid": 1907436,
+          "outcome": "decoded",
+          "ownership": "settled",
+          "worker_pid": 1907438,
+          "worker_wait": {
+            "raw_status": 0,
+            "exit_code": 0,
+            "collector_pid": 1907436
+          },
+          "worker_io": {
+            "stdin_closed": true,
+            "stdout_eof": true,
+            "stderr_eof": true,
+            "owned_fds_closed": true
+          },
+          "session_policy_verified": true,
+          "input_bytes_received": 172800,
+          "input_sha256": "64d9be602c821c31c0dfd6e952199a328325acdbf9a7e1b3494921942a11055f",
+          "G_bytes": 1,
+          "image_bytes_sent": 172800,
+          "stdout_observed": 259,
+          "stdout_retained": 259,
+          "stderr_observed": 33,
+          "stderr_retained": 33,
+          "worker_stderr_base64": "c3RhdHVzPWRlY29kZWQgZ3JpZHM9MSBieXRlcz0yNTkK",
+          "result_bytes": 259,
+          "result_sha256": "88a16190a1b1ed033fc9bebe5452af70e9a9783fd6b92305add2ac7134039ff7",
+          "final_worker_eligible": true,
+          "cancel_observed": false,
+          "timing": {
+            "begin_ns": "6168587141006017",
+            "invalidated_ns": null,
+            "cleanup_deadline_ns": null,
+            "settled_ns": "6168587149933267",
+            "final_admission_ns": "6168587149934178"
+          }
+        },
+        "output_bytes": 259,
+        "output_sha256": "88a16190a1b1ed033fc9bebe5452af70e9a9783fd6b92305add2ac7134039ff7",
+        "diagnostic_base64": "",
+        "elapsed_ns": "52905065",
+        "protocol_error": null,
+        "synthetic_no_W_helper": false,
+        "complete_status_records": 2,
+        "unconsumed_status_bytes": 0
+      },
+      {
+        "pid": 1907441,
+        "code": 0,
+        "signal": null,
+        "ready_hex": "52",
+        "readyEOF": true,
+        "readyAccepted": true,
+        "statusEOF": true,
+        "outEOF": true,
+        "errEOF": true,
+        "status_bytes": 1423,
+        "commands": [
+          {
+            "opcode": "P",
+            "node_ns": "6168587291982656"
+          },
+          {
+            "opcode": "G",
+            "node_ns": "6168587294241539"
+          }
+        ],
+        "phase": {
+          "v": 1,
+          "kind": "worker_ready",
+          "owner_pid": 1907441,
+          "worker_pid": 1907448,
+          "ppid": 1907441,
+          "sid": 1907448,
+          "pgid": 1907448,
+          "exe_sha256": "716ba85b3e55595b81e4225228d866bcaae5b1428a66829fb09ab8cef3f6a369",
+          "limits": {
+            "AS": [
+              268435456,
+              268435456
+            ],
+            "CPU": [
+              1,
+              2
+            ],
+            "CORE": [
+              0,
+              0
+            ]
+          },
+          "G_bytes": 0,
+          "image_bytes_sent": 0,
+          "fds": [
+            {
+              "fd": 0,
+              "target": "pipe:[224794179]",
+              "dev": "15",
+              "ino": "224794179"
+            },
+            {
+              "fd": 1,
+              "target": "pipe:[224794180]",
+              "dev": "15",
+              "ino": "224794180"
+            },
+            {
+              "fd": 2,
+              "target": "pipe:[224794181]",
+              "dev": "15",
+              "ino": "224794181"
+            }
+          ]
+        },
+        "terminal": {
+          "v": 1,
+          "kind": "terminal",
+          "owner_pid": 1907441,
+          "outcome": "decoded",
+          "ownership": "settled",
+          "worker_pid": 1907448,
+          "worker_wait": {
+            "raw_status": 0,
+            "exit_code": 0,
+            "collector_pid": 1907441
+          },
+          "worker_io": {
+            "stdin_closed": true,
+            "stdout_eof": true,
+            "stderr_eof": true,
+            "owned_fds_closed": true
+          },
+          "session_policy_verified": true,
+          "input_bytes_received": 172800,
+          "input_sha256": "64d9be602c821c31c0dfd6e952199a328325acdbf9a7e1b3494921942a11055f",
+          "G_bytes": 1,
+          "image_bytes_sent": 172800,
+          "stdout_observed": 259,
+          "stdout_retained": 259,
+          "stderr_observed": 33,
+          "stderr_retained": 33,
+          "worker_stderr_base64": "c3RhdHVzPWRlY29kZWQgZ3JpZHM9MSBieXRlcz0yNTkK",
+          "result_bytes": 259,
+          "result_sha256": "88a16190a1b1ed033fc9bebe5452af70e9a9783fd6b92305add2ac7134039ff7",
+          "final_worker_eligible": true,
+          "cancel_observed": false,
+          "timing": {
+            "begin_ns": "6168587292023953",
+            "invalidated_ns": null,
+            "cleanup_deadline_ns": null,
+            "settled_ns": "6168587301253297",
+            "final_admission_ns": "6168587301254119"
+          }
+        },
+        "output_bytes": 259,
+        "output_sha256": "88a16190a1b1ed033fc9bebe5452af70e9a9783fd6b92305add2ac7134039ff7",
+        "diagnostic_base64": "",
+        "elapsed_ns": "53763220",
+        "protocol_error": null,
+        "synthetic_no_W_helper": false,
+        "complete_status_records": 2,
+        "unconsumed_status_bytes": 0
+      },
+      {
+        "pid": 1907449,
+        "code": 0,
+        "signal": null,
+        "ready_hex": "52",
+        "readyEOF": true,
+        "readyAccepted": true,
+        "statusEOF": true,
+        "outEOF": true,
+        "errEOF": true,
+        "status_bytes": 1423,
+        "commands": [
+          {
+            "opcode": "P",
+            "node_ns": "6168587357793639"
+          },
+          {
+            "opcode": "G",
+            "node_ns": "6168587360051700"
+          }
+        ],
+        "phase": {
+          "v": 1,
+          "kind": "worker_ready",
+          "owner_pid": 1907449,
+          "worker_pid": 1907451,
+          "ppid": 1907449,
+          "sid": 1907451,
+          "pgid": 1907451,
+          "exe_sha256": "716ba85b3e55595b81e4225228d866bcaae5b1428a66829fb09ab8cef3f6a369",
+          "limits": {
+            "AS": [
+              268435456,
+              268435456
+            ],
+            "CPU": [
+              1,
+              2
+            ],
+            "CORE": [
+              0,
+              0
+            ]
+          },
+          "G_bytes": 0,
+          "image_bytes_sent": 0,
+          "fds": [
+            {
+              "fd": 0,
+              "target": "pipe:[224792753]",
+              "dev": "15",
+              "ino": "224792753"
+            },
+            {
+              "fd": 1,
+              "target": "pipe:[224792754]",
+              "dev": "15",
+              "ino": "224792754"
+            },
+            {
+              "fd": 2,
+              "target": "pipe:[224792755]",
+              "dev": "15",
+              "ino": "224792755"
+            }
+          ]
+        },
+        "terminal": {
+          "v": 1,
+          "kind": "terminal",
+          "owner_pid": 1907449,
+          "outcome": "decoded",
+          "ownership": "settled",
+          "worker_pid": 1907451,
+          "worker_wait": {
+            "raw_status": 0,
+            "exit_code": 0,
+            "collector_pid": 1907449
+          },
+          "worker_io": {
+            "stdin_closed": true,
+            "stdout_eof": true,
+            "stderr_eof": true,
+            "owned_fds_closed": true
+          },
+          "session_policy_verified": true,
+          "input_bytes_received": 172800,
+          "input_sha256": "64d9be602c821c31c0dfd6e952199a328325acdbf9a7e1b3494921942a11055f",
+          "G_bytes": 1,
+          "image_bytes_sent": 172800,
+          "stdout_observed": 259,
+          "stdout_retained": 259,
+          "stderr_observed": 33,
+          "stderr_retained": 33,
+          "worker_stderr_base64": "c3RhdHVzPWRlY29kZWQgZ3JpZHM9MSBieXRlcz0yNTkK",
+          "result_bytes": 259,
+          "result_sha256": "88a16190a1b1ed033fc9bebe5452af70e9a9783fd6b92305add2ac7134039ff7",
+          "final_worker_eligible": true,
+          "cancel_observed": false,
+          "timing": {
+            "begin_ns": "6168587357820089",
+            "invalidated_ns": null,
+            "cleanup_deadline_ns": null,
+            "settled_ns": "6168587367529951",
+            "final_admission_ns": "6168587367530772"
+          }
+        },
+        "output_bytes": 259,
+        "output_sha256": "88a16190a1b1ed033fc9bebe5452af70e9a9783fd6b92305add2ac7134039ff7",
+        "diagnostic_base64": "",
+        "elapsed_ns": "55647653",
+        "protocol_error": null,
+        "synthetic_no_W_helper": false,
+        "complete_status_records": 2,
+        "unconsumed_status_bytes": 0
+      },
+      {
+        "pid": 1907452,
+        "code": 2,
+        "signal": null,
+        "ready_hex": "52",
+        "readyEOF": true,
+        "readyAccepted": true,
+        "statusEOF": true,
+        "outEOF": true,
+        "errEOF": true,
+        "status_bytes": 1335,
+        "commands": [
+          {
+            "opcode": "P",
+            "node_ns": "6168587531459165"
+          },
+          {
+            "opcode": "X",
+            "node_ns": "6168587533772980"
+          }
+        ],
+        "phase": {
+          "v": 1,
+          "kind": "worker_ready",
+          "owner_pid": 1907452,
+          "worker_pid": 1907454,
+          "ppid": 1907452,
+          "sid": 1907454,
+          "pgid": 1907454,
+          "exe_sha256": "716ba85b3e55595b81e4225228d866bcaae5b1428a66829fb09ab8cef3f6a369",
+          "limits": {
+            "AS": [
+              268435456,
+              268435456
+            ],
+            "CPU": [
+              1,
+              2
+            ],
+            "CORE": [
+              0,
+              0
+            ]
+          },
+          "G_bytes": 0,
+          "image_bytes_sent": 0,
+          "fds": [
+            {
+              "fd": 0,
+              "target": "pipe:[224786262]",
+              "dev": "15",
+              "ino": "224786262"
+            },
+            {
+              "fd": 1,
+              "target": "pipe:[224786263]",
+              "dev": "15",
+              "ino": "224786263"
+            },
+            {
+              "fd": 2,
+              "target": "pipe:[224786264]",
+              "dev": "15",
+              "ino": "224786264"
+            }
+          ]
+        },
+        "terminal": {
+          "v": 1,
+          "kind": "terminal",
+          "owner_pid": 1907452,
+          "outcome": "cancelled",
+          "ownership": "settled",
+          "worker_pid": 1907454,
+          "worker_wait": {
+            "raw_status": 9,
+            "exit_code": -9,
+            "collector_pid": 1907452
+          },
+          "worker_io": {
+            "stdin_closed": true,
+            "stdout_eof": true,
+            "stderr_eof": true,
+            "owned_fds_closed": true
+          },
+          "session_policy_verified": true,
+          "input_bytes_received": 172800,
+          "input_sha256": "64d9be602c821c31c0dfd6e952199a328325acdbf9a7e1b3494921942a11055f",
+          "G_bytes": 0,
+          "image_bytes_sent": 0,
+          "stdout_observed": 0,
+          "stdout_retained": 0,
+          "stderr_observed": 0,
+          "stderr_retained": 0,
+          "worker_stderr_base64": "",
+          "result_bytes": 0,
+          "result_sha256": null,
+          "final_worker_eligible": false,
+          "cancel_observed": true,
+          "timing": {
+            "begin_ns": "6168587531507966",
+            "invalidated_ns": "6168587533787738",
+            "cleanup_deadline_ns": "6168591533787738",
+            "settled_ns": "6168587533892554",
+            "final_admission_ns": "6168587533892904"
+          }
+        },
+        "output_bytes": 0,
+        "output_sha256": null,
+        "diagnostic_base64": "",
+        "elapsed_ns": "47864973",
+        "protocol_error": null,
+        "synthetic_no_W_helper": false,
+        "complete_status_records": 2,
+        "unconsumed_status_bytes": 0
+      },
+      {
+        "pid": 1907455,
+        "code": 0,
+        "signal": null,
+        "ready_hex": "52",
+        "readyEOF": true,
+        "readyAccepted": true,
+        "statusEOF": true,
+        "outEOF": true,
+        "errEOF": true,
+        "status_bytes": 1423,
+        "commands": [
+          {
+            "opcode": "P",
+            "node_ns": "6168587582879074"
+          },
+          {
+            "opcode": "G",
+            "node_ns": "6168587585079447"
+          }
+        ],
+        "phase": {
+          "v": 1,
+          "kind": "worker_ready",
+          "owner_pid": 1907455,
+          "worker_pid": 1907459,
+          "ppid": 1907455,
+          "sid": 1907459,
+          "pgid": 1907459,
+          "exe_sha256": "716ba85b3e55595b81e4225228d866bcaae5b1428a66829fb09ab8cef3f6a369",
+          "limits": {
+            "AS": [
+              268435456,
+              268435456
+            ],
+            "CPU": [
+              1,
+              2
+            ],
+            "CORE": [
+              0,
+              0
+            ]
+          },
+          "G_bytes": 0,
+          "image_bytes_sent": 0,
+          "fds": [
+            {
+              "fd": 0,
+              "target": "pipe:[224794800]",
+              "dev": "15",
+              "ino": "224794800"
+            },
+            {
+              "fd": 1,
+              "target": "pipe:[224794801]",
+              "dev": "15",
+              "ino": "224794801"
+            },
+            {
+              "fd": 2,
+              "target": "pipe:[224794802]",
+              "dev": "15",
+              "ino": "224794802"
+            }
+          ]
+        },
+        "terminal": {
+          "v": 1,
+          "kind": "terminal",
+          "owner_pid": 1907455,
+          "outcome": "decoded",
+          "ownership": "settled",
+          "worker_pid": 1907459,
+          "worker_wait": {
+            "raw_status": 0,
+            "exit_code": 0,
+            "collector_pid": 1907455
+          },
+          "worker_io": {
+            "stdin_closed": true,
+            "stdout_eof": true,
+            "stderr_eof": true,
+            "owned_fds_closed": true
+          },
+          "session_policy_verified": true,
+          "input_bytes_received": 172800,
+          "input_sha256": "64d9be602c821c31c0dfd6e952199a328325acdbf9a7e1b3494921942a11055f",
+          "G_bytes": 1,
+          "image_bytes_sent": 172800,
+          "stdout_observed": 259,
+          "stdout_retained": 259,
+          "stderr_observed": 33,
+          "stderr_retained": 33,
+          "worker_stderr_base64": "c3RhdHVzPWRlY29kZWQgZ3JpZHM9MSBieXRlcz0yNTkK",
+          "result_bytes": 259,
+          "result_sha256": "88a16190a1b1ed033fc9bebe5452af70e9a9783fd6b92305add2ac7134039ff7",
+          "final_worker_eligible": true,
+          "cancel_observed": false,
+          "timing": {
+            "begin_ns": "6168587582896867",
+            "invalidated_ns": null,
+            "cleanup_deadline_ns": null,
+            "settled_ns": "6168587591603393",
+            "final_admission_ns": "6168587591604195"
+          }
+        },
+        "output_bytes": 259,
+        "output_sha256": "88a16190a1b1ed033fc9bebe5452af70e9a9783fd6b92305add2ac7134039ff7",
+        "diagnostic_base64": "",
+        "elapsed_ns": "54159732",
+        "protocol_error": null,
+        "synthetic_no_W_helper": false,
+        "complete_status_records": 2,
+        "unconsumed_status_bytes": 0
+      },
+      {
+        "pid": 1907461,
+        "code": 0,
+        "signal": null,
+        "ready_hex": "52",
+        "readyEOF": true,
+        "readyAccepted": true,
+        "statusEOF": true,
+        "outEOF": true,
+        "errEOF": true,
+        "status_bytes": 1423,
+        "commands": [
+          {
+            "opcode": "P",
+            "node_ns": "6168587645081079"
+          },
+          {
+            "opcode": "G",
+            "node_ns": "6168587647350061"
+          }
+        ],
+        "phase": {
+          "v": 1,
+          "kind": "worker_ready",
+          "owner_pid": 1907461,
+          "worker_pid": 1907463,
+          "ppid": 1907461,
+          "sid": 1907463,
+          "pgid": 1907463,
+          "exe_sha256": "716ba85b3e55595b81e4225228d866bcaae5b1428a66829fb09ab8cef3f6a369",
+          "limits": {
+            "AS": [
+              268435456,
+              268435456
+            ],
+            "CPU": [
+              1,
+              2
+            ],
+            "CORE": [
+              0,
+              0
+            ]
+          },
+          "G_bytes": 0,
+          "image_bytes_sent": 0,
+          "fds": [
+            {
+              "fd": 0,
+              "target": "pipe:[224794811]",
+              "dev": "15",
+              "ino": "224794811"
+            },
+            {
+              "fd": 1,
+              "target": "pipe:[224794812]",
+              "dev": "15",
+              "ino": "224794812"
+            },
+            {
+              "fd": 2,
+              "target": "pipe:[224794813]",
+              "dev": "15",
+              "ino": "224794813"
+            }
+          ]
+        },
+        "terminal": {
+          "v": 1,
+          "kind": "terminal",
+          "owner_pid": 1907461,
+          "outcome": "decoded",
+          "ownership": "settled",
+          "worker_pid": 1907463,
+          "worker_wait": {
+            "raw_status": 0,
+            "exit_code": 0,
+            "collector_pid": 1907461
+          },
+          "worker_io": {
+            "stdin_closed": true,
+            "stdout_eof": true,
+            "stderr_eof": true,
+            "owned_fds_closed": true
+          },
+          "session_policy_verified": true,
+          "input_bytes_received": 172800,
+          "input_sha256": "64d9be602c821c31c0dfd6e952199a328325acdbf9a7e1b3494921942a11055f",
+          "G_bytes": 1,
+          "image_bytes_sent": 172800,
+          "stdout_observed": 259,
+          "stdout_retained": 259,
+          "stderr_observed": 33,
+          "stderr_retained": 33,
+          "worker_stderr_base64": "c3RhdHVzPWRlY29kZWQgZ3JpZHM9MSBieXRlcz0yNTkK",
+          "result_bytes": 259,
+          "result_sha256": "88a16190a1b1ed033fc9bebe5452af70e9a9783fd6b92305add2ac7134039ff7",
+          "final_worker_eligible": true,
+          "cancel_observed": false,
+          "timing": {
+            "begin_ns": "6168587645129059",
+            "invalidated_ns": null,
+            "cleanup_deadline_ns": null,
+            "settled_ns": "6168587654234652",
+            "final_admission_ns": "6168587654235654"
+          }
+        },
+        "output_bytes": 259,
+        "output_sha256": "88a16190a1b1ed033fc9bebe5452af70e9a9783fd6b92305add2ac7134039ff7",
+        "diagnostic_base64": "",
+        "elapsed_ns": "54220033",
+        "protocol_error": null,
+        "synthetic_no_W_helper": false,
+        "complete_status_records": 2,
+        "unconsumed_status_bytes": 0
+      },
+      {
+        "pid": 1907464,
+        "code": 2,
+        "signal": null,
+        "ready_hex": "52",
+        "readyEOF": true,
+        "readyAccepted": true,
+        "statusEOF": true,
+        "outEOF": true,
+        "errEOF": true,
+        "status_bytes": 1335,
+        "commands": [
+          {
+            "opcode": "P",
+            "node_ns": "6168587707146790"
+          },
+          {
+            "opcode": "X",
+            "node_ns": "6168587710200579"
+          }
+        ],
+        "phase": {
+          "v": 1,
+          "kind": "worker_ready",
+          "owner_pid": 1907464,
+          "worker_pid": 1907466,
+          "ppid": 1907464,
+          "sid": 1907466,
+          "pgid": 1907466,
+          "exe_sha256": "716ba85b3e55595b81e4225228d866bcaae5b1428a66829fb09ab8cef3f6a369",
+          "limits": {
+            "AS": [
+              268435456,
+              268435456
+            ],
+            "CPU": [
+              1,
+              2
+            ],
+            "CORE": [
+              0,
+              0
+            ]
+          },
+          "G_bytes": 0,
+          "image_bytes_sent": 0,
+          "fds": [
+            {
+              "fd": 0,
+              "target": "pipe:[224786282]",
+              "dev": "15",
+              "ino": "224786282"
+            },
+            {
+              "fd": 1,
+              "target": "pipe:[224786283]",
+              "dev": "15",
+              "ino": "224786283"
+            },
+            {
+              "fd": 2,
+              "target": "pipe:[224786284]",
+              "dev": "15",
+              "ino": "224786284"
+            }
+          ]
+        },
+        "terminal": {
+          "v": 1,
+          "kind": "terminal",
+          "owner_pid": 1907464,
+          "outcome": "cancelled",
+          "ownership": "settled",
+          "worker_pid": 1907466,
+          "worker_wait": {
+            "raw_status": 9,
+            "exit_code": -9,
+            "collector_pid": 1907464
+          },
+          "worker_io": {
+            "stdin_closed": true,
+            "stdout_eof": true,
+            "stderr_eof": true,
+            "owned_fds_closed": true
+          },
+          "session_policy_verified": true,
+          "input_bytes_received": 172800,
+          "input_sha256": "64d9be602c821c31c0dfd6e952199a328325acdbf9a7e1b3494921942a11055f",
+          "G_bytes": 0,
+          "image_bytes_sent": 0,
+          "stdout_observed": 0,
+          "stdout_retained": 0,
+          "stderr_observed": 0,
+          "stderr_retained": 0,
+          "worker_stderr_base64": "",
+          "result_bytes": 0,
+          "result_sha256": null,
+          "final_worker_eligible": false,
+          "cancel_observed": true,
+          "timing": {
+            "begin_ns": "6168587707167529",
+            "invalidated_ns": "6168587710214776",
+            "cleanup_deadline_ns": "6168591710214776",
+            "settled_ns": "6168587710382639",
+            "final_admission_ns": "6168587710382960"
+          }
+        },
+        "output_bytes": 0,
+        "output_sha256": null,
+        "diagnostic_base64": "",
+        "elapsed_ns": "48383963",
+        "protocol_error": null,
+        "synthetic_no_W_helper": false,
+        "complete_status_records": 2,
+        "unconsumed_status_bytes": 0
+      },
+      {
+        "pid": 1907467,
+        "code": 2,
+        "signal": null,
+        "ready_hex": "52",
+        "readyEOF": true,
+        "readyAccepted": true,
+        "statusEOF": true,
+        "outEOF": true,
+        "errEOF": true,
+        "status_bytes": 1339,
+        "commands": [
+          {
+            "opcode": "P",
+            "node_ns": "6168587758323324"
+          }
+        ],
+        "phase": {
+          "v": 1,
+          "kind": "worker_ready",
+          "owner_pid": 1907467,
+          "worker_pid": 1907469,
+          "ppid": 1907467,
+          "sid": 1907469,
+          "pgid": 1907469,
+          "exe_sha256": "716ba85b3e55595b81e4225228d866bcaae5b1428a66829fb09ab8cef3f6a369",
+          "limits": {
+            "AS": [
+              268435456,
+              268435456
+            ],
+            "CPU": [
+              1,
+              2
+            ],
+            "CORE": [
+              0,
+              0
+            ]
+          },
+          "G_bytes": 0,
+          "image_bytes_sent": 0,
+          "fds": [
+            {
+              "fd": 0,
+              "target": "pipe:[224792764]",
+              "dev": "15",
+              "ino": "224792764"
+            },
+            {
+              "fd": 1,
+              "target": "pipe:[224792765]",
+              "dev": "15",
+              "ino": "224792765"
+            },
+            {
+              "fd": 2,
+              "target": "pipe:[224792766]",
+              "dev": "15",
+              "ino": "224792766"
+            }
+          ]
+        },
+        "terminal": {
+          "v": 1,
+          "kind": "terminal",
+          "owner_pid": 1907467,
+          "outcome": "control_lost",
+          "ownership": "settled",
+          "worker_pid": 1907469,
+          "worker_wait": {
+            "raw_status": 9,
+            "exit_code": -9,
+            "collector_pid": 1907467
+          },
+          "worker_io": {
+            "stdin_closed": true,
+            "stdout_eof": true,
+            "stderr_eof": true,
+            "owned_fds_closed": true
+          },
+          "session_policy_verified": true,
+          "input_bytes_received": 172800,
+          "input_sha256": "64d9be602c821c31c0dfd6e952199a328325acdbf9a7e1b3494921942a11055f",
+          "G_bytes": 0,
+          "image_bytes_sent": 0,
+          "stdout_observed": 0,
+          "stdout_retained": 0,
+          "stderr_observed": 0,
+          "stderr_retained": 0,
+          "worker_stderr_base64": "",
+          "result_bytes": 0,
+          "result_sha256": null,
+          "final_worker_eligible": false,
+          "cancel_observed": false,
+          "timing": {
+            "begin_ns": "6168587758362668",
+            "invalidated_ns": "6168587760644473",
+            "cleanup_deadline_ns": "6168591760644473",
+            "settled_ns": "6168587760753517",
+            "final_admission_ns": "6168587760753838"
+          }
+        },
+        "output_bytes": 0,
+        "output_sha256": null,
+        "diagnostic_base64": "",
+        "elapsed_ns": "48062782",
+        "protocol_error": null,
+        "synthetic_no_W_helper": false,
+        "complete_status_records": 2,
+        "unconsumed_status_bytes": 0
+      },
+      {
+        "pid": 1907470,
+        "code": 2,
+        "signal": null,
+        "ready_hex": "52",
+        "readyEOF": true,
+        "readyAccepted": true,
+        "statusEOF": true,
+        "outEOF": true,
+        "errEOF": true,
+        "status_bytes": 704,
+        "commands": [
+          {
+            "opcode": "X",
+            "node_ns": "6168587811534081"
+          }
+        ],
+        "terminal": {
+          "v": 1,
+          "kind": "terminal",
+          "owner_pid": 1907470,
+          "outcome": "cancelled",
+          "ownership": "settled",
+          "worker_pid": null,
+          "worker_wait": null,
+          "worker_io": {
+            "stdin_closed": null,
+            "stdout_eof": null,
+            "stderr_eof": null,
+            "owned_fds_closed": true
+          },
+          "session_policy_verified": false,
+          "input_bytes_received": 0,
+          "input_sha256": null,
+          "G_bytes": 0,
+          "image_bytes_sent": 0,
+          "stdout_observed": 0,
+          "stdout_retained": 0,
+          "stderr_observed": 0,
+          "stderr_retained": 0,
+          "worker_stderr_base64": "",
+          "result_bytes": 0,
+          "result_sha256": null,
+          "final_worker_eligible": false,
+          "cancel_observed": true,
+          "timing": {
+            "begin_ns": null,
+            "invalidated_ns": "6168587811595125",
+            "cleanup_deadline_ns": "6168591811595125",
+            "settled_ns": "6168587811611836",
+            "final_admission_ns": "6168587811612357"
+          }
+        },
+        "output_bytes": 0,
+        "output_sha256": null,
+        "diagnostic_base64": "",
+        "elapsed_ns": "43367605",
+        "protocol_error": null,
+        "synthetic_no_W_helper": false,
+        "complete_status_records": 1,
+        "unconsumed_status_bytes": 0
+      },
+      {
+        "pid": 1907472,
+        "code": 2,
+        "signal": null,
+        "ready_hex": "52",
+        "readyEOF": true,
+        "readyAccepted": true,
+        "statusEOF": true,
+        "outEOF": true,
+        "errEOF": true,
+        "status_bytes": 713,
+        "commands": [
+          {
+            "opcode": "Z",
+            "node_ns": "6168587861723860"
+          }
+        ],
+        "terminal": {
+          "v": 1,
+          "kind": "terminal",
+          "owner_pid": 1907472,
+          "outcome": "control_malformed",
+          "ownership": "settled",
+          "worker_pid": null,
+          "worker_wait": null,
+          "worker_io": {
+            "stdin_closed": null,
+            "stdout_eof": null,
+            "stderr_eof": null,
+            "owned_fds_closed": true
+          },
+          "session_policy_verified": false,
+          "input_bytes_received": 0,
+          "input_sha256": null,
+          "G_bytes": 0,
+          "image_bytes_sent": 0,
+          "stdout_observed": 0,
+          "stdout_retained": 0,
+          "stderr_observed": 0,
+          "stderr_retained": 0,
+          "worker_stderr_base64": "",
+          "result_bytes": 0,
+          "result_sha256": null,
+          "final_worker_eligible": false,
+          "cancel_observed": false,
+          "timing": {
+            "begin_ns": null,
+            "invalidated_ns": "6168587861781738",
+            "cleanup_deadline_ns": "6168591861781738",
+            "settled_ns": "6168587861795915",
+            "final_admission_ns": "6168587861796576"
+          }
+        },
+        "output_bytes": 0,
+        "output_sha256": null,
+        "diagnostic_base64": "",
+        "elapsed_ns": "43312101",
+        "protocol_error": null,
+        "synthetic_no_W_helper": false,
+        "complete_status_records": 1,
+        "unconsumed_status_bytes": 0
+      },
+      {
+        "pid": 1907474,
+        "code": 2,
+        "signal": null,
+        "ready_hex": "52",
+        "readyEOF": true,
+        "readyAccepted": true,
+        "statusEOF": true,
+        "outEOF": true,
+        "errEOF": true,
+        "status_bytes": 727,
+        "commands": [
+          {
+            "opcode": "PP",
+            "node_ns": "6168587912181951"
+          }
+        ],
+        "terminal": {
+          "v": 1,
+          "kind": "terminal",
+          "owner_pid": 1907474,
+          "outcome": "control_malformed",
+          "ownership": "settled",
+          "worker_pid": null,
+          "worker_wait": null,
+          "worker_io": {
+            "stdin_closed": null,
+            "stdout_eof": null,
+            "stderr_eof": null,
+            "owned_fds_closed": true
+          },
+          "session_policy_verified": false,
+          "input_bytes_received": 0,
+          "input_sha256": null,
+          "G_bytes": 0,
+          "image_bytes_sent": 0,
+          "stdout_observed": 0,
+          "stdout_retained": 0,
+          "stderr_observed": 0,
+          "stderr_retained": 0,
+          "worker_stderr_base64": "",
+          "result_bytes": 0,
+          "result_sha256": null,
+          "final_worker_eligible": false,
+          "cancel_observed": false,
+          "timing": {
+            "begin_ns": "6168587912208521",
+            "invalidated_ns": "6168587912210033",
+            "cleanup_deadline_ns": "6168591912210033",
+            "settled_ns": "6168587912220192",
+            "final_admission_ns": "6168587912220513"
+          }
+        },
+        "output_bytes": 0,
+        "output_sha256": null,
+        "diagnostic_base64": "",
+        "elapsed_ns": "43954102",
+        "protocol_error": null,
+        "synthetic_no_W_helper": false,
+        "complete_status_records": 1,
+        "unconsumed_status_bytes": 0
+      },
+      {
+        "pid": 1907476,
+        "code": 2,
+        "signal": null,
+        "ready_hex": "52",
+        "readyEOF": true,
+        "readyAccepted": true,
+        "statusEOF": true,
+        "outEOF": true,
+        "errEOF": true,
+        "status_bytes": 713,
+        "commands": [
+          {
+            "opcode": "G",
+            "node_ns": "6168587962760868"
+          }
+        ],
+        "terminal": {
+          "v": 1,
+          "kind": "terminal",
+          "owner_pid": 1907476,
+          "outcome": "control_malformed",
+          "ownership": "settled",
+          "worker_pid": null,
+          "worker_wait": null,
+          "worker_io": {
+            "stdin_closed": null,
+            "stdout_eof": null,
+            "stderr_eof": null,
+            "owned_fds_closed": true
+          },
+          "session_policy_verified": false,
+          "input_bytes_received": 0,
+          "input_sha256": null,
+          "G_bytes": 0,
+          "image_bytes_sent": 0,
+          "stdout_observed": 0,
+          "stdout_retained": 0,
+          "stderr_observed": 0,
+          "stderr_retained": 0,
+          "worker_stderr_base64": "",
+          "result_bytes": 0,
+          "result_sha256": null,
+          "final_worker_eligible": false,
+          "cancel_observed": false,
+          "timing": {
+            "begin_ns": null,
+            "invalidated_ns": "6168587962807595",
+            "cleanup_deadline_ns": "6168591962807595",
+            "settled_ns": "6168587962824557",
+            "final_admission_ns": "6168587962825108"
+          }
+        },
+        "output_bytes": 0,
+        "output_sha256": null,
+        "diagnostic_base64": "",
+        "elapsed_ns": "43952067",
+        "protocol_error": null,
+        "synthetic_no_W_helper": false,
+        "complete_status_records": 1,
+        "unconsumed_status_bytes": 0
+      },
+      {
+        "pid": 1907478,
+        "code": 2,
+        "signal": null,
+        "ready_hex": "52",
+        "readyEOF": true,
+        "readyAccepted": true,
+        "statusEOF": true,
+        "outEOF": true,
+        "errEOF": true,
+        "status_bytes": 704,
+        "commands": [
+          {
+            "opcode": "X",
+            "node_ns": "6168588018809059"
+          }
+        ],
+        "terminal": {
+          "v": 1,
+          "kind": "terminal",
+          "owner_pid": 1907478,
+          "outcome": "cancelled",
+          "ownership": "settled",
+          "worker_pid": null,
+          "worker_wait": null,
+          "worker_io": {
+            "stdin_closed": null,
+            "stdout_eof": null,
+            "stderr_eof": null,
+            "owned_fds_closed": true
+          },
+          "session_policy_verified": false,
+          "input_bytes_received": 0,
+          "input_sha256": null,
+          "G_bytes": 0,
+          "image_bytes_sent": 0,
+          "stdout_observed": 0,
+          "stdout_retained": 0,
+          "stderr_observed": 0,
+          "stderr_retained": 0,
+          "worker_stderr_base64": "",
+          "result_bytes": 0,
+          "result_sha256": null,
+          "final_worker_eligible": false,
+          "cancel_observed": true,
+          "timing": {
+            "begin_ns": null,
+            "invalidated_ns": "6168588018833284",
+            "cleanup_deadline_ns": "6168592018833284",
+            "settled_ns": "6168588018841830",
+            "final_admission_ns": "6168588018842261"
+          }
+        },
+        "output_bytes": 0,
+        "output_sha256": null,
+        "diagnostic_base64": "",
+        "elapsed_ns": "48452481",
+        "protocol_error": null,
+        "synthetic_no_W_helper": false,
+        "complete_status_records": 1,
+        "unconsumed_status_bytes": 0
+      },
+      {
+        "pid": 1907480,
+        "code": 0,
+        "signal": null,
+        "ready_hex": "5258",
+        "readyEOF": true,
+        "readyAccepted": false,
+        "statusEOF": true,
+        "outEOF": true,
+        "errEOF": true,
+        "status_bytes": 0,
+        "commands": [
+          {
+            "opcode": "X",
+            "node_ns": "6168588032661616"
+          }
+        ],
+        "output_bytes": 0,
+        "output_sha256": null,
+        "diagnostic_base64": "",
+        "elapsed_ns": "9785925",
+        "protocol_error": "Error: invalid O readiness token",
+        "synthetic_no_W_helper": true,
+        "complete_status_records": 0,
+        "unconsumed_status_bytes": 0
+      },
+      {
+        "pid": 1907481,
+        "code": 0,
+        "signal": null,
+        "ready_hex": "",
+        "readyEOF": true,
+        "readyAccepted": false,
+        "statusEOF": true,
+        "outEOF": true,
+        "errEOF": true,
+        "status_bytes": 0,
+        "commands": [
+          {
+            "opcode": "X",
+            "node_ns": "6168588045356600"
+          }
+        ],
+        "output_bytes": 0,
+        "output_sha256": null,
+        "diagnostic_base64": "",
+        "elapsed_ns": "11010935",
+        "protocol_error": "Error: missing O readiness/EOF",
+        "synthetic_no_W_helper": true,
+        "complete_status_records": 0,
+        "unconsumed_status_bytes": 0
+      },
+      {
+        "pid": 1907482,
+        "code": 0,
+        "signal": null,
+        "ready_hex": "52",
+        "readyEOF": true,
+        "readyAccepted": true,
+        "statusEOF": true,
+        "outEOF": true,
+        "errEOF": true,
+        "status_bytes": 0,
+        "commands": [
+          {
+            "opcode": "Q",
+            "node_ns": "6168588059172578"
+          }
+        ],
+        "output_bytes": 0,
+        "output_sha256": null,
+        "diagnostic_base64": "",
+        "elapsed_ns": "10037435",
+        "protocol_error": null,
+        "synthetic_no_W_helper": true,
+        "complete_status_records": 0,
+        "unconsumed_status_bytes": 0
+      },
+      {
+        "pid": 1907483,
+        "code": 0,
+        "signal": null,
+        "ready_hex": "52",
+        "readyEOF": true,
+        "readyAccepted": true,
+        "statusEOF": true,
+        "outEOF": true,
+        "errEOF": true,
+        "status_bytes": 701,
+        "commands": [
+          {
+            "opcode": "Q",
+            "node_ns": "6168588071883120"
+          }
+        ],
+        "output_bytes": 0,
+        "output_sha256": null,
+        "diagnostic_base64": "",
+        "elapsed_ns": "10027616",
+        "protocol_error": null,
+        "synthetic_no_W_helper": true,
+        "complete_status_records": 0,
+        "unconsumed_status_bytes": 701
+      },
+      {
+        "pid": 1907484,
+        "code": 0,
+        "signal": null,
+        "ready_hex": "52",
+        "readyEOF": true,
+        "readyAccepted": true,
+        "statusEOF": true,
+        "outEOF": true,
+        "errEOF": true,
+        "status_bytes": 4097,
+        "commands": [
+          {
+            "opcode": "Q",
+            "node_ns": "6168588084396804"
+          },
+          {
+            "opcode": "X",
+            "node_ns": "6168588084695473"
+          }
+        ],
+        "output_bytes": 0,
+        "output_sha256": null,
+        "diagnostic_base64": "",
+        "elapsed_ns": "9944230",
+        "protocol_error": "AssertionError [ERR_ASSERTION]: O status capacity",
+        "synthetic_no_W_helper": true,
+        "complete_status_records": 0,
+        "unconsumed_status_bytes": 0
+      },
+      {
+        "pid": 1907485,
+        "code": 0,
+        "signal": null,
+        "ready_hex": "52",
+        "readyEOF": true,
+        "readyAccepted": true,
+        "statusEOF": true,
+        "outEOF": true,
+        "errEOF": true,
+        "status_bytes": 702,
+        "commands": [
+          {
+            "opcode": "Q",
+            "node_ns": "6168588096627219"
+          }
+        ],
+        "terminal": {
+          "v": 1,
+          "kind": "terminal",
+          "owner_pid": 1907486,
+          "outcome": "unused",
+          "ownership": "settled",
+          "worker_pid": null,
+          "worker_wait": null,
+          "worker_io": {
+            "stdin_closed": null,
+            "stdout_eof": null,
+            "stderr_eof": null,
+            "owned_fds_closed": true
+          },
+          "session_policy_verified": false,
+          "input_bytes_received": 0,
+          "input_sha256": null,
+          "G_bytes": 0,
+          "image_bytes_sent": 0,
+          "stdout_observed": 0,
+          "stdout_retained": 0,
+          "stderr_observed": 0,
+          "stderr_retained": 0,
+          "worker_stderr_base64": "",
+          "result_bytes": 0,
+          "result_sha256": null,
+          "final_worker_eligible": false,
+          "cancel_observed": false,
+          "timing": {
+            "begin_ns": null,
+            "invalidated_ns": "6168588096647247",
+            "cleanup_deadline_ns": "6168592096647247",
+            "settled_ns": "6168588096647247",
+            "final_admission_ns": "6168588096647247"
+          }
+        },
+        "output_bytes": 0,
+        "output_sha256": null,
+        "diagnostic_base64": "",
+        "elapsed_ns": "9848883",
+        "protocol_error": null,
+        "synthetic_no_W_helper": true,
+        "complete_status_records": 1,
+        "unconsumed_status_bytes": 0
+      },
+      {
+        "pid": 1907486,
+        "code": 0,
+        "signal": null,
+        "ready_hex": "52",
+        "readyEOF": true,
+        "readyAccepted": true,
+        "statusEOF": true,
+        "outEOF": true,
+        "errEOF": true,
+        "status_bytes": 700,
+        "commands": [
+          {
+            "opcode": "Q",
+            "node_ns": "6168588108220652"
+          }
+        ],
+        "terminal": {
+          "v": 1,
+          "kind": "terminal",
+          "owner_pid": 1907486,
+          "outcome": "unused",
+          "ownership": "settled",
+          "worker_pid": 99,
+          "worker_wait": null,
+          "worker_io": {
+            "stdin_closed": null,
+            "stdout_eof": null,
+            "stderr_eof": null,
+            "owned_fds_closed": true
+          },
+          "session_policy_verified": false,
+          "input_bytes_received": 0,
+          "input_sha256": null,
+          "G_bytes": 0,
+          "image_bytes_sent": 0,
+          "stdout_observed": 0,
+          "stdout_retained": 0,
+          "stderr_observed": 0,
+          "stderr_retained": 0,
+          "worker_stderr_base64": "",
+          "result_bytes": 0,
+          "result_sha256": null,
+          "final_worker_eligible": false,
+          "cancel_observed": false,
+          "timing": {
+            "begin_ns": null,
+            "invalidated_ns": "6168588108243535",
+            "cleanup_deadline_ns": "6168592108243535",
+            "settled_ns": "6168588108243535",
+            "final_admission_ns": "6168588108243535"
+          }
+        },
+        "output_bytes": 0,
+        "output_sha256": null,
+        "diagnostic_base64": "",
+        "elapsed_ns": "9432985",
+        "protocol_error": null,
+        "synthetic_no_W_helper": true,
+        "complete_status_records": 1,
+        "unconsumed_status_bytes": 0
+      },
+      {
+        "pid": 1907487,
+        "code": 0,
+        "signal": null,
+        "ready_hex": "52",
+        "readyEOF": true,
+        "readyAccepted": true,
+        "statusEOF": true,
+        "outEOF": true,
+        "errEOF": true,
+        "status_bytes": 703,
+        "commands": [
+          {
+            "opcode": "Q",
+            "node_ns": "6168588120140857"
+          }
+        ],
+        "terminal": {
+          "v": 1,
+          "kind": "terminal",
+          "owner_pid": 1907487,
+          "outcome": "unused",
+          "ownership": "settled",
+          "worker_pid": null,
+          "worker_wait": null,
+          "worker_io": {
+            "stdin_closed": null,
+            "stdout_eof": null,
+            "stderr_eof": null,
+            "owned_fds_closed": false
+          },
+          "session_policy_verified": false,
+          "input_bytes_received": 0,
+          "input_sha256": null,
+          "G_bytes": 0,
+          "image_bytes_sent": 0,
+          "stdout_observed": 0,
+          "stdout_retained": 0,
+          "stderr_observed": 0,
+          "stderr_retained": 0,
+          "worker_stderr_base64": "",
+          "result_bytes": 0,
+          "result_sha256": null,
+          "final_worker_eligible": false,
+          "cancel_observed": false,
+          "timing": {
+            "begin_ns": null,
+            "invalidated_ns": "6168588120164251",
+            "cleanup_deadline_ns": "6168592120164251",
+            "settled_ns": "6168588120164251",
+            "final_admission_ns": "6168588120164251"
+          }
+        },
+        "output_bytes": 0,
+        "output_sha256": null,
+        "diagnostic_base64": "",
+        "elapsed_ns": "9715673",
+        "protocol_error": null,
+        "synthetic_no_W_helper": true,
+        "complete_status_records": 1,
+        "unconsumed_status_bytes": 0
+      },
+      {
+        "pid": 1907488,
+        "code": 0,
+        "signal": null,
+        "ready_hex": "52",
+        "readyEOF": true,
+        "readyAccepted": true,
+        "statusEOF": true,
+        "outEOF": true,
+        "errEOF": true,
+        "status_bytes": 708,
+        "commands": [
+          {
+            "opcode": "Q",
+            "node_ns": "6168588132136283"
+          },
+          {
+            "opcode": "X",
+            "node_ns": "6168588132569262"
+          }
+        ],
+        "output_bytes": 0,
+        "output_sha256": null,
+        "diagnostic_base64": "",
+        "elapsed_ns": "10861676",
+        "protocol_error": "AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:\n+ actual - expected\n\n+ '{\"v\":1,\"kind\":\"terminal\",\"owner_pid\":1907488,\"outcome\":\"unused\",\"ownership\":\"settled\",\"worker_pid\":null,\"worker_wait\":null,\"worker_io\":{\"stdin_closed\":null,\"stdout_eof\":null,\"stderr_eof\":null,\"owned_fds_closed\":true},\"session_policy_verified\":false,\"input_bytes_received\":0,\"input_sha256\":null,\"G_bytes\":0,\"image_bytes_sent\":0,\"stdout_observed\":0,\"stdout_retained\":0,\"stderr_observed\":0,\"stderr_retained\":0,\"worker_stderr_base64\":\"\",\"result_bytes\":0,\"result_sha256\":null,\"final_worker_eligible\":false,\"cancel_observed\":false,\"timing\":{\"begin_ns\":null,\"invalidated_ns\":\"6168588132172370\",\"cleanup_deadline_ns\":\"6168592132172370\",\"settled_ns\":\"6168588132172370\",\"final_admission_ns\":\"6168588132172370\"}}\\n'\n- '{\"v\":1,\"v\":1,\"kind\":\"terminal\",\"owner_pid\":1907488,\"outcome\":\"unused\",\"ownership\":\"settled\",\"worker_pid\":null,\"worker_wait\":null,\"worker_io\":{\"stdin_closed\":null,\"stdout_eof\":null,\"stderr_eof\":null,\"owned_fds_closed\":true},\"session_policy_verified\":false,\"input_bytes_received\":0,\"input_sha256\":null,\"G_bytes\":0,\"image_bytes_sent\":0,\"stdout_observed\":0,\"stdout_retained\":0,\"stderr_observed\":0,\"stderr_retained\":0,\"worker_stderr_base64\":\"\",\"result_bytes\":0,\"result_sha256\":null,\"final_worker_eligible\":false,\"cancel_observed\":false,\"timing\":{\"begin_ns\":null,\"invalidated_ns\":\"6168588132172370\",\"cleanup_deadline_ns\":\"6168592132172370\",\"settled_ns\":\"6168588132172370\",\"final_admission_ns\":\"6168588132172370\"}}\\n'\n",
+        "synthetic_no_W_helper": true,
+        "complete_status_records": 1,
+        "unconsumed_status_bytes": 0
+      },
+      {
+        "pid": 1907489,
+        "code": 0,
+        "signal": null,
+        "ready_hex": "52",
+        "readyEOF": true,
+        "readyAccepted": true,
+        "statusEOF": true,
+        "outEOF": true,
+        "errEOF": true,
+        "status_bytes": 1404,
+        "commands": [
+          {
+            "opcode": "Q",
+            "node_ns": "6168588145433482"
+          },
+          {
+            "opcode": "X",
+            "node_ns": "6168588146072897"
+          }
+        ],
+        "terminal": {
+          "v": 1,
+          "kind": "terminal",
+          "owner_pid": 1907489,
+          "outcome": "unused",
+          "ownership": "settled",
+          "worker_pid": null,
+          "worker_wait": null,
+          "worker_io": {
+            "stdin_closed": null,
+            "stdout_eof": null,
+            "stderr_eof": null,
+            "owned_fds_closed": true
+          },
+          "session_policy_verified": false,
+          "input_bytes_received": 0,
+          "input_sha256": null,
+          "G_bytes": 0,
+          "image_bytes_sent": 0,
+          "stdout_observed": 0,
+          "stdout_retained": 0,
+          "stderr_observed": 0,
+          "stderr_retained": 0,
+          "worker_stderr_base64": "",
+          "result_bytes": 0,
+          "result_sha256": null,
+          "final_worker_eligible": false,
+          "cancel_observed": false,
+          "timing": {
+            "begin_ns": null,
+            "invalidated_ns": "6168588145446496",
+            "cleanup_deadline_ns": "6168592145446496",
+            "settled_ns": "6168588145446496",
+            "final_admission_ns": "6168588145446496"
+          }
+        },
+        "output_bytes": 0,
+        "output_sha256": null,
+        "diagnostic_base64": "",
+        "elapsed_ns": "9817895",
+        "protocol_error": "AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:\n+ actual - expected\n\n+ {\n+   G_bytes: 0,\n+   cancel_observed: false,\n+   final_worker_eligible: false,\n+   image_bytes_sent: 0,\n+   input_bytes_received: 0,\n+   input_sha256: null,\n+   kind: 'terminal',\n+   outcome: 'unused',\n+   owner_pid: 1907489,\n+   ownership: 'settled',\n+   result_bytes: 0,\n+   result_sha256: null,\n+   session_policy_verified: false,\n+   stderr_observed: 0,\n+   stderr_retained: 0,\n+   stdout_observed: 0,\n+   stdout_retained: 0,\n+   timing: {\n+     begin_ns: null,\n+     cleanup_deadline_ns: '6168592145446496',\n+     final_admission_ns: '6168588145446496',\n+     invalidated_ns: '6168588145446496',\n+     settled_ns: '6168588145446496'\n+   },\n+   v: 1,\n+   worker_io: {\n+     owned_fds_closed: true,\n+     stderr_eof: null,\n+     stdin_closed: null,\n+     stdout_eof: null\n+   },\n+   worker_pid: null,\n+   worker_stderr_base64: '',\n+   worker_wait: null\n+ }\n- undefined\n",
+        "synthetic_no_W_helper": true,
+        "complete_status_records": 2,
+        "unconsumed_status_bytes": 0
+      },
+      {
+        "pid": 1907490,
+        "code": 0,
+        "signal": null,
+        "ready_hex": "52",
+        "readyEOF": true,
+        "readyAccepted": true,
+        "statusEOF": true,
+        "outEOF": true,
+        "errEOF": true,
+        "status_bytes": 726,
+        "commands": [
+          {
+            "opcode": "Q",
+            "node_ns": "6168588157071909"
+          },
+          {
+            "opcode": "X",
+            "node_ns": "6168588157484080"
+          }
+        ],
+        "terminal": {
+          "v": 1,
+          "kind": "terminal",
+          "owner_pid": 1907490,
+          "outcome": "unused",
+          "ownership": "settled",
+          "worker_pid": null,
+          "worker_wait": null,
+          "worker_io": {
+            "stdin_closed": null,
+            "stdout_eof": null,
+            "stderr_eof": null,
+            "owned_fds_closed": true
+          },
+          "session_policy_verified": false,
+          "input_bytes_received": 0,
+          "input_sha256": null,
+          "G_bytes": 0,
+          "image_bytes_sent": 0,
+          "stdout_observed": 0,
+          "stdout_retained": 0,
+          "stderr_observed": 0,
+          "stderr_retained": 0,
+          "worker_stderr_base64": "",
+          "result_bytes": 0,
+          "result_sha256": null,
+          "final_worker_eligible": false,
+          "cancel_observed": false,
+          "timing": {
+            "begin_ns": null,
+            "invalidated_ns": "6168588157095363",
+            "cleanup_deadline_ns": "6168592157095363",
+            "settled_ns": "6168588157095363",
+            "final_admission_ns": "6168588157095363"
+          }
+        },
+        "output_bytes": 0,
+        "output_sha256": null,
+        "diagnostic_base64": "",
+        "elapsed_ns": "9500601",
+        "protocol_error": "AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:\n+ actual - expected\n\n+ {\n+   G_bytes: 0,\n+   cancel_observed: false,\n+   final_worker_eligible: false,\n+   image_bytes_sent: 0,\n+   input_bytes_received: 0,\n+   input_sha256: null,\n+   kind: 'terminal',\n+   outcome: 'unused',\n+   owner_pid: 1907490,\n+   ownership: 'settled',\n+   result_bytes: 0,\n+   result_sha256: null,\n+   session_policy_verified: false,\n+   stderr_observed: 0,\n+   stderr_retained: 0,\n+   stdout_observed: 0,\n+   stdout_retained: 0,\n+   timing: {\n+     begin_ns: null,\n+     cleanup_deadline_ns: '6168592157095363',\n+     final_admission_ns: '6168588157095363',\n+     invalidated_ns: '6168588157095363',\n+     settled_ns: '6168588157095363'\n+   },\n+   v: 1,\n+   worker_io: {\n+     owned_fds_closed: true,\n+     stderr_eof: null,\n+     stdin_closed: null,\n+     stdout_eof: null\n+   },\n+   worker_pid: null,\n+   worker_stderr_base64: '',\n+   worker_wait: null\n+ }\n- undefined\n",
+        "synthetic_no_W_helper": true,
+        "complete_status_records": 2,
+        "unconsumed_status_bytes": 0
+      }
+    ]
+  },
+  "raw_logs": {
+    "early-pi-fixed.stdout.log": {
+      "bytes": 300133,
+      "sha256": "c3c4e6b91977fe42c94a20045812dafbc166a082c29a66e2890120e411c6e32f",
+      "gzip": "early-pi-fixed.stdout.log.gz"
+    },
+    "early-pi-fixed.stderr.log": {
+      "bytes": 565,
+      "sha256": "4986bd110f4e37c7e8239c1f3b9e7263d757e46d9febe896420a6b2e1b7399bd",
+      "gzip": "early-pi-fixed.stderr.log.gz"
+    },
+    "early-pi.stdout.log": {
+      "bytes": 13894,
+      "sha256": "88dc0b7dc5f4871cc38f19023f3f5c8db9011836676b75ca724b094ad5dfbe4c",
+      "gzip": "early-pi.stdout.log.gz"
+    },
+    "early-install.stdout.log": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "gzip": "early-install.stdout.log.gz"
+    },
+    "early-install.stderr.log": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "gzip": "early-install.stderr.log.gz"
+    }
+  },
+  "limits": "First author cold/source-bound host gate smoke only; old RED retained, full candidate makeci/distinct final review/normal protected PR+main+cold verification still required. No product/physical/release criterion closed."
+}
