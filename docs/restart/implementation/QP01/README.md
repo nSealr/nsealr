@@ -1,11 +1,28 @@
-# QP01 reviewed preparation delivery
+# QP01 reviewed host engineering components
 
-QP01 remains **planned**, with all three acceptance criteria incomplete. This
-branch bundles two reviewed preparation packets for the Pi path alongside one
-bounded QH01 QR-codec correction. The QP01 preparation does not admit a product
-Pi adapter, a physical probe or Q02 completion. All six Q02
-criteria remain incomplete. Exact kit/image/operator/access facts are still
-missing, and the existing follow-up stays pending.
+QP01 remains **planned**, with all three acceptance criteria incomplete. All
+five QH01 and six Q02 criteria also remain incomplete. The recorded kit inventory
+is a resource lead; targeted Pi identification remains pending and no physical
+availability or qualification follows.
+
+The [request-aware public-fixture engine delivery](request-engine/delivery/README.md)
+adds author `e44f957b` and its distinct [implementation/runtime review](../reviews/QP01-request-engine/report.md)
+and [provenance review](../reviews/QP01-request-engine-provenance/report.md), based on
+accepted main `14d5e370`. Original request bytes enter the real Rust owner,
+complete review and consuming authorization; the resulting v2 response reaches
+the unchanged actual client verifier. Author and reviewer each ran the full host
+Pi suite (189 tests) and two real client round trips with the already-public
+fixture identity. Their builds, negative cases and settlement evidence retain
+separate source/run identities; this metadata assembly runs no product tests.
+Python/native callbacks remain trusted and presentation is synthetic. No default
+route, real keys, camera/display/buttons, ARM/Pi/P4, entropy, custody, physical
+consent or release is qualified. JSON704/static-frame947 and image-worker512
+remain separate limits. The new cdylib has build/SHA evidence, not a
+reproducibility result. Final delivery review and protected integration remain
+root-owned future gates.
+
+The earlier preparation below is historical source and host-boundary evidence,
+accepted through PR41; its original reports and pending fields are unchanged.
 
 The [source brief](brief.md), [source evidence](evidence.json) and
 [minimal physical procedure](physical-probe.md) are exact historical copies from
@@ -48,12 +65,13 @@ The [distinct review](../reviews/QH01-qr-ingress/report.md) at
 All five QH01 criteria remain incomplete. No complete client/optical session,
 camera/native decoder or screen comparison is qualified.
 
-[Combined delivery proof](delivery/result.json), [exact copy inventory](delivery/copy-inventory.json)
-and [scope](delivery/source-scope.json) bind this metadata proposal to the actual
+[Combined preparation proof](delivery/result.json), [exact copy inventory](delivery/copy-inventory.json)
+and [scope](delivery/source-scope.json) bind that historical proposal to the actual
 accepted5d base. Every original mode/blob/byte and paired relative name is kept.
 The copied source packets and reports are immutable; only this entry, current
 shared navigation, the exact admitted QR source/test postimages and current graph
 fields describe the new delivery. Original194615 remains the immutable standalone
 QP01 metadata checkpoint; its old checks are not relabelled as combined-source checks.
-The root reviewer still must approve this exact final package; normal protected
-PR and resulting-main CI remain future gates for this preparation delivery.
+That preparation was [accepted on actual main d41](../reviews/QP01-current-delivery/adoption/actual-main-acceptance.json)
+after protected PR41 and full PR/resulting-main CI. This acceptance does not
+replace the new request-engine delivery gates.
