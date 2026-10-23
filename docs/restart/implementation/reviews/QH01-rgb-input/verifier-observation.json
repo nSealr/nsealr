@@ -1,0 +1,34 @@
+{
+  "schema_version": 1,
+  "kind": "REVIEWER_METADATA_ASSERTION_ERROR_BEFORE_BUILD_OR_RUNTIME",
+  "initial_exit_code": 1,
+  "initial_trace": "File <stdin>, line22: AssertionError",
+  "failed_assertion": "params == oldparams and len(params[baseline]) == 13",
+  "cause": "Whole metadata object equality was stricter than admitted invariant: source/provenance/format descriptions legitimately change.",
+  "actual_differences": {
+    "source_commit": {
+      "old": "06d213fd46e654bfe2ac43e4a88963a346d35973",
+      "new": "5fa5ec3afd0cf1f343743fe347b61728a242b15c"
+    },
+    "role": {
+      "old": "Exact13baseline hostexperiment values reused unchanged; no dimensionaloverlays neededforfivevalidfixedassets",
+      "new": "Exact13baseline unchanged forRGBexperiment"
+    },
+    "source_sha256": {
+      "old": "e26091f4813efc6c1a7dfb6a0ede55b0373664c6156fa62a08b766b6ffacf0da",
+      "new": "ef85f58625943dc831158700d9fbf7df342eef1eb79e51e11398c285b73db52f"
+    },
+    "source_path": {
+      "old": "docs/restart/implementation/QH01/linux-worker-experiment/parameters.json",
+      "new": "docs/restart/implementation/QH01/rust-qr-worker/parameters.json"
+    },
+    "format": {
+      "old": "RGB888, equalchannels onthesefixedassets; directchannelvalue only, no colorcamera qualification",
+      "new": "RGB888, integerfixedpoint perPillow11.1.0source; no fileparser/colorspace/cameraclaim"
+    }
+  },
+  "corrected_check": "Compare all13 baseline values and core0; separately verify declared source path/commit/hash and pre-code binding.",
+  "source_product_or_test_failure": false,
+  "source_edits_or_threshold_changes": false,
+  "builds_or_runtime_started_before_error": 0
+}

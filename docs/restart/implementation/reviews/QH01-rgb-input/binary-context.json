@@ -1,0 +1,135 @@
+{
+  "recorded_utc": "2026-10-23T11:22:40.133040+00:00",
+  "binary_path": "/home/tux/nsealr/.restart-tools/goal/qh01-rgb-input-review/docs/restart/implementation/reviews/QH01-rgb-input/.runtime/target/release/nsealr-qh01-rust-qr-worker",
+  "binary_sha256": "a4bc8f43d58442baca4aceb5113b3a0ee639618ba3490a24397278e077c15f46",
+  "bytes": 669080,
+  "mode": "0o775",
+  "uid": 1000,
+  "gid": 1000,
+  "setuid_setgid_bits": false,
+  "file_capability": {
+    "absent_or_unavailable_errno": 61
+  },
+  "author_binary_sha256": "1a4af26b3c738807fb0f1a2e6fb7fcca9d480057642150357ad3c5bf774e6542",
+  "byte_equal_to_author": false,
+  "reproducibility_claim": false,
+  "dynamic_libraries": [
+    {
+      "path": "/lib/x86_64-linux-gnu/libgcc_s.so.1",
+      "resolved_path": "/usr/lib/x86_64-linux-gnu/libgcc_s.so.1",
+      "sha256": "30c61ab012a4241bed033725a09b61f5fdd3bb7df95ee852d0b096520524c7af",
+      "bytes": 182856
+    },
+    {
+      "path": "/lib/x86_64-linux-gnu/libc.so.6",
+      "resolved_path": "/usr/lib/x86_64-linux-gnu/libc.so.6",
+      "sha256": "9792e3cbb541c8f44c7acf5f14f4022ea62998ecc787d326bed4d8b6547dfd92",
+      "bytes": 1995216
+    },
+    {
+      "path": "/lib64/ld-linux-x86-64.so.2",
+      "resolved_path": "/usr/lib/x86_64-linux-gnu/ld-linux-x86-64.so.2",
+      "sha256": "c8438e4fde1934e61c88311633f00949ff645d5c04cdb8671fa3d78164d2f307",
+      "bytes": 225672
+    }
+  ],
+  "linker_evidence_scope": "ELF .comment identifies embedded linker metadata; cc -print-prog-name=ld is lookup context, not an execve linker trace",
+  "python": {
+    "path": "/home/tux/nsealr/.restart-tools/goal/r00/tools/baseline/.work/final/.tools/python/bin/python3",
+    "sha256": "eaaa308032c4aa063df5880c4c293cd458b4629d503fbc2c03ec163d71f7f790"
+  },
+  "environment_source": "docs/restart/implementation/R00/evidence/final/environment.json",
+  "overrides": {
+    "CARGO_HOME": "/home/tux/nsealr/.restart-tools/goal/qh01-rgb-input-review/docs/restart/implementation/reviews/QH01-rgb-input/.runtime/cargo",
+    "CARGO_TARGET_DIR": "/home/tux/nsealr/.restart-tools/goal/qh01-rgb-input-review/docs/restart/implementation/reviews/QH01-rgb-input/.runtime/target",
+    "RUSTUP_TOOLCHAIN": "1.95.0",
+    "TMPDIR": "/home/tux/nsealr/.restart-tools/goal/qh01-rgb-input-review/docs/restart/implementation/reviews/QH01-rgb-input/.runtime",
+    "XDG_CACHE_HOME": "/home/tux/nsealr/.restart-tools/goal/qh01-rgb-input-review/docs/restart/implementation/reviews/QH01-rgb-input/.runtime/cache",
+    "PYTHONDONTWRITEBYTECODE": "1"
+  },
+  "commands": [
+    {
+      "name": "rustc",
+      "argv": [
+        "rustc",
+        "-vV"
+      ],
+      "cwd": "/home/tux",
+      "exit_code": 0,
+      "stdout": "rustc.stdout.log",
+      "stderr": "rustc.stderr.log"
+    },
+    {
+      "name": "cargo",
+      "argv": [
+        "cargo",
+        "--version"
+      ],
+      "cwd": "/home/tux",
+      "exit_code": 0,
+      "stdout": "cargo.stdout.log",
+      "stderr": "cargo.stderr.log"
+    },
+    {
+      "name": "ELF",
+      "argv": [
+        "readelf",
+        "-h",
+        "-l",
+        "-d",
+        "/home/tux/nsealr/.restart-tools/goal/qh01-rgb-input-review/docs/restart/implementation/reviews/QH01-rgb-input/.runtime/target/release/nsealr-qh01-rust-qr-worker"
+      ],
+      "cwd": "/home/tux",
+      "exit_code": 0,
+      "stdout": "ELF.stdout.log",
+      "stderr": "ELF.stderr.log"
+    },
+    {
+      "name": "ELF-version",
+      "argv": [
+        "readelf",
+        "--version-info",
+        "-p",
+        ".comment",
+        "/home/tux/nsealr/.restart-tools/goal/qh01-rgb-input-review/docs/restart/implementation/reviews/QH01-rgb-input/.runtime/target/release/nsealr-qh01-rust-qr-worker"
+      ],
+      "cwd": "/home/tux",
+      "exit_code": 0,
+      "stdout": "ELF-version.stdout.log",
+      "stderr": "ELF-version.stderr.log"
+    },
+    {
+      "name": "ldd",
+      "argv": [
+        "ldd",
+        "/home/tux/nsealr/.restart-tools/goal/qh01-rgb-input-review/docs/restart/implementation/reviews/QH01-rgb-input/.runtime/target/release/nsealr-qh01-rust-qr-worker"
+      ],
+      "cwd": "/home/tux",
+      "exit_code": 0,
+      "stdout": "ldd.stdout.log",
+      "stderr": "ldd.stderr.log"
+    },
+    {
+      "name": "cc",
+      "argv": [
+        "cc",
+        "--version"
+      ],
+      "cwd": "/home/tux",
+      "exit_code": 0,
+      "stdout": "cc.stdout.log",
+      "stderr": "cc.stderr.log"
+    },
+    {
+      "name": "linker-lookup",
+      "argv": [
+        "cc",
+        "-print-prog-name=ld"
+      ],
+      "cwd": "/home/tux",
+      "exit_code": 0,
+      "stdout": "linker-lookup.stdout.log",
+      "stderr": "linker-lookup.stderr.log"
+    }
+  ]
+}

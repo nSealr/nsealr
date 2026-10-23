@@ -1,0 +1,45 @@
+{
+  "schema_version": 1,
+  "kind": "REVIEWER_POSTPROCESSING_SCOPE_ASSERTION_ERROR",
+  "exit_code": 1,
+  "trace": "verify-observations.py line104: assert not image_files; AssertionError",
+  "original_script_sha256": "8a4347778581d0eb9e1cab5f4fff2c175161290b0a60e52974d86f99f28e2b95",
+  "failed_assertion": "assert not image_files (recursive whole review prefix, including Cargo extracted dependency sources)",
+  "cause": "Cargo legitimately extracted four pre-existing rqrr crate test assets; whole-cache absence was stricter than no newly generated or executed image/corpus.",
+  "product_or_runtime_failure": false,
+  "campaigns_after_failure": 0,
+  "source_thresholds_or_cases_changed": false,
+  "archive_path": "/home/tux/nsealr/.restart-tools/goal/qh01-rgb-input-review/docs/restart/implementation/reviews/QH01-rgb-input/.runtime/cargo/registry/cache/index.crates.io-1949cf8c6b5b557f/rqrr-0.11.0.crate",
+  "archive_sha256": "8d084c50c5cfa397a081850da329566c8667b0b6c4e81da16abff1fef27de93b",
+  "allowed_preexisting_archive_images": [
+    {
+      "path": ".runtime/cargo/registry/src/index.crates.io-1949cf8c6b5b557f/rqrr-0.11.0/src/test_data/cap.png",
+      "archive_member": "rqrr-0.11.0/src/test_data/cap.png",
+      "sha256": "285787a6197e75e9de0f4d0bc9a6f0ff8a30e756b19cf747b9c861a5b71cdafc",
+      "bytes": 200,
+      "byte_equal_to_verified_crate": true
+    },
+    {
+      "path": ".runtime/cargo/registry/src/index.crates.io-1949cf8c6b5b557f/rqrr-0.11.0/src/test_data/cap_connect.png",
+      "archive_member": "rqrr-0.11.0/src/test_data/cap_connect.png",
+      "sha256": "e894135831f70f16ea839cf98b7b64a87e5b44b0cf040238ff69f2e44d32d87c",
+      "bytes": 196,
+      "byte_equal_to_verified_crate": true
+    },
+    {
+      "path": ".runtime/cargo/registry/src/index.crates.io-1949cf8c6b5b557f/rqrr-0.11.0/src/test_data/cap_disconnect.png",
+      "archive_member": "rqrr-0.11.0/src/test_data/cap_disconnect.png",
+      "sha256": "6742bcd892e8d2bdc900d9b7c41f8b6404147ff97a2080a85b812dbece5372f8",
+      "bytes": 211,
+      "byte_equal_to_verified_crate": true
+    },
+    {
+      "path": ".runtime/cargo/registry/src/index.crates.io-1949cf8c6b5b557f/rqrr-0.11.0/src/test_data/cap_size.png",
+      "archive_member": "rqrr-0.11.0/src/test_data/cap_size.png",
+      "sha256": "eaa5f8c7c452d460a45c1c961578be11fd76ea5200509bb41bba1d645c2cde74",
+      "bytes": 209,
+      "byte_equal_to_verified_crate": true
+    }
+  ],
+  "corrected_check": "No image outside these four exact verified archive members; verify each member hash. No image file saved by controller."
+}
