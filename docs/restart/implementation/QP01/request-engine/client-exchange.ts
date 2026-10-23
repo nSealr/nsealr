@@ -27,23 +27,29 @@ const decode = (value: string) => JSON.parse(Buffer.from(value.slice(8), "base64
 let children = 0, collected = 0;
 const reports: unknown[] = [];
 
-async function native(frame: string): Promise<string> {
+async function native(frame: string, held?: (release: () => void) => void): Promise<string> {
   assert(Buffer.byteLength(frame) <= 947);
   const python = process.env.NSEALR_QP01_PYTHON;
   assert(python && process.env.NSEALR_QP01_LIBRARY && process.env.NSEALR_QP01_LIBRARY_SHA256);
-  const child = spawn(python, ["-B", resolve(root, "docs/restart/implementation/QP01/request-engine/exchange.py")],
-    { cwd: root, env: process.env, stdio: ["pipe", "pipe", "pipe"] });
+  const argv = ["-B", resolve(root, "docs/restart/implementation/QP01/request-engine/exchange.py")];
+  if (held) argv.push("--settlement-fd", "3");
+  const child = spawn(python, argv, { cwd: root, env: process.env, stdio: ["pipe", "pipe", "pipe", "pipe"] });
+  const safety = setTimeout(() => child.kill("SIGKILL"), 5000);
   children++;
   const stdout: Buffer[] = [], stderr: Buffer[] = [];
-  let out = 0, err = 0, overflow = false;
+  let out = 0, err = 0, overflow = false, notified = false;
   child.stdout.on("data", (chunk: Buffer) => { out += chunk.length;
     if (out <= 947) stdout.push(chunk); else { overflow = true; child.kill("SIGKILL"); } });
   child.stderr.on("data", (chunk: Buffer) => { err += chunk.length;
-    if (err <= 262144) stderr.push(chunk); else { overflow = true; child.kill("SIGKILL"); } });
+    if (err <= 262144) {
+      stderr.push(chunk);
+      if (held && !notified && chunk.includes(10)) { notified = true;
+        held(() => (child.stdio[3] as import("node:stream").Writable).end("R")); }
+    } else { overflow = true; child.kill("SIGKILL"); } });
   child.stdin.on("error", () => { /* Actual exit/close below decides failure. */ });
   const ended = new Promise<void>((yes, no) => {
     child.once("error", no);
-    child.once("close", (code, signal) => { collected++;
+    child.once("close", (code, signal) => { collected++; clearTimeout(safety);
       if (code === 0 && signal === null && !overflow) yes();
       else no(new Error(`fixture child failed: ${code}/${signal}: ${Buffer.concat(stderr)}`)); });
   });
@@ -60,7 +66,7 @@ async function native(frame: string): Promise<string> {
 }
 
 type Mutation = "account-key" | "request-id" | "template" | "event-id" | "signature";
-function setup(vector = basic, mutation?: Mutation, changed?: string) {
+function setup(vector = basic, mutation?: Mutation, changed?: string, holdChild = false) {
   const cases = load("vectors/profile-capabilities/cases-v1.json");
   const request = structuredClone(vector.request);
   const implementation = parseImplementationProfile(load(cases.implementation_examples.pi_qr));
@@ -80,13 +86,16 @@ function setup(vector = basic, mutation?: Mutation, changed?: string) {
   const account = parseAccountDescriptor(load("vectors/accounts/raspberry-qr-nip06-account-0.json"));
   account.public_key = mutation === "account-key" ? "f9308a019258c31049344f85f89d5229b531c845836f99b08601f113bce036f9" : vector.signed_event.pubkey;
   let opens = 0, scans = 0, closes = 0, ticks = 0;
+  let entered!: (release: () => void) => void, settled!: () => void;
+  const held = new Promise<() => void>((yes) => { entered = yes; });
+  const settledPromise = new Promise<void>((yes) => { settled = yes; });
   let pending: Promise<string> | undefined;
   const dispatcher = createManualQrRouteDispatcher({ account_id: account.account_id, route_type: "raspberry_qr_vault",
     openPort: async (control) => { opens++;
       return {
         present: (frame) => { control.before_present(); assert.equal(frame, qr(request));
           const input = mutation === "template" ? qr({ ...tagged.request, request_id: request.request_id }) : frame;
-          pending = native(input); },
+          pending = native(input, holdChild ? entered : undefined); holdChild = false; },
         scan: async () => { scans++; assert(pending); let frame = await pending;
           if (mutation && mutation !== "account-key" && mutation !== "template") {
             const response = decode(frame);
@@ -102,7 +111,7 @@ function setup(vector = basic, mutation?: Mutation, changed?: string) {
           if (changed === "deadline") ticks = 100;
           return frame;
         },
-        close: async () => { if (pending) await pending; closes++; }
+        close: async () => { if (pending) await pending; closes++; settled(); }
       };
     }
   });
@@ -111,7 +120,9 @@ function setup(vector = basic, mutation?: Mutation, changed?: string) {
       allowed_operations: ["dispatch_signer_request"] }], signerCompatibility: () => snapshot, signerDispatcher: dispatcher };
   const envelope = { version: 1 as const, request_id: "qp01.local.fixture", operation: "dispatch_signer_request" as const,
     params: { client: identity, route_request: { account_id: account.account_id, method: "sign_event" }, request } };
-  return { run: () => handleLocalServiceRequestAsync(envelope, context), counts: () => ({ opens, scans, closes }) };
+  return { run: () => handleLocalServiceRequestAsync(envelope, context),
+    separate: () => handleLocalServiceRequestAsync(envelope, { ...context }), held, settled: settledPromise,
+    counts: () => ({ opens, scans, closes }) };
 }
 
 for (const vector of [basic, tagged]) {
@@ -132,6 +143,20 @@ for (const change of ["account", "generation", "availability", "limits", "deadli
   assert.equal(result.ok, false, change);
   assert.deepEqual(state.counts(), { opens: 1, scans: 1, closes: 1 });
 }
+{
+  const state = setup(basic, undefined, undefined, true), operation = state.run();
+  const release = await state.held;
+  try {
+    const timedOut = await operation;
+    assert.equal((timedOut as any).error.code, "signer_transport_timeout");
+    assert.equal((await state.run() as any).error.code, "runtime_unavailable");
+    assert.equal((await state.separate() as any).error.code, "signer_transport_failed");
+    assert.equal(state.counts().closes, 0);
+  } finally { release(); await state.settled; }
+  assert.equal((await state.run()).ok, true);
+  assert.deepEqual(state.counts(), { opens: 2, scans: 2, closes: 2 });
+}
 assert.equal(children, collected);
 console.log(JSON.stringify({ scope: "actual client + public-fixture host adapter only", positive: 2,
-  valid_shape_verifier_negatives: 5, post_native_currentness_negatives: 5, children, collected, reports }, null, 2));
+  valid_shape_verifier_negatives: 5, post_native_currentness_negatives: 5,
+  actual_unsettled_child_timeout_no_early_reuse_then_fresh: true, children, collected, reports }, null, 2));
