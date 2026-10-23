@@ -67,8 +67,11 @@ def verify_product(raw, head, repo, run_id=None):
     assert all(s.endswith(' --offline check --deny index-failure') for s in commands[3:])
     assert audit.count('advisories ok, bans ok, licenses ok, sources ok')==3
     first_proof=verify_first(objects,b,head,repo)
-    out={'run':int(run_id),'source_head':head,'product_log_sha256':hashlib.sha256(raw).hexdigest(),'native_build':b,'native_source_bindings':4,'actual_full_Pi_tests':194,'automatic_readiness_controls':ready[0],'client':{k:v for k,v in c.items() if k!='reports'},'all14_native_observations_match_actual_provisioned_library':True,'fixture_coverage_actual_and_floor':coverage[0],'additional_audit_controls':4,'three_complete_fresh_audits':True,'audit_commands':commands,'limits':'Original completed CI source/build/trace binding only; the ELF itself is not downloaded, no cdylib reproducibility or target/device/custody/physical qualification claim. The original17-step/check/bootstrap/capture verifier remains separately mandatory.'}
+    out={'run':int(run_id) if run_id is not None else None,'source_head':head,'product_log_sha256':hashlib.sha256(raw).hexdigest(),'native_build':b,'native_source_bindings':4,'actual_full_Pi_tests':194,'automatic_readiness_controls':ready[0],'client':{k:v for k,v in c.items() if k!='reports'},'all14_native_observations_match_actual_provisioned_library':True,'fixture_coverage_actual_and_floor':coverage[0],'additional_audit_controls':4,'three_complete_fresh_audits':True,'audit_commands':commands,'limits':'Original completed CI source/build/trace binding only; the ELF itself is not downloaded, no cdylib reproducibility or target/device/custody/physical qualification claim. The original17-step/check/bootstrap/capture verifier remains separately mandatory.'}
     out.update(first_proof)
+    out['proof_role']='local_makeci_source_addon_no_GitHub_claim' if run_id is None else 'completed_capture_source_addon_requires_generic_receipt_job_check_verifier'
+    if run_id is None:
+        out['limits']='Local stable makeci source/build/trace proof only; no GitHub run, receipt, job, check, protected integration or device claim. Hosted acceptance separately requires the unchanged mandatory completed-capture verifier with RUN HEAD CHECKRUNS_JSON, plus this source addon. No ELF reproducibility or physical qualification.'
     return out
 
 def verify_first(objects,b,head,repo):
