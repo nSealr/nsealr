@@ -157,7 +157,8 @@ async function setup(vector = basic, mutation?: Mutation, changed?: string, hold
         present: (frame) => { control.before_present(); assert.equal(frame, qr(request));
           const input = mutation === "template" ? qr({ ...tagged.request, request_id: request.request_id }) : frame;
           pending = worker.send(input, holdChild ? entered : undefined); holdChild = false;
-          void pending.catch(() => {}); // Keep failure observed if the client returns early. },
+          void pending.catch(() => {}); // Keep failure observed if the client returns early.
+        },
         scan: async () => { scans++; assert(pending); let frame = await pending;
           if (mutation && mutation !== "account-key" && mutation !== "template") {
             const response = decode(frame);
