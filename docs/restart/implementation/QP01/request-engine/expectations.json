@@ -1,0 +1,475 @@
+{
+  "schema_version": 1,
+  "role": "PRE-CODE contract and independent expected test matrix; no new code, test, build or runtime result.",
+  "source_tuple": {
+    "commit": "d250d1302fb88487e14b6883463386fe66aa7fc7",
+    "tree": "87053e148aebfbd7315229d053e51fa83f9dd188",
+    "role": "Authorized test-only combination, not adopted main; runtime awaits root assignment/current-source reconciliation."
+  },
+  "fixture_identity": {
+    "source_path": "protocols/contracts/v1/vectors/keys/test-key-1.json",
+    "classification": "Already published deterministic public test fixture; never a production identity",
+    "scalar_hex": "1111111111111111111111111111111111111111111111111111111111111111",
+    "pubkey": "4f355bdcb7cc0af728ef3cceb9615d90684bb5b2ca5f859ab0f0b704075871aa",
+    "old_canary_pubkey": "f9308a019258c31049344f85f89d5229b531c845836f99b08601f113bce036f9",
+    "owner": "Fresh Rust SecretKey/AuthorizationSession per call; no caller secret or owner handle, original bytes consumed/wiped; no persistent-custody claim",
+    "auxiliary_positive": "Explicit all-zero32-byte public fixture returned by fallible test callback; first compatibility run must match pinned expectations or STOP/investigate without changing fixtures."
+  },
+  "single_path": {
+    "entry": "Pi engine_adapter.run_request_frame(original_frame: bytes, local_io, monotonic_clock, auxiliary, cancel) -> bytes or closed local error",
+    "input": "Bytes only, one existing experimental static frame; no str.encode on unbounded scanner output, Python JSON parsing, method reconstruction or reference signing",
+    "native_export": "qp01_fixture_request_v1(frame,frame_bytes,present,now,aux,cancelled,response,capacity,written)",
+    "abi": "Synchronous explicit C integer/pointer/length ABI under trusted Python; new symbol/version, old canary left immutable. No PyO3/new registry dependency/process service. Child process exists only in software client-exchange harness.",
+    "decode": "Whole raw maximum947 before borrow/copy; private copy, core decode_qr_envelope into704 bytes, strict ParsedRequest::parse and begin_request on identical raw JSON. Host fields cannot select limits/callbacks/key.",
+    "dispatch": "get_public_key derives owner identity, sign_event runs AuthorizationSession; get_capabilities/unsupported workflows fail locally without fabricated runtime capability report.",
+    "wire_output": "Private bare-event9216-byte existing core staging -> checked complete v2 JSON<=704 -> core static encoding<=947 -> fresh cancel/clock publication check -> one copy to caller. JSON wrapper order version/request_id/ok/result; event order stays core serialization.",
+    "error_output": "For valid admitted arguments any failure leaves written0 and whole capacity zero; no partial event/frame or fabricated error response. ARGUMENT/BUSY touch no pointers and callers must ignore/prezero output.",
+    "unwind": "Python catches BaseException in every callback and returns explicit failure; Rust catch_unwind surrounds operation. Owner cancel/lock/drop on ordinary failure and unwind; no abort/segfault/foreign-exception or process-wide wipe guarantee.",
+    "engineering_context": "Actual client/port calls use explicitly tagged synthetic conformance observations only; do not persist readiness or promote a reported descriptor into local/provider/hardware qualification."
+  },
+  "abi_contract": {
+    "input": "Live immutable nonoverlapping byte span for full call, length1..947; null/range/overflow/overlap invalid before any Rust slice.",
+    "output": "Live writable span, capacity1..947; distinct aligned size_t written; input/output/written allocations disjoint. Validity cannot be proven from addresses.",
+    "guard": "Acquire global nonblocking guard before ANY pointer dereference or external callback. Busy path never dereferences pointers; no Python-GIL owner assumption.",
+    "present": "Borrow label/body/position spans only during callback; display all bytes and index/total, then fresh local action:0Next/1Approve/2Reject/3Back/4None; all other values fail display. Strong CFUNCTYPE references held until call settles.",
+    "clock": "int32 now(uint64_t *tick):0 success, nonzero unavailable; sample same trusted monotonic source throughout. Host engineering conversion elapsed whole seconds (1 tick/s), fallible on source failure/overflow. Core100-tick lifetime unchanged; this is not an image/client/device deadline selection.",
+    "aux": "int32 aux(uint8_t *destination,size_t capacity32): nonnegative reported count, negative error. Only32 succeeds; provider ceases writes before returning and cannot retain pointer. No fallback/automatic second attempt.",
+    "cancel": "int32 cancelled():0 active/1 cancelled/anything else unavailable. Checked through freshness bridge before/after review and after staging; after approval core consumes before its first clock/cancel/provider callback. A blocked callback cannot be forcibly interrupted.",
+    "status_values": {
+      "0": "SUCCESS",
+      "-1": "ARGUMENT",
+      "-2": "BUSY",
+      "-3": "REQUEST",
+      "-4": "UNSUPPORTED",
+      "-5": "REJECTED",
+      "-6": "DISPLAY",
+      "-7": "CLOCK",
+      "-8": "AUXILIARY",
+      "-9": "ENGINE",
+      "-10": "CAPACITY",
+      "-11": "CANCELLED",
+      "-12": "PANIC"
+    },
+    "cleanup": "No active owner/callback/key survives returned call; Python retains native reservation until return, then known cleanup. Crash/uncertain native outcome quarantines wrapper; no automatic reload/reuse."
+  },
+  "bounds": {
+    "raw_static_frame_bytes": 947,
+    "decoded_request_and_response_JSON_bytes": 704,
+    "caller_output_capacity_max": 947,
+    "core_signed_event_staging_existing_bytes": 9216,
+    "content_bytes": 512,
+    "tags": 16,
+    "fields_per_tag": 8,
+    "field_bytes": 64,
+    "text_bytes": 4096,
+    "canonical_bytes": 8192,
+    "review_pages": 1024,
+    "callback_step_ceiling_existing_canary": 1024,
+    "geometry_cells": {
+      "columns": 32,
+      "lines": 8
+    },
+    "core_lifetime_ticks": 100,
+    "image_worker_output_bytes_separate": 512,
+    "original13949_compact_JSON_bytes": [
+      67,
+      188,
+      142,
+      452
+    ],
+    "original13949_static_frame_bytes": [
+      98,
+      259,
+      198,
+      611
+    ],
+    "meaning": "Reuse existing provisional limits, not hardware-qualified capacities. No511/512/611 reinterpretation, cap increase, multipart selection, new corpus or decoder."
+  },
+  "independent_positive_expectations": [
+    {
+      "id": "basic",
+      "source_path": "protocols/contracts/v1/vectors/events/kind-1-basic.json",
+      "request_id": "req-kind-1-basic",
+      "expected_pubkey": "4f355bdcb7cc0af728ef3cceb9615d90684bb5b2ca5f859ab0f0b704075871aa",
+      "expected_event_id": "2977f107ad2668dbd9f09b8594eff3b5276e21bfe098e60ae3e905e3c861e4d3",
+      "expected_signature": "2eec0351eb1d651140922d4b1f1bd8135f4474aabf42ec5bda7011087c1a072d71be863646dc162e4d96eacf14afeed2618a4acb0e1134a273a2b8e73039e654",
+      "expected_complete_event": {
+        "id": "2977f107ad2668dbd9f09b8594eff3b5276e21bfe098e60ae3e905e3c861e4d3",
+        "pubkey": "4f355bdcb7cc0af728ef3cceb9615d90684bb5b2ca5f859ab0f0b704075871aa",
+        "created_at": 1710000000,
+        "kind": 1,
+        "tags": [],
+        "content": "nSealr fixture: basic kind 1 event.",
+        "sig": "2eec0351eb1d651140922d4b1f1bd8135f4474aabf42ec5bda7011087c1a072d71be863646dc162e4d96eacf14afeed2618a4acb0e1134a273a2b8e73039e654"
+      },
+      "raw_response_order": "Use core bare-event field order inside version/request_id/ok/result wrapper; semantic equality to source expected event, not replay of original response envelope bytes."
+    },
+    {
+      "id": "tagged",
+      "source_path": "protocols/contracts/v1/vectors/events/kind-1-tags.json",
+      "request_id": "req-kind-1-tags",
+      "expected_pubkey": "4f355bdcb7cc0af728ef3cceb9615d90684bb5b2ca5f859ab0f0b704075871aa",
+      "expected_event_id": "0bef8491d04976053cdde3cff1903224b94fdee708712adffb00fe754a634543",
+      "expected_signature": "3538c2bf84dd2008a7a0c0011be7d45e3f4f754a3fd67c87fa8815483299060c26b929330e261e6c69947bd16561b6f7ed64dbc80d0f79852167f165f0c703e0",
+      "expected_complete_event": {
+        "id": "0bef8491d04976053cdde3cff1903224b94fdee708712adffb00fe754a634543",
+        "pubkey": "4f355bdcb7cc0af728ef3cceb9615d90684bb5b2ca5f859ab0f0b704075871aa",
+        "created_at": 1710000060,
+        "kind": 1,
+        "tags": [
+          [
+            "p",
+            "4f355bdcb7cc0af728ef3cceb9615d90684bb5b2ca5f859ab0f0b704075871aa",
+            "",
+            "mention"
+          ],
+          [
+            "t",
+            "nsealr"
+          ]
+        ],
+        "content": "nSealr fixture: tagged kind 1 event.",
+        "sig": "3538c2bf84dd2008a7a0c0011be7d45e3f4f754a3fd67c87fa8815483299060c26b929330e261e6c69947bd16561b6f7ed64dbc80d0f79852167f165f0c703e0"
+      },
+      "raw_response_order": "Use core bare-event field order inside version/request_id/ok/result wrapper; semantic equality to source expected event, not replay of original response envelope bytes."
+    }
+  ],
+  "cases": [
+    {
+      "id": "P01",
+      "input_or_trigger": "existing original get-public-key frame",
+      "expected_class": "success",
+      "required_assertions": "Actual owner public key equals test-key-1; matching request_id and complete142-byte JSON/198-byte frame; no presentation/auxiliary/sign attempt.",
+      "executed": false,
+      "expected_status_by_subcase": {
+        "valid": 0
+      }
+    },
+    {
+      "id": "P02",
+      "input_or_trigger": "existing original kind-1-basic frame",
+      "expected_class": "success",
+      "required_assertions": "Every Rust frame shown in contiguous index order through separate decision; actual core first attempt/one aux invocation; exact existing event fields/ID/signature; complete v2 response passes actual client.",
+      "executed": false,
+      "expected_status_by_subcase": {
+        "valid": 0
+      }
+    },
+    {
+      "id": "P03",
+      "input_or_trigger": "existing kind-1-tags.request serialized compactly by the actual host",
+      "expected_class": "success",
+      "required_assertions": "Different incoming request/template must produce the independently pinned tagged event/ID/signature, with every indexed tag/field/suffix presented. Stored basic/canary response cannot pass.",
+      "executed": false,
+      "expected_status_by_subcase": {
+        "valid": 0
+      }
+    },
+    {
+      "id": "P04",
+      "input_or_trigger": "basic request with only request_id replaced by another already-admissible ID",
+      "expected_class": "success",
+      "required_assertions": "Fresh complete review; new ID appears in review and response. Event ID/signature stay equal because Nostr canonical event excludes host correlation. No prior approval reused.",
+      "executed": false,
+      "expected_status_by_subcase": {
+        "valid": 0
+      }
+    },
+    {
+      "id": "P05",
+      "input_or_trigger": "basic JSON with leading/trailing whitespace or reordered members, same exact request fields",
+      "expected_class": "success",
+      "required_assertions": "Core receives unchanged decoded bytes; same event/ID/signature; full fresh review. No Python normalization is allowed.",
+      "executed": false,
+      "expected_status_by_subcase": {
+        "valid": 0
+      }
+    },
+    {
+      "id": "B01",
+      "input_or_trigger": "raw frame lengths0/947/948 and null/overflow/overlap arguments",
+      "expected_class": "boundary",
+      "required_assertions": "Reject invalid raw bounds before slice/copy/callback; legitimate947-byte frame from JSON704 admitted to strict parsing. Do not dereference invalid caller pointers to test UB.",
+      "executed": false,
+      "expected_status_by_subcase": {
+        "invalid_bounds_or_pointer_arguments": -1,
+        "valid_maximum_frame": 0
+      }
+    },
+    {
+      "id": "B02",
+      "input_or_trigger": "original valid basic JSON padded with legal trailing ASCII whitespace to704 then705 bytes",
+      "expected_class": "boundary",
+      "required_assertions": "704 decodes and reviews normally.705 requires948 frame bytes and fails outer guard; do not count that as executing internal decoded-cap rejection. Existing core codec boundary tests retain that distinct coverage.",
+      "executed": false,
+      "expected_status_by_subcase": {
+        "JSON704_valid": 0,
+        "JSON705_outer_guard": -1
+      }
+    },
+    {
+      "id": "B03",
+      "input_or_trigger": "invalid prefix/base64 padding/trailing bits/UTF8, decoded duplicate or escaped-alias members, version2e0/-0/fraction, unknown members",
+      "expected_class": "request_error",
+      "required_assertions": "Original malformed bytes arrive at Rust parser; no presentation/auxiliary/sign attempt or successful response. Equal-valued duplicate keys must still reject.",
+      "executed": false,
+      "expected_status_by_subcase": {
+        "strict_frame_or_request_error": -3
+      }
+    },
+    {
+      "id": "B04",
+      "input_or_trigger": "valid parsed get_capabilities and generic DM/AUTH/setup kinds4/13/14/1059/10050/22242 or unknown kind",
+      "expected_class": "unsupported_or_request_error",
+      "required_assertions": "No capability/readiness promotion, reference-signer fallback, local approval or signature output.",
+      "executed": false,
+      "expected_status_by_subcase": {
+        "parsed_unsupported_method_or_catalog": -4,
+        "unknown_or_malformed_method": -3
+      }
+    },
+    {
+      "id": "A01",
+      "input_or_trigger": "Premature Approve/reordered action attempting to skip a Rust page; unknown approved/digest request members; explicit display failure",
+      "expected_class": "review_or_display_error",
+      "required_assertions": "No API lets Python select/skip the owner cursor. Premature approval fails; raw extra authority fields reject; explicit presenter failure acknowledges no page. Assert every actual displayed Rust byte/index. A trusted Python presenter that lies about displaying cannot be detected or isolated by this ABI; no such guarantee.",
+      "executed": false,
+      "expected_status_by_subcase": {
+        "premature_approval": -9,
+        "presenter_reports_failure": -6,
+        "forged_approval_members_in_request": -3
+      }
+    },
+    {
+      "id": "A02",
+      "input_or_trigger": "local Reject, Back then complete traversal, None/poll until old step ceiling",
+      "expected_class": "reject_or_bounded_success",
+      "required_assertions": "Reject ends authority; Back never extends deadline and later success requires full traversal; callback-step exhaustion refuses with no signature.",
+      "executed": false,
+      "expected_status_by_subcase": {
+        "local_reject": -5,
+        "complete_back_traversal": 0,
+        "step_exhaustion": -9
+      }
+    },
+    {
+      "id": "A03",
+      "input_or_trigger": "Python exceptions in presenter/action/clock/auxiliary/cancel callbacks",
+      "expected_class": "closed_failure",
+      "required_assertions": "Catch in each ctypes callback; explicit error crosses C ABI, never an uncaught foreign exception or inferred default action. Admitted result zeroed; owner/guard settled.",
+      "executed": false,
+      "expected_status_by_subcase": {
+        "presentation_or_action_exception": -6,
+        "clock_exception": -7,
+        "aux_exception": -8,
+        "cancel_callback_exception": -11
+      }
+    },
+    {
+      "id": "T01",
+      "input_or_trigger": "missing/rollback/overflow/expiry clock at intake/review/first attempt/completion/final publication",
+      "expected_class": "clock_error",
+      "required_assertions": "Actual callback stage reached and recorded. On attempted execution consent is spent before fresh clock callback; no stale staged output may publish.",
+      "executed": false,
+      "expected_status_by_subcase": {
+        "unavailable_rollback_overflow_expiry": -7
+      }
+    },
+    {
+      "id": "T02",
+      "input_or_trigger": "cancel before intake, during review, after approval before attempt, during auxiliary, after core success before wrapper publication",
+      "expected_class": "cancel_or_clock_error",
+      "required_assertions": "No successful frame; after approval invoke the consuming core attempt before its external freshness callback or explicitly cancel owner, never leave retry authority. Final publication samples after staging.",
+      "executed": false,
+      "expected_status_by_subcase": {
+        "cooperative_cancel_observed": -11
+      }
+    },
+    {
+      "id": "E01",
+      "input_or_trigger": "auxiliary error after each written prefix0..32; short reports0/1/31; oversized report33 after writing<=32",
+      "expected_class": "auxiliary_error",
+      "required_assertions": "Exactly one attempted provider path; full destination wiped by core, no fallback or second attempt/output; next API call must perform fresh complete review. Do not write beyond destination for oversized-report control.",
+      "executed": false,
+      "expected_status_by_subcase": {
+        "error_short_or_oversized_report": -8
+      }
+    },
+    {
+      "id": "O01",
+      "input_or_trigger": "caller output capacities197 for198 getkey and610 for611 basic sign, plus maximum947",
+      "expected_class": "capacity_error_or_success",
+      "required_assertions": "Insufficient live caller space yields no partial output; successful947-capacity call returns exact written length and zero tail. Record actual sign/provider effects before any late capacity refusal.",
+      "executed": false,
+      "expected_status_by_subcase": {
+        "valid_but_insufficient_output": -10,
+        "full_output_capacity": 0
+      }
+    },
+    {
+      "id": "L01",
+      "input_or_trigger": "nested/concurrent call from first clock and from presentation; then fresh call after settlement",
+      "expected_class": "busy_then_fresh_success",
+      "required_assertions": "Guard is reserved before callbacks and pointer borrowing. Busy touches no nested input/output; wrapper prezeros. Outer operation unaffected; later call has a new owner/full review.",
+      "executed": false,
+      "expected_status_by_subcase": {
+        "nested_or_concurrent": -2,
+        "fresh_after_settlement": 0
+      }
+    },
+    {
+      "id": "L02",
+      "input_or_trigger": "callback blocks until test explicitly releases it; caller locally cancels meanwhile",
+      "expected_class": "no_early_reuse",
+      "required_assertions": "No forced interrupt claim; second call remains Busy while native call/callback runs. No adapter/camera reservation release merely because caller timed out. Uncertain native termination is quarantined.",
+      "executed": false,
+      "expected_status_by_subcase": {
+        "nested_while_blocked": -2,
+        "outer_after_local_cancel_observed": -11
+      }
+    },
+    {
+      "id": "L03",
+      "input_or_trigger": "test-only internal Rust unwind before publication",
+      "expected_class": "panic_error",
+      "required_assertions": "Catch inside Rust C boundary, clear admitted public output and release guard only after cleanup. Not an abort/invalid-pointer/foreign-unwind recovery claim; no public panic selector.",
+      "executed": false,
+      "expected_status_by_subcase": {
+        "internal_caught_Rust_unwind": -12
+      }
+    },
+    {
+      "id": "V01",
+      "input_or_trigger": "actual handleLocalServiceRequestAsync plus injected manual port calling the Pi adapter child for P02/P03",
+      "expected_class": "success",
+      "required_assertions": "Actual two sign_event round trips, not prerecorded response mocks: match account/request/key/template, canonical ID and Schnorr verification using unchanged client verifier; complete child/native settlement before close.",
+      "executed": false,
+      "expected_status_by_subcase": {
+        "client_dispatch": "ok:true, independently verified response"
+      }
+    },
+    {
+      "id": "V02",
+      "input_or_trigger": "wrong expected account key; response request_id/template/eventID/signature mutated one field at a time",
+      "expected_class": "client_refusal",
+      "required_assertions": "All mutations keep valid wire shape and actually cross the adapter/client boundary. Wrong expected-key route must really dispatch before rejection; template mismatch uses the other independently valid signed vector with matching correlation ID; ID/signature mutations preserve length/hex syntax. Assert invalid_signer_response at the intended verifier layer, not an earlier schema/compatibility failure.",
+      "executed": false,
+      "expected_status_by_subcase": {
+        "valid_shape_but_wrong_binding_or_signature": "invalid_signer_response"
+      }
+    },
+    {
+      "id": "V03",
+      "input_or_trigger": "late result, repeated scan/cancel, changed route/account/capabilities/limits or uncooperative child",
+      "expected_class": "client_refusal_no_early_reuse",
+      "required_assertions": "Reuse actual client/manual dispatcher currentness/pending/cleanup machinery. Host refusal does not recall a device operation; retain ownership until genuine promise/child settlement.",
+      "executed": false,
+      "expected_status_by_subcase": {
+        "late_or_invalidated": "existing client transport/currentness refusal; assert actual layer reached, no stale result"
+      }
+    },
+    {
+      "id": "N01",
+      "input_or_trigger": "patch Python sign_request/sign_event reference functions to raise and supply missing/wrong ABI library",
+      "expected_class": "no_fallback",
+      "required_assertions": "Valid new adapter path never invokes Python signer; missing symbol/library hash/version is a loader failure. No old fixed canary or cached response used as substitute.",
+      "executed": false,
+      "expected_status_by_subcase": {
+        "loader_failure": "Python closed loader exception, no C call/fallback"
+      }
+    }
+  ],
+  "proposed_future_edit_set": [
+    {
+      "path": "Cargo.toml",
+      "action": "Only add crates/nsealr-pi-engine-fixture as workspace member; no new registry dependency."
+    },
+    {
+      "path": "Cargo.lock",
+      "action": "Only new fixture member/local path edge and compatible existing product closure; no third active lock or historical lock rewrite."
+    },
+    {
+      "path": "crates/nsealr-pi-engine-fixture/Cargo.toml",
+      "action": "New publish=false host cdylib workspace member, only nsealr-core path/default-features=false; inherit workspace host unwind build, reject abort-only mode for this experiment."
+    },
+    {
+      "path": "crates/nsealr-pi-engine-fixture/src/lib.rs",
+      "action": "New request-aware monolithic Rust owner/C ABI plus scoped actual-owner unit tests."
+    },
+    {
+      "path": "ci/ratchet.json",
+      "action": "Only add new fixture member floor100.00%; existing core100.00/host76.70 and checker unchanged. Existing workspace-membership ratchet requires an entry; no weakening or new gate."
+    },
+    {
+      "path": "apps/pi/app/nsealr_vault/engine_adapter.py",
+      "action": "new thin ctypes caller, explicit built-library path/hash, local callback adapters; no reference signer/key API"
+    },
+    {
+      "path": "apps/pi/tests/test_engine_adapter.py",
+      "action": "new meaningful source/bounds/callback/authority/effect/cleanup tests with actual library"
+    },
+    {
+      "path": "docs/restart/implementation/QP01/request-engine/exchange.py",
+      "action": "new finite public-fixture software driver using actual Pi adapter; original frame in/response out, no camera or default CLI wiring"
+    },
+    {
+      "path": "docs/restart/implementation/QP01/request-engine/client-exchange.ts",
+      "action": "new finite actual-client/manual-port harness using existing workspace dependencies and Pi driver child; no product transport or service"
+    },
+    {
+      "path": "Makefile",
+      "action": "Only pi-ci: bridge-ci and real exchange.py --ci apps/pi provisioning driver; this invokes full existing Pi CI once before client exchange, no Actions/service/other gate replacement."
+    },
+    {
+      "path": "scripts/check_product_gates.py",
+      "action": "Require exact invoked exchange.py --ci apps/pi marker, whose apps/pi argument really supplies child make -C. Preserve existing Pi gate/other markers/all17 integration obligations and existing removal controls."
+    }
+  ],
+  "unchanged_paths_and_properties": [
+    "Shared core/parser/catalog/one-use APIs and old tests/vectors",
+    "Old QP01 canary/proofs/locks and Python independent signer/hardware_flow/CLI",
+    "Protocol/schema/framing/caps and native image-worker512",
+    "Actual client/manual dispatcher lifecycle and no default routes/readiness",
+    "Existing root/host dependencies and host lock, vendor/toolchain/Actions workflows/other CI recipes/graph/criteria/resource/release state; root member/lock and new member floor are the only integration metadata additions"
+  ],
+  "commands_after_root_runtime_assignment": [
+    "Freeze actual test definitions and run focused RED before affected runtime source edits; do not claim a pre-code source reading is executed RED.",
+    "cargo build -p nsealr-pi-engine-fixture --locked --offline --release (same root workspace/lock/vendor, task-local target/cache, pinned R00 toolchain)",
+    "Default pi-ci driver builds before autodiscovery, passes explicit source-matched ELF path/hash to the FULL existing make -C apps/pi ci exactly once, then runs actual client exchange. No skip, fallback or duplicate suite; focused new tests are development controls only.",
+    "exchange.py --ci apps/pi uses the required directory as actual make -C input, runs full Pi CI first, then mandatory client-exchange.ts. Existing bridge-ci prerequisite runs once outside driver. Preserve setup/test/lint/audit/docs, original thresholds and all17 integration steps.",
+    "Relevant existing Pi/core/client/manual-port controls only when changed perimeter requires; complete candidate checks later root-owned."
+  ],
+  "requirements_preserved": {
+    "QP01": "3 unchanged criteria remain incomplete: actual kit/image/physical/ABI unqualified",
+    "QH01": "5 unchanged criteria remain incomplete: actual bounded optical sessions/native resources/screens/cameras/multipart comparison not supplied",
+    "Q02": "6 unchanged criteria remain incomplete: engineering known-public fixture does not deliver real custody/provider or exact-target execution"
+  },
+  "remaining_property_or_experiment": "No source API blocker identified. Missing actual experiment is dynamic incoming-frame -> complete Rust local review/one-use signature -> matching v2 frame -> actual client verification, including failure/effect matrix. Real hardware/ABI/presenter/camera/provider and611 optical decode capacity remain separate unknowns; existing kit/operator question is not repeated.",
+  "new_executions": {
+    "code": 0,
+    "builds": 0,
+    "tests": 0,
+    "fetches": 0,
+    "CI_queries": 0,
+    "physical_operations": 0
+  },
+  "limitations": [
+    "Trusted Python/callback/native code stays in same-process TCB; no secret isolation or production-key loading",
+    "Local cancellation is cooperative and host cancellation cannot recall an optical device action",
+    "Clock tick conversion and geometry are host engineering parameters, not qualified target latency/UI",
+    "Fresh owner/public fixture per call is not Q01 session custody/import/recovery implementation",
+    "Original JSON704 / static947 / worker512 are different units; full signed response611 remains outside image-worker experiment",
+    "Spec only; root review and actual source/runtime assignment remain required"
+  ],
+  "workspace_and_audit": "crates/nsealr-pi-engine-fixture is an ordinary unpublished workspace member, audited under Cargo.toml/root Cargo.lock by the existing wrapper. No standalone Cargo.lock under proof prefix. This remains public-fixture-only; membership does not enable a product/device route.",
+  "mandatory_default_CI": {
+    "entry": "Existing root pi-ci: bridge-ci, recipe python3 -B docs/restart/implementation/QP01/request-engine/exchange.py --ci apps/pi. The required apps/pi argument is resolved/validated as root/apps/pi and actually used in the child make -C call; not a comment or unused marker.",
+    "finite_driver_steps": [
+      "cargo build -p nsealr-pi-engine-fixture --locked --offline --release --message-format=json, using inherited R00 CARGO_TARGET_DIR unchanged",
+      "Require exactly the fresh requested cdylib compiler-artifact; derive actual absolute path from Cargo JSON, verify file/source binding, calculate SHA256. Never assume ./target or a cached filename.",
+      "BEFORE unittest autodiscovery, pass explicit built ELF path/hash environment to the ENTIRE existing make -C <resolved apps/pi> ci exactly once, preserving its setup/test/lint/audit/docs; missing/mismatched ELF fails. Do not run a duplicate173-case suite or substitute only new native unittests.",
+      "Only after the full Pi CI succeeds, run actual client-exchange.ts with the SAME ELF path/hash and pinned Pi interpreter. bridge-ci is an existing Make prerequisite executed once by Make, never invoked again inside driver. All17 integration obligations remain unchanged."
+    ],
+    "placement": "Required exact exchange.py --ci apps/pi marker follows the invoked recipe and real child argument; existing apps/pi marker is not preserved through a comment. Existing marker-removal controls and actual driver step-order assertions must reject missing full Pi CI/native provisioning/client exchange; retain other markers/counts."
+  }
+}
