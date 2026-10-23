@@ -6,6 +6,7 @@ RISCV_TARGET := riscv32imafc-unknown-none-elf
 RUST_COVERAGE_JSON := build/rust-core-coverage.json
 HOST_COVERAGE_JSON := build/rust-host-coverage.json
 HOST_MANIFEST := apps/desktop-simulator/Cargo.toml
+QR_MANIFEST := apps/pi/qr-worker/Cargo.toml
 
 # ---------------------------------------------------------------------------
 # Generic (toolchain-agnostic) Python gates.
@@ -40,13 +41,16 @@ docs:
 cargo-fmt:
 	cargo fmt --all --check
 	cargo fmt --manifest-path $(HOST_MANIFEST) --all --check
+	cargo fmt --manifest-path $(QR_MANIFEST) --all --check
 
 cargo-clippy:
 	cargo clippy --all-targets -- -D warnings -D dead_code
 	cargo clippy --all-targets --all-features -- -D warnings -D dead_code
 	cargo clippy --manifest-path $(HOST_MANIFEST) --all-targets --all-features -- -D warnings -D dead_code
+	cargo clippy --manifest-path $(QR_MANIFEST) --locked --offline --all-targets --all-features -- -D warnings -D dead_code
 
 cargo-test:
+	cargo test --manifest-path $(QR_MANIFEST) --locked --offline
 	cargo test --workspace
 	cargo test -p nsealr-core --features std
 	cargo build -p nsealr-core --target $(RISCV_TARGET)
@@ -84,6 +88,7 @@ bridge-ci:
 	pnpm run ci
 
 pi-ci: bridge-ci
+	python3 -B -m unittest discover -s docs/restart/implementation/QP01/request-engine -p 'test_provision.py'
 	python3 -B docs/restart/implementation/QP01/request-engine/exchange.py --ci apps/pi
 
 integration-tests:

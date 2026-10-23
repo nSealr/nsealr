@@ -8,7 +8,7 @@ import tempfile
 import tomllib
 
 ROOT = Path(__file__).resolve().parents[1]
-MANIFESTS = ('Cargo.toml', 'apps/desktop-simulator/Cargo.toml')
+MANIFESTS = ('Cargo.toml', 'apps/desktop-simulator/Cargo.toml', 'apps/pi/qr-worker/Cargo.toml')
 
 
 def audit(root=ROOT):

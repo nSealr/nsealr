@@ -83,7 +83,7 @@ async function runScope(readinessControls: boolean, firstGate = false) {
       child.once("close", (code, signal) => {
         reaped = true; collected++; closedAt = process.hrtime.bigint(); clearTimeout(safety);
         readyNo(new Error("child closed before readiness"));
-        console.log(JSON.stringify({ child_settlement: { scope: readinessControls ? "readiness_controls" : "actual_client", pid: child.pid, code, signal,
+        console.log(JSON.stringify({ [firstGate ? "first_owner_child_settlement" : "child_settlement"]: { scope: firstGate ? "first_owner_gate_C" : readinessControls ? "readiness_controls" : "actual_client", pid: child.pid, code, signal,
           synthetic_handshake_control: !!syntheticArgv, sent, readiness_hex: readyBytes.toString("hex"),
           stdout_bytes: out, stderr_bytes: err, overflow,
           initialization_ns: readyAt === undefined ? null : String(readyAt - spawnedAt),
@@ -124,7 +124,7 @@ async function runScope(readinessControls: boolean, firstGate = false) {
         assert.equal(trace.output_sha256, createHash("sha256").update(response).digest("hex"));
         assert(trace.synthetic_complete_review.length > 1);
         reports.push(trace);
-        console.log(JSON.stringify({ native_observation: trace }));
+        console.log(JSON.stringify({ [firstGate ? "first_owner_native_observation" : "native_observation"]: trace }));
         return response;
       }
     };
