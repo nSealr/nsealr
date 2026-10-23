@@ -92,7 +92,7 @@
       "request_id": "req-kind-1-basic",
       "expected_pubkey": "4f355bdcb7cc0af728ef3cceb9615d90684bb5b2ca5f859ab0f0b704075871aa",
       "expected_event_id": "2977f107ad2668dbd9f09b8594eff3b5276e21bfe098e60ae3e905e3c861e4d3",
-      "expected_signature": "2eec0351eb1d651140922d4b1f1bd8135f4474aabf42ec5bda7011087c1a072d71be863646dc162e4d96eacf14afeed2618a4acb0e1134a273a2b8e73039e654",
+      "expected_signature": "d8f39a159fd833bb1f0663c7f03b2ff1c19b27867442a5a372779fe6998a8a28b26c623fed74896a5065b1a6739d1953b9d386d2d57e24cf1f7c1cc353a82635",
       "expected_complete_event": {
         "id": "2977f107ad2668dbd9f09b8594eff3b5276e21bfe098e60ae3e905e3c861e4d3",
         "pubkey": "4f355bdcb7cc0af728ef3cceb9615d90684bb5b2ca5f859ab0f0b704075871aa",
@@ -100,9 +100,25 @@
         "kind": 1,
         "tags": [],
         "content": "nSealr fixture: basic kind 1 event.",
-        "sig": "2eec0351eb1d651140922d4b1f1bd8135f4474aabf42ec5bda7011087c1a072d71be863646dc162e4d96eacf14afeed2618a4acb0e1134a273a2b8e73039e654"
+        "sig": "d8f39a159fd833bb1f0663c7f03b2ff1c19b27867442a5a372779fe6998a8a28b26c623fed74896a5065b1a6739d1953b9d386d2d57e24cf1f7c1cc353a82635"
       },
-      "raw_response_order": "Use core bare-event field order inside version/request_id/ok/result wrapper; semantic equality to source expected event, not replay of original response envelope bytes."
+      "raw_response_order": "Use core bare-event field order inside version/request_id/ok/result wrapper; semantic equality to source expected event, not replay of original response envelope bytes.",
+      "legacy_verification_reference": {
+        "source_path": "protocols/contracts/v1/vectors/events/kind-1-basic.json",
+        "source_commit": "e8ffed4ed4643c1e74b598c742b81ca718118cf4",
+        "signature": "2eec0351eb1d651140922d4b1f1bd8135f4474aabf42ec5bda7011087c1a072d71be863646dc162e4d96eacf14afeed2618a4acb0e1134a273a2b8e73039e654",
+        "role": "Unchanged historical valid signature golden for verification/interoperability only; not the expected explicit-zero-aux signature. Historical nonce provenance is unknown."
+      },
+      "signing_expectation_source": {
+        "reference_path": "docs/restart/implementation/S03/oracle-source/bip340_reference.py",
+        "reference_sha256": "4b1d4ad9e60820df4a6d239733d52b014bc03e4c47afd757a2fe4d3b586d892c",
+        "formula": "schnorr_sign(bytes.fromhex(raw_event_id), bytes.fromhex(scalar_hex), bytes.fromhex(aux_hex))",
+        "scalar_hex": "1111111111111111111111111111111111111111111111111111111111111111",
+        "aux_hex": "0000000000000000000000000000000000000000000000000000000000000000",
+        "oracle_result_commit": "26e6ab77ba05d8b6ac7c85784a2cdaaeb2fa1eda",
+        "generator_replay_commit": "4fd9bbf376b76c12fa639a0bf264730bac1b9749",
+        "requirement": "Exact signature-byte equality and existing semantic/canonical/key/correlation checks; verification alone is insufficient."
+      }
     },
     {
       "id": "tagged",
@@ -110,7 +126,7 @@
       "request_id": "req-kind-1-tags",
       "expected_pubkey": "4f355bdcb7cc0af728ef3cceb9615d90684bb5b2ca5f859ab0f0b704075871aa",
       "expected_event_id": "0bef8491d04976053cdde3cff1903224b94fdee708712adffb00fe754a634543",
-      "expected_signature": "3538c2bf84dd2008a7a0c0011be7d45e3f4f754a3fd67c87fa8815483299060c26b929330e261e6c69947bd16561b6f7ed64dbc80d0f79852167f165f0c703e0",
+      "expected_signature": "1336d914499020b678dd43d19e533233cb7a19de5bd25f8e8ec891319d28c4ea0e4a99d800d3525b17c8b411f116c195ac22496a39c4d321340799a6027bb668",
       "expected_complete_event": {
         "id": "0bef8491d04976053cdde3cff1903224b94fdee708712adffb00fe754a634543",
         "pubkey": "4f355bdcb7cc0af728ef3cceb9615d90684bb5b2ca5f859ab0f0b704075871aa",
@@ -129,9 +145,25 @@
           ]
         ],
         "content": "nSealr fixture: tagged kind 1 event.",
-        "sig": "3538c2bf84dd2008a7a0c0011be7d45e3f4f754a3fd67c87fa8815483299060c26b929330e261e6c69947bd16561b6f7ed64dbc80d0f79852167f165f0c703e0"
+        "sig": "1336d914499020b678dd43d19e533233cb7a19de5bd25f8e8ec891319d28c4ea0e4a99d800d3525b17c8b411f116c195ac22496a39c4d321340799a6027bb668"
       },
-      "raw_response_order": "Use core bare-event field order inside version/request_id/ok/result wrapper; semantic equality to source expected event, not replay of original response envelope bytes."
+      "raw_response_order": "Use core bare-event field order inside version/request_id/ok/result wrapper; semantic equality to source expected event, not replay of original response envelope bytes.",
+      "legacy_verification_reference": {
+        "source_path": "protocols/contracts/v1/vectors/events/kind-1-tags.json",
+        "source_commit": "e8ffed4ed4643c1e74b598c742b81ca718118cf4",
+        "signature": "3538c2bf84dd2008a7a0c0011be7d45e3f4f754a3fd67c87fa8815483299060c26b929330e261e6c69947bd16561b6f7ed64dbc80d0f79852167f165f0c703e0",
+        "role": "Unchanged historical valid signature golden for verification/interoperability only; not the expected explicit-zero-aux signature. Historical nonce provenance is unknown."
+      },
+      "signing_expectation_source": {
+        "reference_path": "docs/restart/implementation/S03/oracle-source/bip340_reference.py",
+        "reference_sha256": "4b1d4ad9e60820df4a6d239733d52b014bc03e4c47afd757a2fe4d3b586d892c",
+        "formula": "schnorr_sign(bytes.fromhex(raw_event_id), bytes.fromhex(scalar_hex), bytes.fromhex(aux_hex))",
+        "scalar_hex": "1111111111111111111111111111111111111111111111111111111111111111",
+        "aux_hex": "0000000000000000000000000000000000000000000000000000000000000000",
+        "oracle_result_commit": "26e6ab77ba05d8b6ac7c85784a2cdaaeb2fa1eda",
+        "generator_replay_commit": "4fd9bbf376b76c12fa639a0bf264730bac1b9749",
+        "requirement": "Exact signature-byte equality and existing semantic/canonical/key/correlation checks; verification alone is insufficient."
+      }
     }
   ],
   "cases": [
@@ -149,7 +181,7 @@
       "id": "P02",
       "input_or_trigger": "existing original kind-1-basic frame",
       "expected_class": "success",
-      "required_assertions": "Every Rust frame shown in contiguous index order through separate decision; actual core first attempt/one aux invocation; exact existing event fields/ID/signature; complete v2 response passes actual client.",
+      "required_assertions": "Every Rust frame shown in contiguous index order through separate decision; actual core first attempt/one aux invocation; existing event fields/ID plus exact independently pinned explicit-zero-aux signature (legacy signature remains a verification golden); complete v2 response passes actual client.",
       "executed": false,
       "expected_status_by_subcase": {
         "valid": 0
@@ -159,7 +191,7 @@
       "id": "P03",
       "input_or_trigger": "existing kind-1-tags.request serialized compactly by the actual host",
       "expected_class": "success",
-      "required_assertions": "Different incoming request/template must produce the independently pinned tagged event/ID/signature, with every indexed tag/field/suffix presented. Stored basic/canary response cannot pass.",
+      "required_assertions": "Different incoming request/template must produce the existing tagged event/ID plus independently pinned explicit-zero-aux signature (legacy signature remains a verification golden), with every indexed tag/field/suffix presented. Stored basic/canary response cannot pass.",
       "executed": false,
       "expected_status_by_subcase": {
         "valid": 0
@@ -292,7 +324,27 @@
       "required_assertions": "Exactly one attempted provider path; full destination wiped by core, no fallback or second attempt/output; next API call must perform fresh complete review. Do not write beyond destination for oversized-report control.",
       "executed": false,
       "expected_status_by_subcase": {
-        "error_short_or_oversized_report": -8
+        "error_short_or_oversized_report": -8,
+        "positive_full32_aux42": 0
+      },
+      "positive_auxiliary_forwarding_control": {
+        "source_fixture": "protocols/contracts/v1/vectors/events/kind-1-basic.json",
+        "scalar_hex": "1111111111111111111111111111111111111111111111111111111111111111",
+        "pubkey": "4f355bdcb7cc0af728ef3cceb9615d90684bb5b2ca5f859ab0f0b704075871aa",
+        "raw_event_id": "2977f107ad2668dbd9f09b8594eff3b5276e21bfe098e60ae3e905e3c861e4d3",
+        "aux_hex": "4242424242424242424242424242424242424242424242424242424242424242",
+        "reported_count": 32,
+        "expected_native_status": 0,
+        "expected_signature_rule": {
+          "source_path": "docs/restart/implementation/S03/oracle-source/bip340_reference.py",
+          "source_sha256": "4b1d4ad9e60820df4a6d239733d52b014bc03e4c47afd757a2fe4d3b586d892c",
+          "formula": "schnorr_sign(bytes.fromhex(raw_event_id), bytes.fromhex(scalar_hex), bytes.fromhex(aux_hex))",
+          "exact_equality_required": true,
+          "must_differ_from_zero_aux_signature": "d8f39a159fd833bb1f0663c7f03b2ff1c19b27867442a5a372779fe6998a8a28b26c623fed74896a5065b1a6739d1953b9d386d2d57e24cf1f7c1cc353a82635",
+          "literal_status": "Not evaluated in this amendment: root explicitly forbids another signature operation here. A02 must calculate and record the exact independent expected bytes/source/time BEFORE this native call. No learning from native output or verification-only acceptance."
+        },
+        "required_assertions": "One provider call writes all32 bytes0x42, fresh complete review/one-use attempt, full matching event/key/ID and exact oracle signature; distinguish success from zero32 even if both verify. All previous failure/prefix/report/wipe controls remain unchanged.",
+        "executed": false
       }
     },
     {
@@ -471,5 +523,17 @@
       "Only after the full Pi CI succeeds, run actual client-exchange.ts with the SAME ELF path/hash and pinned Pi interpreter. bridge-ci is an existing Make prerequisite executed once by Make, never invoked again inside driver. All17 integration obligations remain unchanged."
     ],
     "placement": "Required exact exchange.py --ci apps/pi marker follows the invoked recipe and real child argument; existing apps/pi marker is not preserved through a comment. Existing marker-removal controls and actual driver step-order assertions must reject missing full Pi CI/native provisioning/client exchange; retain other markers/counts."
+  },
+  "nonce_contract_amendment": {
+    "role": "Author-only narrow correction awaiting distinct root affected review; no fixture/runtime change or acceptance.",
+    "preimage_spec_commit": "e8ffed4ed4643c1e74b598c742b81ca718118cf4",
+    "preimage_expectations_sha256": "5948a20781042b67cfe7f5ea5f4114baf1563e38bbafff74d61eeb404eedda82",
+    "investigation_commit": "5740407eeac6a4716be21616695d8f34939b6147",
+    "investigation_path": "docs/restart/implementation/QP01/request-engine/nonce-contract/conclusion.json",
+    "investigation_sha256": "7639c4719172a2d5ae69be634691b35bd901ba6cb5db8b1114abcff0efa46721",
+    "two_zero_aux_expectations": "Derived independently with pinned S03 reference in26e6 and matched by current pinned generator replay4fd9; no new signature computed here.",
+    "legacy_treatment": "Retain every original corpus byte. Valid legacy signatures have unproven original nonce provenance; do not assign sdist/R00 NULL origin.",
+    "E01_addition": "Only one successful nonzero-aux forwarding control, frozen input/formula now; exact independent literal must be recorded before future native execution.",
+    "case_groups_preserved": 23
   }
 }
