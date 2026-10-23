@@ -277,7 +277,7 @@ fn run(
         request.request_id().as_bytes(),
         b"\",\"ok\":true,\"result\":{",
         if is_key {
-            b"\"pubkey\":\""
+            b"\"public_key\":\""
         } else {
             b"\"event\":"
         },

@@ -2,7 +2,7 @@ use super::*;
 use std::{cell::RefCell, sync::Mutex};
 
 const BASIC: &[u8] = br#"{"version":2,"request_id":"req-kind-1-basic","method":"sign_event","params":{"event_template":{"created_at":1710000000,"kind":1,"tags":[],"content":"nSealr fixture: basic kind 1 event."}}}"#;
-const GET: &[u8] = br#"{"version":2,"request_id":"req-get-public-key","method":"get_public_key"}"#;
+const GET: &[u8] = br#"{"version":2,"request_id":"req-pubkey-1","method":"get_public_key"}"#;
 static SERIAL: Mutex<()> = Mutex::new(());
 #[derive(Default)]
 struct State {
@@ -306,7 +306,7 @@ fn arguments_do_not_touch_any_live_destination() {
     let input = encode(GET);
     let mut output = [0xa5; FRAME];
     let mut written = 123usize;
-    let mut invoke = |p, n, o, c, w| unsafe {
+    let invoke = |p, n, o, c, w| unsafe {
         qp01_fixture_request_v1(
             p,
             n,

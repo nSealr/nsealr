@@ -1,0 +1,34 @@
+
+running 3 tests
+test tests::actual_ffi_effects_and_boundaries ... FAILED
+test tests::unwind_cleanup_and_internal_error_mapping ... FAILED
+test tests::arguments_do_not_touch_any_live_destination ... FAILED
+
+failures:
+
+---- tests::actual_ffi_effects_and_boundaries stdout ----
+
+thread 'tests::actual_ffi_effects_and_boundaries' (1573792) panicked at crates/nsealr-pi-engine-fixture/src/tests.rs:250:5:
+assertion `left == right` failed
+  left: 200
+ right: 198
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+
+---- tests::unwind_cleanup_and_internal_error_mapping stdout ----
+
+thread 'tests::unwind_cleanup_and_internal_error_mapping' (1573794) panicked at crates/nsealr-pi-engine-fixture/src/tests.rs:381:33:
+called `Result::unwrap()` on an `Err` value: PoisonError { .. }
+
+---- tests::arguments_do_not_touch_any_live_destination stdout ----
+
+thread 'tests::arguments_do_not_touch_any_live_destination' (1573793) panicked at crates/nsealr-pi-engine-fixture/src/tests.rs:305:33:
+called `Result::unwrap()` on an `Err` value: PoisonError { .. }
+
+
+failures:
+    tests::actual_ffi_effects_and_boundaries
+    tests::arguments_do_not_touch_any_live_destination
+    tests::unwind_cleanup_and_internal_error_mapping
+
+test result: FAILED. 0 passed; 3 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.49s
+
