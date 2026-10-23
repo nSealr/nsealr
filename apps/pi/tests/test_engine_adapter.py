@@ -17,7 +17,18 @@ from nsealr_vault.engine_adapter import EngineAdapter, EngineError
 
 
 def vector(name):
-    return json.loads((ROOT / "protocols/contracts/v1/vectors/events" / name).read_text())
+    original = json.loads((ROOT / "protocols/contracts/v1/vectors/events" / name).read_text())
+    amended = json.loads((ROOT / "docs/restart/implementation/QP01/request-engine/expectations.json").read_text())
+    expected = next(row for row in amended["independent_positive_expectations"] if row["source_path"].endswith("/" + name))
+    # Only the reviewed, independently calculated nonce-dependent signature
+    # changes in this in-memory expectation. Original files remain untouched.
+    assert {k: v for k, v in original["signed_event"].items() if k != "sig"} == {
+        k: v for k, v in expected["expected_complete_event"].items() if k != "sig"}
+    assert original["signature"] == expected["legacy_verification_reference"]["signature"]
+    original["signature"] = expected["expected_signature"]
+    original["signed_event"]["sig"] = expected["expected_signature"]
+    original["response"]["result"]["event"]["sig"] = expected["expected_signature"]
+    return original
 
 
 def frame(raw):
@@ -127,6 +138,22 @@ class EngineAdapterTests(unittest.TestCase):
         self.assertEqual(response(result), expected)
         self.assertEqual(self.pages, [])
         self.assertEqual(self.aux_calls, 0)
+
+    def test_E01_positive_aux42_is_forwarded_exactly_once(self):
+        expected = json.loads((ROOT / "docs/restart/implementation/QP01/request-engine/evidence/aux42-expected-01/stdout.log").read_text())
+        data = vector("kind-1-basic.json")
+        calls = []
+        def auxiliary():
+            value = bytes.fromhex(expected["input"]["aux_hex"])
+            calls.append(value)
+            return value
+        actual = response(self.execute(frame(compact(data["request"])), auxiliary=auxiliary))
+        self.assertEqual(calls, [bytes([0x42]) * 32])
+        self.assertNotEqual(actual["result"]["event"]["sig"], data["signature"])
+        data["response"]["result"]["event"]["sig"] = expected["expected_signature"]
+        self.assertEqual(actual, data["response"])
+        self.assertEqual([p.index for p in self.pages], list(range(len(self.pages))))
+        self.assertEqual(self.pages[-1].kind, 1)
 
     def test_B03_strict_original_bytes_no_normalization(self):
         raw = compact(vector("kind-1-basic.json")["request"])

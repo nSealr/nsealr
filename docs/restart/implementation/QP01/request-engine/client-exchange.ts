@@ -14,6 +14,13 @@ import { createManualQrRouteDispatcher } from "../../../../../apps/bridge/servic
 const root = resolve(fileURLToPath(new URL("../../../../../", import.meta.url)));
 const load = (path: string) => JSON.parse(readFileSync(resolve(root, "protocols/contracts/v1", path), "utf8"));
 const basic = load("vectors/events/kind-1-basic.json"), tagged = load("vectors/events/kind-1-tags.json");
+const amended = JSON.parse(readFileSync(new URL("expectations.json", import.meta.url), "utf8"));
+for (const [vector, id] of [[basic, "basic"], [tagged, "tagged"]] as const) {
+  const expected = amended.independent_positive_expectations.find((row: any) => row.id === id);
+  assert.equal(vector.signature, expected.legacy_verification_reference.signature);
+  vector.response.result.event.sig = expected.expected_signature;
+  assert.deepEqual(vector.response.result.event, expected.expected_complete_event);
+}
 const identity = { surface: "cli" as const, origin: "app:qp01-public-fixture", app_name: "QP01 synthetic engineering fixture" };
 const qr = (value: unknown) => `nsealr1:${Buffer.from(JSON.stringify(value)).toString("base64url")}`;
 const decode = (value: string) => JSON.parse(Buffer.from(value.slice(8), "base64url").toString("utf8"));
