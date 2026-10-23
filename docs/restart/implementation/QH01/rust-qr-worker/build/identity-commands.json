@@ -1,0 +1,72 @@
+{
+  "commands": [
+    {
+      "name": "rustc",
+      "argv": [
+        "rustc",
+        "-vV"
+      ],
+      "cwd": "/home/tux",
+      "exit_code": 0
+    },
+    {
+      "name": "cargo",
+      "argv": [
+        "cargo",
+        "-V"
+      ],
+      "cwd": "/home/tux",
+      "exit_code": 0
+    },
+    {
+      "name": "features",
+      "argv": [
+        "cargo",
+        "tree",
+        "--locked",
+        "--offline",
+        "-e",
+        "features",
+        "--manifest-path",
+        "/home/tux/nsealr/.restart-tools/goal/qh01-linux-worker-experiment/docs/restart/implementation/QH01/rust-qr-worker/Cargo.toml"
+      ],
+      "cwd": "/home/tux",
+      "exit_code": 0
+    },
+    {
+      "name": "ELF",
+      "argv": [
+        "readelf",
+        "-h",
+        "-l",
+        "-d",
+        "/home/tux/nsealr/.restart-tools/goal/qh01-linux-worker-experiment/docs/restart/implementation/QH01/rust-qr-worker/.runtime/target/release/nsealr-qh01-rust-qr-worker"
+      ],
+      "cwd": "/home/tux",
+      "exit_code": 0
+    },
+    {
+      "name": "link",
+      "argv": [
+        "ldd",
+        "/home/tux/nsealr/.restart-tools/goal/qh01-linux-worker-experiment/docs/restart/implementation/QH01/rust-qr-worker/.runtime/target/release/nsealr-qh01-rust-qr-worker"
+      ],
+      "cwd": "/home/tux",
+      "exit_code": 0
+    },
+    {
+      "name": "cc",
+      "argv": [
+        "cc",
+        "--version"
+      ],
+      "cwd": "/home/tux",
+      "exit_code": 0
+    }
+  ],
+  "environment_reuse": "release-command.json",
+  "binary_path": "/home/tux/nsealr/.restart-tools/goal/qh01-linux-worker-experiment/docs/restart/implementation/QH01/rust-qr-worker/.runtime/target/release/nsealr-qh01-rust-qr-worker",
+  "binary_bytes": 669048,
+  "binary_sha256": "d0bd5e36d9303cab7c33aebf868e5f52394265b95f3b851a3366f2a8203db559",
+  "limit": "HostELF/linkinspection only; noARM/no reproducibility orindependentfreshbuildclaim"
+}
