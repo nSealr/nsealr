@@ -1,0 +1,88 @@
+{
+  "verdict": "PASS_DISTINCT_FIRST_SCOPE_VERIFIER_ONLY",
+  "candidate": "9d39469209afc8e35535cf8ba58dbe668a3f3224",
+  "checker_sha256": "a5d0ab2d279bc944888f42b5b2b77c15e81f85bef6ce5ab59391662367d43e7a",
+  "original_929_case_catalogue": {
+    "final_unique_true": 39,
+    "intermediate_rows": 23,
+    "case_tagged_rows": 62
+  },
+  "actual_reused_early_log_sha256": "c3c4e6b91977fe42c94a20045812dafbc166a082c29a66e2890120e411c6e32f",
+  "positive": {
+    "worker_build": {
+      "role": "public RGB worker build, initialization v2, not hardware qualification",
+      "argv": [
+        "cargo",
+        "build",
+        "--manifest-path",
+        "apps/pi/qr-worker/Cargo.toml",
+        "--locked",
+        "--offline",
+        "--release",
+        "--message-format=json"
+      ],
+      "source": {
+        "apps/pi/qr-worker/Cargo.toml": "a0c4db1b67499608914d07df5c5d8a54bfc69970e4559829f4c5573858068e91",
+        "apps/pi/qr-worker/Cargo.lock": "d4dadbe7162e838039ef6a53dcd7addc71a32520836b2ddc189070fbe79c091a",
+        "apps/pi/qr-worker/src/main.rs": "e60b3bc2baec2eded7ee474e101cfa8debd1a88be76d6d7cffce31b4e3e1dcf1",
+        "apps/pi/qr-worker/rust-toolchain.toml": "6e90f2cf35aad6218e0d99f319101783cf5ce91cc62349dec0c7b357a420dabc",
+        ".cargo/config.toml": "98e1cf108d2b5aa2ff9d9fb6f58df4d0332df3a85411cf8c1249c615edecf625",
+        "rust-toolchain.toml": "6e90f2cf35aad6218e0d99f319101783cf5ce91cc62349dec0c7b357a420dabc"
+      },
+      "worker": "/home/tux/nsealr/.restart-tools/goal/qp01-owner-cold-integration-runtime/cold-target/release/nsealr-qr-worker",
+      "sha256": "716ba85b3e55595b81e4225228d866bcaae5b1428a66829fb09ab8cef3f6a369",
+      "CARGO_TARGET_DIR": "/home/tux/nsealr/.restart-tools/goal/qp01-owner-cold-integration-runtime/cold-target"
+    },
+    "first_owner_cases": 39,
+    "first_owner_actual_children": 64,
+    "first_owner_W": 11,
+    "first_owner_native_reports": 3,
+    "trusted_initialization_version": 2,
+    "source_exact_five_added_Pi_unit_controls": true,
+    "real_synchronous_deadline_guard": {
+      "type": "CapabilityError",
+      "reason": "runtime_unavailable",
+      "message": "local deadline expired or clock rolled back/unavailable",
+      "signal_aborted": false,
+      "hold_begin_ms": 918.019848,
+      "hold_end_ms": 1028.025422,
+      "actual_hold_ms": 110.00557399999991,
+      "operation_elapsed_ms": 125.91330299999993,
+      "W_O_collected": true,
+      "private_decoded_bytes": 259,
+      "C_input_bytes": 0
+    },
+    "generic_completed_capture_checker_remains_separately_mandatory": true
+  },
+  "negative_controls": [
+    {
+      "control": "duplicate final true",
+      "rejected": true
+    },
+    {
+      "control": "duplicate intermediate telemetry",
+      "rejected": true
+    },
+    {
+      "control": "false final result",
+      "rejected": true
+    },
+    {
+      "control": "foreign worker ELF",
+      "rejected": true
+    },
+    {
+      "control": "wrong actual W collector",
+      "rejected": true
+    },
+    {
+      "control": "timer callback already aborted",
+      "rejected": true
+    },
+    {
+      "control": "foreign decoded response oracle",
+      "rejected": true
+    }
+  ],
+  "limits": "Read-only replay of the proposed verifier on existing actual source-bound early evidence. No new product run or completed hosted CI claim; full combined verifier and unchanged mandatory generic checker remain required on final delivery."
+}

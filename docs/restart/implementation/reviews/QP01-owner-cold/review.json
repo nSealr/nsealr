@@ -1,0 +1,97 @@
+{
+  "verdict": "PASS_scoped_cold_host_software_integration_only",
+  "candidate": "3494f43d0c96dbdfa1a941f5b14f642c1733353c",
+  "candidate_tree": "9adda99d718b3f791aad9b2ac2d7b2946a4b2c42",
+  "executed_source": "9d39469209afc8e35535cf8ba58dbe668a3f3224",
+  "executed_tree": "ae40e5a3f6b0c8d13238f2477a9f643ee5eda466",
+  "recorded_utc": "2026-10-23T20:40:59.985522+00:00",
+  "reviewer": "/root/a02_resume",
+  "integration_author": "/root/sdk_dependency_probe",
+  "scope_commits": [
+    "8b07faf80bb1c4cd86cced859309118ce6e2fa36",
+    "21c2e71b0b210875bb20dba152ad55b24486cade"
+  ],
+  "independence": "Reviewer did not author these integration changes. Earlier O/lifecycle component authored by this reviewer is accepted under distinct root032 review and is reused unchanged, not self-reviewed here.",
+  "reused_component_review": "032cbab9ac3fa2ce27463ed43c05b09df108c162",
+  "excluded_review": "Completed-capture checker internals/mutation controls are separately owned by root; its outputs may be consumed here.",
+  "findings": [],
+  "resolved_findings": [
+    {
+      "id": "QP01-COLD-REVIEW-01",
+      "classification": "absent ignored pycache member in author manifest",
+      "rejected_candidate": "afc686e81632fc5d51cdb12c940d0b253df0388c",
+      "fixed_candidate": "3494f43d0c96dbdfa1a941f5b14f642c1733353c",
+      "witness": "packaging-finding.json",
+      "resolution": "Exactly one manifest-only delta;41 tracked members and self now exact."
+    }
+  ],
+  "observations": [
+    {
+      "id": "REVIEWER-VERIFIER-01",
+      "classification": "reviewer source inventory false-green due to cwd-relative empty git ls-tree",
+      "preserved": "verifier-initial/",
+      "correction": "--full-tree plus nonempty assertion;9139 blobs/modes verified by read-only check",
+      "runtime_repeated": false
+    }
+  ],
+  "checks": [
+    {
+      "scope": "Cold source/manifest/lock/vendor closure",
+      "result": "PASS",
+      "evidence": "initial-source-vendor.json",
+      "detail": "Rust exact922;11 lock archives;329 closure files;8 added directories/211files;1914 existing vendor files unchanged."
+    },
+    {
+      "scope": "Actual producer and trusted artifact/runtime binding",
+      "result": "PASS",
+      "evidence": "execution-checks.json",
+      "detail": "Empty CargoHome/target, tracked-source export, actual native+QR builds and recorded CargoJSON; no historical binary fallback."
+    },
+    {
+      "scope": "Current runtime integration",
+      "result": "PASS",
+      "evidence": "owner-matrix-01/receipt.json",
+      "detail": "One independent39 matrix, actual new ELF identities,64 unique descendants/11W real wait+IO; no fullPi/fullCI replay."
+    },
+    {
+      "scope": "Producer and audit boundary controls",
+      "result": "PASS",
+      "evidence": [
+        "producer-controls-01/receipt.json",
+        "audit-controls-01/receipt.json"
+      ],
+      "detail": "Five producer controls and four audit controls, separately executed; synthetic wrappers distinguished from real builds."
+    },
+    {
+      "scope": "Final source/proof/metadata correspondence",
+      "result": "PASS",
+      "evidence": "final-source-correspondence.json",
+      "detail": "226 sourcepostimages exact9d;47 formal/status/top-level stable;45 other records exact;R00 only3admittedSHA;author full9dCI0 bound to unchanged sources."
+    }
+  ],
+  "evidence_bindings": {
+    "report.md": "df4dc894e39d44bc95950758d90b9996ba466e541ad7202f0d5b606a3d2418a5",
+    "initial-source-vendor.json": "122cc15c456b8b1a0361b2e160d594caeb67ee080475f6b3536252621fa97106",
+    "preflight.json": "62adb118b0ed7ee9a42ebc4c27c79c7d7208437955e2084e50a3bdcee88aba89",
+    "execution-checks.json": "d780505b76edd2ee87b7fecb0d90ce7dfe68a202065ab990a3733d6eb66470d4",
+    "final-source-correspondence.json": "be62ab939614a321792f532e0aa9f29185f74dc8a129618dd2da20388826ce39",
+    "packaging-finding.json": "c5b29eacf5786524e2e6d748cc5970a29fb45917a2b86d0da40d427d49e5bfc6",
+    "tool-artifact-identities.json": "e590c70f35651ecda79ee82b4c974b9aeaa042efda80ab76f338f5af9350e6eb",
+    "whitespace.json": "4c4ede33448f90ceba757e6b38594c25b1024e2d0e6d81840f3fcf4eca9a94c7"
+  },
+  "independent_builds": {
+    "native_sha256": "35a419a611a94817a7a6682cda5899b9400dff7c83ce4120aaa88171a364e23c",
+    "QR_sha256": "8b3ee7a24d643cae75a02383f5d84138cd011b4990aa8de47308a8890b103019"
+  },
+  "limitations": [
+    "Host software/public fixtures only; no physical Pi/ARM/P4/camera or final caps/profile qualification.",
+    "No default product route/UI or secret-key sandbox/provider adoption.",
+    "No general ELF reproducibility or hard real-time/latency bound. Existing repro checks only core/host artifacts.",
+    "No O-death or unknown-cleanup quarantine qualification.",
+    "Fresh author audit data is source/time-bound; reviewer did not reacquire feeds.",
+    "No hosted CI/PR/merge performed or observed by reviewer; root owns delivery.",
+    "No task/acceptance/resource/release completion."
+  ],
+  "criteria_completed": 0,
+  "physical_releases": 0
+}

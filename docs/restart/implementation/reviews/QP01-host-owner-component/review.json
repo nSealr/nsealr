@@ -1,0 +1,66 @@
+{
+  "verdict": "CHANGES_REQUESTED_source_review_before_independent_replay",
+  "recorded_utc": "2026-10-23T19:33:00.706118+00:00",
+  "reviewer": "/root",
+  "author": "/root/a02_resume",
+  "candidate": "1ba98c9b6767eba82ed5ff231ae3d35abcf17337",
+  "tree": "3b826223e06735d9fe681f16483ce6c9a0815203",
+  "scope": "Full398-line O,515-line Node driver,92-line focused tests and23-line existing-C-owner delta read; actual client monotonic/currentness source and final author report inspected.",
+  "reviewer_independence": "Root authored pre-code admission, not implementation/test-driver source. Author remains sole runtime writer.",
+  "source_bindings": [
+    {
+      "path": "apps/pi/app/nsealr_vault/qr_worker.py",
+      "bytes": 17479,
+      "sha256": "d7a245a9a558cce3ec8271ec42fc49664c094320c6465a537aa3a49c83558d50"
+    },
+    {
+      "path": "apps/pi/tests/test_qr_worker.py",
+      "bytes": 3980,
+      "sha256": "2ce1310dfc3eb596e4bdd03c4c2386b1d61a104e99e87337edc00f2a2325fa19"
+    },
+    {
+      "path": "docs/restart/implementation/QP01/request-engine/client-exchange.ts",
+      "bytes": 18143,
+      "sha256": "0ad47d643ebc3665a9c3c940912d838b28eba4b7e2b15026cbb2c395494cb018"
+    },
+    {
+      "path": "docs/restart/implementation/QP01/host-coordinator/first-gate.ts",
+      "bytes": 34639,
+      "sha256": "aa4b730d13aa74bb13796a2177faab77e9d476e0729d4681f614fbfc12dd5338"
+    }
+  ],
+  "findings": [
+    {
+      "id": "F1",
+      "priority": "P1",
+      "kind": "new_harness_actual_deadline_clock_contract_defect",
+      "path": "docs/restart/implementation/QP01/host-coordinator/first-gate.ts",
+      "line": 346,
+      "source_evidence": "New first-gate context injects monotonicNow:()=>0. Actual client service.ts1095-1111 uses that clock for start/deadline and now>=deadline/currentness. Its separate real setTimeout100ms still runs, but the currentness clock never advances.",
+      "impact": "The new matrix tests the real timer but cannot substantiate its no-fake-monotonic-clock/currentness claim; an event-loop delay can expose C input after real deadline before the timer callback. Source finding, no exploit/runtime replay performed by reviewer.",
+      "required_change": "Use actual client default performance.now or a faithful actual-clock forwarding observer in the NEW first-gate context. Keep100ms/5000ms and all old negative cases; leave original frozen default harness source/evidence in its conformance role. Qualify synthetic wall/fixture context separately.",
+      "required_proof": "Freeze an independent new FG2 subcase at the existing post-W-settlement/pre-second-guard boundary: real elapsed deadline expires while the Node timer callback has not run, then same before_present must reject and actual C_input_bytes stay0. Use real bounded synchronous elapsed delay, not a fake clock or extended timeout; derive expected failure layer from actual service source before running. One stable affected matrix on actual clock. Existing source-identical O units/default5+14 may be reused."
+    },
+    {
+      "id": "F2",
+      "priority": "P2",
+      "kind": "new_channel_parser_state_and_counter_relations_incomplete",
+      "path": "docs/restart/implementation/QP01/host-coordinator/first-gate.ts",
+      "line": 155,
+      "source_evidence": "worker_ready validates shape/claimed identity but does not require P/presented or reject unused state. validateTerminal47-102 allows outcome unused with a non-null worker/phase and only retained<=observed. Its decoded branch does not require stdout_observed==stdout_retained==result_bytes or bounded non-truncated stderr.",
+      "impact": "Contradictory but canonical records can pass the advertised strict relation checks. In particular an unused Q before P may be accepted with claimed W existence, contrary to the frozen contract; decoded receipts can contradict fixed stream caps. This is a source-established protocol validation defect; trusted operational O produced correct records in the reported runs.",
+      "required_change": "Require worker_ready only in the presented/P state; unused must have no W/phase/G/image. For decoded require full bounded retained/observed/result correspondence and complete non-overflow stderr, retaining existing ownership/status/IO and late-cancellation rules. Do not invent a second state engine or reject a truthful already-committed decoded record just because a late Node X was sent.",
+      "required_proof": "Add only focused contradictory-record negatives for pre-P/unused phase/worker and decoded overflow/count mismatch, with explicit parser cause and zero C input. No-W helpers/pure validation controls remain synthetic and cannot become W/native success evidence; distinguish helper PIDs from claimed synthetic worker fields in accounting. Preserve all29 existing subcases and original FG7 false-green history."
+    }
+  ],
+  "runtime_execution_by_reviewer": 0,
+  "why_no_replay_yet": "Source establishes both defects; strengthen the intended checks first rather than repeat a green matrix against an inadequate clock/parser. Original author runs remain source-qualified, not rewritten.",
+  "still_applicable": "Selected W/native sources, explicit binary pins, single C timer/one O parent ownership and original author evidence retain their limited roles; no new full runtime/physical acceptance.",
+  "pending": [
+    "Author corrections and bounded new negatives",
+    "Distinct affected review of corrected source",
+    "One independent replay on coherent stable candidate",
+    "Explicit cold source/vendored/deny/fresh audit integration before protected adoption"
+  ],
+  "parent_criteria_closed": []
+}
