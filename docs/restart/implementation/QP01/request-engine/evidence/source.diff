@@ -1,0 +1,1701 @@
+diff --git a/Cargo.lock b/Cargo.lock
+index 13a5bc4b..30b7c582 100644
+--- a/Cargo.lock
++++ b/Cargo.lock
+@@ -221,6 +221,13 @@ dependencies = [
+  "zeroize",
+ ]
+ 
++[[package]]
++name = "nsealr-pi-engine-fixture"
++version = "0.0.0"
++dependencies = [
++ "nsealr-core",
++]
++
+ [[package]]
+ name = "num-traits"
+ version = "0.2.19"
+diff --git a/Cargo.toml b/Cargo.toml
+index f438331d..6fd14e72 100644
+--- a/Cargo.toml
++++ b/Cargo.toml
+@@ -1,7 +1,7 @@
+ # Portable no_std engine workspace. Host tools resolve independently.
+ [workspace]
+ resolver = "2"
+-members = ["crates/nsealr-core"]
++members = ["crates/nsealr-core", "crates/nsealr-pi-engine-fixture"]
+ exclude = ["apps/desktop-simulator"]
+ 
+ # Reproducible release profile (docs/reproducible-build.md, `make repro-build`).
+diff --git a/Makefile b/Makefile
+index 2c9dfe66..cbcfe45f 100644
+--- a/Makefile
++++ b/Makefile
+@@ -83,8 +83,8 @@ contract-ci:
+ bridge-ci:
+ 	pnpm run ci
+ 
+-pi-ci:
+-	$(MAKE) -C apps/pi ci
++pi-ci: bridge-ci
++	python3 -B docs/restart/implementation/QP01/request-engine/exchange.py --ci apps/pi
+ 
+ integration-tests:
+ 	python3 -B -m unittest discover -s tests/integration -p 'test_*.py' -v
+diff --git a/apps/pi/app/nsealr_vault/engine_adapter.py b/apps/pi/app/nsealr_vault/engine_adapter.py
+new file mode 100644
+index 00000000..ba4a7c9e
+--- /dev/null
++++ b/apps/pi/app/nsealr_vault/engine_adapter.py
+@@ -0,0 +1,138 @@
++"""Trusted host engineering bridge to the public-fixture-only Rust owner.
++
++No request JSON parsing, Python signing, key API, hardware route or image decoder.
++Callbacks and this process are trusted; cancellation cannot interrupt a callback.
++"""
++import ctypes as C
++from dataclasses import dataclass
++import hashlib
++from pathlib import Path
++import threading
++import time
++
++MAX_FRAME_BYTES = 947
++PRESENT = C.CFUNCTYPE(C.c_int32, C.c_uint32, C.c_uint32, C.c_uint32,
++                     C.POINTER(C.c_uint8), C.c_size_t, C.POINTER(C.c_uint8),
++                     C.c_size_t, C.POINTER(C.c_uint8), C.c_size_t)
++NOW = C.CFUNCTYPE(C.c_int32, C.POINTER(C.c_uint64))
++AUX = C.CFUNCTYPE(C.c_int32, C.POINTER(C.c_uint8), C.c_size_t)
++CANCEL = C.CFUNCTYPE(C.c_int32)
++
++
++@dataclass(frozen=True)
++class Presentation:
++    kind: int
++    index: int
++    total: int
++    label: bytes
++    body: bytes
++    position: bytes
++
++
++class EngineError(RuntimeError):
++    def __init__(self, status):
++        self.status = status
++        super().__init__(f"public-fixture request refused: {status}")
++
++
++class MonotonicSeconds:
++    """Elapsed whole host seconds; not a qualified device clock/deadline."""
++    def __init__(self):
++        self.origin = time.monotonic_ns()
++
++    def __call__(self):
++        return (time.monotonic_ns() - self.origin) // 1_000_000_000
++
++
++class EngineAdapter:
++    """Explicit source-matched ELF, synchronous ownership until native return."""
++    def __init__(self, library_path, library_sha256):
++        path = Path(library_path).resolve(strict=True)
++        actual = hashlib.sha256(path.read_bytes()).hexdigest()
++        if actual != library_sha256 or len(library_sha256) != 64:
++            raise ValueError("native library SHA256 mismatch")
++        self._library = C.CDLL(str(path))
++        self._run = self._library.qp01_fixture_request_v1
++        self._run.argtypes = [C.POINTER(C.c_uint8), C.c_size_t, PRESENT, NOW,
++                              AUX, CANCEL, C.POINTER(C.c_uint8), C.c_size_t,
++                              C.POINTER(C.c_size_t)]
++        self._run.restype = C.c_int32
++        if hashlib.sha256(path.read_bytes()).hexdigest() != actual:
++            raise ValueError("native library changed during load")
++        self.library_path = path
++        self.library_sha256 = actual
++        self._reservation = threading.Lock()
++        self._quarantined = False
++
++    def run_request_frame(self, original_frame, local_io, monotonic_clock,
++                          auxiliary, cancel):
++        if not self._reservation.acquire(blocking=False):
++            raise EngineError(-2)
++        try:
++            if self._quarantined:
++                raise RuntimeError("uncertain native outcome: adapter quarantined")
++            if not isinstance(original_frame, bytes) or not 1 <= len(original_frame) <= MAX_FRAME_BYTES:
++                raise EngineError(-1)
++            incoming = (C.c_uint8 * len(original_frame)).from_buffer_copy(original_frame)
++            output = (C.c_uint8 * MAX_FRAME_BYTES)()
++            written = C.c_size_t(0)
++
++            @PRESENT
++            def present(kind, index, total, label, label_len, body, body_len, position, position_len):
++                try:
++                    page = Presentation(kind, index, total, C.string_at(label, label_len),
++                                        C.string_at(body, body_len), C.string_at(position, position_len))
++                    action = local_io(page)
++                    return action if type(action) is int and 0 <= action <= 4 else -1
++                except BaseException:
++                    return -1
++
++            @NOW
++            def now(destination):
++                try:
++                    tick = monotonic_clock()
++                    if type(tick) is not int or not 0 <= tick <= (1 << 64)-1:
++                        return -1
++                    destination[0] = tick
++                    return 0
++                except BaseException:
++                    return -1
++
++            @AUX
++            def aux(destination, capacity):
++                try:
++                    value = auxiliary()
++                    if capacity != 32 or not isinstance(value, bytes) or len(value) > 33:
++                        return -1
++                    C.memmove(destination, value, min(len(value), capacity))
++                    return len(value)
++                except BaseException:
++                    return -1
++
++            @CANCEL
++            def cancelled():
++                try:
++                    value = cancel()
++                    return int(value) if type(value) is bool else -1
++                except BaseException:
++                    return -1
++
++            # Strong references above survive until the complete synchronous call
++            # settles. Never free/reload/reserve early on a host timeout.
++            try:
++                status = self._run(incoming, len(incoming), present, now, aux, cancelled,
++                                   output, len(output), C.byref(written))
++            except BaseException:
++                self._quarantined = True
++                raise
++            if status != 0:
++                if written.value != 0 or any(output):
++                    self._quarantined = True
++                    raise RuntimeError("native failure returned partial public output")
++                raise EngineError(status)
++            if not 1 <= written.value <= len(output) or any(output[written.value:]):
++                self._quarantined = True
++                raise RuntimeError("native success returned invalid result bounds")
++            return bytes(output[:written.value])
++        finally:
++            self._reservation.release()
+diff --git a/apps/pi/tests/test_engine_adapter.py b/apps/pi/tests/test_engine_adapter.py
+new file mode 100644
+index 00000000..75cbf07d
+--- /dev/null
++++ b/apps/pi/tests/test_engine_adapter.py
+@@ -0,0 +1,341 @@
++"""Public-fixture request/owner tests: a real provisioned native library is required."""
++import base64
++import copy
++import json
++import os
++from pathlib import Path
++import sys
++import ctypes as C
++import importlib.util
++import threading
++import unittest
++from unittest.mock import patch
++
++ROOT = Path(__file__).resolve().parents[3]
++sys.path.insert(0, str(ROOT / "apps/pi/app"))
++from nsealr_vault.engine_adapter import EngineAdapter, EngineError
++
++
++def vector(name):
++    original = json.loads((ROOT / "protocols/contracts/v1/vectors/events" / name).read_text())
++    amended = json.loads((ROOT / "docs/restart/implementation/QP01/request-engine/expectations.json").read_text())
++    expected = next(row for row in amended["independent_positive_expectations"] if row["source_path"].endswith("/" + name))
++    # Only the reviewed, independently calculated nonce-dependent signature
++    # changes in this in-memory expectation. Original files remain untouched.
++    assert {k: v for k, v in original["signed_event"].items() if k != "sig"} == {
++        k: v for k, v in expected["expected_complete_event"].items() if k != "sig"}
++    assert original["signature"] == expected["legacy_verification_reference"]["signature"]
++    original["signature"] = expected["expected_signature"]
++    original["signed_event"]["sig"] = expected["expected_signature"]
++    original["response"]["result"]["event"]["sig"] = expected["expected_signature"]
++    return original
++
++
++def frame(raw):
++    return b"nsealr1:" + base64.urlsafe_b64encode(raw).rstrip(b"=")
++
++
++def compact(value):
++    return json.dumps(value, separators=(",", ":")).encode()
++
++
++def response(value):
++    return json.loads(base64.urlsafe_b64decode(value[8:] + b"=" * (-len(value[8:]) % 4)))
++
++
++class EngineAdapterTests(unittest.TestCase):
++    @classmethod
++    def setUpClass(cls):
++        cls.adapter = EngineAdapter(os.environ["NSEALR_QP01_LIBRARY"],
++                                    os.environ["NSEALR_QP01_LIBRARY_SHA256"])
++
++    def execute(self, request_frame, **overrides):
++        self.pages = []
++        self.aux_calls = 0
++
++        def present(page):
++            self.pages.append(page)
++            return 1 if page.kind == 1 else 0
++
++        def auxiliary():
++            self.aux_calls += 1
++            return bytes(32)
++
++        args = dict(local_io=present, monotonic_clock=lambda: 0,
++                    auxiliary=auxiliary, cancel=lambda: False)
++        args.update(overrides)
++        return self.adapter.run_request_frame(request_frame, **args)
++
++    def assert_review(self, request_id):
++        self.assertGreater(len(self.pages), 1)
++        self.assertEqual([p.index for p in self.pages], list(range(len(self.pages))))
++        self.assertTrue(all(p.total == len(self.pages) for p in self.pages))
++        self.assertEqual([p.kind for p in self.pages], [0] * (len(self.pages)-1) + [1])
++        for p in self.pages:
++            self.assertIsInstance(p.label, bytes)
++            self.assertIsInstance(p.body, bytes)
++            self.assertEqual(p.position, f"{p.index+1}/{p.total}".encode())
++        self.assertIn(request_id.encode(), b"".join(p.body for p in self.pages))
++        self.assertEqual(self.aux_calls, 1)
++
++    def test_P02_P03_real_basic_and_tagged_requests(self):
++        for name in ["kind-1-basic.json", "kind-1-tags.json"]:
++            with self.subTest(vector=name):
++                data = vector(name)
++                actual = response(self.execute(frame(compact(data["request"]))))
++                self.assertEqual(actual, data["response"])
++                self.assert_review(data["request"]["request_id"])
++                # Fixed ASCII source vectors: newline is only the core's visual
++                # wrapping. Check every incoming signed field at its own role,
++                # including the empty tag field and the signed suffix.
++                shown = {p.label.replace(b"\n", b"").split(b" / fragment")[0].decode():
++                         json.loads(p.body.replace(b"\n", b"")) for p in self.pages}
++                expected = data["signed_event"]
++                self.assertEqual(shown["Selected actual signing identity"], expected["pubkey"])
++                self.assertEqual(shown["Canonical event ID"], expected["id"])
++                self.assertEqual(shown["Signed kind"], str(expected["kind"]))
++                self.assertEqual(shown["Signed created_at (untrusted timestamp)"], str(expected["created_at"]))
++                self.assertEqual(shown["Signed tag count"], str(len(expected["tags"])))
++                self.assertEqual(shown["Signed content (plain text)"], expected["content"])
++                for tag_index, tag in enumerate(expected["tags"]):
++                    for field_index, field in enumerate(tag):
++                        matching = [value for role, value in shown.items()
++                                    if role.startswith(f"Signed tag {tag_index} field {field_index}:")]
++                        self.assertEqual(matching, [field])
++
++    def test_P04_changed_correlation_is_fresh(self):
++        data = vector("kind-1-basic.json")
++        changed = copy.deepcopy(data["request"])
++        changed["request_id"] = "qp01-distinct-correlation"
++        actual = response(self.execute(frame(compact(changed))))
++        self.assertEqual(actual["request_id"], changed["request_id"])
++        self.assertEqual(actual["result"]["event"], data["signed_event"])
++        self.assert_review(changed["request_id"])
++
++    def test_P05_B01_B02_original_raw_bytes_and_outer_bound(self):
++        data = vector("kind-1-basic.json")
++        raw = b" \n" + compact(dict(reversed(list(data["request"].items()))))
++        self.assertEqual(response(self.execute(frame(raw))), data["response"])
++        padded = compact(data["request"]).ljust(704, b" ")
++        self.assertEqual(len(frame(padded)), 947)
++        self.assertEqual(response(self.execute(frame(padded))), data["response"])
++        for invalid in [b"", frame(padded + b" "), bytes(948)]:
++            with self.subTest(length=len(invalid)), self.assertRaises(EngineError) as caught:
++                self.execute(invalid)
++            self.assertEqual(caught.exception.status, -1)
++            self.assertEqual(self.pages, [])
++            self.assertEqual(self.aux_calls, 0)
++
++    def test_A01_A02_no_premature_or_rejected_authority(self):
++        raw = frame(compact(vector("kind-1-basic.json")["request"]))
++        for action, status in [(1, -9), (2, -5), (99, -6), (4, -9)]:
++            with self.subTest(action=action), self.assertRaises(EngineError) as caught:
++                self.execute(raw, local_io=lambda page: action)
++            self.assertEqual(caught.exception.status, status)
++            self.assertEqual(self.aux_calls, 0)
++
++    def test_E01_no_auxiliary_fallback(self):
++        raw = frame(compact(vector("kind-1-basic.json")["request"]))
++        for count in [0, 1, 31, 33]:
++            calls = []
++            def aux():
++                calls.append(count)
++                return bytes(count)
++            with self.subTest(count=count), self.assertRaises(EngineError) as caught:
++                self.execute(raw, auxiliary=aux)
++            self.assertEqual(caught.exception.status, -8)
++            self.assertEqual(calls, [count])
++        self.assertEqual(response(self.execute(raw)), vector("kind-1-basic.json")["response"])
++
++    def test_P01_original_identity_and_no_signing(self):
++        data = json.loads((ROOT / "protocols/contracts/v1/examples/request-get-public-key.json").read_text())
++        expected = json.loads((ROOT / "protocols/contracts/v1/examples/response-get-public-key.json").read_text())
++        result = self.execute(frame(compact(data)))
++        self.assertEqual(len(result), 198)
++        self.assertEqual(response(result), expected)
++        self.assertEqual(self.pages, [])
++        self.assertEqual(self.aux_calls, 0)
++
++    def test_E01_positive_aux42_is_forwarded_exactly_once(self):
++        expected = json.loads((ROOT / "docs/restart/implementation/QP01/request-engine/evidence/aux42-expected-01/stdout.log").read_text())
++        data = vector("kind-1-basic.json")
++        calls = []
++        def auxiliary():
++            value = bytes.fromhex(expected["input"]["aux_hex"])
++            calls.append(value)
++            return value
++        actual = response(self.execute(frame(compact(data["request"])), auxiliary=auxiliary))
++        self.assertEqual(calls, [bytes([0x42]) * 32])
++        self.assertNotEqual(actual["result"]["event"]["sig"], data["signature"])
++        data["response"]["result"]["event"]["sig"] = expected["expected_signature"]
++        self.assertEqual(actual, data["response"])
++        self.assertEqual([p.index for p in self.pages], list(range(len(self.pages))))
++        self.assertEqual(self.pages[-1].kind, 1)
++
++    def test_B03_strict_original_bytes_no_normalization(self):
++        raw = compact(vector("kind-1-basic.json")["request"])
++        malformed = [b"bad", b"nsealr1:e30=", b"nsealr1:e31", frame(b"{\xff}"),
++                     frame(raw.replace(b'"version":2', b'"version":2,"version":2')),
++                     frame(raw.replace(b'"version":2', b'"version":2,"\\u0076ersion":2')),
++                     frame(raw.replace(b'"version":2', b'"version":2e0')),
++                     frame(raw.replace(b'"version":2', b'"version":-0')),
++                     frame(raw.replace(b'"version":2', b'"version":2.0')),
++                     frame(raw[:-1] + b',"approved":true}'),
++                     frame(raw[:-1] + b',"digest":"' + b"00" * 32 + b'"}')]
++        for value in malformed:
++            with self.subTest(raw=value), self.assertRaises(EngineError) as caught:
++                self.execute(value)
++            self.assertEqual(caught.exception.status, -3)
++            self.assertEqual((self.pages, self.aux_calls), ([], 0))
++
++    def test_B04_unsupported_workflows(self):
++        raw = vector("kind-1-basic.json")["request"]
++        for kind in [4, 13, 14, 1059, 10050, 22242, 65535]:
++            changed = copy.deepcopy(raw)
++            changed["params"]["event_template"]["kind"] = kind
++            with self.subTest(kind=kind), self.assertRaises(EngineError) as caught:
++                self.execute(frame(compact(changed)))
++            self.assertEqual(caught.exception.status, -4)
++            self.assertEqual((self.pages, self.aux_calls), ([], 0))
++        with self.assertRaises(EngineError) as caught:
++            self.execute(frame(compact(dict(version=2, request_id="caps", method="get_capabilities"))))
++        self.assertEqual(caught.exception.status, -4)
++
++    def test_T01_T02_callback_failures_are_closed(self):
++        raw = frame(compact(vector("kind-1-basic.json")["request"]))
++        def failure(*args):
++            raise KeyboardInterrupt("explicit callback BaseException")
++        for name, status in [("local_io", -6), ("monotonic_clock", -7), ("auxiliary", -8), ("cancel", -11)]:
++            with self.subTest(callback=name), self.assertRaises(EngineError) as caught:
++                self.execute(raw, **{name: failure})
++            self.assertEqual(caught.exception.status, status)
++        for value in [None, True, -1, 1 << 64, (1 << 64)-1]:
++            with self.subTest(tick=value), self.assertRaises(EngineError) as caught:
++                self.execute(raw, monotonic_clock=lambda: value)
++            self.assertEqual(caught.exception.status, -7)
++        with self.assertRaises(EngineError) as caught:
++            self.execute(raw, cancel=lambda: True)
++        self.assertEqual(caught.exception.status, -11)
++        interrupted, calls = threading.Event(), []
++        def cancelled_in_auxiliary():
++            calls.append(32)
++            interrupted.set()
++            return bytes(32)
++        with self.assertRaises(EngineError) as caught:
++            self.execute(raw, auxiliary=cancelled_in_auxiliary, cancel=interrupted.is_set)
++        self.assertEqual(caught.exception.status, -11)
++        self.assertEqual(calls, [32])
++
++    def test_L01_reentrant_first_clock_and_presentation(self):
++        raw = frame(compact(vector("kind-1-basic.json")["request"]))
++        nested = []
++        def again():
++            with self.assertRaises(EngineError) as caught:
++                self.adapter.run_request_frame(raw, lambda p: 1, lambda: 0, lambda: bytes(32), lambda: False)
++            nested.append(caught.exception.status)
++        def clock():
++            again()
++            return 0
++        def present(page):
++            again()
++            return 1 if page.kind == 1 else 0
++        self.assertEqual(response(self.execute(raw, local_io=present, monotonic_clock=clock)), vector("kind-1-basic.json")["response"])
++        self.assertGreater(len(nested), 2)
++        self.assertEqual(set(nested), {-2})
++
++    def test_L02_native_reservation_survives_blocked_callback(self):
++        raw = frame(compact(vector("kind-1-basic.json")["request"]))
++        entered, release, cancelled = threading.Event(), threading.Event(), threading.Event()
++        outcomes = []
++        other = EngineAdapter(self.adapter.library_path, self.adapter.library_sha256)
++        def present(page):
++            entered.set()
++            if not release.wait(5):
++                raise RuntimeError("test failed to release its controlled callback")
++            return 0
++        def operation():
++            try:
++                self.adapter.run_request_frame(raw, present, lambda: 0, lambda: bytes(32), cancelled.is_set)
++            except EngineError as exc:
++                outcomes.append(exc.status)
++        worker = threading.Thread(target=operation)
++        worker.start()
++        try:
++            self.assertTrue(entered.wait(5))
++            cancelled.set()
++            self.assertTrue(worker.is_alive())
++            for adapter in [self.adapter, other]:
++                with self.assertRaises(EngineError) as caught:
++                    adapter.run_request_frame(raw, lambda p: 1, lambda: 0, lambda: bytes(32), lambda: False)
++                self.assertEqual(caught.exception.status, -2)
++        finally:
++            release.set()
++            worker.join(5)
++        self.assertFalse(worker.is_alive())
++        self.assertEqual(outcomes, [-11])
++        self.assertEqual(response(self.execute(raw)), vector("kind-1-basic.json")["response"])
++
++    def test_N01_no_reference_signer_or_loader_fallback(self):
++        from nsealr_vault import signer
++        raw = frame(compact(vector("kind-1-basic.json")["request"]))
++        with patch.object(signer, "sign_request", side_effect=AssertionError("forbidden reference signer")), \
++             patch.object(signer, "sign_event", side_effect=AssertionError("forbidden reference signer")):
++            self.assertEqual(response(self.execute(raw)), vector("kind-1-basic.json")["response"])
++        with self.assertRaises(FileNotFoundError):
++            EngineAdapter("/nonexistent/qp01-library.so", "0" * 64)
++        with self.assertRaisesRegex(ValueError, "SHA256"):
++            EngineAdapter(self.adapter.library_path, "0" * 64)
++        # Explicit loader-shape unit control, not an actual foreign-library run.
++        with patch("nsealr_vault.engine_adapter.C.CDLL", return_value=object()), self.assertRaises(AttributeError):
++            EngineAdapter(self.adapter.library_path, self.adapter.library_sha256)
++
++    def test_uncertain_native_exception_quarantines_wrapper(self):
++        adapter = EngineAdapter(self.adapter.library_path, self.adapter.library_sha256)
++        raw = frame(compact(vector("kind-1-basic.json")["request"]))
++        args = (raw, lambda p: 1, lambda: 0, lambda: bytes(32), lambda: False)
++        # Unit fault at the Python native-call boundary; no crash/abort recovery claim.
++        with patch.object(adapter, "_run", side_effect=OSError("unknown native outcome")):
++            with self.assertRaises(OSError):
++                adapter.run_request_frame(*args)
++        with self.assertRaisesRegex(RuntimeError, "quarantined"):
++            adapter.run_request_frame(*args)
++
++
++class ProvisioningControls(unittest.TestCase):
++    def test_actual_driver_orders_full_pi_then_client_with_same_library(self):
++        path = ROOT / "docs/restart/implementation/QP01/request-engine/exchange.py"
++        spec = importlib.util.spec_from_file_location("qp01_exchange", path)
++        driver = importlib.util.module_from_spec(spec)
++        spec.loader.exec_module(driver)
++        calls = []
++        lib = {"NSEALR_QP01_LIBRARY": "/explicit/test.so", "NSEALR_QP01_LIBRARY_SHA256": "a"*64}
++        def provision():
++            calls.append("build")
++            return lib
++        def run(argv, **kwargs):
++            calls.append(argv)
++            self.assertEqual(kwargs["cwd"], ROOT)
++            self.assertTrue(kwargs["check"])
++            for key, value in lib.items():
++                self.assertEqual(kwargs["env"][key], value)
++        with patch.object(driver, "provision", side_effect=provision), patch.object(driver.subprocess, "run", side_effect=run):
++            driver.ci("apps/pi")
++        self.assertEqual(calls, ["build", ["make", "-C", str(ROOT / "apps/pi"), "ci"],
++                                ["node", "--import", "tsx/esm", str(driver.CLIENT)]])
++        with self.assertRaises(ValueError):
++            driver.ci("apps/pi/tests")
++
++    def test_failed_full_pi_never_reaches_client(self):
++        path = ROOT / "docs/restart/implementation/QP01/request-engine/exchange.py"
++        spec = importlib.util.spec_from_file_location("qp01_exchange_failed", path)
++        driver = importlib.util.module_from_spec(spec)
++        spec.loader.exec_module(driver)
++        with patch.object(driver, "provision", return_value={}), \
++             patch.object(driver.subprocess, "run", side_effect=RuntimeError("full Pi failure")) as run:
++            with self.assertRaisesRegex(RuntimeError, "full Pi failure"):
++                driver.ci("apps/pi")
++        self.assertEqual(run.call_count, 1)
++
++
++if __name__ == "__main__":
++    unittest.main()
+diff --git a/ci/ratchet.json b/ci/ratchet.json
+index 5339a745..4edc7739 100644
+--- a/ci/ratchet.json
++++ b/ci/ratchet.json
+@@ -4,7 +4,8 @@
+     "metric": "line-percent",
+     "floors": {
+       "nsealr-core": 100.0,
+-      "desktop-simulator": 76.7
++      "desktop-simulator": 76.7,
++      "nsealr-pi-engine-fixture": 100.0
+     }
+   },
+   "dead_code": {
+diff --git a/crates/nsealr-pi-engine-fixture/Cargo.toml b/crates/nsealr-pi-engine-fixture/Cargo.toml
+new file mode 100644
+index 00000000..59815e2a
+--- /dev/null
++++ b/crates/nsealr-pi-engine-fixture/Cargo.toml
+@@ -0,0 +1,14 @@
++[package]
++name = "nsealr-pi-engine-fixture"
++version = "0.0.0"
++edition = "2021"
++rust-version = "1.95"
++license = "MIT"
++publish = false
++description = "Host engineering adapter for an already-public Nostr fixture; never production custody."
++
++[lib]
++crate-type = ["cdylib", "rlib"]
++
++[dependencies]
++nsealr-core = { version = "=0.0.0", path = "../nsealr-core", default-features = false }
+diff --git a/crates/nsealr-pi-engine-fixture/src/lib.rs b/crates/nsealr-pi-engine-fixture/src/lib.rs
+new file mode 100644
+index 00000000..ce58cefd
+--- /dev/null
++++ b/crates/nsealr-pi-engine-fixture/src/lib.rs
+@@ -0,0 +1,387 @@
++//! Synchronous request-aware host engineering ABI, using only public test-key-1.
++//! Trusted callers/presenters/providers are in the same process TCB. No device,
++//! production custody, callback preemption or hostile-pointer isolation claim.
++#[cfg(panic = "abort")]
++compile_error!("the host fixture ABI requires unwind, not abort-only compilation");
++
++use nsealr_core::{
++    authorization::{
++        AuthorizationError, AuthorizationSession, AuthorizationState, AuxiliaryError,
++        AuxiliarySource, LocalDisplayError, LocalInput, LocalPresentation, LocalReviewIo,
++        REVIEW_LIFETIME, SIGNED_EVENT_BYTES,
++    },
++    event::{OperationLimits, ParsedRequest, RequestMethod},
++    nip19::SecretKey,
++    qr::envelope::{decode_qr_envelope, encode_qr_envelope_json},
++    review::event::{InspectionError, InspectionGeometry},
++};
++use std::{
++    cell::Cell,
++    panic::{catch_unwind, AssertUnwindSafe},
++    sync::atomic::{AtomicBool, Ordering},
++};
++
++pub type Present =
++    extern "C" fn(u32, u32, u32, *const u8, usize, *const u8, usize, *const u8, usize) -> i32;
++pub type Now = extern "C" fn(*mut u64) -> i32;
++pub type Aux = extern "C" fn(*mut u8, usize) -> i32;
++pub type Cancelled = extern "C" fn() -> i32;
++const FRAME: usize = 947;
++const JSON: usize = 704;
++const ARGUMENT: i32 = -1;
++const BUSY: i32 = -2;
++const REQUEST: i32 = -3;
++const UNSUPPORTED: i32 = -4;
++const REJECTED: i32 = -5;
++const DISPLAY: i32 = -6;
++const CLOCK: i32 = -7;
++const AUXILIARY: i32 = -8;
++const ENGINE: i32 = -9;
++const CAPACITY: i32 = -10;
++const CANCELLED: i32 = -11;
++const PANIC: i32 = -12;
++static ACTIVE: AtomicBool = AtomicBool::new(false);
++
++struct Active;
++impl Active {
++    fn acquire() -> Result<Self, i32> {
++        ACTIVE
++            .compare_exchange(false, true, Ordering::Acquire, Ordering::Relaxed)
++            .map(|_| Self)
++            .map_err(|_| BUSY)
++    }
++}
++impl Drop for Active {
++    fn drop(&mut self) {
++        ACTIVE.store(false, Ordering::Release);
++    }
++}
++struct Owner(AuthorizationSession);
++impl Drop for Owner {
++    fn drop(&mut self) {
++        self.0.cancel();
++        // Fresh owner per call cannot exhaust its session generation.
++        let _ = self.0.lock();
++    }
++}
++
++fn limits() -> OperationLimits {
++    OperationLimits {
++        input_bytes: JSON,
++        content_bytes: 512,
++        tags: 16,
++        fields_per_tag: 8,
++        field_bytes: 64,
++        ..OperationLimits::conformance()
++    }
++}
++
++struct Freshness {
++    now: Now,
++    cancelled: Cancelled,
++    last: Cell<Option<u64>>,
++    deadline: Cell<Option<u64>>,
++    failure: Cell<i32>,
++}
++impl Freshness {
++    fn sample(&self) -> Option<u64> {
++        if self.failure.get() != 0 {
++            return None;
++        }
++        let mut tick = 0;
++        let failure = match (self.cancelled)() {
++            0 => {
++                if (self.now)(&mut tick) != 0
++                    || self.last.get().is_some_and(|last| tick < last)
++                    || self.deadline.get().is_some_and(|deadline| tick >= deadline)
++                {
++                    CLOCK
++                } else {
++                    0
++                }
++            }
++            1 => CANCELLED,
++            _ => CANCELLED,
++        };
++        self.failure.set(failure);
++        if failure != 0 {
++            return None;
++        }
++        self.last.set(Some(tick));
++        Some(tick)
++    }
++    fn error(&self, error: AuthorizationError) -> i32 {
++        if self.failure.get() != 0 {
++            return self.failure.get();
++        }
++        match error {
++            AuthorizationError::Clock | AuthorizationError::Expired => CLOCK,
++            AuthorizationError::Auxiliary => AUXILIARY,
++            AuthorizationError::Display => DISPLAY,
++            AuthorizationError::Parse(_) => REQUEST,
++            AuthorizationError::Inspection(InspectionError::Unsupported) => UNSUPPORTED,
++            AuthorizationError::Output => CAPACITY,
++            _ => ENGINE,
++        }
++    }
++}
++struct Ui<'a> {
++    present: Present,
++    fresh: &'a Freshness,
++}
++impl LocalReviewIo for Ui<'_> {
++    fn now(&mut self) -> Option<u64> {
++        self.fresh.sample()
++    }
++    fn present(
++        &mut self,
++        presentation: LocalPresentation<'_>,
++    ) -> Result<LocalInput, LocalDisplayError> {
++        let (kind, page) = match presentation {
++            LocalPresentation::Data(page) => (0, page),
++            LocalPresentation::Decision(page) => (1, page),
++        };
++        match (self.present)(
++            kind,
++            page.index() as u32,
++            page.total() as u32,
++            page.label().as_ptr(),
++            page.label().len(),
++            page.body().as_ptr(),
++            page.body().len(),
++            page.position().as_ptr(),
++            page.position().len(),
++        ) {
++            0 => Ok(LocalInput::Next),
++            1 => Ok(LocalInput::Approve),
++            2 => Ok(LocalInput::Reject),
++            3 => Ok(LocalInput::Back),
++            4 => Ok(LocalInput::None),
++            _ => Err(LocalDisplayError),
++        }
++    }
++}
++struct Auxiliary(Aux);
++impl AuxiliarySource for Auxiliary {
++    fn fill(&mut self, destination: &mut [u8; 32]) -> Result<usize, AuxiliaryError> {
++        usize::try_from((self.0)(destination.as_mut_ptr(), destination.len()))
++            .map_err(|_| AuxiliaryError::Provider)
++    }
++}
++
++fn append(out: &mut [u8], length: &mut usize, bytes: &[u8]) -> Result<(), i32> {
++    let end = length.checked_add(bytes.len()).ok_or(CAPACITY)?;
++    out.get_mut(*length..end)
++        .ok_or(CAPACITY)?
++        .copy_from_slice(bytes);
++    *length = end;
++    Ok(())
++}
++
++fn run(
++    input: &[u8],
++    present: Present,
++    now: Now,
++    aux: Aux,
++    cancelled: Cancelled,
++    output: &mut [u8],
++) -> Result<usize, i32> {
++    // Copy all original bytes before the first external callback.
++    let mut frame = [0u8; FRAME];
++    frame[..input.len()].copy_from_slice(input);
++    let mut raw = [0u8; JSON];
++    let decoded = decode_qr_envelope(&frame[..input.len()], &mut raw).map_err(|_| REQUEST)?;
++    let request = ParsedRequest::parse(decoded.payload_json, limits()).map_err(|_| REQUEST)?;
++    if request.method() == RequestMethod::Capabilities {
++        return Err(UNSUPPORTED);
++    }
++    let fresh = Freshness {
++        now,
++        cancelled,
++        last: Cell::new(None),
++        deadline: Cell::new(None),
++        failure: Cell::new(0),
++    };
++    let intake = fresh.sample().ok_or_else(|| fresh.failure.get())?;
++    fresh
++        .deadline
++        .set(Some(intake.checked_add(REVIEW_LIFETIME).ok_or(CLOCK)?));
++    let mut scalar = [0x11; 32]; // Already published test-key-1. No secret crosses FFI.
++    let key = SecretKey::take_from(&mut scalar).expect("fixed nonzero public test scalar");
++    let mut owner = Owner(
++        AuthorizationSession::new(
++            limits(),
++            InspectionGeometry {
++                columns: 32,
++                lines: 8,
++            },
++        )
++        .expect("fixed validated conformance subset"),
++    );
++    owner
++        .0
++        .select_key(key)
++        .expect("fixed valid public fixture key");
++    let mut event = [0u8; SIGNED_EVENT_BYTES];
++    let mut public = [0u8; 64];
++    let result: &[u8] = match request.method() {
++        RequestMethod::PublicKey => {
++            for (pair, byte) in public
++                .chunks_exact_mut(2)
++                .zip(owner.0.public_key().expect("selected key"))
++            {
++                pair[0] = b"0123456789abcdef"[(byte >> 4) as usize];
++                pair[1] = b"0123456789abcdef"[(byte & 15) as usize];
++            }
++            &public
++        }
++        // Capabilities was refused before any external callback.
++        _ => {
++            owner
++                .0
++                .begin_request(decoded.payload_json, Some(intake))
++                .map_err(|e| fresh.error(e))?;
++            let mut ui = Ui {
++                present,
++                fresh: &fresh,
++            };
++            for _ in 0..1024 {
++                if owner.0.state() != AuthorizationState::Reviewing {
++                    break;
++                }
++                owner.0.review_step(&mut ui).map_err(|e| fresh.error(e))?;
++            }
++            match owner.0.state() {
++                AuthorizationState::Spent => return Err(REJECTED),
++                AuthorizationState::Approved => (),
++                _ => return Err(ENGINE),
++            }
++            // Core consumes approval BEFORE invoking fresh.sample/cancel/provider.
++            let length = owner
++                .0
++                .sign_approved(
++                    request.request_id(),
++                    &mut || fresh.sample(),
++                    &mut Auxiliary(aux),
++                    &mut event,
++                )
++                .map_err(|e| fresh.error(e))?;
++            &event[..length]
++        }
++    };
++    let mut json = [0u8; JSON];
++    let mut length = 0;
++    let is_key = request.method() == RequestMethod::PublicKey;
++    for part in [
++        b"{\"version\":2,\"request_id\":\"".as_slice(),
++        request.request_id().as_bytes(),
++        b"\",\"ok\":true,\"result\":{",
++        if is_key {
++            b"\"public_key\":\""
++        } else {
++            b"\"event\":"
++        },
++        result,
++        if is_key { b"\"}}" } else { b"}}" },
++    ] {
++        append(&mut json, &mut length, part)?;
++    }
++    let mut staged = [0u8; FRAME];
++    let encoded = encode_qr_envelope_json(&json[..length], &mut staged).map_err(|_| CAPACITY)?;
++    if encoded.len() > output.len() {
++        return Err(CAPACITY);
++    }
++    // Last logical admission sample after all private serialization/staging.
++    // It is not a hard-real-time return bound or an interruptible callback.
++    fresh.sample().ok_or_else(|| fresh.failure.get())?;
++    output[..encoded.len()].copy_from_slice(encoded);
++    Ok(encoded.len())
++}
++
++fn range(start: usize, length: usize) -> Option<(usize, usize)> {
++    if start == 0 || length == 0 || length > isize::MAX as usize {
++        return None;
++    }
++    Some((start, start.checked_add(length)?))
++}
++fn disjoint(a: (usize, usize), b: (usize, usize)) -> bool {
++    a.1 <= b.0 || b.1 <= a.0
++}
++
++fn settled(
++    output: &mut [u8],
++    operation: impl FnOnce(&mut [u8]) -> Result<usize, i32>,
++) -> Result<usize, i32> {
++    let result = catch_unwind(AssertUnwindSafe(|| operation(output))).unwrap_or(Err(PANIC));
++    if result.is_err() {
++        output.fill(0);
++    }
++    result
++}
++
++/// Run the actual request using only the already-public fixture11x32 identity.
++///
++/// # Safety
++/// Input/output/written must be live, aligned as required, nonoverlapping and
++/// unaliased for this synchronous call. Address checks do not prove validity.
++/// Callbacks must remain alive, never unwind across C, never retain spans, and
++/// cease all writes before return. The entire Python/native process is trusted.
++/// ARGUMENT/BUSY touch no pointers. Admitted failure zeroes whole output/written.
++#[no_mangle]
++pub unsafe extern "C" fn qp01_fixture_request_v1(
++    input: *const u8,
++    input_bytes: usize,
++    present: Option<Present>,
++    now: Option<Now>,
++    aux: Option<Aux>,
++    cancelled: Option<Cancelled>,
++    output: *mut u8,
++    capacity: usize,
++    written: *mut usize,
++) -> i32 {
++    let _active = match Active::acquire() {
++        Ok(active) => active,
++        Err(status) => return status,
++    };
++    let (Some(i), Some(o), Some(w), Some(present), Some(now), Some(aux), Some(cancelled)) = (
++        range(input as usize, input_bytes),
++        range(output as usize, capacity),
++        range(written as usize, size_of::<usize>()),
++        present,
++        now,
++        aux,
++        cancelled,
++    ) else {
++        return ARGUMENT;
++    };
++    if input_bytes > FRAME
++        || capacity > FRAME
++        || !written.is_aligned()
++        || !disjoint(i, o)
++        || !disjoint(i, w)
++        || !disjoint(o, w)
++    {
++        return ARGUMENT;
++    }
++    // SAFETY: caller live/aligned/unaliased contract plus validated sizes/ranges.
++    let output = unsafe { std::slice::from_raw_parts_mut(output, capacity) };
++    let input = unsafe { std::slice::from_raw_parts(input, input_bytes) };
++    output.fill(0);
++    unsafe {
++        *written = 0;
++    }
++    match settled(output, |output| {
++        run(input, present, now, aux, cancelled, output)
++    }) {
++        Ok(length) => {
++            unsafe {
++                *written = length;
++            }
++            0
++        }
++        Err(status) => status,
++    }
++}
++
++#[cfg(test)]
++mod tests;
+diff --git a/crates/nsealr-pi-engine-fixture/src/tests.rs b/crates/nsealr-pi-engine-fixture/src/tests.rs
+new file mode 100644
+index 00000000..1f284b30
+--- /dev/null
++++ b/crates/nsealr-pi-engine-fixture/src/tests.rs
+@@ -0,0 +1,435 @@
++use super::*;
++use std::{cell::RefCell, sync::Mutex};
++
++const BASIC: &[u8] = br#"{"version":2,"request_id":"req-kind-1-basic","method":"sign_event","params":{"event_template":{"created_at":1710000000,"kind":1,"tags":[],"content":"nSealr fixture: basic kind 1 event."}}}"#;
++const GET: &[u8] = br#"{"version":2,"request_id":"req-pubkey-1","method":"get_public_key"}"#;
++static SERIAL: Mutex<()> = Mutex::new(());
++type ObservedPage = (u32, u32, u32, Vec<u8>, Vec<u8>, Vec<u8>);
++#[derive(Default)]
++struct State {
++    clocks: usize,
++    cancel_calls: usize,
++    pages: Vec<ObservedPage>,
++    providers: usize,
++    action: Option<i32>,
++    fail_clock: usize,
++    cancel_at: usize,
++    tick: u64,
++    rollback_at: usize,
++    expire_at: usize,
++    aux_report: Option<i32>,
++    prefix: usize,
++    reenter_clock: bool,
++    reenter_present: bool,
++    did_back: bool,
++    back: bool,
++    invalid_cancel: bool,
++}
++thread_local! { static STATE: RefCell<State> = RefCell::new(State::default()); }
++fn reset() {
++    STATE.with(|s| *s.borrow_mut() = State::default());
++}
++extern "C" fn present(
++    kind: u32,
++    index: u32,
++    total: u32,
++    l: *const u8,
++    ln: usize,
++    b: *const u8,
++    bn: usize,
++    p: *const u8,
++    pn: usize,
++) -> i32 {
++    STATE.with(|s| {
++        let mut s = s.borrow_mut();
++        s.pages.push((
++            kind,
++            index,
++            total,
++            unsafe { std::slice::from_raw_parts(l, ln).to_vec() },
++            unsafe { std::slice::from_raw_parts(b, bn).to_vec() },
++            unsafe { std::slice::from_raw_parts(p, pn).to_vec() },
++        ));
++        if s.reenter_present {
++            assert_busy();
++        }
++        if s.back && index == 1 && !s.did_back {
++            s.did_back = true;
++            return 3;
++        }
++        s.action.unwrap_or(if kind == 1 { 1 } else { 0 })
++    })
++}
++extern "C" fn now(tick: *mut u64) -> i32 {
++    STATE.with(|s| {
++        let mut s = s.borrow_mut();
++        s.clocks += 1;
++        if s.reenter_clock {
++            assert_busy();
++        }
++        if s.clocks == s.fail_clock {
++            return -1;
++        }
++        unsafe {
++            *tick = if s.clocks == s.rollback_at {
++                0
++            } else if s.clocks == s.expire_at {
++                s.tick + 100
++            } else {
++                s.tick
++            };
++        }
++        0
++    })
++}
++extern "C" fn aux(out: *mut u8, cap: usize) -> i32 {
++    assert_eq!(cap, 32);
++    STATE.with(|s| {
++        let mut s = s.borrow_mut();
++        s.providers += 1;
++        unsafe {
++            std::slice::from_raw_parts_mut(out, cap)[..s.prefix].fill(0x55);
++        }
++        s.aux_report.unwrap_or(32)
++    })
++}
++extern "C" fn cancelled() -> i32 {
++    STATE.with(|s| {
++        let mut s = s.borrow_mut();
++        s.cancel_calls += 1;
++        if s.invalid_cancel {
++            -1
++        } else {
++            i32::from(s.cancel_at == s.cancel_calls)
++        }
++    })
++}
++fn encode(json: &[u8]) -> Vec<u8> {
++    let mut buffer = [0; FRAME];
++    encode_qr_envelope_json(json, &mut buffer).unwrap().to_vec()
++}
++fn call(input: &[u8], capacity: usize) -> (i32, usize, Vec<u8>) {
++    let mut output = vec![0xa5; capacity];
++    let mut written = 123;
++    let status = unsafe {
++        qp01_fixture_request_v1(
++            input.as_ptr(),
++            input.len(),
++            Some(present),
++            Some(now),
++            Some(aux),
++            Some(cancelled),
++            output.as_mut_ptr(),
++            output.len(),
++            &mut written,
++        )
++    };
++    if status != 0 && status != ARGUMENT && status != BUSY {
++        assert_eq!(written, 0);
++        assert!(output.iter().all(|b| *b == 0));
++    }
++    if status == 0 {
++        assert!(output[written..].iter().all(|b| *b == 0));
++    }
++    (status, written, output)
++}
++fn assert_busy() {
++    // Invalid addresses are never borrowed: BUSY must precede all validation.
++    assert_eq!(
++        unsafe {
++            qp01_fixture_request_v1(
++                std::ptr::null(),
++                usize::MAX,
++                None,
++                None,
++                None,
++                None,
++                std::ptr::null_mut(),
++                usize::MAX,
++                std::ptr::null_mut(),
++            )
++        },
++        BUSY
++    );
++}
++
++#[test]
++fn actual_ffi_effects_and_boundaries() {
++    let _serial = SERIAL.lock().unwrap();
++    reset();
++    let basic = encode(BASIC);
++    let get = encode(GET);
++    let (status, length, output) = call(&basic, FRAME);
++    assert_eq!((status, length), (0, 611));
++    let mut decoded = [0; JSON];
++    let json = decode_qr_envelope(&output[..length], &mut decoded)
++        .unwrap()
++        .payload_json;
++    assert!(json
++        .windows(64)
++        .any(|p| p == b"2977f107ad2668dbd9f09b8594eff3b5276e21bfe098e60ae3e905e3c861e4d3"));
++    STATE.with(|s| {
++        let s = s.borrow();
++        assert_eq!(s.providers, 1);
++        for (i, p) in s.pages.iter().enumerate() {
++            assert_eq!(p.1 as usize, i);
++            assert_eq!(p.2 as usize, s.pages.len());
++            assert_eq!(p.5, format!("{}/{}", i + 1, s.pages.len()).as_bytes());
++        }
++        assert_eq!(s.pages.last().unwrap().0, 1);
++    });
++    let clocks = STATE.with(|s| s.borrow().clocks);
++    for stage in 1..=clocks {
++        reset();
++        STATE.with(|s| s.borrow_mut().fail_clock = stage);
++        assert_eq!(call(&basic, FRAME).0, CLOCK);
++        assert_eq!(STATE.with(|s| s.borrow().clocks), stage);
++        assert_eq!(
++            STATE.with(|s| s.borrow().providers),
++            usize::from(stage >= clocks - 1)
++        );
++        reset();
++        STATE.with(|s| {
++            let mut s = s.borrow_mut();
++            s.tick = 1;
++            s.rollback_at = stage;
++        });
++        if stage > 1 {
++            assert_eq!(call(&basic, FRAME).0, CLOCK);
++        }
++        reset();
++        STATE.with(|s| s.borrow_mut().expire_at = stage);
++        if stage > 1 {
++            assert_eq!(call(&basic, FRAME).0, CLOCK);
++        }
++        reset();
++        STATE.with(|s| s.borrow_mut().cancel_at = stage);
++        assert_eq!(call(&basic, FRAME).0, CANCELLED);
++    }
++    reset();
++    STATE.with(|s| s.borrow_mut().tick = u64::MAX);
++    assert_eq!(call(&get, FRAME).0, CLOCK);
++    reset();
++    STATE.with(|s| s.borrow_mut().invalid_cancel = true);
++    assert_eq!(call(&get, FRAME).0, CANCELLED);
++    for (action, expected) in [(1, ENGINE), (2, REJECTED), (4, ENGINE), (99, DISPLAY)] {
++        reset();
++        STATE.with(|s| s.borrow_mut().action = Some(action));
++        assert_eq!(call(&basic, FRAME).0, expected);
++        assert_eq!(STATE.with(|s| s.borrow().providers), 0);
++    }
++    reset();
++    STATE.with(|s| s.borrow_mut().back = true);
++    assert_eq!(call(&basic, FRAME).0, 0);
++    STATE.with(|s| {
++        let s = s.borrow();
++        assert!(s.did_back);
++        assert_eq!(s.pages[2].1, 0);
++    });
++    for prefix in 0..=32 {
++        reset();
++        STATE.with(|s| {
++            let mut s = s.borrow_mut();
++            s.prefix = prefix;
++            s.aux_report = Some(-1);
++        });
++        assert_eq!(call(&basic, FRAME).0, AUXILIARY);
++        assert_eq!(STATE.with(|s| s.borrow().providers), 1);
++    }
++    for count in [0, 1, 31, 33] {
++        reset();
++        STATE.with(|s| s.borrow_mut().aux_report = Some(count));
++        assert_eq!(call(&basic, FRAME).0, AUXILIARY);
++    }
++    reset();
++    assert_eq!(call(&get, 197).0, CAPACITY);
++    assert_eq!(STATE.with(|s| s.borrow().providers), 0);
++    reset();
++    assert_eq!(call(&basic, 610).0, CAPACITY);
++    assert_eq!(STATE.with(|s| s.borrow().providers), 1);
++    reset();
++    assert_eq!(call(&get, FRAME).1, 198);
++    assert!(STATE.with(|s| s.borrow().pages.is_empty()));
++    reset();
++    STATE.with(|s| {
++        let mut s = s.borrow_mut();
++        s.reenter_clock = true;
++        s.reenter_present = true;
++    });
++    assert_eq!(call(&basic, FRAME).0, 0);
++    reset();
++    assert_eq!(call(&basic, FRAME).0, 0);
++    for bad in [
++        b"bad".as_slice(),
++        b"nsealr1:AA",
++        b"nsealr1:e31",
++        b"nsealr1:e30=",
++    ] {
++        reset();
++        assert_eq!(call(bad, FRAME).0, REQUEST);
++        assert_eq!(STATE.with(|s| s.borrow().clocks), 0);
++    }
++    for bad in [
++        br#"{"version":2,"request_id":"x","method":"no"}"#.as_slice(),
++        br#"{"version":2,"version":2,"request_id":"x","method":"get_public_key"}"#,
++    ] {
++        assert_eq!(call(&encode(bad), FRAME).0, REQUEST);
++    }
++    assert_eq!(
++        call(
++            &encode(br#"{"version":2,"request_id":"x","method":"get_capabilities"}"#),
++            FRAME
++        )
++        .0,
++        UNSUPPORTED
++    );
++    let bad_kind = String::from_utf8(BASIC.to_vec())
++        .unwrap()
++        .replace("\"kind\":1", "\"kind\":4");
++    assert_eq!(call(&encode(bad_kind.as_bytes()), FRAME).0, UNSUPPORTED);
++    let mut padded = BASIC.to_vec();
++    padded.resize(JSON, b' ');
++    assert_eq!(call(&encode(&padded), FRAME).0, 0);
++    // Large validated correlation plus legal content exceeds only the RESPONSE
++    // staging bound: real signing occurs, then no partial response escapes.
++    let large = String::from_utf8(BASIC.to_vec())
++        .unwrap()
++        .replace("req-kind-1-basic", &"r".repeat(128))
++        .replace("nSealr fixture: basic kind 1 event.", &"x".repeat(200));
++    reset();
++    assert_eq!(call(&encode(large.as_bytes()), FRAME).0, CAPACITY);
++    assert_eq!(STATE.with(|s| s.borrow().providers), 1);
++}
++
++#[test]
++fn arguments_do_not_touch_any_live_destination() {
++    let _serial = SERIAL.lock().unwrap();
++    let input = encode(GET);
++    let mut output = [0xa5; FRAME];
++    let mut written = 123usize;
++    let invoke = |p, n, o, c, w| unsafe {
++        qp01_fixture_request_v1(
++            p,
++            n,
++            Some(present),
++            Some(now),
++            Some(aux),
++            Some(cancelled),
++            o,
++            c,
++            w,
++        )
++    };
++    for (p, n) in [
++        (std::ptr::null(), 1),
++        (input.as_ptr(), 0),
++        (input.as_ptr(), 948),
++        (usize::MAX as *const u8, 2),
++    ] {
++        assert_eq!(
++            invoke(p, n, output.as_mut_ptr(), FRAME, &mut written),
++            ARGUMENT
++        );
++    }
++    for (o, c, w) in [
++        (std::ptr::null_mut(), 1, &mut written as *mut usize),
++        (output.as_mut_ptr(), 0, &mut written),
++        (output.as_mut_ptr(), 948, &mut written),
++        (output.as_mut_ptr(), FRAME, std::ptr::null_mut()),
++        (
++            output.as_mut_ptr(),
++            FRAME,
++            output.as_mut_ptr().wrapping_add(1).cast(),
++        ),
++        (output.as_mut_ptr(), FRAME, output.as_mut_ptr().cast()),
++        (output.as_mut_ptr(), FRAME, input.as_ptr().cast_mut().cast()),
++    ] {
++        assert_eq!(invoke(input.as_ptr(), input.len(), o, c, w), ARGUMENT);
++    }
++    assert_eq!(
++        invoke(
++            input.as_ptr(),
++            input.len(),
++            input.as_ptr().cast_mut(),
++            1,
++            &mut written
++        ),
++        ARGUMENT
++    );
++    assert_eq!(
++        unsafe {
++            qp01_fixture_request_v1(
++                input.as_ptr(),
++                input.len(),
++                None,
++                Some(now),
++                Some(aux),
++                Some(cancelled),
++                output.as_mut_ptr(),
++                FRAME,
++                &mut written,
++            )
++        },
++        ARGUMENT
++    );
++    assert_eq!(written, 123);
++    assert_eq!(output, [0xa5; FRAME]);
++    assert_eq!(range(1, usize::MAX), None);
++}
++
++#[test]
++fn unwind_cleanup_and_internal_error_mapping() {
++    let _serial = SERIAL.lock().unwrap();
++    let mut out = [0xa5; 9];
++    {
++        let _active = Active::acquire().unwrap();
++        assert_eq!(
++            settled(&mut out, |out| {
++                let mut scalar = [0x11; 32];
++                let mut owner = Owner(
++                    AuthorizationSession::new(
++                        limits(),
++                        InspectionGeometry {
++                            columns: 32,
++                            lines: 8,
++                        },
++                    )
++                    .unwrap(),
++                );
++                owner
++                    .0
++                    .select_key(SecretKey::take_from(&mut scalar).unwrap())
++                    .unwrap();
++                owner.0.begin_request(BASIC, Some(0)).unwrap();
++                assert_eq!(owner.0.state(), AuthorizationState::Reviewing);
++                out[0] = 7;
++                panic!("controlled internal Rust unwind")
++            }),
++            Err(PANIC)
++        );
++    }
++    assert_eq!(out, [0; 9]);
++    let _active = Active::acquire().unwrap();
++    let fresh = Freshness {
++        now,
++        cancelled,
++        last: Cell::new(None),
++        deadline: Cell::new(None),
++        failure: Cell::new(0),
++    };
++    for (error, status) in [
++        (AuthorizationError::Clock, CLOCK),
++        (AuthorizationError::Expired, CLOCK),
++        (
++            AuthorizationError::Parse(nsealr_core::event::EventError::Syntax),
++            REQUEST,
++        ),
++        (AuthorizationError::Output, CAPACITY),
++    ] {
++        assert_eq!(fresh.error(error), status);
++    }
++    let mut length = usize::MAX;
++    assert_eq!(append(&mut out, &mut length, b"x"), Err(CAPACITY));
++    fresh.failure.set(CLOCK);
++    assert_eq!(fresh.sample(), None);
++}
+diff --git a/docs/restart/implementation/QP01/request-engine/client-exchange.ts b/docs/restart/implementation/QP01/request-engine/client-exchange.ts
+new file mode 100644
+index 00000000..9a5b46af
+--- /dev/null
++++ b/docs/restart/implementation/QP01/request-engine/client-exchange.ts
+@@ -0,0 +1,169 @@
++// Finite public-fixture engineering test. No default route or device readiness.
++import assert from "node:assert/strict";
++import { spawn } from "node:child_process";
++import { createHash } from "node:crypto";
++import { readFileSync } from "node:fs";
++import { resolve } from "node:path";
++import { fileURLToPath } from "node:url";
++import { clientIdForIdentity, handleLocalServiceRequestAsync, type LocalServiceContext,
++  type SignerCompatibilitySnapshot } from "@nsealr/client";
++import { parseAccountDescriptor } from "@nsealr/policy";
++import { parseImplementationProfile, parseLimitsManifest, type FullCapabilities } from "@nsealr/protocol";
++import { createManualQrRouteDispatcher } from "../../../../../apps/bridge/service/src/manual-qr.js";
++
++const root = resolve(fileURLToPath(new URL("../../../../../", import.meta.url)));
++const load = (path: string) => JSON.parse(readFileSync(resolve(root, "protocols/contracts/v1", path), "utf8"));
++const basic = load("vectors/events/kind-1-basic.json"), tagged = load("vectors/events/kind-1-tags.json");
++const amended = JSON.parse(readFileSync(new URL("expectations.json", import.meta.url), "utf8"));
++for (const [vector, id] of [[basic, "basic"], [tagged, "tagged"]] as const) {
++  const expected = amended.independent_positive_expectations.find((row: any) => row.id === id);
++  assert.equal(vector.signature, expected.legacy_verification_reference.signature);
++  vector.response.result.event.sig = expected.expected_signature;
++  assert.deepEqual(vector.response.result.event, expected.expected_complete_event);
++}
++const identity = { surface: "cli" as const, origin: "app:qp01-public-fixture", app_name: "QP01 synthetic engineering fixture" };
++const qr = (value: unknown) => `nsealr1:${Buffer.from(JSON.stringify(value)).toString("base64url")}`;
++const decode = (value: string) => JSON.parse(Buffer.from(value.slice(8), "base64url").toString("utf8"));
++let children = 0, collected = 0;
++const reports: unknown[] = [];
++
++async function native(frame: string, held?: (release: () => void) => void): Promise<string> {
++  assert(Buffer.byteLength(frame) <= 947);
++  const python = process.env.NSEALR_QP01_PYTHON;
++  assert(python && process.env.NSEALR_QP01_LIBRARY && process.env.NSEALR_QP01_LIBRARY_SHA256);
++  const argv = ["-B", resolve(root, "docs/restart/implementation/QP01/request-engine/exchange.py")];
++  if (held) argv.push("--settlement-fd", "3");
++  const child = spawn(python, argv, { cwd: root, env: process.env, stdio: ["pipe", "pipe", "pipe", "pipe"] });
++  const safety = setTimeout(() => child.kill("SIGKILL"), 5000);
++  children++;
++  const stdout: Buffer[] = [], stderr: Buffer[] = [];
++  let out = 0, err = 0, overflow = false, notified = false;
++  child.stdout.on("data", (chunk: Buffer) => { out += chunk.length;
++    if (out <= 947) stdout.push(chunk); else { overflow = true; child.kill("SIGKILL"); } });
++  child.stderr.on("data", (chunk: Buffer) => { err += chunk.length;
++    if (err <= 262144) {
++      stderr.push(chunk);
++      if (held && !notified && chunk.includes(10)) { notified = true;
++        held(() => (child.stdio[3] as import("node:stream").Writable).end("R")); }
++    } else { overflow = true; child.kill("SIGKILL"); } });
++  child.stdin.on("error", () => { /* Actual exit/close below decides failure. */ });
++  const ended = new Promise<void>((yes, no) => {
++    child.once("error", no);
++    child.once("close", (code, signal) => { collected++; clearTimeout(safety);
++      if (code === 0 && signal === null && !overflow) yes();
++      else no(new Error(`fixture child failed: ${code}/${signal}: ${Buffer.concat(stderr)}`)); });
++  });
++  child.stdin.end(frame);
++  await ended; // Native/callback/process/stream settlement before port.close.
++  const response = Buffer.concat(stdout).toString("ascii");
++  const trace = JSON.parse(Buffer.concat(stderr).toString("utf8"));
++  assert.equal(trace.sha256, process.env.NSEALR_QP01_LIBRARY_SHA256);
++  assert.equal(trace.input_sha256, createHash("sha256").update(frame).digest("hex"));
++  assert.equal(trace.output_sha256, createHash("sha256").update(response).digest("hex"));
++  assert(trace.synthetic_complete_review.length > 1);
++  reports.push(trace);
++  console.log(JSON.stringify({ native_observation: trace }));
++  return response;
++}
++
++type Mutation = "account-key" | "request-id" | "template" | "event-id" | "signature";
++function setup(vector = basic, mutation?: Mutation, changed?: string, holdChild = false) {
++  const cases = load("vectors/profile-capabilities/cases-v1.json");
++  const request = structuredClone(vector.request);
++  const implementation = parseImplementationProfile(load(cases.implementation_examples.pi_qr));
++  const adapter = structuredClone(implementation);
++  const { conformance_only: _, ...data } = structuredClone(implementation);
++  const reported: FullCapabilities = { ...data, format: "nsealr.capabilities.v1", form: "full" };
++  for (const source of [adapter, reported]) for (const entry of source.methods)
++    Object.assign(entry, { configuration: "configured", availability: "available", reason: null });
++  const limits = parseLimitsManifest(structuredClone(cases.limits_manifest));
++  const snapshot: SignerCompatibilitySnapshot = {
++    implementation, adapter, reported, limits, adapter_limits: structuredClone(limits),
++    connection_id: "qp01.synthetic.connection", generation: 1,
++    review_plan: { request_sha256: createHash("sha256").update(JSON.stringify(request)).digest("hex"),
++      implementation_id: implementation.implementation_id, connection_id: "qp01.synthetic.connection", generation: 1,
++      context_id: "qp01.synthetic.no-consent", geometry_id: "qp01.unqualified.fixture", pages: 7 }
++  };
++  const account = parseAccountDescriptor(load("vectors/accounts/raspberry-qr-nip06-account-0.json"));
++  account.public_key = mutation === "account-key" ? "f9308a019258c31049344f85f89d5229b531c845836f99b08601f113bce036f9" : vector.signed_event.pubkey;
++  let opens = 0, scans = 0, closes = 0, ticks = 0;
++  let entered!: (release: () => void) => void, settled!: () => void;
++  const held = new Promise<() => void>((yes) => { entered = yes; });
++  const settledPromise = new Promise<void>((yes) => { settled = yes; });
++  let pending: Promise<string> | undefined;
++  const dispatcher = createManualQrRouteDispatcher({ account_id: account.account_id, route_type: "raspberry_qr_vault",
++    openPort: async (control) => { opens++;
++      return {
++        present: (frame) => { control.before_present(); assert.equal(frame, qr(request));
++          const input = mutation === "template" ? qr({ ...tagged.request, request_id: request.request_id }) : frame;
++          pending = native(input, holdChild ? entered : undefined); holdChild = false; },
++        scan: async () => { scans++; assert(pending); let frame = await pending;
++          if (mutation && mutation !== "account-key" && mutation !== "template") {
++            const response = decode(frame);
++            if (mutation === "request-id") response.request_id = "a-valid-different-id";
++            if (mutation === "event-id") response.result.event.id = "0".repeat(64);
++            if (mutation === "signature") response.result.event.sig = "0".repeat(128);
++            frame = qr(response);
++          }
++          if (changed === "account") account.public_key = "0".repeat(64);
++          if (changed === "generation") snapshot.generation++;
++          if (changed === "availability") Object.assign(snapshot.adapter.methods[1], { availability: "unavailable", reason: "provider_missing" });
++          if (changed === "limits") snapshot.adapter_limits.methods[1].response_json_bytes--;
++          if (changed === "deadline") ticks = 100;
++          return frame;
++        },
++        close: async () => { if (pending) await pending; closes++; settled(); }
++      };
++    }
++  });
++  const context: LocalServiceContext = { accounts: [account], now: 1, monotonicNow: () => ticks,
++    grants: [{ client_id: clientIdForIdentity(identity), origin: identity.origin, surface: identity.surface,
++      allowed_operations: ["dispatch_signer_request"] }], signerCompatibility: () => snapshot, signerDispatcher: dispatcher };
++  const envelope = { version: 1 as const, request_id: "qp01.local.fixture", operation: "dispatch_signer_request" as const,
++    params: { client: identity, route_request: { account_id: account.account_id, method: "sign_event" }, request } };
++  return { run: () => handleLocalServiceRequestAsync(envelope, context),
++    separate: () => handleLocalServiceRequestAsync(envelope, { ...context }), held, settled: settledPromise,
++    counts: () => ({ opens, scans, closes }) };
++}
++
++for (const vector of [basic, tagged]) {
++  const state = setup(vector);
++  const result = await state.run();
++  assert.equal(result.ok, true, JSON.stringify(result));
++  assert.deepEqual((result as any).result.signer_response, vector.response);
++  assert.deepEqual(state.counts(), { opens: 1, scans: 1, closes: 1 });
++}
++for (const mutation of ["account-key", "request-id", "template", "event-id", "signature"] as const) {
++  const state = setup(basic, mutation), result = await state.run();
++  assert.equal(result.ok, false);
++  assert.equal((result as any).error.code, "invalid_signer_response", JSON.stringify(result));
++  assert.deepEqual(state.counts(), { opens: 1, scans: 1, closes: 1 });
++}
++for (const change of ["account", "generation", "availability", "limits", "deadline"]) {
++  const state = setup(basic, undefined, change), result = await state.run();
++  assert.equal(result.ok, false, change);
++  assert.deepEqual(state.counts(), { opens: 1, scans: 1, closes: 1 });
++}
++{
++  const state = setup(basic, undefined, undefined, true), operation = state.run();
++  const release = await state.held;
++  try {
++    const timedOut = await operation;
++    assert.equal((timedOut as any).error.code, "signer_transport_timeout");
++    assert.equal((await state.run() as any).error.code, "runtime_unavailable");
++    assert.equal((await state.separate() as any).error.code, "signer_transport_failed");
++    assert.equal(state.counts().closes, 0);
++  } finally {
++    release(); await state.settled;
++    // close() returning is followed by dispatcher finally/pending-finally;
++    // retain the reservation through that actual promise settlement as well.
++    await new Promise<void>((yes) => setImmediate(yes));
++  }
++  const fresh = await state.run();
++  assert.equal(fresh.ok, true, JSON.stringify(fresh));
++  assert.deepEqual(state.counts(), { opens: 2, scans: 2, closes: 2 });
++}
++assert.equal(children, collected);
++console.log(JSON.stringify({ scope: "actual client + public-fixture host adapter only", positive: 2,
++  valid_shape_verifier_negatives: 5, post_native_currentness_negatives: 5,
++  actual_unsettled_child_timeout_no_early_reuse_then_fresh: true, children, collected, reports }, null, 2));
+diff --git a/docs/restart/implementation/QP01/request-engine/exchange.py b/docs/restart/implementation/QP01/request-engine/exchange.py
+new file mode 100644
+index 00000000..b65c377f
+--- /dev/null
++++ b/docs/restart/implementation/QP01/request-engine/exchange.py
+@@ -0,0 +1,102 @@
++#!/usr/bin/env python3
++"""Finite host fixture exchange/provisioner; no device route or camera input."""
++import argparse
++import hashlib
++import json
++import os
++from pathlib import Path
++import subprocess
++import sys
++
++ROOT = Path(__file__).resolve().parents[5]
++SOURCE = ROOT / "crates/nsealr-pi-engine-fixture/src/lib.rs"
++CLIENT = Path(__file__).with_name("client-exchange.ts")
++
++
++def source_binding():
++    paths = ["Cargo.toml", "Cargo.lock", "crates/nsealr-pi-engine-fixture/Cargo.toml",
++             "crates/nsealr-pi-engine-fixture/src/lib.rs"]
++    return {p: hashlib.sha256((ROOT / p).read_bytes()).hexdigest() for p in paths}
++
++
++def provision():
++    before = source_binding()
++    command = ["cargo", "build", "-p", "nsealr-pi-engine-fixture", "--locked", "--offline",
++               "--release", "--message-format=json"]
++    result = subprocess.run(command, cwd=ROOT, check=True, stdout=subprocess.PIPE, text=True)
++    artifacts = []
++    for line in result.stdout.splitlines():
++        record = json.loads(line)
++        if record.get("reason") != "compiler-artifact":
++            continue
++        target = record["target"]
++        if target["name"] == "nsealr_pi_engine_fixture" and "cdylib" in target["kind"]:
++            if Path(target["src_path"]).resolve() != SOURCE:
++                raise RuntimeError("Cargo artifact has wrong source")
++            artifacts.extend(Path(p).resolve(strict=True) for p in record["filenames"] if p.endswith(".so"))
++    if len(artifacts) != 1 or source_binding() != before:
++        raise RuntimeError("missing/ambiguous native artifact or changed build input")
++    library = artifacts[0]
++    binary = library.read_bytes()
++    if binary[:4] != b"\x7fELF":
++        raise RuntimeError("host experiment requires the actual ELF")
++    digest = hashlib.sha256(binary).hexdigest()
++    print(json.dumps({"role": "public fixture build, not hardware qualification", "argv": command,
++                      "source": before, "library": str(library), "sha256": digest,
++                      "CARGO_TARGET_DIR": os.environ.get("CARGO_TARGET_DIR")}), flush=True)
++    return {"NSEALR_QP01_LIBRARY": str(library), "NSEALR_QP01_LIBRARY_SHA256": digest}
++
++
++def ci(directory):
++    pi = (ROOT / directory).resolve()
++    if pi != ROOT / "apps/pi":
++        raise ValueError("--ci requires the actual apps/pi directory")
++    env = dict(os.environ, **provision())
++    # The entire existing setup/test/lint/audit/docs runs ONCE, after provisioning.
++    subprocess.run(["make", "-C", str(pi), "ci"], cwd=ROOT, env=env, check=True)
++    env["NSEALR_QP01_PYTHON"] = str(pi / ".venv/bin/python")
++    subprocess.run(["node", "--import", "tsx/esm", str(CLIENT)], cwd=ROOT, env=env, check=True)
++
++
++def exchange(settlement_fd=None):
++    sys.path.insert(0, str(ROOT / "apps/pi/app"))
++    from nsealr_vault.engine_adapter import EngineAdapter, MonotonicSeconds
++    incoming = sys.stdin.buffer.read(948)
++    adapter = EngineAdapter(os.environ["NSEALR_QP01_LIBRARY"], os.environ["NSEALR_QP01_LIBRARY_SHA256"])
++    pages = []
++
++    def present(page):
++        # Synthetic conformance display/action only: all actual borrowed bytes
++        # are recorded. This is not human/physical consent or a qualified UI.
++        pages.append({"kind": page.kind, "index": page.index, "total": page.total,
++                      "label": page.label.decode("ascii"), "body": page.body.decode("ascii"),
++                      "position": page.position.decode("ascii")})
++        return 1 if page.kind == 1 else 0
++
++    output = adapter.run_request_frame(incoming, present, MonotonicSeconds(), lambda: bytes(32), lambda: False)
++    print(json.dumps({"library": str(adapter.library_path), "sha256": adapter.library_sha256,
++                      "input_bytes": len(incoming), "input_sha256": hashlib.sha256(incoming).hexdigest(),
++                      "output_bytes": len(output), "output_sha256": hashlib.sha256(output).hexdigest(),
++                      "synthetic_complete_review": pages}), file=sys.stderr, flush=True)
++    if settlement_fd is not None:
++        # Finite harness-only process-settlement control AFTER native return.
++        # It models a child that cannot settle merely because the client timed
++        # out; this neither pauses the native clock nor grants extra authority.
++        if os.read(settlement_fd, 1) != b"R":
++            raise RuntimeError("controlled child was not explicitly released")
++    sys.stdout.buffer.write(output)
++
++
++def main():
++    parser = argparse.ArgumentParser()
++    parser.add_argument("--ci", metavar="DIRECTORY")
++    parser.add_argument("--settlement-fd", type=int, choices=[3])
++    args = parser.parse_args()
++    if args.ci:
++        ci(args.ci)
++    else:
++        exchange(args.settlement_fd)
++
++
++if __name__ == "__main__":
++    main()
+diff --git a/scripts/check_product_gates.py b/scripts/check_product_gates.py
+index 34053369..22354141 100644
+--- a/scripts/check_product_gates.py
++++ b/scripts/check_product_gates.py
+@@ -6,7 +6,7 @@ import subprocess
+ 
+ ROOT=Path(__file__).resolve().parents[1]
+ REQUIRED_STEPS={1:'check_fixture_snapshots',2:'integration_feature_matrix',3:'integration_companion_fixtures',4:'integration_companion_policy_cli',5:'integration_companion_nip46_cli',6:'integration_companion_serial_frame_cli',7:'integration_companion_service_context',8:'integration_companion_route_identity',9:'integration_companion_sdk_browser',10:'integration_browser_extension_package_plan',11:'integration_browser_extension_package_build',12:'integration_browser_extension_origin_permission_cli',13:'integration_browser_extension_origin_review_control',14:'integration_browser_extension_origin_approval_control',15:'integration_browser_native_messaging_manifest',17:'integration_raspberry_hardware_probe',19:'integration_vault_companion'}
+-REQUIRED_COMMANDS=('scripts/verify_contracts.py','scripts/test_contracts.py','scripts/verify_evidence.py','scripts/validate_restart_plan.py','tools/baseline','cargo fmt','cargo clippy','cargo test --workspace','cargo test -p nsealr-core --features std','riscv32imafc-unknown-none-elf','apps/desktop-simulator/Cargo.toml','python3 scripts/audit_rust.py','test_audit_rust.py','cargo llvm-cov','ci/check_coverage_ratchet.py','ci/repro_build.sh','pnpm run ci','protocols/contracts/v1','scripts/verify_specs.py','apps/pi','tests/integration','tests.integration.run')
++REQUIRED_COMMANDS=('scripts/verify_contracts.py','scripts/test_contracts.py','scripts/verify_evidence.py','scripts/validate_restart_plan.py','tools/baseline','cargo fmt','cargo clippy','cargo test --workspace','cargo test -p nsealr-core --features std','riscv32imafc-unknown-none-elf','apps/desktop-simulator/Cargo.toml','python3 scripts/audit_rust.py','test_audit_rust.py','cargo llvm-cov','ci/check_coverage_ratchet.py','ci/repro_build.sh','pnpm run ci','protocols/contracts/v1','scripts/verify_specs.py','apps/pi','docs/restart/implementation/QP01/request-engine/exchange.py --ci apps/pi','tests/integration','tests.integration.run')
+ 
+ 
+ def steps_from_source(text):

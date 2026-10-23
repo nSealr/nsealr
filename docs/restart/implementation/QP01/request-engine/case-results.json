@@ -1,0 +1,320 @@
+{
+  "groups": 23,
+  "source": "ab0b040e83038e03bc47ceed640a093490c79ef1",
+  "role": "Author runtime/control mapping for distinct review; no physical/task acceptance. The original expected matrix remains a pre-code document with executed=false.",
+  "cases": [
+    {
+      "id": "P01",
+      "status": "PASS_scoped_host_controls",
+      "expected_status_by_subcase": {
+        "valid": 0
+      },
+      "implemented_control": "Python test_P01_original_identity_and_no_signing; Rust actual_ffi_effects_and_boundaries",
+      "observed_scope": "Original req-pubkey-1 ->142 JSON/198 frame, actual4f35 identity, no pages/provider.",
+      "current_receipts": [
+        "evidence/stable-06-rust-final/receipt.json",
+        "evidence/stable-07-pi-final/receipt.json"
+      ]
+    },
+    {
+      "id": "P02",
+      "status": "PASS_scoped_host_controls",
+      "expected_status_by_subcase": {
+        "valid": 0
+      },
+      "implemented_control": "Python test_P02_P03_real_basic_and_tagged_requests; actual client positive basic",
+      "observed_scope": "Original bytes, complete31-page indexed review, every signed field/role, one provider and exact independent zero-aux event/signature.",
+      "current_receipts": [
+        "evidence/stable-06-rust-final/receipt.json",
+        "evidence/stable-07-pi-final/receipt.json"
+      ]
+    },
+    {
+      "id": "P03",
+      "status": "PASS_scoped_host_controls",
+      "expected_status_by_subcase": {
+        "valid": 0
+      },
+      "implemented_control": "Python test_P02_P03_real_basic_and_tagged_requests; actual client positive tagged",
+      "observed_scope": "Original tagged request,37-page complete review with every indexed tag field including empty relay field and mention suffix, exact independent signature.",
+      "current_receipts": [
+        "evidence/stable-06-rust-final/receipt.json",
+        "evidence/stable-07-pi-final/receipt.json"
+      ]
+    },
+    {
+      "id": "P04",
+      "status": "PASS_scoped_host_controls",
+      "expected_status_by_subcase": {
+        "valid": 0
+      },
+      "implemented_control": "Python test_P04_changed_correlation_is_fresh",
+      "observed_scope": "Changed request ID appears in a complete fresh review and response; same event/zero-aux signature.",
+      "current_receipts": [
+        "evidence/stable-06-rust-final/receipt.json",
+        "evidence/stable-07-pi-final/receipt.json"
+      ]
+    },
+    {
+      "id": "P05",
+      "status": "PASS_scoped_host_controls",
+      "expected_status_by_subcase": {
+        "valid": 0
+      },
+      "implemented_control": "Python test_P05_B01_B02_original_raw_bytes_and_outer_bound",
+      "observed_scope": "Raw whitespace/reversed members reach Rust without Python JSON normalization; exact semantic signed response.",
+      "current_receipts": [
+        "evidence/stable-06-rust-final/receipt.json",
+        "evidence/stable-07-pi-final/receipt.json"
+      ]
+    },
+    {
+      "id": "B01",
+      "status": "PASS_scoped_host_controls",
+      "expected_status_by_subcase": {
+        "invalid_bounds_or_pointer_arguments": -1,
+        "valid_maximum_frame": 0
+      },
+      "implemented_control": "Rust arguments_do_not_touch_any_live_destination; Python test_P05_B01_B02_original_raw_bytes_and_outer_bound",
+      "observed_scope": "0/947/948, null/overflow/overlap/misalignment; invalid pointers never borrowed; ARG leaves sentinels untouched.",
+      "current_receipts": [
+        "evidence/stable-06-rust-final/receipt.json",
+        "evidence/stable-07-pi-final/receipt.json"
+      ]
+    },
+    {
+      "id": "B02",
+      "status": "PASS_scoped_host_controls",
+      "expected_status_by_subcase": {
+        "JSON704_valid": 0,
+        "JSON705_outer_guard": -1
+      },
+      "implemented_control": "Python test_P05_B01_B02_original_raw_bytes_and_outer_bound; Rust actual_ffi_effects_and_boundaries",
+      "observed_scope": "Legal JSON704/frame947 succeeds;705/frame948 refuses outer guard. No claim of executing internal decoded-cap rejection on that row.",
+      "current_receipts": [
+        "evidence/stable-06-rust-final/receipt.json",
+        "evidence/stable-07-pi-final/receipt.json"
+      ]
+    },
+    {
+      "id": "B03",
+      "status": "PASS_scoped_host_controls",
+      "expected_status_by_subcase": {
+        "strict_frame_or_request_error": -3
+      },
+      "implemented_control": "Python test_B03_strict_original_bytes_no_normalization; Rust actual_ffi_effects_and_boundaries",
+      "observed_scope": "Malformed prefix/padding/trailing bits/UTF8, duplicate and escaped-alias members, exponent/-0/fraction and unknown approved/digest fields; no pages/provider/output.",
+      "current_receipts": [
+        "evidence/stable-06-rust-final/receipt.json",
+        "evidence/stable-07-pi-final/receipt.json"
+      ]
+    },
+    {
+      "id": "B04",
+      "status": "PASS_scoped_host_controls",
+      "expected_status_by_subcase": {
+        "parsed_unsupported_method_or_catalog": -4,
+        "unknown_or_malformed_method": -3
+      },
+      "implemented_control": "Python test_B04_unsupported_workflows; Rust actual_ffi_effects_and_boundaries",
+      "observed_scope": "Capabilities and kinds4/13/14/1059/10050/22242/65535 refuse with no review/provider. Unknown method refuses request.",
+      "current_receipts": [
+        "evidence/stable-06-rust-final/receipt.json",
+        "evidence/stable-07-pi-final/receipt.json"
+      ]
+    },
+    {
+      "id": "A01",
+      "status": "PASS_scoped_host_controls",
+      "expected_status_by_subcase": {
+        "premature_approval": -9,
+        "presenter_reports_failure": -6,
+        "forged_approval_members_in_request": -3
+      },
+      "implemented_control": "Python test_A01_A02_no_premature_or_rejected_authority and test_B03; Rust actual_ffi_effects_and_boundaries",
+      "observed_scope": "Premature approval, invalid action/presenter failure and forged authority members refuse; no detached approval or cursor API.",
+      "current_receipts": [
+        "evidence/stable-06-rust-final/receipt.json",
+        "evidence/stable-07-pi-final/receipt.json"
+      ]
+    },
+    {
+      "id": "A02",
+      "status": "PASS_scoped_host_controls",
+      "expected_status_by_subcase": {
+        "local_reject": -5,
+        "complete_back_traversal": 0,
+        "step_exhaustion": -9
+      },
+      "implemented_control": "Rust actual_ffi_effects_and_boundaries; Python test_A01_A02_no_premature_or_rejected_authority",
+      "observed_scope": "Reject, one Back then complete retraversal, and None until unchanged1024-step ceiling; no signing on failure.",
+      "current_receipts": [
+        "evidence/stable-06-rust-final/receipt.json",
+        "evidence/stable-07-pi-final/receipt.json"
+      ]
+    },
+    {
+      "id": "A03",
+      "status": "PASS_scoped_host_controls",
+      "expected_status_by_subcase": {
+        "presentation_or_action_exception": -6,
+        "clock_exception": -7,
+        "aux_exception": -8,
+        "cancel_callback_exception": -11
+      },
+      "implemented_control": "Python test_T01_T02_callback_failures_are_closed",
+      "observed_scope": "KeyboardInterrupt/BaseException in each actual ctypes callback becomes closed -6/-7/-8/-11; original cancel-status RED preserved before source fix.",
+      "current_receipts": [
+        "evidence/stable-06-rust-final/receipt.json",
+        "evidence/stable-07-pi-final/receipt.json"
+      ]
+    },
+    {
+      "id": "T01",
+      "status": "PASS_scoped_host_controls",
+      "expected_status_by_subcase": {
+        "unavailable_rollback_overflow_expiry": -7
+      },
+      "implemented_control": "Rust actual_ffi_effects_and_boundaries; Python test_T01_T02_callback_failures_are_closed",
+      "observed_scope": "Actual baseline clock-call positions enumerated; missing time at every stage, rollback/expiry after intake, intake overflow, and final-publication failure with provider-count assertions. This is logical admission, not hard return timing.",
+      "current_receipts": [
+        "evidence/stable-06-rust-final/receipt.json",
+        "evidence/stable-07-pi-final/receipt.json"
+      ]
+    },
+    {
+      "id": "T02",
+      "status": "PASS_scoped_host_controls",
+      "expected_status_by_subcase": {
+        "cooperative_cancel_observed": -11
+      },
+      "implemented_control": "Rust actual_ffi_effects_and_boundaries; Python test_T01_T02_callback_failures_are_closed",
+      "observed_scope": "Cancellation across actual freshness call positions and explicitly set inside the auxiliary callback; admitted output remains zero. A provider/backend operation may already have executed; cancellation is not recall.",
+      "current_receipts": [
+        "evidence/stable-06-rust-final/receipt.json",
+        "evidence/stable-07-pi-final/receipt.json"
+      ]
+    },
+    {
+      "id": "E01",
+      "status": "PASS_scoped_host_controls",
+      "expected_status_by_subcase": {
+        "error_short_or_oversized_report": -8,
+        "positive_full32_aux42": 0
+      },
+      "implemented_control": "Rust actual_ffi_effects_and_boundaries; Python test_E01_no_auxiliary_fallback and test_E01_positive_aux42_is_forwarded_exactly_once; unchanged K01 core auxiliary tests",
+      "observed_scope": "Errors after each prefix0..32, reports0/1/31/33 without out-of-bounds writes, one provider/no fallback; original core destination-wipe/consumption tests re-executed. Positive32x42 equals the precommitted independent signature and differs from zero, exact single callback.",
+      "current_receipts": [
+        "evidence/stable-06-rust-final/receipt.json",
+        "evidence/stable-07-pi-final/receipt.json"
+      ]
+    },
+    {
+      "id": "O01",
+      "status": "PASS_scoped_host_controls",
+      "expected_status_by_subcase": {
+        "valid_but_insufficient_output": -10,
+        "full_output_capacity": 0
+      },
+      "implemented_control": "Rust actual_ffi_effects_and_boundaries",
+      "observed_scope": "197 for getkey198 and610 for sign611 refuse without partial output; real provider effect counted on late sign-capacity failure.947 succeeds with zero tail; oversize complete wrapper also refuses privately.",
+      "current_receipts": [
+        "evidence/stable-06-rust-final/receipt.json",
+        "evidence/stable-07-pi-final/receipt.json"
+      ]
+    },
+    {
+      "id": "L01",
+      "status": "PASS_scoped_host_controls",
+      "expected_status_by_subcase": {
+        "nested_or_concurrent": -2,
+        "fresh_after_settlement": 0
+      },
+      "implemented_control": "Rust actual_ffi_effects_and_boundaries; Python test_L01_reentrant_first_clock_and_presentation",
+      "observed_scope": "Guard reserved before initial clock and presentation; native nested call with invalid addresses returns BUSY without touching them; fresh call after settlement succeeds.",
+      "current_receipts": [
+        "evidence/stable-06-rust-final/receipt.json",
+        "evidence/stable-07-pi-final/receipt.json"
+      ]
+    },
+    {
+      "id": "L02",
+      "status": "PASS_scoped_host_controls",
+      "expected_status_by_subcase": {
+        "nested_while_blocked": -2,
+        "outer_after_local_cancel_observed": -11
+      },
+      "implemented_control": "Python test_L02_native_reservation_survives_blocked_callback and test_uncertain_native_exception_quarantines_wrapper",
+      "observed_scope": "Real thread/callback held until explicit release; both same wrapper and separate wrapper/native owner remain BUSY after local cancel; release then -11 and fresh complete review. Quarantine is a Python-boundary unit fault, not crash recovery.",
+      "current_receipts": [
+        "evidence/stable-06-rust-final/receipt.json",
+        "evidence/stable-07-pi-final/receipt.json"
+      ]
+    },
+    {
+      "id": "L03",
+      "status": "PASS_scoped_host_controls",
+      "expected_status_by_subcase": {
+        "internal_caught_Rust_unwind": -12
+      },
+      "implemented_control": "Rust unwind_cleanup_and_internal_error_mapping",
+      "observed_scope": "Controlled internal Rust unwind with actual selected owner/pending request before publication; private boundary catches, whole output zero, owner RAII cleanup, guard re-acquisition. No public panic selector, foreign exception/abort/segfault claim.",
+      "current_receipts": [
+        "evidence/stable-06-rust-final/receipt.json",
+        "evidence/stable-07-pi-final/receipt.json"
+      ]
+    },
+    {
+      "id": "V01",
+      "status": "PASS_scoped_host_controls",
+      "expected_status_by_subcase": {
+        "client_dispatch": "ok:true, independently verified response"
+      },
+      "implemented_control": "client-exchange.ts actual two positive round trips under mandatory default make pi-ci",
+      "observed_scope": "Actual handleLocalServiceRequestAsync/injected manual port/Pi child/Rust owner, independent unchanged client identity/correlation/template/ID/Schnorr verification. No prerecorded signer.",
+      "current_receipts": [
+        "evidence/stable-06-rust-final/receipt.json",
+        "evidence/stable-07-pi-final/receipt.json"
+      ]
+    },
+    {
+      "id": "V02",
+      "status": "PASS_scoped_host_controls",
+      "expected_status_by_subcase": {
+        "valid_shape_but_wrong_binding_or_signature": "invalid_signer_response"
+      },
+      "implemented_control": "client-exchange.ts five valid-shape negatives",
+      "observed_scope": "Wrong account key actually dispatched; changed requestID; other independently signed template with matching requestID; full-length hex ID/signature mutations. Each reaches invalid_signer_response after actual native child/scan/close.",
+      "current_receipts": [
+        "evidence/stable-06-rust-final/receipt.json",
+        "evidence/stable-07-pi-final/receipt.json"
+      ]
+    },
+    {
+      "id": "V03",
+      "status": "PASS_scoped_host_controls",
+      "expected_status_by_subcase": {
+        "late_or_invalidated": "existing client transport/currentness refusal; assert actual layer reached, no stale result"
+      },
+      "implemented_control": "client-exchange.ts five post-native changes and actual held-child timeout; unchanged manual-qr.test.ts in full Bridge CI",
+      "observed_scope": "Account/generation/availability/limits/deadline revalidated after native. Real child held AFTER native operation but before output/process settlement; timeout, same-context pending refusal, separate-context owner refusal, explicit release/close/finally then fresh success. Existing repeated-scan/operator-cancel/route/late-promise controls re-executed unchanged. Host timeout does not recall completed native signing.",
+      "current_receipts": [
+        "evidence/stable-06-rust-final/receipt.json",
+        "evidence/stable-07-pi-final/receipt.json"
+      ]
+    },
+    {
+      "id": "N01",
+      "status": "PASS_scoped_host_controls",
+      "expected_status_by_subcase": {
+        "loader_failure": "Python closed loader exception, no C call/fallback"
+      },
+      "implemented_control": "Python test_N01_no_reference_signer_or_loader_fallback",
+      "observed_scope": "Existing reference signer functions patched to raise while native request succeeds; missing path/wrong SHA fail; absent ABI symbol is explicit loader-shape unit control. No cached canary/fallback.",
+      "current_receipts": [
+        "evidence/stable-06-rust-final/receipt.json",
+        "evidence/stable-07-pi-final/receipt.json"
+      ]
+    }
+  ]
+}
