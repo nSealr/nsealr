@@ -1,0 +1,75 @@
+{
+  "status": "DEFAULT_BUILD_SOURCE_CLEANNESS_CORRECTED_PENDING_DISTINCT_REVIEW_AND_FULL_HOSTED_RETRY",
+  "original_failed_run": "https://github.com/nSealr/nsealr/actions/runs/40022139706",
+  "original_run_id": 40022139706,
+  "original_head": "53f533b998998a74b41cb71eccd6471b4ce2a833",
+  "original_conclusion": "failure",
+  "original_capture_sha256": "c6ec07291bb84eca22debb653df8b39f45639597828292abaf70176792b653a2",
+  "original_members": 9,
+  "code_candidate": "7b00c4e554606189a20c314d804b27020625d1c7",
+  "code_delta": [
+    ".gitignore: exact /apps/pi/qr-worker/target/ addition"
+  ],
+  "baseline_source_guard_unchanged": true,
+  "qualified_runtime_and_gate_postimages": 226,
+  "qualified_differences": [],
+  "old_full_local_runtime_source": "9d39469209afc8e35535cf8ba58dbe668a3f3224",
+  "existing_five_metadata_gates": [
+    {
+      "argv": [
+        "python3",
+        "scripts/verify_repo.py"
+      ],
+      "exit_code": 0,
+      "output": "nSealr consolidated product structure passed\n"
+    },
+    {
+      "argv": [
+        "python3",
+        "scripts/validate_restart_plan.py"
+      ],
+      "exit_code": 0,
+      "output": "Restart plan valid: 47 tasks; ready: \nStructural check only; hardware, review quality and security remain evidence gates.\n"
+    },
+    {
+      "argv": [
+        "python3",
+        "scripts/verify_evidence.py"
+      ],
+      "exit_code": 0,
+      "output": "{\"closed_files\": 1508, \"current_contracts\": 5, \"current_navigation_files\": 18, \"frozen_source\": \"f2ef70f522af4977e15f81554a8c6eadcdbe8097\"}\n"
+    },
+    {
+      "argv": [
+        "python3",
+        "scripts/verify_contracts.py"
+      ],
+      "exit_code": 0,
+      "output": "{\"artifact\": \"nsealr-contracts-v1\", \"artifact_format\": 2, \"artifact_tree\": \"b629e75d18190ded2403ffabe965b595a9bcf6a6\", \"consumers\": [\"bridge\", \"engine\", \"pi\"], \"files\": 255, \"records\": 266, \"retired\": 11, \"source_commit\": \"45f8b6ff1123f3f55be4ce457fd1008e91043cc2\"}\n"
+    },
+    {
+      "argv": [
+        "python3",
+        "scripts/validate_firmware.py"
+      ],
+      "exit_code": 0,
+      "output": "nSealr firmware board-profile validation passed\n"
+    }
+  ],
+  "default_target_red": "red-command.json",
+  "default_target_green": "green-command.json",
+  "meaning": "Real offline default Cargo build first succeeds but dirties original source; same fresh default build succeeds with clean corrected source. Unexpected adjacent file and tracked source mutation remain visible to the unchanged source predicates. Original local full319s used an explicit external target, not the hosted-default integration environment. Original failed hosted trace retained without relabelling it as acceptance.",
+  "next": "Distinct affected review, then normal full PRCI on corrected head; actual protected integration/mainCI/cold acceptance still mandatory.",
+  "criteria_closed": [],
+  "physical_releases": 0,
+  "raw_whitespace_check": {
+    "full_exit": 2,
+    "full_output": "docs/restart/implementation/QP01/host-coordinator/delivery/default-target-correction/green.log:22: new blank line at EOF.\ndocs/restart/implementation/QP01/host-coordinator/delivery/default-target-correction/red.log:22: new blank line at EOF.\n",
+    "authored_exit": 0,
+    "excluded_only": [
+      "docs/restart/implementation/QP01/host-coordinator/delivery/default-target-correction/red.log",
+      "docs/restart/implementation/QP01/host-coordinator/delivery/default-target-correction/green.log"
+    ],
+    "reason": "Original Cargo output ends with blank lines; preserve raw bytes. Initial all-files whitespace assertion correctly stopped packaging, no product or proof rerun and no acceptance from that invocation."
+  }
+}
