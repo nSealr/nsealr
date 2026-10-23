@@ -1,0 +1,52 @@
+{
+  "verdict": "PASS_two_current_generator_calls_only_CONTRACT_UNCHANGED",
+  "executed_source": "558bdf1b755f75d6934a233d01088148144cbd66",
+  "generator_sha256": "aadf8b86116f6103d71de9ce2d7ea0c5c9979dfc955b0219a0d5b1b496d6519a",
+  "runtime_binding_and_ELF_sha256": {
+    "secp256k1/__init__.py": "fcce0bd7593070a7cdc450d9556570465c9f8e0770331e6b33028b97c42eabf8",
+    "secp256k1/_libsecp256k1.cpython-312-x86_64-linux-gnu.so": "7bf7d7cec3a072f2a21e8464e42537da1fa56fd7476ad7336baa02c8e1b5ef71"
+  },
+  "wheel_sha256": "1041694e429eb465123cb742911d2aad5cbd9e0cf2891aaaf794a887938647d1",
+  "actual_signing_calls": 2,
+  "method": "Imported existing generate_fixtures.py without main execution; called its unmodified sign_event() once per original basic/tagged template. Existing R00 schnorr_sign(msg, empty tag, raw=True) parameters observed with Python profiling. Existing K01.load_oracle() -> S03.reference() independently verified the two returned signatures. No new signing implementation.",
+  "observations": [
+    {
+      "fixture": "protocols/contracts/v1/vectors/events/kind-1-basic.json",
+      "actual_binding_call": {
+        "digest_hex": "2977f107ad2668dbd9f09b8594eff3b5276e21bfe098e60ae3e905e3c861e4d3",
+        "bip340tag": "",
+        "raw": true
+      },
+      "oracle_verifies_generator_signature": true,
+      "generator_equals_legacy": false,
+      "generator_equals_zero_aux": true,
+      "generator_equals_Rust": true
+    },
+    {
+      "fixture": "protocols/contracts/v1/vectors/events/kind-1-tags.json",
+      "actual_binding_call": {
+        "digest_hex": "0bef8491d04976053cdde3cff1903224b94fdee708712adffb00fe754a634543",
+        "bip340tag": "",
+        "raw": true
+      },
+      "oracle_verifies_generator_signature": true,
+      "generator_equals_legacy": false,
+      "generator_equals_zero_aux": true,
+      "generator_equals_Rust": true
+    }
+  ],
+  "conclusion": "Current R00 generator/binding reproduces explicit-zero-aux Rust/oracle signatures for both public messages, and does not reproduce either historical fixture signature. The origin/nonce parameters/environment of the historical fixture signatures remain unknown. NULL must not be described as no auxiliary masking: this result is consistent with B01 identification of the exact loaded ELF ZERO_MASK path.",
+  "source_correspondence": "R00 wheel/binding/loaded ELF match B01 exact identities and installed archive bytes. Product/core/provider/tests/contract/fixture files remain byte-identical to the frozen26 checkpoint. Historical8 RED and all earlier evidence remain unchanged.",
+  "limits": [
+    "Two original public messages/key only; no corpus generation, install, fetch, new native adapter invocation, full campaign or CI.",
+    "Only existing sign_event helper executed; generator main/sign_fixture/write_json were not called. The existing main output-envelope version is outside this diagnostic.",
+    "Runtime source/hash checks and original-file hashes retained; this establishes current behavior, not the historical production provenance of fixture signatures.",
+    "All23groups/fullPiCI/actualclient/workspacecoverage and final acceptance remain incomplete pending root/B01 adjudication."
+  ],
+  "proof_sha256": {
+    "evidence/generator-diagnostic-01/stdout.log": "aaa7686613973f93d1c0188552ad2d864f411d155ed88d61fb45e1dac649d44f",
+    "evidence/generator-diagnostic-01/stderr.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "evidence/generator-diagnostic-01/receipt.json": "066ae850e9ba819d02dfccebdaa9a38e8e72d8663a81fe273e7f710b26484b56",
+    "generator-diagnostic.py": "cc1f4455a20ceca9bffa65cea5a670141aebfc755c60b388e7d50fe1587da600"
+  }
+}
