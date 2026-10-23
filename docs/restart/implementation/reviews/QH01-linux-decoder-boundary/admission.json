@@ -55,5 +55,87 @@
     "Preserve meaningful failures and corrections. Run focused checks during development, then one complete stable experiment campaign; root distinct runtime/source review before any integration/adoption."
   ],
   "stop_conditions": "Complete coherent implementation/proof packet and freeze/push for distinct root review. If a platform gate or an essential unsupported property prevents the experiment, preserve exact evidence and stop dependent execution without bypass.",
-  "acceptance_limits": "Host IPC/resource-lifecycle experiment only, actual_QR_decode=false, no signing/decoder/physical/resource-profile qualification. All47criteria unchanged."
+  "acceptance_limits": "Host IPC/resource-lifecycle experiment only, actual_QR_decode=false, no signing/decoder/physical/resource-profile qualification. All47criteria unchanged.",
+  "pre_execution_case_input_clarification": {
+    "reason": "The original source spec already requires isolated dimension/raw-cap boundary rows. Frozen means a predeclared per-case matrix, not one identical cap value across mutually exclusive negative/positive rows. No code or experiment has run; baseline and acceptance criteria are unchanged.",
+    "raw_input_bytes_semantics": "Maximum allowed raw-byte length, not the actual buffer length or advertised tuple length. Actual canonical fixture is always N=172800 with width240/height240/RGB888/stride720, except the separately labelled relation-error view.",
+    "independent_caps": "Width/height/pixel/raw maxima are independent valid caps; do not reject a configuration merely because maximum_width*maximum_height exceeds maximum_pixels or the raw cap. Validate the actual tuple against their intersection.",
+    "frozen_rows": [
+      {
+        "case_group": "dimensions",
+        "row": "width-cap",
+        "parameter_overlay": {
+          "maximum_width": 239
+        },
+        "actual_buffer_bytes": 172800,
+        "actual_metadata_unchanged": true
+      },
+      {
+        "case_group": "dimensions",
+        "row": "height-cap",
+        "parameter_overlay": {
+          "maximum_height": 239
+        },
+        "actual_buffer_bytes": 172800,
+        "actual_metadata_unchanged": true
+      },
+      {
+        "case_group": "dimensions",
+        "row": "pixel-cap",
+        "parameter_overlay": {
+          "maximum_pixels": 57599
+        },
+        "actual_buffer_bytes": 172800,
+        "actual_metadata_unchanged": true
+      },
+      {
+        "case_group": "dimensions",
+        "row": "stride-length-relation",
+        "parameter_overlay": {},
+        "actual_buffer_bytes": 172799,
+        "actual_metadata_unchanged": true,
+        "mutation": "Transient memoryview missing the final byte of existing fixture; no new persisted image/corpus. Dimensional caps and raw maximum172800 stay nonbinding; exact stride/height relation must refuse."
+      },
+      {
+        "case_group": "raw-cap",
+        "row": "N-minus-1",
+        "parameter_overlay": {
+          "raw_input_bytes": 172799
+        },
+        "actual_buffer_bytes": 172800,
+        "actual_metadata_unchanged": true
+      },
+      {
+        "case_group": "raw-cap",
+        "row": "N",
+        "parameter_overlay": {
+          "raw_input_bytes": 172800
+        },
+        "actual_buffer_bytes": 172800,
+        "actual_metadata_unchanged": true
+      },
+      {
+        "case_group": "raw-cap",
+        "row": "N-plus-1",
+        "parameter_overlay": {
+          "raw_input_bytes": 172801
+        },
+        "actual_buffer_bytes": 172800,
+        "actual_metadata_unchanged": true
+      }
+    ],
+    "unchanged_for_all_these_rows": [
+      "worker_AS_bytes",
+      "CPU_soft_seconds",
+      "CPU_hard_seconds",
+      "wall_eligibility_deadline",
+      "cleanup_observation_window",
+      "stdout_bytes",
+      "stderr_bytes",
+      "fixed_IO_chunk_bytes",
+      "stride_and_pixel_format"
+    ],
+    "prohibited": "No changing actual raw buffer length in raw-cap rows; no AS/CPU/time/IO retuning or silent increases after failures. This clarifies inputs and does not weaken a guard or acceptance criterion. Other case-specific changes require an explicit pre-execution mapping grounded in the admitted spec.",
+    "implementation_branch_sync": "Exact two coordinator-owned admission/report postimages may be imported into the implementation branch by fast-forward or ordinary cherry-pick; author does not edit them. Preserve old28546b89 and original admission history."
+  }
 }

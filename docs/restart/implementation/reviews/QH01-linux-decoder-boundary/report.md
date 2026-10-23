@@ -23,3 +23,10 @@ Popen sequence because Popen can hide lost status as zero. Unsupported APIs are
 a refusal, not permission for a bypass. No decoder, sandbox, product default,
 physical profile, daemon or additional framework is selected. All QH/QP/Q02
 criteria remain incomplete; this review supplies no production security claim.
+
+The pre-code input clarification in admission.json freezes case-specific cap
+overlays already required by the source experiment. Baseline13values remain
+exact; independent caps are valid, and raw-cap rows keep the actual RGB tuple
+andNbytes fixed while varying only the maximum. The separate relation row uses
+a transient truncated view with nonbinding caps. No resource threshold changes
+after a result, new corpus or relaxed negative expectation are permitted.
