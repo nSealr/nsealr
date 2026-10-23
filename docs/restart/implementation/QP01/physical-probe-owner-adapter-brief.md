@@ -163,3 +163,25 @@ source status before/after and actual artifact identity, and send the minimal
 frozen source/command/result tuple to root. Do not start the full negative matrix,
 Pi/fullCI or next hardware/capture/display layer until that first result is
 reviewed; this is a finite implementation checkpoint, not new parent acceptance.
+
+## Root negative-phase admission — 24 October 2026
+
+Root admitted only the finite negative phase after MICRO9bf and distinct review
+`3c9afc1c08c078704026694e2ff463eabb3ab8ac`, verdict
+`PASS_MICRO_HOST_PYTHON312_POSITIVE_ONLY_PENDING_NEGATIVE_PHASE`, no findings.
+That review independently replayed one actual O/W with baseline Python3.12.15.
+The original proposal, MICRO source/proofs and original RED remain historical.
+
+Before negative implementation, freeze per-case expectations at
+`python-owner-adapter/negative/expectations.json`: real unused/cancel/late-discard/
+8s-wall/control cases first, then the original11 no-W helpers and9 pure relation
+mutations, with the specified type/canonicality/limit controls. Reuse the actual
+worker path/SHA initialized by the existing producer; no rebuild per case. The
+normal Pi unittest discovery must exercise the new checks and fail on missing
+required W. A dedicated focused invocation supplies structured author evidence;
+it does not replace normal Pi or mandatory full gates. Keep original194 Pi tests,
+default5/14, native14, first39 and all17/floors/repro gates. Root owns later count
+projection/protected delivery. Known no-W helper collection is test evidence;
+quarantine stays poisoned and is never runtime recovery or admission to reuse.
+No live O is killed or abandoned. Complete source/proof/limits, then stop for
+distinct affected review before integration; no physical/provider layer is added.
