@@ -58,7 +58,7 @@ def ci(directory):
     subprocess.run(["node", "--import", "tsx/esm", str(CLIENT)], cwd=ROOT, env=env, check=True)
 
 
-def exchange():
+def exchange(settlement_fd=None):
     sys.path.insert(0, str(ROOT / "apps/pi/app"))
     from nsealr_vault.engine_adapter import EngineAdapter, MonotonicSeconds
     incoming = sys.stdin.buffer.read(948)
@@ -78,17 +78,24 @@ def exchange():
                       "input_bytes": len(incoming), "input_sha256": hashlib.sha256(incoming).hexdigest(),
                       "output_bytes": len(output), "output_sha256": hashlib.sha256(output).hexdigest(),
                       "synthetic_complete_review": pages}), file=sys.stderr, flush=True)
+    if settlement_fd is not None:
+        # Finite harness-only process-settlement control AFTER native return.
+        # It models a child that cannot settle merely because the client timed
+        # out; this neither pauses the native clock nor grants extra authority.
+        if os.read(settlement_fd, 1) != b"R":
+            raise RuntimeError("controlled child was not explicitly released")
     sys.stdout.buffer.write(output)
 
 
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--ci", metavar="DIRECTORY")
+    parser.add_argument("--settlement-fd", type=int, choices=[3])
     args = parser.parse_args()
     if args.ci:
         ci(args.ci)
     else:
-        exchange()
+        exchange(args.settlement_fd)
 
 
 if __name__ == "__main__":
