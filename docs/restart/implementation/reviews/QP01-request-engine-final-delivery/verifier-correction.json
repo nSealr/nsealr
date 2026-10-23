@@ -1,0 +1,20 @@
+{
+  "classification": "Verifier assumption defect, not product/test failure",
+  "first_invocation_exit": 1,
+  "first_script_sha256": "766e4aa8e6801605da3a6cf45402deefb23c570b16c3a564991b7df0da9ebc2c",
+  "failed_assertion": "assert all(current_artifacts[p]==r for p,r in old_artifacts.items())",
+  "observation": "The existing QP01 README is one of the three authorized navigation edits; only its current artifact SHA changed. No old artifact path was removed. The verifier incorrectly required all old rows to remain byte-identical.",
+  "correction": "assert set(old_artifacts)<=set(current_artifacts)\nreconciled=[p for p,r in old_artifacts.items() if current_artifacts[p]!=r]\nassert reconciled==['docs/restart/implementation/QP01/README.md']\nfor path in reconciled:\n    assert old_artifacts[path]['sha256']==sha(blob(path,AUTHOR))\n    assert dict(current_artifacts[path],sha256=old_artifacts[path]['sha256'])==old_artifacts[path]",
+  "unchanged_requirements": "Every other old row remains exact; the permitted README SHA binds author before/current candidate after; all 133 current hashes and every other graph field are still checked. No product source/test/floor or historical report changed.",
+  "retention": "Both exact replacement rules reconstruct the rejected verifier preimage from audit.py; SHA checked. No repeated failing product run.",
+  "replacement_rules": [
+    {
+      "before": "assert all(current_artifacts[p]==r for p,r in old_artifacts.items())",
+      "after": "assert set(old_artifacts)<=set(current_artifacts)\nreconciled=[p for p,r in old_artifacts.items() if current_artifacts[p]!=r]\nassert reconciled==['docs/restart/implementation/QP01/README.md']\nfor path in reconciled:\n    assert old_artifacts[path]['sha256']==sha(blob(path,AUTHOR))\n    assert dict(current_artifacts[path],sha256=old_artifacts[path]['sha256'])==old_artifacts[path]"
+    },
+    {
+      "before": "'old_QP01_artifacts_preserved':len(old_artifacts)",
+      "after": "'old_QP01_artifact_paths_preserved':len(old_artifacts),'old_QP01_artifact_rows_exact':len(old_artifacts)-len(reconciled),'current_navigation_artifact_hash_reconciled':reconciled"
+    }
+  ]
+}
