@@ -2,8 +2,8 @@
 import assert from "node:assert/strict";
 import { spawn } from "node:child_process";
 import { createHash } from "node:crypto";
-import { readFileSync, writeFileSync } from "node:fs";
-import { resolve } from "node:path";
+import { readFileSync, statSync, writeFileSync } from "node:fs";
+import { isAbsolute, resolve } from "node:path";
 import type { Readable, Writable } from "node:stream";
 import { clientIdForIdentity, handleLocalServiceRequestAsync, type LocalServiceContext,
   type SignerCompatibilitySnapshot } from "@nsealr/client";
@@ -232,6 +232,15 @@ export async function runFirstGate({ prepareNative, basic, root }: {
   prepareNative(hold?: boolean, env?: NodeJS.ProcessEnv, syntheticArgv?: string[]): Promise<Native>; basic: any; root: string;
 }) {
   const contract = JSON.parse(readFileSync(new URL("control-contract.json", import.meta.url), "utf8"));
+  assert.equal(contract.schema_version, 2); assert.equal(contract.initialization.version, 2);
+  const binary = process.env.NSEALR_QP01_QR_WORKER, trustedHash = process.env.NSEALR_QP01_QR_WORKER_SHA256;
+  assert(binary && isAbsolute(binary) && statSync(binary).isFile(), "required trusted worker path");
+  digest(trustedHash);
+  const bytes = readFileSync(binary);
+  assert(bytes.subarray(0, 4).equals(Buffer.from([0x7f, 0x45, 0x4c, 0x46])));
+  assert.equal(hash(bytes), trustedHash, "worker initialization SHA256 mismatch");
+  // Trusted initialization from the finite producer, never from image/request/status data.
+  contract.identities.worker_elf_sha256 = trustedHash;
   if (process.argv.includes("--owner-correction-parser")) { parserRelationControls(contract); return; }
   const deadlineFocus = process.argv.includes("--owner-deadline-control");
   if (process.argv.includes("--owner-malformed-controls")) { await malformedHelpers(root, contract); return; }

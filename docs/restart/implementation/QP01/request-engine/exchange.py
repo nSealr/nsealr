@@ -13,16 +13,16 @@ SOURCE = ROOT / "crates/nsealr-pi-engine-fixture/src/lib.rs"
 CLIENT = Path(__file__).with_name("client-exchange.ts")
 
 
-def source_binding():
-    paths = ["Cargo.toml", "Cargo.lock", "crates/nsealr-pi-engine-fixture/Cargo.toml",
-             "crates/nsealr-pi-engine-fixture/src/lib.rs"]
+def source_binding(paths=None):
+    if paths is None:
+        paths = ["Cargo.toml", "Cargo.lock", "crates/nsealr-pi-engine-fixture/Cargo.toml",
+                 "crates/nsealr-pi-engine-fixture/src/lib.rs"]
     return {p: hashlib.sha256((ROOT / p).read_bytes()).hexdigest() for p in paths}
 
 
-def provision():
-    before = source_binding()
-    command = ["cargo", "build", "-p", "nsealr-pi-engine-fixture", "--locked", "--offline",
-               "--release", "--message-format=json"]
+def build_artifact(command, source, manifest, name, kind, paths=None):
+    """Bind the actual Cargo artifact to this producer's unchanged inputs."""
+    before = source_binding(paths)
     result = subprocess.run(command, cwd=ROOT, check=True, stdout=subprocess.PIPE, text=True)
     artifacts = []
     for line in result.stdout.splitlines():
@@ -30,21 +30,50 @@ def provision():
         if record.get("reason") != "compiler-artifact":
             continue
         target = record["target"]
-        if target["name"] == "nsealr_pi_engine_fixture" and "cdylib" in target["kind"]:
-            if Path(target["src_path"]).resolve() != SOURCE:
-                raise RuntimeError("Cargo artifact has wrong source")
+        if target["name"] != name or kind not in target["kind"]:
+            continue
+        if (Path(target["src_path"]).resolve() != source or
+                Path(record["manifest_path"]).resolve() != manifest):
+            raise RuntimeError("Cargo artifact has wrong source or manifest")
+        if kind == "bin":
+            executable = record.get("executable")
+            if executable is None or executable not in record["filenames"]:
+                raise RuntimeError("Cargo artifact has no bound executable")
+            artifacts.append(Path(executable).resolve(strict=True))
+        else:
             artifacts.extend(Path(p).resolve(strict=True) for p in record["filenames"] if p.endswith(".so"))
-    if len(artifacts) != 1 or source_binding() != before:
-        raise RuntimeError("missing/ambiguous native artifact or changed build input")
-    library = artifacts[0]
-    binary = library.read_bytes()
+    if len(artifacts) != 1 or source_binding(paths) != before:
+        raise RuntimeError("missing/ambiguous artifact or changed build input")
+    artifact = artifacts[0]
+    if not artifact.is_file():
+        raise RuntimeError("Cargo artifact is not a regular file")
+    binary = artifact.read_bytes()
     if binary[:4] != b"\x7fELF":
         raise RuntimeError("host experiment requires the actual ELF")
-    digest = hashlib.sha256(binary).hexdigest()
+    return artifact, hashlib.sha256(binary).hexdigest(), before
+
+
+def provision():
+    command = ["cargo", "build", "-p", "nsealr-pi-engine-fixture", "--locked", "--offline",
+               "--release", "--message-format=json"]
+    library, digest, before = build_artifact(
+        command, SOURCE, ROOT / "crates/nsealr-pi-engine-fixture/Cargo.toml",
+        "nsealr_pi_engine_fixture", "cdylib")
     print(json.dumps({"role": "public fixture build, not hardware qualification", "argv": command,
                       "source": before, "library": str(library), "sha256": digest,
                       "CARGO_TARGET_DIR": os.environ.get("CARGO_TARGET_DIR")}), flush=True)
-    return {"NSEALR_QP01_LIBRARY": str(library), "NSEALR_QP01_LIBRARY_SHA256": digest}
+    paths = ["apps/pi/qr-worker/" + p for p in ("Cargo.toml", "Cargo.lock", "src/main.rs", "rust-toolchain.toml")]
+    paths += [".cargo/config.toml", "rust-toolchain.toml"]
+    command = ["cargo", "build", "--manifest-path", "apps/pi/qr-worker/Cargo.toml",
+               "--locked", "--offline", "--release", "--message-format=json"]
+    worker, worker_digest, worker_before = build_artifact(
+        command, ROOT / "apps/pi/qr-worker/src/main.rs", ROOT / "apps/pi/qr-worker/Cargo.toml",
+        "nsealr-qr-worker", "bin", paths)
+    print(json.dumps({"role": "public RGB worker build, initialization v2, not hardware qualification",
+                      "argv": command, "source": worker_before, "worker": str(worker), "sha256": worker_digest,
+                      "CARGO_TARGET_DIR": os.environ.get("CARGO_TARGET_DIR")}), flush=True)
+    return {"NSEALR_QP01_LIBRARY": str(library), "NSEALR_QP01_LIBRARY_SHA256": digest,
+            "NSEALR_QP01_QR_WORKER": str(worker), "NSEALR_QP01_QR_WORKER_SHA256": worker_digest}
 
 
 def ci(directory):
@@ -56,6 +85,8 @@ def ci(directory):
     subprocess.run(["make", "-C", str(pi), "ci"], cwd=ROOT, env=env, check=True)
     env["NSEALR_QP01_PYTHON"] = str(pi / ".venv/bin/python")
     subprocess.run(["node", "--import", "tsx/esm", str(CLIENT)], cwd=ROOT, env=env, check=True)
+    subprocess.run(["node", "--import", "tsx/esm", str(CLIENT), "--first-owner-gate"],
+                   cwd=ROOT, env=env, check=True)
 
 
 def exchange(settlement_fd=None, ready_fd=None):

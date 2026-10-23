@@ -28,18 +28,18 @@ class AuditControls(unittest.TestCase):
         self.assertFalse(calls[0][1].exists(), 'temporary audit data cleaned after success or failure')
         return result, calls
 
-    def test_success_runs_both_real_manifests_and_preserves_policy(self):
-        result, calls = self.exercise([0, 0, 0, 0])
+    def test_success_runs_three_real_manifests_and_preserves_policy(self):
+        result, calls = self.exercise([0] * 6)
         self.assertEqual(result, 0)
-        self.assertEqual(len(calls), 4)
+        self.assertEqual(len(calls), 6)
         for index, (argv, cwd, env) in enumerate(calls):
-            self.assertEqual(argv[argv.index('--manifest-path') + 1], str(ROOT / audit.MANIFESTS[index % 2]))
+            self.assertEqual(argv[argv.index('--manifest-path') + 1], str(ROOT / audit.MANIFESTS[index % 3]))
             self.assertEqual(argv[argv.index('--config') + 1], str(ROOT / 'deny.toml'))
             self.assertIn('--locked', argv)
             self.assertEqual(env['RUSTUP_TOOLCHAIN'], '1.95.0')
             self.assertEqual(env['CARGO_REGISTRIES_CRATES_IO_PROTOCOL'], 'sparse')
             self.assertEqual(Path(env['CARGO_HOME']), calls[0][1] / 'cargo')
-            if index < 2:
+            if index < 3:
                 self.assertFalse(cwd.is_relative_to(ROOT))
                 self.assertEqual(argv[argv.index('fetch'):], ['fetch', 'index', 'db'] if index == 0 else ['fetch', 'index'])
             else:
@@ -48,7 +48,7 @@ class AuditControls(unittest.TestCase):
                 self.assertEqual(argv[argv.index('check'):], ['check', '--deny', 'index-failure'])
 
     def test_each_data_or_check_failure_stops_dependents_and_propagates(self):
-        for failure_at in range(4):
+        for failure_at in range(6):
             with self.subTest(failure_at=failure_at):
                 result, calls = self.exercise([0] * failure_at + [17])
                 self.assertEqual(result, 17)
