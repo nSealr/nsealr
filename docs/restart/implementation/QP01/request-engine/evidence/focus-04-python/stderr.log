@@ -1,0 +1,101 @@
+test_A01_A02_no_premature_or_rejected_authority (test_engine_adapter.EngineAdapterTests.test_A01_A02_no_premature_or_rejected_authority) ... ok
+test_B03_strict_original_bytes_no_normalization (test_engine_adapter.EngineAdapterTests.test_B03_strict_original_bytes_no_normalization) ... ok
+test_B04_unsupported_workflows (test_engine_adapter.EngineAdapterTests.test_B04_unsupported_workflows) ... ok
+test_E01_no_auxiliary_fallback (test_engine_adapter.EngineAdapterTests.test_E01_no_auxiliary_fallback) ... FAIL
+test_L01_reentrant_first_clock_and_presentation (test_engine_adapter.EngineAdapterTests.test_L01_reentrant_first_clock_and_presentation) ... FAIL
+test_L02_native_reservation_survives_blocked_callback (test_engine_adapter.EngineAdapterTests.test_L02_native_reservation_survives_blocked_callback) ... FAIL
+test_N01_no_reference_signer_or_loader_fallback (test_engine_adapter.EngineAdapterTests.test_N01_no_reference_signer_or_loader_fallback) ... FAIL
+test_P01_original_identity_and_no_signing (test_engine_adapter.EngineAdapterTests.test_P01_original_identity_and_no_signing) ... ok
+test_P02_P03_real_basic_and_tagged_requests (test_engine_adapter.EngineAdapterTests.test_P02_P03_real_basic_and_tagged_requests) ... 
+  test_P02_P03_real_basic_and_tagged_requests (test_engine_adapter.EngineAdapterTests.test_P02_P03_real_basic_and_tagged_requests) (vector='kind-1-basic.json') ... FAIL
+  test_P02_P03_real_basic_and_tagged_requests (test_engine_adapter.EngineAdapterTests.test_P02_P03_real_basic_and_tagged_requests) (vector='kind-1-tags.json') ... FAIL
+test_P04_changed_correlation_is_fresh (test_engine_adapter.EngineAdapterTests.test_P04_changed_correlation_is_fresh) ... FAIL
+test_P05_B01_B02_original_raw_bytes_and_outer_bound (test_engine_adapter.EngineAdapterTests.test_P05_B01_B02_original_raw_bytes_and_outer_bound) ... FAIL
+test_T01_T02_callback_failures_are_closed (test_engine_adapter.EngineAdapterTests.test_T01_T02_callback_failures_are_closed) ... ok
+test_uncertain_native_exception_quarantines_wrapper (test_engine_adapter.EngineAdapterTests.test_uncertain_native_exception_quarantines_wrapper) ... ok
+test_actual_driver_orders_full_pi_then_client_with_same_library (test_engine_adapter.ProvisioningControls.test_actual_driver_orders_full_pi_then_client_with_same_library) ... ok
+test_failed_full_pi_never_reaches_client (test_engine_adapter.ProvisioningControls.test_failed_full_pi_never_reaches_client) ... ok
+
+======================================================================
+FAIL: test_E01_no_auxiliary_fallback (test_engine_adapter.EngineAdapterTests.test_E01_no_auxiliary_fallback)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/tux/nsealr/.restart-tools/goal/qp01-request-engine/apps/pi/tests/test_engine_adapter.py", line 120, in test_E01_no_auxiliary_fallback
+    self.assertEqual(response(self.execute(raw)), vector("kind-1-basic.json")["response"])
+AssertionError: {'ver[73 chars]': {'pubkey': '4f355bdcb7cc0af728ef3cceb9615d9[344 chars]5'}}} != {'ver[73 chars]': {'id': '2977f107ad2668dbd9f09b8594eff3b5276[344 chars]4'}}}
+Diff is 792 characters long. Set self.maxDiff to None to see it.
+
+======================================================================
+FAIL: test_L01_reentrant_first_clock_and_presentation (test_engine_adapter.EngineAdapterTests.test_L01_reentrant_first_clock_and_presentation)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/tux/nsealr/.restart-tools/goal/qp01-request-engine/apps/pi/tests/test_engine_adapter.py", line 188, in test_L01_reentrant_first_clock_and_presentation
+    self.assertEqual(response(self.execute(raw, local_io=present, monotonic_clock=clock)), vector("kind-1-basic.json")["response"])
+AssertionError: {'ver[73 chars]': {'pubkey': '4f355bdcb7cc0af728ef3cceb9615d9[344 chars]5'}}} != {'ver[73 chars]': {'id': '2977f107ad2668dbd9f09b8594eff3b5276[344 chars]4'}}}
+Diff is 792 characters long. Set self.maxDiff to None to see it.
+
+======================================================================
+FAIL: test_L02_native_reservation_survives_blocked_callback (test_engine_adapter.EngineAdapterTests.test_L02_native_reservation_survives_blocked_callback)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/tux/nsealr/.restart-tools/goal/qp01-request-engine/apps/pi/tests/test_engine_adapter.py", line 222, in test_L02_native_reservation_survives_blocked_callback
+    self.assertEqual(response(self.execute(raw)), vector("kind-1-basic.json")["response"])
+AssertionError: {'ver[73 chars]': {'pubkey': '4f355bdcb7cc0af728ef3cceb9615d9[344 chars]5'}}} != {'ver[73 chars]': {'id': '2977f107ad2668dbd9f09b8594eff3b5276[344 chars]4'}}}
+Diff is 792 characters long. Set self.maxDiff to None to see it.
+
+======================================================================
+FAIL: test_N01_no_reference_signer_or_loader_fallback (test_engine_adapter.EngineAdapterTests.test_N01_no_reference_signer_or_loader_fallback)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/tux/nsealr/.restart-tools/goal/qp01-request-engine/apps/pi/tests/test_engine_adapter.py", line 229, in test_N01_no_reference_signer_or_loader_fallback
+    self.assertEqual(response(self.execute(raw)), vector("kind-1-basic.json")["response"])
+AssertionError: {'ver[73 chars]': {'pubkey': '4f355bdcb7cc0af728ef3cceb9615d9[344 chars]5'}}} != {'ver[73 chars]': {'id': '2977f107ad2668dbd9f09b8594eff3b5276[344 chars]4'}}}
+Diff is 792 characters long. Set self.maxDiff to None to see it.
+
+======================================================================
+FAIL: test_P02_P03_real_basic_and_tagged_requests (test_engine_adapter.EngineAdapterTests.test_P02_P03_real_basic_and_tagged_requests) (vector='kind-1-basic.json')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/tux/nsealr/.restart-tools/goal/qp01-request-engine/apps/pi/tests/test_engine_adapter.py", line 75, in test_P02_P03_real_basic_and_tagged_requests
+    self.assertEqual(actual, data["response"])
+AssertionError: {'ver[73 chars]': {'pubkey': '4f355bdcb7cc0af728ef3cceb9615d9[344 chars]5'}}} != {'ver[73 chars]': {'id': '2977f107ad2668dbd9f09b8594eff3b5276[344 chars]4'}}}
+Diff is 792 characters long. Set self.maxDiff to None to see it.
+
+======================================================================
+FAIL: test_P02_P03_real_basic_and_tagged_requests (test_engine_adapter.EngineAdapterTests.test_P02_P03_real_basic_and_tagged_requests) (vector='kind-1-tags.json')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/tux/nsealr/.restart-tools/goal/qp01-request-engine/apps/pi/tests/test_engine_adapter.py", line 75, in test_P02_P03_real_basic_and_tagged_requests
+    self.assertEqual(actual, data["response"])
+AssertionError: {'ver[72 chars]': {'pubkey': '4f355bdcb7cc0af728ef3cceb9615d9[450 chars]8'}}} != {'ver[72 chars]': {'id': '0bef8491d04976053cdde3cff1903224b94[450 chars]0'}}}
+Diff is 1032 characters long. Set self.maxDiff to None to see it.
+
+======================================================================
+FAIL: test_P04_changed_correlation_is_fresh (test_engine_adapter.EngineAdapterTests.test_P04_changed_correlation_is_fresh)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/tux/nsealr/.restart-tools/goal/qp01-request-engine/apps/pi/tests/test_engine_adapter.py", line 84, in test_P04_changed_correlation_is_fresh
+    self.assertEqual(actual["result"]["event"], data["signed_event"])
+AssertionError: {'pubkey': '4f355bdcb7cc0af728ef3cceb9615d9[342 chars]635'} != {'id': '2977f107ad2668dbd9f09b8594eff3b5276[342 chars]654'}
+  {'content': 'nSealr fixture: basic kind 1 event.',
+   'created_at': 1710000000,
+   'id': '2977f107ad2668dbd9f09b8594eff3b5276e21bfe098e60ae3e905e3c861e4d3',
+   'kind': 1,
+   'pubkey': '4f355bdcb7cc0af728ef3cceb9615d90684bb5b2ca5f859ab0f0b704075871aa',
+-  'sig': 'd8f39a159fd833bb1f0663c7f03b2ff1c19b27867442a5a372779fe6998a8a28b26c623fed74896a5065b1a6739d1953b9d386d2d57e24cf1f7c1cc353a82635',
++  'sig': '2eec0351eb1d651140922d4b1f1bd8135f4474aabf42ec5bda7011087c1a072d71be863646dc162e4d96eacf14afeed2618a4acb0e1134a273a2b8e73039e654',
+   'tags': []}
+
+======================================================================
+FAIL: test_P05_B01_B02_original_raw_bytes_and_outer_bound (test_engine_adapter.EngineAdapterTests.test_P05_B01_B02_original_raw_bytes_and_outer_bound)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/tux/nsealr/.restart-tools/goal/qp01-request-engine/apps/pi/tests/test_engine_adapter.py", line 90, in test_P05_B01_B02_original_raw_bytes_and_outer_bound
+    self.assertEqual(response(self.execute(frame(raw))), data["response"])
+AssertionError: {'ver[73 chars]': {'pubkey': '4f355bdcb7cc0af728ef3cceb9615d9[344 chars]5'}}} != {'ver[73 chars]': {'id': '2977f107ad2668dbd9f09b8594eff3b5276[344 chars]4'}}}
+Diff is 792 characters long. Set self.maxDiff to None to see it.
+
+----------------------------------------------------------------------
+Ran 15 tests in 0.025s
+
+FAILED (failures=8)
