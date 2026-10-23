@@ -1,0 +1,126 @@
+[
+  {
+    "id": "official-ctutils-unit-build",
+    "argv": [
+      "rustc",
+      "--edition=2024",
+      "--crate-name",
+      "ctutils",
+      "--test",
+      "vendor/ctutils/src/lib.rs",
+      "--cfg",
+      "feature=\"subtle\"",
+      "--extern",
+      "cmov=/home/tux/nsealr/.restart-tools/goal/qh01-linux-worker-experiment/docs/restart/implementation/R00/ctutils-remediation/.runtime/target/debug/deps/libcmov-e85548b64c7f9661.rlib",
+      "--extern",
+      "subtle=/home/tux/nsealr/.restart-tools/goal/qh01-linux-worker-experiment/docs/restart/implementation/R00/ctutils-remediation/.runtime/target/debug/deps/libsubtle-518a5861ebe040ae.rlib",
+      "-L",
+      "dependency=/home/tux/nsealr/.restart-tools/goal/qh01-linux-worker-experiment/docs/restart/implementation/R00/ctutils-remediation/.runtime/target/debug/deps",
+      "-o",
+      "/home/tux/nsealr/.restart-tools/goal/qh01-linux-worker-experiment/docs/restart/implementation/R00/ctutils-remediation/.runtime/upstream-ctutils-tests"
+    ],
+    "cwd": "/home/tux/nsealr/.restart-tools/goal/qh01-linux-worker-experiment",
+    "source_commit": "f089a20098523f07193f15cf472bdf1b973b7318",
+    "environment_sha256": "a87a52bae39f9e94280a63eed5df982e6ddd08295edede87ad094d539184959b",
+    "overrides": {
+      "CARGO_NET_OFFLINE": "true"
+    },
+    "started_utc": "2026-10-23T12:02:41.342631+00:00",
+    "elapsed_seconds": 0.211,
+    "exit": 0,
+    "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "id": "official-ctutils-unit-tests",
+    "argv": [
+      "/home/tux/nsealr/.restart-tools/goal/qh01-linux-worker-experiment/docs/restart/implementation/R00/ctutils-remediation/.runtime/upstream-ctutils-tests"
+    ],
+    "cwd": "/home/tux/nsealr/.restart-tools/goal/qh01-linux-worker-experiment",
+    "source_commit": "f089a20098523f07193f15cf472bdf1b973b7318",
+    "environment_sha256": "a87a52bae39f9e94280a63eed5df982e6ddd08295edede87ad094d539184959b",
+    "overrides": {
+      "CARGO_NET_OFFLINE": "true"
+    },
+    "started_utc": "2026-10-23T12:02:41.553869+00:00",
+    "elapsed_seconds": 0.004,
+    "exit": 0,
+    "stdout_sha256": "e1ef63eae2d86d881691e4f0c8d0181259ff1ca378256acb71798e26975cd953",
+    "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "id": "core-coverage",
+    "argv": [
+      "cargo",
+      "llvm-cov",
+      "--locked",
+      "--offline",
+      "--workspace",
+      "--all-features",
+      "--summary-only",
+      "--json",
+      "--output-path",
+      "/home/tux/nsealr/.restart-tools/goal/qh01-linux-worker-experiment/docs/restart/implementation/R00/ctutils-remediation/rust-gates/core-coverage.json"
+    ],
+    "cwd": "/home/tux/nsealr/.restart-tools/goal/qh01-linux-worker-experiment",
+    "source_commit": "f089a20098523f07193f15cf472bdf1b973b7318",
+    "environment_sha256": "a87a52bae39f9e94280a63eed5df982e6ddd08295edede87ad094d539184959b",
+    "overrides": {
+      "CARGO_NET_OFFLINE": "true"
+    },
+    "started_utc": "2026-10-23T12:02:41.557800+00:00",
+    "elapsed_seconds": 4.432,
+    "exit": 0,
+    "stdout_sha256": "51c2e10e1e108945321e159ec0033f8ade62a72fc99a5ba85ecc90ec6fd7d491",
+    "stderr_sha256": "72bfa265d36d980a899604f3da72d59b9961b113d3adedab9d96bf74c13f629e"
+  },
+  {
+    "id": "host-coverage",
+    "argv": [
+      "cargo",
+      "llvm-cov",
+      "--manifest-path",
+      "apps/desktop-simulator/Cargo.toml",
+      "--locked",
+      "--offline",
+      "--workspace",
+      "--all-features",
+      "--summary-only",
+      "--json",
+      "--output-path",
+      "/home/tux/nsealr/.restart-tools/goal/qh01-linux-worker-experiment/docs/restart/implementation/R00/ctutils-remediation/rust-gates/host-coverage.json"
+    ],
+    "cwd": "/home/tux/nsealr/.restart-tools/goal/qh01-linux-worker-experiment",
+    "source_commit": "f089a20098523f07193f15cf472bdf1b973b7318",
+    "environment_sha256": "a87a52bae39f9e94280a63eed5df982e6ddd08295edede87ad094d539184959b",
+    "overrides": {
+      "CARGO_NET_OFFLINE": "true"
+    },
+    "started_utc": "2026-10-23T12:02:45.990045+00:00",
+    "elapsed_seconds": 1.364,
+    "exit": 0,
+    "stdout_sha256": "903931f82b3b38f069946e1d9058556067c0b9076367cdd54960913f0ac7a1ab",
+    "stderr_sha256": "a652ac619be206e2330668a348f26bbb35e473fec3e824d0e0a730599a8dafbf"
+  },
+  {
+    "id": "unchanged-coverage-ratchet",
+    "argv": [
+      "python3",
+      "ci/check_coverage_ratchet.py",
+      "/home/tux/nsealr/.restart-tools/goal/qh01-linux-worker-experiment/docs/restart/implementation/R00/ctutils-remediation/rust-gates/core-coverage.json",
+      "ci/ratchet.json",
+      "/home/tux/nsealr/.restart-tools/goal/qh01-linux-worker-experiment/docs/restart/implementation/R00/ctutils-remediation/rust-gates/host-coverage.json"
+    ],
+    "cwd": "/home/tux/nsealr/.restart-tools/goal/qh01-linux-worker-experiment",
+    "source_commit": "f089a20098523f07193f15cf472bdf1b973b7318",
+    "environment_sha256": "a87a52bae39f9e94280a63eed5df982e6ddd08295edede87ad094d539184959b",
+    "overrides": {
+      "CARGO_NET_OFFLINE": "true"
+    },
+    "started_utc": "2026-10-23T12:02:47.354459+00:00",
+    "elapsed_seconds": 0.062,
+    "exit": 0,
+    "stdout_sha256": "7d1973d0160a5d0a70fd51f0242c0c429fa036b5bd61ecc7b4262dcda6fc35bb",
+    "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  }
+]

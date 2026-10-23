@@ -1,0 +1,221 @@
+{
+  "schema_version": 1,
+  "role": "Author source/compatibility packet for distinct review, not final audit/adoption/task acceptance.",
+  "status": "OFFICIAL_PATCH_FUNCTIONAL_COMPATIBILITY_PASS_FINAL_AUDIT_AND_REVIEW_PENDING",
+  "original_product_input": "1be80c8114583627a8eef1952a0cd939f40b84ec",
+  "frozen_expectations": "249e6f8fb4895d129803cd1988be1bf02acf96a3",
+  "tested_product_source": "f089a20098523f07193f15cf472bdf1b973b7318",
+  "official_remediation": {
+    "advisory": "RUSTSEC-2026-0385",
+    "advisory_commit": "f7b2f6bc663452200bbe639ebb75e0c762b3422b",
+    "package": "ctutils",
+    "old": "0.4.3",
+    "new": "0.4.4",
+    "release_commit": "a993c0ba50db6510d8db15a6219572de65115438",
+    "official_archive_sha256": "12218662ccac37d9714f2191252553d67585b97df8c839cbe49e0bde278dc865",
+    "claim": "Version0.4.4 is declared patched by official advisory; no observed attack or all-target constant-time proof."
+  },
+  "product_scope": {
+    "paths": [
+      "Cargo.lock",
+      "apps/desktop-simulator/Cargo.lock",
+      "vendor/ctutils/.cargo-checksum.json",
+      "vendor/ctutils/.cargo_vcs_info.json",
+      "vendor/ctutils/CHANGELOG.md",
+      "vendor/ctutils/Cargo.lock",
+      "vendor/ctutils/Cargo.toml",
+      "vendor/ctutils/Cargo.toml.orig",
+      "vendor/ctutils/src/choice.rs",
+      "vendor/ctutils/src/traits/ct_gt.rs",
+      "vendor/ctutils/src/traits/ct_lt.rs",
+      "vendor/ctutils/tests/proptests.rs"
+    ],
+    "root_other_package_records_exact": 42,
+    "host_other_package_records_exact": 46,
+    "non_ctutils_vendor_files_unchanged": 1892,
+    "new_product_dependency_packages": 0,
+    "official_archive_file_checksums_verified": 21,
+    "upstream_internal_lock": "Seven dev/test-only dependencies change in the official archive lock; none changes either product graph.",
+    "workspace_core_host_manifests_edited": false,
+    "vendor_manifests": "Exact official0.4.4 archive metadata replaces old vendor Cargo.toml/Cargo.toml.orig and upstream-internal lock."
+  },
+  "actual_checks": {
+    "commands_by_group": {
+      "resolution": [
+        {
+          "id": "toolchain",
+          "exit": 0
+        },
+        {
+          "id": "minimal-registry-lock",
+          "exit": 0
+        },
+        {
+          "id": "official-vendor",
+          "exit": 0
+        },
+        {
+          "id": "root-lock-update",
+          "exit": 0
+        },
+        {
+          "id": "host-lock-update",
+          "exit": 0
+        }
+      ],
+      "compatibility": [
+        {
+          "id": "root-reverse-graph",
+          "exit": 0
+        },
+        {
+          "id": "host-reverse-graph",
+          "exit": 0
+        },
+        {
+          "id": "ctutils-feature-graph",
+          "exit": 0
+        },
+        {
+          "id": "workspace-default",
+          "exit": 0
+        },
+        {
+          "id": "workspace-all-features",
+          "exit": 0
+        },
+        {
+          "id": "core-no-default-riscv32",
+          "exit": 0
+        },
+        {
+          "id": "host-vector-harness",
+          "exit": 0
+        },
+        {
+          "id": "s03-independent-output",
+          "exit": 0
+        },
+        {
+          "id": "k01-independent-output",
+          "exit": 0
+        },
+        {
+          "id": "workspace-clippy",
+          "exit": 0
+        },
+        {
+          "id": "host-clippy",
+          "exit": 0
+        }
+      ],
+      "rust-gates": [
+        {
+          "id": "official-ctutils-unit-build",
+          "exit": 0
+        },
+        {
+          "id": "official-ctutils-unit-tests",
+          "exit": 0
+        },
+        {
+          "id": "core-coverage",
+          "exit": 0
+        },
+        {
+          "id": "host-coverage",
+          "exit": 0
+        },
+        {
+          "id": "unchanged-coverage-ratchet",
+          "exit": 0
+        }
+      ]
+    },
+    "test_summaries": [
+      {
+        "command": "workspace-default",
+        "result_summaries": [
+          "test result: ok. 257 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.38s",
+          "test result: ok. 10 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s",
+          "test result: ok. 4 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s",
+          "test result: ok. 15 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.04s"
+        ]
+      },
+      {
+        "command": "workspace-all-features",
+        "result_summaries": [
+          "test result: ok. 258 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.35s",
+          "test result: ok. 10 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s",
+          "test result: ok. 4 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s",
+          "test result: ok. 15 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.04s"
+        ]
+      },
+      {
+        "command": "host-vector-harness",
+        "result_summaries": [
+          "test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s",
+          "test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s",
+          "test result: ok. 21 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s",
+          "test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s"
+        ]
+      }
+    ],
+    "s03_actual_output_checker": {
+      "verified_events": 8,
+      "official_verifier_controls": 7,
+      "actual_key_imports_checked": 3,
+      "strict_parser_negative_controls": 9,
+      "signature_byte_mutations_rejected": 512,
+      "event_id_byte_mutations_rejected": 256,
+      "canonical_field_mutations_rejected": 32,
+      "wrong_key_mutations_rejected": 8,
+      "double_hash_mutations_rejected": 8
+    },
+    "k01_actual_output_checker": {
+      "identities": 3,
+      "independent_vectors": 13,
+      "limits": "source-bound observations only; no execution provenance, hardware or provider qualification from data comparison",
+      "official_controls": 7,
+      "per_byte_and_canonical_mutations_rejected": 1313,
+      "preflight_rejections": 27
+    },
+    "official_ctutils_library_unit_tests": {
+      "passed": 150,
+      "failed": 0,
+      "method": "Pinned rustc --test on exact official vendor src/lib.rs, subtle feature, existing product-built cmov/subtle; no new test source or dev dependency.",
+      "new_u128_half_width_boundary_test": "executed host PASS; not target machine-code timing proof"
+    },
+    "coverage": {
+      "core_percent": 100.0,
+      "host_percent": 77.69,
+      "core_floor": 100.0,
+      "host_floor": 76.7,
+      "ratchet_exit": 0
+    },
+    "no_std_32bit": "Production --no-default-features RISC-V32 release build passed; not executed/booted/side-channel tested."
+  },
+  "preserved_observations": {
+    "original_vulnerability_RED": "Actual PR44 CI39945073403 excerpt, original source1be, cargo-deny advisory failed; not a locally reproduced exploit.",
+    "metadata_access": "Web tool metadata URL inaccessible; root rustsec.org unavailability attributed, not retried; primary requests/receipts preserved.",
+    "tool_invocation": "One packaging functions.exec JavaScript call had SyntaxError before execution; corrected invocation wrote new proof only. No product/test/source change or functional rerun resulted.",
+    "whitespace": "Raw official-vendor stderr and source diff preserved; full diagnostics are separate from product/authored-file check in whitespace.json."
+  },
+  "pending": [
+    "Final cargo-deny BOTH product graphs with corrected complete feed and no index-failure concealment; A02 owns feed correction",
+    "Distinct root source/proof review",
+    "Protected PR/full resulting-main checks, source reconciliation and adoption"
+  ],
+  "limitations": [
+    "No constant-time proof for every compiler/target or physical side-channel qualification",
+    "No benchmark/attack or provider/custody/device-release claim",
+    "Historical experiment/probe locks and all old reports are unchanged",
+    "Existing R00/toolchain/pins/vendor outside ctutils and policy/floors are unchanged",
+    "No new whole CI, PR or hosted polling; no final audit green claimed"
+  ],
+  "local_state": {
+    "task_runtime": "Ignored R00/ctutils-remediation/.runtime: isolated Cargo cache, source unpack, target and unit executable retained.",
+    "other_residue": "Preserved untracked QH01/rgb-input/.runtime cache; not part of candidate.",
+    "tracked_product": "Frozen source bytes equal tested f089; final tail proof only."
+  }
+}
