@@ -1,0 +1,23 @@
+diff --git a/docs/restart/implementation/QH01/linux-worker-experiment/experiment.py b/docs/restart/implementation/QH01/linux-worker-experiment/experiment.py
+index 2d4136be..36adf149 100644
+--- a/docs/restart/implementation/QH01/linux-worker-experiment/experiment.py
++++ b/docs/restart/implementation/QH01/linux-worker-experiment/experiment.py
+@@ -596,7 +596,17 @@ def run_case(case, owner, image, expected_output, directory):
+     common = record["image_bytes_sent"] == N and record["control_bytes_sent"] == 1 and policy_ready and session_ready
+     kind = case["id"]
+     if mode == "echo" and not abort and kind not in ("policy-permission", "stolen-status"):
+-        record["eligible"] = reason is None and common and out == expected_output and waited is not None and waited["exitcode"] == 0 and not owner.busy and not owner.quarantined
++        # Final eligibility is sampled here, after actualwait/IO settlement;
++        # a loop-top timestamp cannot cover descheduling before thisdecision.
++        admission_now = None
++        record["eligible"] = reason is None and common and out == expected_output and waited is not None and waited["exitcode"] == 0 and not owner.busy and not owner.quarantined and (admission_now := time.monotonic()) < start + P["wall_eligibility_deadline"]
++        if admission_now is not None:
++            record["admission_elapsed_seconds"] = admission_now - start
++            record["admission_budget_seconds"] = P["wall_eligibility_deadline"]
++            if not record["eligible"]:
++                reason = "wall"
++                record["boundary"] = "wall-at-admission"
++                event("expired-at-result-admission", elapsed=admission_now - start)
+         checks["exact_eligible_output"] = record["eligible"]
+     elif kind == "policy-permission":
+         failure = record.get("policy_error", {})

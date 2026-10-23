@@ -1,0 +1,98 @@
+{
+  "schema_version": 1,
+  "role": "Frozen host-only parameters before implementation/execution",
+  "admission_commit": "e287c938973770d8c8c2bb63d2c9693c50e84a84",
+  "admission_path": "docs/restart/implementation/reviews/QH01-linux-decoder-boundary/admission.json",
+  "admission_sha256": "2a2ea4eb6ab01cf976ae53730d4fe26516a537e9e5d9980723aa29ee8fe1e784",
+  "baseline": {
+    "maximum_width": 240,
+    "maximum_height": 240,
+    "maximum_pixels": 57600,
+    "raw_input_bytes": 172800,
+    "stride_and_pixel_format": {
+      "format": "RGB888",
+      "bytes_per_pixel": 3,
+      "stride": 720
+    },
+    "worker_AS_bytes": 268435456,
+    "CPU_soft_seconds": 1,
+    "CPU_hard_seconds": 2,
+    "wall_eligibility_deadline": 8.0,
+    "cleanup_observation_window": 4.0,
+    "stdout_bytes": 512,
+    "stderr_bytes": 512,
+    "fixed_IO_chunk_bytes": 4096
+  },
+  "extra_policy": {
+    "worker_core_bytes": 0,
+    "one_active_worker": true,
+    "run_without_privilege_elevation": true,
+    "stdlib_only": true,
+    "image_and_envelope_source": "Existing tracked fixture paths on main994, exact13949hashes in source spec; no copied image corpus."
+  },
+  "frozen_boundary_rows": [
+    {
+      "case_group": "dimensions",
+      "row": "width-cap",
+      "parameter_overlay": {
+        "maximum_width": 239
+      },
+      "actual_buffer_bytes": 172800,
+      "actual_metadata_unchanged": true
+    },
+    {
+      "case_group": "dimensions",
+      "row": "height-cap",
+      "parameter_overlay": {
+        "maximum_height": 239
+      },
+      "actual_buffer_bytes": 172800,
+      "actual_metadata_unchanged": true
+    },
+    {
+      "case_group": "dimensions",
+      "row": "pixel-cap",
+      "parameter_overlay": {
+        "maximum_pixels": 57599
+      },
+      "actual_buffer_bytes": 172800,
+      "actual_metadata_unchanged": true
+    },
+    {
+      "case_group": "dimensions",
+      "row": "stride-length-relation",
+      "parameter_overlay": {},
+      "actual_buffer_bytes": 172799,
+      "actual_metadata_unchanged": true,
+      "mutation": "Transient memoryview missing the final byte of existing fixture; no new persisted image/corpus. Dimensional caps and raw maximum172800 stay nonbinding; exact stride/height relation must refuse."
+    },
+    {
+      "case_group": "raw-cap",
+      "row": "N-minus-1",
+      "parameter_overlay": {
+        "raw_input_bytes": 172799
+      },
+      "actual_buffer_bytes": 172800,
+      "actual_metadata_unchanged": true
+    },
+    {
+      "case_group": "raw-cap",
+      "row": "N",
+      "parameter_overlay": {
+        "raw_input_bytes": 172800
+      },
+      "actual_buffer_bytes": 172800,
+      "actual_metadata_unchanged": true
+    },
+    {
+      "case_group": "raw-cap",
+      "row": "N-plus-1",
+      "parameter_overlay": {
+        "raw_input_bytes": 172801
+      },
+      "actual_buffer_bytes": 172800,
+      "actual_metadata_unchanged": true
+    }
+  ],
+  "interpretation": "Caps are independent maxima. Only listed case overlays; no runtime limit retuning. RGB remains original172800B except transient relation-error memoryviewN-1."
+}

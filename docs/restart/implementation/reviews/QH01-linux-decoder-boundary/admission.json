@@ -1,0 +1,141 @@
+{
+  "schema_version": 1,
+  "task": "QH01",
+  "role": "One concrete host experiment admission, not a new plan or production profile",
+  "source_spec": "4b9cbaca71b7fe53661a443ccfd5fea800323eeb",
+  "experiment_path": "docs/restart/implementation/QH01/linux-decoder-boundary/experiment.json",
+  "experiment_sha256": "3cfe5d3e0b25f10d80e77b92d3b80410a6b09450bdde32e5e0856f1ce9ee25d1",
+  "review_sha256": "ba2fb891a5a5d2dedcfeffdb9e01270b5367dfac8327fc26feeef150e278540b",
+  "scope": "New owned worktree/branch; new files only under docs/restart/implementation/QH01/linux-worker-experiment/. No product/app/graph/CI/R00/vendor/lock changes, decoder selection, new library or daemon.",
+  "required_before_code": "Commit frozen expectations/case mapping and explicit run parameters before implementation or execution. An import-only RED has zero executed behavioral cases.",
+  "run_parameters_host_fixture_only": {
+    "maximum_width": 240,
+    "maximum_height": 240,
+    "maximum_pixels": 57600,
+    "raw_input_bytes": 172800,
+    "stride_and_pixel_format": {
+      "format": "RGB888",
+      "bytes_per_pixel": 3,
+      "stride": 720
+    },
+    "worker_AS_bytes": 268435456,
+    "CPU_soft_seconds": 1,
+    "CPU_hard_seconds": 2,
+    "wall_eligibility_deadline": 8.0,
+    "cleanup_observation_window": 4.0,
+    "stdout_bytes": 512,
+    "stderr_bytes": 512,
+    "fixed_IO_chunk_bytes": 4096
+  },
+  "rationale": "Existing public240x240RGB/172800B and198B envelope. AS256MiB and CPU1/2s are modest explicit host-only experiment inputs, not hardware capacities/defaults; wall8s is nonbinding for CPU cause isolation. All parameters stay fixed through failures unless separately justified and re-admitted, never silently enlarged.",
+  "extra_run_policy": {
+    "worker_core_bytes": 0,
+    "one_active_worker": true,
+    "run_without_privilege_elevation": true,
+    "stdlib_only": true,
+    "image_and_envelope_source": "Existing tracked fixture paths on main994, exact13949hashes in source spec; no copied image corpus."
+  },
+  "creation_wait_choice": {
+    "choice": "Existing CPython3.12 standard-library os.posix_spawn and os.wait4(pid, WNOHANG), capability-checked; direct acquired wait status and per-child rusage.",
+    "reason": "Popen can conceal missing wait status as0. This is an explicit implementation refinement of the proposed Popen sequence, preserving every experiment criterion. No private Popen hooks or false-success fallback.",
+    "primary_source": "https://docs.python.org/3.12/library/os.html#os.posix_spawn",
+    "wait_source": "https://docs.python.org/3.12/library/os.html#os.wait4",
+    "conditions": "Verify exact APIs/setsid/fd actions on current pinned Linux environment; unsupported means refuse/record, not bypass or switch frameworks. Process creation still has no hard timeout claim."
+  },
+  "required_execution_properties": [
+    "All12case groups and separately described dimension/raw-cap/abort rows; preceding/masking failures are NOT_EXERCISED, never PASS. Freeze concrete variant mapping before execution.",
+    "Use nonblocking bounded concurrent stdin/stdout/stderr supervision. Parent prlimit set+readback before image bytes; record requested/actual limits, privilege context and policy gate. Bootstrap accounting remains explicit/unqualified, refuse impossible admission.",
+    "Retained stdout/stderr<=their caps, temporary chunk<=4096 independently; finite deterministic over-cap helper output is sufficient, no unlimited output capture.",
+    "CPU helper validates its own finite hard limit before burning; AS negative uses new virtual mapping without touching huge memory. No unbounded unsafe baseline run. Set worker core limit0 before input.",
+    "Observed real signals/status and boundary-entry evidence separate CPU, AS, wall, output/diagnostics and raw-length cases. No invented kernel failure; keep unsupported/injected versus actual-kernel outcomes distinct.",
+    "Missing/stolen status must be exercised with actual controlled child reaping, valid prior input/output and no earlier masking error. An unknown status quarantines ownership. The OR status variant is admitted; no arbitrary-descendant proof is claimed.",
+    "Demonstrate actual refusal of a second operation before owned settlement and actual reuse after known cleanup; permanently refuse a quarantined owner. Test harness ownership only, no new session coordinator or actual TS-port integration claim.",
+    "Only signal/reap explicitly owned PID/PGID. Never signal0/-1/coordinator group, elevate privilege, alter parent/global limits or leave a helper/thread/FD running. Fixture teardown must account for all actual created PIDs.",
+    "Use pinned R00 Python/environment, explicit non-secret worker environment/absolute executable/closed unrelated descriptors. No secret/production-key operations, installs or R00 mutation.",
+    "Preserve meaningful failures and corrections. Run focused checks during development, then one complete stable experiment campaign; root distinct runtime/source review before any integration/adoption."
+  ],
+  "stop_conditions": "Complete coherent implementation/proof packet and freeze/push for distinct root review. If a platform gate or an essential unsupported property prevents the experiment, preserve exact evidence and stop dependent execution without bypass.",
+  "acceptance_limits": "Host IPC/resource-lifecycle experiment only, actual_QR_decode=false, no signing/decoder/physical/resource-profile qualification. All47criteria unchanged.",
+  "pre_execution_case_input_clarification": {
+    "reason": "The original source spec already requires isolated dimension/raw-cap boundary rows. Frozen means a predeclared per-case matrix, not one identical cap value across mutually exclusive negative/positive rows. No code or experiment has run; baseline and acceptance criteria are unchanged.",
+    "raw_input_bytes_semantics": "Maximum allowed raw-byte length, not the actual buffer length or advertised tuple length. Actual canonical fixture is always N=172800 with width240/height240/RGB888/stride720, except the separately labelled relation-error view.",
+    "independent_caps": "Width/height/pixel/raw maxima are independent valid caps; do not reject a configuration merely because maximum_width*maximum_height exceeds maximum_pixels or the raw cap. Validate the actual tuple against their intersection.",
+    "frozen_rows": [
+      {
+        "case_group": "dimensions",
+        "row": "width-cap",
+        "parameter_overlay": {
+          "maximum_width": 239
+        },
+        "actual_buffer_bytes": 172800,
+        "actual_metadata_unchanged": true
+      },
+      {
+        "case_group": "dimensions",
+        "row": "height-cap",
+        "parameter_overlay": {
+          "maximum_height": 239
+        },
+        "actual_buffer_bytes": 172800,
+        "actual_metadata_unchanged": true
+      },
+      {
+        "case_group": "dimensions",
+        "row": "pixel-cap",
+        "parameter_overlay": {
+          "maximum_pixels": 57599
+        },
+        "actual_buffer_bytes": 172800,
+        "actual_metadata_unchanged": true
+      },
+      {
+        "case_group": "dimensions",
+        "row": "stride-length-relation",
+        "parameter_overlay": {},
+        "actual_buffer_bytes": 172799,
+        "actual_metadata_unchanged": true,
+        "mutation": "Transient memoryview missing the final byte of existing fixture; no new persisted image/corpus. Dimensional caps and raw maximum172800 stay nonbinding; exact stride/height relation must refuse."
+      },
+      {
+        "case_group": "raw-cap",
+        "row": "N-minus-1",
+        "parameter_overlay": {
+          "raw_input_bytes": 172799
+        },
+        "actual_buffer_bytes": 172800,
+        "actual_metadata_unchanged": true
+      },
+      {
+        "case_group": "raw-cap",
+        "row": "N",
+        "parameter_overlay": {
+          "raw_input_bytes": 172800
+        },
+        "actual_buffer_bytes": 172800,
+        "actual_metadata_unchanged": true
+      },
+      {
+        "case_group": "raw-cap",
+        "row": "N-plus-1",
+        "parameter_overlay": {
+          "raw_input_bytes": 172801
+        },
+        "actual_buffer_bytes": 172800,
+        "actual_metadata_unchanged": true
+      }
+    ],
+    "unchanged_for_all_these_rows": [
+      "worker_AS_bytes",
+      "CPU_soft_seconds",
+      "CPU_hard_seconds",
+      "wall_eligibility_deadline",
+      "cleanup_observation_window",
+      "stdout_bytes",
+      "stderr_bytes",
+      "fixed_IO_chunk_bytes",
+      "stride_and_pixel_format"
+    ],
+    "prohibited": "No changing actual raw buffer length in raw-cap rows; no AS/CPU/time/IO retuning or silent increases after failures. This clarifies inputs and does not weaken a guard or acceptance criterion. Other case-specific changes require an explicit pre-execution mapping grounded in the admitted spec.",
+    "implementation_branch_sync": "Exact two coordinator-owned admission/report postimages may be imported into the implementation branch by fast-forward or ordinary cherry-pick; author does not edit them. Preserve old28546b89 and original admission history."
+  }
+}

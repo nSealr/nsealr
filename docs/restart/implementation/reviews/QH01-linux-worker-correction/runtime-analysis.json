@@ -1,0 +1,283 @@
+{
+  "schema_version": 1,
+  "checked_utc": "2026-10-23T09:44:30.791579+00:00",
+  "candidate": "06d213fd46e654bfe2ac43e4a88963a346d35973",
+  "checks": {
+    "exact_22_frozen_cases_no_mask": true,
+    "sixteen_unique_owned_children": true,
+    "owned_actual_status_and_IO": true,
+    "signals_only_owned_positive_PID": true,
+    "each_retained_raw_matches_trace_and_bounds": true,
+    "fixed_IO_requests_bounded": true,
+    "live_and_post_wait_reservations_refused": true,
+    "owner_generations_reused_without_reset": true,
+    "kernel_session_policy_before_every_admitted_input": true,
+    "identity_rechecks_cover_every_write": true,
+    "positive_actual_output_owned_exit0_current_admission": true,
+    "dimensions-width-cap_isolated_pre_spawn": true,
+    "dimensions-height-cap_isolated_pre_spawn": true,
+    "dimensions-pixel-cap_isolated_pre_spawn": true,
+    "dimensions-stride-length-relation_isolated_pre_spawn": true,
+    "raw-N-minus-1_isolated_pre_spawn": true,
+    "raw_caps_vary_not_actual_image": true,
+    "actual_EPERM_stops_all_input": true,
+    "actual_ENOMEM_isolated": true,
+    "actual_kernel_CPU_SIGKILL_no_caller_kill": true,
+    "wall_deadline_and_known_cleanup": true,
+    "input-backpressure_deadline_and_known_cleanup": true,
+    "policy-session-not-established_deadline_and_known_cleanup": true,
+    "wall_after_all_input": true,
+    "backpressure_partial_body_control_received": true,
+    "stdout_513_isolated_overflow": true,
+    "stderr_513_isolated_overflow": true,
+    "five_abort_phases_ineligible": true,
+    "abort_exact_phase_preconditions": true,
+    "no_session_zero_control_image_policy": true,
+    "known_owner_reused_after_no_session": true,
+    "actual_stolen_wait_ECHILD_then_quarantine": true,
+    "actual_parent_identity_limits_threads_FDs": true,
+    "regression_real_pause_preconditions_and_expiry": true,
+    "all17_owned_children_and_two_controllers_absent_after_return": true,
+    "all_pinned_inputs_unchanged_after_runtime": true,
+    "no_tracked_source_modification": true
+  },
+  "passed": true,
+  "observations": {
+    "positive": {
+      "pid": 1447759,
+      "initial_sid": 1447751,
+      "initial_pgid": 1447751,
+      "established_kernel_identity": {
+        "pgid": 1447759,
+        "pid": 1447759,
+        "sid": 1447759
+      },
+      "identity_checks_before_writes": 44,
+      "admission_elapsed_seconds": 0.025539030320942402,
+      "output_bytes": 198,
+      "meaning": "Initial identity at spawn return is inherited; kernel-session-established and last_kernel_identity are the actual pre-admission session evidence."
+    },
+    "CPU": {
+      "kernel_status": 9,
+      "user_plus_system_seconds": 1.998574,
+      "case_wall_seconds": 2.001775939948857,
+      "parent_signals": [],
+      "actual_finite_CPU_limits": [
+        1,
+        2
+      ]
+    },
+    "AS": {
+      "actual_errno": 12,
+      "actual_exitcode": 40,
+      "actual_AS_bytes": [
+        268435456,
+        268435456
+      ],
+      "parent_signals": []
+    },
+    "wall": {
+      "pid": 1447769,
+      "invalidation_seconds": 8.008631977252662,
+      "settlement_seconds": 8.009840516373515,
+      "control_bytes_sent": 1,
+      "image_bytes_sent": 172800,
+      "owner_generation": 12
+    },
+    "input-backpressure": {
+      "pid": 1447835,
+      "invalidation_seconds": 8.002854030579329,
+      "settlement_seconds": 8.004161834716797,
+      "control_bytes_sent": 1,
+      "image_bytes_sent": 65536,
+      "owner_generation": 15
+    },
+    "policy-session-not-established": {
+      "pid": 1447895,
+      "invalidation_seconds": 8.004887590184808,
+      "settlement_seconds": 8.006212375126779,
+      "control_bytes_sent": 0,
+      "image_bytes_sent": 0,
+      "owner_generation": 21
+    },
+    "stdout": {
+      "totals": {
+        "stderr": 0,
+        "stdout": 513
+      },
+      "retained": {
+        "stderr": 0,
+        "stdout": 512
+      },
+      "max_read_chunk": 513,
+      "limit_semantics": "512 is a retention ceiling, not a fill requirement."
+    },
+    "stderr": {
+      "totals": {
+        "stderr": 513,
+        "stdout": 37
+      },
+      "retained": {
+        "stderr": 512,
+        "stdout": 37
+      },
+      "max_read_chunk": 513,
+      "limit_semantics": "512 is a retention ceiling, not a fill requirement."
+    },
+    "stolen_status": {
+      "pid": 1447970,
+      "generation": 22,
+      "controlled_first_reaper_status": 0,
+      "owner_wait_error": {
+        "errno": 10,
+        "type": "ChildProcessError"
+      },
+      "owner_wait": null,
+      "quarantined_at_end": true,
+      "quarantine_reset": false
+    },
+    "regression": {
+      "real_pause_seconds": 8.250305970199406,
+      "admission_elapsed_seconds": 8.276367386803031,
+      "pre_admission_settlement_duration_seconds": 0.02572669181972742,
+      "observed_eligible": false,
+      "boundary": "wall-at-admission",
+      "original_positive_validator_disposition": "NOT_EXERCISED",
+      "meaning": "Intentionally late positive is NOT_EXERCISED under original positive validator; separate regression succeeds. duration_seconds is sampled before final admission; use admission_elapsed_seconds for the delayed decision, not that earlier settlement duration."
+    }
+  },
+  "campaign_duration_seconds": 26.29255726467818,
+  "case_count": 22,
+  "spawned_children": 16,
+  "regression_children": 1,
+  "post_process_observation": [
+    {
+      "pid": 1447759,
+      "proc_entry_present": false
+    },
+    {
+      "pid": 1447760,
+      "proc_entry_present": false
+    },
+    {
+      "pid": 1447761,
+      "proc_entry_present": false
+    },
+    {
+      "pid": 1447762,
+      "proc_entry_present": false
+    },
+    {
+      "pid": 1447763,
+      "proc_entry_present": false
+    },
+    {
+      "pid": 1447764,
+      "proc_entry_present": false
+    },
+    {
+      "pid": 1447769,
+      "proc_entry_present": false
+    },
+    {
+      "pid": 1447833,
+      "proc_entry_present": false
+    },
+    {
+      "pid": 1447834,
+      "proc_entry_present": false
+    },
+    {
+      "pid": 1447835,
+      "proc_entry_present": false
+    },
+    {
+      "pid": 1447891,
+      "proc_entry_present": false
+    },
+    {
+      "pid": 1447892,
+      "proc_entry_present": false
+    },
+    {
+      "pid": 1447893,
+      "proc_entry_present": false
+    },
+    {
+      "pid": 1447894,
+      "proc_entry_present": false
+    },
+    {
+      "pid": 1447895,
+      "proc_entry_present": false
+    },
+    {
+      "pid": 1447970,
+      "proc_entry_present": false
+    },
+    {
+      "pid": 1447565,
+      "proc_entry_present": false
+    },
+    {
+      "pid": 1447755,
+      "proc_entry_present": false
+    },
+    {
+      "pid": 1447563,
+      "proc_entry_present": false
+    }
+  ],
+  "post_input_hash_checks": [
+    {
+      "path": "docs/restart/implementation/QH01/linux-worker-experiment/experiment.py",
+      "same_sha256": true
+    },
+    {
+      "path": "docs/restart/implementation/QH01/linux-worker-experiment/deadline-correction/regression.py",
+      "same_sha256": true
+    },
+    {
+      "path": "docs/restart/implementation/QH01/linux-worker-experiment/parameters.json",
+      "same_sha256": true
+    },
+    {
+      "path": "docs/restart/implementation/QH01/linux-worker-experiment/expectations.json",
+      "same_sha256": true
+    },
+    {
+      "path": "docs/restart/implementation/QH01/linux-worker-experiment/strategy-amendment.json",
+      "same_sha256": true
+    },
+    {
+      "path": "/home/tux/nsealr/.restart-tools/goal/r00/tools/baseline/.work/final/.tools/python/bin/python3",
+      "same_sha256": true
+    },
+    {
+      "path": "docs/restart/implementation/R00/evidence/final/environment.json",
+      "same_sha256": true
+    },
+    {
+      "path": "docs/restart/implementation/QH01/native-qr-probe/expected/response-get-public-key.envelope",
+      "same_sha256": true
+    },
+    {
+      "path": "docs/restart/implementation/QH01/native-qr-probe/execution-01/response-get-public-key.rgb",
+      "same_sha256": true
+    },
+    {
+      "path": "/home/tux/nsealr/.restart-tools/goal/r00/tools/baseline/.work/final/.tools/python/lib/python3.12/os.py",
+      "same_sha256": true
+    },
+    {
+      "path": "/home/tux/nsealr/.restart-tools/goal/r00/tools/baseline/.work/final/.tools/python/lib/python3.12/selectors.py",
+      "same_sha256": true
+    }
+  ],
+  "measurement_limits": [
+    "new_threads/new_descendants in harness summary are static source declarations; actual_final_threads comes from /proc. No arbitrary descendant containment is inferred.",
+    "No RSS or cumulative allocation bound follows from RLIMIT_AS or recorded wait4 rusage.",
+    "Logical monotonic admission point only; no hard return or realtime scheduling guarantee.",
+    "Cleanup observation is bounded by the unchanged 4 s window in this host run; no device latency guarantee."
+  ]
+}

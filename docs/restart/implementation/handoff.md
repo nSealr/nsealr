@@ -1,6 +1,6 @@
 # Execution handoff
 
-Date: 2026-10-20. This handoff gives navigation and recovery procedures, not a second task-status ledger. Read the current graph before choosing work.
+Date: 2026-10-23. This handoff gives navigation and recovery procedures, not a second task-status ledger. Read the current graph before choosing work.
 
 ## Current software foundations and next dependency
 
@@ -83,10 +83,23 @@ match0985, which is source correspondence rather than another measurement.
 The unchanged default ECC_M/quietzone4 and observed4/3/3/2pixel scaling do not
 select a threshold or framing. No native hostile-image memory/work/latency,
 camera/ARM/Pi/optical/physical qualification follows. All5QH01/3QP01/6Q02
-criteria stay incomplete and QP01 preparation remains unchanged. Only final
-stable metadata gates run for this delivery, pending distinct root source/metadata
-review and later protected integration. Separate decoder-decision research is
-outside this packet and does not block its review.
+criteria stay incomplete and QP01 preparation remains unchanged.
+[Root accepted this evidence delivery on actual main994](reviews/QH01-native-qr-delivery/adoption/actual-main-acceptance.json)
+after protected rebase PR43, full PR CI39918357800 and actual-main
+CI39920255547/check120303496162. Original measurements keep their source roles.
+
+The [Linux and Rust QR foundation delivery](QH01/rust-qr-delivery/README.md)
+assembles the limited decoder/API decision, Linux specification/admissions,
+corrected IPC/resource experiment and fixed-image Rust QR experiment with their
+distinct reviews and preserved failures. The Rust proof uses five original
+equal-channel RGB images:98/259/198 exact,611 refused at the experimental512 cap,
+and blank refused. The independent ELF differs; no general reproducibility,
+color-camera, product decoder/route, ARM/Pi/P4, secrets or physical claim follows.
+This proposal awaits the accepted Pi readiness-probe correction and final
+structural metadata review. It does not rerun native/crypto/corpus evidence or
+attribute these later experiments to old main994. Root owns final distinct review
+and subsequent protected PR/actual-main integration gates; all task states and
+acceptance/dependency/resource/release sets remain unchanged.
 
 The sole task authority is [plan/work-items.json](../../../plan/work-items.json).
 Use existing commands, targeted source reads, one CI observer and applicable

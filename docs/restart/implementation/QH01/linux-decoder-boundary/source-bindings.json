@@ -1,0 +1,178 @@
+{
+  "schema_version": 1,
+  "task": "QH01",
+  "role": "Exactly three source/specification files; no worker/backend code or experiment executed. Final immutable commit binds this source register itself.",
+  "source_input": "994a8b682ed6cd52bb46608b90794c02d2a9d3cb",
+  "input_tree": "a477c08387e937771d047fe96f2885c6d7c7c186",
+  "input_gate_at_assignment": "NormalPR43 merged; actual-mainCI39920255547 pending under root-only observer. This research does not infer adoption.",
+  "model_policy": "gpt-6.1-sol xhigh; no override/escalation/subagent",
+  "primary_sources": [
+    {
+      "id": "linux-rlimit",
+      "url": "https://man7.org/linux/man-pages/man2/getrlimit.2.html",
+      "resolved_url": "https://man7.org/linux/man-pages/man2/getrlimit.2.html",
+      "retrieved_at_utc": "2026-10-23T08:12:00.703309+00:00",
+      "response_bytes": 40703,
+      "response_sha256": "23a6b91999ed770f7260aeb763199512080d2b6daf55ebf42e3fb02635b14376",
+      "sections_read": "DESCRIPTION/RLIMIT_AS/RLIMIT_CPU, prlimit, NOTES",
+      "reason_in_scope": "Original required primary source. AS/CPU semantics, privileges/inheritance and lowering below current consumption.",
+      "role": "Primary documentation read only; HTML digest is retrieval identity, not execution or immutable upstream Git proof."
+    },
+    {
+      "id": "python-subprocess",
+      "url": "https://docs.python.org/3.12/library/subprocess.html",
+      "resolved_url": "https://docs.python.org/3.12/library/subprocess.html",
+      "retrieved_at_utc": "2026-10-23T08:12:00.949504+00:00",
+      "response_bytes": 216417,
+      "response_sha256": "19d9348e45533d48badf02df4d07b4a9a57cdc7ad313ec4db44d6313da506907",
+      "sections_read": "subprocess.run; Popen constructor; Popen.wait/communicate/kill",
+      "reason_in_scope": "Original required primary source. Creation timeout, thread-unsafe preexec, binary pipes, buffering and child wait/kill.",
+      "role": "Primary documentation read only; HTML digest is retrieval identity, not execution or immutable upstream Git proof."
+    },
+    {
+      "id": "linux-kill",
+      "url": "https://man7.org/linux/man-pages/man2/kill.2.html",
+      "resolved_url": "https://man7.org/linux/man-pages/man2/kill.2.html",
+      "retrieved_at_utc": "2026-10-23T08:12:01.056267+00:00",
+      "response_bytes": 16474,
+      "response_sha256": "7d953c559068736beefc6f1b246dc25c22509a81439a17f07cf3bcae990b5506",
+      "sections_read": "DESCRIPTION; RETURN VALUE; ERRORS",
+      "reason_in_scope": "Indispensable linked reference from getrlimit: group signal scope/permission and success is delivery, not quiescence.",
+      "role": "Primary documentation read only; HTML digest is retrieval identity, not execution or immutable upstream Git proof."
+    },
+    {
+      "id": "python-resource",
+      "url": "https://docs.python.org/3.12/library/resource.html",
+      "resolved_url": "https://docs.python.org/3.12/library/resource.html",
+      "retrieved_at_utc": "2026-10-23T08:12:01.194879+00:00",
+      "response_bytes": 53008,
+      "response_sha256": "01667eb90cfe264df8a64b3d98b43909c1c8bed615c7d39632d6810420b8f1a0",
+      "sections_read": "resource.getrlimit/setrlimit/prlimit",
+      "reason_in_scope": "Indispensable binding reference: Python3.12 prlimit/get/set APIs used by the one proposed Linux experiment.",
+      "role": "Primary documentation read only; HTML digest is retrieval identity, not execution or immutable upstream Git proof."
+    }
+  ],
+  "local_primary_implementation": {
+    "path": "/home/tux/nsealr/.restart-tools/goal/r00/tools/baseline/.work/final/.tools/python/lib/python3.12/subprocess.py",
+    "sha256": "85d29b2bf0249f5436838298c9a60ee93508b1102e9ac43b001f8a7e7ae8f375",
+    "bytes": 88747,
+    "role": "Existing CPython3.12.15 stdlib source read only; no interpreter/worker launched or baseline changed.",
+    "ranges": [
+      {
+        "lines": [
+          2008,
+          2020
+        ],
+        "fact": "POSIX _try_wait calls waitpid(self.pid); lost/auto-reaped status may take the ChildProcessError path, so require exclusive wait ownership and do not treat missing status as successful work."
+      },
+      {
+        "lines": [
+          2021,
+          2060
+        ],
+        "fact": "POSIX wait obtains direct child status, not a process subtree."
+      },
+      {
+        "lines": [
+          2202,
+          2216
+        ],
+        "fact": "POSIX signal/kill targets self.pid and does not itself wait/reap."
+      }
+    ]
+  },
+  "git_bindings": [
+    {
+      "commit": "994a8b682ed6cd52bb46608b90794c02d2a9d3cb",
+      "path": "apps/bridge/service/src/manual-qr.ts",
+      "mode": "100644",
+      "blob": "af03c275f29dc4008be4887408d59407634641d4",
+      "bytes": 9404,
+      "sha256": "d2c9aa73f723739a5682f0a2a4b6c88f4b319a70d879766fe7b8f862ee5e82f9",
+      "role": "Existing unmodified port abort/cleanup/quarantine contract"
+    },
+    {
+      "commit": "994a8b682ed6cd52bb46608b90794c02d2a9d3cb",
+      "path": "packages/client/src/service.ts",
+      "mode": "100644",
+      "blob": "771c4f81eb71cdaa4fb7d2f8b4271c210375de63",
+      "bytes": 52924,
+      "sha256": "d230d65ec2eb505afd940951c792c6ed0ac93a13e781ca70116db464ff59c509",
+      "role": "Existing pending reservation/monotonic expiry until actual dispatcher settlement"
+    },
+    {
+      "commit": "615bf51f1da3dd59f5d7ff7956e37bf1e3398bac",
+      "path": "docs/restart/implementation/QH01/native-decoder-decision/decision.json",
+      "mode": "100644",
+      "blob": "7122fbd7dff0d0d883cc117ee7e2bdcb8dd904c9",
+      "bytes": 12187,
+      "sha256": "3d405d4247f8ad776331b95d4b98b32ca5b2d4eeb6cb223ada68189c4804452c",
+      "role": "Prior NO API-budget decision only, not a Linux worker result"
+    },
+    {
+      "commit": "132b4c4239e6f17aa23b3a7696420e5d2849c5fd",
+      "path": "docs/restart/implementation/reviews/QH01-native-decoder-decision/review.json",
+      "mode": "100644",
+      "blob": "bb1cfc1ef7d2ed8c49100b29abad7b4dc75d396d",
+      "bytes": 3017,
+      "sha256": "3f31f7350b0ed17d882eb6017704fddd6aeeef6713fdcccb9f81b0b8cf343f4e",
+      "role": "Distinct prior PASS_source_API_decision_only, not current spec acceptance"
+    },
+    {
+      "commit": "13949e4e859de1456f3532cb7fbee2b0cda0cf1c",
+      "path": "docs/restart/implementation/QH01/native-qr-probe/execution-01/response-get-public-key.rgb",
+      "mode": "100644",
+      "blob": "c6d57f7ed09cd46f682e90b6209d19f979cf400f",
+      "bytes": 172800,
+      "sha256": "1b56f2926382c7da914a877db899494414988d311c65ff459e2f78a8ab4f0216",
+      "role": "Existing public240x240RGB bytes, referenced only; no new image/corpus"
+    },
+    {
+      "commit": "13949e4e859de1456f3532cb7fbee2b0cda0cf1c",
+      "path": "docs/restart/implementation/QH01/native-qr-probe/expected/response-get-public-key.envelope",
+      "mode": "100644",
+      "blob": "12867d8d8506724887e6e2bea2951aa98abc00b6",
+      "bytes": 198,
+      "sha256": "dae39f12a7744d3c82e2d3e1050b02948a3b72612e5835c237054dabc3d8f3cf",
+      "role": "Existing fixed public output for proposed IPC helper, not actual QR-decode evidence"
+    }
+  ],
+  "source_reconciliation": "The two existing port/client inputs are byte-identical to accepted0985; no product source mutation or fresh product review. Prior615/132/1394 roles are unchanged.",
+  "artifacts": [
+    {
+      "path": "docs/restart/implementation/QH01/linux-decoder-boundary/brief.md",
+      "bytes": 5895,
+      "sha256": "a51131281100e4aedc520de6cc0630f9162504c56309ba51b312924dbc4cd27a"
+    },
+    {
+      "path": "docs/restart/implementation/QH01/linux-decoder-boundary/experiment.json",
+      "bytes": 8993,
+      "sha256": "3cfe5d3e0b25f10d80e77b92d3b80410a6b09450bdde32e5e0856f1ce9ee25d1"
+    }
+  ],
+  "self_binding": "No self-hash; final Git commit/tree and returned fileSHA bind source-bindings.json.",
+  "scope": "Only this new QH01/linux-decoder-boundary prefix; no graph/sharedhandoff/limits/deps/CI/PR or other worktree writes.",
+  "execution": {
+    "worker_runs": 0,
+    "builds": 0,
+    "tests_or_corpus": 0,
+    "installs": 0,
+    "CI_or_PR_operations": 0,
+    "activity": "Primary documentation/source retrieval/read and static source/artifact hashes only."
+  },
+  "acceptance_limits": "Limited source mechanisms and ONE proposed host experiment, not complete containment, secret isolation, logical parse_work, physical/native safety or current-spec review acceptance.",
+  "metadata_revision": {
+    "previous_candidate": "78e53ab49cf67184da092c92e7169891c4e991f8",
+    "field": "local_primary_implementation.ranges[2].lines",
+    "previous": [
+      2202,
+      2217
+    ],
+    "corrected": [
+      2202,
+      2216
+    ],
+    "reason": "Root literal source-range review failed AssertionError: the exact pinned subprocess.py ends at2216. Correct endpoint without clipping/widening the reader or changing the primary file/semantic conclusion.",
+    "scope": "Only this source-binding JSON changed; brief.md and experiment.json, all12cases/parameters unchanged. No source retrieval, implementation, test/runtime/gate or new admission."
+  }
+}
