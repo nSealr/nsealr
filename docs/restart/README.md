@@ -39,7 +39,7 @@ The cold-first QR owner/client host component is [accepted on actual main8f](imp
 
 ## Delivery order
 
-Q01's [documentary closure proposal](implementation/Q01/delivery/closure/handoff.md) binds the original independently reviewed Pi/P4 custody, optical and verification requirements to the exact accepted delivery source and actual T01 main. Its integrated graph state is a branch adoption proposal pending exact final metadata review, protected PR and actual resulting-main gates. The procedures remain future device/client/release work; no runtime or physical qualification follows.
+Q01's shared offline custody and transport requirements are [supported on current protected main8f](implementation/reviews/Q01-current-documentary-adoption.json). The three documentary criteria have substantive reviews, unchanged normative requirements and source-linked future procedures. Original source observations and closure reports keep their historical identities; all11 device/client/release procedures remain future work. This supplies no runtime or physical qualification.
 
 The first software milestone is a real request → device review → one-use authorization → valid response on an accessible board, with the expected key identity verified end to end. Offline Pi/P4 feasibility and board electronics research run alongside it. No date is promised before measured throughput and physical lead times exist.
 

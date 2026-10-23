@@ -1,6 +1,6 @@
-"""Proposed affected source-aware capture checker for the cold host gate only.
+"""Affected source-aware capture checker for the cold gate and Python consumer.
 
-Derived from the existing PR45/46 verifier; original generic completed-capture
+Extends the accepted 7d5 cold verifier; original generic completed-capture
 verifier stays separately mandatory and unchanged. This proposal never polls,
 triggers CI, or retroactively changes expectations for historical captures.
 CLI: CAPTURE_DIRECTORY SOURCE_HEAD REPOSITORY.
@@ -8,7 +8,12 @@ CLI: CAPTURE_DIRECTORY SOURCE_HEAD REPOSITORY.
 from pathlib import Path
 import collections,hashlib,json,re,subprocess,sys,zipfile
 
-ORIGIN_SHA256 = "1e71c5f9d88e0eb614b5679185485e3c556841e0074a80f4b04270cb3e4d030e"
+if sys.flags.optimize:
+    raise RuntimeError("capture checker requires assertions enabled")
+
+ORIGIN_SHA256 = "7d5a1669ee2ff366ef34b710e8e8b3bdf25531d6e72ca3fc35442acc653f354d"
+EXPECTED_PI_TESTS = 211
+PYTHON_OWNER_ADAPTER_SHA256 = "da6f36c966e2b27407e1025456d1f72c6d061d9463eb9ad25af85f594bf5a203"
 WORKER_UNIT_SOURCE_SHA256 = "2ce1310dfc3eb596e4bdd03c4c2386b1d61a104e99e87337edc00f2a2325fa19"
 EXPECTED_FIRST_CASES = set(['FG0_C_handshake_failure', 'FG0_C_library_ready_failure', 'FG0_actual_pre_admission_refusal', 'FG0_pre_presentation_assertion', 'FG0_startup_unused', 'FG1_normal259', 'FG2_elapsed_deadline_before_timer_callback', 'FG2_timeout_late', 'FG2_timeout_preG', 'FG3_cancel_late', 'FG3_cancel_preG', 'FG3_cancel_preP', 'FG4_generation', 'FG5_C_SIGKILL_preG', 'FG5_C_early_exit_before_P', 'FG6_control_EOF_preG', 'FG6_duplicate_P', 'FG6_invalid_opcode', 'FG6_premature_G', 'FG7_contradictory-IO', 'FG7_duplicate-key', 'FG7_duplicate-terminal', 'FG7_phase-after-terminal', 'FG7_ready-extra', 'FG7_ready-missing', 'FG7_relation_decoded-stderr-overflow', 'FG7_relation_decoded-stderr-truncation', 'FG7_relation_decoded-stdout-count-mismatch', 'FG7_relation_decoded-stdout-overflow', 'FG7_relation_decoded-stdout-retained-result-mismatch', 'FG7_relation_phase-after-Q', 'FG7_relation_phase-before-P', 'FG7_relation_unused-with-phase', 'FG7_relation_unused-with-worker', 'FG7_status-missing', 'FG7_status-overflow', 'FG7_status-truncated', 'FG7_wrong-owner', 'FG7_wrong-worker'])
 
@@ -53,7 +58,7 @@ def verify_product(raw, head, repo, run_id=None):
         assert 0<o['input_bytes']<=947 and 0<o['output_bytes']<=947
         assert all(re.fullmatch('[0-9a-f]{64}',o[k]) for k in ['input_sha256','output_sha256'])
         assert len(o['synthetic_complete_review'])>1
-    assert sum(bool(re.fullmatch(r'Ran 194 tests in .+s',s)) for s in lines)==1
+    assert sum(bool(re.fullmatch(rf'Ran {EXPECTED_PI_TESTS} tests in .+s',s)) for s in lines)==1
     coverage=[tuple(map(float,m.groups())) for s in lines if (m:=re.fullmatch(r'nsealr-pi-engine-fixture\s+([0-9.]+)%\s+([0-9.]+)%\s+ok',s))]
     assert coverage==[(100.0,100.0)]
     control="python3 -B -m unittest discover -s docs/restart/implementation/R00/audit-data -p 'test_audit_rust.py'"
@@ -67,12 +72,133 @@ def verify_product(raw, head, repo, run_id=None):
     assert all(s.endswith(' --offline check --deny index-failure') for s in commands[3:])
     assert audit.count('advisories ok, bans ok, licenses ok, sources ok')==3
     first_proof=verify_first(objects,b,head,repo)
-    out={'run':int(run_id) if run_id is not None else None,'source_head':head,'product_log_sha256':hashlib.sha256(raw).hexdigest(),'native_build':b,'native_source_bindings':4,'actual_full_Pi_tests':194,'automatic_readiness_controls':ready[0],'client':{k:v for k,v in c.items() if k!='reports'},'all14_native_observations_match_actual_provisioned_library':True,'fixture_coverage_actual_and_floor':coverage[0],'additional_audit_controls':4,'three_complete_fresh_audits':True,'audit_commands':commands,'limits':'Original completed CI source/build/trace binding only; the ELF itself is not downloaded, no cdylib reproducibility or target/device/custody/physical qualification claim. The original17-step/check/bootstrap/capture verifier remains separately mandatory.'}
+    out={'run':int(run_id) if run_id is not None else None,'source_head':head,'product_log_sha256':hashlib.sha256(raw).hexdigest(),'native_build':b,'native_source_bindings':4,'actual_full_Pi_tests':EXPECTED_PI_TESTS,'automatic_readiness_controls':ready[0],'client':{k:v for k,v in c.items() if k!='reports'},'all14_native_observations_match_actual_provisioned_library':True,'fixture_coverage_actual_and_floor':coverage[0],'additional_audit_controls':4,'three_complete_fresh_audits':True,'audit_commands':commands,'limits':'Original completed CI source/build/trace binding only; the ELF itself is not downloaded, no cdylib reproducibility or target/device/custody/physical qualification claim. The original17-step/check/bootstrap/capture verifier remains separately mandatory.'}
     out.update(first_proof)
+    out.update(verify_python_owner(objects, first_proof['worker_build'], head, repo))
     out['proof_role']='local_makeci_source_addon_no_GitHub_claim' if run_id is None else 'completed_capture_source_addon_requires_generic_receipt_job_check_verifier'
     if run_id is None:
         out['limits']='Local stable makeci source/build/trace proof only; no GitHub run, receipt, job, check, protected integration or device claim. Hosted acceptance separately requires the unchanged mandatory completed-capture verifier with RUN HEAD CHECKRUNS_JSON, plus this source addon. No ELF reproducibility or physical qualification.'
     return out
+
+
+def verify_python_owner(objects, worker, head, repo):
+    """Verify source-bound automatic cases; helper PIDs are never worker proof."""
+    def blob(path):
+        return subprocess.check_output(['git', '-C', repo, 'show', head + ':' + path])
+    prefix = 'docs/restart/implementation/QP01/python-owner-adapter/negative/'
+    expected = json.loads(blob(prefix + 'expectations.json'))
+    source_paths = ['apps/pi/app/nsealr_vault/qr_owner_adapter.py',
+                    'apps/pi/tests/test_qr_owner_adapter.py',
+                    'apps/pi/tests/test_qr_owner_adapter_lifecycle.py', prefix + 'expectations.json']
+    bindings = {p: hashlib.sha256(blob(p)).hexdigest() for p in source_paths}
+    assert bindings[source_paths[0]] == PYTHON_OWNER_ADAPTER_SHA256
+    rows = [o['python_owner_case'] for o in objects if 'python_owner_case' in o]
+    assert len(rows) == 70
+    negatives = {r['id']: r for r in expected['real_lifecycle_cases']}
+    assert set(negatives) == {'unused_Q', 'cancel_preP', 'cancel_preG', 'late_discard',
+                             'wall8_preG', 'invalid_Z', 'duplicate_PP', 'premature_G', 'control_EOF_preG'}
+    positive = expected['automatic_positive_case']
+    assert positive['id'] == 'normal259_release_once'
+    helpers = {'FG7_' + r['mode']: r for r in expected['helper_cases']}
+    relations = set(expected['pure_relation_cases'])
+    assert len(helpers) == 11 and len(relations) == 9
+    expected_events = {}
+    for case in negatives:
+        events = ['ready', 'observed-terminal', 'settled']
+        if case in {'cancel_preG', 'late_discard', 'wall8_preG', 'control_EOF_preG'}:
+            events.append('phase')
+        if case in {'invalid_Z', 'duplicate_PP', 'premature_G'}:
+            events.append('wire-injected')
+        expected_events.update({(case, event): 1 for event in events})
+    expected_events.update({(positive['id'], event): 1 for event in ['ready', 'phase', 'released']})
+    expected_events.update({(case, event): 1 for case in helpers
+                           for event in ['observed-collected', 'rejected-collected']})
+    expected_events.update({(case, 'rejected'): 1 for case in relations | {'types-canonicality', 'pipe-cap'}})
+    assert collections.Counter((r['id'], r['event']) for r in rows) == expected_events
+    finals = {r['id']: r for r in rows if r['event'] in {'settled', 'released'}}
+    owners, workers = set(), set()
+    for case, row in finals.items():
+        o = row['observation']; t = o['terminal']
+        assert o['state'] == 'settled' and o['EOF'] == [1, 2, 4, 5] and o['parent_owned_fds'] == []
+        assert o['fault'] is None and o['transport_error'] is None and o['diagnostic_base64'] == ''
+        assert o['ready_hex'] == '52' and t['owner_pid'] == o['owner_pid']
+        assert type(o['owner_pid']) is int and o['owner_pid'] > 1 and o['owner_pid'] not in owners
+        owners.add(o['owner_pid'])
+        assert all(type(o[k]) is int for k in ['owner_wait_raw', 'owner_exit_code', 'output_bytes'])
+        assert type(row['caller_released_bytes']) is int
+        assert all(type(t[k]) is int for k in ['G_bytes', 'image_bytes_sent', 'input_bytes_received', 'result_bytes'])
+        assert t['ownership'] == 'settled' and t['worker_io']['owned_fds_closed'] is True
+        assert o['owner_wait_raw'] == o['owner_exit_code'] * 256
+        if case in negatives:
+            e = negatives[case]
+            assert row['role'] == 'actual_O_W_lifecycle' and row['caller_released_bytes'] == 0
+            assert t['outcome'] == e['terminal_outcome'] and o['owner_exit_code'] == e['O_exit']
+            assert o['output_bytes'] == e['O_private_bytes'] and o['taken'] is False
+            assert t['cancel_observed'] is e['O_cancel_observed']
+        else:
+            assert row['role'] == 'actual_O_W_positive_single_use' and row['caller_released_bytes'] == 259
+            assert row['second_take_refused'] is True and row['reservation_before_close_refused'] is True
+            assert t['outcome'] == 'decoded' and o['owner_exit_code'] == 0 and o['taken'] is True
+        if t['worker_pid'] is None:
+            assert o['phase'] is None and t['worker_wait'] is None
+            assert case in negatives and negatives[case]['W_count'] == 0
+        else:
+            p = o['phase']; pid = t['worker_pid']; wait = t['worker_wait']
+            assert type(pid) is int and pid > 1 and pid not in workers
+            workers.add(pid)
+            assert p['worker_pid'] == pid and p['owner_pid'] == p['ppid'] == o['owner_pid']
+            assert p['sid'] == p['pgid'] == pid and p['exe_sha256'] == worker['sha256']
+            assert p['limits'] == {'AS': [268435456, 268435456], 'CPU': [1, 2], 'CORE': [0, 0]}
+            assert p['G_bytes'] == p['image_bytes_sent'] == 0 and [f['fd'] for f in p['fds']] == [0, 1, 2]
+            assert wait['collector_pid'] == o['owner_pid']
+            assert all(type(wait[k]) is int for k in ['raw_status', 'exit_code', 'collector_pid'])
+            assert all(t['worker_io'][k] is True for k in ['stdin_closed', 'stdout_eof', 'stderr_eof'])
+            if case in {'cancel_preG', 'wall8_preG', 'control_EOF_preG'}:
+                assert (wait['exit_code'], wait['raw_status']) in {(71, 18176), (-9, 9)}
+                assert t['G_bytes'] == t['image_bytes_sent'] == 0
+            else:
+                assert wait['exit_code'] == wait['raw_status'] == 0
+        if t['outcome'] == 'decoded':
+            assert t['result_bytes'] == o['output_bytes'] == 259
+            assert t['result_sha256'] == o['output_sha256'] == positive['expected_result_sha256']
+            assert t['input_bytes_received'] == t['image_bytes_sent'] == 172800
+            assert t['input_sha256'] == positive['input_sha256'] and t['G_bytes'] == 1
+        else:
+            assert t['result_bytes'] == o['output_bytes'] == 0
+    assert len(owners) == 10 and len(workers) == 5 and owners.isdisjoint(workers)
+    wall = finals['wall8_preG']['observation']['terminal']['timing']
+    assert int(wall['invalidated_ns']) >= int(wall['begin_ns']) + 8000000000
+    assert int(wall['cleanup_deadline_ns']) == int(wall['invalidated_ns']) + 4000000000
+    helper_pids = set()
+    for row in rows:
+        case = row['id']
+        if row['event'] == 'rejected-collected':
+            e = helpers[case]; o = row['observation']; pid = o['owner_pid']
+            assert row['role'] == 'actual_exact_no_W_helper_only_not_worker_PASS'
+            assert all(type(o[k]) is int for k in ['owner_wait_raw', 'owner_exit_code', 'output_bytes'])
+            assert type(row['actual_W_count']) is type(row['caller_released_bytes']) is int
+            assert row['actual_W_count'] == row['caller_released_bytes'] == o['output_bytes'] == 0
+            assert o['state'] == 'quarantined' and o['owner_wait_raw'] == o['owner_exit_code'] == 0
+            assert o['EOF'] == [1, 2, 4, 5] and o['ready_hex'] == e['expected_ready_hex']
+            assert o['commands'] == [e['intended_control']] and o['diagnostic_base64'] == ''
+            assert row['helper_sha256'] == e['sha256'] == hashlib.sha256(blob(e['path'])).hexdigest()
+            assert pid not in helper_pids and pid not in owners | workers and type(pid) is int and pid > 1
+            helper_pids.add(pid)
+        elif row['event'] == 'rejected':
+            if case in relations:
+                assert row['role'] == 'PURE_SYNTHETIC_RELATION_ZERO_PROCESSES' and row['fabricated_PIDs'] == [10001, 10002]
+            elif case == 'types-canonicality':
+                assert row['role'] == 'PURE_WIRE_DATA_ZERO_PROCESSES' and row['rejected_controls'] == 27
+            else:
+                assert case == 'pipe-cap' and row['role'] == 'REAL_PIPE_ONLY_ZERO_CHILDREN'
+                assert row['retained_bytes'] == 513 and row['payload_cap'] == 512
+    assert len(helper_pids) == 11
+    return {'python_owner_source_bindings': bindings, 'python_owner_telemetry_rows': len(rows),
+            'python_owner_actual_owners': 10, 'python_owner_actual_workers': 5,
+            'python_owner_actual_no_worker_helpers': 11, 'python_owner_pure_relations': 9,
+            'python_owner_pure_wire_rejections': 27, 'python_owner_positive_bytes_released_once': 259,
+            'python_owner_negative_bytes_released': 0, 'python_owner_wall8_from_actual_begin_verified': True,
+            'python_owner_limits': 'Host public-fixture component only; synthetic parser PIDs are not processes. No physical or production qualification.'}
 
 def verify_first(objects,b,head,repo):
     # Only this new candidate's completed logs use initialization v2 and third graph.
