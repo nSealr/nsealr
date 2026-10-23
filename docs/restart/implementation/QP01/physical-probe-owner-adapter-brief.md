@@ -192,3 +192,12 @@ SIGKILL gives exit-9/raw9. For only cancel_preG/control_EOF_preG/wall8_preG acce
 those two exact actual wait pairs, zero G/W image/result/release and original O
 cause. The original -9-only expectation and root's correction remain recorded;
 no runtime result supplied this amendment, and O/W/budgets are unchanged.
+
+Root also admitted one automatic normal positive before the stable full gate:
+reuse provisioned W and original172800/259/vector-v2 oracle, phase/G/actual full
+settlement, successful single-use `take_result`, second take refused, reservation
+blocked before explicit known close. This closes the CI regression gap left by
+the separate historical MICRO invoker; no new functionality/provider or focused
+replay is added. Expected Pi count becomes211 (old194+MICRO3+new14). Structured
+case output uses a leading LF so unittest's merged progress dots cannot prefix
+the JSON; the same save function is used by focused and normal gate execution.
