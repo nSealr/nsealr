@@ -131,7 +131,8 @@
       "exe_sha256",
       "limits",
       "G_bytes",
-      "image_bytes_sent"
+      "image_bytes_sent",
+      "fds"
     ],
     "v": 1,
     "kind": "worker_ready",
@@ -152,7 +153,24 @@
     },
     "G_bytes": 0,
     "image_bytes_sent": 0,
-    "node_action": "Bind the one actual W to this O operation, then send one G only if C is still live and operation has not been cancelled. Never send G on readiness alone. For admitted negative phase tests withhold this acknowledgment while O continues its real wait/IO/deadline loop; no fake clock, stopped O or request warmup."
+    "node_action": "Bind the one actual W to this O operation, then send one G only if C is still live and operation has not been cancelled. Never send G on readiness alone. For admitted negative phase tests withhold this acknowledgment while O continues its real wait/IO/deadline loop; no fake clock, stopped O or request warmup.",
+    "fds": {
+      "exact_count": 3,
+      "exact_fds": [
+        0,
+        1,
+        2
+      ],
+      "fixed_key_order": [
+        "fd",
+        "target",
+        "dev",
+        "ino"
+      ],
+      "types": "fd is exact integer0/1/2 in order; target is bounded kernel pipe:[canonical unsigned decimal inode], at most27 ASCII bytes; dev/ino are canonical unsigned64 decimal strings of1..20digits, preserving values beyond JS safe integers. No other fields.",
+      "binding": "Actual /proc/W/fd has exactly0/1/2; each target/dev/ino equals fstat/readlink of its actual O-owned pipe end before spawn. Collected after actual session/policy and before G. Hygiene only, not hostile isolation.",
+      "unchanged_channel_budget": "All phase plus terminal records together remain at most4096 bytes including LF, at most2 records."
+    }
   },
   "terminal_record": {
     "version": 1,
