@@ -85,6 +85,7 @@ class Owner:
             self.invalidated = time.monotonic_ns()
             self.cleanup = self.invalidated + CLEANUP_NS
         self.unwatch(0)
+        self.unwatch(3)  # No further control allocation/reads after irreversible invalidation.
         if self.stdin_fd is not None:
             self.close(self.stdin_fd)
 
@@ -324,7 +325,8 @@ class Owner:
                 # Drain control before image or W data, including before a commit.
                 if self.reason is not None and self.known():
                     break
-                self.commands()
+                if self.reason is None:
+                    self.commands()
                 now = time.monotonic_ns()
                 if self.reason is None and self.begin is not None and now >= self.begin + WALL_NS:
                     self.invalidate("wall")
@@ -352,7 +354,8 @@ class Owner:
                 events = self.selector.select(0.001)
                 for key, _mask in sorted(events, key=lambda item: item[0].data != "control"):
                     if key.data == "control":
-                        self.commands()
+                        if self.reason is None:
+                            self.commands()
                     elif key.data == "image":
                         self.ingress()
                     elif key.fd in self.fds:
