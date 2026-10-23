@@ -1,6 +1,8 @@
 # Worker ownership after coordinator death — pre-code experiment
 
-**Proposal only; no experiment/code admission.** Base is coordinator spec
+**Finite experiment admitted; no product coordinator admission.** Root review
+`8e53a4f4c876974c5bb876a809d8c83a285be9ef` admits the three cases below,
+including this pre-code amendment. Original proposal0c remains in Git. Base is coordinator spec
 `7996b15d34766e0de1b8c395fb7bcc0b02079935`; its [brief](brief.md) stays historical.
 This answers one question: can termination/collection of a Python coordinator
 establish termination/collection of its separately spawned RGB worker?
@@ -51,7 +53,8 @@ the pins above. C must use that exact source with the explicit selected ELF,
 not the absent source path or an implicit different binary. The original13949
 case image SHA256 is `1b56f2926382c7da914a877db899494414988d311c65ff459e2f78a8ab4f0216`;
 its expected198-byte frame SHA256 is `dae39f12a7744d3c82e2d3e1050b02948a3b72612e5835c237054dabc3d8f3cf`.
-Both case files are present there; the baseline sends neither to W.
+Both case files are present there. Only the normal smoke sends the image to W;
+the two faults send neither G nor image. The expected frame is never an input to W.
 R00 Python3.12.15 has `os.pidfd_open`, `signal.pidfd_send_signal`,
 `os.wait4` and `WUNTRACED`; the inspected host is x86_64 Linux6.12.101+deb13-amd64.
 Presence of bindings/version does not prove syscall permission or successful
@@ -63,7 +66,45 @@ cleanup observation4s; stdout512, stderr512, chunks4096. CORE0 also remains.
 No reuse of the request-engine947/read948/5s wrapper for this RGB operation;
 no change to client100ms, native5s, worker512, JSON704 or static947.
 
-## One discriminating baseline, after separate admission
+## Three admitted cases, in order
+
+1. **Normal real-worker smoke**, before fault injection and before completing
+   fault instrumentation: the new O/C wrapper uses the exact unchanged worker,
+   original image and explicit `supervise(binary=...)`. It must record real
+   bootstrap/session/policy → G → 172800 RGB bytes → exact198 output → actual
+   wait0 and settled IO/owner. No stopping/killing in a successful smoke. This
+   is a generic public QR response, with no Node/native-engine/signing operation.
+   Select the fixture by both input and output hashes above; the tinted case
+   shares output but has a different input and is not selected.
+2. **Early coordinator exit before handoff**: a source-bound trace hook exits C
+   immediately after actual W spawn (controller line108), before policy/late
+   handoff, using explicit exit73 without Python finally. The hook snapshots
+   zero G/image counters first. O must discover its actually adopted W through
+   kernel parentage, acquire an initial stable handle, and obtain actual terminal
+   status. W may already be a zombie after EOF; no status is predicted as success.
+   This initial handle of a kernel-proven owned child is not reopening a lost
+   known PID. Any owned live remainder gets prompt finite teardown; unsupported
+   ownership/accounting blocks the dependent held fault.
+3. **Held worker/coordinator kill**: the discriminating sequence below. It may
+   begin only after normal and early-exit cases satisfy all cleanup checks.
+
+Each case runs in a dedicated single-threaded O with no preexisting children,
+default SIGCHLD and no competing waiter. C waits for O to obtain its initial
+handle before proceeding. The source-controlled C creates only selected W;
+W's pinned source creates no descendants. `/proc/<tid>/children` is a candidate
+list only: its primary manual warns it can omit children during exit. Verify
+PPID==O for adoption, acquire pidfd before reaping, and use `waitid(P_ALL,
+WEXITED|WNOHANG|WNOWAIT)` to observe terminal child identity without consuming
+status; collect via positive-PID wait4. Only ECHILD after every known status is
+acquired establishes no remaining children. None/zero event with live children
+is not empty, and ECHILD for an expected uncollected child is not success.
+All partial setup paths use this accounting, not only the late handoff. If
+ownership cannot be proven, do not signal an unproven process or exit O cleanly:
+retain O/quarantine and report the exact unresolved state. No watchdog may kill O
+while descendant ownership is uncertain. These are test-only ownership measures,
+not an adopted product guardian architecture.
+
+## Held-worker discriminant
 
 1. O starts as a dedicated, single-threaded finite observer, with default
    SIGCHLD behavior, no auto-reaper/competing waiter and no inherited worker
@@ -116,7 +157,8 @@ timeout must never silently abandon an owned child or become a successful result
 
 The eventual single receipt must bind exact sources/ELF/environment, C/W identities,
 phase order, policy readbacks, actual stop and terminal wait statuses, signals,
-zero G/image/decoded-output/engine/signing effects, shared deadlines, quarantine/refusal and final
+per-case G/image/decoded-output effects (normal172800→198, faults0), zero
+engine/signing effects, shared deadlines, quarantine/refusal and final
 FD/child collection. Separate the failed implication from successful emergency
 teardown: O's intervention does not prove C cleaned W. The fault-free decoded
 image results remain the old922/10d8/c3 evidence, not another run here.
@@ -137,13 +179,16 @@ Primary Linux man-pages project pages inspected2026-10-23 (6.19 rendering):
   [pidfd_send_signal(2)](https://man7.org/linux/man-pages/man2/pidfd_send_signal.2.html):
   retain stable process references; use flags0/process scope only. Readability
   indicates termination, not acquired wait status. Permission/errors still matter.
+- [proc_tid_children(5)](https://man7.org/linux/man-pages/man5/proc_tid_children.5.html):
+  child enumeration can omit entries during exit; it cannot alone establish
+  empty ownership. Terminal WNOWAIT observation and final ECHILD remain required.
 - [wait(2)](https://man7.org/linux/man-pages/man2/wait.2.html) and
   [wait4(2)](https://man7.org/linux/man-pages/man2/wait4.2.html): distinguish stopped,
   exited and signalled states; wait4 selects the actual child and supplies status
   and usage. WNOHANG0 and ECHILD are not successful terminal collection.
 
-No signal, subreaper mutation, worker/coordinator experiment, test suite, build,
-CI observation or product edit was performed for this brief. Still missing are
+The pre-code amendment performs no signal, subreaper mutation, worker/coordinator
+experiment, test suite, build, CI observation or product edit. Still missing are
 the admitted runtime witnesses for pidfd permission/adoption, the held-worker
 negative and finite actual teardown. The production owner surviving coordinator
 death remains undecided; this baseline tests that seam before implementing it.
