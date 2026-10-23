@@ -1,0 +1,631 @@
+{
+  "schema_version": 1,
+  "verdict": "AUTHOR_PASS_scoped_host_request_engine_controls_PENDING_DISTINCT_B01_REVIEW",
+  "base": "14d5e37065329078afe7275c7448884214ea8a9a",
+  "executed_product_source": "ab0b040e83038e03bc47ceed640a093490c79ef1",
+  "final_structural_source": "f75ff2235721793ba88fc84cefd9a36a912e54cb",
+  "branch": "implementation/qp01-request-aware-engine",
+  "worktree": "/home/tux/nsealr/.restart-tools/goal/qp01-request-engine",
+  "scope": "Original static request bytes -> actual Rust owner/complete review/consuming authorization -> complete v2 response -> unchanged actual client verification. Already-public fixture only.",
+  "case_groups": 23,
+  "case_results_sha256": "1f1165f2b5b1b1e36747d23814a63a70eac3f6b9af196b075d93c122c078d6ed",
+  "final_local_results": {
+    "Rust": "fmt/clippy/workspace/std/RISC-V core + complete coverage PASS at current source; unchanged host vector, dependency graph audit and core/desktop repro receipts reused explicitly",
+    "coverage": {
+      "nsealr-core": 100.0,
+      "nsealr-pi-engine-fixture": 100.0,
+      "desktop-simulator": 77.69,
+      "floors": {
+        "nsealr-core": 100.0,
+        "nsealr-pi-engine-fixture": 100.0,
+        "desktop-simulator": 76.7
+      }
+    },
+    "Pi_default_command": "make pi-ci: Bridge once, native locked/offline provisioning, entire Pi setup/test/lint/audit/docs once with189tests, then actual client harness",
+    "Bridge_existing_tests": {
+      "passed": 802,
+      "existing_skipped": 1,
+      "new_skips": 0
+    },
+    "client": {
+      "positive_round_trips": 2,
+      "valid_shape_verifier_negatives": 5,
+      "post_native_currentness_negatives": 5,
+      "actual_held_child_timeout_no_early_reuse_then_fresh": true,
+      "children": 14,
+      "collected": 14
+    },
+    "placement": {
+      "controls": 10,
+      "retained_integration_obligations": 17,
+      "claim": "Placement/removal controls, not an extra execution of the17integration steps"
+    },
+    "audit": "Both actual dependency graphs; all policy categories and strict index-failure retained. Standard fresh temporary official metadata acquisition, not the historical pinned f7b2 snapshot.",
+    "structural": {
+      "final-01-docs": 0,
+      "final-02-plan": 0,
+      "final-03-frozen": 0,
+      "final-04-contracts": 0
+    }
+  },
+  "native_ELF": {
+    "path": "/home/tux/nsealr/.restart-tools/goal/qp01-request-engine-runtime/target/release/libnsealr_pi_engine_fixture.so",
+    "sha256": "7f05d70fa4c137d6a92e63107474292c6cb0b2bf10f4d501ff3f59f84137392c",
+    "bytes": 648680,
+    "build": "native-build.json",
+    "ELF_metadata": "evidence/final-05-elf/receipt.json",
+    "reproducibility": "Not established for the new cdylib; inherited repro script covers only core rlib and desktop-simulator."
+  },
+  "nonce": {
+    "zero_aux": "Exact two independent S03-derived expectations, legacy original signatures preserved as valid verification goldens with unknown historical nonce provenance. Current R00 NULL uses ZERO_MASK; not no-aux.",
+    "aux42": "Independent expectation frozen in a647e4b5 BEFORE native use; exact signature differs from zero, one actual32-byte0x42 callback.",
+    "old_diagnostics": "Historical two-message zero-aux/native and generator runs are preserved, not rerun or relabelled as executions on this final ELF."
+  },
+  "R00_current_artifact_reconciliation": [
+    {
+      "task": "R00",
+      "path": "Cargo.lock",
+      "preimage_sha256": "3d6b0a359a3dd86f39ba0a2425426b3080c02277f6e185e490c36c72de000d46",
+      "postimage_sha256": "2b62ce3fe11650d36ffc015344aa6f9f04b5ef22d6bc05dae218a96d07c8e811",
+      "postimage_source_commit": "ab0b040e83038e03bc47ceed640a093490c79ef1",
+      "preimage_graph_source": "14d5e37065329078afe7275c7448884214ea8a9a",
+      "role": "Current evidence reference reconciliation only; all historical manifests/reports unchanged"
+    },
+    {
+      "task": "R00",
+      "path": "Makefile",
+      "preimage_sha256": "03c98e06515803f001fa002bc1a7071596577a99488f1d0ed014214cfdd8a8da",
+      "postimage_sha256": "6c025fc8299088e505e54bfd91f54526a7d5b591b3629381eedb23366be1956d",
+      "postimage_source_commit": "ab0b040e83038e03bc47ceed640a093490c79ef1",
+      "preimage_graph_source": "14d5e37065329078afe7275c7448884214ea8a9a",
+      "role": "Current evidence reference reconciliation only; all historical manifests/reports unchanged"
+    },
+    {
+      "task": "R00",
+      "path": "scripts/check_product_gates.py",
+      "preimage_sha256": "7ff29cf5c8f88c07bf6a47321833045afdd6da0cba068c94b97680289912b2ae",
+      "postimage_sha256": "5937f49dc314e8b21156bf2d751b13a885b040b7b8866ac96a1f49e62eefe477",
+      "postimage_source_commit": "ab0b040e83038e03bc47ceed640a093490c79ef1",
+      "preimage_graph_source": "14d5e37065329078afe7275c7448884214ea8a9a",
+      "role": "Current evidence reference reconciliation only; all historical manifests/reports unchanged"
+    }
+  ],
+  "invariants": "Only three authorized R00.result_artifacts.sha256 values differ. All other JSON values, all47 formal/task/resource/release sets and46other full task records equal accepted main14d5. No historical manifest/report changed.",
+  "selected_imports": {
+    "files": 30,
+    "binding_manifest": "import-bindings.json",
+    "runtime_cache_or_ELF_imports": 0
+  },
+  "preserved_failures": [
+    "red-01: missing implementation path before code",
+    "focus-01: public_key field implementation defect, separately incorrect test ID, dependent test mutex poisoning",
+    "focus-04-python: eight historical signature equality failures; resolved only by distinctly reviewed nonce contract amendment",
+    "nonce-diagnostic-01: incorrect oracle path/hash setup; no crypto/native operation before failure",
+    "focus-06-clippy: test tuple type complexity, fixed by named alias",
+    "focus-09-client: test reused before dispatcher/pending-finally settlement; product correctly retained owner",
+    "stable-01-rust: new local dependency missing exact version, denied by unchanged wildcard policy",
+    "focus-11-A03-red: actual -7 vs original contracted -11 on cancel callback failure, source/test fixed",
+    "stable-09-plan: three stale current R00 artifact hashes, reconciled only under explicit root authority"
+  ],
+  "command_receipts": [
+    {
+      "receipt": "evidence/aux42-expected-01/receipt.json",
+      "sha256": "966b2ffd48687dcfc0df4dd43a462d9dfe8379079b4ec6f8a50cd181443a361a",
+      "source": "2f1ebfdbf28d0147d20bee439640771a47e7264b",
+      "argv": [
+        "python3",
+        "-B",
+        "docs/restart/implementation/QP01/request-engine/prepare-aux42.py"
+      ],
+      "exit": 0,
+      "duration_seconds": 0.19651389122009277
+    },
+    {
+      "receipt": "evidence/final-01-docs/receipt.json",
+      "sha256": "82a8bfd2a11d80ce1cdfb5eb03f2cd9915ca2677b1c4a7ba194aaeba97a0f664",
+      "source": "f75ff2235721793ba88fc84cefd9a36a912e54cb",
+      "argv": [
+        "make",
+        "docs"
+      ],
+      "exit": 0,
+      "duration_seconds": 0.04877638816833496
+    },
+    {
+      "receipt": "evidence/final-02-plan/receipt.json",
+      "sha256": "738bf9c08853e8acc1f104fb3f6ea3b8e59c18b43a389eed565fb0645e179a04",
+      "source": "f75ff2235721793ba88fc84cefd9a36a912e54cb",
+      "argv": [
+        "python3",
+        "scripts/validate_restart_plan.py"
+      ],
+      "exit": 0,
+      "duration_seconds": 0.3402125835418701
+    },
+    {
+      "receipt": "evidence/final-03-frozen/receipt.json",
+      "sha256": "55d22a6274b62ec692e2a58e50a4e2a15564fd311186121abae893061a41604b",
+      "source": "f75ff2235721793ba88fc84cefd9a36a912e54cb",
+      "argv": [
+        "python3",
+        "scripts/verify_evidence.py"
+      ],
+      "exit": 0,
+      "duration_seconds": 0.1737983226776123
+    },
+    {
+      "receipt": "evidence/final-04-contracts/receipt.json",
+      "sha256": "9053acf8c00d91dcd8d5b5a9aa83b189e8e6d74904d74bb1d8ca29588dd04f0d",
+      "source": "f75ff2235721793ba88fc84cefd9a36a912e54cb",
+      "argv": [
+        "python3",
+        "scripts/verify_contracts.py"
+      ],
+      "exit": 0,
+      "duration_seconds": 0.6351587772369385
+    },
+    {
+      "receipt": "evidence/final-05-elf/receipt.json",
+      "sha256": "e03ce1ced603641ed3893eaf78bbdac298c7b1152d7addb23fcb222bf7c3804f",
+      "source": "f75ff2235721793ba88fc84cefd9a36a912e54cb",
+      "argv": [
+        "readelf",
+        "-h",
+        "-d",
+        "-n",
+        "/home/tux/nsealr/.restart-tools/goal/qp01-request-engine-runtime/target/release/libnsealr_pi_engine_fixture.so"
+      ],
+      "exit": 0,
+      "duration_seconds": 0.03353095054626465
+    },
+    {
+      "receipt": "evidence/focus-01/receipt.json",
+      "sha256": "1d9eeb481a28c95944882d8113746da7a43d4abe93e3a7a96358e404c32950c4",
+      "source": "2786da617846d07bc963a36e6db3c16aeb01497e",
+      "argv": [
+        "cargo",
+        "test",
+        "-p",
+        "nsealr-pi-engine-fixture",
+        "--locked",
+        "--offline"
+      ],
+      "exit": 101,
+      "duration_seconds": 2.9315669536590576
+    },
+    {
+      "receipt": "evidence/focus-02/receipt.json",
+      "sha256": "60b9bca4f817b39ca690eb2a8c1a5aa82cbd1fdb3a5bd4d7f53300719bd3fbcb",
+      "source": "beee816aef15eda173e0d6afa72b0d612c17e8e8",
+      "argv": [
+        "cargo",
+        "test",
+        "-p",
+        "nsealr-pi-engine-fixture",
+        "--locked",
+        "--offline"
+      ],
+      "exit": 0,
+      "duration_seconds": 0.7092089653015137
+    },
+    {
+      "receipt": "evidence/focus-03-build/receipt.json",
+      "sha256": "b7bd640186db16930a0d0c0411a1a8c4fa3d8fd42b1849fecf248a2c9e26b900",
+      "source": "a4371ac4dde909607c39ee6a1045c875a98d5089",
+      "argv": [
+        "cargo",
+        "build",
+        "-p",
+        "nsealr-pi-engine-fixture",
+        "--locked",
+        "--offline",
+        "--release",
+        "--message-format=json"
+      ],
+      "exit": 0,
+      "duration_seconds": 3.695413827896118
+    },
+    {
+      "receipt": "evidence/focus-04-python/receipt.json",
+      "sha256": "d8a164e697b305f9c291f8f30e953cc75bdb5d319ef298e0a2ab9e5edf0ca204",
+      "source": "a4371ac4dde909607c39ee6a1045c875a98d5089",
+      "argv": [
+        "python3",
+        "-B",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "apps/pi/tests",
+        "-p",
+        "test_engine_adapter.py",
+        "-v"
+      ],
+      "exit": 1,
+      "duration_seconds": 0.0873875617980957
+    },
+    {
+      "receipt": "evidence/focus-05-python/receipt.json",
+      "sha256": "5d08d3efd435e8ea487036b3df9a4f82f375fb078db0a39e397beeecf0b08269",
+      "source": "a618b5864a07a71ff962a2c98b16231ce581db05",
+      "argv": [
+        "python3",
+        "-B",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "apps/pi/tests",
+        "-p",
+        "test_engine_adapter.py",
+        "-v"
+      ],
+      "exit": 0,
+      "duration_seconds": 0.08777832984924316
+    },
+    {
+      "receipt": "evidence/focus-06-clippy/receipt.json",
+      "sha256": "b6cf49c7ae5919704c2711ff9d197dbf89adbc90f1c5efadddf644ff21c5b142",
+      "source": "a618b5864a07a71ff962a2c98b16231ce581db05",
+      "argv": [
+        "cargo",
+        "clippy",
+        "-p",
+        "nsealr-pi-engine-fixture",
+        "--all-targets",
+        "--locked",
+        "--offline",
+        "--",
+        "-D",
+        "warnings",
+        "-D",
+        "dead_code"
+      ],
+      "exit": 101,
+      "duration_seconds": 2.2625584602355957
+    },
+    {
+      "receipt": "evidence/focus-07-coverage/receipt.json",
+      "sha256": "f827ac7f3ba3c6d509bc7a746061c261f25edd25acf1eb0fc7aecbe2d31270b0",
+      "source": "a618b5864a07a71ff962a2c98b16231ce581db05",
+      "argv": [
+        "cargo",
+        "llvm-cov",
+        "-p",
+        "nsealr-pi-engine-fixture",
+        "--locked",
+        "--offline",
+        "--json",
+        "--output-path",
+        "/home/tux/nsealr/.restart-tools/goal/qp01-request-engine-runtime/focus-coverage.json"
+      ],
+      "exit": 0,
+      "duration_seconds": 3.132046699523926
+    },
+    {
+      "receipt": "evidence/focus-08-js-build/receipt.json",
+      "sha256": "cd9adedb571d29a4165563fb11e373364502679f3b3981153a583919eeab9146",
+      "source": "ec4f3e792a14f2cf9c79fe609c2da42ed4d84998",
+      "argv": [
+        "pnpm",
+        "build"
+      ],
+      "exit": 0,
+      "duration_seconds": 9.279383420944214
+    },
+    {
+      "receipt": "evidence/focus-09-client/receipt.json",
+      "sha256": "a2cb544e2b735bbbe5a3981322393aa0a72416dd952c6ad6f0882aba79d96265",
+      "source": "1d7035178436f4d8a60dc666ba7dac6e0c334752",
+      "argv": [
+        "env",
+        "NSEALR_QP01_PYTHON=/home/tux/nsealr/.restart-tools/goal/r00/tools/baseline/.work/final/.tools/python/bin/python3",
+        "node",
+        "--import",
+        "tsx/esm",
+        "docs/restart/implementation/QP01/request-engine/client-exchange.ts"
+      ],
+      "exit": 1,
+      "duration_seconds": 0.6730635166168213
+    },
+    {
+      "receipt": "evidence/focus-10-client/receipt.json",
+      "sha256": "49cc915e95cd5e81e17b48da832dbf54f352fe4542b644ac5f5610542808d03e",
+      "source": "3020da0cad14420386f3a7cd1a07e703aa556959",
+      "argv": [
+        "env",
+        "NSEALR_QP01_PYTHON=/home/tux/nsealr/.restart-tools/goal/r00/tools/baseline/.work/final/.tools/python/bin/python3",
+        "node",
+        "--import",
+        "tsx/esm",
+        "docs/restart/implementation/QP01/request-engine/client-exchange.ts"
+      ],
+      "exit": 0,
+      "duration_seconds": 0.6964616775512695
+    },
+    {
+      "receipt": "evidence/focus-11-A03-red/receipt.json",
+      "sha256": "056d9a8ff0300e2af0c94c843118a0067dda3e06d40fbe05cf13d93380a9d44d",
+      "source": "2ea46e1a0cd5aae48556d8175f6af7fce2bbd075",
+      "argv": [
+        "python3",
+        "-B",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "apps/pi/tests",
+        "-p",
+        "test_engine_adapter.py",
+        "-k",
+        "T01_T02",
+        "-v"
+      ],
+      "exit": 1,
+      "duration_seconds": 0.06712508201599121
+    },
+    {
+      "receipt": "evidence/focus-12-build/receipt.json",
+      "sha256": "4f6ba75e98182a0cc3de646c8eada57adab318782fbc74f255dcff7b1f33e4ac",
+      "source": "778ccc3753165c897f762d81bfbcc1b75c5e7a32",
+      "argv": [
+        "cargo",
+        "build",
+        "-p",
+        "nsealr-pi-engine-fixture",
+        "--locked",
+        "--offline",
+        "--release",
+        "--message-format=json"
+      ],
+      "exit": 0,
+      "duration_seconds": 0.1756448745727539
+    },
+    {
+      "receipt": "evidence/focus-13-A03-green/receipt.json",
+      "sha256": "7af3c92c0b79732c6eeaa30d4b8acbddc233bb1ee3c02454aa8d790ca931989b",
+      "source": "778ccc3753165c897f762d81bfbcc1b75c5e7a32",
+      "argv": [
+        "python3",
+        "-B",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "apps/pi/tests",
+        "-p",
+        "test_engine_adapter.py",
+        "-k",
+        "T01_T02",
+        "-v"
+      ],
+      "exit": 0,
+      "duration_seconds": 0.06701326370239258
+    },
+    {
+      "receipt": "evidence/generator-diagnostic-01/receipt.json",
+      "sha256": "066ae850e9ba819d02dfccebdaa9a38e8e72d8663a81fe273e7f710b26484b56",
+      "source": "558bdf1b755f75d6934a233d01088148144cbd66",
+      "argv": [
+        "python3",
+        "-B",
+        "docs/restart/implementation/QP01/request-engine/generator-diagnostic.py"
+      ],
+      "exit": 0,
+      "duration_seconds": 0.17900419235229492
+    },
+    {
+      "receipt": "evidence/nonce-diagnostic-01/receipt.json",
+      "sha256": "26eee360f56cdf40a9b9ad5af625e63acb47557166ae422897e38b297b0a1148",
+      "source": "2d20299c24d1aabfe91d0341e1792d7f5c572847",
+      "argv": [
+        "python3",
+        "-B",
+        "docs/restart/implementation/QP01/request-engine/nonce-diagnostic.py"
+      ],
+      "exit": 1,
+      "duration_seconds": 0.03618597984313965
+    },
+    {
+      "receipt": "evidence/nonce-diagnostic-02/receipt.json",
+      "sha256": "01cb3449a0822ccc0d8a1f9612ed83369a60c28ccb222c4e456163b857af4996",
+      "source": "77bffc6e8d532c233b2e38618f5c25dc403ecea8",
+      "argv": [
+        "python3",
+        "-B",
+        "docs/restart/implementation/QP01/request-engine/nonce-diagnostic.py"
+      ],
+      "exit": 0,
+      "duration_seconds": 0.561682939529419
+    },
+    {
+      "receipt": "evidence/red-01/receipt.json",
+      "sha256": "d6dcae12f8ce44b04a7268279a7a74c4c498ae10ace8c868e902f764a1bce229",
+      "source": "8f0907824dee9328ea130013e56c1919d1cd2f1a",
+      "argv": [
+        "python3",
+        "-B",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "apps/pi/tests",
+        "-p",
+        "test_engine_adapter.py",
+        "-v"
+      ],
+      "exit": 1,
+      "duration_seconds": 0.028867006301879883
+    },
+    {
+      "receipt": "evidence/setup-js-01/receipt.json",
+      "sha256": "8680a286acb1840a57ad49946680ea095bfcc679a29e0c7d805ce3246b36091c",
+      "source": "a618b5864a07a71ff962a2c98b16231ce581db05",
+      "argv": [
+        "pnpm",
+        "install",
+        "--offline",
+        "--frozen-lockfile",
+        "--store-dir",
+        "/home/tux/nsealr/.restart-tools/goal/qp01-request-engine-runtime/pnpm-store"
+      ],
+      "exit": 0,
+      "duration_seconds": 0.7980918884277344
+    },
+    {
+      "receipt": "evidence/stable-01-rust/receipt.json",
+      "sha256": "9ee5402d8dc96f8acf238bbedb257c062aa4f1f9ba26c6e0887b08038095ae77",
+      "source": "24d0cb1fa23cbdf084a069f1a214a19c16bf8085",
+      "argv": [
+        "make",
+        "rust-ci"
+      ],
+      "exit": 2,
+      "duration_seconds": 18.555405378341675
+    },
+    {
+      "receipt": "evidence/stable-02-rust-remaining/receipt.json",
+      "sha256": "ab3e72f787a0e8b45e86128be0308f2964ca5bba03bf1dbd7e68504b3475dda9",
+      "source": "3112e68e958bbe7f260de54d019ea8504f84d0a9",
+      "argv": [
+        "make",
+        "cargo-deny",
+        "coverage-ratchet",
+        "repro-build"
+      ],
+      "exit": 0,
+      "duration_seconds": 30.395825624465942
+    },
+    {
+      "receipt": "evidence/stable-03-pi/receipt.json",
+      "sha256": "1f1ac4b0d5c8d718b015efc1066eb65e2eeec2a90e494d7a8b1b9af5c8baf007",
+      "source": "3112e68e958bbe7f260de54d019ea8504f84d0a9",
+      "argv": [
+        "make",
+        "pi-ci"
+      ],
+      "exit": 0,
+      "duration_seconds": 27.80433416366577
+    },
+    {
+      "receipt": "evidence/stable-04-placement/receipt.json",
+      "sha256": "eaa2675cec61e757910569a2ff12af2cd5058cde3a549a76d7b08dfb6d1aa379",
+      "source": "3112e68e958bbe7f260de54d019ea8504f84d0a9",
+      "argv": [
+        "make",
+        "product-gates"
+      ],
+      "exit": 0,
+      "duration_seconds": 0.22260475158691406
+    },
+    {
+      "receipt": "evidence/stable-05-elf/receipt.json",
+      "sha256": "60ed880682f9b1b683bb3588ded57b1ec08c295d48baa408c56a73a505c86588",
+      "source": "3112e68e958bbe7f260de54d019ea8504f84d0a9",
+      "argv": [
+        "readelf",
+        "-h",
+        "-d",
+        "-n",
+        "/home/tux/nsealr/.restart-tools/goal/qp01-request-engine-runtime/target/release/libnsealr_pi_engine_fixture.so"
+      ],
+      "exit": 0,
+      "duration_seconds": 0.019089937210083008
+    },
+    {
+      "receipt": "evidence/stable-06-rust-final/receipt.json",
+      "sha256": "eddb02522a04e958a4c013089044b992af75194e03027963802a2899a8075c8f",
+      "source": "ab0b040e83038e03bc47ceed640a093490c79ef1",
+      "argv": [
+        "make",
+        "cargo-fmt",
+        "cargo-clippy",
+        "cargo-test",
+        "coverage-ratchet"
+      ],
+      "exit": 0,
+      "duration_seconds": 7.533748149871826
+    },
+    {
+      "receipt": "evidence/stable-07-pi-final/receipt.json",
+      "sha256": "2068ced5e10e800eaf3db2850601dff4a71e94f7538bffd79f73957ecd669074",
+      "source": "ab0b040e83038e03bc47ceed640a093490c79ef1",
+      "argv": [
+        "make",
+        "pi-ci"
+      ],
+      "exit": 0,
+      "duration_seconds": 26.884007453918457
+    },
+    {
+      "receipt": "evidence/stable-08-docs/receipt.json",
+      "sha256": "a1c425bab1623495924b56db16b465a730c459d24b1ec028853bc4ed1f0e1e38",
+      "source": "ab0b040e83038e03bc47ceed640a093490c79ef1",
+      "argv": [
+        "make",
+        "docs"
+      ],
+      "exit": 0,
+      "duration_seconds": 0.04788684844970703
+    },
+    {
+      "receipt": "evidence/stable-09-plan/receipt.json",
+      "sha256": "82eaaff9926105b558bc2c2193b37d0b36420e839c06a448b036151e6ebe11eb",
+      "source": "ab0b040e83038e03bc47ceed640a093490c79ef1",
+      "argv": [
+        "python3",
+        "scripts/validate_restart_plan.py"
+      ],
+      "exit": 1,
+      "duration_seconds": 0.3453991413116455
+    },
+    {
+      "receipt": "evidence/stable-10-frozen/receipt.json",
+      "sha256": "dccbf2c4e9f70c24c530bc4c8609a9a267022f6b6161ae80461182ddaef81ef4",
+      "source": "ab0b040e83038e03bc47ceed640a093490c79ef1",
+      "argv": [
+        "python3",
+        "scripts/verify_evidence.py"
+      ],
+      "exit": 0,
+      "duration_seconds": 0.18003201484680176
+    },
+    {
+      "receipt": "evidence/stable-11-contracts/receipt.json",
+      "sha256": "726680314fae60106a686b56a2a31877bfdc4dc0a5c21e4fc3bee3dc50029e2d",
+      "source": "ab0b040e83038e03bc47ceed640a093490c79ef1",
+      "argv": [
+        "python3",
+        "scripts/verify_contracts.py"
+      ],
+      "exit": 0,
+      "duration_seconds": 0.6175210475921631
+    }
+  ],
+  "limits": [
+    "Trusted Python/native callbacks; live pointer validity is a caller precondition, no hostile interpreter or secret isolation.",
+    "Public fixture/key and auxiliary test bytes only; no production custody/entropy/provider, target ARM/Pi/P4 ABI, no_std adapter or distribution qualification.",
+    "Cooperative cancellation and local client timeout cannot interrupt a blocked callback or recall an already-executed backend/device operation. During-aux cancellation proves output refusal/settlement, not absence of backend effects.",
+    "Synthetic complete presentation/action records are not human/physical display/button consent.",
+    "JSON704/static947/imageworker512 are separate unchanged limits; no camera, image decoder, real optical exchange or final framing/cap selection.",
+    "All task/acceptance/dependency/resource/release data remain unchanged apart from three authorized current evidence hashes; no task/profile/physical release is completed.",
+    "Distinct B01 review, hostedCI/PR and actual integration remain pending and root-owned."
+  ],
+  "recovery": {
+    "task_runtime_sibling": "/home/tux/nsealr/.restart-tools/goal/qp01-request-engine-runtime",
+    "preserved_ignored": [
+      "target/ and exact current ELF",
+      "pnpm-store/ and task-local caches",
+      "run.py command collector and library.json",
+      "worktree node_modules/, apps/pi/.venv/, build/ coverage/repro outputs"
+    ],
+    "active_processes": 0,
+    "unfinished_runtime_operations": []
+  },
+  "format_check": {
+    "report": "whitespace.json",
+    "full_exit": 2,
+    "authored_only_exit": 0,
+    "raw_bytes_unchanged": true
+  }
+}
