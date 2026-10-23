@@ -55,7 +55,9 @@ def save(case, event, role, op=None, **extra):
         with (path / f"{case}-{event}.json").open("x") as target:
             json.dump(record, target, indent=2)
             target.write("\n")
-    print(json.dumps({"python_owner_case": record}), flush=True)
+    # unittest's preceding stderr progress dot has no LF in the merged CI
+    # stream. Start a fresh line before every structured evidence record.
+    print("\n" + json.dumps({"python_owner_case": record}), flush=True)
 
 
 def hold_uncertain(case, op, reason):
