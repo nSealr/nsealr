@@ -62,6 +62,7 @@ async function native(frame: string, held?: (release: () => void) => void): Prom
   assert.equal(trace.output_sha256, createHash("sha256").update(response).digest("hex"));
   assert(trace.synthetic_complete_review.length > 1);
   reports.push(trace);
+  console.log(JSON.stringify({ native_observation: trace }));
   return response;
 }
 
@@ -152,8 +153,14 @@ for (const change of ["account", "generation", "availability", "limits", "deadli
     assert.equal((await state.run() as any).error.code, "runtime_unavailable");
     assert.equal((await state.separate() as any).error.code, "signer_transport_failed");
     assert.equal(state.counts().closes, 0);
-  } finally { release(); await state.settled; }
-  assert.equal((await state.run()).ok, true);
+  } finally {
+    release(); await state.settled;
+    // close() returning is followed by dispatcher finally/pending-finally;
+    // retain the reservation through that actual promise settlement as well.
+    await new Promise<void>((yes) => setImmediate(yes));
+  }
+  const fresh = await state.run();
+  assert.equal(fresh.ok, true, JSON.stringify(fresh));
   assert.deepEqual(state.counts(), { opens: 2, scans: 2, closes: 2 });
 }
 assert.equal(children, collected);
