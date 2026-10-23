@@ -1,0 +1,43 @@
+{
+  "verdict": "PASS_two_message_explicit_aux_diagnosis_only_CONTRACT_AMENDMENT_NOT_AUTHORIZED",
+  "executed_source": "77bffc6e8d532c233b2e38618f5c25dc403ecea8",
+  "native_build_source": "a4371ac4dde909607c39ee6a1045c875a98d5089",
+  "library_sha256": "c9e34aba2fed030305deb423d8ff20ad334020be618b376c80bcd55c9a44fa92",
+  "native_calls": 2,
+  "oracle_loader": "Existing K01/check_observed.py load_oracle() -> S03/oracle.py reference() -> pinned official bip340_reference.py; no new crypto implementation.",
+  "summary": [
+    {
+      "fixture": "protocols/contracts/v1/vectors/events/kind-1-basic.json",
+      "zero_aux_signature": "d8f39a159fd833bb1f0663c7f03b2ff1c19b27867442a5a372779fe6998a8a28b26c623fed74896a5065b1a6739d1953b9d386d2d57e24cf1f7c1cc353a82635",
+      "zero_aux_equals_native": true,
+      "legacy_differs": true,
+      "legacy_verifies": true,
+      "zero_aux_verifies": true,
+      "native_verifies": true,
+      "actual_aux_calls": 1
+    },
+    {
+      "fixture": "protocols/contracts/v1/vectors/events/kind-1-tags.json",
+      "zero_aux_signature": "1336d914499020b678dd43d19e533233cb7a19de5bd25f8e8ec891319d28c4ea0e4a99d800d3525b17c8b411f116c195ac22496a39c4d321340799a6027bb668",
+      "zero_aux_equals_native": true,
+      "legacy_differs": true,
+      "legacy_verifies": true,
+      "zero_aux_verifies": true,
+      "native_verifies": true,
+      "actual_aux_calls": 1
+    }
+  ],
+  "preserved_failures": [
+    "focus-01: public_key implementation defect plus wrong test correlation and dependent mutex poisoning",
+    "focus-04-python: original8 signature equality failure records unchanged",
+    "nonce-diagnostic-01: incorrect oracle path/SHA pairing stopped before any diagnostic native call"
+  ],
+  "source_correspondence": "Native implementation and Python adapter SHA256 unchanged since the original failed compatibility test; same built ELF, input messages, public key and zero32 auxiliary callback.",
+  "remaining": "Root/B01 must adjudicate the pre-code exact-signature requirement after pinned legacy C-source analysis. No expectations, original vectors, core/provider, policy, threshold or matrix changed. Full23-group acceptance/client/PiCI/workspace coverage/final gates still NOT completed.",
+  "receipts_sha256": {
+    "evidence/nonce-diagnostic-02/receipt.json": "01cb3449a0822ccc0d8a1f9612ed83369a60c28ccb222c4e456163b857af4996",
+    "evidence/nonce-diagnostic-02/stdout.log": "6a7e1858c69e3f7d5b22e8151c923443136770f6d098ac38bb956ad75ddbc589",
+    "evidence/nonce-diagnostic-02/stderr.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "nonce-diagnostic.py": "3296fd1e819fe80d40c25303d3faf409126675a262682d93673a9eac04188ee2"
+  }
+}
