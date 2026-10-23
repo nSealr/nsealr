@@ -1,0 +1,83 @@
+error: unknown command 'smartcard-sim-sign'
+.....
+----------------------------------------------------------------------
+Ran 5 tests in 0.013s
+
+OK
+   Compiling subtle v2.6.1
+   Compiling zeroize v1.9.1
+   Compiling typenum v1.20.1
+   Compiling rand_core v0.10.1
+   Compiling autocfg v1.5.1
+   Compiling const-oid v0.10.2
+   Compiling cmov v0.5.4
+   Compiling cpubits v0.1.1
+   Compiling base16ct v1.0.0
+   Compiling cpufeatures v0.3.1
+   Compiling cfg-if v1.0.5
+   Compiling nsealr-core v0.0.0 (/home/tux/nsealr/.restart-tools/goal/qp01-owner-cold-integration/crates/nsealr-core)
+   Compiling ff v0.14.0
+   Compiling der v0.8.2
+   Compiling group v0.14.0
+   Compiling ctutils v0.4.4
+   Compiling num-traits v0.2.19
+   Compiling hybrid-array v0.4.15
+   Compiling crypto-common v0.2.2
+   Compiling block-buffer v0.12.1
+   Compiling crypto-bigint v0.7.5
+   Compiling sec1 v0.8.1
+   Compiling digest v0.11.3
+   Compiling signature v3.0.0
+   Compiling sha2 v0.11.0
+   Compiling elliptic-curve v0.14.1
+   Compiling primefield v0.14.0
+   Compiling wnaf v0.14.1
+   Compiling ecdsa v0.17.0
+   Compiling primeorder v0.14.0
+   Compiling k256 v0.14.0
+   Compiling nsealr-pi-engine-fixture v0.0.0 (/home/tux/nsealr/.restart-tools/goal/qp01-owner-cold-integration/crates/nsealr-pi-engine-fixture)
+    Finished `release` profile [optimized] target(s) in 3.85s
+   Compiling proc-macro2 v1.0.107
+   Compiling unicode-ident v1.0.27
+   Compiling quote v1.0.47
+   Compiling foldhash v0.2.0
+   Compiling g2poly v1.2.2
+   Compiling hashbrown v0.17.1
+   Compiling syn v2.0.119
+   Compiling lru v0.18.5
+   Compiling g2gen v1.2.2
+   Compiling g2p v1.2.2
+   Compiling rqrr v0.11.0
+   Compiling nsealr-qr-worker v0.0.0 (/home/tux/nsealr/.restart-tools/goal/qp01-owner-cold-integration/apps/pi/qr-worker)
+    Finished `release` profile [optimized] target(s) in 1.26s
+..............F...................................................................................................................................................................................
+======================================================================
+FAIL: test_actual_driver_orders_full_pi_then_client_with_same_library (test_engine_adapter.ProvisioningControls.test_actual_driver_orders_full_pi_then_client_with_same_library)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/tux/nsealr/.restart-tools/goal/qp01-owner-cold-integration/apps/pi/tests/test_engine_adapter.py", line 323, in test_actual_driver_orders_full_pi_then_client_with_same_library
+    self.assertEqual(calls, ["build", ["make", "-C", str(ROOT / "apps/pi"), "ci"],
+AssertionError: Lists differ: ['bui[264 chars].ts'], ['node', '--import', 'tsx/esm', '/home/[145 chars]te']] != ['bui[264 chars].ts']]
+
+First list contains 1 additional elements.
+First extra element 3:
+['node', '--import', 'tsx/esm', '/home/tux/nsealr/.restart-tools/goal/qp01-owner-cold-integration/docs/restart/implementation/QP01/request-engine/client-exchange.ts', '--first-owner-gate']
+
+Diff is 939 characters long. Set self.maxDiff to None to see it.
+
+----------------------------------------------------------------------
+Ran 194 tests in 1.385s
+
+FAILED (failures=1)
+make[1]: *** [Makefile:14: test] Error 1
+Traceback (most recent call last):
+  File "/home/tux/nsealr/.restart-tools/goal/qp01-owner-cold-integration/docs/restart/implementation/QP01/request-engine/exchange.py", line 142, in <module>
+    main()
+  File "/home/tux/nsealr/.restart-tools/goal/qp01-owner-cold-integration/docs/restart/implementation/QP01/request-engine/exchange.py", line 136, in main
+    ci(args.ci)
+  File "/home/tux/nsealr/.restart-tools/goal/qp01-owner-cold-integration/docs/restart/implementation/QP01/request-engine/exchange.py", line 85, in ci
+    subprocess.run(["make", "-C", str(pi), "ci"], cwd=ROOT, env=env, check=True)
+  File "/home/tux/nsealr/.restart-tools/goal/r00/tools/baseline/.work/final/.tools/python/lib/python3.12/subprocess.py", line 571, in run
+    raise CalledProcessError(retcode, process.args,
+subprocess.CalledProcessError: Command '['make', '-C', '/home/tux/nsealr/.restart-tools/goal/qp01-owner-cold-integration/apps/pi', 'ci']' returned non-zero exit status 2.
+make: *** [Makefile:92: pi-ci] Error 1

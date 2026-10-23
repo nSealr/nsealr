@@ -302,13 +302,14 @@ class EngineAdapterTests(unittest.TestCase):
 
 
 class ProvisioningControls(unittest.TestCase):
-    def test_actual_driver_orders_full_pi_then_client_with_same_library(self):
+    def test_actual_driver_orders_full_pi_then_clients_with_same_identities(self):
         path = ROOT / "docs/restart/implementation/QP01/request-engine/exchange.py"
         spec = importlib.util.spec_from_file_location("qp01_exchange", path)
         driver = importlib.util.module_from_spec(spec)
         spec.loader.exec_module(driver)
         calls = []
-        lib = {"NSEALR_QP01_LIBRARY": "/explicit/test.so", "NSEALR_QP01_LIBRARY_SHA256": "a"*64}
+        lib = {"NSEALR_QP01_LIBRARY": "/explicit/test.so", "NSEALR_QP01_LIBRARY_SHA256": "a"*64,
+               "NSEALR_QP01_QR_WORKER": "/explicit/worker", "NSEALR_QP01_QR_WORKER_SHA256": "b"*64}
         def provision():
             calls.append("build")
             return lib
@@ -321,7 +322,8 @@ class ProvisioningControls(unittest.TestCase):
         with patch.object(driver, "provision", side_effect=provision), patch.object(driver.subprocess, "run", side_effect=run):
             driver.ci("apps/pi")
         self.assertEqual(calls, ["build", ["make", "-C", str(ROOT / "apps/pi"), "ci"],
-                                ["node", "--import", "tsx/esm", str(driver.CLIENT)]])
+                                ["node", "--import", "tsx/esm", str(driver.CLIENT)],
+                                ["node", "--import", "tsx/esm", str(driver.CLIENT), "--first-owner-gate"]])
         with self.assertRaises(ValueError):
             driver.ci("apps/pi/tests")
 
