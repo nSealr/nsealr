@@ -1,0 +1,1005 @@
+2026-10-23T11:19:23.7547363Z cargo deny check
+2026-10-23T11:19:24.1350000Z error[vulnerability]: Non-constant-time mask generation and `u128` comparisons
+2026-10-23T11:19:24.1356464Z    ┌─ /home/runner/work/_temp/nsealr-product/nsealr/Cargo.lock:11:1
+2026-10-23T11:19:24.1359315Z    │
+2026-10-23T11:19:24.1366864Z 11 │ ctutils 0.4.3 registry+https://github.com/rust-lang/crates.io-index
+2026-10-23T11:19:24.1368642Z    │ ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ security vulnerability detected
+2026-10-23T11:19:24.1369739Z    │
+2026-10-23T11:19:24.1370436Z    ├ ID: RUSTSEC-2026-0385
+2026-10-23T11:19:24.1371429Z    ├ Advisory: https://rustsec.org/advisories/RUSTSEC-2026-0385
+2026-10-23T11:19:24.1372404Z    ├ ## Summary
+2026-10-23T11:19:24.1372996Z      
+2026-10-23T11:19:24.1373835Z      The `ctutils::Choice` type has mask generation functions for each unsigned
+2026-10-23T11:19:24.1375107Z      integer size (`u8`, `u16`, `u32`, `u64`, `u128`). These are `const fn` and
+2026-10-23T11:19:24.1376540Z      therefore can't reuse the `asm!`-backed mask generation in the `cmov` crate
+2026-10-23T11:19:24.1377716Z      that's otherwise used to ensure constant-time.
+2026-10-23T11:19:24.1378516Z      
+2026-10-23T11:19:24.1379347Z      In releases prior to v0.4.4, the generated code from these functions could
+2026-10-23T11:19:24.1380630Z      include a branch on commonly used platforms. This has been corrected in this
+2026-10-23T11:19:24.1381850Z      release and now verified on several platforms using BINSEC.
+2026-10-23T11:19:24.1382701Z      
+2026-10-23T11:19:24.1383585Z      Additionally, `u128` comparison operations provided via `ctutils::Choice` and
+2026-10-23T11:19:24.1384950Z      intended to work in constant-time were generating branches on 32-bit targets.
+2026-10-23T11:19:24.1386448Z      This has been resolved via a special case implementation of these functions
+2026-10-23T11:19:24.1387376Z      for such targets.
+2026-10-23T11:19:24.1387895Z      
+2026-10-23T11:19:24.1388348Z      ## Impact
+2026-10-23T11:19:24.1388835Z      
+2026-10-23T11:19:24.1389532Z      Branch instructions on secret values can potentially leak such values via
+2026-10-23T11:19:24.1390631Z      covert channels. This can enable attackers to potentially recover such secrets.
+2026-10-23T11:19:24.1391506Z      
+2026-10-23T11:19:24.1391991Z      ## Resolution
+2026-10-23T11:19:24.1392508Z      
+2026-10-23T11:19:24.1395775Z      This has been resolved by calling `Choice::to_u8()` when generating the mask,
+2026-10-23T11:19:24.1397223Z      which in turn uses `black_box` as an optimization barrier. Verification that
+2026-10-23T11:19:24.1398316Z      this resulted in the desired change in the generated assembly across a variety
+2026-10-23T11:19:24.1399437Z      of target CPU architectures was performed by BINSEC, which now runs
+2026-10-23T11:19:24.1400301Z      automatically in CI using `cargo checkct`.
+2026-10-23T11:19:24.1401300Z    ├ Announcement: https://github.com/RustCrypto/utils/pull/1569
+2026-10-23T11:19:24.1402327Z    ├ Solution: Upgrade to >=0.4.4 (try `cargo update -p ctutils`)
+2026-10-23T11:19:24.1403230Z    ├ ctutils v0.4.3
+2026-10-23T11:19:24.1403816Z      ├── crypto-bigint v0.7.5
+2026-10-23T11:19:24.1404505Z      │   ├── elliptic-curve v0.14.1
+2026-10-23T11:19:24.1405193Z      │   │   ├── ecdsa v0.17.0
+2026-10-23T11:19:24.1405863Z      │   │   │   └── k256 v0.14.0
+2026-10-23T11:19:24.1407152Z      │   │   │       └── nsealr-core v0.0.0
+2026-10-23T11:19:24.1407867Z      │   │   ├── k256 v0.14.0 (*)
+2026-10-23T11:19:24.1408555Z      │   │   └── primeorder v0.14.0
+2026-10-23T11:19:24.1409292Z      │   │       └── k256 v0.14.0 (*)
+2026-10-23T11:19:24.1409990Z      │   └── primefield v0.14.0
+2026-10-23T11:19:24.1410637Z      │       ├── primeorder v0.14.0 (*)
+2026-10-23T11:19:24.1411319Z      │       └── wnaf v0.14.1
+2026-10-23T11:19:24.1412043Z      │           ├── k256 v0.14.0 (*)
+2026-10-23T11:19:24.1412952Z      │           └── primeorder v0.14.0 (*)
+2026-10-23T11:19:24.1413687Z      └── sec1 v0.8.1
+2026-10-23T11:19:24.1414368Z          └── elliptic-curve v0.14.1 (*)
+2026-10-23T11:19:24.1414877Z 
+2026-10-23T11:19:24.1415292Z warning[index-failure]: unable to check for yanked crates
+2026-10-23T11:19:24.1416480Z    ┌─ /home/runner/work/_temp/nsealr-product/nsealr/Cargo.lock:1:1
+2026-10-23T11:19:24.1417467Z    │
+2026-10-23T11:19:24.1418407Z  1 │ autocfg 1.5.1 registry+https://github.com/rust-lang/crates.io-index
+2026-10-23T11:19:24.1420003Z    │ ─────────────────────────────────────────────────────────────────── crate whose registry we failed to query
+2026-10-23T11:19:24.1421086Z    │
+2026-10-23T11:19:24.1421982Z    ┌─ /home/runner/work/_temp/nsealr-product/nsealr/deny.toml:17:11
+2026-10-23T11:19:24.1422901Z    │
+2026-10-23T11:19:24.1423538Z 17 │ yanked = "deny"
+2026-10-23T11:19:24.1424304Z    │           ━━━━ lint level defined here
+2026-10-23T11:19:24.1425032Z    │
+2026-10-23T11:19:24.1425716Z    ├ unable to locate index entry for crate
+2026-10-23T11:19:24.1426761Z    ├ autocfg v1.5.1
+2026-10-23T11:19:24.1427533Z      └── (build) num-traits v0.2.19
+2026-10-23T11:19:24.1428371Z          └── crypto-bigint v0.7.5
+2026-10-23T11:19:24.1429214Z              ├── elliptic-curve v0.14.1
+2026-10-23T11:19:24.1430121Z              │   ├── ecdsa v0.17.0
+2026-10-23T11:19:24.1430951Z              │   │   └── k256 v0.14.0
+2026-10-23T11:19:24.1431807Z              │   │       └── nsealr-core v0.0.0
+2026-10-23T11:19:24.1432712Z              │   ├── k256 v0.14.0 (*)
+2026-10-23T11:19:24.1433556Z              │   └── primeorder v0.14.0
+2026-10-23T11:19:24.1434408Z              │       └── k256 v0.14.0 (*)
+2026-10-23T11:19:24.1435257Z              └── primefield v0.14.0
+2026-10-23T11:19:24.1436102Z                  ├── primeorder v0.14.0 (*)
+2026-10-23T11:19:24.1437182Z                  └── wnaf v0.14.1
+2026-10-23T11:19:24.1437983Z                      ├── k256 v0.14.0 (*)
+2026-10-23T11:19:24.1438846Z                      └── primeorder v0.14.0 (*)
+2026-10-23T11:19:24.1439437Z 
+2026-10-23T11:19:24.1439991Z warning[index-failure]: unable to check for yanked crates
+2026-10-23T11:19:24.1441189Z    ┌─ /home/runner/work/_temp/nsealr-product/nsealr/Cargo.lock:2:1
+2026-10-23T11:19:24.1442138Z    │
+2026-10-23T11:19:24.1443066Z  2 │ base16ct 1.0.0 registry+https://github.com/rust-lang/crates.io-index
+2026-10-23T11:19:24.1444693Z    │ ──────────────────────────────────────────────────────────────────── crate whose registry we failed to query
+2026-10-23T11:19:24.1445813Z    │
+2026-10-23T11:19:24.1446784Z    ┌─ /home/runner/work/_temp/nsealr-product/nsealr/deny.toml:17:11
+2026-10-23T11:19:24.1447622Z    │
+2026-10-23T11:19:24.1448114Z 17 │ yanked = "deny"
+2026-10-23T11:19:24.1448771Z    │           ━━━━ lint level defined here
+2026-10-23T11:19:24.1449474Z    │
+2026-10-23T11:19:24.1450086Z    ├ unable to locate index entry for crate
+2026-10-23T11:19:24.1450786Z    ├ base16ct v1.0.0
+2026-10-23T11:19:24.1451411Z      ├── elliptic-curve v0.14.1
+2026-10-23T11:19:24.1452064Z      │   ├── ecdsa v0.17.0
+2026-10-23T11:19:24.1452652Z      │   │   └── k256 v0.14.0
+2026-10-23T11:19:24.1453338Z      │   │       └── nsealr-core v0.0.0
+2026-10-23T11:19:24.1454086Z      │   ├── k256 v0.14.0 (*)
+2026-10-23T11:19:24.1454730Z      │   └── primeorder v0.14.0
+2026-10-23T11:19:24.1455433Z      │       └── k256 v0.14.0 (*)
+2026-10-23T11:19:24.1456060Z      └── sec1 v0.8.1
+2026-10-23T11:19:24.1456960Z          └── elliptic-curve v0.14.1 (*)
+2026-10-23T11:19:24.1457723Z 
+2026-10-23T11:19:24.1458136Z warning[index-failure]: unable to check for yanked crates
+2026-10-23T11:19:24.1459137Z    ┌─ /home/runner/work/_temp/nsealr-product/nsealr/Cargo.lock:3:1
+2026-10-23T11:19:24.1459936Z    │
+2026-10-23T11:19:24.1460777Z  3 │ block-buffer 0.12.1 registry+https://github.com/rust-lang/crates.io-index
+2026-10-23T11:19:24.1462216Z    │ ───────────────────────────────────────────────────────────────────────── crate whose registry we failed to query
+2026-10-23T11:19:24.1463142Z    │
+2026-10-23T11:19:24.1464395Z    ┌─ /home/runner/work/_temp/nsealr-product/nsealr/deny.toml:17:11
+2026-10-23T11:19:24.1465228Z    │
+2026-10-23T11:19:24.1465768Z 17 │ yanked = "deny"
+2026-10-23T11:19:24.1466654Z    │           ━━━━ lint level defined here
+2026-10-23T11:19:24.1467436Z    │
+2026-10-23T11:19:24.1468156Z    ├ unable to locate index entry for crate
+2026-10-23T11:19:24.1468994Z    ├ block-buffer v0.12.1
+2026-10-23T11:19:24.1469748Z      └── digest v0.11.3
+2026-10-23T11:19:24.1470489Z          ├── ecdsa v0.17.0
+2026-10-23T11:19:24.1471054Z          │   └── k256 v0.14.0
+2026-10-23T11:19:24.1471565Z          │       └── nsealr-core v0.0.0
+2026-10-23T11:19:24.1472098Z          ├── elliptic-curve v0.14.1
+2026-10-23T11:19:24.1472600Z          │   ├── ecdsa v0.17.0 (*)
+2026-10-23T11:19:24.1473103Z          │   ├── k256 v0.14.0 (*)
+2026-10-23T11:19:24.1473598Z          │   └── primeorder v0.14.0
+2026-10-23T11:19:24.1474096Z          │       └── k256 v0.14.0 (*)
+2026-10-23T11:19:24.1474613Z          ├── sha2 v0.11.0
+2026-10-23T11:19:24.1475094Z          │   ├── k256 v0.14.0 (*)
+2026-10-23T11:19:24.1475602Z          │   └── nsealr-core v0.0.0 (*)
+2026-10-23T11:19:24.1476118Z          └── signature v3.0.0
+2026-10-23T11:19:24.1477146Z              ├── ecdsa v0.17.0 (*)
+2026-10-23T11:19:24.1477716Z              └── k256 v0.14.0 (*)
+2026-10-23T11:19:24.1478068Z 
+2026-10-23T11:19:24.1478400Z warning[index-failure]: unable to check for yanked crates
+2026-10-23T11:19:24.1479429Z    ┌─ /home/runner/work/_temp/nsealr-product/nsealr/Cargo.lock:4:1
+2026-10-23T11:19:24.1480239Z    │
+2026-10-23T11:19:24.1480942Z  4 │ cfg-if 1.0.5 registry+https://github.com/rust-lang/crates.io-index
+2026-10-23T11:19:24.1482090Z    │ ────────────────────────────────────────────────────────────────── crate whose registry we failed to query
+2026-10-23T11:19:24.1482573Z    │
+2026-10-23T11:19:24.1482943Z    ┌─ /home/runner/work/_temp/nsealr-product/nsealr/deny.toml:17:11
+2026-10-23T11:19:24.1483330Z    │
+2026-10-23T11:19:24.1483560Z 17 │ yanked = "deny"
+2026-10-23T11:19:24.1483901Z    │           ━━━━ lint level defined here
+2026-10-23T11:19:24.1484197Z    │
+2026-10-23T11:19:24.1484480Z    ├ unable to locate index entry for crate
+2026-10-23T11:19:24.1484816Z    ├ cfg-if v1.0.5
+2026-10-23T11:19:24.1485090Z      └── sha2 v0.11.0
+2026-10-23T11:19:24.1485356Z          ├── k256 v0.14.0
+2026-10-23T11:19:24.1485647Z          │   └── nsealr-core v0.0.0
+2026-10-23T11:19:24.1485994Z          └── nsealr-core v0.0.0 (*)
+2026-10-23T11:19:24.1486465Z 
+2026-10-23T11:19:24.1487187Z warning[index-failure]: unable to check for yanked crates
+2026-10-23T11:19:24.1488514Z    ┌─ /home/runner/work/_temp/nsealr-product/nsealr/Cargo.lock:5:1
+2026-10-23T11:19:24.1489266Z    │
+2026-10-23T11:19:24.1490042Z  5 │ cmov 0.5.4 registry+https://github.com/rust-lang/crates.io-index
+2026-10-23T11:19:24.1491482Z    │ ──────────────────────────────────────────────────────────────── crate whose registry we failed to query
+2026-10-23T11:19:24.1492391Z    │
+2026-10-23T11:19:24.1493355Z    ┌─ /home/runner/work/_temp/nsealr-product/nsealr/deny.toml:17:11
+2026-10-23T11:19:24.1494157Z    │
+2026-10-23T11:19:24.1494598Z 17 │ yanked = "deny"
+2026-10-23T11:19:24.1495192Z    │           ━━━━ lint level defined here
+2026-10-23T11:19:24.1495777Z    │
+2026-10-23T11:19:24.1496531Z    ├ unable to locate index entry for crate
+2026-10-23T11:19:24.1497174Z    ├ cmov v0.5.4
+2026-10-23T11:19:24.1497703Z      └── ctutils v0.4.3
+2026-10-23T11:19:24.1498273Z          ├── crypto-bigint v0.7.5
+2026-10-23T11:19:24.1498954Z          │   ├── elliptic-curve v0.14.1
+2026-10-23T11:19:24.1499628Z          │   │   ├── ecdsa v0.17.0
+2026-10-23T11:19:24.1500249Z          │   │   │   └── k256 v0.14.0
+2026-10-23T11:19:24.1500921Z          │   │   │       └── nsealr-core v0.0.0
+2026-10-23T11:19:24.1501620Z          │   │   ├── k256 v0.14.0 (*)
+2026-10-23T11:19:24.1502305Z          │   │   └── primeorder v0.14.0
+2026-10-23T11:19:24.1503004Z          │   │       └── k256 v0.14.0 (*)
+2026-10-23T11:19:24.1503692Z          │   └── primefield v0.14.0
+2026-10-23T11:19:24.1504488Z          │       ├── primeorder v0.14.0 (*)
+2026-10-23T11:19:24.1505173Z          │       └── wnaf v0.14.1
+2026-10-23T11:19:24.1505766Z          │           ├── k256 v0.14.0 (*)
+2026-10-23T11:19:24.1506752Z          │           └── primeorder v0.14.0 (*)
+2026-10-23T11:19:24.1507428Z          └── sec1 v0.8.1
+2026-10-23T11:19:24.1508024Z              └── elliptic-curve v0.14.1 (*)
+2026-10-23T11:19:24.1508430Z 
+2026-10-23T11:19:24.1508748Z warning[index-failure]: unable to check for yanked crates
+2026-10-23T11:19:24.1509820Z    ┌─ /home/runner/work/_temp/nsealr-product/nsealr/Cargo.lock:6:1
+2026-10-23T11:19:24.1510585Z    │
+2026-10-23T11:19:24.1511415Z  6 │ const-oid 0.10.2 registry+https://github.com/rust-lang/crates.io-index
+2026-10-23T11:19:24.1512881Z    │ ────────────────────────────────────────────────────────────────────── crate whose registry we failed to query
+2026-10-23T11:19:24.1513813Z    │
+2026-10-23T11:19:24.1514576Z    ┌─ /home/runner/work/_temp/nsealr-product/nsealr/deny.toml:17:11
+2026-10-23T11:19:24.1515384Z    │
+2026-10-23T11:19:24.1515835Z 17 │ yanked = "deny"
+2026-10-23T11:19:24.1516636Z    │           ━━━━ lint level defined here
+2026-10-23T11:19:24.1517303Z    │
+2026-10-23T11:19:24.1517817Z    ├ unable to locate index entry for crate
+2026-10-23T11:19:24.1518471Z    ├ const-oid v0.10.2
+2026-10-23T11:19:24.1519010Z      ├── der v0.8.2
+2026-10-23T11:19:24.1519526Z      │   ├── ecdsa v0.17.0
+2026-10-23T11:19:24.1520089Z      │   │   └── k256 v0.14.0
+2026-10-23T11:19:24.1520738Z      │   │       └── nsealr-core v0.0.0
+2026-10-23T11:19:24.1521386Z      │   └── sec1 v0.8.1
+2026-10-23T11:19:24.1521987Z      │       └── elliptic-curve v0.14.1
+2026-10-23T11:19:24.1522664Z      │           ├── ecdsa v0.17.0 (*)
+2026-10-23T11:19:24.1523324Z      │           ├── k256 v0.14.0 (*)
+2026-10-23T11:19:24.1523974Z      │           └── primeorder v0.14.0
+2026-10-23T11:19:24.1524686Z      │               └── k256 v0.14.0 (*)
+2026-10-23T11:19:24.1525313Z      └── digest v0.11.3
+2026-10-23T11:19:24.1525878Z          ├── ecdsa v0.17.0 (*)
+2026-10-23T11:19:24.1526841Z          ├── elliptic-curve v0.14.1 (*)
+2026-10-23T11:19:24.1527498Z          ├── sha2 v0.11.0
+2026-10-23T11:19:24.1528071Z          │   ├── k256 v0.14.0 (*)
+2026-10-23T11:19:24.1528695Z          │   └── nsealr-core v0.0.0 (*)
+2026-10-23T11:19:24.1529415Z          └── signature v3.0.0
+2026-10-23T11:19:24.1530059Z              ├── ecdsa v0.17.0 (*)
+2026-10-23T11:19:24.1530684Z              └── k256 v0.14.0 (*)
+2026-10-23T11:19:24.1531327Z 
+2026-10-23T11:19:24.1531647Z warning[index-failure]: unable to check for yanked crates
+2026-10-23T11:19:24.1532676Z    ┌─ /home/runner/work/_temp/nsealr-product/nsealr/Cargo.lock:7:1
+2026-10-23T11:19:24.1533513Z    │
+2026-10-23T11:19:24.1534307Z  7 │ cpubits 0.1.1 registry+https://github.com/rust-lang/crates.io-index
+2026-10-23T11:19:24.1535704Z    │ ─────────────────────────────────────────────────────────────────── crate whose registry we failed to query
+2026-10-23T11:19:24.1536826Z    │
+2026-10-23T11:19:24.1537876Z    ┌─ /home/runner/work/_temp/nsealr-product/nsealr/deny.toml:17:11
+2026-10-23T11:19:24.1538690Z    │
+2026-10-23T11:19:24.1539155Z 17 │ yanked = "deny"
+2026-10-23T11:19:24.1539768Z    │           ━━━━ lint level defined here
+2026-10-23T11:19:24.1540349Z    │
+2026-10-23T11:19:24.1540873Z    ├ unable to locate index entry for crate
+2026-10-23T11:19:24.1541536Z    ├ cpubits v0.1.1
+2026-10-23T11:19:24.1542057Z      ├── crypto-bigint v0.7.5
+2026-10-23T11:19:24.1542712Z      │   ├── elliptic-curve v0.14.1
+2026-10-23T11:19:24.1543366Z      │   │   ├── ecdsa v0.17.0
+2026-10-23T11:19:24.1543969Z      │   │   │   └── k256 v0.14.0
+2026-10-23T11:19:24.1544642Z      │   │   │       └── nsealr-core v0.0.0
+2026-10-23T11:19:24.1545337Z      │   │   ├── k256 v0.14.0 (*)
+2026-10-23T11:19:24.1545989Z      │   │   └── primeorder v0.14.0
+2026-10-23T11:19:24.1546763Z      │   │       └── k256 v0.14.0 (*)
+2026-10-23T11:19:24.1547398Z      │   └── primefield v0.14.0
+2026-10-23T11:19:24.1548019Z      │       ├── primeorder v0.14.0 (*)
+2026-10-23T11:19:24.1548643Z      │       └── wnaf v0.14.1
+2026-10-23T11:19:24.1549244Z      │           ├── k256 v0.14.0 (*)
+2026-10-23T11:19:24.1549969Z      │           └── primeorder v0.14.0 (*)
+2026-10-23T11:19:24.1550609Z      └── k256 v0.14.0 (*)
+2026-10-23T11:19:24.1550930Z 
+2026-10-23T11:19:24.1551295Z warning[index-failure]: unable to check for yanked crates
+2026-10-23T11:19:24.1552318Z    ┌─ /home/runner/work/_temp/nsealr-product/nsealr/Cargo.lock:8:1
+2026-10-23T11:19:24.1553071Z    │
+2026-10-23T11:19:24.1553960Z  8 │ cpufeatures 0.3.1 registry+https://github.com/rust-lang/crates.io-index
+2026-10-23T11:19:24.1555482Z    │ ─────────────────────────────────────────────────────────────────────── crate whose registry we failed to query
+2026-10-23T11:19:24.1556755Z    │
+2026-10-23T11:19:24.1557464Z    ┌─ /home/runner/work/_temp/nsealr-product/nsealr/deny.toml:17:11
+2026-10-23T11:19:24.1558216Z    │
+2026-10-23T11:19:24.1558656Z 17 │ yanked = "deny"
+2026-10-23T11:19:24.1559231Z    │           ━━━━ lint level defined here
+2026-10-23T11:19:24.1559856Z    │
+2026-10-23T11:19:24.1560359Z    ├ unable to locate index entry for crate
+2026-10-23T11:19:24.1561006Z    ├ cpufeatures v0.3.1
+2026-10-23T11:19:24.1561549Z      └── sha2 v0.11.0
+2026-10-23T11:19:24.1562050Z          ├── k256 v0.14.0
+2026-10-23T11:19:24.1562652Z          │   └── nsealr-core v0.0.0
+2026-10-23T11:19:24.1563297Z          └── nsealr-core v0.0.0 (*)
+2026-10-23T11:19:24.1563654Z 
+2026-10-23T11:19:24.1564292Z warning[index-failure]: unable to check for yanked crates
+2026-10-23T11:19:24.1565411Z    ┌─ /home/runner/work/_temp/nsealr-product/nsealr/Cargo.lock:9:1
+2026-10-23T11:19:24.1566359Z    │
+2026-10-23T11:19:24.1567230Z  9 │ crypto-bigint 0.7.5 registry+https://github.com/rust-lang/crates.io-index
+2026-10-23T11:19:24.1568694Z    │ ───────────────────────────────────────────────────────────────────────── crate whose registry we failed to query
+2026-10-23T11:19:24.1569688Z    │
+2026-10-23T11:19:24.1570665Z    ┌─ /home/runner/work/_temp/nsealr-product/nsealr/deny.toml:17:11
+2026-10-23T11:19:24.1571476Z    │
+2026-10-23T11:19:24.1571896Z 17 │ yanked = "deny"
+2026-10-23T11:19:24.1572548Z    │           ━━━━ lint level defined here
+2026-10-23T11:19:24.1573155Z    │
+2026-10-23T11:19:24.1573658Z    ├ unable to locate index entry for crate
+2026-10-23T11:19:24.1574291Z    ├ crypto-bigint v0.7.5
+2026-10-23T11:19:24.1574912Z      ├── elliptic-curve v0.14.1
+2026-10-23T11:19:24.1575509Z      │   ├── ecdsa v0.17.0
+2026-10-23T11:19:24.1576101Z      │   │   └── k256 v0.14.0
+2026-10-23T11:19:24.1576943Z      │   │       └── nsealr-core v0.0.0
+2026-10-23T11:19:24.1577578Z      │   ├── k256 v0.14.0 (*)
+2026-10-23T11:19:24.1578192Z      │   └── primeorder v0.14.0
+2026-10-23T11:19:24.1578791Z      │       └── k256 v0.14.0 (*)
+2026-10-23T11:19:24.1579359Z      └── primefield v0.14.0
+2026-10-23T11:19:24.1579963Z          ├── primeorder v0.14.0 (*)
+2026-10-23T11:19:24.1580591Z          └── wnaf v0.14.1
+2026-10-23T11:19:24.1581175Z              ├── k256 v0.14.0 (*)
+2026-10-23T11:19:24.1581843Z              └── primeorder v0.14.0 (*)
+2026-10-23T11:19:24.1582227Z 
+2026-10-23T11:19:24.1582556Z warning[index-failure]: unable to check for yanked crates
+2026-10-23T11:19:24.1583600Z    ┌─ /home/runner/work/_temp/nsealr-product/nsealr/Cargo.lock:10:1
+2026-10-23T11:19:24.1584372Z    │
+2026-10-23T11:19:24.1585166Z 10 │ crypto-common 0.2.2 registry+https://github.com/rust-lang/crates.io-index
+2026-10-23T11:19:24.1586886Z    │ ───────────────────────────────────────────────────────────────────────── crate whose registry we failed to query
+2026-10-23T11:19:24.1587884Z    │
+2026-10-23T11:19:24.1588579Z    ┌─ /home/runner/work/_temp/nsealr-product/nsealr/deny.toml:17:11
+2026-10-23T11:19:24.1589352Z    │
+2026-10-23T11:19:24.1589742Z 17 │ yanked = "deny"
+2026-10-23T11:19:24.1590238Z    │           ━━━━ lint level defined here
+2026-10-23T11:19:24.1590619Z    │
+2026-10-23T11:19:24.1590856Z    ├ unable to locate index entry for crate
+2026-10-23T11:19:24.1591212Z    ├ crypto-common v0.2.2
+2026-10-23T11:19:24.1591564Z      ├── digest v0.11.3
+2026-10-23T11:19:24.1591849Z      │   ├── ecdsa v0.17.0
+2026-10-23T11:19:24.1592131Z      │   │   └── k256 v0.14.0
+2026-10-23T11:19:24.1592437Z      │   │       └── nsealr-core v0.0.0
+2026-10-23T11:19:24.1592783Z      │   ├── elliptic-curve v0.14.1
+2026-10-23T11:19:24.1593076Z      │   │   ├── ecdsa v0.17.0 (*)
+2026-10-23T11:19:24.1593347Z      │   │   ├── k256 v0.14.0 (*)
+2026-10-23T11:19:24.1593687Z      │   │   └── primeorder v0.14.0
+2026-10-23T11:19:24.1594017Z      │   │       └── k256 v0.14.0 (*)
+2026-10-23T11:19:24.1594325Z      │   ├── sha2 v0.11.0
+2026-10-23T11:19:24.1594622Z      │   │   ├── k256 v0.14.0 (*)
+2026-10-23T11:19:24.1594923Z      │   │   └── nsealr-core v0.0.0 (*)
+2026-10-23T11:19:24.1595204Z      │   └── signature v3.0.0
+2026-10-23T11:19:24.1595466Z      │       ├── ecdsa v0.17.0 (*)
+2026-10-23T11:19:24.1595732Z      │       └── k256 v0.14.0 (*)
+2026-10-23T11:19:24.1596038Z      ├── elliptic-curve v0.14.1 (*)
+2026-10-23T11:19:24.1596618Z      └── primefield v0.14.0
+2026-10-23T11:19:24.1596909Z          ├── primeorder v0.14.0 (*)
+2026-10-23T11:19:24.1597223Z          └── wnaf v0.14.1
+2026-10-23T11:19:24.1597518Z              ├── k256 v0.14.0 (*)
+2026-10-23T11:19:24.1597843Z              └── primeorder v0.14.0 (*)
+2026-10-23T11:19:24.1598061Z 
+2026-10-23T11:19:24.1598226Z warning[index-failure]: unable to check for yanked crates
+2026-10-23T11:19:24.1598719Z    ┌─ /home/runner/work/_temp/nsealr-product/nsealr/Cargo.lock:11:1
+2026-10-23T11:19:24.1599312Z    │
+2026-10-23T11:19:24.1599731Z 11 │ ctutils 0.4.3 registry+https://github.com/rust-lang/crates.io-index
+2026-10-23T11:19:24.1600418Z    │ ─────────────────────────────────────────────────────────────────── crate whose registry we failed to query
+2026-10-23T11:19:24.1600891Z    │
+2026-10-23T11:19:24.1601196Z    ┌─ /home/runner/work/_temp/nsealr-product/nsealr/deny.toml:17:11
+2026-10-23T11:19:24.1601527Z    │
+2026-10-23T11:19:24.1601721Z 17 │ yanked = "deny"
+2026-10-23T11:19:24.1602139Z    │           ━━━━ lint level defined here
+2026-10-23T11:19:24.1602450Z    │
+2026-10-23T11:19:24.1602729Z    ├ unable to locate index entry for crate
+2026-10-23T11:19:24.1603088Z    ├ ctutils v0.4.3
+2026-10-23T11:19:24.1603351Z      ├── crypto-bigint v0.7.5
+2026-10-23T11:19:24.1603706Z      │   ├── elliptic-curve v0.14.1
+2026-10-23T11:19:24.1604032Z      │   │   ├── ecdsa v0.17.0
+2026-10-23T11:19:24.1604336Z      │   │   │   └── k256 v0.14.0
+2026-10-23T11:19:24.1604670Z      │   │   │       └── nsealr-core v0.0.0
+2026-10-23T11:19:24.1604977Z      │   │   ├── k256 v0.14.0 (*)
+2026-10-23T11:19:24.1605267Z      │   │   └── primeorder v0.14.0
+2026-10-23T11:19:24.1605545Z      │   │       └── k256 v0.14.0 (*)
+2026-10-23T11:19:24.1605822Z      │   └── primefield v0.14.0
+2026-10-23T11:19:24.1606140Z      │       ├── primeorder v0.14.0 (*)
+2026-10-23T11:19:24.1606720Z      │       └── wnaf v0.14.1
+2026-10-23T11:19:24.1607011Z      │           ├── k256 v0.14.0 (*)
+2026-10-23T11:19:24.1607315Z      │           └── primeorder v0.14.0 (*)
+2026-10-23T11:19:24.1607607Z      └── sec1 v0.8.1
+2026-10-23T11:19:24.1607886Z          └── elliptic-curve v0.14.1 (*)
+2026-10-23T11:19:24.1608057Z 
+2026-10-23T11:19:24.1608223Z warning[index-failure]: unable to check for yanked crates
+2026-10-23T11:19:24.1608791Z    ┌─ /home/runner/work/_temp/nsealr-product/nsealr/Cargo.lock:12:1
+2026-10-23T11:19:24.1609139Z    │
+2026-10-23T11:19:24.1609465Z 12 │ der 0.8.2 registry+https://github.com/rust-lang/crates.io-index
+2026-10-23T11:19:24.1610130Z    │ ─────────────────────────────────────────────────────────────── crate whose registry we failed to query
+2026-10-23T11:19:24.1610578Z    │
+2026-10-23T11:19:24.1610885Z    ┌─ /home/runner/work/_temp/nsealr-product/nsealr/deny.toml:17:11
+2026-10-23T11:19:24.1611255Z    │
+2026-10-23T11:19:24.1611501Z 17 │ yanked = "deny"
+2026-10-23T11:19:24.1611793Z    │           ━━━━ lint level defined here
+2026-10-23T11:19:24.1612046Z    │
+2026-10-23T11:19:24.1612271Z    ├ unable to locate index entry for crate
+2026-10-23T11:19:24.1626899Z    ├ der v0.8.2
+2026-10-23T11:19:24.1627178Z      ├── ecdsa v0.17.0
+2026-10-23T11:19:24.1627466Z      │   └── k256 v0.14.0
+2026-10-23T11:19:24.1627778Z      │       └── nsealr-core v0.0.0
+2026-10-23T11:19:24.1628132Z      └── sec1 v0.8.1
+2026-10-23T11:19:24.1628436Z          └── elliptic-curve v0.14.1
+2026-10-23T11:19:24.1628731Z              ├── ecdsa v0.17.0 (*)
+2026-10-23T11:19:24.1629013Z              ├── k256 v0.14.0 (*)
+2026-10-23T11:19:24.1629296Z              └── primeorder v0.14.0
+2026-10-23T11:19:24.1629932Z                  └── k256 v0.14.0 (*)
+2026-10-23T11:19:24.1630108Z 
+2026-10-23T11:19:24.1630270Z warning[index-failure]: unable to check for yanked crates
+2026-10-23T11:19:24.1630805Z    ┌─ /home/runner/work/_temp/nsealr-product/nsealr/Cargo.lock:13:1
+2026-10-23T11:19:24.1631202Z    │
+2026-10-23T11:19:24.1631568Z 13 │ digest 0.11.3 registry+https://github.com/rust-lang/crates.io-index
+2026-10-23T11:19:24.1632383Z    │ ─────────────────────────────────────────────────────────────────── crate whose registry we failed to query
+2026-10-23T11:19:24.1632833Z    │
+2026-10-23T11:19:24.1633213Z    ┌─ /home/runner/work/_temp/nsealr-product/nsealr/deny.toml:17:11
+2026-10-23T11:19:24.1633593Z    │
+2026-10-23T11:19:24.1633815Z 17 │ yanked = "deny"
+2026-10-23T11:19:24.1634178Z    │           ━━━━ lint level defined here
+2026-10-23T11:19:24.1634464Z    │
+2026-10-23T11:19:24.1634697Z    ├ unable to locate index entry for crate
+2026-10-23T11:19:24.1635043Z    ├ digest v0.11.3
+2026-10-23T11:19:24.1635321Z      ├── ecdsa v0.17.0
+2026-10-23T11:19:24.1635601Z      │   └── k256 v0.14.0
+2026-10-23T11:19:24.1635884Z      │       └── nsealr-core v0.0.0
+2026-10-23T11:19:24.1636439Z      ├── elliptic-curve v0.14.1
+2026-10-23T11:19:24.1636764Z      │   ├── ecdsa v0.17.0 (*)
+2026-10-23T11:19:24.1637078Z      │   ├── k256 v0.14.0 (*)
+2026-10-23T11:19:24.1637421Z      │   └── primeorder v0.14.0
+2026-10-23T11:19:24.1637729Z      │       └── k256 v0.14.0 (*)
+2026-10-23T11:19:24.1637989Z      ├── sha2 v0.11.0
+2026-10-23T11:19:24.1638297Z      │   ├── k256 v0.14.0 (*)
+2026-10-23T11:19:24.1638618Z      │   └── nsealr-core v0.0.0 (*)
+2026-10-23T11:19:24.1638911Z      └── signature v3.0.0
+2026-10-23T11:19:24.1639218Z          ├── ecdsa v0.17.0 (*)
+2026-10-23T11:19:24.1639516Z          └── k256 v0.14.0 (*)
+2026-10-23T11:19:24.1639662Z 
+2026-10-23T11:19:24.1639828Z warning[index-failure]: unable to check for yanked crates
+2026-10-23T11:19:24.1640409Z    ┌─ /home/runner/work/_temp/nsealr-product/nsealr/Cargo.lock:14:1
+2026-10-23T11:19:24.1640774Z    │
+2026-10-23T11:19:24.1641188Z 14 │ ecdsa 0.17.0 registry+https://github.com/rust-lang/crates.io-index
+2026-10-23T11:19:24.1641905Z    │ ────────────────────────────────────────────────────────────────── crate whose registry we failed to query
+2026-10-23T11:19:24.1642377Z    │
+2026-10-23T11:19:24.1642758Z    ┌─ /home/runner/work/_temp/nsealr-product/nsealr/deny.toml:17:11
+2026-10-23T11:19:24.1643171Z    │
+2026-10-23T11:19:24.1643392Z 17 │ yanked = "deny"
+2026-10-23T11:19:24.1643689Z    │           ━━━━ lint level defined here
+2026-10-23T11:19:24.1643959Z    │
+2026-10-23T11:19:24.1644209Z    ├ unable to locate index entry for crate
+2026-10-23T11:19:24.1644588Z    ├ ecdsa v0.17.0
+2026-10-23T11:19:24.1644844Z      └── k256 v0.14.0
+2026-10-23T11:19:24.1645093Z          └── nsealr-core v0.0.0
+2026-10-23T11:19:24.1645246Z 
+2026-10-23T11:19:24.1645402Z warning[index-failure]: unable to check for yanked crates
+2026-10-23T11:19:24.1645928Z    ┌─ /home/runner/work/_temp/nsealr-product/nsealr/Cargo.lock:15:1
+2026-10-23T11:19:24.1646629Z    │
+2026-10-23T11:19:24.1647088Z 15 │ elliptic-curve 0.14.1 registry+https://github.com/rust-lang/crates.io-index
+2026-10-23T11:19:24.1647768Z    │ ─────────────────────────────────────────────────────────────────────────── crate whose registry we failed to query
+2026-10-23T11:19:24.1648222Z    │
+2026-10-23T11:19:24.1648582Z    ┌─ /home/runner/work/_temp/nsealr-product/nsealr/deny.toml:17:11
+2026-10-23T11:19:24.1648928Z    │
+2026-10-23T11:19:24.1649182Z 17 │ yanked = "deny"
+2026-10-23T11:19:24.1649706Z    │           ━━━━ lint level defined here
+2026-10-23T11:19:24.1650055Z    │
+2026-10-23T11:19:24.1650302Z    ├ unable to locate index entry for crate
+2026-10-23T11:19:24.1650683Z    ├ elliptic-curve v0.14.1
+2026-10-23T11:19:24.1651012Z      ├── ecdsa v0.17.0
+2026-10-23T11:19:24.1651301Z      │   └── k256 v0.14.0
+2026-10-23T11:19:24.1651609Z      │       └── nsealr-core v0.0.0
+2026-10-23T11:19:24.1651930Z      ├── k256 v0.14.0 (*)
+2026-10-23T11:19:24.1652378Z      └── primeorder v0.14.0
+2026-10-23T11:19:24.1652709Z          └── k256 v0.14.0 (*)
+2026-10-23T11:19:24.1652883Z 
+2026-10-23T11:19:24.1653065Z warning[index-failure]: unable to check for yanked crates
+2026-10-23T11:19:24.1653572Z    ┌─ /home/runner/work/_temp/nsealr-product/nsealr/Cargo.lock:16:1
+2026-10-23T11:19:24.1653912Z    │
+2026-10-23T11:19:24.1654299Z 16 │ ff 0.14.0 registry+https://github.com/rust-lang/crates.io-index
+2026-10-23T11:19:24.1655029Z    │ ─────────────────────────────────────────────────────────────── crate whose registry we failed to query
+2026-10-23T11:19:24.1655517Z    │
+2026-10-23T11:19:24.1655859Z    ┌─ /home/runner/work/_temp/nsealr-product/nsealr/deny.toml:17:11
+2026-10-23T11:19:24.1656535Z    │
+2026-10-23T11:19:24.1656766Z 17 │ yanked = "deny"
+2026-10-23T11:19:24.1657101Z    │           ━━━━ lint level defined here
+2026-10-23T11:19:24.1657369Z    │
+2026-10-23T11:19:24.1657601Z    ├ unable to locate index entry for crate
+2026-10-23T11:19:24.1657923Z    ├ ff v0.14.0
+2026-10-23T11:19:24.1658215Z      ├── elliptic-curve v0.14.1
+2026-10-23T11:19:24.1658514Z      │   ├── ecdsa v0.17.0
+2026-10-23T11:19:24.1658769Z      │   │   └── k256 v0.14.0
+2026-10-23T11:19:24.1659112Z      │   │       └── nsealr-core v0.0.0
+2026-10-23T11:19:24.1659445Z      │   ├── k256 v0.14.0 (*)
+2026-10-23T11:19:24.1659773Z      │   └── primeorder v0.14.0
+2026-10-23T11:19:24.1660087Z      │       └── k256 v0.14.0 (*)
+2026-10-23T11:19:24.1660416Z      ├── group v0.14.0
+2026-10-23T11:19:24.1660737Z      │   ├── elliptic-curve v0.14.1 (*)
+2026-10-23T11:19:24.1661084Z      │   └── wnaf v0.14.1
+2026-10-23T11:19:24.1661357Z      │       ├── k256 v0.14.0 (*)
+2026-10-23T11:19:24.1661668Z      │       └── primeorder v0.14.0 (*)
+2026-10-23T11:19:24.1661954Z      ├── primefield v0.14.0
+2026-10-23T11:19:24.1662228Z      │   ├── primeorder v0.14.0 (*)
+2026-10-23T11:19:24.1662523Z      │   └── wnaf v0.14.1 (*)
+2026-10-23T11:19:24.1662817Z      └── wnaf v0.14.1 (*)
+2026-10-23T11:19:24.1662995Z 
+2026-10-23T11:19:24.1663170Z warning[index-failure]: unable to check for yanked crates
+2026-10-23T11:19:24.1663693Z    ┌─ /home/runner/work/_temp/nsealr-product/nsealr/Cargo.lock:17:1
+2026-10-23T11:19:24.1664032Z    │
+2026-10-23T11:19:24.1664375Z 17 │ group 0.14.0 registry+https://github.com/rust-lang/crates.io-index
+2026-10-23T11:19:24.1665108Z    │ ────────────────────────────────────────────────────────────────── crate whose registry we failed to query
+2026-10-23T11:19:24.1665592Z    │
+2026-10-23T11:19:24.1665960Z    ┌─ /home/runner/work/_temp/nsealr-product/nsealr/deny.toml:17:11
+2026-10-23T11:19:24.1666635Z    │
+2026-10-23T11:19:24.1666841Z 17 │ yanked = "deny"
+2026-10-23T11:19:24.1667105Z    │           ━━━━ lint level defined here
+2026-10-23T11:19:24.1667412Z    │
+2026-10-23T11:19:24.1667683Z    ├ unable to locate index entry for crate
+2026-10-23T11:19:24.1668044Z    ├ group v0.14.0
+2026-10-23T11:19:24.1668330Z      ├── elliptic-curve v0.14.1
+2026-10-23T11:19:24.1668629Z      │   ├── ecdsa v0.17.0
+2026-10-23T11:19:24.1669130Z      │   │   └── k256 v0.14.0
+2026-10-23T11:19:24.1669452Z      │   │       └── nsealr-core v0.0.0
+2026-10-23T11:19:24.1669773Z      │   ├── k256 v0.14.0 (*)
+2026-10-23T11:19:24.1670056Z      │   └── primeorder v0.14.0
+2026-10-23T11:19:24.1670362Z      │       └── k256 v0.14.0 (*)
+2026-10-23T11:19:24.1670677Z      └── wnaf v0.14.1
+2026-10-23T11:19:24.1670952Z          ├── k256 v0.14.0 (*)
+2026-10-23T11:19:24.1671322Z          └── primeorder v0.14.0 (*)
+2026-10-23T11:19:24.1671525Z 
+2026-10-23T11:19:24.1671827Z warning[index-failure]: unable to check for yanked crates
+2026-10-23T11:19:24.1672347Z    ┌─ /home/runner/work/_temp/nsealr-product/nsealr/Cargo.lock:18:1
+2026-10-23T11:19:24.1672746Z    │
+2026-10-23T11:19:24.1673182Z 18 │ hybrid-array 0.4.15 registry+https://github.com/rust-lang/crates.io-index
+2026-10-23T11:19:24.1673976Z    │ ───────────────────────────────────────────────────────────────────────── crate whose registry we failed to query
+2026-10-23T11:19:24.1674491Z    │
+2026-10-23T11:19:24.1674868Z    ┌─ /home/runner/work/_temp/nsealr-product/nsealr/deny.toml:17:11
+2026-10-23T11:19:24.1675255Z    │
+2026-10-23T11:19:24.1675512Z 17 │ yanked = "deny"
+2026-10-23T11:19:24.1675832Z    │           ━━━━ lint level defined here
+2026-10-23T11:19:24.1676398Z    │
+2026-10-23T11:19:24.1676732Z    ├ unable to locate index entry for crate
+2026-10-23T11:19:24.1677059Z    ├ hybrid-array v0.4.15
+2026-10-23T11:19:24.1677324Z      ├── block-buffer v0.12.1
+2026-10-23T11:19:24.1677645Z      │   └── digest v0.11.3
+2026-10-23T11:19:24.1677972Z      │       ├── ecdsa v0.17.0
+2026-10-23T11:19:24.1678259Z      │       │   └── k256 v0.14.0
+2026-10-23T11:19:24.1678633Z      │       │       └── nsealr-core v0.0.0
+2026-10-23T11:19:24.1679017Z      │       ├── elliptic-curve v0.14.1
+2026-10-23T11:19:24.1679378Z      │       │   ├── ecdsa v0.17.0 (*)
+2026-10-23T11:19:24.1679728Z      │       │   ├── k256 v0.14.0 (*)
+2026-10-23T11:19:24.1680039Z      │       │   └── primeorder v0.14.0
+2026-10-23T11:19:24.1680376Z      │       │       └── k256 v0.14.0 (*)
+2026-10-23T11:19:24.1680739Z      │       ├── sha2 v0.11.0
+2026-10-23T11:19:24.1681019Z      │       │   ├── k256 v0.14.0 (*)
+2026-10-23T11:19:24.1681311Z      │       │   └── nsealr-core v0.0.0 (*)
+2026-10-23T11:19:24.1681672Z      │       └── signature v3.0.0
+2026-10-23T11:19:24.1682028Z      │           ├── ecdsa v0.17.0 (*)
+2026-10-23T11:19:24.1682313Z      │           └── k256 v0.14.0 (*)
+2026-10-23T11:19:24.1682589Z      ├── crypto-bigint v0.7.5
+2026-10-23T11:19:24.1682901Z      │   ├── elliptic-curve v0.14.1 (*)
+2026-10-23T11:19:24.1683250Z      │   └── primefield v0.14.0
+2026-10-23T11:19:24.1683580Z      │       ├── primeorder v0.14.0 (*)
+2026-10-23T11:19:24.1683920Z      │       └── wnaf v0.14.1
+2026-10-23T11:19:24.1684236Z      │           ├── k256 v0.14.0 (*)
+2026-10-23T11:19:24.1684523Z      │           └── primeorder v0.14.0 (*)
+2026-10-23T11:19:24.1684878Z      ├── crypto-common v0.2.2
+2026-10-23T11:19:24.1685164Z      │   ├── digest v0.11.3 (*)
+2026-10-23T11:19:24.1685723Z      │   ├── elliptic-curve v0.14.1 (*)
+2026-10-23T11:19:24.1686082Z      │   └── primefield v0.14.0 (*)
+2026-10-23T11:19:24.1686729Z      ├── elliptic-curve v0.14.1 (*)
+2026-10-23T11:19:24.1687046Z      ├── sec1 v0.8.1
+2026-10-23T11:19:24.1687367Z      │   └── elliptic-curve v0.14.1 (*)
+2026-10-23T11:19:24.1687690Z      └── wnaf v0.14.1 (*)
+2026-10-23T11:19:24.1687837Z 
+2026-10-23T11:19:24.1688017Z warning[index-failure]: unable to check for yanked crates
+2026-10-23T11:19:24.1688513Z    ┌─ /home/runner/work/_temp/nsealr-product/nsealr/Cargo.lock:19:1
+2026-10-23T11:19:24.1689104Z    │
+2026-10-23T11:19:24.1689558Z 19 │ itoa 1.0.18 registry+https://github.com/rust-lang/crates.io-index
+2026-10-23T11:19:24.1690295Z    │ ───────────────────────────────────────────────────────────────── crate whose registry we failed to query
+2026-10-23T11:19:24.1690795Z    │
+2026-10-23T11:19:24.1691186Z    ┌─ /home/runner/work/_temp/nsealr-product/nsealr/deny.toml:17:11
+2026-10-23T11:19:24.1691551Z    │
+2026-10-23T11:19:24.1691829Z 17 │ yanked = "deny"
+2026-10-23T11:19:24.1692152Z    │           ━━━━ lint level defined here
+2026-10-23T11:19:24.1692479Z    │
+2026-10-23T11:19:24.1692750Z    ├ unable to locate index entry for crate
+2026-10-23T11:19:24.1693102Z    ├ itoa v1.0.18
+2026-10-23T11:19:24.1693404Z      └── serde_json v1.0.151
+2026-10-23T11:19:24.1693759Z          └── (dev) nsealr-core v0.0.0
+2026-10-23T11:19:24.1693996Z 
+2026-10-23T11:19:24.1694170Z warning[index-failure]: unable to check for yanked crates
+2026-10-23T11:19:24.1694662Z    ┌─ /home/runner/work/_temp/nsealr-product/nsealr/Cargo.lock:20:1
+2026-10-23T11:19:24.1695012Z    │
+2026-10-23T11:19:24.1695374Z 20 │ k256 0.14.0 registry+https://github.com/rust-lang/crates.io-index
+2026-10-23T11:19:24.1696099Z    │ ───────────────────────────────────────────────────────────────── crate whose registry we failed to query
+2026-10-23T11:19:24.1696852Z    │
+2026-10-23T11:19:24.1697193Z    ┌─ /home/runner/work/_temp/nsealr-product/nsealr/deny.toml:17:11
+2026-10-23T11:19:24.1697577Z    │
+2026-10-23T11:19:24.1697802Z 17 │ yanked = "deny"
+2026-10-23T11:19:24.1698130Z    │           ━━━━ lint level defined here
+2026-10-23T11:19:24.1698430Z    │
+2026-10-23T11:19:24.1698658Z    ├ unable to locate index entry for crate
+2026-10-23T11:19:24.1698969Z    ├ k256 v0.14.0
+2026-10-23T11:19:24.1699227Z      └── nsealr-core v0.0.0
+2026-10-23T11:19:24.1699381Z 
+2026-10-23T11:19:24.1699525Z warning[index-failure]: unable to check for yanked crates
+2026-10-23T11:19:24.1700092Z    ┌─ /home/runner/work/_temp/nsealr-product/nsealr/Cargo.lock:21:1
+2026-10-23T11:19:24.1700535Z    │
+2026-10-23T11:19:24.1700942Z 21 │ libc 0.2.190 registry+https://github.com/rust-lang/crates.io-index
+2026-10-23T11:19:24.1701596Z    │ ────────────────────────────────────────────────────────────────── crate whose registry we failed to query
+2026-10-23T11:19:24.1702025Z    │
+2026-10-23T11:19:24.1702328Z    ┌─ /home/runner/work/_temp/nsealr-product/nsealr/deny.toml:17:11
+2026-10-23T11:19:24.1702684Z    │
+2026-10-23T11:19:24.1702925Z 17 │ yanked = "deny"
+2026-10-23T11:19:24.1703246Z    │           ━━━━ lint level defined here
+2026-10-23T11:19:24.1703535Z    │
+2026-10-23T11:19:24.1703784Z    ├ unable to locate index entry for crate
+2026-10-23T11:19:24.1704123Z    ├ libc v0.2.190
+2026-10-23T11:19:24.1704419Z      └── cpufeatures v0.3.1
+2026-10-23T11:19:24.1704680Z          └── sha2 v0.11.0
+2026-10-23T11:19:24.1704938Z              ├── k256 v0.14.0
+2026-10-23T11:19:24.1705213Z              │   └── nsealr-core v0.0.0
+2026-10-23T11:19:24.1705570Z              └── nsealr-core v0.0.0 (*)
+2026-10-23T11:19:24.1705795Z 
+2026-10-23T11:19:24.1705974Z warning[index-failure]: unable to check for yanked crates
+2026-10-23T11:19:24.1706864Z    ┌─ /home/runner/work/_temp/nsealr-product/nsealr/Cargo.lock:22:1
+2026-10-23T11:19:24.1707296Z    │
+2026-10-23T11:19:24.1707705Z 22 │ memchr 2.8.3 registry+https://github.com/rust-lang/crates.io-index
+2026-10-23T11:19:24.1708412Z    │ ────────────────────────────────────────────────────────────────── crate whose registry we failed to query
+2026-10-23T11:19:24.1709066Z    │
+2026-10-23T11:19:24.1709448Z    ┌─ /home/runner/work/_temp/nsealr-product/nsealr/deny.toml:17:11
+2026-10-23T11:19:24.1709868Z    │
+2026-10-23T11:19:24.1710118Z 17 │ yanked = "deny"
+2026-10-23T11:19:24.1710405Z    │           ━━━━ lint level defined here
+2026-10-23T11:19:24.1710724Z    │
+2026-10-23T11:19:24.1710993Z    ├ unable to locate index entry for crate
+2026-10-23T11:19:24.1711281Z    ├ memchr v2.8.3
+2026-10-23T11:19:24.1711521Z      └── serde_json v1.0.151
+2026-10-23T11:19:24.1711977Z          └── (dev) nsealr-core v0.0.0
+2026-10-23T11:19:24.1712207Z 
+2026-10-23T11:19:24.1712388Z warning[index-failure]: unable to check for yanked crates
+2026-10-23T11:19:24.1712967Z    ┌─ /home/runner/work/_temp/nsealr-product/nsealr/Cargo.lock:24:1
+2026-10-23T11:19:24.1713365Z    │
+2026-10-23T11:19:24.1713817Z 24 │ num-traits 0.2.19 registry+https://github.com/rust-lang/crates.io-index
+2026-10-23T11:19:24.1714609Z    │ ─────────────────────────────────────────────────────────────────────── crate whose registry we failed to query
+2026-10-23T11:19:24.1715108Z    │
+2026-10-23T11:19:24.1715470Z    ┌─ /home/runner/work/_temp/nsealr-product/nsealr/deny.toml:17:11
+2026-10-23T11:19:24.1715865Z    │
+2026-10-23T11:19:24.1716086Z 17 │ yanked = "deny"
+2026-10-23T11:19:24.1716651Z    │           ━━━━ lint level defined here
+2026-10-23T11:19:24.1717012Z    │
+2026-10-23T11:19:24.1717288Z    ├ unable to locate index entry for crate
+2026-10-23T11:19:24.1717629Z    ├ num-traits v0.2.19
+2026-10-23T11:19:24.1717948Z      └── crypto-bigint v0.7.5
+2026-10-23T11:19:24.1718425Z          ├── elliptic-curve v0.14.1
+2026-10-23T11:19:24.1719006Z          │   ├── ecdsa v0.17.0
+2026-10-23T11:19:24.1719546Z          │   │   └── k256 v0.14.0
+2026-10-23T11:19:24.1720173Z          │   │       └── nsealr-core v0.0.0
+2026-10-23T11:19:24.1720785Z          │   ├── k256 v0.14.0 (*)
+2026-10-23T11:19:24.1721326Z          │   └── primeorder v0.14.0
+2026-10-23T11:19:24.1721964Z          │       └── k256 v0.14.0 (*)
+2026-10-23T11:19:24.1722595Z          └── primefield v0.14.0
+2026-10-23T11:19:24.1723228Z              ├── primeorder v0.14.0 (*)
+2026-10-23T11:19:24.1723843Z              └── wnaf v0.14.1
+2026-10-23T11:19:24.1724428Z                  ├── k256 v0.14.0 (*)
+2026-10-23T11:19:24.1725121Z                  └── primeorder v0.14.0 (*)
+2026-10-23T11:19:24.1725507Z 
+2026-10-23T11:19:24.1725852Z warning[index-failure]: unable to check for yanked crates
+2026-10-23T11:19:24.1727101Z    ┌─ /home/runner/work/_temp/nsealr-product/nsealr/Cargo.lock:25:1
+2026-10-23T11:19:24.1727937Z    │
+2026-10-23T11:19:24.1728740Z 25 │ primefield 0.14.0 registry+https://github.com/rust-lang/crates.io-index
+2026-10-23T11:19:24.1729993Z    │ ─────────────────────────────────────────────────────────────────────── crate whose registry we failed to query
+2026-10-23T11:19:24.1730777Z    │
+2026-10-23T11:19:24.1731171Z    ┌─ /home/runner/work/_temp/nsealr-product/nsealr/deny.toml:17:11
+2026-10-23T11:19:24.1731521Z    │
+2026-10-23T11:19:24.1731935Z 17 │ yanked = "deny"
+2026-10-23T11:19:24.1732210Z    │           ━━━━ lint level defined here
+2026-10-23T11:19:24.1732639Z    │
+2026-10-23T11:19:24.1733046Z    ├ unable to locate index entry for crate
+2026-10-23T11:19:24.1733577Z    ├ primefield v0.14.0
+2026-10-23T11:19:24.1733869Z      ├── primeorder v0.14.0
+2026-10-23T11:19:24.1734130Z      │   └── k256 v0.14.0
+2026-10-23T11:19:24.1734390Z      │       └── nsealr-core v0.0.0
+2026-10-23T11:19:24.1734663Z      └── wnaf v0.14.1
+2026-10-23T11:19:24.1734913Z          ├── k256 v0.14.0 (*)
+2026-10-23T11:19:24.1735372Z          └── primeorder v0.14.0 (*)
+2026-10-23T11:19:24.1735556Z 
+2026-10-23T11:19:24.1735702Z warning[index-failure]: unable to check for yanked crates
+2026-10-23T11:19:24.1736164Z    ┌─ /home/runner/work/_temp/nsealr-product/nsealr/Cargo.lock:26:1
+2026-10-23T11:19:24.1736783Z    │
+2026-10-23T11:19:24.1737166Z 26 │ primeorder 0.14.0 registry+https://github.com/rust-lang/crates.io-index
+2026-10-23T11:19:24.1737816Z    │ ─────────────────────────────────────────────────────────────────────── crate whose registry we failed to query
+2026-10-23T11:19:24.1738235Z    │
+2026-10-23T11:19:24.1738543Z    ┌─ /home/runner/work/_temp/nsealr-product/nsealr/deny.toml:17:11
+2026-10-23T11:19:24.1738881Z    │
+2026-10-23T11:19:24.1739078Z 17 │ yanked = "deny"
+2026-10-23T11:19:24.1739337Z    │           ━━━━ lint level defined here
+2026-10-23T11:19:24.1739592Z    │
+2026-10-23T11:19:24.1739819Z    ├ unable to locate index entry for crate
+2026-10-23T11:19:24.1740116Z    ├ primeorder v0.14.0
+2026-10-23T11:19:24.1740364Z      └── k256 v0.14.0
+2026-10-23T11:19:24.1740611Z          └── nsealr-core v0.0.0
+2026-10-23T11:19:24.1740762Z 
+2026-10-23T11:19:24.1740910Z warning[index-failure]: unable to check for yanked crates
+2026-10-23T11:19:24.1741356Z    ┌─ /home/runner/work/_temp/nsealr-product/nsealr/Cargo.lock:27:1
+2026-10-23T11:19:24.1741685Z    │
+2026-10-23T11:19:24.1742036Z 27 │ rand_core 0.10.1 registry+https://github.com/rust-lang/crates.io-index
+2026-10-23T11:19:24.1742674Z    │ ────────────────────────────────────────────────────────────────────── crate whose registry we failed to query
+2026-10-23T11:19:24.1743076Z    │
+2026-10-23T11:19:24.1743389Z    ┌─ /home/runner/work/_temp/nsealr-product/nsealr/deny.toml:17:11
+2026-10-23T11:19:24.1743722Z    │
+2026-10-23T11:19:24.1743919Z 17 │ yanked = "deny"
+2026-10-23T11:19:24.1744178Z    │           ━━━━ lint level defined here
+2026-10-23T11:19:24.1744431Z    │
+2026-10-23T11:19:24.1744660Z    ├ unable to locate index entry for crate
+2026-10-23T11:19:24.1744967Z    ├ rand_core v0.10.1
+2026-10-23T11:19:24.1745223Z      ├── crypto-bigint v0.7.5
+2026-10-23T11:19:24.1745506Z      │   ├── elliptic-curve v0.14.1
+2026-10-23T11:19:24.1745988Z      │   │   ├── ecdsa v0.17.0
+2026-10-23T11:19:24.1746597Z      │   │   │   └── k256 v0.14.0
+2026-10-23T11:19:24.1747101Z      │   │   │       └── nsealr-core v0.0.0
+2026-10-23T11:19:24.1747465Z      │   │   ├── k256 v0.14.0 (*)
+2026-10-23T11:19:24.1747744Z      │   │   └── primeorder v0.14.0
+2026-10-23T11:19:24.1748051Z      │   │       └── k256 v0.14.0 (*)
+2026-10-23T11:19:24.1748357Z      │   └── primefield v0.14.0
+2026-10-23T11:19:24.1748638Z      │       ├── primeorder v0.14.0 (*)
+2026-10-23T11:19:24.1748928Z      │       └── wnaf v0.14.1
+2026-10-23T11:19:24.1749189Z      │           ├── k256 v0.14.0 (*)
+2026-10-23T11:19:24.1749481Z      │           └── primeorder v0.14.0 (*)
+2026-10-23T11:19:24.1749781Z      ├── crypto-common v0.2.2
+2026-10-23T11:19:24.1750052Z      │   ├── digest v0.11.3
+2026-10-23T11:19:24.1750327Z      │   │   ├── ecdsa v0.17.0 (*)
+2026-10-23T11:19:24.1750620Z      │   │   ├── elliptic-curve v0.14.1 (*)
+2026-10-23T11:19:24.1750909Z      │   │   ├── sha2 v0.11.0
+2026-10-23T11:19:24.1751172Z      │   │   │   ├── k256 v0.14.0 (*)
+2026-10-23T11:19:24.1751467Z      │   │   │   └── nsealr-core v0.0.0 (*)
+2026-10-23T11:19:24.1751759Z      │   │   └── signature v3.0.0
+2026-10-23T11:19:24.1752040Z      │   │       ├── ecdsa v0.17.0 (*)
+2026-10-23T11:19:24.1752323Z      │   │       └── k256 v0.14.0 (*)
+2026-10-23T11:19:24.1752793Z      │   ├── elliptic-curve v0.14.1 (*)
+2026-10-23T11:19:24.1753100Z      │   └── primefield v0.14.0 (*)
+2026-10-23T11:19:24.1753382Z      ├── elliptic-curve v0.14.1 (*)
+2026-10-23T11:19:24.1753661Z      ├── ff v0.14.0
+2026-10-23T11:19:24.1753916Z      │   ├── elliptic-curve v0.14.1 (*)
+2026-10-23T11:19:24.1754202Z      │   ├── group v0.14.0
+2026-10-23T11:19:24.1754478Z      │   │   ├── elliptic-curve v0.14.1 (*)
+2026-10-23T11:19:24.1754778Z      │   │   └── wnaf v0.14.1 (*)
+2026-10-23T11:19:24.1755188Z      │   ├── primefield v0.14.0 (*)
+2026-10-23T11:19:24.1755474Z      │   └── wnaf v0.14.1 (*)
+2026-10-23T11:19:24.1755732Z      ├── group v0.14.0 (*)
+2026-10-23T11:19:24.1755993Z      ├── primefield v0.14.0 (*)
+2026-10-23T11:19:24.1756561Z      └── signature v3.0.0 (*)
+2026-10-23T11:19:24.1756726Z 
+2026-10-23T11:19:24.1756878Z warning[index-failure]: unable to check for yanked crates
+2026-10-23T11:19:24.1757338Z    ┌─ /home/runner/work/_temp/nsealr-product/nsealr/Cargo.lock:28:1
+2026-10-23T11:19:24.1757693Z    │
+2026-10-23T11:19:24.1758028Z 28 │ sec1 0.8.1 registry+https://github.com/rust-lang/crates.io-index
+2026-10-23T11:19:24.1758618Z    │ ──────────────────────────────────────────────────────────────── crate whose registry we failed to query
+2026-10-23T11:19:24.1759011Z    │
+2026-10-23T11:19:24.1759319Z    ┌─ /home/runner/work/_temp/nsealr-product/nsealr/deny.toml:17:11
+2026-10-23T11:19:24.1759648Z    │
+2026-10-23T11:19:24.1759846Z 17 │ yanked = "deny"
+2026-10-23T11:19:24.1760118Z    │           ━━━━ lint level defined here
+2026-10-23T11:19:24.1760383Z    │
+2026-10-23T11:19:24.1760610Z    ├ unable to locate index entry for crate
+2026-10-23T11:19:24.1760894Z    ├ sec1 v0.8.1
+2026-10-23T11:19:24.1761135Z      └── elliptic-curve v0.14.1
+2026-10-23T11:19:24.1761403Z          ├── ecdsa v0.17.0
+2026-10-23T11:19:24.1761653Z          │   └── k256 v0.14.0
+2026-10-23T11:19:24.1761924Z          │       └── nsealr-core v0.0.0
+2026-10-23T11:19:24.1762208Z          ├── k256 v0.14.0 (*)
+2026-10-23T11:19:24.1762482Z          └── primeorder v0.14.0
+2026-10-23T11:19:24.1762748Z              └── k256 v0.14.0 (*)
+2026-10-23T11:19:24.1762904Z 
+2026-10-23T11:19:24.1763055Z warning[index-failure]: unable to check for yanked crates
+2026-10-23T11:19:24.1763507Z    ┌─ /home/runner/work/_temp/nsealr-product/nsealr/Cargo.lock:29:1
+2026-10-23T11:19:24.1763837Z    │
+2026-10-23T11:19:24.1764201Z 29 │ serde_core 1.0.229 registry+https://github.com/rust-lang/crates.io-index
+2026-10-23T11:19:24.1764858Z    │ ──────────────────────────────────────────────────────────────────────── crate whose registry we failed to query
+2026-10-23T11:19:24.1765266Z    │
+2026-10-23T11:19:24.1765574Z    ┌─ /home/runner/work/_temp/nsealr-product/nsealr/deny.toml:17:11
+2026-10-23T11:19:24.1765907Z    │
+2026-10-23T11:19:24.1766107Z 17 │ yanked = "deny"
+2026-10-23T11:19:24.1766599Z    │           ━━━━ lint level defined here
+2026-10-23T11:19:24.1766861Z    │
+2026-10-23T11:19:24.1767091Z    ├ unable to locate index entry for crate
+2026-10-23T11:19:24.1767577Z    ├ serde_core v1.0.229
+2026-10-23T11:19:24.1767846Z      └── serde_json v1.0.151
+2026-10-23T11:19:24.1768125Z          └── (dev) nsealr-core v0.0.0
+2026-10-23T11:19:24.1768304Z 
+2026-10-23T11:19:24.1768447Z warning[index-failure]: unable to check for yanked crates
+2026-10-23T11:19:24.1768892Z    ┌─ /home/runner/work/_temp/nsealr-product/nsealr/Cargo.lock:30:1
+2026-10-23T11:19:24.1769387Z    │
+2026-10-23T11:19:24.1770047Z 30 │ serde_json 1.0.151 registry+https://github.com/rust-lang/crates.io-index
+2026-10-23T11:19:24.1771577Z    │ ──────────────────────────────────────────────────────────────────────── crate whose registry we failed to query
+2026-10-23T11:19:24.1772080Z    │
+2026-10-23T11:19:24.1772411Z    ┌─ /home/runner/work/_temp/nsealr-product/nsealr/deny.toml:17:11
+2026-10-23T11:19:24.1772761Z    │
+2026-10-23T11:19:24.1772963Z 17 │ yanked = "deny"
+2026-10-23T11:19:24.1773226Z    │           ━━━━ lint level defined here
+2026-10-23T11:19:24.1773485Z    │
+2026-10-23T11:19:24.1773730Z    ├ unable to locate index entry for crate
+2026-10-23T11:19:24.1774027Z    ├ serde_json v1.0.151
+2026-10-23T11:19:24.1774304Z      └── (dev) nsealr-core v0.0.0
+2026-10-23T11:19:24.1774473Z 
+2026-10-23T11:19:24.1774628Z warning[index-failure]: unable to check for yanked crates
+2026-10-23T11:19:24.1775079Z    ┌─ /home/runner/work/_temp/nsealr-product/nsealr/Cargo.lock:31:1
+2026-10-23T11:19:24.1775409Z    │
+2026-10-23T11:19:24.1775743Z 31 │ sha2 0.11.0 registry+https://github.com/rust-lang/crates.io-index
+2026-10-23T11:19:24.1776649Z    │ ───────────────────────────────────────────────────────────────── crate whose registry we failed to query
+2026-10-23T11:19:24.1777055Z    │
+2026-10-23T11:19:24.1777367Z    ┌─ /home/runner/work/_temp/nsealr-product/nsealr/deny.toml:17:11
+2026-10-23T11:19:24.1777702Z    │
+2026-10-23T11:19:24.1777901Z 17 │ yanked = "deny"
+2026-10-23T11:19:24.1778167Z    │           ━━━━ lint level defined here
+2026-10-23T11:19:24.1778423Z    │
+2026-10-23T11:19:24.1778652Z    ├ unable to locate index entry for crate
+2026-10-23T11:19:24.1778945Z    ├ sha2 v0.11.0
+2026-10-23T11:19:24.1779167Z      ├── k256 v0.14.0
+2026-10-23T11:19:24.1779416Z      │   └── nsealr-core v0.0.0
+2026-10-23T11:19:24.1779689Z      └── nsealr-core v0.0.0 (*)
+2026-10-23T11:19:24.1779843Z 
+2026-10-23T11:19:24.1779990Z warning[index-failure]: unable to check for yanked crates
+2026-10-23T11:19:24.1780447Z    ┌─ /home/runner/work/_temp/nsealr-product/nsealr/Cargo.lock:32:1
+2026-10-23T11:19:24.1780792Z    │
+2026-10-23T11:19:24.1781158Z 32 │ signature 3.0.0 registry+https://github.com/rust-lang/crates.io-index
+2026-10-23T11:19:24.1781790Z    │ ───────────────────────────────────────────────────────────────────── crate whose registry we failed to query
+2026-10-23T11:19:24.1782189Z    │
+2026-10-23T11:19:24.1782497Z    ┌─ /home/runner/work/_temp/nsealr-product/nsealr/deny.toml:17:11
+2026-10-23T11:19:24.1782829Z    │
+2026-10-23T11:19:24.1783028Z 17 │ yanked = "deny"
+2026-10-23T11:19:24.1783285Z    │           ━━━━ lint level defined here
+2026-10-23T11:19:24.1783555Z    │
+2026-10-23T11:19:24.1783783Z    ├ unable to locate index entry for crate
+2026-10-23T11:19:24.1784086Z    ├ signature v3.0.0
+2026-10-23T11:19:24.1784324Z      ├── ecdsa v0.17.0
+2026-10-23T11:19:24.1784563Z      │   └── k256 v0.14.0
+2026-10-23T11:19:24.1784823Z      │       └── nsealr-core v0.0.0
+2026-10-23T11:19:24.1785102Z      └── k256 v0.14.0 (*)
+2026-10-23T11:19:24.1785231Z 
+2026-10-23T11:19:24.1785376Z warning[index-failure]: unable to check for yanked crates
+2026-10-23T11:19:24.1785831Z    ┌─ /home/runner/work/_temp/nsealr-product/nsealr/Cargo.lock:33:1
+2026-10-23T11:19:24.1786401Z    │
+2026-10-23T11:19:24.1786810Z 33 │ subtle 2.6.1 registry+https://github.com/rust-lang/crates.io-index
+2026-10-23T11:19:24.1787437Z    │ ────────────────────────────────────────────────────────────────── crate whose registry we failed to query
+2026-10-23T11:19:24.1787842Z    │
+2026-10-23T11:19:24.1788156Z    ┌─ /home/runner/work/_temp/nsealr-product/nsealr/deny.toml:17:11
+2026-10-23T11:19:24.1788662Z    │
+2026-10-23T11:19:24.1788862Z 17 │ yanked = "deny"
+2026-10-23T11:19:24.1789123Z    │           ━━━━ lint level defined here
+2026-10-23T11:19:24.1789385Z    │
+2026-10-23T11:19:24.1789610Z    ├ unable to locate index entry for crate
+2026-10-23T11:19:24.1789894Z    ├ subtle v2.6.1
+2026-10-23T11:19:24.1790136Z      ├── crypto-bigint v0.7.5
+2026-10-23T11:19:24.1790422Z      │   ├── elliptic-curve v0.14.1
+2026-10-23T11:19:24.1790713Z      │   │   ├── ecdsa v0.17.0
+2026-10-23T11:19:24.1790980Z      │   │   │   └── k256 v0.14.0
+2026-10-23T11:19:24.1791392Z      │   │   │       └── nsealr-core v0.0.0
+2026-10-23T11:19:24.1791693Z      │   │   ├── k256 v0.14.0 (*)
+2026-10-23T11:19:24.1791969Z      │   │   └── primeorder v0.14.0
+2026-10-23T11:19:24.1792252Z      │   │       └── k256 v0.14.0 (*)
+2026-10-23T11:19:24.1792540Z      │   └── primefield v0.14.0
+2026-10-23T11:19:24.1792825Z      │       ├── primeorder v0.14.0 (*)
+2026-10-23T11:19:24.1793111Z      │       └── wnaf v0.14.1
+2026-10-23T11:19:24.1793394Z      │           ├── k256 v0.14.0 (*)
+2026-10-23T11:19:24.1793697Z      │           └── primeorder v0.14.0 (*)
+2026-10-23T11:19:24.1793985Z      ├── ctutils v0.4.3
+2026-10-23T11:19:24.1794253Z      │   ├── crypto-bigint v0.7.5 (*)
+2026-10-23T11:19:24.1794530Z      │   └── sec1 v0.8.1
+2026-10-23T11:19:24.1794797Z      │       └── elliptic-curve v0.14.1 (*)
+2026-10-23T11:19:24.1795110Z      ├── elliptic-curve v0.14.1 (*)
+2026-10-23T11:19:24.1795375Z      ├── ff v0.14.0
+2026-10-23T11:19:24.1795628Z      │   ├── elliptic-curve v0.14.1 (*)
+2026-10-23T11:19:24.1795932Z      │   ├── group v0.14.0
+2026-10-23T11:19:24.1796456Z      │   │   ├── elliptic-curve v0.14.1 (*)
+2026-10-23T11:19:24.1796783Z      │   │   └── wnaf v0.14.1 (*)
+2026-10-23T11:19:24.1797099Z      │   ├── primefield v0.14.0 (*)
+2026-10-23T11:19:24.1797380Z      │   └── wnaf v0.14.1 (*)
+2026-10-23T11:19:24.1797641Z      ├── group v0.14.0 (*)
+2026-10-23T11:19:24.1797902Z      ├── hybrid-array v0.4.15
+2026-10-23T11:19:24.1798185Z      │   ├── block-buffer v0.12.1
+2026-10-23T11:19:24.1798457Z      │   │   └── digest v0.11.3
+2026-10-23T11:19:24.1798732Z      │   │       ├── ecdsa v0.17.0 (*)
+2026-10-23T11:19:24.1799040Z      │   │       ├── elliptic-curve v0.14.1 (*)
+2026-10-23T11:19:24.1799347Z      │   │       ├── sha2 v0.11.0
+2026-10-23T11:19:24.1799621Z      │   │       │   ├── k256 v0.14.0 (*)
+2026-10-23T11:19:24.1799936Z      │   │       │   └── nsealr-core v0.0.0 (*)
+2026-10-23T11:19:24.1800243Z      │   │       └── signature v3.0.0
+2026-10-23T11:19:24.1800556Z      │   │           ├── ecdsa v0.17.0 (*)
+2026-10-23T11:19:24.1800865Z      │   │           └── k256 v0.14.0 (*)
+2026-10-23T11:19:24.1801167Z      │   ├── crypto-bigint v0.7.5 (*)
+2026-10-23T11:19:24.1801459Z      │   ├── crypto-common v0.2.2
+2026-10-23T11:19:24.1801740Z      │   │   ├── digest v0.11.3 (*)
+2026-10-23T11:19:24.1802033Z      │   │   ├── elliptic-curve v0.14.1 (*)
+2026-10-23T11:19:24.1802341Z      │   │   └── primefield v0.14.0 (*)
+2026-10-23T11:19:24.1802808Z      │   ├── elliptic-curve v0.14.1 (*)
+2026-10-23T11:19:24.1803109Z      │   ├── sec1 v0.8.1 (*)
+2026-10-23T11:19:24.1803369Z      │   └── wnaf v0.14.1 (*)
+2026-10-23T11:19:24.1803632Z      ├── primefield v0.14.0 (*)
+2026-10-23T11:19:24.1803895Z      └── sec1 v0.8.1 (*)
+2026-10-23T11:19:24.1804031Z 
+2026-10-23T11:19:24.1804183Z warning[index-failure]: unable to check for yanked crates
+2026-10-23T11:19:24.1804649Z    ┌─ /home/runner/work/_temp/nsealr-product/nsealr/Cargo.lock:34:1
+2026-10-23T11:19:24.1804992Z    │
+2026-10-23T11:19:24.1805501Z 34 │ typenum 1.20.1 registry+https://github.com/rust-lang/crates.io-index
+2026-10-23T11:19:24.1806130Z    │ ──────────────────────────────────────────────────────────────────── crate whose registry we failed to query
+2026-10-23T11:19:24.1807065Z    │
+2026-10-23T11:19:24.1807389Z    ┌─ /home/runner/work/_temp/nsealr-product/nsealr/deny.toml:17:11
+2026-10-23T11:19:24.1807725Z    │
+2026-10-23T11:19:24.1807923Z 17 │ yanked = "deny"
+2026-10-23T11:19:24.1808188Z    │           ━━━━ lint level defined here
+2026-10-23T11:19:24.1808463Z    │
+2026-10-23T11:19:24.1808695Z    ├ unable to locate index entry for crate
+2026-10-23T11:19:24.1808993Z    ├ typenum v1.20.1
+2026-10-23T11:19:24.1809248Z      └── hybrid-array v0.4.15
+2026-10-23T11:19:24.1809528Z          ├── block-buffer v0.12.1
+2026-10-23T11:19:24.1809816Z          │   └── digest v0.11.3
+2026-10-23T11:19:24.1810087Z          │       ├── ecdsa v0.17.0
+2026-10-23T11:19:24.1810379Z          │       │   └── k256 v0.14.0
+2026-10-23T11:19:24.1810704Z          │       │       └── nsealr-core v0.0.0
+2026-10-23T11:19:24.1811032Z          │       ├── elliptic-curve v0.14.1
+2026-10-23T11:19:24.1811343Z          │       │   ├── ecdsa v0.17.0 (*)
+2026-10-23T11:19:24.1811644Z          │       │   ├── k256 v0.14.0 (*)
+2026-10-23T11:19:24.1811940Z          │       │   └── primeorder v0.14.0
+2026-10-23T11:19:24.1812248Z          │       │       └── k256 v0.14.0 (*)
+2026-10-23T11:19:24.1812543Z          │       ├── sha2 v0.11.0
+2026-10-23T11:19:24.1812841Z          │       │   ├── k256 v0.14.0 (*)
+2026-10-23T11:19:24.1813146Z          │       │   └── nsealr-core v0.0.0 (*)
+2026-10-23T11:19:24.1813453Z          │       └── signature v3.0.0
+2026-10-23T11:19:24.1813743Z          │           ├── ecdsa v0.17.0 (*)
+2026-10-23T11:19:24.1814034Z          │           └── k256 v0.14.0 (*)
+2026-10-23T11:19:24.1814322Z          ├── crypto-bigint v0.7.5
+2026-10-23T11:19:24.1814612Z          │   ├── elliptic-curve v0.14.1 (*)
+2026-10-23T11:19:24.1814913Z          │   └── primefield v0.14.0
+2026-10-23T11:19:24.1815219Z          │       ├── primeorder v0.14.0 (*)
+2026-10-23T11:19:24.1815506Z          │       └── wnaf v0.14.1
+2026-10-23T11:19:24.1815786Z          │           ├── k256 v0.14.0 (*)
+2026-10-23T11:19:24.1816089Z          │           └── primeorder v0.14.0 (*)
+2026-10-23T11:19:24.1816633Z          ├── crypto-common v0.2.2
+2026-10-23T11:19:24.1816914Z          │   ├── digest v0.11.3 (*)
+2026-10-23T11:19:24.1817239Z          │   ├── elliptic-curve v0.14.1 (*)
+2026-10-23T11:19:24.1817562Z          │   └── primefield v0.14.0 (*)
+2026-10-23T11:19:24.1817863Z          ├── elliptic-curve v0.14.1 (*)
+2026-10-23T11:19:24.1818143Z          ├── sec1 v0.8.1
+2026-10-23T11:19:24.1818410Z          │   └── elliptic-curve v0.14.1 (*)
+2026-10-23T11:19:24.1818702Z          └── wnaf v0.14.1 (*)
+2026-10-23T11:19:24.1818858Z 
+2026-10-23T11:19:24.1819010Z warning[index-failure]: unable to check for yanked crates
+2026-10-23T11:19:24.1819466Z    ┌─ /home/runner/work/_temp/nsealr-product/nsealr/Cargo.lock:35:1
+2026-10-23T11:19:24.1819815Z    │
+2026-10-23T11:19:24.1820153Z 35 │ wnaf 0.14.1 registry+https://github.com/rust-lang/crates.io-index
+2026-10-23T11:19:24.1820751Z    │ ───────────────────────────────────────────────────────────────── crate whose registry we failed to query
+2026-10-23T11:19:24.1821151Z    │
+2026-10-23T11:19:24.1821458Z    ┌─ /home/runner/work/_temp/nsealr-product/nsealr/deny.toml:17:11
+2026-10-23T11:19:24.1821791Z    │
+2026-10-23T11:19:24.1821989Z 17 │ yanked = "deny"
+2026-10-23T11:19:24.1822427Z    │           ━━━━ lint level defined here
+2026-10-23T11:19:24.1822689Z    │
+2026-10-23T11:19:24.1822917Z    ├ unable to locate index entry for crate
+2026-10-23T11:19:24.1823205Z    ├ wnaf v0.14.1
+2026-10-23T11:19:24.1823430Z      ├── k256 v0.14.0
+2026-10-23T11:19:24.1823680Z      │   └── nsealr-core v0.0.0
+2026-10-23T11:19:24.1823957Z      └── primeorder v0.14.0
+2026-10-23T11:19:24.1824231Z          └── k256 v0.14.0 (*)
+2026-10-23T11:19:24.1824382Z 
+2026-10-23T11:19:24.1824655Z warning[index-failure]: unable to check for yanked crates
+2026-10-23T11:19:24.1825123Z    ┌─ /home/runner/work/_temp/nsealr-product/nsealr/Cargo.lock:36:1
+2026-10-23T11:19:24.1825465Z    │
+2026-10-23T11:19:24.1825811Z 36 │ zeroize 1.9.1 registry+https://github.com/rust-lang/crates.io-index
+2026-10-23T11:19:24.1826678Z    │ ─────────────────────────────────────────────────────────────────── crate whose registry we failed to query
+2026-10-23T11:19:24.1827079Z    │
+2026-10-23T11:19:24.1827389Z    ┌─ /home/runner/work/_temp/nsealr-product/nsealr/deny.toml:17:11
+2026-10-23T11:19:24.1827735Z    │
+2026-10-23T11:19:24.1827930Z 17 │ yanked = "deny"
+2026-10-23T11:19:24.1828190Z    │           ━━━━ lint level defined here
+2026-10-23T11:19:24.1828453Z    │
+2026-10-23T11:19:24.1828683Z    ├ unable to locate index entry for crate
+2026-10-23T11:19:24.1828975Z    ├ zeroize v1.9.1
+2026-10-23T11:19:24.1829223Z      ├── block-buffer v0.12.1
+2026-10-23T11:19:24.1829491Z      │   └── digest v0.11.3
+2026-10-23T11:19:24.1829747Z      │       ├── ecdsa v0.17.0
+2026-10-23T11:19:24.1830024Z      │       │   └── k256 v0.14.0
+2026-10-23T11:19:24.1830313Z      │       │       └── nsealr-core v0.0.0
+2026-10-23T11:19:24.1830622Z      │       ├── elliptic-curve v0.14.1
+2026-10-23T11:19:24.1830927Z      │       │   ├── ecdsa v0.17.0 (*)
+2026-10-23T11:19:24.1831214Z      │       │   ├── k256 v0.14.0 (*)
+2026-10-23T11:19:24.1831501Z      │       │   └── primeorder v0.14.0
+2026-10-23T11:19:24.1831805Z      │       │       └── k256 v0.14.0 (*)
+2026-10-23T11:19:24.1832101Z      │       ├── sha2 v0.11.0
+2026-10-23T11:19:24.1832366Z      │       │   ├── k256 v0.14.0 (*)
+2026-10-23T11:19:24.1832661Z      │       │   └── nsealr-core v0.0.0 (*)
+2026-10-23T11:19:24.1832962Z      │       └── signature v3.0.0
+2026-10-23T11:19:24.1833242Z      │           ├── ecdsa v0.17.0 (*)
+2026-10-23T11:19:24.1833526Z      │           └── k256 v0.14.0 (*)
+2026-10-23T11:19:24.1833808Z      ├── crypto-bigint v0.7.5
+2026-10-23T11:19:24.1834087Z      │   ├── elliptic-curve v0.14.1 (*)
+2026-10-23T11:19:24.1834394Z      │   └── primefield v0.14.0
+2026-10-23T11:19:24.1834682Z      │       ├── primeorder v0.14.0 (*)
+2026-10-23T11:19:24.1834965Z      │       └── wnaf v0.14.1
+2026-10-23T11:19:24.1835240Z      │           ├── k256 v0.14.0 (*)
+2026-10-23T11:19:24.1835526Z      │           └── primeorder v0.14.0 (*)
+2026-10-23T11:19:24.1835806Z      ├── der v0.8.2
+2026-10-23T11:19:24.1836041Z      │   ├── ecdsa v0.17.0 (*)
+2026-10-23T11:19:24.1836558Z      │   └── sec1 v0.8.1
+2026-10-23T11:19:24.1837055Z      │       └── elliptic-curve v0.14.1 (*)
+2026-10-23T11:19:24.1837355Z      ├── digest v0.11.3 (*)
+2026-10-23T11:19:24.1837611Z      ├── ecdsa v0.17.0 (*)
+2026-10-23T11:19:24.1837884Z      ├── elliptic-curve v0.14.1 (*)
+2026-10-23T11:19:24.1838171Z      ├── hybrid-array v0.4.15
+2026-10-23T11:19:24.1838447Z      │   ├── block-buffer v0.12.1 (*)
+2026-10-23T11:19:24.1838740Z      │   ├── crypto-bigint v0.7.5 (*)
+2026-10-23T11:19:24.1839029Z      │   ├── crypto-common v0.2.2
+2026-10-23T11:19:24.1839311Z      │   │   ├── digest v0.11.3 (*)
+2026-10-23T11:19:24.1839724Z      │   │   ├── elliptic-curve v0.14.1 (*)
+2026-10-23T11:19:24.1840043Z      │   │   └── primefield v0.14.0 (*)
+2026-10-23T11:19:24.1840342Z      │   ├── elliptic-curve v0.14.1 (*)
+2026-10-23T11:19:24.1840626Z      │   ├── sec1 v0.8.1 (*)
+2026-10-23T11:19:24.1840890Z      │   └── wnaf v0.14.1 (*)
+2026-10-23T11:19:24.1841154Z      ├── nsealr-core v0.0.0 (*)
+2026-10-23T11:19:24.1841424Z      ├── primefield v0.14.0 (*)
+2026-10-23T11:19:24.1841698Z      └── sec1 v0.8.1 (*)
+2026-10-23T11:19:24.1841834Z 
+2026-10-23T11:19:24.1841985Z warning[index-failure]: unable to check for yanked crates
+2026-10-23T11:19:24.1842438Z    ┌─ /home/runner/work/_temp/nsealr-product/nsealr/Cargo.lock:37:1
+2026-10-23T11:19:24.1842774Z    │
+2026-10-23T11:19:24.1843112Z 37 │ zmij 1.0.23 registry+https://github.com/rust-lang/crates.io-index
+2026-10-23T11:19:24.1843711Z    │ ───────────────────────────────────────────────────────────────── crate whose registry we failed to query
+2026-10-23T11:19:24.1844124Z    │
+2026-10-23T11:19:24.1844435Z    ┌─ /home/runner/work/_temp/nsealr-product/nsealr/deny.toml:17:11
+2026-10-23T11:19:24.1844769Z    │
+2026-10-23T11:19:24.1844966Z 17 │ yanked = "deny"
+2026-10-23T11:19:24.1845230Z    │           ━━━━ lint level defined here
+2026-10-23T11:19:24.1845492Z    │
+2026-10-23T11:19:24.1845722Z    ├ unable to locate index entry for crate
+2026-10-23T11:19:24.1846005Z    ├ zmij v1.0.23
+2026-10-23T11:19:24.1846473Z      └── serde_json v1.0.151
+2026-10-23T11:19:24.1846779Z          └── (dev) nsealr-core v0.0.0
+2026-10-23T11:19:24.1846953Z 
+2026-10-23T11:19:24.1847122Z advisories FAILED, bans ok, licenses ok, sources ok
+2026-10-23T11:19:24.1847450Z make: *** [Makefile:55: cargo-deny] Error 1

@@ -1,0 +1,6 @@
+python3 -B -m unittest discover -s docs/restart/implementation/R00/audit-data -p 'test_audit_rust.py'
+python3 scripts/audit_rust.py
+cargo deny --locked --config /home/tux/nsealr/.restart-tools/goal/r00-audit-data/deny.toml --manifest-path /home/tux/nsealr/.restart-tools/goal/r00-audit-data/Cargo.toml fetch index db
+cargo deny --locked --config /home/tux/nsealr/.restart-tools/goal/r00-audit-data/deny.toml --manifest-path /home/tux/nsealr/.restart-tools/goal/r00-audit-data/apps/desktop-simulator/Cargo.toml fetch index
+cargo deny --locked --config /home/tux/nsealr/.restart-tools/goal/r00-audit-data/deny.toml --manifest-path /home/tux/nsealr/.restart-tools/goal/r00-audit-data/Cargo.toml --offline check --deny index-failure
+advisories FAILED, bans ok, licenses ok, sources ok
