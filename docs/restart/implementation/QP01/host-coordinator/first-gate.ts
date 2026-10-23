@@ -8,7 +8,7 @@ import type { Readable, Writable } from "node:stream";
 import { clientIdForIdentity, handleLocalServiceRequestAsync, type LocalServiceContext,
   type SignerCompatibilitySnapshot } from "@nsealr/client";
 import { parseAccountDescriptor } from "@nsealr/policy";
-import { parseImplementationProfile, parseLimitsManifest, type FullCapabilities } from "@nsealr/protocol";
+import { parseImplementationProfile, parseLimitsManifest, type FullCapabilities, CapabilityError } from "@nsealr/protocol";
 import { createManualQrRouteDispatcher } from "../../../../../apps/bridge/service/src/manual-qr.js";
 
 type Native = { dispose(): Promise<void>; isCollected(): boolean; inputBytes(): number;
@@ -28,7 +28,8 @@ const decimal = (s: unknown) => {
   assert(BigInt(s) <= 18446744073709551615n);
 };
 
-function validatePhase(row: any, pid: number, contract: any) {
+function validatePhase(row: any, pid: number, contract: any, presented: boolean, unused: boolean) {
+  assert(presented && !unused, "worker_phase_requires_presented_P_not_unused");
   equalKeys(row, contract.worker_ready_record.fixed_key_order);
   assert.equal(row.v, 1); assert.equal(row.kind, "worker_ready");
   assert.equal(row.owner_pid, pid); integer(row.worker_pid, 2);
@@ -54,6 +55,13 @@ function validateTerminal(row: any, pid: number, phase: any, contract: any, outp
     assert.equal(typeof row[name], "boolean");
   equalKeys(row.worker_io, ["stdin_closed", "stdout_eof", "stderr_eof", "owned_fds_closed"]);
   assert.equal(row.worker_io.owned_fds_closed, true);
+  if (row.outcome === "unused") {
+    assert.equal(row.worker_pid, null, "unused_has_no_worker");
+    assert.equal(phase, undefined, "unused_has_no_phase");
+    assert.equal(row.G_bytes, 0, "unused_has_no_G");
+    assert.equal(row.image_bytes_sent, 0, "unused_has_no_image");
+    assert.equal(row.input_bytes_received, 0, "unused_has_no_input");
+  }
   if (row.worker_pid === null) {
     assert.equal(phase, undefined); assert.equal(row.worker_wait, null);
     for (const key of ["stdin_closed", "stdout_eof", "stderr_eof"]) assert.equal(row.worker_io[key], null);
@@ -91,6 +99,11 @@ function validateTerminal(row: any, pid: number, phase: any, contract: any, outp
   else assert.equal(row.timing.cleanup_deadline_ns, null);
   if (row.outcome === "decoded") {
     assert(phase); assert.equal(row.worker_wait.exit_code, 0);
+    assert(row.stdout_observed <= 512, "decoded_stdout_overflow");
+    assert.equal(row.stdout_observed, row.stdout_retained, "decoded_stdout_observed_retained_mismatch");
+    assert.equal(row.stdout_retained, row.result_bytes, "decoded_stdout_retained_result_mismatch");
+    assert(row.stderr_observed <= 512, "decoded_stderr_overflow");
+    assert.equal(row.stderr_observed, row.stderr_retained, "decoded_stderr_observed_retained_mismatch");
     assert.equal(row.final_worker_eligible, true); assert.equal(row.cancel_observed, false);
     assert.equal(row.G_bytes, 1); assert.equal(row.image_bytes_sent, 172800); assert.equal(row.input_bytes_received, 172800);
     assert.equal(row.timing.invalidated_ns, null); assert.notEqual(row.timing.begin_ns, null);
@@ -154,7 +167,7 @@ async function prepareOwner(root: string, contract: any, syntheticArgv?: string[
         assert.equal(JSON.stringify(row) + "\n", raw); assert.equal(terminal, undefined);
         if (row.kind === "worker_ready") {
           assert.equal(phase, undefined); assert(child.pid);
-          validatePhase(row, child.pid, contract); phase = row;
+          validatePhase(row, child.pid, contract, presented && commands.some((entry) => entry.opcode === "P"), unused); phase = row;
           console.log(JSON.stringify({ owner_phase: row, node_ns: String(process.hrtime.bigint()) }));
           onPhase?.();
         } else { assert.equal(row.kind, "terminal"); terminal = row; }
@@ -219,6 +232,8 @@ export async function runFirstGate({ prepareNative, basic, root }: {
   prepareNative(hold?: boolean, env?: NodeJS.ProcessEnv, syntheticArgv?: string[]): Promise<Native>; basic: any; root: string;
 }) {
   const contract = JSON.parse(readFileSync(new URL("control-contract.json", import.meta.url), "utf8"));
+  if (process.argv.includes("--owner-correction-parser")) { parserRelationControls(contract); return; }
+  const deadlineFocus = process.argv.includes("--owner-deadline-control");
   if (process.argv.includes("--owner-malformed-controls")) { await malformedHelpers(root, contract); return; }
   const image = readFileSync(resolve(root, contract.independent_oracle.image_path));
   const expected = readFileSync(resolve(root, contract.independent_oracle.decoded_frame_path));
@@ -234,28 +249,30 @@ export async function runFirstGate({ prepareNative, basic, root }: {
       assert(owner.isCollected()); throw error;
     }
   };
-  // FIRST actual initialization/disposal. No P/RGB/W/native request.
-  {
-    const { owner, native } = await preparePair();
-    const [result] = await Promise.all([owner.disposeUnused(), native.dispose()]);
-    assert.equal(result.terminal.outcome, "unused"); assert.equal(result.terminal.worker_pid, null);
-    assert.equal(native.inputBytes(), 0); assert(owner.isCollected() && native.isCollected());
-    console.log(JSON.stringify({ case: "FG0_startup_unused", pass: true, W_spawned: 0, C_input_bytes: 0 }));
+  if (!deadlineFocus) {
+    // FIRST actual initialization/disposal. No P/RGB/W/native request.
+    {
+      const { owner, native } = await preparePair();
+      const [result] = await Promise.all([owner.disposeUnused(), native.dispose()]);
+      assert.equal(result.terminal.outcome, "unused"); assert.equal(result.terminal.worker_pid, null);
+      assert.equal(native.inputBytes(), 0); assert(owner.isCollected() && native.isCollected());
+      console.log(JSON.stringify({ case: "FG0_startup_unused", pass: true, W_spawned: 0, C_input_bytes: 0 }));
+    }
+    await assert.rejects(preparePair({ ...process.env, NSEALR_QP01_LIBRARY_SHA256: "0".repeat(64) }), /SHA256 mismatch/);
+    console.log(JSON.stringify({ case: "FG0_C_library_ready_failure", pass: true, W_spawned: 0, C_input_bytes: 0 }));
+    await assert.rejects(preparePair(process.env, ["-c", "import os; os.write(4,b'RX'); os.close(4); os.read(0,1)"]), /invalid readiness token/);
+    console.log(JSON.stringify({ case: "FG0_C_handshake_failure", pass: true, W_spawned: 0, C_input_bytes: 0, synthetic_C_helper: true }));
+    await assert.rejects(async () => {
+      const { owner, native } = await preparePair();
+      try { assert.fail("controlled pre-presentation assertion"); }
+      finally { await Promise.all([owner.disposeUnused(), native.dispose()]); assert(owner.isCollected() && native.isCollected()); }
+    }, /controlled pre-presentation assertion/);
+    console.log(JSON.stringify({ case: "FG0_pre_presentation_assertion", pass: true, W_spawned: 0, C_input_bytes: 0 }));
   }
-  await assert.rejects(preparePair({ ...process.env, NSEALR_QP01_LIBRARY_SHA256: "0".repeat(64) }), /SHA256 mismatch/);
-  console.log(JSON.stringify({ case: "FG0_C_library_ready_failure", pass: true, W_spawned: 0, C_input_bytes: 0 }));
-  await assert.rejects(preparePair(process.env, ["-c", "import os; os.write(4,b'RX'); os.close(4); os.read(0,1)"]), /invalid readiness token/);
-  console.log(JSON.stringify({ case: "FG0_C_handshake_failure", pass: true, W_spawned: 0, C_input_bytes: 0, synthetic_C_helper: true }));
-  await assert.rejects(async () => {
-    const { owner, native } = await preparePair();
-    try { assert.fail("controlled pre-presentation assertion"); }
-    finally { await Promise.all([owner.disposeUnused(), native.dispose()]); assert(owner.isCollected() && native.isCollected()); }
-  }, /controlled pre-presentation assertion/);
-  console.log(JSON.stringify({ case: "FG0_pre_presentation_assertion", pass: true, W_spawned: 0, C_input_bytes: 0 }));
   // The frozen early smoke stays in its original source/receipt; the stable
   // sequence below includes normal first, then only the admitted fault groups.
   type Mode = "normal" | "timeout-preG" | "timeout-late" | "cancel-preG" | "cancel-late" |
-    "generation" | "Cdeath" | "control-eof" | "preadmission";
+    "generation" | "Cdeath" | "control-eof" | "preadmission" | "elapsed-before-timer";
   async function exchangeCase(mode: Mode, id: string) {
     let owner: Awaited<ReturnType<typeof prepareOwner>>, native: Native;
     const load = (path: string) => JSON.parse(readFileSync(resolve(root, "protocols/contracts/v1", path), "utf8"));
@@ -280,6 +297,7 @@ export async function runFirstGate({ prepareNative, basic, root }: {
     const identity = { surface: "cli" as const, origin: "app:qp01-public-fixture", app_name: "QP01 synthetic engineering fixture" };
     let pending: Promise<string> | undefined, invalidated = false, opens = 0, scans = 0, closes = 0;
     let secondGuard = false, privateDecoded = 0, phaseEntered = false;
+    let elapsedGuard: Record<string, unknown> | undefined;
     let settlePort!: () => void, reached!: () => void, release!: () => void;
     let portSettled = new Promise<void>((yes) => { settlePort = yes; });
     const held = new Promise<void>((yes) => { reached = yes; });
@@ -319,6 +337,31 @@ export async function runFirstGate({ prepareNative, basic, root }: {
               if (mode === "timeout-late") { reached(); await released; }
               if (mode === "cancel-late") localCancel("private_cancel_after_W_settlement");
               assert(!invalidated && !native.isCollected());
+              if (mode === "elapsed-before-timer") {
+                assert(owner.isCollected() && result.terminal.worker_wait.exit_code === 0);
+                const holdBegin = performance.now();
+                assert(holdBegin - operationStart < 100, "deadline already elapsed before the intended synchronous hold");
+                assert.equal(control.abort_signal.aborted, false);
+                // Actual elapsed time, not a substituted clock or intercepted timer.
+                // Node cannot run a timer callback during this synchronous interval.
+                while (performance.now() - holdBegin < 110) { /* finite real-time hold */ }
+                const holdEnd = performance.now();
+                assert.equal(control.abort_signal.aborted, false);
+                try { control.before_present(); }
+                catch (error) {
+                  assert(error instanceof CapabilityError);
+                  assert.equal(error.reason, "runtime_unavailable");
+                  assert.equal(error.message, "local deadline expired or clock rolled back/unavailable");
+                  assert.equal(control.abort_signal.aborted, false);
+                  elapsedGuard = { type: error.name, reason: error.reason, message: error.message,
+                    signal_aborted: control.abort_signal.aborted, hold_begin_ms: holdBegin, hold_end_ms: holdEnd,
+                    actual_hold_ms: holdEnd - holdBegin, operation_elapsed_ms: holdEnd - operationStart,
+                    W_O_collected: owner.isCollected(), private_decoded_bytes: decoded.length, C_input_bytes: native.inputBytes() };
+                  console.log(JSON.stringify({ case: id, synchronous_deadline_guard: elapsedGuard }));
+                  throw error; // Preserve the real guard error through the existing async cleanup.
+                }
+                assert.fail("same before_present did not reject the real elapsed deadline");
+              }
               // SAME actual guard while Bridge.presenting remains true; never an
               // asynchronous continuation after present() returned.
               control.before_present();
@@ -343,7 +386,7 @@ export async function runFirstGate({ prepareNative, basic, root }: {
         };
       }
     });
-    const context: LocalServiceContext = { accounts: [account], now: 1, monotonicNow: () => 0,
+    const context: LocalServiceContext = { accounts: [account], now: 1, // Synthetic fixture wall metadata; actual service default performance.now governs deadlines.
       grants: [{ client_id: clientIdForIdentity(identity), origin: identity.origin, surface: identity.surface,
         allowed_operations: ["dispatch_signer_request"] }], signerCompatibility: () => snapshot, signerDispatcher: dispatcher };
     const envelope = { version: 1 as const, request_id: "qp01.local.fixture", operation: "dispatch_signer_request" as const,
@@ -356,6 +399,7 @@ export async function runFirstGate({ prepareNative, basic, root }: {
     ({ owner, native } = await preparePair());
     void native.ended.then(() => { if (!owner.isCollected()) localCancel("C_actual_close"); });
     const started = process.hrtime.bigint();
+    const operationStart = performance.now();
     let result: any, ownerResult: Awaited<ReturnType<typeof owner.settle>> | undefined;
     try {
       const operation = run();
@@ -381,16 +425,20 @@ export async function runFirstGate({ prepareNative, basic, root }: {
       await portSettled;
       ownerResult = await owner.settle();
       console.log(JSON.stringify({ case: id, actual_client: result, operation_ns: String(process.hrtime.bigint() - started),
-        causes, phaseEntered, secondGuard, privateDecoded, C_input_bytes: native.inputBytes(), opens, scans, closes }));
+        causes, phaseEntered, secondGuard, privateDecoded, elapsedGuard, C_input_bytes: native.inputBytes(), opens, scans, closes }));
       if (mode === "normal") {
         assert.equal(result.ok, true, JSON.stringify(result)); assert.deepEqual(result.result.signer_response, basic.response);
         assert.equal(native.inputBytes(), 259); assert.equal(Buffer.byteLength(await pending!), 611);
         assert.deepEqual({ opens, scans, closes }, { opens: 1, scans: 1, closes: 1 });
       } else {
         assert.equal(result.ok, false, JSON.stringify(result)); assert.equal(native.inputBytes(), 0); assert.equal(secondGuard, false);
-        if (mode === "generation" || mode === "timeout-late" || mode === "cancel-late") {
+        if (mode === "generation" || mode === "timeout-late" || mode === "cancel-late" || mode === "elapsed-before-timer") {
           assert.equal(privateDecoded, 259); assert.equal(ownerResult.terminal.outcome, "decoded");
         } else { assert.equal(ownerResult.terminal.result_bytes, 0); assert.equal(ownerResult.terminal.G_bytes, 0); }
+        if (mode === "elapsed-before-timer") {
+          assert(elapsedGuard); assert.equal(elapsedGuard.C_input_bytes, 0);
+          assert(["runtime_unavailable", "signer_transport_timeout"].includes(result.error.code));
+        }
         if (mode === "Cdeath") assert.equal((await native.ended).signal, "SIGKILL");
         if (mode === "cancel-preG") assert.equal(ownerResult.terminal.cancel_observed, true);
         if (mode === "control-eof") assert.equal(ownerResult.terminal.outcome, "control_lost");
@@ -417,10 +465,15 @@ export async function runFirstGate({ prepareNative, basic, root }: {
     }
     console.log(JSON.stringify({ case: id, pass: true, all_collected: true }));
   }
+  if (deadlineFocus) {
+    await exchangeCase("elapsed-before-timer", "FG2_elapsed_deadline_before_timer_callback");
+    return;
+  }
   await exchangeCase("preadmission", "FG0_actual_pre_admission_refusal");
   await exchangeCase("normal", "FG1_normal259");
   await exchangeCase("timeout-preG", "FG2_timeout_preG");
   await exchangeCase("timeout-late", "FG2_timeout_late");
+  await exchangeCase("elapsed-before-timer", "FG2_elapsed_deadline_before_timer_callback");
   await exchangeCase("cancel-preG", "FG3_cancel_preG");
   await exchangeCase("cancel-late", "FG3_cancel_late");
   await exchangeCase("generation", "FG4_generation");
@@ -446,6 +499,7 @@ export async function runFirstGate({ prepareNative, basic, root }: {
     console.log(JSON.stringify({ case: "FG5_C_early_exit_before_P", pass: true, W_spawned: 0, C_input_bytes: 0 }));
   }
   await malformedHelpers(root, contract);
+  parserRelationControls(contract);
   console.log(JSON.stringify({ scope: "FG0_through_FG7_host_author_only", groups: 8, pass: true,
     no_component_or_physical_qualification: true }));
 }
@@ -511,5 +565,56 @@ except BrokenPipeError:pass
       }
     }
     console.log(JSON.stringify({ case: `FG7_${mode}`, pass: true, helper_only: true, W_spawned: 0 }));
+  }
+}
+
+
+function parserRelationControls(contract: any) {
+  // Pure validator controls only. All PID/pipe fields below are fabricated
+  // values, never process ownership evidence; no child/native call is made.
+  const pid = 10001, worker = 10002;
+  const output = Buffer.from(contract.independent_oracle.decoded_frame_ascii, "ascii");
+  const phase = { v: 1, kind: "worker_ready", owner_pid: pid, worker_pid: worker, ppid: pid,
+    sid: worker, pgid: worker, exe_sha256: contract.identities.worker_elf_sha256,
+    limits: structuredClone(contract.worker_ready_record.limits), G_bytes: 0, image_bytes_sent: 0,
+    fds: [0, 1, 2].map((fd) => ({ fd, target: `pipe:[${100 + fd}]`, dev: "1", ino: String(100 + fd) })) };
+  const decoded = { v: 1, kind: "terminal", owner_pid: pid, outcome: "decoded", ownership: "settled",
+    worker_pid: worker, worker_wait: { raw_status: 0, exit_code: 0, collector_pid: pid },
+    worker_io: { stdin_closed: true, stdout_eof: true, stderr_eof: true, owned_fds_closed: true },
+    session_policy_verified: true, input_bytes_received: 172800, input_sha256: contract.independent_oracle.image_sha256,
+    G_bytes: 1, image_bytes_sent: 172800, stdout_observed: output.length, stdout_retained: output.length,
+    stderr_observed: 0, stderr_retained: 0, worker_stderr_base64: "", result_bytes: output.length,
+    result_sha256: hash(output), final_worker_eligible: true, cancel_observed: false,
+    timing: { begin_ns: "1", invalidated_ns: null, cleanup_deadline_ns: null, settled_ns: "2", final_admission_ns: "3" } };
+  const unused = { ...decoded, outcome: "unused", worker_pid: null, worker_wait: null,
+    worker_io: { stdin_closed: null, stdout_eof: null, stderr_eof: null, owned_fds_closed: true },
+    session_policy_verified: false, input_bytes_received: 0, input_sha256: null, G_bytes: 0, image_bytes_sent: 0,
+    stdout_observed: 0, stdout_retained: 0, result_bytes: 0, result_sha256: null, final_worker_eligible: false,
+    timing: { begin_ns: null, invalidated_ns: "1", cleanup_deadline_ns: "4000000001", settled_ns: "2", final_admission_ns: "3" } };
+  // Baselines satisfy all old/new checks before the single-relation mutations.
+  validatePhase(phase, pid, contract, true, false);
+  validateTerminal(decoded, pid, phase, contract, output);
+  validateTerminal(unused, pid, undefined, contract, Buffer.alloc(0));
+  const cases: [string, string, () => void][] = [
+    ["phase-before-P", "worker_phase_requires_presented_P_not_unused", () => validatePhase(phase, pid, contract, false, false)],
+    ["phase-after-Q", "worker_phase_requires_presented_P_not_unused", () => validatePhase(phase, pid, contract, true, true)],
+    ["unused-with-phase", "unused_has_no_phase", () => validateTerminal(unused, pid, phase, contract, Buffer.alloc(0))],
+    ["unused-with-worker", "unused_has_no_worker", () => validateTerminal({ ...unused, worker_pid: worker,
+      worker_wait: decoded.worker_wait, worker_io: decoded.worker_io }, pid, undefined, contract, Buffer.alloc(0))],
+    ["decoded-stdout-count-mismatch", "decoded_stdout_observed_retained_mismatch", () => validateTerminal(
+      { ...decoded, stdout_observed: output.length + 1 }, pid, phase, contract, output)],
+    ["decoded-stdout-overflow", "decoded_stdout_overflow", () => validateTerminal(
+      { ...decoded, stdout_observed: 513, stdout_retained: 512 }, pid, phase, contract, output)],
+    ["decoded-stdout-retained-result-mismatch", "decoded_stdout_retained_result_mismatch", () => validateTerminal(
+      { ...decoded, stdout_observed: output.length - 1, stdout_retained: output.length - 1 }, pid, phase, contract, output)],
+    ["decoded-stderr-overflow", "decoded_stderr_overflow", () => validateTerminal(
+      { ...decoded, stderr_observed: 513, stderr_retained: 512, worker_stderr_base64: Buffer.alloc(512).toString("base64") }, pid, phase, contract, output)],
+    ["decoded-stderr-truncation", "decoded_stderr_observed_retained_mismatch", () => validateTerminal(
+      { ...decoded, stderr_observed: 10, stderr_retained: 9, worker_stderr_base64: Buffer.alloc(9).toString("base64") }, pid, phase, contract, output)]
+  ];
+  for (const [id, message, exercise] of cases) {
+    assert.throws(exercise, (error) => error instanceof assert.AssertionError && error.message.includes(message));
+    console.log(JSON.stringify({ case: `FG7_relation_${id}`, pass: true, pure_synthetic_parser_only: true,
+      expected_relation: message, kernel_processes_spawned: 0, C_input_bytes: 0 }));
   }
 }
