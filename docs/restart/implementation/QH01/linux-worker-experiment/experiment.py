@@ -339,7 +339,9 @@ def run_case(case, owner, image, expected_output, directory):
         # Plain spawn is the single explicit readmitted strategy. Trustedchild
         # setsid success is independently checked by kernelqueries beforepolicy.
         pid = os.posix_spawn(str(PYTHON), argv, CHILD_ENV, file_actions=actions, setsigmask=(), setsigdef=(signal.SIGPIPE, signal.SIGXCPU, signal.SIGTERM))
-        record.update(pid=pid, spawned=1, pgid=os.getpgid(pid), sid=os.getsid(pid))
+        # Record ownership immediately, before any independently falliblequery.
+        record.update(pid=pid, spawned=1)
+        record.update(pgid=os.getpgid(pid), sid=os.getsid(pid))
         event("spawn-return", pid=pid)
         if pid <= 1 or pid == os.getpgrp():
             raise RuntimeError("unsafe owned PID")
@@ -549,7 +551,8 @@ def run_case(case, owner, image, expected_output, directory):
         # this explicit owned direct child; never sweep/reap unknown children.
         if pid is not None and not collected:
             signal_owned()
-            until = time.monotonic() + P["cleanup_observation_window"]
+            # A failure does not buy a secondcleanupwindow or change thecap.
+            until = cleanup_deadline if cleanup_deadline is not None else time.monotonic() + P["cleanup_observation_window"]
             while time.monotonic() < until:
                 try:
                     waited = raw_wait(pid)
@@ -657,6 +660,8 @@ def main():
     owner = Owner()
     results = []
     initial_fds = open_fds()
+    parent_identity = {"sid": os.getsid(0), "pgid": os.getpgrp()}
+    parent_limits = {str(k): resource.getrlimit(k) for k in LIMITS}
     started = time.monotonic()
     for case in cases:
         record = run_case(case, owner, image, output, args.out)
@@ -672,7 +677,15 @@ def main():
                "duration_seconds": time.monotonic() - started, "final_FDs_equal_initial": open_fds() == initial_fds,
                "owner_quarantined": owner.quarantined, "all_created_direct_children_collected": all(r.get("owned_child_collected", r["spawned"] == 0) for r in results),
                "new_threads": 0, "new_descendants": 0, "all47_criteria_unchanged": True}
-    summary["passed"] = len(results) == len(cases) and all(r["disposition"] == "PASS" for r in results) and summary["final_FDs_equal_initial"] and summary["all_created_direct_children_collected"]
+    final_status = dict(line.split(":", 1) for line in Path("/proc/self/status").read_text().splitlines() if ":" in line)
+    summary["actual_final_threads"] = int(final_status["Threads"].strip())
+    summary["parent_identity_before"] = parent_identity
+    summary["parent_identity_after"] = {"sid": os.getsid(0), "pgid": os.getpgrp()}
+    summary["parent_limits_before"] = parent_limits
+    summary["parent_limits_after"] = {str(k): resource.getrlimit(k) for k in LIMITS}
+    summary["parent_identity_and_limits_unchanged"] = summary["parent_identity_after"] == parent_identity and summary["parent_limits_after"] == parent_limits
+    summary["actual_owned_PIDs"] = [r["pid"] for r in results if "pid" in r]
+    summary["passed"] = summary["actual_final_threads"] == 1 and summary["parent_identity_and_limits_unchanged"] and len(results) == len(cases) and all(r["disposition"] == "PASS" for r in results) and summary["final_FDs_equal_initial"] and summary["all_created_direct_children_collected"]
     json_write(args.out / "summary.json", summary)
     return 0 if summary["passed"] else 1
 
