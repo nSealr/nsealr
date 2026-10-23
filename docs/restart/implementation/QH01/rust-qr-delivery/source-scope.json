@@ -1,10 +1,10 @@
 {
   "schema_version": 1,
   "task": "QH01",
-  "role": "Current assembly scope; final candidate waits for accepted Pi correction",
+  "role": "Final selected-file source/evidence candidate; distinct delivery review and actual integration gates pending",
   "base_commit": "994a8b682ed6cd52bb46608b90794c02d2a9d3cb",
   "base_tree": "a477c08387e937771d047fe96f2885c6d7c7c186",
-  "exact_source_copy_count": 562,
+  "exact_source_copy_count": 595,
   "source_groups": [
     {
       "source_commit": "1b457aed4218231b951adacc961f5dc7359f75ef",
@@ -75,27 +75,63 @@
       "source_commit": "bd9933e09dccf5e9d58b278d1980e01b37457855",
       "prefix": "docs/restart/implementation/reviews/QH01-rust-qr-worker-proof/",
       "count": 4
+    },
+    {
+      "source_commit": "4ab6e46e3f6e332d38bb049ed4988bec9f3550cf",
+      "paths": [
+        "apps/pi/app/nsealr_vault/hardware_probe.py",
+        "apps/pi/tests/test_seed_signer_hardware.py"
+      ],
+      "count": 2
+    },
+    {
+      "source_commit": "4ab6e46e3f6e332d38bb049ed4988bec9f3550cf",
+      "prefix": "docs/restart/implementation/QP01/probe-readiness/",
+      "count": 22
+    },
+    {
+      "source_commit": "7f7a32617d8f5a7340a014f8a72914b9a6cc677e",
+      "prefix": "docs/restart/implementation/reviews/QP01-probe-readiness/",
+      "count": 9
     }
   ],
   "existing_paths_allowed_now": [
     "docs/restart/README.md",
     "docs/restart/implementation/handoff.md",
-    "plan/work-items.json"
+    "plan/work-items.json",
+    "apps/pi/app/nsealr_vault/hardware_probe.py",
+    "apps/pi/tests/test_seed_signer_hardware.py"
   ],
   "new_wrapper_prefix": "docs/restart/implementation/QH01/rust-qr-delivery/",
   "graph_fields_allowed_now": [
     "QH01.result_artifacts",
-    "QH01.current_checkpoint"
+    "QH01.current_checkpoint",
+    "QP01.result_artifacts",
+    "QP01.current_checkpoint"
   ],
   "invariants": [
     "All47 task states, acceptance requirements, dependencies, required resources and release gates unchanged",
-    "All46 other task records including QP01/Q02 exact before accepted Pi addition",
-    "All previous tracked source/evidence bytes exact except the three current navigation/graph paths",
+    "All45 other task records exact, including Q02",
+    "All562 prior selected public files and all original source-specific receipts unchanged",
+    "All previous main source/evidence bytes exact except three current navigation/graph paths and two accepted Pi postimages",
     "Frozen1508 evidence and P01/T01 contracts retained",
-    "No product/runtime/test/dependency/CI/R00 or canonical main mutation at this preparatory checkpoint"
+    "No dependency/CI/R00 or canonical main mutation; no ignored runtime/cache/target copied"
   ],
-  "pending_Pi": "Only root-supplied accepted candidate/review may extend scope for hardware_probe.py, its tests and scoped QP01 evidence. No current import.",
-  "execution": "No new native/crypto/corpus/build/install. Structural metadata checks are separate from component validation.",
+  "pending_Pi": null,
+  "execution": "Exactly one final structural docs/plan/frozen/contracts gate set after accepted input change. No new full Pi/native/crypto/corpus/build/install execution.",
   "privacy": "Selected tracked public files only; exclude ignored runtime/cache/target, private Git histories and original private manuals.",
-  "self_binding": "External artifact-manifest inventories final changed paths except itself; final Git commit binds it without a hash cycle."
+  "self_binding": "External artifact-manifest inventories final changed paths except itself; final Git commit binds it without a hash cycle.",
+  "new_exact_copy_count": 593,
+  "existing_exact_postimages": 2,
+  "accepted_Pi": {
+    "candidate": "4ab6e46e3f6e332d38bb049ed4988bec9f3550cf",
+    "review": "7f7a32617d8f5a7340a014f8a72914b9a6cc677e",
+    "product_paths": [
+      "apps/pi/app/nsealr_vault/hardware_probe.py",
+      "apps/pi/tests/test_seed_signer_hardware.py"
+    ],
+    "tested_source": "69a090254738cbf6368b37c2ebb820a99bf83ea4",
+    "overwrite_authorization": "Explicit coordinator assignment after distinct component acceptance"
+  },
+  "preparation_checkpoint": "660d73caf2dda71999dac901e65c0e042bfdf37f"
 }

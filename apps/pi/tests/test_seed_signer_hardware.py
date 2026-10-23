@@ -3,6 +3,9 @@ from __future__ import annotations
 import json
 import unittest
 from pathlib import Path
+from unittest.mock import patch
+
+from nsealr_vault.hardware_probe import _default_run_command, run_seed_signer_compatibility_probe
 
 from nsealr_vault.seed_signer_hardware import (
     BOARD_MODE,
@@ -645,6 +648,137 @@ class SeedSignerHardwareTests(unittest.TestCase):
 
         with self.assertRaisesRegex(ValueError, "QR matrix must be square"):
             display.emit_response_qr(response_qr)
+
+
+class ProbeReadinessRegressionTests(unittest.TestCase):
+    @staticmethod
+    def _safe_command(args: tuple[str, ...]) -> tuple[int, str, str]:
+        return (1, "disabled", "") if args[1] == "is-enabled" else (3, "inactive", "")
+
+    def _report(self, config: str = "start_x=1\ndtparam=spi=on\n", command=None) -> dict[str, object]:
+        files = {
+            "/proc/device-tree/model": "Raspberry Pi Zero Rev 1.3\x00",
+            "/boot/config.txt": config,
+            "/proc/swaps": "Filename\tType\tSize\tUsed\tPriority\n",
+        }
+        return run_seed_signer_compatibility_probe(
+            read_text=lambda path: files[str(path)],
+            find_module=lambda name: name in {"RPi.GPIO", "spidev", "picamera"},
+            run_command=command or self._safe_command,
+        )
+
+    def _assert_gate(self, report, gate: str, status: str) -> None:
+        checks = {check["id"]: check for check in report["checks"]}
+        self.assertEqual(checks[gate]["status"], status)
+        if status != "pass":
+            self.assertFalse(report["ready_for_hardware_acceptance"])
+            self.assertIn(gate, report["acceptance_blockers"])
+        self.assertFalse(report["production_signing_enabled"])
+
+    def test_commented_spi_is_not_configuration_evidence(self) -> None:
+        report = self._report("start_x=1\n# dtparam=spi=on\n")
+        self._assert_gate(report, "boot_spi_enabled", "fail")
+
+    def test_later_spi_off_cannot_be_masked_by_earlier_on(self) -> None:
+        report = self._report("start_x=1\ndtparam=spi=on\ndtparam=spi=off\n")
+        self._assert_gate(report, "boot_spi_enabled", "blocked")
+
+    def test_permission_error_is_not_remote_disabled_evidence(self) -> None:
+        report = self._report(command=lambda args: (1, "", "Permission denied"))
+        self._assert_gate(report, "remote_access_disabled", "blocked")
+
+    def test_known_valid_profile_and_supported_whitespace(self) -> None:
+        for config in [
+            "start_x=1\ndtparam=spi=on\n",
+            "[all]\nstart_x = 1\ndtparam = spi = on\n",
+            "camera_auto_detect=1\ndtparam=spi=on\n",
+            "# " + "comment" * 20 + "\nstart_x=1\ndtparam=spi=on\n",
+            "start_x=1\ndtparam=spi=on\ndtparam=spi=on\n",
+        ]:
+            with self.subTest(config=config):
+                self.assertTrue(self._report(config)["ready_for_hardware_acceptance"])
+
+    def test_missing_off_and_commented_camera_do_not_pass(self) -> None:
+        for config, gate in [
+            ("start_x=1\n", "boot_spi_enabled"),
+            ("start_x=1\ndtparam=spi=off\n", "boot_spi_enabled"),
+            ("# start_x=1\n# camera_auto_detect=1\ndtparam=spi=on\n", "boot_camera_enabled"),
+            ("start_x=0\ndtparam=spi=on\n", "boot_camera_enabled"),
+        ]:
+            with self.subTest(config=config):
+                self._assert_gate(self._report(config), gate, "fail")
+
+    def test_unresolved_boot_syntax_is_explicitly_blocked(self) -> None:
+        for suffix in [
+            "[pi4]\n", "[pi4]\n[all]\n", "[none]\n", "include extra.txt\n",
+            "dtoverlay=some-overlay\n", "dtparam=audio=on,spi=on\n",
+            "dtparam=spi=on,spi=off\n", "dtparam=spi=on # inline syntax unsupported\n",
+            "dtparam=spi=onething\n", "other=dtparam=spi=on\n",
+            " " * 99 + "dtparam=spi=on\n", "\u2003dtparam=spi=on\n",
+            "start_x=1\u2028dtparam=spi=on\n",
+        ]:
+            with self.subTest(suffix=suffix):
+                self._assert_gate(self._report("start_x=1\ndtparam=spi=on\n" + suffix), "boot_spi_enabled", "blocked")
+
+    def test_contradictory_camera_or_reverse_spi_duplicates_block(self) -> None:
+        for config, gate in [
+            ("start_x=1\nstart_x=0\ndtparam=spi=on\n", "boot_camera_enabled"),
+            ("camera_auto_detect=1\ncamera_auto_detect=0\ndtparam=spi=on\n", "boot_camera_enabled"),
+            ("start_x=1\ndtparam=spi=off\ndtparam=spi=on\n", "boot_spi_enabled"),
+        ]:
+            with self.subTest(config=config):
+                self._assert_gate(self._report(config), gate, "blocked")
+
+    def test_remote_unknown_error_state_or_exit_cannot_pass(self) -> None:
+        cases = [
+            ("is-enabled", (2, "", "unknown systemctl error")),
+            ("is-enabled", (127, "", "systemctl missing")),
+            ("is-enabled", (127, "disabled", "")),
+            ("is-enabled", (0, "disabled", "")),
+            ("is-enabled", (1, "disabled", "Permission denied")),
+            ("is-enabled", (1, "disabled\nmasked", "")),
+            ("is-enabled", (4, "not-found", "")),
+            ("is-enabled", (0, "static", "")),
+            ("is-enabled", (0, "indirect", "")),
+            ("is-enabled", (0, "generated", "")),
+            ("is-enabled", (0, "transient", "")),
+            ("is-enabled", (1, "", "")),
+            ("is-active", (0, "inactive", "")),
+            ("is-active", (1, "inactive", "")),
+            ("is-active", (3, "inactive", "Permission denied")),
+            ("is-active", (3, "inactive\nunknown", "")),
+            ("is-active", (3, "failed", "")),
+            ("is-active", (4, "unknown", "")),
+        ]
+        for action, result in cases:
+            with self.subTest(action=action, result=result):
+                def command(args):
+                    return result if args[1] == action else self._safe_command(args)
+                self._assert_gate(self._report(command=command), "remote_access_disabled", "blocked")
+
+    def test_explicit_unsafe_states_even_after_first_line_refuse(self) -> None:
+        cases = [("is-enabled", state) for state in ["enabled", "enabled-runtime", "linked", "linked-runtime", "alias", "disabled\nenabled"]]
+        cases += [("is-active", state) for state in ["active", "reloading", "refreshing", "activating", "deactivating", "inactive\nactive"]]
+        for action, state in cases:
+            with self.subTest(action=action, state=state):
+                def command(args):
+                    return (0, state, "") if args[1] == action else self._safe_command(args)
+                self._assert_gate(self._report(command=command), "remote_access_disabled", "fail")
+
+    def test_safe_pair_checks_both_services_and_remains_read_only(self) -> None:
+        for enabled in ["disabled", "masked", "masked-runtime"]:
+            calls = []
+            def command(args):
+                calls.append(args)
+                return (1, enabled, "") if args[1] == "is-enabled" else (3, "inactive", "")
+            self.assertTrue(self._report(command=command)["ready_for_hardware_acceptance"])
+            self.assertEqual(calls, [("systemctl", action, service) for service in ("ssh", "sshd") for action in ("is-enabled", "is-active")])
+
+    def test_default_missing_command_blocks_without_service_actions(self) -> None:
+        with patch("nsealr_vault.hardware_probe.subprocess.run", side_effect=FileNotFoundError("systemctl")) as run:
+            self._assert_gate(self._report(command=_default_run_command), "remote_access_disabled", "blocked")
+        self.assertEqual(run.call_count, 4)
+        self.assertTrue(all(call.args[0][1] in {"is-enabled", "is-active"} for call in run.call_args_list))
 
 
 if __name__ == "__main__":

@@ -1,0 +1,60 @@
+{
+  "schema_version": 1,
+  "role": "Frozenbeforeproductioncodecorrection; expectedstatusesnotlearnedfromprobeoutput",
+  "input": "Syntheticread_text/run_command functions usingexistingprobeinjection, actualPythonfunctionexecution, noprobingphysicalGPIO/services",
+  "known_valid": "PiZeroRev1.3, start_x=1 + dtparam=spi=on, allrequiredmodulesavailable, emptyswap, ssh/sshd disabledrc1/inactiverc3 => existingPASS preserved",
+  "boot_expectations": [
+    {
+      "input": "start_x=1\n# dtparam=spi=on\n",
+      "check": "boot_spi_enabled",
+      "status": "fail"
+    },
+    {
+      "input": "start_x=1\ndtparam=spi=on\ndtparam=spi=off\n",
+      "check": "boot_spi_enabled",
+      "status": "blocked"
+    },
+    {
+      "input": "start_x=1\n[pi4]\ndtparam=spi=on\n",
+      "status": "blocked"
+    },
+    {
+      "input": "start_x=1\ndtparam=spi=on\ninclude extra.txt\n",
+      "status": "blocked"
+    },
+    {
+      "input": "[all]\nstart_x = 1\ndtparam = spi = on\n",
+      "status": "pass"
+    },
+    {
+      "input": "start_x=1\ndtparam=spi=on,spi=off\n",
+      "status": "blocked"
+    },
+    {
+      "input": "camera_auto_detect=1\ndtparam=spi=on\n",
+      "status": "pass"
+    },
+    {
+      "input": "start_x=1\nstart_x=0\ndtparam=spi=on\n",
+      "check": "boot_camera_enabled",
+      "status": "blocked"
+    }
+  ],
+  "remote_expectations": {
+    "safe_pairs": [
+      "is-enabled:rc1+exactdisabled/masked/masked-runtime+emptystderr",
+      "is-active:rc3+exactinactive+emptystderr"
+    ],
+    "unsafe": "enabled/enabled-runtime/linked/linked-runtime/alias, active/reloading/refreshing/activating/deactivating =>fail, readinessfalse",
+    "unknown": "Permissiondenied/unknownerror/commandmissing/emptyoutput/multilinestate/contradictoryexit/stderr/not-found/static/indirect/generated/transient/failed =>blocked, readinessfalse",
+    "required_RED": "OriginalcodeactuallypassesPermissionErrorresponses; testsassertblockedandfailbeforecorrection. Comment/overridefalsepositivesalsoreproducedasactualtests."
+  },
+  "gates": [
+    "Precommitbrief+expectations+sourcebindingbeforeproductionedit",
+    "Commitregressiontestdefinitions andrunactualREDonoriginalhardware_probe.py",
+    "Minimalparser/statecorrection; meaningfulfocusedGREEN",
+    "ONEexistingfullPiCI onstablecandidate; preserveallfailures/raws/source/env/exit",
+    "Exactsource/test/proof/limitsfreezeandpush forrootdistinctreview"
+  ],
+  "limits": "No targetkitidentified, physicaltest, runtimeactiveconfigproof, globalremoteattestation, signing/readinessenablement orcriteria completion."
+}
