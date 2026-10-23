@@ -26,6 +26,7 @@ ROOT = HERE.parents[4]
 PARAMETERS = json.loads((HERE / "parameters.json").read_text())
 P = PARAMETERS["baseline"]
 EXPECTATIONS = json.loads((HERE / "expectations.json").read_text())
+AMENDMENT = json.loads((HERE / "strategy-amendment.json").read_text())
 SOURCES = EXPECTATIONS["sources"]
 PYTHON = Path("/home/tux/nsealr/.restart-tools/goal/r00/tools/baseline/.work/final/.tools/python/bin/python3")
 N = 172800
@@ -56,6 +57,9 @@ def write_all(fd, data):
 
 
 def worker(mode):
+    # Explicit readmitted strategy, not a runtime fallback for a deniedcall.
+    if mode != "no-session":
+        os.setsid()  # trusted bootstrap; before any control/image read
     # This bounded control read is bootstrap, not image data or decoder work.
     if os.read(0, 1) != b"G":
         return 70
@@ -159,7 +163,7 @@ def context():
         raise RuntimeError("required Linux/CPython3.12 unavailable; no fallback")
     if Path(sys.executable).resolve() != PYTHON.resolve():
         raise RuntimeError("not pinned R00 interpreter")
-    if not all(hasattr(os, name) for name in ("posix_spawn", "wait4", "POSIX_SPAWN_DUP2", "POSIX_SPAWN_CLOSE", "pipe2")) or not hasattr(resource, "prlimit"):
+    if not all(hasattr(os, name) for name in ("posix_spawn", "setsid", "getsid", "getpgid", "wait4", "POSIX_SPAWN_DUP2", "POSIX_SPAWN_CLOSE", "pipe2")) or not hasattr(resource, "prlimit"):
         raise RuntimeError("required spawn/wait/prlimit API missing")
     status = dict(line.split(":", 1) for line in Path("/proc/self/status").read_text().splitlines() if ":" in line)
     if os.getuid() == 0 or os.geteuid() != os.getuid() or int(status["CapEff"].strip(), 16) != 0 or int(status["Threads"].strip()) != 1:
@@ -283,6 +287,7 @@ def run_case(case, owner, image, expected_output, directory):
     mode = case["worker_mode"]
     reason = None
     policy_ready = False
+    session_ready = False
     waiting_cleanup = False
     cleanup_deadline = None
     stdin_fd = None
@@ -331,12 +336,13 @@ def run_case(case, owner, image, expected_output, directory):
         record["argv"] = argv
         record["closed_extra_inheritable_fds"] = inherited
         event("spawn-begin")
-        # Unsupported setsid/fd-actions is an actual gate failure, no fallback.
-        pid = os.posix_spawn(str(PYTHON), argv, CHILD_ENV, file_actions=actions, setsid=True, setsigmask=(), setsigdef=(signal.SIGPIPE, signal.SIGXCPU, signal.SIGTERM))
+        # Plain spawn is the single explicit readmitted strategy. Trustedchild
+        # setsid success is independently checked by kernelqueries beforepolicy.
+        pid = os.posix_spawn(str(PYTHON), argv, CHILD_ENV, file_actions=actions, setsigmask=(), setsigdef=(signal.SIGPIPE, signal.SIGXCPU, signal.SIGTERM))
         record.update(pid=pid, spawned=1, pgid=os.getpgid(pid), sid=os.getsid(pid))
         event("spawn-return", pid=pid)
-        if record["pgid"] != pid or record["sid"] != pid or pid == os.getpgrp():
-            raise RuntimeError("owned session/group validation failed")
+        if pid <= 1 or pid == os.getpgrp():
+            raise RuntimeError("unsafe owned PID")
         for fd in (child_stdin, child_stdout, child_stderr):
             close_fd(fd)
         stdin_fd = parent_stdin
@@ -348,10 +354,57 @@ def run_case(case, owner, image, expected_output, directory):
         if abort == "after-spawn":
             stop("abort")
         else:
-            before = Path(f"/proc/{pid}/status").read_text()
-            vm = next(int(line.split()[1]) * 1024 for line in before.splitlines() if line.startswith("VmSize:"))
+            # Rendezvous uses only existing stdout/stderr pipes. No readyformat,
+            # addedpipe or per-poll trace growth. Bounds precede every append.
+            record["session_poll_count"] = 0
+            while reason is None and not session_ready:
+                sid, pgid = os.getsid(pid), os.getpgid(pid)
+                record["session_poll_count"] += 1
+                record["last_kernel_identity"] = {"pid": pid, "sid": sid, "pgid": pgid}
+                if sid == pid and pgid == pid:
+                    session_ready = True
+                    event("kernel-session-established", sid=sid, pgid=pgid, pid=pid)
+                    break
+                if time.monotonic() >= start + P["wall_eligibility_deadline"]:
+                    stop("session-not-established")
+                    break
+                waited = raw_wait(pid)
+                if waited is not None:
+                    record["owner_wait"] = waited
+                    owner_status_known = True
+                    collected = True
+                    event("owner-wait-during-session", raw_status=waited["raw_status"])
+                    refuse_second("acquired-wait-before-parent-IO-close")
+                    stop("session-exited-before-established")
+                    break
+                for key, _mask in selector.select(0.01):
+                    stream = key.data
+                    cap = P[stream + "_bytes"]
+                    count = min(CHUNK, max(1, cap - len(streams[stream]) + 1))
+                    try:
+                        block = os.read(key.fd, count)
+                    except BlockingIOError:
+                        continue
+                    read_max = max(read_max, len(block))
+                    if not block:
+                        close_fd(key.fd)
+                        io_eof.add(stream)
+                        continue
+                    totals[stream] += len(block)
+                    remaining = cap - len(streams[stream])
+                    streams[stream].extend(block[:remaining])
+                    if len(block) > remaining:
+                        stop(stream + "-overflow-before-session")
+            if session_ready:
+                if (os.getsid(pid), os.getpgid(pid)) != (pid, pid):
+                    raise RuntimeError("kernel session changed before policy")
+                event("kernel-identity-before-policy")
+            before = Path(f"/proc/{pid}/status").read_text() if session_ready else ""
+            vm = next((int(line.split()[1]) * 1024 for line in before.splitlines() if line.startswith("VmSize:")), None)
             record["bootstrap_VmSize_bytes"] = vm
-            if vm >= P["worker_AS_bytes"]:
+            if not session_ready:
+                pass  # admission refused; no prlimit/control/image action
+            elif vm is None or vm >= P["worker_AS_bytes"]:
                 stop("impossible-startup-AS")
             else:
                 applied = {}
@@ -428,8 +481,11 @@ def run_case(case, owner, image, expected_output, directory):
                 if fd not in fds:
                     continue
                 if stream == "stdin":
-                    if not policy_ready:
-                        raise RuntimeError("input before policy")
+                    if not policy_ready or not session_ready:
+                        raise RuntimeError("input before session/policy")
+                    if (os.getsid(pid), os.getpgid(pid)) != (pid, pid):
+                        raise RuntimeError("kernel session changed before write")
+                    record["kernel_identity_checks_before_writes"] = record.get("kernel_identity_checks_before_writes", 0) + 1
                     if record["control_bytes_sent"] == 0:
                         block = memoryview(b"G")
                     else:
@@ -533,7 +589,8 @@ def run_case(case, owner, image, expected_output, directory):
     out = bytes(streams["stdout"])
     err = bytes(streams["stderr"])
     waited = record["owner_wait"]
-    common = record["image_bytes_sent"] == N and record["control_bytes_sent"] == 1 and policy_ready
+    record["session_ready"] = session_ready
+    common = record["image_bytes_sent"] == N and record["control_bytes_sent"] == 1 and policy_ready and session_ready
     kind = case["id"]
     if mode == "echo" and not abort and kind not in ("policy-permission", "stolen-status"):
         record["eligible"] = reason is None and common and out == expected_output and waited is not None and waited["exitcode"] == 0 and not owner.busy and not owner.quarantined
@@ -541,6 +598,8 @@ def run_case(case, owner, image, expected_output, directory):
     elif kind == "policy-permission":
         failure = record.get("policy_error", {})
         checks["real_EPERM_no_input_effective_limit_unchanged"] = reason == "policy-permission" and failure.get("errno") == errno.EPERM and tuple(failure.get("actual_AS_after", ())) == LIMITS[resource.RLIMIT_AS] and record["image_bytes_sent"] == 0 and record["control_bytes_sent"] == 0
+    elif mode == "no-session":
+        checks["isolated_no_session_zero_admission_bytes"] = reason == "session-not-established" and not session_ready and not policy_ready and record["control_bytes_sent"] == 0 and record["image_bytes_sent"] == 0 and record.get("last_kernel_identity", {}).get("sid") != pid and record.get("last_kernel_identity", {}).get("pgid") != pid and owner_status_known and not owner.busy and not owner.quarantined
     elif mode == "as":
         checks["isolated_kernel_ENOMEM_after_valid_input"] = common and waited is not None and waited["exitcode"] == 40 and b'"phase":"as-mapping-before"' in err and b'"errno":12' in err and not record["parent_signals"] and reason is None
     elif mode == "cpu":
@@ -570,7 +629,7 @@ def run_case(case, owner, image, expected_output, directory):
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--worker", choices=("echo", "as", "cpu", "wall", "stdout", "stderr", "backpressure"))
+    parser.add_argument("--worker", choices=("echo", "as", "cpu", "wall", "stdout", "stderr", "backpressure", "no-session"))
     parser.add_argument("--out", type=Path)
     parser.add_argument("--cases", help="Comma-separated focused IDs; omitted means one stable complete campaign")
     args = parser.parse_args()
@@ -583,9 +642,12 @@ def main():
     ctx["harness_sha256"] = digest(Path(__file__).read_bytes())
     ctx["parameters_sha256"] = digest((HERE / "parameters.json").read_bytes())
     ctx["expectations_sha256"] = digest((HERE / "expectations.json").read_bytes())
+    ctx["strategy_amendment_sha256"] = digest((HERE / "strategy-amendment.json").read_bytes())
     json_write(args.out / "environment.json", ctx)
     wanted = args.cases.split(",") if args.cases else None
-    cases = EXPECTATIONS["cases"]
+    # Original21case file remains byteidentical; explicit additivegate before
+    # last stolen-status case, which intentionally quarantines theowner.
+    cases = EXPECTATIONS["cases"][:-1] + [AMENDMENT["extra_case"]] + EXPECTATIONS["cases"][-1:]
     if wanted:
         if len(set(wanted)) != len(wanted) or set(wanted) - {c["id"] for c in cases}:
             raise RuntimeError("unknown/repeated case selector")
