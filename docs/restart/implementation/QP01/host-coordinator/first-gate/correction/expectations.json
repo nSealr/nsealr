@@ -1,0 +1,90 @@
+{
+  "status": "PRECODE_F1_F2_CORRECTION_EXPECTATIONS_NO_RUNTIME",
+  "recorded_utc": "2026-10-23T19:36:18.457010+00:00",
+  "review": "e4807ce2a2757f1058a72ce9c4b32c7720f9a321",
+  "reviewed_candidate": "1ba98c9b6767eba82ed5ff231ae3d35abcf17337",
+  "scope": "Only new first-gate driver clock and parser-state/counter relations; qr_worker/units/prepareNative/defaultpath unchanged",
+  "source_bindings": [
+    {
+      "path": "packages/client/src/service.ts",
+      "sha256": "d230d65ec2eb505afd940951c792c6ed0ac93a13e781ca70116db464ff59c509"
+    },
+    {
+      "path": "apps/bridge/service/src/manual-qr.ts",
+      "sha256": "d2c9aa73f723739a5682f0a2a4b6c88f4b319a70d879766fe7b8f862ee5e82f9"
+    },
+    {
+      "path": "docs/restart/implementation/QP01/host-coordinator/first-gate.ts",
+      "sha256": "aa4b730d13aa74bb13796a2177faab77e9d476e0729d4681f614fbfc12dd5338"
+    },
+    {
+      "path": "apps/pi/app/nsealr_vault/qr_worker.py",
+      "sha256": "d7a245a9a558cce3ec8271ec42fc49664c094320c6465a537aa3a49c83558d50"
+    },
+    {
+      "path": "apps/pi/tests/test_qr_worker.py",
+      "sha256": "2ce1310dfc3eb596e4bdd03c4c2386b1d61a104e99e87337edc00f2a2325fa19"
+    },
+    {
+      "path": "docs/restart/implementation/QP01/request-engine/client-exchange.ts",
+      "sha256": "0ad47d643ebc3665a9c3c940912d838b28eba4b7e2b15026cbb2c395494cb018"
+    }
+  ],
+  "F1": {
+    "clock": "Remove constant monotonicNow; actual service uses its default performance.now. now:1 remains synthetic wall/fixture metadata only, not the deadline clock.",
+    "subcase": "FG2_elapsed_deadline_before_timer_callback",
+    "placement": "After original image decoded259 and actual W/IO/O collection, while async present remains active, before same before_present/C write. No C input before this point.",
+    "injection": "One real synchronous110ms elapsed loop measured with performance.now; no clock override, timer interception or deadline increase. This test-only hold does not assert hard real-time scheduling or exact return duration.",
+    "preconditions": [
+      "real decoded259 private",
+      "W and O actually collected/IO settled",
+      "client abort_signal not aborted",
+      "operation not already past100ms before synchronous hold",
+      "C still live with zero input"
+    ],
+    "expected_guard": {
+      "type": "CapabilityError",
+      "reason": "runtime_unavailable",
+      "message": "local deadline expired or clock rolled back/unavailable",
+      "same_before_present_rejects": true,
+      "C_input_bytes": 0,
+      "signal_aborted_at_guard": false
+    },
+    "failure_layers": {
+      "service": "service.ts1095-1111: default actual clock; now>=deadline throws CapabilityError(runtime_unavailable).",
+      "bridge": "manual-qr.ts45-50 preserves CapabilityError; actual control.before_present calls the same current closure while presenting is true.",
+      "cleanup_and_outer_race": "Driver catch awaits native.dispose after recording the synchronous guard rejection. Actual client setTimeout may win Promise.race during that real async cleanup. Outer runtime_unavailable or signer_transport_timeout is separately recorded, never substituted for the required synchronous guard witness. Other errors fail the case."
+    },
+    "budgets_unchanged": {
+      "client_ms": 100,
+      "C_ms": 5000,
+      "W_seconds": 8,
+      "cleanup_seconds": 4
+    }
+  },
+  "F2": {
+    "phase_rule": "worker_ready requires actual presented/P state and not unused; exact identity/shape checks remain.",
+    "unused_rule": "unused requires no worker, no phase, zeroG/image/input; prior generic wait/IO/stream rules remain.",
+    "decoded_rule": "stdout_observed==stdout_retained==result_bytes<=512; stderr_observed==stderr_retained<=512; retained stderr canonical bytes still match. Existing status/session/IO/timing rules remain.",
+    "synthetic_controls": [
+      "phase-before-P",
+      "phase-after-Q",
+      "unused-with-phase",
+      "unused-with-worker",
+      "decoded-stdout-count-mismatch",
+      "decoded-stdout-overflow",
+      "decoded-stdout-retained-result-mismatch",
+      "decoded-stderr-overflow",
+      "decoded-stderr-truncation"
+    ],
+    "cause_isolation": "First validate well-formed synthetic baselines with the same pure validator; each mutation must fail its named relation. No processes/worker/native calls in pure controls; fabricated fields are never counted as real PIDs.",
+    "late_cancel": "Truthful decoded record committed before a late Node X remains factual. Parser does not retroactively reject it for local cancellation; the final actual guard/private-cancel rule still prevents C exposure."
+  },
+  "required_execution_order": [
+    "Freeze this precode record before editing expectations/source",
+    "Freeze corrected executable driver and inputset before runtime",
+    "Necessary parser and new actual-monotonic deadline focus",
+    "ONE stable full original29 subcases plus the new bounded controls with actual monotonic clock",
+    "Reuse identical O five-unit/default5+14 receipts; no fullPi/CI/build/feed"
+  ]
+}
