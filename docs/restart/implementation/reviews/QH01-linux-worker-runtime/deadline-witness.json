@@ -1,0 +1,104 @@
+{
+  "schema_version": 1,
+  "finding": "QH-WORKER-RUNTIME-01",
+  "kind": "Static control-flow scheduling counterexample; not an executed delayed runtime trace",
+  "candidate": "31df3027a6e0903d8efa183dd3d4f964ebdf3949",
+  "source_path": "docs/restart/implementation/QH01/linux-worker-experiment/experiment.py",
+  "source_sha256": "e90e6365453b908df084e3fc4636d7e30d7da4c759250a09f07bf48f0d2ab599",
+  "budget_unchanged_seconds": 8.0,
+  "requirements": [
+    {
+      "path": "docs/restart/implementation/QH01/linux-decoder-boundary/brief.md",
+      "lines": [
+        16,
+        50,
+        51,
+        52
+      ],
+      "meaning": "Monotonic expiry invalidates output; actual cessation and IO/callback settlement are still required."
+    },
+    {
+      "path": "docs/restart/implementation/QH01/linux-decoder-boundary/experiment.json",
+      "case": "wall",
+      "meaning": "Delayed completion stays ineligible; no hard return-time guarantee is a separate limit."
+    }
+  ],
+  "source_excerpts": [
+    {
+      "start_line": 438,
+      "end_line": 455,
+      "text": "        deadline = start + P[\"wall_eligibility_deadline\"]\n        stolen = case[\"id\"] == \"stolen-status\"\n        while True:\n            now = time.monotonic()\n            if not waiting_cleanup and now >= deadline:\n                stop(\"wall\")\n            if waiting_cleanup and not signalled and not collected:\n                signal_owned()\n                signalled = True\n            if waiting_cleanup and now >= cleanup_deadline:\n                record[\"cleanup_window_exceeded\"] = True\n                break\n            # For stolen-status, deliberately permit the controlled first reaper\n            # only after valid complete I/O. Never give its status to this owner.\n            if not collected and (not stolen or io_eof == {\"stdout\", \"stderr\"}):\n                try:\n                    waited = raw_wait(pid)\n                    if waited is not None:"
+    },
+    {
+      "start_line": 468,
+      "end_line": 479,
+      "text": "                        else:\n                            record[\"owner_wait\"] = waited\n                            owner_status_known = True\n                            event(\"owner-wait-acquired\", raw_status=waited[\"raw_status\"])\n                        # Real descriptors/selector remain unsettled here.\n                        refuse_second(\"acquired-wait-before-parent-IO-close\")\n                except ChildProcessError:\n                    record[\"owner_wait_error\"] = {\"type\": \"ChildProcessError\", \"unexpected\": True}\n                    reason = \"missing-status\"\n                    break\n            if collected and io_eof == {\"stdout\", \"stderr\"}:\n                break"
+    },
+    {
+      "start_line": 548,
+      "end_line": 582,
+      "text": "        reason = \"harness-error\"\n    finally:\n        # On normal cases this is bookkeeping only. On any exception still collect\n        # this explicit owned direct child; never sweep/reap unknown children.\n        if pid is not None and not collected:\n            signal_owned()\n            # A failure does not buy a secondcleanupwindow or change thecap.\n            until = cleanup_deadline if cleanup_deadline is not None else time.monotonic() + P[\"cleanup_observation_window\"]\n            while time.monotonic() < until:\n                try:\n                    waited = raw_wait(pid)\n                except ChildProcessError as exc:\n                    record[\"owner_wait_error\"] = {\"type\": type(exc).__name__, \"errno\": exc.errno}\n                    break\n                if waited:\n                    record[\"owner_wait\"] = waited\n                    owner_status_known = True\n                    collected = True\n                    event(\"owner-wait-acquired-finally\", raw_status=waited[\"raw_status\"])\n                    break\n                time.sleep(0.01)\n        for fd in list(fds):\n            close_fd(fd)\n        selector.close()\n        record[\"owned_child_collected\"] = collected or pid is None\n        record[\"own_status_acquired\"] = owner_status_known\n        record[\"all_parent_IO_closed\"] = not fds\n        record[\"callbacks_settled\"] = True  # synchronous selector only; no thread/callback left\n        record[\"final_open_fds_equal_initial\"] = open_fds() == initial_fds\n        known = record[\"owned_child_collected\"] and (owner_status_known or pid is None) and record[\"all_parent_IO_closed\"] and record[\"final_open_fds_equal_initial\"]\n        owner.settle(known)\n        event(\"owner-settlement\", known=known, quarantined=owner.quarantined)\n    record[\"totals\"] = totals\n    record[\"retained\"] = {name: len(data) for name, data in streams.items()}\n    record[\"max_read_chunk\"] = read_max"
+    },
+    {
+      "start_line": 594,
+      "end_line": 600,
+      "text": "    waited = record[\"owner_wait\"]\n    record[\"session_ready\"] = session_ready\n    common = record[\"image_bytes_sent\"] == N and record[\"control_bytes_sent\"] == 1 and policy_ready and session_ready\n    kind = case[\"id\"]\n    if mode == \"echo\" and not abort and kind not in (\"policy-permission\", \"stolen-status\"):\n        record[\"eligible\"] = reason is None and common and out == expected_output and waited is not None and waited[\"exitcode\"] == 0 and not owner.busy and not owner.quarantined\n        checks[\"exact_eligible_output\"] = record[\"eligible\"]"
+    }
+  ],
+  "preconditions": {
+    "worker_mode": "echo",
+    "expected_output": "Existing exact198-byte public envelope",
+    "image_bytes_sent": 172800,
+    "control_bytes_sent": 1,
+    "session_ready": true,
+    "policy_ready": true,
+    "reason": null,
+    "waiting_cleanup": false,
+    "collected": false,
+    "io_eof": [
+      "stdout",
+      "stderr"
+    ],
+    "owner_busy": true,
+    "owner_quarantined": false
+  },
+  "schedule": [
+    {
+      "step": 1,
+      "location": "loop top441-443",
+      "relative_time_seconds": 7.999,
+      "transition": "now < start+8, so stop(wall) is not called."
+    },
+    {
+      "step": 2,
+      "location": "between443 and454",
+      "relative_time_seconds": 8.001,
+      "transition": "Ordinary controller descheduling crosses deadline; no parameter, input, source or child behavior is changed."
+    },
+    {
+      "step": 3,
+      "location": "raw_wait454 / status assignment468-473",
+      "relative_time_seconds": 8.001,
+      "transition": "Owned child status0 is actually acquired; second acquisition still refused. reason stays None."
+    },
+    {
+      "step": 4,
+      "location": "478-479",
+      "transition": "collected and both EOF true: break exits supervision without another clock sample."
+    },
+    {
+      "step": 5,
+      "location": "finally548-580",
+      "transition": "Real acquired status, IO closure and FD equality make owner.settle(True) release reservation; event timestamps record elapsed time but do not invalidate it."
+    },
+    {
+      "step": 6,
+      "location": "599-600 /628",
+      "transition": "Eligibility predicate checks no deadline; all its recorded conditions are true, allowing eligible=True and PASS after expiry."
+    }
+  ],
+  "actual_runtime_reproduction": false,
+  "why_finite_polling_is_insufficient": "The result decision occurs only after acquired status and settlement; the earlier loop clock sample cannot establish currentness at this later success decision. A hard return-time guarantee is not requested.",
+  "preserved_author_observation": "Original positive case took0.024933757s and author22case campaign passed. Neither is relabelled as a reproduced failure.",
+  "bounded_remediation": "Author must check current monotonic eligibility at successful result admission after required status/IO settlement, preserve cleanup/quarantine and original failures, then supply a narrowly scoped deterministic delayed-completion/settlement control and affected review. No limit increase or framework change."
+}
