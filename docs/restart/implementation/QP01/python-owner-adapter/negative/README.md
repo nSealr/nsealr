@@ -67,13 +67,33 @@ and3 pure methods. Preserve all194 old Pi tests and3 MICRO tests: expected211.
 One root-admitted automatic positive additionally checks actual phase/G/full
 settlement, original259-byte/vector-v2 result, second take refusal, reservation
 refusal before known close and fresh admission only afterwards. It has no
-separate focused/micro replay; its first execution belongs to the upcoming
-normal Pi gate inside the complete stable `make ci`.
+separate focused/micro replay; its first execution occurred in the normal Pi
+gate inside the complete stable `make ci` below.
 
-Full gate result is pending at this source freeze. No old TS/Node/C39-case
-matrix was separately replayed during focused development. All old17/default5/
-14/native14/first39, coverage floors and repro remain mandatory in the normal
-complete gate. Root owns source-aware projection/protected PR/main adoption.
+Complete normal `make ci` passed0 on stable source
+`dc0b7c81a12bf83d70b6ce9ecd65b49ce55fc082` (tree
+`e8f501ce2c07e068a7e21a5c7deecdc6da3e8cf9`) in316.645884439s, clean before/after,
+with default targets and no CARGO_TARGET_DIR override. Pi211 passed in10.634s.
+The normal positive O2357465/W2357466 released exactly259, second take and
+pre-close reservation were refused, both actual raw waits were0 and all EOF/FD
+closure was verified. Same-run evidence contains70 structured records:10 actual
+O,5 W,11 no-fork helpers, with role-specific data and zero negative release.
+
+`full-validation/stable/` retains the exact merged log compressed, original
+command/environment and all70 same-run records archived with an internal
+manifest. `result.json` summarizes the actual source-specific receipts. Old17,
+default5/14/native14/first39/64 descendants,3 fresh Rust audit graphs, core/fixture
+100% and desktop77.69%>=76.70%, and reproA/B/X all pass. No old TS/Node/C39-case
+matrix was separately replayed during focused development.
+
+The earlier full-ci-01 exit2 is preserved under `original-setup-red/`: this new
+worktree lacked node_modules and `tsc` before Pi began. The admitted correction
+was the existing offline/frozen pnpm installation from the R00 store, with
+source/lock hashes unchanged and baseline/local executable versions resolved
+before the second complete gate. This is a setup RED, not an adapter failure or
+partial full-gate PASS. No product code changed for it. Root owns source-aware
+capture projection, distinct final review and protected PR/main adoption. These
+are local author receipts, with no GitHub run or integrated-main claim.
 
 Still excluded: actual unknown-W cleanup/O-death recovery, hostile isolation,
 hard scheduling guarantees, broad interpreter/ARM support, camera/SPI/GPIO/UI,
