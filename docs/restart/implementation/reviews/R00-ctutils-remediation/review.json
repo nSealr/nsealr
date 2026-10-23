@@ -1,0 +1,45 @@
+{
+  "schema_version": 1,
+  "verdict": "PASS_scoped_official_ctutils_patch_and_functional_compatibility_only",
+  "candidate_commit": "1d10e7a1c2986a5d244807624377e22ad562a110",
+  "candidate_tree": "99b8ae91552cd33eb08b45c20f98291fb361e387",
+  "product_tested_source": "f089a20098523f07193f15cf472bdf1b973b7318",
+  "reviewer": "root; distinct from B01 implementation author",
+  "findings": [],
+  "evidence": {
+    "source_audit": "validation.json",
+    "independent_runtime": "commands.json",
+    "runtime_passed": 150,
+    "source_manifest_verified": 80,
+    "official_archive_files": 21,
+    "exact_changed_product_paths": 12,
+    "unchanged_other_packages": {
+      "root": 42,
+      "host": 46
+    },
+    "unchanged_other_vendor_files": 1892
+  },
+  "source_review": [
+    "Official advisory RUSTSEC-2026-0385 declares >=0.4.4 patched; independent primary GitHub read confirmed pinned advisory body.",
+    "Both active lock changes are only ctutils version/checksum; all other package records and workspace metadata preserved. All24 product source bindings equal frozen tested product;6 original independent-checker/ratchet/test inputs unchanged.",
+    "Archive bytes/checksums and VCS commit match captured official registry/release identity;21 archive files exact, generated vendor checksum file separately checked. Runtime dependencies/features/MSRV/edition/licenses unchanged. Seven dev-only pins in upstream-internal lock do not enter product graphs.",
+    "Read all affected runtime diffs: masks use existing opaque to_u8; u128 32-bit predicates compare high/low halves and preserve opaque intermediate predicates; dedicated CtLt/CtGt implementations delegate accordingly. Existing to_u8 itself documents best-effort black_box.",
+    "Upstream added proptests are preserved exact but not claimed executed. Independent150 official library tests include direct halves boundary matrix on host; real RISC-V32 compile is author evidence only."
+  ],
+  "reused_proof": {
+    "compatibility_commands": 11,
+    "rust_gate_commands": 5,
+    "method": "All receipts/log hashes/environment/source identity verified; unchanged oracle/fixtures and coverage floors verified. No duplicate full functional/crypto/coverage suite in this review. Final protected CI must run on final candidate."
+  },
+  "integration_status": "NOT_ADOPTED; PR44 old-head CI failed; A02 audit-data gate has separate independent review. No PR/main success inferred.",
+  "limits": [
+    "No universal target timing guarantee, exploit reproduction, physical side-channel test or production-key/provider qualification.",
+    "No target execution: host half-width function test and no_std32 compile have different evidence scopes.",
+    "ctutils old0.4.3 reports remain historical, not current dependency security approval."
+  ],
+  "observations": [
+    "Primary release commit web open returned Cache miss; no retry/bypass. Official captured archive/VCS/registry and pinned advisory were verified directly.",
+    "Pre-review diagnostic resolution receipt source_commit KeyError recovered by inspecting actual variant; checks apply to actual compatibility/rust-gates records. No thresholds or source changed.",
+    "Initial private snapshot copy used wrong directory; corrected existing checkpoint path and committed actual modifications; no state loss."
+  ]
+}
