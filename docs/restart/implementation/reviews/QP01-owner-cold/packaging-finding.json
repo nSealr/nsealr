@@ -1,0 +1,26 @@
+{
+  "id": "QP01-COLD-REVIEW-01",
+  "severity": "metadata packaging blocker",
+  "candidate": "afc686e81632fc5d51cdb12c940d0b253df0388c",
+  "tree": "dba503406f21e6acf2bd4e277e90429be488832e",
+  "recorded_utc": "2026-10-23T20:38:36.853344+00:00",
+  "manifest_path": "docs/restart/implementation/QP01/host-coordinator/cold-delivery/artifact-manifest.json",
+  "manifest_sha256": "fa1fc3e28a0128ac17f093c31ed8e86e7181a4b2ac3ad29c2aa4f70ca8a42e78",
+  "declared_members": 42,
+  "absent_member": "docs/restart/implementation/QP01/host-coordinator/cold-delivery/__pycache__/verify-cold-capture.cpython-313.pyc",
+  "witness": {
+    "argv": [
+      "git",
+      "cat-file",
+      "-e",
+      "afc686e81632fc5d51cdb12c940d0b253df0388c:docs/restart/implementation/QP01/host-coordinator/cold-delivery/__pycache__/verify-cold-capture.cpython-313.pyc"
+    ],
+    "exit": 128,
+    "stdout": "",
+    "stderr": "fatal: path 'docs/restart/implementation/QP01/host-coordinator/cold-delivery/__pycache__/verify-cold-capture.cpython-313.pyc' does not exist in 'afc686e81632fc5d51cdb12c940d0b253df0388c'\n"
+  },
+  "other_members_byte_exact": 41,
+  "cause": "Manifest enumerated an ignored generated Python cache absent from the tracked source.",
+  "required_correction": "Author remove the untracked cache member from manifest/count; preserve this rejected packaging state. No source or runtime change needed.",
+  "status": "communicated to author and root; corrected candidate pending"
+}
