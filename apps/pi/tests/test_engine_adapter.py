@@ -85,6 +85,23 @@ class EngineAdapterTests(unittest.TestCase):
                 actual = response(self.execute(frame(compact(data["request"]))))
                 self.assertEqual(actual, data["response"])
                 self.assert_review(data["request"]["request_id"])
+                # Fixed ASCII source vectors: newline is only the core's visual
+                # wrapping. Check every incoming signed field at its own role,
+                # including the empty tag field and the signed suffix.
+                shown = {p.label.replace(b"\n", b"").split(b" / fragment")[0].decode():
+                         json.loads(p.body.replace(b"\n", b"")) for p in self.pages}
+                expected = data["signed_event"]
+                self.assertEqual(shown["Selected actual signing identity"], expected["pubkey"])
+                self.assertEqual(shown["Canonical event ID"], expected["id"])
+                self.assertEqual(shown["Signed kind"], str(expected["kind"]))
+                self.assertEqual(shown["Signed created_at (untrusted timestamp)"], str(expected["created_at"]))
+                self.assertEqual(shown["Signed tag count"], str(len(expected["tags"])))
+                self.assertEqual(shown["Signed content (plain text)"], expected["content"])
+                for tag_index, tag in enumerate(expected["tags"]):
+                    for field_index, field in enumerate(tag):
+                        matching = [value for role, value in shown.items()
+                                    if role.startswith(f"Signed tag {tag_index} field {field_index}:")]
+                        self.assertEqual(matching, [field])
 
     def test_P04_changed_correlation_is_fresh(self):
         data = vector("kind-1-basic.json")
