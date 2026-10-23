@@ -47,6 +47,8 @@ def build_artifact(command, source, manifest, name, kind, paths=None):
     artifact = artifacts[0]
     if not artifact.is_file():
         raise RuntimeError("Cargo artifact is not a regular file")
+    if kind == "bin" and not os.access(artifact, os.X_OK):
+        raise RuntimeError("Cargo worker artifact is not executable")
     binary = artifact.read_bytes()
     if binary[:4] != b"\x7fELF":
         raise RuntimeError("host experiment requires the actual ELF")

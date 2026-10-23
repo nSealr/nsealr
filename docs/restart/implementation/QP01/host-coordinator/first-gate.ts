@@ -2,7 +2,7 @@
 import assert from "node:assert/strict";
 import { spawn } from "node:child_process";
 import { createHash } from "node:crypto";
-import { readFileSync, statSync, writeFileSync } from "node:fs";
+import { accessSync, constants, readFileSync, statSync, writeFileSync } from "node:fs";
 import { isAbsolute, resolve } from "node:path";
 import type { Readable, Writable } from "node:stream";
 import { clientIdForIdentity, handleLocalServiceRequestAsync, type LocalServiceContext,
@@ -235,6 +235,7 @@ export async function runFirstGate({ prepareNative, basic, root }: {
   assert.equal(contract.schema_version, 2); assert.equal(contract.initialization.version, 2);
   const binary = process.env.NSEALR_QP01_QR_WORKER, trustedHash = process.env.NSEALR_QP01_QR_WORKER_SHA256;
   assert(binary && isAbsolute(binary) && statSync(binary).isFile(), "required trusted worker path");
+  accessSync(binary, constants.X_OK);
   digest(trustedHash);
   const bytes = readFileSync(binary);
   assert(bytes.subarray(0, 4).equals(Buffer.from([0x7f, 0x45, 0x4c, 0x46])));

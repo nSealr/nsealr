@@ -6,11 +6,13 @@ triggers CI, or retroactively changes expectations for historical captures.
 CLI: CAPTURE_DIRECTORY SOURCE_HEAD REPOSITORY.
 """
 from pathlib import Path
-import hashlib,json,re,subprocess,sys,zipfile
+import collections,hashlib,json,re,subprocess,sys,zipfile
 
 ORIGIN_SHA256 = "1e71c5f9d88e0eb614b5679185485e3c556841e0074a80f4b04270cb3e4d030e"
 WORKER_UNIT_SOURCE_SHA256 = "2ce1310dfc3eb596e4bdd03c4c2386b1d61a104e99e87337edc00f2a2325fa19"
 EXPECTED_FIRST_CASES = set(['FG0_C_handshake_failure', 'FG0_C_library_ready_failure', 'FG0_actual_pre_admission_refusal', 'FG0_pre_presentation_assertion', 'FG0_startup_unused', 'FG1_normal259', 'FG2_elapsed_deadline_before_timer_callback', 'FG2_timeout_late', 'FG2_timeout_preG', 'FG3_cancel_late', 'FG3_cancel_preG', 'FG3_cancel_preP', 'FG4_generation', 'FG5_C_SIGKILL_preG', 'FG5_C_early_exit_before_P', 'FG6_control_EOF_preG', 'FG6_duplicate_P', 'FG6_invalid_opcode', 'FG6_premature_G', 'FG7_contradictory-IO', 'FG7_duplicate-key', 'FG7_duplicate-terminal', 'FG7_phase-after-terminal', 'FG7_ready-extra', 'FG7_ready-missing', 'FG7_relation_decoded-stderr-overflow', 'FG7_relation_decoded-stderr-truncation', 'FG7_relation_decoded-stdout-count-mismatch', 'FG7_relation_decoded-stdout-overflow', 'FG7_relation_decoded-stdout-retained-result-mismatch', 'FG7_relation_phase-after-Q', 'FG7_relation_phase-before-P', 'FG7_relation_unused-with-phase', 'FG7_relation_unused-with-worker', 'FG7_status-missing', 'FG7_status-overflow', 'FG7_status-truncated', 'FG7_wrong-owner', 'FG7_wrong-worker'])
+
+EXPECTED_CASE_ROW_COUNTS = {'FG0_C_handshake_failure': 1, 'FG0_C_library_ready_failure': 1, 'FG0_actual_pre_admission_refusal': 1, 'FG0_pre_presentation_assertion': 1, 'FG0_startup_unused': 1, 'FG1_normal259': 3, 'FG2_elapsed_deadline_before_timer_callback': 4, 'FG2_timeout_late': 5, 'FG2_timeout_preG': 5, 'FG3_cancel_late': 3, 'FG3_cancel_preG': 3, 'FG3_cancel_preP': 1, 'FG4_generation': 3, 'FG5_C_SIGKILL_preG': 3, 'FG5_C_early_exit_before_P': 1, 'FG6_control_EOF_preG': 3, 'FG6_duplicate_P': 1, 'FG6_invalid_opcode': 1, 'FG6_premature_G': 1, 'FG7_contradictory-IO': 1, 'FG7_duplicate-key': 1, 'FG7_duplicate-terminal': 1, 'FG7_phase-after-terminal': 1, 'FG7_ready-extra': 1, 'FG7_ready-missing': 1, 'FG7_relation_decoded-stderr-overflow': 1, 'FG7_relation_decoded-stderr-truncation': 1, 'FG7_relation_decoded-stdout-count-mismatch': 1, 'FG7_relation_decoded-stdout-overflow': 1, 'FG7_relation_decoded-stdout-retained-result-mismatch': 1, 'FG7_relation_phase-after-Q': 1, 'FG7_relation_phase-before-P': 1, 'FG7_relation_unused-with-phase': 1, 'FG7_relation_unused-with-worker': 1, 'FG7_status-missing': 1, 'FG7_status-overflow': 1, 'FG7_status-truncated': 1, 'FG7_wrong-owner': 1, 'FG7_wrong-worker': 1}
 
 def verify_product(raw, head, repo, run_id=None):
     lines=[re.sub(r'^\d{4}-\d\d-\d\dT\S+Z ?', '',s) for s in raw.decode().splitlines()]
@@ -64,6 +66,12 @@ def verify_product(raw, head, repo, run_id=None):
     assert len(commands)==6 and commands[0].endswith('Cargo.toml fetch index db') and commands[1].endswith('apps/desktop-simulator/Cargo.toml fetch index') and commands[2].endswith('apps/pi/qr-worker/Cargo.toml fetch index')
     assert all(s.endswith(' --offline check --deny index-failure') for s in commands[3:])
     assert audit.count('advisories ok, bans ok, licenses ok, sources ok')==3
+    first_proof=verify_first(objects,b,head,repo)
+    out={'run':int(run_id),'source_head':head,'product_log_sha256':hashlib.sha256(raw).hexdigest(),'native_build':b,'native_source_bindings':4,'actual_full_Pi_tests':194,'automatic_readiness_controls':ready[0],'client':{k:v for k,v in c.items() if k!='reports'},'all14_native_observations_match_actual_provisioned_library':True,'fixture_coverage_actual_and_floor':coverage[0],'additional_audit_controls':4,'three_complete_fresh_audits':True,'audit_commands':commands,'limits':'Original completed CI source/build/trace binding only; the ELF itself is not downloaded, no cdylib reproducibility or target/device/custody/physical qualification claim. The original17-step/check/bootstrap/capture verifier remains separately mandatory.'}
+    out.update(first_proof)
+    return out
+
+def verify_first(objects,b,head,repo):
     # Only this new candidate's completed logs use initialization v2 and third graph.
     worker_builds=[o for o in objects if o.get('role')=='public RGB worker build, initialization v2, not hardware qualification']
     assert len(worker_builds)==1
@@ -86,6 +94,11 @@ def verify_product(raw, head, repo, run_id=None):
     cases={o['case'] for o in objects if 'case' in o}
     assert cases==EXPECTED_FIRST_CASES
     assert {o['case'] for o in objects if o.get('pass') is True and 'case' in o}==EXPECTED_FIRST_CASES
+    case_rows=[o for o in objects if 'case' in o]
+    assert collections.Counter(o['case'] for o in case_rows)==EXPECTED_CASE_ROW_COUNTS
+    final_cases=[o for o in case_rows if 'pass' in o]
+    assert len(final_cases)==39 and all(o['pass'] is True for o in final_cases)
+    assert collections.Counter(o['case'] for o in final_cases)==dict.fromkeys(EXPECTED_FIRST_CASES,1)
     summary=[o for o in objects if o.get('scope')=='FG0_through_FG7_host_author_only']
     assert len(summary)==1 and summary[0]['groups']==8 and summary[0]['pass'] is True
     first=[o for o in objects if o.get('scope')=='first_owner_gate_C']
@@ -137,12 +150,10 @@ def verify_product(raw, head, repo, run_id=None):
     assert clock['type']=='CapabilityError' and clock['reason']=='runtime_unavailable'
     assert clock['signal_aborted'] is False and clock['actual_hold_ms']>=110
     assert clock['W_O_collected'] is True and clock['private_decoded_bytes']==259 and clock['C_input_bytes']==0
-    out={'run':int(run_id),'source_head':head,'product_log_sha256':hashlib.sha256(raw).hexdigest(),'native_build':b,'native_source_bindings':4,'actual_full_Pi_tests':194,'automatic_readiness_controls':ready[0],'client':{k:v for k,v in c.items() if k!='reports'},'all14_native_observations_match_actual_provisioned_library':True,'fixture_coverage_actual_and_floor':coverage[0],'additional_audit_controls':4,'three_complete_fresh_audits':True,'audit_commands':commands,'limits':'Original completed CI source/build/trace binding only; the ELF itself is not downloaded, no cdylib reproducibility or target/device/custody/physical qualification claim. The original17-step/check/bootstrap/capture verifier remains separately mandatory.'}
-    out.update({'worker_build':w,'first_owner_cases':len(cases),'first_owner_actual_children':64,
+    return {'worker_build':w,'first_owner_cases':len(cases),'first_owner_actual_children':64,
      'first_owner_W':11,'first_owner_native_reports':3,'trusted_initialization_version':2,
      'source_exact_five_added_Pi_unit_controls':True,'real_synchronous_deadline_guard':clock,
-     'generic_completed_capture_checker_remains_separately_mandatory':True})
-    return out
+     'generic_completed_capture_checker_remains_separately_mandatory':True}
 
 if __name__=='__main__':
     capture,head,repo=sys.argv[1:]
