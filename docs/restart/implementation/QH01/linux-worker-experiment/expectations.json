@@ -1,0 +1,203 @@
+{
+  "schema_version": 1,
+  "role": "Independent expected behavior frozen before harness code/execution; not execution evidence",
+  "source_spec": "4b9cbaca71b7fe53661a443ccfd5fea800323eeb",
+  "root_admission": "e287c938973770d8c8c2bb63d2c9693c50e84a84",
+  "model": "gpt-6.1-sol xhigh",
+  "case_count": 21,
+  "groups": 12,
+  "cases": [
+    {
+      "id": "positive",
+      "group": "positive",
+      "worker_mode": "echo",
+      "expected": "eligible_exact_public_output_after_acquired_exit0_and_IO_settlement"
+    },
+    {
+      "id": "dimensions-width-cap",
+      "group": "dimensions",
+      "worker_mode": null,
+      "expected": "pre_spawn_width_refusal",
+      "boundary_row": "width-cap",
+      "spawned": 0,
+      "image_bytes_sent": 0
+    },
+    {
+      "id": "dimensions-height-cap",
+      "group": "dimensions",
+      "worker_mode": null,
+      "expected": "pre_spawn_height_refusal",
+      "boundary_row": "height-cap",
+      "spawned": 0,
+      "image_bytes_sent": 0
+    },
+    {
+      "id": "dimensions-pixel-cap",
+      "group": "dimensions",
+      "worker_mode": null,
+      "expected": "pre_spawn_pixels_refusal",
+      "boundary_row": "pixel-cap",
+      "spawned": 0,
+      "image_bytes_sent": 0
+    },
+    {
+      "id": "dimensions-stride-length-relation",
+      "group": "dimensions",
+      "worker_mode": null,
+      "expected": "pre_spawn_relation_refusal",
+      "boundary_row": "stride-length-relation",
+      "spawned": 0,
+      "image_bytes_sent": 0
+    },
+    {
+      "id": "raw-N-minus-1",
+      "group": "raw-cap",
+      "worker_mode": null,
+      "expected": "pre_spawn_raw_refusal",
+      "boundary_row": "N-minus-1"
+    },
+    {
+      "id": "raw-N",
+      "group": "raw-cap",
+      "worker_mode": "echo",
+      "expected": "eligible_exact_public_output_after_acquired_exit0_and_IO_settlement",
+      "boundary_row": "N"
+    },
+    {
+      "id": "raw-N-plus-1",
+      "group": "raw-cap",
+      "worker_mode": "echo",
+      "expected": "eligible_exact_public_output_after_acquired_exit0_and_IO_settlement",
+      "boundary_row": "N-plus-1"
+    },
+    {
+      "id": "policy-permission",
+      "group": "policy",
+      "worker_mode": "echo",
+      "expected": "real_EPERM_raising_already_lowered_child_AS_hard_limit_no_gate_or_image",
+      "negative_request": "After baselineAS256MiB is set/readback, attempt hardAS+1 on this owned unprivileged child. Expected actualPermissionError/EPERM; effectiveAS remains baseline. No elevation/fallback; unexpected success is failure/stop, not a new limit policy.",
+      "image_bytes_sent": 0
+    },
+    {
+      "id": "AS-growth",
+      "group": "AS-growth",
+      "worker_mode": "as",
+      "expected": "actual_ENOMEM_new_virtual_mapping_over_AS_after_all_input_no_large_RAM_touch"
+    },
+    {
+      "id": "CPU",
+      "group": "CPU",
+      "worker_mode": "cpu",
+      "expected": "kernel_SIGKILL_after_finite_hard_CPU2s_validated_before_burn_parent_wall_not_winner"
+    },
+    {
+      "id": "wall",
+      "group": "wall",
+      "worker_mode": "wall",
+      "expected": "parent_wall_ineligible_SIGKILL_then_acquired_wait_and_IO_settlement"
+    },
+    {
+      "id": "stdout",
+      "group": "stdout",
+      "worker_mode": "stdout",
+      "expected": "observed_513_stdout_retained512_overflow_before_append_stderr_quiet"
+    },
+    {
+      "id": "stderr",
+      "group": "stderr",
+      "worker_mode": "stderr",
+      "expected": "observed_513_stderr_retained512_overflow_before_append_stdout_bounded"
+    },
+    {
+      "id": "input-backpressure",
+      "group": "input-backpressure",
+      "worker_mode": "backpressure",
+      "expected": "body_write_stalls_but_deadline_supervision_responsive_and_cleanup_acquired"
+    },
+    {
+      "id": "abort-pre-spawn",
+      "group": "abort",
+      "worker_mode": "echo",
+      "expected": "abort_ineligible_then_known_cleanup",
+      "abort_phase": "pre-spawn",
+      "scope": "Pending startup means afteractualspawn beforepolicy; no forced uninterruptiblespawn experiment."
+    },
+    {
+      "id": "abort-after-spawn",
+      "group": "abort",
+      "worker_mode": "echo",
+      "expected": "abort_ineligible_then_known_cleanup",
+      "abort_phase": "after-spawn",
+      "scope": "Pending startup means afteractualspawn beforepolicy; no forced uninterruptiblespawn experiment."
+    },
+    {
+      "id": "abort-after-policy",
+      "group": "abort",
+      "worker_mode": "echo",
+      "expected": "abort_ineligible_then_known_cleanup",
+      "abort_phase": "after-policy",
+      "scope": "Pending startup means afteractualspawn beforepolicy; no forced uninterruptiblespawn experiment."
+    },
+    {
+      "id": "abort-during-input",
+      "group": "abort",
+      "worker_mode": "echo",
+      "expected": "abort_ineligible_then_known_cleanup",
+      "abort_phase": "during-input",
+      "scope": "Pending startup means afteractualspawn beforepolicy; no forced uninterruptiblespawn experiment."
+    },
+    {
+      "id": "abort-after-output",
+      "group": "abort",
+      "worker_mode": "echo",
+      "expected": "abort_ineligible_then_known_cleanup",
+      "abort_phase": "after-output",
+      "scope": "Pending startup means afteractualspawn beforepolicy; no forced uninterruptiblespawn experiment."
+    },
+    {
+      "id": "stolen-status",
+      "group": "descendant-or-status",
+      "worker_mode": "echo",
+      "expected": "valid_preceding_IO_actual_controlled_reap_then_owner_ECHILD_quarantine_permanent_refusal",
+      "variant": "status OR; no descendants are created. Controlled first reaper only uses this exact ownedPID. Firstreaper status never credited to owner."
+    }
+  ],
+  "sources": {
+    "public_RGB": {
+      "commit": "13949e4e859de1456f3532cb7fbee2b0cda0cf1c",
+      "path": "docs/restart/implementation/QH01/native-qr-probe/execution-01/response-get-public-key.rgb",
+      "bytes": 172800,
+      "sha256": "1b56f2926382c7da914a877db899494414988d311c65ff459e2f78a8ab4f0216"
+    },
+    "predetermined_public_output": {
+      "commit": "13949e4e859de1456f3532cb7fbee2b0cda0cf1c",
+      "path": "docs/restart/implementation/QH01/native-qr-probe/expected/response-get-public-key.envelope",
+      "bytes": 198,
+      "sha256": "dae39f12a7744d3c82e2d3e1050b02948a3b72612e5835c237054dabc3d8f3cf"
+    },
+    "R00_environment": {
+      "path": "docs/restart/implementation/R00/evidence/final/environment.json",
+      "sha256": "5b0f773e07fc90aa4a2b7d62c102bbc7b824b6bab135002ee0a01ad90a0ef001"
+    }
+  },
+  "all_spawned_rows": [
+    "absolute pinnedR00Python3.12.15 stdlib, -I -B, explicit nonsecret env, setsid and pipe fd-actions; no descendants/thread",
+    "parent prlimitAS/CPU/CORE set+exactreadback beforegate/image; currentVmSize recorded, bootstrapnotqualified",
+    "allimagewrites/temporaryreads<=4096; independentlyretained stdout/stderr<=512; boundedconcurrentIO",
+    "owner reservation beforecreate; actual secondacquire refusal withliveworker and afterwait/beforeFDsettlement; knownwait+closedIO beforeactualnextreuse",
+    "actualownedPIDregistry; onlykill ownedpositivePID, never0/-1/group; wait4 actualrawstatus+rusage, allFDsclosed and zeroownedchildren atcampaignend"
+  ],
+  "unproven": [
+    "actualQRdecode or signing",
+    "uninterruptiblespawn/hardwall/reaplatency",
+    "RSS/cumulativeallocation/logicalparse_work/totaljobresources",
+    "hostilecompromisedworker or arbitrarydescendants/secretisolation",
+    "camera/Pi/ARM/physical profile/readability/clientintegration"
+  ],
+  "execution_before_commit": {
+    "worker_runs": 0,
+    "code_files": 0,
+    "tests": 0
+  },
+  "case_disposition": "PASS requires intendedboundary actuallyobserved. Earlier/maskingfault=NOT_EXERCISED, preserved failure; no parameterretuning."
+}
