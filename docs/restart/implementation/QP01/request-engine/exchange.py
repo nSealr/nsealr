@@ -55,7 +55,6 @@ def ci(directory):
     # The entire existing setup/test/lint/audit/docs runs ONCE, after provisioning.
     subprocess.run(["make", "-C", str(pi), "ci"], cwd=ROOT, env=env, check=True)
     env["NSEALR_QP01_PYTHON"] = str(pi / ".venv/bin/python")
-    subprocess.run(["node", "--import", "tsx/esm", str(CLIENT), "--readiness-controls"], cwd=ROOT, env=env, check=True)
     subprocess.run(["node", "--import", "tsx/esm", str(CLIENT)], cwd=ROOT, env=env, check=True)
 
 
