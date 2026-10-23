@@ -1,0 +1,251 @@
+{
+  "candidate": "e44f957bc20c79d443f6e29ac0ba8c611f4787bd",
+  "groups": 23,
+  "cases": [
+    {
+      "id": "P01",
+      "assessment": "PASS_scoped_host_component",
+      "basis": "Actual fixture owner returns4f35 identity/142JSON/198frame; no presentation or auxiliary call. Native wrapper and direct ABI assertions.",
+      "independent_execution": [
+        "commands/pi-client/receipt.json",
+        "commands/cargo-newcrate/receipt.json"
+      ],
+      "original_control_mapping": "Python test_P01_original_identity_and_no_signing; Rust actual_ffi_effects_and_boundaries",
+      "unchanged_core_or_Bridge_reuse": false
+    },
+    {
+      "id": "P02",
+      "assessment": "PASS_scoped_host_component",
+      "basis": "Basic input actual owner signs;31 indexed frames through decision, literal selected key/ID/time/kind/content/tag count; exact independent zero-aux event and actual client acceptance.",
+      "independent_execution": [
+        "commands/pi-client/receipt.json",
+        "commands/cargo-newcrate/receipt.json"
+      ],
+      "original_control_mapping": "Python test_P02_P03_real_basic_and_tagged_requests; actual client positive basic",
+      "unchanged_core_or_Bridge_reuse": false
+    },
+    {
+      "id": "P03",
+      "assessment": "PASS_scoped_host_component",
+      "basis": "Tagged input produces37 indexed frames and exact distinct event; all incoming tag fields, empty relay field and signed suffix checked against source fixture, not learned native output.",
+      "independent_execution": [
+        "commands/pi-client/receipt.json"
+      ],
+      "original_control_mapping": "Python test_P02_P03_real_basic_and_tagged_requests; actual client positive tagged",
+      "unchanged_core_or_Bridge_reuse": false
+    },
+    {
+      "id": "P04",
+      "assessment": "PASS_scoped_host_component",
+      "basis": "Only correlation changes: fresh complete traversal and response ID change; exact event/signature unchanged. No detached approval input.",
+      "independent_execution": [
+        "commands/pi-client/receipt.json"
+      ],
+      "original_control_mapping": "Python test_P04_changed_correlation_is_fresh",
+      "unchanged_core_or_Bridge_reuse": false
+    },
+    {
+      "id": "P05",
+      "assessment": "PASS_scoped_host_component",
+      "basis": "Python forwards original frame bytes; Rust copies then decodes once and passes same decoded slice to strict parser/begin_request. Whitespace/reversed-member runtime control succeeds without Python normalization.",
+      "independent_execution": [
+        "commands/pi-client/receipt.json"
+      ],
+      "original_control_mapping": "Python test_P05_B01_B02_original_raw_bytes_and_outer_bound",
+      "unchanged_core_or_Bridge_reuse": false
+    },
+    {
+      "id": "B01",
+      "assessment": "PASS_scoped_host_component",
+      "basis": "Direct exported ABI tests null/zero/max+1/overflow/overlap/misalignment before slices, live destination sentinels unchanged; max947 actually admitted. Pointer validity remains unsafe caller precondition.",
+      "independent_execution": [
+        "commands/pi-client/receipt.json",
+        "commands/cargo-newcrate/receipt.json"
+      ],
+      "original_control_mapping": "Rust arguments_do_not_touch_any_live_destination; Python test_P05_B01_B02_original_raw_bytes_and_outer_bound",
+      "unchanged_core_or_Bridge_reuse": false
+    },
+    {
+      "id": "B02",
+      "assessment": "PASS_scoped_host_component",
+      "basis": "JSON704/frame947 success;JSON705/frame948 rejected by outer ABI/wrapper. No claim of executing internal decoded-cap failure for that row.",
+      "independent_execution": [
+        "commands/pi-client/receipt.json",
+        "commands/cargo-newcrate/receipt.json"
+      ],
+      "original_control_mapping": "Python test_P05_B01_B02_original_raw_bytes_and_outer_bound; Rust actual_ffi_effects_and_boundaries",
+      "unchanged_core_or_Bridge_reuse": false
+    },
+    {
+      "id": "B03",
+      "assessment": "PASS_scoped_host_component",
+      "basis": "Actual native malformed prefix/base64/padding/trailing bits/UTF8/duplicates/escaped aliases/noncanonical numbers/unknown authority fields reject-3 before presentation/provider.",
+      "independent_execution": [
+        "commands/pi-client/receipt.json",
+        "commands/cargo-newcrate/receipt.json"
+      ],
+      "original_control_mapping": "Python test_B03_strict_original_bytes_no_normalization; Rust actual_ffi_effects_and_boundaries",
+      "unchanged_core_or_Bridge_reuse": false
+    },
+    {
+      "id": "B04",
+      "assessment": "PASS_scoped_host_component",
+      "basis": "Capabilities/catalog-inadmissible4/13/14/1059/10050/22242/65535 reject-4 with no pages/provider. Direct unknown method rejects-3.",
+      "independent_execution": [
+        "commands/pi-client/receipt.json",
+        "commands/cargo-newcrate/receipt.json"
+      ],
+      "original_control_mapping": "Python test_B04_unsupported_workflows; Rust actual_ffi_effects_and_boundaries",
+      "unchanged_core_or_Bridge_reuse": false
+    },
+    {
+      "id": "A01",
+      "assessment": "PASS_scoped_host_component",
+      "basis": "Premature Approve rejects-9, invalid action/presenter failure-6, forged request authority-3. Core owns cursor/seen state; trusted presenter honesty is not detectable by ABI.",
+      "independent_execution": [
+        "commands/pi-client/receipt.json",
+        "commands/cargo-newcrate/receipt.json"
+      ],
+      "original_control_mapping": "Python test_A01_A02_no_premature_or_rejected_authority and test_B03; Rust actual_ffi_effects_and_boundaries",
+      "unchanged_core_or_Bridge_reuse": false
+    },
+    {
+      "id": "A02",
+      "assessment": "PASS_scoped_host_component",
+      "basis": "Direct ABI observes Back to earlier page then full traversal; Reject-5, None exhausts unchanged1024steps-9, no provider on refusal.",
+      "independent_execution": [
+        "commands/pi-client/receipt.json",
+        "commands/cargo-newcrate/receipt.json"
+      ],
+      "original_control_mapping": "Rust actual_ffi_effects_and_boundaries; Python test_A01_A02_no_premature_or_rejected_authority",
+      "unchanged_core_or_Bridge_reuse": false
+    },
+    {
+      "id": "A03",
+      "assessment": "PASS_scoped_host_component",
+      "basis": "Actual Python CFUNCTYPE callbacks catch BaseException; presenter/action-6, clock-7,aux-8,cancel-11. Native failure result checked whole-zero/written0.",
+      "independent_execution": [
+        "commands/pi-client/receipt.json"
+      ],
+      "original_control_mapping": "Python test_T01_T02_callback_failures_are_closed",
+      "unchanged_core_or_Bridge_reuse": false
+    },
+    {
+      "id": "T01",
+      "assessment": "PASS_scoped_host_component",
+      "basis": "Direct ABI enumerates actual clock call positions, failures at each, post-intake rollback/expiry and intake overflow; final staging sample is included. Provider counts distinguish pre/post-attempt effects. Consuming-before-first-fresh-clock private witness comes from unchanged core source/tests and author ab0 run.",
+      "independent_execution": [
+        "commands/pi-client/receipt.json",
+        "commands/cargo-newcrate/receipt.json"
+      ],
+      "original_control_mapping": "Rust actual_ffi_effects_and_boundaries; Python test_T01_T02_callback_failures_are_closed",
+      "unchanged_core_or_Bridge_reuse": true
+    },
+    {
+      "id": "T02",
+      "assessment": "PASS_scoped_host_component",
+      "basis": "Direct cancellation at freshness positions and Python cancellation set inside aux return-11 with no published frame. Core may have signed before completion discovers cancel; no absent-effect or recall claim.",
+      "independent_execution": [
+        "commands/pi-client/receipt.json",
+        "commands/cargo-newcrate/receipt.json"
+      ],
+      "original_control_mapping": "Rust actual_ffi_effects_and_boundaries; Python test_T01_T02_callback_failures_are_closed",
+      "unchanged_core_or_Bridge_reuse": false
+    },
+    {
+      "id": "E01",
+      "assessment": "PASS_scoped_host_component",
+      "basis": "Native provider failures after every written prefix0..32 and reports0/1/31/33 refuse without fallback; exact one32-byte0x42 call produces precommitted independent signature different from zero. Full destination-wipe/spent/no-backend witness is reused unchanged core test evidence, not a post-return stack-pointer read.",
+      "independent_execution": [
+        "commands/pi-client/receipt.json",
+        "commands/cargo-newcrate/receipt.json"
+      ],
+      "original_control_mapping": "Rust actual_ffi_effects_and_boundaries; Python test_E01_no_auxiliary_fallback and test_E01_positive_aux42_is_forwarded_exactly_once; unchanged K01 core auxiliary tests",
+      "unchanged_core_or_Bridge_reuse": true
+    },
+    {
+      "id": "O01",
+      "assessment": "PASS_scoped_host_component",
+      "basis": "Direct ABI197for198/610for611 capacity refusal wipes caller output; sign capacity failure already has one provider.947 success has zero tail; oversized wrapper staging refuses after actual signing.",
+      "independent_execution": [
+        "commands/pi-client/receipt.json",
+        "commands/cargo-newcrate/receipt.json"
+      ],
+      "original_control_mapping": "Rust actual_ffi_effects_and_boundaries",
+      "unchanged_core_or_Bridge_reuse": false
+    },
+    {
+      "id": "L01",
+      "assessment": "PASS_scoped_host_component",
+      "basis": "Atomic guard precedes pointer validation and even initial cancel callback. Rust reentry from clock/presentation calls exported ABI with invalid addresses and gets BUSY before any borrow. Python same-owner reservation also refuses; fresh call after settlement succeeds.",
+      "independent_execution": [
+        "commands/pi-client/receipt.json",
+        "commands/cargo-newcrate/receipt.json"
+      ],
+      "original_control_mapping": "Rust actual_ffi_effects_and_boundaries; Python test_L01_reentrant_first_clock_and_presentation",
+      "unchanged_core_or_Bridge_reuse": false
+    },
+    {
+      "id": "L02",
+      "assessment": "PASS_scoped_host_component",
+      "basis": "Real blocked callback thread remains alive while local cancel set; same wrapper and second wrapper/native owner return BUSY. Explicit release/join precedes fresh success. Separate mocked Python-call fault verifies only quarantine policy.",
+      "independent_execution": [
+        "commands/pi-client/receipt.json"
+      ],
+      "original_control_mapping": "Python test_L02_native_reservation_survives_blocked_callback and test_uncertain_native_exception_quarantines_wrapper",
+      "unchanged_core_or_Bridge_reuse": false
+    },
+    {
+      "id": "L03",
+      "assessment": "PASS_scoped_host_component",
+      "basis": "Controlled internal Rust unwind invokes same settled helper while actual owner has selected fixture and pending review. RAII cancels/locks/drops, output clears, guard reacquires. No public panic selector, no actual foreign exception/abort/segfault recovery claim.",
+      "independent_execution": [
+        "commands/pi-client/receipt.json",
+        "commands/cargo-newcrate/receipt.json"
+      ],
+      "original_control_mapping": "Rust unwind_cleanup_and_internal_error_mapping",
+      "unchanged_core_or_Bridge_reuse": false
+    },
+    {
+      "id": "V01",
+      "assessment": "PASS_scoped_host_component",
+      "basis": "Two actual client\u2192manual dispatcher\u2192Python child\u2192native owner\u2192v2 responses. Fixed public identity, different templates, exact complete expected events; unchanged client verifies selected key/template/canonicalID/Schnorr/correlation.",
+      "independent_execution": [
+        "commands/pi-client/receipt.json"
+      ],
+      "original_control_mapping": "client-exchange.ts actual two positive round trips under mandatory default make pi-ci",
+      "unchanged_core_or_Bridge_reuse": false
+    },
+    {
+      "id": "V02",
+      "assessment": "PASS_scoped_host_component",
+      "basis": "Five valid-shape mutations really dispatch and each reaches invalid_signer_response after one open/scan/close. Other signed template comes from real native signing of tagged request with matching correlation, not invalid dummy signature.",
+      "independent_execution": [
+        "commands/pi-client/receipt.json"
+      ],
+      "original_control_mapping": "client-exchange.ts five valid-shape negatives",
+      "unchanged_core_or_Bridge_reuse": false
+    },
+    {
+      "id": "V03",
+      "assessment": "PASS_scoped_host_component",
+      "basis": "Five post-native account/generation/availability/limit/deadline changes yield no success after actual child exchange. Held child signals after native return, remains unsettled through timeout; context pending and shared port refuse reuse until explicit release/close/finally then fresh success. Existing repeated-scan/operator-cancel/late-promise controls reused by identical Bridge source.",
+      "independent_execution": [
+        "commands/pi-client/receipt.json"
+      ],
+      "original_control_mapping": "client-exchange.ts five post-native changes and actual held-child timeout; unchanged manual-qr.test.ts in full Bridge CI",
+      "unchanged_core_or_Bridge_reuse": true
+    },
+    {
+      "id": "N01",
+      "assessment": "PASS_scoped_host_component",
+      "basis": "Reference Python signer functions patched to raise while actual native request succeeds; path/hash/symbol loader failures have no fallback. Missing-symbol and uncertain-call exceptions are explicitly unit controls.",
+      "independent_execution": [
+        "commands/pi-client/receipt.json"
+      ],
+      "original_control_mapping": "Python test_N01_no_reference_signer_or_loader_fallback",
+      "unchanged_core_or_Bridge_reuse": false
+    }
+  ],
+  "limit": "Passes these bounded host engineering controls only. IDs/mappings alone are not evidence; assertion/source analysis and actual raw runs are the bases above."
+}
