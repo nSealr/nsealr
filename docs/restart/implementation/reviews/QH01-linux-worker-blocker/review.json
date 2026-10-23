@@ -1,0 +1,18 @@
+{
+  "schema_version": 1,
+  "task": "QH01",
+  "reviewer": "/root",
+  "candidate": "edd7ac5fc0cb1688643dedd0c91fd797fa41f076",
+  "utc": "2026-10-23T09:04:21.761355+00:00",
+  "verdict": "PASS_blocker_evidence_only_RUNTIME_UNQUALIFIED",
+  "findings": [],
+  "validation": "validation.json",
+  "validation_sha256": "e9e873b72b909a72a5a46c4cd9394d2671f229a58d0ba0906aff831b12f7032e",
+  "source_basis": [
+    "Python3.12 os.posix_spawn docs: optional setsid flag may raise NotImplementedError.",
+    "Pinned pyconfig independently declares HAVE_SETSID; Python os.setsid docs and Linux setsid(2) define a separate call in a non-group-leader child.",
+    "No actual kernel setsid call/permission has yet succeeded in this experiment."
+  ],
+  "limits": "All21rows unexercised; prototype is not accepted for runtime or production. Old unsupported route stays failed and immutable. Readmission is an explicit reviewed implementation change preserving fresh-session-before-data, not an automatic fallback or a bypass of an OS denial.",
+  "next": "readmission.json"
+}
