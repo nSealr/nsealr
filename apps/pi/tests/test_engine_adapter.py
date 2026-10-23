@@ -5,7 +5,11 @@ import json
 import os
 from pathlib import Path
 import sys
+import ctypes as C
+import importlib.util
+import threading
 import unittest
+from unittest.mock import patch
 
 ROOT = Path(__file__).resolve().parents[3]
 sys.path.insert(0, str(ROOT / "apps/pi/app"))
@@ -114,6 +118,169 @@ class EngineAdapterTests(unittest.TestCase):
             self.assertEqual(caught.exception.status, -8)
             self.assertEqual(calls, [count])
         self.assertEqual(response(self.execute(raw)), vector("kind-1-basic.json")["response"])
+
+    def test_P01_original_identity_and_no_signing(self):
+        data = json.loads((ROOT / "protocols/contracts/v1/examples/request-get-public-key.json").read_text())
+        expected = json.loads((ROOT / "protocols/contracts/v1/examples/response-get-public-key.json").read_text())
+        result = self.execute(frame(compact(data)))
+        self.assertEqual(len(result), 198)
+        self.assertEqual(response(result), expected)
+        self.assertEqual(self.pages, [])
+        self.assertEqual(self.aux_calls, 0)
+
+    def test_B03_strict_original_bytes_no_normalization(self):
+        raw = compact(vector("kind-1-basic.json")["request"])
+        malformed = [b"bad", b"nsealr1:e30=", b"nsealr1:e31", frame(b"{\xff}"),
+                     frame(raw.replace(b'"version":2', b'"version":2,"version":2')),
+                     frame(raw.replace(b'"version":2', b'"version":2,"\\u0076ersion":2')),
+                     frame(raw.replace(b'"version":2', b'"version":2e0')),
+                     frame(raw.replace(b'"version":2', b'"version":-0')),
+                     frame(raw.replace(b'"version":2', b'"version":2.0')),
+                     frame(raw[:-1] + b',"approved":true}')]
+        for value in malformed:
+            with self.subTest(raw=value), self.assertRaises(EngineError) as caught:
+                self.execute(value)
+            self.assertEqual(caught.exception.status, -3)
+            self.assertEqual((self.pages, self.aux_calls), ([], 0))
+
+    def test_B04_unsupported_workflows(self):
+        raw = vector("kind-1-basic.json")["request"]
+        for kind in [4, 13, 14, 1059, 10050, 22242, 65535]:
+            changed = copy.deepcopy(raw)
+            changed["params"]["event_template"]["kind"] = kind
+            with self.subTest(kind=kind), self.assertRaises(EngineError) as caught:
+                self.execute(frame(compact(changed)))
+            self.assertEqual(caught.exception.status, -4)
+            self.assertEqual((self.pages, self.aux_calls), ([], 0))
+        with self.assertRaises(EngineError) as caught:
+            self.execute(frame(compact(dict(version=2, request_id="caps", method="get_capabilities"))))
+        self.assertEqual(caught.exception.status, -4)
+
+    def test_T01_T02_callback_failures_are_closed(self):
+        raw = frame(compact(vector("kind-1-basic.json")["request"]))
+        def failure(*args):
+            raise KeyboardInterrupt("explicit callback BaseException")
+        for name, status in [("local_io", -6), ("monotonic_clock", -7), ("auxiliary", -8), ("cancel", -7)]:
+            with self.subTest(callback=name), self.assertRaises(EngineError) as caught:
+                self.execute(raw, **{name: failure})
+            self.assertEqual(caught.exception.status, status)
+        for value in [None, True, -1, 1 << 64, (1 << 64)-1]:
+            with self.subTest(tick=value), self.assertRaises(EngineError) as caught:
+                self.execute(raw, monotonic_clock=lambda: value)
+            self.assertEqual(caught.exception.status, -7)
+        with self.assertRaises(EngineError) as caught:
+            self.execute(raw, cancel=lambda: True)
+        self.assertEqual(caught.exception.status, -11)
+
+    def test_L01_reentrant_first_clock_and_presentation(self):
+        raw = frame(compact(vector("kind-1-basic.json")["request"]))
+        nested = []
+        def again():
+            with self.assertRaises(EngineError) as caught:
+                self.adapter.run_request_frame(raw, lambda p: 1, lambda: 0, lambda: bytes(32), lambda: False)
+            nested.append(caught.exception.status)
+        def clock():
+            again()
+            return 0
+        def present(page):
+            again()
+            return 1 if page.kind == 1 else 0
+        self.assertEqual(response(self.execute(raw, local_io=present, monotonic_clock=clock)), vector("kind-1-basic.json")["response"])
+        self.assertGreater(len(nested), 2)
+        self.assertEqual(set(nested), {-2})
+
+    def test_L02_native_reservation_survives_blocked_callback(self):
+        raw = frame(compact(vector("kind-1-basic.json")["request"]))
+        entered, release, cancelled = threading.Event(), threading.Event(), threading.Event()
+        outcomes = []
+        other = EngineAdapter(self.adapter.library_path, self.adapter.library_sha256)
+        def present(page):
+            entered.set()
+            if not release.wait(5):
+                raise RuntimeError("test failed to release its controlled callback")
+            return 0
+        def operation():
+            try:
+                self.adapter.run_request_frame(raw, present, lambda: 0, lambda: bytes(32), cancelled.is_set)
+            except EngineError as exc:
+                outcomes.append(exc.status)
+        worker = threading.Thread(target=operation)
+        worker.start()
+        try:
+            self.assertTrue(entered.wait(5))
+            cancelled.set()
+            self.assertTrue(worker.is_alive())
+            for adapter in [self.adapter, other]:
+                with self.assertRaises(EngineError) as caught:
+                    adapter.run_request_frame(raw, lambda p: 1, lambda: 0, lambda: bytes(32), lambda: False)
+                self.assertEqual(caught.exception.status, -2)
+        finally:
+            release.set()
+            worker.join(5)
+        self.assertFalse(worker.is_alive())
+        self.assertEqual(outcomes, [-11])
+        self.assertEqual(response(self.execute(raw)), vector("kind-1-basic.json")["response"])
+
+    def test_N01_no_reference_signer_or_loader_fallback(self):
+        from nsealr_vault import signer
+        raw = frame(compact(vector("kind-1-basic.json")["request"]))
+        with patch.object(signer, "sign_request", side_effect=AssertionError("forbidden reference signer")), \
+             patch.object(signer, "sign_event", side_effect=AssertionError("forbidden reference signer")):
+            self.assertEqual(response(self.execute(raw)), vector("kind-1-basic.json")["response"])
+        with self.assertRaises(FileNotFoundError):
+            EngineAdapter("/nonexistent/qp01-library.so", "0" * 64)
+        with self.assertRaisesRegex(ValueError, "SHA256"):
+            EngineAdapter(self.adapter.library_path, "0" * 64)
+        # Explicit loader-shape unit control, not an actual foreign-library run.
+        with patch("nsealr_vault.engine_adapter.C.CDLL", return_value=object()), self.assertRaises(AttributeError):
+            EngineAdapter(self.adapter.library_path, self.adapter.library_sha256)
+
+    def test_uncertain_native_exception_quarantines_wrapper(self):
+        adapter = EngineAdapter(self.adapter.library_path, self.adapter.library_sha256)
+        raw = frame(compact(vector("kind-1-basic.json")["request"]))
+        args = (raw, lambda p: 1, lambda: 0, lambda: bytes(32), lambda: False)
+        # Unit fault at the Python native-call boundary; no crash/abort recovery claim.
+        with patch.object(adapter, "_run", side_effect=OSError("unknown native outcome")):
+            with self.assertRaises(OSError):
+                adapter.run_request_frame(*args)
+        with self.assertRaisesRegex(RuntimeError, "quarantined"):
+            adapter.run_request_frame(*args)
+
+
+class ProvisioningControls(unittest.TestCase):
+    def test_actual_driver_orders_full_pi_then_client_with_same_library(self):
+        path = ROOT / "docs/restart/implementation/QP01/request-engine/exchange.py"
+        spec = importlib.util.spec_from_file_location("qp01_exchange", path)
+        driver = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(driver)
+        calls = []
+        lib = {"NSEALR_QP01_LIBRARY": "/explicit/test.so", "NSEALR_QP01_LIBRARY_SHA256": "a"*64}
+        def provision():
+            calls.append("build")
+            return lib
+        def run(argv, **kwargs):
+            calls.append(argv)
+            self.assertEqual(kwargs["cwd"], ROOT)
+            self.assertTrue(kwargs["check"])
+            for key, value in lib.items():
+                self.assertEqual(kwargs["env"][key], value)
+        with patch.object(driver, "provision", side_effect=provision), patch.object(driver.subprocess, "run", side_effect=run):
+            driver.ci("apps/pi")
+        self.assertEqual(calls, ["build", ["make", "-C", str(ROOT / "apps/pi"), "ci"],
+                                ["node", "--import", "tsx/esm", str(driver.CLIENT)]])
+        with self.assertRaises(ValueError):
+            driver.ci("apps/pi/tests")
+
+    def test_failed_full_pi_never_reaches_client(self):
+        path = ROOT / "docs/restart/implementation/QP01/request-engine/exchange.py"
+        spec = importlib.util.spec_from_file_location("qp01_exchange_failed", path)
+        driver = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(driver)
+        with patch.object(driver, "provision", return_value={}), \
+             patch.object(driver.subprocess, "run", side_effect=RuntimeError("full Pi failure")) as run:
+            with self.assertRaisesRegex(RuntimeError, "full Pi failure"):
+                driver.ci("apps/pi")
+        self.assertEqual(run.call_count, 1)
 
 
 if __name__ == "__main__":
