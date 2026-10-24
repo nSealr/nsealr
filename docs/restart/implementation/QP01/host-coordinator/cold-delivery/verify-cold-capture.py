@@ -325,6 +325,7 @@ def verify_qh01_lifecycle(objects):
                           'result_sha256', 'final_worker_eligible', 'cancel_observed', 'timing']
         assert list(wait) == ['raw_status', 'exit_code', 'collector_pid']
         assert list(t['worker_io']) == ['stdin_closed', 'stdout_eof', 'stderr_eof', 'owned_fds_closed']
+        assert list(p['limits']) == ['AS', 'CPU', 'CORE']
         # The positive block already binds these common policy values to Git and
         # the actual provisioned worker. Every refusal must preserve them.
         for key in ['state', 'EOF', 'parent_owned_fds', 'fault', 'transport_error', 'ready_hex', 'diagnostic_base64', 'closed']:
