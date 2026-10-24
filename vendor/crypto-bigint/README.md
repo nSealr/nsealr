@@ -51,8 +51,8 @@ combinations, excluding explicitly unstable features.
 
 Licensed under either of:
 
-- [Apache License, Version 2.0](http://www.apache.org/licenses/LICENSE-2.0)
-- [MIT license](http://opensource.org/licenses/MIT)
+- [Apache License, Version 2.0](https://www.apache.org/licenses/LICENSE-2.0)
+- [MIT license](https://opensource.org/license/mit)
 
 at your option.
 
@@ -73,7 +73,7 @@ dual licensed as above, without any additional terms or conditions.
 [coverage-image]: https://codecov.io/gh/RustCrypto/crypto-bigint/graph/badge.svg?token=B4J72KDXXJ
 [coverage-link]: https://codecov.io/gh/RustCrypto/crypto-bigint
 [license-image]: https://img.shields.io/badge/license-Apache2.0/MIT-blue.svg
-[rustc-image]: https://img.shields.io/badge/rustc-1.85+-blue.svg
+[rustc-image]: https://img.shields.io/badge/rustc-1.87+-blue.svg
 [chat-image]: https://img.shields.io/badge/zulip-join_chat-blue.svg
 [chat-link]: https://rustcrypto.zulipchat.com/#narrow/stream/300602-crypto-bigint
 

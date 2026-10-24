@@ -11,9 +11,9 @@
 
 [package]
 edition = "2024"
-rust-version = "1.85"
+rust-version = "1.87"
 name = "crypto-bigint"
-version = "0.7.5"
+version = "0.7.6"
 authors = ["RustCrypto Developers"]
 build = false
 exclude = [
@@ -28,9 +28,9 @@ autoexamples = false
 autotests = false
 autobenches = false
 description = """
-Pure Rust implementation of a big integer library which has been designed from
-the ground-up for use in cryptographic applications. Provides constant-time,
-no_std-friendly implementations of modern formulas using const generics.
+Pure Rust implementation of a big integer library which has been designed from the ground-up for use
+in cryptographic applications. Provides constant-time, `no_std`/`no_alloc`-friendly implementations
+of modern formulas using const generics. Also includes optional support for heap-backed integers.
 """
 readme = "README.md"
 keywords = [
@@ -49,7 +49,7 @@ categories = [
 ]
 license = "Apache-2.0 OR MIT"
 repository = "https://github.com/RustCrypto/crypto-bigint"
-resolver = "2"
+resolver = "3"
 
 [package.metadata.docs.rs]
 all-features = true
@@ -162,7 +162,7 @@ harness = false
 version = "0.1"
 
 [dependencies.ctutils]
-version = "0.4"
+version = "0.4.5"
 
 [dependencies.der]
 version = "0.8"
@@ -216,16 +216,15 @@ default-features = false
 version = "1"
 
 [dev-dependencies.num-bigint]
-version = "0.4"
+version = "0.5"
 
 [dev-dependencies.num-integer]
 version = "0.1"
 
 [dev-dependencies.num-modular]
-version = "0.6"
+version = "0.7"
 features = [
     "num-bigint",
-    "num-integer",
     "num-traits",
 ]
 
@@ -248,7 +247,6 @@ cast_precision_loss = "warn"
 cast_sign_loss = "warn"
 checked_conversions = "warn"
 doc_markdown = "warn"
-from_iter_instead_of_collect = "warn"
 implicit_saturating_sub = "warn"
 integer_division_remainder_used = "warn"
 manual_assert = "warn"

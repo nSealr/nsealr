@@ -133,11 +133,10 @@ pub fn gcd<const VARTIME: bool>(f: &BoxedUint, g: &BoxedUint) -> BoxedUint {
             gcd_nz::<VARTIME>(f_nz, g).get()
         } else {
             // gcd of (0, g) is g
-            g.clone()
+            g.resize(u32_max(f.bits_precision(), g.bits_precision()))
         }
     } else {
         let (f_nz, f_is_nonzero) = f.to_nz_or_one();
-        // gcd of (0, g) is g
         let mut r = gcd_nz::<VARTIME>(&f_nz, g).get();
         r.ct_assign(g, !f_is_nonzero);
         r
@@ -163,7 +162,10 @@ pub fn gcd_nz<const VARTIME: bool>(f: &NonZero<BoxedUint>, g: &BoxedUint) -> Non
     // 4) 2^k•gcd(f, g) = 2^k•gcd(a, 2^j•b)
 
     let i = f.as_ref().trailing_zeros();
-    let k = u32_min(i, g.trailing_zeros());
+    let j = g
+        .is_nonzero()
+        .select_u32(f.bits_precision(), g.trailing_zeros());
+    let k = u32_min(i, j);
 
     let f_odd = Odd::new_unchecked(f.as_ref().shr(i));
     let mut r = gcd_odd::<VARTIME>(&f_odd, g).get();
@@ -427,20 +429,70 @@ impl fmt::Debug for SignedBoxedInt {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         f.write_fmt(format_args!(
             "{}0x{}",
-            if self.sign.to_bool_vartime() {
-                "-"
-            } else {
-                "+"
-            },
-            &self.magnitude
+            if self.sign.to_bool() { "-" } else { "+" },
+            self.magnitude
         ))
     }
 }
 
 #[cfg(test)]
 mod tests {
-    use super::BoxedSafeGcdInverter;
-    use crate::BoxedUint;
+    use super::{BoxedSafeGcdInverter, gcd_odd, invert_odd_mod};
+    use crate::{BoxedUint, Odd, Resize};
+    use num_bigint::BigUint;
+    use num_integer::Integer;
+
+    /// The smallest precision at which `45907 * bits + 30179` no longer fits in `u32`.
+    const LARGE_BITS: u32 = 93_568;
+
+    /// A deterministic, odd, full-width `BoxedUint` of `bits` bits; different seeds give
+    /// unrelated values.
+    fn large_odd(bits: u32, seed: u32) -> BoxedUint {
+        let mut bytes: alloc::vec::Vec<u8> = (0..bits >> 3)
+            .map(|i| {
+                let h = (i ^ seed.wrapping_mul(0x9E37_79B9)).wrapping_mul(0x85EB_CA6B);
+                let h = (h ^ (h >> 13)).wrapping_mul(0xC2B2_AE35);
+                (h ^ (h >> 16)).to_le_bytes()[0]
+            })
+            .collect();
+        bytes[0] |= 0x80;
+        *bytes.last_mut().unwrap() |= 1;
+        BoxedUint::from_be_slice(&bytes, bits).unwrap()
+    }
+
+    fn to_big(x: &BoxedUint) -> BigUint {
+        BigUint::from_bytes_be(&x.to_be_bytes())
+    }
+
+    #[test]
+    fn invert_odd_mod_large_precision() {
+        let m = large_odd(LARGE_BITS, 1);
+        let a = BoxedUint::from(65537u32).resize(LARGE_BITS);
+        assert_eq!(to_big(&a).gcd(&to_big(&m)), BigUint::from(1u32));
+        let m = Odd::new(m).unwrap();
+
+        for inv in [
+            invert_odd_mod::<false>(&a, &m).unwrap(),
+            invert_odd_mod::<true>(&a, &m).unwrap(),
+        ] {
+            assert_eq!(
+                (to_big(&a) * to_big(&inv)) % to_big(m.as_ref()),
+                BigUint::from(1u32)
+            );
+        }
+    }
+
+    #[test]
+    fn gcd_odd_large_precision() {
+        // Two unrelated full-width values: the reduction needs the whole iteration budget,
+        // unlike a pair with a large common factor and small cofactors.
+        let f = Odd::new(large_odd(LARGE_BITS, 2)).unwrap();
+        let g = large_odd(LARGE_BITS, 4);
+        let expected = to_big(f.as_ref()).gcd(&to_big(&g));
+
+        assert_eq!(to_big(gcd_odd::<false>(&f, &g).as_ref()), expected);
+        assert_eq!(to_big(gcd_odd::<true>(&f, &g).as_ref()), expected);
+    }
 
     #[test]
     fn invert() {
