@@ -1,25 +1,30 @@
 # Execution handoff
 
-Date: 2026-10-23. This handoff gives navigation and recovery procedures, not a second task-status ledger. Read the current graph before choosing work.
+Date: 2026-10-24. This handoff gives navigation and recovery procedures, not a second task-status ledger. Read the current graph before choosing work.
 
 ## Current software foundations and next dependency
 
-The latest accepted host composition is [actual mainBD after protected PR49](reviews/QH01-python-rgb-composition-adoption/actual-main-acceptance.json).
-Its original PR/main captures and fresh main-only source check are complete;
-do not poll or rerun them for navigation updates. The later automatic lifecycle
-candidate adds three refusal cases to the same normal Pi CI. Its [independent
-wrapper review](reviews/QH01-python-rgb-lifecycle-ci/report.md) is scoped to source
-and original proof. The corrected capture checker passed its [affected review](reviews/QH01-python-rgb-lifecycle-capture-correction-review/report.md).
-The [first complete local gate](reviews/QH01-python-rgb-lifecycle-integration/local-full-security-red/result.json)
-failed fresh security audit RUSTSEC-2026-0387 on crypto-bigint0.7.5, with all17
-functional integrations passing. The [authenticated correction and independent review](reviews/R00-crypto-bigint-remediation/report.md)
-and [new stable complete local gate](reviews/QH01-python-rgb-lifecycle-integration/local-full-qualified/result.json)
-now pass. Protected PR and actual-main qualification remain pending. Preserve the original RED and source-qualified
-partial proofs; neither is complete-CI acceptance. The
-next software dependency is a real request-aware engine response after RGB decode;
-the Native helper/timer prerequisite is separate and does not yet wire that path.
-Use the graph's QH01 checkpoint for exact current candidate and evidence. Physical
-kit/image/operator identification remains pending in the existing resource request.
+The accepted host composition and automatic lifecycle cases are [actual main6b
+after protected PR50](reviews/QH01-lifecycle-security-adoption/actual-main-acceptance.json).
+Original PR/main CI, both capture checkers and fresh main-only source checks passed.
+The first local security RED and authenticated crypto-bigint0.7.6/ctutils0.4.5
+correction remain source-specific historical evidence. Do not repoll completed runs.
+
+The [automatic real-engine candidate](QH01/manual-port/python-rgb-composition/proof/request-engine-ci/README.md)
+now exercises RGB decode → actual Rust public-fixture signature → independent
+client verification, plus loaded-SHA readiness refusal, in one fresh normal Pi CI.
+One joined current-checkout helper compilation serves both cases; old lifecycle
+and regression checks remain mandatory. [Capture-oracle proof](reviews/QH01-rgb-request-engine-capture/result.json)
+retains its original verifier RED and corrected 51 pure rejection controls, without
+product replay. Final distinct affected reviews, complete local/protected gates
+and actual-main qualification are still pending. The graph records exact sources.
+
+Physical kit/image/operator identification remains pending in the existing resource
+request. The [first physical probe](QP01/physical-probe.md) is prepared and unexecuted.
+It must establish exact ARM/image/camera/display/input facts before a device build
+or signing session can be admitted. Public-fixture host success closes no physical,
+production-provider, entropy, key-custody or release criterion. General Rust rewrites
+remain deferred; custom-PCB research is independent of this software path.
 
 A02 source adoption, bounded anchor repair and closure passed normal protected
 integration and actual main CI. Its [handoff](A02/closure/handoff.md) and
