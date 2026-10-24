@@ -1,0 +1,138 @@
+{
+  "run": null,
+  "source_head": "5b32621d24bf06fe523f28f83ac51ebce6d870fc",
+  "product_log_sha256": "21965321b2537b213549f04e4fdcf266a8932877963ab297d903a68fea96c244",
+  "native_build": {
+    "role": "public fixture build, not hardware qualification",
+    "argv": [
+      "cargo",
+      "build",
+      "-p",
+      "nsealr-pi-engine-fixture",
+      "--locked",
+      "--offline",
+      "--release",
+      "--message-format=json"
+    ],
+    "source": {
+      "Cargo.toml": "97475b27f26bbfa1c2d46508c4e719edb3713ea5c76da5987ef5283b9d7245eb",
+      "Cargo.lock": "2b62ce3fe11650d36ffc015344aa6f9f04b5ef22d6bc05dae218a96d07c8e811",
+      "crates/nsealr-pi-engine-fixture/Cargo.toml": "6199f807c29406405b839ed71f1791ffb44359e34dff3db5bf8591361a2fb30d",
+      "crates/nsealr-pi-engine-fixture/src/lib.rs": "7840133113a54d58f81e808e2037e0b5e999d148920f6bf4fea5212fa9a5425a"
+    },
+    "library": "/home/tux/nsealr/.restart-tools/goal/qh01-python-rgb-composition-delivery/target/release/libnsealr_pi_engine_fixture.so",
+    "sha256": "f562ab11fe6d3f5345e7491cea239cee22ab26a47072b7637ebbe1c59a7e3c51",
+    "CARGO_TARGET_DIR": null
+  },
+  "native_source_bindings": 4,
+  "actual_full_Pi_tests": 211,
+  "automatic_readiness_controls": {
+    "scope": "readiness_controls",
+    "readiness_controls": 5,
+    "request_bytes_sent": 0,
+    "native_reports": 0,
+    "children": 5,
+    "collected": 5
+  },
+  "client": {
+    "scope": "actual client + public-fixture host adapter only",
+    "positive": 2,
+    "valid_shape_verifier_negatives": 5,
+    "post_native_currentness_negatives": 5,
+    "actual_unsettled_child_timeout_no_early_reuse_then_fresh": true,
+    "children": 14,
+    "collected": 14
+  },
+  "all14_native_observations_match_actual_provisioned_library": true,
+  "fixture_coverage_actual_and_floor": [
+    100.0,
+    100.0
+  ],
+  "additional_audit_controls": 4,
+  "three_complete_fresh_audits": true,
+  "audit_commands": [
+    "cargo deny --locked --config /home/tux/nsealr/.restart-tools/goal/qh01-python-rgb-composition-delivery/deny.toml --manifest-path /home/tux/nsealr/.restart-tools/goal/qh01-python-rgb-composition-delivery/Cargo.toml fetch index db",
+    "cargo deny --locked --config /home/tux/nsealr/.restart-tools/goal/qh01-python-rgb-composition-delivery/deny.toml --manifest-path /home/tux/nsealr/.restart-tools/goal/qh01-python-rgb-composition-delivery/apps/desktop-simulator/Cargo.toml fetch index",
+    "cargo deny --locked --config /home/tux/nsealr/.restart-tools/goal/qh01-python-rgb-composition-delivery/deny.toml --manifest-path /home/tux/nsealr/.restart-tools/goal/qh01-python-rgb-composition-delivery/apps/pi/qr-worker/Cargo.toml fetch index",
+    "cargo deny --locked --config /home/tux/nsealr/.restart-tools/goal/qh01-python-rgb-composition-delivery/deny.toml --manifest-path /home/tux/nsealr/.restart-tools/goal/qh01-python-rgb-composition-delivery/Cargo.toml --offline check --deny index-failure",
+    "cargo deny --locked --config /home/tux/nsealr/.restart-tools/goal/qh01-python-rgb-composition-delivery/deny.toml --manifest-path /home/tux/nsealr/.restart-tools/goal/qh01-python-rgb-composition-delivery/apps/desktop-simulator/Cargo.toml --offline check --deny index-failure",
+    "cargo deny --locked --config /home/tux/nsealr/.restart-tools/goal/qh01-python-rgb-composition-delivery/deny.toml --manifest-path /home/tux/nsealr/.restart-tools/goal/qh01-python-rgb-composition-delivery/apps/pi/qr-worker/Cargo.toml --offline check --deny index-failure"
+  ],
+  "limits": "Local stable makeci source/build/trace proof only; no GitHub run, receipt, job, check, protected integration or device claim. Hosted acceptance separately requires the unchanged mandatory completed-capture verifier with RUN HEAD CHECKRUNS_JSON, plus this source addon. No ELF reproducibility or physical qualification.",
+  "worker_build": {
+    "role": "public RGB worker build, initialization v2, not hardware qualification",
+    "argv": [
+      "cargo",
+      "build",
+      "--manifest-path",
+      "apps/pi/qr-worker/Cargo.toml",
+      "--locked",
+      "--offline",
+      "--release",
+      "--message-format=json"
+    ],
+    "source": {
+      "apps/pi/qr-worker/Cargo.toml": "a0c4db1b67499608914d07df5c5d8a54bfc69970e4559829f4c5573858068e91",
+      "apps/pi/qr-worker/Cargo.lock": "d4dadbe7162e838039ef6a53dcd7addc71a32520836b2ddc189070fbe79c091a",
+      "apps/pi/qr-worker/src/main.rs": "e60b3bc2baec2eded7ee474e101cfa8debd1a88be76d6d7cffce31b4e3e1dcf1",
+      "apps/pi/qr-worker/rust-toolchain.toml": "6e90f2cf35aad6218e0d99f319101783cf5ce91cc62349dec0c7b357a420dabc",
+      ".cargo/config.toml": "98e1cf108d2b5aa2ff9d9fb6f58df4d0332df3a85411cf8c1249c615edecf625",
+      "rust-toolchain.toml": "6e90f2cf35aad6218e0d99f319101783cf5ce91cc62349dec0c7b357a420dabc"
+    },
+    "worker": "/home/tux/nsealr/.restart-tools/goal/qh01-python-rgb-composition-delivery/apps/pi/qr-worker/target/release/nsealr-qr-worker",
+    "sha256": "e6e8327c18285e4cceff7ead0f0cd4d893a6e4e96a430cbdc2bff9f1d83e730f",
+    "CARGO_TARGET_DIR": null
+  },
+  "first_owner_cases": 39,
+  "first_owner_actual_children": 64,
+  "first_owner_W": 11,
+  "first_owner_native_reports": 3,
+  "trusted_initialization_version": 2,
+  "source_exact_five_added_Pi_unit_controls": true,
+  "real_synchronous_deadline_guard": {
+    "type": "CapabilityError",
+    "reason": "runtime_unavailable",
+    "message": "local deadline expired or clock rolled back/unavailable",
+    "signal_aborted": false,
+    "hold_begin_ms": 938.836817,
+    "hold_end_ms": 1048.849299,
+    "actual_hold_ms": 110.01248199999998,
+    "operation_elapsed_ms": 125.70622700000001,
+    "W_O_collected": true,
+    "private_decoded_bytes": 259,
+    "C_input_bytes": 0
+  },
+  "generic_completed_capture_checker_remains_separately_mandatory": true,
+  "python_owner_source_bindings": {
+    "apps/pi/app/nsealr_vault/qr_owner_adapter.py": "da6f36c966e2b27407e1025456d1f72c6d061d9463eb9ad25af85f594bf5a203",
+    "apps/pi/tests/test_qr_owner_adapter.py": "19b2391141f0e0bd133049bb57f2d78ac2fc2286430125a16da6a428649ae743",
+    "apps/pi/tests/test_qr_owner_adapter_lifecycle.py": "6416c13f8358199141e59ce15ffcae97da68a8612c0270a04a2e4958e0728a7c",
+    "docs/restart/implementation/QP01/python-owner-adapter/negative/expectations.json": "40d41bf5ec49c73e0edc917968f289decc7a5dc933e95320f209d145f02fed8f"
+  },
+  "python_owner_telemetry_rows": 70,
+  "python_owner_actual_owners": 10,
+  "python_owner_actual_workers": 5,
+  "python_owner_actual_no_worker_helpers": 11,
+  "python_owner_pure_relations": 9,
+  "python_owner_pure_wire_rejections": 27,
+  "python_owner_positive_bytes_released_once": 259,
+  "python_owner_negative_bytes_released": 0,
+  "python_owner_wall8_from_actual_begin_verified": true,
+  "python_owner_limits": "Host public-fixture component only; synthetic parser PIDs are not processes. No physical or production qualification.",
+  "qh01_composition_cases": 1,
+  "qh01_compiler_outputs_cross_bound": 10,
+  "qh01_build_records_verified": 15,
+  "qh01_post_case_CLI_build_intervals": 14,
+  "qh01_dynamic_source_bindings": 60,
+  "qh01_same_checkout_generated_bindings": 62,
+  "qh01_actual_O_W_Node_collected": true,
+  "qh01_frame_bytes": [
+    259,
+    259,
+    611
+  ],
+  "qh01_attention_pure_controls": 6,
+  "qh01_clock": "synthetic100; actualO8/shared4",
+  "qh01_limits": "New host fixture composition only; real timeout/cancel seam, camera/physical/key/provider gates remain open.",
+  "proof_role": "local_makeci_source_addon_no_GitHub_claim"
+}
