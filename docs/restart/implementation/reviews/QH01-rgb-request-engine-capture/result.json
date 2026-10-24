@@ -1,0 +1,28 @@
+{
+  "role": "Affected additive capture-oracle implementation and pure controls, pending independent review",
+  "qualified_product_source": "355bdef1c4c543029e1b15e76b5010fb67f0ee94",
+  "author_final": "278341518ed54a107dcc429c00e1795d58b0438b",
+  "original_accepted_oracle_sha256": "4b66f6242f2fed02eb2da923396d2ecf9b4f697c55edd6068a920003e4eef36f",
+  "new_checker_commit": "dcf72053",
+  "new_checker_sha256": "e64bf1cc45c13b7b41ca6e1c0640eb3da94d30dbb220422c764d0e6d9c12bc26",
+  "test_driver_sha256": "03f5e2c0fdb1e4e9b7ff0f43c78cf82dd375721085a398c7651c5ffaad23610b",
+  "first_pure_RED": {
+    "path": "root-capture-controls-01",
+    "kind": "VERIFIER_DEFECT",
+    "cause": "New checker treated AS/CPU/CORE values as scalar integers; actual source explicitly emits [soft,hard] integer pairs. Original raw retained. Product source and expectations unchanged."
+  },
+  "correction": {
+    "path": "root-capture-controls-02",
+    "result": "PASS",
+    "negative_controls": 51,
+    "new_product_processes": 0,
+    "changes": "Validate each pair shape and both integer members. No thresholds/cases reduced."
+  },
+  "original_log": {
+    "path": "../QH01/manual-port/python-rgb-composition/proof/request-engine-ci/execution-evidence.tar.gz",
+    "member": "make-pi-ci-01.log",
+    "sha256": "58172516c4426f184cf02939c9ef09be23f7ba862a42dbdfe13ef4a91d4d487c"
+  },
+  "source_correspondence": "Old module AST equal accepted4b66 after removing only new helper and one verify_product update call; original generic completed-capture verifier stays mandatory.",
+  "scope": "Host public fixtures, actual same-run C readiness/close/response and complete independent expected event. No physical/target/production-provider/hard C collection bound claim; complete final gate still required."
+}
