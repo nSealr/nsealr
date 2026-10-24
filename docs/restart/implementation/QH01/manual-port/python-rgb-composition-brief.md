@@ -619,3 +619,103 @@ source correspondence and limits. Negative stdout is namespaced without changing
 result.json or positive/attention. Root owns checker extension and final current
 main reconciliation; no full make-ci/hosted or physical/component-completion
 claim. STOP for distinct review.
+
+## Proposed decoded-RGB → actual request-engine seam — source only
+
+Base5bc8dae4 remains immutable. This is one opt-in host-fixture experiment proposal,
+not code/admission, default integration, a physical provider or a task closure.
+The missing operation is after B3.take_result(raw,parsed), before Node scan: call
+EngineAdapter.run_request_frame(raw, callbacks), then supply ITS actual response
+instead of loading the original scanner response. Do not reconstruct raw from parsed.
+
+Source/callgraph (paths relative to repository root):
+- apps/pi/app/nsealr_vault/qr_owner_adapter.py492–504: single-use release only after
+  actual O wait/all EOF/private validation; parsedv2 accompanies original bytes.
+- apps/pi/app/nsealr_vault/engine_adapter.py46–138: explicit SHA-bound CDLL,
+  same-process synchronous call; owned buffers/strong callback refs/reservation
+  until return, closed local errors, uncertain native exception quarantines reuse.
+- crates/nsealr-pi-engine-fixture/src/lib.rs181–299: strict Rust frame/request parse,
+  fresh fixture owner/review/sign_approved, complete response staging/final freshness;
+  26–31 define947frame/704JSON;322–383 define trusted unsafe ABI/zeroed failures.
+- docs/restart/implementation/QP01/request-engine/exchange.py57–80,186–221:
+  existing provision() returns native+W path/SHA; exchange() shows explicit load
+  BEFORE readiness/request, per-call MonotonicSeconds and synthetic page collector.
+  Its nested present callback is not an importable helper; reuse EngineAdapter/
+  Presentation, adding only a tiny test collector, no duplicated signing semantics.
+- docs/restart/implementation/QP01/request-engine/client-exchange.ts18–23,34–41,
+  115–128,167–210: original zero-aux expected event, actual native exchange/client,
+  readiness/settlement;5000 is the TS-owned child safety timer from spawn.
+- apps/bridge/service/src/manual-qr.ts126–164 and packages/client/src/service.ts
+  935–979,1172–1181: current scan/decode/close then existing expected-route-key,
+  request correlation/template/event-ID/signature verification; reuse unchanged.
+- docs/restart/implementation/QH01/manual-port/python-rgb-composition/bridge-child.mjs
+  39–70,105–140: current259 decoded reply but precomputed611 scan; total parent
+  reply cap512 cannot carry a611 response, even before JSON wrapping.
+- docs/restart/implementation/reviews/QP01-request-engine/report.md5–21 plus
+  commands/pi-client/{receipt.json,stdout.log}: distinct real review025b77dc;
+  stdout SHA251ca15899691be0652f3bd540cb213e7d56b5e27c95373a845143389b705616.
+
+Exact fixed inputs/expected outputs, unchanged original files:
+- native-qr-probe/execution-01/request-kind-1-basic.rgb:172800B,
+  SHA64d9be602c821c31c0dfd6e952199a328325acdbf9a7e1b3494921942a11055f.
+- native-qr-probe/expected/request-kind-1-basic.envelope:259B,
+  SHA88a16190a1b1ed033fc9bebe5452af70e9a9783fd6b92305add2ac7134039ff7;
+  nsealr1: + unpadded base64url of original188B JSON, numeric version2.
+  Response611 stays host-only, never W's512 output seam; no cap is raised.
+- original scanner response611B SHA f27dbe54785a9510e43f05d27dbb67c488c77def150e0110d51264762cdeec1b
+  stays a historical verification golden; it is NOT the zero-aux engine output.
+- Independent original native observation for the SAME259/SHA88a1 records611B
+  SHA250167d1137f6da25676b00b62913a3d8f29391a1ff5331d64f7079d953f5ded.
+  Its decoded452B v2 response has original req-kind-1-basic/event2977f107…;
+  expectations.json independent_positive_expectations[basic] freezes full event
+  and signature d8f39a159fd833bb…c353a82635. No new signing/oracle generation here.
+- Actual Rust public fixture11x32 selects4f355bdcb7cc0af728ef3cceb9615d90684bb5b2ca5f859ab0f0b704075871aa,
+  identical to current expected route key; old scalar3/f930… is unrelated.
+- Reviewed source identity remains engine_adapter.py5616B/c7d7778e538dc787e328295c67f9702473b87cb7c35d7576d37eab06a51137c7,
+  lib.rs12344B/7840133113a54d58f81e808e2037e0b5e999d148920f6bf4fea5212fa9a5425a;
+  expectations.json35403B/313a3b96792d9e9fea644df95fb4c56439df5cfcb091af159281e858801f4f7d.
+
+Minimal proposed opt-in mode fixture_request_engine, preserving all old cases:
+load the SAME provisioned native path/SHA and trusted callback configuration before
+Node/client timer, RGB/request or O open; retain adapter plus B3 runtime/op and
+Node handles in the existing top Python owner. After known B3 settlement/take_result,
+call native ONCE on raw259. Record actual complete31 indexed review pages/bytes,
+synthetic Next/data and Approve/decision, one explicit32zero auxiliary callback,
+cooperative cancelFalse, native return/output/hash and the actual verified client.
+Rust performs the real consuming authorization/signature; the action/clock/entropy
+provider and account/capability/consent metadata remain synthetic/trusted host data.
+No externally supplied key, new crypto, default approval/provider or factory follows.
+
+Proposed minimal host-only handoff (requires explicit admission before code):
+pre-request trusted output directory supplies fixed engine-response.envelope path
+only to the diagnostic Node child; require absent initially, parent writes actual
+native bytes once after known return. Node scan reads at most948B/refuses >947B,
+never falls back to original611. Existing decoded259 reply/EOF remains <=512B;
+Node receives no additional commands/keys and old stdout4096/record2048/5 stay.
+Existing client must verify actual v2 response + original template/ID + expected4f;
+assert full independent zero-aux event and actual611/SHA2501, not old f27d bytes.
+This file is trusted bounded test IPC, not an optical/camera/display measurement.
+
+Clock/ownership decision to admit explicitly: same-parent C is feasible, but has
+NO5000ms preemptive timer. Existing TS C5000 stays unchanged in its own regression;
+new direct call uses actual MonotonicSeconds (whole seconds), core100ticks and
+cooperative sampling, not Node's synthetic100ms nor a hard return bound. No kill
+of Python/O, native callback thread or recovery/coordinator may be added. The
+synchronous stack strongly retains every handle until native return; if it blocks,
+there is no prompt cleanup claim. Known B3 collection/close precedes reuse; unknown
+B3/Node outcome keeps exact existing invoker/attention hold. Native uncertainty
+keeps adapter quarantined; process crash/abort is outside the trusted-FFI guarantee.
+
+After admission/source+IPC freeze, ONE proposed invocation, using already bound
+current-root artifacts (no per-test build), from ROOT:
+apps/pi/.venv/bin/python -B docs/restart/implementation/QH01/manual-port/python-rgb-composition/run-composition.py
+--case fixture_request_engine --output <fresh-owned-dir> --worker <provision.W> --sha256
+<provision.W_SHA> --node <pinnedNode> --bridge <ROOT/service/dist> --reuse <ROOT>
+--engine-library <provision.library> --engine-sha256 <provision.library_SHA>.
+Finish requires actual RGB/W/O collection+EOF, native call/return+all review bytes,
+actual produced611/client verification, Node0/all EOF/FD restoration and no fallback;
+then STOP distinct review before automatic gates/provider work. Existing PR46/48
+source-qualified component proofs remain reusable;5bc positive/3negative/211/70/39
+and full15build regressions stay mandatory/unchanged. This source-only append runs
+nothing. Missing proof is exactly this combined actual path and its admitted IPC/
+nonpreemptive-call observation, plus future physical kit/UI/entropy qualification.
