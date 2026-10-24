@@ -1,0 +1,126 @@
+{
+  "verdict": "CHANGES_REQUESTED",
+  "candidate": {
+    "commit": "9703d03d0cf2e57bbf4de523b70aa0a2c7110768",
+    "tree": "9a11a5c1ac6699af616332c5b80dc5d4d11afc86"
+  },
+  "checker_sha256": "20f7e533837c659936e4e9b8b59d0b4879055dcafe4957122bc279a2b907d247",
+  "scope": "Only new verify_qh01_lifecycle function, product call, pure controls and proof; prior product/case/CI-wrapper reviews reused",
+  "findings": [
+    {
+      "id": "QH01-LIFECYCLE-CAPTURE-01",
+      "priority": "P2",
+      "title": "Status byte cap/canonical form and FD pipe constraints are not enforced",
+      "locations": [
+        {
+          "path": "docs/restart/implementation/QP01/host-coordinator/cold-delivery/verify-cold-capture.py",
+          "lines": [
+            325,
+            331,
+            332,
+            359,
+            360,
+            361
+          ]
+        }
+      ],
+      "required_source": {
+        "path": "apps/pi/app/nsealr_vault/qr_owner_adapter.py",
+        "sha256": "da6f36c966e2b27407e1025456d1f72c6d061d9463eb9ad25af85f594bf5a203",
+        "ranges": [
+          [
+            93,
+            99
+          ],
+          [
+            278,
+            300
+          ],
+          [
+            322,
+            339
+          ]
+        ]
+      },
+      "witnesses": [
+        "noncanonical_status_over4096",
+        "canonical_phase_nonpipe_FD"
+      ],
+      "impact": "The new oracle returns success for bounded/canonical IPC and descriptor claims that the actual B3 cannot accept.",
+      "requested_correction": "Validate the finite status wire cap, canonical two records, exact phase/terminal schemas and pipe identity format; add coherent-wire corruption controls without product changes."
+    },
+    {
+      "id": "QH01-LIFECYCLE-CAPTURE-02",
+      "priority": "P2",
+      "title": "preG admitted exits can carry source-impossible stderr",
+      "locations": [
+        {
+          "path": "docs/restart/implementation/QP01/host-coordinator/cold-delivery/verify-cold-capture.py",
+          "lines": [
+            344,
+            345,
+            346,
+            347,
+            348,
+            349
+          ]
+        }
+      ],
+      "required_source": {
+        "path": "apps/pi/qr-worker/src/main.rs",
+        "sha256": "e60b3bc2baec2eded7ee474e101cfa8debd1a88be76d6d7cffce31b4e3e1dcf1",
+        "ranges": [
+          [
+            45,
+            58
+          ],
+          [
+            105,
+            106
+          ]
+        ]
+      },
+      "witnesses": [
+        "preG_unexpected_stderr"
+      ],
+      "origin": "Root flagged the primary-source discrepancy; reviewer independently read source and reproduced checker acceptance.",
+      "impact": "A supposedly successful-policy preG trace with admitted71/-9 accepts stderr bytes from no possible source path.",
+      "requested_correction": "Require zero stderr for this preG fixture; preserve decoded33 and old failed/corrected receipts, with explicit historical explanation erratum."
+    }
+  ],
+  "reused_reviews": [
+    "4314ea2ba04506ec18116d842b0e619e0f60ecff",
+    "292dab05e926ee0e5a82bbd2d7402452e8f2b713"
+  ],
+  "evidence": {
+    "report_sha256": "d7238489ba518a1a2b2077682fb19792a6f36ab680009ea7ac553be2a71a0acc",
+    "witness_script_sha256": "a21b5d44edd9bd17fadb622a7fec2cc0e4799c637d75298789131ae53023ff48",
+    "witness_result_sha256": "bff41de6980affac462e7cf35b278251e07edccacdc7530646ab9909d52c79f3",
+    "original_control_result_sha256": "483c9d9cbd49293bc223ea102b7553f7c83e7fe09c7a7c7323c6273bf941834a",
+    "original_controls": {
+      "positive": true,
+      "lifecycle_cases": 3,
+      "rejected_mutations": 38,
+      "exit_code": 0
+    },
+    "witness_exit0_means": "Three known-invalid data witnesses accepted, findings reproduced; not an acceptance PASS.",
+    "original_log_sha256": "e3b31f6f629f45eefeb0e2374c98958a850425738b63347f7e1ec48c82cf8eac",
+    "original_log_bytes": 616947,
+    "runtime_source": "f7f300960e693fa6f47001cdb6f069372b82b67d",
+    "new_product_processes": 0
+  },
+  "preserved_author_proof": {
+    "prefix": "docs/restart/implementation/reviews/QH01-python-rgb-lifecycle-capture/",
+    "manifest_members": 19,
+    "total_files": 20,
+    "first_checker_RED": "6623a9425229631dfb57e4757a1573146b5a84f6",
+    "first_correction_source": "3bf9a38c2c124d0b18d3c5421c008a8152d8bcac",
+    "all_unchanged": true
+  },
+  "limitations": [
+    "Static/source and pure evidence review only; no product/runtime/physical finding inferred.",
+    "Existing38 controls pass but miss these coherent corruptions.",
+    "No hosted/full CI, main integration, acceptance or release qualification.",
+    "Author source unchanged; corrections and affected re-review remain required."
+  ]
+}
