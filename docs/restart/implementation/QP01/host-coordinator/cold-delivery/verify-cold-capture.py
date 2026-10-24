@@ -6,7 +6,7 @@ triggers CI, or retroactively changes expectations for historical captures.
 CLI: CAPTURE_DIRECTORY SOURCE_HEAD REPOSITORY.
 """
 from pathlib import Path
-import base64,collections,hashlib,json,re,subprocess,sys,zipfile
+import ast,base64,collections,hashlib,json,re,subprocess,sys,zipfile
 
 if sys.flags.optimize:
     raise RuntimeError("capture checker requires assertions enabled")
@@ -75,14 +75,14 @@ def verify_product(raw, head, repo, run_id=None):
     out={'run':int(run_id) if run_id is not None else None,'source_head':head,'product_log_sha256':hashlib.sha256(raw).hexdigest(),'native_build':b,'native_source_bindings':4,'actual_full_Pi_tests':EXPECTED_PI_TESTS,'automatic_readiness_controls':ready[0],'client':{k:v for k,v in c.items() if k!='reports'},'all14_native_observations_match_actual_provisioned_library':True,'fixture_coverage_actual_and_floor':coverage[0],'additional_audit_controls':4,'three_complete_fresh_audits':True,'audit_commands':commands,'limits':'Original completed CI source/build/trace binding only; the ELF itself is not downloaded, no cdylib reproducibility or target/device/custody/physical qualification claim. The original17-step/check/bootstrap/capture verifier remains separately mandatory.'}
     out.update(first_proof)
     out.update(verify_python_owner(objects, first_proof['worker_build'], head, repo))
-    out.update(verify_qh01_composition(objects, lines, first_proof['worker_build'], head, repo))
+    out.update(verify_qh01_composition(objects, lines, first_proof['worker_build'], head, repo, full_product=True))
     out['proof_role']='local_makeci_source_addon_no_GitHub_claim' if run_id is None else 'completed_capture_source_addon_requires_generic_receipt_job_check_verifier'
     if run_id is None:
         out['limits']='Local stable makeci source/build/trace proof only; no GitHub run, receipt, job, check, protected integration or device claim. Hosted acceptance separately requires the unchanged mandatory completed-capture verifier with RUN HEAD CHECKRUNS_JSON, plus this source addon. No ELF reproducibility or physical qualification.'
     return out
 
 
-def verify_qh01_composition(objects, lines, worker, head, repo):
+def verify_qh01_composition(objects, lines, worker, head, repo, full_product=False):
     """Require the new real composition in addition to every existing gate."""
     def blob(path):
         return subprocess.check_output(['git', '-C', repo, 'show', head + ':' + path])
@@ -96,7 +96,37 @@ def verify_qh01_composition(objects, lines, worker, head, repo):
         rows = [o[key] for o in objects if key in o]
         assert len(rows) == 1
         return rows[0]
-    b, c, command = (one(k) for k in ['bridge_service_build', 'qh01_composition_case', 'qh01_composition_command'])
+    c, command = (one(k) for k in ['qh01_composition_case', 'qh01_composition_command'])
+    builds = [o['bridge_service_build'] for o in objects if 'bridge_service_build' in o]
+    positions = lambda key: [i for i, line in enumerate(lines) if line.startswith('{"' + key + '":')]
+    build_positions = positions('bridge_service_build')
+    command_positions, case_positions = positions('qh01_composition_command'), positions('qh01_composition_case')
+    assert len(command_positions) == len(case_positions) == 1
+    assert len(builds) == len(build_positions) == (15 if full_product else 1)
+    command_at, case_at = command_positions[0], case_positions[0]
+    assert build_positions[0] < command_at < case_at
+    b = builds[0]
+    # Source oracle2db4: one pre-case build, then14 mandatory CLI rebuilds.
+    # Validate every occurrence; identical payloads are never deduplicated.
+    assert all(record == b for record in builds)
+    if full_product:
+        runner = ast.parse(blob('tests/integration/run.py'))
+        assignments = [n for n in runner.body if isinstance(n, ast.Assign)
+                       and any(isinstance(t, ast.Name) and t.id == 'PRODUCT_STEPS' for t in n.targets)]
+        assert len(assignments) == 1
+        steps = ast.literal_eval(assignments[0].value)
+        assert len(steps) == 17
+        expected = [f'[{i}/17 original {original}] {module}' for i, (original, module) in enumerate(steps, 1)]
+        markers = [(i, line) for i, line in enumerate(lines) if re.fullmatch(r'\[\d+/17 original \d+\] \w+', line)]
+        assert [line for _, line in markers] == expected and case_at < markers[0][0]
+        finish = 'All 17 retained product integration steps passed. External hardware and optional physical resources are separate.'
+        endings = [i for i, line in enumerate(lines) if line == finish]
+        assert len(endings) == 1 and markers[-1][0] < endings[0]
+        assert len([i for i in build_positions if i < command_at]) == 1
+        for number, (begin, _label) in enumerate(markers, 1):
+            end = markers[number][0] if number < 17 else endings[0]
+            assert sum(begin < i < end for i in build_positions) == (1 if number in {*range(3, 16), 17} else 0)
+        assert all(i < endings[0] for i in build_positions)
     assert not any('qh01_composition_failure' in o for o in objects)
     integers([b['v'], c['v'], command['v'], b['status']])
     assert b['v'] == c['v'] == command['v'] == 1 and b['status'] == 0
@@ -213,6 +243,7 @@ def verify_qh01_composition(objects, lines, worker, head, repo):
         line = 'test_' + method + ' (__main__.AttentionReportingTests.test_' + method + ') ... ok'
         assert lines.count(line) == 1
     return {'qh01_composition_cases': 1, 'qh01_compiler_outputs_cross_bound': len(outputs),
+            'qh01_build_records_verified': len(builds), 'qh01_post_case_CLI_build_intervals': 14 if full_product else 0,
             'qh01_dynamic_source_bindings': len(source), 'qh01_same_checkout_generated_bindings': len(generated),
             'qh01_actual_O_W_Node_collected': True, 'qh01_frame_bytes': [259, 259, 611],
             'qh01_attention_pure_controls': 6, 'qh01_clock': 'synthetic100; actualO8/shared4',
