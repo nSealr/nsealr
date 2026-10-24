@@ -109,3 +109,36 @@ This gives no human-review, real-client latency, signing, camera/display,
 ARM/Pi/physical or production-provider result. No old39 replay, new framing
 decision, limit/default/acceptance/task-graph change is proposed. STOP for root
 admission of the test-only implementation.
+
+## Root admission — 24 October 2026
+
+ADMITTED: freeze a minimal test-only composition harness, then ONE real positive
+before completing the component or running full gates. Root read the complete
+brief and original66-line pure command, verified all seven original byte/hash
+bindings and exact command/stdout receipts. Actual mainDA8 is now accepted after
+protected PR48, both original PR/main captures and a fresh main-only check.
+
+Python is the top-level owner of both its retained B3 operation and one Bridge
+Node child. Use a fixed trusted child script and bounded fixture-only IPC; frame
+data cannot select commands, worker configuration or keys. Freeze wire shapes,
+byte/record limits and failure/finally behavior before the first spawn. Reuse
+the existing explicit worker producer/binding and test helpers where sufficient.
+Do not create a general coordinator, provider or new runtime dependency.
+
+The monotonicNow hook alone does not replace the actual setTimeout in the client
+deadline wrapper. Confirm the real timer interface first. Prefer the installed
+Node test timer facilities, with a tiny pure preflight and primary documentation,
+isolated to the Node child. Preserve and record the100ms argument and synthetic
+clock progression; do not change shared client code/defaults or claim actual
+client/human latency. Python/O8s and cleanup4s remain real; C5000 is untouched.
+If the timer or bounded-ownership design cannot be established, report that
+exact missing property before execution rather than guessing an API.
+
+The early result must bind actual presented259, decoded259, scanned611 and the
+verified service response; actual O/W and Node collection/EOF must precede
+successful teardown. Refusal does not abandon a live owner. Unknown cleanup
+retains the owning invoker and exact handles and blocks acceptance/reuse; no
+Python/O timeout-killer, implicit recovery or destructor guarantee is admitted.
+Return the frozen source/command/result and STOP at that early checkpoint.
+No old39 replay, broad full-gate run or physical/default-provider qualification
+is admitted by this first positive checkpoint. General Rust rewrites stay deferred.
