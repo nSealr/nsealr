@@ -40,7 +40,30 @@ class Composition:
     def __init__(self, args):
         self.args = args
         self.output = Path(args.output)
-        self.output.mkdir(parents=True, exist_ok=False)
+        self.output.mkdir(parents=True, exist_ok=False,
+                          mode=0o700 if getattr(args, "case", "positive") == "fixture_request_engine" else 0o777)
+        self.engine_initialization = None
+        if getattr(args, "case", "positive") == "fixture_request_engine":
+            library = Path(args.engine_library).resolve(strict=True)
+            module = Path(args.engine_module).resolve(strict=True)
+            require(library.is_file() and sha(library.read_bytes()) == args.engine_sha256, "trusted actual native library SHA")
+            require(module.is_file() and sha(module.read_bytes()) == args.engine_module_sha256, "trusted emitted native helper SHA")
+            receipt = json.loads((Path(__file__).parent / "proof/native-leaf-prerequisite/tsc-preparation.json").read_text())
+            source = "docs/restart/implementation/QP01/request-engine/native-leaf.ts"
+            source_sha = sha((ROOT / source).read_bytes())
+            require(receipt["exit_code"] == 0 and receipt["source_before"][source] == receipt["source_after"][source] == source_sha
+                    and receipt["outputs"]["native-leaf.js"]["sha256"] == args.engine_module_sha256,
+                    "current source-bound joined helper preparation")
+            require(json.loads((module.parent / "package.json").read_text()) == {"type": "module"}, "helper ESM context")
+            child_sha = args.engine_sha256
+            if args.engine_refusal:
+                child_sha = ("1" if child_sha[0] == "0" else "0") + child_sha[1:]
+            self.engine_initialization = {"v": 1, "scope": "QH01_RGB_ENGINE_OPT_IN_V1",
+                  "mode": "loaded-sha-refusal" if args.engine_refusal else "positive", "source_root": str(ROOT),
+                  "output_dir": str(self.output.resolve()), "python": str(Path(sys.executable).absolute()),
+                  "library": str(library), "library_sha256": args.engine_sha256, "child_expected_sha256": child_sha,
+                  "module": str(module), "module_sha256": args.engine_module_sha256, "module_source_sha256": source_sha}
+            write(self.output / "engine-initialization.json", self.engine_initialization)
         self.baseline_fds = live_fds()
         self.runtime = RgbOwnerRuntime()
         self.op = self.runtime.reserve(args.worker, args.sha256)
@@ -54,6 +77,34 @@ class Composition:
         self.rows = []
         self.failure = None
         self.reply_sent = False
+
+    def engine_receipt(self, name, cap):
+        raw = (self.output / name).read_bytes()
+        require(len(raw) <= cap, "bounded native artifact")
+        return json.loads(raw)
+
+    def engine_known(self):
+        if self.engine_initialization is None or self.node is None:
+            return True
+        try:
+            outcome = self.engine_receipt("engine-outcome.json", 16384)["qh01_engine_leaf_outcome"]
+            require(outcome["scope"] == "QH01_RGB_ENGINE_OPT_IN_V1" and outcome["node_pid"] == self.node.pid,
+                    "exact Node native owner")
+            for name in ("spawned", "collected", "capability_calls"):
+                require(type(outcome[name]) is int, "typed native ownership counters")
+            if outcome["spawned"] == outcome["collected"] == outcome["capability_calls"] == 0:
+                return outcome["spawn"] is None  # Actual guarded no-C path; never a fabricated PID/status.
+            require(outcome["spawned"] == outcome["collected"] == outcome["capability_calls"] == 1, "one C owner collected")
+            status = self.engine_receipt("engine-settlement.json", 2048)["qh01_engine_leaf_settlement"]
+            _keys(status, ["pid", "code", "signal", "synthetic_handshake_control", "sent", "readiness_hex",
+                           "stdout_bytes", "stderr_bytes", "overflow", "initialization_ns", "request_to_close_ns"])
+            require(type(status["pid"]) is int and status["pid"] > 1 and status["pid"] == outcome["spawn"]["pid"],
+                    "exact actual C identity")
+            require((type(status["code"]) is int and status["signal"] is None)
+                    or (status["code"] is None and type(status["signal"]) is str), "actual C code/signal, not raw wait")
+            return True
+        except (OSError, ValueError, KeyError, TypeError, RuntimeError):
+            return False
 
     def record_node_wait(self):
         if self.node is not None and self.raw_wait is None:
@@ -152,7 +203,8 @@ class Composition:
                 self.attention("cleanup quarantine; no replacement or successful teardown")
             owner_known = self.op.state == "settled"
             node_known = self.node is None or (self.raw_wait is not None and self.eof == {"stdout", "stderr"})
-            if owner_known and node_known:
+            engine_known = node_known and self.engine_known()
+            if owner_known and node_known and engine_known:
                 self.op.close()
                 if self.selector is not None:
                     self.selector.close()
@@ -165,6 +217,8 @@ class Composition:
         case = getattr(self.args, "case", "positive")
         cancelled = case == "fixture_cancel_B3_verified_preG"
         timed_out = case == "scan_pending_timeout_after_settlement"
+        engine_case = case == "fixture_request_engine"
+        engine_refusal = engine_case and self.args.engine_refusal
         native = ROOT / "docs/restart/implementation/QH01/native-qr-probe"
         request_raw = (native / "expected/request-kind-1-basic.envelope").read_bytes()
         response_raw = (native / "expected/response-kind-1-basic.envelope").read_bytes()
@@ -177,6 +231,8 @@ class Composition:
         command = [self.args.node, str(Path(__file__).with_name("bridge-child.mjs")), str(ROOT), self.args.bridge, self.args.reuse]
         if case != "positive":
             command.append(case)
+        if engine_case:
+            command.append(str((self.output / "engine-initialization.json").resolve()))
         try:
             self.node = subprocess.Popen(command, stdin=subprocess.PIPE, stdout=subprocess.PIPE,
                                          stderr=subprocess.PIPE, close_fds=True)
@@ -267,7 +323,7 @@ class Composition:
             self.reply_sent = True
             self.until(lambda: self.raw_wait is not None and self.eof == {"stdout", "stderr"}, "Node collection/EOF")
             require(self.raw_wait == 0 and self.node.returncode == 0 and not self.buffers["stderr"], "actual Node0 collection")
-            require(not self.tail and len(self.rows) == (3 if cancelled else 5 if timed_out else 4), "exact complete case records")
+            require(not self.tail and len(self.rows) == (3 if cancelled or engine_refusal else 5 if timed_out else 4), "exact complete case records")
             result = self.rows[-1]
             close = self.rows[-2]
             if timed_out:
@@ -281,18 +337,22 @@ class Composition:
                     require(type(timeout[name]) is int and timeout[name] == value, "typed timeout-stage counters")
                 require(timeout["timer_args"] == [100] and timeout["abort_observed"] is True
                         and timeout["underlying_settled"] is False and timeout["pending_retry_error"] == "runtime_unavailable", "actual timeout before late settlement")
-            elif not cancelled:
+            elif not cancelled and not engine_refusal:
                 scan = self.rows[1]
                 _keys(scan, ["v", "event", "frame"])
                 require(scan["event"] == "scan", "single scan event")
                 if case == "scan_null_after_settlement":
                     require(scan["frame"] is None, "actual null scan")
+                elif engine_case:
+                    produced = (self.output / "engine-response.envelope").read_bytes()
+                    require(len(produced) == 611 and sha(produced) == "250167d1137f6da25676b00b62913a3d8f29391a1ff5331d64f7079d953f5ded"
+                            and scan["frame"].encode("ascii") == produced, "actual C-produced scan611")
                 else:
                     require(scan["frame"].encode("ascii") == response_raw, "host scanner611 binding")
             _keys(close, ["v", "event"])
             require(close == {"v": 1, "event": "close"}, "actual port close")
             result_keys = ["v", "event", "native_response_base64", "timer_args", "clear_calls", "deadline_fires", "clock_steps"]
-            _keys(result, result_keys + ([] if case == "positive" else ["lifecycle"]))
+            _keys(result, result_keys + (["engine"] if engine_case else [] if case == "positive" else ["lifecycle"]))
             require(result["v"] == 1 and result["event"] == "result" and result["timer_args"] == [100]
                     and all(type(x) is int for x in result["timer_args"])
                     and type(result["clear_calls"]) is int and result["clear_calls"] == 1
@@ -305,12 +365,16 @@ class Composition:
             service = json.loads(wire[4:])
             expected_response = json.loads((ROOT / "protocols/contracts/v1/examples/response-kind-1-basic.json").read_text())
             require(service["request_id"] == "qh01.composition", "actual native response request binding")
-            if case == "positive":
+            if case == "positive" or engine_case and not engine_refusal:
+                if engine_case:
+                    expected = json.loads((ROOT / "docs/restart/implementation/QP01/request-engine/expectations.json").read_text())
+                    expected_response["result"]["event"] = next(row for row in expected["independent_positive_expectations"] if row["id"] == "basic")["expected_complete_event"]
                 require(service["ok"] is True and service["result"]["signer_response"] == expected_response, "actual client verified response")
             else:
                 require(service["ok"] is False and "result" not in service
                         and service["error"]["code"] == ("signer_transport_timeout" if timed_out else "signer_transport_failed"), "exact native refusal")
-                lifecycle = result["lifecycle"]
+                lifecycle = result.get("lifecycle")
+            if case != "positive" and not engine_case:
                 _keys(lifecycle, ["case", "opens", "scans", "closes", "abort_observed", "underlying_settled",
                                   "late_scan_bytes", "late_scan_sha256", "pending_retry_error"])
                 require(lifecycle["case"] == case and lifecycle["abort_observed"] is True
@@ -320,6 +384,47 @@ class Composition:
                     require(type(lifecycle[name]) is int and lifecycle[name] == value, "typed lifecycle counters")
                 require(lifecycle["late_scan_sha256"] == (sha(response_raw) if timed_out else None)
                         and lifecycle["pending_retry_error"] == ("runtime_unavailable" if timed_out else None), "late scan/retry binding")
+            if engine_case:
+                require(self.engine_known(), "known native C close before successful harness teardown")
+                outcome = self.engine_receipt("engine-outcome.json", 16384)["qh01_engine_leaf_outcome"]
+                status = self.engine_receipt("engine-settlement.json", 2048)["qh01_engine_leaf_settlement"]
+                require(outcome["spawned"] == outcome["collected"] == outcome["capability_calls"] == 1
+                        and outcome["timer_args"] == [5000] and outcome["timer_clears"] == 1
+                        and outcome["children_before"] == outcome["children_after"] == ""
+                        and outcome["fds_before"] == outcome["fds_after"], "actual C count/timer/Node FD accounting")
+                require(status["code"] == (1 if engine_refusal else 0) and status["signal"] is None
+                        and status["sent"] is (not engine_refusal) and status["readiness_hex"] == ("" if engine_refusal else "52")
+                        and status["stdout_bytes"] == (0 if engine_refusal else 611) and status["overflow"] is False,
+                        "actual native readiness/refusal and terminal status")
+                require(type(outcome["response_bytes"]) is int and outcome["response_bytes"] == (0 if engine_refusal else 611)
+                        and type(outcome["observation_count"]) is int and outcome["observation_count"] == (0 if engine_refusal else 1)
+                        and outcome["readiness_refusal"] is engine_refusal
+                        and outcome["response_sha256"] == (None if engine_refusal else sha(produced)), "actual response artifact accounting")
+                _keys(result["engine"], ["mode", "spawned", "collected", "capability_calls", "pid", "code", "signal",
+                                         "timer_args", "timer_clears", "children_after", "fd_restored"])
+                for name in ("spawned", "collected", "capability_calls", "timer_clears"):
+                    require(type(result["engine"][name]) is int and type(outcome[name]) is int, "typed native counters")
+                require(type(result["engine"]["pid"]) is int and type(result["engine"]["code"]) is int
+                        and result["engine"]["fd_restored"] is True
+                        and result["engine"] == {"mode": self.engine_initialization["mode"], "spawned": 1, "collected": 1,
+                            "capability_calls": 1, "pid": status["pid"], "code": status["code"], "signal": status["signal"],
+                            "timer_args": outcome["timer_args"], "timer_clears": outcome["timer_clears"],
+                            "children_after": outcome["children_after"], "fd_restored": True}, "actual wire/artifact native binding")
+                if engine_refusal:
+                    require(not (self.output / "engine-observation.json").exists() and not (self.output / "engine-response.envelope").exists()
+                            and outcome["observation_count"] == 0, "refused initialization sends no request/response")
+                    refusal = self.engine_receipt("engine-refusal.json", 4096)["qh01_engine_leaf_refusal"]
+                    require(type(refusal["message"]) is str and "native library SHA256 mismatch" in refusal["message"],
+                            "actual loaded-SHA readiness refusal")
+                else:
+                    trace = self.engine_receipt("engine-observation.json", 262144)["qh01_engine_leaf_observation"]
+                    require(trace["sha256"] == self.args.engine_sha256 and trace["input_bytes"] == 259
+                            and trace["input_sha256"] == sha(request_raw) and trace["output_bytes"] == 611
+                            and trace["output_sha256"] == sha(produced), "real native input/output binding")
+                    pages = trace["synthetic_complete_review"]
+                    require(len(pages) == 31 and [p["index"] for p in pages] == list(range(31))
+                            and all(p["total"] == 31 for p in pages) and [p["kind"] for p in pages] == [0] * 30 + [1],
+                            "complete actual indexed basic Rust review")
             (self.output / "native-response.bin").write_bytes(wire)
             write(self.output / "service-response.json", service)
         except BaseException as error:
@@ -352,7 +457,13 @@ class Composition:
                   "presented_bytes": 259, "decoded_bytes": 259, "scanned_bytes": 611,
                   "client_clock": "synthetic0/99/100; actual setTimeout argument100",
                   "O_clocks": "actual8s/shared4s unchanged", "physical_claim": False}
-        if case != "positive":
+        if engine_case:
+            result.update({"result": "PASS_FIRST_HOST_RGB_REQUEST_ENGINE_ONLY", "case": case,
+                           "mode": self.engine_initialization["mode"], "scanned_bytes": 0 if engine_refusal else 611,
+                           "C_pid": status["pid"], "C_code": status["code"], "C_signal": status["signal"],
+                           "C_scope": "Node-owned existing fixture leaf; code/signal/stdio-close, no raw wait",
+                           "service_error": service.get("error", {}).get("code"), "caller_released_bytes": 259})
+        elif case != "positive":
             result.update({"result": "PASS_HOST_COMPOSITION_LIFECYCLE_CASE", "case": case,
                            "decoded_bytes": 0 if cancelled else 259,
                            "scanned_bytes": 611 if timed_out else 0,
@@ -360,7 +471,7 @@ class Composition:
                            "B3_outcome": self.op.observation()["terminal"]["outcome"],
                            "caller_released_bytes": 0 if cancelled else 259})
         write(self.output / "result.json", result)
-        print(json.dumps(result) if case == "positive" else "\n" + json.dumps({"qh01_lifecycle_result": result}), flush=True)
+        print("\n" + json.dumps({"qh01_request_engine_result": result}) if engine_case else json.dumps(result) if case == "positive" else "\n" + json.dumps({"qh01_lifecycle_result": result}), flush=True)
 
 
 if __name__ == "__main__":
@@ -368,5 +479,15 @@ if __name__ == "__main__":
     for name in ("output", "worker", "sha256", "node", "bridge", "reuse"):
         parser.add_argument("--" + name, required=True)
     parser.add_argument("--case", choices=("positive", "scan_null_after_settlement",
-                        "scan_pending_timeout_after_settlement", "fixture_cancel_B3_verified_preG"), default="positive")
-    Composition(parser.parse_args()).run()
+                        "scan_pending_timeout_after_settlement", "fixture_cancel_B3_verified_preG", "fixture_request_engine"), default="positive")
+    for name in ("engine-library", "engine-sha256", "engine-module", "engine-module-sha256"):
+        parser.add_argument("--" + name)
+    parser.add_argument("--engine-refusal", action="store_true")
+    args = parser.parse_args()
+    engine_fields = [args.engine_library, args.engine_sha256, args.engine_module, args.engine_module_sha256]
+    if args.case == "fixture_request_engine":
+        if not all(engine_fields):
+            parser.error("fixture_request_engine requires all explicit native initialization arguments")
+    elif any(engine_fields) or args.engine_refusal:
+        parser.error("native initialization/refusal is exclusive to fixture_request_engine")
+    Composition(args).run()

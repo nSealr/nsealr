@@ -812,3 +812,65 @@ four current QH fixtures. All14 old native observations/every page/output equal
 manual/combined RGB-engine run, fullmakeci or hosted run. proof/native-leaf-
 prerequisite/ packages originals/source/prep/timer/gate/limits; STOP distinct
 review, kept separate from the current lifecycle delivery.
+
+## Admitted opt-in RGB/request-engine source freeze — no runtime yet
+
+Root accepted distinct prerequisite reviewb21985a7/findings[] and admitted only
+fixture_request_engine on a new branch froma3. Python still owns B3/runtime/op
+and Node; Node owns ONE reviewed exchange.py C-leaf after actual B3 settlement/
+take_result. Real timer5000 references and spawn function are captured before
+mock/guards; a capability wrapper admits ONLY trusted fixed C argv/env/root once,
+after the decoded259 reply. Other process helpers remain forbidden. Old four
+cases, helper module/client legacy14 and all211/70/39/15build semantics remain.
+
+Native path/SHA, Python, source-bound emitted helper module/SHA and case output
+directory are fixed before RGB/Node. Module uses the reviewed createPrepareNative
+with source-equal prior joined TSC6 ESM artifacts; no runtime compiler/new build.
+C readiness is actualR/EOF after CDLL validation; C5000 starts at its spawn, not
+at O start, and is a real kill attempt against C only, not a hard collection bound.
+The actual B3-released raw259 is sent once; no JSON reconstruction/golden scan.
+Node retains the returned actual611 in memory for scan, and writes it as a fixed
+proof artifact. Thus no extra response IPC/file input is needed: reply512 and
+Node4096/2048/5 remain exact. Native stderr262144/stdout947 limits remain separate.
+
+Fixed artifacts engine-initialization.json, engine-settlement.json, optional
+engine-observation.json/engine-response.envelope, engine-outcome.json and optional
+engine-refusal.json use qh01_engine_leaf_* wrappers, never legacy native_observation.
+Counter/report callbacks only retain values; artifact I/O occurs after known C
+close. Finally awaits the same prepare/dispose/ended owner before Node exit;
+unknown retains the exact live Python/Node/B3 handles, no Python/O kill/restart.
+Node reports C code/signal/actualclose only, never invents raw wait status.
+
+Positive expectation: RGB172800/SHA64d9→raw259/SHA88a1→actual C input259 once,
+31 complete indexed review pages, actual611/SHA250167d1 and full independent
+zero-aux event; client uses expected4f/ID/template/signature verifier unchanged.
+Original scanner611/f27d stays untouched and cannot supply this scan. Client100
+is synthetic0/99/100, real O8/shared4 and C5000 remain; review/auxiliary provider
+and account/capability metadata are still trusted public host fixtures.
+
+Necessary failure control uses the SAME opt-in plus trusted --engine-refusal:
+parent first verifies the actual good library/SHA, then fixes a one-nibble-wrong
+child expectedSHA before Node. After real B3 settlement C fails loading beforeR;
+expect Ccode1/signalnull, sentfalse/readinessempty/stdout0/no observation/response,
+actual close, client signer_transport_failed/scan0/close1/clear1/fire0. No request
+bytes reach C; no signing after that refusal follows from actual no-send plus
+unchanged loader-before-stdin source, not an invented runtime crypto counter.
+
+Before ANY new TSC/Node/O/W/C execution, freeze source, exact initialization/
+artifact/Node record schemas, commands and input hashes under proof/request-engine-
+opt-in/ and send root the tuple for capability/timer/handoff guard review. First
+allowed future runtime is ONE actual positive, then stop/checkpoint before the
+precise readiness control/further gates as root directs. No combined execution,
+compile, manual replay, normal/fullCI, signing or physical claim occurs in this
+source checkpoint. This does not alter the separate lifecycle delivery.
+
+Fresh audit dependency reported by root during this freeze: RUSTSEC-2026-0387
+affects current crypto-bigint0.7.5; separate owner A02 is correcting lock/vendor
+to0.7.6. Full5e17 RED2 remains preserved and no adoption is inferred from17
+functional passes. This branch does not touch lock/vendor or repeat that work.
+The old native library is HISTORICAL only, not the future execution/security
+candidate. A source-qualified locked/offline build_artifact on the independently
+accepted corrected closure must provide actual library path/SHA before the first
+combined test. Until that exact input exists and root's guard review admits it,
+ALL TSC/runtime/C/O/W execution remains blocked. Expected2501 stays frozen; any
+new output difference is a refusal/investigation, never a learned golden change.
