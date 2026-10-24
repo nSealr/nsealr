@@ -108,7 +108,7 @@ def verify_qh01_composition(objects, lines, worker, head, repo, full_product=Fal
     b = builds[0]
     # Source oracle2db4: one pre-case build, then14 mandatory CLI rebuilds.
     # Validate every occurrence; identical payloads are never deduplicated.
-    assert all(record == b for record in builds)
+    assert all(json.dumps(record, sort_keys=True) == json.dumps(b, sort_keys=True) for record in builds)
     if full_product:
         runner = ast.parse(blob('tests/integration/run.py'))
         assignments = [n for n in runner.body if isinstance(n, ast.Assign)
