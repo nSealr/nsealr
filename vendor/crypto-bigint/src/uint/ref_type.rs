@@ -10,6 +10,7 @@ mod mul;
 mod shl;
 mod shr;
 mod slice;
+mod sqrt;
 mod sub;
 
 use crate::{Choice, Limb, NonZero, Odd, Uint, Word};
@@ -30,7 +31,6 @@ use {
 /// This type contains a limb slice which can be borrowed from either a [`Uint`] or [`BoxedUint`] and
 /// thus provides an abstraction for writing shared implementations.
 #[repr(transparent)]
-#[derive(PartialEq, Eq)]
 pub struct UintRef {
     /// Inner limb array. Stored from least significant to most significant.
     // TODO(tarcieri): maintain an invariant of at least one limb?
@@ -102,7 +102,6 @@ impl UintRef {
 
     /// Get an iterator over the inner limbs.
     #[inline]
-    #[must_use]
     pub fn iter(&self) -> impl DoubleEndedIterator<Item = &Limb> {
         self.limbs.iter()
     }
@@ -179,7 +178,7 @@ impl UintRef {
     #[inline]
     #[must_use]
     pub const fn as_odd_vartime(&self) -> Option<&Odd<Self>> {
-        if !self.is_odd().to_bool_vartime() {
+        if !self.is_odd().to_bool() {
             return None;
         }
         Some(Odd::new_ref_unchecked(self))

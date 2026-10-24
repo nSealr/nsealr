@@ -20,16 +20,6 @@ pub(crate) const fn overflowing_add(lhs: Word, rhs: Word) -> (Word, Word) {
     (res, carry as Word)
 }
 
-/// Computes `lhs - (rhs + borrow)`, returning the result along with the new borrow.
-#[inline(always)]
-pub(crate) const fn borrowing_sub(lhs: Word, rhs: Word, borrow: Word) -> (Word, Word) {
-    // XXX we cannot use WideWord casts here: https://github.com/rust-lang/rust/issues/149522
-    // rustc 1.87 through 1.91 incorrectly optimize some WideWord bit arithmetic.
-    let (ret, b2) = lhs.overflowing_sub(borrow >> (Word::BITS - 1));
-    let (ret, b1) = ret.overflowing_sub(rhs);
-    (ret, Word::MIN.wrapping_sub((b1 | b2) as Word))
-}
-
 /// Computes `lhs * rhs`, returning the low and the high words of the result.
 #[inline(always)]
 #[allow(clippy::cast_possible_truncation)]
@@ -189,10 +179,10 @@ mod tests {
 
     #[test]
     fn test_usize_const_lt() {
-        assert!(usize_lt(0, 5).to_bool_vartime());
-        assert!(!usize_lt(7, 0).to_bool_vartime());
-        assert!(!usize_lt(7, 5).to_bool_vartime());
-        assert!(!usize_lt(7, 7).to_bool_vartime());
+        assert!(usize_lt(0, 5).to_bool());
+        assert!(!usize_lt(7, 0).to_bool());
+        assert!(!usize_lt(7, 5).to_bool());
+        assert!(!usize_lt(7, 7).to_bool());
     }
 
     cpubits::cpubits! {
