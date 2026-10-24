@@ -9,8 +9,13 @@ Its original PR/main captures and fresh main-only source check are complete;
 do not poll or rerun them for navigation updates. The later automatic lifecycle
 candidate adds three refusal cases to the same normal Pi CI. Its [independent
 wrapper review](reviews/QH01-python-rgb-lifecycle-ci/report.md) is scoped to source
-and original proof. The new capture checker is undergoing its own affected review
-and correction before stable complete gates and protected integration. The
+and original proof. The corrected capture checker passed its [affected review](reviews/QH01-python-rgb-lifecycle-capture-correction-review/report.md).
+The [first complete local gate](reviews/QH01-python-rgb-lifecycle-integration/local-full-security-red/result.json)
+failed fresh security audit RUSTSEC-2026-0387 on crypto-bigint0.7.5, with all17
+functional integrations passing. Authenticate the minimal dependency correction,
+run affected checks and independent review, then one new stable complete gate
+before protected integration. Preserve the original RED and source-qualified
+partial proofs; neither is complete-CI acceptance. The
 next software dependency is a real request-aware engine response after RGB decode;
 the Native helper/timer prerequisite is separate and does not yet wire that path.
 Use the graph's QH01 checkpoint for exact current candidate and evidence. Physical
