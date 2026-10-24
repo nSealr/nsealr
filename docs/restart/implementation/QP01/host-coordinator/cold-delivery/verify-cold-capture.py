@@ -6,7 +6,7 @@ triggers CI, or retroactively changes expectations for historical captures.
 CLI: CAPTURE_DIRECTORY SOURCE_HEAD REPOSITORY.
 """
 from pathlib import Path
-import collections,hashlib,json,re,subprocess,sys,zipfile
+import base64,collections,hashlib,json,re,subprocess,sys,zipfile
 
 if sys.flags.optimize:
     raise RuntimeError("capture checker requires assertions enabled")
@@ -75,10 +75,148 @@ def verify_product(raw, head, repo, run_id=None):
     out={'run':int(run_id) if run_id is not None else None,'source_head':head,'product_log_sha256':hashlib.sha256(raw).hexdigest(),'native_build':b,'native_source_bindings':4,'actual_full_Pi_tests':EXPECTED_PI_TESTS,'automatic_readiness_controls':ready[0],'client':{k:v for k,v in c.items() if k!='reports'},'all14_native_observations_match_actual_provisioned_library':True,'fixture_coverage_actual_and_floor':coverage[0],'additional_audit_controls':4,'three_complete_fresh_audits':True,'audit_commands':commands,'limits':'Original completed CI source/build/trace binding only; the ELF itself is not downloaded, no cdylib reproducibility or target/device/custody/physical qualification claim. The original17-step/check/bootstrap/capture verifier remains separately mandatory.'}
     out.update(first_proof)
     out.update(verify_python_owner(objects, first_proof['worker_build'], head, repo))
+    out.update(verify_qh01_composition(objects, lines, first_proof['worker_build'], head, repo))
     out['proof_role']='local_makeci_source_addon_no_GitHub_claim' if run_id is None else 'completed_capture_source_addon_requires_generic_receipt_job_check_verifier'
     if run_id is None:
         out['limits']='Local stable makeci source/build/trace proof only; no GitHub run, receipt, job, check, protected integration or device claim. Hosted acceptance separately requires the unchanged mandatory completed-capture verifier with RUN HEAD CHECKRUNS_JSON, plus this source addon. No ELF reproducibility or physical qualification.'
     return out
+
+
+def verify_qh01_composition(objects, lines, worker, head, repo):
+    """Require the new real composition in addition to every existing gate."""
+    def blob(path):
+        return subprocess.check_output(['git', '-C', repo, 'show', head + ':' + path])
+    def paths(prefix):
+        return subprocess.check_output(['git', '-C', repo, 'ls-tree', '-r', '--name-only', head, '--', prefix], text=True).splitlines()
+    def digest(data):
+        return hashlib.sha256(data).hexdigest()
+    def integers(values):
+        assert all(type(v) is int for v in values)
+    def one(key):
+        rows = [o[key] for o in objects if key in o]
+        assert len(rows) == 1
+        return rows[0]
+    b, c, command = (one(k) for k in ['bridge_service_build', 'qh01_composition_case', 'qh01_composition_command'])
+    assert not any('qh01_composition_failure' in o for o in objects)
+    integers([b['v'], c['v'], command['v'], b['status']])
+    assert b['v'] == c['v'] == command['v'] == 1 and b['status'] == 0
+    assert b['signal'] is None and b['error'] is None and b['role'] == 'current_checkout_compiler_artifacts_only'
+    assert c['id'] == 'bridge_rgb_kind1_basic' and c['scope'] == 'QH01_HOST_COMPOSITION_CI_V1'
+    assert c['role'] == 'public_host_fixture_synthetic_client_clock'
+    root = Path(b['cwd'])
+    assert root.is_absolute() and '..' not in root.parts
+    service = sorted(p for p in paths('apps/bridge/service/src') if p.endswith('.ts') and not p.endswith('.test.ts'))
+    assert len(service) == 5
+    assert b['source_before'] == b['source_after'] == {p: digest(blob(p)) for p in service}
+    options = ['pnpm', 'exec', 'tsc', '--ignoreConfig', '--target', 'ES2022', '--module', 'NodeNext',
+               '--moduleResolution', 'NodeNext', '--strict', '--esModuleInterop', '--forceConsistentCasingInFileNames',
+               '--skipLibCheck', '--resolveJsonModule', '--types', 'node', '--declaration',
+               '--rootDir', 'apps/bridge/service/src', '--outDir', 'apps/bridge/service/dist']
+    assert b['argv'] == options + service
+    assert b['compiler']['version'] == json.loads(blob('package.json'))['devDependencies']['typescript'] == '6.0.3'
+    assert Path(b['compiler']['path']).is_relative_to(root / 'node_modules')
+    assert b['compiler']['path'].endswith('/typescript/bin/tsc') and re.fullmatch('[0-9a-f]{64}', b['compiler']['sha256'])
+    prefix = 'docs/restart/implementation/QH01/manual-port/python-rgb-composition/'
+    source = ['tools/bridge/build_packages.mjs', 'pnpm-lock.yaml', 'apps/bridge/service/package.json',
+              'docs/restart/implementation/QP01/request-engine/exchange.py', 'apps/pi/tests/test_engine_adapter.py',
+              'apps/pi/app/nsealr_vault/qr_owner_adapter.py', 'apps/pi/app/nsealr_vault/qr_worker.py']
+    source += [prefix + p for p in ['run-composition.py', 'bridge-child.mjs', 'test_attention_reporting.py']] + service
+    packages = ['client', 'core', 'policy', 'protocol', 'qr', 'transport', 'framing']
+    package_sources = [p for name in packages for p in paths('packages/' + name + '/src') if p.endswith('.ts')]
+    source += package_sources
+    assert c['source_before'] == c['source_after'] == {p: digest(blob(p)) for p in source}
+    outputs = {p.replace('/src/', '/dist/')[:-3] + suffix for p in service for suffix in ['.js', '.d.ts']}
+    generated = outputs | {p.replace('/src/', '/dist/')[:-3] + suffix for p in package_sources
+                           if not p.endswith('.test.ts') for suffix in ['.js', '.d.ts']}
+    assert set(b['outputs']) == outputs and set(c['generated_before']) == generated
+    assert c['generated_before'] == c['generated_after']
+    assert all(re.fullmatch('[0-9a-f]{64}', h) for h in c['generated_before'].values())
+    assert b['outputs'] == {p: c['generated_before'][p] for p in outputs}
+    assert c['worker_initialization'] == {'path': worker['worker'], 'sha256': worker['sha256']}
+    argv = c['argv']
+    assert len(argv) == 15 and argv == command['argv'] and argv[:3] == [str(root / 'apps/pi/.venv/bin/python'), '-B', str(root / (prefix + 'run-composition.py'))]
+    assert argv[3] == '--output' and argv[4] == command['output']
+    output = Path(argv[4])
+    assert output.is_absolute() and output.name == 'case' and output.parent.name.startswith('nsealr-qh01-composition-')
+    assert argv[5:10] == ['--worker', worker['worker'], '--sha256', worker['sha256'], '--node']
+    assert Path(argv[10]).is_absolute() and Path(argv[10]).name == 'node'
+    assert argv[11:] == ['--bridge', str(root / 'apps/bridge/service/dist'), '--reuse', str(root)]
+    native = 'docs/restart/implementation/QH01/native-qr-probe/'
+    request, response = [blob(native + 'expected/' + p + '-kind-1-basic.envelope') for p in ['request', 'response']]
+    image = blob(native + 'execution-01/request-kind-1-basic.rgb')
+    frame = lambda raw: {'bytes': len(raw), 'sha256': digest(raw)}
+    assert c['frames'] == {'presented': frame(request), 'decoded': frame(request), 'scanned': frame(response)}
+    assert len(request) == 259 and len(response) == 611 and len(image) == 172800
+    assert c['decoded_request'] == json.loads(blob('protocols/contracts/v1/vectors/transports/qr-envelope-kind-1-basic.json'))['decoded']
+    a, collection = c['actual'], c['collection']
+    assert a['result'] == 'PASS_FIRST_HOST_COMPOSITION_ONLY' and a['physical_claim'] is False
+    ids = [a[k] for k in ['parent_pid', 'node_pid', 'owner_pid', 'worker_pid']]
+    integers(ids)
+    assert len(set(ids)) == 4 and min(ids) > 1 and a['worker_sha256'] == worker['sha256']
+    integers([a[k] for k in ['presented_bytes', 'decoded_bytes', 'scanned_bytes']])
+    assert [a[k] for k in ['presented_bytes', 'decoded_bytes', 'scanned_bytes']] == [259, 259, 611]
+    assert collection['node_pid'] == a['node_pid'] and type(collection['node_wait_raw']) is int and collection['node_wait_raw'] == 0
+    assert collection['node_EOF'] == ['stderr', 'stdout'] and collection['node_observed']['stderr'] == 0
+    assert collection['parent_fd_before'] == collection['parent_fd_after'] == [0, 1, 2]
+    assert collection['runtime_strong_reference'] is True
+    o = collection['B3']; t = o['terminal']; p = o['phase']; wait = t['worker_wait']
+    integers(collection['parent_fd_before'] + collection['parent_fd_after'] + o['EOF'])
+    integers([p[k] for k in ['v', 'owner_pid', 'worker_pid', 'ppid', 'sid', 'pgid', 'G_bytes', 'image_bytes_sent']])
+    integers([t[k] for k in ['v', 'owner_pid', 'worker_pid', 'input_bytes_received', 'G_bytes', 'image_bytes_sent',
+                            'stdout_observed', 'stdout_retained', 'stderr_observed', 'stderr_retained', 'result_bytes']])
+    integers([o[k] for k in ['owner_pid', 'image_bytes_written', 'output_bytes']])
+    integers([f['fd'] for f in p['fds']] + [n for pair in p['limits'].values() for n in pair])
+    assert p['v'] == t['v'] == 1 and p['kind'] == 'worker_ready' and t['kind'] == 'terminal'
+    assert o['state'] == 'settled' and o['owner_pid'] == a['owner_pid'] == t['owner_pid'] == p['owner_pid'] == p['ppid']
+    integers([o['owner_wait_raw'], o['owner_exit_code'], wait['raw_status'], wait['exit_code'], wait['collector_pid']])
+    assert o['owner_wait_raw'] == o['owner_exit_code'] == wait['raw_status'] == wait['exit_code'] == 0
+    assert wait['collector_pid'] == o['owner_pid'] and p['worker_pid'] == t['worker_pid'] == a['worker_pid']
+    assert p['sid'] == p['pgid'] == p['worker_pid'] and p['exe_sha256'] == worker['sha256']
+    assert p['limits'] == {'AS': [268435456, 268435456], 'CPU': [1, 2], 'CORE': [0, 0]}
+    assert p['G_bytes'] == p['image_bytes_sent'] == 0 and [f['fd'] for f in p['fds']] == [0, 1, 2]
+    assert len({(f['dev'], f['ino']) for f in p['fds']}) == 3
+    assert o['EOF'] == [1, 2, 4, 5] and o['parent_owned_fds'] == [] and o['commands'] == ['P', 'G']
+    assert o['taken'] is o['closed'] is True and o['fault'] is o['transport_error'] is None
+    assert o['ready_hex'] == '52' and o['diagnostic_base64'] == ''
+    assert t['outcome'] == 'decoded' and t['ownership'] == 'settled' and t['session_policy_verified'] is True
+    assert all(t['worker_io'][k] is True for k in ['stdin_closed', 'stdout_eof', 'stderr_eof', 'owned_fds_closed'])
+    assert t['input_bytes_received'] == t['image_bytes_sent'] == o['image_bytes_written'] == len(image)
+    assert t['input_sha256'] == digest(image) and t['G_bytes'] == 1
+    assert t['result_bytes'] == o['output_bytes'] == t['stdout_observed'] == t['stdout_retained'] == len(request)
+    assert t['result_sha256'] == o['output_sha256'] == digest(request)
+    assert t['final_worker_eligible'] is True and t['cancel_observed'] is False
+    clock = t['timing']
+    assert clock['invalidated_ns'] is clock['cleanup_deadline_ns'] is None
+    assert int(clock['begin_ns']) <= int(clock['settled_ns']) <= int(clock['final_admission_ns']) < int(clock['begin_ns']) + 8000000000
+    wire = base64.b64decode(o['status_wire_base64'], validate=True)
+    assert base64.b64encode(wire).decode('ascii') == o['status_wire_base64']
+    assert [json.loads(row) for row in wire.splitlines()] == [p, t]
+    rows = c['node_records']
+    assert len(rows) == 4 and [r['event'] for r in rows] == ['present', 'scan', 'close', 'result']
+    assert all(type(r['v']) is int and r['v'] == 1 for r in rows)
+    assert rows[0]['frame'].encode('ascii') == request and rows[0]['timer_args'] == [100] and rows[0]['clock'] == 99
+    assert rows[1]['frame'].encode('ascii') == response and rows[2] == {'v': 1, 'event': 'close'}
+    result = rows[3]
+    integers(result['timer_args'] + result['clock_steps'] + [result['clear_calls'], result['deadline_fires']])
+    assert result['timer_args'] == [100] and result['clock_steps'] == [0, 99, 100] and result['clear_calls'] == 1 and result['deadline_fires'] == 0
+    assert result['native_response_base64'] == c['native_response_base64']
+    wire = base64.b64decode(c['native_response_base64'], validate=True)
+    assert base64.b64encode(wire).decode('ascii') == c['native_response_base64'] and len(wire) >= 4
+    assert int.from_bytes(wire[:4], 'little') == len(wire) - 4 and json.loads(wire[4:]) == c['service_response']
+    fixture = json.loads(blob('protocols/contracts/v1/examples/response-kind-1-basic.json'))
+    key = json.loads(blob('protocols/contracts/v1/examples/response-get-public-key.json'))['result']['public_key']
+    assert c['expected_public_key'] == fixture['result']['event']['pubkey'] == key
+    assert c['service_response'] == {'version': 1, 'request_id': 'qh01.composition', 'ok': True, 'result': {'signer_response': fixture}}
+    assert type(c['service_response']['version']) is int and c['service_response']['ok'] is True
+    methods = ['both_fail', 'observation_failure', 'print_failure', 'reporting_base_exception', 'serialization_failure', 'write_failure']
+    for method in methods:
+        line = 'test_' + method + ' (__main__.AttentionReportingTests.test_' + method + ') ... ok'
+        assert lines.count(line) == 1
+    return {'qh01_composition_cases': 1, 'qh01_compiler_outputs_cross_bound': len(outputs),
+            'qh01_dynamic_source_bindings': len(source), 'qh01_same_checkout_generated_bindings': len(generated),
+            'qh01_actual_O_W_Node_collected': True, 'qh01_frame_bytes': [259, 259, 611],
+            'qh01_attention_pure_controls': 6, 'qh01_clock': 'synthetic100; actualO8/shared4',
+            'qh01_limits': 'New host fixture composition only; real timeout/cancel seam, camera/physical/key/provider gates remain open.'}
 
 
 def verify_python_owner(objects, worker, head, repo):
