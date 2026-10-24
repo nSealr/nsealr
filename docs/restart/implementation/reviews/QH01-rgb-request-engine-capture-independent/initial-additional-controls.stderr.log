@@ -1,0 +1,35 @@
+fatal: path 'docs/restart/implementation/QP01/request-engine/native-leaf.ts' exists on disk, but not in '6b0a57aebd7a3b1fa567312417f92e5336db4f18'
+Traceback (most recent call last):
+  File "/home/tux/nsealr/.restart-tools/goal/qh01-rgb-request-engine-checker-review/docs/restart/implementation/reviews/QH01-rgb-request-engine-capture-independent/probe.py", line 75, in <module>
+    negative('source HEAD changed to prior accepted main',lambda o:None,'6b0a57aebd7a3b1fa567312417f92e5336db4f18')
+    ~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/tux/nsealr/.restart-tools/goal/qh01-rgb-request-engine-checker-review/docs/restart/implementation/reviews/QH01-rgb-request-engine-capture-independent/probe.py", line 43, in negative
+    try:m.verify_qh01_request_engine(changed,head,str(a.repo))
+        ~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/tux/nsealr/.restart-tools/goal/qh01-rgb-request-engine-checker-review/docs/restart/implementation/QP01/host-coordinator/cold-delivery/verify-cold-capture.py", line 467, in verify_qh01_request_engine
+    bindings = {p: sha(blob(p)) for p in source}
+                       ~~~~^^^
+  File "/home/tux/nsealr/.restart-tools/goal/qh01-rgb-request-engine-checker-review/docs/restart/implementation/QP01/host-coordinator/cold-delivery/verify-cold-capture.py", line 442, in blob
+    return subprocess.check_output(['git', '-C', repo, 'show', head + ':' + path])
+           ~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.13/unittest/mock.py", line 1169, in __call__
+    return self._mock_call(*args, **kwargs)
+           ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.13/unittest/mock.py", line 1173, in _mock_call
+    return self._execute_mock_call(*args, **kwargs)
+           ~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.13/unittest/mock.py", line 1234, in _execute_mock_call
+    result = effect(*args, **kwargs)
+  File "/home/tux/nsealr/.restart-tools/goal/qh01-rgb-request-engine-checker-review/docs/restart/implementation/reviews/QH01-rgb-request-engine-capture-independent/probe.py", line 17, in safe_read
+    return git_read(tuple(argv),kwargs.get('text',False))
+  File "/home/tux/nsealr/.restart-tools/goal/qh01-rgb-request-engine-checker-review/docs/restart/implementation/reviews/QH01-rgb-request-engine-capture-independent/probe.py", line 14, in git_read
+    return original_check_output(list(argv),text=text)
+  File "/usr/lib/python3.13/subprocess.py", line 472, in check_output
+    return run(*popenargs, stdout=PIPE, timeout=timeout, check=True,
+           ~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+               **kwargs).stdout
+               ^^^^^^^^^
+  File "/usr/lib/python3.13/subprocess.py", line 577, in run
+    raise CalledProcessError(retcode, process.args,
+                             output=stdout, stderr=stderr)
+subprocess.CalledProcessError: Command '['git', '-C', '/home/tux/nsealr/.restart-tools/goal/qh01-rgb-request-engine-checker-review', 'show', '6b0a57aebd7a3b1fa567312417f92e5336db4f18:docs/restart/implementation/QP01/request-engine/native-leaf.ts']' returned non-zero exit status 128.
