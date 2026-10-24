@@ -1,0 +1,236 @@
+{
+  "schema": 1,
+  "role": "Independent source/authenticity/minimum-closure and focused proof review, plus bounded root assembly facet; no complete/protected integration acceptance",
+  "reviewer": "/root/b01_final_review",
+  "recorded_utc": "2026-10-24T04:39:43.550629+00:00",
+  "actual_model": {
+    "model": "gpt-6.1-sol",
+    "effort": "xhigh",
+    "current_thread_verified": true,
+    "subagents": 0
+  },
+  "candidate": {
+    "source_commit": "4f132f5bba19f28ee491d05189eea1ad919ba7b4",
+    "source_tree": "41e55fec64d2abc04a76e9d9d03826dc47388af5",
+    "executed_source": "7badfdc93fcb1654e97943204b7b854113c21120",
+    "product_commit": "ad4ac14cb97f5ca272338d987d0fd5b46463e14f",
+    "failed_base": "5e17f9a957137c7d856f12bc08f5f795d3f858d8",
+    "static_reading_commit": "2f106d1e856c83e7018f86ba4ef1157c54563482",
+    "integration_candidate": "72c54c716cfa222a2c67c3295ae77e2e0abb481e",
+    "integration_tree": "e6f2b0b11605ab1036bb85db5a7818e4d493f8ef"
+  },
+  "verdict": "PASS_SECURITY_PATCH_SOURCE_AND_FOCUSED_PROOF_ONLY",
+  "findings": [],
+  "source_authentication": {
+    "successful_primary_fetches": 14,
+    "archives": [
+      {
+        "crate": "crypto-bigint",
+        "version": "0.7.6",
+        "sha256": "6bb08299a6046833a879ace115697f12fd2bd6c8d3e93c909ffc9e0738e7cae0",
+        "files": 224,
+        "sparse_not_yanked": true,
+        "vcs_tag_commit": "c34044b8a1479ef32bec0a9030cf2f07b06506d9",
+        "license_files": {
+          "LICENSE-APACHE": "a9040321c3712d8fd0b09cf52b17445de04a23a10165049ae187cd39e5c86be5",
+          "LICENSE-MIT": "57a4d75c1d095bb94754a478f3cd15e60ac66a5c5627d844be01a918eea5fe88"
+        },
+        "rust_version": "1.87",
+        "features_unchanged": true,
+        "normal_dependencies": "only requiredctutils minimum changed"
+      },
+      {
+        "crate": "ctutils",
+        "version": "0.4.5",
+        "sha256": "38d28fb6aa7dd680b3ffd1a3e64e115c177bdba63c0ae7f9cd48129ff05c4fa0",
+        "files": 23,
+        "sparse_not_yanked": true,
+        "vcs_tag_commit": "88d6e90d4cfd2fc3333d00e13c99241507d2138f",
+        "license_files": {
+          "LICENSE-APACHE": "cfc7749b96f63bd31c3c42b5c471bf756814053e847c10f3eb003417bc523d30",
+          "LICENSE-MIT": "91585c36e4fb9ab4ca0d3dfac5d66d3c0c62cc51f640a0e1196542daf2267eae"
+        },
+        "rust_version": "1.87",
+        "features_unchanged": true,
+        "normal_dependencies": "unchanged"
+      }
+    ],
+    "old_bigint_archive223_exact": true,
+    "license_notices_preserved": true,
+    "publisher_signature_claimed": false,
+    "required_ctutils_045_despite_PR_044_prose": true,
+    "preserved_fetch_errors": [
+      {
+        "url": "https://raw.githubusercontent.com/RustSec/advisory-db/a32530a9217e93567241cd7d6d43352c5403ec8f/crates/crypto-bigint/RUSTSEC-2026-0387.md",
+        "error": "HTTP Error 404: Not Found"
+      }
+    ]
+  },
+  "minimum_closure": {
+    "product_paths": 77,
+    "bigint_paths": 64,
+    "ctutils_paths": 11,
+    "locks": 2,
+    "root_packages": 44,
+    "desktop_packages": 47,
+    "only_package_changes": [
+      "crypto-bigint0.7.5\u21920.7.6",
+      "ctutils0.4.4\u21920.4.5"
+    ],
+    "all_other_package_records_exact": true,
+    "worker_graph12_exact": true,
+    "other_vendor_files_exact": 1879,
+    "runtime_features_and_other_normal_dependencies_unchanged": true,
+    "MSRV": "1.87",
+    "pinned_toolchain": "1.95.0",
+    "application_manifests_toolchain_policy_gates_thresholds_unchanged": true
+  },
+  "source_semantics": [
+    "Borrow/Choice masks/barriers, zero-count target dispatch and wide carry",
+    "UintRef equality/selection and mixed-width public-size constraints",
+    "Exact division, Montgomery repeated-square reduction/carry, CtOption inversion",
+    "Safegcd overflow bound and fixed/boxed square-root replacement",
+    "Unchanged selected k256/elliptic-curve/primefield/primeorder interfaces; no local replacement crypto"
+  ],
+  "proof": {
+    "author_manifest_sha256": "2c4c2ae44b69690d429cc94f117d3c87b2477f9545b4e959c267751447445dfe",
+    "author_manifest_members": 111,
+    "author_result_sha256": "855cfbf618eec1eeb2016bc61cfdde3ffda847d5a1d03989f8f85318f8b2ba70",
+    "input_bindings": 2222,
+    "proof_only_tail_paths": 70,
+    "product_postimages_executed_exact": true,
+    "receipts": 23,
+    "all_exit_zero": true,
+    "tool_hashes_verified": 8,
+    "workspace_core_tests": [
+      257,
+      258
+    ],
+    "integration_cases_each": [
+      10,
+      4
+    ],
+    "fixture_units_each": 3,
+    "core_doctests_each": 15,
+    "desktop_vectors": 21,
+    "official_ctutils_units": 157,
+    "S03": {
+      "verified_events": 8,
+      "official_verifier_controls": 7,
+      "actual_key_imports_checked": 3,
+      "strict_parser_negative_controls": 9,
+      "signature_byte_mutations_rejected": 512,
+      "event_id_byte_mutations_rejected": 256,
+      "canonical_field_mutations_rejected": 32,
+      "wrong_key_mutations_rejected": 8,
+      "double_hash_mutations_rejected": 8
+    },
+    "K01": {
+      "identities": 3,
+      "independent_vectors": 13,
+      "limits": "source-bound observations only; no execution provenance, hardware or provider qualification from data comparison",
+      "official_controls": 7,
+      "per_byte_and_canonical_mutations_rejected": 1313,
+      "preflight_rejections": 27
+    },
+    "coverage_measured": [
+      100,
+      100,
+      77.69
+    ],
+    "coverage_floors": [
+      100,
+      100,
+      76.7
+    ],
+    "RISC_V32": "no-default release compile only",
+    "C_ABI": {
+      "path": "/home/tux/nsealr/.restart-tools/goal/r00-crypto-bigint-remediation-runtime/target/release/libnsealr_pi_engine_fixture.so",
+      "bytes": 650608,
+      "sha256": "431a0e29861116d21a4eb0395e44a4cd3f41c9b6d5cc3b2c2dad5aeaf274336d",
+      "compiler_artifact_bound": true,
+      "fourteen_test_env_bound": true,
+      "reproducibility_proven": false
+    },
+    "C_ABI_tests": 14,
+    "fresh_audit_graphs": 3,
+    "fresh_audit_controls": 4,
+    "fresh_audit_DB_pinned_or_retained": false,
+    "fresh_audit_role": "actual time/log-bound unchanged standard gate; separate discovery snapshot retained",
+    "author_whitespace": {
+      "full_exit": 2,
+      "authored_exit": 0,
+      "source": "docs/restart/implementation/R00/crypto-bigint-remediation/whitespace.json",
+      "raw_archive_vendor_not_normalized": true
+    }
+  },
+  "bounded_integration_facet": {
+    "candidate": "72c54c716cfa222a2c67c3295ae77e2e0abb481e",
+    "tree": "e6f2b0b11605ab1036bb85db5a7818e4d493f8ef",
+    "exact_author_postimages": 189,
+    "live_hashes_verified": 10,
+    "all47_formal_global_sets_unchanged": true,
+    "other45_records_exact": true,
+    "failed5e_not_relabelled": true,
+    "scope": "Only import correspondence, ten current R00 bindings and focused-vs-complete gate metadata; other lifecycle assembly not re-reviewed."
+  },
+  "preserved_errors": [
+    "Original full5e17/RUSTSEC0387 exit2;17 functional passes do not make it green",
+    "Author inventory count100 included23docs; shell continuation and corrected77freeze preserved",
+    {
+      "class": "Reader path error, not source/product failure",
+      "requested": "commands.json",
+      "actual": "checks/commands.json",
+      "effect": "FileNotFoundError before that metadata read; corrected from actual README path, no candidate/runtime edits or PASS from failed read"
+    },
+    {
+      "class": "Reviewer metadata reader/writer error, not candidate/product failure",
+      "original": "KeyError resolved: two actual-pinned-tool rows have direct path rather than resolved alias key",
+      "dependent_writer": "KeyError author_whitespace because prior reader stopped before adding its fields; no report/verdict JSON written or PASS attributed",
+      "correction": "Read all8 actual schemas; first6 alias rows use resolved, last2 actual pinned binaries use path. Then verify all8 file size/SHA and record actual whitespace exits. No candidate or runtime changes."
+    }
+  ],
+  "independent_execution": {
+    "read_only_verification": true,
+    "builds_tests_signatures_audits_fetches_hosted_queries": 0,
+    "additional_replay_required": false
+  },
+  "remaining_root_gates": [
+    "Final assembly and one NEW stable complete product gate",
+    "Normal protectedPR/complete required CI/source checks",
+    "Normal merge and actual resulting-main/source qualification"
+  ],
+  "evidence_bindings": [
+    {
+      "path": "final-proof-validation.json",
+      "bytes": 3382,
+      "sha256": "98215018bb8cc62297b1095a3dfbf42ddad0d8014c74c0e54a7e0945b12ae98e"
+    },
+    {
+      "path": "integration-validation.json",
+      "bytes": 3528,
+      "sha256": "ddab519f5dc919746ebf4a0cdc8f53a1dc787fac5ee3f813c77005ac5f709c72"
+    },
+    {
+      "path": "report.md",
+      "bytes": 6674,
+      "sha256": "4321682216d93d31b04440e3ee98568792d1fe8c24c4b1fbd040abbf6eb51243"
+    },
+    {
+      "path": "static-authenticity.json",
+      "bytes": 6695,
+      "sha256": "f46447257ad55ad0e0e8aecff36cf1a8738f328fb51e70050b5d87449b4d1f17"
+    },
+    {
+      "path": "static-notes.md",
+      "bytes": 2459,
+      "sha256": "4377b9b7a5759ef8e6d50ac731801e7214411f8e0165783234cc3bf4c4c9ec2c"
+    }
+  ],
+  "limits": [
+    "Published advisory remediation and bounded functional compatibility only; no universal constant-time, side-channel absence or exploit proof.",
+    "No new ELF reproducibility, ARM/Pi/MCU runtime, physical/provider/custody/default-route/task/release qualification.",
+    "Fresh audit is time/log-bound; no retained/pinned DB identity or equivalence to source discovery snapshot.",
+    "Full stable/protected/main gates remain mandatory; no author/reviewer full CI credited."
+  ]
+}
