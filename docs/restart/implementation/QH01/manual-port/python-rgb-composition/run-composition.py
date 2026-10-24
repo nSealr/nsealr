@@ -99,11 +99,19 @@ class Composition:
         self.record_node_wait()
 
     def attention(self, reason):
-        write(self.output / "attention.json", {"reason": reason,
-              "parent_pid": os.getpid(), "node_pid": self.node.pid if self.node else None,
-              "node_wait_raw": self.raw_wait, "node_EOF": sorted(self.eof),
-              "B3": self.op.observation(), "runtime_strong_reference": self.runtime.operation is self.op})
-        print("UNCERTAIN OWNERS RETAINED; exact invoker handle must remain live; notify root", flush=True)
+        # Diagnostic failure must never prevent entry into the ownership hold.
+        # Keep these guards separate so either report can succeed independently.
+        try:
+            write(self.output / "attention.json", {"reason": reason,
+                  "parent_pid": os.getpid(), "node_pid": self.node.pid if self.node else None,
+                  "node_wait_raw": self.raw_wait, "node_EOF": sorted(self.eof),
+                  "B3": self.op.observation(), "runtime_strong_reference": self.runtime.operation is self.op})
+        except BaseException:
+            pass
+        try:
+            print("UNCERTAIN OWNERS RETAINED; exact invoker handle must remain live; notify root", flush=True)
+        except BaseException:
+            pass
         while True:
             try:
                 if self.op._child is not None:
