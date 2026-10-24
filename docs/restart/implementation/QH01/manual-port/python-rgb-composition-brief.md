@@ -242,3 +242,26 @@ product edits, new dependencies or runtime compiler/TSX/esbuild. Stop before the
 positive if imports or any runtime helper remain unresolved. Compiler preparation
 is separate from the three diagnostic runtime roles; no total-process claim is
 inferred. All first-positive limits and the root-owned review boundary remain.
+
+### Minimal source/input checkpoint before the first composition
+
+The single admitted preparation actually passed: compilerPID2478758, wait4raw0,
+0.487895866s, collected before runtime. Eleven outputs (five separate JS and five
+declarations plus byte-exact service package.json) and original compiler/import
+preflight receipts are bound in `python-rgb-composition/inputs.json` and
+`proof/preparation.tar.gz`. The ordinary ESM import preflight passed on24.22.0
+with helper process APIs refused and no helper calls; no O/W ran. Actual ordinary
+dependencies additionally traverse already-existing transport/framing dist; all
+seven reused package source trees equal DA8/implementation28, with52dist files
+bound. No optional serial/default driver is opened. The import.meta entry guard
+and relative module tree are preserved, not bundled or manually rewritten.
+
+The adjacent fixed138-line Node child and Python invoker use those prepared
+modules and B3 unchanged. Runtime child program APIs fail if unexpectedly called;
+the Node test does not load TSX/esbuild or a compiler. Twenty-nine tracked inputs,
+eleven generated outputs, actual W3c92 and tool hashes are frozen before run.
+The reused W's original six source bindings were checked against this checkout;
+there is no new W/C/Rust build or reproducibility assertion. Parser and B3 owner
+logic are reused; the local loop exists only to drain the fixed IPC and retain
+these two handles. Caller FDs exclude B3's own selector and must remain unchanged;
+the final descriptor set must equal the pre-reservation baseline.
