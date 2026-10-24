@@ -1373,39 +1373,39 @@
         },
         {
           "path": "Cargo.lock",
-          "sha256": "2b62ce3fe11650d36ffc015344aa6f9f04b5ef22d6bc05dae218a96d07c8e811"
+          "sha256": "27d2549f6854088d157a1054dfe355124a41e283b2f33f1d76b4f6ef12f87038"
         },
         {
           "path": "apps/desktop-simulator/Cargo.lock",
-          "sha256": "b4cd6242b4a9b909543fc03744324c6fa98c69d1719d73cd2ec63d63f622b00c"
+          "sha256": "2ab3af57590e8463210762e1c6218aa3694c39cf4abb8961bcf48ed7e47ce266"
         },
         {
           "path": "vendor/ctutils/.cargo-checksum.json",
-          "sha256": "86409ddd5b3e88a8f1b259f4d4114cbeb52738b38027fa11b3a8862558c2a91c"
+          "sha256": "160cdc7c9f78a755e0c301d3c12c83a645d31ad112ebe8168f7719290a9f9e3c"
         },
         {
           "path": "vendor/ctutils/.cargo_vcs_info.json",
-          "sha256": "79af273f631faf92ab600892cf556aaf539514ab08b76963f4abc1ff1da1ce98"
+          "sha256": "98755252343ffa0896150d9d60b44abb28c8408fd44f44fcc8f7a0bbb6d260f4"
         },
         {
           "path": "vendor/ctutils/CHANGELOG.md",
-          "sha256": "ce578d46c72a36733739aba7077d47eb9105e851066f9f9c043f69ebf5ac41d7"
+          "sha256": "5cb6e02a2bbb4d678fe0ad201dcc60317a32f6e6fdc62508816e9d2cf200a741"
         },
         {
           "path": "vendor/ctutils/Cargo.lock",
-          "sha256": "68a0e988a37f399b87c82d3ae0a690c11044e658c2e11b8f3645add60b59da10"
+          "sha256": "7393c1300b397a9923d69d1f62878960f56f0932f7095e48efbb0a5017ada769"
         },
         {
           "path": "vendor/ctutils/Cargo.toml",
-          "sha256": "0e7a80338f6195bd85c0d0dad3c0d258c626d95da17a29a82307b2f6092902f1"
+          "sha256": "2ef94bf9e6dd13a9153d2205af4bb4ff049e37ee243fa561f7f931c008de7948"
         },
         {
           "path": "vendor/ctutils/Cargo.toml.orig",
-          "sha256": "454330a0bdfcbd411f0e5c7fa94bc660e019da0efff1df45056a18f77d9f9ea3"
+          "sha256": "d14fe7848c26b6367e3dc74b5615221b9882683ed3cbdf600110ddaeaaf956bc"
         },
         {
           "path": "vendor/ctutils/src/choice.rs",
-          "sha256": "bf7876cc7427f37c7ae8e90582ae9790faae18f428cde4a4c962fd84afcda5c3"
+          "sha256": "6c78fe58e5b1a842cce21f9098bac24052726a443140cd35f969adea82bca671"
         },
         {
           "path": "vendor/ctutils/src/traits/ct_gt.rs",
@@ -1417,7 +1417,7 @@
         },
         {
           "path": "vendor/ctutils/tests/proptests.rs",
-          "sha256": "3e23eb642799caa9e9ab2116230367908c0a7355277e1843e45a5b134e0b2e5d"
+          "sha256": "17e74f576649a825a093929bfa0c635368198d7ea83c1f6d62bee349a9ee1bac"
         },
         {
           "path": "docs/restart/implementation/R00/ctutils-remediation/.gitignore",
@@ -2174,6 +2174,14 @@
         {
           "path": "docs/restart/implementation/reviews/R00-audit-data/wrapper-controls.stdout.log",
           "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "path": "docs/restart/implementation/R00/crypto-bigint-remediation/artifact-manifest.json",
+          "sha256": "2c4c2ae44b69690d429cc94f117d3c87b2477f9545b4e959c267751447445dfe"
+        },
+        {
+          "path": "docs/restart/implementation/R00/crypto-bigint-remediation/result.json",
+          "sha256": "855cfbf618eec1eeb2016bc61cfdde3ffda847d5a1d03989f8f85318f8b2ba70"
         }
       ],
       "requires_physical_evidence": false,
@@ -2247,7 +2255,24 @@
         },
         "delivery_result": "docs/restart/implementation/QH01/rust-qr-delivery/result.json",
         "component_source_correspondence": "docs/restart/implementation/QH01/rust-qr-delivery/security-fix-correspondence.json",
-        "scope": "ctutils active-lock/vendor patch and audit-data fail-closed correction only; no task-state/acceptance/resource/release changes"
+        "scope": "ctutils active-lock/vendor patch and audit-data fail-closed correction only; no task-state/acceptance/resource/release changes",
+        "dependency_remediation_0387": {
+          "state": "AUTHENTICATED_MINIMUM_CLOSURE_SOURCE_IMPORTED_FOCUSED23_PASS_PENDING_DISTINCT_REVIEW_AND_NEW_COMPLETE_GATES",
+          "candidate": "4f132f5bba19f28ee491d05189eea1ad919ba7b4",
+          "executed_source": "7badfdc93fcb1654e97943204b7b854113c21120",
+          "result": "docs/restart/implementation/R00/crypto-bigint-remediation/result.json",
+          "product_paths": 77,
+          "versions": {
+            "crypto-bigint": "0.7.6",
+            "ctutils": "0.4.5"
+          },
+          "reason": "RUSTSEC-2026-0387 fresh audit rejected0.7.5 on stable5e17; published manifest requires ctutils^0.4.5 despite PR notes4.4",
+          "focused_commands": 23,
+          "focused_failures": 0,
+          "fresh_audit_graphs_passed": 3,
+          "original_failed_full_source": "5e17f9a957137c7d856f12bc08f5f795d3f858d8",
+          "meaning": "Exact author source/functional compatibility only. Original RED preserved; no universal constant-time, physical, complete-CI or protected-main acceptance."
+        }
       }
     },
     {
@@ -16607,7 +16632,7 @@
           }
         },
         "host_python_rgb_composition": {
-          "state": "ACTUAL_MAIN_BD_POSITIVE_ADOPTED_LIFECYCLE_REVIEWS_PASS_LOCAL_COMPLETE_GATE_FAILED_CURRENT_DEPENDENCY_AUDIT",
+          "state": "LIFECYCLE_REVIEWS_PASS_SECURITY_CLOSURE_FOCUSED23_PASS_PENDING_DISTINCT_REVIEW_AND_NEW_COMPLETE_GATES",
           "base": "da8c06aa30a460c1849a1f96f62862259640bf19",
           "fixed_harness_candidate": "b6d07a4aff913249a06bf1e7ea31cb6265ea0cc0",
           "fixed_harness_review": "1e0453fe7af476275b749fbff116899093cbeced",
@@ -16630,7 +16655,7 @@
           "physical_releases": 0,
           "general_Rust_rewrites": "deferred",
           "meaning": "Protected mainBD accepts the original same-checkout public host composition. Later automatic lifecycle fixtures remain a separately reviewed candidate. Client100 is synthetic; O8/shared4 real; C5000 unchanged. Physical, production key/provider, default route and framing gates remain open.",
-          "next": "Authenticate minimal crypto-bigint0.7.6 and requiredctutils0.4.5 transitive closure, focused affected Rust checks and distinct review; then one new stable complete candidate before protected PR/actual-main gates. Continue independent combined-engine source freeze without using unqualified old artifacts.",
+          "next": "Finish independent4f dependency/source-proof review, reconcile the final bundle and run one new stable complete gate; then protected PR, actual-main CI/source checks. Preserve failed5e17. Real-engine sourcee132 remains separate, pre-execution reviewed with corrected-library resource pending.",
           "initial_early_capture_extension": {
             "source": "a1188dbc4ba67bf5e269f0da008504097e1466aa",
             "manifest": "docs/restart/implementation/reviews/QH01-python-rgb-composition/capture-extension/artifact-manifest.json",
@@ -16729,6 +16754,11 @@
               "remediation_owner": "/root/a02_resume",
               "remediation_branch": "implementation/r00-crypto-bigint-remediation",
               "proposed_minimum_versions": "crypto-bigint0.7.6; source-required ctutils0.4.5 still under authentication; no ignore/threshold/source-policy change"
+            },
+            "security_remediation": {
+              "candidate": "4f132f5bba19f28ee491d05189eea1ad919ba7b4",
+              "state": "focused23/current3audit PASS; distinct review and root newcomplete gates pending",
+              "result": "docs/restart/implementation/R00/crypto-bigint-remediation/result.json"
             }
           }
         }
