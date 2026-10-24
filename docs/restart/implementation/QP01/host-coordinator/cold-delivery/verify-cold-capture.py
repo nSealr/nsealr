@@ -77,6 +77,7 @@ def verify_product(raw, head, repo, run_id=None):
     out.update(verify_python_owner(objects, first_proof['worker_build'], head, repo))
     out.update(verify_qh01_composition(objects, lines, first_proof['worker_build'], head, repo, full_product=True))
     out.update(verify_qh01_lifecycle(objects))
+    out.update(verify_qh01_request_engine(objects, head, repo))
     out['proof_role']='local_makeci_source_addon_no_GitHub_claim' if run_id is None else 'completed_capture_source_addon_requires_generic_receipt_job_check_verifier'
     if run_id is None:
         out['limits']='Local stable makeci source/build/trace proof only; no GitHub run, receipt, job, check, protected integration or device claim. Hosted acceptance separately requires the unchanged mandatory completed-capture verifier with RUN HEAD CHECKRUNS_JSON, plus this source addon. No ELF reproducibility or physical qualification.'
@@ -420,6 +421,230 @@ def verify_qh01_lifecycle(objects):
     return {'qh01_automatic_lifecycle_cases': ids, 'qh01_lifecycle_original_actor_statuses_and_source_bound': True,
             'qh01_lifecycle_timeout_close0_then_close1_verified': True, 'qh01_lifecycle_precancel_API_release_bytes': 0,
             'qh01_lifecycle_limits': 'Fixed trusted host fixtures; synthetic client100 and actual O8/shared4. No decoder counter, external clientAbort/UI, camera/physical/key/provider qualification.'}
+
+
+def verify_qh01_request_engine(objects, head, repo):
+    """Check the joined helper build and both real-engine host CI records."""
+    def same(actual, expected):
+        assert json.dumps(actual, sort_keys=True) == json.dumps(expected, sort_keys=True)
+    def integers(values):
+        assert all(type(v) is int and abs(v) <= 9007199254740991 for v in values)
+    def decimal(value):
+        assert type(value) is str and re.fullmatch(r'0|[1-9][0-9]{0,19}', value)
+        assert int(value) <= 18446744073709551615
+    def occurrences(key):
+        return [(i, o[key]) for i, o in enumerate(objects) if key in o]
+    def one(key):
+        rows = occurrences(key)
+        assert len(rows) == 1
+        return rows[0]
+    def blob(path):
+        return subprocess.check_output(['git', '-C', repo, 'show', head + ':' + path])
+    def sha(data):
+        return hashlib.sha256(data).hexdigest()
+    _, positive = one('qh01_composition_case')
+    natives = [o for o in objects if o.get('role') == 'public fixture build, not hardware qualification']
+    assert len(natives) == 1
+    native = natives[0]
+    bridge_builds = occurrences('bridge_service_build')
+    assert bridge_builds
+    bridge_build = bridge_builds[0][1]
+    command_at, command = one('qh01_request_engine_build_command')
+    build_at, build = one('qh01_request_engine_build')
+    prior = occurrences('qh01_lifecycle_case')
+    assert len(prior) == 3 and prior[-1][0] < command_at < build_at
+    assert not occurrences('qh01_request_engine_build_failure') and not occurrences('qh01_request_engine_failure')
+    integers([command['v'], build['v'], build['status']])
+    assert command['v'] == build['v'] == 1 and build['status'] == 0
+    assert build['scope'] == 'QH01_NATIVE_LEAF_PREPARATION_V1' and build['role'] == 'current_checkout_joined_compiler_artifacts_only'
+    root, output = Path(build['cwd']), Path(build['output_dir'])
+    assert build['cwd'] == bridge_build['cwd']
+    assert root.is_absolute() and '..' not in root.parts
+    assert output.is_absolute() and output.name == 'module' and output.parent.name.startswith('nsealr-qh01-native-leaf-')
+    assert build['receipt'] == str(output.parent / 'preparation.json')
+    leaf = 'docs/restart/implementation/QP01/request-engine/native-leaf.ts'
+    source = [leaf, 'package.json', 'pnpm-lock.yaml']
+    bindings = {p: sha(blob(p)) for p in source}
+    same(build['source_before'], bindings); same(build['source_after'], bindings)
+    options = ['pnpm', 'exec', 'tsc', '--ignoreConfig', '--target', 'ES2022', '--module', 'NodeNext',
+               '--moduleResolution', 'NodeNext', '--strict', '--esModuleInterop', '--forceConsistentCasingInFileNames',
+               '--skipLibCheck', '--resolveJsonModule', '--types', 'node', '--declaration', '--rootDir',
+               'docs/restart/implementation/QP01/request-engine', '--outDir', str(output), leaf]
+    same(build['argv'], options)
+    same(command, {'v': 1, 'argv': options, 'cwd': str(root), 'output_dir': str(output)})
+    compiler = build['compiler']
+    same(compiler, bridge_build['compiler'])
+    assert compiler['version'] == json.loads(blob('package.json'))['devDependencies']['typescript'] == '6.0.3'
+    assert Path(compiler['path']).is_relative_to(root / 'node_modules') and compiler['path'].endswith('/typescript/bin/tsc')
+    assert re.fullmatch('[0-9a-f]{64}', compiler['sha256'])
+    assert list(build['outputs']) == ['native-leaf.js', 'native-leaf.d.ts']
+    for name, item in build['outputs'].items():
+        assert list(item) == ['path', 'bytes', 'sha256'] and item['path'] == str(output / name)
+        integers([item['bytes']]); assert item['bytes'] > 0 and re.fullmatch('[0-9a-f]{64}', item['sha256'])
+    context = b'{"type":"module"}\n'
+    same(build['package_context'], {'path': str(output / 'package.json'), 'bytes': len(context),
+                                   'sha256': sha(context), 'value': {'type': 'module'}})
+    ids = ['fixture_request_engine', 'fixture_request_engine_loaded_sha_refusal']
+    commands, results, cases = [occurrences(k) for k in ['qh01_request_engine_command', 'qh01_request_engine_result', 'qh01_request_engine_case']]
+    assert len(commands) == len(results) == len(cases) == 2
+    assert [c['id'] for _, c in commands] == [c['id'] for _, c in cases] == ids
+    assert len({positive['argv'][4], *[c['argv'][4] for _, c in cases],
+                *[c['argv'][4] for _, c in occurrences('qh01_lifecycle_case')]}) == 6
+    extra = ['docs/restart/implementation/QP01/request-engine/' + p for p in ['native-leaf.ts', 'client-exchange.ts', 'expectations.json']]
+    extra += ['apps/pi/app/nsealr_vault/engine_adapter.py', 'Cargo.toml', 'Cargo.lock',
+              'crates/nsealr-pi-engine-fixture/Cargo.toml', 'crates/nsealr-pi-engine-fixture/src/lib.rs']
+    expected_source = {**positive['source_before'], **{p: sha(blob(p)) for p in extra}}
+    assert len(positive['source_before']) == 60 and len(expected_source) == 68
+    expectation = next(row for row in json.loads(blob('docs/restart/implementation/QP01/request-engine/expectations.json'))['independent_positive_expectations'] if row['id'] == 'basic')
+    response_sha = '250167d1137f6da25676b00b62913a3d8f29391a1ff5331d64f7079d953f5ded'
+    prior = build_at
+    ref = positive['collection']['B3']
+    for index, ((ci, cmd), (ri, actual_result), (di, case)) in enumerate(zip(commands, results, cases)):
+        assert prior < ci < ri < di
+        prior = di
+        refused = index == 1
+        mode = 'loaded-sha-refusal' if refused else 'positive'
+        integers([cmd['v'], case['v']]); assert cmd['v'] == case['v'] == 1
+        assert case['scope'] == 'QH01_RGB_ENGINE_CI_V1' and case['role'] == positive['role']
+        for key in ['source_before', 'source_after']: same(case[key], expected_source)
+        for key in ['generated_before', 'generated_after', 'worker_initialization', 'expected_public_key']:
+            same(case[key], positive[key])
+        argv = case['argv']
+        same(argv, cmd['argv']); assert argv[:4] == positive['argv'][:4] and argv[4] == cmd['output']
+        case_output = Path(argv[4])
+        assert case_output.is_absolute() and case_output.name == 'case' and case_output.parent.name.startswith('nsealr-qh01-composition-')
+        suffix = ['--case', ids[0], '--engine-library', native['library'], '--engine-sha256', native['sha256'],
+                  '--engine-module', build['outputs']['native-leaf.js']['path'], '--engine-module-sha256',
+                  build['outputs']['native-leaf.js']['sha256'], '--engine-preparation', build['receipt']]
+        same(argv[5:], positive['argv'][5:] + suffix + (['--engine-refusal'] if refused else []))
+        same(case['native_preparation'], build)
+        same(case['native_preparation_after'], {'source': bindings, 'compiler_sha256': compiler['sha256'],
+                                               'outputs': build['outputs'], 'package_context_sha256': sha(context)})
+        a = case['actual']; collection = case['collection']; outcome = case['native_outcome']; status = case['native_settlement']
+        same(actual_result, a)
+        assert a['result'] == 'PASS_FIRST_HOST_RGB_REQUEST_ENGINE_ONLY' and a['case'] == ids[0] and a['mode'] == mode and a['physical_claim'] is False
+        pids = [a[k] for k in ['parent_pid', 'node_pid', 'owner_pid', 'worker_pid', 'C_pid']]
+        integers(pids); assert min(pids) > 1 and len(set(pids)) == 5
+        integers([a[k] for k in ['presented_bytes', 'decoded_bytes', 'scanned_bytes', 'caller_released_bytes', 'C_code']])
+        assert a['worker_sha256'] == positive['worker_initialization']['sha256']
+        assert a['presented_bytes'] == a['decoded_bytes'] == a['caller_released_bytes'] == 259
+        assert a['scanned_bytes'] == (0 if refused else 611) and a['C_code'] == int(refused) and a['C_signal'] is None
+        same(a['service_error'], 'signer_transport_failed' if refused else None)
+        expected_frame = None if refused else {'bytes': 611, 'sha256': response_sha}
+        same(case['frames'], {'presented': positive['frames']['presented'], 'decoded': positive['frames']['decoded'],
+                              'scanned': expected_frame, 'engine_response': expected_frame})
+        same(case['decoded_request'], positive['decoded_request'])
+        cfg = case['native_initialization']; child_sha = native['sha256']
+        if refused: child_sha = ('1' if child_sha[0] == '0' else '0') + child_sha[1:]
+        same(cfg, {'v': 1, 'scope': 'QH01_RGB_ENGINE_OPT_IN_V1', 'mode': mode, 'source_root': str(root),
+                   'output_dir': str(case_output), 'python': argv[0], 'library': native['library'],
+                   'library_sha256': native['sha256'], 'child_expected_sha256': child_sha,
+                   'module': build['outputs']['native-leaf.js']['path'], 'module_sha256': build['outputs']['native-leaf.js']['sha256'],
+                   'module_source_sha256': bindings[leaf]})
+        assert collection['node_pid'] == a['node_pid'] and type(collection['node_wait_raw']) is int and collection['node_wait_raw'] == 0
+        for key in ['node_EOF', 'parent_fd_before', 'parent_fd_after', 'runtime_strong_reference']: same(collection[key], positive['collection'][key])
+        integers(collection['node_observed'].values()); assert collection['node_observed']['stderr'] == 0
+        o = collection['B3']; p = o['phase']; t = o['terminal']; wait = t['worker_wait']
+        for key in ['state', 'owner_wait_raw', 'owner_exit_code', 'commands', 'EOF', 'image_bytes_written', 'output_bytes',
+                    'output_sha256', 'diagnostic_base64', 'ready_hex', 'fault', 'transport_error', 'parent_owned_fds', 'taken', 'closed']:
+            same(o[key], ref[key])
+        assert list(p) == ['v', 'kind', 'owner_pid', 'worker_pid', 'ppid', 'sid', 'pgid',
+                           'exe_sha256', 'limits', 'G_bytes', 'image_bytes_sent', 'fds']
+        assert list(t) == ['v', 'kind', 'owner_pid', 'outcome', 'ownership', 'worker_pid',
+                          'worker_wait', 'worker_io', 'session_policy_verified', 'input_bytes_received',
+                          'input_sha256', 'G_bytes', 'image_bytes_sent', 'stdout_observed', 'stdout_retained',
+                          'stderr_observed', 'stderr_retained', 'worker_stderr_base64', 'result_bytes',
+                          'result_sha256', 'final_worker_eligible', 'cancel_observed', 'timing']
+        assert list(wait) == ['raw_status', 'exit_code', 'collector_pid']
+        assert list(p['limits']) == ['AS', 'CPU', 'CORE']
+        assert list(t['worker_io']) == ['stdin_closed', 'stdout_eof', 'stderr_eof', 'owned_fds_closed']
+        integers([o['owner_pid'], p['owner_pid'], p['worker_pid'], p['ppid'], p['sid'], p['pgid'], t['owner_pid'], t['worker_pid'], wait['collector_pid']])
+        assert o['owner_pid'] == p['owner_pid'] == p['ppid'] == t['owner_pid'] == wait['collector_pid'] == a['owner_pid']
+        assert p['worker_pid'] == p['sid'] == p['pgid'] == t['worker_pid'] == a['worker_pid']
+        for key in ['v', 'kind', 'exe_sha256', 'limits', 'G_bytes', 'image_bytes_sent']: same(p[key], ref['phase'][key])
+        assert len(p['fds']) == 3 and len({(fd['dev'], fd['ino']) for fd in p['fds']}) == 3
+        for i, fd in enumerate(p['fds']):
+            assert list(fd) == ['fd', 'target', 'dev', 'ino']
+            integers([fd['fd']]); assert fd['fd'] == i
+            decimal(fd['dev']); decimal(fd['ino']); assert fd['target'] == 'pipe:[' + fd['ino'] + ']' and len(fd['target']) <= 27
+        integers([o[k] for k in ['owner_wait_raw', 'owner_exit_code', 'image_bytes_written', 'output_bytes']])
+        integers([p[k] for k in ['v', 'G_bytes', 'image_bytes_sent']] + list(p['limits'].values()))
+        integers([t[k] for k in ['v', 'input_bytes_received', 'G_bytes', 'image_bytes_sent', 'stdout_observed',
+                                'stdout_retained', 'stderr_observed', 'stderr_retained', 'result_bytes']])
+        integers([wait['raw_status'], wait['exit_code']])
+        for key in ref['terminal']:
+            if key not in ['owner_pid', 'worker_pid', 'worker_wait', 'timing']: same(t[key], ref['terminal'][key])
+        same(wait['raw_status'], 0); same(wait['exit_code'], 0)
+        timing = t['timing']; assert list(timing) == ['begin_ns', 'invalidated_ns', 'cleanup_deadline_ns', 'settled_ns', 'final_admission_ns']
+        for key in ['begin_ns', 'settled_ns', 'final_admission_ns']: decimal(timing[key])
+        assert timing['invalidated_ns'] is timing['cleanup_deadline_ns'] is None
+        assert int(timing['begin_ns']) <= int(timing['settled_ns']) <= int(timing['final_admission_ns']) < int(timing['begin_ns']) + 8000000000
+        wire = base64.b64decode(o['status_wire_base64'], validate=True)
+        assert base64.b64encode(wire).decode('ascii') == o['status_wire_base64'] and len(wire) <= 4096
+        assert wire == b''.join((json.dumps(row, separators=(',', ':')) + '\n').encode('ascii') for row in [p, t])
+        assert list(status) == ['pid', 'code', 'signal', 'synthetic_handshake_control', 'sent', 'readiness_hex',
+                                'stdout_bytes', 'stderr_bytes', 'overflow', 'initialization_ns', 'request_to_close_ns']
+        integers([status[k] for k in ['pid', 'code', 'stdout_bytes', 'stderr_bytes']])
+        assert status['pid'] == a['C_pid'] and status['code'] == int(refused) and status['signal'] is None
+        assert status['synthetic_handshake_control'] is status['overflow'] is False and status['sent'] is (not refused)
+        assert status['readiness_hex'] == ('' if refused else '52') and status['stdout_bytes'] == (0 if refused else 611)
+        assert 0 < status['stderr_bytes'] <= 262144
+        for key in ['initialization_ns', 'request_to_close_ns']:
+            if refused: assert status[key] is None
+            else: decimal(status[key])
+        integers([outcome[k] for k in ['node_pid', 'spawned', 'collected', 'capability_calls', 'timer_clears', 'response_bytes', 'observation_count']])
+        assert outcome['scope'] == 'QH01_RGB_ENGINE_OPT_IN_V1' and outcome['node_pid'] == a['node_pid']
+        assert outcome['spawned'] == outcome['collected'] == outcome['capability_calls'] == outcome['timer_clears'] == 1
+        same(outcome['timer_args'], [5000]); assert outcome['children_before'] == outcome['children_after'] == ''
+        assert set(outcome['fds_before']) >= {'0', '1', '2'}; same(outcome['fds_before'], outcome['fds_after'])
+        for fd, info in outcome['fds_before'].items():
+            assert re.fullmatch(r'0|[1-9][0-9]*', fd) and list(info) == ['dev', 'ino', 'target']
+            decimal(info['dev']); decimal(info['ino']); assert type(info['target']) is str
+        same(outcome['spawn'], {'python': argv[0], 'argv': ['-B', str(root / 'docs/restart/implementation/QP01/request-engine/exchange.py'), '--ready-fd', '4'],
+                                'cwd': str(root), 'pid': a['C_pid'], 'initialization': {'library': native['library'], 'sha256': child_sha}})
+        assert outcome['response_bytes'] == (0 if refused else 611) and outcome['observation_count'] == (0 if refused else 1)
+        assert outcome['readiness_refusal'] is refused; same(outcome['response_sha256'], None if refused else response_sha)
+        rows = case['node_records']; assert [row['event'] for row in rows] == (['present', 'close', 'result'] if refused else ['present', 'scan', 'close', 'result'])
+        assert all(type(row['v']) is int and row['v'] == 1 for row in rows)
+        same(rows[0], positive['node_records'][0]); same(rows[-2], {'v': 1, 'event': 'close'})
+        final = rows[-1]; same(final['timer_args'], [100]); same(final['clear_calls'], 1); same(final['deadline_fires'], 0); same(final['clock_steps'], [0, 99, 100])
+        same(final['engine'], {'mode': mode, 'spawned': 1, 'collected': 1, 'capability_calls': 1, 'pid': a['C_pid'],
+                               'code': int(refused), 'signal': None, 'timer_args': [5000], 'timer_clears': 1,
+                               'children_after': '', 'fd_restored': True})
+        assert final['native_response_base64'] == case['native_response_base64']
+        encoded = [(json.dumps(row, separators=(',', ':')) + '\n').encode('ascii') for row in rows]
+        assert max(map(len, encoded)) <= 2048 and sum(map(len, encoded)) == collection['node_observed']['stdout'] <= 4096
+        native_wire = base64.b64decode(case['native_response_base64'], validate=True)
+        assert base64.b64encode(native_wire).decode('ascii') == case['native_response_base64'] and len(native_wire) >= 4
+        assert int.from_bytes(native_wire[:4], 'little') == len(native_wire) - 4
+        same(json.loads(native_wire[4:]), case['service_response'])
+        assert native_wire[4:] == json.dumps(case['service_response'], separators=(',', ':')).encode('ascii')
+        service = case['service_response']; assert service['request_id'] == positive['service_response']['request_id']
+        if refused:
+            same(service, {'version': 1, 'request_id': service['request_id'], 'ok': False,
+                           'error': {'code': 'signer_transport_failed', 'message': 'fixture native loaded-SHA readiness refusal', 'retryable': False}})
+            assert case['native_observation'] is None and case['native_refusal']['name'] == 'Error'
+            assert 'native library SHA256 mismatch' in case['native_refusal']['message']
+        else:
+            frame = rows[1]['frame'].encode('ascii'); assert len(frame) == 611 and sha(frame) == response_sha
+            same(service, {'version': 1, 'request_id': service['request_id'], 'ok': True, 'result': {'signer_response': {
+                 'version': 2, 'request_id': expectation['request_id'], 'ok': True, 'result': {'event': expectation['expected_complete_event']}}}})
+            assert case['expected_public_key'] == expectation['expected_pubkey'] and case['native_refusal'] is None
+            obs = case['native_observation']
+            legacy = [o['native_observation'] for o in objects if 'native_observation' in o and
+                      o['native_observation']['input_sha256'] == positive['frames']['decoded']['sha256'] and o['native_observation']['output_sha256'] == response_sha]
+            assert legacy and all(json.dumps(item, sort_keys=True) == json.dumps(obs, sort_keys=True) for item in legacy)
+            assert obs['library'] == native['library'] and obs['sha256'] == native['sha256']
+            integers([obs['input_bytes'], obs['output_bytes']]); assert obs['input_bytes'] == 259 and obs['output_bytes'] == 611
+            pages = obs['synthetic_complete_review']; assert len(pages) == 31
+            for i, page in enumerate(pages):
+                integers([page['kind'], page['index'], page['total']]); assert page['index'] == i and page['total'] == 31 and page['position'] == f'{i + 1}/31'
+            assert len((json.dumps(obs) + '\n').encode('ascii')) == status['stderr_bytes']
+    return {'qh01_automatic_request_engine_cases': ids, 'qh01_current_root_native_leaf_builds': 1,
+            'qh01_request_engine_source_bindings': 68, 'qh01_request_engine_actual_C_close_and_FD_restore': True,
+            'qh01_request_engine_complete_review_pages': 31, 'qh01_request_engine_actual_response_sha256': response_sha,
+            'qh01_request_engine_refusal_C_input_and_output_bytes': 0,
+            'qh01_request_engine_limits': 'Host public fixtures/trusted synthetic review and source-configured auxiliary only. Real C5000 scheduling, no rawCwait/hard collection bound or combined expiry/clientAbort/physical/provider qualification.'}
 
 
 def verify_python_owner(objects, worker, head, repo):
