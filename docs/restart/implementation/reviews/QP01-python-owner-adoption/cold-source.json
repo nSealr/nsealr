@@ -1,0 +1,60 @@
+{
+  "role": "Fresh actual-main-only positive source check; original9 negative controls reused by source identity",
+  "result": {
+    "actual_main": "da8c06aa30a460c1849a1f96f62862259640bf19",
+    "clean": true,
+    "old_objects_absent": [
+      "86569e073da4faec0811d67137bbb0fd4f74c7c6",
+      "5cb16cbaffc6b90ca9dfbb1ce7a5388e731d1ae0",
+      "e83c49d97efcbec4fb54c11609c0d2d21e687719",
+      "ae34085dd6017eaf2539cf0b570bfb49daace824",
+      "21137d6177d1fe62b29f29cf59707bd7988527c3",
+      "104f5e369244dcdc3afe87bb91074067c6ad8ac7"
+    ],
+    "only_ref": "refs/heads/main",
+    "permanent_anchors_actual_ancestors": true,
+    "previous_accepted_main": "8f0c4bc54f72ea62e201fdf19be9380f4b20c877",
+    "prior_negative_controls": "Source-identical verify_contracts.py/artifact/provenance source; retain T01 original9control proof939da2, not rerun or relabelled here.",
+    "remote_alternate_shallow_graft_present": false,
+    "source_guard_result": {
+      "artifact": "nsealr-contracts-v1",
+      "artifact_format": 2,
+      "artifact_tree": "b629e75d18190ded2403ffabe965b595a9bcf6a6",
+      "consumers": [
+        "bridge",
+        "engine",
+        "pi"
+      ],
+      "files": 255,
+      "records": 266,
+      "retired": 11,
+      "source_commit": "45f8b6ff1123f3f55be4ce457fd1008e91043cc2"
+    },
+    "state": "ACTUAL_PR48_PYTHON_OWNER_MAIN_ONLY_POSITIVE_SOURCE_CHECK_NOT_FULLCI_OR_DEVICE_QUALIFICATION",
+    "tree": "1bc21a2c2c5cb99a9a1b7efd04a92d81e333a895"
+  },
+  "command_and_derivation": {
+    "role": "fresh actual-main-only source check; no fullCI or physical claim",
+    "argv": [
+      "/usr/bin/python3",
+      "-B",
+      "/home/tux/nsealr/.restart-tools/goal/qp01-python-owner-adapter-delivery-runtime/actual-main-cold.py"
+    ],
+    "python": "3.13.5 (main, Aug 10 2026, 12:06:59) [GCC 14.2.0]",
+    "started_utc": "2026-10-24T00:02:48.859721+00:00",
+    "exit_code": 0,
+    "origin_script": "/home/tux/nsealr/.restart-tools/goal/qp01-cold-owner-delivery-runtime/actual-main-cold.py",
+    "origin_sha256": "3cb281c3a943d892a777be2f9e736a837e4286fbb60eb8be13d758d04ead7c19",
+    "actual_script_sha256": "a0b566dffaa13fef6eb235d2181a6f623376e3d6e5429e4f202160de08721b7b",
+    "only_literal_substitutions": {
+      "base='592a412b17bff42f496f8785c36ec18bfc0ac4f8'": "base='8f0c4bc54f72ea62e201fdf19be9380f4b20c877'",
+      "candidate='8f0c4bc54f72ea62e201fdf19be9380f4b20c877'": "candidate='da8c06aa30a460c1849a1f96f62862259640bf19'",
+      "/home/tux/nsealr/.restart-tools/goal/qp01-cold-owner-delivery-runtime/actual-main-cold": "/home/tux/nsealr/.restart-tools/goal/qp01-python-owner-adapter-delivery-runtime/actual-main-cold",
+      "6ef6e4fd8ff682b0bca352865ed3ba11cf53b85a": "1bc21a2c2c5cb99a9a1b7efd04a92d81e333a895",
+      "ACTUAL_PR47_COLD_OWNER_MAIN_ONLY_POSITIVE_SOURCE_CHECK_NOT_FULLCI_OR_DEVICE_QUALIFICATION": "ACTUAL_PR48_PYTHON_OWNER_MAIN_ONLY_POSITIVE_SOURCE_CHECK_NOT_FULLCI_OR_DEVICE_QUALIFICATION"
+    },
+    "all_original_function_ASTs_equal": true,
+    "T01_scripts_protocol_sources_equal_8f": true
+  },
+  "executed_script": "from pathlib import Path\nimport subprocess,json,hashlib,os\nsource=Path('/home/tux/nsealr/firmware');base='8f0c4bc54f72ea62e201fdf19be9380f4b20c877';candidate='da8c06aa30a460c1849a1f96f62862259640bf19';approved='b629e75d18190ded2403ffabe965b595a9bcf6a6'\nrewrite=source;rebased=candidate;cold=Path('/home/tux/nsealr/.restart-tools/goal/qp01-python-owner-adapter-delivery-runtime/actual-main-cold')\nassert not cold.exists()\ndef run(repo,*args,expect=0):\n    command=['git','--no-replace-objects','-C',str(repo),*args]\n    result=subprocess.run(command,capture_output=True,text=True)\n    print(json.dumps({'argv':command,'exit_code':result.returncode}),flush=True)\n    if result.stdout:print(result.stdout,end='',flush=True)\n    if result.stderr:print(result.stderr,end='',flush=True)\n    assert result.returncode==expect,(command,result.returncode,expect)\n    return result.stdout.strip()\ndef init(repo):\n    result=subprocess.run(['git','-c','init.templateDir=','init','-q','--initial-branch=intake',str(repo)],capture_output=True,text=True)\n    assert result.returncode==0,result.stderr\ntree=run(source,'rev-parse','HEAD^{tree}');assert tree=='1bc21a2c2c5cb99a9a1b7efd04a92d81e333a895'\ninit(cold)\nrun(cold,'fetch','--no-tags','--no-write-fetch-head',str(rewrite),rebased+':refs/heads/main')\nrun(cold,'checkout','-q','main')\nassert run(cold,'for-each-ref','--format=%(refname)')=='refs/heads/main'\nassert run(cold,'remote')==''\nfor name in ['objects/info/alternates','shallow','info/grafts']:\n    assert not (cold/'.git'/name).exists(),name\nabsent=['86569e073da4faec0811d67137bbb0fd4f74c7c6','5cb16cbaffc6b90ca9dfbb1ce7a5388e731d1ae0','e83c49d97efcbec4fb54c11609c0d2d21e687719','ae34085dd6017eaf2539cf0b570bfb49daace824','21137d6177d1fe62b29f29cf59707bd7988527c3','104f5e369244dcdc3afe87bb91074067c6ad8ac7']\nfor oid in absent:run(cold,'cat-file','-e',oid+'^{commit}',expect=128)\nfor anchor in ['68508ea1eea1e07b0064fadd65b33433d72701f8','59653fcc15c4cbc21a39d0a0dd5548abe46165b0']:\n    run(cold,'merge-base','--is-ancestor',anchor,'main')\nassert run(cold,'cat-file','-t',approved)=='tree'\nreachable=subprocess.check_output(['git','--no-replace-objects','-C',str(cold),'rev-list','--objects','main'],text=True)\nassert approved in {line.split()[0] for line in reachable.splitlines()}\nmanifest=json.loads((cold/'protocols/contracts/v1/manifest.json').read_text());assert manifest['initial_import_commit']==absent[0] and manifest['artifact_format']==2\ndef check(name,expected):\n    result=subprocess.run(['python3','scripts/verify_contracts.py'],cwd=cold,capture_output=True,text=True)\n    print(json.dumps({'control':name,'argv':['python3','scripts/verify_contracts.py'],'cwd':str(cold),'exit_code':result.returncode}),flush=True)\n    print(result.stdout,end='',flush=True);print(result.stderr,end='',flush=True)\n    assert result.returncode==expected,(name,result.returncode)\n    return result.stdout\nvalid=json.loads(check('cold-rebased-main-valid',0));assert valid['files']==255 and valid['records']==266 and valid['retired']==11 and valid['artifact_tree']==approved and valid['consumers']==['bridge','engine','pi']\nassert run(cold,'status','--porcelain')==''\nassert run(source,'rev-parse','HEAD')==candidate\nprint(json.dumps({'state':'ACTUAL_PR48_PYTHON_OWNER_MAIN_ONLY_POSITIVE_SOURCE_CHECK_NOT_FULLCI_OR_DEVICE_QUALIFICATION','actual_main':candidate,'previous_accepted_main':base,'tree':tree,'source_guard_result':valid,'old_objects_absent':absent,'permanent_anchors_actual_ancestors':True,'only_ref':'refs/heads/main','remote_alternate_shallow_graft_present':False,'clean':True,'prior_negative_controls':'Source-identical verify_contracts.py/artifact/provenance source; retain T01 original9control proof939da2, not rerun or relabelled here.'},sort_keys=True))\n"
+}
