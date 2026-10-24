@@ -226,3 +226,19 @@ none was found in the inspected reusable worktree. Until that preparation is
 admitted, STOP before code or the first positive; the timer preflight is PASS,
 not a composition result. The preflight path lookup failure is an absent build
 artifact, not a product failure.
+
+### Root preparation amendment — admitted before emission
+
+Root now admits ONE preventive JS emission of the five non-test Bridge TS files
+using the existing compiler recipe and pinned TypeScript6.0.3. The earlier
+preparation STOP remains historical. `no build per test` prohibits W/C/repeated
+builds, not this single preparation. Join the actual compiler before any O/W or
+composition Node starts; record compiler/version/hash/options, five source and
+all output hashes, source before/after and any failure. Emit separate ESM tree
+modules, preserve import.meta entry guards and copy the original service package
+context byte-exact. Resolve ordinary imports through the already source-equal
+existing library dist/node_modules; no bundle, copied business functions,
+product edits, new dependencies or runtime compiler/TSX/esbuild. Stop before the
+positive if imports or any runtime helper remain unresolved. Compiler preparation
+is separate from the three diagnostic runtime roles; no total-process claim is
+inferred. All first-positive limits and the root-owned review boundary remain.
