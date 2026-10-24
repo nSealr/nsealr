@@ -21,3 +21,13 @@ this package and has its own review and integration path. General Rust rewrites
 remain deferred. All47 formal task/status/dependency/resource/release sets stay
 unchanged; all parent criteria remain incomplete and zero physical releases are
 qualified. Exact kits/image/operator/access remain in the existing pending request.
+
+The current stable local checkpoint is source7f584568: one complete `make -k ci`
+passed with clean source before/after, then the unchanged source-aware addon and
+32 full-oracle corruption controls passed on that original log. The [qualified
+packet](local-full-qualified/result.json) retains21 original files in its archive.
+The original [failed5e17 gate](local-full-security-red/result.json) remains RED.
+Dependency source4f/assembly72 passed independent reviewa40; only crypto-bigint0.7.6
+and required ctutils0.4.5 change, with no gate/threshold/source-policy exception.
+This is local proof, while protected PR and actual resulting-main qualification
+remain mandatory. The new real-engine experiment remains a separate delivery.
