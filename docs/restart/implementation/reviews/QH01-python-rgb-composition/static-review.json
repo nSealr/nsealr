@@ -1,0 +1,78 @@
+{
+  "role": "Distinct STATIC-ONLY first-checkpoint review; no replay/build/import/test execution",
+  "reviewed_at_utc": "2026-10-24T00:57:00.028008+00:00",
+  "candidate": {
+    "commit": "f6d850316ab96a47203ddf925a972bb44c013ae6",
+    "tree": "175160aab6404040b86e42b13e0c3bbb84aae466",
+    "executed_author_positive": "7157117c2c15a3fbd383ccfebfd5681868b91b5e"
+  },
+  "verdict": "CHANGES_REQUESTED_KNOWN_ATTENTION_RETENTION_GUARD_ONLY",
+  "findings": [
+    {
+      "id": "QH01-COMPOSITION-01",
+      "priority": "P1",
+      "status": "Already disclosed by author/root; same bounded fix in progress, not a new failure claim",
+      "path": "docs/restart/implementation/QH01/manual-port/python-rgb-composition/run-composition.py",
+      "lines": [
+        101,
+        106
+      ],
+      "title": "Best-effort reporting can escape before uncertain-owner retention starts",
+      "witness": "attention first evaluates op.observation(), serializes/writes attention.json and prints/flushes. None is guarded. An OSError or observation/serialization/reporting exception at101\u2013106 leaves the function before while107. The outer cleanup catch246\u2013247 calls the same fallible attention path; therefore it cannot reliably retain live/unknown Node/B3 handles if diagnostic I/O fails. This is a source witness; no reviewer fault execution and no leak observed in the original positive.",
+      "required_change": "Protect the reporting operations independently and preserve entry to the existing retained-handle loop even if reporting fails. Keep original source/positive and pure RED/GREEN controls source-bound; no budget, child kill/recovery, timer or component expansion.",
+      "validation_boundary": "Pure injected reporting controls can prove control-flow retention with mocked polling/clock, not actual cleanup or recovery. One real positive only after the coherent corrected candidate is supplied and delta reviewed."
+    }
+  ],
+  "additional_findings": [],
+  "complete_new_source_read": {
+    "bridge_child_lines": 138,
+    "bridge_child_sha256": "3be4583d556c164712f76b53e89b97e22ff8253739d635a624f273a712f3f5d8",
+    "python_invoker_lines": 278,
+    "python_invoker_sha256": "07525e11eb5068d96fe3aeba2582dca6d2ca77389c07c6249bd4479d9cdcfcd7",
+    "brief_sha256": "3048a52e47e84faedcafdb04f80ffe7b2f72601e3fb7347fbf3ea89baf3c8738",
+    "inputs_sha256": "d8a2bf198a6dce79b3f35b4d01d955321c3748863db5d641c5e26f93119e5213"
+  },
+  "unchanged_reviews_reused": {
+    "B3": "4daa2bc7dee4f4fcc5143441508f05d598e6ce69, entire unchanged source review and finite host lifecycle/wire evidence",
+    "B3_sha256": "da6f36c966e2b27407e1025456d1f72c6d061d9463eb9ad25af85f594bf5a203",
+    "Bridge": "Existing reviewed manual dispatcher/native service; complete subtree de11840ac496f48867bcce67328485658685843e identical to DA8. Read only currentness/present/scan and actual client deadline callsites for new composition mapping. No whole B3/Bridge audit or old matrix repeated."
+  },
+  "static_observations": [
+    {
+      "area": "Actual path and public fixture roles",
+      "conclusion": "Fixed Node child invokes actual runServiceOnceAsync and manual dispatcher/client verification. Exact presented259 is checked before real B3 start; existing RGB172800 produces raw259 compared before response. Original scanner611 is a trusted host string and never enters the worker512 bound. Selected fixture public key comes independently from original public-key response; no signer/nativeC/provider is invoked."
+    },
+    {
+      "area": "Ownership and known settlement",
+      "conclusion": "Python retains runtime/op plus exact Node Popen handle. O is B3 child, W is O child; Node is not their supervisor. Known success requires actual wait4 terminal statuses, all EOF/FD closures and retained runtime identity before teardown; ECHILD is asserted only after known collection. Caller FD identities are checked during B3 and baseline set restored after both roles settle. Exceptional cleanup uses cancel, polls and closes known handles; unknown observation/quarantine is intended to retain indefinitely and is blocked by the single reporting finding."
+    },
+    {
+      "area": "Synthetic timer and currentness",
+      "conclusion": "Only isolated child setTimeout/clearTimeout are mocked. After actual client installs its100ms timer, present advances mock timer and injected monotonic0\u219299, invokes the same before_present and waits real B3 while time stays99. Unchanged dispatcher checks currentness after present and before/after scan. Actual client completion clears the timer; final1tick to100 produces no callback. This intentionally proves composition under a synthetic clock, not real-client latency/deadline behavior. O8s/shared4s remain unchanged real clocks; C5000 is unused."
+    },
+    {
+      "area": "IPC and finite bounds",
+      "conclusion": "Trusted CLI paths are fixed before request; IPC chooses no executable, worker options or key. Python reads4097-byte chunks, retains4096+sentinel per Node stream, enforces2048 per LF record/4096 total and exact four successful ordered shapes. A fifth/error/partial/malformed record cannot complete successfully. Existing strict _record rejects duplicate/noncanonical input; typed v1/numeric timer relations and exact frame bytes are checked. Parent reply296 is \u2264512 and one decoded record plus EOF; Node checks cap before append, ASCII/LF/canonical JSON/keys/frame. Fixed string/data caps provide no general hostile-process sandbox claim."
+    },
+    {
+      "area": "Separate compiler preparation",
+      "conclusion": "One pinned TypeScript6.0.3 process emits five ordinary ESM modules plus five declarations, with original package context. Options match the existing recipe; actual compiler raw0 is recorded before runtime. No TSX/esbuild/runtime compiler is loaded; runtime process helper APIs throw. Original import preflight and runtime direct-child snapshot are bounded observations, not whole-host process guarantees."
+    },
+    {
+      "area": "Provenance and original evidence",
+      "conclusion": "10 manifest members/modes/blobs,29 executed inputs,11 prepared outputs,7 unchanged package trees/52 dist files, explicit actual worker/tool hashes and original archives verify. Six direct prepared module links and actual client-to-core transitive resolution point to source-bound contexts. Original positive owns Python/Node/O/W raw0 with expected hashes, Node1851 stdout/0stderr, O/W EOF and parent[0,1,2] restoration. Compiler and import-only Node are separate from runtime roles; no new execution occurred during this review."
+    }
+  ],
+  "evidence": "static-checks.json",
+  "evidence_sha256": "3c7433d0fc3dd350d3d927dfcbe32c02ee88559cf1dd4a8004eddf285fbd51f5",
+  "preserved_reader_error": "Optional static resolution reader initially assumed all seven package links direct under Bridge; it stopped on transitive core before writing. Exact traceback and corrected six-direct/client-core mapping preserved in static-checks.json. No source change or runtime retry.",
+  "original_positive_role": "Author first positive on715 remains valid for its exact successful path. The attention finding was not exercised and does not relabel it as a failure or qualify fault cleanup.",
+  "limits": [
+    "No reviewer positive, negative runtime, import, build, installation, old39/fullPi/CI/PR or signing.",
+    "Source441 reporting delta and six pure controls are forthcoming; neither accepted nor executed by this static verdict.",
+    "No unknown-owner/O-death/caller-death cleanup or recovery qualification; external process death remains out of scope.",
+    "Synthetic client clock provides no real100ms/human-review latency claim. Public scanner string is not camera/optical transfer.",
+    "No production route/default provider, camera/display/input, ARM/Pi/P4, custody, framing freeze, cold-checkout/reproducibility, task or physical release qualification."
+  ],
+  "next_step": "Receive coherent final corrected candidate; inspect only reporting delta/pure source controls and changed input/proof bindings, then the single assigned independent positive. No other source changes or campaign."
+}
