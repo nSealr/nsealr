@@ -1,0 +1,11 @@
+python3 -B -m unittest discover -s docs/restart/implementation/R00/audit-data -p 'test_audit_rust.py'
+python3 scripts/audit_rust.py
+cargo deny --locked --config /home/tux/nsealr/.restart-tools/goal/r00-crypto-bigint-remediation/deny.toml --manifest-path /home/tux/nsealr/.restart-tools/goal/r00-crypto-bigint-remediation/Cargo.toml fetch index db
+cargo deny --locked --config /home/tux/nsealr/.restart-tools/goal/r00-crypto-bigint-remediation/deny.toml --manifest-path /home/tux/nsealr/.restart-tools/goal/r00-crypto-bigint-remediation/apps/desktop-simulator/Cargo.toml fetch index
+cargo deny --locked --config /home/tux/nsealr/.restart-tools/goal/r00-crypto-bigint-remediation/deny.toml --manifest-path /home/tux/nsealr/.restart-tools/goal/r00-crypto-bigint-remediation/apps/pi/qr-worker/Cargo.toml fetch index
+cargo deny --locked --config /home/tux/nsealr/.restart-tools/goal/r00-crypto-bigint-remediation/deny.toml --manifest-path /home/tux/nsealr/.restart-tools/goal/r00-crypto-bigint-remediation/Cargo.toml --offline check --deny index-failure
+advisories ok, bans ok, licenses ok, sources ok
+cargo deny --locked --config /home/tux/nsealr/.restart-tools/goal/r00-crypto-bigint-remediation/deny.toml --manifest-path /home/tux/nsealr/.restart-tools/goal/r00-crypto-bigint-remediation/apps/desktop-simulator/Cargo.toml --offline check --deny index-failure
+advisories ok, bans ok, licenses ok, sources ok
+cargo deny --locked --config /home/tux/nsealr/.restart-tools/goal/r00-crypto-bigint-remediation/deny.toml --manifest-path /home/tux/nsealr/.restart-tools/goal/r00-crypto-bigint-remediation/apps/pi/qr-worker/Cargo.toml --offline check --deny index-failure
+advisories ok, bans ok, licenses ok, sources ok
