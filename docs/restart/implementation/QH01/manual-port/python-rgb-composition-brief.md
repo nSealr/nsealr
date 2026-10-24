@@ -380,3 +380,22 @@ minimal scan cases do not establish cancellation while B3 is still active, which
 also remains open before any complete-component ownership claim. No camera/kit
 fact is needed for these host tests; physical capture/display still needs the
 already-pending identified kit/provider facts. STOP for root admission before code.
+
+### Root normal-CI admission — before implementation
+
+Root admits c6's bounded builder/ci integration on this branch. Preserve original
+compiler options and five Bridge TS/ten outputs; derive source/options/argv/status
+and output records from the actual build. Append the six-control unittest command
+and ONE composition only after both existing Node client calls. Cross-binding
+build/case records is root's future source-aware capture-checker work, not a new
+artifact producer/service. The only additional affected test scope is existing
+ProvisioningControls: retain its exact build/make/two-client prefix, env identity,
+cwd/check and first-full-Pi-failure stop, then assert the new two-command suffix.
+No Pi test method/count or old211/70/39 assertion is removed or weakened.
+
+Freeze source, exact commands and v1 schema before real spawn; first run targeted
+build and pure provisioning checks without composition, then ONE stable mandatory
+`make pi-ci` with one new actual composition. This is an early integration
+checkpoint, not full make-ci/hosted/production/component completion. Preserve
+failure output/path; unknown ownership retains the exact live invoker, no kill or
+restart. Historical proofs and f129 remain unchanged. STOP for distinct review.
