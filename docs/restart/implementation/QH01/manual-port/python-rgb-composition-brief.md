@@ -504,3 +504,16 @@ states are booleans. For non-timeout negatives late bytes0/hashnull/retrynull;
 timeout late bytes611/hashf27d and retry runtime_unavailable. Default positive
 result and four IPC record shapes stay unchanged. These are fixture controls,
 not request data or a client-abort API.
+
+Three early executions on frozenf4d4d8c5 passed in the admitted order, no retry:
+null signer_transport_failed with O/W0; timeout signer_transport_timeout with
+close0 before late611 and close1 after underlying settlement, O/W0; preG fixture
+cancel signer_transport_failed with O2/raw512 and observed W-9/raw9, PX/G0/Wimage0
+and API0. Each Node exited0, actual waits/EOF and caller FD restoration were
+recorded. Caps observed4/5/3records,934/1508/923stdout bytes and zero stderr.
+No new Rust/C build/install was needed: source-equal old artifacts were explicitly
+bound in inputs, not a runtime fallback. `proof/lifecycle-cases/early.tar.gz`
+retains52original files plus manifest; no additional positive was executed.
+The diagnostic runtime source remainsf4. Freeze this stable checkpoint before
+ONE normal make pi-ci using the current checkout's ordinary builder/provisioner,
+to preserve default positive/211/70/39/six pure controls; no full make-ci.
