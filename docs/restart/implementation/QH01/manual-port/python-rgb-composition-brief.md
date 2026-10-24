@@ -608,3 +608,14 @@ provisioned W/C pair, current-root JS/packages, exact old positive/211/70/39 and
 15 full-gate build semantics; no checker/product/Node IPC/budget change. Preserve
 all actual receipts and failures; unknown ownership remains held by the exact
 existing invoker. STOP after coherent proof for distinct review.
+
+The automatic lifecycle source was frozen at f7f30096 before controls/runtime.
+Focused2ordering+5producer passed. ONE normal make pi-ci then passed0/raw0 in
+39.708556903s, clean before/after; Pi211/70owner/39final/62FG objects and six pure
+controls remain, followed by ONE positive and exactly3new lifecycle cases using
+the same provisioned W/SHA. No manual replay or source correction was needed.
+`proof/lifecycle-ci/` retains schema, actual record variants, command/raw/70files,
+source correspondence and limits. Negative stdout is namespaced without changing
+result.json or positive/attention. Root owns checker extension and final current
+main reconciliation; no full make-ci/hosted or physical/component-completion
+claim. STOP for distinct review.
