@@ -874,3 +874,8 @@ accepted corrected closure must provide actual library path/SHA before the first
 combined test. Until that exact input exists and root's guard review admits it,
 ALL TSC/runtime/C/O/W execution remains blocked. Expected2501 stays frozen; any
 new output difference is a refusal/investigation, never a learned golden change.
+
+Pre-execution source clarification: opt-in Node receives an explicit Python
+os.environ snapshot fixed during initialization before RGB/Node, then its C env
+is frozen with the three trusted native overrides. No ambient late inheritance,
+process-global environment mutation or preexec_fn is used; old cases unchanged.

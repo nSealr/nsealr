@@ -43,7 +43,9 @@ class Composition:
         self.output.mkdir(parents=True, exist_ok=False,
                           mode=0o700 if getattr(args, "case", "positive") == "fixture_request_engine" else 0o777)
         self.engine_initialization = None
+        self.engine_environment = None
         if getattr(args, "case", "positive") == "fixture_request_engine":
+            self.engine_environment = dict(os.environ)  # Fixed before RGB/Node; never mutate process-global env.
             library = Path(args.engine_library).resolve(strict=True)
             module = Path(args.engine_module).resolve(strict=True)
             require(library.is_file() and sha(library.read_bytes()) == args.engine_sha256, "trusted actual native library SHA")
@@ -235,7 +237,8 @@ class Composition:
             command.append(str((self.output / "engine-initialization.json").resolve()))
         try:
             self.node = subprocess.Popen(command, stdin=subprocess.PIPE, stdout=subprocess.PIPE,
-                                         stderr=subprocess.PIPE, close_fds=True)
+                                         stderr=subprocess.PIPE, close_fds=True,
+                                         **({"env": self.engine_environment} if engine_case else {}))
             self.selector = selectors.DefaultSelector()
             for name in ("stdout", "stderr"):
                 stream = getattr(self.node, name)
