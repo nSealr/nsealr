@@ -1,0 +1,408 @@
+{
+  "schema_version": 1,
+  "verdict": "PASS_HOST_RGB_REQUEST_ENGINE_FIXTURE_RUNTIME_COMPONENT_ONLY",
+  "findings": [],
+  "candidate": {
+    "commit": "25b30582798c4a3207afdf77c5e32b8822fd433f",
+    "tree": "8b73288d2e29896f954f6cf4d7d96b5c96a80c14",
+    "author_branch": "implementation/qh01-rgb-request-engine",
+    "runtime_commit": "1742e6e90915a7e80afca48337cc3a44bc439caf",
+    "runtime_tree": "14ff8b2cfbc279121b33b0c5356e9f873cfa288c"
+  },
+  "reviewer": {
+    "role": "distinct affected runtime and source/proof reviewer; not author of the two harnesses",
+    "model": "gpt-6.1-sol",
+    "reasoning_effort": "xhigh",
+    "model_verification": "actual current thread turn_context read before replay",
+    "branch": "review/qh01-rgb-request-engine-runtime"
+  },
+  "scope": "New host-only opt-in fixture_request_engine execution and loaded-SHA refusal proof; identical static/native-leaf/security/legacy reviews reused in their original scopes.",
+  "reused_reviews": [
+    {
+      "commit": "b147fb966e0617660ec8d7398f4c0cc90446a437",
+      "source": "e132bec7731b628f064bef4e543e1e8f727a27be",
+      "basis": "both harness mode/blob/bytes exact; capability/trust/timer/ownership static semantics"
+    },
+    {
+      "commit": "a40c7e8879e32bd49cb6f2b8352ff4bd9e305673",
+      "source": "4f132f5bba19f28ee491d05189eea1ad919ba7b4",
+      "basis": "77 product and112 proof postimages exact; security component only"
+    },
+    {
+      "commit": "b21985a7c9fc8a50e337766c30c2cad33378e504",
+      "source": "a3a49eeb7cbddcad2b9e7b04aaa16808b8ef0a86",
+      "basis": "unchanged native leaf/helper source and source-qualified TSC provenance"
+    }
+  ],
+  "input_bindings": [
+    {
+      "commit": "25b30582798c4a3207afdf77c5e32b8822fd433f",
+      "path": "docs/restart/implementation/QH01/manual-port/python-rgb-composition/run-composition.py",
+      "mode": "100644",
+      "blob": "560bfacfe3bf755eda708b844de2c4ed3e528936",
+      "bytes": 32821,
+      "sha256": "2833c353c474acf863a87636e2547191d882b84c9f48ac8d96946425d84b79b6"
+    },
+    {
+      "commit": "25b30582798c4a3207afdf77c5e32b8822fd433f",
+      "path": "docs/restart/implementation/QH01/manual-port/python-rgb-composition/bridge-child.mjs",
+      "mode": "100644",
+      "blob": "1a428fb49a8fb1f437646434af291c9d705ae793",
+      "bytes": 21173,
+      "sha256": "1e8a19845d9d7ea60da447677d7d2b5e01218d3be57bcaf85b416a066c42456f"
+    },
+    {
+      "commit": "25b30582798c4a3207afdf77c5e32b8822fd433f",
+      "path": "docs/restart/implementation/QH01/manual-port/python-rgb-composition-brief.md",
+      "mode": "100644",
+      "blob": "62c25a3bfec6e8a13567e31af31bb14ba114ccd3",
+      "bytes": 62453,
+      "sha256": "3234d602c8a95ba333da552fe01bdf1badcb87bfb702968f170339ed58bc63ba"
+    },
+    {
+      "commit": "25b30582798c4a3207afdf77c5e32b8822fd433f",
+      "path": "docs/restart/implementation/QH01/manual-port/python-rgb-composition/proof/request-engine-opt-in/README.md",
+      "mode": "100644",
+      "blob": "aab4a48762cfd4390d091f735215ea792adf9344",
+      "bytes": 2935,
+      "sha256": "9a94c165d514074a349ba944738709d294a1956a36ac009302d7473bf1040cd7"
+    },
+    {
+      "commit": "25b30582798c4a3207afdf77c5e32b8822fd433f",
+      "path": "docs/restart/implementation/QH01/manual-port/python-rgb-composition/proof/request-engine-opt-in/artifact-manifest.json",
+      "mode": "100644",
+      "blob": "a43fbd6bf8e84167f9a4ac5020303435be2cace0",
+      "bytes": 5533,
+      "sha256": "f45a3c25ea6063e59d30e1e57079886421dd651584aba842854d1bc1a22fb3f6"
+    },
+    {
+      "commit": "25b30582798c4a3207afdf77c5e32b8822fd433f",
+      "path": "docs/restart/implementation/QH01/manual-port/python-rgb-composition/proof/request-engine-opt-in/result.json",
+      "mode": "100644",
+      "blob": "b19afe114bba8f674b404f5c6a72b29bc5e0e307",
+      "bytes": 2915,
+      "sha256": "dba70204b437d194b477814a9b7973aff144377b0b811b7d0f0665580fecde58"
+    },
+    {
+      "commit": "25b30582798c4a3207afdf77c5e32b8822fd433f",
+      "path": "docs/restart/implementation/QH01/manual-port/python-rgb-composition/proof/request-engine-opt-in/execution-evidence.tar.gz",
+      "mode": "100644",
+      "blob": "a3e9ebfa089d59d25f3cf4bdc305961006491d2a",
+      "bytes": 682709,
+      "sha256": "9c216115c7f7a2213071d735b71a0cc49736f053cea981b6f339557762cae9ad"
+    },
+    {
+      "commit": "25b30582798c4a3207afdf77c5e32b8822fd433f",
+      "path": "docs/restart/implementation/QH01/manual-port/python-rgb-composition/proof/request-engine-opt-in/actual-library.json",
+      "mode": "100644",
+      "blob": "2bb5d959db1877e760a4c09f7f7c213b6683940d",
+      "bytes": 1309,
+      "sha256": "47c12ea7bcb9244b0bfa1537cb47c2cb10ffcadfda792c28c26e70ed04283ca6"
+    },
+    {
+      "commit": "25b30582798c4a3207afdf77c5e32b8822fd433f",
+      "path": "docs/restart/implementation/QH01/manual-port/python-rgb-composition/proof/request-engine-opt-in/corrected-inputs.json",
+      "mode": "100644",
+      "blob": "f58bcf62c266b9756aa6213868c143769ce49d60",
+      "bytes": 16490,
+      "sha256": "343fa2979298724d7c91b8263fc14280d438185c9d3052736bafa51e7ac3eb19"
+    },
+    {
+      "commit": "25b30582798c4a3207afdf77c5e32b8822fd433f",
+      "path": "docs/restart/implementation/QH01/manual-port/python-rgb-composition/proof/request-engine-opt-in/source-qualification.json",
+      "mode": "100644",
+      "blob": "547b46cf34fc09cf3c1811970e614700aaf64700",
+      "bytes": 11671,
+      "sha256": "c340dbc97d9cc8cd14a2653f23d153cd8bca355e81a1d5b45b34b37c98b57137"
+    },
+    {
+      "commit": "25b30582798c4a3207afdf77c5e32b8822fd433f",
+      "path": "docs/restart/implementation/QH01/manual-port/python-rgb-composition/proof/request-engine-opt-in/resource-freeze.json",
+      "mode": "100644",
+      "blob": "1dfaa9b09e19c8f7f54c1903a93e7cbefc13f3bb",
+      "bytes": 9792,
+      "sha256": "b6275fd2f1e019ffdf6451ed2d99ff1b223dd788feca88f81bfc5bedacc4fdca"
+    },
+    {
+      "commit": "25b30582798c4a3207afdf77c5e32b8822fd433f",
+      "path": "docs/restart/implementation/QH01/manual-port/python-rgb-composition/proof/request-engine-opt-in/producer-command.json",
+      "mode": "100644",
+      "blob": "5a73fec38722283b5e28a0fe968fef31a5f84e2c",
+      "bytes": 1636,
+      "sha256": "8eeeb474262c014bb6e754f47daa6da9fd827a14fd656f171eff1b0bdfd7f567"
+    },
+    {
+      "commit": "25b30582798c4a3207afdf77c5e32b8822fd433f",
+      "path": "docs/restart/implementation/QH01/manual-port/python-rgb-composition/proof/request-engine-opt-in/positive-command.json",
+      "mode": "100644",
+      "blob": "cc2e92e2c4b31228f9873bd23d7c2a6ed689b340",
+      "bytes": 2075,
+      "sha256": "d00dbd5549e81c072ee531e2f9dddb993fbe87a5b91c279d4adeae07b1f6566f"
+    },
+    {
+      "commit": "25b30582798c4a3207afdf77c5e32b8822fd433f",
+      "path": "docs/restart/implementation/QH01/manual-port/python-rgb-composition/proof/request-engine-opt-in/refusal-command.json",
+      "mode": "100644",
+      "blob": "607f8e81a3c6c58141c098046d872f434040be2e",
+      "bytes": 2011,
+      "sha256": "50dc7372e18b9efaf2bb253dfc5a0e7068764fcd002cb5326cfd836a3c827def"
+    },
+    {
+      "commit": "25b30582798c4a3207afdf77c5e32b8822fd433f",
+      "path": "docs/restart/implementation/QH01/manual-port/python-rgb-composition/proof/request-engine-opt-in/normal-command.json",
+      "mode": "100644",
+      "blob": "2ae198856dcd70d22c4829721ed26415b20f54e3",
+      "bytes": 1804,
+      "sha256": "f64e28ef7dee5e1c7140d55467b9cff659da4b7ce39a95ed982b9467a4e3e46b"
+    },
+    {
+      "commit": "25b30582798c4a3207afdf77c5e32b8822fd433f",
+      "path": "docs/restart/implementation/QH01/manual-port/python-rgb-composition/proof/request-engine-opt-in/normal-summary.json",
+      "mode": "100644",
+      "blob": "0936fac632004e40f1616af2c784133ac8e91178",
+      "bytes": 5004,
+      "sha256": "99884be6e3d2ade99ce1cb37ca022f4806f1d3af99cff1fa9055ad3eb4986020"
+    },
+    {
+      "commit": "25b30582798c4a3207afdf77c5e32b8822fd433f",
+      "path": "docs/restart/implementation/QH01/manual-port/python-rgb-composition/proof/request-engine-opt-in/positive-engine-observation.json",
+      "mode": "100644",
+      "blob": "8e38c6514b27b6ca77774b65d3613f7f1377ee15",
+      "bytes": 4593,
+      "sha256": "02b9f15fbcac6106fafa2103d6b5102e219e334f91cedafb4ef67944ecee6ca7"
+    },
+    {
+      "commit": "25b30582798c4a3207afdf77c5e32b8822fd433f",
+      "path": "docs/restart/implementation/QH01/manual-port/python-rgb-composition/proof/request-engine-opt-in/two-fixture-summary.json",
+      "mode": "100644",
+      "blob": "b625e3e59653d31a15ded7c451b47c5f56da0d20",
+      "bytes": 25146,
+      "sha256": "58bfe416db3ff4233e603911384094245c7cbbef3a582cba93c3c887e993222c"
+    }
+  ],
+  "provenance": {
+    "author_manifest_members": 16,
+    "archive_regular_files": 132,
+    "archive_internal_bindings": 131,
+    "source_artifact_tool_hashes_exact_before_after": 80,
+    "generated_source_qualified_outputs": 62,
+    "author_checkout_clean_before_after": true,
+    "author_tail": "brief/proof only; harness exacte132 and corrected closure exact4f"
+  },
+  "qualified_inputs": {
+    "library": {
+      "path": "/home/tux/nsealr/.restart-tools/goal/qh01-python-rgb-lifecycle/target/release/libnsealr_pi_engine_fixture.so",
+      "bytes": 650592,
+      "sha256": "5ab3e09153a94b79c1ed8fc257f54678aa3cfff3a3cd9665e50788f252821d4e"
+    },
+    "worker": {
+      "path": "/home/tux/nsealr/.restart-tools/goal/qh01-python-rgb-lifecycle/apps/pi/qr-worker/target/release/nsealr-qr-worker",
+      "bytes": 668192,
+      "sha256": "95f541ec0f05bf4849b71bd0507ca47eaa4a5f649696492ad48edcbc375c0df5"
+    },
+    "module": {
+      "path": "/home/tux/nsealr/.restart-tools/goal/qh01-native-leaf-prerequisite-runtime-2026-10-24/compiled/native-leaf.js",
+      "bytes": 6550,
+      "sha256": "2d0b31bee68128e2295c19c4d3336503f020eb2625fc86b0733302bbb1f11083"
+    },
+    "module_source": {
+      "path": "/home/tux/nsealr/.restart-tools/goal/qh01-python-rgb-lifecycle/docs/restart/implementation/QP01/request-engine/native-leaf.ts",
+      "bytes": 6457,
+      "sha256": "b5321f9b9412fbd7f5154e2e6645837f19f9ecece13013beda1c5587e95e3bf9"
+    },
+    "python": {
+      "path": "/home/tux/nsealr/.restart-tools/goal/qh01-python-rgb-lifecycle/apps/pi/.venv/bin/python",
+      "sha256": "eaaa308032c4aa063df5880c4c293cd458b4629d503fbc2c03ec163d71f7f790"
+    },
+    "node": {
+      "path": "/home/tux/nsealr/.restart-tools/goal/r00/tools/baseline/.work/final/.tools/node/bin/node",
+      "sha256": "67ca5783febb8bf85736c79fcdd92c8d6d465a0eb2a082672bcdfa76a506751c"
+    }
+  },
+  "author_execution_review": {
+    "producer": {
+      "source": "43d6b2db39d2422159b489f0a6f6d42e144c4c54",
+      "commands": 1,
+      "exit_code": 0,
+      "elapsed_seconds": 3.548334,
+      "argv": "cargo build -p nsealr-pi-engine-fixture --locked --offline --release --message-format=json",
+      "compiler_artifact_and_archived_binary_match": true,
+      "input_pre_post_hashes_match": true,
+      "reproducibility_demonstrated": false
+    },
+    "fixtures": [
+      {
+        "case": "positive-01",
+        "outer_pid": 3073640,
+        "Node": 3073641,
+        "O": 3073648,
+        "W": 3073649,
+        "C": 3073652,
+        "outer_exit": 0,
+        "C_code": 0,
+        "C_signal": null,
+        "Node_FDs": 21,
+        "elapsed_seconds": 0.22627832926809788
+      },
+      {
+        "case": "loaded-sha-refusal-01",
+        "outer_pid": 3074255,
+        "Node": 3074256,
+        "O": 3074267,
+        "W": 3074291,
+        "C": 3074292,
+        "outer_exit": 0,
+        "C_code": 1,
+        "C_signal": null,
+        "Node_FDs": 21,
+        "elapsed_seconds": 0.20899881701916456
+      }
+    ],
+    "loaded_sha_refusal": {
+      "same_binary_pair": true,
+      "C_code": 1,
+      "signal": null,
+      "sent": false,
+      "R_hex": "",
+      "stdout_bytes": 0,
+      "observations": 0,
+      "responses": 0,
+      "client_error": "signer_transport_failed",
+      "scan": 0,
+      "close": 1,
+      "before_signing_basis": "actual no-send/no-R/no-output plus unchanged expected-SHA check before CDLL/stdin; no invented crypto count"
+    },
+    "normal_gate": {
+      "exit": 0,
+      "Pi": 211,
+      "owner_rows": 70,
+      "first_finals": 39,
+      "old_QH_cases": 4,
+      "new_optin_cases": 0,
+      "replayed_by_reviewer": false,
+      "elapsed_seconds": 40.58041585423052,
+      "actual_client_C": 14,
+      "readiness_C": 5,
+      "first_total_rows": 62,
+      "separate_attention_controls": 6,
+      "raw_log_bytes": 616977,
+      "raw_log_sha256": "de49befe40ba7156bcf67c064ec550b4bff9367cd9dd72cb964f6d2383b16968"
+    },
+    "fixture_gate_failures_or_retries": [],
+    "reader_observation": "Author missing source-postimages.json navigation lookup retained separately; no executed build/fixture failure."
+  },
+  "independent_replay": {
+    "runs": 1,
+    "exit_code": 0,
+    "wait_raw": 0,
+    "elapsed_seconds": 0.2260833317413926,
+    "PIDs": {
+      "parent_pid": 3092012,
+      "node_pid": 3092013,
+      "owner_pid": 3092020,
+      "worker_pid": 3092021,
+      "C_pid": 3092022
+    },
+    "C_status": {
+      "pid": 3092022,
+      "code": 0,
+      "signal": null,
+      "synthetic_handshake_control": false,
+      "sent": true,
+      "readiness_hex": "52",
+      "stdout_bytes": 611,
+      "stderr_bytes": 4944,
+      "overflow": false,
+      "initialization_ns": "23246905",
+      "request_to_close_ns": "4780162"
+    },
+    "Node_FD_count_restored": 21,
+    "Node_children_after": "",
+    "Node_wait": 0,
+    "Node_EOF": [
+      "stderr",
+      "stdout"
+    ],
+    "O_W_raw_wait": [
+      0,
+      0
+    ],
+    "O_EOF": [
+      1,
+      2,
+      4,
+      5
+    ],
+    "parent_FD_restored": true,
+    "response_bytes": 611,
+    "response_sha256": "250167d1137f6da25676b00b62913a3d8f29391a1ff5331d64f7079d953f5ded",
+    "expected_full_event_equal": true,
+    "measured_review_pages": 31,
+    "review_page_bytes_equal_author": true,
+    "all80_preflight_file_hashes_exact_before_after": true,
+    "PID_proc_present_after_known_wait": {
+      "parent_pid": false,
+      "node_pid": false,
+      "owner_pid": false,
+      "worker_pid": false,
+      "C_pid": false
+    },
+    "command": "replay-command.json",
+    "environment": "reviewer-environment.json",
+    "preflight": "preflight.json",
+    "after_source": "after-source.json",
+    "raw_stdout": "replay.stdout",
+    "raw_stderr": "replay.stderr",
+    "records": "replay/",
+    "started_utc": "2026-10-24T05:08:24.178168+00:00",
+    "completed_utc": "2026-10-24T05:08:24.404366+00:00",
+    "outer_timeout": null
+  },
+  "effects": {
+    "RGB": {
+      "bytes": 172800,
+      "sha256": "64d9be602c821c31c0dfd6e952199a328325acdbf9a7e1b3494921942a11055f"
+    },
+    "original_decoded_frame": {
+      "bytes": 259,
+      "sha256": "88a16190a1b1ed033fc9bebe5452af70e9a9783fd6b92305add2ac7134039ff7"
+    },
+    "actual_C_response": {
+      "bytes": 611,
+      "sha256": "250167d1137f6da25676b00b62913a3d8f29391a1ff5331d64f7079d953f5ded",
+      "full_independent_zeroaux_event_equal": true,
+      "actual_client_checks": "expected4f identity, requestID, event template, canonicalID and signature"
+    },
+    "pages": {
+      "measured": 31,
+      "indices": "0..30",
+      "positions": "1/31..31/31",
+      "kinds": "30data/1decision",
+      "all_bytes_equal_author": true,
+      "record": "replay/engine-observation.json",
+      "actions": "Next0/Approve1 source-projected from exact exchange.py:198..206, not newly instrumented counters"
+    },
+    "auxiliary": "source-explicit lambda:bytes(32), full zeroaux event exact; no provider-call/cryptographic-attempt counter",
+    "native": "One actual Node C spawn/captured capability; real5000ms scheduled/cleared; R readiness before one original-frame send; C0/null signal/close/stdio. C rawwait not exposed and never invented.",
+    "lifecycle": "Python retains Node/B3/O; O/W rawwait0, O EOF1/2/4/5; Node rawwait0/stdout+stderr EOF; Node21 FD identities and parent FD set restored; no Node direct children.",
+    "quarantine": "No unknown-owner branch here; strong-reference/attention-hold rule unchanged, no Python/O kill/restart."
+  },
+  "limits": [
+    "Worker512, JSON704 and static947 remain distinct. Worker decodes259; C generates611, injected as software scan rather than decoded through512 worker.",
+    "Node reply512, JSONL2048/count5 and observation4096 retain separate roles.",
+    "Client0/99/100 and timer100ms are synthetic; local100ticks, real O8/shared4/C5000 have different roles. Hostelapsed226ms is not real100ms conformance or physical/human timing.",
+    "No combined C5000 expiry/external-abort/quarantine recovery test. No hard collection deadline, recall or total descendant containment.",
+    "Known-public-identity trusted fixture and synthetic review/approval/zeroaux; no real consent/entropy/user-key/custody guarantee.",
+    "No camera/display/buttons/optical-return611/ARM/Pi/P4/native-all-input qualification, default route/provider or readiness.",
+    "Author normal gate reused, not reviewer-rerun; new opt-ins manual and not automatic in that gate.",
+    "Exactly one independent positive; no reviewer build/TSC/W/native rebuild/refusal/normal/full/hosted/fetch/extra runtime.",
+    "No cdylib reproducibility, full security/integration/protected-main adoption, task closure or release. Formal criteria and physical gates remain unchanged."
+  ],
+  "reviewer_reader_error": "reader-observation.json: report-packaging wrong brief path; corrected to actual Git path before writing. No candidate fix/runtime repeat.",
+  "evidence": {
+    "validation": "validation.json",
+    "report": "report.md",
+    "manifest": "artifact-manifest.json",
+    "commit_binding": "Review commit binds packet without self-hash or future-commit assertion."
+  }
+}
