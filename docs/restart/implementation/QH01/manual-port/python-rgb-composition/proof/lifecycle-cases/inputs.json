@@ -1,0 +1,599 @@
+{
+  "role": "pre-runtime lifecycle inputs; no actual case yet",
+  "base": "f8adb7dd0b8cfb22f0b7d7c7cf5c7ad65104d683",
+  "source_expectation_commit": "5138d835c55eccc8826a770a6113d4ca8e53f5fd",
+  "source_expectation_sha256": "9683cd5dbb60536bb216668d34d2034165170223b9b1914ab26ae8a71393fdf2",
+  "unchanged_eight_requirement_source_bindings": [
+    {
+      "id": "client",
+      "path": "packages/client/src/service.ts",
+      "sha256": "d230d65ec2eb505afd940951c792c6ed0ac93a13e781ca70116db464ff59c509",
+      "lines": [
+        [
+          1076,
+          1118
+        ],
+        [
+          1130,
+          1145
+        ],
+        [
+          1149,
+          1159
+        ],
+        [
+          1236,
+          1255
+        ]
+      ]
+    },
+    {
+      "id": "manual",
+      "path": "apps/bridge/service/src/manual-qr.ts",
+      "sha256": "d2c9aa73f723739a5682f0a2a4b6c88f4b319a70d879766fe7b8f862ee5e82f9",
+      "lines": [
+        [
+          11,
+          34
+        ],
+        [
+          45,
+          50
+        ],
+        [
+          62,
+          78
+        ],
+        [
+          126,
+          164
+        ]
+      ]
+    },
+    {
+      "id": "manual_tests",
+      "path": "apps/bridge/service/src/manual-qr.test.ts",
+      "sha256": "fce4623fc99e5d0c405bdce9529a4faa367b54f5bd52b1fb49f13858bd3bee4e",
+      "lines": [
+        [
+          209,
+          221
+        ],
+        [
+          241,
+          246
+        ],
+        [
+          263,
+          288
+        ]
+      ]
+    },
+    {
+      "id": "B3",
+      "path": "apps/pi/app/nsealr_vault/qr_owner_adapter.py",
+      "sha256": "da6f36c966e2b27407e1025456d1f72c6d061d9463eb9ad25af85f594bf5a203",
+      "lines": [
+        [
+          112,
+          118
+        ],
+        [
+          208,
+          250
+        ],
+        [
+          355,
+          367
+        ],
+        [
+          451,
+          475
+        ],
+        [
+          492,
+          504
+        ]
+      ]
+    },
+    {
+      "id": "O",
+      "path": "apps/pi/app/nsealr_vault/qr_worker.py",
+      "sha256": "d7a245a9a558cce3ec8271ec42fc49664c094320c6465a537aa3a49c83558d50",
+      "lines": [
+        [
+          82,
+          90
+        ],
+        [
+          102,
+          128
+        ],
+        [
+          212,
+          246
+        ],
+        [
+          326,
+          345
+        ],
+        [
+          367,
+          386
+        ]
+      ]
+    },
+    {
+      "id": "W",
+      "path": "apps/pi/qr-worker/src/main.rs",
+      "sha256": "e60b3bc2baec2eded7ee474e101cfa8debd1a88be76d6d7cffce31b4e3e1dcf1",
+      "lines": [
+        [
+          54,
+          58
+        ]
+      ]
+    },
+    {
+      "id": "B3_tests",
+      "path": "apps/pi/tests/test_qr_owner_adapter_lifecycle.py",
+      "sha256": "6416c13f8358199141e59ce15ffcae97da68a8612c0270a04a2e4958e0728a7c",
+      "lines": [
+        [
+          92,
+          108
+        ],
+        [
+          119,
+          152
+        ],
+        [
+          166,
+          172
+        ],
+        [
+          242,
+          250
+        ]
+      ]
+    },
+    {
+      "id": "B3_expectations",
+      "path": "docs/restart/implementation/QP01/python-owner-adapter/negative/expectations.json",
+      "sha256": "40d41bf5ec49c73e0edc917968f289decc7a5dc933e95320f209d145f02fed8f",
+      "lines": [
+        [
+          46,
+          67
+        ],
+        [
+          365,
+          376
+        ]
+      ]
+    }
+  ],
+  "fixtures": [
+    {
+      "role": "RGB",
+      "path": "docs/restart/implementation/QH01/native-qr-probe/execution-01/request-kind-1-basic.rgb",
+      "bytes": 172800,
+      "sha256": "64d9be602c821c31c0dfd6e952199a328325acdbf9a7e1b3494921942a11055f"
+    },
+    {
+      "role": "request259",
+      "path": "docs/restart/implementation/QH01/native-qr-probe/expected/request-kind-1-basic.envelope",
+      "bytes": 259,
+      "sha256": "88a16190a1b1ed033fc9bebe5452af70e9a9783fd6b92305add2ac7134039ff7"
+    },
+    {
+      "role": "response611",
+      "path": "docs/restart/implementation/QH01/native-qr-probe/expected/response-kind-1-basic.envelope",
+      "bytes": 611,
+      "sha256": "f27dbe54785a9510e43f05d27dbb67c488c77def150e0110d51264762cdeec1b"
+    },
+    {
+      "role": "response_json",
+      "path": "protocols/contracts/v1/examples/response-kind-1-basic.json",
+      "bytes": 540,
+      "sha256": "3a398947e46c715a6ceaaeaa7198455ac840727c7f0f78dd079a1de8742350a1"
+    },
+    {
+      "role": "independent_key",
+      "path": "protocols/contracts/v1/examples/response-get-public-key.json",
+      "bytes": 169,
+      "sha256": "ec333e4ec4cea4b889d12fd6b927870cc7096d5f553685584fd91f866c97190c"
+    }
+  ],
+  "current_harness": [
+    {
+      "path": "docs/restart/implementation/QH01/manual-port/python-rgb-composition/run-composition.py",
+      "bytes": 21836,
+      "sha256": "03a9b39e53c56710a4c92d1d6defa6c2b962b6f3cc638bfdbad7dda53b6515ef"
+    },
+    {
+      "path": "docs/restart/implementation/QH01/manual-port/python-rgb-composition/bridge-child.mjs",
+      "bytes": 11564,
+      "sha256": "09e233663b02073d15655dd5d86b9070f6f2c53ce0abc0beae0117ff86d47177"
+    }
+  ],
+  "unchanged_python_methods": [
+    "__init__",
+    "record_node_wait",
+    "pump",
+    "attention",
+    "until",
+    "cleanup"
+  ],
+  "reuse": {
+    "root": "/home/tux/nsealr/.restart-tools/goal/qh01-python-rgb-composition-implementation",
+    "root_commit": "2db4fc8595869ed0bdb48d754ba447554d96b425",
+    "original_actual_build_source": "8a80b256455deb8b9ae3a4e6115c13a3e64d328b",
+    "package_source_trees_equal_f8": {
+      "client": "ca2bd24d7fafc594afc7a045936b910c2b6f4b3c",
+      "core": "bc95d479bf1f54ce20e91202791635797f7a41e1",
+      "policy": "5abb40a824658180ce37edb11170f613ccee378c",
+      "protocol": "d89c928fc73e94c0e74f81a510cd61678bc91019",
+      "qr": "5850765753c6eeac2b0145eeda438c40a1bc6bae",
+      "transport": "187e6bd8f16a6060ed48825cfa952cc62b8b08df",
+      "framing": "8a18ae0e8e9da392607c467aaf05c9adda9a22a7"
+    },
+    "bridge_source_tree_equal_f8": true,
+    "bridge_outputs": [
+      {
+        "path": "/home/tux/nsealr/.restart-tools/goal/qh01-python-rgb-composition-implementation/apps/bridge/service/dist/context.d.ts",
+        "bytes": 1397,
+        "sha256": "3642c147470eb3d0b56a59eb8f88a86f9ad46d1fd4c35b1621b6479762d1b65f"
+      },
+      {
+        "path": "/home/tux/nsealr/.restart-tools/goal/qh01-python-rgb-composition-implementation/apps/bridge/service/dist/context.js",
+        "bytes": 8924,
+        "sha256": "dcefcf6c091dcef6bd31b8197f2e4abcfc3db623827b6658174a70d4ee19de65"
+      },
+      {
+        "path": "/home/tux/nsealr/.restart-tools/goal/qh01-python-rgb-composition-implementation/apps/bridge/service/dist/drivers.d.ts",
+        "bytes": 1495,
+        "sha256": "98ca9337c58d9689e49b0199c4c745cd0c35e6b6ad770dded3785436d56ecc58"
+      },
+      {
+        "path": "/home/tux/nsealr/.restart-tools/goal/qh01-python-rgb-composition-implementation/apps/bridge/service/dist/drivers.js",
+        "bytes": 10988,
+        "sha256": "0aeb949c934f1c0d6b66cc1c58ad04baa249b8ae0d11517fe2c33c708cefd490"
+      },
+      {
+        "path": "/home/tux/nsealr/.restart-tools/goal/qh01-python-rgb-composition-implementation/apps/bridge/service/dist/index.d.ts",
+        "bytes": 887,
+        "sha256": "cab23aa03c3fcbbb02a8a378b22ec2ca722ecfeb53208ff2badd549a1f86b6aa"
+      },
+      {
+        "path": "/home/tux/nsealr/.restart-tools/goal/qh01-python-rgb-composition-implementation/apps/bridge/service/dist/index.js",
+        "bytes": 8474,
+        "sha256": "24e3d00a653e55605a6caba32aff5cee5926a0000e9fe7689949c248c86a17af"
+      },
+      {
+        "path": "/home/tux/nsealr/.restart-tools/goal/qh01-python-rgb-composition-implementation/apps/bridge/service/dist/manifest.d.ts",
+        "bytes": 1788,
+        "sha256": "c8b63815d76c4f6d6ae53d856f75f5cb4806a161e8d53719bef3f6e0a61ddf5b"
+      },
+      {
+        "path": "/home/tux/nsealr/.restart-tools/goal/qh01-python-rgb-composition-implementation/apps/bridge/service/dist/manifest.js",
+        "bytes": 9686,
+        "sha256": "c2214dfbea9da30686730f6b1dfc2789bbe2b649362b2a493d626a532da997eb"
+      },
+      {
+        "path": "/home/tux/nsealr/.restart-tools/goal/qh01-python-rgb-composition-implementation/apps/bridge/service/dist/manual-qr.d.ts",
+        "bytes": 1868,
+        "sha256": "d6f718ce7525c22209bcdb17b785ca07f354d46644cf1c8d81e8da3dd61a4e08"
+      },
+      {
+        "path": "/home/tux/nsealr/.restart-tools/goal/qh01-python-rgb-composition-implementation/apps/bridge/service/dist/manual-qr.js",
+        "bytes": 8911,
+        "sha256": "9c23286c1d2e8de9cfed89b4e02971614bb0bfa6d3a686b7f8a31047f8fd5115"
+      }
+    ],
+    "library_outputs": [
+      {
+        "path": "/home/tux/nsealr/.restart-tools/goal/qh01-python-rgb-composition-implementation/packages/client/dist/browser.d.ts",
+        "bytes": 890,
+        "sha256": "40e49be8e62dc54a4f4d847c202df057b716c2773f8aa4bd267959b5716a3980"
+      },
+      {
+        "path": "/home/tux/nsealr/.restart-tools/goal/qh01-python-rgb-composition-implementation/packages/client/dist/browser.js",
+        "bytes": 532,
+        "sha256": "00f03a2cb37f27ac932e67936e4dd0bb43f64f393bfe606b524e4d0b678a1c21"
+      },
+      {
+        "path": "/home/tux/nsealr/.restart-tools/goal/qh01-python-rgb-composition-implementation/packages/client/dist/client-identity.d.ts",
+        "bytes": 426,
+        "sha256": "dec14b45d802c2a9f8d1326dc108021514ab487795ebdc654999a78bc076fd1f"
+      },
+      {
+        "path": "/home/tux/nsealr/.restart-tools/goal/qh01-python-rgb-composition-implementation/packages/client/dist/client-identity.js",
+        "bytes": 2404,
+        "sha256": "eeee321a4be8fbae1a0a64cd37e1bc3d064bdb64893b12317ea9bebe4ea9427b"
+      },
+      {
+        "path": "/home/tux/nsealr/.restart-tools/goal/qh01-python-rgb-composition-implementation/packages/client/dist/grant-store.d.ts",
+        "bytes": 1751,
+        "sha256": "52fa7d86e643276d1f1cc87fadf2cf463b17e000f5f9aa3d4088a4c37964d78c"
+      },
+      {
+        "path": "/home/tux/nsealr/.restart-tools/goal/qh01-python-rgb-composition-implementation/packages/client/dist/grant-store.js",
+        "bytes": 9681,
+        "sha256": "05b3a8144d2c8102d075df0bb5e294822777c25f5700c1de2cd9188e28bced50"
+      },
+      {
+        "path": "/home/tux/nsealr/.restart-tools/goal/qh01-python-rgb-composition-implementation/packages/client/dist/index.d.ts",
+        "bytes": 301,
+        "sha256": "8ce011731646b34b72952265f4b9c4bef9dbfeb5069656f918599438d59f4994"
+      },
+      {
+        "path": "/home/tux/nsealr/.restart-tools/goal/qh01-python-rgb-composition-implementation/packages/client/dist/index.js",
+        "bytes": 301,
+        "sha256": "8ce011731646b34b72952265f4b9c4bef9dbfeb5069656f918599438d59f4994"
+      },
+      {
+        "path": "/home/tux/nsealr/.restart-tools/goal/qh01-python-rgb-composition-implementation/packages/client/dist/local-service-client.d.ts",
+        "bytes": 2616,
+        "sha256": "af26cad90f44ea48bb3fa1af23c0d7567ecd9b53d05b1ede2dc2c483315db5e1"
+      },
+      {
+        "path": "/home/tux/nsealr/.restart-tools/goal/qh01-python-rgb-composition-implementation/packages/client/dist/local-service-client.js",
+        "bytes": 14014,
+        "sha256": "95824ab25dd6d485ce1680da96ede81833231add29f4e03fc0d6c6f44c83a0ad"
+      },
+      {
+        "path": "/home/tux/nsealr/.restart-tools/goal/qh01-python-rgb-composition-implementation/packages/client/dist/native-host-manifest.d.ts",
+        "bytes": 4083,
+        "sha256": "67406486ebef7e8b806b7866bf4b8d37761c3ff0d38bf8acded2197892e81098"
+      },
+      {
+        "path": "/home/tux/nsealr/.restart-tools/goal/qh01-python-rgb-composition-implementation/packages/client/dist/native-host-manifest.js",
+        "bytes": 21045,
+        "sha256": "5c539cb1a6eaeca476729f0e4485cdcf0458f55e89bee36f140af958e06ae1e8"
+      },
+      {
+        "path": "/home/tux/nsealr/.restart-tools/goal/qh01-python-rgb-composition-implementation/packages/client/dist/native-messaging.d.ts",
+        "bytes": 393,
+        "sha256": "ded566bdbb57dfc72e30e7b9d574e3d328bb226ff7510b5a131dbb4394e116c9"
+      },
+      {
+        "path": "/home/tux/nsealr/.restart-tools/goal/qh01-python-rgb-composition-implementation/packages/client/dist/native-messaging.js",
+        "bytes": 1556,
+        "sha256": "4e9a535796651e5e12d6c4284c4568eab5b47a9788b41c10c826a8a868f94a87"
+      },
+      {
+        "path": "/home/tux/nsealr/.restart-tools/goal/qh01-python-rgb-composition-implementation/packages/client/dist/pairing-review.d.ts",
+        "bytes": 728,
+        "sha256": "869c3f1d18e25c66d752f642f8b389f1a521e086fb59b7de5826b6439e759342"
+      },
+      {
+        "path": "/home/tux/nsealr/.restart-tools/goal/qh01-python-rgb-composition-implementation/packages/client/dist/pairing-review.js",
+        "bytes": 1591,
+        "sha256": "b77e203a1d6d380ed5a222d38fa0c8edd47de6c0d75a450b2acc1ed30d2213bf"
+      },
+      {
+        "path": "/home/tux/nsealr/.restart-tools/goal/qh01-python-rgb-composition-implementation/packages/client/dist/service.d.ts",
+        "bytes": 8355,
+        "sha256": "c01f24678407002eb3765960c473a4e7cac1ae72c2e63eb6fd180a7e2bf52cb9"
+      },
+      {
+        "path": "/home/tux/nsealr/.restart-tools/goal/qh01-python-rgb-composition-implementation/packages/client/dist/service.js",
+        "bytes": 46769,
+        "sha256": "cda8a34d079d2c6c9f46086694d6a606271007f6a6551d94e0893fa367c31ddf"
+      },
+      {
+        "path": "/home/tux/nsealr/.restart-tools/goal/qh01-python-rgb-composition-implementation/packages/client/dist/storage-review.d.ts",
+        "bytes": 1903,
+        "sha256": "dca6024fbdb9e765718c6036bd71ec4d6d3f2893246cfc40c9abf5f35819ae82"
+      },
+      {
+        "path": "/home/tux/nsealr/.restart-tools/goal/qh01-python-rgb-composition-implementation/packages/client/dist/storage-review.js",
+        "bytes": 7950,
+        "sha256": "1012220da45e426f5696e960ea5abcfc0b749c8f1d72edcae801bce21f494a86"
+      },
+      {
+        "path": "/home/tux/nsealr/.restart-tools/goal/qh01-python-rgb-composition-implementation/packages/core/dist/index.d.ts",
+        "bytes": 65,
+        "sha256": "fb15e29f861640d2105fa1269a66cca5161359157b13737a616733e1c3b81479"
+      },
+      {
+        "path": "/home/tux/nsealr/.restart-tools/goal/qh01-python-rgb-composition-implementation/packages/core/dist/index.js",
+        "bytes": 65,
+        "sha256": "fb15e29f861640d2105fa1269a66cca5161359157b13737a616733e1c3b81479"
+      },
+      {
+        "path": "/home/tux/nsealr/.restart-tools/goal/qh01-python-rgb-composition-implementation/packages/core/dist/nip44.d.ts",
+        "bytes": 298,
+        "sha256": "19580ea27d1cd08cde7cc666ceb167d5847d76737d7e05843c70a15ba34ddb25"
+      },
+      {
+        "path": "/home/tux/nsealr/.restart-tools/goal/qh01-python-rgb-composition-implementation/packages/core/dist/nip44.js",
+        "bytes": 7138,
+        "sha256": "f5671f6cae25f782645e345c15ae2301467bdeb2dbde5fe03589bb70ba5eef75"
+      },
+      {
+        "path": "/home/tux/nsealr/.restart-tools/goal/qh01-python-rgb-composition-implementation/packages/core/dist/nostr.d.ts",
+        "bytes": 1269,
+        "sha256": "e33c76aef1a4890ff17b4bae7b468b1cb7cf39802a9e759543627247cd0253fa"
+      },
+      {
+        "path": "/home/tux/nsealr/.restart-tools/goal/qh01-python-rgb-composition-implementation/packages/core/dist/nostr.js",
+        "bytes": 2501,
+        "sha256": "829b8abf892bdbf1ecdfcfd71da920513885dccf0860e678623f1543503c7316"
+      },
+      {
+        "path": "/home/tux/nsealr/.restart-tools/goal/qh01-python-rgb-composition-implementation/packages/policy/dist/index.d.ts",
+        "bytes": 29,
+        "sha256": "d2e4e9d55e2ef3b5111bdda9007b2c9b0b9c3911d6751877ed16b608527f4664"
+      },
+      {
+        "path": "/home/tux/nsealr/.restart-tools/goal/qh01-python-rgb-composition-implementation/packages/policy/dist/index.js",
+        "bytes": 29,
+        "sha256": "d2e4e9d55e2ef3b5111bdda9007b2c9b0b9c3911d6751877ed16b608527f4664"
+      },
+      {
+        "path": "/home/tux/nsealr/.restart-tools/goal/qh01-python-rgb-composition-implementation/packages/policy/dist/policy.d.ts",
+        "bytes": 6940,
+        "sha256": "6455a625cf2d849bfec096e4d92a99c7404606d5df08356d40cdbe7e36cdd848"
+      },
+      {
+        "path": "/home/tux/nsealr/.restart-tools/goal/qh01-python-rgb-composition-implementation/packages/policy/dist/policy.js",
+        "bytes": 47264,
+        "sha256": "8f28448937b4fc0254a998a8dfa6dd6c8dde0545f958214bec819a7257d0f8cb"
+      },
+      {
+        "path": "/home/tux/nsealr/.restart-tools/goal/qh01-python-rgb-composition-implementation/packages/protocol/dist/capabilities.d.ts",
+        "bytes": 7196,
+        "sha256": "53fdb95c8bb873f5f161b7d269a96e0dbfc218b53401e92756741c6ff4772c29"
+      },
+      {
+        "path": "/home/tux/nsealr/.restart-tools/goal/qh01-python-rgb-composition-implementation/packages/protocol/dist/capabilities.js",
+        "bytes": 24011,
+        "sha256": "7014e36c5bc05071b80581aa477f61163c8c4d18885bd7120e4ea4a0143c0eb8"
+      },
+      {
+        "path": "/home/tux/nsealr/.restart-tools/goal/qh01-python-rgb-composition-implementation/packages/protocol/dist/encoding.d.ts",
+        "bytes": 531,
+        "sha256": "a5289b29544a0d03542dac4cc2a3e66b5791d8751a98c7793db914c4bc744911"
+      },
+      {
+        "path": "/home/tux/nsealr/.restart-tools/goal/qh01-python-rgb-composition-implementation/packages/protocol/dist/encoding.js",
+        "bytes": 4590,
+        "sha256": "209a1e0a6a49489066c1f35445c1319b8f3e1b09981dbe54483972bb8f9f5f58"
+      },
+      {
+        "path": "/home/tux/nsealr/.restart-tools/goal/qh01-python-rgb-composition-implementation/packages/protocol/dist/index.d.ts",
+        "bytes": 926,
+        "sha256": "b28c669b7e064aa6ee2ef6084dac9922107b4a8defb028badd76559e5391b708"
+      },
+      {
+        "path": "/home/tux/nsealr/.restart-tools/goal/qh01-python-rgb-composition-implementation/packages/protocol/dist/index.js",
+        "bytes": 424,
+        "sha256": "53e1772e96474497db2011dc4fbf16993a52e3ca0c2c66845efdc848b2ceecdd"
+      },
+      {
+        "path": "/home/tux/nsealr/.restart-tools/goal/qh01-python-rgb-composition-implementation/packages/protocol/dist/limits.d.ts",
+        "bytes": 971,
+        "sha256": "96317130d407f4f0956b83e53156b7aaa08e178542ec7fa060faa02287356399"
+      },
+      {
+        "path": "/home/tux/nsealr/.restart-tools/goal/qh01-python-rgb-composition-implementation/packages/protocol/dist/limits.js",
+        "bytes": 957,
+        "sha256": "4d4571bb1a7e45beee1440d622df9fef907181ec4266f59bf05b17a1dae2dbe1"
+      },
+      {
+        "path": "/home/tux/nsealr/.restart-tools/goal/qh01-python-rgb-composition-implementation/packages/protocol/dist/protocol.d.ts",
+        "bytes": 759,
+        "sha256": "dd2148e3c0fe8c8423ead7de6aaf386c5f918e257066ad777dafa9298f7744eb"
+      },
+      {
+        "path": "/home/tux/nsealr/.restart-tools/goal/qh01-python-rgb-composition-implementation/packages/protocol/dist/protocol.js",
+        "bytes": 12092,
+        "sha256": "f71a1718d4dc83fdc56df8927e28651947525ffd1e92561b34c8f5938fdf506b"
+      },
+      {
+        "path": "/home/tux/nsealr/.restart-tools/goal/qh01-python-rgb-composition-implementation/packages/qr/dist/index.d.ts",
+        "bytes": 25,
+        "sha256": "d8a745ad49a5dbbb382d652463dec8d8b77f5d31fa21deec6c3e7c8e6378fa57"
+      },
+      {
+        "path": "/home/tux/nsealr/.restart-tools/goal/qh01-python-rgb-composition-implementation/packages/qr/dist/index.js",
+        "bytes": 25,
+        "sha256": "d8a745ad49a5dbbb382d652463dec8d8b77f5d31fa21deec6c3e7c8e6378fa57"
+      },
+      {
+        "path": "/home/tux/nsealr/.restart-tools/goal/qh01-python-rgb-composition-implementation/packages/qr/dist/qr.d.ts",
+        "bytes": 529,
+        "sha256": "739e6aa14c6121af0b90715f2b3e31cba8fd43c6b030a3a7d8d69b29d2bee981"
+      },
+      {
+        "path": "/home/tux/nsealr/.restart-tools/goal/qh01-python-rgb-composition-implementation/packages/qr/dist/qr.js",
+        "bytes": 9765,
+        "sha256": "33108e0956c3e223a9c9f2274031b921e650b50c3cf6209f3437ed7174150b99"
+      },
+      {
+        "path": "/home/tux/nsealr/.restart-tools/goal/qh01-python-rgb-composition-implementation/packages/transport/dist/index.d.ts",
+        "bytes": 32,
+        "sha256": "c3c91f41be5a7856ff257f58226cc3e7136b98efa7597567254aa62c56e266db"
+      },
+      {
+        "path": "/home/tux/nsealr/.restart-tools/goal/qh01-python-rgb-composition-implementation/packages/transport/dist/index.js",
+        "bytes": 32,
+        "sha256": "c3c91f41be5a7856ff257f58226cc3e7136b98efa7597567254aa62c56e266db"
+      },
+      {
+        "path": "/home/tux/nsealr/.restart-tools/goal/qh01-python-rgb-composition-implementation/packages/transport/dist/transport.d.ts",
+        "bytes": 4034,
+        "sha256": "abc7a8f391b5a0e1331a2244ecfc37f7d560f6ac3274176b7be13af290340119"
+      },
+      {
+        "path": "/home/tux/nsealr/.restart-tools/goal/qh01-python-rgb-composition-implementation/packages/transport/dist/transport.js",
+        "bytes": 25352,
+        "sha256": "cf56dba3e4791e4769e9a3c5037ab28b9a4028cd982f9a809ff1c809aabb36b5"
+      },
+      {
+        "path": "/home/tux/nsealr/.restart-tools/goal/qh01-python-rgb-composition-implementation/packages/framing/dist/index.d.ts",
+        "bytes": 29,
+        "sha256": "817643b76185153e84000fd927f54d2846d9bc1b61bb76b5c0d63678a5848adb"
+      },
+      {
+        "path": "/home/tux/nsealr/.restart-tools/goal/qh01-python-rgb-composition-implementation/packages/framing/dist/index.js",
+        "bytes": 29,
+        "sha256": "817643b76185153e84000fd927f54d2846d9bc1b61bb76b5c0d63678a5848adb"
+      },
+      {
+        "path": "/home/tux/nsealr/.restart-tools/goal/qh01-python-rgb-composition-implementation/packages/framing/dist/serial.d.ts",
+        "bytes": 341,
+        "sha256": "a8ff0b80c8216db8631f056274f43edaf7f97619cc0669b7858641505d79a967"
+      },
+      {
+        "path": "/home/tux/nsealr/.restart-tools/goal/qh01-python-rgb-composition-implementation/packages/framing/dist/serial.js",
+        "bytes": 3375,
+        "sha256": "707679e755d3429a820ef4d8b761d034f77d5d7ce5a5963c1112378d60fccdc6"
+      }
+    ],
+    "worker": {
+      "path": "/home/tux/nsealr/.restart-tools/goal/qh01-python-rgb-composition-implementation/apps/pi/qr-worker/target/release/nsealr-qr-worker",
+      "bytes": 668336,
+      "sha256": "313835a1b7675e2af6376a3a6ef13383f613be6ac77f20a2c305f681740a4fe3"
+    },
+    "worker_actual_producer": {
+      "role": "public RGB worker build, initialization v2, not hardware qualification",
+      "argv": [
+        "cargo",
+        "build",
+        "--manifest-path",
+        "apps/pi/qr-worker/Cargo.toml",
+        "--locked",
+        "--offline",
+        "--release",
+        "--message-format=json"
+      ],
+      "source": {
+        "apps/pi/qr-worker/Cargo.toml": "a0c4db1b67499608914d07df5c5d8a54bfc69970e4559829f4c5573858068e91",
+        "apps/pi/qr-worker/Cargo.lock": "d4dadbe7162e838039ef6a53dcd7addc71a32520836b2ddc189070fbe79c091a",
+        "apps/pi/qr-worker/src/main.rs": "e60b3bc2baec2eded7ee474e101cfa8debd1a88be76d6d7cffce31b4e3e1dcf1",
+        "apps/pi/qr-worker/rust-toolchain.toml": "6e90f2cf35aad6218e0d99f319101783cf5ce91cc62349dec0c7b357a420dabc",
+        ".cargo/config.toml": "98e1cf108d2b5aa2ff9d9fb6f58df4d0332df3a85411cf8c1249c615edecf625",
+        "rust-toolchain.toml": "6e90f2cf35aad6218e0d99f319101783cf5ce91cc62349dec0c7b357a420dabc"
+      },
+      "worker": "/home/tux/nsealr/.restart-tools/goal/qh01-python-rgb-composition-implementation/apps/pi/qr-worker/target/release/nsealr-qr-worker",
+      "sha256": "313835a1b7675e2af6376a3a6ef13383f613be6ac77f20a2c305f681740a4fe3",
+      "CARGO_TARGET_DIR": null
+    }
+  },
+  "tools": {
+    "python": {
+      "path": "/home/tux/nsealr/.restart-tools/goal/r00/tools/baseline/.work/final/.tools/python/bin/python3",
+      "bytes": 31009064,
+      "sha256": "eaaa308032c4aa063df5880c4c293cd458b4629d503fbc2c03ec163d71f7f790"
+    },
+    "node": {
+      "path": "/home/tux/nsealr/.restart-tools/goal/r00/tools/baseline/.work/final/.tools/node/bin/node",
+      "bytes": 126816376,
+      "sha256": "67ca5783febb8bf85736c79fcdd92c8d6d465a0eb2a082672bcdfa76a506751c"
+    }
+  },
+  "new_Rust_C_builds_or_installs_before_early_cases": 0
+}
