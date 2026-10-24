@@ -4,6 +4,18 @@ Date: 2026-10-23. This handoff gives navigation and recovery procedures, not a s
 
 ## Current software foundations and next dependency
 
+The latest accepted host composition is [actual mainBD after protected PR49](reviews/QH01-python-rgb-composition-adoption/actual-main-acceptance.json).
+Its original PR/main captures and fresh main-only source check are complete;
+do not poll or rerun them for navigation updates. The later automatic lifecycle
+candidate adds three refusal cases to the same normal Pi CI. Its [independent
+wrapper review](reviews/QH01-python-rgb-lifecycle-ci/report.md) is scoped to source
+and original proof. The new capture checker is undergoing its own affected review
+and correction before stable complete gates and protected integration. The
+next software dependency is a real request-aware engine response after RGB decode;
+the Native helper/timer prerequisite is separate and does not yet wire that path.
+Use the graph's QH01 checkpoint for exact current candidate and evidence. Physical
+kit/image/operator identification remains pending in the existing resource request.
+
 A02 source adoption, bounded anchor repair and closure passed normal protected
 integration and actual main CI. Its [handoff](A02/closure/handoff.md) and
 [result](A02/closure/result.json) preserve the original input/source roles and
