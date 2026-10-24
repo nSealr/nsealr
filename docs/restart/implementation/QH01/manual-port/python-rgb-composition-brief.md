@@ -779,3 +779,25 @@ Actual611 can stay in the proposed fixed <=947 artifact, with no precomputed sca
 After admission: freeze extracted source/guards/timer-control command, prove real
 5000 capability, then ONE opt-in combined fixture command/known C+O/W+Node closure.
 Existing positive/three negatives/211/70/39/15build remain unchanged; STOP here.
+
+## Admitted native-leaf prerequisite only
+
+Root admitted source0210 extraction, not the combined RGB/signing path: one
+side-effect-free fixture prepareNative export, unchanged legacy callsites/output/
+ordering/key/library/5000 semantics; explicit spawn/timer/report dependencies.
+Real timer references must be captured before client mock. Freeze source/prep/
+pure oracle, then one joined TSC6 ESM preparation, import-with-no-helpers control
+and actual5s pure timer check (zero C/O/W/signing); only afterwards ONE mandatory
+normal make pi-ci, reusing its legacy C cases and four current QH fixtures. No
+manual replay/fullmakeci/hosted/QH-engine wiring/process exception/framefile or
+new crypto. Preserve all failures; STOP distinct review after coherent proof.
+
+The prerequisite source/prep/oracle is frozen in proof/native-leaf-prerequisite/.
+The pure control captures real timers before mock/import, injects only MockChild
+without a PID, ticks synthetic5000 (client100 fires once, native callback0), then
+awaits exactly one real5000 callback and requires real monotonic elapsed>=5000ms
+with no lower tolerance. Simulated SIGKILL/close is explicitly not kernel child/EOF
+evidence. Existing helper body is reversible byte-equal under eight dependency
+substitutions; outer legacy caller is equal outside binding/import/timer capture.
+One joined normal-recipe TSC ESM emission precedes this zero-child control. No
+combined RGB/request-engine call or future QH process permission is wired.
