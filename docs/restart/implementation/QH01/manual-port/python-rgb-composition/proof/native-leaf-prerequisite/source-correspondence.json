@@ -1,0 +1,43 @@
+{
+  "role": "source-only reversible extraction proof before execution",
+  "base": "0210e6f5f32ac2ea7a0fbde13052c67798d51a2a",
+  "old_caller_sha256": "ebd17828c1b4058eee6628848d61e70f8f8bcfaaf2731ff2fd183679bd3a2eaa",
+  "old_normalized_leaf_sha256": "1ceb2aecb31ec63194563a184c13a385ef6124d50ab0b0876f6472ba1767a920",
+  "reversed_module_leaf_sha256": "1ceb2aecb31ec63194563a184c13a385ef6124d50ab0b0876f6472ba1767a920",
+  "leaf_equal_after_explicit_substitutions": true,
+  "caller_outside_helper_binding_import_timer_capture_byte_equal": true,
+  "substitutions": [
+    {
+      "old": "async function prepareNative(",
+      "new": "return async function prepareNative("
+    },
+    {
+      "old": "setTimeout(() => child.kill(\"SIGKILL\"), 5000)",
+      "new": "timers.setTimeout(() => child.kill(\"SIGKILL\"), 5000)"
+    },
+    {
+      "old": "children++;",
+      "new": "onSpawn();"
+    },
+    {
+      "old": "reaped = true; collected++; closedAt",
+      "new": "reaped = true; onCollected(); closedAt"
+    },
+    {
+      "old": "clearTimeout(safety);",
+      "new": "timers.clearTimeout(safety);"
+    },
+    {
+      "old": "console.log(JSON.stringify({ [firstGate ? \"first_owner_child_settlement\" : \"child_settlement\"]: { scope: firstGate ? \"first_owner_gate_C\" : readinessControls ? \"readiness_controls\" : \"actual_client\", pid: child.pid, code, signal,\n",
+      "new": "reportSettlement({ pid: child.pid, code, signal,\n"
+    },
+    {
+      "old": "request_to_close_ns: sentAt === undefined ? null : String(closedAt - sentAt) } }));",
+      "new": "request_to_close_ns: sentAt === undefined ? null : String(closedAt - sentAt) });"
+    },
+    {
+      "old": "reports.push(trace);\n      console.log(JSON.stringify({ [firstGate ? \"first_owner_native_observation\" : \"native_observation\"]: trace }));",
+      "new": "reportObservation(trace);"
+    }
+  ]
+}
