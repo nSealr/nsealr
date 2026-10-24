@@ -1,0 +1,11 @@
+{
+  "classification": "verification scope error, not product/test failure",
+  "original_command": "git diff --cached --name-only 5e17f9a957137c7d856f12bc08f5f795d3f858d8",
+  "original_assertion": "assert len(paths)==77,len(paths)",
+  "original_error": "AssertionError: 100",
+  "cause": "100 included77 product changes plus23 already committed precode documentation paths against base; reader failed before writing source-freeze.json",
+  "shell_observation": "Shell did not use fail-fast, so subsequent git add/commit created ad4ac14c; no verification PASS claimed, no build/sign/test executed",
+  "correction": "Explicitly exclude only the task documentation prefix, validate every remaining product path, then write inventory; corrected command uses set -e",
+  "corrected_source": "ad4ac14cb97f5ca272338d987d0fd5b46463e14f",
+  "corrected_product_paths": 77
+}
