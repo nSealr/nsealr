@@ -1,0 +1,222 @@
+{
+  "format": "nsealr-qh01-composition-integration-review-v1",
+  "verdict": "CHANGES_REQUESTED",
+  "findings": [
+    {
+      "id": "QH01-COMPOSITION-INTEGRATION-01",
+      "priority": "P2",
+      "classification": "Capture-checker full-scope oracle defect; not product failure",
+      "summary": "Global uniqueness of bridge_service_build rejects legitimate subsequent integration builds",
+      "witness": "one() collects all bridge_service_build objects and asserts len==1. Required integration_companion_service_context calls the existing build_pnpm_workspace(ROOT); that runs pnpm build with inherited stdout, and the changed builder emits a fresh valid record. This later record is legitimate but violates the global singleton assumption. One source witness is sufficient; full sequence/count derivation belongs to the assigned source owner.",
+      "source_bindings": [
+        {
+          "path": "docs/restart/implementation/QP01/host-coordinator/cold-delivery/verify-cold-capture.py",
+          "source": "5b32621d24bf06fe523f28f83ac51ebce6d870fc",
+          "sha256": "b07d28c28990a89750289b0bdf2d34adcb663b4c621d5012b6849bd63a2b1f56",
+          "lines_inclusive": [
+            [
+              95,
+              99
+            ]
+          ]
+        },
+        {
+          "path": "Makefile",
+          "source": "5b32621d24bf06fe523f28f83ac51ebce6d870fc",
+          "sha256": "4bab1e163d50ae90f3c882cc0a3df6d35bc0fb2e3919a0b28993f2a6cdb8ffd7",
+          "lines_inclusive": [
+            [
+              87,
+              105
+            ]
+          ]
+        },
+        {
+          "path": "tests/integration/run.py",
+          "source": "5b32621d24bf06fe523f28f83ac51ebce6d870fc",
+          "sha256": "14c8437843fedd32d5fa618f1d1b2fb2e4c46a7a0c8f158ed173cac513f8b808",
+          "lines_inclusive": [
+            [
+              16,
+              16
+            ],
+            [
+              30,
+              33
+            ]
+          ]
+        },
+        {
+          "path": "tests/integration/integration_companion_service_context.py",
+          "source": "5b32621d24bf06fe523f28f83ac51ebce6d870fc",
+          "sha256": "01c850f930bf8bca01c6778eb55e951d441aad300702702cd29e2ba5f2a4b151",
+          "lines_inclusive": [
+            [
+              17,
+              18
+            ],
+            [
+              140,
+              146
+            ]
+          ]
+        },
+        {
+          "path": "tests/integration/integration_support.py",
+          "source": "5b32621d24bf06fe523f28f83ac51ebce6d870fc",
+          "sha256": "56b0ccef0352fe5c0c013144fa59286ca5616a7a2620b17496b107f78b567121",
+          "lines_inclusive": [
+            [
+              46,
+              63
+            ],
+            [
+              79,
+              80
+            ]
+          ]
+        },
+        {
+          "path": "package.json",
+          "source": "5b32621d24bf06fe523f28f83ac51ebce6d870fc",
+          "sha256": "930d2a56579a1243cd13d32f19dc529dc18734faf4c1f1a4b335da77a2199b45",
+          "lines_inclusive": [
+            [
+              46,
+              46
+            ]
+          ]
+        },
+        {
+          "path": "tools/bridge/build_packages.mjs",
+          "source": "5b32621d24bf06fe523f28f83ac51ebce6d870fc",
+          "sha256": "8421f59976767fd84b1d77ab37a73c3251077fa9f279f0deef362bc292759c2c",
+          "lines_inclusive": [
+            [
+              81,
+              88
+            ],
+            [
+              96,
+              99
+            ]
+          ]
+        }
+      ],
+      "discovery": "Root identified repeated builds during the still-running complete gate before reviewer freeze; reviewer independently read the frozen source witness.",
+      "runtime_evidence_scope": "Independent positive+27 negatives concern only the original one-build early pi-ci log. No reviewer full-gate execution or additional mutation run. Root owns preservation of the completed full-log RED.",
+      "required_change": "Bind the composition to its actual preceding build and validate the legitimate source-required later build sequence without accepting arbitrary duplicates, suppressing builds, skipping tests or weakening old gates. Review the affected checker/oracle and pure controls before adoption."
+    }
+  ],
+  "candidate": "5b32621d24bf06fe523f28f83ac51ebce6d870fc",
+  "tree": "f2e9aceefd9fced53fdc803d26dd0cf2c7cf5034",
+  "reviewer_role": "Distinct affected source/metadata/capture reviewer; none of five changed executable files authored by reviewer",
+  "scope": {
+    "base": "b6d07a4aff913249a06bf1e7ea31cb6265ea0cc0",
+    "qualified_author_runtime_source": "8a80b256455deb8b9ae3a4e6115c13a3e64d328b",
+    "executable_source_bindings": [
+      {
+        "path": "docs/restart/implementation/QP01/request-engine/exchange.py",
+        "mode": "100644",
+        "kind": "blob",
+        "git_blob": "0bddf7830537f44d43935de1057a5814b94d929a",
+        "sha256": "9bcceb56c1a8324089db1b5b129679a357dc99ac751138be3eb703f70b48d12e"
+      },
+      {
+        "path": "tools/bridge/build_packages.mjs",
+        "mode": "100644",
+        "kind": "blob",
+        "git_blob": "1b40fd7bb0cc6a8d9ad9b42c6a48ae7fac63e875",
+        "sha256": "8421f59976767fd84b1d77ab37a73c3251077fa9f279f0deef362bc292759c2c"
+      },
+      {
+        "path": "apps/pi/tests/test_engine_adapter.py",
+        "mode": "100644",
+        "kind": "blob",
+        "git_blob": "d3a03e6f1c735476587afdfc6e0f37aa9cada126",
+        "sha256": "1736c960d01a27a26ae8f67abc69ad330c528027a99a72c39430e69bd2a27ef8"
+      },
+      {
+        "path": "docs/restart/implementation/QP01/host-coordinator/cold-delivery/verify-cold-capture.py",
+        "mode": "100644",
+        "kind": "blob",
+        "git_blob": "7bca0fcc7a16a38119e87b10b6cfc8c597dc74ef",
+        "sha256": "b07d28c28990a89750289b0bdf2d34adcb663b4c621d5012b6849bd63a2b1f56"
+      },
+      {
+        "path": "docs/restart/implementation/reviews/QH01-python-rgb-composition/test_capture_extension.py",
+        "mode": "100644",
+        "kind": "blob",
+        "git_blob": "84729bf38c895c4ae33d7dac6fa77e0464c809f8",
+        "sha256": "214d4072adeb5e0b2ee4e6bdeac034b04122f13323f8c124464f751d71bee6b5"
+      }
+    ],
+    "reused_review": "1e0453fe7af476275b749fbff116899093cbeced",
+    "reused_legacy_checker_sha256": "f1292809dcf594aee4b50820aa1e3f1d320a419ca6da55b88b314a5559a147df",
+    "not_self_reviewed": "5138 lifecycle-expectations is exact/informative only"
+  },
+  "observations": {
+    "builder_options_package_order_production_Bridge_unchanged": true,
+    "same_checkout_bridge_TS": 5,
+    "compiler_outputs": 10,
+    "dynamic_sources": 60,
+    "generated_inputs": 62,
+    "full_old_ci_prefix_and_failure_stop_preserved": true,
+    "Pi_methods_unchanged": true,
+    "legacy_checker_entire_AST_preserved_except_new_import_function_call": true,
+    "formal47_and_other45_task_records_unchanged": true,
+    "normal_ci_manifest_members_plus_self": [
+      12,
+      1
+    ],
+    "capture_manifest_members_plus_self": [
+      9,
+      1
+    ],
+    "archive_members": 91,
+    "old_source_proofs_not_relabelled": true,
+    "full_log_builder_oracle_valid": false,
+    "other_affected_source_metadata_checks_pass_scoped": true
+  },
+  "independent_execution": {
+    "command": "command.json",
+    "exit_code": 0,
+    "elapsed_seconds_bookkeeping_only": 0.3265258437022567,
+    "log_sha256": "63382b6d98cbe5bcb63bd23e207363f439187600bd9f13a161019330f9dc02ee",
+    "positive_blocks": 1,
+    "negative_mutations_rejected": 27,
+    "new_product_processes": 0,
+    "new_product_builds": 0,
+    "new_product_suites": 0,
+    "hosted_queries_or_CI": 0,
+    "result_sha256": "478c1b47715a7d7a120a19fb30a2768733a74e9c3406761b21739a98bd6e69bf",
+    "scope": "Original early one-build pi-ci block only; does not qualify full-log builder oracle"
+  },
+  "pending": [
+    "Correct finding QH01-COMPOSITION-INTEGRATION-01 and obtain distinct affected checker/oracle review",
+    "Complete stable-candidate gates owned separately by root",
+    "Protected PR and actual resulting-main validation before adoption",
+    "Composition timeout/scan-cancel/active-B3-cancel cases require separate admission and execution",
+    "Physical camera/display/kit/provider and release gates"
+  ],
+  "limits": [
+    "Host public-fixture integration/source evidence only; no component/task/release completion",
+    "Synthetic client0/99/100; real O8/shared4; C5000 unchanged",
+    "No owner-death or real quarantine recovery qualification from reporting mocks",
+    "No independent product replay here; original author8a normal pi-ci and reviewer1e045/b6 retain their original source identities",
+    "No compiler/ELF general reproducibility, ARM/Pi, key custody, production provider/default route or physical claim"
+  ],
+  "evidence": {
+    "report.md": "3ac4e2c3dc422802ad288d556b4310465e23083cf8ffa1d1bfcbaac3fb0ef2cd",
+    "checks.json": "f3480c0bc3a255418d585b85a0c462ba4b34cbd1248d9a1128d25d7b8506d232",
+    "inspect.py": "d56f4ba8e961b57c9d4c054972778ed09d776271b17c2acfa6c4eb03dca933f6",
+    "inspect-command.json": "38d49425e3d4adfa3374f1290d1211faaeb2d9623d8436ff704a77bbc7c70f38",
+    "inspect.stdout": "abce5d73eef6c61d27f3dda537420e74bf906fa1f145beb683cee7719396c0ad",
+    "inspect.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "proof-bindings.json": "59eac90f3d1987f94b9c1fd3c377fd4c349a98e2cf4b3daa4c497f53e12855ef",
+    "command.json": "e1139180835d79cbe2ffa2826c70a3ee796f5bd47bc0823af7d3564a48aad7f3",
+    "controls.json": "478c1b47715a7d7a120a19fb30a2768733a74e9c3406761b21739a98bd6e69bf",
+    "replay.stdout": "f8794da0b75ba414e1bd929e657efd3a594a754726bcde5416d95980b815f6f3",
+    "replay.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  }
+}
