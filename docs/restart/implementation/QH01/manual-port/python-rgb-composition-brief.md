@@ -142,3 +142,64 @@ Python/O timeout-killer, implicit recovery or destructor guarantee is admitted.
 Return the frozen source/command/result and STOP at that early checkpoint.
 No old39 replay, broad full-gate run or physical/default-provider qualification
 is admitted by this first positive checkpoint. General Rust rewrites stay deferred.
+
+## First implementation freeze — before code or composition spawn
+
+Owner retains root admission `d72b0f1d25823d461c576448d39064557336bee7`.
+The installed Node24.22.0 pure timer preflight passed: `mock.timers.enable({
+apis: ['setTimeout'] })`, a100ms timer does not fire at99, fires at100, and a
+cleared second timer stays inactive; reset succeeds. The official
+[Node24 test-runner documentation](https://nodejs.org/docs/latest-v24.x/api/test.html#timersenableenableoptions)
+currently identifies24.22.1; the versioned24.22.0 documentation URL was
+inaccessible to the web reader. API availability is grounded in the actual
+installed24.22.0 preflight and its bundled mock-timers source SHA256
+`06b114f37a3104e66a991de1c583a10df6fb12c2923cf21e01303fe8d1a2457b`, not an
+assumed version upgrade. No O/W/C or product integration ran in that preflight.
+
+Freeze one fixed Node child script and one Python parent invoker under the
+adjacent `python-rgb-composition/` prefix. Reuse implementation28's already
+qualified explicit W path/SHA and built JS modules only after checking their
+source inputs equal this checkout; no build/install is needed for this first run.
+The parent takes those trusted local paths before any request, never from IPC.
+
+Fixture-only ASCII JSON/LF IPC is v1, canonical compact objects with exact keys:
+Node stdout `present(frame259,timer_args[100],clock99)`, `scan(frame611)`, `close`,
+then `result(native_response_base64,timer evidence)`; at most4successful records.
+An error record may terminate a prefix, never count as success. Parent stdin to
+Node is exactly one `decoded(frame259)` record then EOF. Each record has `v` and
+`event` first. Exact ordered key suffixes are `present:[frame,timer_args,clock]`,
+`scan:[frame]`, `close:[]`, `result:[native_response_base64,timer_args,clear_calls,
+deadline_fires,clock_steps]`, `error:[name,message]`, `decoded:[frame]`; v is1,
+events are those literal strings and error strings are capped at256characters.
+Node output caps are2048bytes/record including LF,4096bytes total,
+and4096stderr bytes; parent reply cap512bytes including LF. Parsing rejects
+extra/duplicate keys, noncanonical input, wrong order/shape/fixture bytes, excess
+records and partial EOF. Caps are checked during reads, before parsing. Pipe
+data selects no paths, programs, keys or worker options.
+
+Only Node's setTimeout/associated clearTimeout are mocked. A transparent child
+observer records the actual unchanged client's100ms argument and actual clear;
+after that timer exists, tick99 and set the injected monotonic clock to99 before
+emitting present. Keep that synthetic time fixed during real Python/O/W work.
+After validated service completion and timer clear, tick1 to100 and require no
+deadline callback. No synthetic ticks affect O's actual8s/shared4s clocks.
+
+Python owns its runtime/op and Node Popen handle throughout a try/finally. On
+present, open B3, bind real ready/phase/live W ELF, send G, drive actual settlement,
+require O/W statuses0, all EOF and no owned FDs, then take and compare raw259 and
+parsed original request before sending decoded. Node scan uses only response611,
+the real manual dispatcher/client/native-message functions and selected fixture
+public key. Record exact IPC, actual statuses/ELF/FDs/EOF and native response.
+Final success requires Node wait4(raw0), stdout/stderr EOF and all parent pipe
+closure in addition to B3's known collection. Keep parent liveFDs unchanged.
+
+Any assertion, malformed/partial IPC, Node failure or refusal enters the same
+finally: invalidate/cancel active B3 and continue polling/draining owned handles
+until actual collection; successful settlement permits explicit close. Never
+kill Python/O or assume a failed assertion released children. A20s observation
+expiry or quarantine reports exact handles and retains the live parent/runtime
+without returning success/reuse; it is not a second cleanup deadline or recovery.
+Node refusal never controls the parent's lifetime. This is one fixed diagnostic
+test, not a general supervisor; unhandled external process death has no guarantee.
+Freeze source/inputs clean before ONE actual positive; preserve any RED and STOP
+at the first result before full gates or extension.
