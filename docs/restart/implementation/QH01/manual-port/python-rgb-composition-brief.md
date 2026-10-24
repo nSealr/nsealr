@@ -431,3 +431,11 @@ Frozen commands are targeted `pnpm build`, baseline unittest ProvisioningControl
 and existing test_provision.py (zero composition), then ONE `make pi-ci`. Same
 checkout inputs/default targets, baseline offline lock/store and existing wheels
 are prerequisites; any setup delta is recorded. No full make-ci or manual replay.
+
+Early normal integration on frozen8a80b256 passed: focused build, two ordering
+and five producer controls, then ONE mandatory make pi-ci exit0/45.048391s. The
+normal gate retained Pi211/70owner rows and emitted one new actual composition
+with current-checkout JS/packages/provisioned W, statuses0/EOF/FD closure and
+259/259/611 binding. The adjacent `proof/normal-ci/` preserves source qualification,
+actual records and raw command/log. No runtime source changed afterwards; no
+full make-ci, hosted run, manual replay or complete-component claim. STOP review.
