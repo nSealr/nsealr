@@ -1,10 +1,10 @@
 [package]
 name = "crypto-bigint"
-version = "0.7.5"
+version = "0.7.6"
 description = """
-Pure Rust implementation of a big integer library which has been designed from
-the ground-up for use in cryptographic applications. Provides constant-time,
-no_std-friendly implementations of modern formulas using const generics.
+Pure Rust implementation of a big integer library which has been designed from the ground-up for use
+in cryptographic applications. Provides constant-time, `no_std`/`no_alloc`-friendly implementations
+of modern formulas using const generics. Also includes optional support for heap-backed integers.
 """
 authors = ["RustCrypto Developers"]
 license = "Apache-2.0 OR MIT"
@@ -12,14 +12,14 @@ repository = "https://github.com/RustCrypto/crypto-bigint"
 categories = ["algorithms", "cryptography", "data-structures", "mathematics", "no-std"]
 keywords = ["arbitrary", "crypto", "bignum", "integer", "precision"]
 readme = "README.md"
-resolver = "2"
+resolver = "3"
 edition = "2024"
-rust-version = "1.85"
+rust-version = "1.87"
 exclude = [".clippy.toml", ".codecov.yml", ".github", ".gitignore"]
 
 [dependencies]
 cpubits = "0.1"
-ctutils = "0.4"
+ctutils = "0.4.5"
 num-traits = { version = "0.2.19", default-features = false }
 
 # optional dependencies
@@ -35,9 +35,9 @@ zeroize = { version = "1", optional = true, default-features = false }
 [dev-dependencies]
 chacha20 = { version = "0.10", default-features = false, features = ["rng"] }
 hex-literal = "1"
-num-bigint = "0.4"
+num-bigint = "0.5"
 num-integer = "0.1"
-num-modular = { version = "0.6", features = ["num-bigint", "num-integer", "num-traits"] }
+num-modular = { version = "0.7", features = ["num-bigint", "num-traits"] }
 rand_core = "0.10"
 
 [target.'cfg(any(unix, windows))'.dev-dependencies]
@@ -78,7 +78,6 @@ cast_precision_loss = "warn"
 cast_sign_loss = "warn"
 checked_conversions = "warn"
 doc_markdown = "warn"
-from_iter_instead_of_collect = "warn"
 implicit_saturating_sub = "warn"
 integer_division_remainder_used = "warn" # not constant time (see Kyberslash)
 manual_assert = "warn"

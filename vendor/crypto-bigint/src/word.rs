@@ -6,6 +6,13 @@ use ctutils::Choice;
 cpubits::cpubits! {
     16 => { compile_error!("this crate builds on 32-bit and 64-bit platforms only") }
     32 => {
+        pub(crate) use ctutils::primitives::{
+            borrowing_sub_u32 as borrowing_sub,
+            leading_zeros_u32 as leading_zeros,
+            overflowing_add_u64 as overflowing_add_wide,
+            trailing_zeros_u32 as trailing_zeros,
+        };
+
         /// Inner integer type that the [`Limb`] newtype wraps.
         pub type Word = u32;
 
@@ -29,8 +36,21 @@ cpubits::cpubits! {
         pub(crate) const fn choice_from_wide_le(x: WideWord, y: WideWord) -> Choice {
             Choice::from_u64_le(x, y)
         }
+
+        /// Returns the truthy value if `x < y` and the falsy value otherwise.
+        #[inline]
+        pub(crate) const fn choice_from_wide_lt(x: WideWord, y: WideWord) -> Choice {
+            Choice::from_u64_lt(x, y)
+        }
     }
     64 => {
+        pub(crate) use ctutils::primitives::{
+            borrowing_sub_u64 as borrowing_sub,
+            leading_zeros_u64 as leading_zeros,
+            overflowing_add_u128 as overflowing_add_wide,
+            trailing_zeros_u64 as trailing_zeros,
+        };
+
         /// Unsigned integer type that the [`Limb`][`crate::Limb`] newtype wraps.
         pub type Word = u64;
 
@@ -55,6 +75,11 @@ cpubits::cpubits! {
             Choice::from_u128_le(x, y)
         }
 
+        /// Returns the truthy value if `x < y` and the falsy value otherwise.
+        #[inline]
+        pub(crate) const fn choice_from_wide_lt(x: WideWord, y: WideWord) -> Choice {
+            Choice::from_u128_lt(x, y)
+        }
     }
 }
 
@@ -67,7 +92,10 @@ pub(crate) const fn choice_from_eq(x: Word, y: Word) -> Choice {
 /// Returns the truthy value if `x == y`, and the falsy value otherwise.
 #[inline]
 pub(crate) const fn choice_from_wide_eq(x: WideWord, y: WideWord) -> Choice {
-    choice_from_wide_nz(x ^ y).not()
+    cpubits::cpubits! {
+        32 => { Choice::from_u64_eq(x, y) }
+        64 => { Choice::from_u128_eq(x, y) }
+    }
 }
 
 /// Returns the truthy value if `x > y`, and the falsy value otherwise.
@@ -98,13 +126,10 @@ pub(crate) const fn choice_from_msb(value: Word) -> Choice {
 /// Returns the truthy value if `value != 0`, and the falsy value otherwise.
 #[inline]
 pub(crate) const fn choice_from_nz(value: Word) -> Choice {
-    choice_from_lsb((value | value.wrapping_neg()) >> (Word::BITS - 1))
-}
-
-/// Returns the truthy value if `value != 0`, and the falsy value otherwise.
-#[inline]
-pub(crate) const fn choice_from_wide_nz(value: WideWord) -> Choice {
-    choice_from_lsb(((value | value.wrapping_neg()) >> (WideWord::BITS - 1)) as Word)
+    cpubits::cpubits! {
+        32 => { Choice::from_u32_nz(value) }
+        64 => { Choice::from_u64_nz(value) }
+    }
 }
 
 /// Return `b` if `self` is truthy, otherwise return `a`.
@@ -126,7 +151,7 @@ pub(crate) const fn select_wide(a: WideWord, b: WideWord, choice: Choice) -> Wid
 /// - `Word::MAX` for `Choice::TRUE`
 #[inline]
 pub(crate) const fn choice_to_mask(choice: Choice) -> Word {
-    (choice.to_u8_vartime() as Word).wrapping_neg()
+    (choice.to_u8() as Word).wrapping_neg()
 }
 
 /// Create a `WideWord`-sized bitmask.
@@ -136,7 +161,7 @@ pub(crate) const fn choice_to_mask(choice: Choice) -> Word {
 /// - `Word::MAX` for `Choice::TRUE`
 #[inline]
 pub(crate) const fn choice_to_wide_mask(choice: Choice) -> WideWord {
-    (choice.to_u8_vartime() as WideWord).wrapping_neg()
+    (choice.to_u8() as WideWord).wrapping_neg()
 }
 
 #[inline(always)]
