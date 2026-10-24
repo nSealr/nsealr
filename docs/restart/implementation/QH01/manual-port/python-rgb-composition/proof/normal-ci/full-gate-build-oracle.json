@@ -1,0 +1,506 @@
+{
+  "format": "nsealr-qh01-full-gate-build-oracle-v1",
+  "role": "source-derived expectation only; no runtime/log-derived acceptance",
+  "author_source": "e9e198a077022671be95a59cf50ce4056f7b225e",
+  "root_full_gate_source": "5b32621d24bf06fe523f28f83ac51ebce6d870fc",
+  "all_referenced_postimages_byteexact_between_sources": true,
+  "observed_product_runs_for_this_oracle": 0,
+  "incomplete_root_log_read": false,
+  "invocation_scope": {
+    "command": [
+      "make",
+      "ci"
+    ],
+    "cwd": "REPOSITORY_ROOT",
+    "requires": "successful serial invocation, no -j/parallel MAKEFLAGS and no externally inserted build commands",
+    "partial_or_failed_run": "not a completed PASS; do not infer or relax totals from progress",
+    "early_make_pi_ci_total": 1,
+    "completed_full_make_ci_total": 15,
+    "before_qh01_case": 1,
+    "after_qh01_case": 14
+  },
+  "initial_build": {
+    "build_ordinal": 1,
+    "make_target": "bridge-ci",
+    "make_lines": [
+      87,
+      88,
+      90,
+      105
+    ],
+    "outer_command": [
+      "pnpm",
+      "run",
+      "ci"
+    ],
+    "package_script_chain": "package.json ci begins pnpm build; build is node tools/bridge/build_packages.mjs",
+    "relative_order": "before pi-ci producer/client/one composition and before integration-tests/product-gates/integration",
+    "deduplication": "bridge-ci is one prerequisite node of the same make invocation, even though pi-ci also depends on it; no second pre-case build is authorized"
+  },
+  "post_case_callsites": [
+    {
+      "build_ordinal": 2,
+      "integration_position": 3,
+      "original_recipe": 3,
+      "module": "integration_companion_fixtures",
+      "call_line": 90
+    },
+    {
+      "build_ordinal": 3,
+      "integration_position": 4,
+      "original_recipe": 4,
+      "module": "integration_companion_policy_cli",
+      "call_line": 137
+    },
+    {
+      "build_ordinal": 4,
+      "integration_position": 5,
+      "original_recipe": 5,
+      "module": "integration_companion_nip46_cli",
+      "call_line": 562
+    },
+    {
+      "build_ordinal": 5,
+      "integration_position": 6,
+      "original_recipe": 6,
+      "module": "integration_companion_serial_frame_cli",
+      "call_line": 129
+    },
+    {
+      "build_ordinal": 6,
+      "integration_position": 7,
+      "original_recipe": 7,
+      "module": "integration_companion_service_context",
+      "call_line": 146
+    },
+    {
+      "build_ordinal": 7,
+      "integration_position": 8,
+      "original_recipe": 8,
+      "module": "integration_companion_route_identity",
+      "call_line": 160
+    },
+    {
+      "build_ordinal": 8,
+      "integration_position": 9,
+      "original_recipe": 9,
+      "module": "integration_companion_sdk_browser",
+      "call_line": 71
+    },
+    {
+      "build_ordinal": 9,
+      "integration_position": 10,
+      "original_recipe": 10,
+      "module": "integration_browser_extension_package_plan",
+      "call_line": 220
+    },
+    {
+      "build_ordinal": 10,
+      "integration_position": 11,
+      "original_recipe": 11,
+      "module": "integration_browser_extension_package_build",
+      "call_line": 801
+    },
+    {
+      "build_ordinal": 11,
+      "integration_position": 12,
+      "original_recipe": 12,
+      "module": "integration_browser_extension_origin_permission_cli",
+      "call_line": 133
+    },
+    {
+      "build_ordinal": 12,
+      "integration_position": 13,
+      "original_recipe": 13,
+      "module": "integration_browser_extension_origin_review_control",
+      "call_line": 109
+    },
+    {
+      "build_ordinal": 13,
+      "integration_position": 14,
+      "original_recipe": 14,
+      "module": "integration_browser_extension_origin_approval_control",
+      "call_line": 149
+    },
+    {
+      "build_ordinal": 14,
+      "integration_position": 15,
+      "original_recipe": 15,
+      "module": "integration_browser_native_messaging_manifest",
+      "call_line": 216
+    },
+    {
+      "build_ordinal": 15,
+      "integration_position": 17,
+      "original_recipe": 19,
+      "module": "integration_vault_companion",
+      "call_line": 539
+    }
+  ],
+  "integration_steps_without_build": [
+    {
+      "integration_position": 1,
+      "original_recipe": 1,
+      "module": "check_fixture_snapshots"
+    },
+    {
+      "integration_position": 2,
+      "original_recipe": 2,
+      "module": "integration_feature_matrix"
+    },
+    {
+      "integration_position": 16,
+      "original_recipe": 17,
+      "module": "integration_raspberry_hardware_probe"
+    }
+  ],
+  "common_build_chain": {
+    "runner": "run.py31-33 launches each selected module once, serially, cwd ROOT, check=True",
+    "module_call": "one unconditional top-level main() build_pnpm_workspace(COMPANION), COMPANION=ROOT",
+    "helper": "integration_support.py79-80 -> run_command([pnpm,build],ROOT)",
+    "execution": "helper55-62: pinned_command, cwd ROOT, check=True, capture_output=False by default; stdout/stderr inherited",
+    "version_gate": "pinned pnpm10.33.4 checked by helper25-30; --version is not a build",
+    "package_entry": "package.json46: node tools/bridge/build_packages.mjs",
+    "emitter": "builder99 exactly one recordBridge=true service invocation per whole build, after package builds96-98",
+    "cwd": "REPOSITORY_ROOT for all15 emissions",
+    "record_key": "bridge_service_build",
+    "record_v": 1,
+    "compiler_argv": [
+      "pnpm",
+      "exec",
+      "tsc",
+      "--ignoreConfig",
+      "--target",
+      "ES2022",
+      "--module",
+      "NodeNext",
+      "--moduleResolution",
+      "NodeNext",
+      "--strict",
+      "--esModuleInterop",
+      "--forceConsistentCasingInFileNames",
+      "--skipLibCheck",
+      "--resolveJsonModule",
+      "--types",
+      "node",
+      "--declaration",
+      "--rootDir",
+      "apps/bridge/service/src",
+      "--outDir",
+      "apps/bridge/service/dist",
+      "apps/bridge/service/src/context.ts",
+      "apps/bridge/service/src/drivers.ts",
+      "apps/bridge/service/src/index.ts",
+      "apps/bridge/service/src/manifest.ts",
+      "apps/bridge/service/src/manual-qr.ts"
+    ],
+    "five_input_sha256": {
+      "apps/bridge/service/src/context.ts": "def1335b2cac999457edceb31889b19a3882c9ddb44ab80b0f3d443069a5f1c7",
+      "apps/bridge/service/src/drivers.ts": "f70e910981e6acbc209384efff42afdb7216e715330b761bd65a912a5a58f47f",
+      "apps/bridge/service/src/index.ts": "f50795d7ed2007e5569e2f728734831949728c1a97113091644b72f3cd5fe721",
+      "apps/bridge/service/src/manifest.ts": "1e5321e5e03e4319e33b7df33c02f6634c8b5922d1e50a8e6aa1749ba9e38d3b",
+      "apps/bridge/service/src/manual-qr.ts": "d2c9aa73f723739a5682f0a2a4b6c88f4b319a70d879766fe7b8f862ee5e82f9"
+    },
+    "ten_output_paths": [
+      "apps/bridge/service/dist/context.js",
+      "apps/bridge/service/dist/context.d.ts",
+      "apps/bridge/service/dist/drivers.js",
+      "apps/bridge/service/dist/drivers.d.ts",
+      "apps/bridge/service/dist/index.js",
+      "apps/bridge/service/dist/index.d.ts",
+      "apps/bridge/service/dist/manifest.js",
+      "apps/bridge/service/dist/manifest.d.ts",
+      "apps/bridge/service/dist/manual-qr.js",
+      "apps/bridge/service/dist/manual-qr.d.ts"
+    ]
+  },
+  "non_build_exclusions": {
+    "integration_unit_build_control": "test_integration_support.py65 patches run_command, so its line66 helper call does not spawn pnpm or emit a build record",
+    "no_unit_module_main_calls": "the integration test files do not invoke the retained product main() entrypoints; their __main__ guards invoke unittest only",
+    "optional_chromium": "tests/integration/optional/browser_extension_chromium_smoke.py is not selected by PRODUCT_STEPS and authorizes no extra build here",
+    "step16": "make setup runs in apps/pi and then its public hardware-probe CLI; no root pnpm build",
+    "browser_package_builds": "package-plan/package-build/package-verify commands are different package scripts; they do not invoke this root build_packages emitter"
+  },
+  "cross_binding_rules": [
+    "Require exactly15 individual record occurrences; never collapse identical JSON objects or accept arbitrary >=1 counts.",
+    "Require exactly one record before qh01_composition_command/case; the sole qh01 case precedes the first retained-integration marker.",
+    "Require exactly the17 unique ordered runner markers from PRODUCT_STEPS. For each marker-to-next-marker interval require one build only at positions3..15 and17; require zero at1,2,16 and after the final All17 completion line.",
+    "A second identical record inside any authorized interval is an unauthorized duplicate; a missing record cannot be compensated by another interval.",
+    "For EACH of the15 records require v1/expected role, exact current-root cwd and compiler argv, actual status0/signal null/error null, pinned compiler version/path/hash and source_before==source_after equal all five current Git inputs.",
+    "For EACH record require exactly the ten current service JS/declaration output paths; cross-bind ALL their hashes to the same values consumed by the sole case generated_before/generated_after, not merely the first or last build.",
+    "Preserve all source/worker/259/611/key/timer/collection/Pi211/70/39 checks. Later legitimate recompiles do not authorize extra composition cases or weaker phase/settlement assertions.",
+    "The v1 build payload has no per-call unique execution ID. Trusted complete-run provenance plus interval/order/cardinality constraints are required; source analysis alone is not a runtime attestation."
+  ],
+  "source_references": {
+    "Makefile": {
+      "sha256": "4bab1e163d50ae90f3c882cc0a3df6d35bc0fb2e3919a0b28993f2a6cdb8ffd7",
+      "lines": [
+        87,
+        88,
+        90,
+        91,
+        92,
+        94,
+        95,
+        97,
+        98,
+        105
+      ]
+    },
+    "package.json": {
+      "sha256": "930d2a56579a1243cd13d32f19dc529dc18734faf4c1f1a4b335da77a2199b45",
+      "lines": [
+        46,
+        47
+      ]
+    },
+    "tools/bridge/build_packages.mjs": {
+      "sha256": "8421f59976767fd84b1d77ab37a73c3251077fa9f279f0deef362bc292759c2c",
+      "lines": [
+        42,
+        46,
+        47,
+        50,
+        75,
+        76,
+        81,
+        89,
+        91,
+        96,
+        99
+      ]
+    },
+    "tools/bridge/package_set.mjs": {
+      "sha256": "d56d9b89cc42d5432171e6439428a9dcb695a99691679c460cf159284651e14b",
+      "lines": [
+        8,
+        65,
+        66,
+        69,
+        70,
+        71,
+        72
+      ]
+    },
+    "tests/integration/run.py": {
+      "sha256": "14c8437843fedd32d5fa618f1d1b2fb2e4c46a7a0c8f158ed173cac513f8b808",
+      "lines": [
+        9,
+        27,
+        30,
+        31,
+        32,
+        33,
+        34
+      ]
+    },
+    "tests/integration/integration_support.py": {
+      "sha256": "56b0ccef0352fe5c0c013144fa59286ca5616a7a2620b17496b107f78b567121",
+      "lines": [
+        25,
+        27,
+        28,
+        30,
+        46,
+        55,
+        57,
+        58,
+        59,
+        73,
+        76,
+        79,
+        80
+      ]
+    },
+    "tests/integration/test_integration_support.py": {
+      "sha256": "b0fc41e3d8c7269f80542c11b8c966589ec21f17318f4d0eb5c69088496433ad",
+      "lines": [
+        61,
+        65,
+        66,
+        69
+      ]
+    },
+    "docs/restart/implementation/QP01/request-engine/exchange.py": {
+      "sha256": "9bcceb56c1a8324089db1b5b129679a357dc99ac751138be3eb703f70b48d12e",
+      "lines": [
+        85,
+        91,
+        93,
+        94,
+        96,
+        98,
+        145,
+        147,
+        151
+      ]
+    },
+    "apps/pi/Makefile": {
+      "sha256": "58e15e7e370b16b658019fe4ae835143a375cce38882ef37ffe0b814fc1aafc3",
+      "lines": [
+        6,
+        7,
+        8,
+        9,
+        10
+      ]
+    },
+    "tests/integration/check_fixture_snapshots.py": {
+      "sha256": "aa4b22679d957cbf829f86ad84477b3759b81fa6a55b92cc7558dabe420416cd",
+      "lines": [
+        7,
+        8,
+        9
+      ]
+    },
+    "tests/integration/integration_feature_matrix.py": {
+      "sha256": "787b13d0a305b9e77e6bb8810cc979818dd73ce2657c15bb15903dbc311123c1",
+      "lines": [
+        60,
+        63,
+        64
+      ]
+    },
+    "tests/integration/integration_companion_fixtures.py": {
+      "sha256": "6a97cc5cacc6a38b3731955db4bf557b40a5a5063629391a0b9bb17a98a6a331",
+      "lines": [
+        16,
+        17,
+        84,
+        90
+      ]
+    },
+    "tests/integration/integration_companion_policy_cli.py": {
+      "sha256": "76492403427863141a654720352ee23b8ea31969da868d36e4c8d7342c06355e",
+      "lines": [
+        19,
+        20,
+        127,
+        137
+      ]
+    },
+    "tests/integration/integration_companion_nip46_cli.py": {
+      "sha256": "e7b6baa72fd5fed29d91b7d27600e3a584e8967a19fdbb592b088037bfaad7b3",
+      "lines": [
+        19,
+        20,
+        556,
+        562
+      ]
+    },
+    "tests/integration/integration_companion_serial_frame_cli.py": {
+      "sha256": "fc92048fa6ba13f6040f112dfc155f7e8b0f3b9305036b48659155be13b95be2",
+      "lines": [
+        21,
+        22,
+        117,
+        129
+      ]
+    },
+    "tests/integration/integration_companion_service_context.py": {
+      "sha256": "01c850f930bf8bca01c6778eb55e951d441aad300702702cd29e2ba5f2a4b151",
+      "lines": [
+        17,
+        18,
+        140,
+        146
+      ]
+    },
+    "tests/integration/integration_companion_route_identity.py": {
+      "sha256": "63154592f675a35a24727a87b2ecf867a553fd75b6b42cb52a4e47a71a9c40e3",
+      "lines": [
+        17,
+        18,
+        154,
+        160
+      ]
+    },
+    "tests/integration/integration_companion_sdk_browser.py": {
+      "sha256": "98275a504db2c0cdac438cb021ad3eb52d6ce0502a54872c85de60a3bd4bca51",
+      "lines": [
+        17,
+        18,
+        66,
+        71
+      ]
+    },
+    "tests/integration/integration_browser_extension_package_plan.py": {
+      "sha256": "6526c8489c7bb9f9ee72b4b03dce5b944bfb26afc7554db63267d8d33b8795cb",
+      "lines": [
+        30,
+        31,
+        215,
+        220
+      ]
+    },
+    "tests/integration/integration_browser_extension_package_build.py": {
+      "sha256": "bdd2c37af5ed57e7b0f5bcb6b3d90926337cd6041145aca1818d90ba6f724178",
+      "lines": [
+        44,
+        45,
+        796,
+        801
+      ]
+    },
+    "tests/integration/integration_browser_extension_origin_permission_cli.py": {
+      "sha256": "b2602f197cf58beb4ddc3508aac587382252148fd025e34863237298e04016f3",
+      "lines": [
+        34,
+        35,
+        128,
+        133
+      ]
+    },
+    "tests/integration/integration_browser_extension_origin_review_control.py": {
+      "sha256": "a10b084599671793d7cc212f56412c3f864aa574c7eef33ab6bf7590926e8bf4",
+      "lines": [
+        15,
+        16,
+        104,
+        109
+      ]
+    },
+    "tests/integration/integration_browser_extension_origin_approval_control.py": {
+      "sha256": "93d7d8b6475c068ab6247bb60fcbb1de1ce62a45b29db1812f878e2f6d6782fa",
+      "lines": [
+        15,
+        16,
+        144,
+        149
+      ]
+    },
+    "tests/integration/integration_browser_native_messaging_manifest.py": {
+      "sha256": "6c91da03c948cd230acafdc43710b3f42528c1c2a2ebbd1dc5c7c6a0eb5c88f2",
+      "lines": [
+        39,
+        40,
+        211,
+        216
+      ]
+    },
+    "tests/integration/integration_raspberry_hardware_probe.py": {
+      "sha256": "ce932198ab5684e5975bc5970dac51910f64c1967e2c2172ae0e67dcf4208f33",
+      "lines": [
+        17,
+        18,
+        56,
+        60,
+        63,
+        64
+      ]
+    },
+    "tests/integration/integration_vault_companion.py": {
+      "sha256": "fd94d4aea3310fcd8227f5b22b2708db520e6810b6b3d7c0fa00d18a1e1e0089",
+      "lines": [
+        17,
+        18,
+        533,
+        539
+      ]
+    }
+  },
+  "limits": [
+    "No checker, builder, test, threshold, runtime, CI observer or historical proof was modified.",
+    "No final root full-gate result is inferred; root alone owns its active run and completed capture validation."
+  ]
+}
