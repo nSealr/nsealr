@@ -879,3 +879,15 @@ Pre-execution source clarification: opt-in Node receives an explicit Python
 os.environ snapshot fixed during initialization before RGB/Node, then its C env
 is frozen with the three trusted native overrides. No ambient late inheritance,
 process-global environment mutation or preexec_fn is used; old cases unchanged.
+
+Root accepted preexecb147 and the distinct security4f/a40 component ONLY for
+this host experiment; root full/protected/main remain pending. Four security
+commits were imported with rename inference disabled:77product/112proof exact,
+no deletions, core/vendor/locks equal4f; twoharness exacte132 and W6inputs/module
+source/compiler receipt unchanged. One existing locked/offline build_artifact
+call produced650592B ELF SHA5ab3e09153a94b79c1ed8fc257f54678aa3cfff3a3cd9665e50788f252821d4e
+in this root; old98d is forbidden. No W/TSC build or fixture run occurred yet.
+resource-freeze.json now supplies actual native path/SHA and two exact commands;
+original NULL source snapshot stays historical. Commit/push/checkpoint precedes
+ONE positive, then only ifPASS ONE fixed loadedSHA refusal; firstRED stops. Only
+bothPASS/sourcesunchanged admit ONE normalmakepi-ci; no full/hosted/manual replay.
