@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 import { spawnSync } from "node:child_process";
-import { readdirSync, rmSync, statSync } from "node:fs";
+import { createHash } from "node:crypto";
+import { readdirSync, readFileSync, realpathSync, rmSync, statSync } from "node:fs";
 import { join, relative } from "node:path";
 import { packageManagerCommand, root } from "./package_set.mjs";
 
@@ -34,14 +35,17 @@ function collectSources(directory) {
   return sources.sort();
 }
 
-function runTsc(packageDir) {
-  const sourceDir = join(root, "packages", packageDir, "src");
-  const outDir = join(root, "packages", packageDir, "dist");
+function hashes(paths) {
+  return Object.fromEntries(paths.map((path) => [path, createHash("sha256").update(readFileSync(join(root, path))).digest("hex")]));
+}
+
+function runTsc(sourceDir, outDir, recordBridge = false) {
   if (!statSync(sourceDir).isDirectory()) {
-    throw new Error(`missing source directory for ${packageDir}`);
+    throw new Error(`missing source directory ${relative(root, sourceDir)}`);
   }
   rmSync(outDir, { recursive: true, force: true });
   const sourceFiles = collectSources(sourceDir).map((path) => relative(root, path));
+  const before = recordBridge ? hashes(sourceFiles) : undefined;
   const packageManager = packageManagerCommand();
   const args = [
     ...packageManager.prefixArgs,
@@ -69,14 +73,30 @@ function runTsc(packageDir) {
     ...sourceFiles
   ];
   const result = spawnSync(packageManager.command, args, { cwd: root, env: packageManager.env, stdio: "inherit" });
+  if (recordBridge) {
+    const after = hashes(sourceFiles);
+    const outputFiles = sourceFiles.flatMap((path) => [".js", ".d.ts"].map((suffix) =>
+      relative(root, join(outDir, relative(sourceDir, join(root, path)).replace(/\.ts$/u, suffix)))));
+    const compiler = realpathSync(join(root, "node_modules/typescript/bin/tsc"));
+    console.log("\n" + JSON.stringify({ bridge_service_build: {
+      v: 1, role: "current_checkout_compiler_artifacts_only", argv: [packageManager.command, ...args], cwd: root,
+      compiler: { path: compiler, version: JSON.parse(readFileSync(join(root, "node_modules/typescript/package.json"), "utf8")).version,
+        sha256: createHash("sha256").update(readFileSync(compiler)).digest("hex") },
+      status: result.status, signal: result.signal,
+      error: result.error ? { name: result.error.name, message: result.error.message } : null,
+      source_before: before, source_after: after, outputs: result.status === 0 ? hashes(outputFiles) : {}
+    } }));
+    if (JSON.stringify(before) !== JSON.stringify(after)) throw new Error("Bridge source changed during compilation");
+  }
   if (result.status !== 0) {
     process.exit(result.status ?? 1);
   }
 }
 
 for (const packageDir of packageOrder) {
-  runTsc(packageDir);
+  runTsc(join(root, "packages", packageDir, "src"), join(root, "packages", packageDir, "dist"));
 }
+runTsc(join(root, "apps/bridge/service/src"), join(root, "apps/bridge/service/dist"), true);
 
 await import("./bundle_sdk.mjs");
 console.log("nSealr package build artifacts generated");
