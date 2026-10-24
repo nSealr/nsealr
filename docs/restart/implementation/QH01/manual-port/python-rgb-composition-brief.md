@@ -904,3 +904,64 @@ manual/full/hosted run. proof/request-engine-opt-in/ retains originals and actua
 artifacts/source/limits. Security reviewed only for this host experiment; complete
 protected/main adoption root-owned, no physical/default/provider claim. STOP
 distinct runtime review; existing timeout/cancel evidence is not this new seam.
+
+## Admitted fresh-checkout automatic engine integration — before execution
+
+Baseline is actual-main6b0a57ae/tree0081; mainCI40065456634 is ROOT-pending at
+assignment, not observed/passed here. Only the eight named author commits were
+selected with rename inference disabled; the77 corrected product postimages
+already on main remain exact4f, without importing those four R00 commits again.
+The five selected code files initially equal25b;37 distinct review files from
+b219/b147/7cb retain exact Git blobs/modes and original source identities.
+
+Append exactly TWO automatic cases after the existing positive+3lifecycle cases:
+fixture_request_engine, then fixture_request_engine_loaded_sha_refusal. Same
+provisioned W/native path+SHA/env throughout; no extra/per-case Rust/W build.
+Legacy14/readiness5/Pi211/owner70/first39+62/separateattention6/oldfourQH and
+15Bridgebuild oracle remain. No default provider, key/crypto/framing/budget change.
+
+ONE joined current-root pnpm exec tsc prepares only native-leaf.ts with existing
+TS6.0.3 NodeNext/ES2022 strict/declaration recipe. A fresh temp module/package.json
+(type:module) and preparation.json are reused by both new calls, never old /goal
+paths or a hardcoded generated hash. Compiler path/version/SHA, argv/cwd/status,
+three source inputs before/after, JS+d.ts actual path/bytes/SHA and package context
+are bound in qh01_request_engine_build. An LF-delimited build_command precedes
+execution; failures persist temp outputs and emit build_failure, never a PASS.
+Both cases receive explicit --engine-preparation plus actual native/module inputs
+and the existing trusted fixture enum; refusal adds only --engine-refusal.
+
+Use the existing common runner/extractor, with qh01_request_engine_command/result/
+case namespaces distinct from old records. Case ids are the two fixed ids above;
+actual.case remains fixture_request_engine and actual.mode distinguishes positive
+vs loaded-sha-refusal. Case trace binds actual result/collection, frames and parsed
+request, initialization, C code/signal/close/outcome/FDs, full31page observation
+(or null only in refusal), actual refusal (or null only in positive), actual
+preparation receipt and unchanged post-case artifacts. Native611/scanned611 come
+from the C result; refusal requires no observation/response, not empty fake files.
+No rawCwait, decoder counter or public clientAbort API is invented.
+
+Existing two ordering tests keep every old9-entry prefix assertion/env/cwd/check/
+first-full-Pi-failure stop. New suffix is one preparation plus two case calls,
+12entries including the original build sentinel; mocks remain explicitly synthetic
+and emit no passing runtime records. Pi method count stays211. Source-aware
+capture extension is root-owned after this schema freeze, not duplicated here.
+
+Success deletes each case only after actual known O/W/C/Node collection and trace
+emission, then deletes the shared preparation after BOTH succeed. Failure retains
+both output/preparation; unknown exact owner/invoker stays live under unchanged
+attention hold, without Python/O kill or restart. Engine512/parentreply512,
+Node2048/4096/5, realO8/shared4/C5000 and syntheticclient100 remain exact.
+
+First future integration is one normal make pi-ci from a fresh checkout with its
+required setup/default targets and one joined helper preparation, then6QH cases.
+Root must first inspect frozen source/prep/schema; no new TSC/O/W/C/Pi/full run
+is performed here. Prior static/runtime proof remains source-specific historical
+proof, not a new replay or physical/component/release qualification.
+
+Root subsequently reported complete actual-main6b qualification (PR50/main
+40065456634/check120787645016/app15368, adoption29aa1aa2); no CI observation
+was performed here. The earlier pending-at-assignment snapshot remains dated
+truth and does not relabel25b/7cb. Source/prep/schema are now frozen under
+proof/request-engine-ci/, including exact compiler/case namespace keys, ids,
+commands, cleanup and preserved oracles. No new TSC/O/W/C/Pi/full or test
+execution yet; STOP for root producer-format/expectation check.
