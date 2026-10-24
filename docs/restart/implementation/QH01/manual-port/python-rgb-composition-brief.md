@@ -526,3 +526,72 @@ Pi211/70owner records/39final cases/five producer/six pure controls remain.
 source correspondence and limits. Three negatives are dedicated commands, not
 claimed automatically called by normal CI. No further runtime source change,
 full make-ci/hosted run or component/physical/release claim; STOP distinct review.
+
+## Proposed automatic lifecycle trace — schema only, before code
+
+New CI branch starts at858eaf19, preserving that public source/proof ref. Root
+accepted review4314ea2ba04506ec18116d842b0e619e0f60ecff scoped PASS/findings[],
+including one independent actual preG replay. This proposal only wires the three
+existing fixtures after the existing positive; future reconciliation with actual
+main is root-owned. No harness/producer/checker implementation is changed yet.
+
+Source hazard confirmed at run-composition.py356/363: negative result.json has a
+top-level `case`, and the same object is printed. Raw inheritance into CI would
+pollute verify_first's global top-level-case catalogue. Minimal fix: ONLY negative
+stdout becomes LF-delimited `{ "qh01_lifecycle_result": <unchanged result> }`.
+Positive stdout/result.json remain unchanged, as do visible attention diagnostics.
+No output capture/filter/controller is needed; Node IPC and all caps stay exact.
+
+Keep the existing positive call/default namespaces unique. AFTER it, invoke the
+same composition_ci common runner with exactly, in order:
+`scan_null_after_settlement`, `scan_pending_timeout_after_settlement`,
+`fixture_cancel_B3_verified_preG`. Use the same env/one provision() W/C artifact
+pair, current-root JS/packages and fixed worker path/SHA; no per-case build.
+Negative argv is the existing Python -B/run-composition.py/output/worker/sha256/
+node/bridge/reuse tuple plus `--case <id>`. Each fresh temp/case directory is
+deleted only after actual known collection and trace emission; failure persists
+and unknown cleanup retains the exact existing live invoker/handles, no killer.
+
+Generalize the current runner/record builder by a private trusted case parameter,
+not a copied50-line runner. Positive record keys/frames/id/scope remain exact.
+Negative command wrapper is `qh01_lifecycle_command {v:1,id,argv,output}` and
+negative case wrapper is `qh01_lifecycle_case` v1 with scope
+`QH01_HOST_LIFECYCLE_CI_V1`, role host fixture/synthetic clock and the exact id.
+Case keys reuse `v,id,scope,role,argv,source_before,source_after,generated_before,
+generated_after,worker_initialization,actual,collection,frames,decoded_request,
+node_records,expected_public_key,service_response,native_response_base64,limits`.
+Copy actual source/generated maps, initialization pair and existing receipts;
+never synthesize PASS/status/clock values. A negative failure uses its own
+`qh01_lifecycle_failure {v,id,output_retained}`; it cannot masquerade as a case.
+
+Actual file formats were inspected: null/timeout each have13files including
+decoded.envelope/json; preG has12, omits both decoded files and adds
+cancel-refusals.json. All have actual result, collection, Node records, native
+response and service-response files. Reuse their shared extraction. For negatives,
+frames keys are `presented,decoded,scanned,late_scan`: present259 always; decoded
+259 for null/timeout, null for preG; scanned null because null/no scan/pending;
+late_scan611/hash only for timeout from actual final Node lifecycle receipt.
+decoded_request is actual decoded.json or null for preG. Include preG's actual
+refusal flags alongside its existing result/collection receipt, not invented data.
+
+Expect null/timeout O0/W0 already settled and original259 release; null returns
+signer_transport_failed/scan1/close1/fire0; timeout returns signer_transport_timeout
+with scan pending/close0/fire1, then late611/underlying settlement/close1. PreG is
+O2/raw512, W71/raw18176 OR W-9/raw9, collectorO, PX/G0/Wimage0/result0/API0,
+known-close before cancelled28B, typed signer_transport_failed/scan0/close1/fire0.
+Every case requires actual Node0/wait/EOF/FD restoration and timer100/clear1;
+client clock remains synthetic, O8/shared4 and C5000 unchanged. No decoder-count,
+external clientAbort API, physical/consent/provider or release claim is added.
+
+Keep ProvisioningControls' same two methods/Pi211. Preserve exact old build/make/
+two-client/pure-control prefix, env object/identities, cwd/check and first-Pi-fail
+stop; assert a four-call suffix (positive then3negatives), identical W/SHA and
+trusted args. Total recorded ordering entries become9 including build sentinel;
+no old assertion is removed. Old70/39 and full-gate15build expectations stay exact.
+Root alone extends f129 for the distinct new namespaces; no checker edit here.
+
+Finish after admission: freeze source/schema, run existing targeted ordering/
+producer pure controls, then ONE coherent stable `make pi-ci` containing positive
+plus3actual cases. Do not replay four manual cases. Preserve command/raw/source
+bindings and failures, then STOP for distinct review. This append is the requested
+schema checkpoint only; no code, test, build or runtime was executed for it.
