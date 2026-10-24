@@ -321,10 +321,11 @@ class ProvisioningControls(unittest.TestCase):
             self.assertTrue(kwargs["check"])
             for key, value in lib.items():
                 self.assertEqual(kwargs["env"][key], value)
-        def record(output, env, command, before, generated):
+        def record(output, env, command, before, generated, case="positive"):
             self.assertIs(env, environments[0])
             self.assertEqual(output.name, "case")
             self.assertEqual(command, calls[-1])
+            self.assertEqual(case, "positive" if len(calls) == 6 else driver.LIFECYCLE_CASES[len(calls)-7])
             return {"role": "SYNTHETIC_ORDER_CONTROL_ONLY", "source_before": before, "source_after": before,
                     "generated_before": generated, "generated_after": generated}
         with patch.object(driver, "provision", side_effect=provision), \
@@ -335,7 +336,7 @@ class ProvisioningControls(unittest.TestCase):
         self.assertEqual(calls[:4], ["build", ["make", "-C", str(ROOT / "apps/pi"), "ci"],
                                 ["node", "--import", "tsx/esm", str(driver.CLIENT)],
                                 ["node", "--import", "tsx/esm", str(driver.CLIENT), "--first-owner-gate"]])
-        self.assertEqual(len(calls), 6)
+        self.assertEqual(len(calls), 9)
         self.assertTrue(all(env is environments[0] for env in environments))
         python = str(ROOT / "apps/pi/.venv/bin/python")
         self.assertEqual(calls[4], [python, "-B", str(driver.COMPOSITION / "test_attention_reporting.py"), "-v"])
@@ -347,7 +348,15 @@ class ProvisioningControls(unittest.TestCase):
                                         "--sha256", lib["NSEALR_QP01_QR_WORKER_SHA256"], "--node"])
         self.assertTrue(Path(calls[5][10]).is_absolute())
         self.assertEqual(calls[5][11:], ["--bridge", str(ROOT / "apps/bridge/service/dist"), "--reuse", str(ROOT)])
-        self.assertEqual(records.call_count, 1)
+        for command, case in zip(calls[6:], driver.LIFECYCLE_CASES, strict=True):
+            self.assertEqual(command[:4], calls[5][:4])
+            self.assertEqual(Path(command[4]).name, "case")
+            self.assertTrue(Path(command[4]).parent.name.startswith("nsealr-qh01-composition-"))
+            self.assertEqual(command[5:], calls[5][5:] + ["--case", case])
+            self.assertNotIn(command[4], [other[4] for other in calls[5:] if other is not command])
+        self.assertEqual(driver.LIFECYCLE_CASES, ("scan_null_after_settlement", "scan_pending_timeout_after_settlement",
+                                                "fixture_cancel_B3_verified_preG"))
+        self.assertEqual(records.call_count, 4)
         with self.assertRaises(ValueError):
             driver.ci("apps/pi/tests")
 
