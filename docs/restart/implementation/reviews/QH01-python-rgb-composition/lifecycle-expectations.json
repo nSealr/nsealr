@@ -1,0 +1,102 @@
+{
+  "role": "SOURCE_DERIVED_EXPECTATIONS_ONLY_NOT_IMPLEMENTATION_ADMISSION_OR_RUNTIME",
+  "base_commit": "1e0453fe7af476275b749fbff116899093cbeced",
+  "component_candidate": "b6d07a4aff913249a06bf1e7ea31cb6265ea0cc0",
+  "scope": "Exactly three subsequent fixture composition cases; no shared brief/harness/builder/checker/plan/source change.",
+  "constraints": "Top Python owner retains exact Node and B3 handles. Same original fixtures, trusted bounded IPC, synthetic client100ms, actual O8s/shared4s and all13+CORE0 remain. No test watchdog/kill of Python/O or unknown handle; immutable O-owned W cancellation remains unchanged.",
+  "IPC": "Keep2048B/record,4096B Node stdout total,4096B stderr,512B parent reply total, ASCII canonical JSON/LF and fixed ordered shapes. At most4 successful diagnostic records plus one error; no paths/options/keys from IPC. Proposed cancelled reply is an alternative to decoded, not extra unbounded traffic.",
+  "shared_pass": "Actual O/W status and IO plus Node wait/EOF and parent wait/FD restoration must be recorded. Expected service error is data, not a presumed process failure/success. No resource reuse before actual known close; uncertain cleanup keeps the same live owner/handles and cannot PASS.",
+  "sources": [
+    {"id":"client","path":"packages/client/src/service.ts","sha256":"d230d65ec2eb505afd940951c792c6ed0ac93a13e781ca70116db464ff59c509","lines":[[1076,1118],[1130,1145],[1149,1159],[1236,1255]]},
+    {"id":"manual","path":"apps/bridge/service/src/manual-qr.ts","sha256":"d2c9aa73f723739a5682f0a2a4b6c88f4b319a70d879766fe7b8f862ee5e82f9","lines":[[11,34],[45,50],[62,78],[126,164]]},
+    {"id":"manual_tests","path":"apps/bridge/service/src/manual-qr.test.ts","sha256":"fce4623fc99e5d0c405bdce9529a4faa367b54f5bd52b1fb49f13858bd3bee4e","lines":[[209,221],[241,246],[263,288]]},
+    {"id":"B3","path":"apps/pi/app/nsealr_vault/qr_owner_adapter.py","sha256":"da6f36c966e2b27407e1025456d1f72c6d061d9463eb9ad25af85f594bf5a203","lines":[[112,118],[208,250],[355,367],[451,475],[492,504]]},
+    {"id":"O","path":"apps/pi/app/nsealr_vault/qr_worker.py","sha256":"d7a245a9a558cce3ec8271ec42fc49664c094320c6465a537aa3a49c83558d50","lines":[[82,90],[102,128],[212,246],[326,345],[367,386]]},
+    {"id":"W","path":"apps/pi/qr-worker/src/main.rs","sha256":"e60b3bc2baec2eded7ee474e101cfa8debd1a88be76d6d7cffce31b4e3e1dcf1","lines":[[54,58]]},
+    {"id":"B3_tests","path":"apps/pi/tests/test_qr_owner_adapter_lifecycle.py","sha256":"6416c13f8358199141e59ce15ffcae97da68a8612c0270a04a2e4958e0728a7c","lines":[[92,108],[119,152],[166,172],[242,250]]},
+    {"id":"B3_expectations","path":"docs/restart/implementation/QP01/python-owner-adapter/negative/expectations.json","sha256":"40d41bf5ec49c73e0edc917968f289decc7a5dc933e95320f209d145f02fed8f","lines":[[46,67],[365,376]]},
+    {"id":"Node_harness","path":"docs/restart/implementation/QH01/manual-port/python-rgb-composition/bridge-child.mjs","sha256":"3be4583d556c164712f76b53e89b97e22ff8253739d635a624f273a712f3f5d8","lines":[[43,74],[97,108],[118,130]]},
+    {"id":"Python_harness","path":"docs/restart/implementation/QH01/manual-port/python-rgb-composition/run-composition.py","sha256":"afe76bc482c4227986efbfbf260611f23c0ba38c2655fea95cb99dbc743d0662","lines":[[101,123],[138,162],[196,231]]}
+  ],
+  "fixtures": [
+    {"role":"RGB","path":"docs/restart/implementation/QH01/native-qr-probe/execution-01/request-kind-1-basic.rgb","bytes":172800,"sha256":"64d9be602c821c31c0dfd6e952199a328325acdbf9a7e1b3494921942a11055f"},
+    {"role":"request259","path":"docs/restart/implementation/QH01/native-qr-probe/expected/request-kind-1-basic.envelope","bytes":259,"sha256":"88a16190a1b1ed033fc9bebe5452af70e9a9783fd6b92305add2ac7134039ff7"},
+    {"role":"response611","path":"docs/restart/implementation/QH01/native-qr-probe/expected/response-kind-1-basic.envelope","bytes":611,"sha256":"f27dbe54785a9510e43f05d27dbb67c488c77def150e0110d51264762cdeec1b"},
+    {"role":"response_json","path":"protocols/contracts/v1/examples/response-kind-1-basic.json","bytes":540,"sha256":"3a398947e46c715a6ceaaeaa7198455ac840727c7f0f78dd079a1de8742350a1"},
+    {"role":"independent_key","path":"protocols/contracts/v1/examples/response-get-public-key.json","bytes":169,"sha256":"ec333e4ec4cea4b889d12fd6b927870cc7096d5f553685584fd91f866c97190c"}
+  ],
+  "prior_independent_lifecycle": {"commit":"4daa2bc7dee4f4fcc5143441508f05d598e6ce69","path":"docs/restart/implementation/reviews/QP01-python-owner-adapter-final/replay/cases.tar.gz","sha256":"1f1468285a39e15231bcba53bb4cc905b1e95d000b4ec94b07c8dc49ca9fe8eb","records":70,"worker_sha256":"aae41ea02f4b0b6fabc9ffd742db5a8b7e5f5035f0a423514a16b8de318da2be","manifest_extra":1,"checked_members":[{"path":"cancel_preG-phase.json","sha256":"d4ff659fddd464510236f16bede1bf3a4828eaa77ae2e745f010249771f5bbac"},{"path":"cancel_preG-settled.json","sha256":"30ce72c3105cefbac606e606bf0b22bf4970b442e88d0bba5977da7254d61391"}],"observed":"O2388467 exit2/raw512; W2388468 exit-9/raw9; commandsPX, G0/Wimage0, O received172800, release0, EOF complete, FDs empty. This is B3 evidence, not an existing Node composition cancellation run."},
+  "cases": [
+    {
+      "id": "scan_pending_timeout_after_settlement",
+      "source_refs": [
+        "client:1130-1145,1236-1255",
+        "manual:70-73,133-164",
+        "manual_tests:209-221,263-288"
+      ],
+      "precondition": "Actual B3 normal settlement, O/W raw0 and EOF/FD closure, original raw259 delivered; present resolves at synthetic99. Actual scan entered and its deferred promise remains pending; client100 timer installed.",
+      "gesture": "Set synthetic now100 and tick the existing timer by1 from99 while scan remains unresolved. Await actual service response BEFORE resolving scan with original public611. Then await underlying scan/close completion separately.",
+      "expected_service": "ok:false,error.code:signer_transport_timeout; exactly one deadline callback and one clear. Abort signal becomes true on client release. Later scan resolution cannot replace this terminal response.",
+      "pass": [
+        "Before late resolution: scan1/close0; client pending reservation and manual busy remain held despite returned timeout.",
+        "Resolve original611 once; aborted current() rejects before QR conversion, then finally close1. Await actual underlying settlement, not only timed-out service promise.",
+        "No accepted signer_response or repeated scan; O/W known raw0 remain historical completed work. Node/Python must actually collect with their asserted diagnostic status and all EOF/FD restored."
+      ],
+      "fail": [
+        "Tick before scan-entered/B3 settlement; accept runtime_unavailable as the timeout oracle; assume timeout itself closes the pending port.",
+        "Early owner reuse, missing close, second scan/response acceptance, or calling old O/W completion a cancellation/recall."
+      ],
+      "source_only": "manual134 precedes decode145; existing manual_tests spies prove pre-conversion rejection. No runtime decode counter exists in compiled b6: do not claim a newly measured decoder-call count.",
+      "missing_property": "b6 scan returns immediately and awaits only its success response; it lacks a deferred scan/entered/completed observer and native-error expectations. These future test-only controls need admission before implementation."
+    },
+    {
+      "id": "scan_null_after_settlement",
+      "source_refs": [
+        "manual:133-135,150-164",
+        "manual_tests:241-246",
+        "client:1149-1159,1249-1253"
+      ],
+      "precondition": "Same real B3 normal settlement and exact259 release; clock remains99 and account/compatibility/request unchanged.",
+      "gesture": "The one trusted fixture scan resolves null before any100 tick; it does not substitute an invalid string or throw a generic Error.",
+      "expected_service": "ok:false,error.code:signer_transport_failed; opens1/scans1/close1. Actual timer argument100/clear1; final post-completion tick1 to100 fires0 callbacks.",
+      "pass": [
+        "No response611 is supplied/decoded and no signer_response is accepted; actual manual135 determines the failure.",
+        "Close settles once before dispatcher completion; retain/collect Node and parent and preserve known O/W raw0/EOF/FD restoration."
+      ],
+      "fail": [
+        "Accept timeout, invalid_signer_response, signer_transport_io_failed or protocol_error as equivalent; tick100 before null settles.",
+        "Invent consent/signing from cancellation, call the already completed B3 worker cancelled, or reuse before known close."
+      ],
+      "missing_property": "Existing manual-port null contract is sufficient; b6 fixture scan/IPC/result checks are success-only. Add only a declared null-case variant after admission; no production API is missing."
+    },
+    {
+      "id": "fixture_cancel_B3_verified_preG",
+      "source_refs": [
+        "B3:112-118,218-250,355-367,451-504",
+        "O:82-90,124-126,212-246,326-345,367-386",
+        "W:54-58",
+        "B3_tests:119-152,166-172",
+        "B3_expectations:46-67,365-376",
+        "manual:45-50,150-164"
+      ],
+      "precondition": "Real O/W and validated verified-worker-ready phase/live ELF at the existing parent checkpoint; P flushed, G0 and Wimage0, no take_result; retain synthetic99. Parent-to-O RGB may already be172800.",
+      "gesture": "A trusted Python test fixture explicitly calls existing op.cancel() instead of acknowledge() at that checkpoint. Do not mutate the private client AbortController or fake abort_signal; this is port-side fixture cancellation.",
+      "handshake": "Continue real B3 polling to known terminal wait/EOF, assert no output and no early reservation, then explicit op.close(). Only then send one fixed ordered {\"v\":1,\"event\":\"cancelled\"}+LF+EOF (28B, within512). Pending Node present rejects with existing SignerTransportError(\"signer_transport_failed\"); scan never starts and close executes once.",
+      "expected_service": "Conditional on that explicitly admitted typed port-cancel mapping: ok:false,error.code:signer_transport_failed, opens1/scans0/close1, timer100/clear1 and0 deadline callbacks at99. Client release aborts afterward; that signal alone is not proof of the cancellation gesture.",
+      "pass": [
+        "O outcome cancelled, cancel_observed:true, actual exit2/raw512; W actual (exit71,raw18176) OR (exit-9,raw9), collector exactO. Require actual statuses, never Popen/default0.",
+        "CommandsPX, G0/Wimage0/result0/APIrelease0 and take_result refused; all W IO true, O EOF[1,2,4,5], parent-owned FDs empty, subsequent O ECHILD only after actual wait.",
+        "Runtime retains exact op and blocks replacement until settled+explicitly closed+not poisoned. Expected handled refusal may let Node/Python tests exit0, but only actual wait/EOF can establish it."
+      ],
+      "fail": [
+        "Assume O/W raw0; count image_bytes_received172800 as W exposure; acknowledge G or fabricate decoded259 to unblock Node.",
+        "Accept wall/control_lost/decoded or another W status as cancellation; close/release Node while O/W collection is unknown; kill/restart owner to make the test finish."
+      ],
+      "missing_property": "B3 cancellation is already sourced/measured; b6 composition has no cancelled reply/parser or typed present rejection and currently requires O/W0. The minimal fixture mapping above is proposed only. There is no public caller-cancel operation in this client; an end-to-end external/UI/client-abort trigger remains absent and is not inferred."
+    }
+  ],
+  "ambiguity_boundary": "Late-scan before-conversion is source/old-unit supported, not a new compiled decoder counter. Fixture port cancellation is distinct from an externally requested client abort. Pure attention controls are not real unknown-owner recovery.",
+  "preserved_lookup_error": "One source search returned2 because optional apps/bridge/service/test/manual-qr.test.ts does not exist; actual src/manual-qr.test.ts was then read. No runtime/test failure or source change.",
+  "execution": {"runtime":0,"tests":0,"builds":0,"installs":0,"CI":0},
+  "conclusion": "Source-derived bounded expectations only. Implementation and normal/physical/component acceptance remain unadmitted by this document; STOP."
+}
