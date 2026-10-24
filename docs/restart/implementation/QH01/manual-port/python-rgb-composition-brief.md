@@ -310,3 +310,73 @@ RED/GREEN output, source/AST correspondence and limits. Six other methods, the
 original hold body, Node child and historical inputs/proofs are unchanged.
 No author actual positive was repeated;715/f6 remains historical only. STOP for
 the distinct reviewer's one positive on the corrected source before integration.
+
+## Proposed normal-CI admission — one real regression, no code yet
+
+Root accepted distinct A02 review `1e0453fe7af476275b749fbff116899093cbeced`,
+tree `b693055c9f9bea61008c2173348c56b82f89796a`, verdict
+`PASS_SCOPED_CORRECTED_HOST_PYTHON_RGB_COMPOSITION_ONLY`, findings[]. Its one
+actual replay passed on unchanged b6. That qualifies the scoped host checkpoint,
+not the complete composition or physical QH01 workflow.
+
+Recommended minimal implementation: change only the existing package builder and
+`exchange.py:ci`, plus scoped proof/docs. Internally generalize builder runTsc to
+accept source/output directories; retain every package build and all compiler
+options, then emit the five non-test `apps/bridge/service/src` TS files to
+`apps/bridge/service/dist`. Existing package.json supplies ESM context and normal
+pnpm imports; keep import.meta, no bundle/launcher/source/dependency/lock change.
+Emit one versioned `bridge_service_build` record with actual compiler argv/status,
+five before/after source hashes and ten JS/declaration output hashes. Missing or
+changed source/output fails; no literal hash of today's harness is embedded.
+
+Normal command is **`make pi-ci`**. Its existing dependency already executes
+`pnpm run ci`, including `pnpm build`, before `exchange.py --ci apps/pi`.
+Keep provision(), the single make-apps/pi-ci call and both existing Node client
+calls byte-exact. AFTER those two client calls, run the existing six pure controls
+as a distinct command, then invoke existing run-composition.py exactly ONCE:
+
+```text
+apps/pi/.venv/bin/python -B <composition>/test_attention_reporting.py -v
+apps/pi/.venv/bin/python -B <composition>/run-composition.py
+  --output <fresh-temporary-root>/case
+  --worker $NSEALR_QP01_QR_WORKER --sha256 $NSEALR_QP01_QR_WORKER_SHA256
+  --node <absolute-node-from-the-trusted-PATH>
+  --bridge <THIS_ROOT>/apps/bridge/service/dist --reuse <THIS_ROOT>
+```
+
+Here `<composition>` is the existing QH01/manual-port/python-rgb-composition
+directory. Worker variables come ONLY from the existing provision() actual Cargo
+artifact, before the request; no extra W/C build, old worktree or fallback.
+Python remains the owner of B3 and the Node child. Use a unique tempfile-created
+directory; successful deletion follows actual collection and evidence emission.
+On failure preserve the directory/command and propagate failure; unknown cleanup
+keeps the existing parent/handles live, never a successful teardown or timer-kill.
+
+Reuse source_binding() for current tracked inputs and generated JS before/after;
+cross-bind the JS hashes to the builder record. Print ONE LF-delimited
+`qh01_composition_case` v1 record containing dynamic current-source hashes, actual
+provisioned/live worker hash, original259/259/611 hashes, actual Node/O/W wait/EOF
+and FD evidence, native verified response and synthetic timer100/clear/ticks.
+It must carry scoped role/limits, not merely a PASS/count. Keep old Pi211, all70
+python_owner_case rows, native/default cases and first39 unchanged and mandatory;
+the new record has a separate namespace. Root's f129 capture checker is untouched
+until a separate admitted extension verifies this schema against the actual Git
+source/capture. No hard-coded current test-source digest or assertion weakening.
+
+Completion of THIS next step: inspect/freeze the small builder/ci delta, prove
+ordinary imports/source binding, run the mandatory normal gate once stable and
+retain its single new actual regression plus six pure controls. No additional
+manual composition replay, provider, task/status/limit or physical claim.
+Client100 remains synthetic; O8s/shared4s real and C5000 unchanged.
+
+Component completion remains open. Next timeout experiment: after the same real
+B3 decode/collection, hold scan(), advance the unchanged client timer to100,
+require signer_transport_timeout, then release the late original611 and require
+discard/no signer response and close once (existing manual-qr.test.ts:211–220).
+Next cancel experiment: return scan(null), require signer_transport_failed and
+close once/no consent (241–246). Both need a separately frozen test-only scan
+handshake/clock step in the fixed IPC; they are not run or added now. Those
+minimal scan cases do not establish cancellation while B3 is still active, which
+also remains open before any complete-component ownership claim. No camera/kit
+fact is needed for these host tests; physical capture/display still needs the
+already-pending identified kit/provider facts. STOP for root admission before code.
