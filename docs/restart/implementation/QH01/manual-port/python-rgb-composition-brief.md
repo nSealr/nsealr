@@ -275,3 +275,29 @@ verification succeeds. Actual client timer100 is recorded with synthetic clock
 0/99/100; O8/4 stays real. The adjacent README and original raw proof bind this
 result. No runtime source changed afterwards; no negative/full gate/old39,
 new W/C build, signing or physical claim follows. STOP for distinct review.
+
+### Root affected admission — attention reporting correction only
+
+Root confirmed the concrete f6 error-path defect: write, observation,
+serialization or print may raise before retention begins. FIRSTpositive715 and
+its13raw positive files remain valid only for that unchanged historical positive;
+the preparation retains19members, five TS inputs and ten compiler outputs plus
+the original package context. No author positive/full gate replay is admitted.
+
+Before changing attention, freeze the adjacent stdlib unittest fixture and run
+only `test_write_failure` against f6's byte-exact invoker: its required two hold
+iterations must fail because OSError escapes with zero poll/hold iterations.
+This is a harness RED with zero child creation, not a B3/product failure. After
+the bounded fix, run six pure controls: write, print, both, observation,
+serialization and reporting BaseException failures. Each must reach/continue
+two original hold iterations, retaining the exact runtime/op/child/Node-handle
+fixture objects after GC; only the fixture's mocked clock raises a sentinel
+BaseException to stop the loop. One mocked ordinary loop error must still be
+tolerated by the unchanged hold body. Child creation APIs are prohibited.
+
+The fix may only make the initial reporting best-effort; no cleanup/recovery,
+clock/budget, B3 or Bridge changes. Compare ASTs of every other method, the exact
+hold body, Node child and historical input/proof postimages. Freeze corrected
+source/pure proof/limits, then STOP: a distinct reviewer owns one future actual
+positive replay on the corrected candidate. The fixture cannot prove actual
+cleanup, quarantine, liveness, process recovery or external-crash survival.
