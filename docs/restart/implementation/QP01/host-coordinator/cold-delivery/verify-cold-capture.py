@@ -76,6 +76,7 @@ def verify_product(raw, head, repo, run_id=None):
     out.update(first_proof)
     out.update(verify_python_owner(objects, first_proof['worker_build'], head, repo))
     out.update(verify_qh01_composition(objects, lines, first_proof['worker_build'], head, repo, full_product=True))
+    out.update(verify_qh01_lifecycle(objects))
     out['proof_role']='local_makeci_source_addon_no_GitHub_claim' if run_id is None else 'completed_capture_source_addon_requires_generic_receipt_job_check_verifier'
     if run_id is None:
         out['limits']='Local stable makeci source/build/trace proof only; no GitHub run, receipt, job, check, protected integration or device claim. Hosted acceptance separately requires the unchanged mandatory completed-capture verifier with RUN HEAD CHECKRUNS_JSON, plus this source addon. No ELF reproducibility or physical qualification.'
@@ -248,6 +249,147 @@ def verify_qh01_composition(objects, lines, worker, head, repo, full_product=Fal
             'qh01_actual_O_W_Node_collected': True, 'qh01_frame_bytes': [259, 259, 611],
             'qh01_attention_pure_controls': 6, 'qh01_clock': 'synthetic100; actualO8/shared4',
             'qh01_limits': 'New host fixture composition only; real timeout/cancel seam, camera/physical/key/provider gates remain open.'}
+
+
+def verify_qh01_lifecycle(objects):
+    """Bind the three automatic refusals to the already verified positive run."""
+    def same(actual, expected):
+        assert json.dumps(actual, sort_keys=True) == json.dumps(expected, sort_keys=True)
+    def integers(values):
+        assert all(type(x) is int for x in values)
+    def occurrences(key):
+        return [(i, o[key]) for i, o in enumerate(objects) if key in o]
+    ids = ['scan_null_after_settlement', 'scan_pending_timeout_after_settlement', 'fixture_cancel_B3_verified_preG']
+    positive = occurrences('qh01_composition_case')
+    assert len(positive) == 1
+    positive_at, positive = positive[0]
+    commands = occurrences('qh01_lifecycle_command')
+    results = occurrences('qh01_lifecycle_result')
+    cases = occurrences('qh01_lifecycle_case')
+    assert len(commands) == len(results) == len(cases) == 3
+    assert [c['id'] for _, c in commands] == [c['id'] for _, c in cases] == ids
+    assert [r['case'] for _, r in results] == ids
+    assert not occurrences('qh01_lifecycle_failure')
+    outputs = [positive['argv'][4]] + [command['output'] for _, command in commands]
+    assert len(set(outputs)) == 4
+    prior = positive_at
+    reference = positive['collection']['B3']
+    worker = positive['worker_initialization']
+    for name, (command_at, command), (result_at, result), (case_at, case) in zip(ids, commands, results, cases):
+        assert prior < command_at < result_at < case_at
+        prior = case_at
+        assert type(case['v']) is type(command['v']) is int and case['v'] == command['v'] == 1
+        assert case['scope'] == 'QH01_HOST_LIFECYCLE_CI_V1' and case['role'] == positive['role']
+        for field in ['source_before', 'source_after', 'generated_before', 'generated_after', 'worker_initialization', 'expected_public_key']:
+            same(case[field], positive[field])
+        argv = case['argv']
+        assert argv == command['argv'] and argv[:4] == positive['argv'][:4] and argv[4] == command['output']
+        assert argv[5:] == positive['argv'][5:] + ['--case', name]
+        output = Path(argv[4])
+        assert output.is_absolute() and output.name == 'case' and output.parent.name.startswith('nsealr-qh01-composition-')
+        a, collection = case['actual'], case['collection']
+        same(result, a)
+        cancelled, timeout = name == ids[2], name == ids[1]
+        error = 'signer_transport_timeout' if timeout else 'signer_transport_failed'
+        assert a['result'] == 'PASS_HOST_COMPOSITION_LIFECYCLE_CASE' and a['case'] == name and a['physical_claim'] is False
+        assert a['service_error'] == error and a['B3_outcome'] == ('cancelled' if cancelled else 'decoded')
+        pids = [a[k] for k in ['parent_pid', 'node_pid', 'owner_pid', 'worker_pid']]
+        integers(pids)
+        assert min(pids) > 1 and len(set(pids)) == 4 and a['worker_sha256'] == worker['sha256']
+        integers([a[k] for k in ['presented_bytes', 'decoded_bytes', 'scanned_bytes', 'caller_released_bytes']])
+        assert a['presented_bytes'] == 259 and a['decoded_bytes'] == a['caller_released_bytes'] == (0 if cancelled else 259)
+        assert a['scanned_bytes'] == (611 if timeout else 0)
+        frames = {'presented': positive['frames']['presented'], 'decoded': None if cancelled else positive['frames']['decoded'],
+                  'scanned': None, 'late_scan': positive['frames']['scanned'] if timeout else None}
+        same(case['frames'], frames)
+        same(case['decoded_request'], None if cancelled else positive['decoded_request'])
+        if cancelled:
+            same(case['cancel_refusals'], {'take_result_refused': True, 'reservation_before_close_refused': True, 'caller_released_bytes': 0})
+        else:
+            assert case['cancel_refusals'] is None
+        assert collection['node_pid'] == a['node_pid'] and type(collection['node_wait_raw']) is int and collection['node_wait_raw'] == 0
+        for key in ['node_EOF', 'parent_fd_before', 'parent_fd_after', 'runtime_strong_reference']:
+            same(collection[key], positive['collection'][key])
+        integers(collection['node_observed'].values())
+        assert collection['node_observed']['stderr'] == 0
+        o = collection['B3']; p = o['phase']; t = o['terminal']; wait = t['worker_wait']
+        # The positive block already binds these common policy values to Git and
+        # the actual provisioned worker. Every refusal must preserve them.
+        for key in ['state', 'EOF', 'parent_owned_fds', 'fault', 'transport_error', 'ready_hex', 'diagnostic_base64', 'closed']:
+            same(o[key], reference[key])
+        for key in ['v', 'kind', 'exe_sha256', 'limits', 'G_bytes', 'image_bytes_sent']:
+            same(p[key], reference['phase'][key])
+        for key in ['v', 'kind', 'ownership', 'worker_io', 'session_policy_verified']:
+            same(t[key], reference['terminal'][key])
+        integers([o[k] for k in ['owner_pid', 'owner_wait_raw', 'owner_exit_code', 'image_bytes_written', 'output_bytes']])
+        integers([p[k] for k in ['owner_pid', 'worker_pid', 'ppid', 'sid', 'pgid']] + [f['fd'] for f in p['fds']])
+        integers([t[k] for k in ['owner_pid', 'worker_pid', 'input_bytes_received', 'G_bytes', 'image_bytes_sent',
+                                'stdout_observed', 'stdout_retained', 'stderr_observed', 'stderr_retained', 'result_bytes']])
+        integers([wait[k] for k in ['raw_status', 'exit_code', 'collector_pid']])
+        assert o['owner_pid'] == t['owner_pid'] == p['owner_pid'] == p['ppid'] == a['owner_pid']
+        assert p['worker_pid'] == p['sid'] == p['pgid'] == t['worker_pid'] == a['worker_pid']
+        assert wait['collector_pid'] == o['owner_pid'] and [f['fd'] for f in p['fds']] == [0, 1, 2]
+        assert len({(f['dev'], f['ino']) for f in p['fds']}) == 3
+        assert o['commands'] == (['P', 'X'] if cancelled else ['P', 'G'])
+        assert o['owner_exit_code'] == (2 if cancelled else 0) and o['owner_wait_raw'] == (512 if cancelled else 0)
+        assert (wait['exit_code'], wait['raw_status']) in ({(71, 18176), (-9, 9)} if cancelled else {(0, 0)})
+        assert o['taken'] is (not cancelled)
+        for key in ['image_bytes_written']:
+            same(o[key], reference[key])
+        for key in ['input_bytes_received', 'input_sha256']:
+            same(t[key], reference['terminal'][key])
+        assert t['outcome'] == a['B3_outcome'] and t['cancel_observed'] is cancelled and t['final_worker_eligible'] is (not cancelled)
+        assert t['G_bytes'] == (0 if cancelled else 1) and t['image_bytes_sent'] == (0 if cancelled else 172800)
+        assert t['result_bytes'] == o['output_bytes'] == t['stdout_observed'] == t['stdout_retained'] == (0 if cancelled else 259)
+        assert t['stderr_observed'] == t['stderr_retained'] == 0 and t['worker_stderr_base64'] == ''
+        same(o['output_sha256'], None if cancelled else reference['output_sha256'])
+        same(t['result_sha256'], None if cancelled else reference['terminal']['result_sha256'])
+        clock = t['timing']
+        assert int(clock['begin_ns']) <= int(clock['settled_ns']) <= int(clock['final_admission_ns']) < int(clock['begin_ns']) + 8000000000
+        if cancelled:
+            assert int(clock['begin_ns']) <= int(clock['invalidated_ns']) <= int(clock['settled_ns'])
+            assert int(clock['cleanup_deadline_ns']) == int(clock['invalidated_ns']) + 4000000000
+        else:
+            assert clock['invalidated_ns'] is clock['cleanup_deadline_ns'] is None
+        status = base64.b64decode(o['status_wire_base64'], validate=True)
+        assert base64.b64encode(status).decode('ascii') == o['status_wire_base64']
+        same([json.loads(row) for row in status.splitlines()], [p, t])
+        rows = case['node_records']
+        events = ['present', 'close', 'result'] if cancelled else (['present', 'scan_pending', 'timeout', 'close', 'result'] if timeout else ['present', 'scan', 'close', 'result'])
+        assert [row['event'] for row in rows] == events and all(type(row['v']) is int and row['v'] == 1 for row in rows)
+        same(rows[0], positive['node_records'][0])
+        same(rows[-2], {'v': 1, 'event': 'close'})
+        if not cancelled and not timeout:
+            same(rows[1], {'v': 1, 'event': 'scan', 'frame': None})
+        final = rows[-1]
+        same(final['timer_args'], [100]); same(final['clock_steps'], [0, 99, 100])
+        same(final['clear_calls'], 1); same(final['deadline_fires'], 1 if timeout else 0)
+        life = {'case': name, 'opens': 1, 'scans': 0 if cancelled else 1, 'closes': 1,
+                'abort_observed': True, 'underlying_settled': True, 'late_scan_bytes': 611 if timeout else 0,
+                'late_scan_sha256': positive['frames']['scanned']['sha256'] if timeout else None,
+                'pending_retry_error': 'runtime_unavailable' if timeout else None}
+        same(final['lifecycle'], life)
+        assert final['native_response_base64'] == case['native_response_base64']
+        if timeout:
+            same(rows[1], {'v': 1, 'event': 'scan_pending', 'clock': 99})
+            expected_timeout = {'v': 1, 'event': 'timeout', 'native_response_base64': case['native_response_base64'],
+                                'timer_args': [100], 'clear_calls': 1, 'deadline_fires': 1, 'clock': 100,
+                                'opens': 1, 'scans': 1, 'closes': 0, 'abort_observed': True,
+                                'underlying_settled': False, 'pending_retry_error': 'runtime_unavailable'}
+            same(rows[2], expected_timeout)
+        wire_rows = [(json.dumps(row, separators=(',', ':')) + '\n').encode('ascii') for row in rows]
+        assert max(map(len, wire_rows)) <= 2048 and sum(map(len, wire_rows)) == collection['node_observed']['stdout'] <= 4096
+        native = base64.b64decode(case['native_response_base64'], validate=True)
+        assert base64.b64encode(native).decode('ascii') == case['native_response_base64'] and len(native) >= 4
+        assert int.from_bytes(native[:4], 'little') == len(native) - 4
+        same(json.loads(native[4:]), case['service_response'])
+        service = case['service_response']
+        assert type(service['version']) is int and service['version'] == 1 and service['ok'] is False and 'result' not in service
+        assert service['request_id'] == positive['service_response']['request_id'] and service['error']['code'] == error
+        assert service['error']['retryable'] is False and type(service['error']['message']) is str
+    return {'qh01_automatic_lifecycle_cases': ids, 'qh01_lifecycle_original_actor_statuses_and_source_bound': True,
+            'qh01_lifecycle_timeout_close0_then_close1_verified': True, 'qh01_lifecycle_precancel_API_release_bytes': 0,
+            'qh01_lifecycle_limits': 'Fixed trusted host fixtures; synthetic client100 and actual O8/shared4. No decoder counter, external clientAbort/UI, camera/physical/key/provider qualification.'}
 
 
 def verify_python_owner(objects, worker, head, repo):
