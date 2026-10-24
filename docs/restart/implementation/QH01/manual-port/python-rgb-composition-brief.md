@@ -493,3 +493,14 @@ before any fix/retry. No new Rust/C build/install if existing artifacts suffice.
 After all3PASS freeze stable source and execute ONE normal make pi-ci: preserve
 default positive,211/70/39 and six pure controls without extra manual positive.
 No full make-ci/hosted run or complete-component/real-device claim; STOP review.
+
+Exact additional ordered IPC keys: scan_pending=`[v,event,clock]`; timeout=
+`[v,event,native_response_base64,timer_args,clear_calls,deadline_fires,clock,opens,
+scans,closes,abort_observed,underlying_settled,pending_retry_error]`. Negative
+result retains the existing seven ordered result keys and appends lifecycle=
+`[case,opens,scans,closes,abort_observed,underlying_settled,late_scan_bytes,
+late_scan_sha256,pending_retry_error]`. Counts/times are typed integers; observed
+states are booleans. For non-timeout negatives late bytes0/hashnull/retrynull;
+timeout late bytes611/hashf27d and retry runtime_unavailable. Default positive
+result and four IPC record shapes stay unchanged. These are fixture controls,
+not request data or a client-abort API.
