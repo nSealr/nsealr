@@ -719,3 +719,63 @@ source-qualified component proofs remain reusable;5bc positive/3negative/211/70/
 and full15build regressions stay mandatory/unchanged. This source-only append runs
 nothing. Missing proof is exactly this combined actual path and its admitted IPC/
 nonpreemptive-call observation, plus future physical kit/UI/entropy qualification.
+
+## Source-only C-leaf alternative retaining the real5000 watchdog
+
+This supersedes no prior source/proof and admits no code/runtime. Direct same-parent
+C remains UNADMITTED; actual2501 vs historicalf27d is already settled, not repeated.
+One minimal recommendation: Node owns ONE existing exchange.py C-leaf, spawned
+only AFTER top Python has actually settled/collected B3 O/W and sent decoded259.
+Python remains owner of its runtime/op and the Node handle; C is a distinct
+Node-owned leaf role, never Python/O and never an uncounted process helper.
+
+Two real options, from existing source:
+- Top Python owns C: current EngineAdapter is in-process; no Python equivalent of
+  prepareNative's readiness,5000 timer, buffers/send/dispose/collection exists.
+  Reimplementing that in Python would duplicate lifecycle logic and need separate
+  timer/thread/FD-mapping proofs. It cannot reuse TS prepareNative as C's parent.
+- Node owns C: client-exchange.ts34–130 already provides the exact finite leaf.
+  prepareNative() starts trusted Python exchange.py with explicit library path/SHA,
+  waits exactR/EOF before send(raw259), then send awaits child close before returning
+  actual response; dispose awaits the same ended promise. This is the smaller seam.
+  C5000 starts at C spawn, includes library initialization, and excludes prior O8.
+  Trusted path/SHA/env are frozen before RGB; actual CDLL load is after B3 but
+  before request stdin/readiness, as exchange.py186–203 already establishes.
+What the helper actually guarantees (client-exchange.ts40–130):5000 schedules a
+SIGKILL attempt against that C ChildProcess only; it is not a proven5s return or
+collection bound. stdout947/stderr262144 are capped; readiness rejects bad/missingR,
+output-before-send/overflow refuses; send requires code0/signalnull/no spawn error.
+Node's close event means process ended AND stdio closed; ended/dispose then settle.
+It exposes code/signal, not wait4 raw status or explicit per-stream EOF counters.
+If close is unavailable, await remains pending; no early cleanup/reuse claim is
+permitted. Python must retain the exact live Node/runtime/op handles and existing
+attention hold, with no kill of Python/O or restart; native crash is leaf failure.
+Missing source preparation, not another supervisor:
+extract the existing function ONCE into a side-effect-free native-leaf.ts export,
+with root/env plus spawn/count, observation/settlement reporter and timer capabilities;
+legacy runScope retains its exact defaults/counters14/log names and caller surface.
+Today it is nested over root/children/collected/reports/firstGate/readinessControls.
+Importing whole client-exchange.ts would run fixture mutation and unconditional
+CLI at294–298; extracting a no-main module avoids importing that entry point.
+The existing builder emits packages/5Bridge files, not this docs helper: one joined
+TS6.0.3 NodeNext/ES2022 ESM emission is needed before runtime, with source/options/
+compiler/output hashes and ordinary built-in imports; no tsx/esbuild helper runtime.
+Important uncovered property: bridge-child.mjs19–24 forbids ALL process helpers,
+and73–82 mocks global setTimeout/clearTimeout for client100. Reusing prepareNative
+unchanged there would both refuse spawn and make its5000 watchdog synthetic.
+A precise opt-in must pass only the fixed native-leaf export a trusted C spawner
+and REAL timer functions captured before guards/mock; all old modes keep helper0.
+The effectiveness of those captured timers under Node24 mock remains an exact
+missing control: prove one actual timer fires against real monotonic elapsed time
+while the client clock stays synthetic, BEFORE any new C/O/W execution. No such
+control is run or presumed here; if unavailable, STOP rather than waive5000.
+
+New mode must await C.dispose in finally before Node exit, account exactly one C
+and actual code/signal/close, then assert no live direct child; do not print old
+native_observation/child_settlement into the legacy14 catalogue. Reporter callbacks
+save bounded native trace/settlement in the trusted case artifacts and a DISTINCT
+qh01-engine-leaf namespace; keep existing Node IPC4096/2048/5 and reply512 exact.
+Actual611 can stay in the proposed fixed <=947 artifact, with no precomputed scan.
+After admission: freeze extracted source/guards/timer-control command, prove real
+5000 capability, then ONE opt-in combined fixture command/known C+O/W+Node closure.
+Existing positive/three negatives/211/70/39/15build remain unchanged; STOP here.
