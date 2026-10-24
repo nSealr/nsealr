@@ -1,0 +1,4922 @@
+--- crypto-bigint-0.7.5/.cargo_vcs_info.json
++++ crypto-bigint-0.7.6/.cargo_vcs_info.json
+@@ -1,6 +1,6 @@
+ {
+   "git": {
+-    "sha1": "2b54d248cce00457e3afb5650d9b14632ef4a116"
++    "sha1": "c34044b8a1479ef32bec0a9030cf2f07b06506d9"
+   },
+   "path_in_vcs": ""
+ }--- crypto-bigint-0.7.5/CHANGELOG.md
++++ crypto-bigint-0.7.6/CHANGELOG.md
+@@ -3,6 +3,45 @@
+ 
+ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
+ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
++
++## 0.7.6 (2026-10-23)
++### Added
++- Implement `Zeroize` for `EncodedUint` ([#1342])
++
++### Changed
++- Faster `floor_sqrt`, `checked_sqrt` implementation ([#1312])
++- Bump `ctutils` to v0.4.4; MSRV 1.87 ([#1350], [#1359])
++
++### Fixed
++- `BoxedUint` GCD with mixed-precision zero operands ([#1291])
++- Carry result from Karatsuba `wrapping_square` for larger integers ([#1309])
++- Exact division edge cases ([#1310])
++- Only use classic binary GCD in Jacobi symbol calculation ([#1313])
++- Montgomery reduction in repeated squaring ([#1344])
++- safegcd iteration count overflow at precisions of 93558 bits and above ([#1346])
++- Carry returned by `Uint::try_sub_with_carry` ([#1354])
++
++### Security
++- Make `UintRef::PartialEq` constant-time and implement `PartialOrd`/`Ord` ([#1311])
++- Avoid branching on invertibility in `BoxedMontyForm::invert` ([#1355])
++- `borrowing_sub` constant-timeness; use `cargo checkct` ([#1358])
++- CT leaks in CTZ, `div_rem`, `nlimbs`, and Montgomery mul ([#1360])
++
++[#1291]: https://github.com/RustCrypto/crypto-bigint/pull/1291
++[#1309]: https://github.com/RustCrypto/crypto-bigint/pull/1309
++[#1310]: https://github.com/RustCrypto/crypto-bigint/pull/1310
++[#1311]: https://github.com/RustCrypto/crypto-bigint/pull/1311
++[#1312]: https://github.com/RustCrypto/crypto-bigint/pull/1312
++[#1313]: https://github.com/RustCrypto/crypto-bigint/pull/1313
++[#1342]: https://github.com/RustCrypto/crypto-bigint/pull/1342
++[#1344]: https://github.com/RustCrypto/crypto-bigint/pull/1344
++[#1346]: https://github.com/RustCrypto/crypto-bigint/pull/1346
++[#1350]: https://github.com/RustCrypto/crypto-bigint/pull/1350
++[#1354]: https://github.com/RustCrypto/crypto-bigint/pull/1354
++[#1355]: https://github.com/RustCrypto/crypto-bigint/pull/1355
++[#1358]: https://github.com/RustCrypto/crypto-bigint/pull/1358
++[#1359]: https://github.com/RustCrypto/crypto-bigint/pull/1359
++[#1360]: https://github.com/RustCrypto/crypto-bigint/pull/1360
+ 
+ ## 0.7.5 (2026-06-22)
+ ### Added
+--- crypto-bigint-0.7.5/Cargo.lock
++++ crypto-bigint-0.7.6/Cargo.lock
+@@ -4,9 +4,9 @@
+ 
+ [[package]]
+ name = "aho-corasick"
+-version = "1.1.4"
+-source = "registry+https://github.com/rust-lang/crates.io-index"
+-checksum = "ddd31a130427c27518df266943a5308ed92d4b226cc639f5a8f1002816174301"
++version = "1.1.5"
++source = "registry+https://github.com/rust-lang/crates.io-index"
++checksum = "c982642fa9e8606056828ee9a8505737230110bb1099153c79efe865c59d12ba"
+ dependencies = [
+  "memchr",
+ ]
+@@ -24,16 +24,10 @@
+ checksum = "940b3a0ca603d1eade50a4846a2afffd5ef57a9feac2c0e2ec2e14f9ead76000"
+ 
+ [[package]]
+-name = "anyhow"
+-version = "1.0.102"
+-source = "registry+https://github.com/rust-lang/crates.io-index"
+-checksum = "7f202df86484c868dbad7eaa557ef785d5c66295e41b460ef922eca0723b842c"
+-
+-[[package]]
+ name = "autocfg"
+-version = "1.5.0"
+-source = "registry+https://github.com/rust-lang/crates.io-index"
+-checksum = "c08606f8c3cbf4ce6ec8e28fb0014a2c086708fe954eaa885384a6165172e7e8"
++version = "1.5.1"
++source = "registry+https://github.com/rust-lang/crates.io-index"
++checksum = "f2032f911046de80f0a198e0901378627c33f59ea0ac00e363d481118bd70a53"
+ 
+ [[package]]
+ name = "base16ct"
+@@ -58,21 +52,21 @@
+ 
+ [[package]]
+ name = "bitflags"
+-version = "2.11.1"
+-source = "registry+https://github.com/rust-lang/crates.io-index"
+-checksum = "c4512299f36f043ab09a583e57bceb5a5aab7a73db1805848e8fef3c9e8c78b3"
++version = "2.13.2"
++source = "registry+https://github.com/rust-lang/crates.io-index"
++checksum = "3ded4057c258ba199e2d26386d3af3780957ecaee6c4ef4041c6b4b8b97c0b06"
+ 
+ [[package]]
+ name = "bumpalo"
+-version = "3.20.2"
+-source = "registry+https://github.com/rust-lang/crates.io-index"
+-checksum = "5d20789868f4b01b2f2caec9f5c4e0213b41e3e5702a50157d699ae31ced2fcb"
++version = "3.20.3"
++source = "registry+https://github.com/rust-lang/crates.io-index"
++checksum = "72f5acc6cb2ba439de613abc23857ec3d78374d8ed5ac84e9d11336e87da8649"
+ 
+ [[package]]
+ name = "bytes"
+-version = "1.11.1"
+-source = "registry+https://github.com/rust-lang/crates.io-index"
+-checksum = "1e748733b7cbc798e1434b6ac524f0c1ff2ab456fe201501e6497c8417a4fc33"
++version = "1.12.1"
++source = "registry+https://github.com/rust-lang/crates.io-index"
++checksum = "fc652a48c352aef3ea3aed32080501cf3ef6ed5da78602a020c991775b0aff04"
+ 
+ [[package]]
+ name = "cast"
+@@ -82,15 +76,15 @@
+ 
+ [[package]]
+ name = "cfg-if"
+-version = "1.0.4"
+-source = "registry+https://github.com/rust-lang/crates.io-index"
+-checksum = "9330f8b2ff13f34540b44e946ef35111825727b38d33286ef986142615121801"
++version = "1.0.5"
++source = "registry+https://github.com/rust-lang/crates.io-index"
++checksum = "4e7648175b45a9a48536d676f68d918270699102aa8dab5496df06904c914600"
+ 
+ [[package]]
+ name = "chacha20"
+-version = "0.10.0"
+-source = "registry+https://github.com/rust-lang/crates.io-index"
+-checksum = "6f8d983286843e49675a4b7a2d174efe136dc93a18d69130dd18198a6c167601"
++version = "0.10.2"
++source = "registry+https://github.com/rust-lang/crates.io-index"
++checksum = "65c35e4b699c7e15ccbe7ee35c005e4fc0a278d22238a2857e6ce2dadeda1b06"
+ dependencies = [
+  "cfg-if",
+  "cpufeatures",
+@@ -126,18 +120,18 @@
+ 
+ [[package]]
+ name = "clap"
+-version = "4.6.0"
+-source = "registry+https://github.com/rust-lang/crates.io-index"
+-checksum = "b193af5b67834b676abd72466a96c1024e6a6ad978a1f484bd90b85c94041351"
++version = "4.6.7"
++source = "registry+https://github.com/rust-lang/crates.io-index"
++checksum = "aa8876b300ab35ba921adea3dfd70157a46249b33f95c9084ae5709785478946"
+ dependencies = [
+  "clap_builder",
+ ]
+ 
+ [[package]]
+ name = "clap_builder"
+-version = "4.6.0"
+-source = "registry+https://github.com/rust-lang/crates.io-index"
+-checksum = "714a53001bf66416adb0e2ef5ac857140e7dc3a0c48fb28b2f10762fc4b5069f"
++version = "4.6.7"
++source = "registry+https://github.com/rust-lang/crates.io-index"
++checksum = "ec0797fb7aeb1406c84efac526901f7ec3ead2124f946b494e72879d4b54704d"
+ dependencies = [
+  "anstyle",
+  "clap_lex",
+@@ -145,15 +139,15 @@
+ 
+ [[package]]
+ name = "clap_lex"
+-version = "1.1.0"
+-source = "registry+https://github.com/rust-lang/crates.io-index"
+-checksum = "c8d4a3bb8b1e0c1050499d1815f5ab16d04f0959b233085fb31653fbfc9d98f9"
++version = "1.1.1"
++source = "registry+https://github.com/rust-lang/crates.io-index"
++checksum = "1c133bc6a41be0d194c306b5506d15e6feeea7b1d6604bd3f8310dfb2ca96486"
+ 
+ [[package]]
+ name = "cmov"
+-version = "0.5.3"
+-source = "registry+https://github.com/rust-lang/crates.io-index"
+-checksum = "3f88a43d011fc4a6876cb7344703e297c71dda42494fee094d5f7c76bf13f746"
++version = "0.5.4"
++source = "registry+https://github.com/rust-lang/crates.io-index"
++checksum = "0c9ea0ac24bc397ab3c98583a3c9ba74fa56b09a4449bbe172b9b1ddb016027a"
+ 
+ [[package]]
+ name = "cpubits"
+@@ -163,9 +157,9 @@
+ 
+ [[package]]
+ name = "cpufeatures"
+-version = "0.3.0"
+-source = "registry+https://github.com/rust-lang/crates.io-index"
+-checksum = "8b2a41393f66f16b0823bb79094d54ac5fbd34ab292ddafb9a0456ac9f87d201"
++version = "0.3.1"
++source = "registry+https://github.com/rust-lang/crates.io-index"
++checksum = "5ca28b0ae3115b884660db4118d803791fd6756b6e88f39c0f3f7859060d7566"
+ dependencies = [
+  "libc",
+ ]
+@@ -205,9 +199,9 @@
+ 
+ [[package]]
+ name = "crossbeam-deque"
+-version = "0.8.6"
+-source = "registry+https://github.com/rust-lang/crates.io-index"
+-checksum = "9dd111b7b7f7d55b72c0a6ae361660ee5853c9af73f70c3c2ef6858b950e2e51"
++version = "0.8.8"
++source = "registry+https://github.com/rust-lang/crates.io-index"
++checksum = "622f3fc73690be383c7214310406f28a90e6edeadc3cea882f9d71e495b9711a"
+ dependencies = [
+  "crossbeam-epoch",
+  "crossbeam-utils",
+@@ -215,18 +209,18 @@
+ 
+ [[package]]
+ name = "crossbeam-epoch"
+-version = "0.9.18"
+-source = "registry+https://github.com/rust-lang/crates.io-index"
+-checksum = "5b82ac4a3c2ca9c3460964f020e1402edd5753411d7737aa39c3714ad1b5420e"
++version = "0.9.21"
++source = "registry+https://github.com/rust-lang/crates.io-index"
++checksum = "dc74980687109a3b14c72fd458107bf0baa1da1a1a805e178d15501ba9b86d9d"
+ dependencies = [
+  "crossbeam-utils",
+ ]
+ 
+ [[package]]
+ name = "crossbeam-utils"
+-version = "0.8.21"
+-source = "registry+https://github.com/rust-lang/crates.io-index"
+-checksum = "d0a5c400df2834b80a4c3327b3aad3a4c4cd4de0629063962b03235697506a28"
++version = "0.8.23"
++source = "registry+https://github.com/rust-lang/crates.io-index"
++checksum = "a31eee39dddec8330830986fcd7625edb5a24ec90ea038215273bbc3adb08ac6"
+ 
+ [[package]]
+ name = "crunchy"
+@@ -236,14 +230,14 @@
+ 
+ [[package]]
+ name = "crypto-bigint"
+-version = "0.7.5"
++version = "0.7.6"
+ dependencies = [
+  "chacha20",
+  "cpubits",
+  "criterion",
+  "ctutils",
+  "der",
+- "getrandom 0.4.2",
++ "getrandom 0.4.3",
+  "hex-literal",
+  "hybrid-array",
+  "num-bigint",
+@@ -260,9 +254,9 @@
+ 
+ [[package]]
+ name = "ctutils"
+-version = "0.4.2"
+-source = "registry+https://github.com/rust-lang/crates.io-index"
+-checksum = "7d5515a3834141de9eafb9717ad39eea8247b5674e6066c404e8c4b365d2a29e"
++version = "0.4.5"
++source = "registry+https://github.com/rust-lang/crates.io-index"
++checksum = "38d28fb6aa7dd680b3ffd1a3e64e115c177bdba63c0ae7f9cd48129ff05c4fa0"
+ dependencies = [
+  "cmov",
+  "subtle",
+@@ -270,21 +264,15 @@
+ 
+ [[package]]
+ name = "der"
+-version = "0.8.0"
+-source = "registry+https://github.com/rust-lang/crates.io-index"
+-checksum = "71fd89660b2dc699704064e59e9dba0147b903e85319429e131620d022be411b"
++version = "0.8.2"
++source = "registry+https://github.com/rust-lang/crates.io-index"
++checksum = "a878c850e9e421b20262e9b41f9c860e4785fa07541c266b62ff9d1ef998a80a"
+ 
+ [[package]]
+ name = "either"
+-version = "1.15.0"
+-source = "registry+https://github.com/rust-lang/crates.io-index"
+-checksum = "48c757948c5ede0e46177b7add2e67155f70e33c07fea8284df6576da70b3719"
+-
+-[[package]]
+-name = "equivalent"
+-version = "1.0.2"
+-source = "registry+https://github.com/rust-lang/crates.io-index"
+-checksum = "877a4ace8713b0bcf2a4e7eec82529c029f1d0619886d18145fea96c3ffe5c0f"
++version = "1.18.0"
++source = "registry+https://github.com/rust-lang/crates.io-index"
++checksum = "252afb9ae5eaa683babdc6a068b3f5726eb19e05070c731f9b2a23a7c3e8ed34"
+ 
+ [[package]]
+ name = "errno"
+@@ -298,9 +286,9 @@
+ 
+ [[package]]
+ name = "fastrand"
+-version = "2.4.1"
+-source = "registry+https://github.com/rust-lang/crates.io-index"
+-checksum = "9f1f227452a390804cdb637b74a86990f2a7d7ba4b7d5693aac9b4dd6defd8d6"
++version = "2.5.0"
++source = "registry+https://github.com/rust-lang/crates.io-index"
++checksum = "da7c62ceae207dd37ea5b845da6a0696c799f85e97da1ab5b7910be3c1c80223"
+ 
+ [[package]]
+ name = "fnv"
+@@ -309,10 +297,28 @@
+ checksum = "3f9eec918d3f24069decb9af1554cad7c880e2da24a9afd88aca000531ab82c1"
+ 
+ [[package]]
+-name = "foldhash"
+-version = "0.1.5"
+-source = "registry+https://github.com/rust-lang/crates.io-index"
+-checksum = "d9c4f5dac5e15c24eb999c26181a6ca40b39fe946cbe4c263c7209467bc83af2"
++name = "futures-core"
++version = "0.3.34"
++source = "registry+https://github.com/rust-lang/crates.io-index"
++checksum = "92d699e522242e69e3003b94ecc1f960f3a5e015aa7c5d7486e65ad01dd94f5e"
++
++[[package]]
++name = "futures-task"
++version = "0.3.34"
++source = "registry+https://github.com/rust-lang/crates.io-index"
++checksum = "cd417de3d1d015fc3bfd2b1ea46dfc7bab72ef86f1cc7cc9c78e728b34a6d1fd"
++
++[[package]]
++name = "futures-util"
++version = "0.3.34"
++source = "registry+https://github.com/rust-lang/crates.io-index"
++checksum = "0d50a92467f8ba5dd6e3ee5d4bd04d73ab2e4e1c44474a0674821dfce14b79bc"
++dependencies = [
++ "futures-core",
++ "futures-task",
++ "pin-project-lite",
++ "slab",
++]
+ 
+ [[package]]
+ name = "getrandom"
+@@ -328,16 +334,14 @@
+ 
+ [[package]]
+ name = "getrandom"
+-version = "0.4.2"
+-source = "registry+https://github.com/rust-lang/crates.io-index"
+-checksum = "0de51e6874e94e7bf76d726fc5d13ba782deca734ff60d5bb2fb2607c7406555"
++version = "0.4.3"
++source = "registry+https://github.com/rust-lang/crates.io-index"
++checksum = "300e883d756b2e4ec94e02791f39b04b522276138852cfc41d9fb7e904106099"
+ dependencies = [
+  "cfg-if",
+  "libc",
+  "r-efi 6.0.0",
+  "rand_core 0.10.1",
+- "wasip2",
+- "wasip3",
+ ]
+ 
+ [[package]]
+@@ -352,27 +356,6 @@
+ ]
+ 
+ [[package]]
+-name = "hashbrown"
+-version = "0.15.5"
+-source = "registry+https://github.com/rust-lang/crates.io-index"
+-checksum = "9229cfe53dfd69f0609a49f65461bd93001ea1ef889cd5529dd176593f5338a1"
+-dependencies = [
+- "foldhash",
+-]
+-
+-[[package]]
+-name = "hashbrown"
+-version = "0.17.0"
+-source = "registry+https://github.com/rust-lang/crates.io-index"
+-checksum = "4f467dd6dccf739c208452f8014c75c18bb8301b050ad1cfb27153803edb0f51"
+-
+-[[package]]
+-name = "heck"
+-version = "0.5.0"
+-source = "registry+https://github.com/rust-lang/crates.io-index"
+-checksum = "2304e00983f87ffb38b55b444b5e3b60a884b5d30c0fca7d82fe33449bbe55ea"
+-
+-[[package]]
+ name = "hex-literal"
+ version = "1.1.0"
+ source = "registry+https://github.com/rust-lang/crates.io-index"
+@@ -380,33 +363,15 @@
+ 
+ [[package]]
+ name = "hybrid-array"
+-version = "0.4.12"
+-source = "registry+https://github.com/rust-lang/crates.io-index"
+-checksum = "9155a582abd142abc056962c29e3ce5ff2ad5469f4246b537ed42c5deba857da"
++version = "0.4.15"
++source = "registry+https://github.com/rust-lang/crates.io-index"
++checksum = "27f864f10dfb56725ce5ce5472bc52252c8f93a4ab86327122cebf62c5f59a17"
+ dependencies = [
+  "subtle",
+  "typenum",
+ ]
+ 
+ [[package]]
+-name = "id-arena"
+-version = "2.3.0"
+-source = "registry+https://github.com/rust-lang/crates.io-index"
+-checksum = "3d3067d79b975e8844ca9eb072e16b31c3c1c36928edf9c6789548c524d0d954"
+-
+-[[package]]
+-name = "indexmap"
+-version = "2.14.0"
+-source = "registry+https://github.com/rust-lang/crates.io-index"
+-checksum = "d466e9454f08e4a911e14806c24e16fba1b4c121d1ea474396f396069cf949d9"
+-dependencies = [
+- "equivalent",
+- "hashbrown 0.17.0",
+- "serde",
+- "serde_core",
+-]
+-
+-[[package]]
+ name = "itertools"
+ version = "0.13.0"
+ source = "registry+https://github.com/rust-lang/crates.io-index"
+@@ -423,25 +388,20 @@
+ 
+ [[package]]
+ name = "js-sys"
+-version = "0.3.95"
+-source = "registry+https://github.com/rust-lang/crates.io-index"
+-checksum = "2964e92d1d9dc3364cae4d718d93f227e3abb088e747d92e0395bfdedf1c12ca"
+-dependencies = [
+- "once_cell",
++version = "0.3.106"
++source = "registry+https://github.com/rust-lang/crates.io-index"
++checksum = "7883d941dae510fb2d978fc3fe018c71c9e2892fd38854de3e8b92c2e5ad9cc5"
++dependencies = [
++ "cfg-if",
++ "futures-util",
+  "wasm-bindgen",
+ ]
+ 
+ [[package]]
+-name = "leb128fmt"
+-version = "0.1.0"
+-source = "registry+https://github.com/rust-lang/crates.io-index"
+-checksum = "09edd9e8b54e49e587e4f6295a7d29c3ea94d469cb40ab8ca70b288248a81db2"
+-
+-[[package]]
+ name = "libc"
+-version = "0.2.185"
+-source = "registry+https://github.com/rust-lang/crates.io-index"
+-checksum = "52ff2c0fe9bc6cb6b14a0592c2ff4fa9ceb83eea9db979b0487cd054946a2b8f"
++version = "0.2.190"
++source = "registry+https://github.com/rust-lang/crates.io-index"
++checksum = "ce5d3ddc6d3fa000eb1536d85e147bfe31aacaba692ed6a876f95cb7c855be78"
+ 
+ [[package]]
+ name = "linux-raw-sys"
+@@ -450,22 +410,16 @@
+ checksum = "32a66949e030da00e8c7d4434b251670a91556f4144941d37452769c25d58a53"
+ 
+ [[package]]
+-name = "log"
+-version = "0.4.29"
+-source = "registry+https://github.com/rust-lang/crates.io-index"
+-checksum = "5e5032e24019045c762d3c0f28f5b6b8bbf38563a65908389bf7978758920897"
+-
+-[[package]]
+ name = "memchr"
+-version = "2.8.0"
+-source = "registry+https://github.com/rust-lang/crates.io-index"
+-checksum = "f8ca58f447f06ed17d5fc4043ce1b10dd205e060fb3ce5b979b8ed8e59ff3f79"
++version = "2.8.3"
++source = "registry+https://github.com/rust-lang/crates.io-index"
++checksum = "cf8baf1c55e62ffcace7a9f06f4bd9cd3f0c4beb022d3b367256b91b87513d98"
+ 
+ [[package]]
+ name = "num-bigint"
+-version = "0.4.6"
+-source = "registry+https://github.com/rust-lang/crates.io-index"
+-checksum = "a5e44f723f1133c9deac646763579fdb3ac745e418f2a7af9cd0c431da1f20b9"
++version = "0.5.1"
++source = "registry+https://github.com/rust-lang/crates.io-index"
++checksum = "93e7820bc0a80a0238e650327316f929ba18d5be054b647490a3a6a339f3e7c0"
+ dependencies = [
+  "num-integer",
+  "num-traits",
+@@ -473,18 +427,18 @@
+ 
+ [[package]]
+ name = "num-integer"
+-version = "0.1.46"
+-source = "registry+https://github.com/rust-lang/crates.io-index"
+-checksum = "7969661fd2958a5cb096e56c8e1ad0444ac2bbcd0061bd28660485a44879858f"
++version = "0.1.47"
++source = "registry+https://github.com/rust-lang/crates.io-index"
++checksum = "7ce2d95d4b3734dc35aa2f45e1aa22cd416814592a4f9d9205e11affd5b8e10b"
+ dependencies = [
+  "num-traits",
+ ]
+ 
+ [[package]]
+ name = "num-modular"
+-version = "0.6.1"
+-source = "registry+https://github.com/rust-lang/crates.io-index"
+-checksum = "17bb261bf36fa7d83f4c294f834e91256769097b3cb505d44831e0a179ac647f"
++version = "0.7.0"
++source = "registry+https://github.com/rust-lang/crates.io-index"
++checksum = "551770cb39471d5f8e98604dd3a1c5392c757e1d2e5cc68274ba4eef20eda06f"
+ dependencies = [
+  "num-bigint",
+  "num-integer",
+@@ -511,6 +465,12 @@
+ version = "11.1.5"
+ source = "registry+https://github.com/rust-lang/crates.io-index"
+ checksum = "d6790f58c7ff633d8771f42965289203411a5e5c68388703c06e14f24770b41e"
++
++[[package]]
++name = "pin-project-lite"
++version = "0.2.17"
++source = "registry+https://github.com/rust-lang/crates.io-index"
++checksum = "a89322df9ebe1c1578d689c92318e070967d1042b512afbe49518723f4e6d5cd"
+ 
+ [[package]]
+ name = "plotters"
+@@ -550,20 +510,10 @@
+ ]
+ 
+ [[package]]
+-name = "prettyplease"
+-version = "0.2.37"
+-source = "registry+https://github.com/rust-lang/crates.io-index"
+-checksum = "479ca8adacdd7ce8f1fb39ce9ecccbfe93a3f1344b3d0d97f20bc0196208f62b"
+-dependencies = [
+- "proc-macro2",
+- "syn",
+-]
+-
+-[[package]]
+ name = "proc-macro2"
+-version = "1.0.106"
+-source = "registry+https://github.com/rust-lang/crates.io-index"
+-checksum = "8fd00f0bb2e90d81d1044c2b32617f68fcb9fa3bb7640c23e9c748e53fb30934"
++version = "1.0.107"
++source = "registry+https://github.com/rust-lang/crates.io-index"
++checksum = "985e7ec9bb745e6ce6535b544d84d6cd6f7ad8bd711c398938ae983b91a766d9"
+ dependencies = [
+  "unicode-ident",
+ ]
+@@ -595,9 +545,9 @@
+ 
+ [[package]]
+ name = "quote"
+-version = "1.0.45"
+-source = "registry+https://github.com/rust-lang/crates.io-index"
+-checksum = "41f2619966050689382d2b44f664f4bc593e129785a36d6ee376ddf37259b924"
++version = "1.0.47"
++source = "registry+https://github.com/rust-lang/crates.io-index"
++checksum = "1fbf4db142a473a8d80c26bbf18454ed458bf8d26c8219c331daecfdbd079001"
+ dependencies = [
+  "proc-macro2",
+ ]
+@@ -616,9 +566,9 @@
+ 
+ [[package]]
+ name = "rand"
+-version = "0.9.4"
+-source = "registry+https://github.com/rust-lang/crates.io-index"
+-checksum = "44c5af06bb1b7d3216d91932aed5265164bf384dc89cd6ba05cf59a35f5f76ea"
++version = "0.9.5"
++source = "registry+https://github.com/rust-lang/crates.io-index"
++checksum = "b9ef1d0d795eb7d84685bca4f72f3649f064e6641543d3a8c415898726a57b41"
+ dependencies = [
+  "rand_chacha",
+  "rand_core 0.9.5",
+@@ -680,9 +630,9 @@
+ 
+ [[package]]
+ name = "regex"
+-version = "1.12.3"
+-source = "registry+https://github.com/rust-lang/crates.io-index"
+-checksum = "e10754a14b9137dd7b1e3e5b0493cc9171fdd105e0ab477f51b72e7f3ac0e276"
++version = "1.13.1"
++source = "registry+https://github.com/rust-lang/crates.io-index"
++checksum = "f020237b6c8eed93db2e2cb53c00c60a8e1bc73da7d073199a1180401450218d"
+ dependencies = [
+  "aho-corasick",
+  "memchr",
+@@ -692,9 +642,9 @@
+ 
+ [[package]]
+ name = "regex-automata"
+-version = "0.4.14"
+-source = "registry+https://github.com/rust-lang/crates.io-index"
+-checksum = "6e1dd4122fc1595e8162618945476892eefca7b88c52820e74af6262213cae8f"
++version = "0.4.18"
++source = "registry+https://github.com/rust-lang/crates.io-index"
++checksum = "ad8553b9b26413251cbf30e620595c7a41b3887f03da04579c0e6b0d6a06b4b2"
+ dependencies = [
+  "aho-corasick",
+  "memchr",
+@@ -703,9 +653,9 @@
+ 
+ [[package]]
+ name = "regex-syntax"
+-version = "0.8.10"
+-source = "registry+https://github.com/rust-lang/crates.io-index"
+-checksum = "dc897dd8d9e8bd1ed8cdad82b5966c3e0ecae09fb1907d58efaa013543185d0a"
++version = "0.8.11"
++source = "registry+https://github.com/rust-lang/crates.io-index"
++checksum = "d6f6ff9a378485b298a5286656da665ba74413d36db0979633275d2e708145d4"
+ 
+ [[package]]
+ name = "rlp"
+@@ -725,9 +675,9 @@
+ 
+ [[package]]
+ name = "rustix"
+-version = "1.1.4"
+-source = "registry+https://github.com/rust-lang/crates.io-index"
+-checksum = "b6fe4565b9518b83ef4f91bb47ce29620ca828bd32cb7e408f0062e9930ba190"
++version = "1.1.5"
++source = "registry+https://github.com/rust-lang/crates.io-index"
++checksum = "891efababe418670775f199f0d233d84843c227a0949a883ce15b37c78d6629d"
+ dependencies = [
+  "bitflags",
+  "errno",
+@@ -738,9 +688,9 @@
+ 
+ [[package]]
+ name = "rustversion"
+-version = "1.0.22"
+-source = "registry+https://github.com/rust-lang/crates.io-index"
+-checksum = "b39cdef0fa800fc44525c84ccb54a029961a8215f9619753635a9c0d2538d46d"
++version = "1.0.23"
++source = "registry+https://github.com/rust-lang/crates.io-index"
++checksum = "cf54715a573b99ac80df0bc206da022bcd442c974952c7b9720069370852e21f"
+ 
+ [[package]]
+ name = "rusty-fork"
+@@ -764,16 +714,10 @@
+ ]
+ 
+ [[package]]
+-name = "semver"
+-version = "1.0.28"
+-source = "registry+https://github.com/rust-lang/crates.io-index"
+-checksum = "8a7852d02fc848982e0c167ef163aaff9cd91dc640ba85e263cb1ce46fae51cd"
+-
+-[[package]]
+ name = "serde"
+-version = "1.0.228"
+-source = "registry+https://github.com/rust-lang/crates.io-index"
+-checksum = "9a8e94ea7f378bd32cbbd37198a4a91436180c5bb472411e48b5ec2e2124ae9e"
++version = "1.0.229"
++source = "registry+https://github.com/rust-lang/crates.io-index"
++checksum = "4148590afebada386688f18773da617792bf2ef03ffc1e4cbd2b1d45b023e0ba"
+ dependencies = [
+  "serde_core",
+  "serde_derive",
+@@ -781,29 +725,29 @@
+ 
+ [[package]]
+ name = "serde_core"
+-version = "1.0.228"
+-source = "registry+https://github.com/rust-lang/crates.io-index"
+-checksum = "41d385c7d4ca58e59fc732af25c3983b67ac852c1a25000afe1175de458b67ad"
++version = "1.0.229"
++source = "registry+https://github.com/rust-lang/crates.io-index"
++checksum = "67dca2c9c51e58a4791a4b1ed58308b39c64224d349a935ab5039aa360942a48"
+ dependencies = [
+  "serde_derive",
+ ]
+ 
+ [[package]]
+ name = "serde_derive"
+-version = "1.0.228"
+-source = "registry+https://github.com/rust-lang/crates.io-index"
+-checksum = "d540f220d3187173da220f885ab66608367b6574e925011a9353e4badda91d79"
++version = "1.0.229"
++source = "registry+https://github.com/rust-lang/crates.io-index"
++checksum = "e7a5d71263a5a7d47b41f6b3f06ba276f10cc18b0931f1799f710578e2309348"
+ dependencies = [
+  "proc-macro2",
+  "quote",
+- "syn",
++ "syn 3.0.6",
+ ]
+ 
+ [[package]]
+ name = "serde_json"
+-version = "1.0.149"
+-source = "registry+https://github.com/rust-lang/crates.io-index"
+-checksum = "83fc039473c5595ace860d8c4fafa220ff474b3fc6bfdb4293327f1a37e94d86"
++version = "1.0.151"
++source = "registry+https://github.com/rust-lang/crates.io-index"
++checksum = "c841b55ecdae098c80dcae9cf767f6f8a0c2cdb3416bbef72181df4d0fe73f14"
+ dependencies = [
+  "itoa",
+  "memchr",
+@@ -823,6 +767,12 @@
+ ]
+ 
+ [[package]]
++name = "slab"
++version = "0.4.12"
++source = "registry+https://github.com/rust-lang/crates.io-index"
++checksum = "0c790de23124f9ab44544d7ac05d60440adc586479ce501c1d6d7da3cd8c9cf5"
++
++[[package]]
+ name = "subtle"
+ version = "2.6.1"
+ source = "registry+https://github.com/rust-lang/crates.io-index"
+@@ -830,9 +780,9 @@
+ 
+ [[package]]
+ name = "syn"
+-version = "2.0.117"
+-source = "registry+https://github.com/rust-lang/crates.io-index"
+-checksum = "e665b8803e7b1d2a727f4023456bbbbe74da67099c585258af0ad9c5013b9b99"
++version = "2.0.119"
++source = "registry+https://github.com/rust-lang/crates.io-index"
++checksum = "872831b642d1a07999a962a351ed35b955ea2cfc8f3862091e2a240a84f17297"
+ dependencies = [
+  "proc-macro2",
+  "quote",
+@@ -840,13 +790,24 @@
+ ]
+ 
+ [[package]]
++name = "syn"
++version = "3.0.6"
++source = "registry+https://github.com/rust-lang/crates.io-index"
++checksum = "8593e8e72159ed2257d083c7a454a85cbf854f37a0966d8d483aff8c8a3ebcee"
++dependencies = [
++ "proc-macro2",
++ "quote",
++ "unicode-ident",
++]
++
++[[package]]
+ name = "tempfile"
+ version = "3.27.0"
+ source = "registry+https://github.com/rust-lang/crates.io-index"
+ checksum = "32497e9a4c7b38532efcdebeef879707aa9f794296a4f0244f6f69e9bc8574bd"
+ dependencies = [
+  "fastrand",
+- "getrandom 0.4.2",
++ "getrandom 0.4.3",
+  "once_cell",
+  "rustix",
+  "windows-sys",
+@@ -864,9 +825,9 @@
+ 
+ [[package]]
+ name = "typenum"
+-version = "1.20.0"
+-source = "registry+https://github.com/rust-lang/crates.io-index"
+-checksum = "40ce102ab67701b8526c123c1bab5cbe42d7040ccfd0f64af1a385808d2f43de"
++version = "1.20.1"
++source = "registry+https://github.com/rust-lang/crates.io-index"
++checksum = "b6f5e870be6c3b371b77fe0ee0bafb859fa4964b4404c27de1d380043c4dda20"
+ 
+ [[package]]
+ name = "unarray"
+@@ -876,15 +837,9 @@
+ 
+ [[package]]
+ name = "unicode-ident"
+-version = "1.0.24"
+-source = "registry+https://github.com/rust-lang/crates.io-index"
+-checksum = "e6e4313cd5fcd3dad5cafa179702e2b244f760991f45397d14d4ebf38247da75"
+-
+-[[package]]
+-name = "unicode-xid"
+-version = "0.2.6"
+-source = "registry+https://github.com/rust-lang/crates.io-index"
+-checksum = "ebc1c04c71510c7f702b52b7c350734c9ff1295c464a03335b00bb84fc54f853"
++version = "1.0.26"
++source = "registry+https://github.com/rust-lang/crates.io-index"
++checksum = "d245f478577f809a851594d02313b640fb437e0bb33866753cff937863096954"
+ 
+ [[package]]
+ name = "wait-timeout"
+@@ -907,27 +862,18 @@
+ 
+ [[package]]
+ name = "wasip2"
+-version = "1.0.2+wasi-0.2.9"
+-source = "registry+https://github.com/rust-lang/crates.io-index"
+-checksum = "9517f9239f02c069db75e65f174b3da828fe5f5b945c4dd26bd25d89c03ebcf5"
++version = "1.0.4+wasi-0.2.12"
++source = "registry+https://github.com/rust-lang/crates.io-index"
++checksum = "b67efb37e106e55ce722a510d6b5f9c17f083e5fc79afc2badeb12cc313d9487"
+ dependencies = [
+  "wit-bindgen",
+ ]
+ 
+ [[package]]
+-name = "wasip3"
+-version = "0.4.0+wasi-0.3.0-rc-2026-01-06"
+-source = "registry+https://github.com/rust-lang/crates.io-index"
+-checksum = "5428f8bf88ea5ddc08faddef2ac4a67e390b88186c703ce6dbd955e1c145aca5"
+-dependencies = [
+- "wit-bindgen",
+-]
+-
+-[[package]]
+ name = "wasm-bindgen"
+-version = "0.2.118"
+-source = "registry+https://github.com/rust-lang/crates.io-index"
+-checksum = "0bf938a0bacb0469e83c1e148908bd7d5a6010354cf4fb73279b7447422e3a89"
++version = "0.2.129"
++source = "registry+https://github.com/rust-lang/crates.io-index"
++checksum = "9bb54f33acc68fd454578d9820b0bde1a1a3d17aa17bb7b6595806d02886d409"
+ dependencies = [
+  "cfg-if",
+  "once_cell",
+@@ -938,9 +884,9 @@
+ 
+ [[package]]
+ name = "wasm-bindgen-macro"
+-version = "0.2.118"
+-source = "registry+https://github.com/rust-lang/crates.io-index"
+-checksum = "eeff24f84126c0ec2db7a449f0c2ec963c6a49efe0698c4242929da037ca28ed"
++version = "0.2.129"
++source = "registry+https://github.com/rust-lang/crates.io-index"
++checksum = "2e29d0c35b16e224a7eeb5cd2d25e3e1968fbd65604117b44d3b789d00ee8535"
+ dependencies = [
+  "quote",
+  "wasm-bindgen-macro-support",
+@@ -948,65 +894,31 @@
+ 
+ [[package]]
+ name = "wasm-bindgen-macro-support"
+-version = "0.2.118"
+-source = "registry+https://github.com/rust-lang/crates.io-index"
+-checksum = "9d08065faf983b2b80a79fd87d8254c409281cf7de75fc4b773019824196c904"
++version = "0.2.129"
++source = "registry+https://github.com/rust-lang/crates.io-index"
++checksum = "6f501a8bc3719dba86ef8ae4728879c08001bea749eb1333ac5b91e040e2a6b7"
+ dependencies = [
+  "bumpalo",
+  "proc-macro2",
+  "quote",
+- "syn",
++ "syn 3.0.6",
+  "wasm-bindgen-shared",
+ ]
+ 
+ [[package]]
+ name = "wasm-bindgen-shared"
+-version = "0.2.118"
+-source = "registry+https://github.com/rust-lang/crates.io-index"
+-checksum = "5fd04d9e306f1907bd13c6361b5c6bfc7b3b3c095ed3f8a9246390f8dbdee129"
++version = "0.2.129"
++source = "registry+https://github.com/rust-lang/crates.io-index"
++checksum = "23f0c9c52aa7cd7d77769a4cfe2a9adb1b331f489a41d912ce14513d5ab995c6"
+ dependencies = [
+  "unicode-ident",
+ ]
+ 
+ [[package]]
+-name = "wasm-encoder"
+-version = "0.244.0"
+-source = "registry+https://github.com/rust-lang/crates.io-index"
+-checksum = "990065f2fe63003fe337b932cfb5e3b80e0b4d0f5ff650e6985b1048f62c8319"
+-dependencies = [
+- "leb128fmt",
+- "wasmparser",
+-]
+-
+-[[package]]
+-name = "wasm-metadata"
+-version = "0.244.0"
+-source = "registry+https://github.com/rust-lang/crates.io-index"
+-checksum = "bb0e353e6a2fbdc176932bbaab493762eb1255a7900fe0fea1a2f96c296cc909"
+-dependencies = [
+- "anyhow",
+- "indexmap",
+- "wasm-encoder",
+- "wasmparser",
+-]
+-
+-[[package]]
+-name = "wasmparser"
+-version = "0.244.0"
+-source = "registry+https://github.com/rust-lang/crates.io-index"
+-checksum = "47b807c72e1bac69382b3a6fb3dbe8ea4c0ed87ff5629b8685ae6b9a611028fe"
+-dependencies = [
+- "bitflags",
+- "hashbrown 0.15.5",
+- "indexmap",
+- "semver",
+-]
+-
+-[[package]]
+ name = "web-sys"
+-version = "0.3.95"
+-source = "registry+https://github.com/rust-lang/crates.io-index"
+-checksum = "4f2dfbb17949fa2088e5d39408c48368947b86f7834484e87b73de55bc14d97d"
++version = "0.3.106"
++source = "registry+https://github.com/rust-lang/crates.io-index"
++checksum = "88261b9deccee56594c11a3460c462c41f58d148598fe70ad77070126a68aba4"
+ dependencies = [
+  "js-sys",
+  "wasm-bindgen",
+@@ -1038,110 +950,28 @@
+ 
+ [[package]]
+ name = "wit-bindgen"
+-version = "0.51.0"
+-source = "registry+https://github.com/rust-lang/crates.io-index"
+-checksum = "d7249219f66ced02969388cf2bb044a09756a083d0fab1e566056b04d9fbcaa5"
+-dependencies = [
+- "wit-bindgen-rust-macro",
+-]
+-
+-[[package]]
+-name = "wit-bindgen-core"
+-version = "0.51.0"
+-source = "registry+https://github.com/rust-lang/crates.io-index"
+-checksum = "ea61de684c3ea68cb082b7a88508a8b27fcc8b797d738bfc99a82facf1d752dc"
+-dependencies = [
+- "anyhow",
+- "heck",
+- "wit-parser",
+-]
+-
+-[[package]]
+-name = "wit-bindgen-rust"
+-version = "0.51.0"
+-source = "registry+https://github.com/rust-lang/crates.io-index"
+-checksum = "b7c566e0f4b284dd6561c786d9cb0142da491f46a9fbed79ea69cdad5db17f21"
+-dependencies = [
+- "anyhow",
+- "heck",
+- "indexmap",
+- "prettyplease",
+- "syn",
+- "wasm-metadata",
+- "wit-bindgen-core",
+- "wit-component",
+-]
+-
+-[[package]]
+-name = "wit-bindgen-rust-macro"
+-version = "0.51.0"
+-source = "registry+https://github.com/rust-lang/crates.io-index"
+-checksum = "0c0f9bfd77e6a48eccf51359e3ae77140a7f50b1e2ebfe62422d8afdaffab17a"
+-dependencies = [
+- "anyhow",
+- "prettyplease",
++version = "0.57.1"
++source = "registry+https://github.com/rust-lang/crates.io-index"
++checksum = "1ebf944e87a7c253233ad6766e082e3cd714b5d03812acc24c318f549614536e"
++
++[[package]]
++name = "zerocopy"
++version = "0.8.60"
++source = "registry+https://github.com/rust-lang/crates.io-index"
++checksum = "6400fc4bb7426f6faac3fb07566122bb18622e3022bd2c36426a92ed489b1dbe"
++dependencies = [
++ "zerocopy-derive",
++]
++
++[[package]]
++name = "zerocopy-derive"
++version = "0.8.60"
++source = "registry+https://github.com/rust-lang/crates.io-index"
++checksum = "99c27cc7525bad4df59a45e073c45b2c2aa820efb588234cc23a547ec69a34db"
++dependencies = [
+  "proc-macro2",
+  "quote",
+- "syn",
+- "wit-bindgen-core",
+- "wit-bindgen-rust",
+-]
+-
+-[[package]]
+-name = "wit-component"
+-version = "0.244.0"
+-source = "registry+https://github.com/rust-lang/crates.io-index"
+-checksum = "9d66ea20e9553b30172b5e831994e35fbde2d165325bec84fc43dbf6f4eb9cb2"
+-dependencies = [
+- "anyhow",
+- "bitflags",
+- "indexmap",
+- "log",
+- "serde",
+- "serde_derive",
+- "serde_json",
+- "wasm-encoder",
+- "wasm-metadata",
+- "wasmparser",
+- "wit-parser",
+-]
+-
+-[[package]]
+-name = "wit-parser"
+-version = "0.244.0"
+-source = "registry+https://github.com/rust-lang/crates.io-index"
+-checksum = "ecc8ac4bc1dc3381b7f59c34f00b67e18f910c2c0f50015669dde7def656a736"
+-dependencies = [
+- "anyhow",
+- "id-arena",
+- "indexmap",
+- "log",
+- "semver",
+- "serde",
+- "serde_derive",
+- "serde_json",
+- "unicode-xid",
+- "wasmparser",
+-]
+-
+-[[package]]
+-name = "zerocopy"
+-version = "0.8.48"
+-source = "registry+https://github.com/rust-lang/crates.io-index"
+-checksum = "eed437bf9d6692032087e337407a86f04cd8d6a16a37199ed57949d415bd68e9"
+-dependencies = [
+- "zerocopy-derive",
+-]
+-
+-[[package]]
+-name = "zerocopy-derive"
+-version = "0.8.48"
+-source = "registry+https://github.com/rust-lang/crates.io-index"
+-checksum = "70e3cd084b1788766f53af483dd21f93881ff30d7320490ec3ef7526d203bad4"
+-dependencies = [
+- "proc-macro2",
+- "quote",
+- "syn",
++ "syn 2.0.119",
+ ]
+ 
+ [[package]]
+@@ -1152,6 +982,6 @@
+ 
+ [[package]]
+ name = "zmij"
+-version = "1.0.21"
+-source = "registry+https://github.com/rust-lang/crates.io-index"
+-checksum = "b8848ee67ecc8aedbaf3e4122217aff892639231befc6a1b58d29fff4c2cabaa"
++version = "1.0.23"
++source = "registry+https://github.com/rust-lang/crates.io-index"
++checksum = "29666d0abbfad1e3dc4dcf6144730dd3a3ab225bbbdac83319345b1b44ccfc1b"
+--- crypto-bigint-0.7.5/Cargo.toml
++++ crypto-bigint-0.7.6/Cargo.toml
+@@ -11,9 +11,9 @@
+ 
+ [package]
+ edition = "2024"
+-rust-version = "1.85"
++rust-version = "1.87"
+ name = "crypto-bigint"
+-version = "0.7.5"
++version = "0.7.6"
+ authors = ["RustCrypto Developers"]
+ build = false
+ exclude = [
+@@ -28,9 +28,9 @@
+ autotests = false
+ autobenches = false
+ description = """
+-Pure Rust implementation of a big integer library which has been designed from
+-the ground-up for use in cryptographic applications. Provides constant-time,
+-no_std-friendly implementations of modern formulas using const generics.
++Pure Rust implementation of a big integer library which has been designed from the ground-up for use
++in cryptographic applications. Provides constant-time, `no_std`/`no_alloc`-friendly implementations
++of modern formulas using const generics. Also includes optional support for heap-backed integers.
+ """
+ readme = "README.md"
+ keywords = [
+@@ -49,7 +49,7 @@
+ ]
+ license = "Apache-2.0 OR MIT"
+ repository = "https://github.com/RustCrypto/crypto-bigint"
+-resolver = "2"
++resolver = "3"
+ 
+ [package.metadata.docs.rs]
+ all-features = true
+@@ -162,7 +162,7 @@
+ version = "0.1"
+ 
+ [dependencies.ctutils]
+-version = "0.4"
++version = "0.4.5"
+ 
+ [dependencies.der]
+ version = "0.8"
+@@ -216,16 +216,15 @@
+ version = "1"
+ 
+ [dev-dependencies.num-bigint]
+-version = "0.4"
++version = "0.5"
+ 
+ [dev-dependencies.num-integer]
+ version = "0.1"
+ 
+ [dev-dependencies.num-modular]
+-version = "0.6"
++version = "0.7"
+ features = [
+     "num-bigint",
+-    "num-integer",
+     "num-traits",
+ ]
+ 
+@@ -248,7 +247,6 @@
+ cast_sign_loss = "warn"
+ checked_conversions = "warn"
+ doc_markdown = "warn"
+-from_iter_instead_of_collect = "warn"
+ implicit_saturating_sub = "warn"
+ integer_division_remainder_used = "warn"
+ manual_assert = "warn"
+--- crypto-bigint-0.7.5/Cargo.toml.orig
++++ crypto-bigint-0.7.6/Cargo.toml.orig
+@@ -1,10 +1,10 @@
+ [package]
+ name = "crypto-bigint"
+-version = "0.7.5"
++version = "0.7.6"
+ description = """
+-Pure Rust implementation of a big integer library which has been designed from
+-the ground-up for use in cryptographic applications. Provides constant-time,
+-no_std-friendly implementations of modern formulas using const generics.
++Pure Rust implementation of a big integer library which has been designed from the ground-up for use
++in cryptographic applications. Provides constant-time, `no_std`/`no_alloc`-friendly implementations
++of modern formulas using const generics. Also includes optional support for heap-backed integers.
+ """
+ authors = ["RustCrypto Developers"]
+ license = "Apache-2.0 OR MIT"
+@@ -12,14 +12,14 @@
+ categories = ["algorithms", "cryptography", "data-structures", "mathematics", "no-std"]
+ keywords = ["arbitrary", "crypto", "bignum", "integer", "precision"]
+ readme = "README.md"
+-resolver = "2"
++resolver = "3"
+ edition = "2024"
+-rust-version = "1.85"
++rust-version = "1.87"
+ exclude = [".clippy.toml", ".codecov.yml", ".github", ".gitignore"]
+ 
+ [dependencies]
+ cpubits = "0.1"
+-ctutils = "0.4"
++ctutils = "0.4.5"
+ num-traits = { version = "0.2.19", default-features = false }
+ 
+ # optional dependencies
+@@ -35,9 +35,9 @@
+ [dev-dependencies]
+ chacha20 = { version = "0.10", default-features = false, features = ["rng"] }
+ hex-literal = "1"
+-num-bigint = "0.4"
++num-bigint = "0.5"
+ num-integer = "0.1"
+-num-modular = { version = "0.6", features = ["num-bigint", "num-integer", "num-traits"] }
++num-modular = { version = "0.7", features = ["num-bigint", "num-traits"] }
+ rand_core = "0.10"
+ 
+ [target.'cfg(any(unix, windows))'.dev-dependencies]
+@@ -78,7 +78,6 @@
+ cast_sign_loss = "warn"
+ checked_conversions = "warn"
+ doc_markdown = "warn"
+-from_iter_instead_of_collect = "warn"
+ implicit_saturating_sub = "warn"
+ integer_division_remainder_used = "warn" # not constant time (see Kyberslash)
+ manual_assert = "warn"
+--- crypto-bigint-0.7.5/README.md
++++ crypto-bigint-0.7.6/README.md
+@@ -51,8 +51,8 @@
+ 
+ Licensed under either of:
+ 
+-- [Apache License, Version 2.0](http://www.apache.org/licenses/LICENSE-2.0)
+-- [MIT license](http://opensource.org/licenses/MIT)
++- [Apache License, Version 2.0](https://www.apache.org/licenses/LICENSE-2.0)
++- [MIT license](https://opensource.org/license/mit)
+ 
+ at your option.
+ 
+@@ -73,7 +73,7 @@
+ [coverage-image]: https://codecov.io/gh/RustCrypto/crypto-bigint/graph/badge.svg?token=B4J72KDXXJ
+ [coverage-link]: https://codecov.io/gh/RustCrypto/crypto-bigint
+ [license-image]: https://img.shields.io/badge/license-Apache2.0/MIT-blue.svg
+-[rustc-image]: https://img.shields.io/badge/rustc-1.85+-blue.svg
++[rustc-image]: https://img.shields.io/badge/rustc-1.87+-blue.svg
+ [chat-image]: https://img.shields.io/badge/zulip-join_chat-blue.svg
+ [chat-link]: https://rustcrypto.zulipchat.com/#narrow/stream/300602-crypto-bigint
+ 
+--- crypto-bigint-0.7.5/benches/uint.rs
++++ crypto-bigint-0.7.6/benches/uint.rs
+@@ -1045,6 +1045,14 @@
+         );
+     });
+ 
++    group.bench_function("floor_sqrt, one Limb", |b| {
++        b.iter_batched(
++            || Uint::new([Limb::random_from_rng(&mut rng)]),
++            |x| x.floor_sqrt(),
++            BatchSize::SmallInput,
++        );
++    });
++
+     group.bench_function("floor_sqrt_vartime, U256 one Limb", |b| {
+         b.iter_batched(
+             || U256::from_word(Limb::random_from_rng(&mut rng).0),
+--- crypto-bigint-0.7.5/src/bitlen.rs
++++ crypto-bigint-0.7.6/src/bitlen.rs
+@@ -23,14 +23,27 @@
+ #[cfg_attr(not(feature = "alloc"), allow(dead_code))]
+ #[inline(always)]
+ pub(crate) const fn to_bytes(nbits: u32) -> usize {
+-    u32_to_usize(nbits.div_ceil(8))
++    u32_to_usize(div_ceil_pow2(nbits, 3))
+ }
+ 
+ /// Calculate a `usize` representing the number of limbs required to store the given number of bits
+ /// represented as a `u32` (i.e. rounding up).
+ #[inline(always)]
+ pub(crate) const fn to_limbs(nbits: u32) -> usize {
+-    u32_to_usize(nbits.div_ceil(Limb::BITS))
++    u32_to_usize(to_limbs_u32(nbits))
++}
++
++/// Calculate the number of limbs required to store the given number of bits as a `u32`.
++#[inline(always)]
++pub(crate) const fn to_limbs_u32(nbits: u32) -> u32 {
++    div_ceil_pow2(nbits, Limb::LOG2_BITS)
++}
++
++/// Divide by a power of two, rounding up, without a remainder-dependent branch.
++#[inline(always)]
++const fn div_ceil_pow2(n: u32, log2: u32) -> u32 {
++    let mask = (1 << log2) - 1;
++    (n >> log2).wrapping_add(((n & mask).wrapping_add(mask)) >> log2)
+ }
+ 
+ #[inline(always)]
+@@ -80,4 +93,18 @@
+         assert_eq!(super::to_bytes(16), 2);
+         assert_eq!(super::to_bytes(17), 3);
+     }
++
++    #[test]
++    fn to_limbs() {
++        use crate::Limb;
++
++        assert_eq!(super::to_limbs(0), 0);
++        assert_eq!(super::to_limbs(1), 1);
++        assert_eq!(super::to_limbs(Limb::BITS), 1);
++        assert_eq!(super::to_limbs(Limb::BITS + 1), 2);
++        assert_eq!(
++            super::to_limbs(u32::MAX),
++            u32::MAX.div_ceil(Limb::BITS) as usize
++        );
++    }
+ }
+--- crypto-bigint-0.7.5/src/int/mod_symbol.rs
++++ crypto-bigint-0.7.6/src/int/mod_symbol.rs
+@@ -33,13 +33,11 @@
+     ) -> JacobiSymbol {
+         let (abs, sign) = self.abs_sign();
+         let jacobi = abs.jacobi_symbol_vartime(rhs);
+-        JacobiSymbol::from_i8(
+-            if sign.to_bool_vartime() && rhs.as_ref().limbs[0].0 & 3 == 3 {
+-                -(jacobi as i8)
+-            } else {
+-                jacobi as i8
+-            },
+-        )
++        JacobiSymbol::from_i8(if sign.to_bool() && rhs.as_ref().limbs[0].0 & 3 == 3 {
++            -(jacobi as i8)
++        } else {
++            jacobi as i8
++        })
+     }
+ }
+ 
+--- crypto-bigint-0.7.5/src/int/shl.rs
++++ crypto-bigint-0.7.6/src/int/shl.rs
+@@ -203,7 +203,7 @@
+ 
+     #[test]
+     fn shl256_const() {
+-        assert!(N.overflowing_shl(256).is_none().to_bool_vartime());
++        assert!(N.overflowing_shl(256).is_none().to_bool());
+         assert!(ShlVartime::overflowing_shl_vartime(&N, 256).is_none());
+     }
+ 
+--- crypto-bigint-0.7.5/src/int/shr.rs
++++ crypto-bigint-0.7.6/src/int/shr.rs
+@@ -236,7 +236,7 @@
+ 
+     #[test]
+     fn shr256_const() {
+-        assert!(N.overflowing_shr(256).is_none().to_bool_vartime());
++        assert!(N.overflowing_shr(256).is_none().to_bool());
+         assert!(ShrVartime::overflowing_shr_vartime(&N, 256).is_none());
+     }
+ 
+--- crypto-bigint-0.7.5/src/int/sqrt.rs
++++ crypto-bigint-0.7.6/src/int/sqrt.rs
+@@ -20,7 +20,7 @@
+     /// Variable time with respect to `self`.
+     #[must_use]
+     pub fn checked_sqrt_vartime(&self) -> Option<Self> {
+-        if self.is_negative().not().to_bool_vartime() {
++        if self.is_negative().not().to_bool() {
+             self.as_uint()
+                 .checked_sqrt_vartime()
+                 .map(|rt| Self::new(rt.limbs))
+--- crypto-bigint-0.7.5/src/limb.rs
++++ crypto-bigint-0.7.6/src/limb.rs
+@@ -26,7 +26,8 @@
+ 
+ use crate::{
+     Bounded, Choice, ConstOne, ConstZero, Constants, CtEq, CtOption, Integer, NonZero, One,
+-    UintRef, Unsigned, WideWord, Word, Zero, primitives::u32_bits, traits::sealed::Sealed, word,
++    UintRef, Unsigned, WideWord, Word, Zero, bitlen, primitives::u32_bits, traits::sealed::Sealed,
++    word,
+ };
+ use core::{fmt, ptr, slice};
+ 
+@@ -38,11 +39,7 @@
+ #[inline(always)]
+ #[must_use]
+ pub const fn nlimbs(bits: u32) -> usize {
+-    match cpubits::CPUBITS {
+-        32 => (((bits as u64) + 31) >> 5) as usize,
+-        64 => (((bits as u64) + 63) >> 6) as usize,
+-        _ => unreachable!(),
+-    }
++    bitlen::to_limbs(bits)
+ }
+ 
+ /// Big integers are represented as an array/vector of smaller CPU word-size integers called
+--- crypto-bigint-0.7.5/src/limb/bits.rs
++++ crypto-bigint-0.7.6/src/limb/bits.rs
+@@ -1,4 +1,4 @@
+-use crate::{BitOps, Choice, Word};
++use crate::{BitOps, Choice, Word, word};
+ 
+ use super::Limb;
+ 
+@@ -50,28 +50,28 @@
+     #[inline(always)]
+     #[must_use]
+     pub const fn bits(self) -> u32 {
+-        Limb::BITS - self.0.leading_zeros()
++        Limb::BITS - self.leading_zeros()
+     }
+ 
+     /// Calculate the number of leading zeros in the binary representation of this number.
+     #[inline(always)]
+     #[must_use]
+     pub const fn leading_zeros(self) -> u32 {
+-        self.0.leading_zeros()
++        word::leading_zeros(self.0)
+     }
+ 
+     /// Calculate the number of trailing zeros in the binary representation of this number.
+     #[inline(always)]
+     #[must_use]
+     pub const fn trailing_zeros(self) -> u32 {
+-        self.0.trailing_zeros()
++        word::trailing_zeros(self.0)
+     }
+ 
+     /// Calculate the number of trailing ones the binary representation of this number.
+     #[inline(always)]
+     #[must_use]
+     pub const fn trailing_ones(self) -> u32 {
+-        self.0.trailing_ones()
++        word::trailing_zeros(!self.0)
+     }
+ 
+     /// Clear bits at or above the given bit position.
+@@ -100,7 +100,7 @@
+ 
+     #[inline(always)]
+     fn bits(&self) -> u32 {
+-        Limb::BITS - self.0.leading_zeros()
++        Limb::bits(*self)
+     }
+ 
+     #[inline(always)]
+@@ -110,7 +110,7 @@
+ 
+     #[inline(always)]
+     fn leading_zeros(&self) -> u32 {
+-        self.0.leading_zeros()
++        Limb::leading_zeros(*self)
+     }
+ 
+     #[inline(always)]
+@@ -130,12 +130,12 @@
+ 
+     #[inline(always)]
+     fn trailing_ones(&self) -> u32 {
+-        self.0.trailing_ones()
++        Limb::trailing_ones(*self)
+     }
+ 
+     #[inline(always)]
+     fn trailing_zeros(&self) -> u32 {
+-        self.0.trailing_zeros()
++        Limb::trailing_zeros(*self)
+     }
+ }
+ 
+@@ -154,13 +154,13 @@
+     #[test]
+     fn bit() {
+         let u = limb_with_bits_at(&[2, 4, 8, 15]);
+-        assert!(!BitOps::bit(&u, 0).to_bool_vartime());
+-        assert!(!BitOps::bit(&u, 1).to_bool_vartime());
+-        assert!(BitOps::bit(&u, 2).to_bool_vartime());
+-        assert!(BitOps::bit(&u, 4).to_bool_vartime());
+-        assert!(BitOps::bit(&u, 8).to_bool_vartime());
+-        assert!(!BitOps::bit(&u, Limb::BITS).to_bool_vartime());
+-        assert!(!BitOps::bit(&u, 300).to_bool_vartime());
++        assert!(!BitOps::bit(&u, 0).to_bool());
++        assert!(!BitOps::bit(&u, 1).to_bool());
++        assert!(BitOps::bit(&u, 2).to_bool());
++        assert!(BitOps::bit(&u, 4).to_bool());
++        assert!(BitOps::bit(&u, 8).to_bool());
++        assert!(!BitOps::bit(&u, Limb::BITS).to_bool());
++        assert!(!BitOps::bit(&u, 300).to_bool());
+     }
+ 
+     #[test]
+--- crypto-bigint-0.7.5/src/limb/sub.rs
++++ crypto-bigint-0.7.6/src/limb/sub.rs
+@@ -1,8 +1,7 @@
+ //! Limb subtraction
+ 
+ use crate::{
+-    Checked, CheckedSub, CtOption, Limb, Sub, SubAssign, SubMod, Wrapping, WrappingSub,
+-    primitives::borrowing_sub,
++    Checked, CheckedSub, CtOption, Limb, Sub, SubAssign, SubMod, Wrapping, WrappingSub, word,
+ };
+ 
+ impl Limb {
+@@ -17,8 +16,8 @@
+     #[inline(always)]
+     #[must_use]
+     pub const fn borrowing_sub(self, rhs: Limb, borrow: Limb) -> (Limb, Limb) {
+-        let (res, borrow) = borrowing_sub(self.0, rhs.0, borrow.0);
+-        (Limb(res), Limb(borrow))
++        let (res, borrow) = word::borrowing_sub(self.0, rhs.0, word::choice_from_msb(borrow.0));
++        (Limb(res), Limb(word::choice_to_mask(borrow)))
+     }
+ 
+     /// Perform saturating subtraction.
+@@ -127,6 +126,31 @@
+     use crate::{CheckedSub, Limb};
+ 
+     #[test]
++    fn borrowing_sub_boundary_values() {
++        use crate::{Limb, Word};
++
++        let msb = 1 << (Word::BITS - 1);
++        let values = [0, 1, 2, msb - 1, msb, msb + 1, Word::MAX - 1, Word::MAX];
++        let borrows = [0, 1, msb, Word::MAX];
++
++        for lhs in values {
++            for rhs in values {
++                for borrow in borrows {
++                    let (ret, borrow1) = lhs.overflowing_sub(borrow >> (Word::BITS - 1));
++                    let (expected, borrow2) = ret.overflowing_sub(rhs);
++                    let expected_borrow = Word::from(borrow1 | borrow2).wrapping_neg();
++
++                    assert_eq!(
++                        Limb(lhs).borrowing_sub(Limb(rhs), Limb(borrow)),
++                        (Limb(expected), Limb(expected_borrow)),
++                        "lhs={lhs:#x}, rhs={rhs:#x}, borrow={borrow:#x}"
++                    );
++                }
++            }
++        }
++    }
++
++    #[test]
+     fn borrowing_sub_no_borrow() {
+         let (res, borrow) = Limb::ONE.borrowing_sub(Limb::ONE, Limb::ZERO);
+         assert_eq!(res, Limb::ZERO);
+--- crypto-bigint-0.7.5/src/modular/bingcd/gcd.rs
++++ crypto-bigint-0.7.6/src/modular/bingcd/gcd.rs
+@@ -124,7 +124,6 @@
+     #[inline(always)]
+     pub(crate) const fn optimized_bingcd(&self, rhs: &Uint<LIMBS>) -> Self {
+         self.optimized_bingcd_::<{ U64::BITS }, { U64::LIMBS }, { U128::LIMBS }>(rhs, U64::BITS - 1)
+-            .0
+     }
+ 
+     /// Computes `gcd(self, rhs)`, leveraging the optimized Binary GCD algorithm.
+@@ -154,9 +153,8 @@
+         &self,
+         rhs: &Uint<LIMBS>,
+         batch_max: u32,
+-    ) -> (Self, Word) {
++    ) -> Self {
+         let (mut a, mut b) = (*self.as_ref(), *rhs);
+-        let mut jacobi_neg = 0;
+ 
+         let mut iterations = Self::MINIMAL_BINGCD_ITERATIONS;
+         while iterations > 0 {
+@@ -169,11 +167,10 @@
+             let b_ = b.compact::<K, LIMBS_2K>(n);
+ 
+             // Compute the batch update matrix from a_ and b_.
+-            let (.., matrix, j_neg) = a_
++            let (.., matrix) = a_
+                 .to_odd()
+                 .expect_copied("a_ is always odd")
+                 .partial_binxgcd::<LIMBS_K>(&b_, batch, Choice::FALSE);
+-            jacobi_neg ^= j_neg;
+ 
+             // Update `a` and `b` using the update matrix.
+             // Safe to use vartime: the number of doublings is the same as the batch size.
+@@ -182,11 +179,8 @@
+             (b, _) = updated_b.dropped_abs_sign();
+         }
+ 
+-        (
+-            a.to_odd()
+-                .expect_copied("gcd of an odd value is always odd"),
+-            jacobi_neg,
+-        )
++        a.to_odd()
++            .expect_copied("gcd of an odd value is always odd")
+     }
+ 
+     /// Variable time equivalent of [`Self::optimized_bingcd`].
+@@ -196,7 +190,6 @@
+             rhs,
+             U64::BITS - 1,
+         )
+-        .0
+     }
+ 
+     /// Variable time equivalent of [`Self::optimized_bingcd_`].
+@@ -209,9 +202,8 @@
+         &self,
+         rhs: &Uint<LIMBS>,
+         batch_max: u32,
+-    ) -> (Self, Word) {
++    ) -> Self {
+         let (mut a, mut b) = (*self.as_ref(), *rhs);
+-        let mut jacobi_neg = 0;
+ 
+         while !b.is_zero_vartime() {
+             // Construct a_ and b_ as the summary of a and b, respectively.
+@@ -221,7 +213,7 @@
+ 
+             if n <= Uint::<LIMBS_2K>::BITS {
+                 loop {
+-                    jacobi_neg ^= bingcd_step(&mut b_, &mut a_).2;
++                    bingcd_step(&mut b_, &mut a_);
+                     if b_.is_zero_vartime() {
+                         break;
+                     }
+@@ -231,11 +223,10 @@
+             }
+ 
+             // Compute the batch update matrix from a_ and b_.
+-            let (.., matrix, j_neg) = a_
++            let (.., matrix) = a_
+                 .to_odd()
+                 .expect_copied("a_ is always odd")
+                 .partial_binxgcd::<LIMBS_K>(&b_, batch_max, Choice::FALSE);
+-            jacobi_neg ^= j_neg;
+ 
+             // Update `a` and `b` using the update matrix.
+             let (updated_a, updated_b) = matrix.extended_apply_to_vartime((a, b));
+@@ -243,11 +234,8 @@
+             (b, _) = updated_b.dropped_abs_sign();
+         }
+ 
+-        (
+-            a.to_odd()
+-                .expect_copied("gcd of an odd value with something else is always odd"),
+-            jacobi_neg,
+-        )
++        a.to_odd()
++            .expect_copied("gcd of an odd value with something else is always odd")
+     }
+ }
+ 
+--- crypto-bigint-0.7.5/src/modular/bingcd/xgcd.rs
++++ crypto-bigint-0.7.6/src/modular/bingcd/xgcd.rs
+@@ -2,7 +2,7 @@
+ use super::gcd::bingcd_step;
+ use crate::modular::bingcd::matrix::{DividedIntMatrix, DividedPatternMatrix, PatternMatrix, Unit};
+ use crate::primitives::u32_max;
+-use crate::{Choice, Int, Limb, NonZeroUint, Odd, OddUint, U64, U128, Uint, Word};
++use crate::{Choice, Int, Limb, NonZeroUint, Odd, OddUint, U64, U128, Uint};
+ 
+ /// Binary XGCD update step.
+ ///
+@@ -34,8 +34,8 @@
+     b: &mut Uint<LIMBS>,
+     matrix: &mut DividedPatternMatrix<MATRIX_LIMBS>,
+     halt_at_zero: Choice,
+-) -> Word {
+-    let (a_odd, swap, j) = bingcd_step(a, b);
++) {
++    let (a_odd, swap, _) = bingcd_step(a, b);
+ 
+     // swap if a odd and a < b
+     matrix.conditional_swap_rows(swap);
+@@ -45,8 +45,6 @@
+ 
+     // Double the bottom row of the matrix when a was ≠ 0 and when not halting.
+     matrix.conditional_double_bottom_row(a.is_nonzero().or(halt_at_zero.not()));
+-
+-    j
+ }
+ 
+ /// Container for the raw output of the Binary XGCD algorithm.
+@@ -209,7 +207,7 @@
+     /// Ref: Pornin, Optimized Binary GCD for Modular Inversion, Algorithm 1.
+     /// <https://eprint.iacr.org/2020/972.pdf>.
+     pub(crate) const fn classic_binxgcd(&self, rhs: &Self) -> DividedPatternXgcdOutput<LIMBS> {
+-        let (gcd, _, matrix, _) =
++        let (gcd, _, matrix) =
+             self.partial_binxgcd::<LIMBS>(rhs.as_ref(), Self::MIN_BINXGCD_ITERATIONS, Choice::TRUE);
+         DividedPatternXgcdOutput { gcd, matrix }
+     }
+@@ -278,7 +276,7 @@
+                 Choice::from_u32_le(b_bits, K - 1).or(Choice::from_u32_eq(n, 2 * K));
+ 
+             // Compute the K-1 iteration update matrix from a_ and b_
+-            let (.., update_matrix, _) = compact_a
++            let (.., update_matrix) = compact_a
+                 .to_odd()
+                 .expect_copied("a is always odd")
+                 .partial_binxgcd::<LIMBS_K>(&compact_b, K - 1, b_eq_compact_b);
+@@ -322,7 +320,7 @@
+         rhs: &Uint<LIMBS>,
+         iterations: u32,
+         halt_at_zero: Choice,
+-    ) -> (Self, Uint<LIMBS>, DividedPatternMatrix<UPDATE_LIMBS>, Word) {
++    ) -> (Self, Uint<LIMBS>, DividedPatternMatrix<UPDATE_LIMBS>) {
+         let (mut a, mut b) = (*self.as_ref(), *rhs);
+         // This matrix corresponds with (f0, g0, f1, g1) in the paper.
+         let mut matrix = DividedPatternMatrix::UNIT;
+@@ -334,12 +332,10 @@
+         Uint::swap(&mut a, &mut b);
+         matrix.swap_rows();
+ 
+-        let mut jacobi_neg = 0;
+         let mut i = 0;
+ 
+         while i < iterations {
+-            jacobi_neg ^=
+-                binxgcd_step::<LIMBS, UPDATE_LIMBS>(&mut a, &mut b, &mut matrix, halt_at_zero);
++            binxgcd_step::<LIMBS, UPDATE_LIMBS>(&mut a, &mut b, &mut matrix, halt_at_zero);
+             i += 1;
+         }
+ 
+@@ -348,7 +344,7 @@
+         matrix.swap_rows();
+ 
+         let a = a.to_odd().expect_copied("a is always odd");
+-        (a, b, matrix, jacobi_neg)
++        (a, b, matrix)
+     }
+ }
+ 
+@@ -514,7 +510,7 @@
+ 
+         #[test]
+         fn test_partial_binxgcd() {
+-            let (.., matrix, _) = A.partial_binxgcd::<{ U64::LIMBS }>(&B, 5, Choice::TRUE);
++            let (.., matrix) = A.partial_binxgcd::<{ U64::LIMBS }>(&B, 5, Choice::TRUE);
+             assert_eq!(matrix.k, 5);
+             assert_eq!(
+                 matrix,
+@@ -527,8 +523,7 @@
+             let target_a = U64::from_be_hex("1CB3FB3FA1218FDB").to_odd().unwrap();
+             let target_b = U64::from_be_hex("0EA028AF0F8966B6");
+ 
+-            let (new_a, new_b, matrix, _) =
+-                A.partial_binxgcd::<{ U64::LIMBS }>(&B, 5, Choice::TRUE);
++            let (new_a, new_b, matrix) = A.partial_binxgcd::<{ U64::LIMBS }>(&B, 5, Choice::TRUE);
+ 
+             assert_eq!(new_a, target_a);
+             assert_eq!(new_b, target_b);
+@@ -547,7 +542,7 @@
+ 
+         #[test]
+         fn test_partial_binxgcd_halts() {
+-            let (gcd, _, matrix, _) =
++            let (gcd, _, matrix) =
+                 SMALL_A.partial_binxgcd::<{ U64::LIMBS }>(&SMALL_B, 60, Choice::TRUE);
+             assert_eq!(matrix.k, 35);
+             assert_eq!(matrix.k_upper_bound, 60);
+@@ -556,7 +551,7 @@
+ 
+         #[test]
+         fn test_partial_binxgcd_does_not_halt() {
+-            let (gcd, .., matrix, _) =
++            let (gcd, .., matrix) =
+                 SMALL_A.partial_binxgcd::<{ U64::LIMBS }>(&SMALL_B, 60, Choice::FALSE);
+             assert_eq!(matrix.k, 60);
+             assert_eq!(matrix.k_upper_bound, 60);
+--- crypto-bigint-0.7.5/src/modular/boxed_monty_form/invert.rs
++++ crypto-bigint-0.7.6/src/modular/boxed_monty_form/invert.rs
+@@ -12,7 +12,7 @@
+         let is_some = montgomery_form.is_some();
+         let montgomery_form2 = self.montgomery_form.clone();
+         let ret = BoxedMontyForm {
+-            montgomery_form: Option::from(montgomery_form).unwrap_or(montgomery_form2),
++            montgomery_form: montgomery_form.unwrap_or(montgomery_form2),
+             params: self.params.clone(),
+         };
+ 
+@@ -30,7 +30,7 @@
+         let is_some = montgomery_form.is_some();
+         let montgomery_form2 = self.montgomery_form.clone();
+         let ret = BoxedMontyForm {
+-            montgomery_form: Option::from(montgomery_form).unwrap_or(montgomery_form2),
++            montgomery_form: montgomery_form.unwrap_or(montgomery_form2),
+             params: self.params.clone(),
+         };
+ 
+@@ -99,4 +99,13 @@
+         let inv_trait = Invert::invert(&x_mod).unwrap();
+         assert_eq!(inv_trait, inv);
+     }
++
++    #[test]
++    fn test_invert_zero() {
++        let params = monty_params();
++        let zero = BoxedMontyForm::zero(&params);
++
++        assert!(bool::from(zero.invert().is_none()));
++        assert!(bool::from(zero.invert_vartime().is_none()));
++    }
+ }
+--- crypto-bigint-0.7.5/src/modular/const_monty_form/sqrt.rs
++++ crypto-bigint-0.7.6/src/modular/const_monty_form/sqrt.rs
+@@ -55,6 +55,6 @@
+         // generator must be non-residue
+         let generator = U256::from_u32(P256Field::PRIME_PARAMS.generator().get());
+         let gen_monty = ConstForm::new(&generator);
+-        assert!(gen_monty.sqrt().is_none().to_bool_vartime());
++        assert!(gen_monty.sqrt().is_none().to_bool());
+     }
+ }
+--- crypto-bigint-0.7.5/src/modular/fixed_monty_form/pow.rs
++++ crypto-bigint-0.7.6/src/modular/fixed_monty_form/pow.rs
+@@ -154,10 +154,10 @@
+ 
+ #[cfg(test)]
+ mod tests {
+-    use crate::traits::MultiExponentiate;
+     use crate::{
+-        U256,
++        U64, U256,
+         modular::{FixedMontyForm, FixedMontyParams},
++        traits::MultiExponentiate,
+     };
+ 
+     const PARAMS: FixedMontyParams<{ U256::LIMBS }> = FixedMontyParams::new_vartime(
+@@ -231,6 +231,20 @@
+     }
+ 
+     #[test]
++    fn issue_1343_regression_test() {
++        let modulus = U64::from_u64(0x7241_9be3_5d7d_03fb).to_odd().unwrap();
++
++        let params = FixedMontyParams::new_vartime(modulus);
++        let x = FixedMontyForm::new(&U64::from_u64(13480), &params);
++        let exponent = U64::from_u64(16);
++
++        let ct = x.pow(&exponent);
++        let vt = x.pow_vartime(&exponent);
++
++        assert_eq!(ct, vt);
++    }
++
++    #[test]
+     fn test_multi_exp_array() {
+         let base = U256::from(2u8);
+         let base_mod = FixedMontyForm::new(&base, &PARAMS);
+--- crypto-bigint-0.7.5/src/modular/monty_params.rs
++++ crypto-bigint-0.7.6/src/modular/monty_params.rs
+@@ -367,7 +367,7 @@
+         other.mod_leading_zeros = 0;
+ 
+         assert_ne!(params, other);
+-        assert!(!CtEq::ct_eq(&params, &other).to_bool_vartime());
++        assert!(!CtEq::ct_eq(&params, &other).to_bool());
+     }
+ 
+     #[cfg(feature = "alloc")]
+@@ -380,6 +380,6 @@
+         let other = BoxedMontyParams::from(other);
+ 
+         assert_ne!(params, other);
+-        assert!(!CtEq::ct_eq(&params, &other).to_bool_vartime());
+-    }
+-}
++        assert!(!CtEq::ct_eq(&params, &other).to_bool());
++    }
++}
+--- crypto-bigint-0.7.5/src/modular/mul.rs
++++ crypto-bigint-0.7.6/src/modular/mul.rs
+@@ -100,9 +100,9 @@
+ 
+         let mut carry;
+         // A[0] + x[i]y[0] + um[0] <= (2^128 - 1) + (2^128 - 2^64) = 2^129 - 2^64 - 1
+-        let (a, c) = ((u as WideWord) * (modulus[0].0 as WideWord)).overflowing_add(axy);
++        let (a, c) = word::overflowing_add_wide((u as WideWord) * (modulus[0].0 as WideWord), axy);
+         // carry <= (2^129 - 2^64 - 1) / 2^64 <= 2^65 - 2
+-        carry = ((c as WideWord) << Word::BITS) | (a >> Word::BITS);
++        carry = ((word::choice_to_wide_mask(c) & 1) << Word::BITS) | (a >> Word::BITS);
+ 
+         let mut j = 1;
+         while j < nlimbs {
+@@ -110,10 +110,10 @@
+             let axy = (xi.0 as WideWord) * (y[j].0 as WideWord) + out[j].0 as WideWord;
+             // um[j] + carry <= (2^64 - 1)^2 + (2^65 - 2) = 2^128 - 1
+             let umc = (u as WideWord) * (modulus[j].0 as WideWord) + carry;
+-            let (ab, c) = axy.overflowing_add(umc);
++            let (ab, c) = word::overflowing_add_wide(axy, umc);
+             out[j - 1] = Limb(ab as Word);
+             // carry <= (2^129 - 2^64 - 1) / 2^64 <= 2^65 - 2
+-            carry = ((c as WideWord) << Word::BITS) | (ab >> Word::BITS);
++            carry = ((word::choice_to_wide_mask(c) & 1) << Word::BITS) | (ab >> Word::BITS);
+             j += 1;
+         }
+ 
+@@ -173,6 +173,8 @@
+ /// `a` is in Montgomery form.
+ ///
+ /// This method is variable time in `n`.
++///
++/// Assumes `a` is fully reduced, i.e. `a < modulus`.
+ #[inline(always)]
+ pub(crate) const fn square_repeat_montgomery_form<const LIMBS: usize>(
+     a: &Uint<LIMBS>,
+@@ -190,29 +192,21 @@
+     let mut i = 0;
+     let mut out = *a;
+     let mut base;
+-    let mut carry;
+-
+-    loop {
++
++    while i != n {
+         (base, out) = (out, Uint::ZERO);
+-        carry = montgomery_multiply_inner(
++        let carry = montgomery_multiply_inner(
+             &base.limbs,
+             &base.limbs,
+             &mut out.limbs,
+             &modulus.as_ref().limbs,
+             mod_neg_inv,
+         );
++        // Because `base < modulus` here, the raw product is below `2 * modulus` and a single
++        // conditional subtraction suffices.
++        out = out.try_sub_with_carry(carry, modulus.as_ref()).0;
+         i += 1;
+-        if i == n {
+-            break;
+-        }
+-        // intermediate results are in "Almost Montgomery form", which is <= Uint::MAX
+-        // but may require the modulus to be subtracted twice.
+-        out = out
+-            .conditional_borrowing_sub(modulus.as_ref(), carry.is_nonzero())
+-            .0;
+-    }
+-
+-    // correct for "Almost Montygomery form"
+-    (out, carry) = out.try_sub_with_carry(carry, modulus.as_ref());
+-    out.try_sub_with_carry(carry, modulus.as_ref()).0
+-}
++    }
++
++    out
++}
+--- crypto-bigint-0.7.5/src/modular/prime_params.rs
++++ crypto-bigint-0.7.6/src/modular/prime_params.rs
+@@ -63,7 +63,7 @@
+             // root^(2^(s-1)) must be equal to -1
+             let check = root.square_repeat_vartime(s.get() - 1);
+             assert!(
+-                Uint::eq(&check.retrieve(), &p_minus_one).to_bool_vartime(),
++                Uint::eq(&check.retrieve(), &p_minus_one).to_bool(),
+                 "error calculating root of unity: invalid generator"
+             );
+             (exp, root)
+@@ -181,14 +181,14 @@
+             MontyParams::new_vartime(Odd::<U128>::from_be_hex("f2799d643ab7ff983437c3a86cdb1beb"));
+         let prime_params_2 = PrimeParams::new_vartime(&monty_params_2, 5);
+ 
+-        assert!(CtEq::ct_eq(&prime_params_1, &prime_params_1).to_bool_vartime());
++        assert!(CtEq::ct_eq(&prime_params_1, &prime_params_1).to_bool());
+         #[cfg(feature = "subtle")]
+         assert!(bool::from(subtle::ConstantTimeEq::ct_eq(
+             &prime_params_1,
+             &prime_params_1
+         )));
+ 
+-        assert!(CtEq::ct_ne(&prime_params_1, &prime_params_2).to_bool_vartime());
++        assert!(CtEq::ct_ne(&prime_params_1, &prime_params_2).to_bool());
+         #[cfg(feature = "subtle")]
+         assert!(bool::from(subtle::ConstantTimeEq::ct_ne(
+             &prime_params_1,
+@@ -200,7 +200,7 @@
+                 &CtSelect::ct_select(&prime_params_1, &prime_params_2, Choice::FALSE),
+                 &prime_params_1,
+             )
+-            .to_bool_vartime()
++            .to_bool()
+         );
+         #[cfg(feature = "subtle")]
+         assert!(
+@@ -212,7 +212,7 @@
+                 ),
+                 &prime_params_1,
+             )
+-            .to_bool_vartime()
++            .to_bool()
+         );
+ 
+         assert!(
+@@ -220,7 +220,7 @@
+                 &CtSelect::ct_select(&prime_params_1, &prime_params_2, Choice::TRUE),
+                 &prime_params_2,
+             )
+-            .to_bool_vartime()
++            .to_bool()
+         );
+         #[cfg(feature = "subtle")]
+         assert!(
+@@ -232,7 +232,7 @@
+                 ),
+                 &prime_params_2,
+             )
+-            .to_bool_vartime()
+-        );
+-    }
+-}
++            .to_bool()
++        );
++    }
++}
+--- crypto-bigint-0.7.5/src/modular/reduction.rs
++++ crypto-bigint-0.7.6/src/modular/reduction.rs
+@@ -104,7 +104,7 @@
+     modulus: &Odd<Uint<LIMBS>>,
+     mod_neg_inv: Limb,
+ ) -> Uint<LIMBS> {
+-    debug_assert!(Uint::lt(montgomery_form, modulus.as_ref()).to_bool_vartime());
++    debug_assert!(Uint::lt(montgomery_form, modulus.as_ref()).to_bool());
+     let mut res = Uint::ZERO;
+     montgomery_retrieve_inner(
+         montgomery_form.as_limbs(),
+--- crypto-bigint-0.7.5/src/modular/safegcd.rs
++++ crypto-bigint-0.7.6/src/modular/safegcd.rs
+@@ -343,12 +343,23 @@
+ 
+ /// Calculate the maximum number of iterations required according to
+ /// safegcd-bounds: <https://github.com/sipa/safegcd-bounds>
++///
++/// Computed in `u64` because `45907 * bits + 30179` exceeds `u32::MAX` once `bits >= 93558`.
++/// The count itself (about `2.3 * bits`) only exceeds `u32::MAX` for `bits` above `1864517463`,
++/// which panics rather than wrapping.
+ // NOTE: the division is non-constant-time, but this is used to compute the number of iterations we
+ // perform which is leaked in timing information
+ #[inline]
+ #[allow(clippy::integer_division_remainder_used, reason = "public parameter")]
++#[allow(clippy::cast_lossless, reason = "`const fn`")]
++#[allow(clippy::cast_possible_truncation, reason = "checked by the assertion")]
+ const fn iterations(bits: u32) -> u32 {
+-    (45907 * bits + 30179) / 19929
++    let iterations = (45907 * bits as u64 + 30179) / 19929;
++    assert!(
++        iterations <= u32::MAX as u64,
++        "precision too large for safegcd"
++    );
++    iterations as u32
+ }
+ 
+ /// A `Uint` which carries a separate sign in order to maintain the same range.
+@@ -485,7 +496,7 @@
+         // Shift the result, eliminating the trailing zeros.
+         shr_in_place_wide(&mut x, &mut x_hi, shift);
+         debug_assert!(
+-            x_hi.shr1().is_nonzero().not().to_bool_vartime(),
++            x_hi.shr1().is_nonzero().not().to_bool(),
+             "overflow was larger than one bit"
+         );
+ 
+@@ -512,25 +523,21 @@
+     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+         f.write_fmt(format_args!(
+             "{}0x{}",
+-            if self.sign.to_bool_vartime() {
+-                "-"
+-            } else {
+-                "+"
+-            },
+-            &self.magnitude
++            if self.sign.to_bool() { "-" } else { "+" },
++            self.magnitude
+         ))
+     }
+ }
+ 
+ impl<const LIMBS: usize> PartialEq for SignedInt<LIMBS> {
+     fn eq(&self, other: &Self) -> bool {
+-        Self::eq(self, other).to_bool_vartime()
++        Self::eq(self, other).to_bool()
+     }
+ }
+ 
+ #[cfg(test)]
+ mod tests {
+-    use super::SafeGcdInverter;
++    use super::{SafeGcdInverter, iterations};
+     use crate::{U128, U256, modular::safegcd::shr_in_place_wide};
+ 
+     #[test]
+@@ -568,4 +575,23 @@
+         );
+         assert_eq!(b_hi, U128::from_u128(0x111111112222222));
+     }
+-}
++
++    #[test]
++    fn iterations_do_not_overflow() {
++        // Values from the `safegcd-bounds` formula evaluated in arbitrary precision.
++        assert_eq!(iterations(256), 591);
++        assert_eq!(iterations(93_504), 215_390);
++        // `45907 * bits + 30179` first exceeds `u32::MAX` here.
++        assert_eq!(iterations(93_558), 215_514);
++        assert_eq!(iterations(93_568), 215_537);
++        assert_eq!(iterations(98_304), 226_447);
++        // The largest precision whose count still fits in `u32`.
++        assert_eq!(iterations(1_864_517_463), 4_294_967_294);
++    }
++
++    #[test]
++    #[should_panic(expected = "precision too large for safegcd")]
++    fn iterations_panics_beyond_u32() {
++        iterations(1_864_517_464);
++    }
++}
+--- crypto-bigint-0.7.5/src/modular/safegcd/boxed.rs
++++ crypto-bigint-0.7.6/src/modular/safegcd/boxed.rs
+@@ -133,11 +133,10 @@
+             gcd_nz::<VARTIME>(f_nz, g).get()
+         } else {
+             // gcd of (0, g) is g
+-            g.clone()
++            g.resize(u32_max(f.bits_precision(), g.bits_precision()))
+         }
+     } else {
+         let (f_nz, f_is_nonzero) = f.to_nz_or_one();
+-        // gcd of (0, g) is g
+         let mut r = gcd_nz::<VARTIME>(&f_nz, g).get();
+         r.ct_assign(g, !f_is_nonzero);
+         r
+@@ -163,7 +162,10 @@
+     // 4) 2^k•gcd(f, g) = 2^k•gcd(a, 2^j•b)
+ 
+     let i = f.as_ref().trailing_zeros();
+-    let k = u32_min(i, g.trailing_zeros());
++    let j = g
++        .is_nonzero()
++        .select_u32(f.bits_precision(), g.trailing_zeros());
++    let k = u32_min(i, j);
+ 
+     let f_odd = Odd::new_unchecked(f.as_ref().shr(i));
+     let mut r = gcd_odd::<VARTIME>(&f_odd, g).get();
+@@ -427,20 +429,70 @@
+     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+         f.write_fmt(format_args!(
+             "{}0x{}",
+-            if self.sign.to_bool_vartime() {
+-                "-"
+-            } else {
+-                "+"
+-            },
+-            &self.magnitude
++            if self.sign.to_bool() { "-" } else { "+" },
++            self.magnitude
+         ))
+     }
+ }
+ 
+ #[cfg(test)]
+ mod tests {
+-    use super::BoxedSafeGcdInverter;
+-    use crate::BoxedUint;
++    use super::{BoxedSafeGcdInverter, gcd_odd, invert_odd_mod};
++    use crate::{BoxedUint, Odd, Resize};
++    use num_bigint::BigUint;
++    use num_integer::Integer;
++
++    /// The smallest precision at which `45907 * bits + 30179` no longer fits in `u32`.
++    const LARGE_BITS: u32 = 93_568;
++
++    /// A deterministic, odd, full-width `BoxedUint` of `bits` bits; different seeds give
++    /// unrelated values.
++    fn large_odd(bits: u32, seed: u32) -> BoxedUint {
++        let mut bytes: alloc::vec::Vec<u8> = (0..bits >> 3)
++            .map(|i| {
++                let h = (i ^ seed.wrapping_mul(0x9E37_79B9)).wrapping_mul(0x85EB_CA6B);
++                let h = (h ^ (h >> 13)).wrapping_mul(0xC2B2_AE35);
++                (h ^ (h >> 16)).to_le_bytes()[0]
++            })
++            .collect();
++        bytes[0] |= 0x80;
++        *bytes.last_mut().unwrap() |= 1;
++        BoxedUint::from_be_slice(&bytes, bits).unwrap()
++    }
++
++    fn to_big(x: &BoxedUint) -> BigUint {
++        BigUint::from_bytes_be(&x.to_be_bytes())
++    }
++
++    #[test]
++    fn invert_odd_mod_large_precision() {
++        let m = large_odd(LARGE_BITS, 1);
++        let a = BoxedUint::from(65537u32).resize(LARGE_BITS);
++        assert_eq!(to_big(&a).gcd(&to_big(&m)), BigUint::from(1u32));
++        let m = Odd::new(m).unwrap();
++
++        for inv in [
++            invert_odd_mod::<false>(&a, &m).unwrap(),
++            invert_odd_mod::<true>(&a, &m).unwrap(),
++        ] {
++            assert_eq!(
++                (to_big(&a) * to_big(&inv)) % to_big(m.as_ref()),
++                BigUint::from(1u32)
++            );
++        }
++    }
++
++    #[test]
++    fn gcd_odd_large_precision() {
++        // Two unrelated full-width values: the reduction needs the whole iteration budget,
++        // unlike a pair with a large common factor and small cofactors.
++        let f = Odd::new(large_odd(LARGE_BITS, 2)).unwrap();
++        let g = large_odd(LARGE_BITS, 4);
++        let expected = to_big(f.as_ref()).gcd(&to_big(&g));
++
++        assert_eq!(to_big(gcd_odd::<false>(&f, &g).as_ref()), expected);
++        assert_eq!(to_big(gcd_odd::<true>(&f, &g).as_ref()), expected);
++    }
+ 
+     #[test]
+     fn invert() {
+--- crypto-bigint-0.7.5/src/modular/sqrt.rs
++++ crypto-bigint-0.7.6/src/modular/sqrt.rs
+@@ -187,7 +187,7 @@
+             assert!(
+                 Uint::eq(&rt, &i)
+                     .or(Uint::eq(&rt, &modulus.wrapping_sub(&i)))
+-                    .to_bool_vartime()
++                    .to_bool()
+             );
+         }
+ 
+@@ -197,7 +197,7 @@
+         assert!(
+             sqrt_montgomery_form(gen_monty.as_montgomery(), &monty_params, &prime_params)
+                 .is_none()
+-                .to_bool_vartime()
++                .to_bool()
+         );
+     }
+ 
+--- crypto-bigint-0.7.5/src/non_zero.rs
++++ crypto-bigint-0.7.6/src/non_zero.rs
+@@ -216,7 +216,7 @@
+     #[must_use]
+     #[track_caller]
+     pub const fn new_unwrap(n: Limb) -> Self {
+-        assert!(n.is_nonzero().to_bool_vartime(), "invalid value: zero");
++        assert!(n.is_nonzero().to_bool(), "invalid value: zero");
+         Self(n)
+     }
+ 
+@@ -266,7 +266,7 @@
+     #[track_caller]
+     #[must_use]
+     pub const fn new_unwrap(n: Uint<LIMBS>) -> Self {
+-        assert!(n.is_nonzero().to_bool_vartime(), "invalid value: zero");
++        assert!(n.is_nonzero().to_bool(), "invalid value: zero");
+         Self(n)
+     }
+ 
+@@ -353,7 +353,7 @@
+     #[must_use]
+     #[track_caller]
+     pub const fn new_unwrap(n: Int<LIMBS>) -> Self {
+-        assert!(n.is_nonzero().to_bool_vartime(), "invalid value: zero");
++        assert!(n.is_nonzero().to_bool(), "invalid value: zero");
+         Self(n)
+     }
+ 
+--- crypto-bigint-0.7.5/src/odd.rs
++++ crypto-bigint-0.7.6/src/odd.rs
+@@ -152,7 +152,7 @@
+     #[track_caller]
+     pub const fn from_be_hex(hex: &str) -> Self {
+         let uint = Uint::<LIMBS>::from_be_hex(hex);
+-        assert!(uint.is_odd().to_bool_vartime(), "number must be odd");
++        assert!(uint.is_odd().to_bool(), "number must be odd");
+         Odd(uint)
+     }
+ 
+@@ -165,7 +165,7 @@
+     #[track_caller]
+     pub const fn from_le_hex(hex: &str) -> Self {
+         let uint = Uint::<LIMBS>::from_le_hex(hex);
+-        assert!(uint.is_odd().to_bool_vartime(), "number must be odd");
++        assert!(uint.is_odd().to_bool(), "number must be odd");
+         Odd(uint)
+     }
+ 
+--- crypto-bigint-0.7.5/src/primitives.rs
++++ crypto-bigint-0.7.6/src/primitives.rs
+@@ -18,16 +18,6 @@
+ pub(crate) const fn overflowing_add(lhs: Word, rhs: Word) -> (Word, Word) {
+     let (res, carry) = lhs.overflowing_add(rhs);
+     (res, carry as Word)
+-}
+-
+-/// Computes `lhs - (rhs + borrow)`, returning the result along with the new borrow.
+-#[inline(always)]
+-pub(crate) const fn borrowing_sub(lhs: Word, rhs: Word, borrow: Word) -> (Word, Word) {
+-    // XXX we cannot use WideWord casts here: https://github.com/rust-lang/rust/issues/149522
+-    // rustc 1.87 through 1.91 incorrectly optimize some WideWord bit arithmetic.
+-    let (ret, b2) = lhs.overflowing_sub(borrow >> (Word::BITS - 1));
+-    let (ret, b1) = ret.overflowing_sub(rhs);
+-    (ret, Word::MIN.wrapping_sub((b1 | b2) as Word))
+ }
+ 
+ /// Computes `lhs * rhs`, returning the low and the high words of the result.
+@@ -189,10 +179,10 @@
+ 
+     #[test]
+     fn test_usize_const_lt() {
+-        assert!(usize_lt(0, 5).to_bool_vartime());
+-        assert!(!usize_lt(7, 0).to_bool_vartime());
+-        assert!(!usize_lt(7, 5).to_bool_vartime());
+-        assert!(!usize_lt(7, 7).to_bool_vartime());
++        assert!(usize_lt(0, 5).to_bool());
++        assert!(!usize_lt(7, 0).to_bool());
++        assert!(!usize_lt(7, 5).to_bool());
++        assert!(!usize_lt(7, 7).to_bool());
+     }
+ 
+     cpubits::cpubits! {
+--- crypto-bigint-0.7.5/src/traits.rs
++++ crypto-bigint-0.7.6/src/traits.rs
+@@ -199,7 +199,7 @@
+     ///
+     /// # Returns
+     ///
+-    /// If odd, returns `Choice::FALSE`. Otherwise, returns `Choice::TRUE`.
++    /// If odd, returns `Choice(1)`. Otherwise, returns `Choice(0)`.
+     #[must_use]
+     fn is_odd(&self) -> Choice {
+         self.as_ref()
+@@ -1882,13 +1882,13 @@
+ 
+         // test zero
+         let zero = T::MontyForm::zero(&params);
+-        assert!(zero.is_zero().to_bool_vartime());
+-        assert!(!zero.is_one().to_bool_vartime());
++        assert!(zero.is_zero().to_bool());
++        assert!(!zero.is_one().to_bool());
+ 
+         // test one
+         let one = T::MontyForm::one(&params);
+-        assert!(!one.is_zero().to_bool_vartime());
+-        assert!(one.is_one().to_bool_vartime());
++        assert!(!one.is_zero().to_bool());
++        assert!(one.is_one().to_bool());
+ 
+         // test as_montgomery()
+         assert_eq!(zero.as_montgomery(), &T::zero());
+@@ -1935,19 +1935,14 @@
+         assert_eq!(zero.ct_select(&one, Choice::TRUE), one);
+ 
+         // test Invert
+-        assert!(zero.invert().is_none().to_bool_vartime());
+-        assert!(zero.invert_vartime().is_none().to_bool_vartime());
+-        assert!(
+-            one.invert()
+-                .expect("inversion error")
+-                .is_one()
+-                .to_bool_vartime()
+-        );
++        assert!(zero.invert().is_none().to_bool());
++        assert!(zero.invert_vartime().is_none().to_bool());
++        assert!(one.invert().expect("inversion error").is_one().to_bool());
+         assert!(
+             one.invert_vartime()
+                 .expect("inversion error")
+                 .is_one()
+-                .to_bool_vartime()
++                .to_bool()
+         );
+ 
+         // test Add, AddAssign
+--- crypto-bigint-0.7.5/src/uint.rs
++++ crypto-bigint-0.7.6/src/uint.rs
+@@ -8,7 +8,7 @@
+ use crate::{
+     Bounded, Choice, ConstOne, ConstZero, Constants, CtEq, CtOption, EncodedUint, FixedInteger,
+     Int, Integer, Limb, NonZero, Odd, One, Unsigned, UnsignedWithMontyForm, Word, Zero, bitlen,
+-    limb::nlimbs, modular::FixedMontyForm, primitives, traits::sealed::Sealed,
++    limb::nlimbs, modular::FixedMontyForm, traits::sealed::Sealed,
+ };
+ use core::fmt;
+ 
+@@ -108,9 +108,6 @@
+     /// Total size of the represented integer in bits.
+     pub const BITS: u32 = bitlen::from_limbs(LIMBS);
+ 
+-    /// `floor(log2(Self::BITS))`.
+-    pub(crate) const LOG2_BITS: u32 = primitives::u32_bits(Self::BITS) - 1;
+-
+     /// Total size of the represented integer in bytes.
+     pub const BYTES: usize = LIMBS * Limb::BYTES;
+ 
+--- crypto-bigint-0.7.5/src/uint/bits.rs
++++ crypto-bigint-0.7.6/src/uint/bits.rs
+@@ -170,13 +170,13 @@
+     #[test]
+     fn bit() {
+         let u = uint_with_bits_at(&[16, 48, 112, 127, 255]);
+-        assert!(!u.bit(0).to_bool_vartime());
+-        assert!(!u.bit(1).to_bool_vartime());
+-        assert!(u.bit(16).to_bool_vartime());
+-        assert!(u.bit(127).to_bool_vartime());
+-        assert!(u.bit(255).to_bool_vartime());
+-        assert!(!u.bit(256).to_bool_vartime());
+-        assert!(!u.bit(260).to_bool_vartime());
++        assert!(!u.bit(0).to_bool());
++        assert!(!u.bit(1).to_bool());
++        assert!(u.bit(16).to_bool());
++        assert!(u.bit(127).to_bool());
++        assert!(u.bit(255).to_bool());
++        assert!(!u.bit(256).to_bool());
++        assert!(!u.bit(260).to_bool());
+     }
+ 
+     #[test]
+--- crypto-bigint-0.7.5/src/uint/boxed.rs
++++ crypto-bigint-0.7.6/src/uint/boxed.rs
+@@ -275,7 +275,7 @@
+     /// Construct an [`Odd`] reference, returning [`None`] in the event `self` is even.
+     #[must_use]
+     pub fn as_odd_vartime(&self) -> Option<&Odd<Self>> {
+-        if !self.is_odd().to_bool_vartime() {
++        if !self.is_odd().to_bool() {
+             None
+         } else {
+             Some(Odd::new_ref_unchecked(self))
+--- crypto-bigint-0.7.5/src/uint/boxed/ct.rs
++++ crypto-bigint-0.7.6/src/uint/boxed/ct.rs
+@@ -7,8 +7,8 @@
+ impl CtAssign for BoxedUint {
+     #[inline]
+     fn ct_assign(&mut self, other: &Self, choice: Choice) {
+-        assert_eq!(self.bits_precision(), other.bits_precision());
+-        self.limbs.ct_assign(&other.limbs, choice);
++        self.as_mut_uint_ref()
++            .ct_assign(other.as_uint_ref(), choice);
+     }
+ }
+ impl CtAssignSlice for BoxedUint {}
+--- crypto-bigint-0.7.5/src/uint/boxed/gcd.rs
++++ crypto-bigint-0.7.6/src/uint/boxed/gcd.rs
+@@ -42,7 +42,7 @@
+ 
+ #[cfg(test)]
+ mod tests {
+-    use crate::{BoxedUint, Gcd, Resize};
++    use crate::{BoxedUint, Gcd, Limb, Resize};
+ 
+     #[test]
+     fn gcd_relatively_prime() {
+@@ -72,6 +72,105 @@
+     }
+ 
+     #[test]
++    fn gcd_zero_lhs_wider_than_rhs() {
++        let zero = BoxedUint::zero_with_precision(2 * Limb::BITS);
++        let one = BoxedUint::one();
++
++        let gcd = zero.gcd(&one);
++        assert_eq!(gcd, one);
++        assert_eq!(gcd.bits_precision(), zero.bits_precision());
++    }
++
++    #[test]
++    fn gcd_zero_rhs_wider_than_lhs() {
++        let one = BoxedUint::one();
++        let zero = BoxedUint::zero_with_precision(2 * Limb::BITS);
++
++        let gcd = one.gcd(&zero);
++        assert_eq!(gcd, one);
++    }
++
++    #[test]
++    fn gcd_zero_rhs_narrower_than_power_of_two_lhs() {
++        let x = BoxedUint::one_with_precision(3 * Limb::BITS).wrapping_shl_vartime(Limb::BITS + 1);
++        let zero = BoxedUint::zero_with_precision(Limb::BITS);
++
++        let gcd = x.gcd(&zero);
++        assert_eq!(gcd, x);
++    }
++
++    #[test]
++    fn gcd_vartime_zero_rhs_narrower_than_power_of_two_lhs() {
++        let x = BoxedUint::one_with_precision(3 * Limb::BITS).wrapping_shl_vartime(Limb::BITS + 1);
++        let zero = BoxedUint::zero_with_precision(Limb::BITS);
++
++        let gcd = x.gcd_vartime(&zero);
++        assert_eq!(gcd, x);
++    }
++
++    #[test]
++    fn gcd_nonzero_lhs_wider_than_rhs_precision() {
++        let wide = BoxedUint::from(6u8).resize(2 * Limb::BITS);
++        let narrow = BoxedUint::from(4u8);
++
++        let gcd = wide.gcd(&narrow);
++        assert_eq!(gcd, BoxedUint::from(2u8));
++        assert_eq!(gcd.bits_precision(), wide.bits_precision());
++    }
++
++    #[test]
++    fn gcd_nonzero_rhs_wider_than_lhs_precision() {
++        let narrow = BoxedUint::from(4u8);
++        let wide = BoxedUint::from(6u8).resize(2 * Limb::BITS);
++
++        let gcd = narrow.gcd(&wide);
++        assert_eq!(gcd, BoxedUint::from(2u8));
++        assert_eq!(gcd.bits_precision(), wide.bits_precision());
++    }
++
++    #[test]
++    fn gcd_vartime_zero_lhs_wider_than_rhs() {
++        let zero = BoxedUint::zero_with_precision(2 * Limb::BITS);
++        let one = BoxedUint::one();
++
++        let gcd = zero.gcd_vartime(&one);
++        assert_eq!(gcd, one);
++        assert_eq!(gcd.bits_precision(), zero.bits_precision());
++    }
++
++    #[test]
++    fn gcd_vartime_zero_rhs_wider_than_lhs() {
++        let one = BoxedUint::one();
++        let zero = BoxedUint::zero_with_precision(2 * Limb::BITS);
++
++        let gcd = one.gcd_vartime(&zero);
++        assert_eq!(gcd, one);
++        assert_eq!(gcd.bits_precision(), zero.bits_precision());
++    }
++
++    #[test]
++    fn gcd_zero_zero_mixed_precision() {
++        let narrow = BoxedUint::zero_with_precision(Limb::BITS);
++        let wide = BoxedUint::zero_with_precision(2 * Limb::BITS);
++
++        let gcd = narrow.gcd(&wide);
++        assert_eq!(gcd, narrow);
++        assert_eq!(gcd.bits_precision(), wide.bits_precision());
++        assert_eq!(gcd, wide.gcd(&narrow));
++    }
++
++    #[test]
++    fn gcd_vartime_zero_zero_mixed_precision() {
++        let narrow = BoxedUint::zero_with_precision(Limb::BITS);
++        let wide = BoxedUint::zero_with_precision(2 * Limb::BITS);
++
++        let gcd = narrow.gcd_vartime(&wide);
++        assert_eq!(gcd, narrow);
++        assert_eq!(gcd.bits_precision(), wide.bits_precision());
++        assert_eq!(gcd, wide.gcd_vartime(&narrow));
++    }
++
++    #[test]
+     fn gcd_one() {
+         let f = BoxedUint::from(1u32);
+         assert_eq!(BoxedUint::from(1u32), f.gcd(&BoxedUint::from(1u32)));
+--- crypto-bigint-0.7.5/src/uint/boxed/invert_mod.rs
++++ crypto-bigint-0.7.6/src/uint/boxed/invert_mod.rs
+@@ -184,10 +184,40 @@
+ 
+ #[cfg(test)]
+ mod tests {
+-    use crate::{Limb, Odd, Resize, U256};
++    use crate::{Limb, NonZero, Odd, Resize, U256};
+ 
+     use super::BoxedUint;
+     use hex_literal::hex;
++    use num_bigint::BigUint;
++    use num_integer::Integer;
++
++    /// `invert_mod` at a precision where the safegcd iteration count overflowed `u32`
++    /// (`45907 * bits + 30179 > u32::MAX` from 93558 bits), with an even modulus so that
++    /// both the odd-modulus and the `2^k` paths are exercised.
++    #[test]
++    fn invert_mod_large_precision_even_modulus() {
++        const BITS: u32 = 93_568;
++        let mut bytes: alloc::vec::Vec<u8> = (0..BITS >> 3)
++            .map(|i| {
++                let h = (i ^ 0xDA94_2042).wrapping_mul(0x85EB_CA6B);
++                let h = (h ^ (h >> 13)).wrapping_mul(0xC2B2_AE35);
++                (h ^ (h >> 16)).to_le_bytes()[0]
++            })
++            .collect();
++        bytes[0] |= 0x80;
++        *bytes.last_mut().unwrap() &= !1;
++        let m = BoxedUint::from_be_slice(&bytes, BITS).unwrap();
++        let a = BoxedUint::from(65537u32).resize(BITS);
++
++        let to_big = |x: &BoxedUint| BigUint::from_bytes_be(&x.to_be_bytes());
++        assert_eq!(to_big(&a).gcd(&to_big(&m)), BigUint::from(1u32));
++
++        let inv = a.invert_mod(&NonZero::new(m.clone()).unwrap()).unwrap();
++        assert_eq!(
++            (to_big(&a) * to_big(&inv)) % to_big(&m),
++            BigUint::from(1u32)
++        );
++    }
+ 
+     #[test]
+     fn invert_mod2k() {
+--- crypto-bigint-0.7.5/src/uint/boxed/mul.rs
++++ crypto-bigint-0.7.6/src/uint/boxed/mul.rs
+@@ -313,4 +313,19 @@
+         let b = UintRef::new(&[Limb(456), Limb(0)]);
+         assert_eq!(a * b, BoxedUint::from(562962957840u64));
+     }
+-}
++
++    #[test]
++    fn overflow_check() {
++        for bits in (64..4096).step_by(2 * Limb::BITS as usize) {
++            let mut b = BoxedUint::max(bits);
++            b.restrict_bits(bits >> 1);
++            assert!(b.checked_mul(&b).is_some().to_bool());
++            assert!(b.checked_square().is_some().to_bool());
++            b.wrapping_add_assign(Limb::ONE);
++            assert!(b.checked_mul(&b).is_none().to_bool());
++            assert!(b.checked_square().is_none().to_bool());
++            assert!(b.saturating_mul(&b) == BoxedUint::max(bits));
++            assert!(b.saturating_square() == BoxedUint::max(bits));
++        }
++    }
++}
+--- crypto-bigint-0.7.5/src/uint/boxed/pow.rs
++++ crypto-bigint-0.7.6/src/uint/boxed/pow.rs
+@@ -261,7 +261,7 @@
+                 .pow(&U128::ONE)
+                 .0
+                 .is_none()
+-                .to_bool_vartime()
++                .to_bool()
+         );
+     }
+ 
+--- crypto-bigint-0.7.5/src/uint/boxed/sqrt.rs
++++ crypto-bigint-0.7.6/src/uint/boxed/sqrt.rs
+@@ -1,10 +1,6 @@
+ //! [`BoxedUint`] square root operations.
+ 
+-use crate::{
+-    BitOps, BoxedUint, CheckedSquareRoot, ConcatenatingSquare, CtAssign, CtEq, CtGt, CtOption,
+-    FloorSquareRoot, Limb,
+-};
+-use core::mem;
++use crate::{BoxedUint, CheckedSquareRoot, Choice, CtOption, FloorSquareRoot, NonZero};
+ 
+ impl BoxedUint {
+     /// Computes `floor(√(self))` in constant time.
+@@ -18,46 +14,13 @@
+ 
+     /// Computes √(`self`) in constant time.
+     ///
+-    /// Callers can check if `self` is a square by squaring the result.
++    /// Callers can check if `self` is a square by squaring the result, or use
++    /// `checked_sqrt`.
+     #[must_use]
+     pub fn floor_sqrt(&self) -> Self {
+-        // Uses Brent & Zimmermann, Modern Computer Arithmetic, v0.5.9, Algorithm 1.13.
+-        //
+-        // See Hast, "Note on computation of integer square roots"
+-        // for the proof of the sufficiency of the bound on iterations.
+-        // https://github.com/RustCrypto/crypto-bigint/files/12600669/ct_sqrt.pdf
+-
+-        // The initial guess: `x_0 = 2^ceil(b/2)`, where `2^(b-1) <= self < b`.
+-        // Will not overflow since `b <= BITS`.
+-        let mut x = Self::one_with_precision(self.bits_precision());
+-        x.unbounded_shl_assign_vartime((self.bits() + 1) >> 1); // ≥ √(`self`)
+-
+-        let mut nz_x = x.clone();
+-        let mut quo = Self::zero_with_precision(self.bits_precision());
+-        let mut rem = Self::zero_with_precision(self.bits_precision());
+-        let mut i = 0;
+-
+-        // Repeat enough times to guarantee result has stabilized.
+-        // TODO (#378): the tests indicate that just `Self::LOG2_BITS` may be enough.
+-        while i < self.log2_bits() + 2 {
+-            let x_nonzero = x.is_nonzero();
+-            nz_x.ct_assign(&x, x_nonzero);
+-
+-            // Calculate `x_{i+1} = floor((x_i + self / x_i) / 2)`
+-            quo.limbs.copy_from_slice(&self.limbs);
+-            rem.limbs.copy_from_slice(&nz_x.limbs);
+-            quo.as_mut_uint_ref().div_rem(rem.as_mut_uint_ref());
+-            x.conditional_carrying_add_assign(&quo, x_nonzero);
+-            x.shr1_assign();
+-
+-            i += 1;
+-        }
+-
+-        // At this point `x_prev == x_{n}` and `x == x_{n+1}`
+-        // where `n == i - 1 == LOG2_BITS + 1 == floor(log2(BITS)) + 1`.
+-        // Thus, according to Hast, `sqrt(self) = min(x_n, x_{n+1})`.
+-        x.ct_assign(&nz_x, x.ct_gt(&nz_x));
+-        x
++        let mut root = self.clone();
++        root.floor_sqrt_assign();
++        root
+     }
+ 
+     /// Computes `floor(√(self))`.
+@@ -73,47 +36,15 @@
+ 
+     /// Computes √(`self`).
+     ///
+-    /// Callers can check if `self` is a square by squaring the result.
++    /// Callers can check if `self` is a square by squaring the result, or use
++    /// `checked_sqrt_vartime`.
+     ///
+     /// Variable time with respect to `self`.
+     #[must_use]
+     pub fn floor_sqrt_vartime(&self) -> Self {
+-        // Uses Brent & Zimmermann, Modern Computer Arithmetic, v0.5.9, Algorithm 1.13
+-
+-        if self.is_zero_vartime() {
+-            return Self::zero_with_precision(self.bits_precision());
+-        }
+-
+-        // The initial guess: `x_0 = 2^ceil(b/2)`, where `2^(b-1) <= self < b`.
+-        // Will not overflow since `b <= BITS`.
+-        // The initial value of `x` is always greater than zero.
+-        let mut x = Self::one_with_precision(self.bits_precision());
+-        x.unbounded_shl_assign_vartime((self.bits() + 1) >> 1); // ≥ √(`self`)
+-
+-        let mut quo = Self::zero_with_precision(self.bits_precision());
+-        let mut rem = Self::zero_with_precision(self.bits_precision());
+-
+-        loop {
+-            // Calculate `x_{i+1} = floor((x_i + self / x_i) / 2)`
+-            quo.limbs.copy_from_slice(&self.limbs);
+-            rem.limbs.copy_from_slice(&x.limbs);
+-            quo.as_mut_uint_ref().div_rem_vartime(rem.as_mut_uint_ref());
+-            quo.carrying_add_assign(&x, Limb::ZERO);
+-            quo.shr1_assign();
+-
+-            // If `quo` is the same as `x` or greater, we reached convergence
+-            // (`x` is guaranteed to either go down or oscillate between
+-            // `sqrt(self)` and `sqrt(self) + 1`)
+-            if !x.cmp_vartime(&quo).is_gt() {
+-                break;
+-            }
+-            x.limbs.copy_from_slice(&quo.limbs);
+-            if x.is_zero_vartime() {
+-                break;
+-            }
+-        }
+-
+-        x
++        let mut root = self.clone();
++        root.floor_sqrt_assign_vartime();
++        root
+     }
+ 
+     /// Wrapped sqrt is just `floor(√(self))`.
+@@ -138,9 +69,9 @@
+     /// only if the square root is exact.
+     #[must_use]
+     pub fn checked_sqrt(&self) -> CtOption<Self> {
+-        let r = self.floor_sqrt();
+-        let s = r.wrapping_square();
+-        CtOption::new(r, self.ct_eq(&s))
++        let mut root = self.clone();
++        let exact = root.floor_sqrt_assign();
++        CtOption::new(root, exact)
+     }
+ 
+     /// Perform checked sqrt, returning an [`Option`] which `is_some`
+@@ -149,24 +80,32 @@
+     /// Variable time with respect to `self`.
+     #[must_use]
+     pub fn checked_sqrt_vartime(&self) -> Option<Self> {
+-        let r = self.floor_sqrt_vartime();
+-        let s = r.wrapping_square();
+-        if self.cmp_vartime(&s).is_eq() {
+-            Some(r)
++        let mut root = self.clone();
++        if root.floor_sqrt_assign_vartime() {
++            Some(root)
+         } else {
+             None
+         }
+     }
+ 
++    /// Assigns `floor(√(self))` to `self` in constant time, and returns a [`Choice`]
++    /// indicating whether the square root is exact.
++    fn floor_sqrt_assign(&mut self) -> Choice {
++        let size = self.nlimbs();
++        let mut buf = Self::zero_with_precision(self.bits_precision() * 2);
++        self.as_mut_uint_ref()
++            .sqrt_assign(buf.as_mut_uint_ref().split_at_mut(size))
++    }
++
+     /// Assigns `floor(√(self))` to `self`, and returns a [`bool`]
+     /// indicating whether the square root is exact.
+     ///
+     /// Variable time with respect to `self`.
+     pub fn floor_sqrt_assign_vartime(&mut self) -> bool {
+-        // TODO(tarcieri): more optimized implementation
+-        let mut ret = self.floor_sqrt_vartime();
+-        mem::swap(&mut ret, self);
+-        self.concatenating_square() == ret
++        let size = self.nlimbs();
++        let mut buf = Self::zero_with_precision(self.bits_precision() * 2);
++        self.as_mut_uint_ref()
++            .sqrt_assign_vartime(buf.as_mut_uint_ref().split_at_mut(size))
+     }
+ }
+ 
+@@ -192,14 +131,38 @@
+     }
+ }
+ 
++impl CheckedSquareRoot for NonZero<BoxedUint> {
++    type Output = Self;
++
++    fn checked_sqrt(&self) -> CtOption<Self> {
++        self.as_ref().checked_sqrt().map(NonZero::new_unchecked)
++    }
++
++    fn checked_sqrt_vartime(&self) -> Option<Self> {
++        self.as_ref()
++            .checked_sqrt_vartime()
++            .map(NonZero::new_unchecked)
++    }
++}
++
++impl FloorSquareRoot for NonZero<BoxedUint> {
++    fn floor_sqrt(&self) -> Self {
++        NonZero::new_unchecked(self.as_ref().floor_sqrt())
++    }
++
++    fn floor_sqrt_vartime(&self) -> Self {
++        NonZero::new_unchecked(self.as_ref().floor_sqrt_vartime())
++    }
++}
++
+ #[cfg(test)]
+ #[allow(clippy::integer_division_remainder_used, reason = "test")]
+ mod tests {
+-    use crate::{BoxedUint, Limb};
++    use crate::{BoxedUint, CheckedSquareRoot, FloorSquareRoot, Limb};
+ 
+     #[cfg(feature = "rand_core")]
+     use {
+-        crate::RandomBits,
++        crate::{ConcatenatingSquare, RandomBits},
+         chacha20::ChaCha8Rng,
+         rand_core::{Rng, SeedableRng},
+     };
+@@ -218,7 +181,7 @@
+         for i in 0..half.limbs.len() / 2 {
+             half.limbs[i] = Limb::MAX;
+         }
+-        let u256_max = !BoxedUint::zero_with_precision(256);
++        let u256_max = BoxedUint::max(256);
+         assert_eq!(u256_max.floor_sqrt(), half);
+ 
+         // Test edge cases that use up the maximum number of iterations.
+@@ -307,8 +270,26 @@
+             let r = BoxedUint::from(*e);
+             assert_eq!(l.floor_sqrt(), r);
+             assert_eq!(l.floor_sqrt_vartime(), r);
+-            assert!(l.checked_sqrt().is_some().to_bool());
+-            assert!(l.checked_sqrt_vartime().is_some());
++            assert_eq!(
++                CheckedSquareRoot::checked_sqrt(&l).into_option().as_ref(),
++                Some(&r)
++            );
++            assert_eq!(
++                CheckedSquareRoot::checked_sqrt_vartime(&l).as_ref(),
++                Some(&r)
++            );
++            let nz_l = l.as_nz_vartime().unwrap();
++            let nz_r = r.to_nz().unwrap();
++            assert_eq!(FloorSquareRoot::floor_sqrt(nz_l), nz_r);
++            assert_eq!(FloorSquareRoot::floor_sqrt_vartime(nz_l), nz_r);
++            assert_eq!(
++                CheckedSquareRoot::checked_sqrt(nz_l).into_option().as_ref(),
++                Some(&nz_r)
++            );
++            assert_eq!(
++                CheckedSquareRoot::checked_sqrt_vartime(nz_l).as_ref(),
++                Some(&nz_r)
++            );
+         }
+     }
+ 
+@@ -362,8 +343,6 @@
+     #[cfg(feature = "rand_core")]
+     #[test]
+     fn fuzz() {
+-        use crate::{CheckedSquareRoot, ConcatenatingSquare};
+-
+         let mut rng = ChaCha8Rng::from_seed([7u8; 32]);
+         let rounds = if cfg!(miri) { 10 } else { 50 };
+         for _ in 0..rounds {
+@@ -384,4 +363,19 @@
+             assert_eq!(s.concatenating_square().floor_sqrt_vartime(), s2);
+         }
+     }
+-}
++
++    #[test]
++    // test input from issue #1303
++    fn sqrt_edge() {
++        let sq = BoxedUint::from_be_hex(
++            "0000000000000AB88E41D05334F646EE1B715C614C81DCE1C46E2E021EF2E7FA45E5DD2CC670725E52B091A0E08B1E9E6C43262581226A7BFDE534F704D6DC6C1FD5C93B3AE4FB73C9D26EBC09DB83040C2CD157884532EB5578CEF2BA95E87C7F6E328F062BB20D3C95D122EB4D26727901A424AF14143EBCEFE5D5958E9EDEA73649F5C76932D491C4A51C370F51E6DBEB66D56D7FB51A",
++            1216,
++        ).unwrap();
++        let expect = BoxedUint::from_be_hex(
++                "00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000346375360711FDFC13BE3CF276FCC535C2E29164A842D3B71E2C7DFA60AE0E24CD0CC65AD7A3B626E03DAC8260D921AB8E16C6757D2CA8DEE5DFA62E5C1CB3C90A49B9F1A192498905",
++                1216,
++            ).unwrap();
++        assert_eq!(sq.floor_sqrt(), expect);
++        assert_eq!(sq.floor_sqrt_vartime(), expect);
++    }
++}
+--- crypto-bigint-0.7.5/src/uint/div_limb.rs
++++ crypto-bigint-0.7.6/src/uint/div_limb.rs
+@@ -195,8 +195,7 @@
+     pub const fn new(divisor: NonZero<Limb>) -> Self {
+         let divisor = divisor.get_copy();
+ 
+-        // Assuming this is constant-time for primitive types.
+-        let shift = divisor.0.leading_zeros();
++        let shift = divisor.leading_zeros();
+ 
+         // Will not panic since divisor is non-zero
+         let divisor_normalized = divisor.0 << shift;
+--- crypto-bigint-0.7.5/src/uint/encoding.rs
++++ crypto-bigint-0.7.6/src/uint/encoding.rs
+@@ -383,6 +383,13 @@
+ // It's a little hacky, but it works, because the array is guaranteed to be contiguous.
+ #[derive(Copy, Clone, Debug, PartialEq, Eq)]
+ pub struct EncodedUint<const LIMBS: usize>([Word; LIMBS]);
++
++#[cfg(feature = "zeroize")]
++impl<const LIMBS: usize> zeroize::Zeroize for EncodedUint<LIMBS> {
++    fn zeroize(&mut self) {
++        self.0.zeroize();
++    }
++}
+ 
+ #[allow(unsafe_code)]
+ const fn cast_slice(limbs: &[Word]) -> &[u8] {
+--- crypto-bigint-0.7.5/src/uint/encoding/der.rs
++++ crypto-bigint-0.7.6/src/uint/encoding/der.rs
+@@ -237,6 +237,7 @@
+         assert_valid_value_len_hex("fedcba9876543210fedcba9876543210");
+     }
+ 
++    #[cfg(feature = "alloc")]
+     #[test]
+     fn fixed_uint_rejects_oversized_integer_without_panic() {
+         use der::Decode;
+--- crypto-bigint-0.7.5/src/uint/invert_mod.rs
++++ crypto-bigint-0.7.6/src/uint/invert_mod.rs
+@@ -304,10 +304,10 @@
+         // An inverse of an even number does not exist.
+ 
+         let a = U256::from(10u64).invert_mod2k(4);
+-        assert!(a.is_none().to_bool_vartime());
++        assert!(a.is_none().to_bool());
+ 
+         let a = U256::from(10u64).invert_mod2k_vartime(4);
+-        assert!(a.is_none().to_bool_vartime());
++        assert!(a.is_none().to_bool());
+ 
+         // A degenerate case. An inverse mod 2^0 == 1 always exists even for even numbers.
+ 
+@@ -359,7 +359,7 @@
+ 
+         // `m` is a multiple of `p1`, so no inverse exists
+         let res = p1.invert_odd_mod(&m);
+-        assert!(res.is_none().to_bool_vartime());
++        assert!(res.is_none().to_bool());
+     }
+ 
+     #[test]
+@@ -404,7 +404,7 @@
+         let m = U64::from(49u64).to_odd().unwrap();
+ 
+         let res = a.invert_odd_mod(&m);
+-        assert!(res.is_none().to_bool_vartime());
++        assert!(res.is_none().to_bool());
+     }
+ 
+     #[test]
+@@ -413,7 +413,7 @@
+             U256::ZERO
+                 .invert_odd_mod(&U256::ONE.to_odd().unwrap())
+                 .is_none()
+-                .to_bool_vartime()
++                .to_bool()
+         );
+         assert_eq!(
+             U256::ONE
+@@ -431,7 +431,7 @@
+             U256::MAX
+                 .invert_odd_mod(&U256::MAX.to_odd().unwrap())
+                 .is_none()
+-                .to_bool_vartime()
++                .to_bool()
+         );
+         assert_eq!(
+             U256::MAX
+--- crypto-bigint-0.7.5/src/uint/mod_symbol.rs
++++ crypto-bigint-0.7.6/src/uint/mod_symbol.rs
+@@ -1,6 +1,6 @@
+ //! Support for computing modular symbols.
+ 
+-use crate::{JacobiSymbol, Odd, U64, U128, Uint};
++use crate::{JacobiSymbol, Odd, Uint};
+ 
+ impl<const LIMBS: usize> Uint<LIMBS> {
+     /// Compute the Jacobi symbol `(self|rhs)`.
+@@ -19,14 +19,8 @@
+             return a.jacobi_symbol(rhs);
+         }
+ 
+-        let (gcd, jacobi_neg) = if LIMBS < 4 {
+-            rhs.classic_bingcd_(&self.resize())
+-        } else {
+-            rhs.optimized_bingcd_::<{ U64::BITS }, { U64::LIMBS }, { U128::LIMBS }>(
+-                &self.resize(),
+-                U64::BITS - 2,
+-            )
+-        };
++        let (gcd, jacobi_neg) = rhs.classic_bingcd_(&self.resize());
++
+         // The sign of the Jacobi symbol is represented by jacobi_neg. We select 0 as the
+         // symbol when the GCD is not one, otherwise 1 or -1.
+         let jacobi = (jacobi_neg as i8 * -2 + 1) as i64;
+@@ -87,14 +81,7 @@
+             }
+         }
+ 
+-        let (gcd, jacobi_neg) = if LIMBS < 4 {
+-            rhs.classic_bingcd_vartime_(&self.resize())
+-        } else {
+-            rhs.optimized_bingcd_vartime_::<{ U64::BITS }, { U64::LIMBS }, { U128::LIMBS }>(
+-                &self.resize(),
+-                U64::BITS - 2,
+-            )
+-        };
++        let (gcd, jacobi_neg) = rhs.classic_bingcd_vartime_(&self.resize());
+         JacobiSymbol::from_i8(if gcd.as_ref().cmp_vartime(&Uint::ONE).is_eq() {
+             jacobi_neg as i8 * -2 + 1
+         } else {
+@@ -200,4 +187,18 @@
+         assert_eq!(res, res_vartime_small);
+         assert_eq!(res, res_vartime_large);
+     }
++
++    #[test]
++    // test from issue #1295 - variations in only the middle bits can trip up optimized binary GCD method
++    fn jacobi_edge() {
++        use crate::{Odd, U256};
++
++        assert_eq!(
++            U256::from_be_hex("0000000000000002108DEAFCB180F023912BEED0186CEEAD593A8507B7DA4E9B")
++                .jacobi_symbol(&Odd::<U256>::from_be_hex(
++                    "0000000000000002108DEAFCB180F023912BEED0186CEEED593A8507B7DA4E9B",
++                )),
++            JacobiSymbol::MinusOne
++        );
++    }
+ }
+--- crypto-bigint-0.7.5/src/uint/mul/karatsuba.rs
++++ crypto-bigint-0.7.6/src/uint/mul/karatsuba.rs
+@@ -469,7 +469,7 @@
+         } else {
+             let (z01, z2) = hi.split_at_mut(LIMBS);
+             z01.copy_from(z0.1.as_uint_ref());
+-            wrapping_square(x1, z2);
++            let z2_carry = wrapping_square(x1, z2);
+             let mut dx0 = Uint::<LIMBS>::ZERO;
+             dx0.as_mut_uint_ref().copy_from(x0);
+             let (dx0, dx0_hi) = dx0.shl1_with_carry(Limb::ZERO);
+@@ -483,10 +483,10 @@
+                 Limb::ZERO,
+                 dx0_hi.is_nonzero(),
+             );
+-            let (z1, z1tail) = hi.split_at_mut(LIMBS + z2_len);
++            let (z1, z1_tail) = hi.split_at_mut(LIMBS + z2_len);
+             let c = wrapping_mul(dx0.as_uint_ref(), x1, z1, true);
+             carry = carry.wrapping_add(c);
+-            z1tail.add_assign_limb(carry)
++            z1_tail.add_assign_limb(carry).wrapping_add(z2_carry)
+         }
+     }
+ 
+@@ -508,7 +508,7 @@
+     // input size or more than MIN_STARTING_LIMBS limbs would be truncated.
+     let mut split = previous_power_of_2(out.nlimbs());
+     if split > x.nlimbs() || 2 * split >= out.nlimbs() + MIN_STARTING_LIMBS {
+-        split /= 2;
++        split >>= 1;
+     }
+ 
+     // Select an optimized implementation for a fixed number of limbs
+--- crypto-bigint-0.7.5/src/uint/pow.rs
++++ crypto-bigint-0.7.6/src/uint/pow.rs
+@@ -264,7 +264,7 @@
+                 .pow(&U128::ONE)
+                 .0
+                 .is_none()
+-                .to_bool_vartime()
++                .to_bool()
+         );
+     }
+ 
+--- crypto-bigint-0.7.5/src/uint/rand.rs
++++ crypto-bigint-0.7.6/src/uint/rand.rs
+@@ -256,8 +256,7 @@
+             *val = U256::random_mod_vartime(&mut rng, &modulus);
+         }
+         let expected = [55, 3378, 2172, 1657, 5323];
+-        for (want, got) in expected.into_iter().zip(vals.into_iter()) {
+-            // assert_eq!(got.as_words()[0], want);
++        for (want, got) in expected.into_iter().zip(vals) {
+             assert_eq!(got, U256::from_u32(want));
+         }
+ 
+--- crypto-bigint-0.7.5/src/uint/ref_type.rs
++++ crypto-bigint-0.7.6/src/uint/ref_type.rs
+@@ -10,6 +10,7 @@
+ mod shl;
+ mod shr;
+ mod slice;
++mod sqrt;
+ mod sub;
+ 
+ use crate::{Choice, Limb, NonZero, Odd, Uint, Word};
+@@ -30,7 +31,6 @@
+ /// This type contains a limb slice which can be borrowed from either a [`Uint`] or [`BoxedUint`] and
+ /// thus provides an abstraction for writing shared implementations.
+ #[repr(transparent)]
+-#[derive(PartialEq, Eq)]
+ pub struct UintRef {
+     /// Inner limb array. Stored from least significant to most significant.
+     // TODO(tarcieri): maintain an invariant of at least one limb?
+@@ -102,7 +102,6 @@
+ 
+     /// Get an iterator over the inner limbs.
+     #[inline]
+-    #[must_use]
+     pub fn iter(&self) -> impl DoubleEndedIterator<Item = &Limb> {
+         self.limbs.iter()
+     }
+@@ -179,7 +178,7 @@
+     #[inline]
+     #[must_use]
+     pub const fn as_odd_vartime(&self) -> Option<&Odd<Self>> {
+-        if !self.is_odd().to_bool_vartime() {
++        if !self.is_odd().to_bool() {
+             return None;
+         }
+         Some(Odd::new_ref_unchecked(self))
+--- crypto-bigint-0.7.5/src/uint/ref_type/add.rs
++++ crypto-bigint-0.7.6/src/uint/ref_type/add.rs
+@@ -4,7 +4,6 @@
+ impl UintRef {
+     /// Perform an in-place carrying add of a limb, returning the carried limb value.
+     #[inline]
+-    #[track_caller]
+     pub const fn add_assign_limb(&mut self, mut rhs: Limb) -> Limb {
+         let mut i = 0;
+         while i < self.limbs.len() {
+@@ -15,6 +14,9 @@
+     }
+ 
+     /// Perform an in-place carrying add of another [`UintRef`], returning the carried limb value.
++    ///
++    /// # Panics
++    /// If `self` is shorter than `rhs`.
+     #[inline]
+     #[track_caller]
+     pub const fn carrying_add_assign(&mut self, rhs: &Self, carry: Limb) -> Limb {
+@@ -24,23 +26,30 @@
+     /// Perform an in-place carrying add of another limb slice, returning the carried limb value.
+     ///
+     /// # Panics
+-    /// If `self` and `rhs` have different lengths.
++    /// If `self` is shorter than `rhs`.
+     #[inline]
+     #[track_caller]
+     pub const fn carrying_add_assign_slice(&mut self, rhs: &[Limb], mut carry: Limb) -> Limb {
+         assert!(
+-            self.limbs.len() == rhs.len(),
++            self.limbs.len() >= rhs.len(),
+             "length mismatch in carrying_add_assign_slice"
+         );
+         let mut i = 0;
++        while i < rhs.len() {
++            (self.limbs[i], carry) = self.limbs[i].carrying_add(rhs[i], carry);
++            i += 1;
++        }
+         while i < self.limbs.len() {
+-            (self.limbs[i], carry) = self.limbs[i].carrying_add(rhs[i], carry);
++            (self.limbs[i], carry) = self.limbs[i].overflowing_add(carry);
+             i += 1;
+         }
+         carry
+     }
+ 
+     /// Perform an in-place carrying add of another limb slice, returning the carried limb value.
++    ///
++    /// # Panics
++    /// If `self` is shorter than `rhs`.
+     #[inline]
+     #[track_caller]
+     pub const fn conditional_add_assign(
+@@ -55,7 +64,7 @@
+     /// Perform an in-place carrying add of another limb slice, returning the carried limb value.
+     ///
+     /// # Panics
+-    /// If `self` and `rhs` have different lengths.
++    /// If `self` is shorter than `rhs`.
+     #[inline]
+     #[track_caller]
+     pub const fn conditional_add_assign_slice(
+@@ -65,13 +74,17 @@
+         choice: Choice,
+     ) -> Limb {
+         assert!(
+-            self.limbs.len() == rhs.len(),
++            self.limbs.len() >= rhs.len(),
+             "length mismatch in conditional_add_assign_slice"
+         );
+         let mut i = 0;
+-        while i < self.limbs.len() {
++        while i < rhs.len() {
+             (self.limbs[i], carry) =
+                 self.limbs[i].carrying_add(Limb::select(Limb::ZERO, rhs[i], choice), carry);
++            i += 1;
++        }
++        while i < self.limbs.len() {
++            (self.limbs[i], carry) = self.limbs[i].overflowing_add(carry);
+             i += 1;
+         }
+         carry
+@@ -102,3 +115,45 @@
+         self.trailing_mut(i).add_assign_limb(carry)
+     }
+ }
++
++#[cfg(test)]
++mod tests {
++    use crate::{Choice, Limb, UintRef, Unsigned};
++
++    #[test]
++    fn carrying_add_assign_mixed() {
++        let mut a = [Limb::MAX];
++        let carry =
++            UintRef::new_mut(&mut a).carrying_add_assign(Limb::ONE.as_uint_ref(), Limb::ZERO);
++        assert_eq!((a, carry), ([Limb::ZERO], Limb::ONE));
++
++        let mut a = [Limb::MAX];
++        let carry = UintRef::new_mut(&mut a).conditional_add_assign(
++            Limb::ONE.as_uint_ref(),
++            Limb::ZERO,
++            Choice::FALSE,
++        );
++        assert_eq!((a, carry), ([Limb::MAX], Limb::ZERO));
++
++        let mut a = [Limb::MAX];
++        let carry = UintRef::new_mut(&mut a).conditional_add_assign(
++            Limb::ONE.as_uint_ref(),
++            Limb::ZERO,
++            Choice::TRUE,
++        );
++        assert_eq!((a, carry), ([Limb::ZERO], Limb::ONE));
++
++        let mut a = [Limb::MAX, Limb::MAX];
++        let carry =
++            UintRef::new_mut(&mut a).carrying_add_assign(Limb::ZERO.as_uint_ref(), Limb::ONE);
++        assert_eq!((a, carry), ([Limb::ZERO, Limb::ZERO], Limb::ONE));
++
++        let mut a = [Limb::MAX, Limb::MAX];
++        let carry = UintRef::new_mut(&mut a).conditional_add_assign(
++            Limb::MAX.as_uint_ref(),
++            Limb::ONE,
++            Choice::TRUE,
++        );
++        assert_eq!((a, carry), ([Limb::MAX, Limb::ZERO], Limb::ONE));
++    }
++}
+--- crypto-bigint-0.7.5/src/uint/ref_type/cmp.rs
++++ crypto-bigint-0.7.6/src/uint/ref_type/cmp.rs
+@@ -5,7 +5,7 @@
+ use core::{cmp::Ordering, mem::transmute};
+ 
+ use super::UintRef;
+-use crate::{Choice, Limb, word};
++use crate::{Choice, CtEq, Limb, word};
+ 
+ impl UintRef {
+     /// Returns the truthy value if `self` is odd or the falsy value otherwise.
+@@ -78,7 +78,7 @@
+             .and(lesser.not())
+             .or(greater)
+             .select_u8(255, 1) as i8;
+-        let ord = (diff.is_nonzero().or(lesser).or(greater).to_u8_vartime() as i8) * sgn;
++        let ord = (diff.is_nonzero().or(lesser).or(greater).to_u8() as i8) * sgn;
+ 
+         #[allow(unsafe_code)]
+         // SAFETY: Ordering is repr(i8)
+@@ -117,7 +117,7 @@
+         Ordering::Equal
+     }
+ 
+-    /// Returns the truthy value if `self < rhs` and the falsy value otherwise.
++    /// Returns the truthy value if `lhs < rhs` and the falsy value otherwise.
+     #[inline(always)]
+     pub(crate) const fn lt(lhs: &Self, rhs: &Self) -> Choice {
+         let overlap = if lhs.nlimbs() < rhs.nlimbs() {
+@@ -140,6 +140,26 @@
+     }
+ }
+ 
++impl Eq for UintRef {}
++
++impl Ord for UintRef {
++    fn cmp(&self, other: &Self) -> Ordering {
++        Self::cmp(self, other)
++    }
++}
++
++impl PartialOrd for UintRef {
++    fn partial_cmp(&self, other: &Self) -> Option<Ordering> {
++        Some(self.cmp(other))
++    }
++}
++
++impl PartialEq for UintRef {
++    fn eq(&self, other: &Self) -> bool {
++        self.ct_eq(other).into()
++    }
++}
++
+ #[cfg(test)]
+ mod tests {
+     use core::cmp::Ordering;
+@@ -149,40 +169,47 @@
+ 
+     #[test]
+     fn cmp() {
++        fn check(a: &UintRef, b: &UintRef, ord: Ordering) {
++            assert_eq!(UintRef::cmp(a, b), ord);
++            assert_eq!(UintRef::cmp_vartime(a, b), ord);
++            assert_eq!(a.cmp(b), ord);
++            if ord == Ordering::Equal {
++                assert_eq!(a, b);
++            } else {
++                assert_ne!(a, b);
++            }
++        }
++
+         let z_small = UintRef::new(&[Limb::ZERO, Limb::ZERO]);
+         let z_big = UintRef::new(&[Limb::ZERO, Limb::ZERO, Limb::ZERO]);
+         let a = UintRef::new(&[Limb::ZERO, Limb::ZERO, Limb::ONE]);
+         let b = UintRef::new(&[Limb::ONE, Limb::ZERO]);
+ 
+-        assert_eq!(UintRef::cmp(z_small, z_big), Ordering::Equal);
+-        assert_eq!(UintRef::cmp(z_big, z_small), Ordering::Equal);
+-        assert_eq!(UintRef::cmp(z_small, a), Ordering::Less);
+-        assert_eq!(UintRef::cmp(z_big, a), Ordering::Less);
+-        assert_eq!(UintRef::cmp(a, z_small), Ordering::Greater);
+-        assert_eq!(UintRef::cmp(a, z_big), Ordering::Greater);
+-        assert_eq!(UintRef::cmp(a, b), Ordering::Greater);
+-        assert_eq!(UintRef::cmp(b, a), Ordering::Less);
+-
+-        assert_eq!(UintRef::cmp_vartime(z_small, z_big), Ordering::Equal);
+-        assert_eq!(UintRef::cmp_vartime(z_big, z_small), Ordering::Equal);
+-        assert_eq!(UintRef::cmp_vartime(z_small, a), Ordering::Less);
+-        assert_eq!(UintRef::cmp_vartime(z_big, a), Ordering::Less);
+-        assert_eq!(UintRef::cmp_vartime(a, z_small), Ordering::Greater);
+-        assert_eq!(UintRef::cmp_vartime(a, z_big), Ordering::Greater);
+-        assert_eq!(UintRef::cmp_vartime(a, b), Ordering::Greater);
+-        assert_eq!(UintRef::cmp_vartime(b, a), Ordering::Less);
++        check(z_small, z_big, Ordering::Equal);
++        check(z_big, z_small, Ordering::Equal);
++        check(z_small, a, Ordering::Less);
++        check(z_big, a, Ordering::Less);
++        check(a, z_small, Ordering::Greater);
++        check(a, z_big, Ordering::Greater);
++        check(a, b, Ordering::Greater);
++        check(b, a, Ordering::Less);
+     }
+ 
+     #[test]
+     fn lt() {
++        fn check(a: &UintRef, b: &UintRef) {
++            assert!(UintRef::lt(a, b).to_bool());
++            assert!(!UintRef::lt(b, a).to_bool());
++            assert!(a < b);
++            assert!(b > a);
++        }
++
+         let lesser = UintRef::new(&[Limb::ZERO, Limb::ZERO, Limb::ZERO]);
+         let greater = UintRef::new(&[Limb::ZERO, Limb::ONE, Limb::ZERO]);
+-        assert!(UintRef::lt(lesser, greater).to_bool());
+-        assert!(!UintRef::lt(greater, lesser).to_bool());
++        check(lesser, greater);
+ 
+         let smaller = UintRef::new(&[Limb::ZERO, Limb::ZERO]);
+         let bigger = UintRef::new(&[Limb::ZERO, Limb::ZERO, Limb::ONE]);
+-        assert!(UintRef::lt(smaller, bigger).to_bool());
+-        assert!(!UintRef::lt(bigger, smaller).to_bool());
+-    }
+-}
++        check(smaller, bigger);
++    }
++}
+--- crypto-bigint-0.7.5/src/uint/ref_type/ct.rs
++++ crypto-bigint-0.7.6/src/uint/ref_type/ct.rs
+@@ -6,8 +6,10 @@
+ impl CtAssign for UintRef {
+     #[inline]
+     fn ct_assign(&mut self, other: &Self, choice: Choice) {
+-        debug_assert_eq!(self.bits_precision(), other.bits_precision());
+-        self.limbs.ct_assign(&other.limbs, choice);
++        assert!(self.bits_precision() >= other.bits_precision());
++        let (lo, hi) = self.split_at_mut(other.nlimbs());
++        lo.limbs.ct_assign(&other.limbs, choice);
++        hi.conditional_set_zero(choice);
+     }
+ }
+ 
+--- crypto-bigint-0.7.5/src/uint/ref_type/div.rs
++++ crypto-bigint-0.7.6/src/uint/ref_type/div.rs
+@@ -30,7 +30,7 @@
+         // Compute the size of the divisor
+         let ybits = y.bits();
+         assert!(ybits > 0, "zero divisor");
+-        let ywords = ybits.div_ceil(Limb::BITS);
++        let ywords = bitlen::to_limbs_u32(ybits);
+ 
+         // Shift the entire divisor such that the high bit is set
+         let yz = y.bits_precision() - ybits;
+@@ -113,7 +113,7 @@
+         // Compute the size of the divisor
+         let ybits = y.bits();
+         assert!(ybits > 0, "zero divisor");
+-        let ywords = ybits.div_ceil(Limb::BITS);
++        let ywords = bitlen::to_limbs_u32(ybits);
+ 
+         // Shift the entire divisor such that the high bit is set
+         let yz = y.bits_precision() - ybits;
+@@ -304,7 +304,7 @@
+ 
+             // This loop is a no-op once xi is smaller than the number of words in the divisor
+             let done = Choice::from_u32_lt(xi as u32, ywords - 1);
+-            if VARTIME && done.to_bool_vartime() {
++            if VARTIME && done.to_bool() {
+                 break;
+             }
+             quo = word::select(quo, 0, done);
+@@ -335,7 +335,7 @@
+                         x.limbs[i].carrying_add(y.limbs[ysize + i - xi - 1].bitand(borrow), carry);
+                     i += 1;
+                 }
+-                quo.saturating_sub(borrow.0 & 1)
++                quo.wrapping_sub(borrow.0 & word::choice_to_mask(word::choice_from_nz(quo)) & 1)
+             };
+ 
+             // Store the quotient within dividend and set x_hi to the current highest word
+@@ -476,7 +476,7 @@
+ 
+             // This loop is a no-op once xi is smaller than the number of words in the divisor
+             let done = Choice::from_u32_lt(xi as u32, ywords - 1);
+-            if VARTIME && done.to_bool_vartime() {
++            if VARTIME && done.to_bool() {
+                 break;
+             }
+             quo = word::select(quo, 0, done);
+@@ -606,30 +606,28 @@
+     /// If the divisor is zero.
+     #[inline(always)]
+     pub(crate) const fn div_exact(&mut self, rhs: &mut UintRef) -> Choice {
+-        let x_prec = self.bits_precision();
+         let y_bits = rhs.bits();
+         assert!(y_bits > 0, "zero divisor");
+ 
+-        let tz = rhs.trailing_zeros();
+-        // Track whether there are more zeros in the divisor than bits in the dividend
+-        let excess_z = Choice::from_u32_lt(x_prec, tz);
+-        let tz = excess_z.select_u32(tz, x_prec);
++        let x_tz = self.trailing_zeros();
++        let x_zero = Choice::from_u32_eq(x_tz, self.bits_precision());
++        let y_tz = rhs.trailing_zeros();
+ 
+         // Shift the divisor such that it is odd
+-        rhs.shr_assign(tz);
+-
+-        // Check that the dividend evenly divides by 2^tz, and shift it to match the divisor
+-        let div2s_exact = self.ensure_trailing_zeros(tz).and(excess_z.not());
+-        self.unbounded_shr_assign(tz);
++        rhs.shr_assign(y_tz);
++
++        // Check that the dividend evenly divides by 2^y+tz, and shift it to match the divisor
++        let div2s_exact = Choice::from_u32_le(y_tz, x_tz).or(x_zero);
++        self.unbounded_shr_assign(y_tz);
+ 
+         let y = Odd::new_ref_unchecked(rhs);
+         let y_inv = y.invert_mod_limb();
+-        let ywords = bitlen::to_limbs(y_bits - tz);
++        let ywords = bitlen::to_limbs(y_bits - y_tz);
+         let is_exact =
+             Self::div_exact_odd_with_inverse::<false>(self, y, y_inv, ywords).and(div2s_exact);
+ 
+         // Restore the divisor
+-        rhs.shl_assign(tz);
++        rhs.shl_assign(y_tz);
+ 
+         is_exact
+     }
+@@ -643,32 +641,28 @@
+     /// If the divisor is zero.
+     #[inline(always)]
+     pub(crate) const fn div_exact_vartime(&mut self, rhs: &mut UintRef) -> Choice {
+-        let x_prec = self.bits_precision();
+         let y_bits = rhs.bits_vartime();
+         assert!(y_bits > 0, "zero divisor");
+ 
+-        let tz = rhs.trailing_zeros_vartime();
+-        if tz > x_prec {
+-            // The divisor exceeds the dividend precision. Short circuit based on public
+-            // information (the divisor and the input size in limbs)
+-            return Choice::FALSE;
+-        }
+-        // Reduce the divisor to its populated limbs and shift it such that it is odd
+-        let rhs = rhs.leading_mut(bitlen::to_limbs(y_bits));
+-        rhs.unbounded_shr_assign_vartime(tz);
+-
+-        // Check that the dividend evenly divides by 2^tz, and shift it to match the divisor
+-        let div2s_exact = self.ensure_trailing_zeros(tz);
+-        self.unbounded_shr_assign_vartime(tz);
+-
+-        let ywords = bitlen::to_limbs(y_bits - tz);
+-        let y = Odd::new_ref_unchecked(rhs.leading(ywords));
++        let x_tz = self.trailing_zeros();
++        let x_zero = Choice::from_u32_eq(x_tz, self.bits_precision());
++        let y_tz = rhs.trailing_zeros_vartime();
++
++        // Shift the divisor to be odd
++        rhs.unbounded_shr_assign_vartime(y_tz);
++
++        // Check that the dividend evenly divides by 2^y_tz, and shift it to match the divisor
++        let div2s_exact = Choice::from_u32_le(y_tz, x_tz).or(x_zero);
++        self.unbounded_shr_assign_vartime(y_tz);
++
++        let ywords = bitlen::to_limbs(y_bits - y_tz);
++        let y = Odd::new_ref_unchecked(rhs.leading_mut(ywords));
+         let y_inv = y.invert_mod_limb();
+         let is_exact =
+             Self::div_exact_odd_with_inverse::<true>(self, y, y_inv, ywords).and(div2s_exact);
+ 
+         // Restore the divisor
+-        rhs.unbounded_shl_assign_vartime(tz);
++        rhs.unbounded_shl_assign_vartime(y_tz);
+ 
+         is_exact
+     }
+@@ -696,21 +690,25 @@
+         let y = y.as_ref();
+         let yc = y.nlimbs();
+         let mut meta_carry = Limb::ZERO;
++        let mut zero_hi = Choice::TRUE;
+         let mut xi = 0;
+ 
+         while xi < xc {
+             let y_remain = if yc < (xc - xi) { yc } else { xc - xi };
+             // This loop is a no-op once there are fewer words remaining than the size of the divisor
+             let done = usize_lt(y_remain, ywords);
+-            if VARTIME && done.to_bool_vartime() {
+-                // Set the upper limbs to zero
+-                x.trailing_mut(xi).fill(Limb::ZERO);
++            if VARTIME && done.to_bool() {
++                zero_hi = x.trailing(xi).is_zero();
+                 break;
+             }
+ 
+             // Compute the quotient limb that will clear the low dividend limb
+-            let quo = Limb::select(x.limbs[xi].wrapping_mul(y_inv), Limb::ZERO, done);
++            let quo = Limb::select(x.limbs[xi].wrapping_mul(y_inv), x.limbs[xi], done);
+             x.limbs[xi] = quo;
++
++            if !VARTIME {
++                zero_hi = zero_hi.and(Limb::select(Limb::ZERO, quo, done).is_zero());
++            }
+ 
+             let (_, mut carry) = quo.widening_mul(y.limbs[0]);
+             let mut sub;
+@@ -735,20 +733,57 @@
+             xi += 1;
+         }
+ 
+-        meta_carry.is_zero()
+-    }
+-
+-    // Check that `self` can be cleanly divided by 2^zs: the bottom zs bits are zero.
+-    #[inline(always)]
+-    const fn ensure_trailing_zeros(&self, zs: u32) -> Choice {
+-        let z_words = (zs >> Limb::LOG2_BITS) as usize;
+-        let z_bits = zs & (Limb::BITS - 1);
+-        if z_words >= self.nlimbs() {
+-            self.is_zero()
+-        } else {
+-            self.leading(z_words)
+-                .is_zero()
+-                .and(self.limbs[z_words].restrict_bits(z_bits).is_zero())
+-        }
++        meta_carry.is_zero().and(zero_hi)
+     }
+ }
++
++#[cfg(test)]
++mod tests {
++    use crate::{U64, U128, U192, Uint};
++
++    #[test]
++    fn div_exact_inexact() {
++        fn check<const L: usize, const R: usize>(lhs: Uint<L>, rhs: Uint<R>, exact: bool) {
++            let (mut q, mut r) = (lhs, rhs);
++            let actual = q.as_mut_uint_ref().div_exact(r.as_mut_uint_ref()).to_bool();
++            assert_eq!(actual, exact, "{lhs} / {rhs}: exact={actual}");
++            let (mut q, mut r) = (lhs, rhs);
++            let actual = q
++                .as_mut_uint_ref()
++                .div_exact_vartime(r.as_mut_uint_ref())
++                .to_bool();
++            assert_eq!(actual, exact, "{lhs} / {rhs}: exact={actual}");
++        }
++
++        check(
++            U64::from_be_hex("0000000000000010"),
++            U64::from_be_hex("0000000000000010"),
++            true,
++        );
++        check(
++            U64::from_be_hex("0000000000000010"),
++            U128::from_be_hex("00000000000000000000000000000001"),
++            true,
++        );
++        check(
++            U64::from_be_hex("0000000000000000"),
++            U128::from_be_hex("10000000000000000000000000000000"),
++            true,
++        );
++        check(
++            U64::from_be_hex("0000000000000001"),
++            U64::from_be_hex("0000000000000010"),
++            false,
++        );
++        check(
++            U64::from_be_hex("0000000000000001"),
++            U128::from_be_hex("00000000000000100000000000000000"),
++            false,
++        );
++        check(
++            U192::from_be_hex("FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF0000000000000000"),
++            U192::from_be_hex("000000000000000100000000000000003ACEDC010F13471D"),
++            false,
++        );
++    }
++}
+--- crypto-bigint-0.7.5/src/uint/ref_type/sqrt.rs
++++ crypto-bigint-0.7.6/src/uint/ref_type/sqrt.rs
+@@ -0,0 +1,298 @@
++//! Square root calculation.
++
++use super::UintRef;
++use crate::{Choice, Limb, NonZero, Uint, WideWord, Word, word};
++
++impl UintRef {
++    #[inline]
++    pub(crate) const fn sqrt_assign(&mut self, buf: (&mut UintRef, &mut UintRef)) -> Choice {
++        let len = self.nlimbs();
++        assert!(buf.0.nlimbs() >= len && buf.1.nlimbs() >= len);
++
++        match len {
++            0 => Choice::TRUE,
++            1 => {
++                let rem;
++                (self.limbs[0].0, rem) = sqrt_rem_word(self.limbs[0].0);
++                Limb(rem).is_zero()
++            }
++            _ => {
++                let mut bits = self.bits();
++                let is_zero = Choice::from_u32_nz(bits).not();
++                // Set first limb to 1 if the input is zero
++                self.limbs[0] = Limb::select(self.limbs[0], Limb::ONE, is_zero);
++                bits = is_zero.select_u32(bits, 1);
++
++                // Shift such that at least one of the top two bits are non-zero
++                let s_shift = (self.bits_precision() - bits) >> 1;
++                self.shl_assign(s_shift * 2);
++
++                // Compute root and uncorrected remainder, placing them in buf.0 and buf.1
++                self.sqrt_rem_normalized::<false>(buf.0, buf.1);
++
++                // Copy the shifted root to self and correct it
++                self.copy_from(buf.0.leading(self.nlimbs()));
++                self.shr_assign(s_shift);
++
++                // Set root to zero if self was zero
++                self.limbs[0] = Limb::select(self.limbs[0], Limb::ZERO, is_zero);
++
++                // Check if there is a remainder
++                buf.1.is_zero()
++            }
++        }
++    }
++
++    #[inline]
++    pub(crate) const fn sqrt_assign_vartime(&mut self, buf: (&mut UintRef, &mut UintRef)) -> bool {
++        let bits = self.bits_vartime();
++        if bits == 0 {
++            return true;
++        }
++
++        let words = bits.div_ceil(Limb::BITS);
++        assert!(buf.0.nlimbs() >= words as usize && buf.1.nlimbs() >= words as usize);
++
++        // Only consider the populated limbs
++        let out = self.leading_mut(words as usize);
++
++        if words <= 2 {
++            // No shifts needed
++            sqrt_rem_small::<true>(out.as_limbs(), buf.0.as_mut_limbs(), buf.1.as_mut_limbs());
++            out.copy_from(buf.0.leading(out.nlimbs()));
++        } else {
++            // Shift such that at least one of the top two bits are non-zero
++            let lz = words * Limb::BITS - bits;
++            let s_shift = lz >> 1;
++            out.shl_assign_limb_vartime(s_shift * 2);
++
++            // Compute root and uncorrected remainder, placing them in buf.0 and buf.1
++            out.sqrt_rem_normalized::<true>(buf.0, buf.1);
++
++            // Copy the shifted root to self and correct it
++            out.copy_from(buf.0.leading(out.nlimbs()));
++            out.shr_assign_limb_vartime(s_shift);
++        }
++
++        // Check if there is a remainder
++        buf.1.is_zero_vartime()
++    }
++
++    /// Corresponds to Brent & Zimmermann, Modern Computer Arithmetic, v0.5.9, Algorithm 1.12
++    #[allow(clippy::cast_possible_truncation)]
++    const fn sqrt_rem_normalized<const VARTIME: bool>(&self, s: &mut UintRef, r: &mut UintRef) {
++        let len = self.nlimbs();
++
++        // Handle base case of a square root < 4 limbs
++        // Unlike the source material, we do not handle 4 limbs in the base case sqrt function
++        if len < 4 {
++            sqrt_rem_small::<VARTIME>(self.as_limbs(), s.as_mut_limbs(), r.as_mut_limbs());
++            return;
++        }
++
++        let l = len >> 2;
++        let rt_len = (len - l * 2).div_ceil(2);
++        let (a_lo, a_hi) = self.split_at(l * 2);
++        let (a0, a1) = a_lo.split_at(l);
++
++        // (s', r') = SqrtRem(a3•B + a2), leaving `l` spare low limbs in each
++        a_hi.sqrt_rem_normalized::<VARTIME>(s.trailing_mut(l), r.trailing_mut(l));
++
++        // Split up buffers
++        let (s, s_tail) = s.split_at_mut(l + rt_len);
++        let (s_lo, s_hi) = s.split_at_mut(l);
++        let (r, r_tail) = r.split_at_mut(l + rt_len + 1);
++
++        // Set r = r'B + a1
++        r.leading_mut(l).copy_from(a1);
++        // Set u = s'
++        let u = s_tail.leading_mut(rt_len);
++        u.copy_from(s_hi);
++
++        // We wish to divide r/2s', setting r to the quotient and u to the remainder, but
++        // 2s' doesn't fit within the available buffer. Compute r/s' and adjust the result
++        r.div_rem(u);
++        // Adjust the result for divisor 2s'
++        let r_mod2 = r.shr1_assign();
++        let u_hi = u.conditional_add_assign(s_hi, Limb::ZERO, r_mod2.is_nonzero());
++
++        let (r_lo, r_hi) = r.split_at_mut(l);
++
++        // s = s'B + q
++        s_lo.copy_from(r_lo);
++        let q_hi = r_hi.limbs[0];
++        s_hi.add_assign_limb(q_hi);
++        debug_assert!(q_hi.0 & !1 == 0);
++
++        // r = uB + a0
++        r_lo.copy_from(a0);
++        r_hi.leading_mut(rt_len).copy_from(u);
++        r_hi.limbs[rt_len] = u_hi;
++
++        // Compute q^2
++        let q2 = s_tail.leading_mut(l * 2);
++        q2.fill(Limb::ZERO);
++        s_lo.wrapping_square(q2);
++
++        // r -= q^2, producing a borrow if r < 0
++        let (r0, r1) = r.split_at_mut(l * 2);
++        let borrow = r0.borrowing_sub_assign(q2, Limb::ZERO);
++        let swap = r1.borrowing_sub_assign_limb(q_hi, borrow).lsb_to_choice();
++        let s_carry = Limb::select(Limb::ZERO, Limb::ONE, swap);
++
++        // s -= 1 if r < 0
++        s.borrowing_sub_assign_limb(s_carry, Limb::ZERO);
++
++        // r += 2s + 1 if r < 0
++        let s_mul = s_carry.shl(1);
++        r.carrying_add_assign_mul_limb(s, s_mul, s_carry);
++
++        // Clear upper limbs of the result buffers
++        s_tail.fill(Limb::ZERO);
++        r_tail.fill(Limb::ZERO);
++    }
++}
++
++/// Compute the square root and remainder of a [`Word`].
++///
++/// Adapted from Hacker's Delight 2E by Henry S. Warren Jr.,
++/// Fig. 11-4, "Integer square root, hardware algorithm"
++/// based on Toepler's algorithm.
++#[inline]
++const fn sqrt_rem_word(value: Word) -> (Word, Word) {
++    let mut m = 1 << (Word::BITS - 2);
++    let mut x = value;
++    let mut y = 0;
++    while m != 0 {
++        let b = y | m;
++        y >>= 1;
++        let mask = word::choice_to_mask(word::choice_from_le(b, x));
++        x = x.wrapping_sub(b & mask);
++        y |= m & mask;
++        m >>= 2;
++    }
++    (y, x)
++}
++
++/// Compute the root and remainder for `n+1` limbs, given the root and remainder
++/// for `n` limbs (n=1 or 2). The input value must be normalized such that at least one of the
++/// top two bits is set, producing an `s1` with at least `Word::BITS/2` bits.
++///
++/// This is essentially a specialized version of the root expansion portion of `sqrt_rem_normalized`.
++#[allow(clippy::cast_possible_truncation)]
++#[inline]
++const fn sqrt_rem_expand_by_word(s1: Word, r1: WideWord, next: Word) -> (WideWord, WideWord) {
++    const HALF_WIDTH: u32 = Word::BITS >> 1;
++    debug_assert!((s1 >> (HALF_WIDTH - 1)) > 0);
++
++    // Split the lower word into lower and upper halves
++    let (a0, a1) = (
++        (next & ((1 << HALF_WIDTH) - 1)) as WideWord,
++        (next >> HALF_WIDTH) as WideWord,
++    );
++    let d = (r1 << HALF_WIDTH) | a1;
++
++    // Divide by (r1B + a1) by s1 (not 2s1 which could overflow a limb)
++    let (q, _) = Uint::<2>::from_wide_word(d).div_rem_limb(NonZero::<Limb>::new_unwrap(Limb(s1)));
++    // Correct the quotient
++    let q = (q.limbs[0].0 >> 1) as WideWord;
++    // Recompute the remainder u
++    let u = d - (q << 1) * s1 as WideWord;
++    // Set s = s1B + q
++    let s = ((s1 as WideWord) << HALF_WIDTH) + q;
++
++    // Set r' = uB + a0
++    let r_pre = (u << HALF_WIDTH) | a0;
++    let q2 = q.pow(2);
++    let swap = word::choice_to_wide_mask(word::choice_from_wide_lt(r_pre, q2));
++
++    // Subtract 1 from s if r' < q^2
++    let s = s - (swap & 1);
++    // Set r = r' - q2, adding back 2s + 1 if r would be negative
++    let r = r_pre.wrapping_add(((s << 1) | 1) & swap) - q2;
++
++    (s, r)
++}
++
++/// Compute the square root and remainder for a 1 to 3 limb input, which must be normalized.
++/// This is the base case square root calculation.
++#[allow(clippy::cast_possible_truncation)]
++#[inline]
++const fn sqrt_rem_small<const VARTIME: bool>(value: &[Limb], s: &mut [Limb], r: &mut [Limb]) {
++    let len = value.len();
++    assert!(len < 4, "value exceeds maximum size for sqrt_rem_small");
++
++    if len == 0 {
++        return;
++    }
++
++    if len == 1 {
++        let base = value[0].0;
++        (s[0].0, r[0].0) = if VARTIME {
++            let root = base.isqrt();
++            (root, base.wrapping_sub(root.wrapping_pow(2)))
++        } else {
++            sqrt_rem_word(base)
++        };
++        return;
++    }
++
++    // Compute root, remainder for two words
++    let (s1, r1) = {
++        if VARTIME {
++            let base = word::join(value[len - 2].0, value[len - 1].0);
++            let root = base.isqrt();
++            (root as Word, base.wrapping_sub(root.wrapping_pow(2)))
++        } else {
++            let (s0, r0) = sqrt_rem_word(value[len - 1].0);
++            let (s1, r1) = sqrt_rem_expand_by_word(s0, r0 as WideWord, value[len - 2].0);
++            (s1 as Word, r1)
++        }
++    };
++    if len == 2 {
++        s[0].0 = s1;
++        (r[0].0, r[1].0) = word::split_wide(r1);
++        return;
++    }
++
++    // Expand to root, remainder for three words
++    let (s1, r1) = sqrt_rem_expand_by_word(s1, r1, value[len - 3].0);
++    (s[0].0, s[1].0) = word::split_wide(s1);
++    (r[0].0, r[1].0) = word::split_wide(r1);
++}
++
++#[cfg(test)]
++mod tests {
++    use super::{sqrt_rem_expand_by_word, sqrt_rem_word};
++    use crate::{WideWord, Word, word};
++
++    #[test]
++    fn sqrt_rem_word_expected() {
++        fn check(val: Word) {
++            let (root, rem) = sqrt_rem_word(val);
++            let check = root.pow(2) + rem;
++            assert_eq!(check, val, "val: {val}, root: {root}, rem: {rem}");
++        }
++
++        check(0);
++        check(1);
++        check(2);
++        check(Word::MAX);
++    }
++
++    #[test]
++    fn sqrt_rem_expand_by_word_expected() {
++        fn check(val: WideWord) {
++            let (lo, hi) = word::split_wide(val);
++            let s1 = hi.isqrt();
++            let r1 = WideWord::from(hi - s1.pow(2));
++            let (s, r) = sqrt_rem_expand_by_word(s1, r1, lo);
++            assert_eq!(s, val.isqrt());
++            assert_eq!(r, val - s.pow(2));
++        }
++
++        check(1 << (WideWord::BITS - 1));
++        check(2 << (WideWord::BITS - 2));
++        check(WideWord::MAX);
++    }
++}
+--- crypto-bigint-0.7.5/src/uint/ref_type/sub.rs
++++ crypto-bigint-0.7.6/src/uint/ref_type/sub.rs
+@@ -17,7 +17,11 @@
+ 
+     /// Perform an in-place borrowing subtraction of another [`UintRef`], returning the carried limb
+     /// value.
++    ///
++    /// # Panics
++    /// If `self` is shorter than `rhs`.
+     #[inline]
++    #[track_caller]
+     pub const fn borrowing_sub_assign(&mut self, rhs: &Self, borrow: Limb) -> Limb {
+         self.borrowing_sub_assign_slice(&rhs.limbs, borrow)
+     }
+@@ -26,13 +30,21 @@
+     /// value.
+     ///
+     /// # Panics
+-    /// If `self` and `rhs` have different lengths.
++    /// If `self` is shorter than `rhs`.
+     #[inline]
++    #[track_caller]
+     pub const fn borrowing_sub_assign_slice(&mut self, rhs: &[Limb], mut borrow: Limb) -> Limb {
+-        assert!(self.limbs.len() == rhs.len(), "length mismatch");
++        assert!(
++            self.limbs.len() >= rhs.len(),
++            "length mismatch in borrowing_sub_assign_slice"
++        );
+         let mut i = 0;
++        while i < rhs.len() {
++            (self.limbs[i], borrow) = self.limbs[i].borrowing_sub(rhs[i], borrow);
++            i += 1;
++        }
+         while i < self.limbs.len() {
+-            (self.limbs[i], borrow) = self.limbs[i].borrowing_sub(rhs[i], borrow);
++            (self.limbs[i], borrow) = self.limbs[i].borrowing_sub(Limb::ZERO, borrow);
+             i += 1;
+         }
+         borrow
+@@ -40,22 +52,76 @@
+ 
+     /// Perform in-place wrapping subtraction, returning the truthy value as the second element of
+     /// the tuple if an underflow has occurred.
+-    pub(crate) fn conditional_borrowing_sub_assign(
++    ///
++    /// # Panics
++    /// If `self` is shorter than `rhs`.
++    #[track_caller]
++    pub(crate) const fn conditional_borrowing_sub_assign(
+         &mut self,
+         rhs: &Self,
+         choice: Choice,
+     ) -> Choice {
+-        debug_assert!(self.bits_precision() <= rhs.bits_precision());
++        assert!(
++            self.limbs.len() >= rhs.limbs.len(),
++            "length mismatch in conditional_borrowing_sub_assign"
++        );
+         let mask = Limb::select(Limb::ZERO, Limb::MAX, choice);
+         let mut borrow = Limb::ZERO;
+ 
+-        for i in 0..self.nlimbs() {
+-            let masked_rhs = *rhs.limbs.get(i).unwrap_or(&Limb::ZERO) & mask;
+-            let (limb, b) = self.limbs[i].borrowing_sub(masked_rhs, borrow);
+-            self.limbs[i] = limb;
+-            borrow = b;
++        let mut i = 0;
++        while i < rhs.limbs.len() {
++            let masked_rhs = rhs.limbs[i].bitand(mask);
++            (self.limbs[i], borrow) = self.limbs[i].borrowing_sub(masked_rhs, borrow);
++            i += 1;
++        }
++        while i < self.limbs.len() {
++            (self.limbs[i], borrow) = self.limbs[i].borrowing_sub(Limb::ZERO, borrow);
++            i += 1;
+         }
+ 
+         borrow.lsb_to_choice()
+     }
+ }
++
++#[cfg(test)]
++mod tests {
++    use crate::{Choice, Limb, UintRef, Unsigned};
++
++    #[test]
++    fn borrowing_sub_assign_mixed() {
++        let mut a = [Limb::MAX];
++        let borrow =
++            UintRef::new_mut(&mut a).borrowing_sub_assign(Limb::MAX.as_uint_ref(), Limb::MAX);
++        assert_eq!((a, borrow), ([Limb::MAX], Limb::MAX));
++
++        let mut a = [Limb::MAX];
++        let borrow = UintRef::new_mut(&mut a)
++            .conditional_borrowing_sub_assign(Limb::MAX.as_uint_ref(), Choice::FALSE);
++        assert_eq!((a, borrow.to_bool()), ([Limb::MAX], false));
++
++        let mut a = [Limb::MAX - Limb::ONE];
++        let borrow = UintRef::new_mut(&mut a)
++            .conditional_borrowing_sub_assign(Limb::MAX.as_uint_ref(), Choice::TRUE);
++        assert_eq!((a, borrow.to_bool()), ([Limb::MAX], true));
++
++        let mut a = [Limb::MAX - Limb::ONE, Limb::ONE];
++        let borrow =
++            UintRef::new_mut(&mut a).borrowing_sub_assign(Limb::MAX.as_uint_ref(), Limb::ZERO);
++        assert_eq!((a, borrow), ([Limb::MAX, Limb::ZERO], Limb::ZERO));
++
++        let mut a = [Limb::MAX - Limb::ONE, Limb::ZERO];
++        let borrow =
++            UintRef::new_mut(&mut a).borrowing_sub_assign(Limb::MAX.as_uint_ref(), Limb::ZERO);
++        assert_eq!((a, borrow), ([Limb::MAX, Limb::MAX], Limb::MAX));
++
++        let mut a = [Limb::MAX - Limb::ONE, Limb::ONE];
++        let borrow = UintRef::new_mut(&mut a)
++            .conditional_borrowing_sub_assign(Limb::MAX.as_uint_ref(), Choice::TRUE);
++        assert_eq!((a, borrow.to_bool()), ([Limb::MAX, Limb::ZERO], false));
++
++        let mut a = [Limb::MAX - Limb::ONE, Limb::ZERO];
++        let borrow = UintRef::new_mut(&mut a)
++            .conditional_borrowing_sub_assign(Limb::MAX.as_uint_ref(), Choice::TRUE);
++        assert_eq!((a, borrow.to_bool()), ([Limb::MAX, Limb::MAX], true));
++    }
++}
+--- crypto-bigint-0.7.5/src/uint/shl.rs
++++ crypto-bigint-0.7.6/src/uint/shl.rs
+@@ -343,7 +343,7 @@
+ 
+     #[test]
+     fn shl_bounds() {
+-        assert!(N.overflowing_shl(256).is_none().to_bool_vartime());
++        assert!(N.overflowing_shl(256).is_none().to_bool());
+         assert!(N.overflowing_shl_vartime(256).is_none());
+         assert_eq!(N.unbounded_shl(256), Uint::ZERO);
+         assert_eq!(N.unbounded_shl_vartime(256), Uint::ZERO);
+--- crypto-bigint-0.7.5/src/uint/shr.rs
++++ crypto-bigint-0.7.6/src/uint/shr.rs
+@@ -275,7 +275,7 @@
+ 
+     #[test]
+     fn shr_bounds() {
+-        assert!(N.overflowing_shr(192).is_none().to_bool_vartime());
++        assert!(N.overflowing_shr(192).is_none().to_bool());
+         assert!(N.overflowing_shr_vartime(192).is_none());
+         assert_eq!(N.unbounded_shr(192), Uint::ZERO);
+         assert_eq!(N.unbounded_shr_vartime(192), Uint::ZERO);
+--- crypto-bigint-0.7.5/src/uint/sqrt.rs
++++ crypto-bigint-0.7.6/src/uint/sqrt.rs
+@@ -1,6 +1,8 @@
+ //! [`Uint`] square root operations.
+ 
+-use crate::{CheckedSquareRoot, CtEq, CtOption, FloorSquareRoot, Limb, NonZero, Uint};
++use ctutils::Choice;
++
++use crate::{CheckedSquareRoot, CtOption, FloorSquareRoot, NonZero, Uint};
+ 
+ impl<const LIMBS: usize> Uint<LIMBS> {
+     /// Computes `floor(√(self))` in constant time.
+@@ -14,12 +16,13 @@
+ 
+     /// Computes `floor(√(self))` in constant time.
+     ///
+-    /// Callers can check if `self` is a square by squaring the result.
++    /// Callers can check if `self` is a square by squaring the result, or use
++    /// `checked_sqrt`.
+     #[must_use]
+     pub const fn floor_sqrt(&self) -> Self {
+-        let (self_nz, self_is_nz) = self.to_nz_or_one();
+-        let root_nz = self_nz.floor_sqrt();
+-        Self::select(&Self::ZERO, root_nz.as_ref(), self_is_nz)
++        let mut root = *self;
++        root.floor_sqrt_assign();
++        root
+     }
+ 
+     /// Computes `floor(√(self))`.
+@@ -40,11 +43,9 @@
+     /// Variable time with respect to `self`.
+     #[must_use]
+     pub const fn floor_sqrt_vartime(&self) -> Self {
+-        if let Some(self_nz) = self.as_nz_vartime() {
+-            self_nz.floor_sqrt_vartime().get_copy()
+-        } else {
+-            Self::ZERO
+-        }
++        let mut root = *self;
++        root.floor_sqrt_assign_vartime();
++        root
+     }
+ 
+     /// Wrapped sqrt is just `floor(√(self))`.
+@@ -69,121 +70,79 @@
+     /// only if the square root is exact.
+     #[must_use]
+     pub fn checked_sqrt(&self) -> CtOption<Self> {
+-        let (self_nz, self_is_nz) = self.to_nz_or_one();
+-        self_nz
+-            .checked_sqrt()
+-            .map(|nz| Self::select(&Self::ZERO, nz.as_ref(), self_is_nz))
++        let mut root = *self;
++        let exact = root.floor_sqrt_assign();
++        CtOption::new(root, exact)
+     }
+ 
+     /// Perform checked sqrt, returning an [`Option`] which `is_some`
+     /// only if the square root is exact.
+     ///
+     /// Variable time with respect to `self`.
++    #[must_use]
+     pub fn checked_sqrt_vartime(&self) -> Option<Self> {
+-        if let Some(self_nz) = self.as_nz_vartime() {
+-            self_nz.checked_sqrt_vartime().map(NonZero::get)
++        let mut root = *self;
++        if root.floor_sqrt_assign_vartime() {
++            Some(root)
+         } else {
+-            Some(Self::ZERO)
+-        }
++            None
++        }
++    }
++
++    /// Assigns `floor(√(self))` to `self` and returns a [`Choice`] indicating
++    /// whether the square root is exact.
++    const fn floor_sqrt_assign(&mut self) -> Choice {
++        let mut buf = (Uint::<LIMBS>::ZERO, Uint::<LIMBS>::ZERO);
++        self.as_mut_uint_ref()
++            .sqrt_assign((buf.0.as_mut_uint_ref(), buf.1.as_mut_uint_ref()))
++    }
++
++    /// Assigns `floor(√(self))` to `self` and returns a [`bool`] indicating
++    /// whether the square root is exact.
++    ///
++    /// Variable time with respect to `self`.
++    const fn floor_sqrt_assign_vartime(&mut self) -> bool {
++        let mut buf = (Uint::<LIMBS>::ZERO, Uint::<LIMBS>::ZERO);
++        self.as_mut_uint_ref()
++            .sqrt_assign_vartime((buf.0.as_mut_uint_ref(), buf.1.as_mut_uint_ref()))
+     }
+ }
+ 
+ impl<const LIMBS: usize> NonZero<Uint<LIMBS>> {
+     /// Computes `floor(√(self))` in constant time.
+     ///
+-    /// Callers can check if `self` is a square by squaring the result.
++    /// Callers can check if `self` is a square by squaring the result, or
++    /// use `checked_sqrt`.
+     #[must_use]
+     pub const fn floor_sqrt(&self) -> Self {
+-        // Uses Brent & Zimmermann, Modern Computer Arithmetic, v0.5.9, Algorithm 1.13.
+-        //
+-        // See Hast, "Note on computation of integer square roots"
+-        // for the proof of the sufficiency of the bound on iterations.
+-        // https://github.com/RustCrypto/crypto-bigint/files/12600669/ct_sqrt.pdf
+-
+-        let rt_bits = self.as_ref().bits().div_ceil(2);
+-        // The initial guess: `x_0 = 2^ceil(b/2)`, where `2^(b-1) <= self < 2^b`.
+-        // Will not overflow since `b <= BITS`.
+-        let mut x = Uint::<LIMBS>::ZERO.set_bit_vartime(rt_bits, true);
+-        // Compute `self.0 / x_0` by shifting.
+-        let mut q = self.as_ref().shr(rt_bits);
+-        // The first division has been performed.
+-        let mut i = 1;
+-
+-        loop {
+-            // Calculate `x_{i+1} = floor((x_i + self_nz / x_i) / 2)`, leaving `x` unmodified
+-            // if it would increase.
+-            x = Uint::select(&x.wrapping_add(&q).shr1(), &x, Uint::lt(&x, &q));
+-
+-            // We repeat enough times to guarantee the result has stabilized.
+-            // TODO (#378): the tests indicate that just `Self::LOG2_BITS` may be enough.
+-            i += 1;
+-            if i >= Uint::<LIMBS>::LOG2_BITS + 2 {
+-                return x.to_nz().expect_copied("ensured non-zero");
+-            }
+-
+-            (q, _) = self
+-                .as_ref()
+-                .div_rem(x.to_nz().expect_ref("ensured non-zero"));
+-        }
++        NonZero::new_unchecked(self.as_ref().floor_sqrt())
+     }
+ 
+     /// Computes `floor(√(self))`.
+     ///
+-    /// Callers can check if `self` is a square by squaring the result.
++    /// Callers can check if `self` is a square by squaring the result, or
++    /// use `checked_sqrt_vartime`.
+     ///
+     /// Variable time with respect to `self`.
+     #[must_use]
+     pub const fn floor_sqrt_vartime(&self) -> Self {
+-        // Uses Brent & Zimmermann, Modern Computer Arithmetic, v0.5.9, Algorithm 1.13
+-
+-        let bits = self.as_ref().bits_vartime();
+-        if bits <= Limb::BITS {
+-            let rt = self.as_ref().limbs[0].0.isqrt();
+-            return Uint::from_word(rt)
+-                .to_nz()
+-                .expect_copied("ensured non-zero");
+-        }
+-        let rt_bits = bits.div_ceil(2);
+-
+-        // The initial guess: `x_0 = 2^ceil(b/2)`, where `2^(b-1) <= self < b`.
+-        // Will not overflow since `b <= BITS`.
+-        let mut x = Uint::ZERO.set_bit_vartime(rt_bits, true);
+-        // Compute `self / x_0` by shifting.
+-        let mut q = self.as_ref().shr_vartime(rt_bits);
+-
+-        loop {
+-            // Terminate if `x_{i+1}` >= `x`.
+-            if q.cmp_vartime(&x).is_ge() {
+-                return x.to_nz().expect_copied("ensured non-zero");
+-            }
+-            // Calculate `x_{i+1} = floor((x_i + self / x_i) / 2)`
+-            x = x.wrapping_add(&q).shr_vartime(1);
+-            q = self
+-                .as_ref()
+-                .wrapping_div_vartime(x.to_nz().expect_ref("ensured non-zero"));
+-        }
++        NonZero::new_unchecked(self.as_ref().floor_sqrt_vartime())
+     }
+ 
+     /// Perform checked sqrt, returning a [`CtOption`] which `is_some`
+     /// only if the square root is exact.
+     #[must_use]
+     pub fn checked_sqrt(&self) -> CtOption<Self> {
+-        let r = self.floor_sqrt();
+-        let s = r.wrapping_square();
+-        CtOption::new(r, self.as_ref().ct_eq(&s))
++        self.as_ref().checked_sqrt().map(NonZero::new_unchecked)
+     }
+ 
+     /// Perform checked sqrt, returning an [`Option`] which `is_some`
+     /// only if the square root is exact.
+     #[must_use]
+     pub fn checked_sqrt_vartime(&self) -> Option<Self> {
+-        let r = self.floor_sqrt_vartime();
+-        let s = r.wrapping_square();
+-        if self.as_ref().cmp_vartime(&s).is_eq() {
+-            Some(r)
+-        } else {
+-            None
+-        }
++        self.as_ref()
++            .checked_sqrt_vartime()
++            .map(NonZero::new_unchecked)
+     }
+ }
+ 
+@@ -238,9 +197,9 @@
+ 
+     #[cfg(feature = "rand_core")]
+     use {
+-        crate::{Random, U512},
++        crate::{CheckedAdd, CheckedSquareRoot, Concat, FloorSquareRoot, Random, RandomBits, Uint},
+         chacha20::ChaCha8Rng,
+-        rand_core::{Rng, SeedableRng},
++        rand_core::SeedableRng,
+     };
+ 
+     #[test]
+@@ -344,33 +303,52 @@
+ 
+     #[cfg(feature = "rand_core")]
+     #[test]
+-    fn fuzz() {
+-        use crate::{CheckedSquareRoot, FloorSquareRoot};
+-
+-        let mut rng = ChaCha8Rng::from_seed([7u8; 32]);
+-        for _ in 0..50 {
+-            let t = u64::from(rng.next_u32());
+-            let s = U256::from(t);
+-            let s2 = s.checked_square().unwrap();
+-            assert_eq!(FloorSquareRoot::floor_sqrt(&s2), s);
+-            assert_eq!(FloorSquareRoot::floor_sqrt_vartime(&s2), s);
+-            assert!(CheckedSquareRoot::checked_sqrt(&s2).is_some().to_bool());
+-            assert!(CheckedSquareRoot::checked_sqrt_vartime(&s2).is_some());
+-
+-            if let Some(nz) = s2.to_nz().into_option() {
+-                assert_eq!(FloorSquareRoot::floor_sqrt(&nz).get(), s);
+-                assert_eq!(FloorSquareRoot::floor_sqrt_vartime(&nz).get(), s);
+-                assert!(CheckedSquareRoot::checked_sqrt(&nz).is_some().to_bool());
+-                assert!(CheckedSquareRoot::checked_sqrt_vartime(&nz).is_some());
++    fn sqrt_fuzz() {
++        fn check_size<const LIMBS: usize, const DOUBLE: usize>()
++        where
++            Uint<LIMBS>: Concat<LIMBS, Output = Uint<DOUBLE>>,
++        {
++            let mut rng = ChaCha8Rng::from_seed([7u8; 32]);
++            for _ in 0..5000 {
++                let s = Uint::<LIMBS>::random_bits(&mut rng, Uint::<LIMBS>::BITS / 2);
++                let s2 = s.checked_square().unwrap();
++                assert_eq!(FloorSquareRoot::floor_sqrt(&s2), s);
++                assert_eq!(FloorSquareRoot::floor_sqrt_vartime(&s2), s);
++                assert!(CheckedSquareRoot::checked_sqrt(&s2).is_some().to_bool());
++                assert!(CheckedSquareRoot::checked_sqrt_vartime(&s2).is_some());
++
++                if let Some(nz) = s2.to_nz().into_option() {
++                    assert_eq!(FloorSquareRoot::floor_sqrt(&nz).get(), s);
++                    assert_eq!(FloorSquareRoot::floor_sqrt_vartime(&nz).get(), s);
++                    assert!(CheckedSquareRoot::checked_sqrt(&nz).is_some().to_bool());
++                    assert!(CheckedSquareRoot::checked_sqrt_vartime(&nz).is_some());
++                }
++
++                if let Some(sx) = s2.checked_add(&Uint::ONE).into_option() {
++                    assert_eq!(FloorSquareRoot::floor_sqrt(&sx), s);
++                    assert_eq!(FloorSquareRoot::floor_sqrt_vartime(&sx), s);
++                    assert!(CheckedSquareRoot::checked_sqrt(&sx).is_none().to_bool());
++                    assert!(CheckedSquareRoot::checked_sqrt_vartime(&sx).is_none());
++                }
+             }
+-        }
+-
+-        for _ in 0..50 {
+-            let s = U256::random_from_rng(&mut rng);
+-            let mut s2 = U512::ZERO;
+-            s2.limbs[..s.limbs.len()].copy_from_slice(&s.limbs);
+-            assert_eq!(s.concatenating_square().floor_sqrt(), s2);
+-            assert_eq!(s.concatenating_square().floor_sqrt_vartime(), s2);
+-        }
+-    }
+-}
++
++            for _ in 0..50 {
++                let s = Uint::<LIMBS>::random_from_rng(&mut rng);
++                let mut s2 = Uint::<DOUBLE>::ZERO;
++                s2.limbs[..s.limbs.len()].copy_from_slice(&s.limbs);
++                assert_eq!(s.concatenating_square().floor_sqrt(), s2);
++                assert_eq!(s.concatenating_square().floor_sqrt_vartime(), s2);
++            }
++        }
++
++        check_size::<1, 2>();
++        check_size::<2, 4>();
++        cpubits::cpubits! {
++            64 => {
++                check_size::<3, 6>();
++            }
++        }
++        check_size::<4, 8>();
++        check_size::<12, 24>();
++    }
++}
+--- crypto-bigint-0.7.5/src/uint/sub.rs
++++ crypto-bigint-0.7.6/src/uint/sub.rs
+@@ -1,9 +1,7 @@
+ //! [`Uint`] subtraction operations.
+ 
+ use super::Uint;
+-use crate::{
+-    Checked, CheckedSub, Choice, CtOption, Limb, Sub, SubAssign, Wrapping, WrappingSub, word,
+-};
++use crate::{Checked, CheckedSub, CtOption, Limb, Sub, SubAssign, Wrapping, WrappingSub, word};
+ 
+ impl<const LIMBS: usize> Uint<LIMBS> {
+     /// Computes `self - (rhs + borrow)`, returning the result along with the new borrow.
+@@ -28,29 +26,6 @@
+         }
+ 
+         (Self { limbs }, borrow)
+-    }
+-
+-    /// Perform wrapping subtraction, returning the truthy value as the second element of
+-    /// the tuple if an underflow has occurred.
+-    #[inline]
+-    #[must_use]
+-    pub(crate) const fn conditional_borrowing_sub(
+-        &self,
+-        rhs: &Self,
+-        choice: Choice,
+-    ) -> (Self, Choice) {
+-        let mut limbs = [Limb::ZERO; LIMBS];
+-        let mask = Limb::select(Limb::ZERO, Limb::MAX, choice);
+-        let mut borrow = Limb::ZERO;
+-
+-        let mut i = 0;
+-        while i < LIMBS {
+-            let masked_rhs = rhs.limbs[i].bitand(mask);
+-            (limbs[i], borrow) = self.limbs[i].borrowing_sub(masked_rhs, borrow);
+-            i += 1;
+-        }
+-
+-        (Self { limbs }, borrow.lsb_to_choice())
+     }
+ 
+     /// Perform saturating subtraction, returning `ZERO` on underflow.
+@@ -137,8 +112,6 @@
+ 
+ #[cfg(test)]
+ mod tests {
+-    use ctutils::Choice;
+-
+     use crate::{CheckedSub, Limb, U128};
+ 
+     #[test]
+@@ -154,27 +127,6 @@
+ 
+         assert_eq!(res, U128::MAX);
+         assert_eq!(borrow, Limb::MAX);
+-    }
+-
+-    #[test]
+-    fn conditional_borrowing_sub_no_sub() {
+-        let (res, borrow) = U128::ONE.conditional_borrowing_sub(&U128::ONE, Choice::FALSE);
+-        assert_eq!(res, U128::ONE);
+-        assert!(!borrow.to_bool_vartime());
+-    }
+-
+-    #[test]
+-    fn conditional_borrowing_sub_no_borrow() {
+-        let (res, borrow) = U128::ONE.conditional_borrowing_sub(&U128::ZERO, Choice::TRUE);
+-        assert_eq!(res, U128::ONE);
+-        assert!(!borrow.to_bool_vartime());
+-    }
+-
+-    #[test]
+-    fn conditional_borrowing_sub_borrow() {
+-        let (res, borrow) = U128::ZERO.conditional_borrowing_sub(&U128::ONE, Choice::TRUE);
+-        assert_eq!(res, U128::MAX);
+-        assert!(borrow.to_bool_vartime());
+     }
+ 
+     #[test]
+--- crypto-bigint-0.7.5/src/uint/sub_mod.rs
++++ crypto-bigint-0.7.6/src/uint/sub_mod.rs
+@@ -21,7 +21,7 @@
+     pub(crate) const fn try_sub_with_carry(&self, mut carry: Limb, rhs: &Self) -> (Self, Limb) {
+         let (out, borrow) = self.borrowing_sub(rhs, Limb::ZERO);
+         let revert = borrow.lsb_to_choice().and(carry.is_zero());
+-        (_, carry) = carry.borrowing_sub(Limb::ZERO, Limb::select(borrow, Limb::ZERO, revert));
++        (carry, _) = carry.borrowing_sub(Limb::ZERO, Limb::select(borrow, Limb::ZERO, revert));
+         (Uint::select(&out, self, revert), carry)
+     }
+ 
+@@ -53,10 +53,10 @@
+ 
+ #[cfg(test)]
+ mod tests {
+-    use crate::U256;
+-
+-    #[cfg(feature = "rand_core")]
+-    use crate::{Limb, NonZero, Random, RandomMod, Uint};
++    use crate::{Limb, U128, U256};
++
++    #[cfg(feature = "rand_core")]
++    use crate::{NonZero, Random, RandomMod, Uint};
+     #[cfg(feature = "rand_core")]
+     use rand_core::SeedableRng;
+ 
+@@ -76,6 +76,33 @@
+             U256::from_be_hex("44acf6b7e36c1342c2c5897204fe09504e1e2efb1a900377dbc4e7a6a133ec56");
+ 
+         assert_eq!(expected, actual);
++    }
++
++    #[test]
++    fn try_sub_with_carry() {
++        let three = U128::from_u8(3);
++        let five = U128::from_u8(5);
++
++        // carry = 0, self >= rhs: subtract.
++        assert_eq!(
++            five.try_sub_with_carry(Limb::ZERO, &three),
++            (U128::from_u8(2), Limb::ZERO)
++        );
++        // carry = 0, self < rhs: unchanged.
++        assert_eq!(
++            three.try_sub_with_carry(Limb::ZERO, &five),
++            (three, Limb::ZERO)
++        );
++        // carry = 1, self < rhs: 2^128 + 3 - 5 = 2^128 - 2.
++        assert_eq!(
++            three.try_sub_with_carry(Limb::ONE, &five),
++            (U128::MAX.wrapping_sub(&U128::ONE), Limb::ZERO)
++        );
++        // carry = 1, self >= rhs: 2^129 - 1 - (2^127 - 1) = 2^128 + 2^127.
++        assert_eq!(
++            U128::MAX.try_sub_with_carry(Limb::ONE, &U128::MAX.shr1()),
++            (U128::ONE.shl_vartime(127), Limb::ONE)
++        );
+     }
+ 
+     #[test]
+--- crypto-bigint-0.7.5/src/word.rs
++++ crypto-bigint-0.7.6/src/word.rs
+@@ -6,6 +6,13 @@
+ cpubits::cpubits! {
+     16 => { compile_error!("this crate builds on 32-bit and 64-bit platforms only") }
+     32 => {
++        pub(crate) use ctutils::primitives::{
++            borrowing_sub_u32 as borrowing_sub,
++            leading_zeros_u32 as leading_zeros,
++            overflowing_add_u64 as overflowing_add_wide,
++            trailing_zeros_u32 as trailing_zeros,
++        };
++
+         /// Inner integer type that the [`Limb`] newtype wraps.
+         pub type Word = u32;
+ 
+@@ -29,8 +36,21 @@
+         pub(crate) const fn choice_from_wide_le(x: WideWord, y: WideWord) -> Choice {
+             Choice::from_u64_le(x, y)
+         }
++
++        /// Returns the truthy value if `x < y` and the falsy value otherwise.
++        #[inline]
++        pub(crate) const fn choice_from_wide_lt(x: WideWord, y: WideWord) -> Choice {
++            Choice::from_u64_lt(x, y)
++        }
+     }
+     64 => {
++        pub(crate) use ctutils::primitives::{
++            borrowing_sub_u64 as borrowing_sub,
++            leading_zeros_u64 as leading_zeros,
++            overflowing_add_u128 as overflowing_add_wide,
++            trailing_zeros_u64 as trailing_zeros,
++        };
++
+         /// Unsigned integer type that the [`Limb`][`crate::Limb`] newtype wraps.
+         pub type Word = u64;
+ 
+@@ -55,6 +75,11 @@
+             Choice::from_u128_le(x, y)
+         }
+ 
++        /// Returns the truthy value if `x < y` and the falsy value otherwise.
++        #[inline]
++        pub(crate) const fn choice_from_wide_lt(x: WideWord, y: WideWord) -> Choice {
++            Choice::from_u128_lt(x, y)
++        }
+     }
+ }
+ 
+@@ -67,7 +92,10 @@
+ /// Returns the truthy value if `x == y`, and the falsy value otherwise.
+ #[inline]
+ pub(crate) const fn choice_from_wide_eq(x: WideWord, y: WideWord) -> Choice {
+-    choice_from_wide_nz(x ^ y).not()
++    cpubits::cpubits! {
++        32 => { Choice::from_u64_eq(x, y) }
++        64 => { Choice::from_u128_eq(x, y) }
++    }
+ }
+ 
+ /// Returns the truthy value if `x > y`, and the falsy value otherwise.
+@@ -98,13 +126,10 @@
+ /// Returns the truthy value if `value != 0`, and the falsy value otherwise.
+ #[inline]
+ pub(crate) const fn choice_from_nz(value: Word) -> Choice {
+-    choice_from_lsb((value | value.wrapping_neg()) >> (Word::BITS - 1))
+-}
+-
+-/// Returns the truthy value if `value != 0`, and the falsy value otherwise.
+-#[inline]
+-pub(crate) const fn choice_from_wide_nz(value: WideWord) -> Choice {
+-    choice_from_lsb(((value | value.wrapping_neg()) >> (WideWord::BITS - 1)) as Word)
++    cpubits::cpubits! {
++        32 => { Choice::from_u32_nz(value) }
++        64 => { Choice::from_u64_nz(value) }
++    }
+ }
+ 
+ /// Return `b` if `self` is truthy, otherwise return `a`.
+@@ -126,7 +151,7 @@
+ /// - `Word::MAX` for `Choice::TRUE`
+ #[inline]
+ pub(crate) const fn choice_to_mask(choice: Choice) -> Word {
+-    (choice.to_u8_vartime() as Word).wrapping_neg()
++    (choice.to_u8() as Word).wrapping_neg()
+ }
+ 
+ /// Create a `WideWord`-sized bitmask.
+@@ -136,7 +161,7 @@
+ /// - `Word::MAX` for `Choice::TRUE`
+ #[inline]
+ pub(crate) const fn choice_to_wide_mask(choice: Choice) -> WideWord {
+-    (choice.to_u8_vartime() as WideWord).wrapping_neg()
++    (choice.to_u8() as WideWord).wrapping_neg()
+ }
+ 
+ #[inline(always)]
+--- crypto-bigint-0.7.5/tests/boxed_uint.rs
++++ crypto-bigint-0.7.6/tests/boxed_uint.rs
+@@ -6,14 +6,16 @@
+ mod common;
+ 
+ use common::to_biguint;
++use core::ops::Range;
+ use crypto_bigint::{
+-    BitOps, BoxedUint, CheckedAdd, Choice, ConcatenatingMul, ConcatenatingSquare, Gcd, Integer,
+-    Limb, NonZero, Odd, Resize,
++    BitOps, BoxedUint, CheckedAdd, ConcatenatingMul, ConcatenatingSquare, Gcd, Integer, Limb,
++    NonZero, Odd, Resize, Word,
+ };
+ use num_bigint::BigUint;
+ use num_integer::Integer as _;
+ use num_modular::ModularUnaryOps;
+ use num_traits::{Zero, identities::One};
++use proptest::collection::vec as propvec;
+ use proptest::prelude::*;
+ 
+ #[allow(clippy::cast_possible_truncation)]
+@@ -29,31 +31,73 @@
+     x.rem_vartime(n)
+ }
+ 
++fn uint() -> impl Strategy<Value = BoxedUint> {
++    prop_oneof![
++        9 => uint_bits(1..1024),
++        1 => uint_bits(1024..8192),
++    ]
++}
++
++fn uint_bits(bits_range: Range<u32>) -> impl Strategy<Value = BoxedUint> {
++    let min_limbs = bits_range.start.max(1).div_ceil(Limb::BITS) as usize;
++    let max_limbs = bits_range.end.div_ceil(Limb::BITS) as usize;
++    uint_limbs(min_limbs..max_limbs)
++}
++
++#[allow(clippy::cast_possible_truncation)]
++fn uint_limbs(limbs_range: Range<usize>) -> impl Strategy<Value = BoxedUint> {
++    let random_words = || propvec(any::<Word>(), limbs_range.clone());
++
++    let random = random_words().prop_map(BoxedUint::from_words);
++    let zero = limbs_range
++        .clone()
++        .prop_map(|l| BoxedUint::zero_with_precision(l as u32 * Limb::BITS));
++    let single_bit = (limbs_range.clone(), any::<u32>()).prop_map(|(l, bit)| {
++        let mut uint = BoxedUint::zero_with_precision(l as u32 * Limb::BITS);
++        uint.set_bit_vartime(bit % uint.bits_precision(), true);
++        uint
++    });
++    let low_bits = (random_words(), any::<u32>()).prop_map(|(words, bit)| {
++        let mut uint = BoxedUint::from_words(words);
++        uint.wrapping_shr_assign(bit);
++        uint
++    });
++    let high_bits = (random_words(), any::<u32>()).prop_map(|(words, bit)| {
++        let mut uint = BoxedUint::from_words(words);
++        uint.wrapping_shl_assign(bit);
++        uint
++    });
++
++    prop_oneof![
++        6 => random,
++        1 => zero,
++        2 => single_bit,
++        2 => low_bits,
++        2 => high_bits,
++    ]
++}
++
+ prop_compose! {
+-    /// Generate a random `BoxedUint`.
+-    fn uint()(mut bytes in any::<Vec<u8>>()) -> BoxedUint {
+-        let extra = bytes.len() % Limb::BYTES;
+-        let bytes_precision = bytes.len() - extra;
+-        bytes.truncate(bytes_precision);
+-        #[allow(clippy::cast_possible_truncation)]
+-        BoxedUint::from_be_slice(&bytes, bytes_precision as u32 * 8).unwrap()
+-    }
+-}
++    fn nonzero_uint()(mut val in uint()) -> NonZero<BoxedUint> {
++        if val.is_zero().to_bool() {
++            val.set_one();
++        }
++        val.into_nz().unwrap()
++    }
++}
++
++prop_compose! {
++    fn odd_uint()(mut val in uint()) -> Odd<BoxedUint> {
++        val.set_bit_vartime(0, true);
++        val.into_odd().unwrap()
++    }
++}
++
+ prop_compose! {
+     /// Generate a pair of random `BoxedUint`s with the same precision.
+     fn uint_pair()(a in uint(), b in uint()) -> (BoxedUint, BoxedUint) {
+         let bits_precision = core::cmp::max(a.bits_precision(), b.bits_precision());
+         (a.resize(bits_precision), b.resize(bits_precision))
+-    }
+-}
+-prop_compose! {
+-    /// Generate a random odd modulus.
+-    fn modulus()(n in uint()) -> Odd<BoxedUint> {
+-        if n.is_even().into() {
+-            n.wrapping_add(Limb::ONE)
+-        } else {
+-            n
+-        }.to_odd().expect("odd by construction")
+     }
+ }
+ 
+@@ -87,7 +131,7 @@
+     }
+ 
+     #[test]
+-    fn checked_div((a, b) in uint_pair()) {
++    fn checked_div(a in uint(), b in uint()) {
+         let actual = a.checked_div(&b);
+ 
+         if b.is_zero().into() {
+@@ -112,44 +156,35 @@
+     }
+ 
+     #[test]
+-    fn div_rem(a in uint(), mut b in uint()) {
+-        if b.is_zero().into() {
+-            b = b.wrapping_add(Limb::ONE);
+-        }
+-
+-        let a_bi = to_biguint(&a);
+-        let b_bi = to_biguint(&b);
++    fn div_rem(a in uint(), b in nonzero_uint()) {
++        let a_bi = to_biguint(&a);
++        let b_bi = to_biguint(b.as_ref());
+         let (expected_quotient, expected_remainder) = a_bi.div_rem(&b_bi);
+ 
+-        let div = NonZero::new(b).unwrap();
+-        let (actual_quotient, actual_remainder) = a.div_rem(&div);
++        let (actual_quotient, actual_remainder) = a.div_rem(&b);
+         prop_assert_eq!(expected_quotient, to_biguint(&actual_quotient));
+         prop_assert_eq!(expected_remainder, to_biguint(&actual_remainder));
+ 
+-        let (quotient_vartime, remainder_vartime) = a.div_rem_vartime(&div);
++        let (quotient_vartime, remainder_vartime) = a.div_rem_vartime(&b);
+         prop_assert_eq!(actual_quotient, quotient_vartime);
+         prop_assert_eq!(actual_remainder, remainder_vartime);
+     }
+ 
+     #[test]
+-    fn div_exact((a, mut b) in uint_pair()) {
+-        if b.is_zero().into() {
+-            b = b.wrapping_add(Limb::ONE);
+-        }
+-
+-        let a_bi = to_biguint(&a);
+-        let b_bi = to_biguint(&b);
++    fn div_exact(a in uint(), b in nonzero_uint()) {
++        let a_bi = to_biguint(&a);
++        let b_bi = to_biguint(b.as_ref());
+         let (expected_quotient, expected_remainder) = a_bi.div_rem(&b_bi);
+         let expected = if expected_remainder.is_zero() { Some(expected_quotient) } else { None };
+ 
+-        let div = NonZero::new(b).unwrap();
+-        let actual = a.div_exact(&div).into_option();
++        let actual = a.div_exact(&b).into_option();
+         prop_assert_eq!(&expected, &actual.as_ref().map(to_biguint));
+-        let actual_vartime = a.div_exact_vartime(&div).into_option();
++        let actual_vartime = a.div_exact_vartime(&b).into_option();
+         prop_assert_eq!(expected, actual_vartime.as_ref().map(to_biguint));
+     }
+ 
+     #[test]
++    // TODO: expand to f in uint(), g in uint()
+     fn gcd((f, g) in uint_pair()) {
+         let f_bi = to_biguint(&f);
+         let g_bi = to_biguint(&g);
+@@ -160,8 +195,7 @@
+     }
+ 
+     #[test]
+-    fn invert_mod2k(mut a in uint(), k in any::<u32>()) {
+-        a.set_bit(0, Choice::TRUE); // make odd
++    fn invert_mod2k(a in odd_uint(), k in any::<u32>()) {
+         let k = k % (a.bits() + 1);
+         let a_bi = to_biguint(&a);
+         let m_bi = BigUint::one() << k as usize;
+@@ -206,7 +240,7 @@
+     }
+ 
+     #[test]
+-    fn mul_mod(a in uint(), b in uint(), n in modulus()) {
++    fn mul_mod(a in uint(), b in uint(), n in odd_uint()) {
+         let a = reduce(&a, n.as_nz_ref());
+         let b = reduce(&b, n.as_nz_ref());
+ 
+@@ -220,11 +254,10 @@
+     }
+ 
+     #[test]
+-    fn wrapping_pow(a in uint(), b in uint()) {
++    fn wrapping_pow(a in uint(), b in uint_bits(1..1024)) {
+         let a_bi = to_biguint(&a);
+         let b_bi = to_biguint(&b);
+         let p_bi = to_biguint(&BoxedUint::max(a.bits_precision())) + 1u32;
+-        println!("a: {a}, b: {b}, p: {p_bi}");
+ 
+         let expected = to_uint(a_bi.modpow(&b_bi, &p_bi));
+ 
+@@ -234,7 +267,7 @@
+     }
+ 
+     #[test]
+-    fn pow_mod(a in uint(), b in uint(), n in modulus()) {
++    fn pow_mod(a in uint(), b in uint_bits(1..1024), n in odd_uint()) {
+         let a = reduce(&a, n.as_nz_ref());
+ 
+         let a_bi = to_biguint(&a);
+@@ -291,29 +324,27 @@
+     }
+ 
+     #[test]
+-    fn rem((a, b) in uint_pair()) {
+-        if bool::from(!b.is_zero()) {
+-            let a_bi = to_biguint(&a);
+-            let b_bi = to_biguint(&b);
+-
+-            let expected = a_bi % b_bi;
+-            let actual = a.rem(&NonZero::new(b).unwrap());
+-
+-            prop_assert_eq!(expected, to_biguint(&actual));
+-        }
+-    }
+-
+-    #[test]
+-    fn rem_vartime((a, b) in uint_pair()) {
+-        if bool::from(!b.is_zero()) {
+-            let a_bi = to_biguint(&a);
+-            let b_bi = to_biguint(&b);
+-
+-            let expected = a_bi % b_bi;
+-            let actual = a.rem_vartime(&NonZero::new(b).unwrap());
+-
+-            prop_assert_eq!(expected, to_biguint(&actual));
+-        }
++    fn rem(a in uint(), b in nonzero_uint()) {
++        let a_bi = to_biguint(&a);
++        let b_bi = to_biguint(b.as_ref());
++
++        let expected = a_bi % b_bi;
++        let actual = a.rem(&b);
++
++        prop_assert_eq!(expected, to_biguint(&actual));
++    }
++
++    #[test]
++    fn rem_vartime(a in uint(), b in nonzero_uint()) {
++        prop_assume!(b.is_nonzero().to_bool());
++
++        let a_bi = to_biguint(&a);
++        let b_bi = to_biguint(b.as_ref());
++
++        let expected = a_bi % b_bi;
++        let actual = a.rem_vartime(&b);
++
++        prop_assert_eq!(expected, to_biguint(&actual));
+     }
+ 
+     #[test]
+@@ -409,4 +440,15 @@
+         let b = BoxedUint::from_le_slice_vartime(&a_bytes);
+         prop_assert_eq!(a, b);
+     }
+-}
++
++    #[test]
++    fn floor_sqrt(a in uint()) {
++        let root = a.floor_sqrt();
++        prop_assert_eq!(&root, &a.floor_sqrt_vartime());
++        let checked_square = root.checked_square().into_option();
++        prop_assert!(checked_square.is_some());
++        prop_assert!(checked_square.unwrap() <= a);
++        let rtp = (root + Limb::ONE).saturating_square();
++        prop_assert!(rtp > a || a.wrapping_add(Limb::ONE).is_zero().to_bool());
++    }
++}
+--- crypto-bigint-0.7.5/tests/uint.rs
++++ crypto-bigint-0.7.6/tests/uint.rs
+@@ -8,7 +8,7 @@
+ use common::to_biguint;
+ use core::mem;
+ use crypto_bigint::{
+-    Encoding, Limb, NonZero, Odd, U128, U256, U512, U4096, U8192, Uint, Word,
++    Encoding, Limb, NonZero, Odd, U256, U512, U4096, U8192, Uint, Word,
+     modular::{FixedMontyForm, FixedMontyParams},
+ };
+ use num_bigint::BigUint;
+@@ -617,12 +617,3 @@
+         prop_assert_eq!(expected, actual);
+     }
+ }
+-
+-#[test]
+-fn div_exact_wide_power_of_two_divisor_is_inexact() {
+-    let lhs = U128::ONE;
+-    let rhs = NonZero::new(U256::ONE << U128::BITS).unwrap();
+-
+-    assert!(bool::from(lhs.div_exact(&rhs).is_none()));
+-    assert!(bool::from(lhs.div_exact_vartime(&rhs).is_none()));
+-}
