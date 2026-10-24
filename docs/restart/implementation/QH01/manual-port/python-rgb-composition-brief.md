@@ -801,3 +801,14 @@ evidence. Existing helper body is reversible byte-equal under eight dependency
 substitutions; outer legacy caller is equal outside binding/import/timer capture.
 One joined normal-recipe TSC ESM emission precedes this zero-child control. No
 combined RGB/request-engine call or future QH process permission is wired.
+
+Prerequisite05468e20 passed one joinedTSC0 and ONE pure Node24.22 control: no
+actual helpers/children, virtual5000 triggered client100 only; real native5000
+callback once at5004886084ns. MockChild/noPID/simulated close remains separate
+from process evidence. ONE mandatory normal make pi-ci then passed0/raw0 in
+39.830564560s, clean before/after, retaining legacy14/readiness5, Pi211/70/39 and
+four current QH fixtures. All14 old native observations/every page/output equal
+5bc; settlement values/order match except actual PID/timings. No RED, extra
+manual/combined RGB-engine run, fullmakeci or hosted run. proof/native-leaf-
+prerequisite/ packages originals/source/prep/timer/gate/limits; STOP distinct
+review, kept separate from the current lifecycle delivery.
