@@ -439,3 +439,57 @@ with current-checkout JS/packages/provisioned W, statuses0/EOF/FD closure and
 259/259/611 binding. The adjacent `proof/normal-ci/` preserves source qualification,
 actual records and raw command/log. No runtime source changed afterwards; no
 full make-ci, hosted run, manual replay or complete-component claim. STOP review.
+
+## Admitted three lifecycle fixtures — before code/runtime
+
+New isolated branch from `f8adb7dd0b8cfb22f0b7d7c7cf5c7ad65104d683` implements
+only the two diagnostic harness files, this append and scoped proof. Root admits
+the three source-derived cases frozen in5138d835, with its ten source/five fixture
+bindings retained. No client/manual/B3/O/W/builder/provision/checker/dependency,
+budget, default provider, physical or task-state change is admitted.
+
+Add trusted Python CLI `--case` enum: `positive` (unchanged default),
+`scan_null_after_settlement`, `scan_pending_timeout_after_settlement`,
+`fixture_cancel_B3_verified_preG`. Only a negative enum is passed as an optional
+fourth trusted Node argument; IPC never selects programs/paths/keys or commands.
+Keep ASCII canonical JSON/LF,2048B/record,4096B stdout/4096B stderr,512B total
+parent reply and at most5records. Existing positive shapes/default argv remain.
+Null/timeout use the existing single decoded259 reply+EOF; preG cancellation uses
+only ordered `{\"v\":1,\"event\":\"cancelled\"}`+LF+EOF (28B), after actual B3 close.
+
+Null records: present, scan(frame:null), close, result. Clock99 through actual
+signer_transport_failed/opens1/scans1/closes1, timer100/clear1; final tick100/fire0.
+Timeout records: present, scan_pending(clock99), timeout(native response and
+counts/abort/pending evidence), close, result. Wait actual scan entry after B3
+settlement; tick1 to100, await service signer_transport_timeout BEFORE releasing
+611. At that point scan1/close0, abort true, underlying dispatcher unsettled; one
+same-context blocked attempt must return runtime_unavailable without opening a
+second port/timer. Then release611 once and await separately observed actual
+underlying settlement/close1. Exactly one deadline fire/clear. No new compiled
+decoder-call counter exists: pre-conversion refusal is source/old-unit evidence,
+not a newly measured zero-decode assertion.
+
+PreG records: present, close, result (no scan). At real verified-W/live-ELF
+checkpoint call op.cancel(), never G. Require O cancelled/exit2/raw512 and W
+(exit71,raw18176) OR(exit-9,raw9), collectorO, commandsPX/G0/Wimage0/output0/API0,
+all waits/EOF/FD closure. take_result and reservation before close must refuse;
+explicitly close before the28B reply. Pending Node present throws the existing
+typed SignerTransportError(signer_transport_failed), giving scans0/close1 and
+timer100/clear1/fire0 at99. No invented public client AbortController operation.
+
+Negative result IPC appends `lifecycle` to the existing result keys, recording
+case/counts/abort/underlying state, late bytes/hash when relevant and the actual
+blocked-attempt error. The timeout intermediate record has the native timeout
+response, timer/counts/abort/unsettled state before late resolution. Parent
+validates exact case-specific ordered keys and expected native error, Node0,
+actual O/W statuses and EOF/FDs; successful diagnostic refusal is not success of
+the signer request. Retain the existing reporting guards/hold and same owning
+runtime/handles; unknown cleanup holds the invoker without kill/restart/reuse.
+
+Before spawning, freeze source/record keys and verify same-source existing JS/W
+bindings. Commands are the existing run-composition.py arguments plus each enum:
+ONE null first; only if PASS, ONE timeout then ONE preG cancel, stopping on error
+before any fix/retry. No new Rust/C build/install if existing artifacts suffice.
+After all3PASS freeze stable source and execute ONE normal make pi-ci: preserve
+default positive,211/70/39 and six pure controls without extra manual positive.
+No full make-ci/hosted run or complete-component/real-device claim; STOP review.
