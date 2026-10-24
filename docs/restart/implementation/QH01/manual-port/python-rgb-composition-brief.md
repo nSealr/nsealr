@@ -203,3 +203,26 @@ Node refusal never controls the parent's lifetime. This is one fixed diagnostic
 test, not a general supervisor; unhandled external process death has no guarantee.
 Freeze source/inputs clean before ONE actual positive; preserve any RED and STOP
 at the first result before full gates or extension.
+
+### Exact preparation dependency found before implementation
+
+The reusable library dist files and W3c92 exist and their source inputs equal
+DA8, but Bridge service has no prebuilt `dist/index.js` or `dist/manual-qr.js`.
+Its actual package script uses `node --no-warnings --import tsx/esm src/index.ts`.
+Installed tsx4.21.0 uses esbuild0.27.7; the latter's `lib/main.js:2268–2311`
+spawns/unrefs a service child, while `stopService` destroys pipes and kills it
+without exposing joined terminal proof. The ESM loader can run in a worker;
+a main-thread observer would not establish that child status. No TSX loader,
+composition Node/O/W or implementation source was started on that assumption.
+
+Required narrow preparation decision: admit ONE isolated Bridge JS emission with
+the already pinned TypeScript6.0.3 and the existing
+`tools/bridge/build_packages.mjs:43–77` compiler recipe, applied only to the five
+non-test Bridge source files, with generated output and hashes outside tracked
+source and implementation28 left read-only. This needs no new dependency,
+esbuild process, W/C build or per-test compilation. A suitable prebuilt Bridge
+artifact with an exact source binding would also satisfy the missing input, but
+none was found in the inspected reusable worktree. Until that preparation is
+admitted, STOP before code or the first positive; the timer preflight is PASS,
+not a composition result. The preflight path lookup failure is an absent build
+artifact, not a product failure.
