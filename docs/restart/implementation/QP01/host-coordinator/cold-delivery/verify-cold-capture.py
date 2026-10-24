@@ -568,7 +568,10 @@ def verify_qh01_request_engine(objects, head, repo):
             integers([fd['fd']]); assert fd['fd'] == i
             decimal(fd['dev']); decimal(fd['ino']); assert fd['target'] == 'pipe:[' + fd['ino'] + ']' and len(fd['target']) <= 27
         integers([o[k] for k in ['owner_wait_raw', 'owner_exit_code', 'image_bytes_written', 'output_bytes']])
-        integers([p[k] for k in ['v', 'G_bytes', 'image_bytes_sent']] + list(p['limits'].values()))
+        integers([p[k] for k in ['v', 'G_bytes', 'image_bytes_sent']])
+        for limit in p['limits'].values():
+            assert type(limit) is list and len(limit) == 2
+            integers(limit)
         integers([t[k] for k in ['v', 'input_bytes_received', 'G_bytes', 'image_bytes_sent', 'stdout_observed',
                                 'stdout_retained', 'stderr_observed', 'stderr_retained', 'result_bytes']])
         integers([wait['raw_status'], wait['exit_code']])
