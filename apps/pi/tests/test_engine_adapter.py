@@ -309,6 +309,8 @@ class ProvisioningControls(unittest.TestCase):
         spec.loader.exec_module(driver)
         calls = []
         environments = []
+        preparation = {}
+        seen_cases = []
         lib = {"NSEALR_QP01_LIBRARY": "/explicit/test.so", "NSEALR_QP01_LIBRARY_SHA256": "a"*64,
                "NSEALR_QP01_QR_WORKER": "/explicit/worker", "NSEALR_QP01_QR_WORKER_SHA256": "b"*64}
         def provision():
@@ -321,22 +323,32 @@ class ProvisioningControls(unittest.TestCase):
             self.assertTrue(kwargs["check"])
             for key, value in lib.items():
                 self.assertEqual(kwargs["env"][key], value)
-        def record(output, env, command, before, generated, case="positive"):
+        def prepare(env):
+            self.assertIs(env, environments[0])
+            calls.append("native-leaf-preparation")
+            temporary = Path(driver.tempfile.mkdtemp(prefix="nsealr-order-native-"))
+            preparation.update({"output_dir": str(temporary / "module"), "receipt": str(temporary / "preparation.json"),
+                                "outputs": {"native-leaf.js": {"path": str(temporary / "module/native-leaf.js"), "sha256": "c"*64}}})
+            return preparation  # Synthetic ordering only; no compiler/process/artifact claim.
+        def record(output, env, command, before, generated, case="positive", prepared=None):
             self.assertIs(env, environments[0])
             self.assertEqual(output.name, "case")
             self.assertEqual(command, calls[-1])
-            self.assertEqual(case, "positive" if len(calls) == 6 else driver.LIFECYCLE_CASES[len(calls)-7])
+            self.assertEqual(case, ("positive", *driver.LIFECYCLE_CASES, *driver.ENGINE_CASES)[len(seen_cases)])
+            seen_cases.append(case)
+            self.assertIs(prepared, preparation if case in driver.ENGINE_CASES else None)
             return {"role": "SYNTHETIC_ORDER_CONTROL_ONLY", "source_before": before, "source_after": before,
                     "generated_before": generated, "generated_after": generated}
         with patch.object(driver, "provision", side_effect=provision), \
              patch.object(driver.subprocess, "run", side_effect=run), \
+             patch.object(driver, "prepare_native_leaf", side_effect=prepare) as preparations, \
              patch.object(driver, "composition_record", side_effect=record) as records, \
              patch("builtins.print"):
             driver.ci("apps/pi")
         self.assertEqual(calls[:4], ["build", ["make", "-C", str(ROOT / "apps/pi"), "ci"],
                                 ["node", "--import", "tsx/esm", str(driver.CLIENT)],
                                 ["node", "--import", "tsx/esm", str(driver.CLIENT), "--first-owner-gate"]])
-        self.assertEqual(len(calls), 9)
+        self.assertEqual(len(calls), 12)
         self.assertTrue(all(env is environments[0] for env in environments))
         python = str(ROOT / "apps/pi/.venv/bin/python")
         self.assertEqual(calls[4], [python, "-B", str(driver.COMPOSITION / "test_attention_reporting.py"), "-v"])
@@ -348,15 +360,27 @@ class ProvisioningControls(unittest.TestCase):
                                         "--sha256", lib["NSEALR_QP01_QR_WORKER_SHA256"], "--node"])
         self.assertTrue(Path(calls[5][10]).is_absolute())
         self.assertEqual(calls[5][11:], ["--bridge", str(ROOT / "apps/bridge/service/dist"), "--reuse", str(ROOT)])
-        for command, case in zip(calls[6:], driver.LIFECYCLE_CASES, strict=True):
+        for command, case in zip(calls[6:9], driver.LIFECYCLE_CASES, strict=True):
             self.assertEqual(command[:4], calls[5][:4])
             self.assertEqual(Path(command[4]).name, "case")
             self.assertTrue(Path(command[4]).parent.name.startswith("nsealr-qh01-composition-"))
             self.assertEqual(command[5:], calls[5][5:] + ["--case", case])
-            self.assertNotIn(command[4], [other[4] for other in calls[5:] if other is not command])
+            self.assertNotIn(command[4], [other[4] for other in calls[5:9] + calls[10:] if other is not command])
         self.assertEqual(driver.LIFECYCLE_CASES, ("scan_null_after_settlement", "scan_pending_timeout_after_settlement",
                                                 "fixture_cancel_B3_verified_preG"))
-        self.assertEqual(records.call_count, 4)
+        self.assertEqual(calls[9], "native-leaf-preparation")
+        preparations.assert_called_once_with(environments[0])
+        self.assertEqual(driver.ENGINE_CASES, ("fixture_request_engine", "fixture_request_engine_loaded_sha_refusal"))
+        for command, case in zip(calls[10:], driver.ENGINE_CASES, strict=True):
+            self.assertEqual(command[:4], calls[5][:4])
+            self.assertEqual(Path(command[4]).name, "case")
+            self.assertTrue(Path(command[4]).parent.name.startswith("nsealr-qh01-composition-"))
+            self.assertEqual(command[5:], calls[5][5:] + ["--case", "fixture_request_engine",
+                "--engine-library", lib["NSEALR_QP01_LIBRARY"], "--engine-sha256", lib["NSEALR_QP01_LIBRARY_SHA256"],
+                "--engine-module", preparation["outputs"]["native-leaf.js"]["path"], "--engine-module-sha256", "c"*64,
+                "--engine-preparation", preparation["receipt"]] + (["--engine-refusal"] if case == driver.ENGINE_CASES[1] else []))
+            self.assertNotIn(command[4], [other[4] for other in calls[5:9] + calls[10:] if other is not command])
+        self.assertEqual(records.call_count, 6)
         with self.assertRaises(ValueError):
             driver.ci("apps/pi/tests")
 
@@ -367,11 +391,13 @@ class ProvisioningControls(unittest.TestCase):
         spec.loader.exec_module(driver)
         with patch.object(driver, "provision", return_value={}), \
              patch.object(driver.subprocess, "run", side_effect=RuntimeError("full Pi failure")) as run, \
-             patch.object(driver, "composition_record") as records:
+             patch.object(driver, "composition_record") as records, \
+             patch.object(driver, "prepare_native_leaf") as preparation:
             with self.assertRaisesRegex(RuntimeError, "full Pi failure"):
                 driver.ci("apps/pi")
         self.assertEqual(run.call_count, 1)
         records.assert_not_called()
+        preparation.assert_not_called()
 
 
 if __name__ == "__main__":

@@ -50,12 +50,34 @@ class Composition:
             module = Path(args.engine_module).resolve(strict=True)
             require(library.is_file() and sha(library.read_bytes()) == args.engine_sha256, "trusted actual native library SHA")
             require(module.is_file() and sha(module.read_bytes()) == args.engine_module_sha256, "trusted emitted native helper SHA")
-            receipt = json.loads((Path(__file__).parent / "proof/native-leaf-prerequisite/tsc-preparation.json").read_text())
+            receipt = json.loads(Path(args.engine_preparation).read_text())
             source = "docs/restart/implementation/QP01/request-engine/native-leaf.ts"
             source_sha = sha((ROOT / source).read_bytes())
-            require(receipt["exit_code"] == 0 and receipt["source_before"][source] == receipt["source_after"][source] == source_sha
+            _keys(receipt["source_before"], [source, "package.json", "pnpm-lock.yaml"])
+            _keys(receipt["source_after"], [source, "package.json", "pnpm-lock.yaml"])
+            _keys(receipt["outputs"], ["native-leaf.js", "native-leaf.d.ts"])
+            for name, item in receipt["outputs"].items():
+                artifact = Path(item["path"]).resolve(strict=True)
+                require(artifact == module.parent / name and type(item["bytes"]) is int
+                        and artifact.stat().st_size == item["bytes"] and sha(artifact.read_bytes()) == item["sha256"],
+                        "complete current-root emitted helper artifacts")
+            require(type(receipt["v"]) is int and receipt["v"] == 1 and receipt["scope"] == "QH01_NATIVE_LEAF_PREPARATION_V1"
+                    and type(receipt["status"]) is int and receipt["status"] == 0 and receipt["cwd"] == str(ROOT)
+                    and receipt["source_before"] == receipt["source_after"]
+                    and receipt["source_before"][source] == source_sha
+                    and Path(receipt["receipt"]).resolve() == Path(args.engine_preparation).resolve()
+                    and Path(receipt["output_dir"]).resolve() == module.parent
+                    and all(sha((ROOT / path).read_bytes()) == value for path, value in receipt["source_before"].items())
+                    and Path(receipt["outputs"]["native-leaf.js"]["path"]).resolve() == module
                     and receipt["outputs"]["native-leaf.js"]["sha256"] == args.engine_module_sha256,
                     "current source-bound joined helper preparation")
+            compiler = (ROOT / "node_modules/typescript/bin/tsc").resolve(strict=True)
+            require(Path(receipt["compiler"]["path"]).resolve() == compiler and receipt["compiler"]["version"] == "6.0.3"
+                    and json.loads((ROOT / "node_modules/typescript/package.json").read_text())["version"] == "6.0.3"
+                    and sha(compiler.read_bytes()) == receipt["compiler"]["sha256"], "current pinned native helper compiler")
+            require(Path(receipt["package_context"]["path"]).resolve() == module.parent / "package.json"
+                    and sha((module.parent / "package.json").read_bytes()) == receipt["package_context"]["sha256"],
+                    "native helper package context receipt")
             require(json.loads((module.parent / "package.json").read_text()) == {"type": "module"}, "helper ESM context")
             child_sha = args.engine_sha256
             if args.engine_refusal:
@@ -483,11 +505,11 @@ if __name__ == "__main__":
         parser.add_argument("--" + name, required=True)
     parser.add_argument("--case", choices=("positive", "scan_null_after_settlement",
                         "scan_pending_timeout_after_settlement", "fixture_cancel_B3_verified_preG", "fixture_request_engine"), default="positive")
-    for name in ("engine-library", "engine-sha256", "engine-module", "engine-module-sha256"):
+    for name in ("engine-library", "engine-sha256", "engine-module", "engine-module-sha256", "engine-preparation"):
         parser.add_argument("--" + name)
     parser.add_argument("--engine-refusal", action="store_true")
     args = parser.parse_args()
-    engine_fields = [args.engine_library, args.engine_sha256, args.engine_module, args.engine_module_sha256]
+    engine_fields = [args.engine_library, args.engine_sha256, args.engine_module, args.engine_module_sha256, args.engine_preparation]
     if args.case == "fixture_request_engine":
         if not all(engine_fields):
             parser.error("fixture_request_engine requires all explicit native initialization arguments")
