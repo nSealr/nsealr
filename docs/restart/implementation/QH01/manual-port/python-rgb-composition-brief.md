@@ -891,3 +891,16 @@ resource-freeze.json now supplies actual native path/SHA and two exact commands;
 original NULL source snapshot stays historical. Commit/push/checkpoint precedes
 ONE positive, then only ifPASS ONE fixed loadedSHA refusal; firstRED stops. Only
 bothPASS/sourcesunchanged admit ONE normalmakepi-ci; no full/hosted/manual replay.
+
+On resource-frozen1742, ONE actual opt-in positive passed0/raw0/0.226278329s:
+RGB64d9→B3raw25988a1→C/Rustactual6112501→existing client expected4f/full
+zeroaux event,31actual review pages. ONE fixed loadedSHA refusal then passed0/
+raw0/0.208998817s: actualCcode1/signalnull/sentfalse/Rempty/output0/noobservation,
+typed clientfailed/scan0/close1. Same5ab/W95/module2d, allO/W/Node/Cknownclosed,
+NodeFD21→21identical/directchildrenempty and parentFD/EOF restored. Only then
+ONE mandatorynormalmakepi-ci passed0/raw0/40.580415854s, preserving legacy14/5,
+Pi211/70/39/oldfourQH; newoptins notautomatic. No RED/sourcefix/retry/extraTSC/
+manual/full/hosted run. proof/request-engine-opt-in/ retains originals and actual
+artifacts/source/limits. Security reviewed only for this host experiment; complete
+protected/main adoption root-owned, no physical/default/provider claim. STOP
+distinct runtime review; existing timeout/cancel evidence is not this new seam.
