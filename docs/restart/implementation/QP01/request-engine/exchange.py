@@ -1,16 +1,20 @@
 #!/usr/bin/env python3
 """Finite host fixture exchange/provisioner; no device route or camera input."""
 import argparse
+import base64
 import hashlib
 import json
 import os
 from pathlib import Path
+import shutil
 import subprocess
 import sys
+import tempfile
 
 ROOT = Path(__file__).resolve().parents[5]
 SOURCE = ROOT / "crates/nsealr-pi-engine-fixture/src/lib.rs"
 CLIENT = Path(__file__).with_name("client-exchange.ts")
+COMPOSITION = ROOT / "docs/restart/implementation/QH01/manual-port/python-rgb-composition"
 
 
 def source_binding(paths=None):
@@ -89,6 +93,69 @@ def ci(directory):
     subprocess.run(["node", "--import", "tsx/esm", str(CLIENT)], cwd=ROOT, env=env, check=True)
     subprocess.run(["node", "--import", "tsx/esm", str(CLIENT), "--first-owner-gate"],
                    cwd=ROOT, env=env, check=True)
+    subprocess.run([str(pi / ".venv/bin/python"), "-B", str(COMPOSITION / "test_attention_reporting.py"), "-v"],
+                   cwd=ROOT, env=env, check=True)
+    composition_ci(pi, env)
+
+
+def composition_record(output, env, command, before, generated):
+    """Expose the existing harness's actual receipts; do not invent a verdict."""
+    load = lambda name: json.loads((output / name).read_text())
+    rows = load("node-records.json")
+    frame = lambda raw: {"bytes": len(raw), "sha256": hashlib.sha256(raw).hexdigest()}
+    return {"v": 1, "id": "bridge_rgb_kind1_basic", "scope": "QH01_HOST_COMPOSITION_CI_V1",
+            "role": "public_host_fixture_synthetic_client_clock", "argv": command,
+            "source_before": before, "source_after": source_binding(list(before)),
+            "generated_before": generated, "generated_after": source_binding(list(generated)),
+            "worker_initialization": {"path": env["NSEALR_QP01_QR_WORKER"], "sha256": env["NSEALR_QP01_QR_WORKER_SHA256"]},
+            "actual": load("result.json"), "collection": load("collection.json"),
+            "frames": {"presented": frame(rows[0]["frame"].encode("ascii")),
+                       "decoded": frame((output / "decoded.envelope").read_bytes()),
+                       "scanned": frame(rows[1]["frame"].encode("ascii"))},
+            "decoded_request": load("decoded.json"), "node_records": rows,
+            "expected_public_key": json.loads((ROOT / "protocols/contracts/v1/examples/response-get-public-key.json").read_text())["result"]["public_key"],
+            "service_response": load("service-response.json"),
+            "native_response_base64": base64.b64encode((output / "native-response.bin").read_bytes()).decode("ascii"),
+            "limits": ["synthetic client100; real O8/shared4; native C5000 unchanged",
+                       "no timeout/cancel seam, camera/physical, key or production-provider qualification"]}
+
+
+def composition_ci(pi, env):
+    packages = ["client", "core", "policy", "protocol", "qr", "transport", "framing"]
+    source_paths = ["tools/bridge/build_packages.mjs", "pnpm-lock.yaml", "apps/bridge/service/package.json",
+                    str(Path(__file__).relative_to(ROOT)), "apps/pi/tests/test_engine_adapter.py",
+                    "apps/pi/app/nsealr_vault/qr_owner_adapter.py", "apps/pi/app/nsealr_vault/qr_worker.py"]
+    source_paths += [str((COMPOSITION / name).relative_to(ROOT)) for name in
+                     ("run-composition.py", "bridge-child.mjs", "test_attention_reporting.py")]
+    source_paths += [str(p.relative_to(ROOT)) for p in sorted((ROOT / "apps/bridge/service/src").glob("*.ts")) if not p.name.endswith(".test.ts")]
+    source_paths += [str(p.relative_to(ROOT)) for name in packages for p in sorted((ROOT / f"packages/{name}/src").rglob("*.ts"))]
+    before = source_binding(source_paths)
+    generated_paths = [str(p.relative_to(ROOT)) for directory in [ROOT / f"packages/{name}/dist" for name in packages] + [ROOT / "apps/bridge/service/dist"]
+                       for p in sorted(directory.rglob("*")) if p.is_file() and p.suffix in (".js", ".ts")]
+    generated = source_binding(generated_paths)
+    node = shutil.which("node", path=env.get("PATH"))
+    if node is None:
+        raise RuntimeError("required current Node executable missing")
+    temporary = Path(tempfile.mkdtemp(prefix="nsealr-qh01-composition-"))
+    output = temporary / "case"
+    command = [str(pi / ".venv/bin/python"), "-B", str(COMPOSITION / "run-composition.py"),
+               "--output", str(output), "--worker", env["NSEALR_QP01_QR_WORKER"],
+               "--sha256", env["NSEALR_QP01_QR_WORKER_SHA256"], "--node", str(Path(node).resolve()),
+               "--bridge", str(ROOT / "apps/bridge/service/dist"), "--reuse", str(ROOT)]
+    print("\n" + json.dumps({"qh01_composition_command": {"v": 1, "argv": command, "output": str(output)}}), flush=True)
+    try:
+        subprocess.run(command, cwd=ROOT, env=env, check=True)
+        record = composition_record(output, env, command, before, generated)
+        if record["source_before"] != record["source_after"] or record["generated_before"] != record["generated_after"]:
+            raise RuntimeError("composition source or compiled input changed")
+        print("\n" + json.dumps({"qh01_composition_case": record}), flush=True)
+    except BaseException:
+        try:
+            print("\n" + json.dumps({"qh01_composition_failure": {"v": 1, "output_retained": str(output)}}), flush=True)
+        except BaseException:
+            pass
+        raise
+    shutil.rmtree(temporary)  # Only after the existing harness's known collection.
 
 
 def exchange(settlement_fd=None, ready_fd=None):
