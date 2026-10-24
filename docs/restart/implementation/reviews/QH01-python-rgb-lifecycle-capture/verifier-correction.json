@@ -1,0 +1,23 @@
+{
+  "classification": "capture verifier defect; no product or test failure",
+  "failed_candidate": "6623a942",
+  "assertion": "W stderr was incorrectly assumed zero for every lifecycle case",
+  "unchanged_original_runtime": "f7f300960e693fa6f47001cdb6f069372b82b67d",
+  "log_sha256": "e3b31f6f629f45eefeb0e2374c98958a850425738b63347f7e1ec48c82cf8eac",
+  "original_observations": {
+    "null_and_timeout": {
+      "bytes": 33,
+      "text": "status=decoded grids=1 bytes=259\n"
+    },
+    "cancel_sigkill": {
+      "bytes": 0
+    }
+  },
+  "source_basis": [
+    "apps/pi/qr-worker/src/main.rs:105 emits the decoded diagnostic on stderr",
+    "apps/pi/app/nsealr_vault/qr_owner_adapter.py:412-415 requires canonical/count-bound stderr",
+    "apps/pi/app/nsealr_vault/qr_owner_adapter.py:437 allows decoded stderr up to unchanged CAP512",
+    "control-contract.json terminal_record.types/canonical_validation"
+  ],
+  "correction": "Validate canonical exact retained/observed count bounded by original512; decoded variants must additionally equal already verified positive stderr. A preG cancellation may have source-valid setup stderr when W exits71, or empty stderr with SIGKILL. No changed limits, waits, wire input or product rerun."
+}

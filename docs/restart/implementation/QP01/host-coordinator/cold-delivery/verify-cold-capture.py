@@ -341,7 +341,12 @@ def verify_qh01_lifecycle(objects):
         assert t['outcome'] == a['B3_outcome'] and t['cancel_observed'] is cancelled and t['final_worker_eligible'] is (not cancelled)
         assert t['G_bytes'] == (0 if cancelled else 1) and t['image_bytes_sent'] == (0 if cancelled else 172800)
         assert t['result_bytes'] == o['output_bytes'] == t['stdout_observed'] == t['stdout_retained'] == (0 if cancelled else 259)
-        assert t['stderr_observed'] == t['stderr_retained'] == 0 and t['worker_stderr_base64'] == ''
+        stderr = base64.b64decode(t['worker_stderr_base64'], validate=True)
+        assert base64.b64encode(stderr).decode('ascii') == t['worker_stderr_base64']
+        assert len(stderr) == t['stderr_retained'] == t['stderr_observed'] <= 512
+        if not cancelled:
+            for key in ['stderr_observed', 'stderr_retained', 'worker_stderr_base64']:
+                same(t[key], reference['terminal'][key])
         same(o['output_sha256'], None if cancelled else reference['output_sha256'])
         same(t['result_sha256'], None if cancelled else reference['terminal']['result_sha256'])
         clock = t['timing']
