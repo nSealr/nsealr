@@ -1,0 +1,35 @@
+{
+  "role": "Original structural-check raw stdout preserved byte-exact; whitespace observation is not product/test failure",
+  "checks": [
+    {
+      "role": "all_new_review_raw_and_source",
+      "argv": [
+        "git",
+        "diff",
+        "--cached",
+        "--check",
+        "--",
+        "docs/restart/implementation/reviews/QH01-python-rgb-lifecycle-metadata"
+      ],
+      "exit_code": 2,
+      "stdout": "docs/restart/implementation/reviews/QH01-python-rgb-lifecycle-metadata/plan.stdout:1: trailing whitespace.\n+Restart plan valid: 47 tasks; ready: \n",
+      "stderr": ""
+    },
+    {
+      "role": "excluding_original_plan_stdout",
+      "argv": [
+        "git",
+        "diff",
+        "--cached",
+        "--check",
+        "--",
+        "docs/restart/implementation/reviews/QH01-python-rgb-lifecycle-metadata",
+        ":(exclude)docs/restart/implementation/reviews/QH01-python-rgb-lifecycle-metadata/plan.stdout"
+      ],
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ""
+    }
+  ],
+  "disposition": "plan.stdout line1 retains the validator original trailing space after ready:. All non-raw review files pass."
+}
