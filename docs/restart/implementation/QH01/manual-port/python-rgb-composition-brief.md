@@ -301,3 +301,12 @@ hold body, Node child and historical input/proof postimages. Freeze corrected
 source/pure proof/limits, then STOP: a distinct reviewer owns one future actual
 positive replay on the corrected candidate. The fixture cannot prove actual
 cleanup, quarantine, liveness, process recovery or external-crash survival.
+
+Affected correction source441a400d now contains only the two reporting guards.
+The pre-fix pure write control reproduced RED exit1/hold0; all six frozen pure
+controls pass afterwards, with two retained-identity snapshots and zero child
+creation. The adjacent `proof/attention-reporting-fix/` retains exact commands,
+RED/GREEN output, source/AST correspondence and limits. Six other methods, the
+original hold body, Node child and historical inputs/proofs are unchanged.
+No author actual positive was repeated;715/f6 remains historical only. STOP for
+the distinct reviewer's one positive on the corrected source before integration.
