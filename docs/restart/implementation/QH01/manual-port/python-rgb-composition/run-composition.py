@@ -162,6 +162,9 @@ class Composition:
             time.sleep(0.001)
 
     def run(self):
+        case = getattr(self.args, "case", "positive")
+        cancelled = case == "fixture_cancel_B3_verified_preG"
+        timed_out = case == "scan_pending_timeout_after_settlement"
         native = ROOT / "docs/restart/implementation/QH01/native-qr-probe"
         request_raw = (native / "expected/request-kind-1-basic.envelope").read_bytes()
         response_raw = (native / "expected/response-kind-1-basic.envelope").read_bytes()
@@ -172,6 +175,8 @@ class Composition:
         require(len(response_raw) == 611 and sha(response_raw) == "f27dbe54785a9510e43f05d27dbb67c488c77def150e0110d51264762cdeec1b", "original scanner frame")
         baseline_fds = self.baseline_fds
         command = [self.args.node, str(Path(__file__).with_name("bridge-child.mjs")), str(ROOT), self.args.bridge, self.args.reuse]
+        if case != "positive":
+            command.append(case)
         try:
             self.node = subprocess.Popen(command, stdin=subprocess.PIPE, stdout=subprocess.PIPE,
                                          stderr=subprocess.PIPE, close_fds=True)
@@ -203,38 +208,95 @@ class Composition:
             write(self.output / "worker-ready.json", {"observation": self.op.observation(),
                   "proc_status": Path(f"/proc/{worker_pid}/status").read_text(),
                   "proc_limits": Path(f"/proc/{worker_pid}/limits").read_text()})
-            self.op.acknowledge()
+            if cancelled:
+                self.op.cancel()
+            else:
+                self.op.acknowledge()
             self.until(lambda: self.op.state == "settled", "actual O/W settlement")
             observation = self.op.observation()
-            require(observation["owner_wait_raw"] == 0 and observation["owner_exit_code"] == 0, "actual O0 collection")
-            require(observation["terminal"]["worker_wait"]["exit_code"] == 0 and observation["terminal"]["worker_wait"]["raw_status"] == 0, "actual W0 collection")
+            terminal = observation["terminal"]
+            wait = terminal["worker_wait"]
+            if cancelled:
+                require(observation["owner_wait_raw"] == 512 and observation["owner_exit_code"] == 2,
+                        "actual cancelled O2 collection")
+                require((wait["exit_code"], wait["raw_status"]) in {(71, 18176), (-9, 9)}, "exact preG W collection")
+                require(wait["collector_pid"] == observation["owner_pid"], "actual O collects W")
+                require(terminal["outcome"] == "cancelled" and terminal["cancel_observed"] is True,
+                        "actual fixture cancellation")
+                require(observation["commands"] == ["P", "X"] and terminal["G_bytes"] == 0
+                        and terminal["image_bytes_sent"] == 0 and terminal["result_bytes"] == 0
+                        and observation["output_bytes"] == 0, "no G/W image/result exposure")
+            else:
+                require(observation["owner_wait_raw"] == 0 and observation["owner_exit_code"] == 0, "actual O0 collection")
+                require(wait["exit_code"] == 0 and wait["raw_status"] == 0, "actual W0 collection")
             require(observation["EOF"] == [1, 2, 4, 5] and observation["parent_owned_fds"] == [], "B3 EOF/FD closure")
             require(self.runtime.operation is self.op, "retained owning runtime")
             require({fd: fd_identity(int(fd)) for fd in parent_live} == parent_live, "caller live FDs unchanged")
-            raw, parsed = self.op.take_result()
-            require(raw == request_raw and parsed == vector["decoded"] and type(parsed["version"]) is int, "released raw/parsed request binding")
-            (self.output / "decoded.envelope").write_bytes(raw)
-            write(self.output / "decoded.json", parsed)
+            if cancelled:
+                try:
+                    self.op.take_result()
+                except ValueError:
+                    pass
+                else:
+                    raise RuntimeError("cancelled operation released a result")
+                try:
+                    self.runtime.reserve(self.args.worker, self.args.sha256)
+                except ValueError:
+                    pass
+                else:
+                    raise RuntimeError("reservation reused before actual close")
+                self.op.close()
+                require(self.op._closed and self.runtime.operation is self.op, "known closed retained operation")
+                write(self.output / "cancel-refusals.json", {"take_result_refused": True,
+                      "reservation_before_close_refused": True, "caller_released_bytes": 0})
+                reply_row = {"v": 1, "event": "cancelled"}
+            else:
+                raw, parsed = self.op.take_result()
+                require(raw == request_raw and parsed == vector["decoded"] and type(parsed["version"]) is int, "released raw/parsed request binding")
+                (self.output / "decoded.envelope").write_bytes(raw)
+                write(self.output / "decoded.json", parsed)
+                reply_row = {"v": 1, "event": "decoded", "frame": raw.decode("ascii")}
             write(self.output / "owner-settled.json", {"observation": self.op.observation(), "parent_live_preserved": parent_live})
-            reply = (json.dumps({"v": 1, "event": "decoded", "frame": raw.decode("ascii")}, separators=(",", ":")) + "\n").encode("ascii")
+            reply = (json.dumps(reply_row, separators=(",", ":")) + "\n").encode("ascii")
             require(len(reply) <= 512, "reply cap")
+            if cancelled:
+                require(reply == b'{"v":1,"event":"cancelled"}\n' and len(reply) == 28, "fixed cancelled reply")
             (self.output / "parent-reply.jsonl").write_bytes(reply)
             self.node.stdin.write(reply)
             self.node.stdin.close()
             self.reply_sent = True
             self.until(lambda: self.raw_wait is not None and self.eof == {"stdout", "stderr"}, "Node collection/EOF")
             require(self.raw_wait == 0 and self.node.returncode == 0 and not self.buffers["stderr"], "actual Node0 collection")
-            require(not self.tail and len(self.rows) == 4, "exact four complete Node records")
-            scan, close, result = self.rows[1:]
-            _keys(scan, ["v", "event", "frame"])
-            require(scan["v"] == 1 and scan["event"] == "scan" and scan["frame"].encode("ascii") == response_raw, "host scanner611 binding")
+            require(not self.tail and len(self.rows) == (3 if cancelled else 5 if timed_out else 4), "exact complete case records")
+            result = self.rows[-1]
+            close = self.rows[-2]
+            if timed_out:
+                pending, timeout = self.rows[1:3]
+                _keys(pending, ["v", "event", "clock"])
+                require(pending["event"] == "scan_pending" and type(pending["clock"]) is int and pending["clock"] == 99, "actual pending scan at99")
+                _keys(timeout, ["v", "event", "native_response_base64", "timer_args", "clear_calls", "deadline_fires", "clock",
+                                "opens", "scans", "closes", "abort_observed", "underlying_settled", "pending_retry_error"])
+                require(timeout["event"] == "timeout" and timeout["native_response_base64"] == result["native_response_base64"], "timeout response cannot be replaced")
+                for name, value in {"clear_calls": 1, "deadline_fires": 1, "clock": 100, "opens": 1, "scans": 1, "closes": 0}.items():
+                    require(type(timeout[name]) is int and timeout[name] == value, "typed timeout-stage counters")
+                require(timeout["timer_args"] == [100] and timeout["abort_observed"] is True
+                        and timeout["underlying_settled"] is False and timeout["pending_retry_error"] == "runtime_unavailable", "actual timeout before late settlement")
+            elif not cancelled:
+                scan = self.rows[1]
+                _keys(scan, ["v", "event", "frame"])
+                require(scan["event"] == "scan", "single scan event")
+                if case == "scan_null_after_settlement":
+                    require(scan["frame"] is None, "actual null scan")
+                else:
+                    require(scan["frame"].encode("ascii") == response_raw, "host scanner611 binding")
             _keys(close, ["v", "event"])
             require(close == {"v": 1, "event": "close"}, "actual port close")
-            _keys(result, ["v", "event", "native_response_base64", "timer_args", "clear_calls", "deadline_fires", "clock_steps"])
+            result_keys = ["v", "event", "native_response_base64", "timer_args", "clear_calls", "deadline_fires", "clock_steps"]
+            _keys(result, result_keys + ([] if case == "positive" else ["lifecycle"]))
             require(result["v"] == 1 and result["event"] == "result" and result["timer_args"] == [100]
                     and all(type(x) is int for x in result["timer_args"])
                     and type(result["clear_calls"]) is int and result["clear_calls"] == 1
-                    and type(result["deadline_fires"]) is int and result["deadline_fires"] == 0
+                    and type(result["deadline_fires"]) is int and result["deadline_fires"] == (1 if timed_out else 0)
                     and result["clock_steps"] == [0, 99, 100]
                     and all(type(x) is int for x in result["clock_steps"]), "synthetic actual timer evidence")
             wire = base64.b64decode(result["native_response_base64"], validate=True)
@@ -242,7 +304,22 @@ class Composition:
             require(len(wire) >= 4 and int.from_bytes(wire[:4], "little") == len(wire) - 4, "native response framing")
             service = json.loads(wire[4:])
             expected_response = json.loads((ROOT / "protocols/contracts/v1/examples/response-kind-1-basic.json").read_text())
-            require(service["ok"] is True and service["request_id"] == "qh01.composition" and service["result"]["signer_response"] == expected_response, "actual client verified response")
+            require(service["request_id"] == "qh01.composition", "actual native response request binding")
+            if case == "positive":
+                require(service["ok"] is True and service["result"]["signer_response"] == expected_response, "actual client verified response")
+            else:
+                require(service["ok"] is False and "result" not in service
+                        and service["error"]["code"] == ("signer_transport_timeout" if timed_out else "signer_transport_failed"), "exact native refusal")
+                lifecycle = result["lifecycle"]
+                _keys(lifecycle, ["case", "opens", "scans", "closes", "abort_observed", "underlying_settled",
+                                  "late_scan_bytes", "late_scan_sha256", "pending_retry_error"])
+                require(lifecycle["case"] == case and lifecycle["abort_observed"] is True
+                        and lifecycle["underlying_settled"] is True, "actual underlying settlement after refusal")
+                for name, value in {"opens": 1, "scans": 0 if cancelled else 1, "closes": 1,
+                                    "late_scan_bytes": 611 if timed_out else 0}.items():
+                    require(type(lifecycle[name]) is int and lifecycle[name] == value, "typed lifecycle counters")
+                require(lifecycle["late_scan_sha256"] == (sha(response_raw) if timed_out else None)
+                        and lifecycle["pending_retry_error"] == ("runtime_unavailable" if timed_out else None), "late scan/retry binding")
             (self.output / "native-response.bin").write_bytes(wire)
             write(self.output / "service-response.json", service)
         except BaseException as error:
@@ -275,6 +352,13 @@ class Composition:
                   "presented_bytes": 259, "decoded_bytes": 259, "scanned_bytes": 611,
                   "client_clock": "synthetic0/99/100; actual setTimeout argument100",
                   "O_clocks": "actual8s/shared4s unchanged", "physical_claim": False}
+        if case != "positive":
+            result.update({"result": "PASS_HOST_COMPOSITION_LIFECYCLE_CASE", "case": case,
+                           "decoded_bytes": 0 if cancelled else 259,
+                           "scanned_bytes": 611 if timed_out else 0,
+                           "service_error": service["error"]["code"],
+                           "B3_outcome": self.op.observation()["terminal"]["outcome"],
+                           "caller_released_bytes": 0 if cancelled else 259})
         write(self.output / "result.json", result)
         print(json.dumps(result), flush=True)
 
@@ -283,4 +367,6 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(description=__doc__)
     for name in ("output", "worker", "sha256", "node", "bridge", "reuse"):
         parser.add_argument("--" + name, required=True)
+    parser.add_argument("--case", choices=("positive", "scan_null_after_settlement",
+                        "scan_pending_timeout_after_settlement", "fixture_cancel_B3_verified_preG"), default="positive")
     Composition(parser.parse_args()).run()
