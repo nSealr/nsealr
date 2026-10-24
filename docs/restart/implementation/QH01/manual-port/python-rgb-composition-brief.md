@@ -559,7 +559,7 @@ negative case wrapper is `qh01_lifecycle_case` v1 with scope
 `QH01_HOST_LIFECYCLE_CI_V1`, role host fixture/synthetic clock and the exact id.
 Case keys reuse `v,id,scope,role,argv,source_before,source_after,generated_before,
 generated_after,worker_initialization,actual,collection,frames,decoded_request,
-node_records,expected_public_key,service_response,native_response_base64,limits`.
+cancel_refusals,node_records,expected_public_key,service_response,native_response_base64,limits`.
 Copy actual source/generated maps, initialization pair and existing receipts;
 never synthesize PASS/status/clock values. A negative failure uses its own
 `qh01_lifecycle_failure {v,id,output_retained}`; it cannot masquerade as a case.
@@ -572,7 +572,8 @@ frames keys are `presented,decoded,scanned,late_scan`: present259 always; decode
 259 for null/timeout, null for preG; scanned null because null/no scan/pending;
 late_scan611/hash only for timeout from actual final Node lifecycle receipt.
 decoded_request is actual decoded.json or null for preG. Include preG's actual
-refusal flags alongside its existing result/collection receipt, not invented data.
+cancel-refusals.json as cancel_refusals (null for the other cases), not invented
+flags or a fabricated empty decoded file.
 
 Expect null/timeout O0/W0 already settled and original259 release; null returns
 signer_transport_failed/scan1/close1/fire0; timeout returns signer_transport_timeout
