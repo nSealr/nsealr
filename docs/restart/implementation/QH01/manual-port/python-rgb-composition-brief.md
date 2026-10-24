@@ -965,3 +965,18 @@ truth and does not relabel25b/7cb. Source/prep/schema are now frozen under
 proof/request-engine-ci/, including exact compiler/case namespace keys, ids,
 commands, cleanup and preserved oracles. No new TSC/O/W/C/Pi/full or test
 execution yet; STOP for root producer-format/expectation check.
+
+After root format approval, focused2+5 passed. The first namespace mkdir RED
+was invoker-only (parent root-owned), before any test/actor; original receipt
+and explicit root author-01 correction are preserved, not relabelled a test
+pass. Reused fresh source355 then had no dist/targets/venv; pinned offline
+cache setup kept source/lock exact. ONE normalmakepi-ci passed0/raw0 in
+46.960843804s, clean before/after: old211/70/39+62/14+5/6/4 unchanged, ONE
+current-root helper preparation and2actual engine records share one native/W
+pair and temp module. Positive actual6112501/31pages; loadedSHA refusal
+Ccode1/sentfalse/Rempty/output0/obsnull; collection/EOF/FD guards pass.
+proof/request-engine-ci/ retains byte-exact3log records +line/offset/hash index,
+original stream/commands/preflight/incident/70owner and actual normal ELFs.
+No manual TSC/5s/actor/replay/full/hosted run;15Bridgeoracle only unchanged
+source. Source355 unchanged; STOP distinct wrapper/proof review, no new
+provider/device/physical qualification.
