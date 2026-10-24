@@ -360,7 +360,7 @@ class Composition:
                            "B3_outcome": self.op.observation()["terminal"]["outcome"],
                            "caller_released_bytes": 0 if cancelled else 259})
         write(self.output / "result.json", result)
-        print(json.dumps(result), flush=True)
+        print(json.dumps(result) if case == "positive" else "\n" + json.dumps({"qh01_lifecycle_result": result}), flush=True)
 
 
 if __name__ == "__main__":

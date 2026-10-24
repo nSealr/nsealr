@@ -1,0 +1,109 @@
+{
+  "role": "FROZEN_SOURCE_AND_TRACE_SCHEMA_BEFORE_FOCUSED_CONTROLS_OR_RUNTIME",
+  "admission": "root explicit e244708157739c9d81aa77da141d038de18cd348",
+  "base": "858eaf19a1f2b104112edb9842a479c035db301f",
+  "sources": {
+    "docs/restart/implementation/QP01/request-engine/exchange.py": "52a9b2a3d813b021c58f6bad10ba0908fd6882f16d9d45fee3de2aa102b944f6",
+    "apps/pi/tests/test_engine_adapter.py": "3e570bfa8392587d88b1f0cb39c440e8d249236af5d188397bf0c5097d6c71c3",
+    "docs/restart/implementation/QH01/manual-port/python-rgb-composition/run-composition.py": "828f2b66ed029962c941df79c73225e029eff097b0782b58db20904d1bb20313"
+  },
+  "source_callsite": "exchange.py:ci -> composition_ci -> composition_record; one default positive then LIFECYCLE_CASES",
+  "ids": [
+    "scan_null_after_settlement",
+    "scan_pending_timeout_after_settlement",
+    "fixture_cancel_B3_verified_preG"
+  ],
+  "stdout": {
+    "qh01_lifecycle_command": [
+      "v",
+      "id",
+      "argv",
+      "output"
+    ],
+    "qh01_lifecycle_result": "unchanged actual result.json nested, LF-delimited only for negatives",
+    "qh01_lifecycle_case": [
+      "v",
+      "id",
+      "scope",
+      "role",
+      "argv",
+      "source_before",
+      "source_after",
+      "generated_before",
+      "generated_after",
+      "worker_initialization",
+      "actual",
+      "collection",
+      "frames",
+      "decoded_request",
+      "cancel_refusals",
+      "node_records",
+      "expected_public_key",
+      "service_response",
+      "native_response_base64",
+      "limits"
+    ],
+    "qh01_lifecycle_failure": [
+      "v",
+      "id",
+      "output_retained"
+    ]
+  },
+  "case": {
+    "v": 1,
+    "scope": "QH01_HOST_LIFECYCLE_CI_V1",
+    "role": "public_host_fixture_synthetic_client_clock",
+    "frames": [
+      "presented",
+      "decoded",
+      "scanned",
+      "late_scan"
+    ],
+    "decoded_request": "actual decoded.json; null preG",
+    "cancel_refusals": "actual cancel-refusals.json preG; null otherwise",
+    "late_scan": "actual final Node lifecycle bytes/SHA timeout only; null otherwise",
+    "collection": "actual collection.json including Node wait/EOF, B3 owner/worker status/EOF/FDs; no invented completion",
+    "parent_cancel_reply": "actual harness requires known-close before writing exact cancelled28B; source-bound assertion, not a fabricated receipt field"
+  },
+  "commands": {
+    "focused_ordering": {
+      "argv": [
+        "apps/pi/.venv/bin/python",
+        "-B",
+        "-m",
+        "unittest",
+        "tests.test_engine_adapter.ProvisioningControls",
+        "-v"
+      ],
+      "cwd": "apps/pi"
+    },
+    "focused_producer": {
+      "argv": [
+        "python3",
+        "-B",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "docs/restart/implementation/QP01/request-engine",
+        "-p",
+        "test_provision.py",
+        "-v"
+      ],
+      "cwd": "."
+    },
+    "normal": {
+      "argv": [
+        "make",
+        "pi-ci"
+      ],
+      "cwd": ".",
+      "cases": "one positive + exactly three negatives, same provision env/W/SHA; no manual replay"
+    }
+  },
+  "limits": [
+    "no Node IPC, attention/hold, B3/O/W, product, builder, locks, checker or graph change",
+    "synthetic client100; actual O8/shared4/native C5000 unchanged",
+    "fixed trusted fixtures and portcancel, no external clientAbort/decoder count or physical claim"
+  ]
+}

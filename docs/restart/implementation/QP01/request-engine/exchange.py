@@ -15,6 +15,8 @@ ROOT = Path(__file__).resolve().parents[5]
 SOURCE = ROOT / "crates/nsealr-pi-engine-fixture/src/lib.rs"
 CLIENT = Path(__file__).with_name("client-exchange.ts")
 COMPOSITION = ROOT / "docs/restart/implementation/QH01/manual-port/python-rgb-composition"
+LIFECYCLE_CASES = ("scan_null_after_settlement", "scan_pending_timeout_after_settlement",
+                   "fixture_cancel_B3_verified_preG")
 
 
 def source_binding(paths=None):
@@ -96,31 +98,47 @@ def ci(directory):
     subprocess.run([str(pi / ".venv/bin/python"), "-B", str(COMPOSITION / "test_attention_reporting.py"), "-v"],
                    cwd=ROOT, env=env, check=True)
     composition_ci(pi, env)
+    for case in LIFECYCLE_CASES:
+        composition_ci(pi, env, case)
 
 
-def composition_record(output, env, command, before, generated):
+def composition_record(output, env, command, before, generated, case="positive"):
     """Expose the existing harness's actual receipts; do not invent a verdict."""
     load = lambda name: json.loads((output / name).read_text())
     rows = load("node-records.json")
     frame = lambda raw: {"bytes": len(raw), "sha256": hashlib.sha256(raw).hexdigest()}
-    return {"v": 1, "id": "bridge_rgb_kind1_basic", "scope": "QH01_HOST_COMPOSITION_CI_V1",
+    cancelled = case == "fixture_cancel_B3_verified_preG"
+    record = {"v": 1, "id": "bridge_rgb_kind1_basic", "scope": "QH01_HOST_COMPOSITION_CI_V1",
             "role": "public_host_fixture_synthetic_client_clock", "argv": command,
             "source_before": before, "source_after": source_binding(list(before)),
             "generated_before": generated, "generated_after": source_binding(list(generated)),
             "worker_initialization": {"path": env["NSEALR_QP01_QR_WORKER"], "sha256": env["NSEALR_QP01_QR_WORKER_SHA256"]},
             "actual": load("result.json"), "collection": load("collection.json"),
             "frames": {"presented": frame(rows[0]["frame"].encode("ascii")),
-                       "decoded": frame((output / "decoded.envelope").read_bytes()),
-                       "scanned": frame(rows[1]["frame"].encode("ascii"))},
-            "decoded_request": load("decoded.json"), "node_records": rows,
+                       "decoded": None if cancelled else frame((output / "decoded.envelope").read_bytes()),
+                       "scanned": frame(rows[1]["frame"].encode("ascii")) if case == "positive" else None},
+            "decoded_request": None if cancelled else load("decoded.json"), "node_records": rows,
             "expected_public_key": json.loads((ROOT / "protocols/contracts/v1/examples/response-get-public-key.json").read_text())["result"]["public_key"],
             "service_response": load("service-response.json"),
             "native_response_base64": base64.b64encode((output / "native-response.bin").read_bytes()).decode("ascii"),
             "limits": ["synthetic client100; real O8/shared4; native C5000 unchanged",
                        "no timeout/cancel seam, camera/physical, key or production-provider qualification"]}
+    if case != "positive":
+        lifecycle = rows[-1]["lifecycle"]
+        record.update({"id": case, "scope": "QH01_HOST_LIFECYCLE_CI_V1",
+                       "cancel_refusals": load("cancel-refusals.json") if cancelled else None,
+                       "limits": ["synthetic client100; real O8/shared4; native C5000 unchanged",
+                                  "fixed trusted fixture/port cancel; no external clientAbort API or decoder counter",
+                                  "no camera/physical, key or production-provider qualification"]})
+        record["frames"]["late_scan"] = ({"bytes": lifecycle["late_scan_bytes"],
+                                            "sha256": lifecycle["late_scan_sha256"]}
+                                           if case == "scan_pending_timeout_after_settlement" else None)
+    return record
 
 
-def composition_ci(pi, env):
+def composition_ci(pi, env, case="positive"):
+    if case not in ("positive", *LIFECYCLE_CASES):
+        raise ValueError("unknown trusted composition case")
     packages = ["client", "core", "policy", "protocol", "qr", "transport", "framing"]
     source_paths = ["tools/bridge/build_packages.mjs", "pnpm-lock.yaml", "apps/bridge/service/package.json",
                     str(Path(__file__).relative_to(ROOT)), "apps/pi/tests/test_engine_adapter.py",
@@ -142,16 +160,20 @@ def composition_ci(pi, env):
                "--output", str(output), "--worker", env["NSEALR_QP01_QR_WORKER"],
                "--sha256", env["NSEALR_QP01_QR_WORKER_SHA256"], "--node", str(Path(node).resolve()),
                "--bridge", str(ROOT / "apps/bridge/service/dist"), "--reuse", str(ROOT)]
-    print("\n" + json.dumps({"qh01_composition_command": {"v": 1, "argv": command, "output": str(output)}}), flush=True)
+    namespace = "qh01_composition" if case == "positive" else "qh01_lifecycle"
+    identity = {} if case == "positive" else {"id": case}
+    if case != "positive":
+        command += ["--case", case]
+    print("\n" + json.dumps({namespace + "_command": {"v": 1, **identity, "argv": command, "output": str(output)}}), flush=True)
     try:
         subprocess.run(command, cwd=ROOT, env=env, check=True)
-        record = composition_record(output, env, command, before, generated)
+        record = composition_record(output, env, command, before, generated, case)
         if record["source_before"] != record["source_after"] or record["generated_before"] != record["generated_after"]:
             raise RuntimeError("composition source or compiled input changed")
-        print("\n" + json.dumps({"qh01_composition_case": record}), flush=True)
+        print("\n" + json.dumps({namespace + "_case": record}), flush=True)
     except BaseException:
         try:
-            print("\n" + json.dumps({"qh01_composition_failure": {"v": 1, "output_retained": str(output)}}), flush=True)
+            print("\n" + json.dumps({namespace + "_failure": {"v": 1, **identity, "output_retained": str(output)}}), flush=True)
         except BaseException:
             pass
         raise

@@ -596,3 +596,15 @@ producer pure controls, then ONE coherent stable `make pi-ci` containing positiv
 plus3actual cases. Do not replay four manual cases. Preserve command/raw/source
 bindings and failures, then STOP for distinct review. This append is the requested
 schema checkpoint only; no code, test, build or runtime was executed for it.
+
+## Admitted automatic lifecycle integration
+
+Root admitted e244708157739c9d81aa77da141d038de18cd348 before code: only
+exchange.py common runner/extractor, the same two ProvisioningControls methods,
+negative stdout wrapper, this brief and scoped proof. Freeze source/schema before
+the focused two ordering plus five producer controls and ONE normal make pi-ci
+with default positive followed by the three admitted lifecycle ids. Same one
+provisioned W/C pair, current-root JS/packages, exact old positive/211/70/39 and
+15 full-gate build semantics; no checker/product/Node IPC/budget change. Preserve
+all actual receipts and failures; unknown ownership remains held by the exact
+existing invoker. STOP after coherent proof for distinct review.
