@@ -256,7 +256,10 @@ def verify_qh01_lifecycle(objects):
     def same(actual, expected):
         assert json.dumps(actual, sort_keys=True) == json.dumps(expected, sort_keys=True)
     def integers(values):
-        assert all(type(x) is int for x in values)
+        assert all(type(x) is int and abs(x) <= 9007199254740991 for x in values)
+    def decimal(value):
+        assert type(value) is str and re.fullmatch(r'0|[1-9][0-9]{0,19}', value)
+        assert int(value) <= 18446744073709551615
     def occurrences(key):
         return [(i, o[key]) for i, o in enumerate(objects) if key in o]
     ids = ['scan_null_after_settlement', 'scan_pending_timeout_after_settlement', 'fixture_cancel_B3_verified_preG']
@@ -313,6 +316,15 @@ def verify_qh01_lifecycle(objects):
         integers(collection['node_observed'].values())
         assert collection['node_observed']['stderr'] == 0
         o = collection['B3']; p = o['phase']; t = o['terminal']; wait = t['worker_wait']
+        assert list(p) == ['v', 'kind', 'owner_pid', 'worker_pid', 'ppid', 'sid', 'pgid',
+                           'exe_sha256', 'limits', 'G_bytes', 'image_bytes_sent', 'fds']
+        assert list(t) == ['v', 'kind', 'owner_pid', 'outcome', 'ownership', 'worker_pid',
+                          'worker_wait', 'worker_io', 'session_policy_verified', 'input_bytes_received',
+                          'input_sha256', 'G_bytes', 'image_bytes_sent', 'stdout_observed', 'stdout_retained',
+                          'stderr_observed', 'stderr_retained', 'worker_stderr_base64', 'result_bytes',
+                          'result_sha256', 'final_worker_eligible', 'cancel_observed', 'timing']
+        assert list(wait) == ['raw_status', 'exit_code', 'collector_pid']
+        assert list(t['worker_io']) == ['stdin_closed', 'stdout_eof', 'stderr_eof', 'owned_fds_closed']
         # The positive block already binds these common policy values to Git and
         # the actual provisioned worker. Every refusal must preserve them.
         for key in ['state', 'EOF', 'parent_owned_fds', 'fault', 'transport_error', 'ready_hex', 'diagnostic_base64', 'closed']:
@@ -329,6 +341,10 @@ def verify_qh01_lifecycle(objects):
         assert o['owner_pid'] == t['owner_pid'] == p['owner_pid'] == p['ppid'] == a['owner_pid']
         assert p['worker_pid'] == p['sid'] == p['pgid'] == t['worker_pid'] == a['worker_pid']
         assert wait['collector_pid'] == o['owner_pid'] and [f['fd'] for f in p['fds']] == [0, 1, 2]
+        for fd in p['fds']:
+            assert list(fd) == ['fd', 'target', 'dev', 'ino']
+            decimal(fd['dev']); decimal(fd['ino'])
+            assert fd['target'] == 'pipe:[' + fd['ino'] + ']' and len(fd['target']) <= 27
         assert len({(f['dev'], f['ino']) for f in p['fds']}) == 3
         assert o['commands'] == (['P', 'X'] if cancelled else ['P', 'G'])
         assert o['owner_exit_code'] == (2 if cancelled else 0) and o['owner_wait_raw'] == (512 if cancelled else 0)
@@ -344,12 +360,18 @@ def verify_qh01_lifecycle(objects):
         stderr = base64.b64decode(t['worker_stderr_base64'], validate=True)
         assert base64.b64encode(stderr).decode('ascii') == t['worker_stderr_base64']
         assert len(stderr) == t['stderr_retained'] == t['stderr_observed'] <= 512
-        if not cancelled:
+        if cancelled:
+            assert not stderr  # W exits71 before G, or is killed before G; neither emits diagnostics.
+        else:
             for key in ['stderr_observed', 'stderr_retained', 'worker_stderr_base64']:
                 same(t[key], reference['terminal'][key])
         same(o['output_sha256'], None if cancelled else reference['output_sha256'])
         same(t['result_sha256'], None if cancelled else reference['terminal']['result_sha256'])
         clock = t['timing']
+        assert list(clock) == ['begin_ns', 'invalidated_ns', 'cleanup_deadline_ns', 'settled_ns', 'final_admission_ns']
+        for value in clock.values():
+            if value is not None:
+                decimal(value)
         assert int(clock['begin_ns']) <= int(clock['settled_ns']) <= int(clock['final_admission_ns']) < int(clock['begin_ns']) + 8000000000
         if cancelled:
             assert int(clock['begin_ns']) <= int(clock['invalidated_ns']) <= int(clock['settled_ns'])
@@ -358,6 +380,8 @@ def verify_qh01_lifecycle(objects):
             assert clock['invalidated_ns'] is clock['cleanup_deadline_ns'] is None
         status = base64.b64decode(o['status_wire_base64'], validate=True)
         assert base64.b64encode(status).decode('ascii') == o['status_wire_base64']
+        assert len(status) <= 4096
+        assert status == b''.join((json.dumps(row, separators=(',', ':')) + '\n').encode('ascii') for row in [p, t])
         same([json.loads(row) for row in status.splitlines()], [p, t])
         rows = case['node_records']
         events = ['present', 'close', 'result'] if cancelled else (['present', 'scan_pending', 'timeout', 'close', 'result'] if timeout else ['present', 'scan', 'close', 'result'])
