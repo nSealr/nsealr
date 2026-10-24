@@ -265,3 +265,13 @@ there is no new W/C/Rust build or reproducibility assertion. Parser and B3 owner
 logic are reused; the local loop exists only to drain the fixed IPC and retain
 these two handles. Caller FDs exclude B3's own selector and must remain unchanged;
 the final descriptor set must equal the pre-reservation baseline.
+
+### First actual result — runtime STOP checkpoint
+
+ONE actual composition on frozen7157117c passed: Python2492197, Node2492198,
+O2492205/W2492206, all known raw statuses0 and required EOF/FD closure. Original
+present259 equals released259; scanner611 stays host-only; actual native/client
+verification succeeds. Actual client timer100 is recorded with synthetic clock
+0/99/100; O8/4 stays real. The adjacent README and original raw proof bind this
+result. No runtime source changed afterwards; no negative/full gate/old39,
+new W/C build, signing or physical claim follows. STOP for distinct review.
