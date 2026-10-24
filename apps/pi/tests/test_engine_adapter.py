@@ -308,6 +308,7 @@ class ProvisioningControls(unittest.TestCase):
         driver = importlib.util.module_from_spec(spec)
         spec.loader.exec_module(driver)
         calls = []
+        environments = []
         lib = {"NSEALR_QP01_LIBRARY": "/explicit/test.so", "NSEALR_QP01_LIBRARY_SHA256": "a"*64,
                "NSEALR_QP01_QR_WORKER": "/explicit/worker", "NSEALR_QP01_QR_WORKER_SHA256": "b"*64}
         def provision():
@@ -315,15 +316,38 @@ class ProvisioningControls(unittest.TestCase):
             return lib
         def run(argv, **kwargs):
             calls.append(argv)
+            environments.append(kwargs["env"])
             self.assertEqual(kwargs["cwd"], ROOT)
             self.assertTrue(kwargs["check"])
             for key, value in lib.items():
                 self.assertEqual(kwargs["env"][key], value)
-        with patch.object(driver, "provision", side_effect=provision), patch.object(driver.subprocess, "run", side_effect=run):
+        def record(output, env, command, before, generated):
+            self.assertIs(env, environments[0])
+            self.assertEqual(output.name, "case")
+            self.assertEqual(command, calls[-1])
+            return {"role": "SYNTHETIC_ORDER_CONTROL_ONLY", "source_before": before, "source_after": before,
+                    "generated_before": generated, "generated_after": generated}
+        with patch.object(driver, "provision", side_effect=provision), \
+             patch.object(driver.subprocess, "run", side_effect=run), \
+             patch.object(driver, "composition_record", side_effect=record) as records, \
+             patch("builtins.print"):
             driver.ci("apps/pi")
-        self.assertEqual(calls, ["build", ["make", "-C", str(ROOT / "apps/pi"), "ci"],
+        self.assertEqual(calls[:4], ["build", ["make", "-C", str(ROOT / "apps/pi"), "ci"],
                                 ["node", "--import", "tsx/esm", str(driver.CLIENT)],
                                 ["node", "--import", "tsx/esm", str(driver.CLIENT), "--first-owner-gate"]])
+        self.assertEqual(len(calls), 6)
+        self.assertTrue(all(env is environments[0] for env in environments))
+        python = str(ROOT / "apps/pi/.venv/bin/python")
+        self.assertEqual(calls[4], [python, "-B", str(driver.COMPOSITION / "test_attention_reporting.py"), "-v"])
+        self.assertEqual(calls[5][:3], [python, "-B", str(driver.COMPOSITION / "run-composition.py")])
+        self.assertEqual(calls[5][3], "--output")
+        self.assertEqual(Path(calls[5][4]).name, "case")
+        self.assertTrue(Path(calls[5][4]).parent.name.startswith("nsealr-qh01-composition-"))
+        self.assertEqual(calls[5][5:10], ["--worker", lib["NSEALR_QP01_QR_WORKER"],
+                                        "--sha256", lib["NSEALR_QP01_QR_WORKER_SHA256"], "--node"])
+        self.assertTrue(Path(calls[5][10]).is_absolute())
+        self.assertEqual(calls[5][11:], ["--bridge", str(ROOT / "apps/bridge/service/dist"), "--reuse", str(ROOT)])
+        self.assertEqual(records.call_count, 1)
         with self.assertRaises(ValueError):
             driver.ci("apps/pi/tests")
 
@@ -333,10 +357,12 @@ class ProvisioningControls(unittest.TestCase):
         driver = importlib.util.module_from_spec(spec)
         spec.loader.exec_module(driver)
         with patch.object(driver, "provision", return_value={}), \
-             patch.object(driver.subprocess, "run", side_effect=RuntimeError("full Pi failure")) as run:
+             patch.object(driver.subprocess, "run", side_effect=RuntimeError("full Pi failure")) as run, \
+             patch.object(driver, "composition_record") as records:
             with self.assertRaisesRegex(RuntimeError, "full Pi failure"):
                 driver.ci("apps/pi")
         self.assertEqual(run.call_count, 1)
+        records.assert_not_called()
 
 
 if __name__ == "__main__":

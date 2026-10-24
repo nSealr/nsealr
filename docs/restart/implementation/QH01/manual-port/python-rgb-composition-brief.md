@@ -399,3 +399,35 @@ build and pure provisioning checks without composition, then ONE stable mandator
 checkpoint, not full make-ci/hosted/production/component completion. Preserve
 failure output/path; unknown ownership retains the exact live invoker, no kill or
 restart. Historical proofs and f129 remain unchanged. STOP for distinct review.
+
+### Normal-CI source/schema freeze before execution
+
+The bounded diff generalizes runTsc's directories, adds the service emission with
+identical options, and appends only the new ci suffix. Existing ProvisioningControls
+still has two methods; its first four ordered entries and failure-stop remain.
+The suffix is one distinct stdlib unittest command with six pure controls, then
+one run-composition.py command, never six actual compositions. The accepted
+composition/Node/reporting-control source files are untouched.
+
+`bridge_service_build` v1 keys are `v,role,argv,cwd,compiler,status,signal,error,
+source_before,source_after,outputs`; compiler holds actual path/version/SHA, source
+maps hold the five inputs, output maps the ten generated files. It records the
+actual spawnSync status, not a fabricated success. `qh01_composition_case` v1 keys
+are `v,id,scope,role,argv,source_before,source_after,generated_before,generated_after,
+worker_initialization,actual,collection,frames,decoded_request,node_records,
+expected_public_key,service_response,native_response_base64,limits`.
+Scope is `QH01_HOST_COMPOSITION_CI_V1`, ID `bridge_rgb_kind1_basic`. Maps dynamically
+bind the current source and generated JS/declarations. `actual`, collection,
+Node records and verified native response are read from the existing fresh
+13-file harness output; frame byte/hash pairs derive from actual present,
+released raw and scan. Worker initialization is the provisioner's exact env pair.
+Source/generated maps must stay equal across execution; build/case cross-binding
+is deferred to root's checker, with no duplicate verifier added here.
+
+The prelaunch record is `qh01_composition_command {v,argv,output}`; failures print
+`qh01_composition_failure {v,output_retained}` without deleting the fresh directory.
+Success prints its distinct LF-delimited case before deleting known-settled output.
+Frozen commands are targeted `pnpm build`, baseline unittest ProvisioningControls
+and existing test_provision.py (zero composition), then ONE `make pi-ci`. Same
+checkout inputs/default targets, baseline offline lock/store and existing wheels
+are prerequisites; any setup delta is recorded. No full make-ci or manual replay.
