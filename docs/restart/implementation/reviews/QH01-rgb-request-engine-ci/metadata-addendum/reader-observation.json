@@ -1,0 +1,13 @@
+{
+  "role": "REVIEWER_METADATA_READER_ERROR_NOT_CANDIDATE_FAILURE",
+  "original_wrapper_exit": 1,
+  "original_stderr": "KeyError: 'current_checkpoint' at inline reader line17",
+  "cause": "Reader assumed all47 task objects contain current_checkpoint before comparing it; it is optional.",
+  "actual_task_shapes": {
+    "with_current_checkpoint": 9,
+    "without_current_checkpoint": 38
+  },
+  "correction": "Compare optional checkpoints with dict.get; all original task fields remain compared exactly outside authorized evidence/checkpoint roles.",
+  "candidate_or_runtime_changed": false,
+  "candidate_execution": 0
+}
