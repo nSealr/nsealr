@@ -517,3 +517,12 @@ retains52original files plus manifest; no additional positive was executed.
 The diagnostic runtime source remainsf4. Freeze this stable checkpoint before
 ONE normal make pi-ci using the current checkout's ordinary builder/provisioner,
 to preserve default positive/211/70/39/six pure controls; no full make-ci.
+
+The ONE normal regression on30222891 passed0/45.239295614s, source clean before
+and after. This checkout produced its own JS/packages/W; default positive retained
+the original argv/result/event shapes,259/611, Node/O/W0 and timer100clear1/fire0.
+Pi211/70owner records/39final cases/five producer/six pure controls remain.
+`proof/lifecycle-cases/` retains original early/normal commands and raw states,
+source correspondence and limits. Three negatives are dedicated commands, not
+claimed automatically called by normal CI. No further runtime source change,
+full make-ci/hosted run or component/physical/release claim; STOP distinct review.
