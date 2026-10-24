@@ -1,0 +1,13 @@
+PASS_METADATA_ASSEMBLY_AND_COPY_CORRESPONDENCE_ONLY; findings [].
+
+This addendum binds root candidate `bd1671e60ff69452c20b0940b0aff981ac66a8fc`, tree `d28e79be5432aa51be303d9b94b27a2a16ecc101`, against parent `6bd71e1932c5322667a8e8a368a99a827302ec8f`. It follows the exact author278 wrapper/proof review b37f188397b37cbcfe41b0a928d5a9f673f69e7a. No source/runtime campaign or new capture-checker review is repeated.
+
+Exactly four root metadata paths change: restart README, implementation handoff, plan/work-items.json and root capture result.json. All 93 author278 postimages changed from main6b have exact mode/blob identity in both6bd and bd167. Every other parent path is unchanged. The eight historical lifecycle/security-adoption files retain exact original29aa mode/blob identity. Their PR50/main6b references are historical root evidence; this addendum performs no CI observation.
+
+Nine live artifact SHA values match their actual current Git files. The 37 appended evidence bindings all resolve with exact hashes: 18 author request-engine proof files, 11 root capture proof files and eight prior-adoption files. The capture-result change only expands the existing immutable checker commit and corrects the original archive to its repository-relative path. Checker file hash/object is unchanged from6bd and matches that referenced commit; its behavior and control results remain outside this review, under A02's distinct assignment.
+
+All 47 task statuses, acceptance criteria, dependencies and other formal fields remain exact to6bd. All top-level graph fields, 16 resources and five release paths are exact. Only QH01's current checkpoint changes; artifact references change for QH01/QP01. New navigation targets exist. The text accurately distinguishes adopted lifecycle/security main6b from the new355/278 normal-Pi candidate, preserves completed source-specific history and leaves affected/full/protected/resulting-main gates pending at this snapshot. No physical criterion, provider/custody readiness or release is closed.
+
+One reviewer-only metadata reader failed with KeyError before reaching its comparisons because current_checkpoint is optional (nine tasks have it; 38 do not). reader-observation.json preserves that error. The corrected reader compares optional checkpoints while retaining the full formal/global comparison; no candidate value or runtime changed. validation.json binds the successful exact-source checks.
+
+No candidate or checker module was imported, and no test, compiler, actor, audit, full gate or hosted CI ran. The original b37 review packet is unchanged; this separately bound addendum covers only the four-path metadata/copy envelope.
