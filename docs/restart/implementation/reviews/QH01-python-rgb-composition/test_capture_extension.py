@@ -87,6 +87,7 @@ def main():
         reject("reported composition failure", lambda rows, _: rows.append({"qh01_composition_failure": {"v": 1}}))
         if full_product:
             reject("changed later build", lambda rows, _: next(o["bridge_service_build"] for o in reversed(rows) if "bridge_service_build" in o).__setitem__("status", 1))
+            reject("later status bool is not integer zero", lambda rows, _: next(o["bridge_service_build"] for o in reversed(rows) if "bridge_service_build" in o).__setitem__("status", False))
             def relocate(ls, which, destination):
                 indices = [i for i, s in enumerate(ls) if s.startswith('{"bridge_service_build":')]
                 moved = ls.pop(indices[which])
