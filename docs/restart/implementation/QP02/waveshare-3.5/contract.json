@@ -1,0 +1,313 @@
+{
+  "schema_version": 1,
+  "status": "SOURCE_CANDIDATE_IDENTIFIED_NOT_BUILT_OR_PHYSICALLY_ADMITTED",
+  "task": "QP02",
+  "base_commit": "9c50c4c6ec4d28ee681bc678047f81abbbf06d7b",
+  "owning_branch": "planning/qp02-waveshare-p4-feasibility",
+  "profile": "Owned Waveshare ESP32-P4-WIFI6-Touch-LCD-3.5 SKU33360 only",
+  "scope": "First public camera->display feasibility candidate, no signer/custody/complete QR workflow",
+  "prerequisite_status_at_base": {
+    "Q01": "integrated",
+    "R00": "integrated",
+    "QP02": "planned; all three acceptance criteria remain open"
+  },
+  "selection": {
+    "path": "Maintained vendor ESP-IDF IO; retain one existing Rust engine for future separately admitted integration",
+    "first_project": "examples/esp-idf/09_video_lcd_display",
+    "vendor_commit": "870588e62daaf723f3c52f0060d8dc053665ed30",
+    "BSP": {
+      "registry_name": "waveshare/esp32_p4_wifi6_touch_lcd_3_5",
+      "version": "==2.0.2",
+      "source_commit": "3812a4c6146ccba2448695f3df7f24b9d9be1d34",
+      "source_path": "bsp/esp32_p4_wifi6_touch_lcd_3_5",
+      "license": "Apache-2.0",
+      "documented_hardware_version": "V1.0; received sample unknown",
+      "registry_archive_bytes_verified_against_Git": false,
+      "mapping_strength": "Registry2.0.2 Repository link names exact commit; source manifest version matches. Published archive byte-equality is not asserted before admitted dependency capture."
+    },
+    "sdk": {
+      "tag": "v6.0.2",
+      "peeled_commit": "7101770dc6db2667b3c477cc31365dd1acd6db4e",
+      "reason": "Vendor declared example matrix version; >=6.0.1 revision3.2 watchdog fix floor",
+      "target": "esp32p4",
+      "compiler_manifest_entry": {
+        "linux-amd64": {
+          "sha256": "ace5aae6afe98f754947be043d40173e2e22ace57754b11a394b7238eefa01cf",
+          "size": 393927372,
+          "url": "https://github.com/espressif/crosstool-NG/releases/download/esp-15.2.0_20251204/riscv32-esp-elf-15.2.0_20251204-x86_64-linux-gnu.tar.xz"
+        },
+        "name": "esp-15.2.0_20251204",
+        "status": "recommended"
+      },
+      "installed_or_archive_downloaded": false,
+      "minimum_IDF_reconciliation": "Example>=5.4; managedBSP>=5.5; selected6.0.2 satisfies both",
+      "managed_video_range_on_selected_IDF": ">=2.2,<3.0",
+      "exact_dependency_lock_available": false,
+      "missing": "Admitted Component Manager resolution with actual source/archive digests and licenses; qualified Python/tools including actual esptool version"
+    }
+  },
+  "board_contract": {
+    "sample_identified_or_measured": false,
+    "LCD": {
+      "document_identity": "ST7796 3.5in 320x480 SPI",
+      "SPI_host": "SPI2_HOST",
+      "GPIO": {
+        "MOSI": 20,
+        "SCLK": 21,
+        "CS": 23,
+        "DC": 26,
+        "reset": 27,
+        "backlight": 28
+      },
+      "format": {
+        "type": "RGB565",
+        "bits_per_pixel": 16,
+        "BSP_big_endian": true,
+        "BSP_color_space": "BGR"
+      },
+      "configured_SPI_frequency_MHz": 80,
+      "physical_clock_or_rating_qualified": false,
+      "source_ids": [
+        "bsp-header",
+        "bsp-display-header",
+        "bsp-source"
+      ],
+      "missing_physical_property": "Received panel/module identification; vendor serial timing rating at actual voltage/load (SCLK maximum, duty, setup/hold), signal integrity and measured transfers; do not infer rating from configured80MHz"
+    },
+    "touch": {
+      "document_identity": "FT6336",
+      "native_BSP_driver": "FT5x06-compatible",
+      "shared_I2C_GPIO": {
+        "SDA": 7,
+        "SCL": 8
+      },
+      "GPIO": {
+        "reset": 29,
+        "interrupt": 50
+      },
+      "source_comment_conflict": "BSP touch reset comment says shared with LCD; header explicitly assigns LCD27/touch29. Actual schematic/sample reconciliation remains necessary.",
+      "part_of_first_probe": "bsp_display_start initializes touch; an absent/wrong touch module can block this unmodified startup",
+      "measured": false
+    },
+    "camera": {
+      "document_identity": "OV5647",
+      "bus": "two-lane dedicated MIPI-CSI; 15-pin/0.5mm FFC",
+      "SCCB_I2C_GPIO": {
+        "SDA": 7,
+        "SCL": 8
+      },
+      "reset_gpio_in_example": -1,
+      "powerdown_gpio_in_example": -1,
+      "configured_sensor_mode": "RAW10 1280x960 binning45fps",
+      "requested_video_format": "RGB565",
+      "sample_module_FFC_orientation_supply_confirmed": false,
+      "source_ids": [
+        "product-doc",
+        "example09-config",
+        "example09-video",
+        "schematic"
+      ],
+      "not_inferred": "No GPIO pinout copied from Function-EV/4.3in/Pi, no DSI panel path, no unknown sensor replacement"
+    },
+    "power": {
+      "documented": "AXP2101 PMU;3.7V MX1.25 battery header; USB input paths",
+      "sample_battery_polarity_protection_supply_and_rails": "UNKNOWN",
+      "PMU_or_C6_isolation_sequence_selected": false
+    },
+    "memory": {
+      "documented_PSRAM": "32MB",
+      "documented_external_NOR": "16MB",
+      "measured": false
+    },
+    "channels": [
+      {
+        "path": "camera optical input / LCD optical output / local touch",
+        "role": "Intended eventual offline operation channel; probe measures preview only",
+        "measured": false
+      },
+      {
+        "path": "ESP32-C6 over SDIO plus onboard/external antenna option",
+        "role": "Physical radio companion; power/reset/data/firmware and isolation not proven",
+        "measured": false
+      },
+      {
+        "path": "USB-UART Type-C",
+        "role": "Future locked no-secret programming/logging probe connection",
+        "measured": false
+      },
+      {
+        "path": "Separate HS USB-OTG Type-C; exposed GPIO/UART/debug/update/boot",
+        "role": "Additional data/debug/update paths; allowed/enforced state unresolved",
+        "measured": false
+      },
+      {
+        "path": "microSD/NOR, microphone/audio codec/speaker",
+        "role": "Persistence and other physical IO channels require own actual-state inventory",
+        "measured": false
+      }
+    ],
+    "offline_claim": "NOT_ESTABLISHED; no WiFi init does not remove/isolate powered C6, nor establish Q01 channels/custody",
+    "processor_marking": {
+      "product_doc": "ESP32-P4NRW32X",
+      "vendor_readme": "ESP32-P4NRW32",
+      "schematic": "Generic ESP32-P4 label",
+      "received_sample": "UNKNOWN",
+      "interpretation": "Do not infer package/silicon revision from abbreviated source labels or SKU; actual marking plus authoritative silicon read required"
+    }
+  },
+  "silicon_image_contract": {
+    "actual_sample_revision": "UNKNOWN",
+    "actual_device_image_selected": false,
+    "profiles": [
+      {
+        "name": "rev1_3",
+        "allowed_silicon_interval": "[1.0,2.0)",
+        "settings": {
+          "CONFIG_ESP32P4_SELECTS_REV_LESS_V3": "y",
+          "CONFIG_ESP32P4_REV_MIN_100": "y",
+          "CONFIG_ESP32P4_REV_MIN_300": "n"
+        }
+      },
+      {
+        "name": "rev3_x",
+        "allowed_silicon_interval": "[3.0,4.0)",
+        "settings": {
+          "CONFIG_ESP32P4_SELECTS_REV_LESS_V3": "n",
+          "CONFIG_ESP32P4_REV_MIN_100": "n",
+          "CONFIG_ESP32P4_REV_MIN_300": "y"
+        }
+      }
+    ],
+    "profile_names_are_not_PCB_revisions": true,
+    "binaries_interchangeable": false,
+    "outside_intervals": "Unsupported by this pinned vendor profile contract; no inference from pre-v3 label",
+    "rev3_2_additional_requirement": "Espressif AR2026-004: actual esptool>=5.3.dev3 on IDF6 line; IDF>=6.0.1 for documented WDT/32kHz fix. Selected SDK6.0.2 source meets version floor; installed loader/clock/sample remain unverified.",
+    "factory_prebuilt_image": "Not selected; no corresponding source build recipe or sample-compatible provenance established"
+  },
+  "data_path": {
+    "stages": [
+      "OV5647 CSI/ISP via esp_video/V4L2",
+      "two PSRAM USERPTR camera buffers",
+      "PPA center crop + mirror + scaling",
+      "two PSRAM RGB565 LCD buffers",
+      "byte-swap through internal DMA stripe",
+      "BSP esp_lv_adapter_dummy_draw_blit -> SPI ST7796"
+    ],
+    "QR_decoder_or_complete_frame_inspection_proven": false,
+    "known_preview_transform": "Center crop+horizontal mirror. Not complete raw-image/QR framing coverage.",
+    "camera_RGB565_buffer_bytes_derived": 2457600,
+    "two_camera_buffers_bytes_derived": 4915200,
+    "two_LCD_buffers_bytes_derived": 614400,
+    "four_buffer_total_bytes_derived": 5529600,
+    "default_internal_DMA_stripe_bytes_derived": 76800,
+    "stripe_allocation_fallback_lines": [
+      120,
+      60,
+      30,
+      15
+    ],
+    "allocation_qualification": "Arithmetic only, excludes alignment/driver/LVGL/stacks/decoder. Need negotiated V4L2 QUERYBUF/format and measured heap/DMA margins.",
+    "conditional_full_frame_bandwidth_bound": {
+      "assumptions": "Configured80MHz sustained single-line SPI and full320x480 RGB565 frames, no protocol/compute overhead",
+      "formula": "80000000/(320*480*16)",
+      "max_fps_arithmetic_only": 32.552083333333336,
+      "not_a_measured_rate_or_timing_rating": true
+    }
+  },
+  "bounded_comparison": [
+    {
+      "option": "Direct Rust esp-hal camera/display board port",
+      "facts": "P4 CPU/SPI/I2C support exists; current primary matrix lacks P4 CSI/ISP/PPA. No exact complete camera example/driver closure was supplied.",
+      "decision": "Not minimum first camera probe; no generic assertion that Rust on P4 is impossible"
+    },
+    {
+      "option": "Exact vendor IDF/BSP example, then narrow maintained IO adapter",
+      "facts": "Concrete board camera/display project and maintained BSP2.0.2 exist with current SDK/revision source contracts.",
+      "decision": "Selected first source candidate; Rust engine integration target/ABI/allocator/owned-frame proof remains separate, no C approval boolean or second Nostr engine"
+    }
+  ],
+  "future_experiment": {
+    "current_admission": "NONE beyond source reading and this packet",
+    "build_host": "Linux Tux via separately qualified IDF environment; Mac control/SSH only, no Mac port assumed",
+    "cwd": "<clean pinned vendor source>/examples/esp-idf/09_video_lcd_display",
+    "required_source_freeze": [
+      "Vendor870588e62daaf723f3c52f0060d8dc053665ed30",
+      "IDF6.0.2 commit7101770dc6db2667b3c477cc31365dd1acd6db4e plus submodule/dependency closure",
+      "BSP2.0.2 plus resolved esp_video/transitive versions/source hashes/licenses",
+      "Host Python/constraints/CMake/Ninja/RISC-V tool versions and actual binary hashes; loader compatibility before physical use"
+    ],
+    "build_commands_future_not_run": [
+      [
+        "idf.py",
+        "-B",
+        "$QP02_BUILD/build-$QP02_PROFILE",
+        "-D",
+        "SDKCONFIG=$QP02_BUILD/sdkconfig.$QP02_PROFILE",
+        "-D",
+        "WAVESHARE_REVISION_PROFILE=$QP02_PROFILE",
+        "set-target",
+        "esp32p4"
+      ],
+      [
+        "idf.py",
+        "-B",
+        "$QP02_BUILD/build-$QP02_PROFILE",
+        "-D",
+        "SDKCONFIG=$QP02_BUILD/sdkconfig.$QP02_PROFILE",
+        "-D",
+        "WAVESHARE_REVISION_PROFILE=$QP02_PROFILE",
+        "build"
+      ]
+    ],
+    "profile_selection": "No device image selected now. Confirm actual chip revision before a device build/flash choice; source-only compile can declare a profile without claiming hardware correspondence.",
+    "physical_inputs_missing": [
+      "Actual PCB/module markings and silicon major/minor revision",
+      "Attached camera identity/FFC type/orientation and supply, panel/touch variant",
+      "Power/battery connector polarity/protection/state and verified appropriate source",
+      "Verified USB-UART data cable/port and operator, locked-empty/no-secret test state",
+      "Actual C6/other channel ownership/isolation evidence for any later offline claim"
+    ],
+    "resources": "Existing owned SKU33360/camera/touch/battery, public moving/color target, camera/display recording and heap/frame instrumentation under later admitted scope; no purchase implied",
+    "finite_acceptance": [
+      {
+        "id": "B1",
+        "criterion": "Exact declared profile builds with recorded lock/dependency/tool/source closure; retain original diagnostics, flasher_args/partition/image sizes and hashes; no factory binary substitution",
+        "state": "NOT_RUN"
+      },
+      {
+        "id": "H1",
+        "criterion": "On identified sample and separately admitted no-secret setup, record sensor/format/QUERYBUF geometry, moving public pattern actually visible, crop/mirror/orientation and channel/USB state; no static colorbar accepted as camera proof",
+        "state": "NOT_RUN"
+      },
+      {
+        "id": "H2",
+        "criterion": "Record achieved frame/drop/latency and PSRAM/internal-DMA/largest-block margins under the actual source config, and original camera absence/init/allocation/stream faults; no sourcefps or RAM arithmetic relabelled as measurement",
+        "state": "NOT_RUN"
+      },
+      {
+        "id": "H3",
+        "criterion": "Qualify panel timing and actual power/companion channels before any stricter display/offline claim; partial render or camera/video success supplies no identity/consent/custody authority",
+        "state": "NOT_RUN"
+      }
+    ]
+  },
+  "next_missing_properties": [
+    "Actual admitted build and deterministic component/Python/tool closure (not a missing physical prerequisite for source preparation)",
+    "Measured silicon/profile and matching camera/panel/power setup for physical preview",
+    "Received ST7796/module serial timing/rating at actual supply/load; no new timing assumption",
+    "C6 power/reset/data/firmware/isolation and all other channel states for eventual offline custody",
+    "Separately admitted Rust/IDF engine integration ABI/allocator/owned-frame and complete QR/consent lifecycle"
+  ],
+  "performed": "SOURCE_READS_AND_METADATA_ONLY",
+  "all_QP02_criteria_open": true,
+  "task_graph_edited": false,
+  "source_or_API_implementation_edited": false,
+  "build_install_runtime_flash_count": 0,
+  "excluded_variants": [
+    "SKU33511-EN not inferred identical",
+    "Waveshare4.3/5/7inch and Function-EV wiring",
+    "External DSI display path",
+    "Custom PCB/S04",
+    "Unconfirmed alternative camera or touch variants"
+  ]
+}
