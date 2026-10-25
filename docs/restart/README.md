@@ -41,16 +41,23 @@ after protected PR50](implementation/reviews/QH01-lifecycle-security-adoption/ac
 with original paired PR/main CI and fresh main-only source proof. The original
 [security RED](implementation/reviews/QH01-python-rgb-lifecycle-integration/local-full-security-red/result.json)
 and [distinct correction review](implementation/reviews/R00-crypto-bigint-remediation/report.md)
-retain their historical source identities. The next [automatic real-engine
-candidate](implementation/QH01/manual-port/python-rgb-composition/proof/request-engine-ci/README.md)
-has one fresh normal Pi CI passing actual RGB decode, Rust public-fixture signature,
-client verification and loaded-SHA readiness refusal. Distinct affected source/proof/capture reviews now pass; the complete local
-gate and its retained full source-aware capture now pass. The maintainer resumed
-the project on25October; [qualification and limits](implementation/reviews/QH01-rgb-request-engine-delivery/local-full-qualified/result.json)
-preserve the original pause evidence. Final delivery-tail review and protected
-integration remain pending. Camera, display/input bindings, an
-identified Pi image and physical tests remain prerequisites; no physical release
-or production route is accepted.
+retain their historical source identities. The [automatic real-engine
+component](implementation/QH01/manual-port/python-rgb-composition/proof/request-engine-ci/README.md)
+is [accepted on actual main9c after protected PR51](implementation/reviews/QH01-rgb-request-engine-adoption/actual-main-acceptance.json).
+Both full PR/main CI and fresh main-only source checks passed. Its original
+pause, correction and source-specific pending reports remain historical.
+
+The [opt-in synthetic inspection component](implementation/QP01/physical-workflow/synthetic-inspection/README.md)
+adds complete cell drawing and fresh local action binding to that same host
+fixture. Its [distinct source review](implementation/reviews/QP01-synthetic-inspection-component/report.md)
+and [source-frozen22 runtime evidence](implementation/QP01/physical-workflow/synthetic-inspection/final22/README.md)
+have separate roles: these are software/public-fixture results, with synthetic
+input and no physical consent claim. Real local-review expiry, human reading
+time, ARM/image, camera/display/input, entropy and custody qualification remain
+open. The [Mac kit identification procedure](implementation/hardware-access/macos-kit-identification.md)
+prepares the next hardware measurements without claiming they occurred. No
+physical release or production route is accepted; general Rust rewrites remain
+deferred.
 
 ## Delivery order
 
