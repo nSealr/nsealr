@@ -89,6 +89,7 @@ bridge-ci:
 
 pi-ci: bridge-ci
 	python3 -B -m unittest discover -s docs/restart/implementation/QP01/request-engine -p 'test_provision.py'
+	python3 -B -m unittest discover -s docs/restart/implementation/QP01/physical-workflow/synthetic-inspection -p 'test_synthetic_inspection.py'
 	python3 -B docs/restart/implementation/QP01/request-engine/exchange.py --ci apps/pi
 
 integration-tests:

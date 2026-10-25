@@ -9,36 +9,43 @@ remains historical evidence. Repository mains and delivery source were unchanged
 all22 archived raw files match the retained complete test run. The existing
 source-aware checker and32 full pure controls now [qualify that original full
 log](reviews/QH01-rgb-request-engine-delivery/local-full-qualified/result.json).
-No product tests or actors were replayed to regenerate proof. Review/pause-only
-metadata changes preserve the executable and test inputs; final affected metadata
-checks and delivery-tail review precede normal protected integration and actual-main
-qualification. Exact first-Pi kit/access/operator details are requested once at
-resume; physical testing remains unexecuted. General Rust rewrites remain deferred.
+No product tests or actors were replayed to regenerate that historical proof.
+The automatic real-engine component subsequently passed protected PR51 and
+actual-main qualification; see the current foundation below. Exact kit/access/
+operator information is collected through the existing resource follow-up;
+physical testing remains unexecuted. General Rust rewrites remain deferred.
 
 ## Current software foundations and next dependency
 
-The accepted host composition and automatic lifecycle cases are [actual main6b
-after protected PR50](reviews/QH01-lifecycle-security-adoption/actual-main-acceptance.json).
-Original PR/main CI, both capture checkers and fresh main-only source checks passed.
-The first local security RED and authenticated crypto-bigint0.7.6/ctutils0.4.5
-correction remain source-specific historical evidence. Do not repoll completed runs.
+The [automatic real-engine component](QH01/manual-port/python-rgb-composition/proof/request-engine-ci/README.md)
+is [accepted on actual main9c after protected PR51](reviews/QH01-rgb-request-engine-adoption/actual-main-acceptance.json).
+Original PR/main CI, both capture checkers and fresh main-only source checks
+passed. It exercises RGB decode → actual Rust public-fixture signature →
+independent client verification and loaded-SHA readiness refusal. One joined
+current-checkout helper compilation serves both cases. The earlier PR50 security
+RED/correction and [capture-oracle proof](reviews/QH01-rgb-request-engine-capture/result.json)
+retain their original source identities and failures. Do not repoll completed runs.
 
-The [automatic real-engine candidate](QH01/manual-port/python-rgb-composition/proof/request-engine-ci/README.md)
-now exercises RGB decode → actual Rust public-fixture signature → independent
-client verification, plus loaded-SHA readiness refusal, in one fresh normal Pi CI.
-One joined current-checkout helper compilation serves both cases; old lifecycle
-and regression checks remain mandatory. [Capture-oracle proof](reviews/QH01-rgb-request-engine-capture/result.json)
-retains its original verifier RED and corrected 51 pure rejection controls, without
-product replay. Distinct affected source/proof/capture and metadata reviews now pass. The complete local
-gate and its full source-aware capture now pass; final delivery-tail review,
-protected gates and actual-main qualification remain pending. The graph records exact sources.
+Next is the [synthetic local inspection component](QP01/physical-workflow/synthetic-inspection/README.md):
+one closed host fixture, complete cell draw/commit and a fresh action per page.
+The [distinct source review](reviews/QP01-synthetic-inspection-component/report.md)
+and [new22-case execution](QP01/physical-workflow/synthetic-inspection/final22/README.md)
+have a [distinct runtime review](reviews/QP01-synthetic-inspection-final22/report.md)
+that accepts only host evidence. Protected delivery and physical qualification
+remain separate. The new batch has a complete fresh62-input pre/post freeze; it does not rewrite the older early2
+input-freeze gap. Old lifecycle and regression gates remain mandatory. No case
+among22 proves real native/UI expiry or usable human review under the current
+synchronous host budget. Those remain explicit dependencies, not timer waivers.
 
 Physical kit/image/operator identification remains pending in the existing resource
 request. The [first physical probe](QP01/physical-probe.md) is prepared and unexecuted.
 It must establish exact ARM/image/camera/display/input facts before a device build
 or signing session can be admitted. Public-fixture host success closes no physical,
-production-provider, entropy, key-custody or release criterion. General Rust rewrites
-remain deferred; custom-PCB research is independent of this software path.
+production-provider, entropy, key-custody or release criterion. The
+[Mac identification guide](hardware-access/macos-kit-identification.md) is ready
+for the reported ESP kits; it is not a completed device test or a selected flash
+image. General Rust rewrites remain deferred; custom-PCB research is independent
+of this software path.
 
 A02 source adoption, bounded anchor repair and closure passed normal protected
 integration and actual main CI. Its [handoff](A02/closure/handoff.md) and

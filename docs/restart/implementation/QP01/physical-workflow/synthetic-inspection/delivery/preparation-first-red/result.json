@@ -1,0 +1,18 @@
+{
+  "schema_version": 1,
+  "classification": "STALE_CURRENT_ARTIFACT_BINDING_AFTER_INTENTIONAL_CI_EXTENSION_NOT_VERIFIER_DEFECT",
+  "command": [
+    "python3",
+    "-B",
+    "scripts/validate_restart_plan.py"
+  ],
+  "exit_code": 1,
+  "observed": "ERROR: R00: artifact hash mismatch Makefile",
+  "old_current_gate_sha256": "4bab1e163d50ae90f3c882cc0a3df6d35bc0fb2e3919a0b28993f2a6cdb8ffd7",
+  "new_gate_sha256": "f90b906cf5fe95639aced250386457dbb535031f5631e5094c0d53c20ce6fbb4",
+  "cause": "The intended one-command addition changes the current supporting Makefile artifact indexed by R00. Its historical result uses separate original evidence; no acceptance outcome cites Makefile as underlying execution evidence.",
+  "correction": "Reconcile only the live artifact index to the explicitly reviewed current postimage; keep historical R00 result, candidate, outcome requirements and verifier unchanged. Final review/gates still pending.",
+  "verifier_changed": false,
+  "historical_result_changed": false,
+  "acceptance_lowered": false
+}
