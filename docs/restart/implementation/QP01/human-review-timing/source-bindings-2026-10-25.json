@@ -1,0 +1,299 @@
+{
+  "schema_version": 1,
+  "role": "SOURCE_ONLY_DECISION_AND_ADMISSION_BRIEF_PENDING_ROOT_REVIEW",
+  "author": "/root/human_wait_design",
+  "date": "2026-10-25",
+  "input_commit": "f1b161364acc041218195cb26113210d644f3e61",
+  "input_tree": "8225c7878f83e8c0d1af032e8af265ba2c792415",
+  "actual_main_input": "9c50c4c6ec4d28ee681bc678047f81abbbf06d7b",
+  "recommendation": "Existing synchronous core API under a separately admitted retained-owner supervisor; no APIv2 necessity inferred",
+  "author_branch": "docs/mac-human-wait-design",
+  "editable_prefix": "docs/restart/implementation/QP01/human-review-timing/",
+  "plan_unchanged": {
+    "path": "plan/work-items.json",
+    "sha256": "35df8cc6a02b2dab7a46789ae1ef81ad70eb15915e58fbce8960cfdc25ecec78",
+    "new_tracker": false
+  },
+  "source_equivalence": {
+    "main_to_delivery_unchanged_targeted_sources": 15,
+    "changed_targeted_sources": [
+      "apps/pi/app/nsealr_vault/synthetic_inspection.py",
+      "docs/restart/implementation/QP01/request-engine/exchange.py"
+    ],
+    "interpretation": "UI callback is added and exchange opts into it; core/ABI/helper/consumer currentness and ownership contracts remain equal for the other15 targeted sources"
+  },
+  "targeted_sources": [
+    {
+      "commit": "f1b161364acc041218195cb26113210d644f3e61",
+      "path": "crates/nsealr-core/src/authorization.rs",
+      "blob": "51b4302e87a2a7c38489e744678300a69b665dcf",
+      "bytes": 26001,
+      "sha256": "0d019eeb26b27bff884f2053209356583520330956f389db7db6b81ed67fa3a4",
+      "inspected_regions": [
+        "1-175",
+        "195-675"
+      ]
+    },
+    {
+      "commit": "f1b161364acc041218195cb26113210d644f3e61",
+      "path": "crates/nsealr-core/src/review/event.rs",
+      "blob": "a14fa61c70869209107e9fb814516126f215ab7b",
+      "bytes": 34256,
+      "sha256": "66be647139fe9f55fe793ecbcaf7767ecc4be1c5a13725f616f4c2395b0f791f",
+      "inspected_regions": [
+        "24-80",
+        "412-430",
+        "540-600",
+        "765-780"
+      ]
+    },
+    {
+      "commit": "f1b161364acc041218195cb26113210d644f3e61",
+      "path": "crates/nsealr-core/src/authorization/tests.rs",
+      "blob": "6cedc72cf232c5b0e93fe6c3596c9f40412c96f1",
+      "bytes": 90545,
+      "sha256": "fbb4a57321a3642ca86b732a0e311959c15aa2710bf9d15cb4efb91622ee410b",
+      "inspected_regions": [
+        "669-710",
+        "1050-1089",
+        "1640-1685"
+      ]
+    },
+    {
+      "commit": "f1b161364acc041218195cb26113210d644f3e61",
+      "path": "crates/nsealr-pi-engine-fixture/src/lib.rs",
+      "blob": "ce58cefd6b16b0c440476254db8f84d4d73b84e6",
+      "bytes": 12344,
+      "sha256": "7840133113a54d58f81e808e2037e0b5e999d148920f6bf4fea5212fa9a5425a",
+      "inspected_regions": [
+        "1-305"
+      ]
+    },
+    {
+      "commit": "f1b161364acc041218195cb26113210d644f3e61",
+      "path": "apps/pi/app/nsealr_vault/engine_adapter.py",
+      "blob": "ba4a7c9e44e664263aee2eda9efdf719f7762c3d",
+      "bytes": 5616,
+      "sha256": "c7d7778e538dc787e328295c67f9702473b87cb7c35d7576d37eab06a51137c7",
+      "inspected_regions": [
+        "1-138"
+      ]
+    },
+    {
+      "commit": "f1b161364acc041218195cb26113210d644f3e61",
+      "path": "apps/pi/app/nsealr_vault/synthetic_inspection.py",
+      "blob": "f734f0752db859f75be529850367fa05081f93ff",
+      "bytes": 12997,
+      "sha256": "1f8eb5b4d6b8192dbb066a4a022517de4c3500223318bf2f34140ab84350dae3",
+      "inspected_regions": [
+        "1-100",
+        "125-261"
+      ]
+    },
+    {
+      "commit": "f1b161364acc041218195cb26113210d644f3e61",
+      "path": "docs/restart/implementation/QP01/request-engine/native-leaf.ts",
+      "blob": "48ee5d2035c70d036dda7716efb9d712f48db1bb",
+      "bytes": 6457,
+      "sha256": "b5321f9b9412fbd7f5154e2e6645837f19f9ecece13013beda1c5587e95e3bf9",
+      "inspected_regions": [
+        "1-117"
+      ]
+    },
+    {
+      "commit": "f1b161364acc041218195cb26113210d644f3e61",
+      "path": "docs/restart/implementation/QP01/request-engine/exchange.py",
+      "blob": "aa3ffc512b64a0d45a1ea17a92b2fd6159566d4a",
+      "bytes": 23393,
+      "sha256": "b246a1136b0ca27407c82aa297d87c7579b4659aa43e32b40a9da89e8a672405",
+      "inspected_regions": [
+        "279-343 at f1b; full main-to-delivery diff"
+      ]
+    },
+    {
+      "commit": "f1b161364acc041218195cb26113210d644f3e61",
+      "path": "docs/restart/implementation/QP01/request-engine/expectations.json",
+      "blob": "5fd197b4ec17e97c4811d8ce7ff99888ff8f906c",
+      "bytes": 35403,
+      "sha256": "313a3b96792d9e9fea644df95fb4c56439df5cfcb091af159281e858801f4f7d",
+      "inspected_regions": [
+        "fixture_identity",
+        "single_path",
+        "abi_contract",
+        "bounds"
+      ]
+    },
+    {
+      "commit": "f1b161364acc041218195cb26113210d644f3e61",
+      "path": "apps/pi/app/nsealr_vault/qr_owner_adapter.py",
+      "blob": "207b1dc4085578dfec2e5592ce3a2c85f9919b53",
+      "bytes": 24312,
+      "sha256": "da6f36c966e2b27407e1025456d1f72c6d061d9463eb9ad25af85f594bf5a203",
+      "inspected_regions": [
+        "210-251",
+        "369-445",
+        "450-515"
+      ]
+    },
+    {
+      "commit": "f1b161364acc041218195cb26113210d644f3e61",
+      "path": "apps/pi/app/nsealr_vault/qr_worker.py",
+      "blob": "2b1394086737fd297579325b92e09f6ab407e257",
+      "bytes": 17479,
+      "sha256": "d7a245a9a558cce3ec8271ec42fc49664c094320c6465a537aa3a49c83558d50",
+      "inspected_regions": [
+        "315-375"
+      ]
+    },
+    {
+      "commit": "f1b161364acc041218195cb26113210d644f3e61",
+      "path": "docs/restart/implementation/QP01/host-coordinator/control-contract.json",
+      "blob": "cd62d704841caa559aa575954bcbe8ea30cd5b2e",
+      "bytes": 25387,
+      "sha256": "bf88746e00337186ef22bbfc5d2f5e378aaf4c32e183fa52bafb87c93b9bffef",
+      "inspected_regions": [
+        "scope",
+        "FG5_C_death",
+        "limits incl No O-death recovery"
+      ]
+    },
+    {
+      "commit": "f1b161364acc041218195cb26113210d644f3e61",
+      "path": "packages/client/src/service.ts",
+      "blob": "771c4f81eb71cdaa4fb7d2f8b4271c210375de63",
+      "bytes": 52924,
+      "sha256": "d230d65ec2eb505afd940951c792c6ed0ac93a13e781ca70116db464ff59c509",
+      "inspected_regions": [
+        "50-165",
+        "242-252",
+        "1000-1155",
+        "1225-1259"
+      ]
+    },
+    {
+      "commit": "f1b161364acc041218195cb26113210d644f3e61",
+      "path": "protocols/contracts/v1/protocols/signing-v2.md",
+      "blob": "19ef2bb3fc92526e8a50cba7831e67ee04c8d553",
+      "bytes": 3065,
+      "sha256": "241f054ad9041086a9714c63c01d87e1fa24e738027320419c94a305d027ac3b",
+      "inspected_regions": [
+        "complete"
+      ]
+    },
+    {
+      "commit": "f1b161364acc041218195cb26113210d644f3e61",
+      "path": "docs/product/event-review-contract.md",
+      "blob": "455909d1941fd183d970bcb749f5e89f537f017b",
+      "bytes": 9733,
+      "sha256": "acaec734d7f5317097dde97eb071c59132ee3a1ed6af1fdb3f6289d1a0950043",
+      "inspected_regions": [
+        "1-23"
+      ]
+    },
+    {
+      "commit": "f1b161364acc041218195cb26113210d644f3e61",
+      "path": "docs/restart/architecture.md",
+      "blob": "3a1c92a3ff20bb7e87a90c166b288625710d39db",
+      "bytes": 4863,
+      "sha256": "bf6869747f74e3655074f5322a8f24d8536e7f9af86e131df343852514f3808d",
+      "inspected_regions": [
+        "1-30"
+      ]
+    },
+    {
+      "commit": "f1b161364acc041218195cb26113210d644f3e61",
+      "path": "docs/restart/implementation/Q01/brief.md",
+      "blob": "97ec89ec30be125551703dee70ff25794a702e2e",
+      "bytes": 9292,
+      "sha256": "727c1fbca3f2695b1fea0b1fccebf5693acc7aa9b2afaf67414e35a476d174f7",
+      "inspected_regions": [
+        "35-80"
+      ]
+    }
+  ],
+  "historical_evidence": [
+    {
+      "commit": "00c46dfe6766b7f9aab48486c2e7d1a7b6a156a0",
+      "path": "docs/restart/implementation/QP01/human-review-timing/brief.md",
+      "blob": "ab2fbced88c81accd544784f6123bd233a447f17",
+      "bytes": 10448,
+      "sha256": "ae781ca0921e5141495ee1c91f5d6a19d44262bdc12ea6aa74bccef5a7b50065",
+      "inspected_regions": [
+        "complete"
+      ]
+    },
+    {
+      "commit": "00c46dfe6766b7f9aab48486c2e7d1a7b6a156a0",
+      "path": "docs/restart/implementation/QP01/human-review-timing/source-bindings.json",
+      "blob": "15da36e7f18ebf4b909fe09549e83bb7719c9958",
+      "bytes": 15016,
+      "sha256": "21214515c7b836f593748e70d1c74cd75cd259fe4188dfabfa8f764fcef58bec",
+      "inspected_regions": [
+        "complete"
+      ]
+    },
+    {
+      "commit": "455d8e5a7e316dee8dc398f0d0c2e4ded0b540c5",
+      "path": "docs/restart/implementation/QP01/human-review-timing/owned-review-canary/README.md",
+      "blob": "24ee0a827bcf735fc3948929310ad6288a45210a",
+      "bytes": 3475,
+      "sha256": "6f48cf70dccb71d2088f18510896702cf96cc1e2106e48b54fdf26ad7289ff4e",
+      "inspected_regions": [
+        "complete"
+      ]
+    },
+    {
+      "commit": "455d8e5a7e316dee8dc398f0d0c2e4ded0b540c5",
+      "path": "crates/nsealr-core/examples/qp01_owned_review_canary.rs",
+      "blob": "7e676bcba8a2a67edb10b7ae1a79b89c992a8085",
+      "bytes": 2461,
+      "sha256": "e8f0b1001ac8a7d39b76fc7ae07754daf615bdc2b58b09596e9c9aaf978562bf",
+      "inspected_regions": [
+        "complete"
+      ]
+    }
+  ],
+  "private_receipts_read": [
+    "workspace/docs/restart/checkpoints/active-2026-10-20/human-review-timing/root-canary-admission.json",
+    "workspace/docs/restart/checkpoints/active-2026-10-20/human-review-timing/root-compile-proof-adoption.json"
+  ],
+  "authoring_observation": {
+    "original_correspondence_assertion": "FAILED: AssertionError: docs/restart/implementation/QP01/request-engine/exchange.py",
+    "cause": "Initial read-only binding script incorrectly assumed all targeted files except synthetic_inspection were main-identical",
+    "correction": "Read full main-to-f1b exchange diff and f1b279-343; classify exchange as changed and bind actual f1b blob. No source/runtime/product failure or expectation change."
+  },
+  "performed": [
+    "Targeted read-only actual Git source and requirements inspection",
+    "Create one documentation worktree on exact delivery input",
+    "Write only the declared documentation prefix",
+    "Read-only source equivalence and artifact hashing"
+  ],
+  "not_performed": [
+    "Build/compiler/test/example/application/module imports",
+    "Runtime/native/actors/delayed-human experiment",
+    "GitHub CI observation",
+    "Source/ABI/SDK/plan or canonical acceptance changes",
+    "S04, new custom hardware, device or secret operations",
+    "Import C01 example or choose mandatory APIv2"
+  ],
+  "documents": [
+    {
+      "path": "docs/restart/implementation/QP01/human-review-timing/decision-2026-10-25.md",
+      "bytes": 8853,
+      "sha256": "a6cf5bd57dcea830bd11315ab0fae7cac8021e2722dc65b31e039c75bbd659db"
+    },
+    {
+      "path": "docs/restart/implementation/QP01/human-review-timing/admission-brief-2026-10-25.md",
+      "bytes": 12372,
+      "sha256": "55dc3663146f3f60dd876bd970af947ede6d019b57b5ac5be8c1a297d06cc5b6"
+    }
+  ],
+  "remaining_root_decisions": [
+    "Admit A supervised synchronous callback or require B empty callback stack during human wait",
+    "Admit literal active/human timing and local protocol source before runtime",
+    "Keep actual shorter caller deadline authoritative; no product human-duration selection"
+  ],
+  "implementation_authorized": false,
+  "runtime_authorized": false,
+  "criteria_or_release_completed": 0
+}
