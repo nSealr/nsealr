@@ -6,6 +6,7 @@
 #include "pin_config.h"
 #include "display_init.h"
 #include "button_probe.h"
+#include "core_abi_probe.h"
 
 static_assert(PIN_BUTTON_1 == 0 && PIN_BUTTON_2 == 14, "Wrong button pin contract");
 #if PIN_LCD_WR != TFT_WR || PIN_LCD_RD != TFT_RD || PIN_LCD_CS != TFT_CS || \
@@ -60,6 +61,9 @@ void setup() {
     tft.drawString("320x170 border / RGBW", 8, 148, 2);
     pinMode(PIN_LCD_BL, OUTPUT);
     digitalWrite(PIN_LCD_BL, HIGH);
+#ifdef NSEALR_S3_CORE_ABI
+    start_core_abi_probe();
+#endif
 }
 
 void loop() {

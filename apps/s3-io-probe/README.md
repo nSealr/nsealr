@@ -30,3 +30,33 @@ This checks diagnostic state only; actual switches/USB/display remain physical
 tests. The inherited Arduino partitions include NVS/SPIFFS/coredump and are only
 admitted for this public probe. A session-key app needs its own storage/dump
 configuration, entropy trace, Rust ABI and consent lifecycle qualification.
+
+
+## Opt-in Rust target ABI check
+
+The separate s3-core-abi environment keeps the public IO behavior and adds one
+finite FreeRTOS task with a 65536-byte requested stack. It calls the unchanged
+shared core to hash abc and derive the x-only public key of published BIP340
+vector0 scalar3, then locks/drops that fixture owner. No request, signature,
+user key, entropy or clock-based authorization is present. It is not an identity
+initialization flow. Its panic handler stalls and the session-firmware panic/
+dump policy remains unqualified.
+
+Build rust-abi/Cargo.toml with the pinned esp-rs1.97.0.0 Xtensa compiler and
+matching rust-src, -Zbuild-std=core --target xtensa-esp32s3-none-elf --release,
+RUSTFLAGS=-C panic=abort. Use --offline --locked and the isolated combined
+product/sysroot vendor closure; product vendor/ and dependencies stay unchanged.
+Point NSEALR_S3_CORE_LIB_DIR to the generated staticlib directory and build
+PlatformIO environment s3-core-abi into its own build directory. link_core.py
+only links that archive; it does not fetch or install anything.
+
+The Rust call runs once; its public result is repeated20times at1second intervals
+for monitor attachment, then the task exits. Read s3-core-abi-v1 over USB after boot. Require rc0, negative1,
+guards1 and exactly the independent SHA256/BIP340 expected public bytes. Null
+and capacities0/63/65 must reject without touching the guarded output. Task
+allocation failure or absent result is inconclusive/failed, never a passing ABI
+claim. The log reports real esp_timer_get_time elapsed microseconds and the
+raw FreeRTOS stack watermark; units and total worst-case demand need their own
+target qualification. These measurements do not set the engine's100-tick
+review lifetime or qualify entropy, crypto side channels, peak product stack,
+local recovery, trusted consent or release custody.
