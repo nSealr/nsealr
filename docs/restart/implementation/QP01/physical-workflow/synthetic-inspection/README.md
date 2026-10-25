@@ -46,3 +46,20 @@ reject-data must be actual native-5, C1, no response, known collection.
 Current result: **SOURCE FROZEN, EXECUTION PENDING**. Original source-only reports
 and failures remain historical; the execution package will retain originals and
 classify any first RED before correction or replay.
+
+## First pure result — stopped before preparation or actors
+
+On frozen `831d0a9210cdb62d2e7b48248aadb76aebb07b63`, baseline Python3.12.15,
+Node24.22.0 and pnpm10.33.4 version checks passed. The new pure suite ran14 test
+methods with one ERROR: the non-ASCII body fixture raised `UnicodeDecodeError`
+during the callback's initial diagnostic decode before its explicit `plan`
+validation. The test required `DisplayRefusal`. That path reached no draw,
+commit or input. This is a concrete local adapter/error-ordering discrepancy;
+the existing EngineAdapter catch is source evidence only, not new native proof.
+
+The required command stopped immediately. No correction/retry, pnpm setup/build,
+helper/compiler, C/O/W/Bridge or either early actual fixture followed. The proposed
+next correction is explicit byte validation before diagnostic decoding, retaining
+the negative assertion and a new source freeze. Await root resume; no replacement
+exception expectation or timing reduction is applied. [first-pure-red.json](first-pure-red.json)
+and its archive retain all seven original environment/command/log/receipt files.
