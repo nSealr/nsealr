@@ -10,4 +10,6 @@ Exactly one Cargo-check command ran, with a new target directory. Cargo compiled
 
 Human waiting, fresh local action/consuming authorization across a future protocol transition, expiry/currentness, cancellation/unknown ownership, caller deadlines, v2 API/provider/policy, ABI/ARM/Pi and physical/client qualification remain open and require their own independently admitted scope. Existing host fixture5s/100ticks/O8shared4 gates and all task/release states are unchanged. This compile-only source/evidence is submitted for distinct root/B01 review; no implementation or runtime admission follows automatically.
 
+This is a compile-only proof branch, **not a qualified main candidate**. The example can be selected by `--all-targets` and Clippy with `-D warnings`; the two retained warnings mean this successful Cargo check does not establish passage of the standard gates. Those gates were not run here. No `allow(dead_code)` or other warning correction was applied. Any future v2 choice remains subject to reassessment and independent admission.
+
 This experiment occurred after the frozen non-Git transfer inventory. It did not modify that inventory; its source/evidence are preserved by this separate branch. No full CI, application run or physical experiment was performed.
