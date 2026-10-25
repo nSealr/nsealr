@@ -1,0 +1,35 @@
+PASS — affected delivery assembly and CI registration only; findings []. Full/protected PR and resulting-main gates remain pending.
+
+Candidate `8f2c1527e999286c1af98f4fbccefd3e95e58ed4`, tree `c63c365833ba30cd1d1cb1401739193c0a6fbc16`, was reviewed against author `0e9bdfb2fd8be0c507a5bf75206520de5bfad636`. Reviewer `/root/b01_final_review` used an isolated checkout on `review/qp01-synthetic-inspection-delivery` under Sol6.1/xhigh. No author/root checkout, source, graph, fixture, threshold or old report was edited. This report adds no new product runtime approval.
+
+The exact21-path delta is four existing paths (Makefile, restart README, handoff and sole graph), five new delivery/provenance/first-metadata-RED files and12 immutable public copies. The executable/test source remains identical to the previously reviewed candidate: all five declared code/test postimages match bytes, Git mode/blob and SHA256. The source review `440320261ec87d4e1a1b91bf142a73df9e2f314e` and final22 runtime review `7761398b6ba49c9f9651fe00d78daf51df97c426` retain their original roles and are not repeated. There is no C01/P4 code import or additional product file.
+
+The Makefile changes by precisely one inserted recipe command before the unchanged exchange driver in `pi-ci`:
+
+```sh
+python3 -B -m unittest discover -s docs/restart/implementation/QP01/physical-workflow/synthetic-inspection -p 'test_synthetic_inspection.py'
+```
+
+The command points to the existing14 pure test definitions; its literal checkout-root derivation resolves to this checkout and imports the current `apps/pi/app` adapter. Test/module bytes and their previous source qualification are unchanged. No native helper, library, subprocess or device is introduced by this registration. This review did not rerun that suite. The existing provisioning command, `pi-ci: bridge-ci`, real `exchange.py --ci apps/pi`, full Pi setup/test/lint/audit/docs sequence, default `ci` dependencies and all17 integration obligations remain intact.
+
+The active source-aware reader is byte-identical to0e9. It still sets `EXPECTED_PI_TESTS = 211` and requires exactly one line matching `Ran 211 tests in ...s`; a distinct `Ran 14 tests ...` line does not satisfy or invalidate that exact count. The unchanged211 suite/source, native and lifecycle records remain independently required. Neither this registration nor the earlier final22 archive claims automatic22-case native execution in each default CI. Existing generic completed-capture verification remains separately mandatory; no reader/control expectation or floor was adjusted.
+
+All12 selected copies match their actual immutable source commit:path, Git mode/blob, length and SHA256: eight PR51 adoption files from `3dccb08963fee8dc66c083c04e03778e77139e04`, two Mac identification guides from `43824f0a10068fe221034a79084396d3d865840b`, and the two original4403/7761 review reports. The two external source commits were read from the existing shared public Git object store; the two reviewer commits were read from this independent object store. No live-worktree path substituted for a source identity and no new network lookup was needed for those copies. All seven bodies in the copied adoption manifest also match their declared mode/blob/length/hash. These copies preserve historical observations rather than replay their commands or qualify an identified kit. The copied adoption names actual9c, PR51, original PR/main checks and its remaining limits consistently with the current navigation; no new adoption is claimed for8f2c.
+
+The complete JSON comparison proves all47 task statuses, acceptance/dependency/required-resource and other formal fields unchanged, along with16 resources, five release paths, revision and every other top-level graph field. All44 task records outside R00/QH01/QP01 are entirely unchanged. R00 changes only its current supporting Makefile entry; QH01 appends the exact historical PR51 adoption checkpoint; QP01 changes only its current checkpoint and appends13 verified artifact hashes. The new synthetic checkpoint explicitly closes zero criteria and keeps full/protected integration, actual expiry, human review, ARM/image/physical IO/custody and optical qualification open. Historical proof/index/checker bodies outside the exact21-path delta remain unchanged by Git correspondence.
+
+The intended Makefile postimage SHA256 is `f90b906cf5fe95639aced250386457dbb535031f5631e5094c0d53c20ce6fbb4`. Its previous live index `4bab1e163d50ae90f3c882cc0a3df6d35bc0fb2e3919a0b28993f2a6cdb8ffd7` was stale after that one-command extension. The original validator exit1 and `ERROR: R00: artifact hash mismatch Makefile` remain in `delivery/preparation-first-red/`; the correction changes the active supporting index and records its role. The original R00 result, candidate/inputs, acceptance outcomes and validator are byte-identical; no R00 acceptance outcome uses Makefile as underlying execution evidence. This is a preserved assembly metadata RED, not a verifier defect or a new execution of R00. The earlier immutable-copy-path reader error is likewise described as assembly input selection, with no runtime claim.
+
+Read-only verification used actual Git objects/diffs and bounded JSON/AST/file checks:21-path allowlist,12 full copy identities, five unchanged postimages, seven adoption manifest bodies,14 existing test definitions,13 new graph hashes, all47 formal task sets,16 resources and five release paths. All88 local Markdown file targets in changed navigation/delivery and the copied guides exist; this does not claim external-site availability or physical results. `git diff --check 0e9bdfb2fd8be0c507a5bf75206520de5bfad636 HEAD` passed. Existing targeted commands returned0:
+
+```text
+python3 -B scripts/validate_restart_plan.py
+Restart plan valid: 47 tasks; ready:
+Structural check only; hardware, review quality and security remain evidence gates.
+python3 -B scripts/check_product_gates.py
+all retained gate placements and seventeen self-contained integration obligations present
+```
+
+The placement checker invokes only existing `make -n ci` command inspection. No test suite, product import, actor, compiler, audit, full CI, hosted check or physical operation was executed. Initial reviewer lookups named three stale checker/placement filenames (`rg` exit2) and asked incomplete object stores for source commits (Git exit128). Only the reader selectors/object-store choice were corrected; those observations are not candidate defects or product/test runs.
+
+Normal stable full gates, protected integration, resulting-main qualification and fresh main-only source verification still belong to root. The historical early2 incomplete62 gap is unchanged; final22 has its own separately accepted pre/post freeze. Real native/UI expiry, human reading time, physical display/input/camera/optical611, exact Pi kit/image/ABI, real entropy/custody/provider and release qualification remain open. Existing512 worker,704 JSON,947 static-frame and timing budgets are unchanged. PASS here authorizes no route/default/readiness, framing freeze, task closure or physical use. STOP after publishing this review.
