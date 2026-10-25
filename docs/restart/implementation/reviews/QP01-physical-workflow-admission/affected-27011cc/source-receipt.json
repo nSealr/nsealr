@@ -1,0 +1,48 @@
+{
+  "schema_version": 1,
+  "method": "Only read 503..270 documentary diff and new JSON/Git/SHA identity bindings; no runtime or test",
+  "candidate_commit": "27011ccf1e8e70c3d9194180552b33e100754697",
+  "candidate_tree": "8d0c6c82fc1a0bc826819eeea6bbeec769be707b",
+  "previous_author_candidate": "503fbf5e23cce7e85f062844aa77143663bcd6a9",
+  "exact_diff": "diff --git a/docs/restart/implementation/QP01/physical-workflow/addendum-source-proof.json b/docs/restart/implementation/QP01/physical-workflow/addendum-source-proof.json\nindex 8b771c60..e5992edf 100644\n--- a/docs/restart/implementation/QP01/physical-workflow/addendum-source-proof.json\n+++ b/docs/restart/implementation/QP01/physical-workflow/addendum-source-proof.json\n@@ -85,8 +85,8 @@\n   ],\n   \"addendum\": {\n     \"path\": \"docs/restart/implementation/QP01/physical-workflow/admission-addendum.md\",\n-    \"bytes\": 13270,\n-    \"sha256\": \"7c37bb9127360b36f0ff9015ac048e182619a656cf61a920dfe46db629830195\"\n+    \"bytes\": 13653,\n+    \"sha256\": \"639cb429d77ac19cb17455995143691b605d74d7567bf7cfb96b9f8cdf8ec928\"\n   },\n   \"changes\": \"Only this addendum and its identity receipt; no source or original report edits\",\n   \"not_performed\": [\n@@ -100,5 +100,26 @@\n     \"Human-review versus bounded-compute time domain/currentness/one-use requirement\",\n     \"Exact kit/image/ABI/driver/access and physical qualification\"\n   ],\n-  \"physical_acceptance_closed\": 0\n+  \"physical_acceptance_closed\": 0,\n+  \"path_correction\": {\n+    \"from_commit\": \"503fbf5e23cce7e85f062844aa77143663bcd6a9\",\n+    \"from_tree\": \"9bb7b2d6c90681ac2591d409c2d0c25c807e0290\",\n+    \"from_addendum_sha256\": \"7c37bb9127360b36f0ff9015ac048e182619a656cf61a920dfe46db629830195\",\n+    \"from_receipt_sha256\": \"74c48fefe2fc355b3ec68e094c142c0afd51c6a24c3297b38e5d6451c43ea2b2\",\n+    \"affected_review_commit\": \"fd3bc75936b622846b7660e56c5c1f0f68a0157c\",\n+    \"affected_report_path\": \"docs/restart/implementation/reviews/QP01-physical-workflow-admission/affected-503fbf5/report.md\",\n+    \"affected_report_sha256\": \"9c4c53b0a93fc58d70892e209308f9e978f9c290f9c6b77f207b3215630ab57d\",\n+    \"finding\": \"Only inconsistent preparation module/receipt example paths\",\n+    \"source_path\": \"docs/restart/implementation/QP01/request-engine/exchange.py\",\n+    \"source_lines\": [\n+      \"114\",\n+      \"137-149\"\n+    ],\n+    \"module_dir_from\": \"record.output_dir\",\n+    \"module_path_equals\": \"record.outputs['native-leaf.js'].path\",\n+    \"preparation_receipt_from\": \"record.receipt\",\n+    \"actual_producer_relation\": \"temporary/module/native-leaf.js versus temporary/preparation.json\",\n+    \"scope\": \"Documentary example/variable correction only; no copying/renaming files or recipe changes\",\n+    \"history\": \"503fbf5 and its CHANGES_REQUIRED review remain immutable; R2 documentary closure and other R1 source properties reused; no runtime or review status rewritten\"\n+  }\n }\ndiff --git a/docs/restart/implementation/QP01/physical-workflow/admission-addendum.md b/docs/restart/implementation/QP01/physical-workflow/admission-addendum.md\nindex b049a580..18eab229 100644\n--- a/docs/restart/implementation/QP01/physical-workflow/admission-addendum.md\n+++ b/docs/restart/implementation/QP01/physical-workflow/admission-addendum.md\n@@ -20,10 +20,16 @@ The single positive invocation shape is:\n   --output \"$OUT\" --worker \"$W\" --sha256 \"$W_SHA\" --node \"$NODE\" \\\n   --bridge \"$ROOT/apps/bridge/service/dist\" --reuse \"$ROOT\" \\\n   --engine-library \"$LIB\" --engine-sha256 \"$LIB_SHA\" \\\n-  --engine-module \"$PREP/native-leaf.js\" --engine-module-sha256 \"$LEAF_SHA\" \\\n-  --engine-preparation \"$PREP/receipt.json\"\n+  --engine-module \"$MODULE_DIR/native-leaf.js\" --engine-module-sha256 \"$LEAF_SHA\" \\\n+  --engine-preparation \"$PREPARATION_RECEIPT\"\n ```\n \n+Take `MODULE_DIR` from the actual preparation record's `output_dir` and\n+`PREPARATION_RECEIPT` from its `receipt`; the module path must equal\n+`outputs['native-leaf.js']['path']`. The existing producer emits\n+`temporary/module/native-leaf.js` and `temporary/preparation.json`, respectively.\n+Freeze these actual returned fields; do not copy/rename a receipt or invent an alias.\n+\n These are required trusted **operator/fixture inputs**, never request fields.\n Before any RGB/O/Node/C, freeze their actual absolute paths/argv, current Git\n commit/tree, Python/Node identities, source snapshots, W/library actual hashes,\n",
+  "changed_paths": [
+    "M\tdocs/restart/implementation/QP01/physical-workflow/addendum-source-proof.json",
+    "M\tdocs/restart/implementation/QP01/physical-workflow/admission-addendum.md"
+  ],
+  "new_bindings": [
+    {
+      "commit": "27011ccf1e8e70c3d9194180552b33e100754697",
+      "path": "docs/restart/implementation/QP01/physical-workflow/admission-addendum.md",
+      "mode": "100644",
+      "blob": "18eab229c666d0d7423e007808cb5f87d06d2296",
+      "bytes": 13653,
+      "sha256": "639cb429d77ac19cb17455995143691b605d74d7567bf7cfb96b9f8cdf8ec928"
+    },
+    {
+      "commit": "27011ccf1e8e70c3d9194180552b33e100754697",
+      "path": "docs/restart/implementation/QP01/physical-workflow/addendum-source-proof.json",
+      "mode": "100644",
+      "blob": "e5992edf282e56117a8247ec062e6ad0c0f4d129",
+      "bytes": 5334,
+      "sha256": "dcdd3af95b2eb0586f31f9e56105d06554ec89247bde683c3eeca0be2da824c6"
+    }
+  ],
+  "reused_reviews": [
+    "c1ffff4a0d79af98fc7b9ba0159d04725a666591",
+    "fd3bc75936b622846b7660e56c5c1f0f68a0157c"
+  ],
+  "original_28_source_bindings_and_previous_analysis": "Unchanged; reuse prior source-correspondence and R1/R2 source/status review. No new source inspection or executable check needed.",
+  "prior_affected_report": {
+    "commit": "fd3bc75936b622846b7660e56c5c1f0f68a0157c",
+    "path": "docs/restart/implementation/reviews/QP01-physical-workflow-admission/affected-503fbf5/report.md",
+    "mode": "100644",
+    "blob": "2fdd4f92efa7ace5a987d8ee1dd328c4fec023d5",
+    "bytes": 5253,
+    "sha256": "9c4c53b0a93fc58d70892e209308f9e978f9c290f9c6b77f207b3215630ab57d"
+  },
+  "execution_counts": {
+    "app_import": 0,
+    "test_build_actor_native_load": 0,
+    "flash_audit_CI_device": 0
+  }
+}

@@ -89,15 +89,32 @@ try {
   const engineCase = selectedCase === 'fixture_request_engine';
   assert(root && bridge && reuse && (engineCase ? process.argv.length === 7 : process.argv.length === 5 || process.argv.length === 6));
   assert(['positive', 'scan_null_after_settlement', 'scan_pending_timeout_after_settlement', 'fixture_cancel_B3_verified_preG', 'fixture_request_engine'].includes(selectedCase));
-  let engineRefusal = false;
+  let engineRefusal = false, inspectionFailed = false;
   if (engineCase) {
     const raw = readFileSync(engineConfig); assert(raw.length <= 8192);
     const config = JSON.parse(raw);
     assert.deepEqual(Object.keys(config), ['v', 'scope', 'mode', 'source_root', 'output_dir', 'python', 'library', 'library_sha256',
-      'child_expected_sha256', 'module', 'module_sha256', 'module_source_sha256']);
+      'child_expected_sha256', 'module', 'module_sha256', 'module_source_sha256',
+      ...(config.mode === 'synthetic-inspection' ? ['synthetic_inspection'] : [])]);
     assert.equal(config.v, 1); assert.equal(config.scope, 'QH01_RGB_ENGINE_OPT_IN_V1');
-    assert(['positive', 'loaded-sha-refusal'].includes(config.mode));
+    assert(['positive', 'loaded-sha-refusal', 'synthetic-inspection'].includes(config.mode));
     engineRefusal = config.mode === 'loaded-sha-refusal';
+    if (config.mode === 'synthetic-inspection') {
+      const fixture = config.synthetic_inspection;
+      assert.deepEqual(Object.keys(fixture), ['config', 'sha256', 'scenario', 'callback_source_sha256', 'expected_status']);
+      assert.equal(resolve(fixture.config), join(config.output_dir, 'synthetic-inspection-config.json'));
+      const bytes = readFileSync(fixture.config); assert(bytes.length <= 4096);
+      assert.equal(digest(bytes), fixture.sha256);
+      const selection = JSON.parse(bytes);
+      assert.deepEqual(Object.keys(selection), ['v', 'scope', 'scenario', 'callback_source_sha256', 'trace_path']);
+      assert.equal(selection.v, 1); assert.equal(selection.scope, 'QP01_SYNTHETIC_INSPECTION_V1');
+      assert.equal(selection.scenario, fixture.scenario);
+      assert.equal(selection.trace_path, join(config.output_dir, 'inspection-trace.json'));
+      assert.equal(selection.callback_source_sha256, fixture.callback_source_sha256);
+      assert.equal(digest(readFileSync(`${root}/apps/pi/app/nsealr_vault/synthetic_inspection.py`)), fixture.callback_source_sha256);
+      assert(Number.isInteger(fixture.expected_status) && [0, -5, -6, -7, -9, -11].includes(fixture.expected_status));
+      inspectionFailed = fixture.expected_status !== 0;
+    }
     assert.equal(config.source_root, root); assert.equal(resolve(engineConfig), join(config.output_dir, 'engine-initialization.json'));
     assert.equal(digest(readFileSync(config.library)), config.library_sha256);
     assert.equal(config.child_expected_sha256, engineRefusal ? (config.library_sha256[0] === '0' ? '1' : '0') + config.library_sha256.slice(1) : config.library_sha256);
@@ -109,7 +126,11 @@ try {
     engine = { config, spawned: 0, collected: 0, capability_calls: 0, timer_args: [], timer_clears: 0,
       settlements: [], observations: [], preparation: null, leaf: null, child: null, response: null, refusal: null, written: false };
     engine.env = Object.freeze({ ...process.env, NSEALR_QP01_PYTHON: config.python,
-      NSEALR_QP01_LIBRARY: config.library, NSEALR_QP01_LIBRARY_SHA256: config.child_expected_sha256 });
+      NSEALR_QP01_LIBRARY: config.library, NSEALR_QP01_LIBRARY_SHA256: config.child_expected_sha256,
+      ...(config.mode === 'synthetic-inspection' ? {
+        NSEALR_QP01_SYNTHETIC_INSPECTION_CONFIG: config.synthetic_inspection.config,
+        NSEALR_QP01_SYNTHETIC_INSPECTION_CONFIG_SHA256: config.synthetic_inspection.sha256
+      } : {}) });
     engine.prepare = imported.createPrepareNative({ root, timers: {
       setTimeout(callback, milliseconds, ...args) {
         assert.equal(milliseconds, 5000); assert.deepEqual(engine.timer_args, []);
@@ -242,6 +263,21 @@ try {
               assert.equal(digest(engine.response), '250167d1137f6da25676b00b62913a3d8f29391a1ff5331d64f7079d953f5ded');
               engineArtifact('engine-response.envelope', engine.response, 947, true);
             } catch (error) {
+              if (inspectionFailed) {
+                assert.equal(engine.collected, 1); assert.equal(engine.observations.length, 0);
+                const status = engine.settlements[0];
+                assert.equal(status.code, 1); assert.equal(status.signal, null); assert.equal(status.sent, true);
+                assert.equal(status.readiness_hex, '52'); assert.equal(status.stdout_bytes, 0); assert.equal(status.overflow, false);
+                const raw = readFileSync(join(engine.config.output_dir, 'inspection-trace.json'));
+                assert(raw.length <= 131072);
+                const trace = JSON.parse(raw);
+                assert.equal(trace.native_status, engine.config.synthetic_inspection.expected_status);
+                assert.equal(trace.config_sha256, engine.config.synthetic_inspection.sha256);
+                assert.equal(trace.output_bytes, 0); assert.equal(trace.output_sha256, null);
+                engineArtifact('inspection-refusal-error.txt', String(error), 262144, true);
+                engine.refusal = { name: error.name, message: String(error.message).slice(0, 2048) };
+                throw new SignerTransportError('signer_transport_failed', 'synthetic inspection native refusal collected');
+              }
               if (!engineRefusal) throw error;
               assert.equal(engine.collected, 1); assert.equal(engine.observations.length, 0);
               const status = engine.settlements[0];
@@ -306,7 +342,7 @@ try {
     native = await operation;
   }
   const result = decodeNativeMessage(native);
-  if (selectedCase === 'positive' || engineCase && !engineRefusal) {
+  if (selectedCase === 'positive' || engineCase && !engineRefusal && !inspectionFailed) {
     assert.equal(result.ok, true);
     assert.deepEqual(result.result.signer_response, expectedResponse);
   } else {
@@ -316,7 +352,7 @@ try {
     assert.equal(controls.abort_signal.aborted, true); assert.equal(underlyingSettled, true);
   }
   assert.equal(result.request_id, envelope.request_id);
-  assert.deepEqual([opens, scans, closes], [1, cancelCase || engineRefusal ? 0 : 1, 1]);
+  assert.deepEqual([opens, scans, closes], [1, cancelCase || engineRefusal || inspectionFailed ? 0 : 1, 1]);
   assert.deepEqual(timerArgs, [100]); assert.equal(clearCalls, 1);
   if (!timeoutCase) { now = 100; clockSteps.push(now); mock.timers.tick(1); }
   assert.equal(deadlineFires, timeoutCase ? 1 : 0);

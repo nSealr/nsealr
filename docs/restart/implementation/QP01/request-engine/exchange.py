@@ -280,7 +280,14 @@ def exchange(settlement_fd=None, ready_fd=None):
     if ready_fd is not None and (ready_fd < 3 or ready_fd == settlement_fd):
         raise ValueError("readiness requires its own inherited control descriptor")
     sys.path.insert(0, str(ROOT / "apps/pi/app"))
-    from nsealr_vault.engine_adapter import EngineAdapter, MonotonicSeconds
+    from nsealr_vault.engine_adapter import EngineAdapter, EngineError, MonotonicSeconds
+    inspection = None
+    if ("NSEALR_QP01_SYNTHETIC_INSPECTION_CONFIG" in os.environ or
+            "NSEALR_QP01_SYNTHETIC_INSPECTION_CONFIG_SHA256" in os.environ):
+        # Literal opt-in only; no request/module path controls this import.
+        from nsealr_vault.synthetic_inspection import Fixture, load_config
+        inspection = load_config(os.environ["NSEALR_QP01_SYNTHETIC_INSPECTION_CONFIG"],
+                                 os.environ["NSEALR_QP01_SYNTHETIC_INSPECTION_CONFIG_SHA256"])
     adapter = EngineAdapter(os.environ["NSEALR_QP01_LIBRARY"], os.environ["NSEALR_QP01_LIBRARY_SHA256"])
     if ready_fd is not None:
         # Initialization only: no stdin read, native request, review or signing.
@@ -299,11 +306,34 @@ def exchange(settlement_fd=None, ready_fd=None):
                       "position": page.position.decode("ascii")})
         return 1 if page.kind == 1 else 0
 
-    output = adapter.run_request_frame(incoming, present, MonotonicSeconds(), lambda: bytes(32), lambda: False)
+    inspection_summary = None
+    if inspection is None:
+        output = adapter.run_request_frame(incoming, present, MonotonicSeconds(), lambda: bytes(32), lambda: False)
+    else:
+        config, config_sha = inspection
+        fixture = Fixture(config, config_sha, incoming, MonotonicSeconds())
+
+        def local_io(page):
+            pages.append({"kind": page.kind, "index": page.index, "total": page.total,
+                          "label": page.label.decode("ascii"), "body": page.body.decode("ascii"),
+                          "position": page.position.decode("ascii")})
+            return fixture.io(page)
+
+        try:
+            output = adapter.run_request_frame(incoming, local_io, fixture.clock, fixture.auxiliary, fixture.cancel)
+        except EngineError as error:
+            inspection_summary = fixture.finish(error.status, b"", adapter.library_path, adapter.library_sha256)
+            print(json.dumps({"library": str(adapter.library_path), "sha256": adapter.library_sha256,
+                              "input_bytes": len(incoming), "input_sha256": hashlib.sha256(incoming).hexdigest(),
+                              "output_bytes": 0, "output_sha256": None, "synthetic_complete_review": pages,
+                              "synthetic_inspection": inspection_summary}), file=sys.stderr, flush=True)
+            raise SystemExit(1)
+        inspection_summary = fixture.finish(0, output, adapter.library_path, adapter.library_sha256)
     print(json.dumps({"library": str(adapter.library_path), "sha256": adapter.library_sha256,
                       "input_bytes": len(incoming), "input_sha256": hashlib.sha256(incoming).hexdigest(),
                       "output_bytes": len(output), "output_sha256": hashlib.sha256(output).hexdigest(),
-                      "synthetic_complete_review": pages}), file=sys.stderr, flush=True)
+                      "synthetic_complete_review": pages,
+                      **({"synthetic_inspection": inspection_summary} if inspection_summary is not None else {})}), file=sys.stderr, flush=True)
     if settlement_fd is not None:
         # Finite harness-only process-settlement control AFTER native return.
         # It models a child that cannot settle merely because the client timed
