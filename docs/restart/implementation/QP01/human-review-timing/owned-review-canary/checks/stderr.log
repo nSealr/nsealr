@@ -1,0 +1,58 @@
+    Checking subtle v2.6.1
+    Checking zeroize v1.9.1
+    Checking typenum v1.20.1
+    Checking rand_core v0.10.1
+   Compiling autocfg v1.5.1
+    Checking const-oid v0.10.2
+    Checking cmov v0.5.4
+    Checking cpubits v0.1.1
+    Checking base16ct v1.0.0
+    Checking cfg-if v1.0.5
+    Checking cpufeatures v0.3.1
+   Compiling zmij v1.0.23
+   Compiling serde_core v1.0.229
+   Compiling serde_json v1.0.151
+   Compiling nsealr-core v0.0.0 (/home/tux/nsealr/.restart-tools/goal/qp01-owned-review-canary/crates/nsealr-core)
+    Checking memchr v2.8.3
+    Checking itoa v1.0.18
+    Checking ff v0.14.0
+    Checking der v0.8.2
+    Checking ctutils v0.4.5
+    Checking group v0.14.0
+   Compiling num-traits v0.2.19
+    Checking hybrid-array v0.4.15
+    Checking crypto-common v0.2.2
+    Checking block-buffer v0.12.1
+    Checking crypto-bigint v0.7.6
+    Checking sec1 v0.8.1
+    Checking digest v0.11.3
+    Checking signature v3.0.0
+    Checking sha2 v0.11.0
+    Checking elliptic-curve v0.14.1
+    Checking primefield v0.14.0
+    Checking wnaf v0.14.1
+    Checking ecdsa v0.17.0
+    Checking primeorder v0.14.0
+    Checking k256 v0.14.0
+warning: fields `kind`, `index`, `total`, `label`, `body`, and `position` are never read
+  --> crates/nsealr-core/examples/qp01_owned_review_canary.rs:9:19
+   |
+ 9 | struct Snapshot { kind: u32, index: usize, total: usize,
+   |        --------   ^^^^       ^^^^^         ^^^^^
+   |        |
+   |        fields in this struct
+10 |                   label: Vec<u8>, body: Vec<u8>, position: Vec<u8> }
+   |                   ^^^^^           ^^^^           ^^^^^^^^
+   |
+   = note: `#[warn(dead_code)]` (part of `#[warn(unused)]`) on by default
+
+warning: fields `raw`, `owner`, and `page` are never read
+  --> crates/nsealr-core/examples/qp01_owned_review_canary.rs:25:18
+   |
+25 | struct Waiting { raw: Vec<u8>, owner: AuthorizationSession, page: Snapshot }
+   |        -------   ^^^           ^^^^^                        ^^^^
+   |        |
+   |        fields in this struct
+
+warning: `nsealr-core` (example "qp01_owned_review_canary") generated 2 warnings
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 2.09s
