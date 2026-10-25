@@ -2,16 +2,14 @@
   "name": "LILYGO T-Display S3",
   "target": "esp32s3",
   "native_usb": true,
-  "status": "usb_display_signer_candidate",
+  "status": "phase_one_session_only_usb_display_candidate_not_qualified",
   "variant": "no_camera_display_board",
   "source": "https://github.com/Xinyuan-LilyGO/T-Display-S3",
   "product_source": "https://lilygo.cc/products/t-display-s3",
-  "firmware_targets": [
-    "esp32_s3_usb_signer"
-  ],
+  "firmware_targets": [],
   "memory": {
-    "flash": "16MB",
-    "psram": "8MB OPI"
+    "flash": "16MB measured by ROM flash-id on the identified sample",
+    "psram": "vendor8MB OPI; prior ROM observation embedded8MB, not application-memory qualification"
   },
   "display": {
     "required_for_signing": true,
@@ -22,7 +20,7 @@
       "long_edge": 320
     },
     "touch": {
-      "status": "variant_dependent",
+      "status": "selected_non_touch_variant_maintainer_declared",
       "approval_allowed": false,
       "notes": "Touch, when present, may be used for navigation experiments but not final approve/reject signing consent."
     },
@@ -34,7 +32,7 @@
       "gpio": 15,
       "notes": "Official FAQ says GPIO15 must be driven high for display power when running from battery."
     },
-    "notes": "This no-camera board is a practical ESP32-S3 USB/display signer candidate and is not the primary QR vault camera target."
+    "notes": "Selected no-camera non-touch S3 candidate for phase-one USB/display/two-button operation. Panel/bus/readability and physical input still require actual-sample D01/V01 evidence."
   },
   "approval_inputs": [
     {
@@ -68,10 +66,21 @@
       "notes": "Short press on the vendor-documented KEY button."
     }
   ],
-  "wireless_policy": "Wireless must not participate in signing approval or request transport for the USB/display signer MVP.",
-  "debug_policy": "Debug access stays enabled for board bring-up and must be locked before any production-key experiment.",
-  "production_signing": "disabled until display, physical controls, storage, provisioning, and signing tests pass",
+  "wireless_policy": "Wireless must not participate in signing approval or request transport for this USB/Bridge profile. Software-disabled does not mean physically absent; enumerate actual radios/channels in D01.",
+  "debug_policy": "Debug is a bring-up interface whose actual exposure and declared release policy must pass D02/D03. No real identity before independent profile admission; ordinary erase/reflash authorization does not authorize irreversible debug/eFuse settings.",
+  "production_signing": "disabled until exact session profile display/input, entropy, no-persistence/lifecycle, firmware/update/recovery, host and release gates pass",
   "reference_notes": [
-    "Legacy/dev reference: kept because the current esp32 firmware config and tests are wired to it; the curated Waveshare ESP32-S3-Touch family is the canonical esp32_usb_nip46 wallet hardware. Scheduled for retirement in the phase-05 esp32-wallet-universal phase (do not remove until then)."
-  ]
+    "Phase-one selected class is LILYGO T-Display-S3 non-touch with case and two buttons, not a universal Waveshare wallet or a scheduled legacy retirement.",
+    "GPIO14 KEY and GPIO0 BOOT mappings are vendor-source candidates; actual controls, panel/PCB, memory and enclosure behavior need D01 measurement.",
+    "ROM ESP32-S3v0.2, flash16MB and embedded8MB PSRAM descriptor were observed; PCB/panel and runtime remain unqualified. Secure Boot/Flash Encryption disabled does not prove empty eFuses. Do not infer Xtensa/ABI/backend/entropy or IDF6 support from P4."
+  ],
+  "profile": "esp32_no_se",
+  "firmware_status": "Historical esp32_s3_usb_signer application was retired; this manifest does not identify a current qualified flashable product. D01/V01 must bind the actual new build.",
+  "custody": {
+    "identity": "session_only_no_SE_no_persistent_identity_vault",
+    "recovery": "Local generation/import and local nsec backup/reload; no plaintext Bridge flow. Two-button usability and same-identity restore remain D02 gates.",
+    "termination": "Lock/disconnect/reset/power loss clear owned session secrets and invalidate consent under a measured lifecycle; no physical RAM-erasure claim.",
+    "persistent_extension": "Deferred; original D02 persistent encrypted-vault/PIN acceptance retained in plan/work-items.json."
+  },
+  "device_facts": "docs/restart/implementation/hardware-access/device-facts-2026-10-25.json"
 }

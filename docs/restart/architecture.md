@@ -4,7 +4,13 @@
 
 **nSealr** is the project. **nSealr Signer** is the Nostr signing application. **nSealr Bridge** connects Nostr clients to devices. **nSealr Board** is the programmable hardware, and **nSealr Board SDK** supports firmware authors. These descriptive names avoid maintaining a separate brand for each chip. They are project naming decisions, not trademark clearance.
 
-Connected and Offline are interaction modes, not a user-controlled switch that automatically preserves custody or security. Every supported artifact has an exact device profile. A commercial ESP32 without SE, a Pi QR kit, a P4 QR kit and the custom board have separate qualification and release paths.
+Connected and Offline are interaction modes, not a user-controlled switch that
+automatically preserves custody or security. Every supported artifact has an
+exact device profile. Phase one covers the non-touch two-button S3 over USB,
+Pi QR and P4 QR, all with session-only identity custody. Custom Board and generic
+embedded Board SDK remain later work with their original qualification gates.
+Each of the three phase-one releases is independent of the other devices and
+custom fabrication; the TypeScript `packages/sdk` remains necessary host scope.
 
 ## One engine, appropriate adapters
 
@@ -20,13 +26,19 @@ Pi adapters may remain Python where that is the simplest maintained integration,
 
 ## Custody and trusted review
 
+For the first S3 profile, create/import and backup/reload identity locally;
+Bridge never supplies plaintext recovery or holds/signs with the identity key.
+Lock/disconnect/reset and identity/session change cancel authority and clear
+owned session secrets under the measured lifecycle. No persistent vault/PIN or
+SE protection is implied. Pi/P4 likewise reload locally after power loss.
+
 Define boot trust, active interfaces, storage/SE behavior, physical attacker assumptions, display ownership, input ownership and recovery for each profile. Display pixels are trusted only if the executing firmware and the relevant peripherals, buses and DMA paths are controlled as required by that profile. A secure element cannot make a hostile display honest.
 
 Approval consumes a grant bound to canonical operation, account, policy version, request/session and expiry. Cancellation, replay, power interruption and malformed requests are negative test cases. The host cannot assert that approval occurred. Capabilities describe supported operations; they are not attestation or proof of readiness.
 
 ## Generic board boundary
 
-Board SDK owns generic MCU/peripheral support, secure-element drivers, boot/update/recovery hooks, owner lifecycle and examples. It has no Nostr event semantics. One trusted firmware image is the initial model; ordinary linked libraries do not isolate mutually hostile applications.
+The generic embedded Board SDK is deferred after phase one; the following boundary is retained. Board SDK owns generic MCU/peripheral support, secure-element drivers, boot/update/recovery hooks, owner lifecycle and examples. It has no Nostr event semantics. One trusted firmware image is the initial model; ordinary linked libraries do not isolate mutually hostile applications.
 
 The owner-controlled development lifecycle and a qualified Signer lifecycle need explicit roots of trust and transitions. Replacing firmware must not leave privileged MCU or SE state accessible to a new image unexpectedly. Test reset, re-enrollment, rollback and post-provisioning recovery on sacrificial hardware before irreversible settings.
 

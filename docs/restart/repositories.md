@@ -1,19 +1,23 @@
 # Repositories and source migration
 
-Five active repositories are the target. Boundaries follow release ownership and independent consumers, not individual boards or implementation languages.
+The phase-one active product is `nSealr/nsealr`, with `website` and `.github`
+for accurate user documentation and communication. `hardware` and `board-sdk`
+remain required later-phase repositories, without current implementation work.
+The retained five-repository boundary follows release ownership and independent
+consumers, not individual boards or implementation languages.
 
 Keep the repository name **`board-sdk`**. It serves embedded firmware authors; the public TypeScript integration package (proposed `@nsealr/sdk`, subject to package ownership checks before publication) serves client/Bridge developers inside `nsealr`. An unqualified repository named `sdk` would blur these two boundaries. Neither name limits the Board SDK to Nostr: it must build a standalone non-Nostr example without importing the product engine. There is no technical prohibition on `sdk`; the more explicit name is the adopted navigation choice.
 
 | Current source | Destination | Disposition |
 | --- | --- | --- |
 | `firmware` | `nsealr` | Same GitHub repository renamed; keep history and three stars |
-| `companion` | `nsealr` | Select useful Bridge code; simplify package/API surface; archive after verified migration |
-| `raspberry` | `nsealr` | Select adapters, UI and differential tests; qualify shared-engine integration; archive afterwards |
+| `companion` | `nsealr` | Select useful Bridge code; simplify package/API surface; retire/remove after verified migration and unique-data/consumer disposition |
+| `raspberry` | `nsealr` | Select adapters, UI and differential tests; qualify shared-engine integration; retire/remove after verified migration and unique-data/consumer disposition |
 | `specs` | `nsealr` | Contracts and vectors colocated with implementation; retain applicable license/provenance |
 | `lab` (private) | selected material in `nsealr` / `hardware` | Review and publish only selected non-sensitive research; preserve private history |
-| `workspace` (private) | `nsealr` | Canonical plan, evidence conventions and integration ownership move here; archive after handoff |
-| `hardware` | `hardware` | Revalidate components and design; no endorsement of inherited PCB/BOM |
-| new | `board-sdk` | Generic platform boundaries, drivers, lifecycle and non-Nostr examples |
+| `workspace` (private) | `nsealr` | Product task state lives only in nsealr; retain workspace as the single private preservation/handoff destination, not another active tracker |
+| `hardware` | `hardware` | Retained later phase; no new design/revalidation now and no endorsement of inherited PCB/BOM |
+| new | `board-sdk` | Retained later-phase embedded platform; distinct from active packages/sdk TypeScript integration |
 | `website` | `website` | User/developer docs and compatibility generated from qualified releases |
 | `.github` | `.github` | Organization profile and concise community metadata |
 | `smartcard` | public archive | Retired from active scope; preserve research and its community star |
@@ -56,6 +60,10 @@ Do not create empty crates or application folders just to imitate the target tre
 3. Rehearse in an isolated checkout. Introduce new versioned contracts; update retained consumers together. Old experimental APIs can be removed without a compatibility layer.
 4. Preserve useful independent vectors and add tests for corrected behavior. Run builds, browser/Node boundaries and affected integrations from the new layout.
 5. Review the final candidate independently. Remove replaced active implementations, repair links/CI and record provenance.
-6. Archive the old repository only after its migrated or deliberately retired content has a verified disposition. Update navigation and website status to the actual result.
+6. Complete the authorized retirement/removal of a redundant repository only after
+   one finite check of consumers, history/licenses, issues/releases and unique
+   data, verified migration/retirement and minimal private preservation. Keep the
+   product, required future hardware/embedded SDK, public smartcard archive and
+   unique private backup. Update navigation and website to the actual result.
 
 GitHub primary references: [rename behavior](https://docs.github.com/en/repositories/creating-and-managing-repositories/renaming-a-repository), [visibility effects](https://docs.github.com/en/repositories/managing-your-repositorys-settings-and-features/managing-repository-settings/setting-repository-visibility).

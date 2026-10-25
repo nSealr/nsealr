@@ -1,0 +1,256 @@
+{
+  "role": "DISTINCT_ROOT_READBACK_OF_ORIGINAL_FIRST14_NO_REPLAY",
+  "reviewer": "/root new coordinator01a17487",
+  "source_candidate": "81dbf81aafc4722e97ed6334ce9e1d7563f04bea",
+  "review_utc": "2026-10-25T19:53:10.473627+00:00",
+  "read_only_parser_reused": "/home/tux/nsealr/.restart-tools/mac-resume-2026-10-25/human-wait-source-correction/docs/restart/implementation/QP01/human-review-timing/canary-source/supervisor.py",
+  "parser_sha256": "1a219ba03fe9ced1fbe0223f41d95fee11e70ae4feb7415688998d07449b0cff",
+  "method": "Reviewed frozen contract/grammars/predicates; parsed original bounded raw streams with existing parser; independently checked actual fault stage, ACK state, counters or unavailability, wait4, parent collection and private-result rejection. No actor/build/replay/oracle run.",
+  "cases": [
+    {
+      "id": 1,
+      "case": "cancel-wait",
+      "result_sha256": "0f27cee28954997769de1d85c72cb1944ff06972a2cbce47a9ead53dca03551b",
+      "raw_records": 3,
+      "ACK_WAIT": 1,
+      "ACK_RESUME": 0,
+      "counts": {
+        "availability": "complete-terminal",
+        "sign_attempts": 0,
+        "auxiliary_calls": 0
+      },
+      "reason": "cancel-wait",
+      "actual_wait_status": 0,
+      "private_candidate_retained": false,
+      "verdict": "PASS_BOUNDED_EXPECTED_REFUSAL_READBACK"
+    },
+    {
+      "id": 2,
+      "case": "caller-100ms",
+      "result_sha256": "22f81afbcde3bb6f679f9b56a71648451f57d4572e6c758f9556a2094bf960d4",
+      "raw_records": 3,
+      "ACK_WAIT": 1,
+      "ACK_RESUME": 0,
+      "counts": {
+        "availability": "complete-terminal",
+        "sign_attempts": 0,
+        "auxiliary_calls": 0
+      },
+      "reason": "deadline",
+      "actual_wait_status": 0,
+      "private_candidate_retained": false,
+      "verdict": "PASS_BOUNDED_EXPECTED_REFUSAL_READBACK"
+    },
+    {
+      "id": 3,
+      "case": "partial-draw",
+      "result_sha256": "a419e2a0176ff6288c4e9b283ebc2fe0d79698234c68a245bd414c3bf19fd4d3",
+      "raw_records": 2,
+      "ACK_WAIT": 0,
+      "ACK_RESUME": 0,
+      "counts": {
+        "availability": "complete-terminal",
+        "sign_attempts": 0,
+        "auxiliary_calls": 0
+      },
+      "reason": "partial-draw",
+      "actual_wait_status": 0,
+      "private_candidate_retained": false,
+      "verdict": "PASS_BOUNDED_EXPECTED_REFUSAL_READBACK"
+    },
+    {
+      "id": 4,
+      "case": "stale-epoch",
+      "result_sha256": "a080d445fbe587f50f9b9cb1018900dffe7e0ec55e65a3e25c10fbd6a7497491",
+      "raw_records": 3,
+      "ACK_WAIT": 1,
+      "ACK_RESUME": 1,
+      "counts": {
+        "availability": "complete-terminal",
+        "sign_attempts": 0,
+        "auxiliary_calls": 0
+      },
+      "reason": "child-status:5",
+      "actual_wait_status": 0,
+      "private_candidate_retained": false,
+      "verdict": "PASS_BOUNDED_EXPECTED_REFUSAL_READBACK"
+    },
+    {
+      "id": 10,
+      "case": "false-wait-cpu",
+      "result_sha256": "c74e7e8028bff22fcbdc4d21bed32fd544c84dcbe077446e93ccf8549e28f75e",
+      "raw_records": 2,
+      "ACK_WAIT": 1,
+      "ACK_RESUME": 0,
+      "counts": {
+        "availability": "source-write-before-sign-barrier",
+        "sign_attempts": 0,
+        "auxiliary_calls": 0
+      },
+      "reason": "wait-cpu-R",
+      "actual_wait_status": 9,
+      "private_candidate_retained": false,
+      "verdict": "PASS_BOUNDED_EXPECTED_REFUSAL_READBACK"
+    },
+    {
+      "id": 11,
+      "case": "resume-before-arm",
+      "result_sha256": "dbf97556d35861b9cc094a539cbcf1acfde6bfb2f249a237fad69c129404d677",
+      "raw_records": 3,
+      "ACK_WAIT": 1,
+      "ACK_RESUME": 0,
+      "counts": {
+        "availability": "complete-terminal",
+        "sign_attempts": 0,
+        "auxiliary_calls": 0
+      },
+      "reason": "resume-before-arm",
+      "actual_wait_status": 0,
+      "private_candidate_retained": false,
+      "verdict": "PASS_BOUNDED_EXPECTED_REFUSAL_READBACK"
+    },
+    {
+      "id": 12,
+      "case": "guard-before-resume",
+      "result_sha256": "edddf11b3d3e411b377a109b71b447170227bc87e03f86ce959188b8b21a585a",
+      "raw_records": 3,
+      "ACK_WAIT": 1,
+      "ACK_RESUME": 0,
+      "counts": {
+        "availability": "complete-terminal",
+        "sign_attempts": 0,
+        "auxiliary_calls": 0
+      },
+      "reason": "child-status:5",
+      "actual_wait_status": 0,
+      "private_candidate_retained": false,
+      "verdict": "PASS_BOUNDED_EXPECTED_REFUSAL_READBACK"
+    },
+    {
+      "id": 13,
+      "case": "aux-short",
+      "result_sha256": "10bbc27aa46ee3c119a703427bfe5c287c139bc5857abad719014d772e513fe1",
+      "raw_records": 35,
+      "ACK_WAIT": 1,
+      "ACK_RESUME": 31,
+      "counts": {
+        "availability": "complete-terminal",
+        "sign_attempts": 1,
+        "auxiliary_calls": 1
+      },
+      "reason": "child-status:5",
+      "actual_wait_status": 0,
+      "private_candidate_retained": false,
+      "verdict": "PASS_BOUNDED_EXPECTED_REFUSAL_READBACK"
+    },
+    {
+      "id": 16,
+      "case": "wrong-correlation",
+      "result_sha256": "9ad2eab9a0ceeffe3e7abc0f4bec51ad5f29ac950d049017827563aa3dc0a2b3",
+      "raw_records": 34,
+      "ACK_WAIT": 1,
+      "ACK_RESUME": 31,
+      "counts": {
+        "availability": "complete-terminal",
+        "sign_attempts": 1,
+        "auxiliary_calls": 0
+      },
+      "reason": "child-status:5",
+      "actual_wait_status": 0,
+      "private_candidate_retained": false,
+      "verdict": "PASS_BOUNDED_EXPECTED_REFUSAL_READBACK"
+    },
+    {
+      "id": 21,
+      "case": "policy-change",
+      "result_sha256": "be75db71c5d2cdb72b9e4d764dcbaee36d4785c7d2cc086b1579ee686973a81d",
+      "raw_records": 34,
+      "ACK_WAIT": 1,
+      "ACK_RESUME": 31,
+      "counts": {
+        "availability": "complete-terminal",
+        "sign_attempts": 1,
+        "auxiliary_calls": 0
+      },
+      "reason": "child-status:5",
+      "actual_wait_status": 0,
+      "private_candidate_retained": false,
+      "verdict": "PASS_BOUNDED_EXPECTED_REFUSAL_READBACK"
+    },
+    {
+      "id": 22,
+      "case": "truncated-result",
+      "result_sha256": "80f9f33a632b4089248dec8d1ef495d2369c925988627b2a5101967dea0081f8",
+      "raw_records": 34,
+      "ACK_WAIT": 1,
+      "ACK_RESUME": 31,
+      "counts": {
+        "availability": "unavailable",
+        "sign_attempts": null,
+        "auxiliary_calls": null
+      },
+      "reason": "partial-record",
+      "actual_wait_status": 0,
+      "private_candidate_retained": false,
+      "verdict": "PASS_BOUNDED_EXPECTED_REFUSAL_READBACK"
+    },
+    {
+      "id": 26,
+      "case": "child-stop",
+      "result_sha256": "739cc2f94a681aeaf637375220f67b73c42b329dd50802042849825a0e5a3b88",
+      "raw_records": 2,
+      "ACK_WAIT": 1,
+      "ACK_RESUME": 0,
+      "counts": {
+        "availability": "source-write-before-sign-barrier",
+        "sign_attempts": 0,
+        "auxiliary_calls": 0
+      },
+      "reason": "child-stop",
+      "actual_wait_status": 9,
+      "private_candidate_retained": false,
+      "verdict": "PASS_BOUNDED_EXPECTED_REFUSAL_READBACK"
+    },
+    {
+      "id": 27,
+      "case": "supervisor-gap",
+      "result_sha256": "5b45456f65e015b5d1d7ac402655e52709b711f53c44c2f15070d690b1bec1a5",
+      "raw_records": 36,
+      "ACK_WAIT": 1,
+      "ACK_RESUME": 31,
+      "counts": {
+        "availability": "complete-terminal",
+        "sign_attempts": 1,
+        "auxiliary_calls": 1
+      },
+      "reason": "monitor-gap",
+      "actual_wait_status": 0,
+      "private_candidate_retained": false,
+      "verdict": "PASS_BOUNDED_EXPECTED_REFUSAL_READBACK"
+    },
+    {
+      "id": 28,
+      "case": "post-core-cancel",
+      "result_sha256": "8103ed7c571117b6adc045edbf14595af313812c30b47cd8199a21329d5b9165",
+      "raw_records": 36,
+      "ACK_WAIT": 1,
+      "ACK_RESUME": 31,
+      "counts": {
+        "availability": "complete-terminal",
+        "sign_attempts": 1,
+        "auxiliary_calls": 1
+      },
+      "reason": "post-core-cancel",
+      "actual_wait_status": 0,
+      "private_candidate_retained": false,
+      "verdict": "PASS_BOUNDED_EXPECTED_REFUSAL_READBACK"
+    }
+  ],
+  "limits": [
+    "Host public-fixture source-specific readback only, no physical consent or product API adoption",
+    "EOF/stdin-close conjunction is attested by source-bound settled receipt; no separate numeric FD/inode snapshot was originally emitted",
+    "No generic hostile-descendant, hard-kill deadline or physical erasure guarantee",
+    "Case22 total counts remain unavailable/null; prefix markers do not fabricate backend totals",
+    "Other18 source selectors remain unexecuted, not implicitly accepted"
+  ]
+}

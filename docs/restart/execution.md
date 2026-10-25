@@ -2,6 +2,14 @@
 
 A Codex coordinator maintains the task graph and assigns bounded work to independent implementers/reviewers. Git worktrees, CI and evidence files are sufficient initially. The latest maintainer policy (20 October 2026) uses `gpt-6.1-sol` with `xhigh` reasoning for coordinator, implementers and reviewers. Minimize Astra; `gpt-6-astra` `xhigh` is an exceptional escalation requiring a concrete task/review complexity reason recorded in its assignment. Hardware/security labels alone do not justify escalation. Verify runtime settings and transition existing authors only at safe recoverable checkpoints; preserve historical model evidence. This foundation does not start an unattended service.
 
+Current scope is the maintainer's 2026-10-25 first milestone in the sole graph:
+session-only connected S3, independent offline Pi/P4 and their required host
+software/releases. Custom Board and generic embedded Board SDK are retained
+later work; the TypeScript product SDK remains current. Prior coordinators and
+assignments are retired; dated checkpoints do not reactivate them. S04 retains
+its terminal platform/document/API/errata block, without retries by another
+model, machine, agent or rephrasing.
+
 The [development contract](development.md) defines specification readiness, first-tranche substeps and a worked one-use authorization contract. A roadmap task is not automatically an implementation-ready brief. Requirements and experiments must be resolved at the boundary being implemented before claiming conformance.
 
 Task lifecycle: planned → ready → running → review → verified → integrated. A blocked task identifies the missing resource, owner and next action. Dependencies must be integrated before dependent acceptance is closed. A code author cannot approve its own final candidate.
@@ -18,7 +26,7 @@ Tasks marked `requires_physical_evidence` additionally require measured evidence
 
 Do not publish secrets or confidential reports. A public redacted/hash-bound report needs authorized review of the underlying restricted evidence. Hashes and structurally consistent records do not prove correctness, reviewer independence in practice or access authorization. Record the later integration commit separately; a review record must not require a commit containing its own hash. Closing metadata can follow the reviewed product candidate without changing that candidate's evidence scope.
 
-Run `make test` for the graph/evidence check and its negative cases; full affected CI remains required. This implements part of O01, not its fresh-session handoff, substantive review or autonomous operating acceptance. Rework creates a new candidate and invalidates affected results; do not insert cycles into the dependency graph.
+Use the existing graph/evidence validator and its negative cases for structural changes; full affected mandatory CI remains required. Reuse unchanged receipts and do not add a separate manual full-CI campaign for report-only packaging. This implements part of O01, not its fresh-session handoff, substantive review or autonomous operating acceptance. Rework creates a new candidate and invalidates affected results; do not insert cycles into the dependency graph.
 
 ## Acceptance layers
 
@@ -36,7 +44,7 @@ Run `make test` for the graph/evidence check and its negative cases; full affect
 
 Zero ERC/DRC findings on an empty board prove nothing useful. A simulated signature, core target build, AI review or test-count total is not physical acceptance or an external security audit.
 
-## Manual review and component freeze
+## Retained later-phase manual review and component freeze
 
 Track document ID, revision, URL, local hash if downloaded, reviewed sections, extracted requirement and open questions. Identify exact package/pin/footprint and electrical interface evidence. Register inaccessible or unread material honestly. Do not claim that all manuals have been reviewed when only relevant sections have been inspected.
 
@@ -53,3 +61,9 @@ An independent developer must build and flash a standalone non-Nostr Board examp
 ## Keeping documentation aligned
 
 Generate supported-device/release tables and API references from structured manifests. Keep requirements and concise decisions next to the owner. Validate links and generated freshness, but test behavior rather than requiring marketing sentences to occur in prose. No unresolved exploitable blocker is waived by renaming it a limitation while retaining the affected guarantee.
+
+Use one useful source/proof/limits/docs delivery, distinct affected review and one
+root CI observer; retain unchanged reviews and wait at least180s between checks
+of an unchanged run. Completed operational worktrees/refs/cache are retired after
+verified minimal private preservation. See the [current delivery and cleanup
+contract](development.md#current-delivery-scope-and-cleanup).
