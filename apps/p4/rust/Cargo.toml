@@ -1,0 +1,23 @@
+[package]
+name = "nsealr-p4-optical"
+version = "0.0.0"
+edition = "2021"
+rust-version = "1.95"
+license = "MIT"
+publish = false
+
+[workspace]
+
+[lib]
+crate-type = ["staticlib"]
+
+[dependencies]
+nsealr-core = { path = "../../../crates/nsealr-core", default-features = false }
+
+[profile.dev]
+panic = "abort"
+
+[profile.release]
+panic = "abort"
+codegen-units = 1
+opt-level = 2

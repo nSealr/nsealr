@@ -1,0 +1,34 @@
+{
+  "role": "ORIGINAL_AUTHOR_NATIVE_OBSERVATIONS_NOT_REPLAYED_DURING_PACKAGING",
+  "compiler": "cc 14.2.0",
+  "sanitizers": [
+    "address",
+    "undefined"
+  ],
+  "GPIO_frame_test": {
+    "sources": [
+      "apps/p4/tests/local_contract_test.c",
+      "apps/p4/main/local_input.c",
+      "apps/p4/main/frame_pixels.c"
+    ],
+    "command": "cc -std=c11 -Wall -Wextra -Werror -fsanitize=address,undefined -g -Imain tests/local_contract_test.c main/local_input.c main/frame_pixels.c -o evidence/local-contract-test; evidence/local-contract-test",
+    "exit": 0,
+    "stdout": "GPIO freshness/debounce/hold/frame-reset/clock and RGB565 bounds/orientation PASS"
+  },
+  "quirc_test": {
+    "sources": [
+      "apps/p4/tests/decode_frame.c",
+      "apps/p4/vendor/quirc/lib/*.c"
+    ],
+    "command": "cc -std=c11 -Wall -Wextra -fsanitize=address,undefined -g -Ivendor/quirc/lib tests/decode_frame.c vendor/quirc/lib/quirc.c vendor/quirc/lib/identify.c vendor/quirc/lib/decode.c vendor/quirc/lib/version_db.c -lm -o evidence/decoder-test; UBSAN_OPTIONS=halt_on_error=1 decoder-test <fixed800x800gray>",
+    "exit": 0,
+    "observations": [
+      "blank detected=0",
+      "one detected=1 grid=57 decode=0 payload_bytes=198",
+      "two detected=2"
+    ],
+    "fixture_source": "Unchanged docs/restart/implementation/QH01/native-qr-probe/execution-01/response-get-public-key.png240x240, centered unscaled in800x800 white; two resized nearest300x300 at20,200 and480,200. No payload printed.",
+    "upstream_warnings": "Existing signedness/unused-parameter warnings in native quirc source; no sanitizer diagnostic after the precise min==0 patch. Target warning flags were not lowered."
+  },
+  "limits": "Synthetic gestures and digital public images only; physical GPIO, camera scans, orientation, DMA/liveness/stack and human consent remain unobserved."
+}

@@ -1,0 +1,6 @@
+cmake_minimum_required(VERSION 3.16)
+if(NOT DEFINED P4_PERIPHERAL_ROOT)
+  message(FATAL_ERROR "Set P4_PERIPHERAL_ROOT to the source-pinned reviewed peripheral candidate")
+endif()
+include($ENV{IDF_PATH}/tools/cmake/project.cmake)
+project(nsealr_p4_public_optical)
