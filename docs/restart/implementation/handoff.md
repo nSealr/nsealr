@@ -1,18 +1,19 @@
 # Execution handoff
 
-Date: 2026-10-24. This handoff gives navigation and recovery procedures, not a second task-status ledger. Read the current graph before choosing work.
+Date: 2026-10-25. This handoff gives navigation and recovery procedures, not a second task-status ledger. Read the current graph before choosing work.
 
-## Explicit operational pause — 24 October 2026
+## Resumed delivery — 25 October 2026
 
-Development stops at the [saved delivery checkpoint](reviews/QH01-rgb-request-engine-delivery/pause-checkpoint.json).
-The new source/proof and capture reviews pass. The already running complete local
-gate finished successfully; its [original raw result](reviews/QH01-rgb-request-engine-delivery/local-full-raw-paused/result.json)
-is saved without claiming source-aware capture or protected-main acceptance.
-No new PR, verification campaign or physical session starts during the pause.
-Resume only after an explicit maintainer instruction, verify current source and
-environment changes, then qualify the retained full log before deciding what must
-repeat. Exact kit/access/operator details remain missing; the physical probe is
-prepared and unexecuted. The goal tool supplies the authoritative pause state.
+The maintainer explicitly reactivated the goal. The [24October pause checkpoint](reviews/QH01-rgb-request-engine-delivery/pause-checkpoint.json)
+remains historical evidence. Repository mains and delivery source were unchanged;
+all22 archived raw files match the retained complete test run. The existing
+source-aware checker and32 full pure controls now [qualify that original full
+log](reviews/QH01-rgb-request-engine-delivery/local-full-qualified/result.json).
+No product tests or actors were replayed to regenerate proof. Review/pause-only
+metadata changes preserve the executable and test inputs; final affected metadata
+checks and delivery-tail review precede normal protected integration and actual-main
+qualification. Exact first-Pi kit/access/operator details are requested once at
+resume; physical testing remains unexecuted. General Rust rewrites remain deferred.
 
 ## Current software foundations and next dependency
 
@@ -28,8 +29,8 @@ client verification, plus loaded-SHA readiness refusal, in one fresh normal Pi C
 One joined current-checkout helper compilation serves both cases; old lifecycle
 and regression checks remain mandatory. [Capture-oracle proof](reviews/QH01-rgb-request-engine-capture/result.json)
 retains its original verifier RED and corrected 51 pure rejection controls, without
-product replay. Distinct affected source/proof/capture and metadata reviews now pass. The complete
-local gate has raw success; full-capture admission, final delivery-tail review,
+product replay. Distinct affected source/proof/capture and metadata reviews now pass. The complete local
+gate and its full source-aware capture now pass; final delivery-tail review,
 protected gates and actual-main qualification remain pending. The graph records exact sources.
 
 Physical kit/image/operator identification remains pending in the existing resource
