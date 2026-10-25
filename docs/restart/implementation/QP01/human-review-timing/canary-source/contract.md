@@ -5,9 +5,12 @@ actor, 5500ms delay or signature has run for this candidate. Distinct exact-sour
 admission is required before compilation or runtime. The sole task graph remains
 `plan/work-items.json`; no criterion is closed.
 
-The opt-in example is
-`crates/nsealr-pi-engine-fixture/examples/qp01_human_wait_canary.rs`.
-`supervisor.py` uses only the Python standard library during the two-actor run.
+The opt-in driver is `driver.rs` in this documentation directory, outside Cargo
+workspace target discovery. It is linked only by the explicit pinned rustc recipe
+against the unique original core-host rlib selected from Cargo compiler-artifact
+JSON and hashed with its source/target/path. No example/bin target, Cargo manifest,
+dependency edge or default gate is added. `supervisor.py` uses only the Python
+standard library during the two-actor run.
 The separate `verify` invocation loads the existing hash-bound independent S03
 oracle after settlement. It neither signs nor starts an engine actor.
 
@@ -139,20 +142,58 @@ without trusting a child phase label; source guards separately prevent early API
 calls. S's independent cell receipt proves only the separate synthetic draw step.
 
 S polls at most25ms; every IO/record step checks monotonic time, with checkpoints
-at most50ms apart. All pipes are nonblocking on S; no provider/driver/crypto verifier
+at most50ms apart. Each guard resamples AFTER its /proc/accounting and heavy trace
+preparation; gap, absolute expiry and ACTIVE ledger use that completed endpoint.
+It preserves the offending raw sample before raising. ACKs remain guarded before
+queue/write. Final retention has a fresh completed guard and a final local clock/
+ledger seal with no intervening IO/callback/await. All pipes are nonblocking on S; no provider/driver/crypto verifier
 runs on its monitoring loop. Any gap over50ms revokes before later input/ACK/result.
 This is a run refusal threshold, not a Linux scheduling or hard kill guarantee.
 A paused/descheduled S cannot enforce by that wall instant; after resumption,
 elapsed work and the failed gap cannot be erased. Already-started effects cannot
-be recalled. supervisor-gap injects an actual75ms sleep, not an OS SIGSTOP claim.
+be recalled. The existing supervisor-gap selector27 now injects its actual75ms
+sleep inside the final retention guard after OS/trace work. The fresh post-delay
+sample must fail, despite an earlier inside-budget entry sample. It is not an OS
+SIGSTOP claim; selectors remain33 and first-tranche cases remain15.
+
+
+The compact report retains the common origin/deadline, process identity snapshots,
+full raw CPU baseline event, raw S/R samples (including a failing sample), phase
+transition endpoints, final WAIT-CPU charge, and final retention timestamp/ledger.
+Regular guard raw_cpu arrays are ordered [S,R], with null for an unavailable actor;
+baseline_event names the full raw /proc baseline row. guard_failure additionally
+retains PID-keyed raw/baseline/upper values and start/completion/previous times.
+All charged values can be recomputed as
+`(WAIT_start-origin)+(retention-WAIT_end)+sum(delta_ticks*10ms+20ms)`;
+no per-page reset is hidden. The final completed observation and retention must
+both meet<=5000ms and the absolute deadline. The report uses compact JSON within
+the unchanged131072byte cap; raw streams and their observed byte counts distinguish
+fully retained capture from truncation. Forensic reconstruction/parent shape work
+on a successful path remains ACTIVE through the fresh retention seal.
 
 ## One use, settlement and evidence roles
 
-R invokes public sign_approved only after core's complete distinct final approval.
-It counts driver API entries and auxiliary calls only. Core's consuming approval,
+R attempts public sign_approved only after core's complete distinct final approval.
+The SIGN_ENTRY marker is written and flushed BEFORE the call. Its presence alone
+is a witness of a possible attempt; killing R immediately afterward may prevent
+the actual call. Auxiliary markers are also distinct from complete terminal
+counters. No marker is a private backend counter. Core's consuming approval,
 internal backend verification and staging remain unchanged. No new backend counter
 or arbitrary backend-fault injection is claimed. Existing source-identical K01
 private test evidence keeps original bf51/4bab identities and is not rerun here.
+
+After known settlement, bounded in-memory forensic parsing recovers complete
+records from original streams even after live revocation. It never applies a
+protocol transition or restores authority. Complete terminal counters are accepted
+only when framing/sequence/incarnation and marker/review counts agree. If R's
+stdout is truly complete through EOF and wait, record-aligned and fully retained,
+absence of SIGN_ENTRY proves zero public sign attempts from this exact source's
+write_all+flush-before-call ordering; no auxiliary callback can precede that public
+call. This source barrier can prove0/0 without a terminal after SIGKILL. It requires
+this precise source/binary binding, one thread, full stream and actual collection;
+absence of ACK alone cannot prove it. A marker without terminal never fabricates
+an actual call/backend count. Lost/truncated evidence remains unavailable, with
+only positive prefix markers described as possible-attempt witnesses.
 
 S stages a bounded candidate privately, requires actual direct-child wait4 status,
 stdout/stderr EOF, its input FD closed, complete one terminal and fresh guards,
@@ -182,8 +223,17 @@ wrong-correlation; policy-change; truncated-result; child-stop; supervisor-gap;
 post-core-cancel. These discriminate real wait, authority, independent CPU,
 currentness/sign-entry/auxiliary and known collection without a broad campaign.
 
-Other selectors are separately marked later-source-only. Their presence is not
-runtime admission, evidence or permission for an automatic full matrix. The recipe
+Only these15 first-tranche cases have evidence predicates. Each predicate binds
+actual stage/fault observation, captured authoritative ACK state and required
+count availability/values; a reason string or selector alone cannot pass. In
+particular pre-sign faults require proven0/0, partial draw requires no commit/WAIT/
+resume, post-core cancel requires the complete scoped result hash/length plus1/1,
+and truncated-result explicitly preserves unavailable total counts and positive
+prefix markers without inventing zero. Collection itself never requires a terminal.
+
+Other selectors are separately marked later-source-only and cannot return PASS
+through this candidate's grader. Their presence is not runtime admission, evidence
+or permission for an automatic full matrix. The recipe
 runs no batch automatically. A different failure, lost count or unknown settlement
 must remain RED/inconclusive; thresholds cannot be raised to force an expected class.
 Parent crypto verification/publication under a responsive additional/incremental

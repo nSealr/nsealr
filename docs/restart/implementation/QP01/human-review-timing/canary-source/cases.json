@@ -11,7 +11,9 @@
       "runtime_executed": false,
       "tranche": "first_proposed",
       "literal_fault": "one real5500ms wait and private candidate",
-      "threshold_waiver": false
+      "threshold_waiver": false,
+      "grading_scope": "first_tranche_evidence_predicate",
+      "required_discriminating_evidence": "known collection; original INIT bound; full31-frame/31-ACK review; complete terminal1/1; real wait>=5500ms; fresh retained endpoint/deadline and reconstructed ledger<=5000ms"
     },
     {
       "id": 1,
@@ -22,7 +24,9 @@
       "runtime_executed": false,
       "tranche": "first_proposed",
       "literal_fault": "cancel in wait before resume",
-      "threshold_waiver": false
+      "threshold_waiver": false,
+      "grading_scope": "first_tranche_evidence_predicate",
+      "required_discriminating_evidence": "actual cancel fault in first WAIT after WAIT_READY; no RESUME queued/sent; complete terminal0/0 or complete EOF source write-before-sign barrier proving0/0"
     },
     {
       "id": 2,
@@ -33,7 +37,9 @@
       "runtime_executed": false,
       "tranche": "first_proposed",
       "literal_fault": "actual shorter100ms caller deadline",
-      "threshold_waiver": false
+      "threshold_waiver": false,
+      "grading_scope": "first_tranche_evidence_predicate",
+      "required_discriminating_evidence": "captured original INIT; actual failing completed guard at/after100ms caller deadline; no RESUME; required proven0/0, not absent markers alone"
     },
     {
       "id": 3,
@@ -44,7 +50,9 @@
       "runtime_executed": false,
       "tranche": "first_proposed",
       "literal_fault": "S sink fails before full commit",
-      "threshold_waiver": false
+      "threshold_waiver": false,
+      "grading_scope": "first_tranche_evidence_predicate",
+      "required_discriminating_evidence": "observed partial-draw fault on first frame; no sink commit/WAIT exemption/RESUME; required proven0/0"
     },
     {
       "id": 4,
@@ -55,7 +63,9 @@
       "runtime_executed": false,
       "tranche": "first_proposed",
       "literal_fault": "stale epoch in scoped ACK",
-      "threshold_waiver": false
+      "threshold_waiver": false,
+      "grading_scope": "first_tranche_evidence_predicate",
+      "required_discriminating_evidence": "actual first RESUME invocation1/epoch0 in complete S stream; scoped R terminal5; required proven0/0"
     },
     {
       "id": 5,
@@ -66,7 +76,8 @@
       "runtime_executed": false,
       "tranche": "later_source_only",
       "literal_fault": "duplicate cycle serial on second page",
-      "threshold_waiver": false
+      "threshold_waiver": false,
+      "grading_scope": "later_source_only_never_PASS_here"
     },
     {
       "id": 6,
@@ -77,7 +88,8 @@
       "runtime_executed": false,
       "tranche": "later_source_only",
       "literal_fault": "different incarnation guaranteed by nonce bit flip",
-      "threshold_waiver": false
+      "threshold_waiver": false,
+      "grading_scope": "later_source_only_never_PASS_here"
     },
     {
       "id": 7,
@@ -88,7 +100,8 @@
       "runtime_executed": false,
       "tranche": "later_source_only",
       "literal_fault": "preheld/incomplete cycle",
-      "threshold_waiver": false
+      "threshold_waiver": false,
+      "grading_scope": "later_source_only_never_PASS_here"
     },
     {
       "id": 8,
@@ -99,7 +112,8 @@
       "runtime_executed": false,
       "tranche": "later_source_only",
       "literal_fault": "simultaneous cycle flags",
-      "threshold_waiver": false
+      "threshold_waiver": false,
+      "grading_scope": "later_source_only_never_PASS_here"
     },
     {
       "id": 9,
@@ -110,7 +124,8 @@
       "runtime_executed": false,
       "tranche": "later_source_only",
       "literal_fault": "R WAIT_READY without S commit/WAIT_ACK",
-      "threshold_waiver": false
+      "threshold_waiver": false,
+      "grading_scope": "later_source_only_never_PASS_here"
     },
     {
       "id": 10,
@@ -121,7 +136,9 @@
       "runtime_executed": false,
       "tranche": "first_proposed",
       "literal_fault": "actual R CPU busy-loop under WAIT label",
-      "threshold_waiver": false
+      "threshold_waiver": false,
+      "grading_scope": "first_tranche_evidence_predicate",
+      "required_discriminating_evidence": "first WAIT_READY with no RESUME; raw failing R CPU delta/baseline upper>100ms; required proven0/0 via complete terminal or source barrier"
     },
     {
       "id": 11,
@@ -132,7 +149,9 @@
       "runtime_executed": false,
       "tranche": "first_proposed",
       "literal_fault": "S resume guard attempted before ACTIVE/watchdog arm",
-      "threshold_waiver": false
+      "threshold_waiver": false,
+      "grading_scope": "first_tranche_evidence_predicate",
+      "required_discriminating_evidence": "observed premature resume guard in first WAIT while unarmed; no gesture queued/sent; required proven0/0"
     },
     {
       "id": 12,
@@ -143,7 +162,9 @@
       "runtime_executed": false,
       "tranche": "first_proposed",
       "literal_fault": "R dispatch guard attempted in Waiting state",
-      "threshold_waiver": false
+      "threshold_waiver": false,
+      "grading_scope": "first_tranche_evidence_predicate",
+      "required_discriminating_evidence": "complete scoped R terminal5 in first WAIT before any RESUME, review count1 and required proven0/0; source branch fixes dispatch-guard location"
     },
     {
       "id": 13,
@@ -154,7 +175,9 @@
       "runtime_executed": false,
       "tranche": "first_proposed",
       "literal_fault": "injected AuxiliarySource reports31",
-      "threshold_waiver": false
+      "threshold_waiver": false,
+      "grading_scope": "first_tranche_evidence_predicate",
+      "required_discriminating_evidence": "full31 review/ACKs; complete terminal5 sign-attempt1/aux1; source-bound short31 auxiliary branch, no backend hook"
     },
     {
       "id": 14,
@@ -165,7 +188,8 @@
       "runtime_executed": false,
       "tranche": "later_source_only",
       "literal_fault": "injected AuxiliarySource returns Provider",
-      "threshold_waiver": false
+      "threshold_waiver": false,
+      "grading_scope": "later_source_only_never_PASS_here"
     },
     {
       "id": 15,
@@ -176,7 +200,8 @@
       "runtime_executed": false,
       "tranche": "later_source_only",
       "literal_fault": "injected AuxiliarySource blocks under S watchdog",
-      "threshold_waiver": false
+      "threshold_waiver": false,
+      "grading_scope": "later_source_only_never_PASS_here"
     },
     {
       "id": 16,
@@ -187,7 +212,9 @@
       "runtime_executed": false,
       "tranche": "first_proposed",
       "literal_fault": "wrong correlation passed to public sign_approved",
-      "threshold_waiver": false
+      "threshold_waiver": false,
+      "grading_scope": "first_tranche_evidence_predicate",
+      "required_discriminating_evidence": "full31 review/ACKs; complete terminal5 sign-attempt1/aux0; source-bound wrong-correlation public call"
     },
     {
       "id": 17,
@@ -198,7 +225,8 @@
       "runtime_executed": false,
       "tranche": "later_source_only",
       "literal_fault": "public output buffer16bytes",
-      "threshold_waiver": false
+      "threshold_waiver": false,
+      "grading_scope": "later_source_only_never_PASS_here"
     },
     {
       "id": 18,
@@ -209,7 +237,8 @@
       "runtime_executed": false,
       "tranche": "later_source_only",
       "literal_fault": "explicit clock-provider unavailable simulation",
-      "threshold_waiver": false
+      "threshold_waiver": false,
+      "grading_scope": "later_source_only_never_PASS_here"
     },
     {
       "id": 19,
@@ -220,7 +249,8 @@
       "runtime_executed": false,
       "tranche": "later_source_only",
       "literal_fault": "explicit1->0 clock-provider rollback simulation",
-      "threshold_waiver": false
+      "threshold_waiver": false,
+      "grading_scope": "later_source_only_never_PASS_here"
     },
     {
       "id": 20,
@@ -231,7 +261,8 @@
       "runtime_executed": false,
       "tranche": "later_source_only",
       "literal_fault": "explicit clock-provider100 boundary simulation",
-      "threshold_waiver": false
+      "threshold_waiver": false,
+      "grading_scope": "later_source_only_never_PASS_here"
     },
     {
       "id": 21,
@@ -242,7 +273,9 @@
       "runtime_executed": false,
       "tranche": "first_proposed",
       "literal_fault": "serialized public policy_changed before attempted sign",
-      "threshold_waiver": false
+      "threshold_waiver": false,
+      "grading_scope": "first_tranche_evidence_predicate",
+      "required_discriminating_evidence": "full31 review/ACKs; complete terminal5 sign-attempt1/aux0; serialized public policy_changed branch"
     },
     {
       "id": 22,
@@ -253,7 +286,9 @@
       "runtime_executed": false,
       "tranche": "first_proposed",
       "literal_fault": "R truncates a RESULT record then exits",
-      "threshold_waiver": false
+      "threshold_waiver": false,
+      "grading_scope": "first_tranche_evidence_predicate",
+      "required_discriminating_evidence": "full31 review/ACKs; complete prefix sign/aux markers1/1 only as attempt witnesses; actual partial RESULT header scope0; counters explicitly unavailable; known exit0 and no eligibility"
     },
     {
       "id": 23,
@@ -264,7 +299,8 @@
       "runtime_executed": false,
       "tranche": "later_source_only",
       "literal_fault": "R emits a second TERMINAL",
-      "threshold_waiver": false
+      "threshold_waiver": false,
+      "grading_scope": "later_source_only_never_PASS_here"
     },
     {
       "id": 24,
@@ -275,7 +311,8 @@
       "runtime_executed": false,
       "tranche": "later_source_only",
       "literal_fault": "R holds stdout/process after terminal",
-      "threshold_waiver": false
+      "threshold_waiver": false,
+      "grading_scope": "later_source_only_never_PASS_here"
     },
     {
       "id": 25,
@@ -286,7 +323,8 @@
       "runtime_executed": false,
       "tranche": "later_source_only",
       "literal_fault": "R exit3 before owner construction",
-      "threshold_waiver": false
+      "threshold_waiver": false,
+      "grading_scope": "later_source_only_never_PASS_here"
     },
     {
       "id": 26,
@@ -297,7 +335,9 @@
       "runtime_executed": false,
       "tranche": "first_proposed",
       "literal_fault": "S sends actual SIGSTOP to R, observes T/t, then revokes/collects",
-      "threshold_waiver": false
+      "threshold_waiver": false,
+      "grading_scope": "first_tranche_evidence_predicate",
+      "required_discriminating_evidence": "actual observed T/t after owned SIGSTOP; first WAIT and no RESUME; known subsequent SIGKILL collection; required proven0/0, no terminal requirement for collection itself"
     },
     {
       "id": 27,
@@ -307,8 +347,10 @@
       "backend_observation": false,
       "runtime_executed": false,
       "tranche": "first_proposed",
-      "literal_fault": "S intentionally pauses75ms; actual elapsed gap, not an OS SIGSTOP claim",
-      "threshold_waiver": false
+      "literal_fault": "S intentionally pauses75ms inside the final retention checkpoint after OS/trace work; real post-sign guard gap, not an OS SIGSTOP or frozen clock",
+      "threshold_waiver": false,
+      "grading_scope": "first_tranche_evidence_predicate",
+      "required_discriminating_evidence": "full31 review/ACKs and terminal0 with1/1; real75ms delay inside retention guard; completed guard gap>50ms; failure telemetry and no retention eligibility"
     },
     {
       "id": 28,
@@ -319,7 +361,9 @@
       "runtime_executed": false,
       "tranche": "first_proposed",
       "literal_fault": "S revokes on post-core private RESULT before retention",
-      "threshold_waiver": false
+      "threshold_waiver": false,
+      "grading_scope": "first_tranche_evidence_predicate",
+      "required_discriminating_evidence": "actual complete scoped RESULT hash/length matches post-core cancel witness; full31 review/ACKs; complete terminal counts1/1; no eligibility"
     },
     {
       "id": 29,
@@ -330,7 +374,8 @@
       "runtime_executed": false,
       "tranche": "later_source_only",
       "literal_fault": "R emits declared body length1021 before any allocation",
-      "threshold_waiver": false
+      "threshold_waiver": false,
+      "grading_scope": "later_source_only_never_PASS_here"
     },
     {
       "id": 30,
@@ -341,7 +386,8 @@
       "runtime_executed": false,
       "tranche": "later_source_only",
       "literal_fault": "None returns; S replays old invocation on the repeated page",
-      "threshold_waiver": false
+      "threshold_waiver": false,
+      "grading_scope": "later_source_only_never_PASS_here"
     },
     {
       "id": 31,
@@ -352,7 +398,8 @@
       "runtime_executed": false,
       "tranche": "later_source_only",
       "literal_fault": "Approve action on a data frame rejected by local adapter",
-      "threshold_waiver": false
+      "threshold_waiver": false,
+      "grading_scope": "later_source_only_never_PASS_here"
     },
     {
       "id": 32,
@@ -363,7 +410,8 @@
       "runtime_executed": false,
       "tranche": "later_source_only",
       "literal_fault": "Next on separate decision rejected by local adapter",
-      "threshold_waiver": false
+      "threshold_waiver": false,
+      "grading_scope": "later_source_only_never_PASS_here"
     }
   ],
   "first_tranche_ids": [
@@ -403,5 +451,7 @@
     31,
     32
   ],
-  "tranche_rule": "No runtime is admitted. First proposed tranche isolates positive, cancel/expiry, source/CPU authority, context/sign-entry/auxiliary and actual settlement; remaining selectors require a separate explicit runtime assignment, not automatic campaign expansion."
+  "tranche_rule": "No runtime is admitted. First proposed tranche isolates positive, cancel/expiry, source/CPU authority, context/sign-entry/auxiliary and actual settlement; remaining selectors require a separate explicit runtime assignment, not automatic campaign expansion.",
+  "count_evidence_rule": "SIGN_ENTRY write_all+flush precedes public sign_approved in this exact single-thread source. Truly complete EOF/wait stdout with no marker can prove zero from source control; a marker without terminal is only a possible-attempt witness. Truncated/lost evidence never fabricates a zero or actual backend count.",
+  "case27_correction": "Existing selector reused at the final retention guard; catalog remains33, first tranche15, no runtime executed."
 }

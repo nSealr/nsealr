@@ -66,9 +66,8 @@ const RESULT: u8 = 7;
 const TERMINAL: u8 = 8;
 const SIGN_ENTRY: u8 = 9;
 const AUX_ENTRY: u8 = 10;
-const RAW: &[u8] = include_bytes!(
-    "../../../docs/restart/implementation/QH01/native-qr-probe/expected/request-kind-1-basic.envelope"
-);
+const RAW: &[u8] =
+    include_bytes!("../../../QH01/native-qr-probe/expected/request-kind-1-basic.envelope");
 const RAW_SHA: &[u8; 64] = b"88a16190a1b1ed033fc9bebe5452af70e9a9783fd6b92305add2ac7134039ff7";
 
 struct Record {
