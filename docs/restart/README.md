@@ -44,9 +44,11 @@ and [distinct correction review](implementation/reviews/R00-crypto-bigint-remedi
 retain their historical source identities. The next [automatic real-engine
 candidate](implementation/QH01/manual-port/python-rgb-composition/proof/request-engine-ci/README.md)
 has one fresh normal Pi CI passing actual RGB decode, Rust public-fixture signature,
-client verification and loaded-SHA readiness refusal. Distinct affected source/proof/capture reviews now pass; the already running full
-local gate also returned success. Its capture admission and protected integration
-remain pending at the [explicit safe-pause checkpoint](implementation/reviews/QH01-rgb-request-engine-delivery/pause-checkpoint.json). Camera, display/input bindings, an
+client verification and loaded-SHA readiness refusal. Distinct affected source/proof/capture reviews now pass; the complete local
+gate and its retained full source-aware capture now pass. The maintainer resumed
+the project on25October; [qualification and limits](implementation/reviews/QH01-rgb-request-engine-delivery/local-full-qualified/result.json)
+preserve the original pause evidence. Final delivery-tail review and protected
+integration remain pending. Camera, display/input bindings, an
 identified Pi image and physical tests remain prerequisites; no physical release
 or production route is accepted.
 
