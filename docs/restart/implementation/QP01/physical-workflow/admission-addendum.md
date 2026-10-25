@@ -20,9 +20,15 @@ The single positive invocation shape is:
   --output "$OUT" --worker "$W" --sha256 "$W_SHA" --node "$NODE" \
   --bridge "$ROOT/apps/bridge/service/dist" --reuse "$ROOT" \
   --engine-library "$LIB" --engine-sha256 "$LIB_SHA" \
-  --engine-module "$PREP/native-leaf.js" --engine-module-sha256 "$LEAF_SHA" \
-  --engine-preparation "$PREP/receipt.json"
+  --engine-module "$MODULE_DIR/native-leaf.js" --engine-module-sha256 "$LEAF_SHA" \
+  --engine-preparation "$PREPARATION_RECEIPT"
 ```
+
+Take `MODULE_DIR` from the actual preparation record's `output_dir` and
+`PREPARATION_RECEIPT` from its `receipt`; the module path must equal
+`outputs['native-leaf.js']['path']`. The existing producer emits
+`temporary/module/native-leaf.js` and `temporary/preparation.json`, respectively.
+Freeze these actual returned fields; do not copy/rename a receipt or invent an alias.
 
 These are required trusted **operator/fixture inputs**, never request fields.
 Before any RGB/O/Node/C, freeze their actual absolute paths/argv, current Git
