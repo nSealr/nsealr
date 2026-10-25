@@ -1,0 +1,30 @@
+{
+  "schema_version": 1,
+  "role": "CORRECTED_SOURCE_FREEZE_BEFORE_SAME14_PURE_RETRY",
+  "from_commit": "034f2ab9067c17894e12cf7d888dd6e3bdd15df4",
+  "first_source": "831d0a9210cdb62d2e7b48248aadb76aebb07b63",
+  "first_RED_archive_sha256": "3b37e727d1714cdd14e62a72876b3661fe8a603fdadd1834835425e2c040c332",
+  "classification": "PRODUCT_ADAPTER_PURE_ERROR_ORDER",
+  "cause": "ASCII decode during enter logging preceded whole-presentation validation. No observed native mapping or process outcome.",
+  "correction": "plan validates every field type/ASCII/line and whole-frame bounds before any decode; InspectionIo completes plan before enter logging. Invalid input retains bounded display_error metadata only.",
+  "corrected_source": {
+    "path": "apps/pi/app/nsealr_vault/synthetic_inspection.py",
+    "bytes": 12997,
+    "sha256": "1f8eb5b4d6b8192dbb066a4a022517de4c3500223318bf2f34140ab84350dae3"
+  },
+  "original_test_unchanged": {
+    "path": "docs/restart/implementation/QP01/physical-workflow/synthetic-inspection/test_synthetic_inspection.py",
+    "bytes": 9786,
+    "sha256": "d8c10ab274241deed6434e1fc755324ff321e30518a6f7d5e5e44db590ba3827"
+  },
+  "other_frozen_sources_unchanged": 4,
+  "retry_command": [
+    "python3",
+    "-B",
+    "docs/restart/implementation/QP01/physical-workflow/synthetic-inspection/test_synthetic_inspection.py"
+  ],
+  "permitted_after_green": "Original one early actual batch basic-fresh then reject-data; stop on any first new RED",
+  "prohibited": "No full22/legacy211/normal/full/hosted/flash/newRust or native-leaf/timer change",
+  "execution_at_freeze": "NONE after correction",
+  "human_clock_property": "OPEN"
+}

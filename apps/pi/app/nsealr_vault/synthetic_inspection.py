@@ -86,17 +86,19 @@ def plan(page, width=240, height=240):
     require(type(width) is int and type(height) is int and (width, height) == (240, 240), "trusted viewport")
     require(type(page.kind) is int and page.kind in (0, 1), "kind")
     require(type(page.index) is int and type(page.total) is int and 0 <= page.index < page.total <= 1024, "page identity")
-    commands = []
-    y = 48
-    for role, raw in (("label", page.label), ("body", page.body), ("position", page.position)):
+    fields = (("label", page.label), ("body", page.body), ("position", page.position))
+    lines = []
+    for role, raw in fields:
         require(type(raw) is bytes and all(byte == 10 or 32 <= byte <= 126 for byte in raw), "printable ASCII/LF bytes")
         for line in raw.split(b"\n"):
-            require(len(line) <= 32 and y <= 48 + 7 * 16, "32x8 whole-frame fit")
-            commands.append({"role": role, "text": line.decode("ascii"), "x": 24, "y": y,
-                             "width": len(line) * 6, "height": 8})
-            y += 16
+            require(len(line) <= 32 and len(lines) < 8, "32x8 whole-frame fit")
+            lines.append((role, line))
     header = f"kind={page.kind} index={page.index} total={page.total}"
     footer = "NEXT/REJECT" if page.kind == 0 else "APPROVE/REJECT"
+    require(len(header) * 6 <= width - 48 and len(footer) * 6 <= width - 48, "header/footer fit")
+    # Only fully validated fields reach decoding, commands or retained diagnostics.
+    commands = [{"role": role, "text": line.decode("ascii"), "x": 24, "y": 48 + index * 16,
+                 "width": len(line) * 6, "height": 8} for index, (role, line) in enumerate(lines)]
     commands = [{"role": "header", "text": header, "x": 24, "y": 16,
                  "width": len(header) * 6, "height": 8}, *commands,
                 {"role": "footer", "text": footer, "x": 24, "y": 208,
@@ -185,13 +187,13 @@ class InspectionIo:
         self.epoch += 1
         epoch = self.epoch
         try:
+            commands = plan(page)
             self.trace.add("enter", epoch=epoch, page={"kind": page.kind, "index": page.index, "total": page.total,
                            "label": page.label.decode("ascii"), "body": page.body.decode("ascii"),
                            "position": page.position.decode("ascii")})
             pressed, queued = self.inputs.baseline(page)
             self.trace.add("baseline", epoch=epoch, pressed=list(pressed), queued=queued)
             require(not pressed and type(queued) is int and queued == 0, "preheld/queued input")
-            commands = plan(page)
             self.trace.add("fit", epoch=epoch, command_count=len(commands), glyph_width=6, glyph_height=8)
             for command in commands:
                 self.sink.draw(epoch, page, command)
