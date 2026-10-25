@@ -1,0 +1,223 @@
+{
+  "schema_version": 1,
+  "result": "FUNCTIONAL_SMOKE_PASS_WITH_INCOMPLETE_62_INPUT_FREEZE",
+  "actual_execution_commit": "1e339eed62cefaf1621aab880a2f6d3195512da0",
+  "actual_execution_tree": "4e2a38343b152ebde46cb7a140293571c774f189",
+  "source_before": {
+    "apps/pi/app/nsealr_vault/synthetic_inspection.py": "1f8eb5b4d6b8192dbb066a4a022517de4c3500223318bf2f34140ab84350dae3",
+    "docs/restart/implementation/QH01/manual-port/python-rgb-composition/run-composition.py": "64495f40b41665ffcd1cad497a147018cec9a3ef4e016ea19823f95b28dcd09b",
+    "docs/restart/implementation/QH01/manual-port/python-rgb-composition/bridge-child.mjs": "da598c4fb5cb782ad886d7f6050b8490aaedf7c207bdf5524f7b5dfffd00abc0",
+    "docs/restart/implementation/QP01/request-engine/exchange.py": "b246a1136b0ca27407c82aa297d87c7579b4659aa43e32b40a9da89e8a672405",
+    "docs/restart/implementation/QP01/physical-workflow/synthetic-inspection/test_synthetic_inspection.py": "d8c10ab274241deed6434e1fc755324ff321e30518a6f7d5e5e44db590ba3827"
+  },
+  "source_after": {
+    "apps/pi/app/nsealr_vault/synthetic_inspection.py": "1f8eb5b4d6b8192dbb066a4a022517de4c3500223318bf2f34140ab84350dae3",
+    "docs/restart/implementation/QH01/manual-port/python-rgb-composition/run-composition.py": "64495f40b41665ffcd1cad497a147018cec9a3ef4e016ea19823f95b28dcd09b",
+    "docs/restart/implementation/QH01/manual-port/python-rgb-composition/bridge-child.mjs": "da598c4fb5cb782ad886d7f6050b8490aaedf7c207bdf5524f7b5dfffd00abc0",
+    "docs/restart/implementation/QP01/request-engine/exchange.py": "b246a1136b0ca27407c82aa297d87c7579b4659aa43e32b40a9da89e8a672405",
+    "docs/restart/implementation/QP01/physical-workflow/synthetic-inspection/test_synthetic_inspection.py": "d8c10ab274241deed6434e1fc755324ff321e30518a6f7d5e5e44db590ba3827"
+  },
+  "source_status_after_actual": "",
+  "first_RED": {
+    "source_commit": "831d0a9210cdb62d2e7b48248aadb76aebb07b63",
+    "preserved_commit": "034f2ab9067c17894e12cf7d888dd6e3bdd15df4",
+    "classification": "PRODUCT_ADAPTER_PURE_ERROR_ORDER",
+    "path": "first-pure-red.json",
+    "not_relabelled_as_native_failure": true
+  },
+  "same14_pure_controls": {
+    "commands": [
+      {
+        "label": "same14-pure-controls",
+        "argv": [
+          "python3",
+          "-B",
+          "docs/restart/implementation/QP01/physical-workflow/synthetic-inspection/test_synthetic_inspection.py"
+        ],
+        "cwd": "/home/tux/nsealr/.restart-tools/goal/qp01-physical-fixture-workflow",
+        "started": "2026-10-25T08:58:32.315215+00:00",
+        "log": "00-same14-pure-controls.log",
+        "ended": "2026-10-25T08:58:32.350893+00:00",
+        "exit_code": 0,
+        "sha256": "51ac51727ba80067eed43fe3ea343c3dcc5c48bf16408f95de5ac7cd8b249b0c"
+      }
+    ],
+    "elapsed_seconds": 0.03900549095124006,
+    "original_test_source_unchanged": true
+  },
+  "preparation": {
+    "commands": [
+      {
+        "label": "offline-lock-install",
+        "argv": [
+          "pnpm",
+          "install",
+          "--frozen-lockfile",
+          "--offline"
+        ],
+        "cwd": "/home/tux/nsealr/.restart-tools/goal/qp01-physical-fixture-workflow",
+        "started": "2026-10-25T08:59:09.005862+00:00",
+        "log": "00-offline-lock-install.log",
+        "ended": "2026-10-25T08:59:09.784727+00:00",
+        "exit_code": 0,
+        "sha256": "21ffa538c1c164d0695f94de054aca0423c9c288c8694a1af4f5c848cd16c121"
+      },
+      {
+        "label": "current-ROOT-Bridge-packages-build",
+        "argv": [
+          "pnpm",
+          "build"
+        ],
+        "cwd": "/home/tux/nsealr/.restart-tools/goal/qp01-physical-fixture-workflow",
+        "started": "2026-10-25T08:59:09.785134+00:00",
+        "log": "01-current-ROOT-Bridge-packages-build.log",
+        "ended": "2026-10-25T08:59:20.253943+00:00",
+        "exit_code": 0,
+        "sha256": "e6b9d48b405b4b68ec3d5054bde670e82e89a4a6be88ecc100125646dab17f89"
+      },
+      {
+        "label": "existing-joined-native-leaf-preparation",
+        "argv": [
+          "python3",
+          "-B",
+          "-c",
+          "import os,runpy; m=runpy.run_path('docs/restart/implementation/QP01/request-engine/exchange.py'); m['prepare_native_leaf'](dict(os.environ))"
+        ],
+        "cwd": "/home/tux/nsealr/.restart-tools/goal/qp01-physical-fixture-workflow",
+        "started": "2026-10-25T08:59:20.254288+00:00",
+        "log": "02-existing-joined-native-leaf-preparation.log",
+        "ended": "2026-10-25T08:59:20.817195+00:00",
+        "exit_code": 0,
+        "sha256": "663f7c86300f1798acbf1cbba7ed8ba45e787483133e08b58d88802e300b945c"
+      }
+    ],
+    "elapsed_seconds": 11.8133424827829,
+    "Rust_rebuilds": 0,
+    "native_leaf_preparation_calls": 1,
+    "current_ROOT_package_build_calls": 1,
+    "pnpm_lock_before": "6bb111659e2df436a81e4a566023e501e07573f49e5ff140b421835360ae2c48",
+    "pnpm_lock_after": "6bb111659e2df436a81e4a566023e501e07573f49e5ff140b421835360ae2c48"
+  },
+  "early_actual": {
+    "commands": [
+      {
+        "label": "basic-fresh",
+        "argv": [
+          "/home/tux/nsealr/.restart-tools/goal/r00/tools/baseline/.work/final/.tools/python/bin/python3.12",
+          "-B",
+          "/home/tux/nsealr/.restart-tools/goal/qp01-physical-fixture-workflow/docs/restart/implementation/QH01/manual-port/python-rgb-composition/run-composition.py",
+          "--case",
+          "fixture_request_engine",
+          "--synthetic-inspection",
+          "basic-fresh",
+          "--output",
+          "/home/tux/nsealr/.restart-tools/goal/qp01-synthetic-inspection-runtime-2026-10-25/basic-fresh",
+          "--worker",
+          "/home/tux/nsealr/.restart-tools/goal/qh01-rgb-request-engine-ci-execution/apps/pi/qr-worker/target/release/nsealr-qr-worker",
+          "--sha256",
+          "43aff637ede40eddf386b802be2601014f59296d3b354f5f8f6b243fabaf0300",
+          "--node",
+          "/home/tux/nsealr/.restart-tools/goal/r00/tools/baseline/.work/final/.tools/node/bin/node",
+          "--bridge",
+          "/home/tux/nsealr/.restart-tools/goal/qp01-physical-fixture-workflow/apps/bridge/service/dist",
+          "--reuse",
+          "/home/tux/nsealr/.restart-tools/goal/qp01-physical-fixture-workflow",
+          "--engine-library",
+          "/home/tux/nsealr/.restart-tools/goal/qh01-rgb-request-engine-ci-execution/target/release/libnsealr_pi_engine_fixture.so",
+          "--engine-sha256",
+          "a14f3ee3392c5b38322d9ac2e9e76ad2b332466427fdb8d86683e1e8d723209f",
+          "--engine-module",
+          "/home/tux/nsealr/.restart-tools/goal/qp01-synthetic-inspection-runtime-2026-10-25/tmp/nsealr-qh01-native-leaf-_80xgtyz/module/native-leaf.js",
+          "--engine-module-sha256",
+          "2d0b31bee68128e2295c19c4d3336503f020eb2625fc86b0733302bbb1f11083",
+          "--engine-preparation",
+          "/home/tux/nsealr/.restart-tools/goal/qp01-synthetic-inspection-runtime-2026-10-25/tmp/nsealr-qh01-native-leaf-_80xgtyz/preparation.json"
+        ],
+        "cwd": "/home/tux/nsealr/.restart-tools/goal/qp01-physical-fixture-workflow",
+        "started": "2026-10-25T09:01:19.688332+00:00",
+        "log": "00-basic-fresh.log",
+        "ended": "2026-10-25T09:01:19.936631+00:00",
+        "exit_code": 0,
+        "sha256": "15c8eb992652eed3a5871fa25925f45e0953add6fee91dc368443bd9bf6fc098"
+      },
+      {
+        "label": "reject-data",
+        "argv": [
+          "/home/tux/nsealr/.restart-tools/goal/r00/tools/baseline/.work/final/.tools/python/bin/python3.12",
+          "-B",
+          "/home/tux/nsealr/.restart-tools/goal/qp01-physical-fixture-workflow/docs/restart/implementation/QH01/manual-port/python-rgb-composition/run-composition.py",
+          "--case",
+          "fixture_request_engine",
+          "--synthetic-inspection",
+          "reject-data",
+          "--output",
+          "/home/tux/nsealr/.restart-tools/goal/qp01-synthetic-inspection-runtime-2026-10-25/reject-data",
+          "--worker",
+          "/home/tux/nsealr/.restart-tools/goal/qh01-rgb-request-engine-ci-execution/apps/pi/qr-worker/target/release/nsealr-qr-worker",
+          "--sha256",
+          "43aff637ede40eddf386b802be2601014f59296d3b354f5f8f6b243fabaf0300",
+          "--node",
+          "/home/tux/nsealr/.restart-tools/goal/r00/tools/baseline/.work/final/.tools/node/bin/node",
+          "--bridge",
+          "/home/tux/nsealr/.restart-tools/goal/qp01-physical-fixture-workflow/apps/bridge/service/dist",
+          "--reuse",
+          "/home/tux/nsealr/.restart-tools/goal/qp01-physical-fixture-workflow",
+          "--engine-library",
+          "/home/tux/nsealr/.restart-tools/goal/qh01-rgb-request-engine-ci-execution/target/release/libnsealr_pi_engine_fixture.so",
+          "--engine-sha256",
+          "a14f3ee3392c5b38322d9ac2e9e76ad2b332466427fdb8d86683e1e8d723209f",
+          "--engine-module",
+          "/home/tux/nsealr/.restart-tools/goal/qp01-synthetic-inspection-runtime-2026-10-25/tmp/nsealr-qh01-native-leaf-_80xgtyz/module/native-leaf.js",
+          "--engine-module-sha256",
+          "2d0b31bee68128e2295c19c4d3336503f020eb2625fc86b0733302bbb1f11083",
+          "--engine-preparation",
+          "/home/tux/nsealr/.restart-tools/goal/qp01-synthetic-inspection-runtime-2026-10-25/tmp/nsealr-qh01-native-leaf-_80xgtyz/preparation.json"
+        ],
+        "cwd": "/home/tux/nsealr/.restart-tools/goal/qp01-physical-fixture-workflow",
+        "started": "2026-10-25T09:01:19.936928+00:00",
+        "log": "01-reject-data.log",
+        "ended": "2026-10-25T09:01:20.161217+00:00",
+        "exit_code": 0,
+        "sha256": "f6cf5d1896deac66ab20e61264cc4f08bca441ed5668029b07d970c0cacb56e7"
+      }
+    ],
+    "elapsed_seconds": 0.4767025439068675,
+    "scenarios": [
+      "basic-fresh",
+      "reject-data"
+    ],
+    "case_details": "early-case-summary.json",
+    "actual_role": "real O/W/Rust/client; synthetic draw/input and client100 clock; actual C5000 and MonotonicSeconds",
+    "exec_tool_reported_wall_seconds": 0.380683716,
+    "elapsed_role": "Original recorder monotonic elapsed and separately reported exec-tool wall retained as distinct measurements, not normalized."
+  },
+  "generated_assets_binding_limit": {
+    "status": "INCOMPLETE_62_PREEXECUTION_FREEZE_NO_RETROACTIVE_RECONSTRUCTION",
+    "preexecution_hashed": [
+      "Bridge10 outputs",
+      "native-leaf2 outputs",
+      "compiler/context/source/W/library"
+    ],
+    "individual_package_hashes": "Collected only post-batch, in post-batch-generated-assets.json. Normal currentROOT package build and source clean/order are real; no 62 pre/post pair was measured. No extra execution performed to conceal this gap.",
+    "classification": "EVIDENCE/INVOKER_FREEZE",
+    "root_disposition": "Retain early2 functional PASS and source-specific Bridge10/helper2/build/actual C/trace/client/closure limits. Distinct review then separately admitted complete62 candidate/input freeze and stable finite22 batch before final acceptance; no waiver."
+  },
+  "artifact": {
+    "path": "docs/restart/implementation/QP01/physical-workflow/synthetic-inspection/early-evidence.tar.gz",
+    "bytes": 1475330,
+    "sha256": "9afd4e230b044555b8a067ec51cce9ba7a71dc19ab0e941bf5741641b45c5d06",
+    "members": 136,
+    "original_or_bound_members": 135
+  },
+  "limits": [
+    "Only early2 actual, not all22; remaining20 selectors native behavior not executed",
+    "No legacy211/70/39/14 or normal/full/hosted CI replay/adoption",
+    "No physical IO/glyph/human consent or human timing assurance",
+    "No current100-second expiry/hardC5collection/rawCwait guarantee",
+    "C positive stderr preserved as structured existing-helper observation, not a claimed byte-for-byte raw stderr file",
+    "No new crypto/key/golden/default provider/Rust/lock/graph change",
+    "No remaining owned runtime actor: actual waits/EOF and exact C close/Node children/FD restoration passed; no unknown quarantine path exercised"
+  ],
+  "code_source_commit": "9f0db7b46276eee28f9a7782e75d1f03d2d1963a",
+  "code_source_tree": "6ced197c263a217af235a553037378c8ce6d1d67"
+}
