@@ -15,6 +15,7 @@ ROOT = Path(__file__).resolve().parents[6]
 sys.path.insert(0, str(ROOT / "apps/pi/app"))
 from nsealr_vault.qr_owner_adapter import RgbOwnerRuntime, _keys, _record
 from nsealr_vault.qr_worker import live_fds
+from nsealr_vault.synthetic_inspection import SCENARIOS, EXPECTED_STATUS, SCOPE, CONFIG_ENV, HASH_ENV, load_config
 
 
 def require(condition, message):
@@ -44,8 +45,12 @@ class Composition:
                           mode=0o700 if getattr(args, "case", "positive") == "fixture_request_engine" else 0o777)
         self.engine_initialization = None
         self.engine_environment = None
+        self.inspection_config = None
+        self.inspection_sources = None
         if getattr(args, "case", "positive") == "fixture_request_engine":
             self.engine_environment = dict(os.environ)  # Fixed before RGB/Node; never mutate process-global env.
+            require(CONFIG_ENV not in self.engine_environment and HASH_ENV not in self.engine_environment,
+                    "synthetic selector must come from explicit trusted CLI only")
             library = Path(args.engine_library).resolve(strict=True)
             module = Path(args.engine_module).resolve(strict=True)
             require(library.is_file() and sha(library.read_bytes()) == args.engine_sha256, "trusted actual native library SHA")
@@ -87,6 +92,26 @@ class Composition:
                   "output_dir": str(self.output.resolve()), "python": str(Path(sys.executable).absolute()),
                   "library": str(library), "library_sha256": args.engine_sha256, "child_expected_sha256": child_sha,
                   "module": str(module), "module_sha256": args.engine_module_sha256, "module_source_sha256": source_sha}
+            if getattr(args, "synthetic_inspection", None):
+                callback = ROOT / "apps/pi/app/nsealr_vault/synthetic_inspection.py"
+                config_path = self.output.resolve() / "synthetic-inspection-config.json"
+                self.inspection_config = {"v": 1, "scope": SCOPE, "scenario": args.synthetic_inspection,
+                    "callback_source_sha256": sha(callback.read_bytes()),
+                    "trace_path": str(self.output.resolve() / "inspection-trace.json")}
+                write(config_path, self.inspection_config)
+                config_sha = sha(config_path.read_bytes())
+                load_config(str(config_path), config_sha)  # Same strict input before any actor.
+                self.engine_initialization["mode"] = "synthetic-inspection"
+                self.engine_initialization["synthetic_inspection"] = {"config": str(config_path), "sha256": config_sha,
+                    "scenario": args.synthetic_inspection, "callback_source_sha256": self.inspection_config["callback_source_sha256"],
+                    "expected_status": EXPECTED_STATUS[args.synthetic_inspection]}
+                source_paths = ["apps/pi/app/nsealr_vault/" + name for name in ("synthetic_inspection.py", "engine_adapter.py")]
+                source_paths += ["docs/restart/implementation/QP01/request-engine/" + name for name in ("exchange.py", "native-leaf.ts")]
+                source_paths += [str(Path(__file__).relative_to(ROOT)),
+                    str(Path(__file__).with_name("bridge-child.mjs").relative_to(ROOT)),
+                    "crates/nsealr-pi-engine-fixture/src/lib.rs", "Cargo.lock"]
+                self.inspection_sources = {name: sha((ROOT / name).read_bytes()) for name in source_paths}
+                write(self.output / "inspection-source-before.json", self.inspection_sources)
             write(self.output / "engine-initialization.json", self.engine_initialization)
         self.baseline_fds = live_fds()
         self.runtime = RgbOwnerRuntime()
@@ -243,6 +268,8 @@ class Composition:
         timed_out = case == "scan_pending_timeout_after_settlement"
         engine_case = case == "fixture_request_engine"
         engine_refusal = engine_case and self.args.engine_refusal
+        inspection_refusal = self.inspection_config is not None and EXPECTED_STATUS[self.args.synthetic_inspection] != 0
+        engine_failed = engine_refusal or inspection_refusal
         native = ROOT / "docs/restart/implementation/QH01/native-qr-probe"
         request_raw = (native / "expected/request-kind-1-basic.envelope").read_bytes()
         response_raw = (native / "expected/response-kind-1-basic.envelope").read_bytes()
@@ -348,7 +375,7 @@ class Composition:
             self.reply_sent = True
             self.until(lambda: self.raw_wait is not None and self.eof == {"stdout", "stderr"}, "Node collection/EOF")
             require(self.raw_wait == 0 and self.node.returncode == 0 and not self.buffers["stderr"], "actual Node0 collection")
-            require(not self.tail and len(self.rows) == (3 if cancelled or engine_refusal else 5 if timed_out else 4), "exact complete case records")
+            require(not self.tail and len(self.rows) == (3 if cancelled or engine_failed else 5 if timed_out else 4), "exact complete case records")
             result = self.rows[-1]
             close = self.rows[-2]
             if timed_out:
@@ -362,7 +389,7 @@ class Composition:
                     require(type(timeout[name]) is int and timeout[name] == value, "typed timeout-stage counters")
                 require(timeout["timer_args"] == [100] and timeout["abort_observed"] is True
                         and timeout["underlying_settled"] is False and timeout["pending_retry_error"] == "runtime_unavailable", "actual timeout before late settlement")
-            elif not cancelled and not engine_refusal:
+            elif not cancelled and not engine_failed:
                 scan = self.rows[1]
                 _keys(scan, ["v", "event", "frame"])
                 require(scan["event"] == "scan", "single scan event")
@@ -390,7 +417,7 @@ class Composition:
             service = json.loads(wire[4:])
             expected_response = json.loads((ROOT / "protocols/contracts/v1/examples/response-kind-1-basic.json").read_text())
             require(service["request_id"] == "qh01.composition", "actual native response request binding")
-            if case == "positive" or engine_case and not engine_refusal:
+            if case == "positive" or engine_case and not engine_failed:
                 if engine_case:
                     expected = json.loads((ROOT / "docs/restart/implementation/QP01/request-engine/expectations.json").read_text())
                     expected_response["result"]["event"] = next(row for row in expected["independent_positive_expectations"] if row["id"] == "basic")["expected_complete_event"]
@@ -417,14 +444,14 @@ class Composition:
                         and outcome["timer_args"] == [5000] and outcome["timer_clears"] == 1
                         and outcome["children_before"] == outcome["children_after"] == ""
                         and outcome["fds_before"] == outcome["fds_after"], "actual C count/timer/Node FD accounting")
-                require(status["code"] == (1 if engine_refusal else 0) and status["signal"] is None
+                require(status["code"] == (1 if engine_failed else 0) and status["signal"] is None
                         and status["sent"] is (not engine_refusal) and status["readiness_hex"] == ("" if engine_refusal else "52")
-                        and status["stdout_bytes"] == (0 if engine_refusal else 611) and status["overflow"] is False,
+                        and status["stdout_bytes"] == (0 if engine_failed else 611) and status["overflow"] is False,
                         "actual native readiness/refusal and terminal status")
-                require(type(outcome["response_bytes"]) is int and outcome["response_bytes"] == (0 if engine_refusal else 611)
-                        and type(outcome["observation_count"]) is int and outcome["observation_count"] == (0 if engine_refusal else 1)
+                require(type(outcome["response_bytes"]) is int and outcome["response_bytes"] == (0 if engine_failed else 611)
+                        and type(outcome["observation_count"]) is int and outcome["observation_count"] == (0 if engine_failed else 1)
                         and outcome["readiness_refusal"] is engine_refusal
-                        and outcome["response_sha256"] == (None if engine_refusal else sha(produced)), "actual response artifact accounting")
+                        and outcome["response_sha256"] == (None if engine_failed else sha(produced)), "actual response artifact accounting")
                 _keys(result["engine"], ["mode", "spawned", "collected", "capability_calls", "pid", "code", "signal",
                                          "timer_args", "timer_clears", "children_after", "fd_restored"])
                 for name in ("spawned", "collected", "capability_calls", "timer_clears"):
@@ -441,6 +468,11 @@ class Composition:
                     refusal = self.engine_receipt("engine-refusal.json", 4096)["qh01_engine_leaf_refusal"]
                     require(type(refusal["message"]) is str and "native library SHA256 mismatch" in refusal["message"],
                             "actual loaded-SHA readiness refusal")
+                elif inspection_refusal:
+                    require(not (self.output / "engine-observation.json").exists()
+                            and not (self.output / "engine-response.envelope").exists(), "synthetic UI refusal releases no frame")
+                    require((self.output / "inspection-refusal-error.txt").stat().st_size <= 262144,
+                            "actual bounded helper error retained")
                 else:
                     trace = self.engine_receipt("engine-observation.json", 262144)["qh01_engine_leaf_observation"]
                     require(trace["sha256"] == self.args.engine_sha256 and trace["input_bytes"] == 259
@@ -450,6 +482,41 @@ class Composition:
                     require(len(pages) == 31 and [p["index"] for p in pages] == list(range(31))
                             and all(p["total"] == 31 for p in pages) and [p["kind"] for p in pages] == [0] * 30 + [1],
                             "complete actual indexed basic Rust review")
+                if self.inspection_config is not None:
+                    ui = self.engine_receipt("inspection-trace.json", 131072)
+                    expected_status = EXPECTED_STATUS[self.args.synthetic_inspection]
+                    require(ui["scope"] == SCOPE and ui["scenario"] == self.args.synthetic_inspection
+                            and type(ui["native_status"]) is int and ui["native_status"] == expected_status,
+                            "actual synthetic callback native status")
+                    require(ui["config_sha256"] == self.engine_initialization["synthetic_inspection"]["sha256"]
+                            and ui["callback_source_sha256"] == self.inspection_config["callback_source_sha256"]
+                            and ui["input_bytes"] == 259 and ui["input_sha256"] == sha(request_raw)
+                            and ui["library_sha256"] == self.args.engine_sha256
+                            and ui["output_bytes"] == (0 if inspection_refusal else 611)
+                            and ui["output_sha256"] == (None if inspection_refusal else sha(produced)), "source/raw/native UI trace binding")
+                    events = ui["events"]
+                    require(type(events) is list and [event["seq"] for event in events] == list(range(len(events))), "actual event order")
+                    clocks = [event for event in events if event["event"] == "clock"]
+                    require(clocks and all(event["source"] == "MonotonicSeconds" and type(event["tick"]) is int
+                            and type(event["observed_monotonic_ns"]) is str and event["observed_monotonic_ns"].isdigit() for event in clocks),
+                            "actual real-clock observations")
+                    entered = [event["page"] for event in events if event["event"] == "enter"]
+                    aux = [event for event in events if event["event"] == "auxiliary_callback_enter"]
+                    require(len(aux) == (0 if inspection_refusal else 1), "actual zeroaux callback entry count")
+                    if not inspection_refusal:
+                        require(entered == pages, "same actual Rust pages reached new callback")
+                        for epoch in range(1, 32):
+                            group = [event for event in events if event.get("epoch") == epoch]
+                            labels = [event["event"] for event in group]
+                            require(labels[0:3] == ["enter", "baseline", "fit"]
+                                    and labels[-4:] == ["commit", "arm", "input", "consume"]
+                                    and set(labels[3:-4]) == {"draw"}, "draw commit precedes one actual fresh event")
+                            for role in ("label", "body", "position"):
+                                drawn = "\n".join(event["text"] for event in group if event["event"] == "draw" and event["role"] == role)
+                                require(drawn == entered[epoch - 1][role], "all indexed bytes drawn without clipping")
+                    after = {name: sha((ROOT / name).read_bytes()) for name in self.inspection_sources}
+                    require(after == self.inspection_sources, "synthetic fixture sources unchanged")
+                    write(self.output / "inspection-source-after.json", after)
             (self.output / "native-response.bin").write_bytes(wire)
             write(self.output / "service-response.json", service)
         except BaseException as error:
@@ -484,7 +551,7 @@ class Composition:
                   "O_clocks": "actual8s/shared4s unchanged", "physical_claim": False}
         if engine_case:
             result.update({"result": "PASS_FIRST_HOST_RGB_REQUEST_ENGINE_ONLY", "case": case,
-                           "mode": self.engine_initialization["mode"], "scanned_bytes": 0 if engine_refusal else 611,
+                           "mode": self.engine_initialization["mode"], "scanned_bytes": 0 if engine_failed else 611,
                            "C_pid": status["pid"], "C_code": status["code"], "C_signal": status["signal"],
                            "C_scope": "Node-owned existing fixture leaf; code/signal/stdio-close, no raw wait",
                            "service_error": service.get("error", {}).get("code"), "caller_released_bytes": 259})
@@ -495,8 +562,12 @@ class Composition:
                            "service_error": service["error"]["code"],
                            "B3_outcome": self.op.observation()["terminal"]["outcome"],
                            "caller_released_bytes": 0 if cancelled else 259})
+        if self.inspection_config is not None:
+            result.update({"result": "PASS_HOST_SYNTHETIC_INSPECTION_ONLY", "scenario": self.args.synthetic_inspection,
+                           "native_status": ui["native_status"], "trace_sha256": sha((self.output / "inspection-trace.json").read_bytes()),
+                           "human_clock_property": "OPEN; no physical consent or human timing claim"})
         write(self.output / "result.json", result)
-        print("\n" + json.dumps({"qh01_request_engine_result": result}) if engine_case else json.dumps(result) if case == "positive" else "\n" + json.dumps({"qh01_lifecycle_result": result}), flush=True)
+        print("\n" + json.dumps({"qp01_synthetic_inspection_result": result}) if self.inspection_config is not None else "\n" + json.dumps({"qh01_request_engine_result": result}) if engine_case else json.dumps(result) if case == "positive" else "\n" + json.dumps({"qh01_lifecycle_result": result}), flush=True)
 
 
 if __name__ == "__main__":
@@ -508,7 +579,10 @@ if __name__ == "__main__":
     for name in ("engine-library", "engine-sha256", "engine-module", "engine-module-sha256", "engine-preparation"):
         parser.add_argument("--" + name)
     parser.add_argument("--engine-refusal", action="store_true")
+    parser.add_argument("--synthetic-inspection", choices=SCENARIOS)
     args = parser.parse_args()
+    if args.synthetic_inspection and (args.case != "fixture_request_engine" or args.engine_refusal):
+        parser.error("synthetic inspection is exclusive to its trusted engine fixture")
     engine_fields = [args.engine_library, args.engine_sha256, args.engine_module, args.engine_module_sha256, args.engine_preparation]
     if args.case == "fixture_request_engine":
         if not all(engine_fields):

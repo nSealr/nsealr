@@ -1,0 +1,68 @@
+{
+  "schema_version": 1,
+  "verdict": "CHANGES_REQUIRED",
+  "reviewer": "/root/a02_final_review",
+  "observed_utc": "2026-10-25T08:31:17.026399+00:00",
+  "candidate_commit": "503fbf5e23cce7e85f062844aa77143663bcd6a9",
+  "candidate_tree": "9bb7b2d6c90681ac2591d409c2d0c25c807e0290",
+  "prior_review_commit": "c1ffff4a0d79af98fc7b9ba0159d04725a666591",
+  "prior_review_files_changed": false,
+  "scope": "Only documentary R1/R2 additions and exact remaining path finding; original28-source/status facts reused",
+  "findings": [
+    {
+      "id": "R1-path",
+      "parent_finding": "R1",
+      "severity": "admission_blocker",
+      "description": "Example joins helper module and nonexistent receipt.json under the same PREP directory; unchanged producer emits output_dir=temporary/module and receipt=temporary/preparation.json.",
+      "addendum_path": "docs/restart/implementation/QP01/physical-workflow/admission-addendum.md",
+      "source_evidence": [
+        "docs/restart/implementation/QP01/request-engine/exchange.py:114",
+        "docs/restart/implementation/QP01/request-engine/exchange.py:140",
+        "docs/restart/implementation/QH01/manual-port/python-rgb-composition/run-composition.py:55"
+      ],
+      "required_change": "Use actual output_dir/output artifact path and actual receipt field as separate MODULE_DIR/PREPARATION_RECEIPT inputs. No copying/renaming/reconstruction or recipe change.",
+      "executed_failure": false
+    }
+  ],
+  "finding_dispositions": {
+    "R1": "ownership/entrypoint/config/status/trace choices accepted for reuse; sole path/variable contract remains open",
+    "R2": "closed documentarily; exact synthetic metrics/commit/fresh-event cycle and finite source-derived native/pure expectations sufficient for scoped admission after R1-path correction"
+  },
+  "metadata_bindings": [
+    {
+      "path": "docs/restart/implementation/QP01/physical-workflow/admission-addendum.md",
+      "commit": "503fbf5e23cce7e85f062844aa77143663bcd6a9",
+      "mode": "100644",
+      "blob": "b049a580f04db090b96b863d2e6459af7a80173b",
+      "bytes": 13270,
+      "sha256": "7c37bb9127360b36f0ff9015ac048e182619a656cf61a920dfe46db629830195"
+    },
+    {
+      "path": "docs/restart/implementation/QP01/physical-workflow/addendum-source-proof.json",
+      "commit": "503fbf5e23cce7e85f062844aa77143663bcd6a9",
+      "mode": "100644",
+      "blob": "8b771c604ebdc0715ecde420043cf62d9ca19d2f",
+      "bytes": 3932,
+      "sha256": "74c48fefe2fc355b3ec68e094c142c0afd51c6a24c3297b38e5d6451c43ea2b2"
+    }
+  ],
+  "next_step": "Only documentary module/receipt field correction plus identity receipt, then affected read; no source/code/experiment execution admitted automatically.",
+  "execution_counts": {
+    "app_import": 0,
+    "test": 0,
+    "build": 0,
+    "actor": 0,
+    "native_load": 0,
+    "flash": 0,
+    "audit": 0,
+    "CI_or_hosted_query": 0,
+    "physical": 0
+  },
+  "limits": [
+    "Source-only admission; no implementation/runtime/physical qualification",
+    "Human-review versus C5000/client100 and nonsuspendable ABI remain OPEN",
+    "All budgets, original28bindings, prior c1 report/proof, graph/contracts/47formalsets and5releasepaths unchanged",
+    "No current CI observation or duplicate kit/operator question"
+  ],
+  "artifacts": "artifacts.json hashes this affected report/receipt/verdict only; prior c1 artifacts remain immutable."
+}
