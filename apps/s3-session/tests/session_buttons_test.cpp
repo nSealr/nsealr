@@ -1,0 +1,71 @@
+// SPDX-License-Identifier: MIT
+#include "../main/session_buttons.h"
+#include "../main/session_input.h"
+#include <cassert>
+int main(){
+    using A=SessionAction;
+    SessionGesture held;
+    assert(held.update(0,false,true,false,true,true)==A::None);
+    assert(held.update(5000,false,true,false,true,true)==A::None);
+    assert(held.update(5010,false,false,false,false,true)==A::None);
+    assert(held.update(5020,false,true,false,true,true)==A::None);
+    assert(held.update(6519,false,true,false,true,true)==A::None);
+    assert(held.update(6520,false,true,false,true,true)==A::Approve);
+    SessionGesture both;both.update(0,false,false,false,false,true);
+    both.update(1,false,true,false,true,true);
+    assert(both.update(1501,false,true,true,true,true)==A::None); // raw Left blocks approval
+    assert(both.update(1541,true,true,true,true,true)==A::None);
+    assert(both.update(3040,true,true,true,true,true)==A::None);
+    assert(both.update(3041,true,true,true,true,true)==A::Lock);
+    SessionGesture data;data.update(0,false,false,false,false,false);
+    assert(data.update(10,false,true,false,true,false)==A::None);
+    assert(data.update(80,false,false,false,false,false)==A::Next);
+    assert(data.update(100,true,false,true,false,false)==A::None);
+    assert(data.update(180,false,false,false,false,false)==A::Back);
+    SessionGesture final;final.update(0,false,false,false,false,true);
+    final.update(10,true,false,true,false,true);
+    assert(final.update(80,false,false,false,false,true)==A::Reject);
+    SessionGesture carry;carry.update(0,false,true,false,true,true);
+    assert(carry.update(4000,false,true,false,true,true)==A::None);
+    carry.update(4010,false,false,false,false,true);
+    carry.update(4020,false,true,false,true,true);
+    assert(carry.update(5520,false,true,false,true,true)==A::Approve);
+    SessionGesture bounce;bounce.update(0,false,false,false,false,false);
+    bounce.update(1,false,false,false,true,false); // raw-only bounce is not a debounced press
+    assert(bounce.update(2,false,false,false,false,false)==A::None);
+
+    SessionMenu menu;
+    SessionGesture after_lock;
+    after_lock.update(0,false,false,false,false,false);
+    after_lock.update(1,true,true,true,true,false);
+    assert(after_lock.update(1501,true,true,true,true,false)==A::Lock);
+    assert(menu.apply(A::Lock)==SessionMenuChange::Lock);
+    after_lock=SessionGesture{}; // new complete menu commit
+    assert(menu.apply(after_lock.update(1510,true,true,true,true,false))==SessionMenuChange::None);
+    assert(menu.apply(after_lock.update(1520,false,false,false,false,false))==SessionMenuChange::None);
+    assert(!menu.rotated); // releasing old Both cannot become Rotate
+    after_lock.update(1600,true,false,true,false,false);
+    assert(menu.apply(after_lock.update(1700,false,false,false,false,false))==SessionMenuChange::Rotate);
+    assert(menu.rotated&&!menu.enabled);
+    assert(menu.apply(A::Next)==SessionMenuChange::Enable);
+    assert(menu.rotated&&menu.enabled);
+    menu.apply(A::Lock);
+    assert(menu.rotated&&!menu.enabled); // RAM orientation survives local lock only
+
+    unsigned read_calls=0;size_t drained_bytes=0;
+    const int wrapped[]={300,700,0};
+    assert(session_discard([&](uint8_t*,size_t max){
+        const int n=wrapped[read_calls++];assert(size_t(n)<=max);drained_bytes+=size_t(n);return n;
+    })==SessionDrain::Empty);
+    assert(read_calls==3&&drained_bytes==1000);
+    read_calls=0;drained_bytes=0;
+    assert(session_discard([&](uint8_t*,size_t max){
+        ++read_calls;drained_bytes+=max;return int(max);
+    })==SessionDrain::Limit);
+    assert(read_calls==1&&drained_bytes==2048); // no false empty at the byte budget
+    read_calls=0;
+    assert(session_discard([&](uint8_t*,size_t){++read_calls;return 1;})==SessionDrain::Limit);
+    assert(read_calls==3); // continuously arriving data cannot create an unbounded loop
+    assert(session_discard([](uint8_t*,size_t){return -1;})==SessionDrain::Error);
+    assert(session_discard([](uint8_t*,size_t){return 0;})==SessionDrain::Empty);
+}

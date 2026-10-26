@@ -1,0 +1,17 @@
+import assert from "node:assert/strict";
+import {readFileSync,writeFileSync} from "node:fs";
+import {SerialLineTransport} from "../client-account-binding/packages/transport/dist/index.js";
+import {decodeSerialFrame} from "../client-account-binding/packages/framing/dist/index.js";
+import {handleLocalServiceRequest,clientIdForIdentity} from "../client-account-binding/packages/client/dist/index.js";
+const raw=readFileSync(new URL("./s3-adc1-actual-response.serial",import.meta.url));
+const request=JSON.parse(readFileSync(new URL("../s3-probe/artifacts/entropy-adc1-completion/request.json",import.meta.url),"utf8"));
+const frame=decodeSerialFrame(raw.toString("utf8"));assert.equal(frame.type,"response");const response=frame.payload;
+const expected="f9308a019258c31049344f85f89d5229b531c845836f99b08601f113bce036f9";
+assert.equal(response.request_id,request.request_id);assert.equal(response.ok,true);assert.equal(response.result.event.pubkey,expected);
+const client={surface:"browser_extension",origin:"https://s3-public.invalid",app_name:"Public S3 physical verifier",instance_id:"adc1-completion-public"};
+const grants=[{client_id:clientIdForIdentity(client),origin:client.origin,surface:client.surface,allowed_operations:["verify_signer_response"],expires_at:2000000000}];
+const verified=handleLocalServiceRequest({version:1,request_id:"verify-s3-adc1-actual",operation:"verify_signer_response",params:{client,request,response}},{grants,now:1900000000});assert.equal(verified.ok,true);assert.equal(verified.result.validation.valid,true);
+let incoming=raw.toString("utf8");const writes=[];const transport=new SerialLineTransport({port:{writeLine:async(line)=>writes.push(line),readLine:async()=>{const out=incoming;incoming=null;return out;}}});
+assert.deepEqual(await transport.exchange(request),response);assert.deepEqual(decodeSerialFrame(writes[0]),{type:"request",payload:request});
+writeFileSync(new URL("./s3-adc1-actual-response.json",import.meta.url),JSON.stringify(response)+"\n");
+console.log(JSON.stringify({product_framing_transport_client:true,expected_identity_explicitly_pinned:expected,event_id:response.result.event.id,request_id:response.request_id,signature:response.result.event.sig}));

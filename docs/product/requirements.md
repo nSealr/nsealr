@@ -40,6 +40,15 @@ capability/threat profiles, not grades on a universal security scale.
 
 ## First S3 session-custody profile
 
+The connected S3 session profile is USB-powered only. It requires no battery,
+supercapacitor or independent supply, and none is an admission dependency.
+Loss of USB power ends the executing session; the real identity must be reloaded
+locally before any new authority. The current published-key fixture does not
+prove that reload or secret disposal. Data-only cable removal with independent
+power is not applicable to this profile. USB bus reset, DTR/port changes and
+suspend with VBUS present retain their separate reset/RAM/ROM and cancellation
+gates. This power model does not change Pi, P4 or the deferred custom Board.
+
 PROD-03/04/11 apply to this connected profile without a persistent vault. D01
 identifies the exact hardware and direct screen/two-button control path; V01
 proves the real shared-engine request/review/consent/verified-response slice with

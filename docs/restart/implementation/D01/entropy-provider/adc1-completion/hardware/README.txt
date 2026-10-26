@@ -1,0 +1,2 @@
+One current-binary public fixture roundtrip, not a production source or session admission.
+The four initial diagnostic draws are not observed/passed. The original runners and commands retain their historical Linux paths unchanged; they are execution evidence, not installed CLI entry points. Actual random-aux signature is verified with the separately pinned expected identity and independent BIP340 reference; old deterministic golden-byte equality is not applicable.
