@@ -1,0 +1,44 @@
+{
+  "utc": "2026-10-26T19:40:47.990131+00:00",
+  "source": "b259d416c482569622e6467a121b6c4436e6ac9e",
+  "delivery": "755fe94cc0953d88ced018fbca64735613b504b6",
+  "actual_response_bytes": 608,
+  "actual_response_sha256": "898e47cd16ee53224bc8cf371017ce5827d054fd6849531c9bcc660a210ab539",
+  "expected_public_key_independently_pinned": "4f355bdcb7cc0af728ef3cceb9615d90684bb5b2ca5f859ab0f0b704075871aa",
+  "records": [
+    {
+      "argv": [
+        "/home/tux/nsealr/.restart-tools/goal/r00/tools/baseline/.work/final-replay/.tools/node/bin/node",
+        "/home/tux/nsealr/.restart-tools/mac-resume-2026-10-25/intake/p4-entropy-physical-20261026/verify-normal-physical.mjs"
+      ],
+      "exit": 0,
+      "runner_sha256": "cd78d9ff863f1f23058dd0b2e27224f9a2c6d55d89800d1c6a9f055450736616",
+      "stdout_sha256": "43ae24de8a6975bedb119eadf4c791c8184cf76212d34467341f19762c333456",
+      "result": {
+        "product_current_QR_client_verifier": true,
+        "identity_explicitly_pinned": "4f355bdcb7cc0af728ef3cceb9615d90684bb5b2ca5f859ab0f0b704075871aa",
+        "event_id": "1be90eddb85c998acb6ccb9af4e7002f82c742ddc98329a8518a23b0c70e9399",
+        "request_id": "p4-aux-normal-1"
+      }
+    },
+    {
+      "argv": [
+        "python3",
+        "/home/tux/nsealr/.restart-tools/mac-resume-2026-10-25/intake/p4-entropy-physical-20261026/verify-normal-independent.py"
+      ],
+      "exit": 0,
+      "runner_sha256": "a30f60f974649a38d706784388864b923bdbfa2e9fa51cbc1b1db7b18df40a9c",
+      "stdout_sha256": "5603aeb90ca78862818fdeb7fc48bf5f41ff8e63c1b5e6f342bcbef75e41bf0d",
+      "result": {
+        "independent_BIP340": true,
+        "expected_identity": "4f355bdcb7cc0af728ef3cceb9615d90684bb5b2ca5f859ab0f0b704075871aa",
+        "event_id": "1be90eddb85c998acb6ccb9af4e7002f82c742ddc98329a8518a23b0c70e9399",
+        "oracle_wrapper": "/home/tux/nsealr/firmware/docs/restart/implementation/S03/oracle.py",
+        "oracle_wrapper_sha256": "f69bd3446fd4dce92106d29a0dfb13bf9fbdf447cbfdcae1b2dcf9e6c0f1cda5",
+        "signature_verification": "Actual random-aux signature verified; old deterministic golden-byte equality is not applicable"
+      }
+    }
+  ],
+  "verdict": "PASS_CURRENT_PRODUCT_CLIENT_AND_SEPARATE_REFERENCE_BIP340",
+  "limits": "Actual scanned normal-provider public response only; no entropy-quality/custody/offline/reset/RAM/ROM/debug/release admission. New random auxiliary is not compared to old deterministic golden signature bytes."
+}

@@ -1,0 +1,147 @@
+{
+  "schema": "nsealr.p4-fallible-entropy-contract.v1",
+  "status": "PROPOSED_ROOT_REVIEW_ONLY; one read-only Q03 dependency lot, no source edit/build/test/USB",
+  "recorded_utc": "2026-10-26T17:39:24.249071+00:00",
+  "base": {
+    "main": "7e2b87d44d652025ac8f826780518fb1af6df218",
+    "worktree": "06f2977bd090d39a0421622427e5dc366439b029",
+    "app_tree": "393e5b179ad84ada89f5dd870da14d96bb6c9093",
+    "compiled_source": "33a6b4e3e29c4dd74b8557bc38d1c5b345c07290",
+    "SDK": "7101770dc6db2667b3c477cc31365dd1acd6db4e ESP-IDF6.0.2",
+    "identified_part": "ESP32-P4rev3.2; Waveshare SKU33360/OV5647 as existing root evidence",
+    "model_policy": "gpt-6.1-sol xhigh unchanged; no delegation/escalation",
+    "same_worktree": "p4-session, no checkout/tool/cache move or duplication"
+  },
+  "source_decision": {
+    "actual_path": "Keep the exact P4 bootloader_random_enable/disable helper and esp_random implementation. Rev3-min300 selects hw_ver3,where esp_random reads LP_TRNG RNG_DATA_REG(base+4). Helper configures ADC1 internal noise AND enables the rev3 LP_TRNG clock/reset/timer/sample logic. Do not transplant S3 doubleSAR/reset-gate/DATA_STATUS/DONE policies or assume the old LP_SYSTEM data register is being read.",
+    "physical_basis_and_gap": "Pinned API describes SAR internal-reference thermal noise plus asynchronous clock source. Collected preliminary P4 TRM pp2052-2055 describes SAR/RC_FAST/BUF_CHAIN and old LP_SYSTEM data0x501101a4,while SDK hw_ver3 uses LP_TRNG data base+4. SDK register/LL calls describe RO sampling and async timer; the exact rev3 interconnection/assurance mapping is not fully supplied by that older prose. Admit implementation and public invocation/fault experiment only; do not assert ADC1 alone feeds the new output, TRNG-only is independently qualified, or this closes production entropy.",
+    "no_health_bool": "esp_random returns uint32 and esp_fill_random returns void; getrandom/getentropy do not add source-health information. Source enables, ownership, clock/register expectations, actual call count and faults are necessary evidence, not an entropy_ok flag. LP_TRNG sample_cnt is only8bit and can wrap/alias; log as diagnostic, never treat two equal/different readings as inactivity/health proof. Keep gross zero/FF/repeated-word/duplicate-block screens without claiming quality. No FIPS/AIS/formal min-entropy certification is added as a hidden requirement.",
+    "startup_cleanup": "Do not trust generic no-RF-kept-enabled prose or assume S3 off/reset defaults. Snapshot actual rev3 state; unexpected active TRNG/foreign ADC owner refuses rather than becoming an accepted baseline. Exact helper disable clears trigger,patterns,calibration0 for BOTH ADC units,analog dtest/ent,then TRNG sample/timer/clock. It does not expressly power SAR fully off or restore every previous register. Gated/unpowered bank values are UNKNOWN,not asserted0/erasure. No claim all RNG/analog power is off."
+  },
+  "primary_bindings": {
+    "SDK_sources": [
+      {
+        "path": "components/bootloader_support/src/bootloader_random_esp32p4.c",
+        "lines": "26-70;73-94",
+        "sha256": "bfa44d0cdc840655a145fff384790e9f686000f79912853b2749627d412f9518",
+        "finding": "Actual helper: reset/ADCbus,XTAL divider0,ADC1channel10/atten12dB/cal2166/DIGpoweron/SARdiv15/trigger100; minrev>=300 also enables LP_TRNG; disable deinitializesADC and disablesTRNG."
+      },
+      {
+        "path": "components/esp_hw_support/hw_random.c",
+        "lines": "43-45;50-86",
+        "sha256": "0cdd29d3b1696aba73056f87517552fe6c0343bfbca23a6c84730eadc50da057",
+        "finding": "esp_random retains pinned wait/XOR/RTC-counter mixing, no health/error return. No replacing with faster direct data reads."
+      },
+      {
+        "path": "components/soc/esp32p4/register/hw_ver3/soc/wdev_reg.h",
+        "lines": "7-17",
+        "sha256": "96562a722dcc3cbf5a538aa918c79725f76a8c757e6427753898c4d2d0c478bc",
+        "finding": "For actual hw_ver3,WDEV_RND_REG aliases new RNG_DATA_REG, not old LP_SYSTEM data register."
+      },
+      {
+        "path": "components/soc/esp32p4/register/hw_ver3/soc/trng_reg.h",
+        "lines": "RNG_CFG/RNG_DATA/RNG_RSTN/RNG_DATE",
+        "sha256": "c4aabf15cafaae51290234e8802af9be94b8f6a8a3559d321204c6f4a859cf49",
+        "finding": "LP_TRNG base+0/+4/+8/+12; sample_enable0,timer9,prescale8:1 default255,sample_cnt31:24 RO,resetn0,date clock31."
+      },
+      {
+        "path": "components/hal/esp32p4/include/hal/trng_ll.h",
+        "lines": "24-110",
+        "sha256": "a726d1d0c97cc4d69918d063598b00885324ff31f63c9d7d3e41db850025108a",
+        "finding": "Clock/reset/timer/sample enable and uint8 sample count; disable sample/timer/clock. No pass/fail entropy-health API."
+      },
+      {
+        "path": "components/esp_hal_ana_conv/esp32p4/include/hal/adc_ll.h",
+        "lines": "154-158;212-239;358-370;475-487;582-595;823-827",
+        "sha256": "c3632447e369ebca24eeb8391212fcfb30cf9ab545cba0c705828ebb13493368",
+        "finding": "Actual SDK6 ADC LL path, not SDK5 S3; HP clock selector/divider,pattern,power,trigger and analog deinit."
+      },
+      {
+        "path": "components/esp_hw_support/adc_share_hw_ctrl.c",
+        "lines": "129-175;202-239",
+        "sha256": "87e1ccfc3683ecbf71682c71b8f25196d812a68d180f04ef525aff8bf4fbc1a7",
+        "finding": "ADC1/2 try-locks and release; ADC APB claim/free with private count. No public count-zero query/transaction; do not invent an exclusive reference assertion."
+      },
+      {
+        "path": "components/esp_hw_support/port/esp32p4/sar_periph_ctrl.c",
+        "lines": "127-142",
+        "sha256": "30e4b757109139f66cae62d2025be3f7d67a34d60d56643125851fda190a2660",
+        "finding": "ADC reset under ADC_BUS_CLK_ATOMIC; adc_reset_lock_acquire/release are empty on this target, not ownership."
+      },
+      {
+        "path": "components/esp_hw_support/include/esp_private/regi2c_ctrl.h",
+        "lines": "33-61",
+        "sha256": "3ee08d3849a702e40d9d7257ae30367906af06a60150b3117b2cd39118e15aee",
+        "finding": "Analog master clock shared by PLL/PHY/RNG/ADC, SDK RCC refcount macros preserve other clients."
+      },
+      {
+        "path": "components/esp_hw_support/regi2c_ctrl.c",
+        "lines": "94-121",
+        "sha256": "4c002a6c38f91ab37452cb3f0bd6118b1c492a452e75f9554dd2b1e9cfa04ed1",
+        "finding": "Separate static SAR internal-I2C reference count; helper enable/disable must pair, never disable an unacquired reference."
+      },
+      {
+        "path": "components/bootloader_support/src/bootloader_utility.c",
+        "lines": "790-791",
+        "sha256": "a7b2896d12980a524c798c667e48c43732605ea2b1c616ef25663810ffa2576b",
+        "finding": "Exact boot image path calls bootloader_random_disable before app; generic no-RF startup prose is not a provider-state attestation."
+      },
+      {
+        "path": "docs/en/api-reference/system/random.rst",
+        "lines": "37-47;65-101;109-144",
+        "sha256": "30adc74597a2d7784f5c15e55ac57700b65bdae5f7aa65ba68cd37730a1331e4",
+        "finding": "Manufacturer API main-source conditions,secondary-source limits and getrandom/getentropy wrapping; none supplies hardware-health status."
+      }
+    ],
+    "collected_TRM": {
+      "path": "intake/p4-orientation-primary/trm.txt;trm-source.json",
+      "PDF_sha256": "622fe9625d19cf00bd7aa49e65f0b5dd6ef2197f83cb7a88b4405078d6a957d4",
+      "pages": "1698 RNG control;1789 oldSARdebug;2052-2055 RNG sources/clock/rate/old data and CFG addresses",
+      "limit": "Preliminary document; exact hw_ver3 data/RO counter semantics must not be silently borrowed from old register layout."
+    },
+    "current_errata": {
+      "checked_utc_date": "2026-10-26",
+      "revision_url": "https://docs.espressif.com/projects/esp-chip-errata/en/latest/esp32p4/_tags/v3-2.html",
+      "summary_url": "https://docs.espressif.com/projects/esp-chip-errata/en/latest/esp32p4/02-errata-summary/index.html",
+      "finding": "Current v3.2 list has ROM-816 and ECDSA_DS-836; no RNG/ADC entry is listed. This is not a health or exhaustive absence guarantee. ROM816 concerns flash-power sequencing/eFuse; no fuse action here. ECDSA_DS836 concerns the hardware ECDSA peripheral,not unchanged Rust BIP340. Do not copy S3ADC183 to P4.",
+      "ROM816": "https://docs.espressif.com/projects/esp-chip-errata/en/latest/esp32p4/03-errata-description/esp32p4/device-hang-when-flash-power-on-sequence-runs-twice-with-rom-download-xpd-on-efuse.html",
+      "ECDSA_DS836": "https://docs.espressif.com/projects/esp-chip-errata/en/latest/esp32p4/03-errata-description/shared/ecdsa-invalid-r-and-s-signature-accepted.html"
+    }
+  },
+  "actual_config_and_conflicts": {
+    "generated": {
+      "min_revision": 300,
+      "max_revision": 399,
+      "CPU_configured_MHz": 400,
+      "PM_ENABLE": false,
+      "actual_hw_include": "register/hw_ver3",
+      "sdkconfig_h_sha256": "a5d936162541c4dac2f6f9af783493753ae7ab46a75b98dc84477a65eeebdae3",
+      "compile_commands_sha256": "211a440d16745a307298f392a9246f6ba3fc96bb2f899ca47b6600b9f3b08ba0"
+    },
+    "ownership": "Single existing worker pinnedCPU1,nonreentrant generation/terminal poison. Try-acquire ADC1 then ADC2 SDK locks; ADC2 is required because helper cleanup clears its calibration too. Busy/second-lock failure releases only acquired locks and performs no helper/reset/clock writes. Claim/free ADC APB through pinned SDK API only after both locks. Hold neither RCC spinlock nor interrupt masking across helper/draw/UI. ADC reset-lock functions are empty,so not evidence of exclusivity. Static ADC/I2C counts have no public snapshot API; combine real API locks,closed call graph,readbacks and balanced own calls,never fabricate count0 from an app bool. Analog master is SHARED with PLL/MIPI clients: retain its SDK refcount behavior,never force it off or overwrite foreign count. Where observable,use periph_rcc_acquire_enter+exit as nonmutating count read,not acquire_exit. Changed/missing ownership or unexpected consumers refuses/poisons.",
+    "camera_LCD_touch_PMIC": "Current LCD is BSP SPI2/ST7796 with asynchronous DMA/backlightLEDC,not S3 I80 or an assumed MIPI LCD. OV5647 uses CSI/ISP and SCCB on the BSP I2C handle; FT5x06 touch uses that external I2C bus and only navigates. Board PMIC/LDO/battery behavior remains existing profile; no on-chip battery ADC client or power reconfiguration is introduced. Compiled ADC/buttonADC/I2S/mbedTLS code alone is not a running consumer. Current helper/reset must not collide with an ADC client; camera/LDO may share analog master clock management,so exact linked callsites and before/after peripheral/GPIO/clock state must be reviewed rather than assuming separate names guarantee safety. Complete existing display ACK before collection; no display/I2C/PMIC reinit inside the lease. Existing camera/USB/tasks may continue; no scheduler freeze.",
+    "existing_link_readback": {
+      "path": "apps/p4/evidence/c6-normal-guard/final-packet/artifact-checks/linked-symbols/stdout.log",
+      "sha256": "a6e9b7e59d8b62db7ee476f3e09aac845d3eccb24aeceffd87d061c1ffec9300",
+      "finding": "Existing defined executable names matched fixture auxiliary and getentropy inclusion anchor only; no esp_random/fill_random/ADC/I2S/temperature/PMIC RNG consumer name matched. Recheck newly linked executable bodies/calls and weak/default symbols; scan is not a proof against all indirect/ROM activity."
+    },
+    "guard54": "Require existing mode0 C6 guard ACTIVE and actual pad/config sample at entropy-before and entropy-after,plus quiet checks between helper/word/cleanup operations and before exposing32bytes. Any guard failure: wipe/error,no signature/response,terminal existing best-effort fatal low policy. No GPIO54 release,SDIO probe,reset cycle or guard bypass. Samples are not C6 chip-pin/RF/offline/reset-continuity proof."
+  },
+  "implementation_proposed_after_review": {
+    "scope": [
+      "apps/p4/main/p4_entropy.c/.h plus a narrow private logic seam/test",
+      "apps/p4/main/p4_local.c:replace0x22 provider;main.c:finite public stop/status/banner only",
+      "apps/p4/rust/src/lib.rs:thin callback and full buffer wipe on error/count mismatch",
+      "apps/p4/main/CMakeLists.txt and existing build.py only for source/dependency plus fixed public negative variant",
+      "apps/p4/tests/engine_host.c and focused provider tests;README/Q03 proof/limits"
+    ],
+    "callback": "Private strong C p4_entropy_fill32(uint8_t*,size_t)->ptrdiff_t,or equivalently retain the private ABI with accurate name. Exactly owned32 INTERNAL bytes,return32 only after all readbacks/cleanup/C6 checks; typed negative statuses for unavailable/ownership/readback/time/interrupted/health/provider/cleanup. Rust AuxiliarySource unchanged:reject0/31/33/error,wipe complete32 with retained volatile/zeroize before Err. No weak/default/dynamic fallback,second Rust engine or public protocol/API version change. Target0x22 implementation removed; deterministic sources only in host tests.",
+    "collection": "One50ms global monotonic between-call budget beginning before locks,finite polls/calls,at most8 unchanged SDK esp_random words into32 INTERNAL staging. Verify exact declared helper ADC1 selector/dividers0,SARdiv15,trigger100,pattern/calibration2166/controller/power and rev3 TRNG reset-released/clock/sample/timer/prescale255,plus actual configured CPU/APB/XTAL accounting. These are declared SDK expectations,not accepting observed values. Snapshot counters for diagnostics only. No DATA_STATUS variation or copiedS3DONE predicate,host seed,cached output or SDK speedup. Nonreturning SDK waits remain outside hard cancellation guarantees; existing5sWDT is unchanged and not fed inside collection.",
+    "cleanup": "Each successfully entered helper is disabled exactly once on returning paths; no disabling an unacquired analog-I2C reference. Verify meaningful accessible digital/clock state and balance ADC APB and lock releases; inaccessible analog banks stay UNKNOWN. Do not manually reset other clients or counts to force cleanup green. Any uncertain/mismatched cleanup exposes0 and poisons untilCPUreset. Wipe destination,staging and previous-block state on failure; guards untouched. Retained previous-block check is a gross screen,never a cached randomness fallback.",
+    "authority_and_privacy": "Only existing published11x32 identity. Callback occurs from sign_approved after full local review and fresh BOOT final hold/release; no touch/host approval authority added. Public USB BOOT/DTR/RTS human-origin limitation stays explicit. One auxiliary attempt perCPUboot including failures; failure consumes/cancels operation,displays PUBLIC AUX STOPPED/RESTART,no response QR or automatic retry,approval reuse or rescan-until-green. Metadata/status/count/elapsed/readbacks/guard only: no raw auxiliary,identity secret,request/payload or production seed logs. Public test fixtures/proof may be versioned; operator/rawUSB identifiers remain private. No import/generateidentity/backup/recovery/key ceremony.",
+    "resource_caps": "No new task/heap/DMA/DRBG. Retained provider<=256bytes INTERNAL,public diagnostic report<=512bytes INTERNAL,32byte staging+existing32byte Rust destination,additional stack<=2048bytes supporting static check plus real watermark. Existing worker98304bytes INTERNAL remains; require affected minimum>=4096bytes free. Current normal-public watermark45756bytes is historical,not a promise for new image. Runtime source/clock/provider/guard trace is required without output bytes.",
+    "focused_proof": "Test shared actual adapter policies for both try-lock failures,busy/reentry,partial acquire,foreign/shared-count preservation,expected register/source loss,short0/31/33,error,zero/FF/repeated/duplicate-block,rollback/global timeout/frozenclock,guard54 loss before/during/after,cleanup failure,full wipe/guards and no signing/output. Focused existing host Rust/C FFI negative after real review path; intentionally absent strong provider must fail host link,not silently bind a fixture/weak stub. Reuse unchanged parser/core/QR/gesture/WDT/C6 tests on their unchanged source. One necessary Rust consumer build plus target normal and one fixed publicUnavailable variant,source+generated config+ELF/map/weak/undefined/direct calls/staticlib/image bindings in one packet,distinct root review before USB. No full campaign for report changes.",
+    "finite_hardware_followup": "Propose root-only two separate source-bound public boots: fixed injectedUnavailable variant once after fresh full review/BOOT confirmation proves0response; normal variant once with a NEW public request/fresh full review proves actual32byte provider invocation and explicit-identity client+independent BIP340 verification if prerequisites succeed. At most1auxiliary perCPUboot,no extra4draw screen or output-statistical campaign. Capture entropy-before/after GPIO54 config/pad0,metadata,time/watermark,LCD/camera/touch continuity and refusal/response. Stop at first unexpected failure,keep unavailable/UNKNOWN;no retry-until-green. Root may narrow the physical negative if the packet shows equivalent existing affected evidence; do not infer it from host tests."
+  },
+  "remaining_and_stop": "This receipt authorizes nothing by itself. Root reads contract before code/build/tests/USB. Public diagnostic success is not production entropy,identity custody,offline/RF absence,reset/RAM/panic/log,boot/update/release readiness or Q03 completion. Exact rev3 source/TRM mapping and hardware fault-detection limits remain explicit before any production admission. S04 is terminal/outside scope;no alternate MCU,SDK/vendor edit,framework/OS rewrite,certification gate,eFuse,push or CI. S3e7/e7ef and P4current sources/tools/checkouts remain untouched."
+}

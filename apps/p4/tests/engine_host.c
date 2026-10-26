@@ -20,12 +20,16 @@ int p4_memory_internal(const uint8_t *p,size_t n) {(void)p;(void)n;return 1;} //
 _Noreturn void p4_fatal(void) {abort();}
 // Host sysroot EH metadata references this even with abort; target ELF does not.
 _Noreturn void rust_eh_personality(void) {abort();}
-ptrdiff_t p4_fixture_auxiliary(uint8_t *out,size_t n) {
+#ifndef P4_MISSING_PROVIDER
+ptrdiff_t p4_entropy_fill32(uint8_t *out,size_t n) {
  assert(n==32);auxiliary++;memset(out,0x22,32);
  if(!strcmp(mode,"aux-short"))return 31;
  if(!strcmp(mode,"aux-error"))return -1;
+ if(!strcmp(mode,"aux-zero"))return 0;
+ if(!strcmp(mode,"aux-over"))return 33;
  return 32;
 }
+#endif
 int p4_present(uint32_t decision,const uint8_t *label,size_t label_len,const uint8_t *body,size_t body_len,
  const uint8_t *position,size_t position_len,size_t index,size_t total,uint64_t deadline) {
  (void)label;(void)body;(void)position;(void)index;(void)deadline;
@@ -47,7 +51,8 @@ int main(int argc,char **argv) {
   for(size_t i=0;i<sizeof(output);i++)assert(output[i]==0);
  } else {
   assert(result<0);
-  assert(auxiliary==((!strcmp(mode,"aux-short")||!strcmp(mode,"aux-error"))?1:0));
+  assert(auxiliary==((!strcmp(mode,"aux-short")||!strcmp(mode,"aux-error")||!strcmp(mode,"aux-zero")||!strcmp(mode,"aux-over"))?1:0));
+  if(auxiliary)assert(presented>2);
   for(size_t i=0;i<sizeof(output);i++)assert(output[i]==0);
  }
  printf("mode=%s result=%d synthetic_presentations=%u output_policy=PASS\n",mode,result,presented);
