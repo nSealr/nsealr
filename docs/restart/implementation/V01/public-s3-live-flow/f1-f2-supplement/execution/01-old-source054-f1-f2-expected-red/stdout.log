@@ -1,0 +1,21 @@
+
+[1m[30m[46m RUN [49m[39m[22m [36mv4.1.5 [39m[90m/home/tux/nsealr/.restart-tools/mac-resume-2026-10-25/client-account-binding[39m
+
+ [31m❯[39m apps/bridge/service/src/public-s3-lease.test.ts [2m([22m[2m0 test[22m[2m)[22m
+ [31m❯[39m apps/bridge/service/src/public-s3-budget.test.ts [2m([22m[2m10 tests[22m[2m | [22m[31m2 failed[39m[2m | [22m[33m7 skipped[39m[2m)[22m[32m 4[2mms[22m[39m
+     [2m[90m↓[39m[22m allows real-clock-shaped external wall above5s while charging host CPU and ACTIVE
+     [2m[90m↓[39m[22m keeps the continuous100s deadline during external work
+     [2m[90m↓[39m[22m charges ACTIVE wall even with zero CPU
+     [2m[90m↓[39m[22m charges CPU consumed in the external phase
+     [2m[90m↓[39m[22m retains a failure after clock rollback instead of rearming
+     [2m[90m↓[39m[22m rejects CPU rollback/unavailable and a second external phase
+     [2m[90m↓[39m[22m rejects invalid clocks/overflow without changing units
+[31m     [31m×[31m F1 rejects intermediate CPU10→20→19 at check and keeps revocation sticky[39m[32m 3[2mms[22m[39m
+[31m     [31m×[31m F1 rejects intermediate CPU10→20→19 at phase-exit and keeps revocation sticky[39m[32m 0[2mms[22m[39m
+     [32m✓[39m F1 preserves cumulative external CPU charge across intermediate samples[32m 0[2mms[22m[39m
+
+[2m Test Files [22m [1m[31m2 failed[39m[22m[90m (2)[39m
+[2m      Tests [22m [1m[31m2 failed[39m[22m[2m | [22m[1m[32m1 passed[39m[22m[2m | [22m[33m7 skipped[39m[90m (10)[39m
+[2m   Start at [22m 20:03:42
+[2m   Duration [22m 222ms[2m (transform 46ms, setup 0ms, import 12ms, tests 4ms, environment 0ms)[22m
+

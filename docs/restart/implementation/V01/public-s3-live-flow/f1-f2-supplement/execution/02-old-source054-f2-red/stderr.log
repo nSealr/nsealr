@@ -1,0 +1,46 @@
+
+[31m⎯⎯⎯⎯⎯⎯⎯[39m[1m[41m Failed Tests 2 [49m[22m[31m⎯⎯⎯⎯⎯⎯⎯[39m
+
+[41m[1m FAIL [22m[49m apps/bridge/service/src/public-s3-lease.test.ts[2m > [22mpublic lease EOF boundary; real Node stream events, no USB[2m > [22mF2 refuses a valid buffered response after observed EOF before close
+[31m[1mAssertionError[22m: expected true to be false // Object.is equality[39m
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[32m- false[39m
+[31m+ true[39m
+
+[36m [2m❯[22m apps/bridge/service/src/public-s3-lease.test.ts:[2m91:24[22m[39m
+    [90m 89|[39m       expect(wire.events.indexOf("end")).toBeLessThan(wire.events.inde…
+    [90m 90|[39m       expect(wire.events.indexOf("end")).toBeLessThan(wire.events.inde…
+    [90m 91|[39m       [34mexpect[39m(reply[33m.[39mok)[33m.[39m[34mtoBe[39m([35mfalse[39m)[33m;[39m
+    [90m   |[39m                        [31m^[39m
+    [90m 92|[39m       expect(f.session.context.publicS3Fixture!.connection()).toMatchO…
+    [90m 93|[39m       [34mexpect[39m(()[33m=>[39mf[33m.[39msession[33m.[39m[34mcheck[39m())[33m.[39m[34mtoThrow[39m([36m/lease/[39m)[33m;[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/2]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m apps/bridge/service/src/public-s3-lease.test.ts[2m > [22mpublic lease EOF boundary; real Node stream events, no USB[2m > [22mF2 rejects an already observed EOF at admission and keeps failure after close
+[31m[1mAssertionError[22m: expected { …(4) } to match object { state: 'failed', generation: 1 }
+(2 matching properties omitted from actual)[39m
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[2m  {[22m
+[32m-   "generation": 1,[39m
+[32m-   "state": "failed",[39m
+[31m+   "generation": 0,[39m
+[31m+   "state": "open",[39m
+[2m  }[22m
+
+[36m [2m❯[22m apps/bridge/service/src/public-s3-lease.test.ts:[2m103:63[22m[39m
+    [90m101|[39m       expect(wire.stream.readableEnded).toBe(true);expect(wire.stream.…
+    [90m102|[39m       f[33m.[39msession[33m.[39m[34marm[39m()[33m;[39m
+    [90m103|[39m       expect(f.session.context.publicS3Fixture!.connection()).toMatchO…
+    [90m   |[39m                                                               [31m^[39m
+    [90m104|[39m       expect(()=>f.session.context.publicS3Fixture!.begin()).toThrow(/…
+    [90m105|[39m       [35mawait[39m f[33m.[39msession[33m.[39m[34mclose[39m()[33m;[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/2]⎯[22m[39m
+
