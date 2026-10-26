@@ -29,7 +29,11 @@ type ServiceSerialLineRouteDriver = {
   };
 };
 
-export type ServiceRouteDriver = ServiceSerialLineRouteDriver;
+type ServicePublicS3StreamRoute = Omit<ServiceSerialLineRouteDriver, "driver" | "serial_line"> & {
+  driver: "public_s3_stream";
+  stream_path: string;
+};
+export type ServiceRouteDriver = ServiceSerialLineRouteDriver | ServicePublicS3StreamRoute;
 
 export type ServiceRouteDriverStore = {
   format: typeof SERVICE_ROUTE_DRIVER_STORE_FORMAT;
@@ -40,6 +44,7 @@ export type ServiceRouteDriverStore = {
 
 export type ServiceRouteDriverOptions = {
   openSerialLinePort: SerialLinePortOpener;
+  openPublicS3Stream?: SerialLinePortOpener;
 };
 
 const SERIAL_LINE_ROUTE_TYPES = new Set<RouteType>(["esp32_usb_nip46", "custom_hardware_wallet"]);
@@ -182,6 +187,14 @@ function parseSerialLineRouteDriver(value: Record<string, unknown>, index: numbe
 
 function parseRouteDriver(value: unknown, index: number): ServiceRouteDriver {
   if (!isRecord(value)) throw new Error(`service route driver ${index} must be an object`);
+  if (value.driver === "public_s3_stream") {
+    if (!hasOnlyKeys(value, ["account_id", "route_type", "transport", "driver", "stream_path"]) ||
+        value.route_type !== "esp32_usb_nip46" || value.transport !== "usb" ||
+        typeof value.stream_path !== "string" || !/^\/tmp\/nsealr-s3-public-[a-z0-9-]{1,48}\.sock$/u.test(value.stream_path))
+      throw new Error("public S3 requires a named local lab stream");
+    return { account_id: requireStableId(value.account_id, "public S3 account_id"),
+      route_type: "esp32_usb_nip46", transport: "usb", driver: "public_s3_stream", stream_path: value.stream_path };
+  }
   return parseSerialLineRouteDriver(value, index);
 }
 
@@ -239,6 +252,7 @@ async function dispatchSerialLineRoute(
       responseTimeoutMs: Math.min(route.serial_line.response_timeout_ms ?? 30_000, dispatch.effective_limits.method.deadline_ms, dispatch.effective_limits.transport.deadline_ms),
       beforeWrite: dispatch.before_write,
       abortSignal: dispatch.abort_signal,
+      operationPhase: dispatch.operation_phase,
       maxFrameBytes: dispatch.effective_limits.transport.frame_bytes,
       maxWorkBytes: Math.min(dispatch.effective_limits.method.parse_work, dispatch.effective_limits.transport.parse_work)
     });
@@ -313,7 +327,13 @@ export function createServiceRouteDispatcher(
     account_id: route.account_id,
     route_type: route.route_type,
     transport: route.transport,
-    dispatch: async (request) => dispatchSerialLineRoute(route, request, options.openSerialLinePort)
+    dispatch: async (request) => {
+      if (route.driver === "serial_line") return dispatchSerialLineRoute(route, request, options.openSerialLinePort);
+      if (!options.openPublicS3Stream) throw new SignerRouteUnavailableError("public S3 stream has no trusted local fixture admission");
+      return dispatchSerialLineRoute({ ...route, driver: "serial_line", serial_line: {
+        path: route.stream_path, max_ignored_lines: 8, response_timeout_ms: 100000
+      } }, request, options.openPublicS3Stream);
+    }
   }));
   return createRouteDispatcher(entries);
 }

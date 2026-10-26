@@ -13,6 +13,7 @@ import {
 } from "@nsealr/client";
 import { SerialLineStreamPort, type SerialLinePort } from "@nsealr/transport";
 import { contextArgsFromCliArgs, loadServiceContextFromFiles } from "./context.js";
+import { loadPublicS3Context } from "./public-s3.js";
 import {
   nativeHostInstallApprovalJsonFromArgs,
   nativeHostInstallExecutionJsonFromArgs,
@@ -207,6 +208,32 @@ async function openNodeSerialLinePort(path: string): Promise<SerialLinePort> {
   return new SerialLineStreamPort({ input: serialPort, output: serialPort });
 }
 
+/** One public client frame, with EOF, while socket close/revocation remains live. */
+function readPublicNativeFrame(): Promise<Uint8Array> {
+  return new Promise((resolve, reject) => {
+    const input = process.stdin;
+    const buffer = Buffer.alloc(NATIVE_MESSAGE_LENGTH_BYTES + MAX_NATIVE_MESSAGE_BYTES);
+    let used = 0;
+    const cleanup = () => { clearTimeout(timer); input.off("data", data); input.off("end", ended); input.off("error", failed); input.pause(); };
+    const failed = (error: Error) => { cleanup(); reject(error); };
+    const data = (chunk: Buffer) => {
+      if (chunk.length > buffer.length - used) { failed(new Error("public native input exceeds bound")); return; }
+      chunk.copy(buffer, used); used += chunk.length;
+      if (used >= 4) {
+        const length = messageLength(buffer.subarray(0,4));
+        if (length > MAX_NATIVE_MESSAGE_BYTES || used > length + 4) failed(new Error("public native input has extra/oversized frame"));
+      }
+    };
+    const ended = () => {
+      cleanup();
+      if (used < 4 || messageLength(buffer.subarray(0,4)) + 4 !== used) reject(new Error("public native input incomplete"));
+      else resolve(buffer.subarray(0,used));
+    };
+    const timer = setTimeout(() => failed(new Error("public native setup input expired")),60000);
+    input.on("data",data); input.on("end",ended); input.on("error",failed); input.resume();
+  });
+}
+
 export async function runServiceCli(args: string[]): Promise<void> {
   if (args.length === 0) {
     await runServiceStdioAsync();
@@ -214,6 +241,32 @@ export async function runServiceCli(args: string[]): Promise<void> {
   }
   try {
     const normalizedArgs = args[0] === "--" ? args.slice(1) : args;
+    if (normalizedArgs.includes("--public-s3-lab")) {
+      if (normalizedArgs.filter(arg => arg === "--public-s3-lab").length !== 1) throw new Error("duplicate public S3 opt-in");
+      const session = await loadPublicS3Context(contextArgsFromCliArgs(normalizedArgs.filter(arg => arg !== "--public-s3-lab")));
+      try {
+        writeSync(2, JSON.stringify({ public_s3_stream_open: true, connection_id: session.connectionId }) + "\n");
+        const frame = await readPublicNativeFrame();
+        if (!frame) throw new Error("public S3 requires one client request");
+        session.arm();
+        const request = decodeNativeMessage(frame) as { params?: { client?: unknown; request?: unknown } };
+        const output = await runServiceOnceAsync(frame, session.context);
+        await session.close();
+        const reply = decodeNativeMessage(output) as { ok?: boolean; result?: { signer_response?: unknown } };
+        if (reply.ok && reply.result?.signer_response !== undefined) {
+          // Recheck the live approved grant after crypto and actual close.
+          const verified = handleLocalServiceRequest({ version: 1, request_id: "public-s3-final-check",
+            operation: "verify_signer_response", params: { client: request.params?.client,
+              request: request.params?.request, response: reply.result.signer_response } },
+            { grants: session.context.currentGrants!() });
+          if (!verified.ok || !("validation" in verified.result) || !verified.result.validation.valid)
+            throw new Error("public S3 final live grant/response check failed");
+          session.check();
+        }
+        writeSync(1, output);
+      } finally { await session.close(); }
+      return;
+    }
     if (normalizedArgs.includes("--native-host-manifest")) {
       writeSync(1, nativeHostManifestJsonFromArgs(args));
       return;

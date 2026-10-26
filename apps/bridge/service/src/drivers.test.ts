@@ -56,6 +56,13 @@ function routeDriverStore(route: Record<string, unknown> = {}): Record<string, u
   };
 }
 
+function serialRoute(store: ReturnType<typeof parseServiceRouteDriverStore>) {
+  const route = store.routes[0];
+  expect(route.driver).toBe("serial_line");
+  if (route.driver !== "serial_line") throw new Error("expected serial-line fixture");
+  return route;
+}
+
 describe("service route drivers", () => {
   it("applies the effective serial frame ceiling to actual peer errors as well as positive responses", async () => {
     const request = JSON.parse(readFileSync(resolve(specsRoot, "examples/request-get-public-key.json"), "utf8"));
@@ -139,11 +146,11 @@ describe("service route drivers", () => {
       "\\\\.\\COM10"
     ];
     for (const path of validPaths) {
-      expect(parseServiceRouteDriverStore(routeDriverStore({
+      expect(serialRoute(parseServiceRouteDriverStore(routeDriverStore({
         serial_line: {
           path
         }
-      })).routes[0].serial_line.path).toBe(path);
+      }))).serial_line.path).toBe(path);
     }
 
     const invalidPaths = [
@@ -166,13 +173,13 @@ describe("service route drivers", () => {
   });
 
   it("bounds serial-line route timing and ignored-log controls", () => {
-    expect(parseServiceRouteDriverStore(routeDriverStore({
+    expect(serialRoute(parseServiceRouteDriverStore(routeDriverStore({
       serial_line: {
         path: "/dev/cu.usbmodem-test",
         max_ignored_lines: MAX_SERIAL_LINE_IGNORED_LINES,
         response_timeout_ms: MAX_SERIAL_LINE_RESPONSE_TIMEOUT_MS
       }
-    })).routes[0].serial_line).toEqual({
+    }))).serial_line).toEqual({
       path: "/dev/cu.usbmodem-test",
       max_ignored_lines: MAX_SERIAL_LINE_IGNORED_LINES,
       response_timeout_ms: MAX_SERIAL_LINE_RESPONSE_TIMEOUT_MS

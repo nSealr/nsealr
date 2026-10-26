@@ -1,6 +1,6 @@
 # Public SDK API review
 
-API surface digest: `sha256:f9b54ad5243e155aa0cafb037f5b2d368cb9e86d8da15f429d06e0ea1b774b25`
+API surface digest: `sha256:dade15d88dd402429cfca631bd7ba7189ba0ad57b4cdd2222d7314f855725d32`
 
 Source: [generated API](api.md). This migration records a proposed pre-release
 surface with the T01 wire2/profile cutover proposed for distinct review. It does not claim a new production-security,
@@ -111,3 +111,23 @@ accumulate orphans. Synchronous results/throws release normally. A local
 minimum-complete-exchange calculation covers encoded request and positive
 response work for all three methods before I/O. Noise remains subject to the
 actual cumulative transport ledger; no frame/work capacity is enlarged.
+
+
+The named public S3 fixture exception is an application-owned local admission
+for the exact e7 public scalar3 source/image, fixed template, pinned account and
+one observed stream lease. PublicS3Fixture is a host TCB interface, not device
+attestation. It supplies no reported capability or complete-page observation.
+Default compatibility/readiness and all other implementations still require
+their ordinary provider and fail closed without one. This public path admits
+only get_public_key and sign_event; get_capabilities remains unsupported.
+
+The explicit public variant uses volatile_session for its named esp32_no_se
+implementation while existing persistent implementations remain unchanged.
+It has one request, a continuous 100s public deadline and a 5s service ACTIVE/
+process-CPU ledger. USER accounting, target CPU and end-to-end C5000 remain
+unavailable. The CLI performs no operation during setup/Enable/Enter, captures
+the original pin before callbacks, rechecks grants/configuration after Enter
+and after verification/actual local settlement, and publishes only a new file.
+currentGrants refreshes authority; it never grants permissions by itself.
+The local fixture and Unix/SSH/Mac byte relay are unqualified public lab wiring,
+with no installer, browser, live-device, custody or release claim from host tests.

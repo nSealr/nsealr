@@ -393,3 +393,23 @@ describe("S01 stream limits, errors and cleanup", () => {
     port.close();
   });
 });
+
+
+describe("owned port close settlement", () => {
+  it("does not complete close until both resource-destruction callbacks finish", async () => {
+    let releaseInput!: (error?: Error | null) => void;
+    let releaseOutput!: (error?: Error | null) => void;
+    const input = new PassThrough({ emitClose: false, destroy(_error, done) { releaseInput = done; } });
+    const output = new PassThrough({ emitClose: false, destroy(_error, done) { releaseOutput = done; } });
+    const port = new SerialLineStreamPort({ input, output });
+    let complete = false;
+    const closing = Promise.resolve(port.close()).then(() => { complete = true; });
+    await new Promise(resolve => setImmediate(resolve));
+    expect(complete).toBe(false);
+    releaseInput();
+    await new Promise(resolve => setImmediate(resolve));
+    expect(complete).toBe(false);
+    releaseOutput();await closing;
+    expect(complete).toBe(true);
+  });
+});
