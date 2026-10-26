@@ -1,0 +1,126 @@
+{
+  "rule": "Historical observations stay valid for their exact old inputs; none is silently relabelled as the 0.7.9 closure.",
+  "root_host": {
+    "inputs": [
+      "Cargo.lock",
+      "apps/desktop-simulator/Cargo.lock",
+      "vendor/crypto-bigint"
+    ],
+    "requires_new_binding": [
+      "nsealr-core host and no_std rlibs",
+      "desktop-simulator binary and vector/oracle outputs",
+      "libnsealr_pi_engine_fixture.so and C-ABI adapter/runtime checks",
+      "coverage/repro/security results attributed to the old dependency closure"
+    ],
+    "historical_review": [
+      "docs/restart/implementation/reviews/R00-crypto-bigint-remediation/review.json",
+      "docs/restart/implementation/reviews/R00-crypto-bigint-remediation/report.md"
+    ],
+    "review_limit": "That review covers the original 0.7.5->0.7.6/ctutils change, not this 0.7.9 diff. Portable application-source reviews and independent oracle definitions remain reusable where unchanged."
+  },
+  "pi": {
+    "source": "45cf182e99447e68ce7a2f7557b86c5d597778e2",
+    "code": "5040e8aa2037a33aa5989150313abd88c7e53673",
+    "native_requires_rebuild": [
+      {
+        "file": "libnsealr_pi_engine_fixture.so",
+        "bytes": 641024,
+        "sha256": "055059de6170e0853aca8d030095b3d4c093ff6d315e5f4baeb8230641d62b0b"
+      }
+    ],
+    "containing_artifacts_require_new_hashes": [
+      {
+        "path": "output/images/nsealr-pi0-diagnostic.img",
+        "bytes": 101711872,
+        "sha256": "79d53623eea901b71944ecdf960ed9c310e4fbb94ab3c4da6461bead16b2423c"
+      },
+      {
+        "path": "output/images/zImage",
+        "bytes": 23936656,
+        "sha256": "c5796c7a0ef98a728063438dbc2047727534286a1e905019d115af5db94717bf"
+      },
+      {
+        "path": "output/images/rootfs.cpio.gz",
+        "bytes": 18210411,
+        "sha256": "a6540092d35c23103448dba9ae45ebaed39a536b6e42553dd2f1b17efc8f6fc6"
+      }
+    ],
+    "affected_proofs": [
+      "docs/restart/implementation/QP01/pi-runtime/proof/native-artifacts.json",
+      "docs/restart/implementation/QP01/pi-runtime/proof/elf-closure.json",
+      "docs/restart/implementation/QP01/pi-runtime/proof/qemu-native-final.json",
+      "docs/restart/implementation/QP01/pi-runtime/proof/image-candidate.json",
+      "docs/restart/implementation/QP01/pi-runtime/proof/fat-readback.json",
+      "docs/restart/implementation/QP01/pi-runtime/artifact-manifest.json"
+    ],
+    "unchanged_worker": [
+      {
+        "file": "nsealr-qr-worker",
+        "bytes": 669740,
+        "sha256": "596b59791ecb66e04e362be0a7b875fb2f8f2a1f10881eaed66033313a82d4aa"
+      }
+    ],
+    "reusable": "Python camera/supervisor source and its 11 stdlib tests; QR worker source/lock/artifact and its digital controls; kernel/config/hardware procedures where unchanged. Root image/FAT checks stay valid for the old image only; a changed image needs its own binding/readback. No physical Pi result existed in this frozen packet.",
+    "rebuilt_here": false,
+    "unchanged_DTB": [
+      {
+        "path": "output/images/bcm2708-rpi-zero.dtb",
+        "bytes": 27856,
+        "sha256": "d49b3c6abcb5bf64937bac3019fa8ccae2a3544b6055f04a1e8853fa8178d386"
+      }
+    ]
+  },
+  "p4": {
+    "source": "83f1575cce1b1c8c0188bb6d6aa22ef03cdf2dc8",
+    "lock_patch": "consumer-locks/p4-83f1575c.patch",
+    "requires_rebuild": [
+      "apps/p4/rust/target/riscv32imafc-unknown-none-elf/release/libnsealr_p4_optical.a",
+      "apps/p4/rust/target/x86_64-unknown-linux-gnu/release/libnsealr_p4_optical.a",
+      "apps/p4/build/nsealr_p4_public_optical.elf",
+      "apps/p4/build/nsealr_p4_public_optical.bin"
+    ],
+    "old_application_artifact": [
+      {
+        "offset": "0x20000",
+        "path": "apps/p4/build/nsealr_p4_public_optical.bin",
+        "bytes": 1223520,
+        "sha256": "2a9ce2f3781b988c4222a88b53b3187b93e32ced007cbc8856b9a11c98ea16ab"
+      }
+    ],
+    "old_ELF_sha256": "0b7c1f870c518df2da300ad98df80138d9f000312e178504495e477b3bcb1824",
+    "affected_proofs": [
+      "docs/restart/implementation/Q03/proof/build-result.json",
+      "docs/restart/implementation/Q03/proof/host-final-matrix.json",
+      "docs/restart/implementation/Q03/proof/client-verify.json (old producer response remains old)",
+      "internal-owner-map/size/runtime measurements of the relinked app"
+    ],
+    "reusable": "Unchanged C GPIO/frame/quirc source and standalone controls, vendor camera/display observations and independent client verifier source. Bootloader/partition bytes are not semantically affected by this crypto change; preserve/recheck actual identity if a later build changes them for another reason.",
+    "rebuilt_here": false
+  },
+  "s3": {
+    "source": "e19892194e3cd452be01a4efb829065fba4ed786",
+    "lock_patch": "consumer-locks/s3-e1989219.patch",
+    "packet_sha256": "2ac35c8828dce4ab428f16f594856d4a1ec48579c122f8fbeb175637e4d0bdcd",
+    "artifacts_require_rebuild": [
+      {
+        "path": "s3-probe/build/rust-abi-xtensa/xtensa-esp32s3-none-elf/release/libnsealr_s3_abi.a",
+        "bytes": 2766218,
+        "sha256": "8568c2d75f94e073ec7c19ac46ee5313aa3740dc5e8a77a87aebb78611ca9ceb"
+      },
+      {
+        "path": "s3-probe/artifacts/io-core-abi/firmware.bin",
+        "bytes": 375344,
+        "sha256": "118a4e53fafb2395c05b4b64dcd5637b39bc30c0f155b9b4295210bd03ea9929"
+      }
+    ],
+    "affected_proofs": [
+      "s3-probe/artifacts/io-core-abi/packet.json",
+      "s3-probe/execution/23-abi*",
+      "s3-probe/execution/24-abi*",
+      "s3-probe/execution/25-abi*"
+    ],
+    "runtime_limit": "Compile/link only; no e198 hardware ABI/runtime was observed or flashed, so no such result is invalidated.",
+    "reusable": "Pure IO5df/TFT evidence without Rust stays in its original context. The new IDF firmware has its own independent SDK/IO gates in addition to this crypto update.",
+    "rebuilt_here": false
+  }
+}
