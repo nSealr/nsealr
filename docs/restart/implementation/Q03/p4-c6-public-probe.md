@@ -95,3 +95,30 @@ Root separately reviews source/artifacts, flashes the public probe and observes
 one bounded operation or UNAVAILABLE, then restores the exact new normal image
 and reads HOLD/RELEASE on the final page. No C6 flash, eFuse, board opening, added
 hardware, CI/push or physical outcome is performed/claimed by this author.
+
+
+## Frozen source and final packet
+
+The product contribution above was completed by phase1_scope in
+813e98cc7eade910b52e37ebd690be5280404aaf. After ownership transfer,
+s3_native_finish verified the clean source, inactive jobs and exact existing
+native-stable source hashes, retained those results, and completed only the
+necessary final source-bound normal/probe builds and packaging. No product code
+was changed by the continuation author. No unchanged tests or WDT canaries ran.
+
+The final packet is apps/p4/evidence/c6-public-probe/final-packet:225 members,
+SHA256SUMS6fa1fe95731c154954c0cf7529b2a76fa23dc3e865ce211ffcf5fbd28b46de46.
+Its manifest, source/closure bindings, source snapshot, native results, exact
+compressed linker maps and build/artifact/integrity receipts are retained in
+proof/c6-public-probe. The packet itself includes both ELF/bin/map sets and source.
+The normal app is1225776bytes, SHA
+b19107ecef328911e53cd9f96668780ac40e73895c706a381279426e208271b5;
+the c6-reset app is1275360bytes, SHA
+908e95aeeea4bda9d9c451d3f014dbd93b088748c1526990b87e908832c52d59.
+Both use P4 boot0x2000/partition0x8000/app0x20000, DIO/80m/16MB, no boot_app0.
+The same builddir is left in normal. SDK effective hash a5d508d7 and Rust archive
+7d77596a remained unchanged through all four configure/build commands.
+
+Distinct final review belongs to p4_optical_review and root. Actual C6 probe
+and new normal display observations are NOT RUN by the implementers. Root is
+the sole USB/flash operator; all open gates above remain open.

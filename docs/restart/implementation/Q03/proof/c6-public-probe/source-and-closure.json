@@ -1,0 +1,78 @@
+{
+  "source": "813e98cc7eade910b52e37ebd690be5280404aaf",
+  "prebuild_source_count": 115,
+  "source_and_Rust_unchanged_through_both_builds": true,
+  "variants": {
+    "c6-reset": {
+      "mode_from_actual_compile_flags": 3,
+      "project_version": "813e98cc",
+      "sdkconfig_sha256": "a5d508d745eff91de953d6e6f5d48f384f130dd6e1cd8ee13422440862cb494d",
+      "ABI": "ELF32 RISC-V RVC single-float ABI flags3",
+      "Rust_storage": {
+        "address": "0x4ff574e0",
+        "bytes": 5920,
+        "section": ".dram0.data",
+        "classification": "internal HP SRAM according to the unchanged P4 SDK linker layout, runtime check retained; not an erasure/custody claim"
+      },
+      "forbidden_linked_name_matches": [],
+      "undefined_anchors": [
+        "         U __cxx_fatal_exception",
+        "         U start_app",
+        "         U start_app_other_cores"
+      ],
+      "flash_settings": {
+        "flash_mode": "dio",
+        "flash_size": "16MB",
+        "flash_freq": "80m"
+      },
+      "offsets": {
+        "0x2000": "bootloader/bootloader.bin",
+        "0x8000": "partition_table/partition-table.bin",
+        "0x20000": "nsealr_p4_public_optical.bin"
+      },
+      "no_boot_app0": true
+    },
+    "normal": {
+      "mode_from_actual_compile_flags": 0,
+      "project_version": "813e98cc",
+      "sdkconfig_sha256": "a5d508d745eff91de953d6e6f5d48f384f130dd6e1cd8ee13422440862cb494d",
+      "ABI": "ELF32 RISC-V RVC single-float ABI flags3",
+      "Rust_storage": {
+        "address": "0x4ff574e0",
+        "bytes": 5920,
+        "section": ".dram0.data",
+        "classification": "internal HP SRAM according to the unchanged P4 SDK linker layout, runtime check retained; not an erasure/custody claim"
+      },
+      "forbidden_linked_name_matches": [],
+      "undefined_anchors": [
+        "         U __cxx_fatal_exception",
+        "         U start_app",
+        "         U start_app_other_cores"
+      ],
+      "flash_settings": {
+        "flash_mode": "dio",
+        "flash_size": "16MB",
+        "flash_freq": "80m"
+      },
+      "offsets": {
+        "0x2000": "bootloader/bootloader.bin",
+        "0x8000": "partition_table/partition-table.bin",
+        "0x20000": "nsealr_p4_public_optical.bin"
+      },
+      "no_boot_app0": true
+    }
+  },
+  "native_reuse": {
+    "path": "native/native-stable-results.json",
+    "sha256": "a3abb878b4b646d0d9d3d9437c55eedc1136077449ee71513b1e131b3a24b81d",
+    "cases": 20,
+    "CIS": "bounded 256byte/64tuple fixtures including final256byte edge",
+    "source_hashes_exact": true,
+    "rerun": false
+  },
+  "clock": "one shared absolute start+20000ms, checked between callbacks/SDIO commands; unchanged real core100ticks and WDT5s. SDK init retries/call overrun may reach WDT; no hard20s return proof.",
+  "cleanup": "Every returning post-low path attempts low and actual pad readback. Atomic low_admitted enables task-level p4_fatal hook. SDK panic/WDT/EN/power reset do not promise continuity.",
+  "WDT_readback_correction": "Historical logs contain Print CPU1 registers label but no MEPC/RA/SP/A* values; ROM SavedPC and task/CPU names remain. No SDK workaround and no rerun.",
+  "linked_scan_limit": "Name-based absence of esp_hosted routines and unbounded CIS helper is supporting evidence, not proof of no RF or all indirect activity. Probe has no engine init before its never-return path; public fixture engine still linked.",
+  "hardware": "NOT RUN. Root alone flashes/observes bounded public probe and restores exact new normal image. No secret/offline/RF/custody qualification."
+}
