@@ -17472,7 +17472,38 @@
       "review_verdict": null,
       "result_artifacts": [],
       "profile": "p4_qr",
-      "requires_physical_evidence": true
+      "requires_physical_evidence": true,
+      "current_checkpoint": {
+        "state": "PUBLIC_PHYSICAL_NORMAL_GUARD_COMPONENT_VERIFIED_RELEASE_GATES_OPEN",
+        "source": "33a6b4e3e29c4dd74b8557bc38d1c5b345c07290",
+        "source_delivery": "86b59a4b859e35cff6d822755d1448b55cdac53b",
+        "base": "99332719e0e116d3e013cd3bfa1969131dd40ecf",
+        "evidence": "docs/restart/implementation/Q03/proof/normal-c6-guard",
+        "review": {
+          "path": "docs/restart/implementation/Q03/proof/normal-c6-guard/root-distinct-review.json",
+          "sha256": "cde6155e83709519624b9844326291ba6660e5420a1f8631814559b1ae11eeea",
+          "reviewer": "/root",
+          "verdict": "PASS_BOUNDED_PUBLIC_NORMAL_C6_GUARD_SOURCE_AND_ARTIFACT"
+        },
+        "actual_public_hardware": {
+          "binary_sha256": "2a74a35788f438d30427c2d37398f41fdbd9babf322f05ba31374a77471347ee",
+          "assessment_sha256": "032778d931b65fb9b23bfdb5e8c4458966b7660c1de31c711338766e5b759809",
+          "runtime_sha256": "771bbf4c975b3792bed318664296aa6f6d6dda43cd124e6588e75428d82a4ef0",
+          "guard_readback_phases": 7,
+          "verified_event_id": "ed403ee9e9bf7ec38ce297f22a8431e9ecbc884d951a4d83805f5c765a49e701",
+          "verification": "Current product QR/client with separately pinned expected identity; independent Python/hashlib and hash-pinned upstream BIP340 reference"
+        },
+        "meaning": "Public fixture11 full QR/review/BOOT release/signature roundtrip. GPIO54low sampled before/after engine, operation and response ACK. Native27 GPIO cases and affected feed/response checks pass; initial mock GREEN, corrected-reset RED and final correction preserved.",
+        "criteria_closed": 0,
+        "release_admitted": false,
+        "limits": [
+          "Pad/config samples do not establish RF absence, C6 die/firmware or chip-pin voltage",
+          "USB-connected BOOT/DTR/RTS is not trusted human consent under adversarial host",
+          "Real entropy, local custody/recovery, reset hold/RAM/panic/log, complete optical negatives and boot/update/release gates remain open",
+          "Battery/PWR availability does not establish CPU continuity"
+        ],
+        "integration": "Source/binary/device proof only; protected delivery checks tracked separately"
+      }
     },
     {
       "id": "Q04",
