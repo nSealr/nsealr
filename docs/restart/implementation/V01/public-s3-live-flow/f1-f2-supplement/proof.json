@@ -1,0 +1,186 @@
+{
+  "schema": "nsealr.public-s3-f1-f2-focused-proof.v1",
+  "source_commit": "1fb2658393d7e4f696209c0f3523506d42b2a790",
+  "production_source_same_as": "1a312a00ff51c603629f89e6416ad95430be3690",
+  "previous_source": "05435ceed1f2362fd5729750705e7952a65cb2b3",
+  "previous_delivery": "b4357d1668ca60a59d593bd917f800ede2fb84a8",
+  "required_distinct_review": "F1/F2 source/test/proof delta only; no hardware",
+  "original_distinct_report_sha256": "5f47c344440f5ec12d662c327074ac61cf8e2246ba865d298a7cd1f69752b96d",
+  "original_distinct_report_immutable_copy": "intake/v01-host-live-source-distinct-review-source054-original.json",
+  "original_264_GREEN": "Preserved unchanged as historical insufficient coverage for F1/F2, not a passing source verdict. Existing original73-member packet tree byte-identical.",
+  "fixes": [
+    {
+      "id": "F1",
+      "source": "apps/bridge/service/src/public-s3-budget.ts",
+      "change": "lastCpu enforces each accepted CPU observation against the previous one. externalCpu remains the distinct entry baseline for cumulative charge; existing catch paths permanently revoke on rollback. No budget/clock/phase change.",
+      "threat_scope": "Fault policy of trusted process.cpuUsage observation; no stock USB clock mutation claim.",
+      "regressions": [
+        "10->20->19 at check fails old source",
+        "10->20->19 at phase exit fails old source",
+        "After rollback, restored clock cannot restore eligibility",
+        "Cumulative2M+2M+1M CPU after intermediate samples still reaches existing5s cap"
+      ]
+    },
+    {
+      "id": "F2",
+      "source": "apps/bridge/service/src/public-s3.ts",
+      "change": "Readable end immediately increments generation and fails the public lease. readableEnded/errored/destroyed readback guards initialization, admission/current checks and pre/post write/read/close. Sticky failed state survives expected close; guards reject retained valid lines after observed end. Generic SerialLineStreamPort parser unchanged.",
+      "threat_scope": "Ordinary local readable EOF event/input; host lease only, no remote USB-close attestation.",
+      "regressions": [
+        "Valid scalar3 signed frame buffered, actual Node end observed before write callback and close: old reply.ok true, fixed reply.ok false; one in-flight write already occurred, no retry or queued byte recall claim",
+        "Already observed end at admission: old generation0/open, fixed generation1/failed retained after close; no operation write"
+      ],
+      "test_boundary": "Controlled Node Duplex with actual data/end/destroy events, push(null), allowHalfOpen true and autoDestroy false to keep end distinct from close. node:net createConnection alone mocked; actual service/context/dispatcher/client/framing/transport code runs. Public dev signer is test-only, not a product fallback."
+    }
+  ],
+  "executions": [
+    {
+      "path": "execution/01-old-source054-f1-f2-expected-red",
+      "exit": 1,
+      "classification": "F1 expected RED at both boundaries; F2 test collection import error, not F2 evidence. Corrected test-only relative import without dependency/API change."
+    },
+    {
+      "path": "execution/02-old-source054-f2-red",
+      "exit": 1,
+      "classification": "Two genuine F2 expected RED assertions on old054 production source unchanged; valid response accepted and ended lease remained open."
+    },
+    {
+      "path": "execution/03-fixed-f1-f2-green",
+      "exit": 0,
+      "tests": 12,
+      "classification": "F1/F2 GREEN:7 existing budget cases+3 CPU regressions+2 EOF regressions. Exact production bytes match final frozen source; only later TS literal narrowing in test has no runtime effect.",
+      "source_binding_at_execution": {
+        "apps/bridge/service/src/public-s3-budget.test.ts": "6518750cdf00b50e10d0aaf66ab81eb754c828f24a18084df5988c5c0b5ae192",
+        "apps/bridge/service/src/public-s3-budget.ts": "0051e9a9b2c86f3a97d1d15dd5d15db817dda0390ad7e9a21503f7304e6fa210",
+        "apps/bridge/service/src/public-s3-lease.test.ts": "4c86000242969c985121cb786236caf6ddc1ecf5c0e3d4400418713e6ad52f88",
+        "apps/bridge/service/src/public-s3.ts": "399c10046ddad69febdf7126619ea2b872369c253d28558ac1e9a13c0a026d05",
+        "docs/restart/implementation/V01/public-s3-live-flow/README.md": "2e5791cd78422a87a9ef029f771f6c0dacdbc887df058fc5516fd1800b6165cc"
+      }
+    },
+    {
+      "path": "execution/04-frozen-affected-service-build",
+      "exit": 0,
+      "elapsed_seconds": 0.5900929253548384,
+      "classification": "Compile two changed service modules with existing compiler flags; imported unchanged local modules emitted as needed. No package/core/firmware rebuild. Clean1a production source identical final1fb."
+    },
+    {
+      "path": "execution/05-frozen-cli-path",
+      "exit": 0,
+      "tests": 17,
+      "real_wait_ms": 5183,
+      "classification": "Actual CLI/client/child-service/Unix test path with newly compiled modules. No USB/device; source unchanged into1fb except test-only annotation. No replay of227/API checks."
+    },
+    {
+      "path": "execution/06-frozen-typecheck",
+      "exit": 2,
+      "classification": "Preserved test-only version/method literal widening; no product failure or threshold relaxation."
+    },
+    {
+      "path": "execution/07-frozen-typecheck-test-literals",
+      "exit": 0,
+      "elapsed_seconds": 1.7432270580902696,
+      "classification": "Final clean1fb full TS typecheck. Only correction from1a is two const literal annotations in EOF regression; no runtime/product change or rebuild repeated."
+    }
+  ],
+  "affected_tests": {
+    "currently_executed_distinct": 29,
+    "formula": "12 budget/lease+17 existing publicCLI",
+    "new_cases": 5,
+    "unchanged_227_or_API_suites_replayed": false
+  },
+  "compiled_runtime": {
+    "apps/bridge/service/dist/public-s3-budget.js": {
+      "previous_sha256": "f792de4e7bc4f8813322b80caed3651f46246659e1db487d0c17dc7165bdd3b1",
+      "bytes": 3071,
+      "sha256": "08f44618e0e9b0fd7a24e0e9abef7d0b286887a1876170536e39ab879a5b5d25",
+      "packet_path": "compiled/public-s3-budget.js"
+    },
+    "apps/bridge/service/dist/public-s3-budget.d.ts": {
+      "previous_sha256": "8cac264fbe9080a14abb7c723b082d28b90a2824bb4a2f457248362eeb6370ec",
+      "bytes": 522,
+      "sha256": "a9c7c7d8c12efc2de53386922747a150de6ee236a38d36346fca8482b1bca464",
+      "packet_path": "compiled/public-s3-budget.d.ts"
+    },
+    "apps/bridge/service/dist/public-s3.js": {
+      "previous_sha256": "f0e8ff1d45de43df6fde10137311db07fbc063f8efaf9dc7a5fd0444a80f6e64",
+      "bytes": 7757,
+      "sha256": "35b031a55dddd46f431d5828fe76642c6b3c4dab22786578e859f43a332b3473",
+      "packet_path": "compiled/public-s3.js"
+    },
+    "apps/bridge/service/dist/public-s3.d.ts": {
+      "previous_sha256": "5dd7a442c7414685af3b8a5d3c757c4ff5cd171fe740c45683c7f48f41f06570",
+      "bytes": 307,
+      "sha256": "5dd7a442c7414685af3b8a5d3c757c4ff5cd171fe740c45683c7f48f41f06570",
+      "packet_path": "compiled/public-s3.d.ts"
+    }
+  },
+  "runtime_scope": "Hashes are actual current outputs of04, read back after05; included compiled bytes allow inspection. No invented pre-run artifact snapshot. Unchanged service index and package runtime remain original source-bound artifacts.",
+  "source_paths_sha256": {
+    "apps/bridge/service/src/public-s3-budget.test.ts": "6518750cdf00b50e10d0aaf66ab81eb754c828f24a18084df5988c5c0b5ae192",
+    "apps/bridge/service/src/public-s3-budget.ts": "0051e9a9b2c86f3a97d1d15dd5d15db817dda0390ad7e9a21503f7304e6fa210",
+    "apps/bridge/service/src/public-s3-lease.test.ts": "f2e0271295685069ecd60f659b97fe1b92fd7f2538b4a4a64954ed2ca8aff881",
+    "apps/bridge/service/src/public-s3.ts": "399c10046ddad69febdf7126619ea2b872369c253d28558ac1e9a13c0a026d05",
+    "docs/restart/implementation/V01/public-s3-live-flow/README.md": "2e5791cd78422a87a9ef029f771f6c0dacdbc887df058fc5516fd1800b6165cc"
+  },
+  "unchanged_boundaries": {
+    "apps/s3-session": {
+      "before": "73ffd5e3e6f63a479bee23a1d6dc7dc606e29919",
+      "after": "73ffd5e3e6f63a479bee23a1d6dc7dc606e29919"
+    },
+    "apps/p4": {
+      "before": "393e5b179ad84ada89f5dd870da14d96bb6c9093",
+      "after": "393e5b179ad84ada89f5dd870da14d96bb6c9093"
+    },
+    "crates": {
+      "before": "97bda3f330c47d4881b26f0474d50d3cb0320f55",
+      "after": "97bda3f330c47d4881b26f0474d50d3cb0320f55"
+    },
+    "vendor": {
+      "before": "e4be4ce356cb26af0825222d2ac90fa4a6eb4bb3",
+      "after": "e4be4ce356cb26af0825222d2ac90fa4a6eb4bb3"
+    },
+    "packages": {
+      "before": "c4e6c040bf4fbd556c69a9bd4f46982f06914bd0",
+      "after": "c4e6c040bf4fbd556c69a9bd4f46982f06914bd0"
+    },
+    "plan/work-items.json": {
+      "before": "15260dace0c8890c5c7fccaf8e15a9391eba457f",
+      "after": "15260dace0c8890c5c7fccaf8e15a9391eba457f"
+    },
+    "plan/evidence-index.json": {
+      "before": "442edf847787e9cd8b71893b7dc0a8486eca5bf4",
+      "after": "442edf847787e9cd8b71893b7dc0a8486eca5bf4"
+    },
+    "docs/bridge/api.md": {
+      "before": "8a66ae461da87253bd8264ed17dd4b45b94ae068",
+      "after": "8a66ae461da87253bd8264ed17dd4b45b94ae068"
+    },
+    "docs/bridge/api-review.md": {
+      "before": "f7cf28d6636b92242c365cee60b71c650d5f6480",
+      "after": "f7cf28d6636b92242c365cee60b71c650d5f6480"
+    },
+    "tools/bridge/public_s3_usb_relay.py": {
+      "before": "cdc60ffd572ba1b5bc60b6cc68323773c1f74e68",
+      "after": "cdc60ffd572ba1b5bc60b6cc68323773c1f74e68"
+    },
+    "docs/restart/implementation/QP01/request-engine/native-leaf.ts": {
+      "before": "48ee5d2035c70d036dda7716efb9d712f48db1bb",
+      "after": "48ee5d2035c70d036dda7716efb9d712f48db1bb"
+    },
+    "docs/restart/implementation/V01/public-s3-live-flow/proof": {
+      "before": "01b74012761f17aaa1ca8884012a08ce59f6b2ab",
+      "after": "01b74012761f17aaa1ca8884012a08ce59f6b2ab"
+    }
+  },
+  "limits_unchanged": [
+    "Opt-in published scalar3 exact source/image/template only",
+    "100s continuous named public deadline;5000ms service ACTIVE/processCPU; USER/targetCPU/globalC5000 unavailable",
+    "Setup Enable/Enter before invocation; live grants/config/private pin and actual child/close settlement",
+    "No automatic retry or remote USB-close attestation",
+    "NativeC5000, firmware/core, S04, entropy/custody/release gates unchanged"
+  ],
+  "decision": "READY_FOR_DISTINCT_F1_F2_AFFECTED_REVIEW_ONLY",
+  "hardware_USB_CI_push": 0,
+  "criteria_closed": 0,
+  "recorded_utc": "2026-10-26T19:08:58.863573+00:00"
+}

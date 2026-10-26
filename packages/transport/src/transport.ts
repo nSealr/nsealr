@@ -66,6 +66,10 @@ export class SerialLineStreamPort implements SerialLinePort {
   private readonly maxBufferedBytes: number;
   private readonly maxBufferedLines: number;
   private readonly encoding: BufferEncoding;
+  private readonly closeCompletion: Promise<void>;
+  private resolveClose!: () => void;
+  private inputClosed = false;
+  private outputClosed = false;
 
   constructor(options: { input: Readable; output: Writable; encoding?: BufferEncoding; maxBufferedBytes?: number; maxBufferedLines?: number }) {
     this.maxBufferedBytes = this.limit(options.maxBufferedBytes ?? NSEALR_V0_LIMITS.max_serial_frame_bytes, 1_048_576, "maxBufferedBytes");
@@ -73,6 +77,7 @@ export class SerialLineStreamPort implements SerialLinePort {
     this.encoding = options.encoding ?? "utf8";
     this.input = options.input;
     this.output = options.output;
+    this.closeCompletion = new Promise(resolve => { this.resolveClose = resolve; });
     if (this.input.destroyed || this.output.destroyed) throw new Error("serial line port stream already closed");
     try {
       this.restoreInputDestroy = observeDestruction(this.input, this.onInputClose);
@@ -128,11 +133,20 @@ export class SerialLineStreamPort implements SerialLinePort {
       else if (!this.ended || this.cancelWrite) this.fail(new Error("serial line port input closed prematurely"));
     }
     this.detachInput();
+    this.inputClosed = true;
+    if (this.output === (this.input as unknown)) this.outputClosed = true;
+    this.completeClose();
   };
   private readonly onOutputClose = (): void => {
     if (!this.inputError) this.fail(this.output.errored ?? new Error("serial line port output closed"));
     this.detachOutput();
+    this.outputClosed = true;
+    this.completeClose();
   };
+
+  private completeClose(): void {
+    if (this.inputClosed && this.outputClosed) this.resolveClose();
+  }
 
   writeLine(line: string): Promise<void> {
     if (this.inputError) return Promise.reject(this.inputError);
@@ -187,7 +201,10 @@ export class SerialLineStreamPort implements SerialLinePort {
     } finally { this.reading = false; }
   }
 
-  close(): void { this.fail(new Error("serial line port closed")); }
+  close(): Promise<void> {
+    this.fail(new Error("serial line port closed"));
+    return this.closeCompletion;
+  }
 
   private fail(error: Error): void {
     if (this.inputError) return;
@@ -485,14 +502,16 @@ export class SerialLineTransport implements SignerTransport {
   private workBytes = 0;
   private readonly maxWorkBytes: number;
   private readonly maxFrameBytes: number;
+  private readonly operationPhase?: (phase: "active" | "external") => void;
 
-  constructor(options: { port: SerialLinePort; maxIgnoredLines?: number; responseTimeoutMs?: number; beforeWrite?: () => void; abortSignal?: AbortSignal; maxWorkBytes?: number; maxFrameBytes?: number }) {
+  constructor(options: { port: SerialLinePort; maxIgnoredLines?: number; responseTimeoutMs?: number; beforeWrite?: () => void; abortSignal?: AbortSignal; maxWorkBytes?: number; maxFrameBytes?: number; operationPhase?: (phase: "active" | "external") => void }) {
     this.port = options.port;
     this.maxIgnoredLines = options.maxIgnoredLines ?? 32;
     this.responseTimeoutMs = options.responseTimeoutMs ?? 30_000;
     if (!Number.isSafeInteger(this.maxIgnoredLines) || this.maxIgnoredLines < 0 || this.maxIgnoredLines > 128) throw new Error("maxIgnoredLines must be an integer in 0..128");
     if (!Number.isSafeInteger(this.responseTimeoutMs) || this.responseTimeoutMs < 1 || this.responseTimeoutMs > 120_000) throw new Error("responseTimeoutMs must be an integer in 1..120000");
     this.beforeWrite = options.beforeWrite;
+    this.operationPhase = options.operationPhase;
     this.abortSignal = options.abortSignal;
     this.maxWorkBytes = options.maxWorkBytes ?? (this.maxIgnoredLines + 2) * NSEALR_V0_LIMITS.max_serial_frame_bytes;
     if (!Number.isSafeInteger(this.maxWorkBytes) || this.maxWorkBytes < 1 || this.maxWorkBytes > 1_048_576) throw new Error("maxWorkBytes must be a finite integer in 1..1048576");
@@ -514,6 +533,7 @@ export class SerialLineTransport implements SignerTransport {
         this.accountWork(line);
         channelUsed = true;
         await this.writeLineWithTimeout(line);
+        this.operationPhase?.("external");
         for (let ignored = 0; ignored <= this.maxIgnoredLines; ignored += 1) {
           const responseLine = await this.readLineWithTimeout();
           if (responseLine === null) {
@@ -521,6 +541,7 @@ export class SerialLineTransport implements SignerTransport {
           }
           this.accountWork(responseLine);
           if (responseLine.startsWith("nsealr1f:")) {
+            this.operationPhase?.("active");
             return responseLine;
           }
         }

@@ -1,0 +1,130 @@
+{
+  "schema": "nsealr.v01-stdio-plumbing-distinct-review.v1",
+  "reviewer": {
+    "task": "/root/historical_cleanup",
+    "agent_id": "01a178b3-59c6-7ad2-9375-0c5614ede672",
+    "actual_model": "gpt-6.1-sol",
+    "actual_reasoning_effort": "xhigh",
+    "runtime_verification": "Root previously verified this new agent's actual turn_context/settings; model and effort unchanged.",
+    "role": "Distinct read-only review of two root-authored operational adapters; sole write this receipt."
+  },
+  "verdict": "PASS_FOR_FINITE_RAW_STDIO_PLUMBING_REPLACEMENT",
+  "source_root": "/Users/vincenzo/Projects/nsealr/intake/v01-live-physical-20261026",
+  "files": {
+    "linux_stdio_socket.py": {
+      "bytes": 2891,
+      "sha256": "1883a548ec9c2d8c084f36e516c2fdf937a4481edd521c17cbdadac6cb8b0648"
+    },
+    "mac_stdio_tunnel.py": {
+      "bytes": 3325,
+      "sha256": "9920e06f0935d1f648bd243e1ed6507b7d50a9bc333df5325412922ca32bf9c9"
+    }
+  },
+  "basis": {
+    "host_distinct_review": {
+      "path": "intake/v01-host-live-source-distinct-review.json",
+      "sha256": "4109d46ae3c2e36e265cdbbf05443f8fde77f6583375264eaab0dee3c3648bdf",
+      "source_commit": "1fb2658393d7e4f696209c0f3523506d42b2a790",
+      "delivery_commit": "e93170a44ef5218a8705480b2687520c751331e4",
+      "decision": "PASS_HOST_SOURCE_AND_AFFECTED_PROOF_ONLY"
+    },
+    "unchanged_usb_relay": {
+      "path": "client-account-binding/tools/bridge/public_s3_usb_relay.py",
+      "sha256": "63dd3f5bcce46f5ea45279553b64e53613ffd4fe8115d3115f3f3ec15208505e"
+    },
+    "replacement_scope": "Root reports reverse Unix forwarding created root:root0600 and failed EACCES before any device bytes. These adapters replace only that Unix reverse forwarding leg. No admin access, privilege escalation or wider permissions."
+  },
+  "scope": "Both adapter sources read in full; exact hashes rechecked after review. Compared directions, stdio segregation, endpoint lifecycle, bounded forwarding and EOF/cleanup behavior with the accepted host review and unchanged relay. No execution, parsing-only test, syntax test, build, USB, CI, search or external contact.",
+  "findings": [],
+  "checks": [
+    {
+      "area": "Byte directions",
+      "verdict": "PASS",
+      "locations": [
+        "linux_stdio_socket.py:29-40",
+        "mac_stdio_tunnel.py:34-45"
+      ],
+      "evidence": "Service writes -> Linux Unix recv -> SSH remote stdout -> Mac child.stdout -> Mac relay Unix sendall -> existing relay USB TX. Device/relay bytes including original plumbing header -> Mac Unix recv -> SSH child.stdin -> Linux stdin -> service Unix sendall. Counters agree with these directions. No transform, Nostr parse, response synthesis or buffering for retry."
+    },
+    {
+      "area": "SSH stdout separation",
+      "verdict": "PASS",
+      "locations": [
+        "linux_stdio_socket.py:21,34,55",
+        "mac_stdio_tunnel.py:16-18,27-33,40-45,60"
+      ],
+      "evidence": "ssh -T tux executes only the Python adapter, no PTY. Remote adapter stdout contains only forwarded raw bytes; all remote ready/final diagnostics go to stderr. SSH stderr is a separate pipe copied to Mac stderr and capped16KiB. The Mac adapter's final JSON goes to its own stdout, not child.stdin or the relay. Safe-character absolute remote arguments exclude shell metacharacters/whitespace. Existing source-bound host validates the original relay marker; adapters do not fabricate it."
+    },
+    {
+      "area": "Tux-owned private Unix endpoint",
+      "verdict": "PASS",
+      "locations": [
+        "linux_stdio_socket.py:9-12,15-22,47-52",
+        "mac_stdio_tunnel.py:13-16"
+      ],
+      "evidence": "Remote process uses existing SSH alias tux, no sudo/root request. New AF_UNIX endpoint refuses existing path/symlink, binds and chmods0600 before listening. Owner is the executing SSH user; ready record includes actual uid/mode and report includes inode/device. Cleanup unlinks only the same inode/device. Root chooses the same fresh /tmp/nsealr-s3-public-*.sock path admitted by the unchanged product route allowlist and passes the hash-bound remote script copy."
+    },
+    {
+      "area": "One connection and no replay",
+      "verdict": "PASS",
+      "locations": [
+        "linux_stdio_socket.py:19-23,34",
+        "mac_stdio_tunnel.py:18-21,39"
+      ],
+      "evidence": "Exactly one SSH child, one Mac Unix connect and one remote accept; no reconnect/accept loop, request retry, fallback or preserved response cache. A second queued Unix connection is never accepted or forwarded. A partial/nonwritable stdio write fails rather than retrying application bytes. sendall performs normal transport completion within1s socket timeout; it does not resend a protocol operation or reopen a link."
+    },
+    {
+      "area": "Byte caps and lease ceilings",
+      "verdict": "PASS_WITH_EXISTING_PLUMBING_SCOPE",
+      "locations": [
+        "linux_stdio_socket.py:19,24-41",
+        "mac_stdio_tunnel.py:21,24-46"
+      ],
+      "evidence": "Each forwarded direction capped65536 bytes before output, chunks<=1024; Mac SSH diagnostics separately<=16384. Socket operations have1s timeout and stdio writes have1s readiness bound. Remote accept has120s setup ceiling; each forwarding loop has a separate180s monotonic lease. These are plumbing/setup ceilings plus bounded in-flight I/O/cleanup, not a new operation clock, strict total180s hard-cancellation promise, or extension of the unchanged100s host/5000ms ACTIVE budget."
+    },
+    {
+      "area": "EOF, errors and cleanup",
+      "verdict": "PASS_WITH_HONEST_LOCAL_SETTLEMENT_LIMIT",
+      "locations": [
+        "linux_stdio_socket.py:30-45,46-55",
+        "mac_stdio_tunnel.py:35-59"
+      ],
+      "evidence": "Either readable EOF stops forwarding; timeout/cap/partial-write/error fails and closes the local connection. Linux uses conn context close, closes listener, removes own endpoint and writes an exclusive report. Mac closes its relay socket and SSH stdin, then collects actual SSH exit, escalates TERM after4s and KILL after another4s if necessary. Reason/end time/counts are recorded with exclusive new report files. Missing/failed report is not success. Closing Mac relay socket propagates EOF to the existing single relay, which owns actual serial close; local socket-close-returned and ssh_exit are not a claim that the remote USB close completed."
+    },
+    {
+      "area": "Authority and network scope",
+      "verdict": "PASS",
+      "locations": [
+        "linux_stdio_socket.py:3-55",
+        "mac_stdio_tunnel.py:3-60"
+      ],
+      "evidence": "Only AF_UNIX sockets and the existing authenticated SSH transport are used. No TCP listener, new TCP forwarding endpoint, device opener, Nostr or signer parser, approval, grant, pin, entropy helper, clock override or identity logic. No new consent authority is introduced. Linux ready notice is endpoint metadata; original USB marker still comes only from the unchanged physical relay."
+    },
+    {
+      "area": "Accepted host guarantees",
+      "verdict": "PASS_NO_PRODUCT_CHANGE",
+      "evidence": "Host private pin/request/grant/config/account/generation checks, sticky EOF lease revocation, deadlines and child/transport settlement remain the previously reviewed source. Adapters cannot make a dead link eligible or create a retry. Hardware Enable/Enter order and actual serial-close report remain root-owned original procedure."
+    }
+  ],
+  "root_execution_boundary": {
+    "decision": "No blocker found for root's already scoped finite public-fixture operation with these exact adapter bytes.",
+    "source_binding": "Remote Linux adapter copy must match1883a548... and exact Mac adapter9920e06f...; review does not attest an unobserved deployment or a different SSH command.",
+    "cleanup_evidence": "Read actual linux/socket report, Mac tunnel ssh_exit/reason and unchanged relay.json usb_close_returned. Local service/mac socket close alone does not attest actual USB closure.",
+    "existing_gates": "Root retains single USB/operator ownership. Original no-retry/one-operation/public-scalar3/fresh physical Enable+Enter rules remain; no identity/product/release qualification or source mutation is granted here."
+  },
+  "actions": {
+    "adapter_executions": 0,
+    "tests": 0,
+    "builds": 0,
+    "USB": 0,
+    "CI": 0,
+    "product_or_adapter_edits": 0,
+    "searches": 0,
+    "contacts": 0,
+    "new_agents": 0,
+    "receipt_files_written": 1
+  },
+  "criteria_closed": 0,
+  "stop": "Finite distinct source review complete; stop for root review and operation.",
+  "recorded_utc": "2026-10-26T20:15:46.192665+00:00"
+}

@@ -1,0 +1,203 @@
+{
+  "schema_version": 1,
+  "role": "PROPOSED_FINITE_CONTRACT_ONLY",
+  "author": "/root/p4_optical_review",
+  "coordinator_and_required_reviewer": "/root",
+  "verdict": "READY_FOR_ROOT_CONTRACT_REVIEW_NO_CODE_OR_HARDWARE_ADMISSION",
+  "purpose_it": "Una richiesta pubblica nasce nel client nSealr, attraversa CLI/servizio/driver seriale reali su Linux, raggiunge S3 via USB del Mac, richiede revisione e pulsanti locali e torna al client soltanto dopo verifica e settlement. Non basta inviare con Python o verificare un playback.",
+  "inputs": {
+    "host_main": "7e2b87d44d652025ac8f826780518fb1af6df218",
+    "s3_source": "e7f04215fc97808acdafdbf9420f6ef6d0102c5b",
+    "s3_delivery_metadata": "e7ef7503fc8ceca586cd0cd9ad32b2bf632380dd",
+    "s3_app_tree_both": "73ffd5e3e6f63a479bee23a1d6dc7dc606e29919",
+    "s3_binary_sha256": "7943dbcf4a1e389718b1959086487b6b13cdb50bb0f577ced9d4539c6d1fd7da",
+    "unchanged_core_tree": "a6b8eaefca2487c8fb5d04ba53620223d64cdbbc",
+    "current_public_roundtrip_frame": {
+      "bytes": 622,
+      "sha256": "50c5b6c70a9b085f64a786cc81032a9cca95666750af62802b76558c639aa4d6",
+      "event_id": "e8d1ffd3a713900f1b342a507b15716b723cd9136649eae3c8a906054729aed3",
+      "role": "Prova root/client/oracle esistente, non nuova esecuzione del reviewer e non sostituto del prossimo client live."
+    },
+    "expected_public_key": "f9308a019258c31049344f85f89d5229b531c845836f99b08601f113bce036f9",
+    "fixture": "published scalar3; nessun endpoint per selezionare/importare segreti",
+    "HRT_reused": {
+      "source": "81dbf81aafc4722e97ed6334ce9e1d7563f04bea",
+      "source_review_sha256": "0a596c8bb6886292c6099eed534429f95efdefabd5772dad4f2000b665694648",
+      "early_positive_review_sha256": "93c14d7a39c640336ddb4e3fe3c90053ba44d25c8d7b62a4fd72cb8bfd75de4d",
+      "first14_readback_sha256": "bb74cea2bb94b19dd7580351d0a279dfb1146d45a1cc37791b50e924cdd6b1f0",
+      "use_it": "Precedente source-qualified per clock reale, CPU durante attesa, revoca e settlement. Nessuna adozione implicita del canary/APIv2;22 resta null/unavailable e gli zero10/26 restano source-barrier, non backendcounter."
+    }
+  },
+  "current_code_findings": [
+    {
+      "where": "apps/bridge/cli/src/index.ts:1077,1391",
+      "fact_it": "local crea artefatti pairing/storage, ma non invoca LocalServiceClient per dispatch. serial-line exchange usa il trasporto e verifica l'evento, ma salta grants/account routing del servizio e non fissa un expected public key separato."
+    },
+    {
+      "where": "apps/bridge/service/src/context.ts:174-201; apps/bridge/service/src/index.ts:240",
+      "fact_it": "Context supporta callback signerCompatibility applicativa, ma il CLI del servizio non la configura. prepareSignerDispatch rifiuta nsealr.signing.v2 prima della porta senza osservazioni correnti: file statici non rendono il percorso pronto."
+    },
+    {
+      "where": "packages/client/src/service.ts:75-95,111-202,1091-1122",
+      "fact_it": "Snapshot corrente richiede implementation/adapter/reported, lease di connessione e review_plan completo. Nessun produttore live S3 è collegato. Non fabbricare report peer o conteggio di pagine dal preview TS/da un flag."
+    },
+    {
+      "where": "packages/policy/src/policy.ts:457-491,1125-1173",
+      "fact_it": "esp32_no_se è vincolato staticamente a mcu_wrapped_persistent. Il profilo S3 di sessione è respinto con volatile_session. Correggere la semantica nominata, preservando il modello persistente futuro senza renderlo prerequisito."
+    },
+    {
+      "where": "protocols/contracts/v1/examples/profile-manifests/esp32_no_se-conformance-v1.json",
+      "fact_it": "È conformance_only, hardware unidentified, custody persistente e metodi key/sign provider_missing. Non è il manifest/admission del dispositivo e7."
+    },
+    {
+      "where": "apps/bridge/service/src/drivers.ts:126-130,226-260",
+      "fact_it": "Il parser seriale esclude /dev/pts/N; il driver apre e chiude la porta per ogni scambio. Il primo before_write precede open. Serve un lease reale già osservato prima del prepare, con stato/generazione coerenti; chiudere/riaprire non conserva Enable."
+    },
+    {
+      "where": "packages/client/src/service.ts:140-156,1099-1117,1234-1260; protocols/contracts/v1/vectors/profile-capabilities/cases-v1.json",
+      "fact_it": "Il dispatch TS usa una deadline continua dall'intersezione, con ulteriore tetto30s. I vettori conformance dichiarano100ms: sono sintetici, non una misura né un budget per lettura umana."
+    },
+    {
+      "where": "docs/restart/implementation/QP01/request-engine/native-leaf.ts:27",
+      "fact_it": "C5000 è il distinto timer legacy5000ms del child nativo. Resta invariato: non assegnargli la semantica del timer TS o trasformarlo in100s."
+    },
+    {
+      "where": "apps/s3-session/core/src/lib.rs:258-260,275-335; main/main.cpp:140-179,313-365",
+      "fact_it": "e7 supporta realmente get_public_key e sign_event; get_capabilities risponde unqualified. Ogni scambio richiede Enable locale fresco e termina Locked. Il clock è floor(esp_timer/1e6), deadline100tick reale, con possibile anticipo<1s; host non approva e non estende la deadline."
+    },
+    {
+      "where": "packages/client/src/service.ts:929,1109-1117,1234-1260",
+      "fact_it": "Grant autorizzato solo all'ingresso; current ricontrolla account/snapshot, non revoca/expiry del grant. La verifica crittografica finale avviene dopo release e ultimo checkCurrent. Nel nuovo percorso controllare grant corrente e budget anche dopo verifica/cleanup; file caricati una volta non sono revoca live."
+    }
+  ],
+  "proposed_next_batch": {
+    "name": "V01 public S3 client/service live path",
+    "ownership_it": "Un autore host nel worktree host esistente indicato dal root; review distinta prima del collaudo root. Nessun nuovo checkout o codice in questo incarico. Firmware e7/core/P4/S04 invariati nel lotto proposto.",
+    "path_it": "@nsealr/client LocalServiceClient → nuovo comando CLI local dispatch → processo nsealr-service e handleLocalServiceRequestAsync → dispatcher route seriale → SerialLineTransport/SerialLineStreamPort e framing esistenti → relay grezzo Mac/USB → S3e7 → stesso servizio/client per verifica.",
+    "minimal_code_scope": [
+      "CLI: un comando local dispatch con input limitato prima della lettura/parse, account/pin espliciti e grants/storage esistenti. Usa LocalServiceClient e Native Messaging con un child servizio dello stesso checkout; nessun comando shell da metadata.",
+      "Context/driver: lease reale prima del prepare, stesso handle alla write, stati open/closed/failed e generation invalidata su EOF/error/abort. Solo opt-in locale lab PTY /dev/pts/N o stream; nessun path/comando arbitrario. Close effettivo e raccolta child fanno parte del settlement.",
+      "Policy: implementation_id nsealr.s3.public.scalar3.e7f04215.v1 e limits_id nsealr.limits.s3.public.e7.v1, con semantica volatile_session. Validazione route discriminata per versione/implementation sessione; niente falsa custody persistente. Conservare input persistenti storici/futuri e gli altri profili; aggiornare solo contratto/schema/vettori affetti con normale provenienza.",
+      "Compatibilità: variante trusted-context locale del solo fixture pubblico distinta da reported-on-wire. Non fabbricare reported o review_plan.pages da preview/flag. Primo giro limitato al template pubblico già osservato e ai limiti e7; il dispositivo fa rispettare review/fit. Default readiness unavailable; altri implementation/request o dati di sessione mancanti rifiutati.",
+      "Budget applicativo pubblico sotto, guardie prima write e dopo decode/verifica/close. Ricontrollare anche grant reale corrente/expiry con clock reale, non --now congelato o sola copia iniziale dei file. Pin C01 privato invariato. Nessun aumento del native-leaf C5000.",
+      "Settlement: output nuovo solo dopo frame completo, firma/evento/pin verificati, budget/grant/lease ancora correnti e close/child raccolti. Cleanup incerto mantiene risorsa indisponibile e risultato non eleggibile; nessun retry."
+    ],
+    "s3_handlers_it": "Nessun nuovo handler S3 nel primo lotto. get_capabilities resta esplicitamente unsupported/unqualified; una query non produce readiness, consenso o nuova ammissione identità. get_public_key e sign_event restano gli unici metodi pubblici utilizzati.",
+    "public_admission_fields": {
+      "provenance": "local_source_bound_public_fixture_only",
+      "implementation_id": "nsealr.s3.public.scalar3.e7f04215.v1",
+      "source_and_image": "e7f04215… /7943dbcf… registrati da root sul campione, non attestati dal filo",
+      "expected_public_key": "f9308a019258c31049344f85f89d5229b531c845836f99b08601f113bce036f9",
+      "supported_methods": [
+        "get_public_key",
+        "sign_event"
+      ],
+      "wire_get_capabilities": "unsupported_unqualified",
+      "connection_fields": [
+        "connection_id",
+        "generation",
+        "handle_state",
+        "route_config_digest"
+      ],
+      "request_binding": [
+        "unique_request_id",
+        "exact_request_sha256",
+        "account_id",
+        "private_original_expected_pubkey"
+      ],
+      "admission_limit": "Osservazione locale del fixture pubblico, non identità hardware autenticata, peer capability report, produzione o consenso."
+    }
+  },
+  "timing_contract_proposal": {
+    "id": "v01.public-external-s3.v1",
+    "clock": "Host now monotono reale in ns, continuo: process.hrtime.bigint con guardie missing/rollback/overflow. Clock S3e7 invariato.",
+    "operation_absolute_ms": 100000,
+    "origin": "Prima del dispatch/preflight dell'operazione; stessa origine per tutti i timeout discendenti, mai refresh su byte/progresso/retry.",
+    "host_active_budget_ms": 5000,
+    "host_ledger_formula": "charged_host = somma wall ACTIVE del servizio + CPU del medesimo processo nella fase EXTERNAL_DEVICE_PENDING; CPU process.cpuUsage user+system in microsecondi, differenze monotone e arrotondamento conservativo. Campioni prima/dopo ogni confine e prima dell'eleggibilità; lettura mancante/non valida rifiuta.",
+    "states": [
+      "ACTIVE_PREPARE",
+      "ACTIVE_WRITE",
+      "EXTERNAL_DEVICE_PENDING",
+      "ACTIVE_VERIFY",
+      "ACTIVE_CLOSE",
+      "DONE_OR_REVOKED"
+    ],
+    "external_phase": "Al massimo1: solo dopo completamento della singola write, termina prima di decode/verify del primo frame di risposta. Comprende computo dispositivo, DMA e revisione; il silenzio non la qualifica come USER o WAIT umana. Diagnostic input CPU resta addebitata e byte/linee sono limitati.",
+    "user_wall_ms": null,
+    "target_active_cpu_ms": null,
+    "scope_limit": "Il ledger misura il processo servizio host, non CPU S3 o un budget globale C5000 di tutti i processi. CLI ha la stessa scadenza assoluta e controlli prima di output. È il limite esplicito del primo esperimento pubblico, non qualifica del contratto ACTIVE/USER prodotto.",
+    "publication": "Controllare now/ledger/generation/pin/grant prima della write e dopo ricezione/verifica/close. Dopo revoca nessun risultato eleggibile anche se la firma pubblica fosse già stata calcolata o accodata.",
+    "cleanup_grace_ms": 4000,
+    "cleanup_limit": "Grace nominale per abort/close/raccolta; non hard return bound. Se il child/port non risulta raccolto/chiuso, niente output eleggibile e niente nuova prenotazione.",
+    "product_gate": "Per qualificare separatamente USER e ACTIVEtarget occorre un adaptermeter concreto sul device e un confine di presentazione/input attendibile, non una deduzione da UART silenziosa o TXready. Fuori da questo lotto; canary HRT riusato come precedente, non portato tacitamente in produzione."
+  },
+  "bounds": {
+    "native_IPC_json_bytes": 16384,
+    "outstanding_operations": 1,
+    "operation_queue": 0,
+    "cached_response": 0,
+    "frame_bytes_including_newline": 1024,
+    "request_json_bytes": 320,
+    "response_json_staging_bytes": 704,
+    "content_utf8_bytes": 128,
+    "tags": 4,
+    "fields_per_tag": 4,
+    "field_utf8_bytes": 64,
+    "aggregate_text_bytes": 160,
+    "canonical_bytes": 1024,
+    "device_review_pages": 128,
+    "host_frame_work_bytes": 8192,
+    "ignored_public_diagnostic_lines": 8,
+    "transport_stream_retained_bytes": 8192,
+    "note": "Intersecare i tetti effettivi in ogni direzione; le dimensioni TS generiche704/512/16 non ampliano e7. Nessuna coda di richieste parsate. Gli8KiB sono tetti host proposti da provare nel prossimo lotto, non RAM misurata."
+  },
+  "pairing_identity_and_lifecycle_it": [
+    "Pairing intent/review/approval e grant/storage approval esistenti per un client CLI nominato e sole operazioni necessarie. Grant client e consenso S3 sono distinti; origin CLI non autentica browser/app esterna. Un grant-file letto una volta non è revoca live: guardie ricaricano la fonte approvata o usano un provider corrente; altrimenti niente claim di revoca in-flight.",
+    "Fissare il pin pubblico scalar3 indipendentemente prima di qualsiasi callback. Una risposta get_public_key può solo confrontarlo; non sostituirlo. Non adottare automaticamente la chiave ricevuta, un alias account o un nuovo device.",
+    "Aprire il relay/USB prima dell'Enable fisico; lo stato host è OPEN_PUBLIC_UNVERIFIED, non READY/TRUSTED. Root esegue Enable locale dopo la nuova apertura. Nessun host-ack è trasmesso come approvazione; host review acknowledgement resta vietato.",
+    "Query get_public_key e sign_event sono operazioni distinte: ognuna consuma l'Enable attuale e richiede quello fresco seguente. Non comporre discovery/riapertura nascosta che invalidi il grant fra check e write.",
+    "In e7: massimo4 draw diagnostici e<=1tentativo aux/firma per CPUboot sono soltanto budget della strumentazione pubblica corrente. Non diventano requisiti di prodotto/sessione. Nel prossimo giro<=1firma; query pubbliche non inventano un tentativo aux.",
+    "Request ID unico per invocazione; template pubblico kind1/content S3 public physical approval, senza nuovi tipi di operazione. Il risultato deve corrispondere a request ID, template, event ID e pin originali; nessun dev-signer/software fallback o playback.",
+    "Abort, revoke grant, account/pin/config/generation change, EOF, errore o deadline invalidano l'owner prima di altro output. Nessuna rispedizione/riapertura/rifirma automatica. Già accodato/calcolato non significa richiamabile; target può aver già eseguito un effetto prima del cancel host."
+  ],
+  "mac_usb_lab_transport": {
+    "owner": "/root soltanto",
+    "topology": "Linux esegue CLI/client/service. Mac possiede soltanto USB e inoltra byte su una singola sessione SSH/PTY o stream già autenticata.",
+    "contract": "Relay raw bounded, senza parse/firma/generazione JSON/framing Nostr, approvazioni, retry o fallback. Associazione esatta campione/immagine fatta dal root; un solo opener USB. Segnala EOF/failure, chiude il link su abort e non riusa dati del link precedente; niente listener pubblico.",
+    "lifecycle": "Registrare apertura/DTR e limiti del mapping PTY→USB: il close della PTY non va spacciato per DTR-low o bus reset senza readback. Il dispositivo e7 gestisce gli eventi realmente osservati; prefix/full response già queued può restare.",
+    "qualification": "Plumbing di laboratorio. Non è installer, port macOS del prodotto, pairing autenticato del dispositivo o compatibilità client esterno."
+  },
+  "finite_validation_next_batch": [
+    "Una positiva reale: client/CLI/service del medesimo candidato, grant e pin espliciti, requestID fresco, traccia original-request→nsealr1f→S3→response→verifica e settlement. Root osserva la revisione/final Approve sul campione e riusa oracle/client esistenti senza rifare core/crypto.",
+    "Un Reject fisico e un cancel/close prima del tentativo firma, coordinati dal root prima dell'unica positiva se condividono il boot; output non eleggibile e nuovo Enable richiesto.",
+    "route non paired/revoked/expired, vecchio profilo persistente o conformance/provider_missing, falso reported/get_capabilities e implementation/lease sconosciuti: nessuna write operativa.",
+    "overflow320/1024 e tag/text limiti e7; input IPC parziale/extra frame; no allocation/accodamento oltre i tetti dichiarati. Riusa parser/framing invariati, testa il nuovo wiring.",
+    "sostituzione account/pin/request/generation fra prepare e write o durante attesa; expected identity resta privata e invariata, nessun late output.",
+    "errore/readEOF/partialwrite/abort e close non completato; una sola write, nessun retry, prenotazione tenuta fino al settlement reale/quarantena.",
+    "clock mancante/rollback/overflow, scadenza reale continua e risposta tarda, CPU host consumata nella fase esterna e contatore CPU indisponibile: rifiuto senza trasformare la fase in WAIT umana.",
+    "response requestID/key/event/signature errati, risultato arrivato dopo revoca e grant modificato al ritorno: nessuna pubblicazione. Riusa i negativi C01/transport ancora sufficienti; nuova esecuzione solo sui punti modificati."
+  ],
+  "completion_and_limits": {
+    "expected_delivery": "Fonte host congelata+prove affette+istruzioni concrete di avvio relay/CLI/service; review distinta; root esegue il singolo giro hardware. Successo registrato soltanto come componente pubblico V01/C01.",
+    "criteria_closed": 0,
+    "production_or_real_identity_admitted": false,
+    "default_readiness_admitted": false,
+    "APIv2_human_wait_adopted": false,
+    "external_client_or_browser_NIP46_qualification": false,
+    "S3_power": "USB-only; nessun requisito batteria o E5 independently-powered unplug. Bus reset/DTR/suspend restano pertinenti.",
+    "remaining": "CPUtarget/USER meter, entropia reale ADC-183, custody/recovery/reset/RAM/debug/panic, installer/versioni esterne e rilascio restano gate separati. S04 terminale e P4/Pi invariati."
+  },
+  "execution_this_assignment": {
+    "source_edits": 0,
+    "new_worktrees": 0,
+    "builds": 0,
+    "tests": 0,
+    "CI_queries": 0,
+    "USB_or_hardware": 0,
+    "network_publication": 0,
+    "only_output": "intake/v01-bridge-s3-live-flow-contract.json",
+    "reader_scope": "Solo Git7e2/e7 e ricevute già disponibili; nessuna nuova campagna o qualifica del provider."
+  },
+  "recorded_utc": "2026-10-26T17:40:27.005025+00:00"
+}

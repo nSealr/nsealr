@@ -1,0 +1,38 @@
+
+[31m⎯⎯⎯⎯⎯⎯[39m[1m[41m Failed Suites 1 [49m[22m[31m⎯⎯⎯⎯⎯⎯⎯[39m
+
+[41m[1m FAIL [22m[49m apps/bridge/service/src/public-s3-lease.test.ts[2m [ apps/bridge/service/src/public-s3-lease.test.ts ][22m
+[31m[1mError[22m: Cannot find package '@nsealr/dev-signer' imported from /home/tux/nsealr/.restart-tools/mac-resume-2026-10-25/client-account-binding/apps/bridge/service/src/public-s3-lease.test.ts[39m
+[36m [2m❯[22m apps/bridge/service/src/public-s3-lease.test.ts:[2m8:1[22m[39m
+    [90m  6|[39m [35mimport[39m { join } [35mfrom[39m [32m"node:path"[39m[33m;[39m
+    [90m  7|[39m [35mimport[39m { encodeSerialFrame[33m,[39m decodeSerialFrame } [35mfrom[39m [32m"@nsealr/framing"[39m[33m;[39m
+    [90m  8|[39m [35mimport[39m { devSignRequest } [35mfrom[39m [32m"@nsealr/dev-signer"[39m[33m;[39m
+    [90m   |[39m [31m^[39m
+    [90m  9|[39m import { LocalServiceClient, createLocalGrantStore, createLocalStorage…
+    [90m 10|[39m   approveLocalStorageReview, clientIdForIdentity, handleLocalServiceRe…
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/3]⎯[22m[39m
+
+
+[31m⎯⎯⎯⎯⎯⎯⎯[39m[1m[41m Failed Tests 2 [49m[22m[31m⎯⎯⎯⎯⎯⎯⎯[39m
+
+[41m[1m FAIL [22m[49m apps/bridge/service/src/public-s3-budget.test.ts[2m > [22mnamed public service ledger; no USER or target CPU measurement[2m > [22mF1 rejects intermediate CPU10→20→19 at check and keeps revocation sticky
+[41m[1m FAIL [22m[49m apps/bridge/service/src/public-s3-budget.test.ts[2m > [22mnamed public service ledger; no USER or target CPU measurement[2m > [22mF1 rejects intermediate CPU10→20→19 at phase-exit and keeps revocation sticky
+[31m[1mAssertionError[22m: expected [Function] to throw an error[39m
+
+[32m- Expected:[39m
+null
+
+[31m+ Received:[39m
+undefined
+
+[36m [2m❯[22m apps/bridge/service/src/public-s3-budget.test.ts:[2m45:78[22m[39m
+    [90m 43|[39m     [35mconst[39m f[33m=[39m[34mfixture[39m()[33m;[39mf[33m.[39m[34mcpu[39m([34m10[39m)[33m;[39mf[33m.[39mbudget[33m.[39m[34mphase[39m([32m"external"[39m)[33m;[39m
+    [90m 44|[39m     f[33m.[39m[34mcpu[39m([34m10[39m)[33m;[39mf[33m.[39mbudget[33m.[39m[34mcheck[39m()[33m;[39mf[33m.[39m[34mcpu[39m([33m-[39m[34m1[39m)[33m;[39m
+    [90m 45|[39m     expect(()=>boundary==="check"?f.budget.check():f.budget.phase("act…
+    [90m   |[39m                                                                              [31m^[39m
+    [90m 46|[39m     f[33m.[39m[34mcpu[39m([34m100[39m)[33m;[39m
+    [90m 47|[39m     [34mexpect[39m(()[33m=>[39mf[33m.[39mbudget[33m.[39m[34mcheck[39m())[33m.[39m[34mtoThrow[39m([36m/revoked/[39m)[33m;[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/3]⎯[22m[39m
+

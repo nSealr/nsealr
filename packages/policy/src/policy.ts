@@ -463,7 +463,7 @@ const CUSTODY_BY_PROFILE: Record<ProfileId, RouteCustody> = {
   esp32_no_se: "mcu_wrapped_persistent", custom_board: "custom_se_assisted_persistent"
 };
 
-function validateRouteSemantics(route: SignerRoute, profile: ProfileId | null): void {
+function validateRouteSemantics(route: SignerRoute, profile: ProfileId | null, implementation?: unknown): void {
   if (route.type === "external_nip46") {
     if (profile !== null || route.transport !== "nip46_relay" || route.custody !== "external_signer" || route.trusted_review !== "external_policy" || route.policy_support !== "external") {
       throw new Error("profile_mismatch: external NIP46 route must not claim a nSealr profile, custody or consent");
@@ -471,7 +471,8 @@ function validateRouteSemantics(route: SignerRoute, profile: ProfileId | null): 
     return;
   }
   if (profile !== PROFILE_BY_ROUTE[route.type]) throw new Error("profile_mismatch: account route/profile do not match");
-  if (route.custody !== CUSTODY_BY_PROFILE[profile!]) throw new Error("custody_mismatch: no custody fallback is allowed");
+  const session = profile === "esp32_no_se" && implementation === "nsealr.s3.public.scalar3.e7f04215.v1";
+  if (route.custody !== (session ? "volatile_session" : CUSTODY_BY_PROFILE[profile!])) throw new Error("custody_mismatch: no custody fallback is allowed");
   if (route.transport !== (QR_ROUTE_TYPES.has(route.type) ? "qr" : "usb")) throw new Error("transport_mismatch: profile transport differs");
   if (route.trusted_review !== "device_display" || route.policy_support !== "manual_only") throw new Error("runtime_unavailable: initial routes require manual local consent without automation");
 }
@@ -488,7 +489,7 @@ export function parseAccountDescriptor(value: unknown): AccountDescriptor {
   if (external && (value.profile !== null || value.implementation_id !== null || value.limits_id !== null)) throw new Error("profile_mismatch: external signer has no nSealr manifest");
   const implementation = external ? null : requireStringId(value.implementation_id, "implementation_id");
   const limits = external ? null : requireStringId(value.limits_id, "limits_id");
-  validateRouteSemantics(route, profile);
+  validateRouteSemantics(route, profile, implementation);
   assertRecord(value.capabilities, "capabilities");
   assertOnlyKeys(value.capabilities, ["methods"], "capabilities");
   const methods = requireStringArray(value.capabilities.methods, "capabilities.methods");
@@ -1129,7 +1130,7 @@ export function parseRouteSelection(value: unknown): RouteSelection {
   if (fields.filter((key) => key !== "repository").some((key) => !Object.hasOwn(value, key)) || value.format !== "nsealr.route-selection.v1") throw new Error("route selection format mismatch");
   if (value.contains_secret_material !== false) throw new Error("route selection contains_secret_material must be false");
   const route = parseSignerRoute({ type: value.route_type, ...(value.repository !== undefined ? { repository: value.repository } : {}), transport: value.transport, custody: value.custody, trusted_review: value.trusted_review, policy_support: value.policy_support });
-  validateRouteSemantics(route, value.profile as ProfileId | null);
+  validateRouteSemantics(route, value.profile as ProfileId | null, value.implementation_id);
   if (value.method_revision !== 1) throw new Error("unsupported_method: unknown method revision");
   const catalog = operation(String(value.method));
   if (value.operation_id !== catalog.operation_id) throw new Error("unsupported_method: operation catalog mismatch");

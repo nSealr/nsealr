@@ -1,4 +1,6 @@
 import { sha256Utf8Hex, verifySignedEventResponse } from "@nsealr/core";
+import { assessPublicS3, PUBLIC_S3_IMPLEMENTATION, type PublicS3Fixture } from "./public-s3.js";
+export type { PublicS3Fixture } from "./public-s3.js";
 import {
   parseRouteSelectionRequest,
   selectAccountRoute,
@@ -68,6 +70,8 @@ export type SignerDispatchRequest = {
   effective_limits?: EffectiveSignerLimits;
   /** Local cancellation/deadline signal; never serialized into device JSON. */
   abort_signal?: AbortSignal;
+  /** Local public experiment instrumentation; never serialized or approval. */
+  operation_phase?: (phase: "active" | "external") => void;
 };
 
 /** Explicit current adapter observations, supplied locally, never from a wire
@@ -248,6 +252,10 @@ export type LocalServiceContext = {
   signerCompatibility?: (route: RouteSelection, request: unknown) => SignerCompatibilitySnapshot;
   /** Local monotonic milliseconds; peer clocks cannot extend the deadline. */
   monotonicNow?: () => number | undefined;
+  /** Trusted application opt-in for the named public scalar3 experiment only. */
+  publicS3Fixture?: PublicS3Fixture;
+  /** Reload the approved grant source; snapshots alone are not live revocation. */
+  currentGrants?: () => LocalClientGrant[];
 };
 
 export type PairingIntent = {
@@ -1088,7 +1096,42 @@ function prepareSignerDispatch(
   const cancellation = new AbortController();
   let timeoutMs: number | undefined;
   let current = (): void => { if (!active) compatibilityError("runtime_unavailable", "operation is no longer active"); };
-  if (routeSelection.contract === "nsealr.signing.v2") {
+  const checkGrant = (): void => {
+    const live = context.currentGrants ? { ...context, grants: context.currentGrants() } : context;
+    const authorization = authorizeClient(live, request.params.client, "dispatch_signer_request");
+    if (!authorization.ok) throw new SignerRouteUnavailableError(authorization.error);
+  };
+  const publicFixture = routeSelection.implementation_id === PUBLIC_S3_IMPLEMENTATION ? context.publicS3Fixture : undefined;
+  if (routeSelection.implementation_id === PUBLIC_S3_IMPLEMENTATION) {
+    try {
+      if (!publicFixture || context.now !== undefined) compatibilityError("runtime_unavailable", "public S3 requires current application admission and real grant time");
+      const fixture = publicFixture!;
+      const effective = assessPublicS3(routeSelection, dispatchRequest.request, fixture);
+      if ((pendingDispatches.get(context) ?? 0) >= 1) compatibilityError("runtime_unavailable", "public S3 operation already pending");
+      const selectedAccount = () => (context.accounts ?? []).find(account => account.account_id === routeSelection.account_id);
+      const connection = fixture.connection();
+      if (connection.state !== "open") compatibilityError("runtime_unavailable", "public S3 stream is not open");
+      const identity = (c: ReturnType<PublicS3Fixture["connection"]>) => [c.connection_id, c.generation, c.config_digest];
+      const original = sha256Utf8Hex(JSON.stringify([identity(connection), routeSelection, dispatchRequest.request, selectedAccount()]));
+      fixture.begin();
+      current = () => {
+        if (!active) compatibilityError("runtime_unavailable", "operation is no longer active");
+        checkGrant();
+        fixture.check();
+        assessPublicS3(routeSelection, dispatchRequest.request, fixture);
+        const account = selectAccountRoute(context.accounts ?? [], routeRequest);
+        if (sha256Utf8Hex(JSON.stringify([identity(fixture.connection()), account, dispatchRequest.request, selectedAccount()])) !== original)
+          compatibilityError("runtime_unavailable", "public S3 account/request/connection changed");
+      };
+      current();
+      timeoutMs = fixture.remainingMs();
+      dispatchRequest.before_write = current;
+      dispatchRequest.effective_limits = effective;
+      dispatchRequest.abort_signal = cancellation.signal;
+      dispatchRequest.operation_phase = phase => { fixture.phase(phase); current(); };
+      pendingDispatches.set(context, (pendingDispatches.get(context) ?? 0) + 1);
+    } catch (error) { return { ok: false, response: dispatchFailureResponse(request, error) }; }
+  } else if (routeSelection.contract === "nsealr.signing.v2") {
     try {
       if (!context.signerCompatibility) compatibilityError("runtime_unavailable", "current local adapter observations are not configured");
       const provider = context.signerCompatibility;
@@ -1108,6 +1151,7 @@ function prepareSignerDispatch(
       let last = start;
       current = () => {
         if (!active) compatibilityError("runtime_unavailable", "operation is no longer active");
+        checkGrant();
         const now = clock();
         if (now === undefined || !Number.isFinite(now) || now < last || now >= deadline) compatibilityError("runtime_unavailable", "local deadline expired or clock rolled back/unavailable");
         last = now;
@@ -1201,34 +1245,24 @@ function dispatchSignerRequest(
 ): LocalServiceResponse {
   const prepared = prepareSignerDispatch(request, context);
   if (!prepared.ok) return prepared.response;
-
-  let signerResponse: unknown;
   try {
     prepared.checkCurrent();
-    signerResponse = prepared.dispatcher(prepared.dispatchRequest);
+    const signerResponse = prepared.dispatcher(prepared.dispatchRequest);
     if (isPromiseLike(signerResponse)) {
-      const pendingResponse = prepared.trackPending(signerResponse);
-      // Observe rejection before any post-dispatch validation can return early.
-      // The finite reservation still remains held until actual settlement.
-      pendingResponse.then(undefined, () => undefined);
-      signerResponse = pendingResponse;
+      prepared.trackPending(signerResponse).then(undefined, () => undefined);
+      prepared.checkCurrent();
+      return errorResponse(request, "signer_dispatch_failed", "async signer dispatcher requires handleLocalServiceRequestAsync");
     }
     prepared.checkCurrent();
-    if (!isPromiseLike(signerResponse)) checkDispatchResponseCapacity(prepared.dispatchRequest, signerResponse);
+    checkDispatchResponseCapacity(prepared.dispatchRequest, signerResponse);
+    const response = dispatchSuccessResponse(request, prepared.expectedPublicKey, signerResponse);
+    prepared.checkCurrent();
+    return response;
   } catch (error) {
     return dispatchFailureResponse(request, error);
   } finally {
     prepared.release();
   }
-
-  if (isPromiseLike(signerResponse)) {
-    return errorResponse(
-      request,
-      "signer_dispatch_failed",
-      "async signer dispatcher requires handleLocalServiceRequestAsync"
-    );
-  }
-  return dispatchSuccessResponse(request, prepared.expectedPublicKey, signerResponse);
 }
 
 async function dispatchSignerRequestAsync(
@@ -1251,11 +1285,13 @@ async function dispatchSignerRequestAsync(
     ]);
     prepared.checkCurrent();
     checkDispatchResponseCapacity(prepared.dispatchRequest, signerResponse);
+    const response = dispatchSuccessResponse(request, prepared.expectedPublicKey, signerResponse);
+    prepared.checkCurrent();
+    return response;
   } catch (error) {
     return dispatchFailureResponse(request, error);
   } finally {
     if (timer !== undefined) clearTimeout(timer);
     prepared.release();
   }
-  return dispatchSuccessResponse(request, prepared.expectedPublicKey, signerResponse);
 }

@@ -1,4 +1,4 @@
-import { readFileSync } from "node:fs";
+import { openSync, readSync, closeSync, fstatSync } from "node:fs";
 import {
   parseLocalGrantStore,
   parseLocalStorageApproval,
@@ -31,6 +31,7 @@ export type ServiceContextFileOptions = {
   routeDriverStorePath?: string;
   storageApprovalPath?: string;
   openSerialLinePort?: SerialLinePortOpener;
+  openPublicS3Stream?: SerialLinePortOpener;
   /** An application-owned current adapter/session observation provider. Paths
    * and a static account store alone do not establish current compatibility. */
   signerCompatibility?: LocalServiceContext["signerCompatibility"];
@@ -57,8 +58,20 @@ function compactJsonUtf8ByteLength(value: unknown): number {
   return Buffer.byteLength(JSON.stringify(value), "utf8");
 }
 
-function readJsonFile(path: string, label: string): unknown {
-  const contents = readFileSync(path, "utf8");
+export function readContextJsonFile(path: string, label: string): unknown {
+  const fd = openSync(path, "r");
+  const data = Buffer.alloc(64 * 1024 + 1);
+  let used = 0;
+  try {
+    if (!fstatSync(fd).isFile()) throw new Error(`${label} must be a regular bounded file`);
+    while (used < data.length) {
+      const got = readSync(fd, data, used, data.length - used, null);
+      if (!got) break;
+      used += got;
+    }
+  } finally { closeSync(fd); }
+  if (used > 64 * 1024) throw new Error(`${label} exceeds max bytes`);
+  const contents = data.subarray(0, used).toString("utf8");
   try {
     return JSON.parse(contents);
   } catch (error) {
@@ -79,7 +92,7 @@ function requireContextStorageApproval(options: ServiceContextFileOptions): void
   if (options.storageApprovalPath === undefined) {
     throw new Error("service context files require --storage-approval");
   }
-  const approval = parseLocalStorageApproval(readJsonFile(options.storageApprovalPath, "local storage approval"));
+  const approval = parseLocalStorageApproval(readContextJsonFile(options.storageApprovalPath, "local storage approval"));
   if (options.grantStorePath !== undefined) {
     requireLocalStorageApprovalEntry(approval, {
       purpose: "grant_store",
@@ -175,14 +188,16 @@ export function loadServiceContextFromFiles(options: ServiceContextFileOptions):
   requireContextStorageApproval(options);
   const grantStore: LocalGrantStore | undefined = options.grantStorePath === undefined
     ? undefined
-    : parseLocalGrantStore(readJsonFile(options.grantStorePath, "local grant store"));
+    : parseLocalGrantStore(readContextJsonFile(options.grantStorePath, "local grant store"));
   const accountStore: ServiceAccountStore | undefined = options.accountStorePath === undefined
     ? undefined
-    : parseServiceAccountStore(readJsonFile(options.accountStorePath, "service account store"));
+    : parseServiceAccountStore(readContextJsonFile(options.accountStorePath, "service account store"));
   const routeDriverStore = options.routeDriverStorePath === undefined
     ? undefined
-    : parseServiceRouteDriverStore(readJsonFile(options.routeDriverStorePath, "service route driver store"));
+    : parseServiceRouteDriverStore(readContextJsonFile(options.routeDriverStorePath, "service route driver store"));
   validateRouteDriverTargets(routeDriverStore, accountStore);
+  if (routeDriverStore?.routes.some(route => route.driver === "public_s3_stream") && !options.openPublicS3Stream)
+    throw new Error("public S3 stream requires explicit application admission");
   if (routeDriverStore !== undefined && options.openSerialLinePort === undefined) {
     throw new Error("service route driver store requires an explicit serial-line opener");
   }
@@ -194,7 +209,8 @@ export function loadServiceContextFromFiles(options: ServiceContextFileOptions):
     ...(routeDriverStore !== undefined && options.openSerialLinePort !== undefined
       ? {
           signerDispatcher: createServiceRouteDispatcher(routeDriverStore, {
-            openSerialLinePort: options.openSerialLinePort
+            openSerialLinePort: options.openSerialLinePort,
+            openPublicS3Stream: options.openPublicS3Stream
           })
         }
       : {}),

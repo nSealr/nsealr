@@ -1,4 +1,6 @@
 #!/usr/bin/env node
+import { dispatchPublicS3, PUBLIC_S3_CLI_CLIENT } from "./public-s3.js";
+import { LocalServiceClient, handleLocalServiceRequest } from "@nsealr/client";
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { Command } from "commander";
 import { isDeepStrictEqual } from "node:util";
@@ -96,6 +98,7 @@ type DataFormat = "json" | "qr" | "qr-animated";
 
 type BuildCliOptions = {
   openSerialLinePort?: SerialLinePortOpener;
+  publicS3Ready?: (signal: AbortSignal) => Promise<void>;
 };
 
 type ErrorOutput = {
@@ -705,6 +708,25 @@ async function openNodeSerialLinePort(path: string): Promise<SerialLinePort> {
   return new SerialLineStreamPort({ input: serialPort, output: serialPort });
 }
 
+async function waitForPublicS3Operator(signal: AbortSignal): Promise<void> {
+  process.stderr.write("Public S3 stream OPEN. Enable locally on S3, then press Enter to transmit. Enter does not approve signing.\n");
+  await new Promise<void>((resolve, reject) => {
+    let bytes = 0;
+    const cleanup = () => { process.stdin.off("data", data); process.stdin.off("end", ended); process.stdin.off("error", error); signal.removeEventListener("abort", aborted); process.stdin.pause(); };
+    const error = (e: Error) => { cleanup(); reject(e); };
+    const ended = () => error(new Error("operator setup input ended"));
+    const aborted = () => error(new Error("operator setup cancelled"));
+    const data = (chunk: Buffer) => {
+      bytes += chunk.length;
+      if (bytes > 64) { error(new Error("operator setup input exceeded64bytes")); return; }
+      if (chunk.includes(10)) { cleanup(); resolve(); }
+    };
+    signal.addEventListener("abort", aborted, { once: true });
+    if (signal.aborted) { aborted(); return; }
+    process.stdin.on("data", data); process.stdin.on("end", ended); process.stdin.on("error", error); process.stdin.resume();
+  });
+}
+
 export function buildCli(options: BuildCliOptions = {}): Command {
   const openSerialLinePort = options.openSerialLinePort ?? openNodeSerialLinePort;
   const program = new Command();
@@ -1075,6 +1097,40 @@ export function buildCli(options: BuildCliOptions = {}): Command {
     });
 
   const local = program.command("local").description("Inspect local companion service objects");
+
+  local
+    .command("public-s3-pairing")
+    .requiredOption("--out <path>")
+    .description("Request the fixed public S3 lab client's local pairing intent")
+    .action(async (actionOptions: { out: string }) => {
+      const client = new LocalServiceClient({ exchange: request => handleLocalServiceRequest(request) });
+      const result = await client.requestPairing(PUBLIC_S3_CLI_CLIENT, [
+        "select_account_route", "validate_signer_request", "dispatch_signer_request", "verify_signer_response"
+      ]);
+      if (!result.ok || !("pairing_intent" in result.result)) throw new Error("pairing intent unavailable");
+      writeNewJson(actionOptions.out, result.result.pairing_intent);
+    });
+
+  local
+    .command("dispatch-public-s3")
+    .requiredOption("--grant-store <path>")
+    .requiredOption("--account-store <path>")
+    .requiredOption("--route-driver-store <path>")
+    .requiredOption("--storage-approval <path>")
+    .requiredOption("--expected-public-key <hex>", "Independently pinned published scalar3 identity")
+    .requiredOption("--out <path>")
+    .option("--method <method>", "sign_event or get_public_key; fresh Enable for each operation", "sign_event")
+    .description("Run one public client/service/USB fixture operation; no production admission")
+    .action(async (actionOptions: {
+      grantStore: string; accountStore: string; routeDriverStore: string; storageApproval: string;
+      expectedPublicKey: string; out: string; method: string;
+    }) => {
+      if (actionOptions.method !== "sign_event" && actionOptions.method !== "get_public_key") throw new Error("public S3 method unsupported");
+      await dispatchPublicS3({ ...actionOptions, method: actionOptions.method,
+        ready: options.publicS3Ready ?? waitForPublicS3Operator });
+    });
+
+
 
   local
     .command("review-pairing")

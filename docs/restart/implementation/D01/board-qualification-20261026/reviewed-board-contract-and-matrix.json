@@ -1,0 +1,234 @@
+{
+  "schema": "nsealr.d01.board-qualification-proposal.v1",
+  "author": "/root",
+  "utc": "2026-10-26T18:31:17.226244+00:00",
+  "status": "PROPOSED_DISTINCT_ACCEPTANCE_REVIEW_ONLY_NO_PLAN_CRITERION_CHANGED",
+  "task": "D01",
+  "canonical_main": "c3492f9a19f0eab1c1bb978443b0e9b268005bf2",
+  "dependencies": {
+    "P01": "integrated",
+    "T01": "integrated"
+  },
+  "source_compiled": "e7f04215fc97808acdafdbf9420f6ef6d0102c5b",
+  "delivery": "e7ef7503fc8ceca586cd0cd9ad32b2bf632380dd",
+  "public_integration_candidate": "5ff7fc2cb5a3f5532974cacd731907f580c2a8fe",
+  "app_tree": "73ffd5e3e6f63a479bee23a1d6dc7dc606e29919",
+  "binary": {
+    "bytes": 449600,
+    "sha256": "7943dbcf4a1e389718b1959086487b6b13cdb50bb0f577ced9d4539c6d1fd7da"
+  },
+  "scope": "Board/sample feasibility and a defined session-only boundary. Not D02, V01, whole security qualification or release.",
+  "inputs": [
+    {
+      "path": "intake/s3-adc1-root-hardware-assessment.json",
+      "bytes": 3072,
+      "sha256": "49e6c90f7e08e37b2fffa98f7a2228b19e8ef03d8db1f3433dc47de664a05924"
+    },
+    {
+      "path": "intake/s3-adc1-completion-distinct-source-review.json",
+      "bytes": 3703,
+      "sha256": "bfcc7a2166dd38c2c6c89b31c0a43814d8275375f286c58b4c311d507a272a51"
+    },
+    {
+      "path": "intake/s3-adc1-root-delivery-addendum-review.json",
+      "bytes": 9608,
+      "sha256": "c346d9cfae1a6d36ca545ef4ccc137e3ad3e1fc6726076271c1525c1af781ac5"
+    },
+    {
+      "path": "intake/s3-otg-public-root-hardware-assessment.json",
+      "bytes": 10386,
+      "sha256": "eee983477ee202c01549396b88a8f06c36a5516d2d25588d65aa7909e5af7a80"
+    },
+    {
+      "path": "intake/s3-local-reject-20261026/root-assessment.json",
+      "bytes": 3148,
+      "sha256": "0dfe23d19753dd8166a71a9df8ee958ba8650fc462f73eff9a264ec5ec8c3162"
+    },
+    {
+      "path": "intake/s3-adc183-provider-admission-decision.json",
+      "bytes": 22998,
+      "sha256": "a815d617f79f8a5ab1d915f3c83b53eb395b90081e441783cc8154ad64d07ead"
+    },
+    {
+      "path": "intake/pr56-canonical-main-readback.json",
+      "bytes": 3182,
+      "sha256": "eafe71691d48383d48c9839ade5643d04fb47e380317f133bf375705fe09da7a"
+    }
+  ],
+  "board_contract": [
+    {
+      "property": "Board model/case",
+      "classification": "MAINTAINER_DECLARED_FUNCTIONALLY_COMPATIBLE",
+      "value": "LilyGO T-Display-S3 non-touch with case; existing inventory declaration, not opened for PCB markings. Native pinned vendor pin/driver sequence works on the same associated sample."
+    },
+    {
+      "property": "Silicon",
+      "classification": "MEASURED_ROM",
+      "value": "ESP32-S3 v0.2 QFN56; flash operations match same privately recorded sample. No MAC/USB-instance identifier published."
+    },
+    {
+      "property": "Flash",
+      "classification": "MEASURED_CAPACITY_AND_FLASH_READBACK",
+      "value": "16MiB reported capacity; exact erase/boot/partition/app write/readback provenance retained. Not a full-flash endurance or secret disposal test."
+    },
+    {
+      "property": "PSRAM",
+      "classification": "ROM_REPORTED_AND_PARTIAL_FUNCTIONAL_USE",
+      "value": "8MB AP_3v3 reported. One108800byte PSRAM public framebuffer used in the native driver; no exhaustive8MB memory test."
+    },
+    {
+      "property": "Board/PCB revision and panel silicon marking",
+      "classification": "UNRESOLVED",
+      "value": "Unknown; no case opening or inferred revision. ST7789-compatible configuration works; panel identity not read from a physical marking/ID register."
+    },
+    {
+      "property": "Display",
+      "classification": "SOURCE_CONFIGURED_AND_PHYSICALLY_OBSERVED",
+      "value": "320x170 native I80/ST7789 sequence. Physical border/RGBW/1-2/3-4 and public-key/request pages readable. Manual0/180 choice source-implemented/reviewed; operator confirmed readability in the selected orientation. Separate explicit physical reports for each0 and180 are not available. Orientation RAM-only. 26columns x8rows with6x8font scaled2,312x128text area; truncation/fit rejects."
+    },
+    {
+      "property": "Two controls",
+      "classification": "MEASURED_PHYSICAL_AND_SOURCE_BOUND",
+      "value": "GPIO0 Back/Reject/Rotate; GPIO14 Next/Approve/Enable, active-low with40ms stable transitions. Both counters physically count press once and hold does not repeat. Both-button1.5sLock is source-bound; no physical universal button claim."
+    },
+    {
+      "property": "Relevant wiring",
+      "classification": "PINNED_VENDOR_AND_WORKING_NATIVE_SEQUENCE",
+      "value": {
+        "LCD_data_GPIO": [
+          39,
+          40,
+          41,
+          42,
+          45,
+          46,
+          47,
+          48
+        ],
+        "LCD_backlight": 38,
+        "LCD_reset": 5,
+        "LCD_CS_DC_WR_RD": [
+          6,
+          7,
+          8,
+          9
+        ],
+        "LCD_power_enable": 15,
+        "buttons": [
+          0,
+          14
+        ],
+        "USB_native": "GPIO19/20 per SoC and supported native connector; measured ROM303a:1001 and running app303a:4001; no external UART bridge asserted",
+        "pin_header": "apps/s3-io-probe/include/pin_config.h; LilyGO1cc41eb1 attribution in THIRD_PARTY.md",
+        "unused_pins": "Header includes battery ADC4 and touch variant pins, but these are not started/required by this non-touch USB-only profile."
+      }
+    },
+    {
+      "property": "Power",
+      "classification": "MAINTAINER_SELECTED_AND_PHYSICALLY_OBSERVED",
+      "value": "USB-only; sample has no battery. USB removal turns display off; reconnect returns public startup. No battery/supercapacitor/independent-supply prerequisite. Data-only independently powered unplug E5 NOT_APPLICABLE. Does not establish whole-RAM erasure."
+    },
+    {
+      "property": "Boot/update",
+      "classification": "MEASURED_WITH_LIMITS",
+      "value": "Holding BOOT through reconnect enters ROM; exact public image flashed/verified. Standard esptool5.6 watchdog reset starts currentOTG app. Earlier direct USB reset failed to enumerate08 until physical power cycle; preserved. No eFuse/production key action."
+    }
+  ],
+  "bench_probes": {
+    "current_approve": {
+      "source": "e7",
+      "frame_bytes": 622,
+      "frame_sha256": "50c5b6c70a9b085f64a786cc81032a9cca95666750af62802b76558c639aa4d6",
+      "physical_operator": "READY, full review then Next hold~2s, RESULTQUEUED and readable",
+      "verification": "Existing product framing/transport/client playback of actual captured frame with original expected pubkey pinned, plus separate referenceBIP340; not live Bridge dispatch."
+    },
+    "current_reject": {
+      "source": "e7 sameCPUboot",
+      "frame_bytes": 60,
+      "frame_sha256": "663d55038dcfef474c9a256fa43e574eb05da2a096d7865cb0617299d160c5ab",
+      "physical_operator": "FreshEnable, final short distinct Back/Reject, operator reports reject",
+      "result": "Actual product decoder error rejected, status-5, no response/event/signature. Numeric backend counter unavailable; early Spent branch before sign_approved. Cached previous RNG report explicitly distinguished."
+    },
+    "prior_usb_marker_cases": "Original1c5/833 E0/E1/E2/E3/E6/E8 observations reused on their own source. USB implementation unchanged intoe7; no claim all cases rerun on e7. E4suspend and E7EN NOT_RUN; E5N/A. Software restart retained valid internal/RTC samples; invalid power-cycle markers UNKNOWN, never erasure.",
+    "actual_resources": {
+      "main_stack_bytes": 98304,
+      "USB_stack_bytes": 4096,
+      "current_main_min_free": 34980,
+      "current_USB_initial_min_free": 3164,
+      "internal_memory_observed": true,
+      "successful_DMA_commits_not_pages": 32
+    },
+    "scope_limits": "No bench electrical pin-voltage/waveform, physical RF absence, exhaustive PSRAM, ADC183 source-quality or authenticated hardware identity claim."
+  },
+  "profile_guarantee_matrix": [
+    {
+      "property": "Session identity model",
+      "decision": "DEFINED_FOR_D02_NOT_IMPLEMENTED",
+      "boundary": "Future identity only in current RAM session; no SE or persistent vault, no host custody/signing/recovery fallback. Startup Locked; local create/import/backup, full pubkey binding and same-key reload drill required."
+    },
+    {
+      "property": "Review authority",
+      "decision": "PUBLIC_COMPONENT_PHYSICALLY_OBSERVED",
+      "boundary": "Current publishedscalar3 only. No host acknowledgement creates approval. Final Approve and Reject distinct physical gestures, exact-source reviewed."
+    },
+    {
+      "property": "Transport lifecycle",
+      "decision": "SELECTED_COMPONENT_MEASURED_AND_SOURCE_BOUND",
+      "boundary": "AppOTGCDC-only,no1200/DTRROMhelper; observed DTRloss/busreset generation revocation; queued output not recallable. Detected events only, SDK queue-loss caveat preserved. Reconnection cannot resurrect real future identity/grant."
+    },
+    {
+      "property": "Build/ABI",
+      "decision": "PINNED_PUBLIC_COMPONENT",
+      "boundary": "ESP-IDF5.3e0991fac, pinnedTinyUSB3.0.0, native Xtensa and thin Rust staticlib ABI; root94source/665compiledinput/497manifest bindings already reviewed. No general Rustrewrite."
+    },
+    {
+      "property": "Entropy",
+      "decision": "PUBLIC_CALL_AND_FAULT_POLICY_ONLY; D02_UNRESOLVED",
+      "boundary": "Fallible32byte provider, ADC1completion before/after observed, gross fault checks and rollback/wipe policy. ADC183 primary-noise routing unresolved; one authorized manufacturer question now external dependency. No entropy_ok/realidentity admission."
+    },
+    {
+      "property": "Lock/disconnect/reload",
+      "decision": "CONTRACT_DEFINED_D02_GATES_OPEN",
+      "boundary": "Future real session cancels and clears owned material on localLock/relevant disconnect/reset/failure; USBpowerloss ends session and requires localreload. Exact CDC/DTR/suspend/reset and residualcopy guarantees still require affected qualification. Publicfixture auto-start is not recovery."
+    },
+    {
+      "property": "Radio/debug/physical/boot",
+      "decision": "LIMITS_EXPLICIT",
+      "boundary": "NoRF init or externalSE driver in current app, but no physicalradioabsence or debuglock/secureboot/flashencryption guarantee. RuntimeUSBmux reversible; no irreversible provisioning. Applicable siliconerrata retained."
+    },
+    {
+      "property": "Recovery/RAM/panic",
+      "decision": "UNQUALIFIED_D02",
+      "boundary": "No arbitrarynsec/create/export endpoint admitted yet; no universalRAM/register/cache erasure claim. nsec local entry/backup UX, compiler moves/stacks, panic/log/reset/ROM/debug are remaining gates."
+    },
+    {
+      "property": "Live host/catalog/client release",
+      "decision": "V01_C01_C02_OPEN",
+      "boundary": "Live client/service public path now implementing. Existing actual-Mac submission plus verifier playback does not close interoperability, full NIP07/NIP46/NIP44/17/59, installer or device release."
+    }
+  ],
+  "proposed_acceptance_mapping": [
+    {
+      "criterion": 1,
+      "proposal": "PASS_BOARD_CONTRACT_WITH_DECLARED_AND_UNRESOLVED_FACTS",
+      "basis": "Exact physical sample association+SoC/flash/PSRAM observation, working native display/two controls/USB, vendor wiring with no inferred PCB revision."
+    },
+    {
+      "criterion": 2,
+      "proposal": "PASS_BOARD_FEASIBILITY_AND_PUBLIC_APPROVE_REJECT",
+      "basis": "Physical direct readable pages/orientation/controls, exact e7 positive and separate final physicalReject, actual boot/update feasibility and explicit silicon/radio/debug/physical limits; no SE/custom-board guarantee."
+    },
+    {
+      "criterion": 3,
+      "proposal": "PASS_DEFINED_SESSION_ONLY_PROFILE_WITH_PINNED_DEPENDENCY_QUESTIONS",
+      "basis": "Selected noSE/no persistentidentityvault/no hostcustody; build/ABI/provider and localreload/lock/disconnect contract pinned with remaining D02/V01 gates, persistentextension deferred."
+    }
+  ],
+  "reviewer_request": "Decide each D01 criterion independently against current accepted text. Reject any insufficient fact with one concrete missing proof. Do not promote D02/V01/production or unknowns. Root will update sole graph only after distinct PASS and normal protected delivery.",
+  "criteria_closed_in_this_proposal": 0,
+  "editorial_correction": {
+    "previous_unreviewed_proposal_sha256": "d903292bacdb61984a26617e48ae72b2f0453763f9b55875db61d3f4f017e964",
+    "field": "board_contract.Display.value",
+    "correction": "Do not promote READY/selected-orientation readability into separate explicit physical confirmation of both0and180. No runtime/source/test changed."
+  }
+}
