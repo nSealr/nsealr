@@ -72,7 +72,7 @@ async function context() {
 }
 describe("public lease EOF boundary; real Node stream events, no USB", () => {
   it("F2 refuses a valid buffered response after observed EOF before close", async () => {
-    const request = {version:2,request_id:"public-s3-observed-eof",method:"sign_event",
+    const request = {version:2 as const,request_id:"public-s3-observed-eof",method:"sign_event" as const,
       params:{event_template:{kind:1,created_at:1710000000,content:"S3 public physical approval",tags:[]}}};
     wire.response = encodeSerialFrame({type:"response",payload:devSignRequest(request,"0".repeat(63)+"3")});
     expect(decodeSerialFrame(wire.response).type).toBe("response");
