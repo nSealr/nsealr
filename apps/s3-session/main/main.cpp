@@ -110,10 +110,11 @@ static void banner() {
 }
 static void status_screen(const char *status) {
     banner();int row=0;
-    (void)cells(reinterpret_cast<const uint8_t*>(status),std::strlen(status),row,0xffff);
-    (void)cells(reinterpret_cast<const uint8_t*>(public_hex),26,row,0x07e0);
-    (void)cells(reinterpret_cast<const uint8_t*>(public_hex+26),26,row,0x07e0);
-    (void)cells(reinterpret_cast<const uint8_t*>(public_hex+52),12,row,0x07e0);
+    if(!cells(reinterpret_cast<const uint8_t*>(status),std::strlen(status),row,0xffff)||
+        !cells(reinterpret_cast<const uint8_t*>(public_hex),26,row,0x07e0)||
+        !cells(reinterpret_cast<const uint8_t*>(public_hex+26),26,row,0x07e0)||
+        !cells(reinterpret_cast<const uint8_t*>(public_hex+52),12,row,0x07e0))
+        esp_system_abort("public status geometry");
     small(158,"0: rotate180 | 14: enable | both: lock",0xffff);flush_frame();
 }
 static void poll_buttons() {
@@ -271,7 +272,7 @@ extern "C" void app_main() {
                 if((attempted&&queued!=int(r.length))||r.length>sizeof(response))transport_failed=true;
                 std::memset(response,0,sizeof(response));
                 menu.enabled=false;discard_input();idle=SessionGesture{};
-                if(r.status==0&&queued==int(r.length)&&attempted)status_screen("RESULT QUEUED - public test");
+                if(r.status==0&&queued==int(r.length)&&attempted)status_screen("RESULT QUEUED - TEST ONLY");
                 else if(r.status==-5)status_screen("REJECTED - no signature");
                 else if(r.status==-7)status_screen("EXPIRED - no signature");
                 else if(r.status==-11)status_screen("LOCKED - no signature");
