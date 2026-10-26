@@ -3,7 +3,7 @@ import { mkdtempSync, writeFileSync, readFileSync, existsSync, rmSync } from "no
 import { join } from "node:path";
 import { tmpdir } from "node:os";
 import { randomUUID } from "node:crypto";
-import { describe, it, expect } from "vitest";
+import { describe, it, expect, vi } from "vitest";
 import { encodeSerialFrame, decodeSerialFrame } from "@nsealr/framing";
 import { devSignRequest } from "@nsealr/dev-signer";
 import { createLocalStorageReview, approveLocalStorageReview, createLocalGrantStore, clientIdForIdentity } from "@nsealr/client";
@@ -122,12 +122,53 @@ describe("real Node client→service child→Unix stream; host fixture, no USB/S
   });
   it("setup timeout aborts its callback and sends no request",async()=>{
     await lab(async f=>{
-      let aborted=false;
-      await expect(dispatchPublicS3({...f.files,expectedPublicKey:KEY,method:"sign_event",out:f.out,setupTimeoutMs:100,
-        ready:async signal=>new Promise<void>((_,reject)=>signal.addEventListener("abort",()=>{aborted=true;reject(new Error("stopped"));},{once:true}))
-      })).rejects.toThrow(/setup expired/);
-      expect(aborted).toBe(true);expect(f.writes).toHaveLength(0);expect(existsSync(f.out)).toBe(false);
+      vi.useFakeTimers({toFake:["setTimeout","clearTimeout"]});
+      let operation:Promise<void>|undefined;
+      try {
+        let readyCalls=0,aborted=false,entered!:()=>void;
+        const readyEntered=new Promise<void>(resolve=>{entered=resolve;});
+        operation=dispatchPublicS3({...f.files,expectedPublicKey:KEY,method:"sign_event",out:f.out,setupTimeoutMs:100,
+          ready:async signal=>new Promise<void>((_,reject)=>{
+            ++readyCalls;
+            expect(signal.aborted).toBe(false);
+            signal.addEventListener("abort",()=>{aborted=true;reject(new Error("stopped"));},{once:true});
+            entered(); // Listener installed; real child OPEN precedes this barrier.
+          })
+        });
+        void operation.catch(()=>undefined);
+        await Promise.race([readyEntered,operation]);
+        expect(readyCalls).toBe(1);expect(aborted).toBe(false);expect(f.writes).toHaveLength(0);
+        const rejected=expect(operation).rejects.toThrow(/setup expired/);
+        await vi.advanceTimersByTimeAsync(100);
+        await rejected; // Includes actual child/pipe/stream settlement.
+        expect(readyCalls).toBe(1);expect(aborted).toBe(true);
+        expect(f.writes).toHaveLength(0);expect(existsSync(f.out)).toBe(false);
+      } finally {
+        try {
+          if(operation){await vi.advanceTimersByTimeAsync(100);await operation.catch(()=>undefined);}
+        } finally {vi.useRealTimers();}
+      }
     },()=>{throw new Error("no write");});
+  });
+  it("setup deadline before OPEN does not enter an unstarted callback",async()=>{
+    await lab(async f=>{
+      vi.useFakeTimers({toFake:["setTimeout","clearTimeout"]});
+      let operation:Promise<void>|undefined;
+      try {
+        let readyCalls=0;
+        operation=dispatchPublicS3({...f.files,expectedPublicKey:KEY,method:"sign_event",out:f.out,setupTimeoutMs:100,
+          ready:async()=>{++readyCalls;}
+        });
+        const rejected=expect(operation).rejects.toThrow(/setup expired/);
+        await vi.advanceTimersByTimeAsync(100);
+        await rejected;
+        expect(readyCalls).toBe(0);expect(f.writes).toHaveLength(0);expect(existsSync(f.out)).toBe(false);
+      } finally {
+        try {
+          if(operation){await vi.advanceTimersByTimeAsync(100);await operation.catch(()=>undefined);}
+        } finally {vi.useRealTimers();}
+      }
+    },()=>{throw new Error("no write");},""); // Withhold only the private OPEN marker.
   });
   it("rejects a different independent pin before opening/writing", async ()=>{
     await lab(async f=>{
