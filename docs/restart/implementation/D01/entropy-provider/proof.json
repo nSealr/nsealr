@@ -1,0 +1,126 @@
+{
+  "schema": "nsealr.s3-public-fallible-sar-delivery-proof.v1",
+  "compiled_source": "08d919c31cff329f14809cc8c3ed2f26cd8454c5",
+  "source_tree": "8b164a7ebc11544397c0597c91baa3ad35191ee9",
+  "merge_main": "a5159582f5ec5b52c3d4e6aa3a9c3cae85d6ffed",
+  "main_input": "99332719e0e116d3e013cd3bfa1969131dd40ecf",
+  "prior_OTG_delivery": "83331c5aa05c952c12635ac96e231a013a6df772",
+  "packet": {
+    "external_activeRoot_path": "s3-probe/artifacts/entropy-public",
+    "members": 436,
+    "manifest_sha256": "fa960732584895f48c6a11092753902d69f7d83b4ec5a569838de4aefc43e702",
+    "packet_json_sha256": "1c67a175d4b17b35c2bcd9a8dad08a3393074189b95d3f085ea77fad4b5f77ec",
+    "closure_sha256": "2a0be16a7d442ff9cead668f119f077c1a8dac065308e4a417fd59375dc9cc09"
+  },
+  "final_integrity": {
+    "record": "151-s3-entropy-final-packet-integrity",
+    "result_sha256": "59e9e414eacb574b34c0387237419fb8b8dc2a0f8eacde2f12a507c0bffbd6d0",
+    "verdict": "PASS_SOURCE_BUILD_PACKET_BINDINGS_ONLY"
+  },
+  "final_build": {
+    "record": "139-s3-entropy-final-supplied-metric-app-build",
+    "exit": 0,
+    "seconds": 4.082613280043006,
+    "files": [
+      {
+        "file": "bootloader.bin",
+        "bytes": 14480,
+        "sha256": "a7f9187bd1880d2ed9f7b44b7f0c0f10095d7dc55fb9215bdcf81fa11cf2e830"
+      },
+      {
+        "file": "partitions.bin",
+        "bytes": 3072,
+        "sha256": "05c350a14c51f248b30b8245e5b22fc8bb64a781152141247c7f2687d39da629"
+      },
+      {
+        "file": "firmware.bin",
+        "bytes": 448928,
+        "sha256": "0825678c8981aaabbf36be9377112905d8f2ea4cd6f06e010b6ef42045b9c969"
+      },
+      {
+        "file": "firmware.elf",
+        "bytes": 4269480,
+        "sha256": "86122d73e688daa41dcb48bad8ecaa2655edaef43970c356df107af726411035"
+      },
+      {
+        "file": "firmware.map",
+        "bytes": 5349571,
+        "sha256": "db604604aaab8d5cdd9450901e92f4299bb91445052c4ca8ccf35ff00f304446"
+      },
+      {
+        "file": "flasher_args.json",
+        "bytes": 939,
+        "sha256": "8264c29f3176516ad66dca941376f8a3b32275737df653e50bf1f8a15f1783d8"
+      },
+      {
+        "file": "flash_args",
+        "bytes": 161,
+        "sha256": "0119fd3b322a1daf35f57ae1b1376e991d9df2378649e0ec76caa9e17947d9df"
+      },
+      {
+        "file": "sdkconfig",
+        "bytes": 56435,
+        "sha256": "535ad94182dc8a94aab794b23d1a00bcf718c1897f4a9188aa5d3669d580cf73"
+      },
+      {
+        "file": "sdkconfig.h",
+        "bytes": 39726,
+        "sha256": "a37f5b9e0b35c72c256890df7128e34929e3ba80d4ee81ed3104af11a7ccbc57"
+      },
+      {
+        "file": "sdkconfig.json",
+        "bytes": 44407,
+        "sha256": "ecda81a0f101478a64c10ddd0e98e65c9acfb2745fb7ba8eea4af78917a00082"
+      },
+      {
+        "file": "sdkconfig.cmake",
+        "bytes": 95253,
+        "sha256": "4b0fae30be19e95eb3352fcd0f4e0261c91c82a6b674d4c2f08b0f6d0c3ba399"
+      },
+      {
+        "file": "project_description.json",
+        "bytes": 182642,
+        "sha256": "858e161b1d146cb33c91995b336a2cf67cf4e76314157e6b29cc4f6d8c9a209a"
+      },
+      {
+        "file": "compile_commands.json",
+        "bytes": 5156180,
+        "sha256": "7304ed8864d7aefd7a683e1646661fb6ce5ac1b1f3b5b3b12967a72340196169"
+      },
+      {
+        "file": "CMakeCache.txt",
+        "bytes": 27099,
+        "sha256": "1e53006b1c92ac491f8cca0dee5441311ea30376e3c9e0fc91dcbdc5ac7bf97a"
+      },
+      {
+        "file": "rust-core.a",
+        "bytes": 2787084,
+        "sha256": "9b8ba1a08aa3094b34d7a0ec392b64095d17be384576dce2a4eaf96906a6452b"
+      },
+      {
+        "file": "esp_tinyusb.a",
+        "bytes": 809386,
+        "sha256": "05bbcad63b96d1e4e43dfdf370cd3e35a83f8ad6f3c27d011d72d56d580b33e9"
+      }
+    ]
+  },
+  "focused_tests": {
+    "Rust_private_adapter": 14,
+    "provider_checks": 1818,
+    "duplicate_receipts": "133/134 repeat unchanged128/129: preserved, no extra coverage claimed",
+    "historical_reused": "114 dependency preflight;116/117 gesture+epoch; unchanged core/oracle/host suites not repeated"
+  },
+  "significant_failures": {
+    "135": "Target code formatting: misleading indentation and Xtensa uint32_t printf type. Fixed9df; final139 passes. No SDK failure.",
+    "149": "Packet assembler used nonexistent generic hal/include regi2c path; corrected to actual platform_port/include. No product source or build changed. Original assembler/log retained.",
+    "146": "GNU objdump repeated --disassemble options only printed the last target; valid public auxiliary body only.147 invokes each exact mangled function independently and asserts body presence.",
+    "packaging_python": "Outer system Python lacked elftools after140\u2013145; no target command failed or was repeated.147 and packet use existing SDK venv with pyelftools0.33."
+  },
+  "scope": "One private S3 provider through existing core AuxiliarySource; public scalar3 only, four finite diagnostic attempts and at most one new auxiliary attempt per CPU boot. Core/protocol/time100s and host unchanged.",
+  "remaining": {
+    "hardware": "Root distinct review and single finite physical pass pending; main>=4096/USB>=512 free watermarks affected. Static selected frames are not a complete stack bound.",
+    "production_entropy": "Not admitted: ADC183 rev0.2 DIGADC2/doubleSAR source uncertainty unresolved. Gross samples or successful signatures cannot close manufacturer-source qualification.",
+    "secrets": "No import/generateidentity/backup/recovery/entropy_ok endpoints or real identity. Reset/RAM/ROM/host gates remain.",
+    "power": "USB-only S3 amendment has separate root receipt5a9238d6 and own source bindings49d31b0f; historical P01/PR53 and Pi/P4 preserved."
+  }
+}

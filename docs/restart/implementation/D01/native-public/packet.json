@@ -1,0 +1,359 @@
+{
+  "schema_version": 1,
+  "created_utc": "2026-10-26T09:59:45.457547+00:00",
+  "author": "/root/s3_native_finish (packet), /root/s3_session (original implementation/build)",
+  "reviewer": "/root (pending)",
+  "build_source_commit": "a159db50af182d134ffce22d4d92826f24f1a651",
+  "branch": "implementation/s3-native-session",
+  "product_main_input": "19ab15d15aa8751174aa87119ae18853007c8222",
+  "immutable_Arduino_probe": "e19892194e3cd452be01a4efb829065fba4ed786; not flashed or adopted",
+  "sdk": {
+    "version": "ESP-IDF5.3",
+    "commit": "e0991facf5ecb362af6aac1fae972139eb38d2e4",
+    "xtensa_gcc": "13.2.0 esp-13.2.0_20240530",
+    "rust_release": "esp-rs1.97.0.0",
+    "rustc_commit": "8ea53bcd7",
+    "LLVM": "21.1.3",
+    "esptool_build_inspection": "4.12.0",
+    "python_lock_receipt": "34-native-idf-python-lock"
+  },
+  "dependencies": {
+    "admitted_crypto_source": "563d10b3c933a0bdc4605d27710c0ff2610960e1",
+    "crypto_bigint": "0.7.9",
+    "root_lock_sha256": "955146a124f4b18df969ce6e2172453403b4b801ad87139a225f5f342ec3a0dc",
+    "native_consumer_lock_sha256": "28fb1a218de7a16421e156de24b1153c70d6d905af48205a65226148d50b7640",
+    "vendor_checksum_sha256": "308aaa65399a468ed54d0920c271a6fddb41bf576509d238ef1c22fa2a9cd82c"
+  },
+  "flash": {
+    "chip": "esp32s3",
+    "mode": "dio",
+    "frequency": "80m",
+    "size": "16MB",
+    "original_generated_file": "flasher_args.json",
+    "files": [
+      {
+        "offset": "0x0",
+        "file": "bootloader.bin"
+      },
+      {
+        "offset": "0x8000",
+        "file": "partitions.bin"
+      },
+      {
+        "offset": "0x10000",
+        "file": "firmware.bin"
+      }
+    ],
+    "boot_app0": false,
+    "before": "default_reset",
+    "after": "hard_reset",
+    "irreversible_fuses": false,
+    "operator": "root on Mac only; identify exact current S3 device privately before erasing/flashing"
+  },
+  "files": [
+    {
+      "file": "bootloader.bin",
+      "bytes": 14480,
+      "sha256": "2ae959b1d02053a7ad9c59bc1c63315609134872b9b542c7664fd173bae531ab"
+    },
+    {
+      "file": "partitions.bin",
+      "bytes": 3072,
+      "sha256": "05c350a14c51f248b30b8245e5b22fc8bb64a781152141247c7f2687d39da629"
+    },
+    {
+      "file": "firmware.bin",
+      "bytes": 293168,
+      "sha256": "23730002c131242fedc07316be913cffec79f6afbe7f89bc28dcf2317f7f7aec"
+    },
+    {
+      "file": "firmware.elf",
+      "bytes": 3587540,
+      "sha256": "da01adac0146587f20f8585363807baa7e8890ab9ebc0cdd52c678b6c163368f"
+    },
+    {
+      "file": "firmware.map",
+      "bytes": 5106648,
+      "sha256": "b0d4c77512edbf6c0f15ebb44497c7abd347096229485c3120b241e9f2f1c05a"
+    },
+    {
+      "file": "rust-core.a",
+      "bytes": 2765530,
+      "sha256": "6f5cc3663cea5458819832f0f7043fa4fcf0bf24609c745b67bfd97f877696a8"
+    },
+    {
+      "file": "rust-core.d",
+      "bytes": 5354,
+      "sha256": "65da167c3bacd46f97f747c89d25b11592d110630b523edf5defb70bd9383c85"
+    },
+    {
+      "file": "sdkconfig",
+      "bytes": 46286,
+      "sha256": "13dfbd1e6d5f09900811f631a9549f36e0ebefa74ba991adb510ecdb89625f86"
+    },
+    {
+      "file": "sdkconfig.h",
+      "bytes": 33829,
+      "sha256": "23a5f80133424778aebe1fb422b2752c3af04fe0162901e53eb1d050870e3d32"
+    },
+    {
+      "file": "sdkconfig.json",
+      "bytes": 36952,
+      "sha256": "c60f532c9213a1146a2bda0d58b04d8a9facbafe1164901a06520474d7ffbb36"
+    },
+    {
+      "file": "flasher_args.json",
+      "bytes": 939,
+      "sha256": "8264c29f3176516ad66dca941376f8a3b32275737df653e50bf1f8a15f1783d8"
+    },
+    {
+      "file": "flash_args.original",
+      "bytes": 161,
+      "sha256": "0119fd3b322a1daf35f57ae1b1376e991d9df2378649e0ec76caa9e17947d9df"
+    },
+    {
+      "file": "project_description.json",
+      "bytes": 154668,
+      "sha256": "1632dcc19bd3ffa9fdd987a492454879b231583e244790216fc8e3ae57bce062"
+    },
+    {
+      "file": "Cargo.lock",
+      "bytes": 7608,
+      "sha256": "28fb1a218de7a16421e156de24b1153c70d6d905af48205a65226148d50b7640"
+    },
+    {
+      "file": "root-Cargo.lock",
+      "bytes": 10078,
+      "sha256": "955146a124f4b18df969ce6e2172453403b4b801ad87139a225f5f342ec3a0dc"
+    },
+    {
+      "file": "crypto-bigint-checksum.json",
+      "bytes": 20720,
+      "sha256": "308aaa65399a468ed54d0920c271a6fddb41bf576509d238ef1c22fa2a9cd82c"
+    }
+  ],
+  "oracle": {
+    "hash_input_utf8": "abc",
+    "hash_oracle": "Python hashlib.sha256",
+    "sha256": "ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad",
+    "bip340_source": "research/2026-10-13/crypto/sources/bitcoin/bips/bip-0340/test-vectors.csv",
+    "bip340_source_sha256": "34c9d1d9c3a88d524bc80778540dc43f8306ec249a7485293063c376db851c2d",
+    "vector_index": "0",
+    "public_key": "f9308a019258c31049344f85f89d5229b531c845836f99b08601f113bce036f9",
+    "expected_public_hex": "ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015adf9308a019258c31049344f85f89d5229b531c845836f99b08601f113bce036f9"
+  },
+  "runtime_expected": {
+    "abi": "rc=0 negative=1 guards=1; exact 128 hex bytes from independent oracle",
+    "diagnostic": "s3-native-v1; GPIO0/14 physical counters; ignored_bytes for bounded untrusted input",
+    "display": "320x170 white border, RGBW top bars, corners1/2/3/4, local counters and green public ABI indicator"
+  },
+  "receipts": {
+    "34-native-idf-python-lock": {
+      "exit": 0,
+      "seconds": 0.5112028950825334,
+      "argv": [
+        "/home/tux/.local/bin/uv",
+        "pip",
+        "compile",
+        "--python",
+        "/home/tux/nsealr/.restart-tools/mac-resume-2026-10-25/p4-probe/python-env-uv/bin/python",
+        "--generate-hashes",
+        "-c",
+        "/home/tux/nsealr/.restart-tools/mac-resume-2026-10-25/s3-probe/native/espidf.constraints.v5.3.txt",
+        "/home/tux/nsealr/.restart-tools/mac-resume-2026-10-25/s3-probe/native/src/esp-idf/tools/requirements/requirements.core.txt",
+        "-o",
+        "/home/tux/nsealr/.restart-tools/mac-resume-2026-10-25/s3-probe/native/python-packages.lock"
+      ],
+      "result_sha256": "b29d62bb81d2770bafb33c5646aa10aa58073c085a325fe5020bab7ef58b6aaf"
+    },
+    "38-native-python-dependency-check": {
+      "exit": 0,
+      "seconds": 0.5103488136082888,
+      "argv": [
+        "/home/tux/nsealr/.restart-tools/mac-resume-2026-10-25/s3-probe/native/python-env/bin/python",
+        "/home/tux/nsealr/.restart-tools/mac-resume-2026-10-25/s3-probe/native/src/esp-idf/tools/check_python_dependencies.py",
+        "-r",
+        "/home/tux/nsealr/.restart-tools/mac-resume-2026-10-25/s3-probe/native/src/esp-idf/tools/requirements/requirements.core.txt",
+        "-c",
+        "/home/tux/nsealr/.restart-tools/mac-resume-2026-10-25/s3-probe/native/espidf.constraints.v5.3.txt"
+      ],
+      "result_sha256": "522e0c49e9a738f8ae3d491eeafff6489a1aeadeeed7b3a7a802840856a39a6d"
+    },
+    "41-native-core-build-079": {
+      "exit": 0,
+      "seconds": 13.772290755063295,
+      "argv": [
+        "/home/tux/nsealr/.restart-tools/mac-resume-2026-10-25/s3-probe/tools/xtensa-rust-1.97.0.0/bin/cargo",
+        "build",
+        "--offline",
+        "--locked",
+        "--config",
+        "source.vendored-sources.directory=\"/home/tux/nsealr/.restart-tools/mac-resume-2026-10-25/s3-probe/tools/rust-sysroot-vendor\"",
+        "-Zbuild-std=core",
+        "--target",
+        "xtensa-esp32s3-none-elf",
+        "--release"
+      ],
+      "result_sha256": "5cf80f73c513d637a3f85c367bda3b1b74419d4012411e1ac67d8b550b1f1bd4"
+    },
+    "45-native-sdk-app-build": {
+      "exit": 2,
+      "seconds": 17.368837064132094,
+      "argv": [
+        "/home/tux/nsealr/.restart-tools/mac-resume-2026-10-25/s3-probe/native/python-env/bin/python",
+        "/home/tux/nsealr/.restart-tools/mac-resume-2026-10-25/s3-probe/native/src/esp-idf/tools/idf.py",
+        "-C",
+        "/home/tux/nsealr/.restart-tools/mac-resume-2026-10-25/s3-session/apps/s3-session",
+        "-B",
+        "/home/tux/nsealr/.restart-tools/mac-resume-2026-10-25/s3-probe/native/build/idf-public",
+        "-D",
+        "SDKCONFIG=/home/tux/nsealr/.restart-tools/mac-resume-2026-10-25/s3-probe/native/sdkconfig.public",
+        "build"
+      ],
+      "result_sha256": "51eb94fc7b5fda3677b8cf5d867ac7bf124ae96ee1ef9add0738d95521633207"
+    },
+    "58-native-final-recursive-gitlinks": {
+      "exit": 0,
+      "seconds": 0.5107845487073064,
+      "argv": [
+        "git",
+        "submodule",
+        "status",
+        "--recursive"
+      ],
+      "result_sha256": "89f467951a08b99585eb215783e911b6f38b8ad0f5ebd46423d2d5b70ad56e6b"
+    },
+    "59-native-final-idf-clean": {
+      "exit": 0,
+      "seconds": 0.5108633050695062,
+      "argv": [
+        "git",
+        "status",
+        "--porcelain"
+      ],
+      "result_sha256": "d2ed9b808a37ce4fdf0bc5a3ba6f3a814618e2ebe20cf55e04b2c59c6ef641ea"
+    },
+    "60-native-sdk-source-closed-app-build": {
+      "exit": 2,
+      "seconds": 3.614098897203803,
+      "argv": [
+        "/home/tux/nsealr/.restart-tools/mac-resume-2026-10-25/s3-probe/native/python-env/bin/python",
+        "/home/tux/nsealr/.restart-tools/mac-resume-2026-10-25/s3-probe/native/src/esp-idf/tools/idf.py",
+        "-C",
+        "/home/tux/nsealr/.restart-tools/mac-resume-2026-10-25/s3-session/apps/s3-session",
+        "-B",
+        "/home/tux/nsealr/.restart-tools/mac-resume-2026-10-25/s3-probe/native/build/idf-public",
+        "-D",
+        "SDKCONFIG=/home/tux/nsealr/.restart-tools/mac-resume-2026-10-25/s3-probe/native/sdkconfig.public",
+        "build"
+      ],
+      "result_sha256": "9946f0d489732da522c8c362c0fbdefe98a37d7a79e44ba8aff341f25bca6593"
+    },
+    "61-native-sdk-corrected-app-build": {
+      "exit": 0,
+      "seconds": 5.157910831272602,
+      "argv": [
+        "/home/tux/nsealr/.restart-tools/mac-resume-2026-10-25/s3-probe/native/python-env/bin/python",
+        "/home/tux/nsealr/.restart-tools/mac-resume-2026-10-25/s3-probe/native/src/esp-idf/tools/idf.py",
+        "-C",
+        "/home/tux/nsealr/.restart-tools/mac-resume-2026-10-25/s3-session/apps/s3-session",
+        "-B",
+        "/home/tux/nsealr/.restart-tools/mac-resume-2026-10-25/s3-probe/native/build/idf-public",
+        "-D",
+        "SDKCONFIG=/home/tux/nsealr/.restart-tools/mac-resume-2026-10-25/s3-probe/native/sdkconfig.public",
+        "build"
+      ],
+      "result_sha256": "7743d9d0094bc16f0145ec8422b19b193bbccbe06b5b05548706a740d528e69d"
+    },
+    "62-native-app-image-info": {
+      "exit": 0,
+      "seconds": 0.5110084852203727,
+      "argv": [
+        "/home/tux/nsealr/.restart-tools/mac-resume-2026-10-25/s3-probe/native/python-env/bin/python",
+        "-m",
+        "esptool",
+        "--chip",
+        "esp32s3",
+        "image_info",
+        "/home/tux/nsealr/.restart-tools/mac-resume-2026-10-25/s3-probe/native/build/idf-public/nsealr_s3_native_public.bin"
+      ],
+      "result_sha256": "19e42aa17807bf3c3654558ff4485cc7e29c13b93167a4e6f7e0ab3cfc06b799"
+    },
+    "63-native-bootloader-image-info": {
+      "exit": 0,
+      "seconds": 0.5115324230864644,
+      "argv": [
+        "/home/tux/nsealr/.restart-tools/mac-resume-2026-10-25/s3-probe/native/python-env/bin/python",
+        "-m",
+        "esptool",
+        "--chip",
+        "esp32s3",
+        "image_info",
+        "/home/tux/nsealr/.restart-tools/mac-resume-2026-10-25/s3-probe/native/build/idf-public/bootloader/bootloader.bin"
+      ],
+      "result_sha256": "3dc59c38485cdab14cdcd003710f4a62d9381c440078017382c7636dfdbd2c52"
+    },
+    "64-native-partition-readback": {
+      "exit": 0,
+      "seconds": 0.5107216266915202,
+      "argv": [
+        "/home/tux/nsealr/.restart-tools/mac-resume-2026-10-25/s3-probe/native/python-env/bin/python",
+        "/home/tux/nsealr/.restart-tools/mac-resume-2026-10-25/s3-probe/native/src/esp-idf/components/partition_table/gen_esp32part.py",
+        "/home/tux/nsealr/.restart-tools/mac-resume-2026-10-25/s3-probe/native/build/idf-public/partition_table/partition-table.bin"
+      ],
+      "result_sha256": "77fc49319a4824add32ae260b2b128adb7176ac94b2ac0861d54a6738d285c6e"
+    },
+    "65-native-final-elf-header": {
+      "exit": 0,
+      "seconds": 0.5135768745094538,
+      "argv": [
+        "/home/tux/nsealr/.restart-tools/mac-resume-2026-10-25/s3-probe/native/tools/tools/xtensa-esp-elf/esp-13.2.0_20240530/xtensa-esp-elf/bin/xtensa-esp32s3-elf-readelf",
+        "-h",
+        "/home/tux/nsealr/.restart-tools/mac-resume-2026-10-25/s3-probe/native/build/idf-public/nsealr_s3_native_public.elf"
+      ],
+      "result_sha256": "49e90b0d1d5653881a3741b2e5bf44a84c20f23a72a72e49e770bd0c51462cd2"
+    },
+    "66-native-final-symbols": {
+      "exit": 0,
+      "seconds": 0.5123889446258545,
+      "argv": [
+        "/home/tux/nsealr/.restart-tools/mac-resume-2026-10-25/s3-probe/native/tools/tools/xtensa-esp-elf/esp-13.2.0_20240530/xtensa-esp-elf/bin/xtensa-esp32s3-elf-nm",
+        "-an",
+        "/home/tux/nsealr/.restart-tools/mac-resume-2026-10-25/s3-probe/native/build/idf-public/nsealr_s3_native_public.elf"
+      ],
+      "result_sha256": "8a115641cdb065c26ea5652e0e5a605d3dc9026f5eb3c96a5dc01c8551bfcaef"
+    },
+    "67-native-final-undefined": {
+      "exit": 0,
+      "seconds": 0.5111697353422642,
+      "argv": [
+        "/home/tux/nsealr/.restart-tools/mac-resume-2026-10-25/s3-probe/native/tools/tools/xtensa-esp-elf/esp-13.2.0_20240530/xtensa-esp-elf/bin/xtensa-esp32s3-elf-nm",
+        "-u",
+        "/home/tux/nsealr/.restart-tools/mac-resume-2026-10-25/s3-probe/native/build/idf-public/nsealr_s3_native_public.elf"
+      ],
+      "result_sha256": "a7a81da2831205f1b70e2db2fb755edc5ebb34147f1c43d48f3acbbf09b6c3f6"
+    },
+    "68-native-rust-abi-export": {
+      "exit": 0,
+      "seconds": 0.5113279009237885,
+      "argv": [
+        "/home/tux/nsealr/.restart-tools/mac-resume-2026-10-25/s3-probe/native/tools/tools/xtensa-esp-elf/esp-13.2.0_20240530/xtensa-esp-elf/bin/xtensa-esp32s3-elf-objdump",
+        "-d",
+        "--disassemble=nsealr_s3_abi_check",
+        "/home/tux/nsealr/.restart-tools/mac-resume-2026-10-25/s3-probe/native/build/idf-public/nsealr_s3_native_public.elf"
+      ],
+      "result_sha256": "d145e3d7c3b615e913cf6774f879d8f2d86f49fa2ec71539f3736badd406f4b3"
+    }
+  },
+  "status": "Build and offline inspection only; physical runtime and distinct review pending",
+  "not_qualified": [
+    "secret-session custody",
+    "fallible entropy",
+    "debug/boot/reset isolation",
+    "real identities",
+    "local nsec recovery UX",
+    "monotonic human-review protocol",
+    "client signing roundtrip",
+    "reproducible release"
+  ]
+}
