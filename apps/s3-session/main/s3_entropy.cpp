@@ -47,7 +47,8 @@ static_assert(sizeof(pins)/sizeof(*pins)<=20,"fixed pin ownership snapshot");
 static uint32_t pin_config(unsigned i){return REG_READ(GPIO_PIN_MUX_REG[pins[i]]);}
 static uint32_t output_config(unsigned i){return REG_READ(GPIO_FUNC0_OUT_SEL_CFG_REG+4*pins[i]);}
 static uint32_t pin_signature(){uint32_t v=REG_READ(GPIO_ENABLE_REG)^REG_READ(GPIO_ENABLE1_REG);
-    for(unsigned i=0;i<sizeof(pins)/sizeof(*pins);++i)v=(v<<3)^(v>>29)^pin_config(i)^output_config(i);return v;}
+    for(unsigned i=0;i<sizeof(pins)/sizeof(*pins);++i){v=(v<<3)^(v>>29)^pin_config(i)^output_config(i);}
+    return v;}
 static bool pins_unchanged(){
     if(LCD_CAM.lcd_clock.val!=ctx.lcd_clock||REG_READ(GPIO_ENABLE_REG)!=ctx.gpio_enable||REG_READ(GPIO_ENABLE1_REG)!=ctx.gpio_enable1)return false;
     for(unsigned i=0;i<sizeof(pins)/sizeof(*pins);++i)if(pin_config(i)!=ctx.pins[i]||output_config(i)!=ctx.outputs[i])return false;
@@ -142,7 +143,8 @@ static S3EntropyStatus enable(void*){
     Rcc rcc;return s3_entropy_rcc_gate(rcc);
 }
 static S3EntropyStatus snapshot(void*,S3EntropySnapshot *out){
-    if(!owner())return S3EntropyStatus::Ownership;observe(*out);
+    if(!owner())return S3EntropyStatus::Ownership;
+    observe(*out);
     if(out->references!=1||!pins_unchanged()||out->usb_mux!=3)return S3EntropyStatus::Ownership;
     return S3EntropyStatus::PublicDraw;
 }
@@ -196,7 +198,7 @@ const S3EntropyReport &s3_entropy_last_report(){return last_report;}
 void s3_entropy_log_report(unsigned draw,const uint8_t *sample){
     // Fixed public diagnostics only. Banks omitted by readable are UNKNOWN.
     const auto &r=last_report;char line[384];
-    std::snprintf(line,sizeof(line),"s3-public-rng-v1 draw=%u status=%ld bytes=%u elapsed_us=%lld flags=%lx/%lx/%lx readable=%lu/%lu/%lu/%lu refs=%lu/%lu/%lu/%lu\n",draw,(long)r.status,r.words*4,(long long)r.elapsed_us,
+    std::snprintf(line,sizeof(line),"s3-public-rng-v1 draw=%u status=%ld bytes=%u elapsed_us=%lld flags=%lx/%lx/%lx readable=%lu/%lu/%lu/%lu refs=%lu/%lu/%lu/%lu\n",draw,(long)r.status,unsigned(r.words*4),(long long)r.elapsed_us,
       (unsigned long)r.enabled.flags,(unsigned long)r.after.flags,(unsigned long)r.rest.flags,
       (unsigned long)r.before.readable,(unsigned long)r.enabled.readable,(unsigned long)r.after.readable,(unsigned long)r.rest.readable,
       (unsigned long)r.before.references,(unsigned long)r.enabled.references,(unsigned long)r.after.references,(unsigned long)r.rest.references);otg_line(line);
