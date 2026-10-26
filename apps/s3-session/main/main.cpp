@@ -23,6 +23,27 @@
 #include "pin_config.h"
 #include "display_init.h"
 #include "button_probe.h"
+#include "session_buttons.h"
+#define PROGMEM
+#include "public_font.h"
+#undef PROGMEM
+extern "C" {
+struct S3ExchangeResult { int32_t status; uint32_t length; };
+using PresentCallback=int32_t(*)(uint32_t,uint32_t,uint32_t,const uint8_t*,size_t,const uint8_t*,size_t,const uint8_t*,size_t);
+using NowCallback=int32_t(*)(uint64_t*);
+using CancelCallback=int32_t(*)();
+int32_t nsealr_s3_public_feed(uint8_t);
+int32_t nsealr_s3_public_reset_input();
+int32_t nsealr_s3_public_key(uint8_t*,size_t);
+S3ExchangeResult nsealr_s3_public_exchange(uint8_t*,size_t,PresentCallback,NowCallback,CancelCallback);
+}
+static bool enabled;
+static bool local_locked;
+static bool clock_started;
+static uint64_t deadline_seconds;
+static uint8_t response[1024];
+static char public_hex[65];
+
 
 #if CONFIG_ESP_MAIN_TASK_STACK_SIZE != 65536
 #error "The public core check requires the reviewed finite native main-task stack"
@@ -34,15 +55,6 @@ static esp_lcd_panel_io_handle_t panel_io;
 static SemaphoreHandle_t transferred;
 static uint16_t *frame;
 static ProbeButton buttons[2];
-static uint32_t ignored;
-static int32_t abi_rc = -99;
-static bool abi_negatives;
-static bool abi_guards;
-static char abi_hex[129];
-static int64_t abi_elapsed_us;
-static UBaseType_t abi_stack_raw;
-extern "C" int32_t nsealr_s3_abi_check(uint8_t *, size_t);
-
 static bool transfer_done(esp_lcd_panel_io_handle_t,
                           esp_lcd_panel_io_event_data_t *, void *user) {
     BaseType_t wake = pdFALSE;
@@ -61,42 +73,92 @@ static void rectangle(int x, int y, int w, int h, uint16_t color) {
             frame[row * width + col] = color;
 }
 
-static void digit(int x, int y, unsigned value, uint16_t color) {
-    // Own diagnostic seven-segment glyphs, no external font dependency.
-    constexpr uint8_t segments[10] = {0x3f,0x06,0x5b,0x4f,0x66,0x6d,0x7d,0x07,0x7f,0x6f};
-    const uint8_t s = segments[value % 10];
-    if (s & 1) rectangle(x + 3,y,18,3,color);
-    if (s & 2) rectangle(x + 21,y + 3,3,16,color);
-    if (s & 4) rectangle(x + 21,y + 22,3,16,color);
-    if (s & 8) rectangle(x + 3,y + 38,18,3,color);
-    if (s & 16) rectangle(x,y + 22,3,16,color);
-    if (s & 32) rectangle(x,y + 3,3,16,color);
-    if (s & 64) rectangle(x + 3,y + 19,18,3,color);
+static void glyph(int x,int y,uint8_t c,uint16_t color,int scale=2) {
+    for(int col=0;col<5;++col) for(int row=0;row<8;++row)
+        if(font[unsigned(c)*5+unsigned(col)]&(1U<<row))
+            rectangle(x+col*scale,y+row*scale,scale,scale,color);
 }
-
-static void present() {
-    std::memset(frame, 0, width * height * sizeof(*frame));
-    rectangle(0,0,width,2,0xffff); rectangle(0,height-2,width,2,0xffff);
-    rectangle(0,0,2,height,0xffff); rectangle(width-2,0,2,height,0xffff);
-    rectangle(4,4,76,24,0xf800); rectangle(82,4,76,24,0x07e0);
-    rectangle(160,4,76,24,0x001f); rectangle(238,4,76,24,0xffff);
-    digit(8,36,1,0xffff); digit(282,36,2,0xffff);
-    digit(8,122,3,0xffff); digit(282,122,4,0xffff);
-    for (unsigned i=0;i<2;++i) {
-        const int x=72+int(i)*100;
-        rectangle(x,52,64,16,buttons[i].stable_down ? 0xf800 : 0x07e0);
-        digit(x+20,78,buttons[i].presses,0xffff);
+static bool cells(const uint8_t *p,size_t n,int &row,uint16_t color) {
+    int col=0;
+    for(size_t i=0;i<n;++i) {
+        const uint8_t c=p[i];
+        if(c=='\n'){++row;col=0;continue;}
+        if(c<32||c>126||col>=26||row>=8)return false;
+        glyph(4+col*12,20+row*16,c,color);++col;
     }
-    const uint16_t core_color = abi_rc == 0 && abi_negatives && abi_guards ? 0x07e0 : 0xf800;
-    rectangle(112,138,96,18,core_color);
-    while (xSemaphoreTake(transferred,0) == pdTRUE) {}
+    ++row;return row<=8;
+}
+static void small(int y,const char *s,uint16_t color) {
+    for(int x=4;*s && x+6<=width;x+=6,++s)glyph(x,y,uint8_t(*s),color,1);
+}
+static void flush_frame() {
+    while(xSemaphoreTake(transferred,0)==pdTRUE){}
     ESP_ERROR_CHECK(esp_lcd_panel_draw_bitmap(panel,0,0,width,height,frame));
-    // One framebuffer: never rewrite pixels until the actual DMA transfer ends.
-    if (xSemaphoreTake(transferred,pdMS_TO_TICKS(1000)) != pdTRUE) {
+    if(xSemaphoreTake(transferred,pdMS_TO_TICKS(1000))!=pdTRUE)
         esp_system_abort("public LCD completion timeout");
+}
+static void banner() {
+    std::memset(frame,0,width*height*sizeof(*frame));
+    const char *t="PUBLIC TEST KEY - S3";
+    for(int x=4;*t;x+=12,++t)glyph(x,1,uint8_t(*t),0xffe0);
+}
+static void status_screen(const char *status) {
+    banner();int row=0;
+    (void)cells(reinterpret_cast<const uint8_t*>(status),std::strlen(status),row,0xffff);
+    (void)cells(reinterpret_cast<const uint8_t*>(public_hex),26,row,0x07e0);
+    (void)cells(reinterpret_cast<const uint8_t*>(public_hex+26),26,row,0x07e0);
+    (void)cells(reinterpret_cast<const uint8_t*>(public_hex+52),12,row,0x07e0);
+    small(158,"14: enable public test | 0+14: lock",0xffff);flush_frame();
+}
+static void poll_buttons() {
+    const uint32_t now=uint32_t(esp_timer_get_time()/1000);
+    for(auto &b:buttons)
+        (void)probe_button_update(b,gpio_get_level(gpio_num_t(b.gpio))==0,now);
+}
+static SessionAction gesture(SessionGesture &g,bool decision) {
+    return g.update(uint32_t(esp_timer_get_time()/1000),
+        buttons[0].stable_down,buttons[1].stable_down,
+        gpio_get_level(gpio_num_t(PIN_BUTTON_1))==0,
+        gpio_get_level(gpio_num_t(PIN_BUTTON_2))==0,decision);
+}
+static int32_t trusted_now(uint64_t *out) {
+    const int64_t us=esp_timer_get_time();if(us<0||!out)return -1;
+    *out=uint64_t(us)/1000000;
+    if(!clock_started){clock_started=true;deadline_seconds=*out+100;}
+    return 0;
+}
+static int32_t cancelled() {
+    return local_locked || !usb_serial_jtag_is_connected();
+}
+static int32_t present_review(uint32_t kind,uint32_t index,uint32_t total,
+    const uint8_t *label,size_t label_n,const uint8_t *body,size_t body_n,
+    const uint8_t *position,size_t position_n) {
+    if(kind>1||index>=total||total>128||!label||!body||!position)return -1;
+    banner();int row=0;
+    if(!cells(label,label_n,row,0xffff)||!cells(body,body_n,row,0xffff)||
+        !cells(position,position_n,row,0x07ff))return -1;
+    small(158,kind?"0: reject | 14 hold1.5s: approve | both: lock":
+        "0: back | 14: next | both hold1.5s: lock",0xffff);
+    flush_frame();
+    // All physical events must follow this successful complete DMA commit.
+    SessionGesture g;
+    for(;;) {
+        uint64_t now=0;
+        if(trusted_now(&now)!=0||now>=deadline_seconds)return 0;
+        if(cancelled())return 0;
+        poll_buttons();const auto action=gesture(g,kind==1);
+        if(action==SessionAction::Lock){local_locked=true;enabled=false;return 4;}
+        if(action!=SessionAction::None)return int32_t(action);
+        uint8_t hostile[64];
+        (void)usb_serial_jtag_read_bytes(hostile,sizeof(hostile),0);
+        vTaskDelay(1);
     }
 }
-
+static void discard_input() {
+    uint8_t discarded[256];
+    (void)usb_serial_jtag_read_bytes(discarded,sizeof(discarded),0);
+    (void)nsealr_s3_public_reset_input();
+}
 static void display_init() {
     gpio_set_direction(gpio_num_t(PIN_POWER_ON),GPIO_MODE_OUTPUT);
     gpio_set_level(gpio_num_t(PIN_POWER_ON),1);
@@ -144,69 +206,57 @@ static void display_init() {
     gpio_set_level(gpio_num_t(PIN_LCD_BL),1);
 }
 
-static void public_core_check() {
-    uint8_t guarded[66]; std::memset(guarded,0xa5,sizeof(guarded));
-    abi_negatives=nsealr_s3_abi_check(nullptr,64)==-1;
-    for(size_t cap:{size_t(0),size_t(63),size_t(65)}) {
-        const int32_t rc=nsealr_s3_abi_check(guarded+1,cap);
-        abi_negatives=abi_negatives && rc==-1;
-    }
-    for(uint8_t b:guarded) abi_negatives=abi_negatives && b==0xa5;
-    const int64_t start=esp_timer_get_time();
-    abi_rc=nsealr_s3_abi_check(guarded+1,64);
-    abi_elapsed_us=esp_timer_get_time()-start;
-    abi_stack_raw=uxTaskGetStackHighWaterMark(nullptr);
-    abi_guards=guarded[0]==0xa5 && guarded[65]==0xa5;
-    constexpr char hex[]="0123456789abcdef";
-    for(unsigned i=0;i<64;++i) {
-        abi_hex[i*2]=hex[guarded[i+1]>>4];abi_hex[i*2+1]=hex[guarded[i+1]&15];
-    }
-    abi_hex[128]=0;
-}
-
 extern "C" void app_main() {
-    usb_serial_jtag_driver_config_t usb = {.tx_buffer_size=1024,.rx_buffer_size=256};
+    usb_serial_jtag_driver_config_t usb={.tx_buffer_size=1024,.rx_buffer_size=256};
     ESP_ERROR_CHECK(usb_serial_jtag_driver_install(&usb));
     const int pins[2]={PIN_BUTTON_1,PIN_BUTTON_2};
-    for(unsigned i=0;i<2;++i) {
-        gpio_config_t c = {}; c.pin_bit_mask=1ULL<<pins[i];c.mode=GPIO_MODE_INPUT;
-        c.pull_up_en=GPIO_PULLUP_ENABLE;
+    for(unsigned i=0;i<2;++i){
+        gpio_config_t c={};c.pin_bit_mask=1ULL<<pins[i];c.mode=GPIO_MODE_INPUT;c.pull_up_en=GPIO_PULLUP_ENABLE;
         ESP_ERROR_CHECK(gpio_config(&c));
         buttons[i]=probe_button_start(uint8_t(pins[i]),gpio_get_level(gpio_num_t(pins[i]))==0,uint32_t(esp_timer_get_time()/1000));
     }
     display_init();
-    public_core_check();
-    present();
-    int64_t last=0;
-    for(;;) {
-        const int64_t now=esp_timer_get_time();
-        bool redraw=false;
-        for(auto &button:buttons) {
-            const auto edge=probe_button_update(button,gpio_get_level(gpio_num_t(button.gpio))==0,uint32_t(now/1000));
-            if(edge!=ProbeEdge::None) {
-                redraw=true;
-                char line[128];
-                std::snprintf(line,sizeof(line),"s3-native-v1 gpio=%u edge=%u count=%lu\n",
-                    unsigned(button.gpio),unsigned(edge),(unsigned long)button.presses);
-                usb_line(line);
+    uint8_t key[32];
+    if(nsealr_s3_public_key(key,sizeof(key))!=0)esp_system_abort("public fixture key unavailable");
+    constexpr char hex[]="0123456789abcdef";
+    for(unsigned i=0;i<32;++i){public_hex[2*i]=hex[key[i]>>4];public_hex[2*i+1]=hex[key[i]&15];}
+    public_hex[64]=0;
+    status_screen("Known public scalar 3\nLocal enable required");
+    usb_line("s3-public-session-v1 public-scalar=3 no-secret-endpoints\n");
+    SessionGesture idle;
+    for(;;){
+        poll_buttons();const auto a=gesture(idle,false);
+        if(a==SessionAction::Lock){
+            enabled=false;local_locked=true;discard_input();
+            status_screen("LOCKED - public test");idle=SessionGesture{};
+        } else if(a==SessionAction::Next){
+            discard_input();enabled=true;local_locked=false;status_screen("READY - public requests");idle=SessionGesture{};
+        }
+        if(!usb_serial_jtag_is_connected()&&enabled){
+            enabled=false;local_locked=true;discard_input();status_screen("DISCONNECTED - locked");idle=SessionGesture{};
+        }
+        uint8_t input[64];const int got=usb_serial_jtag_read_bytes(input,sizeof(input),0);
+        if(enabled && got>0)for(int i=0;i<got;++i){
+            const int32_t state=nsealr_s3_public_feed(input[i]);
+            if(state==1){
+                clock_started=false;local_locked=false;
+                const auto r=nsealr_s3_public_exchange(response,sizeof(response),present_review,trusted_now,cancelled);
+                uint64_t now=0;
+                // No display/IO callback between the final local sample and bounded TX.
+                const bool release=trusted_now(&now)==0&&now<deadline_seconds&&!cancelled();
+                const int sent=release&&r.length>0?
+                    usb_serial_jtag_write_bytes(response,r.length,pdMS_TO_TICKS(200)):0;
+                std::memset(response,0,sizeof(response));
+                enabled=false;discard_input();idle=SessionGesture{};
+                if(r.status==0&&sent==int(r.length))status_screen("RESULT SENT - public test");
+                else if(r.status==-5)status_screen("REJECTED - no signature");
+                else if(r.status==-7)status_screen("EXPIRED - no signature");
+                else if(r.status==-11)status_screen("LOCKED - no signature");
+                else status_screen("FAILED - review again");
+                break; // Remaining bytes from this read cannot start another request.
             }
+            if(state<0){discard_input();break;}
         }
-        uint8_t input[64];
-        const int got=usb_serial_jtag_read_bytes(input,sizeof(input),0);
-        if(got>0) ignored+=unsigned(got); // No received bytes echoed/stored/interpreted.
-        if(redraw) present();
-        if(now-last>=1000000) {
-            last=now;
-            char status[256];
-            std::snprintf(status,sizeof(status),"s3-native-abi-v1 rc=%ld negative=%u guards=%u elapsed_us=%lld stack_raw=%lu public_hex=%s\n",
-                (long)abi_rc,unsigned(abi_negatives),unsigned(abi_guards),(long long)abi_elapsed_us,
-                (unsigned long)abi_stack_raw,abi_hex);
-            usb_line(status);
-            std::snprintf(status,sizeof(status),"s3-native-v1 gpio0=%u gpio14=%u count0=%lu count14=%lu ignored_bytes=%lu\n",
-                unsigned(buttons[0].stable_down),unsigned(buttons[1].stable_down),
-                (unsigned long)buttons[0].presses,(unsigned long)buttons[1].presses,(unsigned long)ignored);
-            usb_line(status);
-        }
-        vTaskDelay(1); // At least one real RTOS tick, including the100Hz SDK default.
+        vTaskDelay(1);
     }
 }

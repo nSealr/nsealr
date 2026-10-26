@@ -96,8 +96,9 @@ An initial held button cannot acknowledge the new page.
 - Data page: a fresh short Right press/release advances; Left returns a page.
   Both buttons held for 1.5 real seconds reject the request and disable the
   public-test session. A gesture is never inferred from USB data.
-- Final decision: Right held for 1.5 real seconds approves only this distinct
+- Final decision: Right alone held for 1.5 real seconds approves only this distinct
   final frame; a fresh Left press/release rejects. Both held locks as above.
+  Both takes precedence over Right approval, including a pending raw Left press.
   A held Next from the prior page cannot become Approve.
 - Result/rejected/expired/locked screens require a fresh release/gesture before
   another request. A no-event callback returns no authority.
@@ -111,7 +112,8 @@ acknowledged page or signature output.
 
 Root selected the existing core unchanged for this bounded public flow:
 now() is floor(esp_timer_get_time()/1_000_000), explicitly real monotonic seconds.
-The unchanged 100-tick lifetime therefore means 100 real seconds from intake.
+The unchanged 100-tick lifetime therefore expires at intake_seconds + 100. Flooring can make expiry up to
+one second earlier than 100.000 elapsed seconds from the intake instant.
 Use the same clock/unit before intake, on both sides of every presentation,
 before the signing attempt, after signing and before adapter result release.
 Reject missing/negative/rollback/overflow/expired readings. Never reset, subtract
