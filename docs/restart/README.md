@@ -4,7 +4,17 @@ This is the engineering direction adopted for the restart. It does not mark futu
 
 The October 18 execution adds independently reviewed product requirements, source disposition, secret ownership, reproducible software tooling and bounded KiCad qualification. Read [the current task graph](../../plan/work-items.json) for accepted candidates, integration records and open work. Earlier readiness views are dated snapshots, not current status.
 
-The objective is a useful Nostr signer ecosystem with accessible connected hardware, two independent offline implementations and a general-purpose programmable security board. Success means real client interoperability, understandable approval, reliable recovery and reproducible third-party development.
+The current maintainer direction (2026-10-25) is to complete the first milestone:
+LILYGO T-Display-S3 non-touch with display/two buttons and USB/Bridge, without SE
+or persistent identity vault; independent session-only offline Pi and P4; and
+the Bridge/CLI/service/browser/client/TypeScript SDK needed to use and distribute
+them. Local recovery, actual interoperability, installation/update and qualified
+artifacts are part of that result. No device release is qualified.
+
+Custom PCB, MCU/SE comparison and its generic embedded Board SDK remain retained
+for a later phase, outside this milestone. `packages/sdk` is the product's
+TypeScript SDK and remains in phase one. The [reconciliation contract](implementation/phase1-reconciliation.md)
+and sole graph define the changed scope; original accepted evidence remains history.
 
 1. [Architecture and security boundaries](architecture.md)
 2. [Repository and naming decisions](repositories.md)
@@ -48,8 +58,11 @@ Both full PR/main CI and fresh main-only source checks passed. Its original
 pause, correction and source-specific pending reports remain historical.
 
 The [opt-in synthetic inspection component](implementation/QP01/physical-workflow/synthetic-inspection/README.md)
-adds complete cell drawing and fresh local action binding to that same host
-fixture. Its [distinct source review](implementation/reviews/QP01-synthetic-inspection-component/report.md)
+is accepted through protected PR52 on actual main
+`19ab15d15aa8751174aa87119ae18853007c8222`, with PR/main CI40205204706/40206485402
+and fresh main-only source checks PASS. Its [adoption receipt](implementation/reviews/QP01-synthetic-inspection-adoption/actual-main-acceptance.json)
+is copied unchanged from the original adoption packet. It adds complete cell
+drawing and fresh local action binding to that same host fixture. Its [distinct source review](implementation/reviews/QP01-synthetic-inspection-component/report.md)
 and [source-frozen22 runtime evidence](implementation/QP01/physical-workflow/synthetic-inspection/final22/README.md)
 have separate roles: these are software/public-fixture results, with synthetic
 input and no physical consent claim. Real local-review expiry, human reading
@@ -63,9 +76,21 @@ deferred.
 
 Q01's shared offline custody and transport requirements are [supported on current protected main8f](implementation/reviews/Q01-current-documentary-adoption.json). The three documentary criteria have substantive reviews, unchanged normative requirements and source-linked future procedures. Original source observations and closure reports keep their historical identities; all11 device/client/release procedures remain future work. This supplies no runtime or physical qualification.
 
-The first software milestone is a real request → device review → one-use authorization → valid response on an accessible board, with the expected key identity verified end to end. Offline Pi/P4 feasibility and board electronics research run alongside it. No date is promised before measured throughput and physical lead times exist.
+The first vertical slice is a real request → device review → physical one-use
+authorization → shared-Rust signature → independently verified response using a
+public test identity. That slice precedes complete lifecycle/client/release
+qualification. The existing P4 peripheral build makes camera/display observation
+the first short physical step while the Pi image recipe and S3 display/button/USB
+probe advance. Neither a peripheral demo nor a build completes a device task.
+Custom electronics research does not run on this milestone's critical path.
 
-The first public release is whichever retained profile satisfies its own safety and usability gates. General Board/SDK delivery has its own non-Nostr acceptance and does not wait for a complete wallet, SSH or FIDO application.
+S3 D03, Pi Q04 and P4 Q05 have independent release paths and must each satisfy
+their applicable safety, usability and distribution gates. S3 D02 admits session
+custody and local recovery; its earlier persistent vault/PIN contract is retained
+as a deferred extension, never an implicit D03 prerequisite. C01/C02 retain real
+connected serving and message/catalog obligations; QH01 owns required offline
+host delivery without forcing offline releases through connected DM qualification.
+Future generic Board/SDK delivery retains separate non-Nostr acceptance.
 
 Old documentation, firmware profiles and fixtures remain source material during migration. Names and behavior inherited from them are not a compatibility commitment. Remove replaced active code when the replacement is verified; history remains in Git.
 
@@ -75,14 +100,14 @@ flowchart TD
     Bridge --> Connected[Connected requests]
     Bridge --> Optical[QR requests]
     Connected --> ESP[Commercial ESP32 without SE]
-    Connected --> Custom[nSealr custom Board]
+    Connected -. later phase .-> Custom[nSealr custom Board]
     Optical --> Pi[Offline Pi]
     Optical --> P4[Offline ESP32-P4]
     Engine[Shared Rust Nostr engine] -. used by .-> ESP
     Engine -. used by .-> Custom
     Engine -. used by .-> Pi
     Engine -. used by .-> P4
-    SDK[board-sdk: generic board services] --> Custom
+    SDK[board-sdk: later generic embedded services] --> Custom
     SDK --> Other[Independent non-Nostr firmware]
     HW[hardware: electronics and mechanics] --> SDK
 ```

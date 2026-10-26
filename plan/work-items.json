@@ -1,9 +1,9 @@
 {
   "schema_version": 2,
   "project": "nSealr restart",
-  "as_of": "2026-10-20",
+  "as_of": "2026-10-25",
   "adoption_status": "accepted_restart_direction_implementation_open",
-  "purpose": "Shared Nostr engine, independent ESP32, Pi, P4 and custom-board signer releases, plus a generic Board/SDK.",
+  "purpose": "Phase one: connected session-only ESP32-S3 without SE or persistent identity vault, independent session-only offline Pi and P4, and their usable Bridge/CLI/service/browser/client/TypeScript SDK and qualified releases. Preserve custom Board and embedded Board SDK for a later phase.",
   "baseline_manifest": "baseline.md",
   "operating_model": "execution.md",
   "status_semantics": {
@@ -20,9 +20,10 @@
     "Independent review closed for final candidate.",
     "Evidence includes commands/procedures, environment, result and hashes.",
     "Affected integration gates pass after integration.",
-    "Documentation and task state agree with source and measurements."
+    "Documentation and task state agree with source and measurements.",
+    "Completed delivery worktrees, duplicate/superseded refs and unused caches are retired after necessary unique material has verified minimal private preservation; legacy repository disposition and current navigation match actual consumers and releases."
   ],
-  "authorization": "Maintainer delegated autonomous execution of the complete plan on 2026-10-18, including research, implementation, local engineering, GitHub issues, branches, pull requests, merges, commits and pushes. Reuse this authorization. Specific purchases, fabrication orders, production-secret ceremonies and irreversible provisioning still require a concrete reviewed scope; missing physical evidence cannot be waived.",
+  "authorization": "Maintainer direction of 2026-10-25 supersedes incompatible earlier priorities and authorizes autonomous implementation, isolated tools, normal GitHub delivery, qualified publication and justified cleanup for phase one. ESP32 erase/reflash is authorized; exact-device/image/offset/hash binding is required. Pi SD writing needs artifact-specific authorization. Purchases, fabrication, production keys and irreversible eFuse/provisioning are not implicitly authorized. Security, independent review and physical evidence gates remain.",
   "initial_parallel_tranche": [
     "R00",
     "P01",
@@ -40,6 +41,33 @@
   },
   "deferred_tracks": [
     {
+      "track": "Custom Board, embedded Board SDK and persistent automation",
+      "task_ids": [
+        "S04",
+        "H01",
+        "H02",
+        "H02S",
+        "H03",
+        "H04",
+        "H05",
+        "H06",
+        "H07",
+        "H08",
+        "H09",
+        "V02",
+        "V03",
+        "S05",
+        "P03",
+        "R01",
+        "R02",
+        "F01",
+        "B01",
+        "B02",
+        "B03"
+      ],
+      "entry": "Retained later phase, outside the phase-one critical path and goal. No new MCU/SE comparison, design/fabrication, EVT/DVT or generic embedded SDK implementation now. A current dependency exception needs a demonstrated finite reason and minimal scope; S04 has no retry/bypass exception."
+    },
+    {
       "track": "Additional board models inside supported families",
       "entry": "An exact new model earns its own physical acceptance and named maintenance owner."
     },
@@ -50,6 +78,12 @@
     {
       "track": "Isolated multi-application runtime",
       "entry": "Separate measured need, isolation architecture and independent review; ordinary SDK libraries offer no such boundary."
+    },
+    {
+      "track": "S3 encrypted persistent vault/PIN extension",
+      "entry": "D02 now gates session custody only. Its deferred_persistent_extension preserves the original persistent requirements; any future persistence needs its own reviewed qualification and cannot be advertised by passing phase one.",
+      "extension_of_task": "D02",
+      "scope": "deferred_persistent_extension"
     }
   ],
   "tasks": [
@@ -1373,11 +1407,11 @@
         },
         {
           "path": "Cargo.lock",
-          "sha256": "27d2549f6854088d157a1054dfe355124a41e283b2f33f1d76b4f6ef12f87038"
+          "sha256": "955146a124f4b18df969ce6e2172453403b4b801ad87139a225f5f342ec3a0dc"
         },
         {
           "path": "apps/desktop-simulator/Cargo.lock",
-          "sha256": "2ab3af57590e8463210762e1c6218aa3694c39cf4abb8961bcf48ed7e47ce266"
+          "sha256": "22aa4303d335d4f93d7e6c49df6d88c0f873fa206a8b8ee13095b9f74fca3efd"
         },
         {
           "path": "vendor/ctutils/.cargo-checksum.json",
@@ -2187,6 +2221,14 @@
         {
           "path": "docs/restart/implementation/reviews/R00-crypto-bigint-remediation/artifact-manifest.json",
           "sha256": "4174c018615d0daa12408795e8fc2c7a973d07dca1222251f909e7e0aaa0ce3b"
+        },
+        {
+          "path": "docs/restart/implementation/R00/crypto-bigint-yank-079/plan-amendment.json",
+          "sha256": "0fa101558fabc7deee4327c370740a4d4fd723be0dc4fd9e88ba38fc3a493eb3"
+        },
+        {
+          "path": "docs/restart/implementation/R00/crypto-bigint-yank-079/artifact-manifest.json",
+          "sha256": "86e74eac22e14ebd1bd75278175a5835359edcfd549e1e1424206ad5c7ab4433"
         }
       ],
       "requires_physical_evidence": false,
@@ -2286,6 +2328,47 @@
             "findings": []
           },
           "new_root_complete_result": "docs/restart/implementation/reviews/QH01-python-rgb-lifecycle-integration/local-full-qualified/result.json"
+        },
+        "dependency_remediation_yank_079": {
+          "state": "SOURCE_AND_EVIDENCE_DISTINCT_REVIEW_PASS_METADATA_PENDING_ROOT_PROTECTED_PR53_PENDING",
+          "candidate": "563d10b3c933a0bdc4605d27710c0ff2610960e1",
+          "evidence_candidate": "9d312f3e8a9c088e839ea8182a40e71bb7bce0f9",
+          "versions": {
+            "crypto-bigint": "0.7.9",
+            "ctutils": "0.4.5"
+          },
+          "reason": "PR53 unchanged cargo-deny rejected yanked crypto-bigint0.7.6. Official minimum compatible0.7.9 replaces only that registry package; existing policy/tests unchanged.",
+          "amendment": "docs/restart/implementation/R00/crypto-bigint-yank-079/plan-amendment.json",
+          "artifact_manifest": "docs/restart/implementation/R00/crypto-bigint-yank-079/artifact-manifest.json",
+          "focused_commands_passed": 14,
+          "distinct_source_review": {
+            "reviewer": "/root",
+            "verdict": "PASS_SOURCE_AND_REUSED_FOCUSED_CHECKS",
+            "original_receipt_sha256": "e40357dd36d03569a4892e42507e26a5a6509bdd1ad68197fe3ca80932174220"
+          },
+          "distinct_evidence_review": {
+            "reviewer": "/root",
+            "verdict": "PASS_AFFECTED_EVIDENCE_REVIEW",
+            "original_receipt_sha256": "2218d06a5caabe7324640b2ed088607dc086bc38fcb73ae0d0c7b52e75763ca6"
+          },
+          "historical_lock_bindings": [
+            {
+              "commit": "19ab15d15aa8751174aa87119ae18853007c8222",
+              "path": "Cargo.lock",
+              "sha256": "27d2549f6854088d157a1054dfe355124a41e283b2f33f1d76b4f6ef12f87038"
+            },
+            {
+              "commit": "19ab15d15aa8751174aa87119ae18853007c8222",
+              "path": "apps/desktop-simulator/Cargo.lock",
+              "sha256": "2ab3af57590e8463210762e1c6218aa3694c39cf4abb8961bcf48ed7e47ce266"
+            }
+          ],
+          "protected_integration": {
+            "state": "PENDING_PROTECTED_PR53_AND_ACTUAL_MAIN",
+            "pr": "https://github.com/nSealr/nsealr/pull/53",
+            "metadata_review": "PENDING_DISTINCT_ROOT_REVIEW",
+            "runtime_replays_during_metadata_fix": 0
+          }
         }
       }
     },
@@ -2376,6 +2459,26 @@
         {
           "path": "docs/restart/implementation/coordination/integration-20261018.json",
           "sha256": "923fa825f834cbb5c3e0d51f2083e64da91366dc6f7b2bb30c0c37d453fb1643"
+        },
+        {
+          "path": "docs/product/contract.md",
+          "sha256": "8deb7be5cc59ab8eea7fb8c506027b947461813eca8c9039689c84ae06253502"
+        },
+        {
+          "path": "docs/product/client-qualification.md",
+          "sha256": "9f78631e8a4addcbe48e08281e07fd23a66bc56ad07d5917bc879876125a48de"
+        },
+        {
+          "path": "docs/product/requirements.md",
+          "sha256": "07c7d19880c69b68138b6b14213971285b4cea5e1a645ea2eca45814c2f6c10c"
+        },
+        {
+          "path": "docs/product/threat-models.md",
+          "sha256": "4c6b24ea3464652cd4005a34fca4bea7289b2839d4b6c2b1dd5b1b7d9e452dc4"
+        },
+        {
+          "path": "docs/restart/implementation/P01/phase-one-current-contract-review.json",
+          "sha256": "248752b2a5b96130f9c14c9f09b89ac7ecc5e3caed7a99357074d85650e3f07d"
         }
       ],
       "requires_physical_evidence": false,
@@ -2394,7 +2497,34 @@
       "integration_commits": {
         "nSealr/nsealr": "3cbd818a0bcd4016eb8983dad7605cb57280d913"
       },
-      "integration_record": "docs/restart/implementation/coordination/integration-20261018.json"
+      "integration_record": "docs/restart/implementation/coordination/integration-20261018.json",
+      "current_contract_amendment": {
+        "scope": "phase_one_2026_10_25",
+        "state": "SOURCE_REVIEW_PASS_PROTECTED_INTEGRATION_PENDING",
+        "input_commits": {
+          "nSealr/nsealr": "19ab15d15aa8751174aa87119ae18853007c8222"
+        },
+        "reviewed_candidate_commits": {
+          "nSealr/nsealr": "220aa0d4e4e0f5f58b02ae66164661aaa48da988"
+        },
+        "review_record": "docs/restart/implementation/P01/phase-one-current-contract-review.json",
+        "review_record_sha256": "248752b2a5b96130f9c14c9f09b89ac7ecc5e3caed7a99357074d85650e3f07d",
+        "reviewer": "/root",
+        "source_review_verdict": "pass",
+        "meaning": "New current contract bytes have their own distinct source review. Original P01 closure fields/result_manifest still describe only the historical integrated foundation; amendment integration/metadata review remain pending PR53.",
+        "current_contract_paths": [
+          "docs/product/contract.md",
+          "docs/product/client-qualification.md",
+          "docs/product/requirements.md",
+          "docs/product/threat-models.md"
+        ],
+        "historical_task_record": {
+          "commit": "19ab15d15aa8751174aa87119ae18853007c8222",
+          "path": "plan/work-items.json",
+          "task_id": "P01",
+          "canonical_json_sha256": "1aa734c846738d1567e10b0d25d847a4a4de880f8b250263351033ab13d52f88"
+        }
+      }
     },
     {
       "id": "P02",
@@ -5932,13 +6062,15 @@
       "github_issue": "https://github.com/nSealr/nsealr/issues/25",
       "input_commits": {
         "nSealr/nsealr": "f2ef70f522af4977e15f81554a8c6eadcdbe8097"
-      }
+      },
+      "milestone_disposition": "deferred_after_phase_one",
+      "deferred_reason": "Custom-board/embedded Board SDK or persistent-automation work is retained for a later phase; no prerequisite for S3/Pi/P4. Existing evidence and unclosed criteria remain."
     },
     {
       "id": "H01",
       "title": "Build the versioned component and manual review register",
       "stage": "R1",
-      "status": "running",
+      "status": "planned",
       "owner_role": "hardware",
       "depends_on": [
         "P01"
@@ -5962,7 +6094,7 @@
         "pin and errata ledger"
       ],
       "required_resources": [],
-      "assignee": "/root/h01_sol",
+      "assignee": null,
       "candidate_commits": {
         "nSealr/hardware": "2adec7ddb2024694a3baf5016bdab9ca874f6437"
       },
@@ -6006,14 +6138,26 @@
             "url": "https://github.com/nSealr/hardware/blob/2adec7ddb2024694a3baf5016bdab9ca874f6437/docs/restart/H01/u585-spi-review.md"
           }
         ],
-        "author_assignment": "Active H01 Sol successor as observed by coordinator; no particular tool/process handle claimed.",
+        "author_assignment": "Retired prior assignment; no current author.",
         "branch": "restart/h01-manuals",
         "current_source_review_pending": true,
         "delivery_commit": "2adec7ddb2024694a3baf5016bdab9ca874f6437",
-        "execution": "Assigned incomplete work; this status does not claim an active process or accepted integration.",
+        "execution": "Prior assigned incomplete work is deferred after phase one. No current author or live process is asserted; original source/review identities remain historical.",
         "observed_utc": "2026-10-20T10:09:37.336221+00:00",
         "repository": "nSealr/hardware",
         "stage": "Incomplete versioned host/manual/configuration research; latest SPI source review is not final H01 acceptance, part selection, wiring or physical qualification."
+      },
+      "milestone_disposition": "deferred_after_phase_one",
+      "deferred_reason": "Custom-board/embedded Board SDK or persistent-automation work is retained for a later phase; no prerequisite for S3/Pi/P4. Existing evidence and unclosed criteria remain.",
+      "historical_assignment": {
+        "status": "running",
+        "assignee": "/root/h01_sol",
+        "assignment_record": "https://github.com/nSealr/nsealr/issues/20",
+        "disposition": "Prior assignment ended; preserved source/checkpoint is not an active author or accepted task closure."
+      },
+      "deferred_external_delivery": {
+        "pull_request": "https://github.com/nSealr/hardware/pull/4",
+        "disposition": "Closed unmerged by current coordinator as explicitly deferred custom work; source57a28 remains preserved. No runner/CI retry or hardware task closure."
       }
     },
     {
@@ -6054,7 +6198,9 @@
       "reviewer": null,
       "review_verdict": null,
       "result_artifacts": [],
-      "requires_physical_evidence": true
+      "requires_physical_evidence": true,
+      "milestone_disposition": "deferred_after_phase_one",
+      "deferred_reason": "Custom-board/embedded Board SDK or persistent-automation work is retained for a later phase; no prerequisite for S3/Pi/P4. Existing evidence and unclosed criteria remain."
     },
     {
       "id": "H02S",
@@ -6096,7 +6242,9 @@
       "reviewer": null,
       "review_verdict": null,
       "result_artifacts": [],
-      "requires_physical_evidence": true
+      "requires_physical_evidence": true,
+      "milestone_disposition": "deferred_after_phase_one",
+      "deferred_reason": "Custom-board/embedded Board SDK or persistent-automation work is retained for a later phase; no prerequisite for S3/Pi/P4. Existing evidence and unclosed criteria remain."
     },
     {
       "id": "H03",
@@ -6136,7 +6284,9 @@
       "reviewer": null,
       "review_verdict": null,
       "result_artifacts": [],
-      "requires_physical_evidence": true
+      "requires_physical_evidence": true,
+      "milestone_disposition": "deferred_after_phase_one",
+      "deferred_reason": "Custom-board/embedded Board SDK or persistent-automation work is retained for a later phase; no prerequisite for S3/Pi/P4. Existing evidence and unclosed criteria remain."
     },
     {
       "id": "E01",
@@ -9711,15 +9861,14 @@
         "D01"
       ],
       "scope": [
-        "one development board",
-        "Bridge",
-        "device protocol"
+        "exact non-touch S3 session-only app and display/two-button adapter",
+        "Bridge/USB device protocol and shared Rust engine vertical slice"
       ],
       "acceptance": [
-        "A real client request reaches trusted display; physical approval returns a valid BIP-340 signature for the exact event and identity.",
+        "A real client request crosses Bridge/USB to complete trusted review on the exact non-touch S3; physical Approve/Reject is bound to that request and approval returns one valid shared-core BIP-340 signature for the exact event and identity. A peripheral smoke alone does not satisfy this criterion.",
         "Host never receives the identity secret; transport and device pairing credentials have explicit lifecycles.",
         "Reject/cancel/replay/substitution/malformed/disconnect cases pass on hardware.",
-        "Use public test identities and record actual flashable build, memory map and board version.",
+        "Use disposable public test identities, session-only custody and the local reload contract; record actual flashable build, memory map, toolchain/ABI and board version. This vertical slice does not replace D02 lifecycle admission or D03 release gates.",
         "On this exact target measure peak stack/RAM, worst-case parser/crypto/transport time and entropy failure behavior; qualify backend features and final binary ABI. Compile/link-only probes do not close this device gate.",
         "Trace entropy from the approved source through the linked/runtime provider to actual device invocation; reject unintended deterministic output or an unqualified fallback and exercise failure/stuck-source handling. An explicitly qualified OS CSPRNG/DRBG is not prohibited. Statistical output checks alone cannot establish entropy quality. Record the exact binary and instrumentation limits."
       ],
@@ -9788,7 +9937,9 @@
       "review_verdict": null,
       "result_artifacts": [],
       "profile": "custom_board",
-      "requires_physical_evidence": true
+      "requires_physical_evidence": true,
+      "milestone_disposition": "deferred_after_phase_one",
+      "deferred_reason": "Custom-board/embedded Board SDK or persistent-automation work is retained for a later phase; no prerequisite for S3/Pi/P4. Existing evidence and unclosed criteria remain."
     },
     {
       "id": "C01",
@@ -9802,15 +9953,16 @@
         "T01"
       ],
       "scope": [
-        "Bridge/extension",
-        "remote serving",
-        "pairing/permissions"
+        "apps/bridge CLI, service and browser extension",
+        "packages/client, browser-provider, nip46 and transport/protocol integration",
+        "packages/sdk TypeScript browser/Node entry points, examples and connected installation/recovery"
       ],
       "acceptance": [
         "Implement actual serving direction and tested local browser path on named client/OS versions.",
         "Define provenance trust explicitly: browser origin is authenticated only inside the browser/extension boundary, and a NIP-46 peer key is not an attested app name. A host-terminated encrypted RPC does not prove forwarded plaintext provenance to the device. Bind and review actual device operations; require device-verifiable evidence for stronger end-to-end claims.",
         "Handle availability, reconnect, account selection, revocation and error states with understandable UX.",
-        "Execute the pinned candidate matrix in client-qualification.md, including explicit unsupported NIP-04, delayed response/cancel/reconnect and distinct peer/user keys. Publish only measured client/workflow support."
+        "Execute the pinned candidate matrix in client-qualification.md, including explicit unsupported NIP-04, delayed response/cancel/reconnect and distinct peer/user keys. Publish only measured client/workflow support.",
+        "Deliver and exercise the necessary consolidated CLI/service/Bridge/browser/client/TypeScript SDK together with the S3, including clean installation, pairing, revocation, reconnection, cancellation, bounded errors and compatible versions. Inventory existing source/consumers before modifying it; a script name, SDK facade or test client is not external-client qualification."
       ],
       "required_evidence": [
         "compatibility traces",
@@ -9840,9 +9992,9 @@
         "P02"
       ],
       "scope": [
-        "secp256k1 ECDH",
-        "NIP-44",
-        "DM client adapters"
+        "shared Rust connected secp256k1 ECDH/NIP-44 device operations",
+        "actual client/Bridge DM adapters with reviewed NIP-17/59 binding",
+        "local kind-10050 relay setup/replacement and NIP-42 where required by selected DM relays"
       ],
       "acceptance": [
         "Distinguish relay RPC transport encryption from user-message key operations.",
@@ -9851,7 +10003,8 @@
         "Document supported payload bounds as product limits rather than protocol maxima.",
         "Bare pubkey/payload decrypt methods do not carry signed outer-event context. Distinguish primitive permissions from verified-message operations; never claim an unseen outer signature was device-verified.",
         "For NIP-17/59 bind reviewed recipient/plaintext to ciphertext and the subsequent seal signature; reject opaque or unmatched seal signing rather than blind-signing to satisfy a client. Trace actual client call ordering and cancellation.",
-        "Follow current NIP-44 extended-length framing with checked padding arithmetic and pre-allocation product caps; add vectors at 65535/65536 and oversize rejection even if the cap is smaller. Never export conversation keys to remove prompts."
+        "Follow current NIP-44 extended-length framing with checked padding arithmetic and pre-allocation product caps; add vectors at 65535/65536 and oversize rejection even if the cap is smaller. Never export conversation keys to remove prompts.",
+        "Qualify a fresh identity local kind-10050 setup/replacement/withdrawal, checked recipient relay discovery, signature versus publication results and actual receive/send flows. When a named DM relay requires NIP-42, qualify separately reviewed connection-bound challenge/freshness, reconnect/cancel/timeout and reject wrong/stale relay/challenge; no silent relay fallback or implied NIP-98 support."
       ],
       "required_evidence": [
         "official vector results",
@@ -9907,7 +10060,9 @@
       "reviewer": null,
       "review_verdict": null,
       "result_artifacts": [],
-      "requires_physical_evidence": false
+      "requires_physical_evidence": false,
+      "milestone_disposition": "deferred_after_phase_one",
+      "deferred_reason": "Custom-board/embedded Board SDK or persistent-automation work is retained for a later phase; no prerequisite for S3/Pi/P4. Existing evidence and unclosed criteria remain."
     },
     {
       "id": "H05",
@@ -9942,7 +10097,9 @@
       "reviewer": null,
       "review_verdict": null,
       "result_artifacts": [],
-      "requires_physical_evidence": false
+      "requires_physical_evidence": false,
+      "milestone_disposition": "deferred_after_phase_one",
+      "deferred_reason": "Custom-board/embedded Board SDK or persistent-automation work is retained for a later phase; no prerequisite for S3/Pi/P4. Existing evidence and unclosed criteria remain."
     },
     {
       "id": "H06",
@@ -9976,7 +10133,9 @@
       "reviewer": null,
       "review_verdict": null,
       "result_artifacts": [],
-      "requires_physical_evidence": false
+      "requires_physical_evidence": false,
+      "milestone_disposition": "deferred_after_phase_one",
+      "deferred_reason": "Custom-board/embedded Board SDK or persistent-automation work is retained for a later phase; no prerequisite for S3/Pi/P4. Existing evidence and unclosed criteria remain."
     },
     {
       "id": "H07",
@@ -10009,7 +10168,9 @@
       "reviewer": null,
       "review_verdict": null,
       "result_artifacts": [],
-      "requires_physical_evidence": false
+      "requires_physical_evidence": false,
+      "milestone_disposition": "deferred_after_phase_one",
+      "deferred_reason": "Custom-board/embedded Board SDK or persistent-automation work is retained for a later phase; no prerequisite for S3/Pi/P4. Existing evidence and unclosed criteria remain."
     },
     {
       "id": "H08",
@@ -10047,7 +10208,9 @@
       "reviewer": null,
       "review_verdict": null,
       "result_artifacts": [],
-      "requires_physical_evidence": true
+      "requires_physical_evidence": true,
+      "milestone_disposition": "deferred_after_phase_one",
+      "deferred_reason": "Custom-board/embedded Board SDK or persistent-automation work is retained for a later phase; no prerequisite for S3/Pi/P4. Existing evidence and unclosed criteria remain."
     },
     {
       "id": "H09",
@@ -10084,7 +10247,9 @@
       "reviewer": null,
       "review_verdict": null,
       "result_artifacts": [],
-      "requires_physical_evidence": true
+      "requires_physical_evidence": true,
+      "milestone_disposition": "deferred_after_phase_one",
+      "deferred_reason": "Custom-board/embedded Board SDK or persistent-automation work is retained for a later phase; no prerequisite for S3/Pi/P4. Existing evidence and unclosed criteria remain."
     },
     {
       "id": "S05",
@@ -10126,7 +10291,9 @@
       "review_verdict": null,
       "result_artifacts": [],
       "profile": "custom_board",
-      "requires_physical_evidence": false
+      "requires_physical_evidence": false,
+      "milestone_disposition": "deferred_after_phase_one",
+      "deferred_reason": "Custom-board/embedded Board SDK or persistent-automation work is retained for a later phase; no prerequisite for S3/Pi/P4. Existing evidence and unclosed criteria remain."
     },
     {
       "id": "P03",
@@ -10166,7 +10333,9 @@
       "review_verdict": null,
       "result_artifacts": [],
       "profile": "custom_board",
-      "requires_physical_evidence": false
+      "requires_physical_evidence": false,
+      "milestone_disposition": "deferred_after_phase_one",
+      "deferred_reason": "Custom-board/embedded Board SDK or persistent-automation work is retained for a later phase; no prerequisite for S3/Pi/P4. Existing evidence and unclosed criteria remain."
     },
     {
       "id": "R01",
@@ -10211,7 +10380,9 @@
       "review_verdict": null,
       "result_artifacts": [],
       "profile": "custom_board",
-      "requires_physical_evidence": true
+      "requires_physical_evidence": true,
+      "milestone_disposition": "deferred_after_phase_one",
+      "deferred_reason": "Custom-board/embedded Board SDK or persistent-automation work is retained for a later phase; no prerequisite for S3/Pi/P4. Existing evidence and unclosed criteria remain."
     },
     {
       "id": "R02",
@@ -10244,7 +10415,9 @@
       "review_verdict": null,
       "result_artifacts": [],
       "profile": "custom_board",
-      "requires_physical_evidence": false
+      "requires_physical_evidence": false,
+      "milestone_disposition": "deferred_after_phase_one",
+      "deferred_reason": "Custom-board/embedded Board SDK or persistent-automation work is retained for a later phase; no prerequisite for S3/Pi/P4. Existing evidence and unclosed criteria remain."
     },
     {
       "id": "F01",
@@ -10282,7 +10455,9 @@
       "review_verdict": null,
       "result_artifacts": [],
       "profile": "custom_board",
-      "requires_physical_evidence": true
+      "requires_physical_evidence": true,
+      "milestone_disposition": "deferred_after_phase_one",
+      "deferred_reason": "Custom-board/embedded Board SDK or persistent-automation work is retained for a later phase; no prerequisite for S3/Pi/P4. Existing evidence and unclosed criteria remain."
     },
     {
       "id": "T01",
@@ -12260,13 +12435,13 @@
         "T01"
       ],
       "scope": [
-        "exact ESP32/display/input board",
-        "boot/debug/update/custody options"
+        "LILYGO T-Display-S3 non-touch with case and two physical buttons",
+        "USB/Bridge, display/input, boot/debug/update and session-only profile boundaries"
       ],
       "acceptance": [
-        "Identify exact SoC revision, memory, USB, screen/input and hardware connections.",
-        "Demonstrate direct display/physical confirmation and boot/update feasibility without borrowing custom-board SE guarantees.",
-        "Define volatile demonstration and persistent product modes; list applicable silicon/security limitations."
+        "Identify the actual LILYGO T-Display-S3 non-touch sample, SoC/board revision, flash/PSRAM, USB, panel, two controls and relevant connections; distinguish measured, maintainer-declared and unresolved facts.",
+        "Demonstrate readable direct display, navigation and separately bound local Approve/Reject on the real sample, plus boot/update feasibility; preserve applicable silicon, radio/debug and physical limits without SE/custom-board guarantees.",
+        "Define the first session-only connected profile: no SE, no persistent identity vault, no host signing/custody or plaintext recovery fallback. Pin candidate build/ABI/entropy-provider questions and the local reload/lock/disconnection contract for V01/D02; persistent use is a later extension."
       ],
       "required_evidence": [
         "board contract",
@@ -12288,7 +12463,7 @@
     },
     {
       "id": "D02",
-      "title": "Qualify ESP32 custody and lifecycle without SE",
+      "title": "Qualify S3 session custody and lifecycle without SE",
       "stage": "portfolio_v2",
       "status": "planned",
       "owner_role": "device_security",
@@ -12297,25 +12472,26 @@
         "D01"
       ],
       "scope": [
-        "MCU-protected storage",
-        "PIN/recovery",
-        "secure boot/update"
+        "volatile identity custody only; no persistent identity vault or PIN-vault promise",
+        "local generation/import, nsec backup and same-identity reload",
+        "lock/disconnect/reset/update and secret-copy lifecycle on exact S3"
       ],
       "acceptance": [
-        "Qualify encrypted persistent custody on the exact MCU before promising daily persistent use; volatile mode is separately named.",
-        "Exercise reset/power-cut, unlock attempts, host rollback, unsigned/old images, debug lock and interrupted updates.",
-        "Document physical extraction/PIN-enforcement limits honestly; no SE-based claims or borrowed custom Board signer acceptance.",
-        "Prove expected-public-key restore and trusted review on actual hardware."
+        "Locally generate or import the session identity on the exact non-touch two-button S3, show the derived full public key, back up locally and restore the expected identity. Measure usable checksum-validated entry/recovery; no plaintext Bridge import/export or host custody shortcut.",
+        "Inventory and qualify identity and derived-secret placement/copies/clear paths across MCU memory, drivers and adapters. Prove no secret writes to flash/NVS/files, logs, dumps or update/recovery tooling; state physical RAM-remanence and no-SE limits without claiming compiler-proof erasure.",
+        "Cancel, lock, disconnect, reset/power loss and relevant identity/session/policy changes invalidate pending consent under a measured lifecycle. Lock/disconnect/reset/power loss clear owned session secrets; identity/session replacement retires the old identity/derived state. Reconnect and power-on require local reload; no stale grant, cached secret or response can silently resume authority.",
+        "Exercise malformed/import input, mutation/replay, cancellation races, lost connection and power interruption with independent expected results. A new session must not authorize a previous request; cached public-result retransmission is bounded and cannot execute signing again.",
+        "Qualify the declared firmware authenticity, boot/update/recovery and debug policy on the exact binary/device. Test unsigned/old image handling, interrupted update and debug exposure against the actual promised guarantees; unavailable enforcement is explicit, never a passing flag or borrowed persistent/custom-board proof.",
+        "Close distinct session-custody/recovery findings before release or real-identity admission. Persistent encrypted vault/PIN requirements remain deferred_persistent_extension and cannot be advertised as completed by this gate."
       ],
       "required_evidence": [
-        "persistent-state tests",
-        "hardware measurements",
-        "recovery evidence",
-        "independent review"
+        "session secret-flow and no-persistence tests",
+        "actual two-button local backup/reload and expected-public-key recovery",
+        "lock/disconnect/reset/update/debug negative traces",
+        "independent session-profile review"
       ],
       "required_resources": [
         "accessible_kit",
-        "sacrificial_units",
         "physical_operator",
         "bench_instruments"
       ],
@@ -12325,7 +12501,34 @@
       "review_verdict": null,
       "result_artifacts": [],
       "profile": "esp32_no_se",
-      "requires_physical_evidence": true
+      "requires_physical_evidence": true,
+      "deferred_persistent_extension": {
+        "title": "Qualify ESP32 custody and lifecycle without SE",
+        "scope": [
+          "MCU-protected storage",
+          "PIN/recovery",
+          "secure boot/update"
+        ],
+        "acceptance": [
+          "Qualify encrypted persistent custody on the exact MCU before promising daily persistent use; volatile mode is separately named.",
+          "Exercise reset/power-cut, unlock attempts, host rollback, unsigned/old images, debug lock and interrupted updates.",
+          "Document physical extraction/PIN-enforcement limits honestly; no SE-based claims or borrowed custom Board signer acceptance.",
+          "Prove expected-public-key restore and trusted review on actual hardware."
+        ],
+        "required_evidence": [
+          "persistent-state tests",
+          "hardware measurements",
+          "recovery evidence",
+          "independent review"
+        ],
+        "required_resources": [
+          "accessible_kit",
+          "sacrificial_units",
+          "physical_operator",
+          "bench_instruments"
+        ],
+        "disposition": "Original pre-2026-10-25 persistent custody/PIN/vault contract retained for a later reviewed extension. No criterion is completed, waived or a hidden prerequisite of D03 session-only release."
+      }
     },
     {
       "id": "D03",
@@ -12342,11 +12545,11 @@
         "A02"
       ],
       "scope": [
-        "ESP32 signer release and pilot"
+        "session-only non-touch S3 signer release, complete connected host delivery and pilot"
       ],
       "acceptance": [
-        "Apply every release_gate_template condition to ESP32 signer and close exact-profile findings.",
-        "Run connected-client onboarding, messaging and recovery pilot after independent admission; measure actual artifact reproducibility.",
+        "Apply every release_gate_template condition to the exact session-only S3 without SE or persistent identity vault, including D02 local recovery/lifecycle findings. The deferred persistent extension is not a release dependency.",
+        "After independent profile admission, run named-client onboarding, pairing/revocation/reconnect/error, full public catalog, C02 messaging and local backup/reload/recovery pilots; measure reproducibility and qualify installation/update/recovery, compatible host/SDK versions and actual distributable artifacts.",
         "Publish only the tested no-SE profile with applicable authorization; custom hardware readiness is not a dependency."
       ],
       "required_evidence": [
@@ -12596,7 +12799,7 @@
         "implementation_admission": false,
         "physical_qualification": false,
         "next_step": "Continue independent Pi/P4 feasibility and all11 future verification procedures. Q01 supplies documentary requirements only; target hardware/runtime/custody and release qualification remain open.",
-        "source_reconciliation": "One-time proposed1e6\u2192actual7f; whole base tree and original normative/source bindings identical",
+        "source_reconciliation": "One-time proposed1e6→actual7f; whole base tree and original normative/source bindings identical",
         "documentary_delivery_source": "05a1b4c8e7e0cab9fa4c08e3358cc3ef72d97896",
         "documentary_delivery_source_review": "eab6d815b714903103d80ade1306e443f59dc4c8",
         "closure_result": "docs/restart/implementation/Q01/delivery/closure/result.json"
@@ -12640,14 +12843,16 @@
       "scope": [
         "bounded QR framing",
         "camera/scan UX",
-        "client pending/cancel/retry"
+        "client pending/cancel/retry",
+        "necessary consolidated CLI/service/browser/client and packages/sdk TypeScript delivery for each manual offline workflow"
       ],
       "acceptance": [
         "Preserve identity/request binding and output verification across manual optical round trips.",
         "Enforce frame/byte/time bounds, reject mixed/replayed requests and separate seed import/export from signing output.",
         "Test actual client deadlines and repeated scans; never extend scope with cached blanket approval or exported identity keys.",
         "Expose unsupported DM/automation capabilities accurately and plan any future compound operation separately.",
-        "Do not confuse nostrconnect pairing QR with an offline transaction. Compare bounded single-frame and maintained multipart UR implementations on actual screens/cameras before framing freeze; CRC/sequence checks do not authenticate a sender. Bound decoder state and work, not only completed payload size."
+        "Do not confuse nostrconnect pairing QR with an offline transaction. Compare bounded single-frame and maintained multipart UR implementations on actual screens/cameras before framing freeze; CRC/sequence checks do not authenticate a sender. Bound decoder state and work, not only completed payload size.",
+        "Exercise the retained CLI/service/Bridge/browser/client and TypeScript SDK entry points needed by each offline profile, with install/onboarding, expected-user binding, version compatibility, error/cancel/retry/reconnect and public response verification. Keep offline public-event support independent of connected C01/C02 and do not advertise DM/automation."
       ],
       "required_evidence": [
         "QR vectors and malformed cases",
@@ -17268,7 +17473,8 @@
         "Apply every release_gate_template condition to this exact offline profile; no connected NIP-44 or custom-PCB prerequisite.",
         "Close independent firmware/image, optical-input/output, boot, physical-substitution, volatile-custody and recovery findings applicable to stated guarantees.",
         "Run optical usability/recovery and independent maker reproduction after profile admission; publish exact limitations and supported kit.",
-        "Keep this release independent of the other vault and custom-board production."
+        "Keep this release independent of the other vault and custom-board production.",
+        "Ship usable matched host/TypeScript SDK versions, identified reproducible artifacts and installation/use/update/recovery instructions. Preserve profile-specific optical/client limits, channel/physical-attacker assumptions and essential support/advisory ownership; a vendor demo or host-only fixture is not this release."
       ],
       "required_evidence": [
         "profile release manifest",
@@ -17311,7 +17517,8 @@
         "Apply every release_gate_template condition to this exact offline profile; no connected NIP-44 or custom-PCB prerequisite.",
         "Close independent firmware/image, optical-input/output, boot, physical-substitution, volatile-custody and recovery findings applicable to stated guarantees.",
         "Run optical usability/recovery and independent maker reproduction after profile admission; publish exact limitations and supported kit.",
-        "Keep this release independent of the other vault and custom-board production."
+        "Keep this release independent of the other vault and custom-board production.",
+        "Ship usable matched host/TypeScript SDK versions, identified reproducible artifacts and installation/use/update/recovery instructions. Preserve profile-specific optical/client limits, channel/physical-attacker assumptions and essential support/advisory ownership; a vendor demo or host-only fixture is not this release."
       ],
       "required_evidence": [
         "profile release manifest",
@@ -17338,7 +17545,7 @@
       "id": "B01",
       "title": "Define and extract the Nostr-independent Board SDK",
       "stage": "portfolio_v2",
-      "status": "running",
+      "status": "planned",
       "owner_role": "platform_architecture",
       "depends_on": [
         "P01",
@@ -17361,7 +17568,7 @@
         "lifecycle review"
       ],
       "required_resources": [],
-      "assignee": "/root",
+      "assignee": null,
       "candidate_commits": {
         "nSealr/board-sdk": "5bcfad5d6127cb53a4ca16a1e74de31c2a14f54d"
       },
@@ -17404,7 +17611,7 @@
         ],
         "branch": "restart/b01-sdk",
         "delivery_commit": "5bcfad5d6127cb53a4ca16a1e74de31c2a14f54d",
-        "execution": "Assigned incomplete work; this status does not claim an active process or accepted integration.",
+        "execution": "Prior assigned incomplete work is deferred after phase one. No current author or live process is asserted; original source/review identities remain historical.",
         "observed_utc": "2026-10-20T10:09:37.336221+00:00",
         "parent_criteria_closed": 0,
         "product_source_imported": false,
@@ -17422,6 +17629,14 @@
         "nSealr/board-sdk": "043e64ceb745a323f9a332cc02fae2993388fabe",
         "nSealr/hardware": "340697d6713a671e9e01b0dc874ec999ab071601",
         "nSealr/nsealr": "f2ef70f522af4977e15f81554a8c6eadcdbe8097"
+      },
+      "milestone_disposition": "deferred_after_phase_one",
+      "deferred_reason": "Custom-board/embedded Board SDK or persistent-automation work is retained for a later phase; no prerequisite for S3/Pi/P4. Existing evidence and unclosed criteria remain.",
+      "historical_assignment": {
+        "status": "running",
+        "assignee": "/root",
+        "assignment_record": "https://github.com/nSealr/nsealr/issues/29",
+        "disposition": "Prior assignment ended; preserved source/checkpoint is not an active author or accepted task closure."
       }
     },
     {
@@ -17465,7 +17680,9 @@
       "review_verdict": null,
       "result_artifacts": [],
       "profile": "board_sdk",
-      "requires_physical_evidence": true
+      "requires_physical_evidence": true,
+      "milestone_disposition": "deferred_after_phase_one",
+      "deferred_reason": "Custom-board/embedded Board SDK or persistent-automation work is retained for a later phase; no prerequisite for S3/Pi/P4. Existing evidence and unclosed criteria remain."
     },
     {
       "id": "V03",
@@ -17507,7 +17724,9 @@
       "review_verdict": null,
       "result_artifacts": [],
       "profile": "custom_board",
-      "requires_physical_evidence": true
+      "requires_physical_evidence": true,
+      "milestone_disposition": "deferred_after_phase_one",
+      "deferred_reason": "Custom-board/embedded Board SDK or persistent-automation work is retained for a later phase; no prerequisite for S3/Pi/P4. Existing evidence and unclosed criteria remain."
     },
     {
       "id": "B03",
@@ -17552,7 +17771,9 @@
       "review_verdict": null,
       "result_artifacts": [],
       "profile": "board_sdk",
-      "requires_physical_evidence": true
+      "requires_physical_evidence": true,
+      "milestone_disposition": "deferred_after_phase_one",
+      "deferred_reason": "Custom-board/embedded Board SDK or persistent-automation work is retained for a later phase; no prerequisite for S3/Pi/P4. Existing evidence and unclosed criteria remain."
     },
     {
       "id": "QP01",
@@ -18807,7 +19028,7 @@
       "profile": "pi_qr",
       "requires_physical_evidence": true,
       "current_checkpoint": {
-        "state": "HOST_FOUNDATION_ACCEPTED_MAIN9C_SYNTHETIC22_REVIEWED_INTEGRATION_PENDING_PHYSICAL_INCOMPLETE",
+        "state": "HOST_SYNTHETIC_INSPECTION_ACCEPTED_MAIN19AB_PHYSICAL_INCOMPLETE",
         "source_preparation": "3330972dd7cc4f36be2622cdafdcfbe8c81adec4",
         "host_boundary_preparation": "b45812362e2f8340572aaaffd0384a9662fc6fb2",
         "limited_reviews": [
@@ -18845,7 +19066,7 @@
         "physical_criteria_complete": 0,
         "QP01_all3_and_Q02_all6_incomplete": true,
         "runtime_or_physical_admission": false,
-        "meaning": "Actual protected main9c accepts automatic real-engine host CI after PR51. The opt-in synthetic inspection source and source-frozen22 runtime proof are distinctly reviewed; normal full/protected integration for that component remains pending. No human expiry, ARM/image, physical UI/camera/custody or QP01/QH01/Q02 criterion is closed.",
+        "meaning": "Protected PR52 accepts the opt-in public-fixture synthetic inspection component and distinct14 pure registration on actual main19ab. Original source/final22 proof retains its identity. Human-wait canary evidence is separate; no ARM/image/physical camera/display/input/entropy/custody or QP01/QH01/Q02 criterion is closed.",
         "current_adoption": {
           "commit": "457bd387168ed8861f67edae0eeac4481dc80d5a",
           "path": "docs/restart/implementation/reviews/QP01-cold-capture/adoption/actual-main-acceptance.json",
@@ -19038,10 +19259,10 @@
           "author_final22": "0e9bdfb2fd8be0c507a5bf75206520de5bfad636",
           "source_review": "440320261ec87d4e1a1b91bf142a73df9e2f314e",
           "runtime_review": "7761398b6ba49c9f9651fe00d78daf51df97c426",
-          "state": "SOURCE_AND_22_HOST_RUNTIME_PROOF_REVIEWED_STABLE_INTEGRATION_GATES_PENDING",
+          "state": "ACTUAL_PROTECTED_MAIN19AB_HOST_COMPONENT_ADOPTED_PHYSICAL_INCOMPLETE",
           "runtime_case_count": 22,
           "pure_control_count": 14,
-          "automatic_registration": "Existing14 pure suite added as distinct pi-ci command; final full gates pending; old211 suite unchanged.",
+          "automatic_registration": "Existing14 pure suite is a distinct pi-ci command, accepted in PR52 and actual-main CI; old211 suite remains separate and unchanged.",
           "pre_post_generated_inputs": 62,
           "old_early_input_gap": "Historical incomplete62 early2 preserved; new freeze belongs only to final22 batch.",
           "criteria_completed": 0,
@@ -19050,8 +19271,57 @@
             "No native/UI expiry or measured human policy; clock-unavailable is fault injection.",
             "No ARM/image/physical IO/custody/entropy/default provider or client optical qualification.",
             "C01 compile-only branch not imported as main-qualified implementation."
+          ],
+          "current_adoption": {
+            "record": "docs/restart/implementation/reviews/QP01-synthetic-inspection-adoption/actual-main-acceptance.json",
+            "sha256": "a98e69518d20d28a007c9ec6b3ba4cea5e8ddb53a0db11148a0e86ff66da5619",
+            "proof_source": "eb69e559922e1b63bb65674e619c0809d5ffb6b1",
+            "reviewed_delivery": "f1b161364acc041218195cb26113210d644f3e61",
+            "actual_main": "19ab15d15aa8751174aa87119ae18853007c8222",
+            "tree": "8225c7878f83e8c0d1af032e8af265ba2c792415",
+            "PR": 52,
+            "PR_CI": 40205204706,
+            "main_CI": 40206485402,
+            "fresh_main_only": "PASS",
+            "integration": "Normal protected rebase; eight rewritten equivalent commits and identical complete tree",
+            "criteria_completed": 0,
+            "physical_releases": 0
+          }
+        },
+        "human_wait_canary": {
+          "source_candidate": "81dbf81aafc4722e97ed6334ce9e1d7563f04bea",
+          "previous_source": "197df6f347e03518afaecddc9d19099bddde5360",
+          "design_candidate": "53275345",
+          "state": "SOURCE_AND_EARLY_POSITIVE_REVIEWED_FIRST14_ORIGINAL_NEGATIVES_DISTINCT_READBACK_PASS_HOST_CANARY_ONLY",
+          "positive": {
+            "real_wait_seconds": 5.505070959,
+            "frames_and_ACKs": 31,
+            "compute_cpu_charged_ms": 212.523946,
+            "compute_budget_ms": 5000,
+            "signature_and_independent_oracle": "PASS after settlement; distinct original positive review PASS",
+            "human_reading_qualification": false
+          },
+          "first14": {
+            "source_manifest_sha256": "483a53de6838bf42e3f79862b76589c740ee367339a30f45709a945831a329b3",
+            "source_manifest_members": 134,
+            "original_author_outcome": "14 expected negative refusals PASS with process collection",
+            "distinct_readback": "docs/restart/implementation/QP01/human-review-timing/first14-distinct-readback.json",
+            "readback_sha256": "67200689e3f66121dc928ab07c95af184f69f04976e87b3d75353252ccfb49c4",
+            "review_role": "New root independently read source/contract and reparsed original raw streams with existing parser; no replay/build/oracle run",
+            "case22_counts": {
+              "availability": "unavailable",
+              "sign_attempts": null,
+              "auxiliary_calls": null
+            }
+          },
+          "remaining18": "Not executed or accepted. Admit only a finite justified set against the actual selected product contract before adoption; no automatic replay campaign.",
+          "limits": [
+            "Opt-in public-fixture host canary, not product APIv2 adoption",
+            "31 frames are not a human reader; no product human-time policy qualification",
+            "No physical UI/entropy/custody or task criterion closed; do not extend C5000 or freeze clocks as a shortcut"
           ]
-        }
+        },
+        "historical_source_states": "Original source-specific pending states and current_adoption entries below retain their source roles. The top-level checkpoint and synthetic_inspection.current_adoption reconcile current PR52 adoption; they do not rewrite old reports."
       }
     },
     {
@@ -19088,17 +19358,57 @@
       "review_verdict": null,
       "result_artifacts": [],
       "profile": "p4_qr",
-      "requires_physical_evidence": true
+      "requires_physical_evidence": true,
+      "current_checkpoint": {
+        "state": "CAMERA_DISPLAY_PREVIEW_OBSERVED_QR_CORE_CONSENT_CUSTODY_UNQUALIFIED",
+        "source_candidate": "9acf6a074fc8d8ecad27927281fbfe78cbfef8b9",
+        "device_facts": "docs/restart/implementation/hardware-access/device-facts-2026-10-25.json",
+        "device_facts_sha256": "f743735d61f3937d2abae3ce57c6525f2aaa66cc55793c22a667d7b76deb639f",
+        "preview_result": "Root source-bound write/hash/boot and actual maintainer moving-object retest PASS; centered stable800x800RGB565 preview. ST7796 BSP path initialized; no separate panel-controller ID read claimed.",
+        "application_sha256": "5d99fbae29f8fea63ef1dbf922d530194246fffcce65bf13cca4c27c22fe5a2f",
+        "distinct_source_review": "PASS by /root/s3_session; source SHA37c5cf730c4006abae0872c3c0b31a0ea5b85b85b45c0698d01873389972efc1",
+        "original_build_preparation": {
+          "state": "ORIGINAL_SOURCE_REVIEWED_VENDOR_BUILD_PREPARATION_ONLY",
+          "source_candidate": "2f55c8e8eacb66b0109f98180efef9f2f3e1d8b8",
+          "vendor_source": "870588e6",
+          "BSP": "2.0.2",
+          "ESP_IDF": "6.0.2/rev3_x",
+          "correction": "Four public LVGL9.6 includes only, distinctly reviewed; no warning relaxation or change to the other26 components.",
+          "build": {
+            "result": "PASS",
+            "elapsed_seconds": 24.553617265075445,
+            "bin_bytes": 988576,
+            "bin_sha256": "962c8805ab3659bddb581a8ff91d5aa050be67e59ba3f1de39c0fdf397fa3fdc",
+            "original_receipt": "p4-probe/execution/a10-header-fixed-app-build/result.json",
+            "offline_image_boot_partition_ELF_checks": "p4-probe/execution/a11-app-image-info/result.json and original a11 packet"
+          },
+          "provenance": "Original preparation receipts and source bundle selectively preserved in private phase-one handoff; no rerun or relabelling as current hardware evidence.",
+          "limits": [
+            "Vendor peripheral example is not a vault or a complete QR/signature flow",
+            "No actual-device display/input/entropy/session-custody qualification from this build",
+            "ESP32-C6 companion radio is present in the board design; absence/isolation is not established",
+            "Old bootstrap not adopted; retain corrected isolated environment, not historical fallback"
+          ],
+          "physical_criteria_completed": 0,
+          "physical_releases": 0
+        },
+        "next": "Complete exact-board camera/decoder/display memory and channel evidence, then a narrow peripheral adapter to the shared Rust engine with actual local consent, session custody and independently verified response.",
+        "limits": [
+          "Bounded peripheral preview only, no complete QR/signature flow",
+          "PCB marking still covered; actual input model and C6 isolation remain unqualified",
+          "No entropy/session-custody, physical criterion closure or release from vendor preview"
+        ],
+        "physical_criteria_completed": 0,
+        "physical_releases": 0
+      }
     }
   ],
-  "revision": 25,
+  "revision": 27,
   "scope_document": "repositories.md",
   "active_profiles": [
     "esp32_no_se",
     "pi_qr",
-    "p4_qr",
-    "custom_board",
-    "board_sdk"
+    "p4_qr"
   ],
   "repository_target": [
     "nSealr/nsealr",
@@ -19125,11 +19435,9 @@
   "release_paths": {
     "esp32_no_se": "D03",
     "pi_qr": "Q04",
-    "p4_qr": "Q05",
-    "board_sdk": "B03",
-    "custom_board": "R02"
+    "p4_qr": "Q05"
   },
-  "sequencing_note": "The connected Bridge integration C01 is first proven on the accessible device V01 and reused by the custom Signer path. This is an implementation sequence, not a claim that the custom-board custody design or generic SDK intrinsically depends on a commercial no-SE board. Pi, P4 and accessible releases do not wait for custom fabrication; Board SDK does not wait for the Nostr app.",
+  "sequencing_note": "D01 identifies the exact non-touch S3; V01 proves its public-test-identity connected vertical slice; D02 qualifies the session-only lifecycle before D03 can release. C01/C02 may prepare host components while V01 is open, but actual connected acceptance still requires hardware. QH01 owns necessary offline host delivery without adding C01/C02 or another vault to Q04/Q05 dependencies. P4 camera/display and Pi recipe work may advance independently. Custom Board/embedded Board SDK and S3 persistence are deferred.",
   "validation_document": "validation.md",
   "release_forbidden_ancestors": {
     "esp32_no_se": [
@@ -19177,55 +19485,62 @@
       "H02",
       "H02S",
       "H03"
-    ],
-    "board_sdk": [
-      "K01",
-      "C01",
-      "C02",
-      "V01",
-      "V02",
-      "V03",
-      "P03",
-      "QP01",
-      "QP02",
-      "Q02",
-      "Q03"
-    ],
-    "custom_board": []
+    ]
   },
   "resources": {
     "accessible_kit": {
-      "status": "unknown",
+      "status": "available",
       "owner_role": "hardware_operator",
-      "next_action": "Identify the reported ESP32-S3 model/revision and display/input, then schedule actual access with an operator; no MCU or persistent-custody guarantee inferred.",
+      "next_action": "Reuse exact S3 identification and vendor TFT build, identify remaining PCB/panel properties and observe display/two-button/USB runtime. Do not infer Xtensa/ABI/backend/entropy or IDF6 support from P4.",
       "maintainer_report": {
         "date": "2026-10-20",
         "source": "Explicit maintainer message in the active project session",
         "observation": "Maintainer reports an ESP32-S3 with two non-touch buttons; exact board/revision, display, memory and physical access not yet identified.",
         "actual_sample_or_operation_verified": false
-      }
+      },
+      "current_identification": {
+        "date": "2026-10-25",
+        "observation": "Maintainer LILYGO T-Display-S3 non-touch/two controls; ROM ESP32-S3 QFN56v0.2, flash16MB measured and embedded8MB PSRAM descriptor. Secure Boot/Flash Encryption disabled, not proof of empty eFuses. PCB/panel and runtime input/display/memory remain unqualified.",
+        "source": "docs/restart/implementation/hardware-access/device-facts-2026-10-25.json"
+      },
+      "confirmed_by": "Maintainer and new coordinator source-bound device identification/retest,2026-10-25",
+      "availability_record": "docs/restart/implementation/hardware-access/device-facts-2026-10-25.json",
+      "availability_scope": "Identified owned ESP32 sample and permitted USB/display operations; bench instruments, sacrificial/irreversible settings and other physical procedures need their own records. This is access, not profile qualification."
     },
     "pi_kit": {
       "status": "unknown",
       "owner_role": "hardware_operator",
-      "next_action": "Identify the reported Zero variant and kit components, inspect radios/channels and schedule actual access. This is the proposed first QR prototype, not a qualified image or inherited SeedSigner compatibility.",
+      "next_action": "Finish pinned SeedSignerOS c4cb767a Buildroot ARMv6 hard-float/glibc image recipe and kernel/Python/ELF/ABI/proc/posix_spawn/pidfd/prlimit/camera support. Prepare exact artifact/procedure before asking for SD write authorization; do not repeat failed mounts/repair.",
       "maintainer_report": {
         "date": "2026-10-20",
         "source": "Explicit maintainer message in the active project session",
         "observation": "Maintainer reports Raspberry Pi Zero with a240x240 display, three buttons, directional control and camera, described as a SeedSigner kit. Exact Zero variant, panel/camera/boot-media and actual access remain unverified.",
         "actual_sample_or_operation_verified": false
+      },
+      "current_identification": {
+        "date": "2026-10-25",
+        "observation": "Maintainer describes SeedSigner Pi Zero1.3 without radio, ST7789 240x240 HAT/buttons/joystick, OV5647 camera and3D case. Sample identification/function remains to be measured;63.9GB ExFAT media metadata does not establish absence of OS.",
+        "source": "Source-qualified phase-one handoff; exact physical/product qualification remains in D01/QP01/QP02, not this metadata update."
       }
     },
     "p4_kit": {
-      "status": "unknown",
+      "status": "available",
       "owner_role": "hardware_operator",
-      "next_action": "Identify the reported Waveshare P4 SKU/revision, camera/display and radio topology, then arrange actual access; do not inherit support from another product.",
+      "next_action": "Reuse the observed source-bound camera/display preview and exact image procedure. Complete decoder/memory/channel and physical-consent evidence, then connect the narrow adapter to the shared Rust engine and qualify session custody.",
       "maintainer_report": {
         "date": "2026-10-20",
         "source": "Explicit maintainer message in the active project session",
         "observation": "Maintainer reports a Waveshare ESP32-P4 kit with camera, battery and touch display. Exact SKU/revision/companion-radio and actual access remain unverified.",
         "actual_sample_or_operation_verified": false
-      }
+      },
+      "current_identification": {
+        "date": "2026-10-25",
+        "observation": "Maintainer Waveshare SKU33360/OV5647; ROM P4v3.2/flash16MB, actual app32MB PSRAM memtest, OV5647 PID0x5647 stream and centered stable display preview observed. Panel identification is BSP path/visible operation, not a separate controller-ID read; PCB marking covered. QR/consent/custody/entropy/C6 isolation remain unqualified.",
+        "source": "docs/restart/implementation/hardware-access/device-facts-2026-10-25.json"
+      },
+      "confirmed_by": "Maintainer and new coordinator source-bound device identification/retest,2026-10-25",
+      "availability_record": "docs/restart/implementation/hardware-access/device-facts-2026-10-25.json",
+      "availability_scope": "Identified owned ESP32 sample and permitted USB/display operations; bench instruments, sacrificial/irreversible settings and other physical procedures need their own records. This is access, not profile qualification."
     },
     "host_bench": {
       "status": "unknown",
@@ -19320,13 +19635,67 @@
     }
   },
   "adoption_reconciliation": {
-    "assigned_incomplete_status_meaning": "running records assigned incomplete work; it does not claim a live process. S04 is blocked with no active author.",
+    "assigned_incomplete_status_meaning": "Historical running H01/B01 assignments are now planned and explicitly deferred; preserved assignment/checkpoint records do not imply active authors. S04 remains terminally blocked, outside phase one.",
     "authority": "b507e00dbbc7992841836cc769a27d8efdbac75a",
     "historical_inputs": "Preserved source-bound inputs for each assignment. Only A02 stale graph core placeholder is explicitly reconciled to accepted pre-import f2; latest main is not assigned indiscriminately.",
     "initial_adoption": "PR31 normally adopted as d931277; its actual main CI39408038674 failure is preserved. Reviewed repair PR32 normally integrated as b1c90139, actual full main CI39412818666 passed. Distinct d280bfdc source review accepts all five original A02 criteria; this closure metadata remains subject to separate root exact review and protected normal PR/main gates.",
     "recorded_utc": "2026-10-20T10:09:37.336221+00:00",
     "scope": "Seven assigned incomplete checkpoint metadata records only. No task closure or source implementation integration.",
     "source_product": "daf8ba03a9eb820f99b0f1bf5c4f553a7961e008",
-    "unmerged_pause_graph": "Historical proposal only; not copied or adopted as another tracker."
+    "unmerged_pause_graph": "Historical proposal only; not copied or adopted as another tracker.",
+    "phase_one_update": "2026-10-25: original adoption authority/input/recorded_utc fields remain historical; only current assignment meaning is reconciled here. Phase-one scope and latest device/canary facts are in their graph fields, with no original acceptance or proof rewritten."
+  },
+  "phase_one_milestone": {
+    "authority": "Maintainer direction 2026-10-25; docs/restart/implementation/phase1-reconciliation.md records the bounded change contract.",
+    "outcome": "Actually usable, interoperable and distributable connected S3 plus independent offline Pi and P4, with qualified installation, recovery, compatible versions, artifacts and maintenance. A peripheral demo, host fixture or successful build is preparation, not milestone completion.",
+    "profiles": [
+      "esp32_no_se",
+      "pi_qr",
+      "p4_qr"
+    ],
+    "release_tasks": [
+      "D03",
+      "Q04",
+      "Q05"
+    ],
+    "host_owners": {
+      "connected_serving_and_host_delivery": "C01",
+      "connected_NIP44_NIP17_NIP59": "C02",
+      "offline_host_and_optical_workflow": "QH01"
+    },
+    "host_scope": [
+      "apps/bridge/cli and apps/bridge/service, including installation and errors",
+      "apps/bridge/browser-extension and packages/browser-provider",
+      "packages/client and packages/nip46, including pairing, distinct transport/user identities, revocation and reconnect",
+      "packages/transport, packages/protocol and packages/qr, including bounded requests, correlation and independent response verification",
+      "packages/sdk TypeScript browser/Node entry points and usable examples; distinct from deferred nSealr/board-sdk"
+    ],
+    "completion": "All applicable acceptance and release gates of the three release tasks and their dependencies, including actual-device qualification and distinct review. Only plan/work-items.json records task status; this scope metadata is not a second tracker.",
+    "early_order": "Use the already compiled P4 camera/display candidate for the first physical peripheral observation while completing the Pi image recipe and the S3 display/button/USB probe. Then choose the smallest real request/review/physical-consent/shared-Rust-signature/verified-response slice from measured dependencies. No fixed order between the three releases."
+  },
+  "initial_parallel_tranche_note": "The original initial_parallel_tranche field is historical. Current work is bounded by the phase-one milestone and dependencies; it does not reactivate former authors.",
+  "deferred_release_paths": {
+    "custom_board": {
+      "release_task": "R02",
+      "release_forbidden_ancestors": [],
+      "entry": "Later maintainer phase after phase-one delivery; preserve original task acceptance and evidence. S04 terminal gate remains binding."
+    },
+    "board_sdk": {
+      "release_task": "B03",
+      "release_forbidden_ancestors": [
+        "K01",
+        "C01",
+        "C02",
+        "V01",
+        "V02",
+        "V03",
+        "P03",
+        "QP01",
+        "QP02",
+        "Q02",
+        "Q03"
+      ],
+      "entry": "Later maintainer phase after phase-one delivery; preserve original task acceptance and evidence. S04 terminal gate remains binding."
+    }
   }
 }

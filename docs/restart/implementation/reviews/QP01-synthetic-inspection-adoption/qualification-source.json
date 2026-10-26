@@ -1,0 +1,36 @@
+{
+  "role": "SCOPED_LOCAL_SOURCE_AND_DISTINCT_CAPTURE_REVIEW",
+  "source": "f1b161364acc041218195cb26113210d644f3e61",
+  "full_makeci_exit": 0,
+  "duration_seconds": 354.631933,
+  "raw_sha256": "bcd27f54098be0ea758a864c50953bb2eea15b89ab76573db59637bf9d8fa7ef",
+  "source_unchanged": true,
+  "source_checker_sha256": "e64bf1cc45c13b7b41ca6e1c0640eb3da94d30dbb220422c764d0e6d9c12bc26",
+  "actual_command_cwd_resolved": "/home/tux/nsealr/.restart-tools/mac-resume-2026-10-25/ui-delivery",
+  "actual_artifacts": {
+    "native_build": {
+      "artifact": "/home/tux/nsealr/.restart-tools/mac-resume-2026-10-25/ui-delivery/target/release/libnsealr_pi_engine_fixture.so",
+      "actual_sha256": "a6bb8365548ee2123dba9938749bb1a23f53d1d137fb81ad9a5019440f2f6ac6"
+    },
+    "worker_build": {
+      "artifact": "/home/tux/nsealr/.restart-tools/mac-resume-2026-10-25/ui-delivery/apps/pi/qr-worker/target/release/nsealr-qr-worker",
+      "actual_sha256": "0b116650c164087d394e4057e387d27b85d0dcb557715ee86baae33a8c853888"
+    }
+  },
+  "distinct14pure_registered": {
+    "command": "python3 -B -m unittest discover -s docs/restart/implementation/QP01/physical-workflow/synthetic-inspection -p 'test_synthetic_inspection.py'",
+    "observed": "Ran 14 tests in 0.003s",
+    "interval_end_command": "python3 -B docs/restart/implementation/QP01/request-engine/exchange.py --ci apps/pi"
+  },
+  "distinct_reviewer": "/root/intake_audit",
+  "distinct_review_sha256": "b304324819f0dd36c725b36f72fea12ce6f52bb43b99fca2fb22e288b15d6587",
+  "original_review_role": "Local full capture only; hosted/cold checks separately recorded in this package",
+  "reader_correction": {
+    "original": "Global Ran14 count assertion incorrectly expected one; actual full run legitimately has an earlier separate14 suite",
+    "correction": "Anchor the unchanged expected14 count and OK to the actual registered command interval; no source/input/product/checker/threshold or expected result changed",
+    "first_observation": "first-reader-observation.json",
+    "source_checker_repeated": false,
+    "product_repeated": false
+  },
+  "scope": "Opt-in host fixture only; no hardware, real human timing or task acceptance closure"
+}

@@ -1,8 +1,12 @@
 # nSealr product contract
 
-The first-release contract has one normative set of requirements:
+The current first milestone (maintainer direction 2026-10-25) is the connected
+session-only S3 without SE/persistent identity vault, independent session-only
+Pi/P4 offline products, and their usable host integration and qualified releases.
+Custom Board and its generic embedded SDK remain retained later work.
+`packages/sdk` TypeScript remains in phase one. The sole normative set is:
 
-- [Product requirements and device feature catalog](requirements.md): four Signer profiles, generic Board SDK, identity/recovery decisions and complete user journeys.
+- [Product requirements and device feature catalog](requirements.md): the three phase-one Signer profiles, retained future custom Board/embedded SDK, identity/recovery decisions and complete user journeys.
 - [Event review contract](event-review-contract.md): exact public-event field/tag treatment, honest presentation and rejection rules.
 - [Profile threat models](threat-models.md): trusted boundaries, attacker assumptions and profile-specific qualification obligations.
 
