@@ -1267,3 +1267,86 @@ describe("local service boundary", () => {
     });
   });
 });
+
+describe.each(["sync", "async"] as const)("C01 private account key pin (%s)", (execution) => {
+  const accountA = "79be667ef9dcbbac55a06295ce870b07029bfcdb2dce28d959f2815b16f81798";
+  // response is the existing independently signed fixture B, unchanged.
+  const keyB: string = response.result.event.pubkey;
+  const mutations = [
+    {
+      name: "changed copy key",
+      apply: (dispatch: import("./service.js").SignerDispatchRequest) => {
+        dispatch.route_selection.public_key = keyB;
+      }
+    },
+    {
+      name: "replaced route copy",
+      apply: (dispatch: import("./service.js").SignerDispatchRequest) => {
+        dispatch.route_selection = { ...dispatch.route_selection, public_key: keyB };
+      }
+    },
+    {
+      name: "removed copy key",
+      apply: (dispatch: import("./service.js").SignerDispatchRequest) => {
+        Reflect.deleteProperty(dispatch.route_selection, "public_key");
+      }
+    }
+  ];
+  async function dispatchFixture(
+    selectedKey: string,
+    mutate?: (dispatch: import("./service.js").SignerDispatchRequest) => void
+  ) {
+    let guardCalls = 0;
+    const accounts = accountsWithSelectedRoutePublicKey(selectedKey);
+    const context = {
+      accounts,
+      grants: [grant],
+      now: 1_900_000_000,
+      signerCompatibility: conformanceSnapshot,
+      monotonicNow: () => 0,
+      signerDispatcher: createRouteDispatcher([{
+        account_id: routeAccountId,
+        dispatch: (dispatch) => {
+          dispatch.before_write?.(); guardCalls++;
+          mutate?.(dispatch);
+          dispatch.before_write?.(); guardCalls++;
+          return structuredClone(response);
+        }
+      }])
+    };
+    const envelope = {
+      version: 1,
+      request_id: "c01-private-key-" + execution,
+      operation: "dispatch_signer_request",
+      params: { client, route_request: routeVector.request, request: structuredClone(request) }
+    };
+    const result = execution === "sync"
+      ? handleLocalServiceRequest(envelope, context)
+      : await handleLocalServiceRequestAsync(envelope, context);
+    expect(guardCalls).toBe(2);
+    expect(accounts.find((account) => account.account_id === routeAccountId)?.public_key).toBe(selectedKey);
+    return result;
+  }
+
+  it("keeps the matching-key positive unchanged", async () => {
+    expect(await dispatchFixture(keyB)).toMatchObject({
+      ok: true, result: { signer_response: response }
+    });
+  });
+
+  it("keeps the unchanged valid-foreign-response control rejected", async () => {
+    expect(await dispatchFixture(accountA)).toMatchObject({
+      ok: false,
+      error: { code: "invalid_signer_response", message: "signer response public key does not match selected route" }
+    });
+  });
+
+  it.each(mutations)("rejects valid foreign fixture after $name", async ({ apply }) => {
+    const result = await dispatchFixture(accountA, apply);
+    expect(result).toMatchObject({
+      ok: false,
+      error: { code: "invalid_signer_response", message: "signer response public key does not match selected route" }
+    });
+    expect(result).not.toHaveProperty("result.signer_response");
+  });
+});
