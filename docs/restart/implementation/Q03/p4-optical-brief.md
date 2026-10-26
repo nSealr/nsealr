@@ -286,3 +286,16 @@ input gesture FSM, sensor adapter and SDK configuration remain unchanged. Reuse
 their frozen proofs; only ACK/response-clear/feed-token fixtures and three affected
 app variants are rebuilt for the new source. Distinct review and physical reset/
 DMA/expiry/BOOT-DTR gates still precede flash/signature admission.
+
+Frozen affected source53094ba7906eff671d7a2dd0a8b83d1120a94821 builds all three
+variants successfully in the same build directory. New proof is under
+`proof/display-ack-expiry/`, including the immutable prior distinct RED receipt,
+new native commands/hashes, actual target compile failure/correction, source
+boundary and final ELF. Normal is restored byte-identical after both fault modes.
+Effective SDK remains a5d508d745eff91de953d6e6f5d48f384f130dd6e1cd8ee13422440862cb494d;
+Rust staticlib/vendor/locks are byte-identical to the earlier admitted079 producer.
+New ELF places the5920-byte owner at0x4ff574e0, ACK state at0x4ff5be80 and own
+clock/color-callback/ACK-complete in IRAM. Internal96KiB stack is still requested
+and checked; no physical stack margin is invented. Builds and native mocks are
+preparation; only the distinct reviewer/root can admit the source for controlled
+physical observations. No previous RED binary is relabelled or flashed.
