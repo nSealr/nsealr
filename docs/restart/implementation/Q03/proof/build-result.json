@@ -1,0 +1,112 @@
+{
+  "role": "AUTHOR_SOURCE_AND_BUILD_CANDIDATE_NO_PHYSICAL_ACCEPTANCE",
+  "utc": "2026-10-25T21:54:53.864967+00:00",
+  "product_base": "19ab15d15aa8751174aa87119ae18853007c8222",
+  "core_source_change": false,
+  "candidate_binding": "Commit containing this report; compiled source hashes below bind it without a self-referential commit/hash. Exact candidate OID delivered separately.",
+  "toolchain": {
+    "Rust": "1.95.0 existing R00 isolated target",
+    "target": "riscv32imafc-unknown-none-elf",
+    "GCC": "15.2.0_20251204",
+    "IDF_commit": "7101770dc6db2667b3c477cc31365dd1acd6db4e",
+    "IDF": "6.0.2/rev3_x",
+    "BSP": "2.0.2",
+    "ELF": "ELF32 RISC-V little endian, RVC/single-float ABI matching GCC ILP32F"
+  },
+  "artifacts": [
+    {
+      "offset": "0x2000",
+      "path": "apps/p4/build/bootloader/bootloader.bin",
+      "bytes": 22096,
+      "sha256": "c1d9bfef1bb411d166bfcbb28d20446a8b39f13c6ac2882d1053c872c5d11c3a"
+    },
+    {
+      "offset": "0x8000",
+      "path": "apps/p4/build/partition_table/partition-table.bin",
+      "bytes": 3072,
+      "sha256": "3dff4fd1d82142a7b82222c430af22665b5ca8cc95a78b3279fb43ecb5a6bf97"
+    },
+    {
+      "offset": "0x20000",
+      "path": "apps/p4/build/nsealr_p4_public_optical.bin",
+      "bytes": 1223520,
+      "sha256": "2a9ce2f3781b988c4222a88b53b3187b93e32ced007cbc8856b9a11c98ea16ab"
+    }
+  ],
+  "elf_sha256": "0b7c1f870c518df2da300ad98df80138d9f000312e178504495e477b3bcb1824",
+  "internal_owner_map": [
+    " .dram1.nsealr  0x4ff57358     0x1720 /home/tux/nsealr/.restart-tools/mac-resume-2026-10-25/p4-session/apps/p4/main/../rust/target/riscv32imafc-unknown-none-elf/release/libnsealr_p4_optical.a(nsealr_p4_optical-0f35010701149c1b.nsealr_p4_optical.f93650745acbf3a6-cgu.0.rcgu.o)"
+  ],
+  "task_stack": {
+    "requested_bytes": 98304,
+    "allocation": "Explicit MALLOC_CAP_INTERNAL|MALLOC_CAP_8BIT, checked both endpoints; worker also checks live local pointer",
+    "physical_high_watermark": "unobserved; emitted only after actual operation"
+  },
+  "tests": {
+    "Rust_no_std_target_build": "PASS",
+    "IDF_configure_and_actual_app_link": "PASS; original four own-code indentation failures preserved, no warning relaxation",
+    "GPIO_and_frame_native": "PASS with ASan/UBSan: tap/hold/too-long/preheld/frame-reset/bounce/clock rollback; fixed800x800 RGB565 size/cap/orientation mapping",
+    "quirc_native": "Original null-copy startup UBSan RED; min==0 skip patch then ASan/UBSan PASS on blank=0, original public QR=1 decode-success198bytes, two QR=2. This does not qualify adversarial pixel liveness or physical scans.",
+    "host_engine": "11 selected cases PASS,2 positive including947-byte boundary and9 expected refusals; replay asserted in each positive; output zeroing RED at948 bytes is retained and fixed. Synthetic callbacks, not physical consent.",
+    "unchanged_actual_client": "PASS through current packages/qr and packages/client verifier, with Noble curves/hashes2.2.0.602-byte public response has expected4f35 identity and valid canonical ID/signature; correlation/template/id/signature mutations reject. No named external client qualification."
+  },
+  "open_gates": [
+    "Distinct source/affected quirc patch review before component admission",
+    "Actual GPIO/button mapping and input/display/flush behavior",
+    "BOOT GPIO35 also joins USB-UART DTR/RTS auto-download circuitry: human-origin consent not established with that data path active",
+    "Acquisition/preview orientation provisional pending root matrix; no hardware signing before that decision",
+    "Actual camera-to-decoder/full review/physical consent/Rust-signature/QR-client cycle",
+    "Hostile-pixel work/time bounds, watchdog/supervision and blocked DMA behavior",
+    "Physical stack/RAM/latency, provider invocation, real identity/session recovery and no-persistence qualification",
+    "C6/USB/data-channel isolation, boot/update/debug/recovery and independent release/client gates"
+  ],
+  "physical_results": 0,
+  "task_criteria_closed": 0,
+  "source_sha256": {
+    "apps/p4/README.md": "8401b3bfc3b87d85eda6ca71885907ea46b5342bd2191adfe5550448d4768d62",
+    "apps/p4/inputs.json": "28f4f48b3c755e2aff1b300ca87c27258f7dd21a11b1433bebb1fd1a516e8691",
+    "apps/p4/partitions.csv": "a865c506d7faa9534d4ad1429bc5f3bb976f4ca99582d3acfd07fb86045ec6a2",
+    "apps/p4/dependencies.lock": "880a831eaff9c76b5b8fa58a55dcfc13b65933352c95baa0715fd74075aa11bc",
+    "apps/p4/CMakeLists.txt": "cabda5854d1af3e6669c4db31bc3531a41afc39de39bdd0df41d368f415d7493",
+    "apps/p4/build.py": "9afa9956c3516d29d6bec22acaf6318a9d56a41007af57ae881f1d2447291a98",
+    "apps/p4/.gitignore": "0c1bff71acade36d2ca91b199234bb60aeb28d764502a6a9d4f1b4710b59144a",
+    "apps/p4/main/app_video.h": "6a4e14281862fafa668a54f15c6640a8158895c1fb21dbeaf6eb3b7c474d4f9d",
+    "apps/p4/main/frame_pixels.c": "9c299288193d116fc5b16a74ae2998ad281138fe2e40b0818270775ae03a8dc2",
+    "apps/p4/main/local_input.h": "268f722d64618974893251deae1e241e159fa677a5a2772ef4a6f4daa9c4265d",
+    "apps/p4/main/idf_component.yml": "c2093beaf985259a84e2ec358c9dfda58d9435b8284313acf15299b1251a4cae",
+    "apps/p4/main/frame_pixels.h": "2e6cb988520cde36382026d9fe2803a2e5937bf2f5c074e42549b535039bf878",
+    "apps/p4/main/local_input.c": "b7d76dc47f8f0c051a13405d4ea5a7c49c4fabc91a207bf380c61ee4789a14b5",
+    "apps/p4/main/CMakeLists.txt": "6417fd720b0a5eeed5d68df70865045f8ec3645292dd9c146de3885d3580d8a6",
+    "apps/p4/main/p4_local.h": "467f02ab204e3289a6a948d208cd2d53bbb502f15d58c737191a7db5c26fe07a",
+    "apps/p4/main/decoder_alloc.c": "fd2c03e84593dc0f4d325fef9547bbd9f5d625bfb9e4218cfe1d8bd268afbff8",
+    "apps/p4/main/preview_contract.h": "fe8cd5337ad7188e158dfd83118e81fdfee7931d79d020479159a564f8e95699",
+    "apps/p4/main/p4_local.c": "cc0d72a13e81da566fb2c2bc00bb1a80813a1aa497e903966b296d590418c528",
+    "apps/p4/main/app_video.c": "5891a2a12b0c6fc2007b82149f28273fe1e5dc7b16841f61fbc48297ada0e4ce",
+    "apps/p4/main/main.c": "de056a88e573970bce6a8e21a3785227b3ba0c3b91ed4b40f84c649487c02025",
+    "apps/p4/tests/engine_host.c": "4425be599f53ee77cdc66408bb1dac8cf70012a562d127c508e599833fcfc84d",
+    "apps/p4/tests/client_verify.mjs": "236e1fb963023e83ee9b8f62d9d490828cfd132507dc25bb427f449e9ee0b0b3",
+    "apps/p4/tests/decode_frame.c": "b3f1bf771f81da4e7cfff9515d3e3356e32ea675a6d2b9df033a44b5be8b6e4a",
+    "apps/p4/tests/bundle_client.mjs": "4b5b4f099e32d8bb3f8b6dc23f0a46bbb973c32fdc453cbbd43b74da4e3b4bbd",
+    "apps/p4/tests/local_contract_test.c": "6f4e158517d593a72e98f7f16f67e5f8cf2bfc01be14e88e166da54e64fc48d1",
+    "apps/p4/vendor/Waveshare-LICENSE.txt": "889d80455bc641cc6aa8dd7f5e78c271f02df0cdde598148739200795e23ef6b",
+    "apps/p4/rust/Cargo.lock": "cd067ebc99f511351155b699801158c35dce8164dfd47f2ce8f4eacca05690cd",
+    "apps/p4/rust/Cargo.toml": "285e283e14972770a57bfaa751a402bd91e34a3e261c446b9cad4435c906c98c",
+    "apps/p4/rust/src/lib.rs": "20a4a9ef013f9e0f1bd7db468bc772674b0670f3bfd16ca01fcb22bd8813444f",
+    "apps/p4/vendor/quirc/README.md": "aaba4c50f3b9768240e1ccf1b385280ae836431a10bf7e32de376c71867c92c2",
+    "apps/p4/vendor/quirc/UPSTREAM.json": "9fc73daec779a95c64aad32f4c02941002d26e96543859bfc858295d62f9a1eb",
+    "apps/p4/vendor/quirc/lib/quirc_internal.h": "e383ed1a0ca70c07b0530d76bfeb6bd5525efda182589f48c978921a9e54676b",
+    "apps/p4/vendor/quirc/lib/identify.c": "ae858d86adcb12db80ad01f6d941cc2247fb5970abf0754f24dca027ede2ba99",
+    "apps/p4/vendor/quirc/lib/version_db.c": "6764aa2f245085080e1e5cefd9dcd59b9727718a0d4606956e0502a57f5dff30",
+    "apps/p4/vendor/quirc/lib/decode.c": "d4468c55ecd0d2f905a6813513708005e6d609ef0a3d32a17673313c7552a7c1",
+    "apps/p4/vendor/quirc/lib/quirc.c": "8b2a8e98a736783592bbaa7d85d2d8dd2a1e2b3438ef18f1c5630156f488aaae",
+    "apps/p4/vendor/quirc/lib/quirc.h": "49660ea710add2d6f304a1323f53190f5a2bf34db4dd160d633db0c3f22bfba5"
+  },
+  "memory_at_link": {
+    "iram0.text": 89126,
+    "iram0.text_end": 90,
+    "dram0.data": 19776,
+    "dram0.bss": 8416,
+    "owner_bytes": 5920,
+    "note": "GNU size aggregate includes flash dummy/address reservations and is not peak RAM. Heap, stack, decoder/camera allocations and actual runtime remain separate measurements."
+  }
+}

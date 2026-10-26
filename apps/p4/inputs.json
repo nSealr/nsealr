@@ -1,0 +1,43 @@
+{
+  "product_commit": "19ab15d15aa8751174aa87119ae18853007c8222",
+  "camera_adapter_candidate": "9acf6a074fc8d8ecad27927281fbfe78cbfef8b9",
+  "camera_adapter_files": [
+    "main/app_video.c",
+    "main/app_video.h",
+    "main/preview_contract.h"
+  ],
+  "vendor_origin": "870588e62daaf723f3c52f0060d8dc053665ed30",
+  "sdkconfig_input_sha256": "e6a0837e1ced7c90cd0be254d693811a7fc93a4a2492f4eb6e1de51b4365698b",
+  "sdkconfig_changes": [
+    "Apply explicit versioned sdkconfig.public on the hashed original baseline; enable existing QR widget and UNSCII16 font",
+    "Task watchdog panic enabled at unchanged5seconds; own worker subscribed, cooperative waits only",
+    "Silent panic reboot and no coredump explicit; vendor TWDT early task/CPU/backtrace diagnostics may still exist; not secret/log-safety qualification"
+  ],
+  "quirc_source": "vendor/quirc/UPSTREAM.json",
+  "component_lock": "dependencies.lock; every retained version/hash equals original peripheral lock;3 unused audio components removed",
+  "external_dependency": "Temporary read-only reviewed peripheral adapter and already installed tool/cache environment. This is an engineering build recipe, not yet a standalone clean-device release recipe.",
+  "licenses": {
+    "Waveshare": "vendor/Waveshare-LICENSE.txt (Apache2.0 original, unchanged)",
+    "camera_adapter": "Original SPDX CC0-1.0/Apache-2.0 retained in copied files",
+    "quirc": "ISC notices in each source/header"
+  },
+  "preview_geometry_reference": {
+    "candidate": "2aaf2d0b62183886cd6bb39dc5b730b457be1fd5",
+    "root_reported_physical_marker": "1 2 / 3 4 readable, centered, stable; peripheral PPA rotation0/mirror0/0",
+    "reused_property": "Crop144,16 size512x768 scale5/8 only; app now uses coordinate-preserving CPU grayscale sample and LVGL snapshot, requires own physical test. PanelMADCTL downstream does not establish raw optical parity."
+  },
+  "sdkconfig_override": "sdkconfig.public",
+  "crypto_dependency_adoption": {
+    "source": "563d10b3c933a0bdc4605d27710c0ff2610960e1",
+    "evidence_candidate": "9d312f3e8a9c088e839ea8182a40e71bb7bce0f9",
+    "root_source_review": "intake/crypto-bigint-079-distinct-source-review.json PASS_SOURCE_AND_REUSED_FOCUSED_CHECKS",
+    "paths": [
+      "vendor/crypto-bigint",
+      "Cargo.lock"
+    ],
+    "consumer_patch": "docs/restart/implementation/R00/crypto-bigint-yank-079/consumer-locks/p4-83f1575c.patch",
+    "consumer_before_sha256": "cd067ebc99f511351155b699801158c35dce8164dfd47f2ce8f4eacca05690cd",
+    "consumer_after_sha256": "3bc2ff5cb22dbc5d25406273b697bb330cc5804aecb7e584134d76d06e03180f",
+    "copied_core": false
+  }
+}

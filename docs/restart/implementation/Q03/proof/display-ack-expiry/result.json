@@ -1,0 +1,256 @@
+{
+  "role": "AUTHOR_AFFECTED_FIX_PROOF_NOT_PHYSICAL_ADMISSION",
+  "author": "/root/phase1_scope",
+  "source_candidate": "53094ba7906eff671d7a2dd0a8b83d1120a94821",
+  "previous_reviewed_RED": "4be7d8f8d9971e19a559b6ca0bd8a85cf00c6ea0",
+  "recorded_utc": "2026-10-26T10:39:58.668244+00:00",
+  "review_before_fix_sha256": "7249be3d76f7dca59d91f961f8246ec0e57cbf9af66021508458045a8ba46e09",
+  "blockers_addressed_in_source": [
+    "P4-ACK-01: serialized actual color-done ACK per stripe, generation/serial checks, one2s/frame deadline, zero-inflight callback startup, preserved adapter notification, stickyfailure before input/feed",
+    "P4-EXPIRY-02: original absolute deadline controls response wait/clear; outputzero before UIclear; drawdark/ACK/deadline before lighton and expiry dark/clear commit",
+    "Nonblockingfeedrace: same camera-admission token guards scanfeed/resume; no publishing token before feed"
+  ],
+  "native": {
+    "count": 4,
+    "sanitizers": [
+      "address",
+      "undefined"
+    ],
+    "result": "PASS",
+    "scope": [
+      "ACK state negative cases, no hardware ID/IRQ claim",
+      "Real CLOCK_MONOTONIC response200ms expiry/freshclear/preheldrelease; mock UI clear; same deadline",
+      "Production scan helper feed-token deterministic race injection; mock semaphore",
+      "Production WDT worker refusal on sticky display failure; native API mocks"
+    ]
+  },
+  "target_variants": {
+    "normal": {
+      "mode": 0,
+      "files": [
+        {
+          "name": "nsealr_p4_public_optical.bin",
+          "build_path": "nsealr_p4_public_optical.bin",
+          "bytes": 1225776,
+          "sha256": "1f5772f31abbec9985b5ea3234c793e10e04c2c7e38a27e005c7aa91bff46cb0"
+        },
+        {
+          "name": "nsealr_p4_public_optical.elf",
+          "build_path": "nsealr_p4_public_optical.elf",
+          "bytes": 16735072,
+          "sha256": "032a71ccf45e02bc5f8f6270ec5b5440e468e2988da48313b9a704d6b4073039"
+        },
+        {
+          "name": "nsealr_p4_public_optical.map",
+          "build_path": "nsealr_p4_public_optical.map",
+          "bytes": 9578793,
+          "sha256": "403ed53b60c22b857347330849713006880d0446448d511663f44676af929463"
+        },
+        {
+          "name": "bootloader.bin",
+          "build_path": "bootloader/bootloader.bin",
+          "bytes": 22048,
+          "sha256": "48c98325be1eaca36b9245680ef83538e2e7832b8777f8c84fa6e8c2bb3a657b"
+        },
+        {
+          "name": "partition-table.bin",
+          "build_path": "partition_table/partition-table.bin",
+          "bytes": 3072,
+          "sha256": "3dff4fd1d82142a7b82222c430af22665b5ca8cc95a78b3279fb43ecb5a6bf97"
+        },
+        {
+          "name": "flasher_args.json",
+          "build_path": "flasher_args.json",
+          "bytes": 947,
+          "sha256": "b4b4ace2d80749b101980f9a4f3af94f8d3b77f82be6ed9e020e87cb0940b465"
+        },
+        {
+          "name": "sdkconfig.h",
+          "build_path": "config/sdkconfig.h",
+          "bytes": 62832,
+          "sha256": "a5d936162541c4dac2f6f9af783493753ae7ab46a75b98dc84477a65eeebdae3"
+        },
+        {
+          "name": "sdkconfig",
+          "bytes": 123822,
+          "sha256": "a5d508d745eff91de953d6e6f5d48f384f130dd6e1cd8ee13422440862cb494d"
+        },
+        {
+          "name": "sdkconfig.public",
+          "bytes": 380,
+          "sha256": "d94b0e17685ed50d99b75cd47e760599134e5c7a1450bd86971ebc411873c2a9"
+        }
+      ],
+      "offsets": {
+        "bootloader.bin": "0x2000",
+        "partition-table.bin": "0x8000",
+        "nsealr_p4_public_optical.bin": "0x20000"
+      },
+      "engine_key_initialized_before_fault": null,
+      "result": "BUILD_ONLY_PASS"
+    },
+    "busy-cpu": {
+      "mode": 1,
+      "files": [
+        {
+          "name": "nsealr_p4_public_optical.bin",
+          "build_path": "nsealr_p4_public_optical.bin",
+          "bytes": 1225968,
+          "sha256": "d6c9857fadcfd30f21d851b70e69f056863abf29624c98e8adcebfc39efa33b3"
+        },
+        {
+          "name": "nsealr_p4_public_optical.elf",
+          "build_path": "nsealr_p4_public_optical.elf",
+          "bytes": 16735744,
+          "sha256": "ec82a96c62a68899c3789d43859550c448a55d7c19139d23b063911a756cd42a"
+        },
+        {
+          "name": "nsealr_p4_public_optical.map",
+          "build_path": "nsealr_p4_public_optical.map",
+          "bytes": 9579360,
+          "sha256": "22d207b9b4a434646c045aaac6c07d34da5e610b97f81470de1ad5dac2647e7d"
+        },
+        {
+          "name": "bootloader.bin",
+          "build_path": "bootloader/bootloader.bin",
+          "bytes": 22048,
+          "sha256": "48c98325be1eaca36b9245680ef83538e2e7832b8777f8c84fa6e8c2bb3a657b"
+        },
+        {
+          "name": "partition-table.bin",
+          "build_path": "partition_table/partition-table.bin",
+          "bytes": 3072,
+          "sha256": "3dff4fd1d82142a7b82222c430af22665b5ca8cc95a78b3279fb43ecb5a6bf97"
+        },
+        {
+          "name": "flasher_args.json",
+          "build_path": "flasher_args.json",
+          "bytes": 947,
+          "sha256": "b4b4ace2d80749b101980f9a4f3af94f8d3b77f82be6ed9e020e87cb0940b465"
+        },
+        {
+          "name": "sdkconfig.h",
+          "build_path": "config/sdkconfig.h",
+          "bytes": 62832,
+          "sha256": "a5d936162541c4dac2f6f9af783493753ae7ab46a75b98dc84477a65eeebdae3"
+        },
+        {
+          "name": "sdkconfig",
+          "bytes": 123822,
+          "sha256": "a5d508d745eff91de953d6e6f5d48f384f130dd6e1cd8ee13422440862cb494d"
+        },
+        {
+          "name": "sdkconfig.public",
+          "bytes": 380,
+          "sha256": "d94b0e17685ed50d99b75cd47e760599134e5c7a1450bd86971ebc411873c2a9"
+        }
+      ],
+      "offsets": {
+        "bootloader.bin": "0x2000",
+        "partition-table.bin": "0x8000",
+        "nsealr_p4_public_optical.bin": "0x20000"
+      },
+      "engine_key_initialized_before_fault": false,
+      "result": "BUILD_ONLY_PASS"
+    },
+    "blocking-wait": {
+      "mode": 2,
+      "files": [
+        {
+          "name": "nsealr_p4_public_optical.bin",
+          "build_path": "nsealr_p4_public_optical.bin",
+          "bytes": 1226000,
+          "sha256": "c8b95fa58a94a225b27997fb0cc668d0d4e80ab67da60426ebfde792aa9a192c"
+        },
+        {
+          "name": "nsealr_p4_public_optical.elf",
+          "build_path": "nsealr_p4_public_optical.elf",
+          "bytes": 16736128,
+          "sha256": "9ca968fdcedf41204c253e8a02b91ba667cc065cb867986812cd07b9346156ae"
+        },
+        {
+          "name": "nsealr_p4_public_optical.map",
+          "build_path": "nsealr_p4_public_optical.map",
+          "bytes": 9579552,
+          "sha256": "a9cf60a71db6d3780728aa2430bacd84da8693d95e489f4505b4ce044f7961e4"
+        },
+        {
+          "name": "bootloader.bin",
+          "build_path": "bootloader/bootloader.bin",
+          "bytes": 22048,
+          "sha256": "48c98325be1eaca36b9245680ef83538e2e7832b8777f8c84fa6e8c2bb3a657b"
+        },
+        {
+          "name": "partition-table.bin",
+          "build_path": "partition_table/partition-table.bin",
+          "bytes": 3072,
+          "sha256": "3dff4fd1d82142a7b82222c430af22665b5ca8cc95a78b3279fb43ecb5a6bf97"
+        },
+        {
+          "name": "flasher_args.json",
+          "build_path": "flasher_args.json",
+          "bytes": 947,
+          "sha256": "b4b4ace2d80749b101980f9a4f3af94f8d3b77f82be6ed9e020e87cb0940b465"
+        },
+        {
+          "name": "sdkconfig.h",
+          "build_path": "config/sdkconfig.h",
+          "bytes": 62832,
+          "sha256": "a5d936162541c4dac2f6f9af783493753ae7ab46a75b98dc84477a65eeebdae3"
+        },
+        {
+          "name": "sdkconfig",
+          "bytes": 123822,
+          "sha256": "a5d508d745eff91de953d6e6f5d48f384f130dd6e1cd8ee13422440862cb494d"
+        },
+        {
+          "name": "sdkconfig.public",
+          "bytes": 380,
+          "sha256": "d94b0e17685ed50d99b75cd47e760599134e5c7a1450bd86971ebc411873c2a9"
+        }
+      ],
+      "offsets": {
+        "bootloader.bin": "0x2000",
+        "partition-table.bin": "0x8000",
+        "nsealr_p4_public_optical.bin": "0x20000"
+      },
+      "engine_key_initialized_before_fault": false,
+      "result": "BUILD_ONLY_PASS"
+    }
+  },
+  "sdkconfig_sha256": "a5d508d745eff91de953d6e6f5d48f384f130dd6e1cd8ee13422440862cb494d",
+  "normal_restored_byte_identical": true,
+  "unchanged_producer_inputs": {
+    "Cargo.lock": "955146a124f4b18df969ce6e2172453403b4b801ad87139a225f5f342ec3a0dc",
+    "vendor/crypto-bigint/.cargo-checksum.json": "308aaa65399a468ed54d0920c271a6fddb41bf576509d238ef1c22fa2a9cd82c",
+    "apps/p4/rust/Cargo.lock": "3bc2ff5cb22dbc5d25406273b697bb330cc5804aecb7e584134d76d06e03180f",
+    "apps/p4/rust/target/riscv32imafc-unknown-none-elf/release/libnsealr_p4_optical.a": "7d77596ae16b74ba794ce81223793351ff681572c89c1cb4fb67c31bd09a525a"
+  },
+  "abi": "ELF32LE RISC-V/RVC singlefloat ILP32F; GCC15.2/IDF6.0.2",
+  "memory": {
+    "Rust_owner_internal": "0x4ff574e0",
+    "Rust_owner_bytes": 5920,
+    "ACKstate_internal": "0x4ff5be80",
+    "ACKstate_bytes": 40,
+    "ACKlock_internal": "0x4ff55ef0",
+    "own_color_callback_IRAM": "0x4ff42f1e",
+    "own_ACK_complete_IRAM": "0x4ff42fae",
+    "clock_adapter_IRAM": "0x4ff42f02",
+    "worker_stack_internal_requested_bytes": 98304,
+    "physical_stack_margin": null
+  },
+  "reused_proof": "All prior core/crypto/quirc/gray/gesture/client results and independent source review apply to unchanged portions. No new complete campaign or producer replay. Prior4be/0227 images stay RED historical, not relabelled.",
+  "limits": [
+    "Distinct affected source/proof review pending",
+    "Zero physical observations: SPIACK/rootdisplay/raw optics/BOOTGPIO and timing remain unobserved",
+    "IO callback has no hardware per-transfer identifier; association uses source-proven single sender/last-segment callback",
+    "2s application ACK timeout does not bound blocked vendor calls; WDT5s reset still requires hardware observation and is not core100seconds/costbudget",
+    "Own selected ISR functions in IRAM do not qualify entire inherited cache-off closure or logs/secret custody",
+    "Expiry detects on real polling then dark/clear; exact physical latency remains unmeasured; public Nostr event is not revoked",
+    "No real key route; BOOTGPIO35DTR/RTS trust gate unchanged; no consent/signature with USBUARTdataattached"
+  ],
+  "initial_compile_failure": "Wrong assumed public input header filename; actual esp_lv_adapter_input.h used. Original RED log preserved, no warning policy change.",
+  "physical_observations": 0,
+  "CI_push_PR_flash_actions": 0,
+  "review": "PENDING_DISTINCT_ROOT_REVIEW"
+}

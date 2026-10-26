@@ -1,0 +1,213 @@
+{
+  "schema_version": 1,
+  "reviewer": "/root/p4_optical_review",
+  "coordinator": "/root",
+  "author": "/root/phase1_scope",
+  "candidate": "4be7d8f8d9971e19a559b6ca0bd8a85cf00c6ea0",
+  "compiled_source": "0227ce5b4a20e074152333be7c454674ad1425bc",
+  "app_tree": "13a5092e919a2dd6fa1613f9d72c71931b7af59f",
+  "prior_source": "83f1575cce1b1c8c0188bb6d6aa22ef03cdf2dc8",
+  "verdict": "RED_SOURCE_SPECIFIC_TWO_CONFIRMED_BLOCKERS",
+  "summary_it": "Revisione completa del codice custom Rust/C e delle prove pubbliche completata. Byte e risultati host/build coerenti; candidato non conforme al commit completo prima di input e al clear della risposta su expiry. Nessuna ammissione flash/workflow firma. Root coordina fix minimo e sola review affetta.",
+  "blockers": [
+    {
+      "id": "P4-ACK-01",
+      "severity": "high",
+      "source": "apps/p4/main/p4_local.c:89-95",
+      "title_it": "Il commit pagina non attende ACK della DMA finale",
+      "evidence_it": "refresh_now chiama lv_refr_now; set_dummy_draw(true) usa display_manager_wait_flush_done. Su LVGL9.6 questo helper osserva rendering_in_progress e aggiunge20ms. lv_refr.c azzera rendering_in_progress dopo invio ultimo draw_buf_flush; flushing viene azzerato solo dalla callback color_trans_done→handle_vsync→flush_ready. prepare_dummy_draw non aggiunge wait per pannelloOTHER/BSP50righe.",
+      "effect_it": "Ultima stripe ancora pendente quando p4_present arma BOOT/touch e feed cooperativo; uno stall finale può restare outstanding mentre il worker alimenta WDT. Delay fisso non prova pagina intera o completamentoDMA.",
+      "required_fix_it": "ACK effettivo correlato alla generazione inviata, prima di input e riuso buffer; timeout fallibile senza feed. Nessun nuovo delay o sola configurazioneWDT.",
+      "author_confirmed": true
+    },
+    {
+      "id": "P4-EXPIRY-02",
+      "severity": "medium",
+      "source": "apps/p4/main/main.c:89-98;apps/p4/main/p4_local.c:122-127,179-194",
+      "title_it": "Risposta già mostrata resta oltre la scadenza",
+      "evidence_it": "Dopo show_response riuscita il worker entra in p4_wait_new_action senza deadline. QR/buffer eliminati soltanto dopo BOOT. Il brief r79 promette expiry clears pending authority and any public response.",
+      "effect_it": "I controlli prima/dopo prima commit non cancellano un QR successivamente scaduto.",
+      "required_fix_it": "Attesa risposta vincolata alla medesima deadline assoluta e clear display/output su expiry tramite commit conACK; nessuna proroga o reinterpretazione.",
+      "author_confirmed": true
+    }
+  ],
+  "nonblocking_observations": [
+    {
+      "source": "apps/p4/main/main.c:51,64-67",
+      "observation_it": "resume_scan pubblica scan_enabled/owned prima di idle/feed; timeout separa check scan_enabled da feed. Callback su altro core può ammettere raw prima di quel feed. Non implica feed continuato dentro conversione/decoder/crypto bloccati; non attestare zero feed con raw outstanding. Root/autore informati."
+    }
+  ],
+  "source_review": {
+    "all_custom_rust_and_c_read": true,
+    "also_read_it": [
+      "Tutti gli header e app_video completo661righe; tutti i testC/stubsWDT, bundle/verifierTS, build.py/CMake/input/config/locks/README/brief",
+      "Critical LVGL/adapter draw/refresh/dummy/flush callbacks; TaskWDT registration/feed/panic; core request_id/review/sign boundaries"
+    ],
+    "single_engine_it": "nsealr-core no_std tramite path, nessuna copia. Core invariato dal prodotto19ab15d1. Parser/canonicalizzazione/review/consumo singolo nel core.",
+    "ffi_it": "Unico worker, guard atomicoreentry, STORAGE interno5920byte, stack interno96KiB con endpoint/live-local check. BufferC live/distinti obbligo callertrusted, nessun isolamento da callerostile.",
+    "ownership_it": "Callback trattiene raw fino a conversione worker/copied, poi requeue. Tokenowned e scan_enabled impediscono seconda operazione; solo worker usa quirc/preview/Rust. Raw rilasciato prima di preview/threshold. Snapshot G prima di quirc_end in place.",
+    "gray_qr_it": "800x800RGB565/1280000byte e gray640000 esatti, raw invariato. Preview320x480 crop144,16 campioni8/5. Nessuna parità raw da display. count1/griglia21..117/payload8..947/prefixnsealr1. Sola fallbackECC→flip→decode. Decoderstartup cap700000, tabelle upstream fisse, niente resizeostile/retryaperto.",
+    "ui_it": "ASCII32x8 con label/body/position interi o rifiuto; freschezza gesto per frame, debounce40ms, BOOTshortReject/hold1500..5000+releaseApprove solo finalpage; touchBack/Next. BlockerACK impedisce ammissione del confine temporale presentazione.",
+    "clock_output_it": "esp_timer_get_time reale/tickfloor-second, deadline100tick mai riavviata da navigazione. Core fresh checks e staging; cancel owner/zero output su errore. Prima pubblicazione non basta a provareACK finale o clear postexpiry.",
+    "watchdog_it": "Worker iscrittoTaskWDT, feed solo worker_idle con controlloowner; nessun feed callback/crypto/decoder. Config5s panic/silent/no coredump; faultbusyCPU/blockingwait prima diBOOT/engine/key. SDK può emettere nomi task/CPU/backtrace. Config/mock non provano reset/hardbound.",
+    "physical_trust_it": "BOOTGPIO35 condiviso DTR/RTS auto-download: nessun consenso umano attendibile/firma con USB-UARTdataattivo. PWR/RST hardware. Identità11x32/auxfixture0x22 pubbliche; nessuna import realkey/entropyclaim.",
+    "custom_source_hashes": {
+      "apps/p4/main/app_video.c": "5891a2a12b0c6fc2007b82149f28273fe1e5dc7b16841f61fbc48297ada0e4ce",
+      "apps/p4/main/app_video.h": "6a4e14281862fafa668a54f15c6640a8158895c1fb21dbeaf6eb3b7c474d4f9d",
+      "apps/p4/main/decode_one.c": "a3a822230fa7df300a4e530dbe074f291644d2ffe2af8bb8176dd24f3210c091",
+      "apps/p4/main/decode_one.h": "7f538d0efce12939c3c3265d30a563b11d2e207c87de430ca2ca93305b342214",
+      "apps/p4/main/decoder_alloc.c": "fd2c03e84593dc0f4d325fef9547bbd9f5d625bfb9e4218cfe1d8bd268afbff8",
+      "apps/p4/main/frame_pixels.c": "5108f5b623c0f5f2571d005928bdc4bd27bacd3d9e05aea108ffb2d62cee8fee",
+      "apps/p4/main/frame_pixels.h": "2ef7b5a555783bde557112bcd588ec2688cc9f86daed7868f013b41fd4cddbc4",
+      "apps/p4/main/local_input.c": "b7d76dc47f8f0c051a13405d4ea5a7c49c4fabc91a207bf380c61ee4789a14b5",
+      "apps/p4/main/local_input.h": "268f722d64618974893251deae1e241e159fa677a5a2772ef4a6f4daa9c4265d",
+      "apps/p4/main/main.c": "19a3ab0857a6ed93c70a7b2cf4dc80e8fcc6c9d6d06046d16448da549a4f9484",
+      "apps/p4/main/p4_local.c": "7fd1402c725c6eca0bbbb0e69cf272051af6a08af3442c524c40d04319d9e296",
+      "apps/p4/main/p4_local.h": "da3e264441c116998fac893e28a15347669c9e8d92711caf114366d5705a031e",
+      "apps/p4/main/preview_contract.h": "fe8cd5337ad7188e158dfd83118e81fdfee7931d79d020479159a564f8e95699",
+      "apps/p4/main/worker_watchdog.c": "b1f0d18f7652c335d66610799bb2a77e407b1a31c020e66b6d61974038039065",
+      "apps/p4/main/worker_watchdog.h": "4d4fa1ce5aae9224059ba9d77c485d6eaa70902bbce4a963c766bf4fc0c315db",
+      "apps/p4/rust/src/lib.rs": "20a4a9ef013f9e0f1bd7db468bc772674b0670f3bfd16ca01fcb22bd8813444f"
+    }
+  },
+  "proof_review": {
+    "manifest": {
+      "path": "docs/restart/implementation/Q03/proof/raw-mirror-wdt-079/artifact-manifest.json",
+      "sha256": "b396bcbafc821a2136436911c9262f5b964f97179e784fdb086f191e01a2c6ef",
+      "members": 58,
+      "all_bytes_hashes_match": true
+    },
+    "private_packet": {
+      "path": "apps/p4/evidence/public-wdt-packet",
+      "members": 27,
+      "all_bytes_hashes_match": true
+    },
+    "original_logs": {
+      "bindings": 44,
+      "decompressed_hashes_and_existing_originals_equal": true
+    },
+    "result_files": {
+      "count": 11,
+      "passing": 10,
+      "preserved_initial_header_compile_failure": 1,
+      "all_log_hashes_match": true
+    },
+    "native_it": "Autore ASan/UBSan gesto/clock/gray/crop/QRnormal/mirror/blank/two PASS. MirrorECC4→secondsuccess e payload198identico;6fixture/payloadbinding verificati. OwnershipWDT conAPImock, non concorrenza camera reale.",
+    "producer_client_it": "Nuovo079producer:2positive esistenti incluso envelope947 e replay immediato rifiutato. Risposta602byte verificata da clientprodotto invariato;4mutazioni correlation/template/id/signature rifiutate. CLOCK_MONOTONIC reale, presentazioni sintetiche. Zero clientesterni qualificati.",
+    "inherited_negatives": {
+      "count": 9,
+      "path": "docs/restart/implementation/Q03/proof/host-final-matrix.json",
+      "reused_source_equal83f": [
+        "apps/p4/rust/src/lib.rs",
+        "apps/p4/tests/engine_host.c",
+        "apps/p4/main/local_input.c",
+        "apps/p4/main/app_video.c",
+        "apps/p4/main/app_video.h",
+        "apps/p4/main/preview_contract.h"
+      ],
+      "rerun": false
+    },
+    "quirc_it": "Pin927d6809. Tutti i source/header uguali agli hash upstream ricostruendo solo guardmin!=0 inquirc.c. Guard hash8b2a8e98...; REDUBSanNULLzero preservato/letto. README sola whitespace normalization. ISCconservata.",
+    "crypto_it": "Riutilizzate2reviewroot079; vendortree/rootlock uguali ammesso563d10b3, consumerlockSHA3bc2ff5c... . Nessuna nuova ricerca/ripetizione225file/14checks.",
+    "abi_memory_it": "ELF32LE RISC-V/RVC/singlefloatILP32F GCC15.2/IDF6.0.2. Owner0x4ff57358/5920byte; stack98304interno richiesto, margine fisiconull. Nessuna misura piccoRAM/stackfisico.",
+    "effective_sdkconfig_sha256": "a5d508d745eff91de953d6e6f5d48f384f130dd6e1cd8ee13422440862cb494d",
+    "normal_restored_byte_identical": true,
+    "reader_correction_it": "Primo scriptread-only presumeva tutti resultJSON verdi: arrestato sulRED originale headercache, corretto selettore a10PASS/1RED e letti log. Primo tentativo scrittura receipt fallito per quoting shell; nessun fileprodotto cambiato; corretto con escaping esplicito. Nessuna prova rieseguita.",
+    "proof_hashes": {
+      "result.json": "442a2fcf066df2bdd0be8aa88c9bf73d1207f14ba7f4aa1be849fab4ec153058",
+      "packet.json": "ef03254bfcdb33c8ff2e00d1516e9bc69c0fdb507c6374f281b16b39fbcfd33e",
+      "abi-memory.json": "a842fb3e3eb8d3028a1af3b2585d87935db3d9c0bd1ce5eed419f8a7f294ec12",
+      "native-results.json": "3c525540101570b6d42bba6d9d08948ca79476bbd75d3be9abdca73f4cc4c8e3",
+      "wdt-ownership-native.json": "9a347717c6924d150a653040958543a32a0d93e0ee6953198de3a026a2412cb6",
+      "crypto079-producer-client.json": "6e76290a54dd6393d302a4cd6bb52d3eaea84e47fe733ba36e7659a2b39921c5"
+    }
+  },
+  "limits_it": [
+    "Zero osservazioni fisiche di questo firmware: rawparity/scan/displayleggibilità/ACK/GPIO/deadline/resetWDT richiedonoroot",
+    "Config5s non è hardreturnbound. Nessuna qualifica hostilepixel/worstcase/stackmargin/resetwipe",
+    "Nessuna ammissione realkey/entropy/custodia/C6isolation/boot/update/recovery/release",
+    "Vendor2aaf marker1 2/3 4 corretto fisicamente non dimostra rawparity o nuovo previewLVGL",
+    "Nessun criterioQ03/QP02 chiuso"
+  ],
+  "performed": {
+    "product_edits": 0,
+    "builds": 0,
+    "new_tests": 0,
+    "flashes": 0,
+    "USB_actions": 0,
+    "CI_actions": 0,
+    "pushes": 0,
+    "SD_actions": 0,
+    "receipt_only_write": true
+  },
+  "next_it": "Root ha assegnato fixminimo2blocker allo stesso autore. Candidato4be restaRED immutabile; una sola review affetta sul successore e riuso di fonti/prove immutate. Nessun flash fino PASSsorgente del coordinatore.",
+  "recorded_utc": "2026-10-26T10:10:39.686090+00:00",
+  "artifact_bindings": {
+    "normal": {
+      "mode": 0,
+      "app": {
+        "name": "nsealr_p4_public_optical.bin",
+        "build_path": "nsealr_p4_public_optical.bin",
+        "bytes": 1223760,
+        "sha256": "9f3e9566cd4b112271bcf87399b699dea46d0488b2ea449d1ab312a7b55d62a3"
+      },
+      "elf": {
+        "name": "nsealr_p4_public_optical.elf",
+        "build_path": "nsealr_p4_public_optical.elf",
+        "bytes": 16641876,
+        "sha256": "d851178b5f47d47d8d019fa64964a989e8d8374c3987f68355072f85600dbd5f"
+      },
+      "offsets": {
+        "bootloader.bin": "0x2000",
+        "partition-table.bin": "0x8000",
+        "nsealr_p4_public_optical.bin": "0x20000"
+      }
+    },
+    "busy-cpu": {
+      "mode": 1,
+      "app": {
+        "name": "nsealr_p4_public_optical.bin",
+        "build_path": "nsealr_p4_public_optical.bin",
+        "bytes": 1223952,
+        "sha256": "49cc39604b723b6bb7b62ac789eb2cf4d6f9b02c7cc79a3539f3e581df7870e5"
+      },
+      "elf": {
+        "name": "nsealr_p4_public_optical.elf",
+        "build_path": "nsealr_p4_public_optical.elf",
+        "bytes": 16642548,
+        "sha256": "2d88394422bf16270ff02e4e6fdc2f94c92c4f954ae411f43d711b143d698d4a"
+      },
+      "offsets": {
+        "bootloader.bin": "0x2000",
+        "partition-table.bin": "0x8000",
+        "nsealr_p4_public_optical.bin": "0x20000"
+      }
+    },
+    "blocking-wait": {
+      "mode": 2,
+      "app": {
+        "name": "nsealr_p4_public_optical.bin",
+        "build_path": "nsealr_p4_public_optical.bin",
+        "bytes": 1224000,
+        "sha256": "2897fda67a53c0a0d421908e14850e1424ebb1ae3b12ab95cc466a7370f9e1e2"
+      },
+      "elf": {
+        "name": "nsealr_p4_public_optical.elf",
+        "build_path": "nsealr_p4_public_optical.elf",
+        "bytes": 16642932,
+        "sha256": "36c2fff88ecd7c78b22e572f86982042e23d4a7fe98bab5062bae9c696e146e4"
+      },
+      "offsets": {
+        "bootloader.bin": "0x2000",
+        "partition-table.bin": "0x8000",
+        "nsealr_p4_public_optical.bin": "0x20000"
+      }
+    }
+  },
+  "dependency_source_hashes": {
+    "components/esp_lvgl_adapter/src/adapter/esp_lv_adapter.c": "3aaf0e1b79c8f89afb1224f5f08957aee3e76e1ae2d9d3ae626d717a6b42b2f5",
+    "components/esp_lvgl_adapter/src/display/display_manager.c": "f058caf78a25003c60f7a86751cb25ae94606563c424cbe841fd024163a5ece7",
+    "components/esp_lvgl_adapter/src/display/bridge/v9/lvgl_bridge_v9.c": "424e7ef240aee67da6a42f9f065bcdc1114393ab7ea38e4f7e449edfcb33f2ed",
+    "vendor/examples/esp-idf/09_video_lcd_display/managed_components/lvgl__lvgl/src/core/lv_refr.c": "397171ec16a0a3496f415c192bea702fdb4c57e0be56acab830434da021f37ef"
+  }
+}

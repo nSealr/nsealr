@@ -1,0 +1,19 @@
+{
+  "input_candidate": "1d229581153f9350e0af5c26a312d1a48d69e931",
+  "actual_final_committed_diff_check": {
+    "argv": [
+      "git",
+      "diff",
+      "--check",
+      "83f1575c..HEAD"
+    ],
+    "exit": 2,
+    "stdout": "docs/restart/implementation/Q03/proof/raw-mirror-wdt-079/internal-owner-map.txt:2: trailing whitespace.\n+ *fill*         0x4ff57355        0x3 \n",
+    "stderr": ""
+  },
+  "cause": "Linker raw map retains a trailing space on fill row. Pre-stage diff check did not include untracked new proof; committed check correctly rejected it.",
+  "correction": "Preserve identical raw bytes in gzip; no trim or global whitespace rule change, source/build/test unchanged.",
+  "original_raw_sha256": "e3c8b182992c24a0f270d6acd16de8ad03a0333ae3542880b9f340de66cb7b60",
+  "compressed_path": "docs/restart/implementation/Q03/proof/raw-mirror-wdt-079/internal-owner-map.txt.gz",
+  "affected_runtime_replays": 0
+}

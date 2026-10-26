@@ -1,0 +1,39 @@
+{
+  "reason": "Affected model exact shared absolute-start API and final CIS boundary; no core/crypto/quirc/WDT replay",
+  "source_sha256": {
+    "main/c6_probe_logic.c": "8b42def06f3fb383fa1b1a0d310dd75c12b007e6c5a79ed31a8b6c8b701721b6",
+    "main/c6_probe.h": "4023b891efa84b35e470821a3ad8307860983b7b0fe741cdaf3a5db6d8c575f0",
+    "tests/c6_probe_test.c": "247285d29b96163c4d92eed981f31c48a5f9dcdfaa3394d0e422e56a030f422a"
+  },
+  "commands": [
+    {
+      "argv": [
+        "cc",
+        "-std=c11",
+        "-O1",
+        "-g",
+        "-Wall",
+        "-Wextra",
+        "-Werror",
+        "-fsanitize=address,undefined",
+        "-fno-omit-frame-pointer",
+        "-I/home/tux/nsealr/.restart-tools/mac-resume-2026-10-25/p4-session/apps/p4/main",
+        "/home/tux/nsealr/.restart-tools/mac-resume-2026-10-25/p4-session/apps/p4/main/c6_probe_logic.c",
+        "/home/tux/nsealr/.restart-tools/mac-resume-2026-10-25/p4-session/apps/p4/tests/c6_probe_test.c",
+        "-o",
+        "/home/tux/nsealr/.restart-tools/mac-resume-2026-10-25/p4-session/apps/p4/evidence/c6-public-probe/c6-native"
+      ],
+      "exit": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "/home/tux/nsealr/.restart-tools/mac-resume-2026-10-25/p4-session/apps/p4/evidence/c6-public-probe/c6-native"
+      ],
+      "exit": 0,
+      "stdout": "case=0 result=1 low_attempts=3 release=1 read=2 final_pad=0 input=1 output=1 cleanup=0\ncase=1 result=0 low_attempts=0 release=0 read=0 final_pad=1 input=1 output=0 cleanup=0\ncase=2 result=0 low_attempts=0 release=0 read=0 final_pad=1 input=1 output=0 cleanup=0\ncase=3 result=0 low_attempts=0 release=0 read=0 final_pad=1 input=0 output=0 cleanup=0\ncase=4 result=3 low_attempts=2 release=0 read=0 final_pad=0 input=1 output=1 cleanup=0\ncase=5 result=3 low_attempts=2 release=0 read=0 final_pad=0 input=1 output=1 cleanup=0\ncase=6 result=3 low_attempts=2 release=0 read=1 final_pad=0 input=1 output=1 cleanup=0\ncase=7 result=2 low_attempts=2 release=0 read=1 final_pad=0 input=1 output=1 cleanup=0\ncase=8 result=3 low_attempts=2 release=1 read=1 final_pad=0 input=1 output=1 cleanup=0\ncase=9 result=2 low_attempts=2 release=1 read=1 final_pad=0 input=1 output=1 cleanup=0\ncase=10 result=3 low_attempts=2 release=1 read=1 final_pad=0 input=1 output=1 cleanup=0\ncase=11 result=3 low_attempts=3 release=1 read=2 final_pad=0 input=1 output=1 cleanup=0\ncase=12 result=4 low_attempts=3 release=1 read=2 final_pad=0 input=1 output=1 cleanup=-10\ncase=13 result=4 low_attempts=3 release=1 read=2 final_pad=0 input=0 output=1 cleanup=0\ncase=14 result=4 low_attempts=3 release=1 read=2 final_pad=1 input=1 output=1 cleanup=0\ncase=15 result=2 low_attempts=0 release=0 read=0 final_pad=1 input=1 output=0 cleanup=0\ncase=16 result=2 low_attempts=2 release=0 read=0 final_pad=0 input=1 output=1 cleanup=0\ncase=17 result=2 low_attempts=2 release=0 read=0 final_pad=0 input=1 output=1 cleanup=0\ncase=18 result=2 low_attempts=2 release=0 read=0 final_pad=0 input=1 output=1 cleanup=0\ncase=19 result=0 low_attempts=0 release=0 read=0 final_pad=1 input=1 output=0 cleanup=0\nCIS bounded parser +20 causal-sequence cases PASS (mock peripheral/clock inputs, not hardware/RF evidence)\n",
+      "stderr": ""
+    }
+  ]
+}
