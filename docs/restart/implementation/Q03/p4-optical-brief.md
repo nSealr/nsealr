@@ -173,3 +173,51 @@ cannot be inferred solely from its level while that path is active. Root was
 notified before hardware signing; actual data-path absence/isolation and the
 operator procedure require distinct admission. This is not replaced by a flag,
 callback or touch approval. The candidate remains controlled/public engineering.
+
+### Frozen-source build packet (26 October 2026)
+
+Source0227ce5b4a20e074152333be7c454674ad1425bc produced all three variants in
+one existing build directory; source/commands/config/artifact hashes and focused
+proof live in `proof/raw-mirror-wdt-079/`. The normal image was rebuilt after the
+two faults and is byte-identical to the first frozen-source normal image. ELF is
+32-bit little-endian RISC-V/RVC/single-float; internal Rust owner remains5920bytes
+at0x4ff57358. Worker stack is an explicitly internal96KiB allocation with endpoint
+checks; stack margin and actual runtime remain unobserved. Effective SDK config
+SHA256 is a5d508d745eff91de953d6e6f5d48f384f130dd6e1cd8ee13422440862cb494d,
+with the complete config and raw baseline delta preserved compressed.
+
+quirc retains its fixed upstream254 regions/32 capstones/64 grids and
+800x800 preallocation under the700000-byte decoder allocation cap. The decoder's
+internal supported maximum remains version40; this consumer accepts at most117
+modules/version25 before bitstream decode. No hostile resize or open retry.
+These caps and native~7.5ms normal/mirror observations are not a measured P4
+worst-case time. WDT5s is neither core100 ticks nor an ACTIVE5000 cost budget.
+Because ticks are floor seconds, elapsed time from the first core clock sample to the deadline is within
+99..100 seconds depending on its fractional phase; navigation never restarts it.
+
+Root's controlled probes, after distinct source/artifact review:
+
+1. Normal, with USB data: public marker1 2/3 4 plus one public QR, compare preview
+   positions, decoder count/attempts/latency and public banner. Startup BOOT check
+   is GPIO diagnostic only. Do not acknowledge a final approval/sign while that
+   USB-UART data path can drive GPIO35. A separate admitted battery/data-absent
+   procedure is needed before any local-consent/signature observation.
+2. Normal cooperative wait: observe more than5 real seconds without WDT reset.
+   On a public review request, leave the review until its fixed floor-second
+   deadline; record refusal/cleared authority, not a signature or extended clock.
+   Actual complete review/consent/response procedure remains gated separately.
+3. BusyCPU then blockingwait: flash each exact reviewed hash separately, bound
+   each observation to one reset/20 seconds and interrupt the repeating probe
+   with the operator's controlled reflash/reset procedure. Check autonomous mode
+   log, real start time, observed reset reason/elapsed time and lack of engine
+   initialization/operation. Failure to reset within the observation window is
+   a failure/unavailable measurement, never a new time limit or automatic retry.
+4. Restore the exact normal hash. Record actual flush/decode/stack/memory and
+   watchdog behavior before widening inputs. Only then can the root decide which
+   further physical negatives apply. No physical outcome is claimed by this packet.
+
+The initial target compile failed on the missing public cache API declaration;
+adding its actual LVGL9.6 public header corrected it without warning suppression.
+The original upstream quirc NULL/zero memcpy RED and precise guard remain
+preserved in the earlier proof; no new algorithm patch was made here. Root must
+review this affected consumer and that inherited correction before admission.
