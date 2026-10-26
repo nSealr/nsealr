@@ -1,0 +1,143 @@
+{
+  "schema": "nsealr.public-s3-setup120-focused-proof.v1",
+  "source_commit": "d00623b5b877dd491f05b1c4f95c7c66860a83f6",
+  "base_candidate": "d19ccc51b6842b67e47b8115faae5ea300536791",
+  "scope": "Two existing setup-only consumers60s->120s and README. No operation timeout, authority or firmware change.",
+  "root_authorization": "Root explicitly approved CLI default/max and child readPublicNativeFrame PRE-operation ceiling; retain100s operation/5000ms ACTIVE and5s handshake.",
+  "actual_old_setup_failure": {
+    "original_case": "physical-approve first setup on d19, not a positive signature",
+    "preserved_launch_sha256": "de32d3a2032a0e6c59fb21048b30691355fd18954e45ac89246ac57abec24bb8",
+    "preserved_stdout_sha256": "45acdc833823e9c7db96060423ffac6eb3b631a2c994a0ea74b551539af73bb3",
+    "preserved_stderr_sha256": "cef438511487a5a35747c55768ee739b879a346f1c8b0241c79be917a78053b3",
+    "head_recorded": "d19ccc51b6842b67e47b8115faae5ea300536791",
+    "controls": [],
+    "elapsed_seconds": 60.519564104266465,
+    "exit": 1,
+    "result_exists": false,
+    "interpretation": "Actual CLI OPEN then setup expired at60.519564s with no Enter and no signer output. Root reports later operator answer after82s and0USB TX; those are root observations, not new wire measurements performed here. Preserved historical RED, not mislabeled product signing failure or new positive."
+  },
+  "changes": [
+    {
+      "path": "apps/bridge/cli/src/public-s3.ts",
+      "expression": "Math.min(options.setupTimeoutMs ?? 120000, 120000)",
+      "order": "Existing separate setup timer; opened+ready/Enable/Enter finishes before monotonic origin and LocalServiceClient construction/dispatch. Same existing option shape, no new flag/env/hook."
+    },
+    {
+      "path": "apps/bridge/service/src/index.ts",
+      "expression": "readPublicNativeFrame setup-input setTimeout120000",
+      "order": "Child waits for bounded single native frame+EOF before session.arm and request decode/prepare. Setup-only timer120; operation budget remains armed later."
+    },
+    {
+      "path": "docs/restart/implementation/V01/public-s3-live-flow/README.md",
+      "change": "Both consumers120, actual prior failure retained, independent180s plumbing may abort earlier."
+    }
+  ],
+  "unchanged_constraints": {
+    "operation_ms": 100000,
+    "service_ACTIVE_or_processCPU_ms": 5000,
+    "relay_open_handshake_ms": 5000,
+    "socket_relay_and_adapters_forwarding_ms": 180000,
+    "new_USER_or_targetCPU_measurement": false,
+    "deadline_origin_refresh": false,
+    "new_retry_or_fallback": false,
+    "clock_grants_pin_generation_body_order": "Unchanged",
+    "lease_limit": "120s setup+100s operation can exceed180s relay/adapters. Their earlier closure is refusal, not guaranteed usable worst-case time or a minimum latency promise."
+  },
+  "execution_results": [
+    {
+      "path": "execution/01-frozen-service-intake-build",
+      "exit": 0,
+      "elapsed_seconds": 0.6395475855097175,
+      "scope": "Existing tsc flags on changed service index.ts; child actually spawns generated dist/index.js, so rebuilding it was necessary. CLI stays source through tsx; no CLI emit or package/core build."
+    },
+    {
+      "path": "execution/02-frozen-existing-setup-eof-settlement",
+      "exit": 0,
+      "elapsed_seconds": 0.9739578617736697,
+      "selected_existing_tests": 3,
+      "skipped_existing_tests": 14,
+      "filter": "sends nothing during setup|setup timeout aborts|observes setup EOF",
+      "scope": "Existing real Commander/LocalServiceClient/child service/Unix fixtures: no operation during setup, one transmit and actual child/pipe settlement before output, bounded setup abort sends no request, already-ended setup refuses. Host fixtures, not USB.",
+      "new_test_code": 0
+    }
+  ],
+  "typecheck_scope": "Service compile checks changed child intake. CLI numeric-literal-only change retains the exact existing TS type shape and is exercised by existing tests through source transformation; no additional unrelated typecheck/build/API suite repeated.",
+  "runtime_binding_before_edit": "intake/v01-actual-runtime-artifact-binding.json",
+  "runtime_binding_before_edit_sha256": "ed862bbd8708bb36245691be96d68210657198f557a606131133985372a81d40",
+  "runtime_changes": [
+    {
+      "path": "apps/bridge/service/dist/index.js",
+      "before_sha256": "cf727909c00b49ac074c2fd95fc6239f5d2fb0267659b7350310acc08da8a418",
+      "after_sha256": "acb04c323e3f77107467d2f1cbe18253ec1233695478518be518516c8cd18c23",
+      "bytes": 12010
+    }
+  ],
+  "other141_dist_hashes_identical": true,
+  "compiled_actual_entry": "compiled/service-index.js",
+  "source_paths_sha256": {
+    "apps/bridge/cli/src/public-s3.ts": "d15f58c8894bcbee7a2c490658586e910097d5efe47967c1d6e87672efe0a49e",
+    "apps/bridge/service/src/index.ts": "7be88ea8347ac1f38a069b1c4aa65cbea8fa9c06b1f1a179c6b4274cadf1e573",
+    "docs/restart/implementation/V01/public-s3-live-flow/README.md": "3081b6209c1d40ab9d9a10137fd0935ea0604e8ba739ba65dcbbfe4e341d4e93"
+  },
+  "unchanged_git_boundaries": {
+    "packages": {
+      "before": "c4e6c040bf4fbd556c69a9bd4f46982f06914bd0",
+      "after": "c4e6c040bf4fbd556c69a9bd4f46982f06914bd0"
+    },
+    "crates": {
+      "before": "97bda3f330c47d4881b26f0474d50d3cb0320f55",
+      "after": "97bda3f330c47d4881b26f0474d50d3cb0320f55"
+    },
+    "vendor": {
+      "before": "e4be4ce356cb26af0825222d2ac90fa4a6eb4bb3",
+      "after": "e4be4ce356cb26af0825222d2ac90fa4a6eb4bb3"
+    },
+    "apps/s3-session": {
+      "before": "73ffd5e3e6f63a479bee23a1d6dc7dc606e29919",
+      "after": "73ffd5e3e6f63a479bee23a1d6dc7dc606e29919"
+    },
+    "apps/p4": {
+      "before": "393e5b179ad84ada89f5dd870da14d96bb6c9093",
+      "after": "393e5b179ad84ada89f5dd870da14d96bb6c9093"
+    },
+    "apps/bridge/service/src/public-s3-budget.ts": {
+      "before": "24ed32c417b2d29f5cefb8fdf3c6b19ce18f8c27",
+      "after": "24ed32c417b2d29f5cefb8fdf3c6b19ce18f8c27"
+    },
+    "apps/bridge/service/src/public-s3.ts": {
+      "before": "b9dd4e492b9c37ec4c835242a02d51c2012c7be8",
+      "after": "b9dd4e492b9c37ec4c835242a02d51c2012c7be8"
+    },
+    "apps/bridge/cli/src/public-s3.test.ts": {
+      "before": "d07e77eb67f8e9fdd456e1c58aad8a7578c5aa35",
+      "after": "d07e77eb67f8e9fdd456e1c58aad8a7578c5aa35"
+    },
+    "tools/bridge/public_s3_usb_relay.py": {
+      "before": "cdc60ffd572ba1b5bc60b6cc68323773c1f74e68",
+      "after": "cdc60ffd572ba1b5bc60b6cc68323773c1f74e68"
+    },
+    "plan/work-items.json": {
+      "before": "1181e839baef98b8e4bed2e828f4ef5b02ebb722",
+      "after": "1181e839baef98b8e4bed2e828f4ef5b02ebb722"
+    },
+    "plan/evidence-index.json": {
+      "before": "442edf847787e9cd8b71893b7dc0a8486eca5bf4",
+      "after": "442edf847787e9cd8b71893b7dc0a8486eca5bf4"
+    },
+    "docs/restart/implementation/QP01/request-engine/native-leaf.ts": {
+      "before": "48ee5d2035c70d036dda7716efb9d712f48db1bb",
+      "after": "48ee5d2035c70d036dda7716efb9d712f48db1bb"
+    }
+  },
+  "remaining_limits": [
+    "Distinct delta review before next root-only physical retry",
+    "No actual positive live signature inferred",
+    "Existing stdin caveat after Reject retained: close input after Enter, no extension of operation deadline",
+    "Public scalar3 only, no real identity/entropy/custody/release/USER/globalC5000 admission",
+    "Original packets/reviews/actual60sRED/runtimebinding immutable"
+  ],
+  "USB_CI_push_or_new_tests": 0,
+  "criteria_closed": 0,
+  "decision": "READY_FOR_DISTINCT_SETUP_ONLY_DELTA_REVIEW",
+  "recorded_utc": "2026-10-26T20:29:54.697345+00:00"
+}
