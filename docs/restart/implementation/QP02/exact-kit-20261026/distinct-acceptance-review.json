@@ -1,0 +1,1172 @@
+{
+  "schema": "nsealr.qp02-exact-p4-feasibility-acceptance-review.v1",
+  "reviewer": {
+    "task": "/root/historical_cleanup",
+    "agent_id": "01a178b3-59c6-7ad2-9375-0c5614ede672",
+    "actual_model": "gpt-6.1-sol",
+    "actual_reasoning_effort": "xhigh",
+    "runtime_verification": "Root previously verified this new agent's actual model/effort in turn_context and collaboration settings; unchanged.",
+    "role": "Distinct finite acceptance review; sole write this receipt."
+  },
+  "decision": "PASS_ALL_THREE_QP02_FEASIBILITY_CRITERIA_WITH_EXPLICIT_HARDWARE_AND_RELEASE_LIMITS",
+  "criteria_supported": 3,
+  "criteria_closed_by_this_receipt": 0,
+  "canonical_plan": {
+    "commit": "c3492f9a19f0eab1c1bb978443b0e9b268005bf2",
+    "path": "plan/work-items.json",
+    "sha256": "f37cddfc40e03a3d1e897b5cb1bf0239ee9942905b74a02f6c31d061bd3d22a8",
+    "QP02_status": "planned",
+    "dependencies": {
+      "Q01": "integrated",
+      "R00": "integrated"
+    },
+    "acceptance_unchanged": true
+  },
+  "evidence_binding": {
+    "old_normal_source": "33a6b4e3e29c4dd74b8557bc38d1c5b345c07290",
+    "old_normal_delivery": "86b59a4b859e35cff6d822755d1448b55cdac53b",
+    "old_normal_binary_sha256": "2a74a35788f438d30427c2d37398f41fdbd9babf322f05ba31374a77471347ee",
+    "normal_source": "b259d416c482569622e6467a121b6c4436e6ac9e",
+    "source_delivery": "755fe94cc0953d88ced018fbca64735613b504b6",
+    "app_tree": "a28abb7ec022b2bd646b668fdae2fb96609acacb",
+    "normal_binary_sha256": "d132fe939b6f6b471a54b9fb3b91d3574c34a883b3a7ee86d5b381b8140031ab",
+    "physical_metadata_candidate": "26aa70c50ec8c262c93a1a8b30a277f321ace53c",
+    "main_merge": "6bfb126b78eb287e572c5c10d0f28e33e9151cfc",
+    "delivery_receipt": "intake/p4-entropy-physical-public-delivery.json",
+    "delivery_receipt_sha256": "5c4ed36e41a527bf3c18fc22e826229b2fe5247ed918388f9cbe746a4ee3e351",
+    "public_packet": "docs/restart/implementation/Q03/entropy-provider/physical-public-20261026",
+    "public_manifest_sha256": "810521ca820041d8bc38dd9f9753ed13b3f08c89c782092ca8c075d1454927af",
+    "root_source_review_sha256": "86e9c8a17596ce6d11a6ce3b4d4746de2f8ef31af93ca362017bed95d8df6786",
+    "sdk_supported_source_decision_sha256": "1b4ca0e49e014f1346d00e103a1cfd6df2d9dd24225e2c40fd4428b159825b92",
+    "reuse": "Root86e9 reviewed source/artifacts, SDK47 and653-member packet; root26aa receipt binds unchanged firmware tree129 inputs, original packet and35 metadata files. This review reads only property-relevant sources/selected physical artifacts; no full packet replay."
+  },
+  "requirements_interpretation": {
+    "Q01": "Read brief/acceptance-plan: common offline requirements are documentary, profiles independent, exact sample/image/channels/bounds required. QP02 proves kit feasibility; Q03/Q05 retain custody, entropy-fault, persistence/reset/update/recovery and release work. Listed future Q01 hostile/custody procedures are not all new prerequisite tests for this limited feasibility gate.",
+    "P01": "Relevant PROD-08/09/11 and hardware-candidate/proof sections retain session-only, exact hardware, finite bounds and honest interfaces. No absent-radio or universally trusted-human claim follows from an optical-capable board.",
+    "exactness": "For criterion1 identify the exact known kit and its configured/observed components and channels. Do not convert a source driver version into physical controller PID or a PCB revision. The criterion does not expressly require reading every peripheral silicon ID or uncovering a PCB mark; unknowns remain attached to the limited claim.",
+    "scope": "No complete vault, release, hostile-host trusted consent, RF-frequency measurement, whole-RAM marker campaign, NIP44, real identity or new statistical benchmark is required or admitted by this receipt."
+  },
+  "criteria": [
+    {
+      "id": "QP02-1",
+      "exact_acceptance": "Identify exact silicon, camera, panel and any companion radio; measure or inspect permitted channels.",
+      "verdict": "PASS_EXACT_KIT_IDENTIFICATION_AND_CHANNEL_INSPECTION_WITH_UNKNOWNS_RETAINED",
+      "supported_claim": "This exact maintainer-identified Waveshare ESP32-P4-WIFI6-Touch-LCD-3.5 SKU33360 sample has ROM/runtime P4rev3.2, physically detected OV5647 PID0x5647, a functioning installed3.5-inch320x480 panel module specified by that kit's manufacturer as ST7796/SPI, and a documented present C6-family companion with inspected connections. Permitted optical/local-control and engineering USB/debug channels are enumerated; no radio-absence/isolation release claim.",
+      "material": [
+        {
+          "path": "docs/restart/implementation/hardware-access/device-facts-2026-10-25.json",
+          "meaning": "Maintainer exact SKU/camera-mark report, ROM P4v3.2, physical OV5647 detection and functional display/preview; PCB covered/unknown and no separate panel-controller ID explicitly retained."
+        },
+        {
+          "path": "docs/restart/implementation/hardware-access/macos-kit-sources.md",
+          "meaning": "Already observed official manufacturer manual binds SKU33360 to ST7796 SPI panel, touch and C6 radio; source specification, not peripheral PID attestation."
+        },
+        {
+          "path": "intake/p4-c6-session-gate.json",
+          "meaning": "Pinned vendor870588 schematic page1 SHA3d8b63f8... identifies U1 ESP32-C6FH8, GPIO54->C6_CHIP_PU, SDIO14..19, auxiliary GPIO6, MicroSD39..44 and USB/power/BOOT paths."
+        },
+        {
+          "path": "intake/p4-c6-root-probe-assessment.json",
+          "meaning": "Actual public positive0092:6666 SDIO endpoint, low timeout263, one release recovers same endpoint, reassert low/cleanup0; evidence of causal local link/control, not C6 die/firmware/RF identity."
+        },
+        {
+          "path": "docs/restart/implementation/Q03/entropy-provider/physical-public-20261026/normal/runtime.log.gz",
+          "lines": [
+            1,
+            22,
+            26,
+            27,
+            38,
+            56,
+            57,
+            58,
+            64,
+            67,
+            70,
+            74,
+            81,
+            83,
+            92,
+            94
+          ],
+          "meaning": "Sourceb259 boot P4v3.2 and physical OV5647 PID0x5647, MIPI-CSI800x800RGB565, live display/touch registration and observed optical completion. st7796 version1.5.0 is a software component version, not a read hardware PID."
+        }
+      ],
+      "channels": [
+        {
+          "path": "Optical operation input/output and local controls",
+          "permitted_state": "Initial manual public-fixture QR request/response; touch navigation and BOOT35 decision path. No DM/automation or operation-to-recovery mode switch."
+        },
+        {
+          "path": "H5 USB-UART/CH343, GPIO38/37 console, DTR/RTS->U6->BOOT35/ESP_EN",
+          "permitted_state": "Current engineering identification/flash/diagnostic path, physically connected in public trials. It cannot establish adversarial-host trusted human consent or secret-bearing offline operation."
+        },
+        {
+          "path": "H1 native USB DP50/DM49 and J6 USB1 GPIO24/25",
+          "permitted_state": "Known physical data paths from pinned schematic; no claim of physical absence or qualified isolation. Production/offline channel transition remains Q03/Q05."
+        },
+        {
+          "path": "C6FH8 specified companion, SDIO14..19, GPIO54 enable/control, GPIO6 auxiliary, exposed C6bootIO9",
+          "permitted_state": "Radio physically present by identified kit design. Root observed causal SDIO control and pad-low guard samples. C6die/revision/firmware, physical pin voltage, continuous hold and RF state remain unknown."
+        },
+        {
+          "path": "Battery/J1/AXP2101, shared USB0_5V, PWR/RST, expansion/MicroSD/debug",
+          "permitted_state": "Known board channels/power and update/debug exposure; not silently classified as data-absent or permanently safe. Battery/PWR observation does not prove CPU continuity."
+        }
+      ],
+      "unknowns": [
+        "Actual PCB marking/revision remains covered/unknown.",
+        "Panel-controller physical PID has not been read. ST7796 is the manufacturer/BSP model association for the observed exact kit panel; runtime software name/version is not PID evidence.",
+        "Camera PID0x5647 is an actual detected sensor result; do not generalize panel or C6 chip identification from it.",
+        "Companion C6die/revision/firmware and continuous pin/RF/reset isolation remain unqualified.",
+        "Touch-controller precise PID and permitted secret-bearing USB/debug transitions are outside this feasibility claim."
+      ],
+      "why_not_blocked": "The named panel module is identified by exact kit/manufacturer specification and demonstrated actual operation. No independent panel-silicon PID or uncovered PCB mark is demanded by this criterion; neither is reported as measured. 'Measure or inspect permitted channels' is satisfied by schematic/source inspection plus targeted actual observations, without claiming RF absence. Full channel isolation/custody is a distinct stronger gate.",
+      "exact_missing_property": null,
+      "minimal_next_check": "None required for this bounded QP02 criterion; preserve stated unknowns for any stronger claim."
+    },
+    {
+      "id": "QP02-2",
+      "exact_acceptance": "Prove camera-to-decoder-to-display operation and memory envelope before implementing the complete vault.",
+      "verdict": "PASS_MEASURED_BOUNDED_OPTICAL_PIPELINE_FEASIBILITY",
+      "supported_claim": "The actual camera captures a bounded operation QR, the actual decoder and shared Rust engine consume it, the physical display presents pages and response QR, and the actual scanned response verifies under the separately pinned public identity. The finite current pipeline fits the observed sample with documented internal/PSRAM allocation shape and measured worker margin; complete-vault worst-case resources remain open.",
+      "physical_chain": [
+        {
+          "source": "33a6b4e3",
+          "runtime_sha256": "771bbf4c975b3792bed318664296aa6f6d6dda43cd124e6588e75428d82a4ef0",
+          "evidence": "Physical MIPI-CSI800x800 stream; detected operation QR phase2207ms; display response ACK; maintainer scanned602-byte public response verified by existing client/reference. Worker free45756 and INTERNAL free224715 at response."
+        },
+        {
+          "source": "b259d416",
+          "runtime_gzip_sha256": "2c67dab8eef2ea7c081969c51ec8bc76f1313d1cb38d1c4bf9df6e0fd3eee1c8",
+          "runtime_raw_sha256": "70117bc3c6e1892c4b6d9b91a973523fc67c069f82426183f7e59edb7431165d",
+          "assessment_sha256": "16d0c6dcea8b0cba6ac52e15fe71cbf8de41508173af0efa895b5309015b95cd",
+          "evidence": "Physical OV5647/MIPI-CSI800x800RGB565 stream, operation QR phase2247ms, local pageNext/Back, response-after-ACK,608-byte actual scanned response. Client and independent BIP340 PASS; one published11 identity only."
+        }
+      ],
+      "memory_envelope": {
+        "sample_PSRAM_bytes": 33554432,
+        "physical_memory_test": "32MB found; SPI SRAM memory test OK in both relevant physical boots.",
+        "camera": "Exactly800x800RGB565 and1280000 bytes per frame; app allocates exactly2 aligned PSRAM frames =2560000 bytes, passes count2 to the bounded adapter.",
+        "decoder": "quirc fixed800x800 image; runtime decoder allocation664152 bytes, including640000 gray image and fixed workspace.700000-byte decoder allocation cap; no hostile resize. Fixed upstream tables254regions/32capstones/64grids; consumer grid<=117modules/version25.",
+        "engine": "One5920-byte INTERNAL Rust owner; one98304-byte INTERNAL worker stack. Fixed quirc code/data allocations and1536-byte response buffer in PSRAM;32x8 review/text and finite frame/input/output bounds.",
+        "observed_normal_free_stack_bytes": 45756,
+        "observed_normal_free_INTERNAL_at_response_bytes": 223963,
+        "interpretation": "Actual stack high-water margin for this finite exercised flow plus free INTERNAL at the response boundary and capped allocation shape establishes current feasibility. These are not whole-system peak-RAM, adversarial worst-case crypto/parser/driver timing, isolated mutex delta or universal cache-off/cleanup guarantees."
+      },
+      "source_locations": [
+        {
+          "path": "apps/p4/main/main.c",
+          "lines": [
+            75,
+            87,
+            113,
+            114,
+            135,
+            137,
+            138,
+            139,
+            140,
+            144,
+            146,
+            147,
+            150,
+            152,
+            153,
+            155,
+            157
+          ]
+        },
+        {
+          "path": "apps/p4/main/preview_contract.h",
+          "lines": [
+            10,
+            11,
+            12,
+            13,
+            14,
+            19,
+            21
+          ]
+        },
+        {
+          "path": "docs/restart/implementation/Q03/p4-optical-brief.md",
+          "lines": [
+            30,
+            31,
+            32,
+            38,
+            42,
+            43,
+            45,
+            48,
+            49,
+            50,
+            183,
+            184,
+            189,
+            190,
+            191,
+            192
+          ]
+        }
+      ],
+      "limits": [
+        "Engineering public fixture precedes a complete vault; no local identity import/recovery/custody implementation is admitted.",
+        "Actual phase2207/2247ms observations are not a new benchmark or worst-case hard bound.",
+        "No separate post-entropy-lease camera preview was performed; neither response display nor signature is relabeled as post-lease whole-camera health.",
+        "Q03 exact worst-case peak resources, hostile optical catalog, lifecycle/reset/RAM/ROM safety remain independent."
+      ],
+      "exact_missing_property": null,
+      "minimal_next_check": "None required to establish this finite QP02 pipeline/memory feasibility; complete-vault work retains existing resource gates."
+    },
+    {
+      "id": "QP02-3",
+      "exact_acceptance": "Compare supported Rust driver path with a narrow maintained vendor-framework adapter if needed; retain one shared signing engine.",
+      "verdict": "PASS_CURRENT_DATED_PRIMARY_COMPARISON_AND_EXISTING_SINGLE_ENGINE_ADAPTER",
+      "temporal_precision": "No historical distinct esp-hal/driver-comparison receipt was found in the finite reviewed records; one is not fabricated from FFI alone. Root explicitly authorized the primary read below. This comparison/selection is made now for QP02, dated2026-10-26, and does not claim to have preceded earlier engineering builds.",
+      "comparison": [
+        {
+          "candidate": "Native esp-rs esp-hal",
+          "support": "Current pinned primary README explicitly lists ESP32-P4; no_std HAL. Export index includes SPI/I2C and unstable MIPI-DSI.",
+          "fit_and_limit": "Family support and a DSI display module are not evidence of a complete exact-rev3.2 OV5647 MIPI-CSI/ISP sensor pipeline. The bounded published surface inspected does not establish that end-to-end chain. This is not proof that no Rust implementation exists elsewhere or could be written."
+        },
+        {
+          "candidate": "esp-rs ESP-IDF Rust wrappers/raw bindings",
+          "support": "Current canonical monorepo esp-rs/esp-idf supplies esp-idf-hal P4 target riscv32imafc-esp-espidf, P4-gated LCD and standard SPI/I2C wrappers; esp-idf-sys raw bindings permit Rust/C integration.",
+          "fit_and_limit": "This remains an ESP-IDF-backed path rather than removing the vendor framework. The inspected surface does not independently qualify exact sensor/CSI/ISP compatibility. Current docs distinguish community wrapper maintenance and HIL limits. Old esp-idf-sys is read-only and explicitly redirects; it is not treated as current independent proof."
+        },
+        {
+          "candidate": "Existing narrow vendor peripheral adapter with no_std shared Rust engine",
+          "support": "Pinned Waveshare870588e62daaf723f3c52f0060d8dc053665ed30/BSP2.0.2 and official SDK7101770/6.0.2 already supply the actual OV5647 MIPI-CSI/ISP/RGB565 path and ST7796 SPI display/LVGL path, source-reviewed and physically exercised on rev3.2.",
+          "fit_and_limit": "Retain those maintained upstream components and narrow owned C adapter, with exact dependency/source hashes and internal no_std Rust engine over private C ABI. No rewrite or new wrapper layer is needed to prove feasibility. Generic DSI support is not substituted for this SPI panel. Future standalone build/release maintenance remains Q03/Q05."
+        }
+      ],
+      "current_selection": "Keep the existing narrow vendor-framework peripheral adapter for this exact observed chain; keep the single Rust signing engine. No SDK replacement, new driver dependency or new checkout is proposed.",
+      "engine_preservation": "apps/p4/rust/Cargo.toml points to the same relative crates/nsealr-core; lib.rs is a private allocation-free no_std consumer. No copied semantic engine, C signer or host fallback. Rust1.95 riscv32imafc-unknown-none-elf staticlib and IDF GCC15.2 ELF32/RISC-V/RVC/single-float ILP32F have actual source/ELF/runtime review and public signature evidence.",
+      "exact_missing_property": null,
+      "minimal_next_check": "No further driver research/build is needed for QP02 after this bounded comparison. Do not claim universal Rust impossibility or exact untested upstream compatibility."
+    }
+  ],
+  "upstream_primary_read": {
+    "authorized_by": "Root followup2026-10-26 allowing one bounded official esp-rs repository/docs read for the missing comparison.",
+    "read_date_UTC": "2026-10-26",
+    "sources": [
+      {
+        "repo": "esp-hal",
+        "commit": "c4fbede977cf21166f408050b3e53e6d876c85c9",
+        "path": "README.md",
+        "URL": "https://api.github.com/repos/esp-rs/esp-hal/contents/README.md?ref=c4fbede977cf21166f408050b3e53e6d876c85c9",
+        "read_utc": "2026-10-26T20:49:18.364270+00:00",
+        "sha256": "1eae4baa909c99cc6e7d6c409baa0f7571ce126a8b4f2f1160b51468973835f5",
+        "bytes": 5768,
+        "git_blob": "236f0bb82bd17904839a4a8ddfe0ba9d16a2c3c5",
+        "html_url": "https://github.com/esp-rs/esp-hal/blob/c4fbede977cf21166f408050b3e53e6d876c85c9/README.md",
+        "selected_original_text": [
+          {
+            "line": 16,
+            "text": "Bare-metal (`no_std`) hardware abstraction layer for Espressif devices. Currently supports the following devices:"
+          },
+          {
+            "line": 21,
+            "text": "- ESP32-P Series: _ESP32-P4_"
+          }
+        ],
+        "meaning": "Current primary README explicitly supports the P4 family; this alone does not qualify exact rev3.2 peripherals."
+      },
+      {
+        "repo": "esp-hal",
+        "commit": "c4fbede977cf21166f408050b3e53e6d876c85c9",
+        "path": "esp-hal/src/lib.rs",
+        "URL": "https://api.github.com/repos/esp-rs/esp-hal/contents/esp-hal/src/lib.rs?ref=c4fbede977cf21166f408050b3e53e6d876c85c9",
+        "read_utc": "2026-10-26T20:49:18.364596+00:00",
+        "sha256": "2f39c6a7fa01f2619becab2e73daa5c672934de3338a8df3d79464dd243d91ab",
+        "bytes": 26387,
+        "git_blob": "d9ead2682378191df19c81529cc6817ff28a1b0e",
+        "html_url": "https://github.com/esp-rs/esp-hal/blob/c4fbede977cf21166f408050b3e53e6d876c85c9/esp-hal/src/lib.rs",
+        "selected_original_text": [
+          {
+            "line": 290,
+            "text": "#[cfg(any(soc_has_dport, soc_has_hp_sys, soc_has_pcr, soc_has_system))]"
+          },
+          {
+            "line": 291,
+            "text": "pub mod clock;"
+          },
+          {
+            "line": 292,
+            "text": "#[cfg(gpio_driver_supported)]"
+          },
+          {
+            "line": 293,
+            "text": "pub mod gpio;"
+          },
+          {
+            "line": 294,
+            "text": "#[cfg(i2c_master_driver_supported)]"
+          },
+          {
+            "line": 295,
+            "text": "pub mod i2c;"
+          },
+          {
+            "line": 296,
+            "text": "// The I2S driver is unstable, but its clock tree nodes are part of every build."
+          },
+          {
+            "line": 297,
+            "text": "#[cfg(i2s_driver_supported)]"
+          },
+          {
+            "line": 298,
+            "text": "#[path = \"i2s/clocks/mod.rs\"]"
+          },
+          {
+            "line": 299,
+            "text": "mod i2s_clocks;"
+          },
+          {
+            "line": 300,
+            "text": "pub mod peripherals;"
+          },
+          {
+            "line": 301,
+            "text": "#[cfg(all("
+          },
+          {
+            "line": 302,
+            "text": "    feature = \"unstable\","
+          },
+          {
+            "line": 303,
+            "text": "    any("
+          },
+          {
+            "line": 304,
+            "text": "        hmac_driver_supported,"
+          },
+          {
+            "line": 305,
+            "text": "        sha_driver_supported,"
+          },
+          {
+            "line": 306,
+            "text": "        ethernet_driver_supported,"
+          },
+          {
+            "line": 307,
+            "text": "        mipi_dsi_driver_supported"
+          },
+          {
+            "line": 308,
+            "text": "    )"
+          },
+          {
+            "line": 309,
+            "text": "))]"
+          },
+          {
+            "line": 310,
+            "text": "mod reg_access;"
+          },
+          {
+            "line": 311,
+            "text": "#[cfg(rng_driver_supported)]"
+          },
+          {
+            "line": 312,
+            "text": "pub mod rng;"
+          },
+          {
+            "line": 313,
+            "text": "#[cfg(any(spi_master_driver_supported, spi_slave_driver_supported))]"
+          },
+          {
+            "line": 314,
+            "text": "pub mod spi;"
+          },
+          {
+            "line": 315,
+            "text": "pub mod system;"
+          },
+          {
+            "line": 316,
+            "text": "pub mod time;"
+          },
+          {
+            "line": 317,
+            "text": "#[cfg(uart_driver_supported)]"
+          },
+          {
+            "line": 318,
+            "text": "pub mod uart;"
+          },
+          {
+            "line": 372,
+            "text": "unstable_driver! {"
+          },
+          {
+            "line": 373,
+            "text": "    #[cfg(aes_driver_supported)]"
+          },
+          {
+            "line": 374,
+            "text": "    pub mod aes;"
+          },
+          {
+            "line": 375,
+            "text": "    #[cfg(assist_debug_driver_supported)]"
+          },
+          {
+            "line": 376,
+            "text": "    pub mod assist_debug;"
+          },
+          {
+            "line": 377,
+            "text": "    #[cfg(canfd_driver_supported)]"
+          },
+          {
+            "line": 378,
+            "text": "    pub mod canfd;"
+          },
+          {
+            "line": 379,
+            "text": "    pub mod delay;"
+          },
+          {
+            "line": 380,
+            "text": "    #[cfg(ecc_driver_supported)]"
+          },
+          {
+            "line": 381,
+            "text": "    pub mod ecc;"
+          },
+          {
+            "line": 382,
+            "text": "    #[cfg(flash_driver_supported)]"
+          },
+          {
+            "line": 383,
+            "text": "    pub mod flash;"
+          },
+          {
+            "line": 384,
+            "text": "    #[cfg(hmac_driver_supported)]"
+          },
+          {
+            "line": 385,
+            "text": "    pub mod hmac;"
+          },
+          {
+            "line": 386,
+            "text": "    #[cfg(i2s_driver_supported)]"
+          },
+          {
+            "line": 387,
+            "text": "    pub mod i2s;"
+          },
+          {
+            "line": 388,
+            "text": "    #[cfg(soc_has_lcd_cam)]"
+          },
+          {
+            "line": 389,
+            "text": "    pub mod lcd_cam;"
+          },
+          {
+            "line": 390,
+            "text": "    #[cfg(ledc_driver_supported)]"
+          },
+          {
+            "line": 391,
+            "text": "    pub mod ledc;"
+          },
+          {
+            "line": 392,
+            "text": "    #[cfg(mcpwm_driver_supported)]"
+          },
+          {
+            "line": 393,
+            "text": "    pub mod mcpwm;"
+          },
+          {
+            "line": 394,
+            "text": "    #[cfg(parl_io_driver_supported)]"
+          },
+          {
+            "line": 395,
+            "text": "    pub mod parl_io;"
+          },
+          {
+            "line": 396,
+            "text": "    #[cfg(pcnt_driver_supported)]"
+          },
+          {
+            "line": 397,
+            "text": "    pub mod pcnt;"
+          },
+          {
+            "line": 398,
+            "text": "    #[cfg(rmt_driver_supported)]"
+          },
+          {
+            "line": 399,
+            "text": "    pub mod rmt;"
+          },
+          {
+            "line": 400,
+            "text": "    #[cfg(rsa_driver_supported)]"
+          },
+          {
+            "line": 401,
+            "text": "    pub mod rsa;"
+          },
+          {
+            "line": 402,
+            "text": "    #[cfg(sdmmc_driver_supported)]"
+          },
+          {
+            "line": 403,
+            "text": "    pub mod sdmmc;"
+          },
+          {
+            "line": 404,
+            "text": "    #[cfg(sha_driver_supported)]"
+          },
+          {
+            "line": 405,
+            "text": "    pub mod sha;"
+          },
+          {
+            "line": 406,
+            "text": "    #[cfg(sdm_driver_supported)]"
+          },
+          {
+            "line": 407,
+            "text": "    pub mod sdm;"
+          },
+          {
+            "line": 408,
+            "text": "    #[cfg(touch_driver_supported)]"
+          },
+          {
+            "line": 409,
+            "text": "    pub mod touch;"
+          },
+          {
+            "line": 410,
+            "text": "    #[cfg(soc_has_trace0)]"
+          },
+          {
+            "line": 411,
+            "text": "    pub mod trace;"
+          },
+          {
+            "line": 412,
+            "text": "    #[cfg(twai_driver_supported)]"
+          },
+          {
+            "line": 413,
+            "text": "    pub mod twai;"
+          },
+          {
+            "line": 414,
+            "text": "    #[cfg(any("
+          },
+          {
+            "line": 415,
+            "text": "        usb_otg_driver_supported,"
+          },
+          {
+            "line": 416,
+            "text": "        usb_otg_hs_driver_supported,"
+          },
+          {
+            "line": 417,
+            "text": "        usb_serial_jtag_driver_supported,"
+          },
+          {
+            "line": 418,
+            "text": "    ))]"
+          },
+          {
+            "line": 419,
+            "text": "    pub mod usb;"
+          },
+          {
+            "line": 420,
+            "text": "    #[cfg(ethernet_driver_supported)]"
+          },
+          {
+            "line": 421,
+            "text": "    pub mod ethernet;"
+          },
+          {
+            "line": 422,
+            "text": "    #[cfg(mipi_dsi_driver_supported)]"
+          },
+          {
+            "line": 423,
+            "text": "    pub mod mipi_dsi;"
+          },
+          {
+            "line": 424,
+            "text": "}"
+          }
+        ],
+        "meaning": "Current driver export surface includes SPI/I2C and feature-gated unstable MIPI-DSI. This inspected module index does not establish a complete OV5647 MIPI-CSI/ISP sensor pipeline; absence here is not a universal Rust impossibility claim."
+      },
+      {
+        "repo": "esp-idf-hal",
+        "commit": "a7a8b5b2d97af88af75988c05d3f433f742368a2",
+        "path": "README.md",
+        "URL": "https://api.github.com/repos/esp-rs/esp-idf-hal/contents/README.md?ref=a7a8b5b2d97af88af75988c05d3f433f742368a2",
+        "read_utc": "2026-10-26T20:49:18.364717+00:00",
+        "sha256": "1ad86b84a08ec3c7af62502bb56c4ff0b996331aab79566ac29bfc942557359a",
+        "bytes": 3950,
+        "git_blob": "4d6c783358361664b000c5ed3d20bf6ff7479057",
+        "html_url": "https://github.com/esp-rs/esp-idf/blob/a7a8b5b2d97af88af75988c05d3f433f742368a2/README.md",
+        "selected_original_text": [
+          {
+            "line": 1,
+            "text": "# Rust on ESP-IDF"
+          }
+        ],
+        "meaning": "Official old repository redirects to esp-rs/esp-idf monorepo; root README37-39 states migration and workspace layout. This is current evidence, not an earlier design decision."
+      },
+      {
+        "repo": "esp-idf-hal",
+        "commit": "a7a8b5b2d97af88af75988c05d3f433f742368a2",
+        "path": "src/lib.rs",
+        "URL": "https://api.github.com/repos/esp-rs/esp-idf-hal/contents/src/lib.rs?ref=a7a8b5b2d97af88af75988c05d3f433f742368a2",
+        "read_utc": "2026-10-26T20:49:18.829062+00:00",
+        "HTTP_error": 404,
+        "meaning": "Old pre-monorepo source path absent; followed the explicitly documented new path once."
+      },
+      {
+        "repo": "esp-idf-sys",
+        "commit": "2d6dd6106f2240d1f177f2ec56b6d5b78ba537ce",
+        "path": "README.md",
+        "URL": "https://api.github.com/repos/esp-rs/esp-idf-sys/contents/README.md?ref=2d6dd6106f2240d1f177f2ec56b6d5b78ba537ce",
+        "read_utc": "2026-10-26T20:49:18.927807+00:00",
+        "sha256": "ce73a75739329f1be294ad3ddaa632b25bf03a0edb548e55c85bbfe746bb0702",
+        "bytes": 5551,
+        "git_blob": "2a8ceb4cef3d5261601ca914a32cb55d12e0fa77",
+        "html_url": "https://github.com/esp-rs/esp-idf-sys/blob/2d6dd6106f2240d1f177f2ec56b6d5b78ba537ce/README.md",
+        "selected_original_text": [
+          {
+            "line": 1,
+            "text": "# ⚠️ This repository has moved"
+          },
+          {
+            "line": 2,
+            "text": ""
+          },
+          {
+            "line": 3,
+            "text": "## `esp-idf-sys` is now developed in the [esp-rs/esp-idf](https://github.com/esp-rs/esp-idf) monorepo, together with `esp-idf-hal` and `esp-idf-svc`"
+          },
+          {
+            "line": 4,
+            "text": ""
+          },
+          {
+            "line": 5,
+            "text": "The sources live under [`esp-idf-sys/`](https://github.com/esp-rs/esp-idf/tree/master/esp-idf-sys) there, with the complete history of this repository and its releases tagged as `esp-idf-sys-vX.Y.Z`."
+          }
+        ],
+        "meaning": "Read-only former repo explicitly redirects current development to esp-rs/esp-idf; historical P4 target row72 is not treated as fresh exact-revision validation."
+      },
+      {
+        "repo": "esp-idf",
+        "commit": "a7a8b5b2d97af88af75988c05d3f433f742368a2",
+        "path": "esp-idf-hal/src/lib.rs",
+        "URL": "https://api.github.com/repos/esp-rs/esp-idf/contents/esp-idf-hal/src/lib.rs?ref=a7a8b5b2d97af88af75988c05d3f433f742368a2",
+        "read_utc": "2026-10-26T20:49:50.628567+00:00",
+        "sha256": "8bff1288fee847214620cb0463a5044087194abaf066dbb20b60e501d3b51318",
+        "bytes": 7478,
+        "git_blob": "17ac889ea56f59c9b0f92cc1efad6f60e1d30c93",
+        "html_url": "https://github.com/esp-rs/esp-idf/blob/a7a8b5b2d97af88af75988c05d3f433f742368a2/esp-idf-hal/src/lib.rs",
+        "selected_original_text": [
+          {
+            "line": 32,
+            "text": "#[cfg(not(any(esp32s31, all(esp32h21, not(esp_idf_soc_adc_supported)))))]"
+          },
+          {
+            "line": 33,
+            "text": "pub mod adc;"
+          },
+          {
+            "line": 34,
+            "text": "pub mod can;"
+          },
+          {
+            "line": 35,
+            "text": "pub mod cpu;"
+          },
+          {
+            "line": 36,
+            "text": "pub mod delay;"
+          },
+          {
+            "line": 37,
+            "text": "pub mod gpio;"
+          },
+          {
+            "line": 38,
+            "text": "pub mod i2c;"
+          },
+          {
+            "line": 39,
+            "text": "#[cfg_attr("
+          },
+          {
+            "line": 40,
+            "text": "    feature = \"nightly\","
+          },
+          {
+            "line": 41,
+            "text": "    doc(cfg(all(esp_idf_soc_i2s_supported, esp_idf_comp_driver_enabled)))"
+          },
+          {
+            "line": 42,
+            "text": ")]"
+          },
+          {
+            "line": 43,
+            "text": "pub mod i2s;"
+          },
+          {
+            "line": 44,
+            "text": "pub mod interrupt;"
+          },
+          {
+            "line": 45,
+            "text": "pub mod io;"
+          },
+          {
+            "line": 46,
+            "text": "#[cfg(all(esp32p4, esp_idf_comp_esp_lcd_enabled, feature = \"alloc\"))]"
+          },
+          {
+            "line": 47,
+            "text": "pub mod lcd;"
+          },
+          {
+            "line": 48,
+            "text": "#[cfg(esp32p4)]"
+          },
+          {
+            "line": 49,
+            "text": "pub mod ldo;"
+          },
+          {
+            "line": 50,
+            "text": "pub mod ledc;"
+          },
+          {
+            "line": 51,
+            "text": "#[cfg(any(esp_idf_eth_use_esp32_emac, esp_idf_eth_use_openeth))]"
+          },
+          {
+            "line": 52,
+            "text": "pub mod mac;"
+          },
+          {
+            "line": 53,
+            "text": "#[cfg(any(not(esp32p4), esp_idf_comp_espressif__esp_wifi_remote_enabled))]"
+          },
+          {
+            "line": 54,
+            "text": "pub mod modem;"
+          },
+          {
+            "line": 123,
+            "text": "pub mod rom;"
+          },
+          {
+            "line": 124,
+            "text": "pub mod sd;"
+          },
+          {
+            "line": 125,
+            "text": "pub mod sleep;"
+          },
+          {
+            "line": 126,
+            "text": "pub mod spi;"
+          },
+          {
+            "line": 127,
+            "text": "pub mod sys;"
+          },
+          {
+            "line": 128,
+            "text": "pub mod task;"
+          },
+          {
+            "line": 129,
+            "text": "#[cfg(all(esp_idf_soc_temp_sensor_supported, esp_idf_version_major = \"5\"))]"
+          },
+          {
+            "line": 130,
+            "text": "pub mod temp_sensor;"
+          },
+          {
+            "line": 131,
+            "text": ""
+          },
+          {
+            "line": 132,
+            "text": "#[cfg(all("
+          },
+          {
+            "line": 133,
+            "text": "    esp_idf_soc_gptimer_supported,"
+          },
+          {
+            "line": 134,
+            "text": "    not(feature = \"timer-legacy\"),"
+          },
+          {
+            "line": 135,
+            "text": "    feature = \"alloc\""
+          },
+          {
+            "line": 136,
+            "text": "))]"
+          },
+          {
+            "line": 137,
+            "text": "#[cfg_attr("
+          },
+          {
+            "line": 138,
+            "text": "    feature = \"nightly\","
+          },
+          {
+            "line": 139,
+            "text": "    doc(cfg(all("
+          },
+          {
+            "line": 140,
+            "text": "        esp_idf_soc_gptimer_supported,"
+          },
+          {
+            "line": 141,
+            "text": "        not(feature = \"timer-legacy\"),"
+          },
+          {
+            "line": 142,
+            "text": "        feature = \"alloc\""
+          },
+          {
+            "line": 143,
+            "text": "    )))"
+          },
+          {
+            "line": 144,
+            "text": ")]"
+          },
+          {
+            "line": 145,
+            "text": "pub mod timer;"
+          },
+          {
+            "line": 146,
+            "text": "#[cfg(all(feature = \"timer-legacy\", not(esp_idf_version_at_least_6_0_0)))]"
+          },
+          {
+            "line": 147,
+            "text": "#[cfg_attr("
+          },
+          {
+            "line": 148,
+            "text": "    all(feature = \"timer-legacy\", not(esp_idf_version_at_least_6_0_0)),"
+          },
+          {
+            "line": 149,
+            "text": "    deprecated("
+          },
+          {
+            "line": 150,
+            "text": "        since = \"0.46.0\","
+          },
+          {
+            "line": 151,
+            "text": "        note = \"use the new `timer` api by disabling the `timer-legacy` feature\""
+          },
+          {
+            "line": 152,
+            "text": "    )"
+          },
+          {
+            "line": 153,
+            "text": ")]"
+          },
+          {
+            "line": 154,
+            "text": "mod timer_legacy;"
+          },
+          {
+            "line": 155,
+            "text": "#[cfg(all(feature = \"timer-legacy\", not(esp_idf_version_at_least_6_0_0)))]"
+          },
+          {
+            "line": 156,
+            "text": "pub mod timer {"
+          },
+          {
+            "line": 157,
+            "text": "    pub use crate::timer_legacy::*;"
+          },
+          {
+            "line": 158,
+            "text": "}"
+          },
+          {
+            "line": 159,
+            "text": ""
+          },
+          {
+            "line": 160,
+            "text": "pub mod uart;"
+          },
+          {
+            "line": 161,
+            "text": "#[cfg(all("
+          },
+          {
+            "line": 162,
+            "text": "    any(esp32, esp32s2, esp32s3, esp32c5, esp32c6, esp32p4, esp32s31),"
+          },
+          {
+            "line": 163,
+            "text": "    esp_idf_comp_ulp_enabled"
+          },
+          {
+            "line": 164,
+            "text": "))]"
+          },
+          {
+            "line": 165,
+            "text": "pub mod ulp;"
+          },
+          {
+            "line": 166,
+            "text": "pub mod units;"
+          },
+          {
+            "line": 167,
+            "text": "#[cfg(esp_idf_soc_usb_serial_jtag_supported)]"
+          },
+          {
+            "line": 168,
+            "text": "pub mod usb_serial;"
+          }
+        ],
+        "meaning": "Current P4-gated LCD/ldo plus SPI/I2C/etc exports; inspected surface is not an independently qualified complete camera pipeline. Rust wrappers still use ESP-IDF."
+      },
+      {
+        "repo": "esp-idf",
+        "commit": "a7a8b5b2d97af88af75988c05d3f433f742368a2",
+        "path": "esp-idf-hal/README.md",
+        "URL": "https://api.github.com/repos/esp-rs/esp-idf/contents/esp-idf-hal/README.md?ref=a7a8b5b2d97af88af75988c05d3f433f742368a2",
+        "read_utc": "2026-10-26T20:49:50.616998+00:00",
+        "sha256": "8d5965ca6cbfdf88c503c9dc3610655cf572cb4cd293e928fb9d2a32024d3f5d",
+        "bytes": 5085,
+        "git_blob": "1b8061652f48f0ada7eae59198028d73023be1b7",
+        "html_url": "https://github.com/esp-rs/esp-idf/blob/a7a8b5b2d97af88af75988c05d3f433f742368a2/esp-idf-hal/README.md",
+        "selected_original_text": [
+          {
+            "line": 1,
+            "text": "# Safe Rust wrappers for the drivers in the [ESP IDF SDK](https://docs.espressif.com/projects/esp-idf/en/latest/esp32/)"
+          },
+          {
+            "line": 52,
+            "text": "| esp32p4 | riscv32imafc-esp-espidf |"
+          }
+        ],
+        "meaning": "Current safe wrappers target P4 riscv32imafc-esp-espidf. README11-14 lists standard ESP-IDF driver wrappers/re-exported raw sys;22-28 describes community-maintenance/HIL limits."
+      }
+    ],
+    "method": "Known official GitHub API commit/content endpoints only; no search engine results, clone, checkout, installation, compilation, issue or contact. Browser API endpoints were inaccessible; exact GitHub contents fallback returned canonical source bytes. One old src/lib.rs path404 was resolved by the README's explicit monorepo path; no open-ended alternatives campaign."
+  },
+  "root_action": "Root may assemble normal QP02 acceptance/delivery metadata marking these exact3 feasibility criteria supported, preserving current sample/source/image bindings and unknowns. This review changes no task graph. Ordinary distinct metadata/integration gates still apply. No additional physical check is needed for these3 criteria on the current evidence; Q03 vault and release requirements remain open.",
+  "no_added_requirements": "No controller-PID attestation, PCB uncovering, RF-frequency survey, new entropy statistics, whole-RAM marker proof, complete-vault custody/recovery or unrelated S3/Pi/custom-board gate is added to QP02.",
+  "not_admitted": [
+    "private identity creation/import/use",
+    "complete P4 vault/custody/recovery",
+    "radio absence or continuously proven isolation",
+    "host-independent BOOT human origin while USB-UART connected",
+    "RAM/ROM/reset/panic/debug/erasure safety",
+    "USER/targetCPU/globalC5000",
+    "full catalog/adversarial optical qualification",
+    "Q03 or Q05 release/task closure"
+  ],
+  "actions": {
+    "product_or_graph_edits": 0,
+    "builds": 0,
+    "tests": 0,
+    "USB": 0,
+    "CI": 0,
+    "full653_packet_replay": 0,
+    "new_benchmark_or_statistics": 0,
+    "new_checkout_or_clone": 0,
+    "external_contacts": 0,
+    "agents_spawned": 0,
+    "receipt_files_written": 1
+  },
+  "stop": "Finite exact acceptance decision complete; stop for root review/delivery.",
+  "selected_material_bindings": [
+    {
+      "scope": "main",
+      "path": "docs/restart/implementation/Q01/brief.md",
+      "bytes": 9292,
+      "sha256": "727c1fbca3f2695b1fea0b1fccebf5693acc7aa9b2afaf67414e35a476d174f7"
+    },
+    {
+      "scope": "main",
+      "path": "docs/restart/implementation/Q01/acceptance-plan.json",
+      "bytes": 14420,
+      "sha256": "6102cec4d1ade71471bcfe4d0ad9b45b6cb9f0e0b92d44b7df1827997929c7b5"
+    },
+    {
+      "scope": "main",
+      "path": "docs/restart/implementation/P01/requirements.md",
+      "bytes": 17199,
+      "sha256": "f8635e2941895b7d4043e769c9b73e2064036b1358e5f4266854b074a9b81326"
+    },
+    {
+      "scope": "main",
+      "path": "docs/restart/implementation/P01/threat-models.md",
+      "bytes": 8532,
+      "sha256": "ebf8d5a821eb4843d7b961840a4b21cc74a2997dfa5b9e15f0cc6907586ffee0"
+    },
+    {
+      "scope": "main",
+      "path": "docs/restart/implementation/hardware-access/device-facts-2026-10-25.json",
+      "bytes": 2607,
+      "sha256": "f743735d61f3937d2abae3ce57c6525f2aaa66cc55793c22a667d7b76deb639f"
+    },
+    {
+      "scope": "main",
+      "path": "docs/restart/implementation/hardware-access/macos-kit-sources.md",
+      "bytes": 7853,
+      "sha256": "9a7fcb0a337050f922cf60490cf9d1a5bf3aa0b3b6eb0bc16bfe07e5cd79cba1"
+    },
+    {
+      "scope": "source",
+      "path": "apps/p4/inputs.json",
+      "bytes": 2627,
+      "sha256": "162bfa7d02c546a679814710fbcaa54d418ca03e84d0aa750d745046ab23c3c7"
+    },
+    {
+      "scope": "source",
+      "path": "apps/p4/rust/Cargo.toml",
+      "bytes": 368,
+      "sha256": "285e283e14972770a57bfaa751a402bd91e34a3e261c446b9cad4435c906c98c"
+    },
+    {
+      "scope": "source",
+      "path": "apps/p4/rust/src/lib.rs",
+      "bytes": 8082,
+      "sha256": "899d0131ee3de0605873a81ce7d9d72ebc3addf365248ac8cea7bbba9f364fa0"
+    },
+    {
+      "scope": "source",
+      "path": "apps/p4/main/main.c",
+      "bytes": 7934,
+      "sha256": "1e0b30f479ff24d43b77e2e52d66048fd1835bc7d1f50aca0b8d1074966d5f69"
+    },
+    {
+      "scope": "source",
+      "path": "apps/p4/main/preview_contract.h",
+      "bytes": 1605,
+      "sha256": "fe8cd5337ad7188e158dfd83118e81fdfee7931d79d020479159a564f8e95699"
+    },
+    {
+      "scope": "source",
+      "path": "docs/restart/implementation/Q03/p4-optical-brief.md",
+      "bytes": 20315,
+      "sha256": "2885f16b08a038ba810fba5b11330c5d4bc8184a3ef7bdc8bb0f08a8e93a7108"
+    },
+    {
+      "scope": "source",
+      "path": "docs/restart/implementation/Q03/p4-normal-c6-guard.md",
+      "bytes": 6380,
+      "sha256": "494e44b04552f2686926db8c547cd848add98620d612afc9f8367af8f1dbe42e"
+    },
+    {
+      "scope": "intake",
+      "path": "intake/p4-c6-session-gate.json",
+      "bytes": 14637,
+      "sha256": "0a7f1e16efbd15480c2059b3ac7bbb41d1fd0fa5d6ad8011797ddc2e138853c1"
+    },
+    {
+      "scope": "intake",
+      "path": "intake/p4-c6-root-probe-assessment.json",
+      "bytes": 1843,
+      "sha256": "401732a2fac52195cb5dd89e2f8bffa107deb200dfd62e1eb1655bfa81d6f0ba"
+    },
+    {
+      "scope": "intake",
+      "path": "intake/p4-normal-c6-root-hardware-assessment.json",
+      "bytes": 3385,
+      "sha256": "032778d931b65fb9b23bfdb5e8c4458966b7660c1de31c711338766e5b759809"
+    },
+    {
+      "scope": "intake",
+      "path": "intake/p4-normal-c6-runtime.log",
+      "bytes": 5412,
+      "sha256": "771bbf4c975b3792bed318664296aa6f6d6dda43cd124e6588e75428d82a4ef0"
+    },
+    {
+      "scope": "intake",
+      "path": "intake/p4-fallible-entropy-distinct-root-review.json",
+      "bytes": 4167,
+      "sha256": "86e9c8a17596ce6d11a6ce3b4d4746de2f8ef31af93ca362017bed95d8df6786"
+    },
+    {
+      "scope": "intake",
+      "path": "intake/p4-sdk-entropy-supported-path-assurance-decision.json",
+      "bytes": 21439,
+      "sha256": "1b4ca0e49e014f1346d00e103a1cfd6df2d9dd24225e2c40fd4428b159825b92"
+    },
+    {
+      "scope": "intake",
+      "path": "intake/p4-entropy-physical-public-delivery.json",
+      "bytes": 7402,
+      "sha256": "5c4ed36e41a527bf3c18fc22e826229b2fe5247ed918388f9cbe746a4ee3e351"
+    }
+  ],
+  "selected_physical_metadata_binding": [
+    {
+      "path": "README.md",
+      "sha256": "cf1a2788b9c121904dbb36f110a57aaa7fe3ee5e418c751b9f54c17a0b905862",
+      "matches_frozen_26aa_git": true
+    },
+    {
+      "path": "normal/root-assessment.json",
+      "sha256": "16d0c6dcea8b0cba6ac52e15fe71cbf8de41508173af0efa895b5309015b95cd",
+      "matches_frozen_26aa_git": true
+    },
+    {
+      "path": "normal/runtime.log.gz",
+      "sha256": "2c67dab8eef2ea7c081969c51ec8bc76f1313d1cb38d1c4bf9df6e0fd3eee1c8",
+      "matches_frozen_26aa_git": true
+    },
+    {
+      "path": "observation.json",
+      "sha256": "33b0daa75a0e69c28a9672dfecab4810d8c2ea8aba43a84bc99335e222db740d",
+      "matches_frozen_26aa_git": true
+    },
+    {
+      "path": "verification/client-verification.json",
+      "sha256": "88ead975bb2d4972fe849601cbc928da465cea3859dd089b5c1f993fcd2f0189",
+      "matches_frozen_26aa_git": true
+    }
+  ],
+  "recorded_utc": "2026-10-26T20:55:45.242756+00:00",
+  "verification_limit": "Selected property-relevant readbacks only. Reused root653/47/35 aggregate binding without replay. Existing hardware evidence not rerun, no S3 or other workstream inspected."
+}

@@ -1,0 +1,14 @@
+import assert from "node:assert/strict";
+import {readFileSync,writeFileSync} from "node:fs";
+import {decodeQrEnvelope} from "../../client-account-binding/packages/qr/dist/index.js";
+import {handleLocalServiceRequest,clientIdForIdentity} from "../../client-account-binding/packages/client/dist/index.js";
+const request=JSON.parse(readFileSync(new URL("./normal/request-v2.json",import.meta.url),"utf8"));
+const response=decodeQrEnvelope(readFileSync(new URL("./normal/actual-response.qr",import.meta.url),"utf8"));
+const expected="4f355bdcb7cc0af728ef3cceb9615d90684bb5b2ca5f859ab0f0b704075871aa";
+assert.equal(response.request_id,request.request_id);assert.equal(response.ok,true);assert.equal(response.result.event.pubkey,expected);
+const client={surface:"cli",origin:"cli:p4-public-normal",instance_id:"normal-c6"};
+const grants=[{client_id:clientIdForIdentity(client),origin:client.origin,surface:client.surface,allowed_operations:["verify_signer_response"]}];
+const result=handleLocalServiceRequest({version:1,request_id:"p4-current-physical-verification",operation:"verify_signer_response",params:{client,request,response}},{grants});
+assert.equal(result.ok,true);assert.equal(result.result.validation.valid,true);
+writeFileSync(new URL("./normal/actual-response.json",import.meta.url),JSON.stringify(response)+"\n");
+console.log(JSON.stringify({product_current_QR_client_verifier:true,identity_explicitly_pinned:expected,event_id:response.result.event.id,request_id:request.request_id}));

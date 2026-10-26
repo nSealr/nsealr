@@ -1,0 +1,46 @@
+{
+  "hits": {
+    "normal": [
+      "400a549e 00000072 T adc_apb_periph_claim",
+      "400a5510 000000b0 T adc_apb_periph_free",
+      "40012d94 00000008 t adc_div_mask",
+      "400a5384 000000c4 T adc_lock_release",
+      "400a5448 00000056 T adc_lock_try_acquire",
+      "400a1f96 000001ca T bootloader_random_disable",
+      "400a1d46 00000250 T bootloader_random_enable",
+      "40008c5e 00000002 T esp_libc_include_getentropy_impl",
+      "400a6674 000000c6 T esp_ota_get_running_partition",
+      "4ff46e46 00000090 T esp_random",
+      "4000c840 00000002 T nvs_sec_provider_include_impl",
+      "40013a38 00000020 T p4_entropy_active",
+      "400139e6 00000052 T p4_entropy_admit",
+      "4001334c 0000016c T p4_entropy_bind_worker",
+      "40013ac6 000005d4 T p4_entropy_collect",
+      "400134f4 00000004 T p4_entropy_fault_mode",
+      "400134f8 0000032c T p4_entropy_fill32",
+      "40013824 00000130 T p4_entropy_log_report",
+      "400134b8 0000003c T p4_entropy_used",
+      "40013a58 0000006e T p4_entropy_warm_locks",
+      "400139d4 00000012 T p4_entropy_wipe",
+      "400dd196 00000070 T regi2c_saradc_disable",
+      "400dd162 00000034 T regi2c_saradc_enable",
+      "400084a0 00000046 T sar_periph_ctrl_adc_reset"
+    ],
+    "fixed-unavailable": [
+      "400a421a 000000c4 T adc_lock_release",
+      "400a42de 00000056 T adc_lock_try_acquire",
+      "40008c18 00000002 T esp_libc_include_getentropy_impl",
+      "400a53e8 000000c6 T esp_ota_get_running_partition",
+      "4000c7fa 00000002 T nvs_sec_provider_include_impl",
+      "40013286 00000052 T p4_entropy_admit",
+      "40012d72 0000016c T p4_entropy_bind_worker",
+      "40012f1a 00000004 T p4_entropy_fault_mode",
+      "40012f1e 00000226 T p4_entropy_fill32",
+      "40013144 00000130 T p4_entropy_log_report",
+      "40012ede 0000003c T p4_entropy_used",
+      "400132d8 0000006e T p4_entropy_warm_locks",
+      "40013274 00000012 T p4_entropy_wipe"
+    ]
+  },
+  "interpretation": "esp_ota_get_running_partition is read-only metadata; two 2byte esp_libc_include_getentropy_impl/nvs_sec_provider_include_impl anchors are not consumers/writers. No target0x22 or extra matched RNG/ADC driver/I2S/temperature/PMIC/persistent writer body. Symbol/name scan plus selected direct calls is not exhaustive against indirect,ROM or concurrent foreign activity."
+}

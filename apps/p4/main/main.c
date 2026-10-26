@@ -10,6 +10,7 @@
 #include "worker_watchdog.h"
 #include "scan_admission.h"
 #include "c6_guard.h"
+#include "p4_entropy.h"
 #include "esp_system.h"
 #include "esp_heap_caps.h"
 #include "esp_private/esp_cache_private.h"
@@ -64,6 +65,10 @@ static void worker(void *unused) {
         for(;;)p4_worker_idle(250);
     }
 #endif
+    if(!p4_entropy_bind_worker()){
+        p4_ui_status("PUBLIC RNG UNAVAILABLE\nNo operation started\nRestart required");
+        for(;;)p4_worker_idle(250);
+    }
     p4_boot_check();
     if(!p4_c6_guard_check("engine-init-before"))p4_fatal();
     if(p4_engine_init()!=0 || !p4_c6_guard_check("engine-init-after"))p4_fatal();
@@ -101,22 +106,31 @@ static void worker(void *unused) {
         if(!p4_c6_guard_check("operation-after")) {
             memset(response,0,1536);memset(data,0,sizeof(*data));p4_fatal();
         }
+        p4_entropy_log_report();
+        bool shown=false;
         if(n>0 && p4_show_response(response,(size_t)n,1536,p4_engine_response_deadline_ms())==0) {
+            shown=true;
             ESP_LOGI(TAG,"PUBLIC response ready; stack_remaining=%u; free_internal=%u; no payload logging",
                 (unsigned)uxTaskGetStackHighWaterMark(NULL),(unsigned)heap_caps_get_free_size(MALLOC_CAP_INTERNAL));
             p4_wait_response_clear(response,1536,p4_engine_response_deadline_ms());
         } else {
-            char message[110];snprintf(message,sizeof(message),"REFUSED / NO RESPONSE\nReason %d\nTap BOOT to scan again",n);
+            char message[110];snprintf(message,sizeof(message),p4_entropy_used()?
+                "PUBLIC AUX STOPPED\nNo response; reason %d\nRestart required":
+                "REFUSED / NO RESPONSE\nReason %d\nTap BOOT to scan again",n);
             p4_ui_status(message);ESP_LOGW(TAG,"Operation refused;code=%d; stack_remaining=%u",n,(unsigned)uxTaskGetStackHighWaterMark(NULL));
-            p4_wait_new_action();
+            if(!p4_entropy_used())p4_wait_new_action();
         }
         memset(response,0,1536);memset(data,0,sizeof(*data));
+        if(p4_entropy_used()){
+            if(shown)p4_ui_status("PUBLIC TEST COMPLETE\nRestart for another test");
+            for(;;)p4_worker_idle(250);
+        }
         p4_ui_status("SCAN ONE NEW REQUEST\nPublic test identity only\nTouch never approves");resume_scan();
     }
 }
 void app_main(void) {
     ESP_LOGW(TAG,"PUBLIC probe_mode=%d reset_reason=%d",P4_WDT_PROBE_MODE,(int)esp_reset_reason());
-    ESP_LOGW(TAG,"PUBLIC TEST FIXTURE BINARY: deterministic identity/auxiliary; no production custody/entropy claim");
+    ESP_LOGW(TAG,"PUBLIC TEST FIXTURE BINARY: published11 identity; fallible auxiliary fault=%d; no production custody/entropy claim",p4_entropy_fault_mode());
     lv_display_t *display=p4_display_start();
     if(!display || lv_display_get_horizontal_resolution(display)!=320 || lv_display_get_vertical_resolution(display)!=480)p4_fatal();
     decoder=quirc_new();
