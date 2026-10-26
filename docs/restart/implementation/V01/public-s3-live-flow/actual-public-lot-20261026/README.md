@@ -12,7 +12,12 @@ identity admission, a client release or closure of V01, D02 or C01.
 | setup-cancel-user-socket | Host setup stdin EOF; exit1, no result, USB TX0 and close returned | Cancellation before Enter/operation; no in-flight cancellation claim |
 | physical-reject | Fresh physical Enable/review/Reject; one actual60B error rejected, status-5, CLI rejection, no result | Device elapsed79.860510s includes review; error has no request ID; association comes from the single exclusive request |
 | physical-approve | Original60s setup expired without Enter; exit1, no result, USB TX0 and close returned | Failed setup, not a failed signature or device refusal |
-| physical-approve-120 | Actual315B request,668B response, CLI exit0 and verified result | Source d00623b5, delivery e1581205; root reports fresh coldboot of unchanged public e7 image |
+| physical-approve-120 | Actual315B request,668B response, CLI exit0 and verified result | Source d00623b5, delivery e1581205; root reports a coldboot before the whole four-case lot on unchanged public e7 |
+
+The maintainer's coldboot preceded all four cases. Root performed no deliberate
+reset, reboot or reflash between them. Startup diagnostic draws remained
+skipped; the first auxiliary attempt in that observed boot sequence occurred
+only in the final positive. The recorded uptimes are consistent with that order.
 
 The first three cases keep host d19/source1fb; their source-time assessments are
 not relabeled as120s runs. The positive uses the reviewed setup-only120s delta.
