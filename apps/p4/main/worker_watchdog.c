@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: MIT
 #include "worker_watchdog.h"
 #include "p4_local.h"
+#include "c6_probe.h"
 #include "esp_task_wdt.h"
 #include "esp_log.h"
 #include "freertos/FreeRTOS.h"
@@ -41,6 +42,8 @@ void p4_worker_fault_probe(void) {
     ESP_LOGW("p4_wdt","PUBLIC blockingwait fault; real_ms=%lld",(long long)p4_monotonic_ms());
     // Private empty semaphore, no producer/handle export. Idle tasks may run.
     (void)xSemaphoreTake(never,portMAX_DELAY);p4_fatal();
+#elif P4_WDT_PROBE_MODE == 3
+    p4_c6_public_probe();
 #elif P4_WDT_PROBE_MODE != 0
 #error Unknown probe mode
 #endif

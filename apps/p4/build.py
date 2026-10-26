@@ -5,8 +5,8 @@ import argparse, datetime, hashlib, json, os, subprocess, sys, time
 APP=Path(__file__).resolve().parent
 parser=argparse.ArgumentParser();parser.add_argument("stage",choices=["rust","configure","app"])
 parser.add_argument("--rust-target",choices=["riscv32imafc-unknown-none-elf","x86_64-unknown-linux-gnu"],default="riscv32imafc-unknown-none-elf")
-parser.add_argument("--probe-mode",choices=["normal","busy-cpu","blocking-wait"],default="normal")
-args=parser.parse_args();probe_mode={"normal":0,"busy-cpu":1,"blocking-wait":2}[args.probe_mode]
+parser.add_argument("--probe-mode",choices=["normal","busy-cpu","blocking-wait","c6-reset"],default="normal")
+args=parser.parse_args();probe_mode={"normal":0,"busy-cpu":1,"blocking-wait":2,"c6-reset":3}[args.probe_mode]
 PROBE=Path(os.environ.get("NSEALR_P4_TOOLS","/home/tux/nsealr/.restart-tools/mac-resume-2026-10-25/p4-probe"))
 PERIPHERAL=PROBE/"candidates/lvgl96-public-headers"
 sys.path.insert(0,str(PROBE/"scripts"))

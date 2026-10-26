@@ -4,6 +4,7 @@
 #include "frame_pixels.h"
 #include "worker_watchdog.h"
 #include "display_ack.h"
+#include "c6_probe.h"
 #include "bsp/esp-bsp.h"
 #include "bsp/display.h"
 #include "esp_lv_adapter_input.h"
@@ -56,6 +57,7 @@ int p4_memory_internal(const uint8_t *p,size_t n) {
     return p && n && esp_ptr_internal(p) && esp_ptr_internal(p+n-1);
 }
 _Noreturn void p4_fatal(void) {
+    p4_c6_before_abort();
     ESP_LOGE(TAG,"PUBLIC TEST application stopped; no response admission");
     esp_restart(); for (;;) vTaskDelay(1);
 }
@@ -236,7 +238,7 @@ int p4_present(uint32_t decision,const uint8_t *label,size_t label_len,
     for(size_t i=0;i<used;i++) {if(text[i]=='\n') {lines++;columns=0;}else if(++columns>32) return -1;}
     if(lines>8) return -1;
     lv_obj_t *root=start_screen();text_at(root,text,32,104,256);
-    if(decision) text_at(root,"BOOT: tap=REJECT\nHold 1.5..5s + release\n= APPROVE (this frame)",16,360,288);
+    if(decision) text_at(root,"BOOT: tap = REJECT\nHOLD BOOT 1.5..5s\nRELEASE to APPROVE\n>5s = REJECT",16,360,288);
     else {
         for(unsigned i=0;i<2;i++) {
             lv_obj_t *button=lv_button_create(root);if(!button) p4_fatal();
