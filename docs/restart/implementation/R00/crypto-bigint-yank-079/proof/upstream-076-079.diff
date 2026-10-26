@@ -1,0 +1,447 @@
+diff -ru '--exclude=.cargo-checksum.json' /home/tux/nsealr/.restart-tools/mac-resume-2026-10-25/crypto-bigint-yank/vendor/crypto-bigint/.cargo_vcs_info.json /home/tux/nsealr/.restart-tools/mac-resume-2026-10-25/crypto-bigint-yank-runtime/sources/crypto-bigint-0.7.9/.cargo_vcs_info.json
+--- /home/tux/nsealr/.restart-tools/mac-resume-2026-10-25/crypto-bigint-yank/vendor/crypto-bigint/.cargo_vcs_info.json	2026-10-26 09:24:04.064776422 +0100
++++ /home/tux/nsealr/.restart-tools/mac-resume-2026-10-25/crypto-bigint-yank-runtime/sources/crypto-bigint-0.7.9/.cargo_vcs_info.json	2006-07-24 03:21:28.000000000 +0200
+@@ -1,6 +1,6 @@
+ {
+   "git": {
+-    "sha1": "c34044b8a1479ef32bec0a9030cf2f07b06506d9"
++    "sha1": "6a22557430de57c27d4e1758c81b7e26d4a26aba"
+   },
+   "path_in_vcs": ""
+ }
+\ No newline at end of file
+diff -ru '--exclude=.cargo-checksum.json' /home/tux/nsealr/.restart-tools/mac-resume-2026-10-25/crypto-bigint-yank/vendor/crypto-bigint/CHANGELOG.md /home/tux/nsealr/.restart-tools/mac-resume-2026-10-25/crypto-bigint-yank-runtime/sources/crypto-bigint-0.7.9/CHANGELOG.md
+--- /home/tux/nsealr/.restart-tools/mac-resume-2026-10-25/crypto-bigint-yank/vendor/crypto-bigint/CHANGELOG.md	2026-10-26 09:24:04.064776422 +0100
++++ /home/tux/nsealr/.restart-tools/mac-resume-2026-10-25/crypto-bigint-yank-runtime/sources/crypto-bigint-0.7.9/CHANGELOG.md	2006-07-24 03:21:28.000000000 +0200
+@@ -4,7 +4,40 @@
+ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
+ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
+ 
+-## 0.7.6 (2026-10-23)
++## 0.7.9 (2026-10-25)
++### Changed
++- Use `shr_vartime` in `PrimeParams::new_vartime` ([#1372])
++
++### Fixed
++- Fix blanket impl of `Mul` for `NonZero<T>` [BREAKING] ([#1373])
++
++[#1372]: https://github.com/RustCrypto/crypto-bigint/pull/1372
++[#1373]: https://github.com/RustCrypto/crypto-bigint/pull/1373
++
++## 0.7.8 (2026-10-25) [YANKED]
++
++NOTE: yanked due to breaking changes in [#1373].
++
++### Fixed
++- Lower overhead of Montgomery multiplication in const eval ([#1370])
++
++[#1370]: https://github.com/RustCrypto/crypto-bigint/pull/1370
++
++## 0.7.7 (2026-10-24) [YANKED]
++
++NOTE: yanked due to breaking changes in [#1373].
++
++### Fixed
++- `invert_odd_mod(_vartime)` truncation ([#1367])
++- `mul_mod_special` boundary cases ([#1368])
++
++[#1367]: https://github.com/RustCrypto/crypto-bigint/pull/1367
++[#1368]: https://github.com/RustCrypto/crypto-bigint/pull/1368
++
++## 0.7.6 (2026-10-23) [YANKED]
++
++NOTE: yanked due to breaking changes in [#1373].
++
+ ### Added
+ - Implement `Zeroize` for `EncodedUint` ([#1342])
+ 
+@@ -43,7 +76,10 @@
+ [#1359]: https://github.com/RustCrypto/crypto-bigint/pull/1359
+ [#1360]: https://github.com/RustCrypto/crypto-bigint/pull/1360
+ 
+-## 0.7.5 (2026-06-22)
++## 0.7.5 (2026-06-22) [YANKED]
++
++NOTE: yanked due to breaking changes in [#1373] and security fixes in v0.7.6.
++
+ ### Added
+ - `BoxedUint::{from_be_slice_truncated, from_le_slice_truncated}` ([#1266])
+ - `Encoding::{from_bytes, to_bytes}` ([#1297])
+diff -ru '--exclude=.cargo-checksum.json' /home/tux/nsealr/.restart-tools/mac-resume-2026-10-25/crypto-bigint-yank/vendor/crypto-bigint/Cargo.lock /home/tux/nsealr/.restart-tools/mac-resume-2026-10-25/crypto-bigint-yank-runtime/sources/crypto-bigint-0.7.9/Cargo.lock
+--- /home/tux/nsealr/.restart-tools/mac-resume-2026-10-25/crypto-bigint-yank/vendor/crypto-bigint/Cargo.lock	2026-10-26 09:24:04.064776422 +0100
++++ /home/tux/nsealr/.restart-tools/mac-resume-2026-10-25/crypto-bigint-yank-runtime/sources/crypto-bigint-0.7.9/Cargo.lock	2006-07-24 03:21:28.000000000 +0200
+@@ -230,7 +230,7 @@
+ 
+ [[package]]
+ name = "crypto-bigint"
+-version = "0.7.6"
++version = "0.7.9"
+ dependencies = [
+  "chacha20",
+  "cpubits",
+@@ -976,9 +976,9 @@
+ 
+ [[package]]
+ name = "zeroize"
+-version = "1.9.0"
++version = "1.9.1"
+ source = "registry+https://github.com/rust-lang/crates.io-index"
+-checksum = "e13c156562582aa81c60cb29407084cdb54c4164760106ab78e6c5b0858cf64e"
++checksum = "e13084392c5e4bc371903e2935a5eaeed24905a7511356b883835e18a78f6879"
+ 
+ [[package]]
+ name = "zmij"
+diff -ru '--exclude=.cargo-checksum.json' /home/tux/nsealr/.restart-tools/mac-resume-2026-10-25/crypto-bigint-yank/vendor/crypto-bigint/Cargo.toml /home/tux/nsealr/.restart-tools/mac-resume-2026-10-25/crypto-bigint-yank-runtime/sources/crypto-bigint-0.7.9/Cargo.toml
+--- /home/tux/nsealr/.restart-tools/mac-resume-2026-10-25/crypto-bigint-yank/vendor/crypto-bigint/Cargo.toml	2026-10-26 09:24:04.064776422 +0100
++++ /home/tux/nsealr/.restart-tools/mac-resume-2026-10-25/crypto-bigint-yank-runtime/sources/crypto-bigint-0.7.9/Cargo.toml	2006-07-24 03:21:28.000000000 +0200
+@@ -13,7 +13,7 @@
+ edition = "2024"
+ rust-version = "1.87"
+ name = "crypto-bigint"
+-version = "0.7.6"
++version = "0.7.9"
+ authors = ["RustCrypto Developers"]
+ build = false
+ exclude = [
+@@ -98,6 +98,10 @@
+ path = "tests/const_monty_form.rs"
+ 
+ [[test]]
++name = "const_prime_monty_params"
++path = "tests/const_prime_monty_params.rs"
++
++[[test]]
+ name = "fixed_monty_form"
+ path = "tests/fixed_monty_form.rs"
+ 
+diff -ru '--exclude=.cargo-checksum.json' /home/tux/nsealr/.restart-tools/mac-resume-2026-10-25/crypto-bigint-yank/vendor/crypto-bigint/Cargo.toml.orig /home/tux/nsealr/.restart-tools/mac-resume-2026-10-25/crypto-bigint-yank-runtime/sources/crypto-bigint-0.7.9/Cargo.toml.orig
+--- /home/tux/nsealr/.restart-tools/mac-resume-2026-10-25/crypto-bigint-yank/vendor/crypto-bigint/Cargo.toml.orig	2026-10-26 09:24:04.064776422 +0100
++++ /home/tux/nsealr/.restart-tools/mac-resume-2026-10-25/crypto-bigint-yank-runtime/sources/crypto-bigint-0.7.9/Cargo.toml.orig	2006-07-24 03:21:28.000000000 +0200
+@@ -1,6 +1,6 @@
+ [package]
+ name = "crypto-bigint"
+-version = "0.7.6"
++version = "0.7.9"
+ description = """
+ Pure Rust implementation of a big integer library which has been designed from the ground-up for use
+ in cryptographic applications. Provides constant-time, `no_std`/`no_alloc`-friendly implementations
+diff -ru '--exclude=.cargo-checksum.json' /home/tux/nsealr/.restart-tools/mac-resume-2026-10-25/crypto-bigint-yank/vendor/crypto-bigint/src/modular/mul.rs /home/tux/nsealr/.restart-tools/mac-resume-2026-10-25/crypto-bigint-yank-runtime/sources/crypto-bigint-0.7.9/src/modular/mul.rs
+--- /home/tux/nsealr/.restart-tools/mac-resume-2026-10-25/crypto-bigint-yank/vendor/crypto-bigint/src/modular/mul.rs	2026-10-26 09:24:04.068776413 +0100
++++ /home/tux/nsealr/.restart-tools/mac-resume-2026-10-25/crypto-bigint-yank-runtime/sources/crypto-bigint-0.7.9/src/modular/mul.rs	2006-07-24 03:21:28.000000000 +0200
+@@ -102,7 +102,7 @@
+         // A[0] + x[i]y[0] + um[0] <= (2^128 - 1) + (2^128 - 2^64) = 2^129 - 2^64 - 1
+         let (a, c) = word::overflowing_add_wide((u as WideWord) * (modulus[0].0 as WideWord), axy);
+         // carry <= (2^129 - 2^64 - 1) / 2^64 <= 2^65 - 2
+-        carry = ((word::choice_to_wide_mask(c) & 1) << Word::BITS) | (a >> Word::BITS);
++        carry = ((c.to_u8() as WideWord) << Word::BITS) | (a >> Word::BITS);
+ 
+         let mut j = 1;
+         while j < nlimbs {
+@@ -113,7 +113,7 @@
+             let (ab, c) = word::overflowing_add_wide(axy, umc);
+             out[j - 1] = Limb(ab as Word);
+             // carry <= (2^129 - 2^64 - 1) / 2^64 <= 2^65 - 2
+-            carry = ((word::choice_to_wide_mask(c) & 1) << Word::BITS) | (ab >> Word::BITS);
++            carry = ((c.to_u8() as WideWord) << Word::BITS) | (ab >> Word::BITS);
+             j += 1;
+         }
+ 
+diff -ru '--exclude=.cargo-checksum.json' /home/tux/nsealr/.restart-tools/mac-resume-2026-10-25/crypto-bigint-yank/vendor/crypto-bigint/src/modular/prime_params.rs /home/tux/nsealr/.restart-tools/mac-resume-2026-10-25/crypto-bigint-yank-runtime/sources/crypto-bigint-0.7.9/src/modular/prime_params.rs
+--- /home/tux/nsealr/.restart-tools/mac-resume-2026-10-25/crypto-bigint-yank/vendor/crypto-bigint/src/modular/prime_params.rs	2026-10-26 09:24:04.068776413 +0100
++++ /home/tux/nsealr/.restart-tools/mac-resume-2026-10-25/crypto-bigint-yank-runtime/sources/crypto-bigint-0.7.9/src/modular/prime_params.rs	2006-07-24 03:21:28.000000000 +0200
+@@ -40,9 +40,10 @@
+         let p_minus_one = p.as_ref().set_bit_vartime(0, false);
+         let generator = NonZeroU32::new(generator).expect("invalid generator");
+         let s = NonZeroU32::new(p_minus_one.trailing_zeros_vartime()).expect("ensured non-zero");
++        // t = (p-1)/2^s
+         let t = p
+             .as_ref()
+-            .shr(s.get())
++            .shr_vartime(s.get())
+             .to_odd()
+             .expect_copied("ensured odd");
+ 
+@@ -53,13 +54,11 @@
+             let root = FixedMontyForm::new(&p_minus_one, params);
+             (exp, root)
+         } else {
+-            // t = (p-1)/2^s
+-            let t = p.as_ref().shr_vartime(s.get());
+             // exp = (t-1)/2
+-            let exp = t.shr_vartime(1);
++            let exp = t.as_ref().shr_vartime(1);
+             // the s'th root of unity is calculated as `generator^t`
+-            let root =
+-                FixedMontyForm::new(&Uint::from_u32(generator.get()), params).pow_vartime(&t);
++            let root = FixedMontyForm::new(&Uint::from_u32(generator.get()), params)
++                .pow_vartime(t.as_ref());
+             // root^(2^(s-1)) must be equal to -1
+             let check = root.square_repeat_vartime(s.get() - 1);
+             assert!(
+diff -ru '--exclude=.cargo-checksum.json' /home/tux/nsealr/.restart-tools/mac-resume-2026-10-25/crypto-bigint-yank/vendor/crypto-bigint/src/modular/safegcd/boxed.rs /home/tux/nsealr/.restart-tools/mac-resume-2026-10-25/crypto-bigint-yank-runtime/sources/crypto-bigint-0.7.9/src/modular/safegcd/boxed.rs
+--- /home/tux/nsealr/.restart-tools/mac-resume-2026-10-25/crypto-bigint-yank/vendor/crypto-bigint/src/modular/safegcd/boxed.rs	2026-10-26 09:24:04.068776413 +0100
++++ /home/tux/nsealr/.restart-tools/mac-resume-2026-10-25/crypto-bigint-yank-runtime/sources/crypto-bigint-0.7.9/src/modular/safegcd/boxed.rs	2006-07-24 03:21:28.000000000 +0200
+@@ -119,10 +119,7 @@
+         steps -= batch;
+     }
+ 
+-    let d = d
+-        .norm(f.is_negative(), &m)
+-        .resize_unchecked(a.bits_precision());
+-
++    let d = d.norm(f.is_negative(), &m);
+     CtOption::new(d, f.magnitude().is_one() & a_nonzero)
+ }
+ 
+diff -ru '--exclude=.cargo-checksum.json' /home/tux/nsealr/.restart-tools/mac-resume-2026-10-25/crypto-bigint-yank/vendor/crypto-bigint/src/non_zero.rs /home/tux/nsealr/.restart-tools/mac-resume-2026-10-25/crypto-bigint-yank-runtime/sources/crypto-bigint-0.7.9/src/non_zero.rs
+--- /home/tux/nsealr/.restart-tools/mac-resume-2026-10-25/crypto-bigint-yank/vendor/crypto-bigint/src/non_zero.rs	2026-10-26 09:24:04.068776413 +0100
++++ /home/tux/nsealr/.restart-tools/mac-resume-2026-10-25/crypto-bigint-yank-runtime/sources/crypto-bigint-0.7.9/src/non_zero.rs	2006-07-24 03:21:28.000000000 +0200
+@@ -1,8 +1,8 @@
+ //! Wrapper type for non-zero integers.
+ 
+ use crate::{
+-    Bounded, Choice, ConstOne, Constants, CtAssign, CtEq, CtOption, CtSelect, Encoding, Int, Limb,
+-    Mul, Odd, One, ToUnsigned, Uint, UintRef, Zero,
++    Bounded, Choice, ConstOne, Constants, CtAssign, CtEq, CtOption, CtSelect, Encoding, Int,
++    Integer, Limb, Mul, Odd, One, ToUnsigned, Uint, UintRef, Zero,
+ };
+ use core::{
+     fmt,
+@@ -160,7 +160,7 @@
+ 
+ impl<T> ConstOne for NonZero<T>
+ where
+-    T: ConstOne + One,
++    T: ConstOne + Integer,
+ {
+     const ONE: Self = Self(T::ONE);
+ }
+@@ -178,7 +178,7 @@
+ 
+ impl<T> num_traits::One for NonZero<T>
+ where
+-    T: One + Mul<T, Output = T>,
++    T: Integer,
+ {
+     #[inline]
+     fn one() -> Self {
+@@ -193,7 +193,7 @@
+ /// Any non-zero integer multiplied by another non-zero integer is definitionally non-zero.
+ impl<T> Mul<Self> for NonZero<T>
+ where
+-    T: Mul<T, Output = T>,
++    T: Integer,
+ {
+     type Output = Self;
+ 
+diff -ru '--exclude=.cargo-checksum.json' /home/tux/nsealr/.restart-tools/mac-resume-2026-10-25/crypto-bigint-yank/vendor/crypto-bigint/src/uint/boxed/invert_mod.rs /home/tux/nsealr/.restart-tools/mac-resume-2026-10-25/crypto-bigint-yank-runtime/sources/crypto-bigint-0.7.9/src/uint/boxed/invert_mod.rs
+--- /home/tux/nsealr/.restart-tools/mac-resume-2026-10-25/crypto-bigint-yank/vendor/crypto-bigint/src/uint/boxed/invert_mod.rs	2026-10-26 09:24:04.072776406 +0100
++++ /home/tux/nsealr/.restart-tools/mac-resume-2026-10-25/crypto-bigint-yank-runtime/sources/crypto-bigint-0.7.9/src/uint/boxed/invert_mod.rs	2006-07-24 03:21:28.000000000 +0200
+@@ -191,6 +191,28 @@
+     use num_bigint::BigUint;
+     use num_integer::Integer;
+ 
++    #[test]
++    fn invert_odd_mod_wider_modulus() {
++        let a = BoxedUint::from(2u64);
++        let modulus = Odd::new(BoxedUint::from(u128::MAX >> 1)).unwrap();
++        // 2 * 2^126 = modulus + 1.
++        let expected = BoxedUint::from(1u128 << 126);
++
++        assert!(a.bits_precision() < modulus.bits_precision());
++        assert_eq!(a.invert_odd_mod(&modulus).unwrap(), expected);
++    }
++
++    #[test]
++    fn invert_odd_mod_vartime_wider_modulus() {
++        let a = BoxedUint::from(2u64);
++        let modulus = Odd::new(BoxedUint::from(u128::MAX >> 1)).unwrap();
++        // 2 * 2^126 = modulus + 1.
++        let expected = BoxedUint::from(1u128 << 126);
++
++        assert!(a.bits_precision() < modulus.bits_precision());
++        assert_eq!(a.invert_odd_mod_vartime(&modulus).unwrap(), expected);
++    }
++
+     /// `invert_mod` at a precision where the safegcd iteration count overflowed `u32`
+     /// (`45907 * bits + 30179 > u32::MAX` from 93558 bits), with an even modulus so that
+     /// both the odd-modulus and the `2^k` paths are exercised.
+diff -ru '--exclude=.cargo-checksum.json' /home/tux/nsealr/.restart-tools/mac-resume-2026-10-25/crypto-bigint-yank/vendor/crypto-bigint/src/uint/boxed/mul_mod.rs /home/tux/nsealr/.restart-tools/mac-resume-2026-10-25/crypto-bigint-yank-runtime/sources/crypto-bigint-0.7.9/src/uint/boxed/mul_mod.rs
+--- /home/tux/nsealr/.restart-tools/mac-resume-2026-10-25/crypto-bigint-yank/vendor/crypto-bigint/src/uint/boxed/mul_mod.rs	2026-10-26 09:24:04.072776406 +0100
++++ /home/tux/nsealr/.restart-tools/mac-resume-2026-10-25/crypto-bigint-yank-runtime/sources/crypto-bigint-0.7.9/src/uint/boxed/mul_mod.rs	2006-07-24 03:21:28.000000000 +0200
+@@ -15,6 +15,8 @@
+     /// Computes `self * rhs mod p` for the special modulus
+     /// `p = MAX+1-c` where `c` is small enough to fit in a single [`Limb`].
+     ///
++    /// When `c` is zero, `p = MAX+1` and the result is wrapping multiplication.
++    ///
+     /// For the modulus reduction, this function implements Algorithm 14.47 from
+     /// the "Handbook of Applied Cryptography", by A. Menezes, P. van Oorschot,
+     /// and S. Vanstone, CRC Press, 1996.
+@@ -23,11 +25,14 @@
+         debug_assert_eq!(self.bits_precision(), rhs.bits_precision());
+ 
+         if self.nlimbs() == 1 {
+-            let reduced = mul_rem(
+-                self.limbs[0],
+-                rhs.limbs[0],
+-                NonZero::<Limb>::new_unwrap(Limb::ZERO.wrapping_sub(c)),
+-            );
++            let a = self.limbs[0];
++            let b = rhs.limbs[0];
++
++            // For c = 0, use a nonzero placeholder divisor and select the
++            // wrapping product in constant time.
++            let (p, c_is_nonzero) = Limb::ZERO.wrapping_sub(c).to_nz_or_one();
++            let reduced = mul_rem(a, b, p);
++            let reduced = Limb::select(a.wrapping_mul(b), reduced, c_is_nonzero);
+             return Self::from(reduced);
+         }
+ 
+@@ -38,7 +43,8 @@
+         let (mut lo, carry) = mac_by_limb(lo, hi, c, Limb::ZERO);
+ 
+         let carry = {
+-            let rhs = carry.wrapping_add(Limb::ONE).widening_mul(c);
++            // Compute (carry + 1) * c without overflowing when carry is Limb::MAX.
++            let rhs = carry.carrying_mul_add(c, c, Limb::ZERO);
+             lo.carrying_add_assign(UintRef::new(&[rhs.0, rhs.1]), Limb::ZERO)
+         };
+ 
+@@ -93,10 +99,42 @@
+ 
+ #[cfg(all(test, feature = "rand_core"))]
+ mod tests {
+-    use crate::{BoxedUint, ConcatenatingMul, Limb, NonZero, Random, RandomMod};
++    use crate::{BoxedUint, ConcatenatingMul, Limb, NonZero, Random, RandomMod, Resize};
+     use rand_core::SeedableRng;
+ 
+     #[test]
++    fn mul_mod_special_zero_c() {
++        for size in [1, 2, 3, 4] {
++            let bits = size * Limb::BITS;
++            let zero = BoxedUint::zero_with_precision(bits);
++            let one = BoxedUint::one_with_precision(bits);
++            let max = zero.wrapping_sub(&one);
++
++            for a in [&zero, &one, &max] {
++                for b in [&zero, &one, &max] {
++                    assert_eq!(a.mul_mod_special(b, Limb::ZERO), a.wrapping_mul(b));
++                }
++            }
++        }
++    }
++
++    #[test]
++    fn mul_mod_special_max_c() {
++        for size in [3, 4] {
++            let bits = size * Limb::BITS;
++            let c = BoxedUint::from(Limb::MAX).resize(bits);
++            let p = NonZero::new(BoxedUint::zero_with_precision(bits).wrapping_sub(&c)).unwrap();
++            let a = p.wrapping_sub(&c);
++
++            // (p - c)^2 mod p = c^2. With at least three limbs, the first
++            // reduction produces a carry of Limb::MAX, so carry + 1 overflows.
++            let expected = c.wrapping_mul(&c);
++            assert_eq!(a.mul_mod_special(&a, Limb::MAX), expected);
++            assert_eq!(a.mul_mod(&a, &p), expected);
++        }
++    }
++
++    #[test]
+     fn mul_mod_special() {
+         let mut rng = chacha20::ChaCha8Rng::seed_from_u64(1);
+         let moduli = [
+diff -ru '--exclude=.cargo-checksum.json' /home/tux/nsealr/.restart-tools/mac-resume-2026-10-25/crypto-bigint-yank/vendor/crypto-bigint/src/uint/mul_mod.rs /home/tux/nsealr/.restart-tools/mac-resume-2026-10-25/crypto-bigint-yank-runtime/sources/crypto-bigint-0.7.9/src/uint/mul_mod.rs
+--- /home/tux/nsealr/.restart-tools/mac-resume-2026-10-25/crypto-bigint-yank/vendor/crypto-bigint/src/uint/mul_mod.rs	2026-10-26 09:24:04.072776406 +0100
++++ /home/tux/nsealr/.restart-tools/mac-resume-2026-10-25/crypto-bigint-yank-runtime/sources/crypto-bigint-0.7.9/src/uint/mul_mod.rs	2006-07-24 03:21:28.000000000 +0200
+@@ -1,6 +1,6 @@
+ //! [`Uint`] modular multiplication operations.
+ 
+-use crate::{Limb, MulMod, NonZero, SquareMod, Uint, WideWord, Word, div_limb::mul_rem};
++use crate::{Limb, MulMod, NonZero, SquareMod, Uint, WideWord, div_limb::mul_rem};
+ 
+ impl<const LIMBS: usize> Uint<LIMBS> {
+     /// Computes `self * rhs mod p`.
+@@ -20,6 +20,8 @@
+     /// Computes `self * rhs mod p` for the special modulus
+     /// `p = MAX+1-c` where `c` is small enough to fit in a single [`Limb`].
+     ///
++    /// When `c` is zero, `p = MAX+1` and the result is wrapping multiplication.
++    ///
+     /// For the modulus reduction, this function implements Algorithm 14.47 from
+     /// the "Handbook of Applied Cryptography", by A. Menezes, P. van Oorschot,
+     /// and S. Vanstone, CRC Press, 1996.
+@@ -28,11 +30,14 @@
+         // We implicitly assume `LIMBS > 0`, because `Uint<0>` doesn't compile.
+         // Still the case `LIMBS == 1` needs special handling.
+         if LIMBS == 1 {
+-            let reduced = mul_rem(
+-                self.limbs[0],
+-                rhs.limbs[0],
+-                NonZero::<Limb>::new_unwrap(Limb(Word::MIN.wrapping_sub(c.0))),
+-            );
++            let a = self.limbs[0];
++            let b = rhs.limbs[0];
++
++            // For c = 0, use a nonzero placeholder divisor and select the
++            // wrapping product in constant time.
++            let (p, c_is_nonzero) = Limb::ZERO.wrapping_sub(c).to_nz_or_one();
++            let reduced = mul_rem(a, b, p);
++            let reduced = Limb::select(a.wrapping_mul(b), reduced, c_is_nonzero);
+             return Self::from_word(reduced.0);
+         }
+ 
+@@ -42,7 +47,8 @@
+         let (lo, carry) = mac_by_limb(&lo, &hi, c, Limb::ZERO);
+ 
+         let (lo, carry) = {
+-            let rhs = (carry.0 + 1) as WideWord * c.0 as WideWord;
++            // Widen before adding: carry can equal Limb::MAX.
++            let rhs = (carry.0 as WideWord + 1) * c.0 as WideWord;
+             lo.carrying_add(&Self::from_wide_word(rhs), Limb::ZERO)
+         };
+ 
+@@ -110,6 +116,41 @@
+     use rand_core::SeedableRng;
+ 
+     #[test]
++    fn mul_mod_special_zero_c() {
++        fn test_size<const LIMBS: usize>() {
++            let values = [Uint::<LIMBS>::ZERO, Uint::ONE, Uint::MAX];
++            for a in values {
++                for b in values {
++                    assert_eq!(a.mul_mod_special(&b, Limb::ZERO), a.wrapping_mul(&b));
++                }
++            }
++        }
++
++        test_size::<1>();
++        test_size::<2>();
++        test_size::<3>();
++        test_size::<4>();
++    }
++
++    #[test]
++    fn mul_mod_special_max_c() {
++        fn test_size<const LIMBS: usize>() {
++            let c = Uint::<LIMBS>::from(Limb::MAX);
++            let p = NonZero::new(Uint::ZERO.wrapping_sub(&c)).unwrap();
++            let a = p.wrapping_sub(&c);
++
++            // (p - c)^2 mod p = c^2. With at least three limbs, the first
++            // reduction produces a carry of Limb::MAX, so carry + 1 overflows.
++            let expected = c.wrapping_mul(&c);
++            assert_eq!(a.mul_mod_special(&a, Limb::MAX), expected);
++            assert_eq!(a.mul_mod(&a, &p), expected);
++        }
++
++        test_size::<3>();
++        test_size::<4>();
++    }
++
++    #[test]
+     fn mul_mod_special() {
+         fn test_size<const LIMBS: usize>() {
+             let mut rng = chacha20::ChaCha8Rng::seed_from_u64(1);
+Only in /home/tux/nsealr/.restart-tools/mac-resume-2026-10-25/crypto-bigint-yank-runtime/sources/crypto-bigint-0.7.9/tests: const_prime_monty_params.rs

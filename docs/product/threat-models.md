@@ -10,15 +10,20 @@ The host client, Bridge inputs, relay, USB/QR bytes, labels, timestamps and oper
 
 People can misread prompts, lose backups, reveal them to a camera, install modified firmware or replace devices. The design must make supported decisions inspectable and recovery understandable. Usability testing is part of the gate, while user scores cannot waive a security failure. The supply chain, vendor SE authority and independent review limits are documented; no device is promised resistant to every physical or invasive attack.
 
-## Commercial ESP32 without SE
+## Phase-one connected S3 without SE or persistent identity vault
 
 | Boundary | Required design and limits | Evidence owner |
 | --- | --- | --- |
 | Local user / host | MCU owns screen and physical confirmation. USB carries bounded requests/results, never user nsec or approval booleans. Check per-request identity and complete reviewed action. | D01/V01, S03/K01/C01 |
-| Firmware / debug | Exact SoC/SDK, boot enforcement, update/recovery and debug lifecycle. Development mode is distinct from admitted persistent use. Locking flags are tested on hardware. | D01/D02/D03 |
-| Persistent custody | Storage wrapping/PIN design must withstand the declared host/flash/rollback threat. No SE protection is claimed. Extraction, fault, silicon and PIN enforcement limits are explicit. | D02 and independent admission |
+| Firmware / debug | Exact S3/SDK, actual authenticity/boot enforcement, update/recovery and debug lifecycle. Development/public-fixture state is distinct from an independently admitted session profile. Promised enforcement is tested on hardware; no irreversible operation is implied by ordinary bring-up. | D01/D02/D03 |
+| Session custody | Local generate/import/backup/reload only. No identity or derived-secret writes to flash/NVS/files, logs, dumps or update tooling; enumerate copies and measured clear paths. Bridge never receives plaintext recovery or signs with the identity. No SE or persistent vault/PIN protection is claimed; extraction, remanence, fault and silicon limits remain explicit. | D02 and independent session-profile admission |
 | Interfaces / memory | Identify radios and enabled channels; control secret placement and driver exposure. No claim of a physical air gap. Measure entropy, stack, RAM and timing on actual binary. | D01/V01/D02 |
-| Loss / recovery | Local backup and same-key restore; interrupted storage/update and reset failures cannot expose state or bypass the declared unlock model. | D02/D03 |
+| Lock / disconnect / recovery | Cancel and invalidate consent on lock/disconnect/reset/power loss and relevant account/session/policy change; clear owned session custody and require local reload. Measure usable two-button checksum-validated same-key restore. Interrupted update/recovery and stale grants/results cannot restore authority. | D02/D03 |
+
+The previous encrypted-persistent custody/PIN/vault contract is preserved in
+D02's deferred extension. It is neither an implied S3 guarantee nor a hidden
+first-release dependency. Modified firmware and physical access still threaten
+volatile keys and trusted review; session-only custody does not remove these gates.
 
 ## Raspberry Pi QR
 
@@ -39,7 +44,7 @@ People can misread prompts, lose backups, reveal them to a camera, install modif
 | Custody / faults | Session-only identity, no persistent secret copies. Trace actual entropy invocation; handle reset/power interruption and update recovery without resurrecting authorization. | Q03/Q05 |
 | Physical access | No SE non-exportability claim. Declare physical substitution, memory access and fault limits; optical operation is not universal extraction resistance. | Q03/Q05 |
 
-## Custom Board running Signer
+## Retained later-phase custom Board running Signer
 
 | Boundary | Required design and limits | Evidence owner |
 | --- | --- | --- |
@@ -49,7 +54,7 @@ People can misread prompts, lose backups, reveal them to a camera, install modif
 | Power / state | Electrical protection and persistence survive declared brownout/reset/update failure cases. Pre-layout calculations and bench probes are repeated on assemblies. | H03/H04/H08/H09/V03 |
 | Actual assembly / production | Bind source, SDK, bootloader, silicon, SE configuration and board revision to measurements. Close independent findings before pilot identities and requalify final production changes. | V03/S05/P03/R01/R02 |
 
-## Generic Board + SDK
+## Retained later-phase generic embedded Board + SDK
 
 The initial developer owns one trusted firmware image. Linked SDK components do not isolate hostile applications. Driver primitives are not complete SSH/FIDO/wallet products. APIs name actual custody location, algorithms and supported/unsupported lifecycle operations; unsupported properties produce explicit errors. Developer mode, owner-secured mode and product-qualified Signer state have different admissible secrets and ownership transitions.
 
@@ -63,7 +68,7 @@ B01 specifies APIs; B02 proves services on evaluation hardware; H08/H09 repeat b
 4. Malformed/mixed QR frames; secret-import QR presented as an operation; camera/log/dump persistence.
 5. Message recipient/plaintext/ciphertext/seal substitution; missing outer context; unsupported NIP-04 or opaque signing.
 6. Failed/stuck entropy or unintended provider; stack/RAM overflow; unqualified runtime/FFI fallback.
-7. Interrupted vault write/update; PIN-counter rollback; partial reset or permissive SE object read; firmware-owner transition retaining privileged state.
+7. Interrupted update/recovery and session reset/disconnect with surviving secrets/authority in phase one; interrupted persistent vault writes, PIN-counter rollback, partial/permissive SE reset/read and privileged firmware-owner state additionally in retained later profiles.
 8. Wrong part/footprint/rail, backfeed and USB-power entitlement, thermal faults, manufacturing substitution and insufficient unit-test coverage.
 
 Each family needs its own independent expected result and exact candidate/resource record. Structural validator success, simulated signing, a source audit or AI agreement cannot replace a physical result at the boundary being claimed.

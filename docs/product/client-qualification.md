@@ -9,6 +9,24 @@ implementation; the older pin below is not a competing current authority.
 
 Research date: 2026-10-13. This is a source-backed test selection, **not a compatibility announcement**. Source review does not establish successful operation against the deployed website, its dependencies or an actual signer.
 
+## Phase-one host delivery
+
+The connected session-only S3 retains C01 NIP-07/NIP-46 serving and C02 bounded
+NIP-44 plus the admitted NIP-17/59 and setup/authentication obligations. Volatile
+custody is not permission to drop the public-event catalog or message flows.
+Pi/P4 initial manual public-event support remains separately qualified via QH01
+and Q04/Q05, without connected DM or another vault as a prerequisite.
+
+Current source consumers include `apps/bridge/cli`, `apps/bridge/service`,
+`apps/bridge/browser-extension`, `packages/client`, `browser-provider`, `nip46`,
+`transport`, `qr` and the `packages/sdk` browser/Node facade. Their existence,
+`pnpm nsealr`/`pnpm nsealr-service` entry points and fixture tests establish no
+external-client compatibility. C01/QH01 must qualify the needed installation,
+onboarding, pairing/revocation/reconnect/cancellation/errors, compatible versions
+and SDK examples together with each actual device workflow. Host transport keys
+are distinct from the identity; local recovery never passes plaintext nsec to
+these helpers. The generic embedded `nSealr/board-sdk` is deferred and distinct.
+
 ## Initial integration candidates
 
 | Candidate and exact source | Observed integration path | Qualification still required |

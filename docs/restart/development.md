@@ -39,9 +39,32 @@ The reviewer assesses three separate questions: does the result implement the ac
 
 Test at the boundary where the claim exists: portable engine tests for canonical operations; adapter tests for host/device boundary behavior; real-device tests for review/input/entropy/custody; browser/client tests for interoperability. A simulator cannot stand in for an assembled device. Numerical parser/QR limits and latency budgets are versioned per target and tested at the boundary, just below it and above it. Do not silently relax them to make a test pass.
 
-## First tranche: ordered steps with concrete outputs
+## Current delivery scope and cleanup
 
-These are implementation briefs to finish, not completed work. Their parent acceptance in the graph still applies in full. The suffixes identify steps, not additional stateful tasks. Parallel work requires disjoint paths; the coordinator checks shared interfaces before assigning it.
+The 2026-10-25 milestone in the sole graph controls current work. Use one short
+contract and useful delivery containing source, proof, limits and current docs;
+include author, distinct reviewer, exact inputs/candidate, behavior and negatives.
+An existing brief can be amended for affected scope rather than spawning a
+separate branch/report/task for each admission or copy. Review the final candidate
+once and only the affected correction thereafter, retaining unchanged evidence.
+
+Use real-dependency smoke checks early, focused checks while developing and the
+mandatory complete gates on a stable candidate. Reuse original receipts instead
+of repeating unchanged campaigns for handoff, renaming or metadata packaging.
+Never remove negatives, lower limits or bypass required checks. The root is the
+single CI observer; unchanged runs are checked no more often than every180s.
+After normal integration, verify actual rewritten identities/tree and resulting
+main CI. Documentation-only reconciliation uses structural/source checks and
+mandatory repository checks, without an additional manual full-CI campaign.
+
+Finish each delivery by removing completed operational worktrees, obsolete refs
+and unused cache after unique necessary source/proof is recoverable in the single
+private backup. Do not delete tools still in use or restore historical trees for
+old paths. Cleanup is also part of milestone completion, not a second tracker.
+
+## Historical first tranche: ordered steps with concrete outputs
+
+These are the original foundation briefs, several since integrated. Their dated descriptions do not reactivate an author or override current graph status. Parent acceptance in the graph still applies in full. The suffixes identify steps, not additional stateful tasks. Parallel work requires disjoint paths; the coordinator checks shared interfaces before assigning it.
 
 | Parent | Ordered steps | Deliverable and check |
 | --- | --- | --- |

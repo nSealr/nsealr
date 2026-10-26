@@ -1,0 +1,36 @@
+{
+  "argv": [
+    "/home/tux/nsealr/.restart-tools/goal/r00/tools/baseline/.work/final/.tools/node/bin/node",
+    "--input-type=module",
+    "-e",
+    "import assert from\"node:assert/strict\";import{realpathSync,readFileSync,readdirSync,existsSync}from\"node:fs\";import{join}from\"node:path\";const root=process.cwd();const dirs=[root,...[\"packages\",\"apps/bridge\"].flatMap(p=>readdirSync(join(root,p)).map(n=>join(root,p,n)).filter(d=>existsSync(join(d,\"package.json\"))))];const packages=dirs.map(d=>({directory:d,json:JSON.parse(readFileSync(join(d,\"package.json\"),\"utf8\"))}));const byName=new Map(packages.map(p=>[p.json.name,p.directory]));const links=[];for(const p of packages){for(const[name,version]of Object.entries({...p.json.dependencies,...p.json.devDependencies,...p.json.optionalDependencies})){if(!String(version).startsWith(\"workspace:\"))continue;const actual=realpathSync(join(p.directory,\"node_modules\",name));assert.equal(actual,byName.get(name));assert.ok(actual.startsWith(root+\"/\"));links.push({consumer:p.directory,name,target:actual});}}console.log(JSON.stringify({checkout:root,workspace_links_checked:links.length,old_S3_dist_used:false,transport_consumers:links.filter(x=>x.name===\"@nsealr/transport\"),all_links:links},null,2));"
+  ],
+  "cwd": "/home/tux/nsealr/.restart-tools/mac-resume-2026-10-25/client-account-binding",
+  "controlled_environment": {
+    "PATH": "/home/tux/nsealr/.restart-tools/goal/r00/tools/baseline/.work/final/.tools/node/bin:/home/tux/nsealr/.restart-tools/goal/r00/tools/baseline/.work/final/.tools/bin:/usr/bin:/bin",
+    "NPM_CONFIG_USERCONFIG": "/home/tux/nsealr/.restart-tools/goal/r00/tools/baseline/.work/final/.tools/npmrc",
+    "NPM_CONFIG_GLOBALCONFIG": "/home/tux/nsealr/.restart-tools/goal/r00/tools/baseline/.work/final/.tools/global-npmrc",
+    "XDG_CACHE_HOME": "/home/tux/nsealr/.restart-tools/goal/r00/tools/baseline/.work/final/.tools/cache",
+    "XDG_DATA_HOME": "/home/tux/nsealr/.restart-tools/goal/r00/tools/baseline/.work/final/.tools/data",
+    "CI": "1",
+    "LANG": "C.UTF-8",
+    "LC_ALL": "C.UTF-8",
+    "HOME": "/home/tux",
+    "TMPDIR": null
+  },
+  "extra_environment": {},
+  "expected_exit": 0,
+  "start_utc": "2026-10-26T11:47:38.198638+00:00",
+  "time_wrapper": [],
+  "resource_note": "Python monotonic elapsed plus sampled process-group aggregateRSS; no external GNUtime available",
+  "role": "setup/configure, not an application build unless label explicitly app-build",
+  "exit": 0,
+  "end_utc": "2026-10-26T11:47:38.709679+00:00",
+  "seconds": 0.5109206894412637,
+  "process_group_RSS_peak_bytes": 33349632,
+  "max_child_RSS_cumulative_kib": 59992,
+  "RSS_sampling_count": 1,
+  "RSS_method": "sum RSS by process group every0.5s; shared pages counted multiple times; resource.getrusage max-child is cumulative for this phase process and labeled accordingly",
+  "stdout_sha256": "b18ed4c0a22eb3af9fabc0d8f86ff3c5c1a4f6a209be17811e857cff81aa614f",
+  "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+}
