@@ -1,0 +1,111 @@
+{
+  "platform": "Linux x86_64; qualification only on this platform",
+  "sdk": {
+    "url": "https://github.com/espressif/esp-idf.git",
+    "commit": "7101770dc6db2667b3c477cc31365dd1acd6db4e",
+    "version": "6.0.2",
+    "submodules": "recursive exact gitlinks from this commit; checked by prepare"
+  },
+  "vendor": {
+    "url": "https://github.com/waveshareteam/ESP32-P4-WIFI6-Touch-LCD-3.5.git",
+    "commit": "870588e62daaf723f3c52f0060d8dc053665ed30",
+    "use": "camera/config origin only; app source and license already versioned; no vendor checkout needed"
+  },
+  "python": {
+    "version": "3.12.15",
+    "filename": "python.tar.gz",
+    "url": "https://github.com/astral-sh/python-build-standalone/releases/download/20261013/cpython-3.12.15%2B20261013-x86_64-unknown-linux-gnu-install_only_stripped.tar.gz",
+    "sha256": "178d3d83b6e8e99285a65d3fce9c16b87952cc5efdb4d1a0e3ff3be18ff0fc9c",
+    "binary_sha256": "eaaa308032c4aa063df5880c4c293cd458b4629d503fbc2c03ec163d71f7f790"
+  },
+  "uv": {
+    "version": "0.11.28",
+    "url": "https://github.com/astral-sh/uv/releases/download/0.11.28/uv-x86_64-unknown-linux-gnu.tar.gz",
+    "sha256": "e490a6464492183c5d4534a5527fb4440f7f2bb2f228162ad7e4afe076dc0224",
+    "binary_sha256": "1cb9cd0a1749debf6049d7d2bb933882cc52d81016326ee6d99a786d6c988b03"
+  },
+  "rustup": {
+    "version": "1.29.1",
+    "filename": "rustup-init",
+    "url": "https://static.rust-lang.org/rustup/archive/1.29.1/x86_64-unknown-linux-gnu/rustup-init",
+    "sha256": "dda7234360b7f578ca8b0ddcb80145646fa61a67c1720a5abc7051b35c9fcb71"
+  },
+  "rust": {
+    "version": "1.95.0",
+    "host": "x86_64-unknown-linux-gnu",
+    "target": "riscv32imafc-unknown-none-elf",
+    "manifest_url": "https://static.rust-lang.org/dist/channel-rust-1.95.0.toml",
+    "rustc_version": "rustc 1.95.0 (59807616e 2026-04-14)"
+  },
+  "idf_tools": [
+    {
+      "name": "riscv32-esp-elf",
+      "version": "esp-15.2.0_20251204",
+      "license": "GPL-3.0-with-GCC-exception",
+      "install": "always",
+      "archive": {
+        "sha256": "ace5aae6afe98f754947be043d40173e2e22ace57754b11a394b7238eefa01cf",
+        "size": 393927372,
+        "url": "https://github.com/espressif/crosstool-NG/releases/download/esp-15.2.0_20251204/riscv32-esp-elf-15.2.0_20251204-x86_64-linux-gnu.tar.xz"
+      }
+    },
+    {
+      "name": "cmake",
+      "version": "4.0.3",
+      "license": "BSD-3-Clause",
+      "install": "on_request",
+      "archive": {
+        "sha256": "585ae9e013107bc8e7c7c9ce872cbdcbdff569e675b07ef57aacfb88c886faac",
+        "size": 55509479,
+        "url": "https://github.com/Kitware/CMake/releases/download/v4.0.3/cmake-4.0.3-linux-x86_64.tar.gz"
+      }
+    },
+    {
+      "name": "ninja",
+      "version": "1.12.1",
+      "license": "Apache-2.0",
+      "install": "on_request",
+      "archive": {
+        "rename_dist": "ninja-linux-v1.12.1.zip",
+        "sha256": "6f98805688d19672bd699fbbfa2c2cf0fc054ac3df1f0e6a47664d963d530255",
+        "size": 123084,
+        "url": "https://github.com/ninja-build/ninja/releases/download/v1.12.1/ninja-linux.zip"
+      }
+    },
+    {
+      "name": "esp-rom-elfs",
+      "version": "20241011",
+      "license": "Apache-2.0",
+      "install": "always",
+      "archive": {
+        "sha256": "921f000164a421c7628fbfee55b173384aafaa51883adc65cd27bf9b0af9e9a9",
+        "size": 3540038,
+        "url": "https://github.com/espressif/esp-rom-elfs/releases/download/20241011/esp-rom-elfs-20241011.tar.gz"
+      }
+    }
+  ],
+  "adapter": {
+    "name": "espressif/esp_lvgl_adapter",
+    "version": "0.6.4",
+    "component_hash": "bcb316bedda9e934d32567082a969a8e8f8f406dd32d23c359a299249dc18e81",
+    "source_commit": "5d75f3f0dc499d9ed4b69284a3741187c2b75a70",
+    "patch": "esp-lvgl-adapter-0.6.4.patch",
+    "license": "Apache-2.0",
+    "patched_file": "src/display/bridge/v9/lvgl_ppa_accel_v9.c",
+    "before_sha256": "3b163b322ec30395354300a7f2e379c6f4560f757cf1ff40a66051267c9ebb8c",
+    "after_sha256": "4190a9f84693b2cc4a902f1b0f766f4f10e960736daadb8b7e3f6b036ddc6008",
+    "patched_component_hash": "fd55835919ccb87ca81bdc8b408c4839b528ebde8faa67739c6f32b4bf287765"
+  },
+  "historical_esptool_wheel": {
+    "sha256": "ce7a54fff8a35b3107bc0c7babc961bd306c8c55f3c791fad071a522b0ea9b47",
+    "role": "historical evidence only; not required to bootstrap"
+  },
+  "baseline_sha256": "e6a0837e1ced7c90cd0be254d693811a7fc93a4a2492f4eb6e1de51b4365698b",
+  "tool_binaries": {
+    "gcc": "921cbcc885a69ac3d4eda619b5b0bf1e29b83b2f169754711df8428c4e8a4dca",
+    "cmake": "b9c9b9a44a83dc4d055405c25300f5877c469eb98e50ea1019d3c63b23746730",
+    "ninja": "cf10a35d13a384fed866bcd4989c7761e8556209d195cc6d2a7c0f11cc73804c",
+    "rustc": "bff349e72704ff70bc08a234a3847338e797065bbedde5e556808bc87b7bf7c6",
+    "cargo": "841072d1d92f9e841d9ba5b0814182a0adf064acf4527cd120967b7bc49dcb66"
+  }
+}
