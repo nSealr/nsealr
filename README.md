@@ -64,4 +64,7 @@ Matched release artifacts and instructions require the D03, Q04 or Q05 gates.
 [security](https://github.com/nSealr/.github/blob/main/SECURITY.md) policies are shared.
 
 This is the renamed original firmware repository; public history is preserved.
+
+## License
+
 MIT, with third-party notices retained; see [LICENSE](LICENSE).
