@@ -1,0 +1,219 @@
+{
+  "schema_version": 1,
+  "reviewer": "/root/p4_optical_review",
+  "author": "/root/s3_native_finish",
+  "coordinator_and_CI_observer": "/root",
+  "base": "de388c9548bc04cdb44ea8ccd2197b2ab29befab",
+  "delivery_candidate": "8e356d3fd6c22e8b238ee9c3c0e72eb8f4f01cb5",
+  "source_candidate": "b2d9875aca08c8811cbcc3081560304a8a13e8ce",
+  "production_fix": "0ebfb45bd9c68dc0324b5b4bc5e48ed45a9a8ed6",
+  "red_source": "b59289df9d448f18c74f50e5c15efdcdf3f718f7",
+  "verdict": "PASS_BOUNDED_ACCOUNT_KEY_PIN_SOURCE_AND_REUSED_PROOF",
+  "blockers": [],
+  "summary_it": "Il servizio ora verifica le risposte sync/async contro la chiave pubblica selezionata originalmente, conservata in stato privato prima dei callback. Cambiare, sostituire o rimuovere la chiave dalla copia della route non può ridefinire l’identità attesa. Il perimetro produzione e le prove sono coerenti; nessun blocker emerso. L’integrazione protetta resta attività del coordinatore.",
+  "audit": {
+    "path": "intake/client-account-binding-audit.json",
+    "sha256": "d3a691510b73b419f7646e2b147562f4a2d121a8aa66067b36c01f956264a284",
+    "finding": "C01-private-expected-key-from-mutable-dispatch-copy",
+    "scope_it": "Il dispatcher è codice nello stesso processo e TCB. Il difetto è un’invariante interna di account binding: la verifica finale leggeva la chiave dalla copia mutabile consegnata al callback. Il driver seriale standard letto non compie quella mutazione. Nessun exploit tramite soli byte USB è dimostrato."
+  },
+  "source_review": {
+    "read_it": [
+      "Intero delta produzione13righe e84righe test aggiunte, con helper e fixture usati dai test",
+      "Tipo privato PreparedSignerDispatch; preparazione route e snapshot, guardia currentness, release/settlement; verifica risposta e percorsi sync/async completi",
+      "Audit, brief, README, manifest e prove RED/GREEN/fallimenti; driver seriale standard per delimitare il confine"
+    ],
+    "production_scope": [
+      "packages/client/src/service.ts"
+    ],
+    "test_scope": [
+      "packages/client/src/service.test.ts"
+    ],
+    "implementation_it": "expectedPublicKey è acquisito dalla route originale subito dopo selectAccountRoute e prima di signerCompatibility/clock/dispatcher. È una stringa e resta nel risultato privato PreparedSignerDispatch; al callback passa una structuredClone separata della route. Entrambi i percorsi usano prepared.expectedPublicKey nella medesima verifica finale. Non si affida alla sola readonly TypeScript o a Object.freeze.",
+    "unchanged_it": "Shape/checksum/correlazione/template/ID/firma, guardie currentness, capacità, timeout, cancellazione, prenotazione pending e settlement non cambiano. Nessuna nuova scelta account nei trasporti raw o nel helper generico verify_signer_response. Nessuna modifica a core, API/schema, dipendenze/lock, custody, plan, S3 o P4.",
+    "test_meaning_it": "Fixture B già firmata e invariata con public key4f35; account A usa la chiave valida pubblica di scalar1. Le regressioni modificano solo la copia route, mantengono account originale e prima/dopo before_write, poi restituiscono la stessa risposta B valida. I tre casi cambiano public_key, sostituiscono la route o eliminano public_key, ciascuno nei due entrypoint.",
+    "test_limits_it": "Le prove async esercitano handleLocalServiceRequestAsync con callback che restituisce la fixture sincrona, attraversando il suo await. Non rappresentano hardware/IO reale o isolamento generale contro callback arbitrari. La proprietà privata mantiene il pin attraverso l’await anche sul percorso produzione."
+  },
+  "proof_review": {
+    "directory": "docs/restart/implementation/C01/account-key-pin",
+    "members": 64,
+    "sha256_manifest_entries": 63,
+    "sha256sums_sha256": "38377fdfb5bbb10b659d6f29169a244e3228c111fac922a1cb2bd2f214e273f6",
+    "manifest_json_sha256": "984d12851b7c2c736c364eae938b5360fa05cc4fa456548838e8a339efb30b61",
+    "all_member_hashes_match": true,
+    "source_bindings_verified": 5,
+    "compiler_artifact_bindings_verified": 6,
+    "command_result_log_bindings_verified": 14,
+    "red_green_it": "03 conserva sei fallimenti attesi sul vecchio codice e quattro controlli passati. Dopo la correzione di solo narrowing del test,13 passa tutti10casi finali;14 usa gli stessi byte test finali contro il vecchio blob produzione e mostra esattamente sei accettazioni errate/fallimenti attesi e quattro controlli passati. Il sorgente GREEN è stato ripristinato byte per byte.",
+    "focused_it": "08 passa79test in4file: service38, profile-dispatch19, driver8 e browser-provider14. I10casi finali sono compresi in questi79, non79casi aggiuntivi. Dopo il solo alias TypeScript i restanti69controlli immutati sono riusati, non ripetuti.",
+    "other_checks_it": "07 build del workspace corrente PASS;10 typecheck completo PASS;11 validatore piano strutturale PASS47task;12 public API check esistente PASS. Nessun criterio fisico o stato task chiuso da questi risultati.",
+    "workspace_it": "05 segue84link workspace dei consumer effettivi, tutti nello stesso checkout. I consumer CLI/service/consumer-smoke/sdk-examples del transport risolvono nel workspace corrente. I6artifact dist correnti hanno gli hash del manifest; service.js letto usa il pin privato nei due percorsi. Nessun vecchio dist S3 adottato.",
+    "preserved_failures_it": [
+      "Recorder iniziale senza directory padre: nessun comando prodotto era partito, errore conservato",
+      "04 resolver presumeva una dipendenza transport diretta alla radice; ENOENT conservato,05 corregge la verifica seguendo i consumer reali",
+      "09 TypeScript segnala routeVector possibly undefined nel helper annidato; b2 cattura la fixture già validata. Produzione identica a0ebfb45; test finali verificati sia RED sia GREEN"
+    ],
+    "source_fidelity_it": "Produzione/test nel delivery8e sono identici a b2. Da0eb a b2 cambia soltanto l’alias della fixture nel test; da b2 a8e soltanto prove/documenti. Fuori dai due file prodotto cambia solo docs/restart/implementation/C01/account-key-pin. Checkout pulito.",
+    "run_bindings": [
+      {
+        "label": "01-offline-local-workspace-dependencies",
+        "exit": 0,
+        "expected_exit": 0,
+        "result_sha256": "2721571e5a90abd10a5b496688ae1d3c7df4bdb37e573b9c2e47bd0ce2996829"
+      },
+      {
+        "label": "02-current-workspace-build-before-red",
+        "exit": 0,
+        "expected_exit": 0,
+        "result_sha256": "5da5519b7ae376d04878d25b90c083cead080c35b027857c6c8c93a44d521dff"
+      },
+      {
+        "label": "03-red-private-account-key-regressions",
+        "exit": 1,
+        "expected_exit": 1,
+        "result_sha256": "1137df7dc7cf1465bfa718b211a0fd9cb722df9cc8ab6f893a4b21d55295bb66"
+      },
+      {
+        "label": "04-workspace-local-resolution",
+        "exit": 1,
+        "expected_exit": 0,
+        "result_sha256": "48bc3c8c6c5b39d89c3a4e200263b471fcebe32d4865ffd5c009ac8c398b01a4"
+      },
+      {
+        "label": "05-actual-consumer-workspace-resolution",
+        "exit": 0,
+        "expected_exit": 0,
+        "result_sha256": "2f7f2b8202c65f95dc13e4953dfd42cc219291cd21b41e9843b6da1d8a15142d"
+      },
+      {
+        "label": "06-green-private-account-key-regressions",
+        "exit": 0,
+        "expected_exit": 0,
+        "result_sha256": "3f349686aa501faedc8a8ca146dfc6c28880da1aacd7de804e007a7173c17ff9"
+      },
+      {
+        "label": "07-fixed-current-workspace-build",
+        "exit": 0,
+        "expected_exit": 0,
+        "result_sha256": "0c4826cc16b32e0707fa1b89da228a700d92f754c8bd2d20e0f672142eb5e883"
+      },
+      {
+        "label": "08-focused-client-route-browser-driver-tests",
+        "exit": 0,
+        "expected_exit": 0,
+        "result_sha256": "aedee3476367e0b812f6d26fcc51a2b913b37ee86fde3ded71e60529905819fb"
+      },
+      {
+        "label": "09-workspace-typecheck",
+        "exit": 2,
+        "expected_exit": 0,
+        "result_sha256": "876a51c4361ee8d91a7afe3da45d4ccc267d9e81446ee9aab60532546b27dab3"
+      },
+      {
+        "label": "10-fixed-workspace-typecheck",
+        "exit": 0,
+        "expected_exit": 0,
+        "result_sha256": "8b7c1e42e30ef8c86116ca83e696a41163b9b1d5736ef65271f47fe270d7f9ae"
+      },
+      {
+        "label": "11-restart-plan-validator",
+        "exit": 0,
+        "expected_exit": 0,
+        "result_sha256": "58db5f42733e65e63369964ca325cd724da32680d26cdf465e52cf68302270fd"
+      },
+      {
+        "label": "12-public-api-review-check",
+        "exit": 0,
+        "expected_exit": 0,
+        "result_sha256": "9ec45cd3b9d06ee7bd3da3782b4e69ea9c6e16ed7dde6b5464a50b27a6d6658d"
+      },
+      {
+        "label": "13-final-private-account-key-regressions",
+        "exit": 0,
+        "expected_exit": 0,
+        "result_sha256": "9396bd188709c2f6188b459e5780ea377ecfad243ae52382eda7a7e89ec4ad71"
+      },
+      {
+        "label": "14-old-production-with-final-tests-red",
+        "exit": 1,
+        "expected_exit": 1,
+        "result_sha256": "a010e8eac911d733eea3033b704ad9c72b95804b0975cdd8780f74a532959bb7"
+      }
+    ]
+  },
+  "limits_it": [
+    "Pin di metadati pubblici, nessuna custodia host di una chiave identità segreta.",
+    "Nessuna barriera generale contro codice TCB arbitrario nello stesso processo o mutationi diverse da questo finding.",
+    "Nessuna attestazione del dispositivo fisico da account_id, route, port path o connection_id; nessun exploit USB osservato.",
+    "Trasporti raw e verify_signer_response generico restano privi di selezione account; il caller deve scegliere il percorso routed o gestire la propria expected identity.",
+    "Nessuna qualifica di client Nostr esterni, completo lifecycle account/rebinding, hardware, segreti, entropy, human-WAIT/ACTIVE o release.",
+    "Protected PR/required CI/resulting-main e adozione effettiva non eseguiti in questa review; root unico osservatore e coordinatore."
+  ],
+  "performed": {
+    "product_edits": 0,
+    "builds": 0,
+    "new_tests": 0,
+    "replays": 0,
+    "CI_actions": 0,
+    "USB_actions": 0,
+    "flashes": 0,
+    "pushes": 0,
+    "merges": 0,
+    "receipt_only_write": true
+  },
+  "recorded_utc": "2026-10-26T12:33:51.765468+00:00",
+  "source_and_artifact_bindings": [
+    {
+      "path": "packages/client/src/service.ts",
+      "sha256": "d2313eee2fd8ed38e0c88ef1bc16d62c95ae8514bf239fa480d1e03c48dca728"
+    },
+    {
+      "path": "packages/client/src/service.test.ts",
+      "sha256": "c4e1290be3e8f377cb36600c785d12baa8c6e5bf3f3f09ea644229eabf90cf16"
+    },
+    {
+      "path": "pnpm-lock.yaml",
+      "sha256": "6bb111659e2df436a81e4a566023e501e07573f49e5ff140b421835360ae2c48"
+    },
+    {
+      "path": "protocols/contracts/v1/examples/request-kind-1-basic.json",
+      "sha256": "f569e5b2f5bc0a3aa8586cba4b8afdeb96a0b93353e8d44212897fbc388c8377"
+    },
+    {
+      "path": "protocols/contracts/v1/examples/response-kind-1-basic.json",
+      "sha256": "3a398947e46c715a6ceaaeaa7198455ac840727c7f0f78dd079a1de8742350a1"
+    },
+    {
+      "path": "packages/client/dist/service.js",
+      "sha256": "12af4be02c94785c0bf999d25b2a58b7aa0160d7c617e4e6809e3e399c5696f2",
+      "role": "Current checkout build07 output, no independent binary reproducibility claim"
+    },
+    {
+      "path": "packages/client/dist/service.d.ts",
+      "sha256": "c01f24678407002eb3765960c473a4e7cac1ae72c2e63eb6fd180a7e2bf52cb9",
+      "role": "Current checkout build07 output, no independent binary reproducibility claim"
+    },
+    {
+      "path": "packages/core/dist/nostr.js",
+      "sha256": "829b8abf892bdbf1ecdfcfd71da920513885dccf0860e678623f1543503c7316",
+      "role": "Current checkout build07 output, no independent binary reproducibility claim"
+    },
+    {
+      "path": "packages/policy/dist/policy.js",
+      "sha256": "8f28448937b4fc0254a998a8dfa6dd6c8dde0545f958214bec819a7257d0f8cb",
+      "role": "Current checkout build07 output, no independent binary reproducibility claim"
+    },
+    {
+      "path": "packages/browser-provider/dist/provider.js",
+      "sha256": "3507ca44074cbc120ebe4a712a24b3a088646046326cd4b24f4f0b1f3fed2c25",
+      "role": "Current checkout build07 output, no independent binary reproducibility claim"
+    },
+    {
+      "path": "packages/fixtures/dist/index.js",
+      "sha256": "ed88e4d33ed7881e402b90554baca8f73dbf42dbbb164b71477663db4505c4cb",
+      "role": "Current checkout build07 output, no independent binary reproducibility claim"
+    }
+  ],
+  "delivery_tree": "8dd9fd8d0daf60515a383c748a7c2dfa169fe061",
+  "clean_delivery": true
+}
