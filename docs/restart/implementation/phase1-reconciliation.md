@@ -38,3 +38,15 @@ No product runtime or full-CI campaign was run for this metadata/document change
 The selected root device receipt is sanitized; raw unique identifiers and private
 hardware logs stay in the existing private preservation path. Original PR52
 packet bytes and historical closed-task records are retained unchanged.
+
+PR53 attribution correction: the four changed `docs/product` contracts are no
+longer labelled equivalent to the original P01 relocation. Their current hashes
+and distinct current-coordinator source review are bound in P01's explicit
+current-contract amendment. Original P01 inputs/candidate/review/result and frozen
+proof remain unchanged; parent integrated status describes that foundation, while
+this amendment still awaits protected integration and affected metadata review.
+The existing evidence verifier and its negative controls remain unchanged.
+Targeted correction checks: `python3 scripts/verify_evidence.py` PASS (1,508 frozen
+files, five contract owners,18 navigation files), `python3 scripts/test_evidence.py`
+PASS (14 existing tamper/attribution controls), plan validation and diff check PASS.
+No full-CI or crypto dependency test is attributed to this correction.
