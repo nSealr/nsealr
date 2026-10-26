@@ -1,0 +1,88 @@
+{
+  "schema": "nsealr.s3-sar-data-status-resolution-contract.v1",
+  "recorded_utc": "2026-10-26T16:24:15.920680+00:00",
+  "status": "PROPOSED_ROOT_REVIEW_ONLY; one read-only source-resolution lot, no code/build/test/device action",
+  "base": {
+    "delivery": "f65e8aa9b8917821e25a80d9d541bba29a9973a7",
+    "compiled_source": "08d919c31cff329f14809cc8c3ed2f26cd8454c5",
+    "sdk": "e0991facf5ecb362af6aac1fae972139eb38d2e4",
+    "part": "observed ESP32-S3 rev0.2",
+    "model_policy": "gpt-6.1-sol xhigh, unchanged; no delegation or escalation"
+  },
+  "observed": {
+    "receipt": "s3-entropy-negative-provider-observation.json",
+    "receipt_sha256": "726b76c04e05f3c7c3d8c7bf3f758ad71bb21da94626616411031333ca9095b6",
+    "raw": "s3-entropy-negative-runtime.log",
+    "raw_sha256": "0d575c63b66997bc5a1e21f5c2fd7c5cb86f56f759b898821b456494988fd8ee",
+    "result": "One auxiliary attempt: Health-6 at s3_entropy_logic.h105-106 because both DATA_STATUS values equal before/after, prior to word gross screens.8 words sampled,0 bytes supplied,2653us, clean refs0/1/1/0, no signature.",
+    "limits": "draw1..4 not observed/passed. No RNG samples published by this failed attempt; no inference that RNG words were stuck or passed later screens. No retry."
+  },
+  "decision": {
+    "classification": "UNKNOWN_SOURCE_ACTIVITY_FROM_LAST_VALUE_EQUALITY; retain the real fail-closed observation and its historical Health label. Neither ADC inactivity, inapplicable register, ADC183 occurrence nor RNG/source quality is established.",
+    "DATA_STATUS_semantics": "TRM1.8 p1513 registers39.70/39.71 calls DATA1/DATA2 raw sample data, RO[16:0], reset0. It specifies no freshness sequence, conversion count, health flag, or required per-read variation. Clock-on/reset-released permits the register read; the lack of DMA is not a documented reason to call this register inapplicable. The same register is exposed by SDK adc_ll_adc1/2_read without DMA transfer code.",
+    "value_0x14000": "Certain: raw17bit word is0x14000; the target SDK12bit result extraction(raw&0xfff) is0. Bits[16:12]=0x14 are outside that numeric result. Conditional inference only: applying the SDK DMA layout would decode channel0xA,reserved12=0,data0; this matches the helper internal-channel comment. The sources do not explicitly equate DATA_STATUS layout with the DMA packet, so do not claim a certain channel/validity/error decode for those upper bits. It is not a documented RNG error or health code.",
+    "why_equality_is_insufficient": "Two identical last-value observations do not prove no intervening conversions, and a completed quantized sample is not required to differ on each observation. Conversely, identical zero-valued results do not prove activity or entropy. The old proxy therefore cannot distinguish a stuck converter from a stable/aliased last value; varied RNG output cannot repair that missing observation.",
+    "ADC183": "Errata1.3 printedpp10-11/PDF12-13 describes false sample-enable sending DIGADC2 inoperative, recommends RTC controller, no fix. TRM1.8 p1466 explicitly removes DIGADC2 documentation. This symptom alone does not diagnose the erratum, and noDMA does not exempt the doubleSAR helper. Production source admission stays closed."
+  },
+  "primary_sources": {
+    "historical_ledger_sha256": "065eaaef10bacb68d10cd2ef40d7468d334d406a6fab3cb9f58f7e306521ed67",
+    "SDK": [
+      {
+        "sdk_path": "components/soc/esp32s3/include/soc/apb_saradc_reg.h",
+        "lines": "339-345;623-629;419-539",
+        "sha256": "253e6ee6bd0393703e98cbdde0fdc2764ee5f09236a02c88a862b21838d963f6",
+        "finding": "DATA1/DATA2 are17bit RO fields; ADC1_DONE raw at0x60 bit31 and clear at0x68 bit31, separate from interrupt enable/status."
+      },
+      {
+        "sdk_path": "components/hal/esp32s3/include/hal/adc_ll.h",
+        "lines": "1183-1192;221-234",
+        "sha256": "c703a606759b6fdccf682fdc5840a06c2a8c8887a10ef1da637e7c4f9a8a5690",
+        "finding": "The target helper reads DATA_STATUS masked0xfff as12bit output; ADC1-only work_mode0/sar_sel0 is an existing controller option, not an entropy qualification."
+      },
+      {
+        "sdk_path": "components/hal/include/hal/adc_types.h",
+        "lines": "194-212",
+        "sha256": "268f2980e27a8390ccdf512b01cb1c9c0a967df0414ae13535ebece36f7b8745",
+        "finding": "S3 DMA type2 has data[11:0],reserved12,channel[16:13],unit17. This is explicitly DMA output format, not an explicit binding for DATA_STATUS."
+      },
+      {
+        "sdk_path": "components/bootloader_support/src/bootloader_random_esp32s3.c",
+        "lines": "17-74;78-101",
+        "sha256": "8a0536dffbe5f7606fd3cde904ca2913472695aee723fc53b6490815b240eb4f",
+        "finding": "RNG helper sets digital doubleSAR, internal channel0xA/reference, timer and RC clock; no DMA setup or DATA_STATUS health/freshness rule."
+      },
+      {
+        "sdk_path": "components/esp_hw_support/hw_random.c",
+        "lines": "27-29;46-87",
+        "sha256": "def2590e896c0854ae6eb65f03555081b5a1f45e972dffab969c6f3e4e294d10",
+        "finding": "esp_random reads WDEV_RND_REG with S3 rate1778APBcycles; no conversion completion/health status or relation requiring changing DATA_STATUS."
+      }
+    ],
+    "TRM": {
+      "file": "s3-entropy-primary-sources/esp32-s3-trm.pdf",
+      "version": "1.8",
+      "sha256": "4484bf8a69035ec42a731c58c64ada6fbd1f1618c5559409f134d9ea083f444f",
+      "pages": "920-921 RNG SAR/RC path;1466 DIGADC2 exclusion;1470-1473 timer/DMA separation and DMA format;1513 raw sample;1514 raw interrupt bit31;1515 clear bit31"
+    },
+    "errata": {
+      "file": "s3-entropy-primary-sources/esp32-s3-errata.pdf",
+      "version": "1.3",
+      "sha256": "8f349bdd0b4e9bca24e49d777ac3b416ff2d2c48253a49653162e84f4b484500",
+      "pages": "printed10-11/PDF12-13, ADC183"
+    }
+  },
+  "next_change_proposed_after_review": {
+    "scope": "Minimal PUBLIC-ONLY activity observer in the existing S3 provider/logic/test files; no SDK patch, new source family, core/API/time/plan/host change. Keep f65/08 and its negative immutable.",
+    "mechanism": "Replace equality-as-health proxy with two observed fresh ADC1 completion transitions: before8words and after8words. Under the existing exclusive RCC lease, briefly stop only the ADC trigger timer, clear only ADC1_DONE via its clear bit31 and require observed RAW bit31=0, re-enable the timer, then require RAW bit31=1 within the existing real50ms envelope and finite poll budget. Preserve all other active-field/readback/ownership checks and cleanup. No CPU interrupt handler/enable, no DMA, scheduler freeze or long RCC lock. A failed clear, missing transition or unavailable signal refuses with Readback/Timeout, supplies0 and wipes; never treat a previously-set/sticky bit as fresh progress.",
+    "meaning": "This is a manufacturer-named completion/liveness observation for ADC1, not proof of ADC2 activity or noise quality. DATA_STATUS remains raw public diagnostic information; stable raw alone cannot override a missing completion. Two transitions are proposed, not yet measured or guaranteed for this helper. If the source signal does not progress, preserve the negative and stop; do not lower the observation requirement.",
+    "negative_conservation": [
+      "Reproduce0x14000/0x14000 with no new completion: refuse,0 supplied,full wipe,cleanup intact. This preserves the inactive/stalled-converter negative intent.",
+      "Initial DONE1/stale, clear cannot be observed0, or completion appears only before words: refuse; no stale event accepted as the post-draw transition.",
+      "A fixture with identical raw but two genuine fresh completion transitions may pass only the public activity gate; word all0/allFF/repeated/duplicate-block screens still reject and no production entropy claim follows.",
+      "Ownership/reference/readback loss, short/error/oversize, cancellation, rollback/timeout/frozen clock and cleanup failures retain fail-closed/wipe/guard requirements; rerun only affected provider tests, reuse unchanged Rust/core/USB tests."
+    ],
+    "resources_and_finite_followup": "No new task/heap/DMA or diagnostic endpoint. Keep provider state<=256B, diagnostic retention<=2048B, main98304/USB4096 INTERNAL and existing between-call50ms bound; compact phase observations must fit those caps and be logged unambiguously. Only after root review: affected build/packet and one fresh public hardware pass, still<=4diagnostic attempts plus<=1new scalar3 auxiliary attempt per CPU boot, stop first failure, no retry-until-green.",
+    "alternative_not_implicitly_authorized": "If completion does not resolve the observation, supported DIGADC1-only work_mode0/sar_sel0 (SDK adc_ll.h221-225; TRM1466/1470) or RTC controller (erratum workaround) are finite candidate paths for a separately reviewed source contract. Merely selecting ADC1 or reading RTC samples is not evidence of an adequate continuous RNG entropy path. Do not silently switch, seed from those samples, or use RC-only/RNG-output variation as fallback."
+  },
+  "unchanged_gates": "Public experimental only. ADC183/manufacturer-supported source admission, reset/RAM/ROM/host gates and all real-identity prohibitions remain. S04 terminal/outside scope; no new MCU catalog, FIPS gate or hardware campaign. No product source, SDK, plan, build, tests or device was modified/executed for this receipt."
+}
