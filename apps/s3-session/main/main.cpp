@@ -41,6 +41,8 @@ S3ExchangeResult nsealr_s3_public_exchange(uint8_t*,size_t,PresentCallback,NowCa
 static SessionMenu menu;
 static bool local_locked;
 static bool clock_started;
+static bool transport_failed;
+static uint32_t review_frames;
 static uint64_t deadline_seconds;
 static uint8_t response[1024];
 static char public_hex[65];
@@ -144,6 +146,7 @@ static int32_t present_review(uint32_t kind,uint32_t index,uint32_t total,
     small(158,kind?"0: reject | 14 hold1.5s: approve | both: lock":
         "0: back | 14: next | both hold1.5s: lock",0xffff);
     flush_frame();
+    ++review_frames;
     // All physical events must follow this successful complete DMA commit.
     SessionGesture g;
     for(;;) {
@@ -240,7 +243,10 @@ extern "C" void app_main() {
             ESP_ERROR_CHECK(esp_lcd_panel_mirror(panel,menu.rotated,!menu.rotated));
             status_screen("ROTATED - locked");idle=SessionGesture{};
         } else if(change==SessionMenuChange::Enable){
-            discard_input();local_locked=false;status_screen("READY - public requests");idle=SessionGesture{};
+            discard_input();local_locked=transport_failed;
+            if(transport_failed){menu.enabled=false;status_screen("TX UNCERTAIN - reset");}
+            else status_screen("READY - public requests");
+            idle=SessionGesture{};
         }
         if(!usb_serial_jtag_is_connected()&&menu.enabled){
             menu.enabled=false;local_locked=true;discard_input();status_screen("DISCONNECTED - locked");idle=SessionGesture{};
@@ -249,20 +255,33 @@ extern "C" void app_main() {
         if(menu.enabled && got>0)for(int i=0;i<got;++i){
             const int32_t state=nsealr_s3_public_feed(input[i]);
             if(state==1){
-                clock_started=false;local_locked=false;
+                clock_started=false;local_locked=false;review_frames=0;
+                const int64_t started_us=esp_timer_get_time();
                 const auto r=nsealr_s3_public_exchange(response,sizeof(response),present_review,trusted_now,cancelled);
+                const int64_t elapsed_us=esp_timer_get_time()-started_us;
+                const auto minimum_stack=uxTaskGetStackHighWaterMark(nullptr);
                 uint64_t now=0;
                 // No display/IO callback between the final local sample and bounded TX.
                 const bool release=trusted_now(&now)==0&&now<deadline_seconds&&!cancelled();
-                const int sent=release&&r.length>0&&r.length<=sizeof(response)?
+                const bool attempted=release&&r.length>0&&r.length<=sizeof(response);
+                const int queued=attempted?
                     usb_serial_jtag_write_bytes(response,r.length,pdMS_TO_TICKS(200)):0;
+                // A return count is queue acceptance, never proof of host receipt.
+                // Even return0 can follow a prefix already copied to hardware FIFO.
+                if((attempted&&queued!=int(r.length))||r.length>sizeof(response))transport_failed=true;
                 std::memset(response,0,sizeof(response));
                 menu.enabled=false;discard_input();idle=SessionGesture{};
-                if(r.status==0&&sent==int(r.length))status_screen("RESULT SENT - public test");
+                if(r.status==0&&queued==int(r.length)&&attempted)status_screen("RESULT QUEUED - public test");
                 else if(r.status==-5)status_screen("REJECTED - no signature");
                 else if(r.status==-7)status_screen("EXPIRED - no signature");
                 else if(r.status==-11)status_screen("LOCKED - no signature");
-                else status_screen("FAILED - review again");
+                else status_screen(transport_failed?"TX UNCERTAIN - reset":"FAILED - review again");
+                if(attempted&&!transport_failed){
+                    char line[192];
+                    std::snprintf(line,sizeof(line),"s3-public-result-v1 status=%ld tx_report=%d frames=%lu elapsed_us=%lld stack_min_free_bytes=%lu\n",
+                        (long)r.status,queued,(unsigned long)review_frames,(long long)elapsed_us,(unsigned long)minimum_stack);
+                    usb_line(line);
+                }
                 break; // Remaining bytes from this read cannot start another request.
             }
             if(state<0){discard_input();break;}

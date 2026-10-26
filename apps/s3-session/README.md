@@ -13,7 +13,11 @@ Every new page requires released inputs after its complete DMA commit.
 GPIO0 in the Idle/Locked menu rotates180degrees and remains Locked. This RAM-only
 choice is fixed throughout a request; GPIO functions do not change. The banner
 identifies the expected buttons-left/right edge. Root must observe both views.
-After settlement, a new local enable is required. All screens identify PUBLIC TEST KEY.
+After settlement, a new local enable is required. RESULT QUEUED means accepted
+by the USB driver, not delivered to the host. Already queued public bytes cannot
+be recalled by Lock/disconnect. A queue failure requires reset, with no automatic
+retry. A finite public metric reports DMA frames, elapsed time including human
+wait, and minimum free main stack since boot. All screens identify PUBLIC TEST KEY.
 
 The explicit clock unit is real monotonic seconds from esp_timer_get_time.
 The unchanged100tick core expiry is intake_seconds+100; flooring may expire

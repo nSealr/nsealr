@@ -71,9 +71,14 @@ C display callback; a callback cannot mutate which request is later signed.
 Use one synchronous Rust owner. Its private consent never leaves Rust; C only
 implements the trusted display/input/clock boundary. Cancel and lock the owner
 on every ordinary return; a lost response never recreates consumed authority.
-If TX cannot finish within the finite transport limit, discard the result and
-require a new review. A fresh real clock sample is required immediately before
-the adapter releases the completed framed result.
+The 200 ms TX call bounds queueing work, not host delivery. A full return means
+accepted into the hardware FIFO/software ring. Return zero can still follow a
+prefix written to the FIFO. Queue failure enters a terminal transport-failed
+state until device reset; it never automatically retries signing or transmission.
+Already queued bytes may remain until the host reads them and cannot be revoked
+by local Lock, port close or SOF loss. The UI says RESULT QUEUED, never SENT. A fresh real clock sample is required immediately before
+the adapter releases the completed framed result. Physical host receipt is a
+separate captured observation; this diagnostic has no delivery acknowledgement.
 
 ## Actual display and two buttons
 
@@ -266,3 +271,10 @@ MX/MY bits between (false,true) and (true,false), preserving swapXY and gap(0,35
 The banner states BUTTONS LEFT/RIGHT and the legend aligns to that edge. No upper/
 lower physical GPIO position is guessed. Root qualifies both actual orientations
 on the exact new image; the old a159 evidence qualifies only its original view.
+
+Public result telemetry is one bounded line after a successfully accepted TX
+queue operation. tx_report is the driver return value, not host-observed bytes;
+frames counts successful local DMA commits, not human reading. elapsed_us includes
+human wait inside the adapter call. stack_min_free_bytes is the Xtensa uint8_t
+stack high-water result since boot, not a new per-operation peak or ACTIVE ledger.
+No telemetry record is assumed present when a non-reading host blocks its queue.
