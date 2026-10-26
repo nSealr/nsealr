@@ -87,7 +87,9 @@ suffix, clipped label, replacement glyph or automatic page acknowledgement.
 The core's escaped ASCII review is rendered as the actual printable ASCII
 glyphs. Physical readability and edge pixels still require distinct readback.
 
-GPIO 0 is Left; GPIO 14 is Right. Keep the 40 ms stable transition rule and
+GPIO 0 owns Back/Reject/Rotate; GPIO 14 owns Next/Approve/Enable.
+These names identify stable functions, not a claim about upper/lower physical
+positions. Root observed the current foundation's buttons on the left edge. Keep the 40 ms stable transition rule and
 require both inputs released after every successful complete frame commit.
 An initial held button cannot acknowledge the new page.
 
@@ -243,3 +245,20 @@ components/esp_hw_support/hw_random.c, components/usb/usb_phy.c and S3 USB HAL,
 plus the exact core authorization/event/nip19 source and registry component
 notices. The web tool was unavailable; pinned local primary sources and the
 captured official registry responses supply these source observations.
+
+## Maintainer orientation steering (26 October 2026)
+
+The maintainer requested a manual 180-degree choice, with no auto-rotation.
+The menu accepts a new GPIO0 short press/release only in Idle/Locked, rotates,
+clears pending ingress and remains Locked. Orientation lives in RAM only; boot
+restores the physically observed buttons-left foundation orientation. Local Lock
+preserves the RAM choice. A completed Lock/rotation redraw creates a new gesture
+object: a held Both gesture or its release cannot rotate the menu.
+
+The synchronous review callback cannot execute the menu handler, so orientation
+is fixed from request intake through settlement. GPIO functions and the 26x8
+request geometry remain unchanged. SDK panel_st7789_mirror toggles both MADCTL
+MX/MY bits between (false,true) and (true,false), preserving swapXY and gap(0,35).
+The banner states BUTTONS LEFT/RIGHT and the legend aligns to that edge. No upper/
+lower physical GPIO position is guessed. Root qualifies both actual orientations
+on the exact new image; the old a159 evidence qualifies only its original view.

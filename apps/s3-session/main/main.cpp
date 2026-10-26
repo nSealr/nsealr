@@ -37,7 +37,7 @@ int32_t nsealr_s3_public_reset_input();
 int32_t nsealr_s3_public_key(uint8_t*,size_t);
 S3ExchangeResult nsealr_s3_public_exchange(uint8_t*,size_t,PresentCallback,NowCallback,CancelCallback);
 }
-static bool enabled;
+static SessionMenu menu;
 static bool local_locked;
 static bool clock_started;
 static uint64_t deadline_seconds;
@@ -89,7 +89,9 @@ static bool cells(const uint8_t *p,size_t n,int &row,uint16_t color) {
     ++row;return row<=8;
 }
 static void small(int y,const char *s,uint16_t color) {
-    for(int x=4;*s && x+6<=width;x+=6,++s)glyph(x,y,uint8_t(*s),color,1);
+    const int length=int(std::strlen(s));
+    const int start=menu.rotated?width-4-length*6:4;
+    for(int x=start;*s && x>=0 && x+6<=width;x+=6,++s)glyph(x,y,uint8_t(*s),color,1);
 }
 static void flush_frame() {
     while(xSemaphoreTake(transferred,0)==pdTRUE){}
@@ -99,7 +101,7 @@ static void flush_frame() {
 }
 static void banner() {
     std::memset(frame,0,width*height*sizeof(*frame));
-    const char *t="PUBLIC TEST KEY - S3";
+    const char *t=menu.rotated?"TEST KEY | BUTTONS RIGHT":"TEST KEY | BUTTONS LEFT";
     for(int x=4;*t;x+=12,++t)glyph(x,1,uint8_t(*t),0xffe0);
 }
 static void status_screen(const char *status) {
@@ -108,7 +110,7 @@ static void status_screen(const char *status) {
     (void)cells(reinterpret_cast<const uint8_t*>(public_hex),26,row,0x07e0);
     (void)cells(reinterpret_cast<const uint8_t*>(public_hex+26),26,row,0x07e0);
     (void)cells(reinterpret_cast<const uint8_t*>(public_hex+52),12,row,0x07e0);
-    small(158,"14: enable public test | 0+14: lock",0xffff);flush_frame();
+    small(158,"0: rotate180 | 14: enable | both: lock",0xffff);flush_frame();
 }
 static void poll_buttons() {
     const uint32_t now=uint32_t(esp_timer_get_time()/1000);
@@ -147,7 +149,7 @@ static int32_t present_review(uint32_t kind,uint32_t index,uint32_t total,
         if(trusted_now(&now)!=0||now>=deadline_seconds)return 0;
         if(cancelled())return 0;
         poll_buttons();const auto action=gesture(g,kind==1);
-        if(action==SessionAction::Lock){local_locked=true;enabled=false;return 4;}
+        if(action==SessionAction::Lock){local_locked=true;menu.enabled=false;return 4;}
         if(action!=SessionAction::None)return int32_t(action);
         uint8_t hostile[64];
         (void)usb_serial_jtag_read_bytes(hostile,sizeof(hostile),0);
@@ -226,17 +228,23 @@ extern "C" void app_main() {
     SessionGesture idle;
     for(;;){
         poll_buttons();const auto a=gesture(idle,false);
-        if(a==SessionAction::Lock){
-            enabled=false;local_locked=true;discard_input();
+        const auto change=menu.apply(a);
+        if(change==SessionMenuChange::Lock){
+            local_locked=true;discard_input();
             status_screen("LOCKED - public test");idle=SessionGesture{};
-        } else if(a==SessionAction::Next){
-            discard_input();enabled=true;local_locked=false;status_screen("READY - public requests");idle=SessionGesture{};
+        } else if(change==SessionMenuChange::Rotate){
+            local_locked=true;discard_input();
+            // Both MX/MY bits change: 180 degrees, with the same MV/gap/geometry.
+            ESP_ERROR_CHECK(esp_lcd_panel_mirror(panel,menu.rotated,!menu.rotated));
+            status_screen("ROTATED - locked");idle=SessionGesture{};
+        } else if(change==SessionMenuChange::Enable){
+            discard_input();local_locked=false;status_screen("READY - public requests");idle=SessionGesture{};
         }
-        if(!usb_serial_jtag_is_connected()&&enabled){
-            enabled=false;local_locked=true;discard_input();status_screen("DISCONNECTED - locked");idle=SessionGesture{};
+        if(!usb_serial_jtag_is_connected()&&menu.enabled){
+            menu.enabled=false;local_locked=true;discard_input();status_screen("DISCONNECTED - locked");idle=SessionGesture{};
         }
         uint8_t input[64];const int got=usb_serial_jtag_read_bytes(input,sizeof(input),0);
-        if(enabled && got>0)for(int i=0;i<got;++i){
+        if(menu.enabled && got>0)for(int i=0;i<got;++i){
             const int32_t state=nsealr_s3_public_feed(input[i]);
             if(state==1){
                 clock_started=false;local_locked=false;
@@ -247,7 +255,7 @@ extern "C" void app_main() {
                 const int sent=release&&r.length>0?
                     usb_serial_jtag_write_bytes(response,r.length,pdMS_TO_TICKS(200)):0;
                 std::memset(response,0,sizeof(response));
-                enabled=false;discard_input();idle=SessionGesture{};
+                menu.enabled=false;discard_input();idle=SessionGesture{};
                 if(r.status==0&&sent==int(r.length))status_screen("RESULT SENT - public test");
                 else if(r.status==-5)status_screen("REJECTED - no signature");
                 else if(r.status==-7)status_screen("EXPIRED - no signature");

@@ -10,6 +10,9 @@ public key appears on screen. Data pages use GPIO14 Next and GPIO0 Back.
 On the separate final page, hold GPIO14 alone for1.5seconds to Approve; GPIO0
 Rejects. Holding both for1.5seconds locks, with precedence over Approve.
 Every new page requires released inputs after its complete DMA commit.
+GPIO0 in the Idle/Locked menu rotates180degrees and remains Locked. This RAM-only
+choice is fixed throughout a request; GPIO functions do not change. The banner
+identifies the expected buttons-left/right edge. Root must observe both views.
 After settlement, a new local enable is required. All screens identify PUBLIC TEST KEY.
 
 The explicit clock unit is real monotonic seconds from esp_timer_get_time.

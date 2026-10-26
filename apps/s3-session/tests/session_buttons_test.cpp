@@ -32,4 +32,22 @@ int main(){
     SessionGesture bounce;bounce.update(0,false,false,false,false,false);
     bounce.update(1,false,false,false,true,false); // raw-only bounce is not a debounced press
     assert(bounce.update(2,false,false,false,false,false)==A::None);
+
+    SessionMenu menu;
+    SessionGesture after_lock;
+    after_lock.update(0,false,false,false,false,false);
+    after_lock.update(1,true,true,true,true,false);
+    assert(after_lock.update(1501,true,true,true,true,false)==A::Lock);
+    assert(menu.apply(A::Lock)==SessionMenuChange::Lock);
+    after_lock=SessionGesture{}; // new complete menu commit
+    assert(menu.apply(after_lock.update(1510,true,true,true,true,false))==SessionMenuChange::None);
+    assert(menu.apply(after_lock.update(1520,false,false,false,false,false))==SessionMenuChange::None);
+    assert(!menu.rotated); // releasing old Both cannot become Rotate
+    after_lock.update(1600,true,false,true,false,false);
+    assert(menu.apply(after_lock.update(1700,false,false,false,false,false))==SessionMenuChange::Rotate);
+    assert(menu.rotated&&!menu.enabled);
+    assert(menu.apply(A::Next)==SessionMenuChange::Enable);
+    assert(menu.rotated&&menu.enabled);
+    menu.apply(A::Lock);
+    assert(menu.rotated&&!menu.enabled); // RAM orientation survives local lock only
 }

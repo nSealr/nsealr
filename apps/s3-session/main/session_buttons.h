@@ -31,3 +31,15 @@ struct SessionGesture {
         return SessionAction::None;
     }
 };
+
+enum class SessionMenuChange { None, Enable, Rotate, Lock };
+// Called only by the Idle/Locked event loop, never inside a live request.
+struct SessionMenu {
+    bool enabled=false, rotated=false;
+    SessionMenuChange apply(SessionAction a) {
+        if(a==SessionAction::Lock){enabled=false;return SessionMenuChange::Lock;}
+        if(a==SessionAction::Back){enabled=false;rotated=!rotated;return SessionMenuChange::Rotate;}
+        if(a==SessionAction::Next){enabled=true;return SessionMenuChange::Enable;}
+        return SessionMenuChange::None;
+    }
+};
