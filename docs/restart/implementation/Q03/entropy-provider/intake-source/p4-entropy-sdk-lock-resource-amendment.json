@@ -1,0 +1,30 @@
+{
+  "schema": "nsealr.p4-entropy-sdk-lock-amendment.v1",
+  "original_contract_sha256": "b4336e6076c4f0b70de1a48d125306fe69c6143ab7acb59f9ac2ae1ef3b3b4d4",
+  "base_source": "f6f08824cf70186cdf472531f0b1863df8036048",
+  "original_no_new_heap": "Preserved as superseded assumption, not silently relabelled.",
+  "finding": "Real SDK ADC1/2 static _lock_t lazily allocate xQueueCreateMutex through lock_init_generic; first try is not allocation-free.",
+  "root_authorization": "Root explicit session message approves once-only worker bind initialization before engine/authority; no SDK patch, close/replacement or foreign ownership normalization.",
+  "amendment": "At most two retained SDK INTERNAL|8BIT mutex payloads, compile cap2*sizeof(StaticSemaphore_t)<=512bytes. Allocator headers/rounding/fragmentation are separate; no falsely isolated concurrent heap delta. No new per-draw allocation in reviewed returning collection after successful bind. OOM may assert/reset in SDK and is not invented as a fallible error.",
+  "failure_policy": "Bind uses both true try-locks and balanced releases; busy/partial/release failure stops terminally before engine/key, no automatic retry. SDK abort/reset paths remain unqualified.",
+  "other_lazy_audit": "Collection ADC APB/RCC/regi2c controls use static counts/portMUX; quiet GPIO/clock/esp_timer reads do not initialize a new SDK lock. ADC handles remain initialized and are never closed by adapter. Startup telemetry/UI and SDK fatal/abort branches are outside a universal heap-free assertion; final linked callgraph/config review required.",
+  "tests": "Shared real warm-up policy tested for success, first/second lock failure and both release errors; preserve collector fault cases. No Rust rebuild when Rust/core/ABI blobs unchanged.",
+  "source_bindings": [
+    {
+      "path": "components/esp_libc/src/locks.c",
+      "sha256": "f387412296c33db8d06d8b666aa4b61c7bdf10be1ff43f6bbb1d71b4937e1edd"
+    },
+    {
+      "path": "components/esp_libc/platform_include/sys/lock.h",
+      "sha256": "962925c5b79d9951c4d10325fb7684d076e29caf394dd64b4bafc8f834aecb36"
+    },
+    {
+      "path": "components/freertos/FreeRTOS-Kernel/queue.c",
+      "sha256": "6794db86ab086372ea2789d043d83e0b1efd0534a0c0deb5d28cffb342feaa0e"
+    },
+    {
+      "path": "components/freertos/heap_idf.c",
+      "sha256": "6201b70a245f721c3021656d62fbbbf45c3e4d5d843365df007d0da9ac99db2e"
+    }
+  ]
+}

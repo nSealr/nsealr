@@ -1,0 +1,23 @@
+{
+  "base": "06f2977bd090d39a0421622427e5dc366439b029",
+  "status": "STOPPED_FIRST_UNEXPECTED_HOST_TEST_COMPILE_FAILURE; no runtime/Rust/target build started",
+  "record": "p4-probe/execution/p4-entropy-01-host-provider-build",
+  "result_sha256": "0e4fb67aba3013fad81679623cb2e1949580bc994eafcdabd494860e90404550",
+  "stderr_sha256": "7316540f06a1701702517f05dc40f3fe08bd4e6e9425436387b36b49e1c6611d",
+  "cause": "Formatting replacement split the test CHECK macro at semicolon-if without C line continuation, causing parser cascades; additional if...return line triggers Werror misleading-indentation. SDK untouched. Product collector unit has no reported compiler error in this combined compile.",
+  "proposed_minimal_correction": "Restore CHECK as one intact macro line or explicit backslash continuations; split test conditional and subsequent return onto distinct lines/brace. Preserve every assertion/fault/sanitizer/warning flag. Then only recompile and run the affected host provider test if root accepts correction.",
+  "source_hashes": {
+    "apps/p4/main/p4_entropy_logic.h": "fc0d0d9291697d230b0cb2f2d90a93a97858895580704c95bb8ff79538c5baca",
+    "apps/p4/main/p4_entropy_logic.c": "ddf933d062e829032cf6ef65be9a43de5e4dd1ceb1ea4a70499457faabcb231b",
+    "apps/p4/main/p4_entropy.h": "e73bec7b7261592b76c68b266ae808ffcf9cf708c504ec622f093ca0d7c253bf",
+    "apps/p4/main/p4_entropy.c": "1e268e38fe87b219e8a318a032e0a17d76a052beb3b470751d3faa6df95870e5",
+    "apps/p4/tests/entropy_provider_test.c": "3eee6af76287c3cb9fd439f992b0bd0db31ee05cc31017ee563b7949ad2cfd92",
+    "apps/p4/main/main.c": "f252d3c539f4e102d2b701d3fa14c4322e7143d9630b8183b9aea16a6998a697",
+    "apps/p4/main/p4_local.c": "f1242cde46506d5b5b3dc2a5a2e46016d9efdb9711e5b7f013bc27656d52ee0a",
+    "apps/p4/rust/src/lib.rs": "899d0131ee3de0605873a81ce7d9d72ebc3addf365248ac8cea7bbba9f364fa0",
+    "apps/p4/tests/engine_host.c": "864ba5eee31e116cff505d65b72ce13b28986dafc90d80b23467bea985d5a572",
+    "apps/p4/build.py": "5ee41f32ff4df1769e6b347d133fcc402db10affa3b6eec93c1cdca8417f61fb",
+    "apps/p4/CMakeLists.txt": "89a198c10e105a17c0692265bc580fcebb2ca1bbf5e654f1393cf68250928c7a",
+    "apps/p4/main/CMakeLists.txt": "bbc2e4446c2d34e86e3663326d454ab1ffa21f4e755fe83e2046fcbf5b910171"
+  }
+}

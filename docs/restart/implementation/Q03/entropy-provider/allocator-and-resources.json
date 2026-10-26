@@ -1,0 +1,42 @@
+{
+  "source": "b259d416c482569622e6467a121b6c4436e6ac9e",
+  "SDK": "7101770dc6db2667b3c477cc31365dd1acd6db4e",
+  "target_ABI": "32bit sizeof(size_t)=4; ELF32",
+  "DWARF_StaticSemaphore_t": 92,
+  "SDK_mutex_count_max": 2,
+  "SDK_mutex_payload_INTERNAL_bytes": 184,
+  "payload_compile_cap": 512,
+  "when": "one bind warm-up before engine/key; SDK handles retained; failed second acquire releases only acquired first; no close/replacement",
+  "heap_caps": "pvPortMalloc INTERNAL|8BIT; no DMA/cache/SIMD caps, heap_align_hw returns before extra alignment",
+  "actual_config": {
+    "LIBC_PICOLIBC": true,
+    "FREERTOS_USE_TRACE_FACILITY": true,
+    "HEAP_POISONING_DISABLED": true,
+    "HEAP_TASK_TRACKING": false,
+    "HEAP_TRACING_OFF": true,
+    "HEAP_USE_HOOKS": false
+  },
+  "derivation": {
+    "TLSF_alignment_bytes": 4,
+    "payload_rounding_for92": 0,
+    "block_size_min_bytes": 12,
+    "block_header_overhead_each": 4,
+    "split_threshold_header_bytes": 16,
+    "nominal_two_block_bytes": 192,
+    "possible_unsplit_tail_each_bytes": [
+      0,
+      4,
+      8,
+      12
+    ],
+    "two_allocation_blocks_bound_bytes_in_this_TLSF_path": [
+      192,
+      216
+    ]
+  },
+  "derivation_limit": "Allocator block accounting only from pinned 32bit nonpoisoned/no-tracking path. No isolated concurrent heap measurement, no new heap arena/control allocation charged to the provider, no hardware watermark yet; external fragmentation/overall free heap is not a payload sum.",
+  "other_lazy_audit": "The two ADC SDK lock handles are warmed with true try-lock/release before authority. Collection returning paths use already-initialized handles; ADC APB/RCC/regi2c use static refcounts/portMUX. No new task/DMA/per-draw app allocation. SDK abort/error logging/UI and concurrent camera/USB tasks are not claimed universally heap-free; SDK OOM assert/reset is not a typed fallible allocation result.",
+  "INTERNAL_static_objects": "actual sizes/addresses/sections in artifact-checks/summary.json; provider owner28+history34+lock8=70bytes (second name owner4 is a different SDK/static object); last_report320bytes separate",
+  "stack": "existing worker98304 INTERNAL unchanged; 32byte C staging+32byte Rust destination. Selected machine bodies retained for review; complete SDK/ROM/concurrent stack cost not claimed as measured. New hardware minimum free>=4096 required; old45756 historical only.",
+  "new_hardware": "NOT RUN"
+}

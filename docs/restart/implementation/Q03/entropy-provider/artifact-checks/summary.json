@@ -1,0 +1,158 @@
+{
+  "normal": {
+    "undefined_anchors": [
+      "__cxx_fatal_exception",
+      "start_app",
+      "start_app_other_cores"
+    ],
+    "objects": [
+      {
+        "name": "owner",
+        "bytes": 28,
+        "address": "0x4ff5c098",
+        "section": ".dram0.bss"
+      },
+      {
+        "name": "owner_lock",
+        "bytes": 8,
+        "address": "0x4ff55f78",
+        "section": ".dram0.data"
+      },
+      {
+        "name": "last_report",
+        "bytes": 320,
+        "address": "0x4ff5bf58",
+        "section": ".dram0.bss"
+      },
+      {
+        "name": "history",
+        "bytes": 34,
+        "address": "0x4ff5c0b4",
+        "section": ".dram0.bss"
+      },
+      {
+        "name": "owner",
+        "bytes": 4,
+        "address": "0x4ff5ce18",
+        "section": ".dram0.bss"
+      }
+    ],
+    "direct_calls": {
+      "p4_entropy_fill32": [
+        {
+          "caller": "<nsealr_p4_optical::PublicFixtureAuxiliary as nsealr_core::authorization::AuxiliarySource>::fill",
+          "instruction": "400a7768:\td94080e7          \tjalr\t-620(ra) # 400134f8 <p4_entropy_fill32>"
+        }
+      ],
+      "esp_random": [
+        {
+          "caller": "word",
+          "instruction": "40012f6a:\tee0080e7          \tjalr\t-288(ra) # 4ff46e46 <esp_random>"
+        }
+      ],
+      "bootloader_random_enable": [
+        {
+          "caller": "source",
+          "instruction": "40013326:\t2218e0ef          \tjal\t400a1d46 <bootloader_random_enable>"
+        }
+      ],
+      "bootloader_random_disable": [
+        {
+          "caller": "source",
+          "instruction": "40013330:\t4678e0ef          \tjal\t400a1f96 <bootloader_random_disable>"
+        }
+      ],
+      "adc_lock_try_acquire": [
+        {
+          "caller": "try_lock",
+          "instruction": "40012e92:\t5b6920ef          \tjal\t400a5448 <adc_lock_try_acquire>"
+        }
+      ],
+      "adc_lock_release": [
+        {
+          "caller": "release_lock",
+          "instruction": "40012e80:\t504920ef          \tjal\t400a5384 <adc_lock_release>"
+        }
+      ],
+      "adc_apb_periph_claim": [
+        {
+          "caller": "bus",
+          "instruction": "4001333c:\t162920ef          \tjal\t400a549e <adc_apb_periph_claim>"
+        }
+      ],
+      "adc_apb_periph_free": [
+        {
+          "caller": "bus",
+          "instruction": "40013346:\t1ca920ef          \tjal\t400a5510 <adc_apb_periph_free>"
+        }
+      ]
+    },
+    "functions_selected": 13
+  },
+  "fixed-unavailable": {
+    "undefined_anchors": [
+      "__cxx_fatal_exception",
+      "start_app",
+      "start_app_other_cores"
+    ],
+    "objects": [
+      {
+        "name": "owner_lock",
+        "bytes": 8,
+        "address": "0x4ff55ef8",
+        "section": ".dram0.data"
+      },
+      {
+        "name": "owner",
+        "bytes": 28,
+        "address": "0x4ff5c008",
+        "section": ".dram0.bss"
+      },
+      {
+        "name": "last_report",
+        "bytes": 320,
+        "address": "0x4ff5bec8",
+        "section": ".dram0.bss"
+      },
+      {
+        "name": "history",
+        "bytes": 34,
+        "address": "0x4ff5c024",
+        "section": ".dram0.bss"
+      },
+      {
+        "name": "owner",
+        "bytes": 4,
+        "address": "0x4ff5cd80",
+        "section": ".dram0.bss"
+      }
+    ],
+    "direct_calls": {
+      "p4_entropy_fill32": [
+        {
+          "caller": "<nsealr_p4_optical::PublicFixtureAuxiliary as nsealr_core::authorization::AuxiliarySource>::fill",
+          "instruction": "400a64dc:\ta46080e7          \tjalr\t-1466(ra) # 40012f1e <p4_entropy_fill32>"
+        }
+      ],
+      "esp_random": [],
+      "bootloader_random_enable": [],
+      "bootloader_random_disable": [],
+      "adc_lock_try_acquire": [
+        {
+          "caller": "try_lock",
+          "instruction": "40012d68:\t576910ef          \tjal\t400a42de <adc_lock_try_acquire>"
+        }
+      ],
+      "adc_lock_release": [
+        {
+          "caller": "release_lock",
+          "instruction": "40012d56:\t4c4910ef          \tjal\t400a421a <adc_lock_release>"
+        }
+      ],
+      "adc_apb_periph_claim": [],
+      "adc_apb_periph_free": []
+    },
+    "functions_selected": 5
+  },
+  "provider_macro_note": "ANA root gating1 in actual provider TU; undefined in hw_random TU only because that header is not included there. Three SOC_RNG_* conditionals are undefined in actual hw_random CPP and init_rng body/symbol absent."
+}
