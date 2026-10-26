@@ -1272,6 +1272,7 @@ describe.each(["sync", "async"] as const)("C01 private account key pin (%s)", (e
   const accountA = "79be667ef9dcbbac55a06295ce870b07029bfcdb2dce28d959f2815b16f81798";
   // response is the existing independently signed fixture B, unchanged.
   const keyB: string = response.result.event.pubkey;
+  const selectedRouteRequest = routeVector.request;
   const mutations = [
     {
       name: "changed copy key",
@@ -1318,7 +1319,7 @@ describe.each(["sync", "async"] as const)("C01 private account key pin (%s)", (e
       version: 1,
       request_id: "c01-private-key-" + execution,
       operation: "dispatch_signer_request",
-      params: { client, route_request: routeVector.request, request: structuredClone(request) }
+      params: { client, route_request: selectedRouteRequest, request: structuredClone(request) }
     };
     const result = execution === "sync"
       ? handleLocalServiceRequest(envelope, context)
