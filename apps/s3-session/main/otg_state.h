@@ -8,7 +8,7 @@
 enum class OtgEvent : unsigned { BusReset, Attached, Detached, Suspend, Resume, LineState, LineCoding, Count };
 struct OtgState {
     uint32_t epoch=0, counts[unsigned(OtgEvent::Count)]={}, baud=0;
-    bool configured=false, suspended=true, dtr=false, rts=false, poisoned=false;
+    bool configured=false, suspended=true, dtr=false, rts=false, poisoned=false, reset_pending=false;
     void increment(uint32_t &value) {
         if(value==UINT32_MAX) poisoned=true;
         else ++value;
@@ -19,7 +19,7 @@ struct OtgState {
         increment(counts[index]);
         bool revoke=false;
         switch(kind){
-        case OtgEvent::BusReset: configured=false;dtr=false;suspended=true;revoke=true;break;
+        case OtgEvent::BusReset: configured=false;dtr=false;suspended=true;reset_pending=true;revoke=true;break;
         case OtgEvent::Attached: configured=true;suspended=false;break;
         case OtgEvent::Detached: configured=false;dtr=false;suspended=true;revoke=true;break;
         case OtgEvent::Suspend: suspended=true;revoke=true;break;
@@ -30,6 +30,12 @@ struct OtgState {
         }
         if(revoke)increment(epoch);
     }
-    bool usable() const {return configured&&!suspended&&dtr&&!poisoned;}
+    // Called by a FIFO barrier after the corresponding stack reset, never by Enable.
+    // Older callbacks cannot reopen the transport while reset is still queued.
+    void reset_processed(uint32_t ticket) {
+        if(poisoned||counts[unsigned(OtgEvent::BusReset)]!=ticket)return;
+        configured=false;dtr=false;suspended=true;reset_pending=false;
+    }
+    bool usable() const {return configured&&!suspended&&dtr&&!poisoned&&!reset_pending;}
     bool current(uint32_t grant) const {return usable()&&grant==epoch;}
 };

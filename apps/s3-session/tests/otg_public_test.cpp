@@ -22,11 +22,22 @@ int main(){
         s.event(event);CHECK(!s.current(before_drain));
         // Restore every operational flag: the old Enable still cannot acknowledge
         // the intervening event by reading a newer state after a blocking drain.
+        if(event==OtgEvent::BusReset)s.reset_processed(s.counts[unsigned(OtgEvent::BusReset)]);
         s.event(OtgEvent::Attached);s.event(OtgEvent::Resume);s.event(OtgEvent::LineState,true,false);
         CHECK(s.usable()&&!s.current(before_drain));
         const auto fresh_local_grant=s.epoch;CHECK(s.current(fresh_local_grant));
         s.event(event);CHECK(!s.current(fresh_local_grant));
     }
+    s=ready();const auto old_grant=s.epoch;
+    s.event(OtgEvent::BusReset);const auto first=s.counts[unsigned(OtgEvent::BusReset)];
+    s.event(OtgEvent::Attached);s.event(OtgEvent::LineState,true,false); // old queued callbacks
+    CHECK(s.reset_pending&&!s.usable()&&!s.current(old_grant));
+    s.event(OtgEvent::BusReset);const auto second=s.counts[unsigned(OtgEvent::BusReset)];
+    s.reset_processed(first);CHECK(s.reset_pending); // older barrier cannot clear a newer reset
+    s.event(OtgEvent::Attached);s.event(OtgEvent::LineState,true,false);CHECK(!s.usable());
+    s.reset_processed(second);CHECK(!s.reset_pending&&!s.configured&&!s.dtr&&!s.usable());
+    s.event(OtgEvent::Attached);s.event(OtgEvent::LineState,true,false);
+    CHECK(s.usable()&&!s.current(old_grant));
     s=ready();s.epoch=UINT32_MAX;CHECK(s.current(UINT32_MAX));
     s.event(OtgEvent::Suspend);s.event(OtgEvent::Resume);CHECK(s.poisoned&&!s.usable());
     s.event(OtgEvent::Attached);s.event(OtgEvent::LineState,true,true);CHECK(!s.current(UINT32_MAX));

@@ -17,6 +17,7 @@
 #include "tinyusb_cdc_acm.h"
 #include "tusb.h"
 #include "device/dcd.h"
+#include "device/usbd_pvt.h"
 
 #if CONFIG_ESP_MAIN_TASK_STACK_SIZE != 98304 || !CONFIG_ESP_CONSOLE_NONE
 #error "Public OTG requires the reviewed internal main stack and no console"
@@ -39,10 +40,12 @@ static uint32_t reported[unsigned(OtgEvent::Count)]={};
 static bool have_report=false,reported_poison=false;
 static int64_t next_report_us=0;
 
-static void observe(OtgEvent event,bool a=false,bool b=false,uint32_t baud=0) {
+static uint32_t observe(OtgEvent event,bool a=false,bool b=false,uint32_t baud=0) {
     portENTER_CRITICAL_SAFE(&lock);
     state.event(event,a,b,baud);
+    const uint32_t ticket=state.counts[unsigned(OtgEvent::BusReset)];
     portEXIT_CRITICAL_SAFE(&lock);
+    return ticket;
 }
 static void task_observed() {
     int stack_sample=0;
@@ -53,8 +56,19 @@ static void task_observed() {
 }
 // The pin invokes this only AFTER a successful TinyUSB queue send. It cannot
 // observe a dropped event or prove that a physical disconnect was detected.
-extern "C" void tud_event_hook_cb(uint8_t,uint32_t event,bool) {
-    if(event==DCD_EVENT_BUS_RESET)observe(OtgEvent::BusReset);
+static void reset_processed(void *param) {
+    portENTER_CRITICAL_SAFE(&lock);
+    state.reset_processed(uint32_t(reinterpret_cast<uintptr_t>(param)));
+    portEXIT_CRITICAL_SAFE(&lock);
+}
+extern "C" void tud_event_hook_cb(uint8_t,uint32_t event,bool in_isr) {
+    if(event!=DCD_EVENT_BUS_RESET)return;
+    const uint32_t ticket=observe(OtgEvent::BusReset);
+    // The exact DWC2 port emits this from its USB ISR. Its FIFO barrier follows
+    // usbd_reset. Never use the task variant: it waits forever on a full queue.
+    // A rejected ISR enqueue (or an unexpected task-origin reset) leaves pending
+    // sticky and authorization closed. No vendor mutation or extra queue/task.
+    if(in_isr)usbd_defer_func(reset_processed,reinterpret_cast<void*>(uintptr_t(ticket)),true);
 }
 static void device_event(tinyusb_event_t *event,void *) {
     if(!event)return;
@@ -160,8 +174,8 @@ void otg_report_idle() {
         main_internal,internal,(unsigned long)uxTaskGetStackHighWaterMark(nullptr),(unsigned long)usb_free,
         unsigned(heap_caps_get_minimum_free_size(MALLOC_CAP_INTERNAL|MALLOC_CAP_8BIT)),unsigned(heap_caps_get_largest_free_block(MALLOC_CAP_INTERNAL|MALLOC_CAP_8BIT)));
     otg_line(line);
-    std::snprintf(line,sizeof(line),"s3-otg-events-v1 epoch=%lu cfg=%u suspend=%u dtr=%u rts=%u poison=%u baud=%lu counts=%lu,%lu,%lu,%lu,%lu,%lu,%lu us=%lld\n",
-        (unsigned long)snapshot.epoch,snapshot.configured,snapshot.suspended,snapshot.dtr,snapshot.rts,snapshot.poisoned,(unsigned long)snapshot.baud,
+    std::snprintf(line,sizeof(line),"s3-otg-events-v1 epoch=%lu cfg=%u suspend=%u dtr=%u rts=%u poison=%u pending=%u baud=%lu counts=%lu,%lu,%lu,%lu,%lu,%lu,%lu us=%lld\n",
+        (unsigned long)snapshot.epoch,snapshot.configured,snapshot.suspended,snapshot.dtr,snapshot.rts,snapshot.poisoned,snapshot.reset_pending,(unsigned long)snapshot.baud,
         (unsigned long)snapshot.counts[0],(unsigned long)snapshot.counts[1],(unsigned long)snapshot.counts[2],(unsigned long)snapshot.counts[3],
         (unsigned long)snapshot.counts[4],(unsigned long)snapshot.counts[5],(unsigned long)snapshot.counts[6],(long long)now);
     otg_line(line);std::memcpy(reported,snapshot.counts,sizeof(reported));have_report=true;reported_poison=snapshot.poisoned;next_report_us=now+1000000;

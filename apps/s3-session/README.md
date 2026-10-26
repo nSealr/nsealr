@@ -73,3 +73,11 @@ Only fixed public diagnostics can be sent without local Enable; no host command
 or arbitrary memory selector is added. Real identities, entropy and recovery
 remain gated separately. Physical evidence for the previous Serial/JTAG image
 remains historical and does not qualify this OTG image.
+
+The bus-reset observation additionally closes reset_pending before older queued
+callbacks can run. A FIFO barrier in the same pinned TinyUSB queue executes
+after its usbd_reset; only the matching reset ticket can clear pending, and it
+clears operational flags rather than authorizing an epoch. Only the nonblocking
+ISR send is used. A failed barrier enqueue or unexpected task-origin bus reset
+leaves authorization closed until CPU restart. A reset event rejected before
+the observation hook remains an explicit stack-observation limit.
