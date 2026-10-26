@@ -39,7 +39,11 @@ corruption; it authenticates no sender. Reuse core base64url and strict
 event::ParsedRequest; do not add a C++ JSON/base64/Nostr parser.
 
 - Frame capacity: 1024 bytes including newline; one completed request at a time.
-- Read quantum: at most 64 received bytes per scheduler iteration.
+- Read quantum: at most 64 received bytes per scheduler iteration. The finite
+  driver RX ring holds 2048 bytes, so one complete 1024-byte frame can arrive
+  between scheduler polls; it is a byte buffer, not a queue of parsed requests.
+  Menu/settlement discard reads at most that ring capacity once and resets the
+  parser. A continuous sender receives no guaranteed lossless service.
 - Decoded request: at most 320 bytes; content at most 128 decoded bytes,
   at most four tags/four fields each, 64 bytes per field and 160 aggregate text
   bytes; canonical bytes at most 1024; at most 128 complete review pages.

@@ -158,7 +158,7 @@ static int32_t present_review(uint32_t kind,uint32_t index,uint32_t total,
     }
 }
 static void discard_input() {
-    uint8_t discarded[256];
+    uint8_t discarded[2048];
     (void)usb_serial_jtag_read_bytes(discarded,sizeof(discarded),0);
     (void)nsealr_s3_public_reset_input();
 }
@@ -210,7 +210,7 @@ static void display_init() {
 }
 
 extern "C" void app_main() {
-    usb_serial_jtag_driver_config_t usb={.tx_buffer_size=1024,.rx_buffer_size=256};
+    usb_serial_jtag_driver_config_t usb={.tx_buffer_size=1024,.rx_buffer_size=2048};
     ESP_ERROR_CHECK(usb_serial_jtag_driver_install(&usb));
     const int pins[2]={PIN_BUTTON_1,PIN_BUTTON_2};
     for(unsigned i=0;i<2;++i){
