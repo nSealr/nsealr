@@ -148,8 +148,31 @@ static S3EntropyStatus snapshot(void*,S3EntropySnapshot *out){
     if(out->references!=1||!pins_unchanged()||out->usb_mux!=3)return S3EntropyStatus::Ownership;
     return S3EntropyStatus::PublicDraw;
 }
+static S3EntropyStatus progress_access(){
+    if(!owner()||refs()!=1)return S3EntropyStatus::Ownership;
+    if(!(REG_READ(SYSTEM_PERIP_CLK_EN0_REG)&SYSTEM_APB_SARADC_CLK_EN)||
+        (REG_READ(SYSTEM_PERIP_RST_EN0_REG)&SYSTEM_APB_SARADC_RST))return S3EntropyStatus::Readback;
+    return S3EntropyStatus::PublicDraw;
+}
+static S3EntropyStatus timer(void*,bool enabled){
+    const auto status=progress_access();if(status!=S3EntropyStatus::PublicDraw)return status;
+    const uint32_t before=REG_READ(APB_SARADC_CTRL2_REG);
+    const uint32_t expected=enabled?before|APB_SARADC_TIMER_EN:before&~APB_SARADC_TIMER_EN;
+    REG_WRITE(APB_SARADC_CTRL2_REG,expected); // Change only the owned timer bit.
+    return REG_READ(APB_SARADC_CTRL2_REG)==expected?S3EntropyStatus::PublicDraw:S3EntropyStatus::Readback;
+}
+static S3EntropyStatus completion(void*,bool clear,bool *set){
+    const auto status=progress_access();if(status!=S3EntropyStatus::PublicDraw)return status;
+    if(clear){
+        if(REG_READ(APB_SARADC_CTRL2_REG)&APB_SARADC_TIMER_EN)return S3EntropyStatus::Readback;
+        REG_WRITE(APB_SARADC_INT_CLR_REG,APB_SARADC_ADC1_DONE_INT_CLR); // WO/W1C, no RMW.
+    }
+    *set=(REG_READ(APB_SARADC_INT_RAW_REG)&APB_SARADC_ADC1_DONE_INT_RAW)!=0;
+    return S3EntropyStatus::PublicDraw;
+}
 static S3EntropyStatus word(void*,uint32_t *out,size_t *n){
-    if(!owner())return S3EntropyStatus::Ownership;
+    const auto status=progress_access();if(status!=S3EntropyStatus::PublicDraw)return status;
+    if(!(REG_READ(APB_SARADC_CTRL2_REG)&APB_SARADC_TIMER_EN))return S3EntropyStatus::Readback;
     *out=esp_random();*n=4;return S3EntropyStatus::PublicDraw;
 }
 static S3EntropyStatus cleanup(void*,bool attempted,S3EntropySnapshot *rest){
@@ -188,7 +211,7 @@ extern "C" int32_t nsealr_s3_public_auxiliary(uint8_t *out,size_t capacity,size_
         last_report=S3EntropyReport{};last_report.status=S3EntropyStatus::Unavailable;
         portEXIT_CRITICAL_SAFE(&owner_lock);return int32_t(S3EntropyStatus::Unavailable);}
     portEXIT_CRITICAL_SAFE(&owner_lock);
-    const S3EntropyOps ops={nullptr,claim,enable,snapshot,word,cleanup,unlock,now,interrupted,pause};
+    const S3EntropyOps ops={nullptr,claim,enable,snapshot,word,cleanup,unlock,now,interrupted,pause,timer,completion};
     S3EntropyReport report;
     const auto status=s3_entropy_collect(history,ops,out,capacity,written,report);
     portENTER_CRITICAL_SAFE(&owner_lock);last_report=report;portEXIT_CRITICAL_SAFE(&owner_lock);
@@ -198,10 +221,10 @@ const S3EntropyReport &s3_entropy_last_report(){return last_report;}
 void s3_entropy_log_report(unsigned draw,const uint8_t *sample){
     // Fixed public diagnostics only. Banks omitted by readable are UNKNOWN.
     const auto &r=last_report;char line[384];
-    std::snprintf(line,sizeof(line),"s3-public-rng-v1 draw=%u status=%ld words=%lu supplied=%u elapsed_us=%lld flags=%lx/%lx/%lx readable=%lu/%lu/%lu/%lu refs=%lu/%lu/%lu/%lu\n",draw,(long)r.status,(unsigned long)r.words,r.status==S3EntropyStatus::PublicDraw?32U:0U,(long long)r.elapsed_us,
+    std::snprintf(line,sizeof(line),"s3-public-rng-v1 draw=%u status=%ld words=%lu supplied=%u elapsed_us=%lld flags=%lx/%lx/%lx readable=%lu/%lu/%lu/%lu refs=%lu/%lu/%lu/%lu progress=%x/%x\n",draw,(long)r.status,(unsigned long)r.words,r.status==S3EntropyStatus::PublicDraw?32U:0U,(long long)r.elapsed_us,
       (unsigned long)r.enabled.flags,(unsigned long)r.after.flags,(unsigned long)r.rest.flags,
       (unsigned long)r.before.readable,(unsigned long)r.enabled.readable,(unsigned long)r.after.readable,(unsigned long)r.rest.readable,
-      (unsigned long)r.before.references,(unsigned long)r.enabled.references,(unsigned long)r.after.references,(unsigned long)r.rest.references);otg_line(line);
+      (unsigned long)r.before.references,(unsigned long)r.enabled.references,(unsigned long)r.after.references,(unsigned long)r.rest.references,unsigned(r.progress_before),unsigned(r.progress_after));otg_line(line);
     const auto &s=r.enabled;
     std::snprintf(line,sizeof(line),"s3-public-rng-reg-v1 sys=%lx/%lx wifi=%lx rtc=%lx configured_cpu=%lu apb=%lu sel=%lu div=%lu/%lu timer=%lu patt=%lx/%lx ref=%lu data=%lx/%lx->%lx/%lx lcd=%lx mux=%lu pins=%lx\n",
       (unsigned long)s.system_clock,(unsigned long)s.system_reset,(unsigned long)s.wifi_clock,(unsigned long)s.rtc_clock,(unsigned long)s.cpu_hz,(unsigned long)s.apb_hz,

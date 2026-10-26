@@ -34,8 +34,13 @@ inline bool s3_entropy_rest(const S3EntropySnapshot &s) {
 }
 struct S3EntropyReport {
     S3EntropySnapshot before,enabled,after,rest;
-    int64_t elapsed_us=0;uint32_t words=0;S3EntropyStatus status=S3EntropyStatus::Unavailable;
+    int64_t elapsed_us=0;
+    uint8_t words=0,progress_before=0,progress_after=0,reserved=0;
+    S3EntropyStatus status=S3EntropyStatus::Unavailable;
 };
+static_assert(sizeof(S3EntropyReport)==384,"private report retains the2048byte diagnostic cap");
+// Compact phase evidence: initial read, initial1, observed clear0, fresh1.
+enum : uint8_t { ProgressRead=1,ProgressInitialSet=2,ProgressClearZero=4,ProgressFresh=8 };
 struct S3EntropyBudget {
     unsigned diagnostic=0,auxiliary=0;
     bool take(bool test){if(test){if(diagnostic>=4)return false;++diagnostic;}
@@ -57,21 +62,55 @@ struct S3EntropyOps {
     int64_t (*now)(void*);
     bool (*interrupted)(void*);
     void (*pause)(void*);
+    S3EntropyStatus (*timer)(void*,bool);
+    S3EntropyStatus (*completion)(void*,bool,bool*);
 };
 inline S3EntropyStatus s3_entropy_collect(S3EntropyState &state,const S3EntropyOps &o,
     uint8_t *destination,size_t capacity,size_t *written,S3EntropyReport &report) {
     report=S3EntropyReport{};
     if(!destination||capacity!=32||!written){report.status=S3EntropyStatus::Argument;return report.status;}
-    *written=0;s3_entropy_wipe(destination,32);
+    *written=0;
+    // One real budget includes claim, enable, settle, both witnesses and cleanup.
+    const int64_t start=o.now(o.context);int64_t last=start;
+    s3_entropy_wipe(destination,32);
     uint8_t staging[32]={};bool owned=false,attempted=false;
-    auto status=o.claim(o.context,&report.before);
-    if(status!=S3EntropyStatus::PublicDraw){report.status=status;return status;}
-    owned=true;const int64_t start=o.now(o.context);int64_t last=start;
     auto check=[&](){
         if(o.interrupted(o.context))return S3EntropyStatus::Interrupted;
         const int64_t t=o.now(o.context);
         if(t<0||t<last||start<0||t-start>=50000)return S3EntropyStatus::Timeout;
         last=t;return S3EntropyStatus::PublicDraw;
+    };
+    auto status=o.claim(o.context,&report.before);
+    if(status!=S3EntropyStatus::PublicDraw){
+        const int64_t end=o.now(o.context);report.elapsed_us=start>=0&&end>=start?end-start:-1;
+        report.status=status;return status;
+    }
+    owned=true;
+    auto progress=[&](uint8_t &phase){
+        auto result=check();bool set=false;
+        if(result==S3EntropyStatus::PublicDraw)result=o.completion(o.context,false,&set);
+        if(result==S3EntropyStatus::PublicDraw){phase=ProgressRead|(set?ProgressInitialSet:0);result=check();}
+        if(result==S3EntropyStatus::PublicDraw)result=o.timer(o.context,false);
+        if(result==S3EntropyStatus::PublicDraw)result=check();
+        if(result==S3EntropyStatus::PublicDraw)result=o.completion(o.context,true,&set);
+        if(result==S3EntropyStatus::PublicDraw)result=check();
+        if(result==S3EntropyStatus::PublicDraw){
+            if(set)result=S3EntropyStatus::Readback;
+            else phase|=ProgressClearZero;
+        }
+        if(result==S3EntropyStatus::PublicDraw)result=o.timer(o.context,true);
+        if(result==S3EntropyStatus::PublicDraw)result=check();
+        for(unsigned poll=0;poll<256&&result==S3EntropyStatus::PublicDraw;++poll){
+            result=o.completion(o.context,false,&set);
+            if(result==S3EntropyStatus::PublicDraw)result=check();
+            if(result!=S3EntropyStatus::PublicDraw)break;
+            if(set){phase|=ProgressFresh;break;}
+            o.pause(o.context);
+        }
+        // Completion after an observed0 can be from an in-flight conversion.
+        // It is a liveness witness, not a guarantee about ADC2 or noise quality.
+        if(result==S3EntropyStatus::PublicDraw&&!(phase&ProgressFresh))result=S3EntropyStatus::Timeout;
+        return result;
     };
     if(state.poisoned)status=S3EntropyStatus::Unavailable;
     else status=check();
@@ -89,21 +128,22 @@ inline S3EntropyStatus s3_entropy_collect(S3EntropyState &state,const S3EntropyO
         }
         if(status==S3EntropyStatus::PublicDraw&&!settled)status=S3EntropyStatus::Timeout;
     }
+    if(status==S3EntropyStatus::PublicDraw)status=progress(report.progress_before);
     for(unsigned i=0;i<8&&status==S3EntropyStatus::PublicDraw;++i){
         status=check();if(status!=S3EntropyStatus::PublicDraw)break;
         S3EntropySnapshot current;status=o.snapshot(o.context,&current);
         if(status!=S3EntropyStatus::PublicDraw)break;
         if(!s3_entropy_active(current)){status=S3EntropyStatus::Readback;break;}
+        status=check();if(status!=S3EntropyStatus::PublicDraw)break;
         uint32_t word=0;size_t got=0;status=o.word(o.context,&word,&got);
         if(status!=S3EntropyStatus::PublicDraw){s3_entropy_wipe(reinterpret_cast<uint8_t*>(&word),4);break;}
         if(got!=4){s3_entropy_wipe(reinterpret_cast<uint8_t*>(&word),4);status=S3EntropyStatus::Provider;break;}
         std::memcpy(staging+4*i,&word,4);s3_entropy_wipe(reinterpret_cast<uint8_t*>(&word),4);++report.words;
         status=check();
     }
+    if(status==S3EntropyStatus::PublicDraw)status=progress(report.progress_after);
     if(status==S3EntropyStatus::PublicDraw)status=o.snapshot(o.context,&report.after);
     if(status==S3EntropyStatus::PublicDraw&&!s3_entropy_active(report.after))status=S3EntropyStatus::Readback;
-    if(status==S3EntropyStatus::PublicDraw&&report.after.data1==report.enabled.data1&&report.after.data2==report.enabled.data2)
-        status=S3EntropyStatus::Health; // Only gross activity; not source qualification.
     if(status==S3EntropyStatus::PublicDraw){
         bool repeated_word=true,zero=true,ones=true;
         for(unsigned i=0;i<32;++i){zero=zero&&staging[i]==0;ones=ones&&staging[i]==255;

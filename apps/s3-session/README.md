@@ -117,9 +117,25 @@ is preserved and poisons further provider use; no successful cleanup is claimed.
 A50ms between-call deadline and finite settle polling detect specified failures;
 SDK helpers/RNG may contain non-cancellable waits, so this is not a hard return
 bound for stuck hardware. Retained staging/output32bytes are wiped on failure,
-with exact-count and guard checks. Raw SAR activity and gross repetition screens
-detect some faults and do not establish entropy quality. The API supplies no
-per-call health report. Private GPIO comparison is exact; its compact logged
+with exact-count and guard checks. The ADC1 completion observer requires two
+independent clear-to-observed0-to-new1 sequences around the eight RNG words,
+briefly stopping only the trigger timer for each clear. Timer enable is restored
+and checked before each RNG word. Initial DONE1 can clear normally; a sticky1,
+missing completion or lost owner/deadline refuses. Both phases share the same
+50ms budget including claim, settle and cleanup. An in-flight conversion may
+complete after clear: this witnesses completion after0, not a conversion started
+only after timer restart, ADC2 activity or entropy quality.
+
+The historical08d919c3 refusal saw DATA_STATUS0x14000 twice and supplied0bytes;
+its Health result is preserved. Raw last-value equality alone is not a documented
+activity/health condition, so it is now diagnostic and cannot substitute for the
+two progress witnesses. All-zero/all-FF/repeated-word/duplicate-block screens
+remain mandatory. The private report stays384bytes by packing the<=8word count
+and two phase bytes into its existing four bytes. The bounded public log adds
+progress=pre/post in hex: bit0 initial read,bit1 initial1,bit2 observed clear0,
+bit3 fresh1. Successful phases are d or f; phase0 means not reached, while bit0
+distinguishes an initial0 reading from an unknown initial value. Core Rust, public request/response ABI and protocol are unchanged.
+The API supplies no per-call health report. Private GPIO comparison is exact; its compact logged
 signature is only diagnostic. CPU/APB values are configured clock accounting,
 not independent physical frequency measurements. S3 clock macros called WIFI_EN
 and BT_EN are zero in this SDK: they cannot prove RF state. Radio absence/RF-off
