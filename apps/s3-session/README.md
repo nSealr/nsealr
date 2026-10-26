@@ -22,8 +22,11 @@ wait, and minimum free main stack since boot. All screens identify PUBLIC TEST K
 The explicit clock unit is real monotonic seconds from esp_timer_get_time.
 The unchanged100tick core expiry is intake_seconds+100; flooring may expire
 up to1second before100.000 elapsed seconds. It is never paused or rescaled.
-The deterministic auxiliary fixture is public-test-only. USB Serial/JTAG remains
-active and unqualified for secrets; SOF loss is detectable, serial-port close is not.
+The deterministic auxiliary fixture is public-test-only. In the previous
+public image a0ea67e0 (delivery a1e9052a), USB Serial/JTAG remained active and
+unqualified for secrets; SOF loss was detectable but serial-port close was not.
+This newer image uses the OTG CDC transport described below. ROM, physical reset,
+debug and PHY mux domains remain separate and unqualified for secrets.
 
 The single factory-app SDK/config and framebuffer/DMA ownership are inherited
 from the source-frozen foundation packet. No NVS/FS/OTA state or identity
@@ -40,7 +43,8 @@ The next public experiment uses USB OTG Full Speed CDC ACM through the exact
 esp_tinyusb 3.0.0 input in tinyusb-source.json. Set
 NSEALR_S3_TINYUSB_COMPONENT to the existing external component directory named
 esp_tinyusb (a symlink to the admitted source is sufficient). CMake pins its
-manifest; the delivery packet binds the complete archive/member closure.
+manifest only; full integrity of all 439 members is checked by the recorded
+preflight and bound to the complete archive/member closure in the packet.
 USB Serial/JTAG driver, console, VFS CDC and automatic reboot helpers are absent
 from the application. CDC descriptors carry no serial number or unique ID.
 This describes the application only: reset, ROM, debug and PHY mux domains are
@@ -49,8 +53,8 @@ not disabled by eFuse and remain outside any secret-custody claim.
 The main stack is 98304 bytes INTERNAL; the separate USB task uses 4096 bytes.
 Bus reset, detach, suspend and DTR-low events observed by the actual stack revoke
 the locally granted generation. Resume/configure/DTR-high never authorize a
-request. ISR/task/main state uses the ESP-IDF safe critical section; no pending
-bit is cleared. Saturation permanently closes authorization until CPU restart.
+request. ISR/task/main state uses the ESP-IDF safe critical section; Enable never clears
+a revocation epoch or acknowledges a later event. Saturation permanently closes authorization until CPU restart.
 Checks follow DMA/drain and signing and precede/follow nonblocking response TX.
 An event racing TX may leave a prefix or full public response already queued;
 TX UNCERTAIN is terminal and no byte-recall or host-delivery claim is made.
