@@ -34,3 +34,42 @@ See docs/restart/implementation/D01/native-session-contract.md for exact bounds,
 UI, tests and future OTG/entropy/internal-RAM/recovery admission gates. Build/test
 results must name the actual candidate; this README alone records no success.
 Foundation packet bcad72fa/a159db50 remains unchanged.
+
+
+The next public experiment uses USB OTG Full Speed CDC ACM through the exact
+esp_tinyusb 3.0.0 input in tinyusb-source.json. Set
+NSEALR_S3_TINYUSB_COMPONENT to the existing external component directory named
+esp_tinyusb (a symlink to the admitted source is sufficient). CMake pins its
+manifest; the delivery packet binds the complete archive/member closure.
+USB Serial/JTAG driver, console, VFS CDC and automatic reboot helpers are absent
+from the application. CDC descriptors carry no serial number or unique ID.
+This describes the application only: reset, ROM, debug and PHY mux domains are
+not disabled by eFuse and remain outside any secret-custody claim.
+
+The main stack is 98304 bytes INTERNAL; the separate USB task uses 4096 bytes.
+Bus reset, detach, suspend and DTR-low events observed by the actual stack revoke
+the locally granted generation. Resume/configure/DTR-high never authorize a
+request. ISR/task/main state uses the ESP-IDF safe critical section; no pending
+bit is cleared. Saturation permanently closes authorization until CPU restart.
+Checks follow DMA/drain and signing and precede/follow nonblocking response TX.
+An event racing TX may leave a prefix or full public response already queued;
+TX UNCERTAIN is terminal and no byte-recall or host-delivery claim is made.
+
+Three fixed 64-byte public patterns sample internal NOLOAD RAM, RTC NOLOAD RAM
+and ordinary BSS. Their previous validity is captured after SDK startup, before
+OTG install, then a new public pattern is written. The checksums detect accidental
+changes only. Invalid means unknown; zero does not prove full-memory erasure.
+The diagnostics report the PHY mux, reset reason, coalesced event counters,
+stack minima and internal heap. USB callbacks do no Rust/display/writer work.
+The TinyUSB bus-reset hook runs only after its fixed event queue accepted the
+event: queue overflow and unavailable VBUS detection limit observation. Detach
+can also mean SetConfiguration(0); suspend does not prove physical unplug.
+
+Locked only: short GPIO0 still rotates 180 degrees; holding GPIO0 alone for
+5 seconds shows PUBLIC RESTART and calls esp_restart for a distinct causal test.
+Both has Lock precedence. Restart requires fresh release and is unavailable in
+Ready/review/sign. The request gesture helper and Rust source are unchanged.
+Only fixed public diagnostics can be sent without local Enable; no host command
+or arbitrary memory selector is added. Real identities, entropy and recovery
+remain gated separately. Physical evidence for the previous Serial/JTAG image
+remains historical and does not qualify this OTG image.

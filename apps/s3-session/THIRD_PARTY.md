@@ -19,3 +19,14 @@ The printable ASCII renderer uses glcdfont.c bitmap data copied unchanged from
 LilyGO1cc41eb1 lib/TFT_eSPI/Fonts/glcdfont.c (original Adafruit_GFX 5x7 font).
 The original combined TFT_eSPI/Adafruit notices are retained in
 LICENSE-Adafruit-font. No TFT_eSPI executable code is linked.
+
+The public OTG transport uses esp_tinyusb 3.0.0, repository esp-usb commit
+68bf7f9613dbb1a31094fdb903209ae3e4bf388d, device/esp_tinyusb. Its bundled
+TinyUSB sources are part of that exact archive, not a separately resolved input.
+The existing external component directory is reused without copying a toolchain
+or cache. Archive and registry checksums are in tinyusb-source.json and the packet.
+Espressif wrapper files are Apache-2.0; bundled TinyUSB is MIT. The original
+LICENSE and tinyusb/LICENSE are retained in the source archive and packet.
+No TinyUSB console, REPL, MSC, DFU, JTAG or network class is enabled. Build
+requirements can mention fatfs/vfs/esp_netif without linking their executable
+writers; inspect the final closure rather than inferring from dependencies.

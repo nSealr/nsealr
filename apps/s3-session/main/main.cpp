@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-// Native public-only S3 foundation. No secret import, signing or entropy provider.
+// Native public-only S3. Only the known fixture identity; no secret endpoints or entropy provider.
 // Board pins/ST7789 extra commands: LilyGO1cc41eb1; see THIRD_PARTY.md.
 #include <cstdint>
 #include <cstddef>
@@ -16,7 +16,8 @@
 #include "esp_lcd_panel_vendor.h"
 #include "esp_timer.h"
 #include "driver/gpio.h"
-#include "driver/usb_serial_jtag.h"
+#include "otg_transport.h"
+#include "public_restart.h"
 #include "freertos/FreeRTOS.h"
 #include "freertos/semphr.h"
 #include "freertos/task.h"
@@ -40,7 +41,9 @@ int32_t nsealr_s3_public_key(uint8_t*,size_t);
 S3ExchangeResult nsealr_s3_public_exchange(uint8_t*,size_t,PresentCallback,NowCallback,CancelCallback);
 }
 static SessionMenu menu;
-static bool local_locked;
+static bool local_locked=true;
+static uint32_t grant_epoch;
+static OtgBoot otg_boot;
 static bool clock_started;
 static bool transport_failed;
 static uint32_t review_frames;
@@ -49,7 +52,7 @@ static uint8_t response[1024];
 static char public_hex[65];
 
 
-#if CONFIG_ESP_MAIN_TASK_STACK_SIZE != 65536
+#if CONFIG_ESP_MAIN_TASK_STACK_SIZE != 98304
 #error "The public core check requires the reviewed finite native main-task stack"
 #endif
 static constexpr int width = 320;
@@ -66,10 +69,7 @@ static bool transfer_done(esp_lcd_panel_io_handle_t,
     return wake == pdTRUE;
 }
 
-static void usb_line(const char *text) {
-    // Public diagnostics only. Finite blocking; a missing host cannot stop IO.
-    (void)usb_serial_jtag_write_bytes(text, std::strlen(text), pdMS_TO_TICKS(20));
-}
+static void usb_line(const char *text) { otg_line(text); }
 
 static void rectangle(int x, int y, int w, int h, uint16_t color) {
     for (int row = y; row < y + h; ++row)
@@ -116,7 +116,13 @@ static void status_screen(const char *status) {
         !cells(reinterpret_cast<const uint8_t*>(public_hex+26),26,row,0x07e0)||
         !cells(reinterpret_cast<const uint8_t*>(public_hex+52),12,row,0x07e0))
         esp_system_abort("public status geometry");
-    small(158,"0: rotate180 | 14: enable | both: lock",0xffff);flush_frame();
+    char observation[53];
+    const auto transport=otg_snapshot();
+    std::snprintf(observation,sizeof(observation),"B%lu R%lu E%lu prev:%u%u%u",
+        (unsigned long)otg_boot.generation,(unsigned long)otg_boot.reset_reason,(unsigned long)transport.epoch,
+        otg_boot.previous_internal,otg_boot.previous_rtc,otg_boot.previous_bss);
+    small(146,observation,0x07ff);
+    small(158,"0:rotate/hold5s restart |14:enable |both:lock",0xffff);flush_frame();
 }
 static void poll_buttons() {
     const uint32_t now=uint32_t(esp_timer_get_time()/1000);
@@ -136,7 +142,7 @@ static int32_t trusted_now(uint64_t *out) {
     return 0;
 }
 static int32_t cancelled() {
-    return local_locked || !usb_serial_jtag_is_connected();
+    return local_locked || !otg_current(grant_epoch);
 }
 static int32_t present_review(uint32_t kind,uint32_t index,uint32_t total,
     const uint8_t *label,size_t label_n,const uint8_t *body,size_t body_n,
@@ -156,16 +162,17 @@ static int32_t present_review(uint32_t kind,uint32_t index,uint32_t total,
         if(trusted_now(&now)!=0||now>=deadline_seconds)return 0;
         if(cancelled())return 0;
         poll_buttons();const auto action=gesture(g,kind==1);
+        if(cancelled())return 0;
         if(action==SessionAction::Lock){local_locked=true;menu.enabled=false;return 4;}
         if(action!=SessionAction::None)return int32_t(action);
         uint8_t hostile[64];
-        (void)usb_serial_jtag_read_bytes(hostile,sizeof(hostile),0);
+        (void)otg_read(hostile,sizeof(hostile));
         vTaskDelay(1);
     }
 }
 static SessionDrain discard_input() {
     const auto result=session_discard([](uint8_t *p,size_t n){
-        return usb_serial_jtag_read_bytes(p,n,0);
+        return otg_read(p,n);
     });
     (void)nsealr_s3_public_reset_input();
     return result;
@@ -218,8 +225,7 @@ static void display_init() {
 }
 
 extern "C" void app_main() {
-    usb_serial_jtag_driver_config_t usb={.tx_buffer_size=1024,.rx_buffer_size=2048};
-    ESP_ERROR_CHECK(usb_serial_jtag_driver_install(&usb));
+    otg_boot=otg_start();
     const int pins[2]={PIN_BUTTON_1,PIN_BUTTON_2};
     for(unsigned i=0;i<2;++i){
         gpio_config_t c={};c.pin_bit_mask=1ULL<<pins[i];c.mode=GPIO_MODE_INPUT;c.pull_up_en=GPIO_PULLUP_ENABLE;
@@ -233,50 +239,80 @@ extern "C" void app_main() {
     for(unsigned i=0;i<32;++i){public_hex[2*i]=hex[key[i]>>4];public_hex[2*i+1]=hex[key[i]&15];}
     public_hex[64]=0;
     status_screen("Known public scalar 3\nLocal enable required");
-    usb_line("s3-public-session-v1 public-scalar=3 no-secret-endpoints\n");
     SessionGesture idle;
+    PublicRestart restart;
+    unsigned shown_countdown=0;
+    uint32_t seen_epoch=otg_snapshot().epoch;
+    bool seen_poison=false;
     for(;;){
-        poll_buttons();const auto a=gesture(idle,false);
+        const auto transport=otg_snapshot();
+        if(transport.epoch!=seen_epoch||transport.poisoned!=seen_poison){
+            seen_poison=transport.poisoned;
+            seen_epoch=transport.epoch;idle=SessionGesture{};restart=PublicRestart{};shown_countdown=0;
+            if(menu.enabled){menu.enabled=false;local_locked=true;discard_input();status_screen("USB EVENT - locked");}
+        }
+        poll_buttons();
+        const uint32_t ms=uint32_t(esp_timer_get_time()/1000);
+        const bool raw_l=gpio_get_level(gpio_num_t(PIN_BUTTON_1))==0;
+        const bool raw_r=gpio_get_level(gpio_num_t(PIN_BUTTON_2))==0;
+        if(restart.update(ms,buttons[0].stable_down,buttons[1].stable_down,raw_l,raw_r,!menu.enabled&&local_locked)){
+            // Public local diagnostic only. No host/control-line/1200-baud path.
+            status_screen("PUBLIC RESTART - TEST");
+            esp_restart();
+        }
+        const unsigned countdown=restart.countdown(ms);
+        if(countdown&&countdown!=shown_countdown){
+            shown_countdown=countdown;char text[53];
+            std::snprintf(text,sizeof(text),"PUBLIC RESTART in %us\nRelease: rotate only",countdown);
+            status_screen(text);
+        }
+        const auto a=gesture(idle,false);
         const auto change=menu.apply(a);
         if(change==SessionMenuChange::Lock){
             local_locked=true;discard_input();
-            status_screen("LOCKED - public test");idle=SessionGesture{};
+            status_screen("LOCKED - public test");idle=SessionGesture{};restart=PublicRestart{};shown_countdown=0;
         } else if(change==SessionMenuChange::Rotate){
             local_locked=true;discard_input();
-            // Both MX/MY bits change: 180 degrees, with the same MV/gap/geometry.
             ESP_ERROR_CHECK(esp_lcd_panel_mirror(panel,menu.rotated,!menu.rotated));
-            status_screen("ROTATED - locked");idle=SessionGesture{};
+            status_screen("ROTATED - locked");idle=SessionGesture{};restart=PublicRestart{};shown_countdown=0;
         } else if(change==SessionMenuChange::Enable){
+            // Capture BEFORE drain. A callback during drain/display never gets
+            // acknowledged by clearing a shared pending bit or reading a newer epoch.
+            const uint32_t candidate=otg_snapshot().epoch;
             const auto drained=discard_input();
-            local_locked=transport_failed||drained!=SessionDrain::Empty;
-            if(transport_failed){menu.enabled=false;status_screen("TX UNCERTAIN - reset");}
-            else if(drained!=SessionDrain::Empty){menu.enabled=false;status_screen("INPUT BUSY - try again");}
+            grant_epoch=candidate;
+            local_locked=transport_failed||drained!=SessionDrain::Empty||!otg_current(candidate);
+            if(local_locked)menu.enabled=false;
+            if(transport_failed)status_screen("TX UNCERTAIN - reset");
+            else if(drained!=SessionDrain::Empty)status_screen("INPUT BUSY - try again");
+            else if(local_locked)status_screen("USB NOT READY - locked");
             else status_screen("READY - public requests");
-            idle=SessionGesture{};
+            idle=SessionGesture{};restart=PublicRestart{};shown_countdown=0;
         }
-        if(!usb_serial_jtag_is_connected()&&menu.enabled){
-            menu.enabled=false;local_locked=true;discard_input();status_screen("DISCONNECTED - locked");idle=SessionGesture{};
+        // Display DMA/drain may block; recheck before consuming or admitting bytes.
+        if(menu.enabled&&cancelled()){
+            menu.enabled=false;local_locked=true;discard_input();status_screen("USB EVENT - locked");
+            idle=SessionGesture{};restart=PublicRestart{};
         }
-        uint8_t input[64];const int got=usb_serial_jtag_read_bytes(input,sizeof(input),0);
-        if(menu.enabled && got>0)for(int i=0;i<got;++i){
+        uint8_t input[64];const int got=otg_read(input,sizeof(input));
+        if(got<0){menu.enabled=false;local_locked=true;discard_input();status_screen("INPUT FAILED - locked");idle=SessionGesture{};restart=PublicRestart{};}
+        if(menu.enabled&&!cancelled()&&got>0)for(int i=0;i<got;++i){
+            if(cancelled())break;
             const int32_t state=nsealr_s3_public_feed(input[i]);
             if(state==1){
-                clock_started=false;local_locked=false;review_frames=0;
+                clock_started=false;review_frames=0;
                 const int64_t started_us=esp_timer_get_time();
                 const auto r=nsealr_s3_public_exchange(response,sizeof(response),present_review,trusted_now,cancelled);
                 const int64_t elapsed_us=esp_timer_get_time()-started_us;
                 const auto minimum_stack=uxTaskGetStackHighWaterMark(nullptr);
                 uint64_t now=0;
-                // No display/IO callback between the final local sample and bounded TX.
                 const bool release=trusted_now(&now)==0&&now<deadline_seconds&&!cancelled();
                 const bool attempted=release&&r.length>0&&r.length<=sizeof(response);
-                const int queued=attempted?
-                    usb_serial_jtag_write_bytes(response,r.length,pdMS_TO_TICKS(200)):0;
-                // A return count is queue acceptance, never proof of host receipt.
-                // Even return0 can follow a prefix already copied to hardware FIFO.
+                // Wrapper checks the grant again before and after nonblocking FIFO TX.
+                const int queued=attempted?otg_queue_response(response,r.length,grant_epoch):0;
                 if((attempted&&queued!=int(r.length))||r.length>sizeof(response))transport_failed=true;
                 std::memset(response,0,sizeof(response));
-                menu.enabled=false;discard_input();idle=SessionGesture{};
+                menu.enabled=false;local_locked=true;discard_input();idle=SessionGesture{};restart=PublicRestart{};
                 if(r.status==0&&queued==int(r.length)&&attempted)status_screen("RESULT QUEUED - TEST ONLY");
                 else if(r.status==-5)status_screen("REJECTED - no signature");
                 else if(r.status==-7)status_screen("EXPIRED - no signature");
@@ -288,10 +324,11 @@ extern "C" void app_main() {
                         (long)r.status,queued,(unsigned long)review_frames,(long long)elapsed_us,(unsigned long)minimum_stack);
                     usb_line(line);
                 }
-                break; // Remaining bytes from this read cannot start another request.
+                break;
             }
-            if(state<0){menu.enabled=false;local_locked=true;discard_input();status_screen("INPUT FAILED - locked");idle=SessionGesture{};break;}
+            if(state<0){menu.enabled=false;local_locked=true;discard_input();status_screen("INPUT FAILED - locked");idle=SessionGesture{};restart=PublicRestart{};break;}
         }
+        if(!menu.enabled)otg_report_idle();
         vTaskDelay(1);
     }
 }
