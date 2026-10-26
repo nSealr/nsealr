@@ -1,0 +1,49 @@
+{
+  "scope": "Final actual helper27 cases with SDK-real OE reset model; ASan/UBSan. Historical initial mock GREEN and corrected-model RED retained; same exact final fixture passes after normalizing documented OE bits without disable/release.",
+  "sources": {
+    "tests/c6_guard_stubs/esp_log.h": "284d2d3d43011b266e208723497171e2933e686e682df9404c3fc3313c73ca0b",
+    "tests/c6_guard_stubs/driver/gpio.h": "cdfe01259f8e8ed975f91d2a19d7e5acc5e18a8c34896997284c02c704d9abb5",
+    "tests/c6_guard_stubs/soc/gpio_reg.h": "e0905c3d84f44a93b746f7ce57702285c53878263b1f6ffe990675b58b72a379",
+    "tests/c6_guard_stubs/soc/soc.h": "63098838bb484f2af889f2adf2127e9835180c7bd20e65a662db0939554661c0",
+    "tests/c6_guard_stubs/soc/gpio_sig_map.h": "e1feaea149dcc8508449c4e0ae8bcd67ad05101f41e4d25a953298fe7bc9f2b2",
+    "tests/c6_guard_stubs/soc/io_mux_reg.h": "495689812b7f94bf8ceab168ea19c107b7c40d542fa83bf4fd2886ec6fa5af89",
+    "main/c6_guard.c": "469b1b59740dcaa393cad1cc64e0b41d0edd703f558a842509b6e38baebc82fd",
+    "main/c6_guard.h": "bb3a2041b2d20186120b9f92fe381ec7b4a4a401d97e0ae3e91f64406f9df9b6",
+    "tests/c6_guard_test.c": "31be93c20548919e21eaf18a37cd68982d64b7bc6f544561bf04671b8ec5d66b"
+  },
+  "commands": [
+    {
+      "argv": [
+        "/usr/bin/cc",
+        "-std=c11",
+        "-O1",
+        "-g",
+        "-Wall",
+        "-Wextra",
+        "-Werror",
+        "-fsanitize=address,undefined",
+        "-fno-omit-frame-pointer",
+        "-DP4_WDT_PROBE_MODE=0",
+        "-I/home/tux/nsealr/.restart-tools/mac-resume-2026-10-25/p4-session/apps/p4/tests/c6_guard_stubs",
+        "-I/home/tux/nsealr/.restart-tools/mac-resume-2026-10-25/p4-session/apps/p4/main",
+        "/home/tux/nsealr/.restart-tools/mac-resume-2026-10-25/p4-session/apps/p4/main/c6_guard.c",
+        "/home/tux/nsealr/.restart-tools/mac-resume-2026-10-25/p4-session/apps/p4/tests/c6_guard_test.c",
+        "-o",
+        "/home/tux/nsealr/.restart-tools/mac-resume-2026-10-25/p4-session/apps/p4/evidence/c6-normal-guard/native-guard-final/guard-native"
+      ],
+      "exit": 0,
+      "seconds": 0.10346186347305775,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "argv": [
+        "/home/tux/nsealr/.restart-tools/mac-resume-2026-10-25/p4-session/apps/p4/evidence/c6-normal-guard/native-guard-final/guard-native"
+      ],
+      "exit": 0,
+      "seconds": 0.028441976755857468,
+      "stdout_sha256": "77f515a2ec69ff17f679610d61a6953f0b09dda03661c443fe81317a8162f88b",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ]
+}

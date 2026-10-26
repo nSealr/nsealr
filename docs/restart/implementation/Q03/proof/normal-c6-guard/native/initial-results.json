@@ -1,0 +1,156 @@
+{
+  "scope": "actual normal guard C with GPIO stubs27cases; affected feed and response-clear tests; ASan/UBSan, no hardware or unchanged suite replay",
+  "sources": {
+    "apps/p4/main/c6_guard.c": "08d7c7229a6f5e68852f809acc6ebd99dcc64b3b2f996adabc2547587032a85c",
+    "apps/p4/main/c6_guard.h": "bb3a2041b2d20186120b9f92fe381ec7b4a4a401d97e0ae3e91f64406f9df9b6",
+    "apps/p4/main/local_input.c": "b7d76dc47f8f0c051a13405d4ea5a7c49c4fabc91a207bf380c61ee4789a14b5",
+    "apps/p4/main/local_input.h": "268f722d64618974893251deae1e241e159fa677a5a2772ef4a6f4daa9c4265d",
+    "apps/p4/main/response_lifetime.c": "2ba58c3655cbf7b3e75319e62f89f894941d090d0107898f2a336cea2578fbfc",
+    "apps/p4/main/worker_watchdog.c": "88238bbe672043978f054ecc180b8d8a36fb23a187b5c36fad66c7e5cb6a24fa",
+    "apps/p4/tests/c6_guard_stubs/driver/gpio.h": "cdfe01259f8e8ed975f91d2a19d7e5acc5e18a8c34896997284c02c704d9abb5",
+    "apps/p4/tests/c6_guard_stubs/esp_log.h": "284d2d3d43011b266e208723497171e2933e686e682df9404c3fc3313c73ca0b",
+    "apps/p4/tests/c6_guard_stubs/soc/gpio_sig_map.h": "e1feaea149dcc8508449c4e0ae8bcd67ad05101f41e4d25a953298fe7bc9f2b2",
+    "apps/p4/tests/c6_guard_stubs/soc/io_mux_reg.h": "495689812b7f94bf8ceab168ea19c107b7c40d542fa83bf4fd2886ec6fa5af89",
+    "apps/p4/tests/c6_guard_test.c": "041a6febe11635601c6446906f9216b8b29aadd666fbf5869ee2ce4bcf2ac81b",
+    "apps/p4/tests/response_lifetime_test.c": "919bad02176d4f142cee6dec572d6ca077036ca5d74e97630c9e745366c77180",
+    "apps/p4/tests/worker_watchdog_test.c": "7495a632aa9015fe44f935b5c831320a20786d5f333443dafc38acc3927d109d"
+  },
+  "commands": [
+    {
+      "argv": [
+        "/usr/bin/cc",
+        "-std=c11",
+        "-O1",
+        "-g",
+        "-Wall",
+        "-Wextra",
+        "-Werror",
+        "-fsanitize=address,undefined",
+        "-fno-omit-frame-pointer",
+        "-DP4_WDT_PROBE_MODE=0",
+        "-I/home/tux/nsealr/.restart-tools/mac-resume-2026-10-25/p4-session/apps/p4/tests/c6_guard_stubs",
+        "-I/home/tux/nsealr/.restart-tools/mac-resume-2026-10-25/p4-session/apps/p4/main",
+        "/home/tux/nsealr/.restart-tools/mac-resume-2026-10-25/p4-session/apps/p4/main/c6_guard.c",
+        "/home/tux/nsealr/.restart-tools/mac-resume-2026-10-25/p4-session/apps/p4/tests/c6_guard_test.c",
+        "-o",
+        "/home/tux/nsealr/.restart-tools/mac-resume-2026-10-25/p4-session/apps/p4/evidence/c6-normal-guard/guard-native"
+      ],
+      "cwd": "/home/tux/nsealr/.restart-tools/mac-resume-2026-10-25/p4-session",
+      "start_utc": "2026-10-26T14:55:52.171146+00:00",
+      "environment": {
+        "LANG": "C.UTF-8",
+        "LC_ALL": "C.UTF-8"
+      },
+      "exit": 0,
+      "seconds": 0.10855479259043932,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "argv": [
+        "/home/tux/nsealr/.restart-tools/mac-resume-2026-10-25/p4-session/apps/p4/evidence/c6-normal-guard/guard-native"
+      ],
+      "cwd": "/home/tux/nsealr/.restart-tools/mac-resume-2026-10-25/p4-session",
+      "start_utc": "2026-10-26T14:55:52.279980+00:00",
+      "environment": {
+        "LANG": "C.UTF-8",
+        "LC_ALL": "C.UTF-8"
+      },
+      "exit": 0,
+      "seconds": 0.028095669113099575,
+      "stdout_sha256": "15fabbc42c246fab19631f9b00f63a3cc1206a8e2689d6550354df07c8d7ac1d",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "argv": [
+        "/usr/bin/cc",
+        "-std=c11",
+        "-O1",
+        "-g",
+        "-Wall",
+        "-Wextra",
+        "-Werror",
+        "-fsanitize=address,undefined",
+        "-fno-omit-frame-pointer",
+        "-DP4_WDT_PROBE_MODE=0",
+        "-I/home/tux/nsealr/.restart-tools/mac-resume-2026-10-25/p4-session/apps/p4/tests/wdt_stubs",
+        "-I/home/tux/nsealr/.restart-tools/mac-resume-2026-10-25/p4-session/apps/p4/main",
+        "/home/tux/nsealr/.restart-tools/mac-resume-2026-10-25/p4-session/apps/p4/main/worker_watchdog.c",
+        "/home/tux/nsealr/.restart-tools/mac-resume-2026-10-25/p4-session/apps/p4/tests/worker_watchdog_test.c",
+        "-o",
+        "/home/tux/nsealr/.restart-tools/mac-resume-2026-10-25/p4-session/apps/p4/evidence/c6-normal-guard/watchdog-native"
+      ],
+      "cwd": "/home/tux/nsealr/.restart-tools/mac-resume-2026-10-25/p4-session",
+      "start_utc": "2026-10-26T14:55:52.308301+00:00",
+      "environment": {
+        "LANG": "C.UTF-8",
+        "LC_ALL": "C.UTF-8"
+      },
+      "exit": 0,
+      "seconds": 0.05347474105656147,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "argv": [
+        "/home/tux/nsealr/.restart-tools/mac-resume-2026-10-25/p4-session/apps/p4/evidence/c6-normal-guard/watchdog-native"
+      ],
+      "cwd": "/home/tux/nsealr/.restart-tools/mac-resume-2026-10-25/p4-session",
+      "start_utc": "2026-10-26T14:55:52.361948+00:00",
+      "environment": {
+        "LANG": "C.UTF-8",
+        "LC_ALL": "C.UTF-8"
+      },
+      "exit": 0,
+      "seconds": 0.004916541278362274,
+      "stdout_sha256": "eee83f10eaedaeb28a9ad4dd5685238e4910016a6248c42c64877a7510225e85",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "argv": [
+        "/usr/bin/cc",
+        "-std=c11",
+        "-O1",
+        "-g",
+        "-Wall",
+        "-Wextra",
+        "-Werror",
+        "-fsanitize=address,undefined",
+        "-fno-omit-frame-pointer",
+        "-DP4_WDT_PROBE_MODE=0",
+        "-I/home/tux/nsealr/.restart-tools/mac-resume-2026-10-25/p4-session/apps/p4/tests/wdt_stubs",
+        "-I/home/tux/nsealr/.restart-tools/mac-resume-2026-10-25/p4-session/apps/p4/main",
+        "/home/tux/nsealr/.restart-tools/mac-resume-2026-10-25/p4-session/apps/p4/main/response_lifetime.c",
+        "/home/tux/nsealr/.restart-tools/mac-resume-2026-10-25/p4-session/apps/p4/main/local_input.c",
+        "/home/tux/nsealr/.restart-tools/mac-resume-2026-10-25/p4-session/apps/p4/tests/response_lifetime_test.c",
+        "-o",
+        "/home/tux/nsealr/.restart-tools/mac-resume-2026-10-25/p4-session/apps/p4/evidence/c6-normal-guard/response-native"
+      ],
+      "cwd": "/home/tux/nsealr/.restart-tools/mac-resume-2026-10-25/p4-session",
+      "start_utc": "2026-10-26T14:55:52.367049+00:00",
+      "environment": {
+        "LANG": "C.UTF-8",
+        "LC_ALL": "C.UTF-8"
+      },
+      "exit": 0,
+      "seconds": 0.08762339502573013,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "argv": [
+        "/home/tux/nsealr/.restart-tools/mac-resume-2026-10-25/p4-session/apps/p4/evidence/c6-normal-guard/response-native"
+      ],
+      "cwd": "/home/tux/nsealr/.restart-tools/mac-resume-2026-10-25/p4-session",
+      "start_utc": "2026-10-26T14:55:52.454884+00:00",
+      "environment": {
+        "LANG": "C.UTF-8",
+        "LC_ALL": "C.UTF-8"
+      },
+      "exit": 0,
+      "seconds": 0.5776558388024569,
+      "stdout_sha256": "3f30d87d7a2b36b90cfb2a0f34ef59154ec029b34d14d0c0e29c402f03ce5600",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ]
+}

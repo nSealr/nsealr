@@ -1,0 +1,55 @@
+{
+  "created_utc": "2026-10-26T15:23:14.415034+00:00",
+  "reviewer": "/root",
+  "author": "/root/p4_optical_review",
+  "verdict": "PASS_BOUNDED_PUBLIC_NORMAL_C6_GUARD_SOURCE_AND_ARTIFACT",
+  "source": "33a6b4e3e29c4dd74b8557bc38d1c5b345c07290",
+  "app_tree": "393e5b179ad84ada89f5dd870da14d96bb6c9093",
+  "packet_bindings": {
+    "SHA256SUMS": "56683c7e98615fff0b4ff9634fcb9d63da73ac9a02ce706207c061096e353873",
+    "packet.json": "c8b155769895ba9c9f3d644b10adccf6f7ef0356c76e1fa4d5b078b6882ea84d",
+    "native-source-binding.json": "4dff3b2c79c0d1e329e578de199b9f0755cbe2a53b7e9a9bbc0034321f7ee7b1"
+  },
+  "packet_members_including_manifest": 218,
+  "binary": {
+    "bytes": 1228304,
+    "sha256": "2a74a35788f438d30427c2d37398f41fdbd9babf322f05ba31374a77471347ee"
+  },
+  "independent_readback": {
+    "full_changed_product_sources": "All c6_guard.c/.h, main/local/watchdog/response/CMake diffs from merged base ebd27264",
+    "native_checks": "Actual final helper27 cases and feed/response failure paths read; SDK-real corrected mock RED and original initial mock GREEN kept distinct. ASan/UBSan exit0 on affected final checks. No reviewer replay.",
+    "source_inputs_exact_frozen_commit": 124,
+    "pinned_SDK_sources_exact_commit_and_live_files": 11,
+    "raw_or_decompressed_artifacts_verified": 12,
+    "actual_compile_mode0_units": [
+      "main.c",
+      "p4_local.c",
+      "worker_watchdog.c",
+      "c6_guard.c"
+    ],
+    "linked_guard_symbols_present": true,
+    "ordinary_mode_SDIO_Hosted_radio_initializers_observed_in_symbols": false,
+    "unchanged_Rust_sdkconfig_camera_gesture_probe_wdt_proof": "Reused source-specific proof; not rerun"
+  },
+  "findings_closed": [
+    {
+      "id": "GPIO54_OEN_RESET_MODEL",
+      "scope": "Availability/readback defect exposed by correcting mock to pinned hw_ver3 OEN_SEL default0. Source normalizes exactly documented OEN_SEL/OEN_INV_SEL after latch0 before INPUT_OUTPUT, without disabling/releasing output; real pad/config readback retained."
+    },
+    {
+      "id": "PACKET_EMPTY_AFFECTED_AGGREGATE",
+      "scope": "Original [] is missing index metadata, not a passing result. Root read actual6 source-linked commands independently. Author corrected aggregate to4 feed/response result receipts, preserving initial index outside final packet. No product or test change."
+    }
+  ],
+  "hardware_next": "One exact-sample normal-mode public flash; capture begin/engine pre/post and later full operation/response guard readbacks. Root alone flashes.",
+  "limits": [
+    "Only known public fixture11; no real identity import/generation admitted",
+    "GPIO54 sample/config and cooperative enforcement are not RF absence, C6 die/firmware or chip-pin voltage proof",
+    "USB bridge still connected; BOOT/DTR/RTS path is not trusted human consent under adversarial host",
+    "No reset-hold, entropy, session custody, RAM erasure or panic/log qualification",
+    "A previously displayed/scanned QR cannot be recalled"
+  ],
+  "production_or_release_admitted": false,
+  "CI_queried_or_started": false,
+  "reviewer_build_or_test_replays": 0
+}

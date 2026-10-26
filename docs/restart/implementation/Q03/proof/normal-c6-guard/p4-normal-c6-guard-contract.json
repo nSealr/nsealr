@@ -1,0 +1,183 @@
+{
+  "schema_version": 1,
+  "role": "PROPOSED_FINITE_P4_NORMAL_C6_PAD_GUARD_CONTRACT_PENDING_ROOT_REVIEW",
+  "author": "/root/p4_optical_review",
+  "reviewer_coordinator_operator": "/root",
+  "recorded_utc": "2026-10-26T14:39:54.688Z",
+  "base": {
+    "delivery": "69ed53a280417495589e39aa38a46a78281b72e0",
+    "product_source": "813e98cc7eade910b52e37ebd690be5280404aaf",
+    "branch": "implementation/p4-rust-optical",
+    "worktree": "/home/tux/nsealr/.restart-tools/mac-resume-2026-10-25/p4-session",
+    "status_observed": "CLEAN",
+    "previous_authorship_preserved": "Prodotto813 di phase1_scope; prove/consegna69 di s3_native_finish. Nessuna riscrittura delle fonti o ricevute precedenti."
+  },
+  "decision_it": "Nel solo normale pubblico mode0, il worker controllerà GPIO54 basso con ingresso e uscita reali verificati prima di ogni inizializzazione/ammissione engine e intorno ai confini critici. Nessuna SDIO/esp_hosted/radio init, release o recovery automatica nel normale. È un controllo software del pad sulla board pinned, non una dimostrazione RF/offline o di consenso umano.",
+  "board_scope": {
+    "vendor": "870588e62daaf723f3c52f0060d8dc053665ed30",
+    "BSP": "waveshare esp32_p4_wifi6_touch_lcd_3_5 v2.0.2",
+    "SDK": "ESP-IDF6.0.2 /7101770dc6db2667b3c477cc31365dd1acd6db4e",
+    "pin": 54,
+    "circuit": "GPIO54→R54=0Ω→C6 CHIP_PU pin4, pull-up R25=10k ESP_3V3/C113=1µF. Stesso circuito del gate0a7f; revisione assemblata/tensione pin4 restano non qualificate.",
+    "policy": "Helper C locale a questa app e board, senza framework/nuovo owner/timer/host API."
+  },
+  "evidence_reused": {
+    "source_review": {
+      "path": "intake/p4-c6-public-probe-distinct-source-review.json",
+      "sha256": "cd7b014a876cce9dfad3f1544da623c4c01143456557c65269bf68c843e6bf8f"
+    },
+    "circuit_gate": {
+      "path": "intake/p4-c6-session-gate.json",
+      "sha256": "0a7f1e16efbd15480c2059b3ac7bbb41d1fd0fa5d6ad8011797ddc2e138853c1"
+    },
+    "root_assessment": {
+      "path": "intake/p4-c6-root-probe-assessment.json",
+      "sha256": "401732a2fac52195cb5dd89e2f8bffa107deb200dfd62e1eb1655bfa81d6f0ba"
+    },
+    "root_raw": {
+      "path": "intake/p4-c6-observed-runtime.log",
+      "bytes": 6240,
+      "sha256": "07b184166a51af337131ce6d0e2a69bff5f7fbab2c1cbf84885033aea8d892af"
+    },
+    "observed_it": "Root ha osservato una sola sequenza813/mode3/POWERON: IO-only funcs2@400kHz/width4,0092:6666/CCCR32/CIS39B; baseline pad1 ie1 oe0, primo low pad0 ie1 oe1 e CMD52 timeout263; una release pad1 ie1 oe0 recupera lo stesso endpoint; reassert timeout263,cleanup0,final pad0 ie1 oe1,func1/signal256. Marker phase1→5=1942ms, non minimo hardware. Nessun engine/key init o WDT nella cattura. Non si ripete la sonda.",
+    "current_device_it": "Normal813 b19107ec ripristinato/BOOTmode0/camera PASS riferito da root. User conferma quattro istruzioni leggibili e Reject, e P4 acceso o ripreso con PWR senza USB: batteria risorsa operativa oggi. Risposta combinata non dimostra continuità CPU. La capture termina per USB unplug; P4 ora su batteria/USB scollegata. Nessuna richiesta di ricollegamento finché root ha un nuovo binario concretamente revisionato."
+  },
+  "normal_guard": {
+    "startup_it": "Nel worker mode0, dopo registrazione WDT e prima di BOOT check e p4_engine_init, precaricare latch GPIO54=0 e configurare GPIO_MODE_INPUT_OUTPUT senza pull software/open-drain. Un solo begin per boot, esito fallibile. Il solo flag RAM non vale come riscontro.",
+    "accepted_sample_it": "gpio_get_io_config riuscito, ie=1,oe=1,fun_sel=PIN_FUNC_GPIO,sig_out=SIG_GPIO_OUT_IDX,nessun controllo OE periferico/inversione/open-drain; gpio_get_level letto solo con input abilitato e deve essere0, altrimenti livello=-1/non valido. Verificare config e vero pad ad ogni check: nessun output-only-zero interpretato come net bassa.",
+    "state_it": "Stato locale NEW/ACTIVE/FAILED e ammissione low atomica per l'abort hook task-level. ACTIVE solo dopo set/config/readback riusciti. Qualsiasi errore o mismatch invalida lo stato in modo sticky per il boot; nessun repair→continue o nuovo tentativo engine nel medesimo boot.",
+    "entry_and_exit_checks": [
+      "Pre/post p4_engine_init e pre/post ogni p4_engine_run; post fallito azzera il buffer risposta pubblico e non lo pubblica.",
+      "Prima/dopo il commit di ogni pagina review e immediatamente prima di restituire una decisione; un guasto non può diventare Approve. FSM/fresh-input/clock restano quelli esistenti.",
+      "Prima e dopo l'aux fixture nel normale, come confine pre-sign già disponibile senza nuova API engine/entropy.",
+      "Prima di comporre/presentare la risposta, dopo ACK e prima di riaccendere backlight; check durante attese UI/clear tramite il percorso cooperativo.",
+      "Prima di ogni feed del worker normale: controllo fallito non alimenta lavoro pendente né consente altra richiesta. Nessun check GPIO introdotto in ISR/DMA/camera callback, né modifica dell'ownership raw."
+    ],
+    "failure_it": "Nessun nuovo output dopo un check fallito: risposta azzerata dove posseduta, backlight off best-effort, risultato applicativo rifiutato e stop/fatal. Abort hook dopo low admission ritenta soltanto low e legge/reporta pad/config, indipendentemente dall'errore iniziale; non chiama UI o feed ricorsivi, non rilascia il pin. Fallimento cleanup resta esplicito, non safe. Nessuna cancellazione completa del Rust owner/RAM o continuità fisica è promessa.",
+    "reset_policy_proposed_it": "Ogni nuovo boot normale riparte senza richiesta/approvazione precedente e tenta low/readback prima di qualunque engine path. Solo reset reason SDK POWERON ammette la sessione pubblica; WDT/panic/software/brownout/altro, anche con guard low riuscito, mostrano UNAVAILABLE e restano senza engine/key init, mantenendo i controlli idle. Un POWERON reason non è autenticazione di umano/alimentazione esterna.",
+    "unchanged_it": "Identità pubblica11x32 e aux22, solo motore nsealr-core, Rust/core/crypto/quirc invariati, clock esp_timer reale e deadline100tick, hold1500..5000ms+release/oltre5000Reject/debounce40ms/fresh frame/input, touch solo navigazione, WDT5s con owner singolo, ACK/expiry/nessun feed raw pendente conservati.",
+    "mode_boundary_it": "La nuova policy è compilata nel mode0. Mode3 e il suo ciclo low/release/recovery rimangono soltanto la sonda pubblica separata della fonte813; vecchi packet/binari preservati. Nel normal finale nessun sdmmc_card_init/CIS/esp_hosted/radio init o release/recovery guard raggiungibile/linkato."
+  },
+  "domains_and_limits_it": [
+    "Il controllo campiona il pad P4 e la configurazione ai confini indicati; non è monitoraggio continuo o un sensore RF. Un impulso/glitch tra campioni o collegamento R54 diverso sul campione non è escluso.",
+    "Il C6 può essere già attivo durante ROM/boot/display init prima del begin, quando nessuna fixture engine è inizializzata. Dopo begin il software normale non rilascia GPIO54; pin4 reale, die/revisione/firmware C6 e RF restano sconosciuti.",
+    "Il fatal task hook tenta low; SDK panic/WDT, reset EN, brownout, perdita alimentazione e finestre ROM possono bypassarlo e riportare GPIO54 high-Z. Nessuna promessa di hold continuity, zeroizzazione o custodia attraverso quei domini.",
+    "Sourceguard e firma condividono il TCB della MCU: verifiche pre/post non costituiscono isolamento hardware da codice ostile né un bound hard di rilevazione. Un blocco SDK resta nel dominio WDT già limitato.",
+    "Questo lotto è pubblico: non introduce import segreti, entropy, nuovo clock/budgetACTIVE o attestazione host/humantrusted. I gate reset/log/debug/custodia restano aperti."
+  ],
+  "USB_source_readback": {
+    "source": {
+      "repo": "p4-probe/src/vendor",
+      "commit": "870588e62daaf723f3c52f0060d8dc053665ed30",
+      "path": "schematic/ESP32-P4-WIFI6-Touch-LCD-3.5-schematic.pdf",
+      "bytes": 903666,
+      "sha256": "3d8b63f8f2a5a89d00c54eaf9798658f3147774e8d3383a1b0a96d5fb9c82d30",
+      "method": "Pagina1 letta da Git, testo e crop visivi dei blocchi USB/PMIC/J6; nessun nuovo documento o misura fisica."
+    },
+    "facts_it": [
+      "H1 (blocco USB OTG) e H5 (USB-UART) hanno VBUS A4/B9 e A9/B4 sulla stessa net USB0_5V. H1 D+/D- sono USBD_P/N verso DP50/DM49 dedicati P4; H5 D+/D- sono USB_DBG_D_P/N verso CH343P U5.",
+      "USB0_5V è anche su J6pin2. Le linee USB1 GPIO24/25 passano tramite R72/R70=0Ω a USB1P1_N/P su J6pin6/8: non si limita l'analisi ai due connettori Type-C.",
+      "USB0_5V raggiunge VCC_5V tramite Q2 AO3401/rete U13; VCC_5V entra in AXP2101 UP1 VBUS37. BAT33 va a J1/VBAT. È quindi possibile un riscontro di alimentazione PMIC in futuro, anche senza GPIO VBUS dedicato al P4; non si deduce assenza di rilevatore da assenza di GPIO diretto.",
+      "CH343P VBUS9 è USB0_5V ma VIO1/VDD5=3/V3=6 sono ESP_3V3. UART GPIO37/38 e DTR/RTS→U6→BOOT35/ESP_EN sono distinti dal VBUS detector. A batteria non si presume il bridge disalimentato né si assumono livelli sicuri dei suoi output."
+    ],
+    "bounded_current_BSP_check": {
+      "version": "2.0.2",
+      "result": "NESSUNA_API_STATUS_VBUS_PMIC_ATTUALE_ESPOSTA",
+      "checked": [
+        {
+          "path": "esp32_p4_wifi6_touch_lcd_3_5.c",
+          "sha256": "f2a69a92e3fa305d84336bd25837f2b2c060f8df62280797cc52bc94f3ae98c3",
+          "hits": [
+            {
+              "line": 647,
+              "text": "esp_err_t bsp_usb_host_start(bsp_usb_host_power_mode_t mode, bool limit_500mA)"
+            }
+          ]
+        },
+        {
+          "path": "include/bsp/config.h",
+          "sha256": "9c2b3229543db1cebb75cdc9a1411f24480543b410cc12a6263553dcbfcc9dec",
+          "hits": []
+        },
+        {
+          "path": "include/bsp/display.h",
+          "sha256": "342956b064ac5f176f0c584721dc80bf64d557334b0e664876e16e1960fd7905",
+          "hits": []
+        },
+        {
+          "path": "include/bsp/esp-bsp.h",
+          "sha256": "058fb4fb83cc785e177fd677bdd183c5341a25938cd4b3748070852bdb5c42d7",
+          "hits": []
+        },
+        {
+          "path": "include/bsp/esp32_p4_wifi6_touch_lcd_3_5.h",
+          "sha256": "e2e80d2ea7a12768186a50ccbed8ccd4f2bcc7ec687d68030e73366fc1cd8a16",
+          "hits": [
+            {
+              "line": 345,
+              "text": "typedef enum bsp_usb_host_power_mode_t {"
+            },
+            {
+              "line": 346,
+              "text": "BSP_USB_HOST_POWER_MODE_USB_DEV, //!< Power from USB DEV port"
+            },
+            {
+              "line": 347,
+              "text": "} bsp_usb_host_power_mode_t;"
+            },
+            {
+              "line": 355,
+              "text": "* @param[in] mode        USB Host connector power mode (Not used on this board)"
+            },
+            {
+              "line": 362,
+              "text": "esp_err_t bsp_usb_host_start(bsp_usb_host_power_mode_t mode, bool limit_500mA);"
+            },
+            {
+              "line": 367,
+              "text": "* USB Host lib will be uninstalled and power from connector removed."
+            }
+          ]
+        },
+        {
+          "path": "include/bsp/touch.h",
+          "sha256": "3c393b32f015be2095ad2ea210fbab346ee05e9194797bc22b8cb32a502b3fd6",
+          "hits": []
+        },
+        {
+          "path": "priv_include/bsp_err_check.h",
+          "sha256": "63599e8d8623716579e7cda929e0656fe71e9d8640025140fa3c8c85d37f5c97",
+          "hits": []
+        },
+        {
+          "path": "test_app/main/main.c",
+          "sha256": "daf1339a9385a09ab314723f7c21e389c21375a42944c681833be6ffdfbb08db",
+          "hits": []
+        },
+        {
+          "path": "test_apps/main/main.c",
+          "sha256": "9dd4609513565fb7d1a813d1eac008b182a6cfac0a155a5ba1bfe516e924ba96",
+          "hits": []
+        }
+      ],
+      "dependency_result": "Project_description finale813 non include driver AXP/PMIC fra le dipendenze BSP; il codice/header BSP non offre status VBUS/batteria/PMIC. bsp_usb_host_start configura uno stack host e il parametro power mode è documentato Not used on this board: non è una misura VBUS. Non si avvia né si modifica.",
+      "future_limit": "Un futuro bit/ADC VBUS della PMIC, se revisionato, potrebbe bloccare VBUS-presente ma non attesterebbe quale connettore, dati host assenti, charge-only reale, linee J6 isolate o assenza di riattacco/race."
+    },
+    "no_host_sensing_claim_it": "Questo normale non misura né autentica assenza di host dati. Nessun flag software offline/USB-disconnected/humantrusted, nessun nuovo driver PMIC/USB e nessuna assenza di librerie usata come prova fisica.",
+    "future_offline_precondition_it": "Profilo futuro P4: alimentazione a batteria e USB dati fisicamente scollegata da tutti i percorsi pertinenti, inclusi H1/H5 ed eventuale J6, come precondizione operatore da qualificare. Un'osservazione VBUS da sola non sostituisce la precondizione né chiude il gate BOOT umano. Nel collaudo USB collegato tutto resta pubblico e senza consenso umano attendibile."
+  },
+  "finite_changes_and_checks": {
+    "allowed_source": "Solo apps/p4: piccolo helper locale c6_guard.c/h, wiring main/p4_local/worker_watchdog/response_lifetime se necessario, CMake e test mirati; brief/proof Q03. Nessuna modifica SDK/vendor/core/Rust, S3, Pi, piano o codice host.",
+    "focused_it": "Dopo PASS root del contratto: test del vero helper C con soli stub GPIO/RTOS necessari per successo, errori set/config/read,ie/oe/mux/pad errati,sticky failure,cleanup e no release. Review call graph dei confini no-engine/no-output; check affetti del feed solo se cambia. Nessuna campagna o framework nuovo.",
+    "reuse_it": "Core/crypto/quirc/gesture/ACK/expiry e precedenti negative/roundtrip/WDT sufficienti riusati dove invariati; non rilanciare il probe causale o le canary53094 senza lacuna concreta.",
+    "target_it": "Un solo build normale su fonte congelata/clean con snapshot completo input, ELF/bin/map/config/ABI/closure e provider esatti, no SDIO/Hosted/radio init normale; packet review distinta prima del flash root. Nessuna nuova suite completa/CI senza mandato root.",
+    "hardware_it": "Root unico USB/flash/operator. Quando esistono fonte e binario concreti revisionati chiederà il ricollegamento. Misurerà guard reale prima engine, pad/config nelle fasi e failclosed applicabile, poi potrà qualificare separatamente la precondizione batteria/USB fisicamente staccata. Nessuna qualifica automatica dalla sola compilazione."
+  },
+  "product_edits_so_far": 0,
+  "builds_so_far": 0,
+  "tests_so_far": 0,
+  "USB_actions_so_far": 0,
+  "CI_actions_so_far": 0,
+  "review": "PENDING_ROOT",
+  "stop_before_source_it": "Nessuna modifica al prodotto fino alla review esplicita di root su questo contratto. I sorgenti e le prove precedenti rimangono congelati."
+}
