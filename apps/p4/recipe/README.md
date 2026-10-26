@@ -23,7 +23,7 @@ Choose existing installations or obtain the following under your own tool root:
 * Python3.12.15 from the pinned Astral standalone archive, uv0.11.28 and Rustup1.29.1
   from pins.json. Verify each archive/executable SHA256 before extracting/running.
   Install Rust1.95.0 minimal plus target riscv32imafc-unknown-none-elf using Rustup
-  in directories you choose. The exact installed binary hashes are also checked.
+  in directories you choose. The exact installed binary hashes are checked before their execution.
   The official version-specific Rust distribution manifest authenticates its
   component downloads through Rustup; no RustR00 path is assumed.
 
@@ -62,6 +62,10 @@ python3 apps/p4/build.py python --work-dir "$TASK_WORK" \
   --work-dir "$TASK_WORK" --sdk "$TASK_SDK" --idf-tools "$TASK_IDF_TOOLS" \
   --rust-toolchain "$TASK_RUST" --jobs 8
 ```
+
+The base Python SHA is checked before its version command. The same SDK/checker/
+constraints admission helper is used before executing SDK Python in both python
+and prepare stages; the source commit, bodies and recursive gitlinks must match.
 
 The python stage fetches only the exact public inputs in python-sources.json.
 Optionally repeat --download-cache DIR to reuse authenticated downloads. It

@@ -98,14 +98,38 @@ def obtain(item, work, caches):
     return destination
 
 
+def verify_sdk(work, sdk, env):
+    """Authenticate the same SDK/checker/constraints before executing SDK Python."""
+    sdk = Path(sdk).resolve()
+    require(sha(RECIPE / "python-constraints.txt") == PINS["constraints_sha256"],
+            "Admitted constraint body changed")
+    for field, relative in (
+            ("python_checker_sha256", "tools/check_python_dependencies.py"),
+            ("idf_tools_sha256", "tools/idf_tools.py"),
+            ("core_requirements_sha256", "tools/requirements/requirements.core.txt")):
+        require(sha(sdk / relative) == PINS["sdk"][field],
+                "Unpinned SDK dependency checker/input: " + relative)
+    require(subprocess.check_output(["git", "-C", str(sdk), "rev-parse", "HEAD"],
+        text=True).strip() == PINS["sdk"]["commit"], "SDK commit changed")
+    require(not subprocess.check_output(["git", "-C", str(sdk), "status", "--porcelain",
+        "--untracked-files=no"], text=True).strip(), "SDK tracked source changed")
+    links = subprocess.check_output(["git", "-C", str(sdk), "submodule", "status", "--recursive"], text=True)
+    require(links and all(line.startswith(" ") for line in links.splitlines()),
+            "Missing or changed SDK submodule")
+    # Validate submodule bodies too, rather than trusting checkout IDs alone.
+    run(work, "sdk-submodule-clean", ["git", "-C", str(sdk), "submodule", "foreach",
+        "--recursive", "git diff --quiet && git diff --cached --quiet"], env)
+    write(work / "sdk-gitlinks.json", dict(commit=PINS["sdk"]["commit"], gitlinks=links.splitlines()))
+
+
 def bootstrap(args, work):
     require(args.base_python and args.uv and args.sdk, "python stage requires --base-python, --uv and --sdk")
     require(sha(args.uv) == PINS["uv"]["binary_sha256"], "Unpinned uv binary")
     env = clean_env(work)
     base = Path(args.base_python).resolve()
+    require(sha(base) == PINS["python"]["binary_sha256"], "Unpinned base Python binary")
     version = subprocess.check_output([str(base), "--version"], env=env, text=True).strip()
     require(version == "Python 3.12.15", "This wheel closure requires Python3.12.15")
-    require(sha(base) == PINS["python"]["binary_sha256"], "Unpinned base Python binary")
     packages = work / "packages"
     packages.mkdir(exist_ok=True)
     for item in json.loads((RECIPE / "python-sources.json").read_text()):
@@ -134,6 +158,7 @@ def bootstrap(args, work):
         "--python", str(python_env / "bin/python")], env)
     # uv hash-file parsing does not accept upstream range constraints. The
     # unchanged SDK checker enforces their full body immediately after sync.
+    verify_sdk(work, args.sdk, env)
     run(work, "python-sdk-constraints", [str(python_env / "bin/python"),
         str(Path(args.sdk).resolve() / "tools/check_python_dependencies.py"),
         "-r", str(Path(args.sdk).resolve() / "tools/requirements/requirements.core.txt"),
@@ -195,17 +220,7 @@ def prepare(args, work, env):
     from idf_component_tools.manifest.models import SolvedComponent
     from idf_component_tools.sources.web_service import WebServiceSource
     sdk = Path(env["IDF_PATH"])
-    require(subprocess.check_output(["git", "-C", str(sdk), "rev-parse", "HEAD"],
-        text=True).strip() == PINS["sdk"]["commit"], "SDK commit changed")
-    require(not subprocess.check_output(["git", "-C", str(sdk), "status", "--porcelain",
-        "--untracked-files=no"], text=True).strip(), "SDK tracked source changed")
-    links = subprocess.check_output(["git", "-C", str(sdk), "submodule", "status", "--recursive"], text=True)
-    require(links and all(line.startswith(" ") for line in links.splitlines()),
-            "Missing or changed SDK submodule")
-    # Validate submodule bodies too, rather than trusting checkout IDs alone.
-    run(work, "sdk-submodule-clean", ["git", "-C", str(sdk), "submodule", "foreach",
-        "--recursive", "git diff --quiet && git diff --cached --quiet"], env)
-    write(work / "sdk-gitlinks.json", dict(commit=PINS["sdk"]["commit"], gitlinks=links.splitlines()))
+    verify_sdk(work, sdk, env)
     want = {}
     for line in (RECIPE / "python-requirements.lock").read_text().splitlines():
         name, version = line.split(" --hash=", 1)[0].split("==")
