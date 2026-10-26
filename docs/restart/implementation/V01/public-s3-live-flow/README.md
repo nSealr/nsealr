@@ -188,3 +188,14 @@ physical USB resets, DTR/suspend behavior, installed UX, entropy quality or
 custody. Human-wait source81 and its original positives/14negative readback remain
 historical experimental inputs, not adopted APIv2 production behavior. S04,
 native C5000, firmware source/core and other device scopes remain unchanged.
+
+
+The F1/F2 supplement preserves the original264 host GREEN results and the
+distinct CHANGES_REQUIRED report: those results did not cover intermediate CPU
+rollback or valid-frame-plus-observed-EOF ordering. The correction tracks each
+accepted CPU sample separately from the cumulative external-entry baseline.
+Readable end immediately and permanently invalidates the public stream lease,
+including admission, buffered-frame reads and close; generic buffered-line
+parser behavior remains unchanged. The targeted EOF regression uses actual
+Node Duplex data/end/destroy events with allowHalfOpen to expose end before
+close. It does not claim physical USB behavior or remote-close attestation.

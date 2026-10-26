@@ -39,4 +39,18 @@ describe("named public service ledger; no USER or target CPU measurement", () =>
     expect(() => new PublicS3Budget({ nowNs: () => -1n, cpuUs: () => 0 })).toThrow(/clock/);
     expect(() => new PublicS3Budget({ nowNs: () => 1n << 64n, cpuUs: () => 0 })).toThrow(/clock/);
   });
+  for (const boundary of ["check","phase-exit"] as const) it("F1 rejects intermediate CPU10→20→19 at "+boundary+" and keeps revocation sticky", () => {
+    const f=fixture();f.cpu(10);f.budget.phase("external");
+    f.cpu(10);f.budget.check();f.cpu(-1);
+    expect(()=>boundary==="check"?f.budget.check():f.budget.phase("active")).toThrow(/CPU/);
+    f.cpu(100);
+    expect(()=>f.budget.check()).toThrow(/revoked/);
+    expect(()=>f.budget.remainingMs()).toThrow(/revoked/);
+  });
+  it("F1 preserves cumulative external CPU charge across intermediate samples", () => {
+    const f=fixture();f.cpu(10);f.budget.phase("external");
+    f.cpu(2_000_000);f.budget.check();f.cpu(2_000_000);f.budget.check();
+    f.cpu(1_000_000);expect(()=>f.budget.check()).toThrow(/ACTIVE/);
+  });
+
 });

@@ -6,6 +6,7 @@ export class PublicS3Budget {
   private activeStart: bigint;
   private charged = 0n;
   private externalCpu = 0;
+  private lastCpu = 0;
   private external = false;
   private entered = false;
   private failed = false;
@@ -24,6 +25,8 @@ export class PublicS3Budget {
   private cpu(): number {
     const n = this.clock.cpuUs();
     if (!Number.isSafeInteger(n) || n < 0) throw new Error("public S3 CPU observation unavailable");
+    if (n < this.lastCpu) throw new Error("public S3 CPU counter rollback");
+    this.lastCpu = n;
     return n;
   }
   check(): void {

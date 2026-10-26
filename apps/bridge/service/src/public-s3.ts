@@ -58,28 +58,40 @@ export async function loadPublicS3Context(options: ServiceContextFileOptions) {
   const config = digest();
   const stream = await openStream(route.stream_path);
   const raw = new SerialLineStreamPort({ input: stream, output: stream, maxBufferedBytes: 8192, maxBufferedLines: 9 });
-  stream.resume();
   let state: "open" | "settled" | "failed" = "open";
   let generation = 0, closing = false, used = false;
   let closePromise: Promise<void> | undefined;
   let budget: PublicS3Budget | undefined;
   const id = "public-s3-" + randomUUID();
   const fail = () => { if (state !== "failed") ++generation; state = "failed"; };
+  const checkStream = () => {
+    if (stream.readableEnded || stream.errored || (stream.destroyed && !closing)) fail();
+  };
+  const requireOpen = () => {
+    checkStream();
+    if (state !== "open") throw new Error("public S3 stream not open");
+  };
+  // Readable EOF revokes this narrower lease even with a complete line buffered.
+  stream.on("end", fail);
   stream.on("error", fail);
   stream.on("close", () => { if (!closing) fail(); });
+  checkStream();
+  stream.resume();
   port = {
     async writeLine(line) {
-      if (state !== "open") throw new Error("public S3 stream not open");
-      try { await raw.writeLine(line); } catch (error) { fail(); throw error; }
+      requireOpen();
+      try { await raw.writeLine(line); requireOpen(); } catch (error) { fail(); throw error; }
     },
     async readLine() {
-      try { const line = await raw.readLine(); if (line === null) fail(); return line; }
+      requireOpen();
+      try { const line = await raw.readLine(); if (line === null) fail(); requireOpen(); return line; }
       catch (error) { fail(); throw error; }
     },
     close() {
       if (!closePromise) {
+        checkStream();
         closing = true;
-        closePromise = raw.close().then(() => { if (state !== "failed") state = "settled"; });
+        closePromise = raw.close().then(() => { checkStream(); if (state !== "failed") state = "settled"; });
       }
       return closePromise;
     }
@@ -88,11 +100,13 @@ export async function loadPublicS3Context(options: ServiceContextFileOptions) {
     source: "e7f04215fc97808acdafdbf9420f6ef6d0102c5b",
     image_sha256: "7943dbcf4a1e389718b1959086487b6b13cdb50bb0f577ced9d4539c6d1fd7da",
     connection() {
-      if (digest() !== config || stream.destroyed && !closing) fail();
+      checkStream();
+      if (digest() !== config) fail();
       return { connection_id: id, generation, config_digest: config, state };
     },
     begin() {
       if (!budget) throw new Error("public S3 operation clock is not armed");
+      checkStream();
       if (used || state !== "open") throw new Error("public S3 fixture requires a fresh connection");
       used = true; budget.check();
     },
