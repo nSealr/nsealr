@@ -1,0 +1,544 @@
+diff --git a/apps/bridge/cli/src/index.ts b/apps/bridge/cli/src/index.ts
+index 565657a6..7a9e3d82 100644
+--- a/apps/bridge/cli/src/index.ts
++++ b/apps/bridge/cli/src/index.ts
+@@ -1,4 +1,6 @@
+ #!/usr/bin/env node
++import { dispatchPublicS3, PUBLIC_S3_CLI_CLIENT } from "./public-s3.js";
++import { LocalServiceClient, handleLocalServiceRequest } from "@nsealr/client";
+ import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
+ import { Command } from "commander";
+ import { isDeepStrictEqual } from "node:util";
+@@ -96,6 +98,7 @@ type DataFormat = "json" | "qr" | "qr-animated";
+ 
+ type BuildCliOptions = {
+   openSerialLinePort?: SerialLinePortOpener;
++  publicS3Ready?: () => Promise<void>;
+ };
+ 
+ type ErrorOutput = {
+@@ -705,6 +708,22 @@ async function openNodeSerialLinePort(path: string): Promise<SerialLinePort> {
+   return new SerialLineStreamPort({ input: serialPort, output: serialPort });
+ }
+ 
++async function waitForPublicS3Operator(): Promise<void> {
++  process.stderr.write("Public S3 stream OPEN. Enable locally on S3, then press Enter to transmit. Enter does not approve signing.\n");
++  await new Promise<void>((resolve, reject) => {
++    let bytes = 0;
++    const cleanup = () => { process.stdin.off("data", data); process.stdin.off("end", ended); process.stdin.off("error", error); process.stdin.pause(); };
++    const error = (e: Error) => { cleanup(); reject(e); };
++    const ended = () => error(new Error("operator setup input ended"));
++    const data = (chunk: Buffer) => {
++      bytes += chunk.length;
++      if (bytes > 64) { error(new Error("operator setup input exceeded64bytes")); return; }
++      if (chunk.includes(10)) { cleanup(); resolve(); }
++    };
++    process.stdin.on("data", data); process.stdin.on("end", ended); process.stdin.on("error", error); process.stdin.resume();
++  });
++}
++
+ export function buildCli(options: BuildCliOptions = {}): Command {
+   const openSerialLinePort = options.openSerialLinePort ?? openNodeSerialLinePort;
+   const program = new Command();
+@@ -1076,6 +1095,40 @@ export function buildCli(options: BuildCliOptions = {}): Command {
+ 
+   const local = program.command("local").description("Inspect local companion service objects");
+ 
++  local
++    .command("public-s3-pairing")
++    .requiredOption("--out <path>")
++    .description("Request the fixed public S3 lab client's local pairing intent")
++    .action(async (actionOptions: { out: string }) => {
++      const client = new LocalServiceClient({ exchange: request => handleLocalServiceRequest(request) });
++      const result = await client.requestPairing(PUBLIC_S3_CLI_CLIENT, [
++        "select_account_route", "validate_signer_request", "dispatch_signer_request", "verify_signer_response"
++      ]);
++      if (!result.ok || !("pairing_intent" in result.result)) throw new Error("pairing intent unavailable");
++      writeNewJson(actionOptions.out, result.result.pairing_intent);
++    });
++
++  local
++    .command("dispatch-public-s3")
++    .requiredOption("--grant-store <path>")
++    .requiredOption("--account-store <path>")
++    .requiredOption("--route-driver-store <path>")
++    .requiredOption("--storage-approval <path>")
++    .requiredOption("--expected-public-key <hex>", "Independently pinned published scalar3 identity")
++    .requiredOption("--out <path>")
++    .option("--method <method>", "sign_event or get_public_key; fresh Enable for each operation", "sign_event")
++    .description("Run one public client/service/USB fixture operation; no production admission")
++    .action(async (actionOptions: {
++      grantStore: string; accountStore: string; routeDriverStore: string; storageApproval: string;
++      expectedPublicKey: string; out: string; method: string;
++    }) => {
++      if (actionOptions.method !== "sign_event" && actionOptions.method !== "get_public_key") throw new Error("public S3 method unsupported");
++      await dispatchPublicS3({ ...actionOptions, method: actionOptions.method,
++        ready: options.publicS3Ready ?? waitForPublicS3Operator });
++    });
++
++
++
+   local
+     .command("review-pairing")
+     .requiredOption("--intent <path>", "Read a local-service pairing intent JSON file")
+diff --git a/apps/bridge/service/src/context.ts b/apps/bridge/service/src/context.ts
+index 1daf67cd..eefea595 100644
+--- a/apps/bridge/service/src/context.ts
++++ b/apps/bridge/service/src/context.ts
+@@ -1,4 +1,4 @@
+-import { readFileSync } from "node:fs";
++import { openSync, readSync, closeSync, fstatSync } from "node:fs";
+ import {
+   parseLocalGrantStore,
+   parseLocalStorageApproval,
+@@ -31,6 +31,7 @@ export type ServiceContextFileOptions = {
+   routeDriverStorePath?: string;
+   storageApprovalPath?: string;
+   openSerialLinePort?: SerialLinePortOpener;
++  openPublicS3Stream?: SerialLinePortOpener;
+   /** An application-owned current adapter/session observation provider. Paths
+    * and a static account store alone do not establish current compatibility. */
+   signerCompatibility?: LocalServiceContext["signerCompatibility"];
+@@ -57,8 +58,20 @@ function compactJsonUtf8ByteLength(value: unknown): number {
+   return Buffer.byteLength(JSON.stringify(value), "utf8");
+ }
+ 
+-function readJsonFile(path: string, label: string): unknown {
+-  const contents = readFileSync(path, "utf8");
++export function readContextJsonFile(path: string, label: string): unknown {
++  const fd = openSync(path, "r");
++  const data = Buffer.alloc(64 * 1024 + 1);
++  let used = 0;
++  try {
++    if (!fstatSync(fd).isFile()) throw new Error(`${label} must be a regular bounded file`);
++    while (used < data.length) {
++      const got = readSync(fd, data, used, data.length - used, null);
++      if (!got) break;
++      used += got;
++    }
++  } finally { closeSync(fd); }
++  if (used > 64 * 1024) throw new Error(`${label} exceeds max bytes`);
++  const contents = data.subarray(0, used).toString("utf8");
+   try {
+     return JSON.parse(contents);
+   } catch (error) {
+@@ -79,7 +92,7 @@ function requireContextStorageApproval(options: ServiceContextFileOptions): void
+   if (options.storageApprovalPath === undefined) {
+     throw new Error("service context files require --storage-approval");
+   }
+-  const approval = parseLocalStorageApproval(readJsonFile(options.storageApprovalPath, "local storage approval"));
++  const approval = parseLocalStorageApproval(readContextJsonFile(options.storageApprovalPath, "local storage approval"));
+   if (options.grantStorePath !== undefined) {
+     requireLocalStorageApprovalEntry(approval, {
+       purpose: "grant_store",
+@@ -175,14 +188,16 @@ export function loadServiceContextFromFiles(options: ServiceContextFileOptions):
+   requireContextStorageApproval(options);
+   const grantStore: LocalGrantStore | undefined = options.grantStorePath === undefined
+     ? undefined
+-    : parseLocalGrantStore(readJsonFile(options.grantStorePath, "local grant store"));
++    : parseLocalGrantStore(readContextJsonFile(options.grantStorePath, "local grant store"));
+   const accountStore: ServiceAccountStore | undefined = options.accountStorePath === undefined
+     ? undefined
+-    : parseServiceAccountStore(readJsonFile(options.accountStorePath, "service account store"));
++    : parseServiceAccountStore(readContextJsonFile(options.accountStorePath, "service account store"));
+   const routeDriverStore = options.routeDriverStorePath === undefined
+     ? undefined
+-    : parseServiceRouteDriverStore(readJsonFile(options.routeDriverStorePath, "service route driver store"));
++    : parseServiceRouteDriverStore(readContextJsonFile(options.routeDriverStorePath, "service route driver store"));
+   validateRouteDriverTargets(routeDriverStore, accountStore);
++  if (routeDriverStore?.routes.some(route => route.driver === "public_s3_stream") && !options.openPublicS3Stream)
++    throw new Error("public S3 stream requires explicit application admission");
+   if (routeDriverStore !== undefined && options.openSerialLinePort === undefined) {
+     throw new Error("service route driver store requires an explicit serial-line opener");
+   }
+@@ -194,7 +209,8 @@ export function loadServiceContextFromFiles(options: ServiceContextFileOptions):
+     ...(routeDriverStore !== undefined && options.openSerialLinePort !== undefined
+       ? {
+           signerDispatcher: createServiceRouteDispatcher(routeDriverStore, {
+-            openSerialLinePort: options.openSerialLinePort
++            openSerialLinePort: options.openSerialLinePort,
++            openPublicS3Stream: options.openPublicS3Stream
+           })
+         }
+       : {}),
+diff --git a/apps/bridge/service/src/drivers.ts b/apps/bridge/service/src/drivers.ts
+index a069767d..3f5384bb 100644
+--- a/apps/bridge/service/src/drivers.ts
++++ b/apps/bridge/service/src/drivers.ts
+@@ -29,7 +29,11 @@ type ServiceSerialLineRouteDriver = {
+   };
+ };
+ 
+-export type ServiceRouteDriver = ServiceSerialLineRouteDriver;
++type ServicePublicS3StreamRoute = Omit<ServiceSerialLineRouteDriver, "driver" | "serial_line"> & {
++  driver: "public_s3_stream";
++  stream_path: string;
++};
++export type ServiceRouteDriver = ServiceSerialLineRouteDriver | ServicePublicS3StreamRoute;
+ 
+ export type ServiceRouteDriverStore = {
+   format: typeof SERVICE_ROUTE_DRIVER_STORE_FORMAT;
+@@ -40,6 +44,7 @@ export type ServiceRouteDriverStore = {
+ 
+ export type ServiceRouteDriverOptions = {
+   openSerialLinePort: SerialLinePortOpener;
++  openPublicS3Stream?: SerialLinePortOpener;
+ };
+ 
+ const SERIAL_LINE_ROUTE_TYPES = new Set<RouteType>(["esp32_usb_nip46", "custom_hardware_wallet"]);
+@@ -182,6 +187,14 @@ function parseSerialLineRouteDriver(value: Record<string, unknown>, index: numbe
+ 
+ function parseRouteDriver(value: unknown, index: number): ServiceRouteDriver {
+   if (!isRecord(value)) throw new Error(`service route driver ${index} must be an object`);
++  if (value.driver === "public_s3_stream") {
++    if (!hasOnlyKeys(value, ["account_id", "route_type", "transport", "driver", "stream_path"]) ||
++        value.route_type !== "esp32_usb_nip46" || value.transport !== "usb" ||
++        typeof value.stream_path !== "string" || !/^\/tmp\/nsealr-s3-public-[a-z0-9-]{1,48}\.sock$/u.test(value.stream_path))
++      throw new Error("public S3 requires a named local lab stream");
++    return { account_id: requireStableId(value.account_id, "public S3 account_id"),
++      route_type: "esp32_usb_nip46", transport: "usb", driver: "public_s3_stream", stream_path: value.stream_path };
++  }
+   return parseSerialLineRouteDriver(value, index);
+ }
+ 
+@@ -239,6 +252,7 @@ async function dispatchSerialLineRoute(
+       responseTimeoutMs: Math.min(route.serial_line.response_timeout_ms ?? 30_000, dispatch.effective_limits.method.deadline_ms, dispatch.effective_limits.transport.deadline_ms),
+       beforeWrite: dispatch.before_write,
+       abortSignal: dispatch.abort_signal,
++      operationPhase: dispatch.operation_phase,
+       maxFrameBytes: dispatch.effective_limits.transport.frame_bytes,
+       maxWorkBytes: Math.min(dispatch.effective_limits.method.parse_work, dispatch.effective_limits.transport.parse_work)
+     });
+@@ -313,7 +327,13 @@ export function createServiceRouteDispatcher(
+     account_id: route.account_id,
+     route_type: route.route_type,
+     transport: route.transport,
+-    dispatch: async (request) => dispatchSerialLineRoute(route, request, options.openSerialLinePort)
++    dispatch: async (request) => {
++      if (route.driver === "serial_line") return dispatchSerialLineRoute(route, request, options.openSerialLinePort);
++      if (!options.openPublicS3Stream) throw new SignerRouteUnavailableError("public S3 stream has no trusted local fixture admission");
++      return dispatchSerialLineRoute({ ...route, driver: "serial_line", serial_line: {
++        path: route.stream_path, max_ignored_lines: 8, response_timeout_ms: 100000
++      } }, request, options.openPublicS3Stream);
++    }
+   }));
+   return createRouteDispatcher(entries);
+ }
+diff --git a/apps/bridge/service/src/index.ts b/apps/bridge/service/src/index.ts
+index 7d7d5e0b..33b07ed4 100644
+--- a/apps/bridge/service/src/index.ts
++++ b/apps/bridge/service/src/index.ts
+@@ -13,6 +13,7 @@ import {
+ } from "@nsealr/client";
+ import { SerialLineStreamPort, type SerialLinePort } from "@nsealr/transport";
+ import { contextArgsFromCliArgs, loadServiceContextFromFiles } from "./context.js";
++import { loadPublicS3Context } from "./public-s3.js";
+ import {
+   nativeHostInstallApprovalJsonFromArgs,
+   nativeHostInstallExecutionJsonFromArgs,
+@@ -214,6 +215,32 @@ export async function runServiceCli(args: string[]): Promise<void> {
+   }
+   try {
+     const normalizedArgs = args[0] === "--" ? args.slice(1) : args;
++    if (normalizedArgs.includes("--public-s3-lab")) {
++      if (normalizedArgs.filter(arg => arg === "--public-s3-lab").length !== 1) throw new Error("duplicate public S3 opt-in");
++      const session = await loadPublicS3Context(contextArgsFromCliArgs(normalizedArgs.filter(arg => arg !== "--public-s3-lab")));
++      try {
++        writeSync(2, JSON.stringify({ public_s3_stream_open: true, connection_id: session.connectionId }) + "\n");
++        const frame = readNativeFrameFromFd(0);
++        if (!frame) throw new Error("public S3 requires one client request");
++        session.arm();
++        const request = decodeNativeMessage(frame) as { params?: { client?: unknown; request?: unknown } };
++        const output = await runServiceOnceAsync(frame, session.context);
++        await session.close();
++        const reply = decodeNativeMessage(output) as { ok?: boolean; result?: { signer_response?: unknown } };
++        if (reply.ok && reply.result?.signer_response !== undefined) {
++          // Recheck the live approved grant after crypto and actual close.
++          const verified = handleLocalServiceRequest({ version: 1, request_id: "public-s3-final-check",
++            operation: "verify_signer_response", params: { client: request.params?.client,
++              request: request.params?.request, response: reply.result.signer_response } },
++            { grants: session.context.currentGrants!() });
++          if (!verified.ok || !("validation" in verified.result) || !verified.result.validation.valid)
++            throw new Error("public S3 final live grant/response check failed");
++          session.check();
++        }
++        writeSync(1, output);
++      } finally { await session.close(); }
++      return;
++    }
+     if (normalizedArgs.includes("--native-host-manifest")) {
+       writeSync(1, nativeHostManifestJsonFromArgs(args));
+       return;
+diff --git a/packages/client/src/service.ts b/packages/client/src/service.ts
+index 2835bcf2..a2263eef 100644
+--- a/packages/client/src/service.ts
++++ b/packages/client/src/service.ts
+@@ -1,4 +1,6 @@
+ import { sha256Utf8Hex, verifySignedEventResponse } from "@nsealr/core";
++import { assessPublicS3, PUBLIC_S3_IMPLEMENTATION, type PublicS3Fixture } from "./public-s3.js";
++export type { PublicS3Fixture } from "./public-s3.js";
+ import {
+   parseRouteSelectionRequest,
+   selectAccountRoute,
+@@ -68,6 +70,8 @@ export type SignerDispatchRequest = {
+   effective_limits?: EffectiveSignerLimits;
+   /** Local cancellation/deadline signal; never serialized into device JSON. */
+   abort_signal?: AbortSignal;
++  /** Local public experiment instrumentation; never serialized or approval. */
++  operation_phase?: (phase: "active" | "external") => void;
+ };
+ 
+ /** Explicit current adapter observations, supplied locally, never from a wire
+@@ -248,6 +252,10 @@ export type LocalServiceContext = {
+   signerCompatibility?: (route: RouteSelection, request: unknown) => SignerCompatibilitySnapshot;
+   /** Local monotonic milliseconds; peer clocks cannot extend the deadline. */
+   monotonicNow?: () => number | undefined;
++  /** Trusted application opt-in for the named public scalar3 experiment only. */
++  publicS3Fixture?: PublicS3Fixture;
++  /** Reload the approved grant source; snapshots alone are not live revocation. */
++  currentGrants?: () => LocalClientGrant[];
+ };
+ 
+ export type PairingIntent = {
+@@ -1088,7 +1096,42 @@ function prepareSignerDispatch(
+   const cancellation = new AbortController();
+   let timeoutMs: number | undefined;
+   let current = (): void => { if (!active) compatibilityError("runtime_unavailable", "operation is no longer active"); };
+-  if (routeSelection.contract === "nsealr.signing.v2") {
++  const checkGrant = (): void => {
++    const live = context.currentGrants ? { ...context, grants: context.currentGrants() } : context;
++    const authorization = authorizeClient(live, request.params.client, "dispatch_signer_request");
++    if (!authorization.ok) throw new SignerRouteUnavailableError(authorization.error);
++  };
++  const publicFixture = routeSelection.implementation_id === PUBLIC_S3_IMPLEMENTATION ? context.publicS3Fixture : undefined;
++  if (routeSelection.implementation_id === PUBLIC_S3_IMPLEMENTATION) {
++    try {
++      if (!publicFixture || context.now !== undefined) compatibilityError("runtime_unavailable", "public S3 requires current application admission and real grant time");
++      const fixture = publicFixture!;
++      const effective = assessPublicS3(routeSelection, dispatchRequest.request, fixture);
++      if ((pendingDispatches.get(context) ?? 0) >= 1) compatibilityError("runtime_unavailable", "public S3 operation already pending");
++      const selectedAccount = () => (context.accounts ?? []).find(account => account.account_id === routeSelection.account_id);
++      const connection = fixture.connection();
++      if (connection.state !== "open") compatibilityError("runtime_unavailable", "public S3 stream is not open");
++      const identity = (c: ReturnType<PublicS3Fixture["connection"]>) => [c.connection_id, c.generation, c.config_digest];
++      const original = sha256Utf8Hex(JSON.stringify([identity(connection), routeSelection, dispatchRequest.request, selectedAccount()]));
++      fixture.begin();
++      current = () => {
++        if (!active) compatibilityError("runtime_unavailable", "operation is no longer active");
++        checkGrant();
++        fixture.check();
++        assessPublicS3(routeSelection, dispatchRequest.request, fixture);
++        const account = selectAccountRoute(context.accounts ?? [], routeRequest);
++        if (sha256Utf8Hex(JSON.stringify([identity(fixture.connection()), account, dispatchRequest.request, selectedAccount()])) !== original)
++          compatibilityError("runtime_unavailable", "public S3 account/request/connection changed");
++      };
++      current();
++      timeoutMs = fixture.remainingMs();
++      dispatchRequest.before_write = current;
++      dispatchRequest.effective_limits = effective;
++      dispatchRequest.abort_signal = cancellation.signal;
++      dispatchRequest.operation_phase = phase => { fixture.phase(phase); current(); };
++      pendingDispatches.set(context, (pendingDispatches.get(context) ?? 0) + 1);
++    } catch (error) { return { ok: false, response: dispatchFailureResponse(request, error) }; }
++  } else if (routeSelection.contract === "nsealr.signing.v2") {
+     try {
+       if (!context.signerCompatibility) compatibilityError("runtime_unavailable", "current local adapter observations are not configured");
+       const provider = context.signerCompatibility;
+@@ -1108,6 +1151,7 @@ function prepareSignerDispatch(
+       let last = start;
+       current = () => {
+         if (!active) compatibilityError("runtime_unavailable", "operation is no longer active");
++        checkGrant();
+         const now = clock();
+         if (now === undefined || !Number.isFinite(now) || now < last || now >= deadline) compatibilityError("runtime_unavailable", "local deadline expired or clock rolled back/unavailable");
+         last = now;
+@@ -1201,34 +1245,24 @@ function dispatchSignerRequest(
+ ): LocalServiceResponse {
+   const prepared = prepareSignerDispatch(request, context);
+   if (!prepared.ok) return prepared.response;
+-
+-  let signerResponse: unknown;
+   try {
+     prepared.checkCurrent();
+-    signerResponse = prepared.dispatcher(prepared.dispatchRequest);
++    const signerResponse = prepared.dispatcher(prepared.dispatchRequest);
+     if (isPromiseLike(signerResponse)) {
+-      const pendingResponse = prepared.trackPending(signerResponse);
+-      // Observe rejection before any post-dispatch validation can return early.
+-      // The finite reservation still remains held until actual settlement.
+-      pendingResponse.then(undefined, () => undefined);
+-      signerResponse = pendingResponse;
++      prepared.trackPending(signerResponse).then(undefined, () => undefined);
++      prepared.checkCurrent();
++      return errorResponse(request, "signer_dispatch_failed", "async signer dispatcher requires handleLocalServiceRequestAsync");
+     }
+     prepared.checkCurrent();
+-    if (!isPromiseLike(signerResponse)) checkDispatchResponseCapacity(prepared.dispatchRequest, signerResponse);
++    checkDispatchResponseCapacity(prepared.dispatchRequest, signerResponse);
++    const response = dispatchSuccessResponse(request, prepared.expectedPublicKey, signerResponse);
++    prepared.checkCurrent();
++    return response;
+   } catch (error) {
+     return dispatchFailureResponse(request, error);
+   } finally {
+     prepared.release();
+   }
+-
+-  if (isPromiseLike(signerResponse)) {
+-    return errorResponse(
+-      request,
+-      "signer_dispatch_failed",
+-      "async signer dispatcher requires handleLocalServiceRequestAsync"
+-    );
+-  }
+-  return dispatchSuccessResponse(request, prepared.expectedPublicKey, signerResponse);
+ }
+ 
+ async function dispatchSignerRequestAsync(
+@@ -1251,11 +1285,13 @@ async function dispatchSignerRequestAsync(
+     ]);
+     prepared.checkCurrent();
+     checkDispatchResponseCapacity(prepared.dispatchRequest, signerResponse);
++    const response = dispatchSuccessResponse(request, prepared.expectedPublicKey, signerResponse);
++    prepared.checkCurrent();
++    return response;
+   } catch (error) {
+     return dispatchFailureResponse(request, error);
+   } finally {
+     if (timer !== undefined) clearTimeout(timer);
+     prepared.release();
+   }
+-  return dispatchSuccessResponse(request, prepared.expectedPublicKey, signerResponse);
+ }
+diff --git a/packages/policy/src/policy.ts b/packages/policy/src/policy.ts
+index 21d17944..c665f5b4 100644
+--- a/packages/policy/src/policy.ts
++++ b/packages/policy/src/policy.ts
+@@ -463,7 +463,7 @@ const CUSTODY_BY_PROFILE: Record<ProfileId, RouteCustody> = {
+   esp32_no_se: "mcu_wrapped_persistent", custom_board: "custom_se_assisted_persistent"
+ };
+ 
+-function validateRouteSemantics(route: SignerRoute, profile: ProfileId | null): void {
++function validateRouteSemantics(route: SignerRoute, profile: ProfileId | null, implementation?: unknown): void {
+   if (route.type === "external_nip46") {
+     if (profile !== null || route.transport !== "nip46_relay" || route.custody !== "external_signer" || route.trusted_review !== "external_policy" || route.policy_support !== "external") {
+       throw new Error("profile_mismatch: external NIP46 route must not claim a nSealr profile, custody or consent");
+@@ -471,7 +471,8 @@ function validateRouteSemantics(route: SignerRoute, profile: ProfileId | null):
+     return;
+   }
+   if (profile !== PROFILE_BY_ROUTE[route.type]) throw new Error("profile_mismatch: account route/profile do not match");
+-  if (route.custody !== CUSTODY_BY_PROFILE[profile!]) throw new Error("custody_mismatch: no custody fallback is allowed");
++  const session = profile === "esp32_no_se" && implementation === "nsealr.s3.public.scalar3.e7f04215.v1";
++  if (route.custody !== (session ? "volatile_session" : CUSTODY_BY_PROFILE[profile!])) throw new Error("custody_mismatch: no custody fallback is allowed");
+   if (route.transport !== (QR_ROUTE_TYPES.has(route.type) ? "qr" : "usb")) throw new Error("transport_mismatch: profile transport differs");
+   if (route.trusted_review !== "device_display" || route.policy_support !== "manual_only") throw new Error("runtime_unavailable: initial routes require manual local consent without automation");
+ }
+@@ -488,7 +489,7 @@ export function parseAccountDescriptor(value: unknown): AccountDescriptor {
+   if (external && (value.profile !== null || value.implementation_id !== null || value.limits_id !== null)) throw new Error("profile_mismatch: external signer has no nSealr manifest");
+   const implementation = external ? null : requireStringId(value.implementation_id, "implementation_id");
+   const limits = external ? null : requireStringId(value.limits_id, "limits_id");
+-  validateRouteSemantics(route, profile);
++  validateRouteSemantics(route, profile, implementation);
+   assertRecord(value.capabilities, "capabilities");
+   assertOnlyKeys(value.capabilities, ["methods"], "capabilities");
+   const methods = requireStringArray(value.capabilities.methods, "capabilities.methods");
+@@ -1129,7 +1130,7 @@ export function parseRouteSelection(value: unknown): RouteSelection {
+   if (fields.filter((key) => key !== "repository").some((key) => !Object.hasOwn(value, key)) || value.format !== "nsealr.route-selection.v1") throw new Error("route selection format mismatch");
+   if (value.contains_secret_material !== false) throw new Error("route selection contains_secret_material must be false");
+   const route = parseSignerRoute({ type: value.route_type, ...(value.repository !== undefined ? { repository: value.repository } : {}), transport: value.transport, custody: value.custody, trusted_review: value.trusted_review, policy_support: value.policy_support });
+-  validateRouteSemantics(route, value.profile as ProfileId | null);
++  validateRouteSemantics(route, value.profile as ProfileId | null, value.implementation_id);
+   if (value.method_revision !== 1) throw new Error("unsupported_method: unknown method revision");
+   const catalog = operation(String(value.method));
+   if (value.operation_id !== catalog.operation_id) throw new Error("unsupported_method: operation catalog mismatch");
+diff --git a/packages/transport/src/transport.ts b/packages/transport/src/transport.ts
+index 9312b60d..95484104 100644
+--- a/packages/transport/src/transport.ts
++++ b/packages/transport/src/transport.ts
+@@ -66,6 +66,10 @@ export class SerialLineStreamPort implements SerialLinePort {
+   private readonly maxBufferedBytes: number;
+   private readonly maxBufferedLines: number;
+   private readonly encoding: BufferEncoding;
++  private readonly closeCompletion: Promise<void>;
++  private resolveClose!: () => void;
++  private inputClosed = false;
++  private outputClosed = false;
+ 
+   constructor(options: { input: Readable; output: Writable; encoding?: BufferEncoding; maxBufferedBytes?: number; maxBufferedLines?: number }) {
+     this.maxBufferedBytes = this.limit(options.maxBufferedBytes ?? NSEALR_V0_LIMITS.max_serial_frame_bytes, 1_048_576, "maxBufferedBytes");
+@@ -73,6 +77,7 @@ export class SerialLineStreamPort implements SerialLinePort {
+     this.encoding = options.encoding ?? "utf8";
+     this.input = options.input;
+     this.output = options.output;
++    this.closeCompletion = new Promise(resolve => { this.resolveClose = resolve; });
+     if (this.input.destroyed || this.output.destroyed) throw new Error("serial line port stream already closed");
+     try {
+       this.restoreInputDestroy = observeDestruction(this.input, this.onInputClose);
+@@ -128,12 +133,21 @@ export class SerialLineStreamPort implements SerialLinePort {
+       else if (!this.ended || this.cancelWrite) this.fail(new Error("serial line port input closed prematurely"));
+     }
+     this.detachInput();
++    this.inputClosed = true;
++    if (this.output === (this.input as unknown)) this.outputClosed = true;
++    this.completeClose();
+   };
+   private readonly onOutputClose = (): void => {
+     if (!this.inputError) this.fail(this.output.errored ?? new Error("serial line port output closed"));
+     this.detachOutput();
++    this.outputClosed = true;
++    this.completeClose();
+   };
+ 
++  private completeClose(): void {
++    if (this.inputClosed && this.outputClosed) this.resolveClose();
++  }
++
+   writeLine(line: string): Promise<void> {
+     if (this.inputError) return Promise.reject(this.inputError);
+     if (this.cancelWrite) return Promise.reject(new Error("serial line port write already pending"));
+@@ -187,7 +201,10 @@ export class SerialLineStreamPort implements SerialLinePort {
+     } finally { this.reading = false; }
+   }
+ 
+-  close(): void { this.fail(new Error("serial line port closed")); }
++  close(): Promise<void> {
++    this.fail(new Error("serial line port closed"));
++    return this.closeCompletion;
++  }
+ 
+   private fail(error: Error): void {
+     if (this.inputError) return;
+@@ -485,14 +502,16 @@ export class SerialLineTransport implements SignerTransport {
+   private workBytes = 0;
+   private readonly maxWorkBytes: number;
+   private readonly maxFrameBytes: number;
++  private readonly operationPhase?: (phase: "active" | "external") => void;
+ 
+-  constructor(options: { port: SerialLinePort; maxIgnoredLines?: number; responseTimeoutMs?: number; beforeWrite?: () => void; abortSignal?: AbortSignal; maxWorkBytes?: number; maxFrameBytes?: number }) {
++  constructor(options: { port: SerialLinePort; maxIgnoredLines?: number; responseTimeoutMs?: number; beforeWrite?: () => void; abortSignal?: AbortSignal; maxWorkBytes?: number; maxFrameBytes?: number; operationPhase?: (phase: "active" | "external") => void }) {
+     this.port = options.port;
+     this.maxIgnoredLines = options.maxIgnoredLines ?? 32;
+     this.responseTimeoutMs = options.responseTimeoutMs ?? 30_000;
+     if (!Number.isSafeInteger(this.maxIgnoredLines) || this.maxIgnoredLines < 0 || this.maxIgnoredLines > 128) throw new Error("maxIgnoredLines must be an integer in 0..128");
+     if (!Number.isSafeInteger(this.responseTimeoutMs) || this.responseTimeoutMs < 1 || this.responseTimeoutMs > 120_000) throw new Error("responseTimeoutMs must be an integer in 1..120000");
+     this.beforeWrite = options.beforeWrite;
++    this.operationPhase = options.operationPhase;
+     this.abortSignal = options.abortSignal;
+     this.maxWorkBytes = options.maxWorkBytes ?? (this.maxIgnoredLines + 2) * NSEALR_V0_LIMITS.max_serial_frame_bytes;
+     if (!Number.isSafeInteger(this.maxWorkBytes) || this.maxWorkBytes < 1 || this.maxWorkBytes > 1_048_576) throw new Error("maxWorkBytes must be a finite integer in 1..1048576");
+@@ -514,6 +533,7 @@ export class SerialLineTransport implements SignerTransport {
+         this.accountWork(line);
+         channelUsed = true;
+         await this.writeLineWithTimeout(line);
++        this.operationPhase?.("external");
+         for (let ignored = 0; ignored <= this.maxIgnoredLines; ignored += 1) {
+           const responseLine = await this.readLineWithTimeout();
+           if (responseLine === null) {
+@@ -521,6 +541,7 @@ export class SerialLineTransport implements SignerTransport {
+           }
+           this.accountWork(responseLine);
+           if (responseLine.startsWith("nsealr1f:")) {
++            this.operationPhase?.("active");
+             return responseLine;
+           }
+         }

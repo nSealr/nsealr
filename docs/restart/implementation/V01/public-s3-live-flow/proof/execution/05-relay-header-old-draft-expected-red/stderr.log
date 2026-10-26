@@ -1,0 +1,25 @@
+Public S3 setup complete; operation clock starts before dispatch/preflight.
+
+[31m⎯⎯⎯⎯⎯⎯⎯[39m[1m[41m Failed Tests 1 [49m[22m[31m⎯⎯⎯⎯⎯⎯⎯[39m
+
+[41m[1m FAIL [22m[49m apps/bridge/cli/src/public-s3.test.ts[2m > [22mreal Node client→service child→Unix stream; host fixture, no USB/S3[2m > [22mrequires the USB-open plumbing acknowledgement before setup/operation
+[31m[1mAssertionError[22m: expected [ { version: 2, …(3) } ] to have a length of +0 but got 1[39m
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[32m- 0[39m
+[31m+ 1[39m
+
+[36m [2m❯[22m apps/bridge/cli/src/public-s3.test.ts:[2m87:24[22m[39m
+    [90m 85|[39m       await expect(dispatchPublicS3({...f.files,expectedPublicKey:KEY,…
+    [90m 86|[39m         ready:async()=>undefined,operationTimeoutMs:80})).rejects.toTh…
+    [90m 87|[39m       expect(f.writes).toHaveLength(0);expect(existsSync(f.out)).toBe(…
+    [90m   |[39m                        [31m^[39m
+    [90m 88|[39m     }[33m,[39m () [33m=>[39m undefined[33m,[39m [32m"not-a-USB-open-ack\n"[39m)[33m;[39m
+    [90m 89|[39m   })[33m;[39m
+[90m [2m❯[22m lab apps/bridge/cli/src/public-s3.test.ts:[2m52:9[22m[39m
+[90m [2m❯[22m apps/bridge/cli/src/public-s3.test.ts:[2m84:5[22m[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯[22m[39m
+

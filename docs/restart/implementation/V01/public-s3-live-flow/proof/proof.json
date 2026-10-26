@@ -1,0 +1,137 @@
+{
+  "schema": "nsealr.public-s3-host-focused-proof.v1",
+  "author": "/root/p4_optical_review",
+  "source_commit": "05435ceed1f2362fd5729750705e7952a65cb2b3",
+  "base_main": "c3492f9a19f0eab1c1bb978443b0e9b268005bf2",
+  "decision": "READY_FOR_DISTINCT_SOURCE_REVIEW_ONLY",
+  "actual_hardware_new_flow": "NOT_RUN; root owns USB and subsequent actual positive/Reject/cancel observations",
+  "execution_model": "Linux source, service builds and tests; Mac relay syntax checked only; no USB, CI, push, publication or new worktree by author",
+  "focused_green": [
+    {
+      "execution": "06-wired-package-build",
+      "result": "PASS",
+      "elapsed_seconds": 9.973888436332345,
+      "scope": "13 existing package builds plus service and SDK; exact changed package source hashes match final frozen commit, so outputs reused. Final affected service index separately rebuilt13."
+    },
+    {
+      "execution": "07-public-wired-tests",
+      "result": "PASS",
+      "tests": 36,
+      "reused_final_only": [
+        "packages/client/src/public-s3.test.ts:13",
+        "apps/bridge/service/src/public-s3-budget.test.ts:7"
+      ],
+      "note": "Initial16 CLI cases are historical; final17 included in14."
+    },
+    {
+      "execution": "08-affected-existing",
+      "result": "PASS",
+      "tests": 227,
+      "test_files": 9,
+      "note": "Generic client/policy/transport/context/driver/CLI checks and actual close completion. Only changed final public helper/index covered anew in14; original existing tests unchanged."
+    },
+    {
+      "execution": "13-frozen-service-build",
+      "result": "PASS",
+      "elapsed_seconds": 0.6544460188597441,
+      "scope": "Existing build script exact tsc argv for seven service source units; clean source05435 before/after. No unchanged package rebuild."
+    },
+    {
+      "execution": "14-frozen-public-cli-and-service",
+      "result": "PASS",
+      "tests": 27,
+      "test_files": 2,
+      "public_cli_cases": 17,
+      "existing_service_entrypoint_cases": 10,
+      "real_external_wait_observed_ms": 5187,
+      "scope": "Actual Commander -> LocalServiceClient -> real child compiled service -> real Unix socket with TEST public scalar3 responder, not device or physical USB"
+    },
+    {
+      "execution": "15-frozen-typecheck",
+      "result": "PASS",
+      "elapsed_seconds": 1.815502604469657
+    },
+    {
+      "execution": "16-frozen-api-docs",
+      "result": "PASS"
+    },
+    {
+      "execution": "17-frozen-api-review",
+      "result": "PASS"
+    },
+    {
+      "execution": "18-frozen-public-imports",
+      "result": "PASS"
+    }
+  ],
+  "unique_tests_currently_applicable": 264,
+  "unique_count_formula": "227 existing affected (including held-close regression) +13 client fixture +7 budget +17 CLI public; service10 appears in both08 and14 and is counted once",
+  "retained_red": [
+    {
+      "execution": "03-typecheck",
+      "exit": 2,
+      "meaning": "Real new driver union exposed existing test fixtures without narrowing. Added serialRoute assertion/narrowing, did not lower assertions.09 and15 GREEN."
+    },
+    {
+      "execution": "05-relay-header-old-draft-expected-red",
+      "exit": 1,
+      "draft": "04-old-draft-relay-header-red/old-compiled-public-s3.js",
+      "meaning": "Expected RED against saved pre-handshake compiled draft: invalid relay-open marker allowed one USB-operation write. Fixed source requires exact private marker after USB open; final14 passes."
+    },
+    {
+      "execution": "11-setup-eof-old-draft-expected-red",
+      "exit": 1,
+      "draft": "10-old-draft-blocking-input/old-compiled-service-index.js",
+      "meaning": "Expected RED against saved compiled blocking stdin draft: setup EOF remained unprocessed and allowed an operation write. Final async public stdin keeps stream events live, before service admission/write; final14 passes."
+    }
+  ],
+  "source_and_output_binding": "execution/19-source-and-runtime-binding.json; older dirty development runs retain actual hashes/HEAD and source before/after.13..18 require frozen clean source and record host source closure. Runtime outputs read back after checks; no fabricated pre-run artifact snapshot.",
+  "timing": {
+    "variant": "v01.public-external-s3.v1",
+    "absolute_cli_ms": 100000,
+    "absolute_service_ms": 100000,
+    "host_service_active_wall_plus_external_process_cpu_ms": 5000,
+    "setup_cli_ms": 60000,
+    "relay_open_handshake_ms": 5000,
+    "cleanup_grace_ms": 4000,
+    "USER_wall_ms": null,
+    "target_CPU_ms": null,
+    "end_to_end_C5000": "UNAVAILABLE; native leaf unchanged",
+    "origin": "CLI samples before post-Enter dispatch/preflight; service arms before decode/preflight of its one IPC frame. Neither resets origin from bytes or diagnostic progress."
+  },
+  "admission_and_settlement": {
+    "only_published_scalar3": true,
+    "fixed_source_image_and_template": true,
+    "private_original_pin_before_callbacks": true,
+    "default_missing_provider_unavailable": true,
+    "no_reported_caps_or_pagecount_fabricated": true,
+    "get_capabilities_supported": false,
+    "live_grant_and_config_revalidation": true,
+    "one_request_write_no_retry": true,
+    "connection_generation": "Host observed Unix stream only, not authenticated S3 epoch",
+    "before_operation": "Real stream setup/relay USB-open marker and operator Enable/Enter precede LocalServiceClient invocation; input remains async. No operation or authority pending during operator wait.",
+    "eligible_output": "New output file only after full response validation, pin/event verification, live grant/config/budget and actual child exit/pipe EOF/local close; remote USB closure is separately observable by root relay report, not attested by local close.",
+    "queued_bytes_recall": false
+  },
+  "unchanged": [
+    "apps/s3-session",
+    "apps/p4",
+    "crates",
+    "vendor",
+    "native-leaf C5000",
+    "plan/work-items.json",
+    "plan/evidence-index.json",
+    "S04"
+  ],
+  "historical_reuse": "Contract binds source81/HRT original positive+14 reviews and existing e7 physical/client/oracle input. No HRT API adoption or hardware replay. Root standalone e7 Reject is a separate physical run; live CLI/relay Reject remains NOT_RUN.",
+  "remaining": [
+    "Distinct root source/packet review before USB",
+    "Actual root single public live positive plus Reject/cancel/close observations",
+    "Real target CPU/USER meter and product timing",
+    "USB bus reset/DTR/suspend/lifecycle qualification",
+    "ADC-183/entropy quality, real identity, custody/recovery/RAM/debug/panic",
+    "Installer/browser/external client/NIP46 and release gates"
+  ],
+  "criteria_closed": 0,
+  "created_utc": "2026-10-26T18:46:27.940273+00:00"
+}

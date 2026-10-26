@@ -1,0 +1,22 @@
+
+[1m[30m[46m RUN [49m[39m[22m [36mv4.1.5 [39m[90m/home/tux/nsealr/.restart-tools/mac-resume-2026-10-25/client-account-binding[39m
+
+ [31m❯[39m apps/bridge/cli/src/public-s3.test.ts [2m([22m[2m12 tests[22m[2m | [22m[31m1 failed[39m[2m | [22m[33m11 skipped[39m[2m)[22m[32m 139[2mms[22m[39m
+     [2m[90m↓[39m[22m sends nothing during setup, then one fresh request and collects the service before output
+     [2m[90m↓[39m[22m keeps a >5s real external wait distinct from service ACTIVE; no human/targetCPU claim
+     [2m[90m↓[39m[22m gets the pinned public key through the same service path without signing
+[31m     [31m×[31m requires the USB-open plumbing acknowledgement before setup/operation[39m[32m 139[2mms[22m[39m
+     [2m[90m↓[39m[22m rejects a different independent pin before opening/writing
+     [2m[90m↓[39m[22m reloads a revoked grant after Enter and sends nothing
+     [2m[90m↓[39m[22m refuses key substitution without publishing or retry
+     [2m[90m↓[39m[22m refuses request substitution without publishing or retry
+     [2m[90m↓[39m[22m refuses event substitution without publishing or retry
+     [2m[90m↓[39m[22m refuses checksum substitution without publishing or retry
+     [2m[90m↓[39m[22m revocation during external work suppresses an otherwise valid result
+     [2m[90m↓[39m[22m times out the operation and closes the only child/stream without retry
+
+[2m Test Files [22m [1m[31m1 failed[39m[22m[90m (1)[39m
+[2m      Tests [22m [1m[31m1 failed[39m[22m[2m | [22m[33m11 skipped[39m[90m (12)[39m
+[2m   Start at [22m 19:21:27
+[2m   Duration [22m 344ms[2m (transform 92ms, setup 0ms, import 131ms, tests 139ms, environment 0ms)[22m
+
