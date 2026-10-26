@@ -29,6 +29,7 @@
 #undef PROGMEM
 extern "C" {
 struct S3ExchangeResult { int32_t status; uint32_t length; };
+static_assert(sizeof(S3ExchangeResult)==8,"Rust/C result layout");
 using PresentCallback=int32_t(*)(uint32_t,uint32_t,uint32_t,const uint8_t*,size_t,const uint8_t*,size_t,const uint8_t*,size_t);
 using NowCallback=int32_t(*)(uint64_t*);
 using CancelCallback=int32_t(*)();
@@ -253,7 +254,7 @@ extern "C" void app_main() {
                 uint64_t now=0;
                 // No display/IO callback between the final local sample and bounded TX.
                 const bool release=trusted_now(&now)==0&&now<deadline_seconds&&!cancelled();
-                const int sent=release&&r.length>0?
+                const int sent=release&&r.length>0&&r.length<=sizeof(response)?
                     usb_serial_jtag_write_bytes(response,r.length,pdMS_TO_TICKS(200)):0;
                 std::memset(response,0,sizeof(response));
                 menu.enabled=false;discard_input();idle=SessionGesture{};
