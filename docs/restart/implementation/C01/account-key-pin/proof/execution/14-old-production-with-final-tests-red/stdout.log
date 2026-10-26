@@ -1,0 +1,48 @@
+
+[1m[30m[46m RUN [49m[39m[22m [36mv4.1.5 [39m[90m/home/tux/nsealr/.restart-tools/mac-resume-2026-10-25/client-account-binding[39m
+
+ [31m❯[39m packages/client/src/service.test.ts [2m([22m[2m38 tests[22m[2m | [22m[31m6 failed[39m[2m | [22m[33m28 skipped[39m[2m)[22m[32m 72[2mms[22m[39m
+     [2m[90m↓[39m[22m parses local client identities through the shared origin boundary
+     [2m[90m↓[39m[22m rejects ambiguous local client identities before pairing or route checks
+     [2m[90m↓[39m[22m reports secretless service status and pairing requirement
+     [2m[90m↓[39m[22m creates a deterministic pairing intent without approving the client
+     [2m[90m↓[39m[22m turns a manually approved pairing intent into an in-memory grant
+     [2m[90m↓[39m[22m rejects tampered pairing intents and invalid approval expiry
+     [2m[90m↓[39m[22m rejects validation requests from unpaired clients before parsing signer payloads
+     [2m[90m↓[39m[22m validates signer requests only after explicit in-memory authorization
+     [2m[90m↓[39m[22m selects a secretless account route only after explicit in-memory authorization
+     [2m[90m↓[39m[22m rejects revoked, expired, and operation-scoped pairings deterministically
+     [2m[90m↓[39m[22m uses the latest matching in-memory grant when grant history is supplied
+     [2m[90m↓[39m[22m verifies signer responses against their original request
+     [2m[90m↓[39m[22m dispatches signer requests only through an explicit route dispatcher
+     [2m[90m↓[39m[22m rejects retired routes before invoking any signer dispatcher
+     [2m[90m↓[39m[22m refuses host acknowledgement bypass while preserving active dispatch
+     [2m[90m↓[39m[22m rejects external review acknowledgement on non-display-less dispatch routes
+     [2m[90m↓[39m[22m matches the shared route-refusal contract for every signer route
+     [2m[90m↓[39m[22m rejects malformed external review acknowledgements before route dispatch
+     [2m[90m↓[39m[22m keeps external NIP-46 routes as secretless adapter metadata
+     [2m[90m↓[39m[22m builds route-aware dispatchers without opening real transports
+     [2m[90m↓[39m[22m reports unavailable or ambiguous route dispatcher registry matches deterministically
+     [2m[90m↓[39m[22m reports signer transport failures with deterministic transport codes
+     [2m[90m↓[39m[22m awaits async signer dispatchers through the async service boundary
+     [2m[90m↓[39m[22m authorizes both dispatch entrypoints before compatibility or adapter work
+     [2m[90m↓[39m[22m keeps async signer dispatchers out of the synchronous service boundary
+     [2m[90m↓[39m[22m rejects unsafe dispatch input before route dispatch
+     [2m[90m↓[39m[22m rejects route/request mismatches and malformed dispatch responses
+     [2m[90m↓[39m[22m rejects malformed local service requests deterministically
+     [32m✓[39m keeps the matching-key positive unchanged[32m 30[2mms[22m[39m
+     [32m✓[39m keeps the unchanged valid-foreign-response control rejected[32m 4[2mms[22m[39m
+[31m     [31m×[31m rejects valid foreign fixture after 'changed copy key'[39m[32m 8[2mms[22m[39m
+[31m     [31m×[31m rejects valid foreign fixture after 'replaced route copy'[39m[32m 4[2mms[22m[39m
+[31m     [31m×[31m rejects valid foreign fixture after 'removed copy key'[39m[32m 5[2mms[22m[39m
+     [32m✓[39m keeps the matching-key positive unchanged[32m 4[2mms[22m[39m
+     [32m✓[39m keeps the unchanged valid-foreign-response control rejected[32m 3[2mms[22m[39m
+[31m     [31m×[31m rejects valid foreign fixture after 'changed copy key'[39m[32m 4[2mms[22m[39m
+[31m     [31m×[31m rejects valid foreign fixture after 'replaced route copy'[39m[32m 4[2mms[22m[39m
+[31m     [31m×[31m rejects valid foreign fixture after 'removed copy key'[39m[32m 5[2mms[22m[39m
+
+[2m Test Files [22m [1m[31m1 failed[39m[22m[90m (1)[39m
+[2m      Tests [22m [1m[31m6 failed[39m[22m[2m | [22m[1m[32m4 passed[39m[22m[2m | [22m[33m28 skipped[39m[90m (38)[39m
+[2m   Start at [22m 12:57:53
+[2m   Duration [22m 263ms[2m (transform 79ms, setup 0ms, import 121ms, tests 72ms, environment 0ms)[22m
+

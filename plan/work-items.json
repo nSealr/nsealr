@@ -9978,7 +9978,28 @@
       "reviewer": null,
       "review_verdict": null,
       "result_artifacts": [],
-      "requires_physical_evidence": true
+      "requires_physical_evidence": true,
+      "current_checkpoint": {
+        "state": "HOST_ACCOUNT_KEY_PIN_COMPONENT_REVIEWED_INTEGRATION_PENDING",
+        "source": "b2d9875aca08c8811cbcc3081560304a8a13e8ce",
+        "delivery": "8e356d3fd6c22e8b238ee9c3c0e72eb8f4f01cb5",
+        "base": "de388c9548bc04cdb44ea8ccd2197b2ab29befab",
+        "evidence": "docs/restart/implementation/C01/account-key-pin",
+        "manifest_sha256": "984d12851b7c2c736c364eae938b5360fa05cc4fa456548838e8a339efb30b61",
+        "review": {
+          "path": "docs/restart/implementation/reviews/C01-account-key-pin/review.json",
+          "sha256": "f8882aec0488d31d5110f31ceea8a95d2315d59939ef07d8dc1af4dc63d42eb4",
+          "reviewer": "/root/p4_optical_review",
+          "verdict": "PASS_BOUNDED_ACCOUNT_KEY_PIN_SOURCE_AND_REUSED_PROOF"
+        },
+        "meaning": "Private original public-key pin across sync/async dispatcher callbacks. Six expected old-code RED failures, ten GREEN regressions and79 affected checks; same-process TCB invariant repair, no demonstrated stock USB exploit. Protected PR and resulting-main gates remain pending.",
+        "criteria_closed": 0,
+        "physical_admission": false,
+        "limits": [
+          "No general isolation from arbitrary same-process TCB code",
+          "No physical device identity, external client interoperability, complete account lifecycle, custody or human-time qualification"
+        ]
+      }
     },
     {
       "id": "C02",
