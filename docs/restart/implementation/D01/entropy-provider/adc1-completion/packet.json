@@ -1,0 +1,449 @@
+{
+  "schema": "nsealr.s3-public-adc1-completion-packet.v1",
+  "created_utc": "2026-10-26T16:43:17.067602+00:00",
+  "source_commit": "e7f04215fc97808acdafdbf9420f6ef6d0102c5b",
+  "compiled_source_commit": "e7f04215fc97808acdafdbf9420f6ef6d0102c5b",
+  "branch": "implementation/s3-native-session",
+  "status": "SOURCE/HOST FAULTS/BUILD ONLY; root distinct review and one finite public hardware pass pending",
+  "sdk": {
+    "version": "ESP-IDF5.3",
+    "commit": "e0991facf5ecb362af6aac1fae972139eb38d2e4",
+    "xtensa_gcc": "13.2.0 esp-13.2.0_20240530",
+    "rust_release": "esp-rs1.97.0.0",
+    "rustc_commit": "8ea53bcd7",
+    "LLVM": "21.1.3",
+    "esptool_build_inspection": "4.12.0",
+    "python_lock_receipt": "34-native-idf-python-lock"
+  },
+  "dependencies": {
+    "name": "espressif/esp_tinyusb",
+    "version": "3.0.0",
+    "repository": "https://github.com/espressif/esp-usb",
+    "repository_path": "device/esp_tinyusb",
+    "commit": "68bf7f9613dbb1a31094fdb903209ae3e4bf388d",
+    "archive_sha256": "af8bc85bc4e23ea1fc3be5b4b352f2100ed663e642aec5d62a333d4a17443b4b",
+    "registry_component_hash": "0ff29f6113c4922691b3d7eee2f29af5fb98b799ef8b198a2956328f7c2296a9",
+    "manifest_sha256": "d3b0800b83099a4fb13139b463bebea93995593244daaf491fef75216bd80b4f",
+    "source_members": 439,
+    "idf_commit": "e0991facf5ecb362af6aac1fae972139eb38d2e4",
+    "admission": "All members and exact set validated against official registry CHECKSUMS; existing receipt75, rechecked before the affected build. No component-manager resolution."
+  },
+  "flash": {
+    "chip": "esp32s3",
+    "mode": "dio",
+    "frequency": "80m",
+    "size": "16MB",
+    "files": [
+      {
+        "offset": "0x0",
+        "file": "bootloader.bin"
+      },
+      {
+        "offset": "0x8000",
+        "file": "partitions.bin"
+      },
+      {
+        "offset": "0x10000",
+        "file": "firmware.bin"
+      }
+    ],
+    "no_boot_app0": true,
+    "operator": "root only; no USB/flash by author"
+  },
+  "files": [
+    {
+      "file": "bootloader.bin",
+      "bytes": 14480,
+      "sha256": "a7f9187bd1880d2ed9f7b44b7f0c0f10095d7dc55fb9215bdcf81fa11cf2e830"
+    },
+    {
+      "file": "partitions.bin",
+      "bytes": 3072,
+      "sha256": "05c350a14c51f248b30b8245e5b22fc8bb64a781152141247c7f2687d39da629"
+    },
+    {
+      "file": "firmware.bin",
+      "bytes": 449600,
+      "sha256": "7943dbcf4a1e389718b1959086487b6b13cdb50bb0f577ced9d4539c6d1fd7da"
+    },
+    {
+      "file": "firmware.elf",
+      "bytes": 4275076,
+      "sha256": "78e1e5a202a6a67a5ac5b50e8fc919e0c257290105e7c73e29f167549d40eac4"
+    },
+    {
+      "file": "firmware.map",
+      "bytes": 5352276,
+      "sha256": "bdf6629f42fd8fa6b1204ee913266231981c5074a57199094adb3a5af030e2ce"
+    },
+    {
+      "file": "flasher_args.json",
+      "bytes": 939,
+      "sha256": "8264c29f3176516ad66dca941376f8a3b32275737df653e50bf1f8a15f1783d8"
+    },
+    {
+      "file": "flash_args",
+      "bytes": 161,
+      "sha256": "0119fd3b322a1daf35f57ae1b1376e991d9df2378649e0ec76caa9e17947d9df"
+    },
+    {
+      "file": "sdkconfig",
+      "bytes": 56435,
+      "sha256": "535ad94182dc8a94aab794b23d1a00bcf718c1897f4a9188aa5d3669d580cf73"
+    },
+    {
+      "file": "sdkconfig.h",
+      "bytes": 39726,
+      "sha256": "a37f5b9e0b35c72c256890df7128e34929e3ba80d4ee81ed3104af11a7ccbc57"
+    },
+    {
+      "file": "sdkconfig.json",
+      "bytes": 44407,
+      "sha256": "ecda81a0f101478a64c10ddd0e98e65c9acfb2745fb7ba8eea4af78917a00082"
+    },
+    {
+      "file": "sdkconfig.cmake",
+      "bytes": 95253,
+      "sha256": "4b0fae30be19e95eb3352fcd0f4e0261c91c82a6b674d4c2f08b0f6d0c3ba399"
+    },
+    {
+      "file": "project_description.json",
+      "bytes": 182642,
+      "sha256": "9267886d475fe7b32564950fda6ee935cd4a87ddb9e29ce72794e5d2203e905d"
+    },
+    {
+      "file": "compile_commands.json",
+      "bytes": 5156180,
+      "sha256": "134ff9e85bd4bf5841f2bdf204500870deb65e82c30dfcac681a85cc31070130"
+    },
+    {
+      "file": "CMakeCache.txt",
+      "bytes": 27099,
+      "sha256": "1e53006b1c92ac491f8cca0dee5441311ea30376e3c9e0fc91dcbdc5ac7bf97a"
+    },
+    {
+      "file": "rust-core.a",
+      "bytes": 2787084,
+      "sha256": "9b8ba1a08aa3094b34d7a0ec392b64095d17be384576dce2a4eaf96906a6452b"
+    },
+    {
+      "file": "esp_tinyusb.a",
+      "bytes": 809386,
+      "sha256": "05bbcad63b96d1e4e43dfdf370cd3e35a83f8ad6f3c27d011d72d56d580b33e9"
+    }
+  ],
+  "receipts": {
+    "114-otg-public-exact-component-preflight": {
+      "exit": 0,
+      "seconds": 0.5101640960201621,
+      "result_sha256": "95a05f4715df43cb8c8bf97154699d5a6755739a5d3cbed4225b70ea011d1498",
+      "stdout_sha256": "41ac412d7b220019c29f34a4b91d8069b20d2871ca0a59004d2ece5e2696ff69",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "116-otg-public-reset-barrier-test-build": {
+      "exit": 0,
+      "seconds": 0.5107226120308042,
+      "result_sha256": "101e26e0837ba4dc3ec3c8487878353696b1070f286584406410c417a01dd98c",
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "117-otg-public-reset-barrier-test-run": {
+      "exit": 0,
+      "seconds": 0.5112467417493463,
+      "result_sha256": "1f3b98b70e200d82ee7a977bac6167e70a7e1d5c1536e243a0e72bf68a70faca",
+      "stdout_sha256": "009bd02a08edcc183b1d1247e31f90abb46089f522b37d2c848299281f37815d",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "128-s3-entropy-provider-host-build": {
+      "exit": 0,
+      "seconds": 0.5109067857265472,
+      "result_sha256": "4bb4412a171ee1bf88827aec827dbdd57e37302f45a4bc39b3d23bb08e960b92",
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "129-s3-entropy-provider-host-run": {
+      "exit": 0,
+      "seconds": 0.5105012701824307,
+      "result_sha256": "91e5e012c5670ec5f6d0ce3aca494ca39f55c23b2ed08416ab1fb10f87de8e97",
+      "stdout_sha256": "683e948ce39b435b949d022da0a2ef3de252b82f0f9abce132ff5f246a78e9ce",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "130-s3-entropy-private-adapter-format": {
+      "exit": 0,
+      "seconds": 0.513824112713337,
+      "result_sha256": "79f28db8946ab88f8aaf7b3b242e06a0e16761c6d52b536386e9f481204be111",
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "131-s3-entropy-private-adapter-tests": {
+      "exit": 0,
+      "seconds": 0.5108855674043298,
+      "result_sha256": "5f7eb9d1eb03ba838c723a90c8491927a80a08f3af5cf3e7df81162514e2fe85",
+      "stdout_sha256": "5d97c85a2e6b090db945bea4f331e98ea35d96761099076b6df1b8996dcb26c6",
+      "stderr_sha256": "6adbcd74af900baeea25380c51ffd6af5c8a964957f1672e695ea3f7a656dc09"
+    },
+    "132-s3-entropy-native-private-adapter-build": {
+      "exit": 0,
+      "seconds": 0.511385552585125,
+      "result_sha256": "3ca0c549b64316756b26fcbf68a7c9571e05dc77ba95d67d5c7506cfa87586ea",
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "97b49463c1bd5bce30c2440da924bc14e622791dc3e418a4df882b0f4b5d2125"
+    },
+    "133-s3-entropy-budget-rcc-host-build": {
+      "exit": 0,
+      "seconds": 0.51096863579005,
+      "result_sha256": "e509fc9115925e890b9e90f80ae4ad50e758580223175ae99283c6fecb53f01d",
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "134-s3-entropy-budget-rcc-host-run": {
+      "exit": 0,
+      "seconds": 0.5112907430157065,
+      "result_sha256": "077bcba91ecbe9600f08ca0d16d7905e53ef3a896b5ccba0308fb3a853ebd76a",
+      "stdout_sha256": "683e948ce39b435b949d022da0a2ef3de252b82f0f9abce132ff5f246a78e9ce",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "135-s3-entropy-sdk-app-build": {
+      "exit": 2,
+      "seconds": 2.5528173968195915,
+      "result_sha256": "4558f78efeb2cf6a8eb49160e42790274c49294569e3b55dd083f5863a4f456f",
+      "stdout_sha256": "e518b35ab76592614d5e1f81ff8834e3d0affcf26387e6a7526edfe5a309f969",
+      "stderr_sha256": "31b6cee78934d24e4012431ce0cae0e21f9a72045436d83d5b78ba8e8d89b50b"
+    },
+    "136-s3-entropy-target-format-fixed-app-build": {
+      "exit": 0,
+      "seconds": 3.573065124452114,
+      "result_sha256": "9a2773ec7d46a6d8f9ff065cd54968387132d0ce753ada36406efe5dd6ff4274",
+      "stdout_sha256": "f7a2cf079e1df56c3b5adc4e53a15f147a11adc2f5a0b1e3bca13630a4b9b997",
+      "stderr_sha256": "f409f3d05bf9942c35a19331b3a47a605565c5cba2d0a9898b2c4301681ddc90"
+    },
+    "137-s3-usb-power-existing-plan-validator": {
+      "exit": 0,
+      "seconds": 0.5108622536063194,
+      "result_sha256": "cefab5177916d02673dfdd9dd7dfe812f9f4634d1e4bbdfe07c833ea88a53764",
+      "stdout_sha256": "5980d15f4ebd04675b98682ab9d1335eebe5835ac675e152b1261db501d9d3e4",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "138-s3-usb-power-existing-evidence-validator": {
+      "exit": 0,
+      "seconds": 0.5111177125945687,
+      "result_sha256": "b53764bccb741c2d6edd23c69d19dea9c3112056f85adf26b6a66b358d76f311",
+      "stdout_sha256": "138790849cdcf7f3e23898c363e56fd327728e56d6e357aa838c9a78472114c5",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "139-s3-entropy-final-supplied-metric-app-build": {
+      "exit": 0,
+      "seconds": 4.082613280043006,
+      "result_sha256": "d2d6faae872d95821d5bcfe3010386ae32e0135412879b22758f00a281e33417",
+      "stdout_sha256": "8a6649dc49859bf95c3d85669712ea17cbf83a28bfe1150d5035aba85001aecd",
+      "stderr_sha256": "f409f3d05bf9942c35a19331b3a47a605565c5cba2d0a9898b2c4301681ddc90"
+    },
+    "140-s3-entropy-final-app-image-info": {
+      "exit": 0,
+      "seconds": 0.5100916586816311,
+      "result_sha256": "4d901dee78a3bc56b05e4f67c02ebebf0a0ec21164691594bfcfeb44dd8613f5",
+      "stdout_sha256": "d2b13126140151405d791d7ed7a0ec2c00c72d37976cd2df2a3fa277cc5a3ebe",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "141-s3-entropy-final-boot-image-info": {
+      "exit": 0,
+      "seconds": 0.51047732681036,
+      "result_sha256": "50b618245144a8333772a699cae6a937d1fdd35cb8668d62c10ad0f0010cfe89",
+      "stdout_sha256": "4c592d1b1088578ddf4678cfcb4a019c98a6f8a54833534c51b46eb395ad343c",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "142-s3-entropy-final-linked-defined": {
+      "exit": 0,
+      "seconds": 0.5130143901333213,
+      "result_sha256": "ce017dad5399d4ea9fce119a0faf03c023aeef64cae98f9368fca1a8918983a2",
+      "stdout_sha256": "b47e184e3e118da3fadb43df0ae0a8dcac4b1bfd96ec6f49bd42435a779ceb9c",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "143-s3-entropy-final-linked-undefined": {
+      "exit": 0,
+      "seconds": 0.5110506396740675,
+      "result_sha256": "df0b43a7fff8df5a04fa0bf1a222d7866fb89dc5f011e7c07547818b75675e53",
+      "stdout_sha256": "fd382a7eb088bebdcc0cbd6b66932581ad7f6b887ba91bed1f8cf5420730bf97",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "144-s3-entropy-final-elf-sections-symbols": {
+      "exit": 0,
+      "seconds": 0.5120126996189356,
+      "result_sha256": "a5765c5fd01110f081ae9d00de451d3eb8ebba493725cb66c3c7a4de67bd9e80",
+      "stdout_sha256": "eac176934061e0788deb5ed25fc6a874a6a80cbcfb3cb9d09dc43fc94ca8d424",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "145-s3-entropy-final-actual-macros": {
+      "exit": 0,
+      "seconds": 0.5108548728749156,
+      "result_sha256": "e383b16725d8c08f5a67f449e3fc0ce811b4fd3f750116cbae3ef2f669da78e4",
+      "stdout_sha256": "c09385c4960c599bdf1e8258102453e0111b8602a10c2321571cc66a38b7f624",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "146-s3-entropy-selected-disassembly": {
+      "exit": 0,
+      "seconds": 0.5112189771607518,
+      "result_sha256": "24e5d04f2ee771a68a5e1f44df674309e9ebd58292eb62ba28d2ac410a072fc5",
+      "stdout_sha256": "6e067f414f7c5b2566d01d931aa955eb58b67b72e5b61cc11cfaf2300a91d4aa",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "147-s3-entropy-exact-selected-functions": {
+      "exit": 0,
+      "seconds": 0.510707882232964,
+      "result_sha256": "7118facda70dc3a17bc9fd56ab593a4ad4f985cb660e45435a104bca71007206",
+      "stdout_sha256": "11432ac2cd6fe9059cb5bfbb8c14f1ed2638cde25b04a6a1583d0fc88372728b",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "148-s3-entropy-direct-linked-rng-calls": {
+      "exit": 0,
+      "seconds": 0.5106448549777269,
+      "result_sha256": "25826a5608bfdf4135eaf18fa7c064686c4d8bf17e2cb877e0198343ab9f4269",
+      "stdout_sha256": "87a7a02f12da3cbf4c2c4674c98b83a5056deadfe9c0e51044b845375b9275c0",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "149-s3-entropy-packet-assembly": {
+      "exit": 1,
+      "seconds": 1.021053547039628,
+      "result_sha256": "74b1723a50db4190c9cc16dba833dff62a93d15e52230ac378da406c05b190c8",
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "1296556ca3b7dd340c5909340ad47444c9c681c0b22c293dd5dd0f2c5f474360"
+    },
+    "150-s3-entropy-packet-corrected-header-path": {
+      "exit": 0,
+      "seconds": 0.5107266400009394,
+      "result_sha256": "82ae45258ac22624552963b8bc793a9019ecaff94cb44e905aa2872b59e6304f",
+      "stdout_sha256": "7dc1ebc98652fc53411d4a60e6e6072d5517e6c1197ca80a36e45ba15b16d33a",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "151-s3-entropy-final-packet-integrity": {
+      "exit": 0,
+      "seconds": 0.5109899723902345,
+      "result_sha256": "59e9e414eacb574b34c0387237419fb8b8dc2a0f8eacde2f12a507c0bffbd6d0",
+      "stdout_sha256": "c37af27815600ef622d0809c59d54a6a9097a746dd6a3530f3ca87c45bbf1041",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "152-s3-adc1-progress-provider-host-build": {
+      "exit": 0,
+      "seconds": 0.5110477823764086,
+      "result_sha256": "0d0f250108b105ce2ad7a5102aaa65dc10187ccff9490cc95fe0e3196aab0621",
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "153-s3-adc1-progress-provider-host-run": {
+      "exit": 0,
+      "seconds": 0.5114624565467238,
+      "result_sha256": "79ce8fea91046bb8f2cdc6a588b6438630e57ef0c2483d878a45387de0adf8d7",
+      "stdout_sha256": "4fcfa71ba721643965f428bd566dac8a9f50b3dd940068ff649c8d7dd48d7ca0",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "154-s3-adc1-progress-sdk-app-build": {
+      "exit": 0,
+      "seconds": 4.083377820439637,
+      "result_sha256": "9efb36d34f498a5d9384d531387e650e415ba48105f82035bf2fe429233351c6",
+      "stdout_sha256": "4e5122c87e5ed03fa53a1499a1e9e33f89f72d5ac7f0c442596ea8a653b9bf2c",
+      "stderr_sha256": "f409f3d05bf9942c35a19331b3a47a605565c5cba2d0a9898b2c4301681ddc90"
+    },
+    "155-s3-adc1-progress-app-image-info": {
+      "exit": 0,
+      "seconds": 0.5104278922080994,
+      "result_sha256": "0edd74e5b737c189de77993b2afa43835720808ec2c3368dc748a8c0e082a386",
+      "stdout_sha256": "ffad1932ba656cf5a4585d01e0636266cdbd42fc580343ab101f8082422227e3",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "156-s3-adc1-progress-linked-defined": {
+      "exit": 0,
+      "seconds": 0.5110097397118807,
+      "result_sha256": "1bcb3d7ee184e8060bf41b63a1f7c2c4cce83ed7c7831c3b05e66d2c71f48b06",
+      "stdout_sha256": "a4d0072ea9f3771e1ba9de6d0a1546d82767f3376009bfc97c148f646d2642cc",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "157-s3-adc1-progress-linked-undefined": {
+      "exit": 0,
+      "seconds": 0.5109780998900533,
+      "result_sha256": "7cd75fffb661133bceb890ba2f8ad6743b6688c1df3dcedfecd6354cb3f97a51",
+      "stdout_sha256": "fd382a7eb088bebdcc0cbd6b66932581ad7f6b887ba91bed1f8cf5420730bf97",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "158-s3-adc1-progress-elf-sections-symbols": {
+      "exit": 0,
+      "seconds": 0.5104503836482763,
+      "result_sha256": "0412642c7a7d1d56e9939e18f1165e87f6076a3fa9b25eb365238fa370e21a6a",
+      "stdout_sha256": "1c3c3daba8f6881ce36f90d41f89f4910b9b49f8363d088dbd527078b3602e54",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "159-s3-adc1-progress-selected-functions": {
+      "exit": 1,
+      "seconds": 0.5113630089908838,
+      "result_sha256": "0bab4603a3bf1d3402ab435f7f195511d849d7eba0229d2d3722f0508d78a6b0",
+      "stdout_sha256": "df179f5f5bb37688d8752fab368997bff5a8e0e0a66b1345bbdbfe39bd20f2a5",
+      "stderr_sha256": "8817ecebba1d61065879b5c6357522d331e879e6b3286a48553965eabf5d7ad5"
+    },
+    "160-s3-adc1-progress-direct-rng-calls": {
+      "exit": 0,
+      "seconds": 0.5110950786620378,
+      "result_sha256": "5ad0040e0899adee888975244ce8e66599698d6d6dbc5740cd57ac5e9267b76e",
+      "stdout_sha256": "b07d89f9e3ad43e4aaa5ca35a8fcab0dc26f959f204b0f43a0c560bd2ad0a7ab",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "161-s3-adc1-progress-selected-address-groups": {
+      "exit": 0,
+      "seconds": 0.5156894139945507,
+      "result_sha256": "6b91c1cfd55a7f743fc82d8b2ac7fbb17f81550ef3f0a5da98e1b39d3dc7cba4",
+      "stdout_sha256": "91e7340554e7cbc1915f74ab9f126ffd4115bf83f6fa385c83aa19df410739eb",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "162-s3-adc1-completion-packet-assembly": {
+      "exit": 1,
+      "seconds": 0.5107920821756124,
+      "result_sha256": "45ffaa548e88b0d876cfd865282a1d59d3c45b20b46674795293da2ac7834200",
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "0925301c582f5c6720a8f682645e1309ff7d8b9099029e6930fc7dbc2eb85d33"
+    },
+    "163-s3-adc1-completion-packet-version-binding": {
+      "exit": 0,
+      "seconds": 1.0214224951341748,
+      "result_sha256": "0dffa10b40a76d781b3a422a89c9950e0c432fca4c1697a8bf63fce2c62f4753",
+      "stdout_sha256": "b0837d0d5b15ba16d9a1c26bf2c30b15e67cf9b5aa2cfa857390b0dbf4f337ef",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  },
+  "tests": {
+    "current_provider_checks": 3485,
+    "current_records": [
+      152,
+      153
+    ],
+    "reused": "Rust14 from131, USB84 from116/117, dependency439members114, prior validators137/138; core/FFI/USB/SDK unchanged; no repeated campaign or Rust build",
+    "duplicate_historical": "133/134 duplicated128/129 and add no coverage"
+  },
+  "failures_preserved": {
+    "135": "Target code formatting: misleading indentation and Xtensa uint32_t printf type. Fixed9df; final139 passes. No SDK failure.",
+    "149": "Packet assembler used nonexistent generic hal/include regi2c path; corrected to actual platform_port/include. No product source or build changed. Original assembler/log retained.",
+    "146": "GNU objdump repeated --disassemble options only printed the last target; valid public auxiliary body only.147 invokes each exact mangled function independently and asserts body presence.",
+    "packaging_python": "Outer system Python lacked elftools after140–145; no target command failed or was repeated.147 and packet use existing SDK venv with pyelftools0.33.",
+    "162": "Packet expected entire compile_commands byte equality; only esp_app_desc PROJECT_VER changed correctly08d to e7.163 checks all665 records, permits only that exact version token, and preserves original assertion/log; no product/build change.",
+    "159": "Inspection selector expected a particular alias name, but compiler folded two lambda symbols to one body/address.161 groups by address/size and retains aliases; no firmware/source/build change. Original selector/log preserved."
+  },
+  "hardware_expected": {
+    "boot": "Wait for CDC configured/DTR; fresh GPIO0 Skip / GPIO14 Run. Run once, up to4x32 public draws, stop at first failure; fresh acknowledgement then scalar3 public workflow",
+    "draws": "Diagnostic attempt budget4 plus at most1 NEW auxiliary attempt per CPU boot, including failures; no retry-until-green",
+    "readbacks": "s3-public-rng-v1 (status/words/supplied/elapsed/banks/refs), s3-public-rng-reg-v1;32byte public-not-identity only on status0; progress=pre/post d/f only after independent observed0to1, initial1 permitted after successful clear; prior raw14000 remains diagnostic",
+    "failure": "Typed failure produces no auxiliary/fallback/signature; restart required after auxiliary failure. Nonreturning SDK call is not hard bounded by between-call50ms checks",
+    "root_only": "One persistent CDC handle, capture full bounded diagnostic and at most1 public roundtrip with explicit expected key; record main/USB watermarks and display/buttons. Unavailable source is a valid negative, not a reason to repeat"
+  },
+  "not_admitted": [
+    "identity import/generation/backup/recovery",
+    "entropy_ok/production source qualification from four samples",
+    "ADC183 exemption",
+    "wholeRAM/register/cache erasure",
+    "RF-off measurement or all reset/debug/ROM domains",
+    "C01/H01 task closure or device readiness"
+  ],
+  "power": "S3 product USB-only, no battery/supercap requirement; E5 not applicable. Future real session ends on power loss and needs local reload; scalar3 auto fixture does not prove that.",
+  "transport_limits": "CDC queue acceptance is not host delivery; already queued prefix/full response cannot be recalled. Existing USB event-loss/reset/RAM limits remain; no secret endpoints added.",
+  "warnings": "Upstream manager-disabled/component/minimum-CMake/GNU-stack warnings retained in logs; no new SDK/vendor/WDT workaround",
+  "delta_base": "f65e8aa9b8917821e25a80d9d541bba29a9973a7",
+  "current_build": "154 sole affected target build PASS; source e7f04215",
+  "historical_negatives": "08d real one-aux Health refusal726b/raw0d575c preserved; no four-draw success, RNG-stuck diagnosis or source-quality conclusion",
+  "completion_phases": "progress=pre/post hex:bit0 initial read,bit1 initial1,bit2 observed clear0,bit3 fresh1. Successful d/f; phase0 unknown/unreached. Raw stable14000 alone never replaces both witnesses. Global50ms budget includes claim/settle/both phases/cleanup; finite256polls each, no hard guarantee for a nonreturning SDK call"
+}

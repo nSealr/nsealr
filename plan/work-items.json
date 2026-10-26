@@ -2470,15 +2470,23 @@
         },
         {
           "path": "docs/product/requirements.md",
-          "sha256": "07c7d19880c69b68138b6b14213971285b4cea5e1a645ea2eca45814c2f6c10c"
+          "sha256": "3aca890c42e9d399a372467402772076b90737a3b4ad2b2c80936c8e2b0abfec"
         },
         {
           "path": "docs/product/threat-models.md",
-          "sha256": "4c6b24ea3464652cd4005a34fca4bea7289b2839d4b6c2b1dd5b1b7d9e452dc4"
+          "sha256": "89d8c047edc16e1a2000395ff58540b0c2164d98c7605a97e04be58409083a8e"
         },
         {
           "path": "docs/restart/implementation/P01/phase-one-current-contract-review.json",
           "sha256": "248752b2a5b96130f9c14c9f09b89ac7ecc5e3caed7a99357074d85650e3f07d"
+        },
+        {
+          "path": "docs/restart/implementation/P01/s3-usb-only-power-amendment.json",
+          "sha256": "49d31b0f5955928925441be51122c59caa81f4244f37307937840735a04ed167"
+        },
+        {
+          "path": "docs/restart/implementation/P01/s3-usb-only-power-amendment-root-review.json",
+          "sha256": "5a9238d6aa8e937bb4b0beec52115eb0cd361090d5f1a6561303bdc5132f0404"
         }
       ],
       "requires_physical_evidence": false,
@@ -2499,25 +2507,52 @@
       },
       "integration_record": "docs/restart/implementation/coordination/integration-20261018.json",
       "current_contract_amendment": {
-        "scope": "phase_one_2026_10_25",
+        "scope": "s3_usb_only_power_model_2026_10_26",
         "state": "SOURCE_REVIEW_PASS_PROTECTED_INTEGRATION_PENDING",
         "input_commits": {
-          "nSealr/nsealr": "19ab15d15aa8751174aa87119ae18853007c8222"
+          "nSealr/nsealr": "99332719e0e116d3e013cd3bfa1969131dd40ecf"
         },
         "reviewed_candidate_commits": {
-          "nSealr/nsealr": "220aa0d4e4e0f5f58b02ae66164661aaa48da988"
+          "nSealr/nsealr": "9df3241cbb6d2676ce0e8323718cf84d2c9515e7"
         },
-        "review_record": "docs/restart/implementation/P01/phase-one-current-contract-review.json",
-        "review_record_sha256": "248752b2a5b96130f9c14c9f09b89ac7ecc5e3caed7a99357074d85650e3f07d",
+        "review_record": "docs/restart/implementation/P01/s3-usb-only-power-amendment.json",
+        "review_record_sha256": "49d31b0f5955928925441be51122c59caa81f4244f37307937840735a04ed167",
         "reviewer": "/root",
         "source_review_verdict": "pass",
-        "meaning": "New current contract bytes have their own distinct source review. Original P01 closure fields/result_manifest still describe only the historical integrated foundation; amendment integration/metadata review remain pending PR53.",
+        "meaning": "Documentary power scope only; no entropy, local reload, custody, hardware or release acceptance.",
         "current_contract_paths": [
           "docs/product/contract.md",
           "docs/product/client-qualification.md",
           "docs/product/requirements.md",
           "docs/product/threat-models.md"
         ],
+        "prior_amendment": {
+          "scope": "phase_one_2026_10_25",
+          "state": "SOURCE_REVIEW_PASS_PROTECTED_INTEGRATION_PENDING",
+          "input_commits": {
+            "nSealr/nsealr": "19ab15d15aa8751174aa87119ae18853007c8222"
+          },
+          "reviewed_candidate_commits": {
+            "nSealr/nsealr": "220aa0d4e4e0f5f58b02ae66164661aaa48da988"
+          },
+          "review_record": "docs/restart/implementation/P01/phase-one-current-contract-review.json",
+          "review_record_sha256": "248752b2a5b96130f9c14c9f09b89ac7ecc5e3caed7a99357074d85650e3f07d",
+          "reviewer": "/root",
+          "source_review_verdict": "pass",
+          "meaning": "New current contract bytes have their own distinct source review. Original P01 closure fields/result_manifest still describe only the historical integrated foundation; amendment integration/metadata review remain pending PR53.",
+          "current_contract_paths": [
+            "docs/product/contract.md",
+            "docs/product/client-qualification.md",
+            "docs/product/requirements.md",
+            "docs/product/threat-models.md"
+          ],
+          "historical_task_record": {
+            "commit": "19ab15d15aa8751174aa87119ae18853007c8222",
+            "path": "plan/work-items.json",
+            "task_id": "P01",
+            "canonical_json_sha256": "1aa734c846738d1567e10b0d25d847a4a4de880f8b250263351033ab13d52f88"
+          }
+        },
         "historical_task_record": {
           "commit": "19ab15d15aa8751174aa87119ae18853007c8222",
           "path": "plan/work-items.json",
@@ -12480,7 +12515,56 @@
       "review_verdict": null,
       "result_artifacts": [],
       "profile": "esp32_no_se",
-      "requires_physical_evidence": true
+      "requires_physical_evidence": true,
+      "current_checkpoint": {
+        "power_model": {
+          "scope": "Connected session-only S3, USB-only, no SE/persistent vault",
+          "authority": "Explicit maintainer direction in active session, 2026-10-26",
+          "battery_supercap_independent_power_required": false,
+          "power_loss": "Ends execution; real identity requires local reload before new authority. Current scalar3 fixture proves neither reload nor disposal.",
+          "data_only_unplug_with_independent_power": "NOT_APPLICABLE",
+          "retained_gates": [
+            "USB bus reset/DTR/suspend with VBUS present",
+            "reset/ROM/RAM/debug and local reload"
+          ],
+          "other_profiles": "Pi/P4 and deferred custom Board unchanged",
+          "admission": "Power-model scope only; no task status, criterion, dependency or completion change"
+        },
+        "public_physical_component": {
+          "state": "PUBLIC_NATIVE_REVIEW_AND_FALLIBLE_PROVIDER_COMPONENT_VERIFIED_RELEASE_GATES_OPEN",
+          "source": "e7f04215fc97808acdafdbf9420f6ef6d0102c5b",
+          "source_delivery": "e7ef7503fc8ceca586cd0cd9ad32b2bf632380dd",
+          "base_main": "7e2b87d44d652025ac8f826780518fb1af6df218",
+          "evidence": "docs/restart/implementation/D01/entropy-provider/adc1-completion",
+          "source_review": {
+            "path": "docs/restart/implementation/D01/entropy-provider/adc1-completion/root-distinct-review.json",
+            "sha256": "bfcc7a2166dd38c2c6c89b31c0a43814d8275375f286c58b4c311d507a272a51",
+            "reviewer": "/root",
+            "verdict": "PASS_MINIMAL_PUBLIC_ADC1_COMPLETION_SOURCE_AND_ARTIFACT"
+          },
+          "actual_public_hardware": {
+            "binary_sha256": "7943dbcf4a1e389718b1959086487b6b13cdb50bb0f577ced9d4539c6d1fd7da",
+            "assessment_sha256": "49e6c90f7e08e37b2fffa98f7a2228b19e8ef03d8db1f3433dc47de664a05924",
+            "runtime_sha256": "36af6670e2ae9da8cba7b9a88d8974f23848a63c59b6ddfdecb17b84921e7042",
+            "response_sha256": "50c5b6c70a9b085f64a786cc81032a9cca95666750af62802b76558c639aa4d6",
+            "auxiliary": "One real attempt supplied32bytes after two observed ADC1 clear0tofresh1 phases;8RNGwords,2935us. Caller/expected public identity and actual signature verified by current product plus independent hash-pinned BIP340 reference.",
+            "main_USB_min_free_bytes": [
+              34980,
+              3164
+            ],
+            "initial_four_diagnostic_draws": "NOT_OBSERVED_OR_PASSED"
+          },
+          "earlier_negative": "Source08d equality proxy refusedHealth6; unchanged raw0d575c and observation726b remain preserved. New completion observer replaces unsupported raw-value variation inference, retaining all word/stale/ownership/time/wipe negatives.",
+          "criteria_closed": 0,
+          "release_or_real_identity_admitted": false,
+          "limits": [
+            "Only published scalar3; ADC183/manufacturer-supported source-quality gate remains open",
+            "ADC1 completion after0 is not ADC2 activity or entropy-quality evidence; in-flight conversions may count",
+            "No custody/import/reload, wholeRAM/ROM/debug/update or release qualification",
+            "Current test uses Mac USB control and product verification; actual Bridge/client serving and full hardware-negative matrix remain separate V01/C01 work"
+          ]
+        }
+      }
     },
     {
       "id": "D02",

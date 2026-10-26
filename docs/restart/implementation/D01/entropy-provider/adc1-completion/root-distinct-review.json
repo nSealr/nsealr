@@ -1,0 +1,52 @@
+{
+  "created_utc": "2026-10-26T16:55:48.298781+00:00",
+  "reviewer": "/root",
+  "author": "/root/s3_native_finish",
+  "verdict": "PASS_MINIMAL_PUBLIC_ADC1_COMPLETION_SOURCE_AND_ARTIFACT",
+  "source": "e7f04215fc97808acdafdbf9420f6ef6d0102c5b",
+  "delivery": "e7ef7503fc8ceca586cd0cd9ad32b2bf632380dd",
+  "reviewed_delta": "f65e8aa9..e7f04215: provider, private logic/report packing, focused native fault tests and README only",
+  "packet_manifest_sha256": "28bf4e20449d02ab0241e7db7e9bb7cd9cba9753e33b7d7dd7d4d0d2136d5e56",
+  "packet_json_sha256": "9d83b4daa884d3402e295fe993a0b211af2df9b8804656e169a351c96421be14",
+  "closure_sha256": "ad3ff7d1ecab25d07ef4d5fc2cc355504a9ee889ed532f33f57ee4463d7dca3b",
+  "manifest_entries_checked": 497,
+  "frozen_source_inputs_checked": 94,
+  "compiled_source_identities_checked": 665,
+  "raw_artifacts_checked": 16,
+  "binary": {
+    "bytes": 449600,
+    "sha256": "7943dbcf4a1e389718b1959086487b6b13cdb50bb0f577ced9d4539c6d1fd7da"
+  },
+  "contract_and_prior_proof": {
+    "contract_sha256": "34347f54db7066f78d0fe46e5ba453258a21f92d8418b81d5a8700daa0811262",
+    "root_approval_sha256": "4d67d883583af68d69c6787083cc33bf5a5b2250b11c935215499445958ef42e",
+    "historical_source08_negative_sha256": "726b76c04e05f3c7c3d8c7bf3f758ad71bb21da94626616411031333ca9095b6"
+  },
+  "source_findings": [
+    "ADC1 RAW/CLRbit31 matches pinned SDK/TRM; WO clear is exactbitwrite, timer toggles only ownedbit with full readback, no IRQenable/handler or SDK patch",
+    "Two observed clear0/fresh1 phases surround8RNGwords; initial1 handled correctly. In-flight completion limit explicit; no ADC2 or entropy-quality inference",
+    "Claim/settle/progress/words/cleanup share global monotonic50ms, finite256polls; timer restored before RNGword and failure supplies0/clearsownedbuffers",
+    "Word zero/ones/repeated/duplicate, stale/nonclear/missing pre/post, ownership/readback, cancellation/rollback/cumulative/frozenclock and cleanup negatives retained",
+    "Constant raw14000 only passes activity witness with both transitions and all remaining screens; historical failed observation preserved unmodified",
+    "Private words<=8 counter packed with two phasebytes retains report384/total2048; providerstate242 and main98304/USB4096 remain INTERNAL"
+  ],
+  "reused_unchanged": "Rust14, portablecore/crypto, USB84 and dependency439 source-specific proof reused; no reviewer build/test replay",
+  "affected_proof": {
+    "native_assertion_checks": 3485,
+    "target_build_record": 154,
+    "target_build_exit": 0,
+    "collector_static_frame_bytes": 240,
+    "largest_selected_frame_bytes": 464,
+    "static_frames_not_complete_indirect_stack_bound": true
+  },
+  "metadata_corrections": "Original macro/index/alias-reader failures retained. Only esp_app_desc PROJECT_VER08d\u2192e7 differs in665 command bindings; target source/build not changed or rerun for reader corrections.",
+  "hardware_next": "One fresh boot; at most4 public diagnostic draws and at most1 fixture3 auxiliary roundtrip. Single CDCcapture, explicit expected identity, record phasebits and real stack margins; stop first failure without retry.",
+  "limits": [
+    "Only public experiment; ADC183/manufacturer-supported source quality remains open",
+    "ADC1 completion proves a completion after observed0, not conversion start exclusively after timer restart, ADC2 or noise entropy",
+    "No real identities/import/recovery/custody, wholeRAM/ROM/reset/debug or release admission",
+    "IRQ/liveness and varied samples cannot be relabelled production entropy_ok",
+    "Queued USB data cannot be recalled; lossy compact diagnostics do not expose every retained snapshot"
+  ],
+  "reviewer_tests_replayed": 0
+}

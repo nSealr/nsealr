@@ -1,0 +1,73 @@
+{
+  "schema": "nsealr.s3-fallible-sar-entropy-contract.v1",
+  "status": "PROPOSED_ROOT_REVIEW_ONLY; no product edits/build/device access",
+  "base": "83331c5aa05c952c12635ac96e231a013a6df772; same s3-session worktree, SDK5.3 e0991facf5ecb362af6aac1fae972139eb38d2e4, observed S3rev0.2",
+  "primary_source_ledger": {
+    "path": "/home/tux/nsealr/.restart-tools/mac-resume-2026-10-25/intake/s3-entropy-primary-sources/exact-source-ledger.json",
+    "sha256": "065eaaef10bacb68d10cd2ef40d7468d334d406a6fab3cb9f58f7e306521ed67"
+  },
+  "admission_and_missing_evidence": [
+    "Admit only implementation and a public diagnostic/fixture workflow. The SDK documents SARADC as a non-RF entropy source; enable/disable and esp_random/esp_fill_random report neither source health nor hardware failure. Successful32bytes is not entropy qualification.",
+    "Exact source disable asserts SYSTEM_APB_SARADC_RST; enable does not explicitly clear it and ends the SYSTEM_APB_SARADC_CLK_EN toggle low. Startup does not establish an app-owned reset-release transaction. Establish and verify the SARADC RCC lease/reset explicitly before calling the unchanged SDK helper; otherwise Unavailable and no draw. No silent SDK patch, guessed reset state or accepting whichever register values happen to appear.",
+    "ADC-183 affects rev0.2 DIGADC2. The helper selects double SAR1+SAR2 digital mode. Not using DMA does not prove non-applicability. Public samples/readbacks may expose failure but cannot resolve the silicon guarantee. No production/new-identity entropy admission until applicable manufacturer evidence or a separately reviewed path closes this uncertainty.",
+    "S3 source waits1778APBcycles per esp_random word; API prose claiming less than100CPUcycles does not describe this exact target implementation. Keep the SDK rate limiter, measure elapsed and real register/clock state, never replace it with a faster direct RNG read.",
+    "TRM1.8 describes RC_FAST nominal20MHz; v5.3 prose/comment says8MHz and the bit retains name DIG_CLK8M. Log the actual selector/gate and clock-source accounting; a name, approximate/cached frequency or passed output statistics is not a physical frequency/entropy measurement.",
+    "No on-chip per-call entropy-valid flag, quantified min-entropy measurement or comprehensive fault-detection guarantee was found in these APIs. Readback/activity/repetition checks detect only specified faults. A vendor call that never returns cannot be made hard-time-bounded by checking time afterwards; terminal/platform reset limits stay explicit."
+  ],
+  "concrete_provider_contract": [
+    "Narrow S3 C adapter fill32(destination32,count) with typed Unavailable/Ownership/Readback/Timeout/Health/Interrupted/Provider/Cleanup outcomes, plus one thin Rust AuxiliarySource implementation. Existing core::authorization::AuxiliarySource::fill and AuxiliaryError remain unchanged; no core/time/protocol/API-version change and no second engine.",
+    "Only the existing published scalar3 owner can use it in this lot. Replace the production-target deterministic PublicAux path by the fallible callback; keep deterministic test sources inside host tests only. Public diagnostic draws are never identity/scalar/backup material and are never reused as signing auxiliary. get_public_key remains the same public fixture.",
+    "Single main-task owner, fixed generation and non-reentrant lease. Closed linked call graph permits no RF init, ADC oneshot/continuous, I2S capture, temperature/battery sampler or other RNG consumer while the lease exists. Audit actual callsites/linker closure, not build component names or a boolean readiness flag.",
+    "Use the pinned SDK RCC critical primitives to atomically require SARADC refcount0 and establish exactly one owner/reference while clearing module reset with the existing S3 HAL operation; busy leaves the foreign count/registers unchanged. Keep the short RCC lock out of SDK helper/draw/UI calls. A changed owner/count or exhausted generation poisons further use until CPU reset. These are explicit private e099 primitives, not a portable public-API promise.",
+    "After RCC ownership, bootloader_random_enable unchanged. Snapshot and require reset deasserted, RNG clock bit, RC clock gate, ADC clock selector/dividers, SAR force/mux/double-mode/pattern lengths/tables, timer target/enable, filter state and internal I2C reference controls matching the exact reviewed helper/TRM path. Unexpected ADC bus-clock/reset semantics means Unavailable, never a new accepted baseline.",
+    "Record CPU/APB configured frequencies plus their source/divider registers before/after; distinguish configured/calculated values from any physically calibrated clock. RF-off means no RF initialization plus applicable modem-clock readback, not absence of radio silicon or RF measurement. RNG_EN in WIFI_CLK is not RF enable.",
+    "Settle by real monotonic time with finite poll count, then take exactly8 SDK esp_random words into INTERNAL staging. Check lease, USB revocation generation, monotonic deadline and relevant readback between words and after any blocking call. Sample SAR1/SAR2 raw status for diagnostic activity; constant/unsupported status is unknown/rejected, never evidence that a source is healthy.",
+    "Reject all-zero/all-FF, one repeated word throughout a block, and identical consecutive32byte blocks; these are gross-failure screens, not min-entropy estimation. On every returning path after enable, call bootloader_random_disable, verify inactive timer/force/reset state and release the one RCC reference. Ownership/cleanup mismatch is terminal. Do not pretend disable restores every foreign register; another ADC owner was never admitted.",
+    "Destination starts zero. Stage32bytes internally; expose Ok32 only after all checks and cleanup succeed, and only in the public experimental policy. Error/short/oversized/interruption wipes the entire owned destination and staging with a retained volatile/zeroize routine. No partial output, fallback, host seed, retry loop or post-return DMA writes. Buffer wiping does not claim register/cache/whole-RAM erasure.",
+    "SDK helper calls may contain non-cancellable waits. Deadline50ms is checked between calls, with a finite polling budget; it is not a hard return guarantee during a stuck SDK/hardware call. Existing panic/reset/RAM gates remain open, with no new watchdog workaround."
+  ],
+  "conflict_review": {
+    "LCD": "Native S3 I80 is LCD_CAM, not the classicESP32 I2S LCD path. It uses its existing dedicated controller/GDMA/framebuffer and clock. Await its existing DMA completion before a provider lease; no display operation inside the lease. Compare LCD mux/clock/GPIO configuration and successful full-frame commits before/after. Do not infer concurrent safety solely from separate peripheral names.",
+    "USB": "OTG task remains active; no interrupt masking/scheduler freeze across collection. Existing epoch cancellation applies, with checks before exposing output. USB19/20 also have ADC2 functions: helper internal channel0xA/ref selection must not configure external ADC GPIO or alter USB mux. Snapshot actual pin configuration before/after; input-disabled pad values are not physical readback.",
+    "I2S_ADC_temperature": "No runtime initializer/consumer in current833 closure. Adding any such owner invalidates the reviewed resource/call graph. The header I2S warning explicitly says ESP32-only; do not present it as proof that S3 LCD shares I2S.",
+    "battery_power": "User confirms no installed battery, and latest product direction is USB-only S3. Add no battery/supercap/independent-power requirement or sampler. Board capability/pads do not mean a battery or ADC measurement is active.",
+    "other_RNG_consumers": "Current833 ELF has no executable esp_random/esp_fill_random/getrandom/getentropy consumer matched. Recheck newly linked callsites including SDK/newlib/mbedTLS and TinyUSB; bootloader is a separate earlier image. Unowned runtime calls/conflicts => refuse provider admission rather than rely on one mutex flag."
+  },
+  "finite_proof_and_resources": {
+    "hardware": "One public diagnostic pass, exactly4 independently acquired32byte draws (128bytes total), each with before/enabled/disabled snapshots and elapsed/counter/count outcome. Run only Locked with an explicit fresh local action; fixed diagnostic output, no host command/memory selector/seed. Then at most one normal public scalar3 roundtrip using a NEW auxiliary draw, only if provider prerequisites pass. Otherwise bounded Unavailable is the result; no repeated probing until green.",
+    "software_negatives": "Focused actual adapter tests inject source error, reported0/31/33byte counts, stuck/all-zero/repeated output, busy/reentrant/changed owner or RCC count, register/source loss, clock rollback/timeout and USB cancellation. Require no success/signature, no fallback, ceased writes, full destination/staging wipe and intact guards. Reuse unchanged core/gesture/oracle cases; rerun only affected private FFI/adapter tests and the necessary target build.",
+    "fixed_resources": "No new task/heap/DMA/DRBG. Provider retained state cap256bytes INTERNAL, private scratch32bytes plus core destination32bytes, diagnostic retention cap2048bytes INTERNAL for the four public samples/snapshots, added stack cap2048bytes to be checked from build/real watermark. Main98304 and USB4096 stacks unchanged; retain measured admission thresholds main4096/USB512free for affected runs.",
+    "failure_policy": "Unavailable/missing signal is UNKNOWN/NOT RUN or typed failure, not entropy_ok. No synthetic successful sample to make UI proceed. If ADC183/source-health evidence remains unresolved, this lot stays public experimental even with varied output and successful signatures.",
+    "operator": "Root alone flashes/captures/observes after distinct source/config/closure/packet review. Implementer does no USB, flash, CI, push, merge or irreversible fuse action."
+  },
+  "USB_only_power_amendment_proposed_after_review": [
+    {
+      "path": "docs/restart/implementation/P01/requirements.md",
+      "delta": "Add S3-specific normative power paragraph: connected session-only withoutSE/vault is USB-powered only; battery/supercap/independent power neither required nor an admission dependency. Power loss ends the future real session and requires local reload; current scalar3 auto fixture proves neither reload nor secret disposal. Preserve Pi/P4/custom-board power requirements."
+    },
+    {
+      "path": "docs/restart/implementation/P01/threat-models.md",
+      "delta": "S3 subsection only: host controls VBUS and may terminate availability. Removing all USB power terminates execution; no exact erasure claim. DTR/bus reset/suspend withVBUS present remain adversarial and independently gated."
+    },
+    {
+      "path": "docs/restart/implementation/D01/native-session-contract.md",
+      "delta": "Append current USB-only addendum and mark OTG E5 data-only unplug with independent power NOT APPLICABLE for this S3 product profile; preserve historical833 contract/proofs unchanged and keep reset/ROM/RAM gates. No battery ADC client is permitted, not a demand to install a battery."
+    },
+    {
+      "path": "plan/work-items.json",
+      "selector": "tasks[id=D01].current_checkpoint.power_model (or the existing canonical S3 profile checkpoint when integrated)",
+      "delta": "Only record USB-only profile/no battery requirement, power-loss/local-reload obligation and E5 non-applicability. No task status/closure/criteria/dependency/ID change; no P4/Pi generalization and no invented second graph."
+    }
+  ],
+  "implementation_paths_after_review": [
+    "apps/s3-session/main/s3_entropy.h",
+    "apps/s3-session/main/s3_entropy.cpp",
+    "apps/s3-session/main/main.cpp",
+    "apps/s3-session/main/CMakeLists.txt",
+    "apps/s3-session/core/src/lib.rs",
+    "apps/s3-session/core/src/tests.rs",
+    "apps/s3-session/tests/entropy_provider_test.cpp",
+    "docs/restart/implementation/D01/entropy-provider/ (brief/proof/limits only)"
+  ],
+  "freeze_policy": "833 source/public hardware packet remains immutable history. No product edit until root accepts this contract and the explicit RCC/ADC183 admission limits. No import/createidentity/backup/recovery or real-key path in this lot."
+}
