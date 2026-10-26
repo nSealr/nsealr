@@ -1,3 +1,13 @@
+unsafe extern "C" fn test_aux(out: *mut u8, capacity: usize, supplied: *mut usize) -> i32 {
+    if out.is_null() || supplied.is_null() || capacity != 32 {
+        return -1;
+    }
+    unsafe {
+        core::slice::from_raw_parts_mut(out, 32).fill(0x42);
+        *supplied = 32;
+    }
+    0
+}
 use super::*;
 use std::{
     sync::atomic::{AtomicI32, AtomicU64, AtomicUsize, Ordering},
@@ -20,6 +30,7 @@ extern "C" fn now(out: *mut u64) -> i32 {
                 Some(present),
                 Some(now),
                 Some(cancelled),
+                Some(test_aux),
             )
         };
         assert_eq!(r.status, BUSY);
@@ -113,6 +124,7 @@ fn run(mode: i32, json: &[u8]) -> (ExchangeResult, [u8; 1024]) {
             Some(present),
             Some(now),
             Some(cancelled),
+            Some(test_aux),
         )
     };
     (result, out)
@@ -232,6 +244,7 @@ fn ffi_invalid_pointer_capacity_and_callback_preserve_guards() {
                 Some(present),
                 Some(now),
                 Some(cancelled),
+                Some(test_aux),
             )
         };
         assert_eq!(r.status, ARG);
@@ -244,6 +257,7 @@ fn ffi_invalid_pointer_capacity_and_callback_preserve_guards() {
             Some(present),
             Some(now),
             Some(cancelled),
+            Some(test_aux),
         )
     };
     assert_eq!(r.status, ARG);
@@ -254,6 +268,7 @@ fn ffi_invalid_pointer_capacity_and_callback_preserve_guards() {
             None,
             Some(now),
             Some(cancelled),
+            Some(test_aux),
         )
     };
     assert_eq!(r.status, ARG);
@@ -274,6 +289,7 @@ fn ffi_invalid_pointer_capacity_and_callback_preserve_guards() {
             Some(present),
             Some(now),
             Some(cancelled),
+            Some(test_aux),
         )
     };
     assert_eq!(r.status, 0);
@@ -298,6 +314,7 @@ fn ingress_overflow_drains_and_busy_does_not_replace_complete_frame() {
             Some(present),
             Some(now),
             Some(cancelled),
+            Some(test_aux),
         )
     };
     assert_eq!(r.status, 0);
@@ -369,4 +386,84 @@ fn reentrant_callbacks_cannot_mutate_ingress_or_create_another_exchange() {
     assert_eq!(r.status, 0);
     let json = payload(&out, r.length);
     assert!(json.windows(11).any(|w| w == b"s3-public-1"));
+}
+
+#[test]
+fn callback_auxiliary_wipes_errors_and_inexact_counts_without_fallback() {
+    unsafe extern "C" fn unavailable(out: *mut u8, _: usize, count: *mut usize) -> i32 {
+        unsafe {
+            core::slice::from_raw_parts_mut(out, 32).fill(0x61);
+            *count = 32;
+        }
+        -2
+    }
+    unsafe extern "C" fn short(out: *mut u8, _: usize, count: *mut usize) -> i32 {
+        unsafe {
+            core::slice::from_raw_parts_mut(out, 32).fill(0x62);
+            *count = 31;
+        }
+        0
+    }
+    unsafe extern "C" fn oversized(out: *mut u8, _: usize, count: *mut usize) -> i32 {
+        unsafe {
+            core::slice::from_raw_parts_mut(out, 32).fill(0x63);
+            *count = 33;
+        }
+        0
+    }
+    unsafe extern "C" fn interrupted(out: *mut u8, _: usize, count: *mut usize) -> i32 {
+        unsafe {
+            core::slice::from_raw_parts_mut(out, 32).fill(0x64);
+            *count = 1;
+        }
+        -7
+    }
+    for callback in [unavailable as Auxiliary, short, oversized, interrupted] {
+        let mut guarded = [0xa7u8; 34];
+        let destination: &mut [u8; 32] = (&mut guarded[1..33]).try_into().unwrap();
+        assert!(CallbackAux(callback).fill(destination).is_err());
+        assert_eq!(&guarded[1..33], &[0; 32]);
+        assert_eq!(guarded[0], 0xa7);
+        assert_eq!(guarded[33], 0xa7);
+    }
+}
+
+#[test]
+fn private_ffi_requires_auxiliary_and_releases_no_signature_on_provider_error() {
+    reset(0);
+    let mut untouched = [0xa7u8; FRAME];
+    let absent = unsafe {
+        nsealr_s3_public_exchange(
+            untouched.as_mut_ptr(),
+            FRAME,
+            Some(present),
+            Some(now),
+            Some(cancelled),
+            None,
+        )
+    };
+    assert_eq!(absent.status, ARG);
+    assert_eq!(untouched, [0xa7; FRAME]);
+    unsafe extern "C" fn fail(out: *mut u8, _: usize, count: *mut usize) -> i32 {
+        unsafe {
+            core::slice::from_raw_parts_mut(out, 32).fill(0x71);
+            *count = 31;
+        }
+        -8
+    }
+    feed(&encoded(REQUEST_JSON));
+    let result = unsafe {
+        nsealr_s3_public_exchange(
+            untouched.as_mut_ptr(),
+            FRAME,
+            Some(present),
+            Some(now),
+            Some(cancelled),
+            Some(fail),
+        )
+    };
+    assert_eq!(result.status, AUX);
+    let json = payload(&untouched, result.length);
+    assert!(!json.windows(6).any(|b| b == b"\"sig\":"));
+    assert!(json.windows(21).any(|b| b == b"auxiliary_unavailable"));
 }

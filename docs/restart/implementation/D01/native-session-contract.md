@@ -285,3 +285,18 @@ Distinct review found the single RX read did not drain both contiguous segments
 of an SDK byte ring. The finite helper now distinguishes Empty/Limit/Error; only
 an observed zero-byte nonblocking read permits Enable. The source200 packet is
 preserved as the candidate before this fix and is not the final flash artifact.
+
+
+## USB-only S3 power-model amendment, 2026-10-26
+
+The connected S3 without SE or persistent identity vault is USB-powered only.
+No battery, supercapacitor or independent supply is required or a hidden gate.
+Removing USB power ends the future real-identity session and requires local
+reload before new authority. The automatically reinitialized public scalar3
+fixture is historical evidence only; it does not prove real reload or disposal.
+E5, data-only unplug while independently powered, is NOT APPLICABLE to this
+product profile. Bus reset, DTR/port close and suspend with VBUS present remain
+pertinent; the reset/ROM/RAM/debug gates above are retained. No whole-RAM erasure
+claim follows from power loss or invalid public markers. The existing833 OTG
+packet/contract remains immutable history. This amendment does not alter Pi/P4
+or deferred custom-board power requirements and adds no battery ADC consumer.

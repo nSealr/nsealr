@@ -190,11 +190,35 @@ impl LocalReviewIo for Ui<'_> {
     }
 }
 /// Deterministic only with already-public scalar 3. Not a production RNG.
+#[cfg(test)]
 struct PublicAux;
+#[cfg(test)]
 impl AuxiliarySource for PublicAux {
     fn fill(&mut self, d: &mut [u8; 32]) -> Result<usize, AuxiliaryError> {
         d.fill(0x42);
         Ok(32)
+    }
+}
+/// Private synchronous app callback, never supplied by USB or a host request.
+pub type Auxiliary = unsafe extern "C" fn(*mut u8, usize, *mut usize) -> i32;
+struct CallbackAux(Auxiliary);
+impl AuxiliarySource for CallbackAux {
+    fn fill(&mut self, destination: &mut [u8; 32]) -> Result<usize, AuxiliaryError> {
+        let mut supplied = 0usize;
+        let status = unsafe { (self.0)(destination.as_mut_ptr(), 32, &mut supplied) };
+        if status == 0 && supplied == 32 {
+            return Ok(32);
+        }
+        for byte in destination.iter_mut() {
+            unsafe { core::ptr::write_volatile(byte, 0) };
+        }
+        core::sync::atomic::compiler_fence(Ordering::SeqCst);
+        Err(match status {
+            -2 | -3 | -4 => AuxiliaryError::Unavailable,
+            -6 => AuxiliaryError::Health,
+            -7 => AuxiliaryError::Interrupted,
+            _ => AuxiliaryError::Provider,
+        })
     }
 }
 fn append(out: &mut [u8], at: &mut usize, b: &[u8]) -> Result<(), i32> {
@@ -364,12 +388,13 @@ pub unsafe extern "C" fn nsealr_s3_public_exchange(
     present: Option<Present>,
     now: Option<Now>,
     cancelled: Option<Cancelled>,
+    auxiliary: Option<Auxiliary>,
 ) -> ExchangeResult {
     let bad = |status| ExchangeResult { status, length: 0 };
     if output.is_null() || capacity != FRAME {
         return bad(ARG);
     }
-    let (Some(p), Some(n), Some(c)) = (present, now, cancelled) else {
+    let (Some(p), Some(n), Some(c), Some(a)) = (present, now, cancelled, auxiliary) else {
         return bad(ARG);
     };
     let Ok(_g) = Guard::take() else {
@@ -378,7 +403,7 @@ pub unsafe extern "C" fn nsealr_s3_public_exchange(
     let out = unsafe { core::slice::from_raw_parts_mut(output, capacity) };
     out.fill(0);
     let s = unsafe { &mut *INGRESS.0.get() };
-    let result = exchange(&s.ready[..s.length], p, n, c, out, &mut PublicAux);
+    let result = exchange(&s.ready[..s.length], p, n, c, out, &mut CallbackAux(a));
     s.ready.fill(0);
     s.length = 0;
     match result {

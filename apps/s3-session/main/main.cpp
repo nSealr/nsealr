@@ -18,6 +18,7 @@
 #include "driver/gpio.h"
 #include "otg_transport.h"
 #include "public_restart.h"
+#include "s3_entropy.h"
 #include "freertos/FreeRTOS.h"
 #include "freertos/semphr.h"
 #include "freertos/task.h"
@@ -35,10 +36,11 @@ static_assert(sizeof(S3ExchangeResult)==8,"Rust/C result layout");
 using PresentCallback=int32_t(*)(uint32_t,uint32_t,uint32_t,const uint8_t*,size_t,const uint8_t*,size_t,const uint8_t*,size_t);
 using NowCallback=int32_t(*)(uint64_t*);
 using CancelCallback=int32_t(*)();
+using AuxCallback=int32_t(*)(uint8_t*,size_t,size_t*);
 int32_t nsealr_s3_public_feed(uint8_t);
 int32_t nsealr_s3_public_reset_input();
 int32_t nsealr_s3_public_key(uint8_t*,size_t);
-S3ExchangeResult nsealr_s3_public_exchange(uint8_t*,size_t,PresentCallback,NowCallback,CancelCallback);
+S3ExchangeResult nsealr_s3_public_exchange(uint8_t*,size_t,PresentCallback,NowCallback,CancelCallback,AuxCallback);
 }
 static SessionMenu menu;
 static bool local_locked=true;
@@ -109,7 +111,7 @@ static void banner() {
     for(int x=4;*t;x+=12,++t)glyph(x,1,uint8_t(*t),0xffe0);
     small(18,menu.rotated?"BUTTONS RIGHT":"BUTTONS LEFT",0x07ff);
 }
-static void status_screen(const char *status) {
+static void status_screen(const char *status,const char *footer="0:rotate/hold5s restart |14:enable |both:lock") {
     banner();int row=0;
     if(!cells(reinterpret_cast<const uint8_t*>(status),std::strlen(status),row,0xffff)||
         !cells(reinterpret_cast<const uint8_t*>(public_hex),26,row,0x07e0)||
@@ -122,7 +124,7 @@ static void status_screen(const char *status) {
         (unsigned long)otg_boot.generation,(unsigned long)otg_boot.reset_reason,(unsigned long)transport.epoch,
         otg_boot.previous_internal,otg_boot.previous_rtc,otg_boot.previous_bss);
     small(146,observation,0x07ff);
-    small(158,"0:rotate/hold5s restart |14:enable |both:lock",0xffff);flush_frame();
+    small(158,footer,0xffff);flush_frame();
 }
 static void poll_buttons() {
     const uint32_t now=uint32_t(esp_timer_get_time()/1000);
@@ -176,6 +178,38 @@ static SessionDrain discard_input() {
     });
     (void)nsealr_s3_public_reset_input();
     return result;
+}
+struct PublicEntropyDraw {uint8_t sample[32];S3EntropyReport report;};
+static PublicEntropyDraw diagnostic_draws[4];
+static_assert(sizeof(diagnostic_draws)+sizeof(S3EntropyReport)<=2048,"finite public instrumentation");
+static void public_entropy_check(){
+    status_screen("PUBLIC RNG - NO IDENTITY\nLocal test or skip","0: skip |14: four public draws |both: lock");
+    SessionGesture choice;
+    for(;;){
+        poll_buttons();const auto action=gesture(choice,false);
+        if(action==SessionAction::Back||action==SessionAction::Lock)return;
+        if(action==SessionAction::Next){
+            if(otg_snapshot().usable())break;
+            status_screen("USB NOT READY - locked\nOpen logger, then retry","0: skip |14: public test");choice=SessionGesture{};
+        }
+        vTaskDelay(1);
+    }
+    s3_entropy_diagnostic_mode(true);
+    S3EntropyStatus status=S3EntropyStatus::Unavailable;unsigned complete=0;
+    for(unsigned i=0;i<4;++i){
+        status_screen("PUBLIC32 BYTE DRAW\nNot identity material","Readbacks and sample: public serial log");
+        s3_entropy_bind_public_epoch(otg_snapshot().epoch);size_t written=0;
+        status=S3EntropyStatus(nsealr_s3_public_auxiliary(diagnostic_draws[i].sample,32,&written));
+        diagnostic_draws[i].report=s3_entropy_last_report();
+        s3_entropy_log_report(i+1,status==S3EntropyStatus::PublicDraw?diagnostic_draws[i].sample:nullptr);
+        if(status!=S3EntropyStatus::PublicDraw||written!=32)break;
+        ++complete;
+    }
+    s3_entropy_diagnostic_mode(false);
+    char text[72];std::snprintf(text,sizeof(text),"PUBLIC RNG status %ld\n%u/4 - NOT QUALIFIED",(long)status,complete);
+    status_screen(text,"Fresh0/14: known public fixture |no real keys");
+    SessionGesture acknowledge;
+    for(;;){poll_buttons();if(gesture(acknowledge,false)!=SessionAction::None)return;vTaskDelay(1);}
 }
 static void display_init() {
     gpio_set_direction(gpio_num_t(PIN_POWER_ON),GPIO_MODE_OUTPUT);
@@ -238,6 +272,7 @@ extern "C" void app_main() {
     constexpr char hex[]="0123456789abcdef";
     for(unsigned i=0;i<32;++i){public_hex[2*i]=hex[key[i]>>4];public_hex[2*i+1]=hex[key[i]&15];}
     public_hex[64]=0;
+    public_entropy_check();
     status_screen("Known public scalar 3\nLocal enable required");
     SessionGesture idle;
     PublicRestart restart;
@@ -302,7 +337,8 @@ extern "C" void app_main() {
             if(state==1){
                 clock_started=false;review_frames=0;
                 const int64_t started_us=esp_timer_get_time();
-                const auto r=nsealr_s3_public_exchange(response,sizeof(response),present_review,trusted_now,cancelled);
+                s3_entropy_bind_public_epoch(grant_epoch);
+                const auto r=nsealr_s3_public_exchange(response,sizeof(response),present_review,trusted_now,cancelled,nsealr_s3_public_auxiliary);
                 const int64_t elapsed_us=esp_timer_get_time()-started_us;
                 const auto minimum_stack=uxTaskGetStackHighWaterMark(nullptr);
                 uint64_t now=0;
@@ -317,6 +353,7 @@ extern "C" void app_main() {
                 else if(r.status==-5)status_screen("REJECTED - no signature");
                 else if(r.status==-7)status_screen("EXPIRED - no signature");
                 else if(r.status==-11)status_screen("LOCKED - no signature");
+                else if(r.status==-8)status_screen("PUBLIC AUX STOPPED\nRestart before new attempt");
                 else status_screen(transport_failed?"TX UNCERTAIN - reset":"FAILED - review again");
                 if(attempted&&!transport_failed){
                     char line[192];
@@ -324,6 +361,7 @@ extern "C" void app_main() {
                         (long)r.status,queued,(unsigned long)review_frames,(long long)elapsed_us,(unsigned long)minimum_stack);
                     usb_line(line);
                 }
+                s3_entropy_log_report(0,nullptr);
                 break;
             }
             if(state<0){menu.enabled=false;local_locked=true;discard_input();status_screen("INPUT FAILED - locked");idle=SessionGesture{};restart=PublicRestart{};break;}

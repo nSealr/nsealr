@@ -22,7 +22,7 @@ wait, and minimum free main stack since boot. All screens identify PUBLIC TEST K
 The explicit clock unit is real monotonic seconds from esp_timer_get_time.
 The unchanged100tick core expiry is intake_seconds+100; flooring may expire
 up to1second before100.000 elapsed seconds. It is never paused or rescaled.
-The deterministic auxiliary fixture is public-test-only. In the previous
+The deterministic auxiliary fixture belonged to the historical public images. In the previous
 public image a0ea67e0 (delivery a1e9052a), USB Serial/JTAG remained active and
 unqualified for secrets; SOF loss was detectable but serial-port close was not.
 This newer image uses the OTG CDC transport described below. ROM, physical reset,
@@ -85,3 +85,51 @@ clears operational flags rather than authorizing an epoch. Only the nonblocking
 ISR send is used. A failed barrier enqueue or unexpected task-origin bus reset
 leaves authorization closed until CPU restart. A reset event rejected before
 the observation hook remains an explicit stack-observation limit.
+
+
+The current experimental entropy adapter replaces target PublicAux with a
+fallible private callback implementing the unchanged core AuxiliarySource.
+Only published scalar3 is present. The deterministic0x42 fixture remains in host
+tests; the running target has no such fallback. No identity generation, import,
+recovery or secret endpoint is added. ADC-183 on S3rev0.2 remains unresolved for
+production-source admission: doubleSAR operation and varied output do not close
+it. No FIPS/AIS or formal minimum-entropy certification is introduced as a gate.
+
+At startup the diagnostic screen offers0 Skip /14 Run after fresh release and
+complete frame commit. Open the public CDC logger first. Run performs at most
+four independently acquired32byte public draws, stops on the first failure,
+then requires a fresh acknowledgement to enter the known-public fixture. Skip
+also enters that fixture. The target permits at most one new auxiliary attempt
+for public signing per boot, whether it succeeds or fails; no retry until green.
+get_public_key still uses the same known public identity. Diagnostic samples are
+never identity/scalar material and are never reused as signing auxiliary.
+
+The provider owns the main task, one generation, one SARADC RCC reference and
+an exact closed software consumer set. Busy exits leave foreign counts and
+registers unchanged. Enable uses the unmodified e099 helper, then explicitly
+restores its APB bus gate under the same reference without pulsing reset. It
+verifies declared selectors/dividers/timer/pattern/ref/mux/power fields, and exact
+LCD/USB GPIO mux/output-enable/matrix configuration. Disable is followed only
+by readable SYSTEM/SENS/internal-analog checks; gated/in-reset digital data is
+UNKNOWN, not a zero-valued health or erasure observation. A changed foreign count
+is preserved and poisons further provider use; no successful cleanup is claimed.
+
+A50ms between-call deadline and finite settle polling detect specified failures;
+SDK helpers/RNG may contain non-cancellable waits, so this is not a hard return
+bound for stuck hardware. Retained staging/output32bytes are wiped on failure,
+with exact-count and guard checks. Raw SAR activity and gross repetition screens
+detect some faults and do not establish entropy quality. The API supplies no
+per-call health report. Private GPIO comparison is exact; its compact logged
+signature is only diagnostic. CPU/APB values are configured clock accounting,
+not independent physical frequency measurements. S3 clock macros called WIFI_EN
+and BT_EN are zero in this SDK: they cannot prove RF state. Radio absence/RF-off
+measurement is not claimed from register names or uninitialized RF APIs.
+
+The public log is bounded and may be dropped if the host does not read. Queue
+acceptance is still not delivery. Full diagnostic snapshots/samples occupy at
+most2048bytes INTERNAL; provider state is at most256bytes, no new task/heap/DMA,
+and main/USB stacks remain98304/4096bytes. Source/build/diagnostics qualify only
+this public experiment. The S3 product power model is USB-only: no battery,
+supercapacitor or independent supply requirement; E5 powered data-only unplug is
+not applicable. A future real identity must reload locally after power loss;
+this automatically reinitialized fixture proves neither reload nor RAM erasure.
