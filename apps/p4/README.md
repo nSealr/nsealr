@@ -8,7 +8,7 @@ TEST; it accepts no personal identity/recovery import and has no qualified custo
 entropy, channel-isolation, human-time, liveness or release claim.
 
 Source and acceptance contract: [Q03 brief](../../docs/restart/implementation/Q03/p4-optical-brief.md).
-Only this app and its brief/proof change; the core, client, protocol and task graph
+This app and its brief/proof change, plus the explicitly reviewed0.7.9 vendor/root lock adoption; the core, client, protocol and task graph
 are unchanged. `inputs.json`, the dependency lock and quirc notices pin provenance.
 The frozen camera source is reused; no old std host fixture is a runtime dependency.
 
@@ -55,11 +55,35 @@ and operator procedure are separately admitted. A disconnected/data-absent UART
 path needs physical evidence; a software flag is not that evidence. PWR/RST keep
 their hardware roles, and touch approval remains disallowed.
 
-Camera orientation is provisional: later physical feedback invalidated a claim
-that180 without mirroring was already qualified. The implemented gray mapping
-has native tests only. Await root's exact acquisition/preview orientation matrix
-before flash/signing observations. Startup displays an input-check screen and
-requires a fresh observed BOOT cycle before key/session initialization.
+The original180-degree grayscale assumption is superseded. Gray now preserves
+raw camera coordinates; the scan preview snapshots that same gray before quirc
+thresholding, with crop144,16 size512x768 scale5/8 and no app rotation/mirror.
+The physically observed peripheral reference2aaf used PPA0/mirror0/0, but panel
+MADCTL is downstream: raw optical parity needs the asymmetric marker+QR probe.
+A mirrored QR gets at most one ECC-only quirc_flip retry, in the same ownership
+and watchdog interval. Native normal/mirror fixtures recover identical bytes.
+
+The single worker explicitly registers with TaskWDT5s. Only cooperative UI/idle
+scan waits feed it; no feed during conversion/decode/flush/signing, and no second
+owner while work is outstanding. The explicit sdkconfig.public enables watchdog
+panic/silent reboot/no coredump, with effective hashes recorded. This does not
+prove a hard return bound, secret-free diagnostics, reset/wipe or core100s timing.
+The approved public fault packet has three compiled modes, normal/busy-cpu/
+blocking-wait; fault modes autonomously start before engine/key initialization:
+
+```sh
+python3 apps/p4/build.py configure --probe-mode busy-cpu
+python3 apps/p4/build.py app --probe-mode busy-cpu
+python3 apps/p4/build.py configure --probe-mode blocking-wait
+python3 apps/p4/build.py app --probe-mode blocking-wait
+python3 apps/p4/build.py configure --probe-mode normal
+python3 apps/p4/build.py app --probe-mode normal
+```
+
+Root reviews frozen sources/artifacts before separate bounded physical reset
+observations and restores normal. No host-triggered approval/fault mechanism.
+Startup requires a fresh BOOT check. With USB data connected this is only an
+input diagnostic and public marker/QR probe; no claimed consent or signature.
 
 After source review and physical admission, root binds exact device/image/offsets
 and transfers hashes, flashes, observes GPIO/display/actual scan, rejects once,

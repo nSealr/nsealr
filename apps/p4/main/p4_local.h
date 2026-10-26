@@ -13,3 +13,4 @@ int p4_memory_internal(const uint8_t *, size_t);
 _Noreturn void p4_fatal(void);
 int p4_present(uint32_t,const uint8_t *,size_t,const uint8_t *,size_t,
  const uint8_t *,size_t,size_t,size_t,uint64_t);
+int p4_scan_preview(const uint8_t *gray,size_t length);

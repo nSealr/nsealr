@@ -1,6 +1,10 @@
 // SPDX-License-Identifier: MIT
 #include "p4_local.h"
 #include "local_input.h"
+#include "frame_pixels.h"
+#include "worker_watchdog.h"
+#include "esp_heap_caps.h"
+#include "src/misc/cache/instance/lv_image_cache.h"
 #include <stdio.h>
 #include <string.h>
 #include <stdatomic.h>
@@ -17,6 +21,8 @@
 
 #define BOOT_GPIO GPIO_NUM_35
 static lv_display_t *screen;
+static uint16_t *preview_pixels;
+static lv_image_dsc_t preview;
 static atomic_uint action, generation, touch_generation;
 static atomic_bool navigation_ready, draw_failed;
 static const char *TAG="p4_local";
@@ -64,6 +70,7 @@ static lv_obj_t *text_at(lv_obj_t *parent,const char *value,int x,int y,int widt
     lv_obj_t *o=lv_label_create(parent);if(!o) p4_fatal();
     lv_obj_set_style_text_font(o,&lv_font_unscii_16,0);
     lv_obj_set_style_text_color(o,lv_color_black(),0);
+    lv_obj_set_style_bg_color(o,lv_color_white(),0);lv_obj_set_style_bg_opa(o,LV_OPA_COVER,0);
     lv_obj_set_width(o,width);lv_obj_set_pos(o,x,y);
     lv_label_set_long_mode(o,LV_LABEL_LONG_CLIP);lv_label_set_text(o,value);return o;
 }
@@ -89,6 +96,10 @@ static int commit_screen(void) {
 }
 void p4_ui_init(lv_display_t *display) {
     screen=display;
+    preview_pixels=heap_caps_calloc(153600,sizeof(uint16_t),MALLOC_CAP_SPIRAM|MALLOC_CAP_8BIT);
+    if(!preview_pixels)p4_fatal();
+    preview=(lv_image_dsc_t){.header={.magic=LV_IMAGE_HEADER_MAGIC,.cf=LV_COLOR_FORMAT_RGB565,
+        .w=320,.h=480,.stride=640},.data_size=307200,.data=(const uint8_t *)preview_pixels};
     gpio_config_t c={.pin_bit_mask=1ULL<<BOOT_GPIO,.mode=GPIO_MODE_INPUT,
         .pull_up_en=GPIO_PULLUP_ENABLE,.pull_down_en=GPIO_PULLDOWN_DISABLE,.intr_type=GPIO_INTR_DISABLE};
     ESP_ERROR_CHECK(gpio_config(&c));
@@ -99,12 +110,21 @@ void p4_ui_status(const char *text) {
     lv_obj_t *root=start_screen();text_at(root,text,16,100,288);
     if(commit_screen()!=0) p4_fatal();
 }
+// Snapshot the exact decoder grayscale before quirc_end thresholds it in place.
+int p4_scan_preview(const uint8_t *gray,size_t length) {
+    lv_obj_t *root=start_screen();
+    if(!p4_gray_preview(gray,length,preview_pixels,153600)) {esp_lv_adapter_unlock();return -1;}
+    lv_image_cache_drop(&preview);
+    lv_obj_t *image=lv_image_create(root);if(!image)p4_fatal();
+    lv_image_set_src(image,&preview);lv_obj_set_pos(image,0,0);lv_obj_move_background(image);
+    return commit_screen();
+}
 void p4_wait_new_action(void) {
     p4_button_t b;p4_button_begin(&b,boot_pressed(),p4_monotonic_ms());
     for(;;) {int a=p4_button_poll(&b,boot_pressed(),p4_monotonic_ms(),false);
         if(a==4) return;
         if(a<0) p4_fatal();
-        vTaskDelay(pdMS_TO_TICKS(10));}
+        p4_worker_idle(10);}
 }
 void p4_boot_check(void) {
     p4_ui_status("INPUT CHECK GPIO35\nRelease, then tap BOOT\nPWR/RST are not consent");
@@ -144,14 +164,16 @@ int p4_present(uint32_t decision,const uint8_t *label,size_t label_len,
         uint64_t now=(uint64_t)p4_monotonic_ms();
         if(now>=deadline || atomic_load(&draw_failed)) {atomic_store(&navigation_ready,false);return -1;}
         int local=p4_button_poll(&b,boot_pressed(),now,decision!=0);
-        if(local) {atomic_store(&navigation_ready,false);return local;}
+        if(local) {atomic_store(&navigation_ready,false);return (uint64_t)p4_monotonic_ms()<deadline?local:-1;}
         if(!decision) {
-            if(!touch_released()) neutral_since=now;
+            bool released=touch_released();
+            if((uint64_t)p4_monotonic_ms()>=deadline) {atomic_store(&navigation_ready,false);return -1;}
+            if(!released) neutral_since=now;
             else if(now-neutral_since>=40 && b.state==1) atomic_store(&navigation_ready,true);
             unsigned a=atomic_exchange(&action,0);
-            if(a==1 || a==2) {atomic_store(&navigation_ready,false);return (int)a;}
+            if(a==1 || a==2) {atomic_store(&navigation_ready,false);return (uint64_t)p4_monotonic_ms()<deadline?(int)a:-1;}
         }
-        vTaskDelay(pdMS_TO_TICKS(10));
+        p4_worker_idle(10);
     }
 }
 int p4_show_response(const uint8_t *payload,size_t length,uint64_t deadline_ms) {

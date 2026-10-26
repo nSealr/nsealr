@@ -6,6 +6,9 @@
 #include "frame_pixels.h"
 #include "p4_local.h"
 #include "quirc.h"
+#include "decode_one.h"
+#include "worker_watchdog.h"
+#include "esp_system.h"
 #include "esp_heap_caps.h"
 #include "esp_private/esp_cache_private.h"
 #include "esp_log.h"
@@ -25,7 +28,10 @@ static struct quirc *decoder;
 static struct quirc_code *code;
 static struct quirc_data *data;
 static uint8_t *response;
-static SemaphoreHandle_t owned;
+static SemaphoreHandle_t owned, copied;
+static const uint8_t *borrowed_rgb;
+static size_t borrowed_length;
+static uint32_t borrowed_width, borrowed_height;
 static TaskHandle_t worker_handle;
 static atomic_bool scan_enabled;
 static const char *TAG="p4_optical";
@@ -36,16 +42,18 @@ static void camera_frame(uint8_t *rgb,uint8_t index,uint32_t width,uint32_t heig
     int64_t now=p4_monotonic_ms();
     if(!atomic_load(&scan_enabled) || now-last<150 || xSemaphoreTake(owned,0)!=pdTRUE)return;
     atomic_store(&scan_enabled,false);last=now;
-    int w,h;uint8_t *gray=quirc_begin(decoder,&w,&h);
-    if(w!=800 || h!=800 || !p4_frame_gray180(rgb,length,width,height,gray,640000)) {
-        atomic_store(&scan_enabled,true);xSemaphoreGive(owned);return;
-    }
+    // Camera retains its buffer until the worker completes the bounded copy.
+    // Only worker calls quirc, preview or Rust. No second frame may own it.
+    borrowed_rgb=rgb;borrowed_length=length;borrowed_width=width;borrowed_height=height;
     xTaskNotifyGive(worker_handle);
+    if(xSemaphoreTake(copied,portMAX_DELAY)!=pdTRUE)p4_fatal();
 }
-static void resume_scan(void) {atomic_store(&scan_enabled,true);xSemaphoreGive(owned);}
+static void resume_scan(void) {atomic_store(&scan_enabled,true);xSemaphoreGive(owned);p4_worker_idle(10);}
 static void worker(void *unused) {
     (void)unused;uint8_t local=0;
     if(!esp_ptr_internal(&local))p4_fatal();
+    p4_worker_watchdog_start();
+    p4_worker_fault_probe();
     p4_boot_check();
     if(p4_engine_init()!=0)p4_fatal();
     ESP_LOGI(TAG,"PUBLIC TEST11x32 only; engine=%u internal stack=%u bytes decoder=%u bytes",
@@ -53,8 +61,19 @@ static void worker(void *unused) {
     p4_ui_status("SCAN ONE nsealr1 QR\nPublic test identity only\nTouch never approves");
     atomic_store(&scan_enabled,true);
     for(;;) {
-        ulTaskNotifyTake(pdTRUE,portMAX_DELAY);
-        int64_t start=p4_monotonic_ms();quirc_end(decoder);
+        if(!ulTaskNotifyTake(pdTRUE,pdMS_TO_TICKS(250))) {
+            // A callback holding a raw frame is outstanding work: do not feed.
+            if(atomic_load(&scan_enabled))p4_worker_idle(0);
+            continue;
+        }
+        int64_t start=p4_monotonic_ms();int w,h;
+        uint8_t *gray=quirc_begin(decoder,&w,&h);
+        bool valid=w==800 && h==800 && p4_frame_gray_raw(borrowed_rgb,borrowed_length,
+            borrowed_width,borrowed_height,gray,640000);
+        borrowed_rgb=NULL;xSemaphoreGive(copied);
+        if(!valid) {resume_scan();continue;}
+        if(p4_scan_preview(gray,640000)!=0)p4_fatal();
+        quirc_end(decoder);
         int count=quirc_count(decoder);
         int64_t detection=p4_monotonic_ms()-start;
         if(count!=1) {
@@ -62,12 +81,10 @@ static void worker(void *unused) {
             resume_scan();continue;
         }
         quirc_extract(decoder,0,code);
-        if(code->size>117 || code->size<21) {resume_scan();continue;}
-        quirc_decode_error_t result=quirc_decode(code,data);
-        if(result!=QUIRC_SUCCESS || data->payload_len<8 || data->payload_len>947 ||
-            memcmp(data->payload,"nsealr1:",8)!=0) {resume_scan();continue;}
-        ESP_LOGI(TAG,"One bounded operation QR; detect_decode_ms=%lld; payload content omitted",
-            (long long)(p4_monotonic_ms()-start));
+        unsigned attempts;
+        if(p4_decode_one(code,data,&attempts)!=0) {resume_scan();continue;}
+        ESP_LOGI(TAG,"One bounded operation QR; gray_preview_detect_decode_ms=%lld; attempts=%u; payload omitted",
+            (long long)(p4_monotonic_ms()-start),attempts);
         int n=p4_engine_run(data->payload,(size_t)data->payload_len,response,1536);
         if(n>0 && p4_show_response(response,(size_t)n,p4_engine_response_deadline_ms())==0) {
             ESP_LOGI(TAG,"PUBLIC response ready; stack_remaining=%u; free_internal=%u; no payload logging",
@@ -83,6 +100,7 @@ static void worker(void *unused) {
     }
 }
 void app_main(void) {
+    ESP_LOGW(TAG,"PUBLIC probe_mode=%d reset_reason=%d",P4_WDT_PROBE_MODE,(int)esp_reset_reason());
     ESP_LOGW(TAG,"PUBLIC TEST FIXTURE BINARY: deterministic identity/auxiliary; no production custody/entropy claim");
     lv_display_t *display=bsp_display_start();
     if(!display || lv_display_get_horizontal_resolution(display)!=320 || lv_display_get_vertical_resolution(display)!=480)p4_fatal();
@@ -92,8 +110,8 @@ void app_main(void) {
     code=heap_caps_calloc(1,sizeof(*code),MALLOC_CAP_SPIRAM|MALLOC_CAP_8BIT);
     data=heap_caps_calloc(1,sizeof(*data),MALLOC_CAP_SPIRAM|MALLOC_CAP_8BIT);
     response=heap_caps_calloc(1,1536,MALLOC_CAP_SPIRAM|MALLOC_CAP_8BIT);
-    owned=xSemaphoreCreateBinary();
-    if(!code || !data || !response || !owned)p4_fatal();
+    owned=xSemaphoreCreateBinary();copied=xSemaphoreCreateBinary();
+    if(!code || !data || !response || !owned || !copied)p4_fatal();
     xSemaphoreGive(owned);
     StackType_t *stack=heap_caps_calloc(1,WORKER_STACK_BYTES,MALLOC_CAP_INTERNAL|MALLOC_CAP_8BIT);
     StaticTask_t *task=heap_caps_calloc(1,sizeof(*task),MALLOC_CAP_INTERNAL|MALLOC_CAP_8BIT);
