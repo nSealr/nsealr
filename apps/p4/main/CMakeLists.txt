@@ -1,4 +1,4 @@
-idf_component_register(SRCS "main.c" "app_video.c" "p4_local.c" "local_input.c" "frame_pixels.c" "decoder_alloc.c" "decode_one.c" "worker_watchdog.c"
+idf_component_register(SRCS "main.c" "app_video.c" "p4_local.c" "local_input.c" "frame_pixels.c" "decoder_alloc.c" "decode_one.c" "worker_watchdog.c" "display_ack.c" "response_lifetime.c" "scan_admission.c"
  INCLUDE_DIRS "." "../vendor/quirc/lib"
  REQUIRES esp_video waveshare__esp32_p4_wifi6_touch_lcd_3_5 esp_driver_gpio esp_timer esp_system esp_lcd esp_lvgl_adapter)
 add_library(p4_quirc STATIC ../vendor/quirc/lib/quirc.c ../vendor/quirc/lib/identify.c ../vendor/quirc/lib/decode.c ../vendor/quirc/lib/version_db.c)

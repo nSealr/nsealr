@@ -95,3 +95,13 @@ Third-party terms: frozen camera files retain their original CC0-1.0/Apache-2.0
 SPDX notices; `vendor/Waveshare-LICENSE.txt` preserves the vendor Apache2.0
 license verbatim. quirc ISC copyright/permission/disclaimer remain in each source
 and header, with exact upstream and explicit local-patch hashes.
+
+The affected display correction after4be review owns the IO callback from startup
+through public BSP handles and preserves the adapter callback behavior via its
+public completion notification. Every stripe now waits for actual color-done,
+with one2s deadline per complete frame and sticky failure before input/feed.
+Dummy mode and its inherited20ms delay alone are not ACK evidence. Response QR
+is drawn dark, published only after ACK plus fresh deadline checks, and cleared
+with its output buffer at the same absolute deadline even without BOOT. See the
+brief for correlation, physical latency and cache-off limits; prior builds remain
+historical. The scan feed takes/retains the camera's admission token.

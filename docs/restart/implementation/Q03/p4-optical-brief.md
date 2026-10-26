@@ -221,3 +221,68 @@ adding its actual LVGL9.6 public header corrected it without warning suppression
 The original upstream quirc NULL/zero memcpy RED and precise guard remain
 preserved in the earlier proof; no new algorithm patch was made here. Root must
 review this affected consumer and that inherited correction before admission.
+
+### Affected correction after distinct review of4be7d8f
+
+The root-assigned distinct reviewer found that the adapter's v9 wait checks only
+rendering_in_progress then sleeps20ms; LVGL clears that render flag before the
+last asynchronous color DMA completes. The previous comment/claim that dummy
+mode was a physical commit was wrong. That reviewed RED and the4be/0227 builds
+remain historical. No flash of them is admitted by this correction. The reviewer
+also identified the shown QR waiting indefinitely for BOOT despite the stated
+expiry-clear contract. The code now implements that contract rather than
+reinterpreting the original deadline after the finding.
+
+The app uses only public APIs to retain the BSP's exact OTHER/rotation0/320x480/
+50-row/internal-single-buffer/no-PPA/tear-none profile and unchanged underlying
+BSP panel/touch initialization. It initializes the adapter, disables its automatic
+IDF callback registration before register_display, installs one IO callback plus
+custom_draw_bitmap, enters dummy mode, registers touch and only then starts the
+adapter. Brightness stays off until a fully committed status screen. There is
+no prior LVGL color transaction or callback-owner handover to drain. The app's
+IO callback forwards every actual color completion to the adapter's public
+notify_color_trans_done_from_isr so normal LVGL flush_ready is retained.
+
+Every stripe submission captures the current frame generation and an increasing
+serial before esp_lcd_panel_draw_bitmap. It waits on a fresh binary completion
+signal without any watchdog feed; an unexpected residual signal is an error.
+The frame has one absolute2s commit deadline from start_screen, never restarted
+by another stripe or ACK. Success requires an ACK matching the pending generation/
+serial, collected before the deadline, and all submitted stripes completed with
+no pending work. Input freshness begins only after that whole-frame success.
+Missing/late/unexpected/duplicate/out-of-generation ACK, display error, counter
+wrap or a frame with no submitted stripe latches failure until restart. Failure
+prevents further physical submissions and subsequent cooperative watchdog feeds.
+The adapter's20ms delay remains an inherited implementation detail with no role
+as evidence of completion. A blocking IDF/adapter call can still require the
+separate watchdog reset mechanism; this adds no qualified hard return bound.
+
+Important correlation limit: the IDF IO callback supplies no hardware transaction
+ID. Matching is established by zero-inflight startup, this one serialized sender,
+one ST7796 tx_color per draw and IDF's one callback on its final color segment.
+The native ACK model tests explicit stale identifiers and state/refusal behavior;
+it does not prove an ID that the hardware/API does not provide or arbitrary
+spurious-IRQ resistance. The callback/clock/ACK helper are placed in IRAM and their
+state in internal RAM for the current configuration; this is not qualification
+of the complete inherited ISR/cache-off path or physical pixel visibility.
+
+Response rendering starts with backlight off. The complete response QR is committed
+with those stripe ACKs, then the same real absolute core deadline is checked before
+and after backlight activation. The response wait uses that unchanged deadline,
+not a new TTL: on the first observed expiry (poll up to10ms, scheduler behavior
+still to measure) or fresh BOOT clear, the1536-byte output is zeroed before the
+UI clear callback. The lamp is disabled, the QR widget is removed and a complete
+clear/status frame is acknowledged before the lamp is re-enabled. Display/clear
+failure keeps the lamp off and stops/restarts without returning to feed/scan.
+This does not revoke a previously verified public Nostr event or promise an
+instantaneous hardware transition exactly on a wall-clock boundary. Actual
+expiry-to-dark/clear latency remains a controlled device measurement.
+
+The resume feed now occurs while the worker retains the camera-admission token;
+only after the feed/yield does it enable/release admission. An idle-scan feed also
+takes that very token around check/feed, so an outstanding raw buffer cannot race
+the idle feed check. Core/Rust FFI, crypto079, grayscale/crop, quirc/decode fallback,
+input gesture FSM, sensor adapter and SDK configuration remain unchanged. Reuse
+their frozen proofs; only ACK/response-clear/feed-token fixtures and three affected
+app variants are rebuilt for the new source. Distinct review and physical reset/
+DMA/expiry/BOOT-DTR gates still precede flash/signature admission.

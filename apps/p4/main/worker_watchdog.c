@@ -24,7 +24,7 @@ void p4_worker_watchdog_start(void) {
 }
 void p4_worker_idle(uint32_t delay_ms) {
     // No other task, timer, camera, DMA or decoder callback can feed this owner.
-    if(!owner || xTaskGetCurrentTaskHandle()!=owner || delay_ms>250 ||
+    if(!owner || xTaskGetCurrentTaskHandle()!=owner || delay_ms>250 || p4_display_failed() ||
        esp_task_wdt_reset()!=ESP_OK)p4_fatal();
     vTaskDelay(pdMS_TO_TICKS(delay_ms));
 }

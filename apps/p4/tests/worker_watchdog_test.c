@@ -2,12 +2,15 @@
 #include <assert.h>
 #include <setjmp.h>
 #include <stdio.h>
+#include <stdbool.h>
 #include "worker_watchdog.h"
 #include "freertos/task.h"
 static void *current=(void *)1,*subscribed;
 static unsigned adds,feeds,delays;
 static jmp_buf failure;
 static int reset_result;
+static bool display_failed;
+bool p4_display_failed(void) {return display_failed;}
 TaskHandle_t xTaskGetCurrentTaskHandle(void) {return current;}
 int esp_task_wdt_add(TaskHandle_t who) {adds++;subscribed=who;return 0;}
 int esp_task_wdt_status(TaskHandle_t who) {return who==subscribed?0:-1;}
@@ -29,6 +32,9 @@ int main(void) {
  assert(adds==1);
  reset_result=-1;
  if(!setjmp(failure)) {p4_worker_idle(10);assert(!"reset error ignored");}
+ assert(feeds==2 && delays==1);
+ reset_result=0;display_failed=true;
+ if(!setjmp(failure)) {p4_worker_idle(10);assert(!"display failure returned to feed");}
  assert(feeds==2 && delays==1);
  puts("single registered worker; foreign/unregistered/duplicate owner and feed failure refused PASS (native mocks only)");
 }
