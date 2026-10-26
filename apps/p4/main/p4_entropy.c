@@ -17,6 +17,7 @@
 #include "esp_log.h"
 #include "freertos/FreeRTOS.h"
 #include "freertos/task.h"
+#include "freertos/semphr.h"
 #include <string.h>
 #if CONFIG_ESP32P4_REV_MIN_FULL < 300 || CONFIG_PM_ENABLE || CONFIG_ESP_BRINGUP_BYPASS_RANDOM_SETTING
 #error "This public P4 source requires reviewed hw_ver3, fixed clocks and real SDK RNG"
@@ -35,6 +36,7 @@ static struct {
 static p4_entropy_report_t last_report;
 _Static_assert(sizeof(owner)+sizeof(history)+sizeof(owner_lock)<=256,"INTERNAL provider cap");
 _Static_assert(sizeof(last_report)<=512,"INTERNAL diagnostic cap");
+_Static_assert(2*sizeof(StaticSemaphore_t)<=512,"two SDK mutex payloads cap, allocator overhead separate");
 static uint32_t analog_refs(void) {
  const uint8_t n=periph_rcc_acquire_enter(PERIPH_ANA_I2C_MASTER_MODULE);
  periph_rcc_exit();return n; // Read only; never acquire_exit/increment a foreign ref.
@@ -132,10 +134,28 @@ static int64_t now(void *unused){(void)unused;return esp_timer_get_time();}
 static void pause_source(void *unused){(void)unused;esp_rom_delay_us(20);}
 bool p4_entropy_bind_worker(void) {
  portENTER_CRITICAL(&owner_lock);
- const bool ok=P4_WDT_PROBE_MODE==0 && xPortGetCoreID()==1 && !xPortInIsrContext() && !owner.admission.bound && !owner.admission.poisoned;
- if(ok){owner.task=xTaskGetCurrentTaskHandle();owner.admission.bound=true;}else owner.admission.poisoned=true;
- portEXIT_CRITICAL(&owner_lock);return ok;
+ const bool can_bind=P4_WDT_PROBE_MODE==0 && xPortGetCoreID()==1 && !xPortInIsrContext() &&
+  xTaskGetSchedulerState()==taskSCHEDULER_RUNNING && !owner.admission.bound &&
+  !owner.admission.busy && !owner.admission.poisoned;
+ if(can_bind){owner.task=xTaskGetCurrentTaskHandle();owner.admission.busy=true;}
+ else owner.admission.poisoned=true;
+ portEXIT_CRITICAL(&owner_lock);
+ if(!can_bind)return false;
+ // SDK ADC locks lazily allocate two INTERNAL mutexes. Warm once before engine/key,
+ // retain them, and never close/replace another SDK owner. OOM may assert in SDK.
+ const p4_entropy_ops_t init={.context=NULL,.try_lock=try_lock,.release_lock=release_lock};
+ const int initialized=p4_entropy_warm_locks(&init);
+ const bool guard_ok=p4_c6_guard_check(NULL);
+ portENTER_CRITICAL(&owner_lock);
+ const bool ok=initialized==P4_RNG_OK && guard_ok && !owner.admission.poisoned;
+ owner.admission.busy=false;
+ if(ok)owner.admission.bound=true;else owner.admission.poisoned=true;
+ portEXIT_CRITICAL(&owner_lock);
+ ESP_LOGI(TAG,"PUBLIC bind=%d SDKmutex_payload_cap=%u INTERNAL; allocator overhead separate; no engine yet",
+  ok,2U*(unsigned)sizeof(StaticSemaphore_t));
+ return ok;
 }
+
 bool p4_entropy_used(void) {
  portENTER_CRITICAL(&owner_lock);const bool used=owner.admission.used;portEXIT_CRITICAL(&owner_lock);return used;
 }

@@ -164,9 +164,23 @@ the existing Linux consumer for actual focused FFI negatives, using the same
 cached target/dependency/tool environment. It is not a new hardware port.
 
 Provider retained state<=256bytes and report<=512bytes INTERNAL,32byte staging,
-no new task/heap/DMA/DRBG; existing96KiB INTERNAL worker stack unchanged. Selected
+no new task/DMA/DRBG and no new collection allocation after successful bind; existing96KiB INTERNAL worker stack unchanged. Selected
 static frames and affected physical minimum>=4096bytes free remain separate
 checks. One fixedUnavailable public boot and one normal public boot are proposed
 for root only, with a new request/fresh confirmation per boot and explicit host
 expectedPublicKey plus independent BIP340 verification. No extra draw screen,
 output-statistical campaign, real identity or device/task closure is authorized.
+
+The original no-new-heap wording is amended: the SDK adc1/adc2 _lock_t handles
+lazily call xQueueCreateMutex on first use. Bind warms both true SDK try-locks
+and balances releases once before the engine, key or review authority exists.
+No close/replacement/foreign normalization is used. Two retained SDK mutex
+payloads are bounded by2*sizeof(StaticSemaphore_t)<=512bytes INTERNAL; allocator
+headers/rounding/fragmentation are separate, not a falsely isolated heap delta.
+Failed bind is terminal without an engine. The SDK may assert/reset on OOM;
+the adapter cannot turn that nonreturning behavior into a typed source error.
+The same locks are reused in collection. Static ADC/RCC/regi2c critical sections
+and quiet GPIO/clock/timer reads add no lazy lock allocation in the reviewed
+returning collection path. Startup logging/UI and SDK fatal/abort paths are not
+included in a universal heap-free assertion. Exact callgraph/config and source
+bindings are required before that narrower claim is accepted.

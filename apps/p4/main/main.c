@@ -65,7 +65,10 @@ static void worker(void *unused) {
         for(;;)p4_worker_idle(250);
     }
 #endif
-    if(!p4_entropy_bind_worker())p4_fatal();
+    if(!p4_entropy_bind_worker()){
+        p4_ui_status("PUBLIC RNG UNAVAILABLE\nNo operation started\nRestart required");
+        for(;;)p4_worker_idle(250);
+    }
     p4_boot_check();
     if(!p4_c6_guard_check("engine-init-before"))p4_fatal();
     if(p4_engine_init()!=0 || !p4_c6_guard_check("engine-init-after"))p4_fatal();

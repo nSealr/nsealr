@@ -11,6 +11,16 @@ int p4_entropy_admit(p4_entropy_admission_t *s,bool correct_worker) {
 bool p4_entropy_active(const p4_entropy_snapshot_t *s) {
  return s->readable==15 && s->flags==P4_RNG_ACTIVE;
 }
+int p4_entropy_warm_locks(const p4_entropy_ops_t *o) {
+ bool locks[2]={false,false};int status=P4_RNG_OK;
+ for(unsigned unit=0;unit<2;++unit){
+  if(o->try_lock(o->context,unit)!=0){status=P4_RNG_OWNERSHIP;break;}
+  locks[unit]=true;
+ }
+ for(unsigned unit=2;unit>0;--unit)
+  if(locks[unit-1] && o->release_lock(o->context,unit-1)!=0)status=P4_RNG_CLEANUP;
+ return status;
+}
 static int check(const p4_entropy_ops_t *o,int64_t start,int64_t *last) {
  if(!o->guard(o->context))return P4_RNG_INTERRUPTED;
  const int64_t t=o->now(o->context);

@@ -99,6 +99,17 @@ int main(void){
  p4_entropy_snapshot_t a={.readable=15,.flags=P4_RNG_ACTIVE};CHECK(p4_entropy_active(&a));
  for(unsigned bit=0;bit<21;++bit){p4_entropy_snapshot_t b=a;b.flags^=1U<<bit;CHECK(!p4_entropy_active(&b));}
  for(unsigned mask=0;mask<15;++mask){p4_entropy_snapshot_t b=a;b.readable=mask;CHECK(!p4_entropy_active(&b));}
+ // The same warm-up policy is used by real bind, before any engine admission.
+ const enum fault init_faults[]={OK,LOCK1,LOCK2,RELEASE1,RELEASE2};
+ for(unsigned i=0;i<sizeof(init_faults)/sizeof(*init_faults);++i){
+  mock_t m=mock(init_faults[i]);p4_entropy_ops_t o=ops(&m);
+  const int result=p4_entropy_warm_locks(&o);
+  CHECK(!m.locks[0]&&!m.locks[1]&&!m.bus_claims&&!m.enabled&&!m.disabled&&m.refs==m.baseline);
+  if(init_faults[i]==OK)CHECK(result==P4_RNG_OK&&m.releases[0]==1&&m.releases[1]==1);
+  if(init_faults[i]==LOCK1)CHECK(result==P4_RNG_OWNERSHIP&&!m.releases[0]&&!m.attempts[1]);
+  if(init_faults[i]==LOCK2)CHECK(result==P4_RNG_OWNERSHIP&&m.releases[0]==1&&!m.releases[1]);
+  if(init_faults[i]==RELEASE1||init_faults[i]==RELEASE2)CHECK(result==P4_RNG_CLEANUP&&m.releases[0]==1&&m.releases[1]==1);
+ }
  p4_entropy_admission_t adm={0};CHECK(p4_entropy_admit(&adm,true)==P4_RNG_OWNERSHIP);
  adm.bound=true;CHECK(p4_entropy_admit(&adm,false)==P4_RNG_OWNERSHIP);CHECK(!adm.used&&!adm.busy);
  CHECK(p4_entropy_admit(&adm,true)==P4_RNG_OK);CHECK(adm.used&&adm.busy&&adm.generation==1);

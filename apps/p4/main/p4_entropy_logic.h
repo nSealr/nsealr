@@ -46,6 +46,7 @@ typedef struct {
  uint32_t analog_increment;
  int64_t start_us;
 } p4_entropy_ops_t;
+int p4_entropy_warm_locks(const p4_entropy_ops_t*);
 void p4_entropy_wipe(uint8_t*,size_t);
 bool p4_entropy_active(const p4_entropy_snapshot_t*);
 int p4_entropy_collect(p4_entropy_state_t*,const p4_entropy_ops_t*,uint8_t*,size_t,p4_entropy_report_t*);
