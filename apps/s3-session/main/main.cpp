@@ -11,6 +11,7 @@
 #include "esp_system.h"
 #include "esp_heap_caps.h"
 #include "esp_lcd_io_i80.h"
+#include "esp_lcd_panel_io.h"
 #include "esp_lcd_panel_ops.h"
 #include "esp_lcd_panel_vendor.h"
 #include "esp_timer.h"
@@ -110,7 +111,7 @@ static void display_init() {
                        PIN_LCD_D4,PIN_LCD_D5,PIN_LCD_D6,PIN_LCD_D7};
     for(unsigned i=0;i<8;++i) bus.data_gpio_nums[i]=data[i];
     bus.bus_width=8; bus.max_transfer_bytes=width*height*2;
-    bus.psram_trans_align=64; bus.sram_trans_align=4;
+    bus.psram_trans_align=64;
     esp_lcd_i80_bus_handle_t handle;
     ESP_ERROR_CHECK(esp_lcd_new_i80_bus(&bus,&handle));
     esp_lcd_panel_io_i80_config_t io = {};
@@ -206,6 +207,6 @@ extern "C" void app_main() {
                 (unsigned long)buttons[0].presses,(unsigned long)buttons[1].presses,(unsigned long)ignored);
             usb_line(status);
         }
-        vTaskDelay(pdMS_TO_TICKS(5));
+        vTaskDelay(1); // At least one real RTOS tick, including the100Hz SDK default.
     }
 }

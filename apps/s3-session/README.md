@@ -6,7 +6,7 @@ Only public fixture3 is used: no real identity, signing, entropy collection,
 import UI, or persistent data service is present.
 
 The native app draws an RGBW border/pattern, numbered corners and two local
-button counters. GPIO0/14 require a release after a held startup state and use
+button counters (last decimal digit on screen, full count over USB). GPIO0/14 require a release after a held startup state and use
 the already-tested40ms debounce helper. USB Serial/JTAG reports cached public
 ABI output and physical button status once per second. It ignores received
 bytes, up to64 per iteration, without logging content or accepting commands.
