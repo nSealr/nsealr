@@ -2,6 +2,7 @@
 #include "worker_watchdog.h"
 #include "p4_local.h"
 #include "c6_probe.h"
+#include "c6_guard.h"
 #include "esp_task_wdt.h"
 #include "esp_log.h"
 #include "freertos/FreeRTOS.h"
@@ -26,6 +27,7 @@ void p4_worker_watchdog_start(void) {
 void p4_worker_idle(uint32_t delay_ms) {
     // No other task, timer, camera, DMA or decoder callback can feed this owner.
     if(!owner || xTaskGetCurrentTaskHandle()!=owner || delay_ms>250 || p4_display_failed() ||
+       !p4_c6_guard_check(NULL) ||
        esp_task_wdt_reset()!=ESP_OK)p4_fatal();
     vTaskDelay(pdMS_TO_TICKS(delay_ms));
 }

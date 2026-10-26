@@ -2,12 +2,14 @@
 #include "p4_local.h"
 #include "worker_watchdog.h"
 #include "local_input.h"
+#include "c6_guard.h"
 #include <string.h>
 void p4_wait_response_clear(uint8_t *response,size_t capacity,uint64_t deadline) {
     if(!response || capacity!=1536)p4_fatal();
     p4_button_t button;p4_button_begin(&button,p4_boot_pressed(),p4_monotonic_ms());
     bool expired;
     for(;;) {
+        if(!p4_c6_guard_check(NULL)) {memset(response,0,capacity);p4_fatal();}
         uint64_t now=(uint64_t)p4_monotonic_ms();expired=now>=deadline;
         if(expired || p4_display_failed())break;
         int action=p4_button_poll(&button,p4_boot_pressed(),now,false);

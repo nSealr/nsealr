@@ -105,3 +105,10 @@ is drawn dark, published only after ACK plus fresh deadline checks, and cleared
 with its output buffer at the same absolute deadline even without BOOT. See the
 brief for correlation, physical latency and cache-off limits; prior builds remain
 historical. The scan feed takes/retains the camera's admission token.
+
+Normal public mode0 now holds/checks the pinned board's C6 GPIO54 before engine
+admission and across critical UI/output/feed boundaries. It has no SDIO/reset
+cycle or radio initialization. Abnormal reset reasons stop without engine.
+See docs/restart/implementation/Q03/p4-normal-c6-guard.md for the exact sampled
+pad policy, USB/PMIC/operator precondition and remaining physical/reset limits.
+This remains a public fixture, not an offline/custody-qualified release.

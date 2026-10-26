@@ -9,6 +9,7 @@
 #include "decode_one.h"
 #include "worker_watchdog.h"
 #include "scan_admission.h"
+#include "c6_guard.h"
 #include "esp_system.h"
 #include "esp_heap_caps.h"
 #include "esp_private/esp_cache_private.h"
@@ -56,8 +57,16 @@ static void worker(void *unused) {
     if(!esp_ptr_internal(&local))p4_fatal();
     p4_worker_watchdog_start();
     p4_worker_fault_probe();
+#if P4_WDT_PROBE_MODE == 0
+    if(!p4_c6_guard_begin())p4_fatal();
+    if(esp_reset_reason()!=ESP_RST_POWERON) {
+        p4_ui_status("PUBLIC NORMAL UNAVAILABLE\nPrevious reset; no session\nNo engine/key admitted");
+        for(;;)p4_worker_idle(250);
+    }
+#endif
     p4_boot_check();
-    if(p4_engine_init()!=0)p4_fatal();
+    if(!p4_c6_guard_check("engine-init-before"))p4_fatal();
+    if(p4_engine_init()!=0 || !p4_c6_guard_check("engine-init-after"))p4_fatal();
     ESP_LOGI(TAG,"PUBLIC TEST11x32 only; engine=%u internal stack=%u bytes decoder=%u bytes",
         (unsigned)p4_engine_bytes(),WORKER_STACK_BYTES,(unsigned)p4_decoder_retained());
     p4_ui_status("SCAN ONE nsealr1 QR\nPublic test identity only\nTouch never approves");
@@ -87,7 +96,11 @@ static void worker(void *unused) {
         if(p4_decode_one(code,data,&attempts)!=0) {resume_scan();continue;}
         ESP_LOGI(TAG,"One bounded operation QR; gray_preview_detect_decode_ms=%lld; attempts=%u; payload omitted",
             (long long)(p4_monotonic_ms()-start),attempts);
+        if(!p4_c6_guard_check("operation-before"))p4_fatal();
         int n=p4_engine_run(data->payload,(size_t)data->payload_len,response,1536);
+        if(!p4_c6_guard_check("operation-after")) {
+            memset(response,0,1536);memset(data,0,sizeof(*data));p4_fatal();
+        }
         if(n>0 && p4_show_response(response,(size_t)n,1536,p4_engine_response_deadline_ms())==0) {
             ESP_LOGI(TAG,"PUBLIC response ready; stack_remaining=%u; free_internal=%u; no payload logging",
                 (unsigned)uxTaskGetStackHighWaterMark(NULL),(unsigned)heap_caps_get_free_size(MALLOC_CAP_INTERNAL));

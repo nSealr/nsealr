@@ -5,6 +5,7 @@
 #include "worker_watchdog.h"
 #include "display_ack.h"
 #include "c6_probe.h"
+#include "c6_guard.h"
 #include "bsp/esp-bsp.h"
 #include "bsp/display.h"
 #include "esp_lv_adapter_input.h"
@@ -50,15 +51,23 @@ int64_t IRAM_ATTR p4_monotonic_ms(void) {return esp_timer_get_time()/1000;}
 // This is an explicitly public deterministic test source, not qualified entropy.
 ptrdiff_t p4_fixture_auxiliary(uint8_t *destination,size_t capacity) {
     if(!destination || capacity!=32)return -1;
-    memset(destination,0x22,32);return 32;
+    if(!p4_c6_guard_check(NULL))return -1;
+    memset(destination,0x22,32);
+    if(!p4_c6_guard_check(NULL)) {memset(destination,0,32);return -1;}
+    return 32;
 }
 
 int p4_memory_internal(const uint8_t *p,size_t n) {
     return p && n && esp_ptr_internal(p) && esp_ptr_internal(p+n-1);
 }
 _Noreturn void p4_fatal(void) {
-    p4_c6_before_abort();
-    ESP_LOGE(TAG,"PUBLIC TEST application stopped; no response admission");
+    static atomic_flag entered=ATOMIC_FLAG_INIT;
+    if(!atomic_flag_test_and_set(&entered)) {
+        p4_c6_guard_before_abort();
+        int blank=bsp_display_backlight_off();
+        p4_c6_before_abort();
+        ESP_LOGE(TAG,"PUBLIC TEST stopped; blank=%d best-effort; no response admission",blank);
+    }
     esp_restart(); for (;;) vTaskDelay(1);
 }
 bool p4_boot_pressed(void) {return gpio_get_level(BOOT_GPIO)==0;}
@@ -127,6 +136,7 @@ static lv_obj_t *text_at(lv_obj_t *parent,const char *value,int x,int y,int widt
 }
 // Worker owns screen updates; action capture stays disabled through DMA commit.
 static lv_obj_t *start_screen(void) {
+    if(!p4_c6_guard_check(NULL))p4_fatal();
     atomic_store(&navigation_ready,false);atomic_store(&action,0);
     unsigned next=atomic_fetch_add(&generation,1)+1;atomic_store(&touch_generation,0);
     if(!next || p4_display_failed())p4_fatal();
@@ -151,7 +161,7 @@ static int commit_screen(void) {
     bool committed=p4_display_ack_finish(&ack,frame_generation,(uint64_t)p4_monotonic_ms());
     portEXIT_CRITICAL(&ack_lock);
     if(!committed)poison_draw();
-    return committed && !p4_display_failed()?0:-1;
+    return committed && !p4_display_failed() && p4_c6_guard_check(NULL)?0:-1;
 }
 static void p4_ui_init(lv_display_t *display) {
     screen=display;
@@ -214,7 +224,7 @@ void p4_wait_new_action(void) {
     p4_button_t b;p4_button_begin(&b,p4_boot_pressed(),p4_monotonic_ms());
     for(;;) {if(p4_display_failed())p4_fatal();
         int a=p4_button_poll(&b,p4_boot_pressed(),p4_monotonic_ms(),false);
-        if(a==4) return;
+        if(a==4) {if(!p4_c6_guard_check(NULL))p4_fatal();return;}
         if(a<0) p4_fatal();
         p4_worker_idle(10);}
 }
@@ -231,6 +241,7 @@ static bool append_text(char *text,size_t *used,const uint8_t *value,size_t n) {
 int p4_present(uint32_t decision,const uint8_t *label,size_t label_len,
  const uint8_t *body,size_t body_len,const uint8_t *position,size_t position_len,
  size_t index,size_t total,uint64_t deadline) {
+    if(!p4_c6_guard_check(NULL))return -1;
     if(decision>1 || !label || !body || !position || label_len>176 || position_len>9 || !total || index>=total || total>64) return -1;
     char text[500]={0};size_t used=0;
     if(!append_text(text,&used,label,label_len) || !append_text(text,&used,body,body_len) || !append_text(text,&used,position,position_len)) return -1;
@@ -253,23 +264,25 @@ int p4_present(uint32_t decision,const uint8_t *label,size_t label_len,
     p4_button_t b;p4_button_begin(&b,p4_boot_pressed(),p4_monotonic_ms());
     uint64_t neutral_since=(uint64_t)p4_monotonic_ms();
     for(;;) {
+        if(!p4_c6_guard_check(NULL)) {atomic_store(&navigation_ready,false);return -1;}
         uint64_t now=(uint64_t)p4_monotonic_ms();
         if(now>=deadline || p4_display_failed()) {atomic_store(&navigation_ready,false);return -1;}
         int local=p4_button_poll(&b,p4_boot_pressed(),now,decision!=0);
-        if(local) {atomic_store(&navigation_ready,false);return (uint64_t)p4_monotonic_ms()<deadline && !p4_display_failed()?local:-1;}
+        if(local) {atomic_store(&navigation_ready,false);return !p4_display_failed() && p4_c6_guard_check(NULL) && (uint64_t)p4_monotonic_ms()<deadline?local:-1;}
         if(!decision) {
             bool released=touch_released();
             if((uint64_t)p4_monotonic_ms()>=deadline) {atomic_store(&navigation_ready,false);return -1;}
             if(!released) neutral_since=now;
             else if(now-neutral_since>=40 && b.state==1) atomic_store(&navigation_ready,true);
             unsigned a=atomic_exchange(&action,0);
-            if(a==1 || a==2) {atomic_store(&navigation_ready,false);return (uint64_t)p4_monotonic_ms()<deadline && !p4_display_failed()?(int)a:-1;}
+            if(a==1 || a==2) {atomic_store(&navigation_ready,false);return !p4_display_failed() && p4_c6_guard_check(NULL) && (uint64_t)p4_monotonic_ms()<deadline?(int)a:-1;}
         }
         p4_worker_idle(10);
     }
 }
 int p4_show_response(uint8_t *payload,size_t length,size_t capacity,uint64_t deadline_ms) {
     if(!payload || capacity!=1536)return -1;
+    if(!p4_c6_guard_check("response-before")) {memset(payload,0,capacity);return -1;}
     if(!length || length>capacity || (uint64_t)p4_monotonic_ms()>=deadline_ms) {
         memset(payload,0,capacity);p4_clear_response(true);return -1;
     }
@@ -295,10 +308,12 @@ int p4_show_response(uint8_t *payload,size_t length,size_t capacity,uint64_t dea
         p4_clear_response(true);return -1;
     }
     int committed=commit_screen();
+    if(!p4_c6_guard_check("response-after-ACK")) {memset(payload,0,capacity);p4_fatal();}
     if(committed!=0 || (uint64_t)p4_monotonic_ms()>=deadline_ms) {
         memset(payload,0,1536);p4_clear_response(true);return -1;
     }
     if(bsp_display_backlight_on()!=ESP_OK)p4_fatal();
+    if(!p4_c6_guard_check(NULL)) {memset(payload,0,capacity);p4_fatal();}
     if((uint64_t)p4_monotonic_ms()>=deadline_ms) {
         memset(payload,0,capacity);p4_clear_response(true);return -1;
     }

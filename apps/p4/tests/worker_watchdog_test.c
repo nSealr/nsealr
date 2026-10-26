@@ -9,7 +9,8 @@ static void *current=(void *)1,*subscribed;
 static unsigned adds,feeds,delays;
 static jmp_buf failure;
 static int reset_result;
-static bool display_failed;
+static bool display_failed,guard_ok=true;
+bool p4_c6_guard_check(const char *phase) {(void)phase;return guard_ok;}
 bool p4_display_failed(void) {return display_failed;}
 TaskHandle_t xTaskGetCurrentTaskHandle(void) {return current;}
 int esp_task_wdt_add(TaskHandle_t who) {adds++;subscribed=who;return 0;}
@@ -36,5 +37,8 @@ int main(void) {
  reset_result=0;display_failed=true;
  if(!setjmp(failure)) {p4_worker_idle(10);assert(!"display failure returned to feed");}
  assert(feeds==2 && delays==1);
- puts("single registered worker; foreign/unregistered/duplicate owner and feed failure refused PASS (native mocks only)");
+ display_failed=false;guard_ok=false;
+ if(!setjmp(failure)) {p4_worker_idle(10);assert(!"C6 guard failure returned to feed");}
+ assert(feeds==2 && delays==1);
+ puts("C6 guard failure blocks feed; single registered worker; foreign/unregistered/duplicate owner and feed failure refused PASS (native mocks only)");
 }
