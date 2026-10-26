@@ -379,6 +379,7 @@ type PreparedSignerDispatch =
       ok: true;
       dispatcher: SignerRequestDispatcher;
       dispatchRequest: SignerDispatchRequest;
+      readonly expectedPublicKey: string;
       release: () => void;
       trackPending: (operation: unknown) => Promise<unknown>;
       checkCurrent: () => void;
@@ -1049,6 +1050,9 @@ function prepareSignerDispatch(
     };
   }
 
+  // Keep account identity private; the adapter owns a separate mutable route copy.
+  const expectedPublicKey = routeSelection.public_key;
+
   const acknowledgement = request.params.external_review_acknowledgement;
   if (acknowledgement !== undefined) {
     return {
@@ -1125,6 +1129,7 @@ function prepareSignerDispatch(
     ok: true,
     dispatcher: context.signerDispatcher,
     dispatchRequest,
+    expectedPublicKey,
     checkCurrent: current,
     timeout_ms: timeoutMs,
     trackPending: (operation) => {
@@ -1166,10 +1171,10 @@ function dispatchFailureResponse(
 
 function dispatchSuccessResponse(
   request: Extract<LocalServiceRequest, { operation: "dispatch_signer_request" }>,
-  routeSelection: RouteSelection,
+  expectedPublicKey: string,
   signerResponse: unknown
 ): LocalServiceResponse {
-  const verification = verifySignerResponsePayload(request.params.request, signerResponse, routeSelection.public_key);
+  const verification = verifySignerResponsePayload(request.params.request, signerResponse, expectedPublicKey);
   if (!verification.ok) {
     return errorResponse(request, "invalid_signer_response", verification.error);
   }
@@ -1223,7 +1228,7 @@ function dispatchSignerRequest(
       "async signer dispatcher requires handleLocalServiceRequestAsync"
     );
   }
-  return dispatchSuccessResponse(request, prepared.dispatchRequest.route_selection, signerResponse);
+  return dispatchSuccessResponse(request, prepared.expectedPublicKey, signerResponse);
 }
 
 async function dispatchSignerRequestAsync(
@@ -1252,5 +1257,5 @@ async function dispatchSignerRequestAsync(
     if (timer !== undefined) clearTimeout(timer);
     prepared.release();
   }
-  return dispatchSuccessResponse(request, prepared.dispatchRequest.route_selection, signerResponse);
+  return dispatchSuccessResponse(request, prepared.expectedPublicKey, signerResponse);
 }
