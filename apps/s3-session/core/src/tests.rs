@@ -9,6 +9,22 @@ static CLOCK_CALLS: AtomicUsize = AtomicUsize::new(0);
 static TICK: AtomicU64 = AtomicU64::new(10);
 extern "C" fn now(out: *mut u64) -> i32 {
     let n = CLOCK_CALLS.fetch_add(1, Ordering::SeqCst);
+    if MODE.load(Ordering::SeqCst) == 9 {
+        assert_eq!(nsealr_s3_public_feed(b"x"[0]), BUSY);
+        assert_eq!(nsealr_s3_public_reset_input(), BUSY);
+        let mut out = [0xa5; FRAME];
+        let r = unsafe {
+            nsealr_s3_public_exchange(
+                out.as_mut_ptr(),
+                FRAME,
+                Some(present),
+                Some(now),
+                Some(cancelled),
+            )
+        };
+        assert_eq!(r.status, BUSY);
+        assert!(out.iter().all(|b| *b == 0xa5));
+    }
     let m = MODE.load(Ordering::SeqCst);
     if m == 5 {
         return -1;
@@ -345,4 +361,12 @@ fn corrupted_frame_wrong_direction_and_oversized_decoded_json_reject() {
         Err(REQUEST)
     );
     assert_eq!(CALLS.load(Ordering::SeqCst), 0);
+}
+
+#[test]
+fn reentrant_callbacks_cannot_mutate_ingress_or_create_another_exchange() {
+    let (r, out) = run(9, REQUEST_JSON);
+    assert_eq!(r.status, 0);
+    let json = payload(&out, r.length);
+    assert!(json.windows(11).any(|w| w == b"s3-public-1"));
 }
