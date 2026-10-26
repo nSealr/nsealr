@@ -1,0 +1,59 @@
+
+[31m⎯⎯⎯⎯⎯⎯⎯[39m[1m[41m Failed Tests 6 [49m[22m[31m⎯⎯⎯⎯⎯⎯⎯[39m
+
+[41m[1m FAIL [22m[49m packages/client/src/service.test.ts[2m > [22mC01 private account key pin (sync)[2m > [22mrejects valid foreign fixture after 'changed copy key'
+[41m[1m FAIL [22m[49m packages/client/src/service.test.ts[2m > [22mC01 private account key pin (sync)[2m > [22mrejects valid foreign fixture after 'replaced route copy'
+[41m[1m FAIL [22m[49m packages/client/src/service.test.ts[2m > [22mC01 private account key pin (sync)[2m > [22mrejects valid foreign fixture after 'removed copy key'
+[31m[1mAssertionError[22m: expected { version: 1, …(3) } to match object { ok: false, error: { …(2) } }
+(4 matching properties omitted from actual)[39m
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[2m  {[22m
+[32m-   "error": {[39m
+[32m-     "code": "invalid_signer_response",[39m
+[32m-     "message": "signer response public key does not match selected route",[39m
+[32m-   },[39m
+[32m-   "ok": false,[39m
+[31m+   "ok": true,[39m
+[2m  }[22m
+
+[36m [2m❯[22m packages/client/src/service.test.ts:[2m1346:20[22m[39m
+    [90m1344|[39m   it.each(mutations)("rejects valid foreign fixture after $name", asyn…
+    [90m1345|[39m     [35mconst[39m result [33m=[39m [35mawait[39m [34mdispatchFixture[39m(accountA[33m,[39m apply)[33m;[39m
+    [90m1346|[39m     [34mexpect[39m(result)[33m.[39m[34mtoMatchObject[39m({
+    [90m   |[39m                    [31m^[39m
+    [90m1347|[39m       ok[33m:[39m [35mfalse[39m[33m,[39m
+    [90m1348|[39m       error: { code: "invalid_signer_response", message: "signer respo…
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/6]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m packages/client/src/service.test.ts[2m > [22mC01 private account key pin (async)[2m > [22mrejects valid foreign fixture after 'changed copy key'
+[41m[1m FAIL [22m[49m packages/client/src/service.test.ts[2m > [22mC01 private account key pin (async)[2m > [22mrejects valid foreign fixture after 'replaced route copy'
+[41m[1m FAIL [22m[49m packages/client/src/service.test.ts[2m > [22mC01 private account key pin (async)[2m > [22mrejects valid foreign fixture after 'removed copy key'
+[31m[1mAssertionError[22m: expected { version: 1, …(3) } to match object { ok: false, error: { …(2) } }
+(4 matching properties omitted from actual)[39m
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[2m  {[22m
+[32m-   "error": {[39m
+[32m-     "code": "invalid_signer_response",[39m
+[32m-     "message": "signer response public key does not match selected route",[39m
+[32m-   },[39m
+[32m-   "ok": false,[39m
+[31m+   "ok": true,[39m
+[2m  }[22m
+
+[36m [2m❯[22m packages/client/src/service.test.ts:[2m1346:20[22m[39m
+    [90m1344|[39m   it.each(mutations)("rejects valid foreign fixture after $name", asyn…
+    [90m1345|[39m     [35mconst[39m result [33m=[39m [35mawait[39m [34mdispatchFixture[39m(accountA[33m,[39m apply)[33m;[39m
+    [90m1346|[39m     [34mexpect[39m(result)[33m.[39m[34mtoMatchObject[39m({
+    [90m   |[39m                    [31m^[39m
+    [90m1347|[39m       ok[33m:[39m [35mfalse[39m[33m,[39m
+    [90m1348|[39m       error: { code: "invalid_signer_response", message: "signer respo…
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/6]⎯[22m[39m
+

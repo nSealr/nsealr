@@ -1,12 +1,25 @@
 # First-release product requirements
 
-Date: 2026-10-18. These requirements define the first-release product contract. Source and protocol inputs remain pinned in the parent brief. The task graph records actual independent acceptance and integration; this document does not announce implemented features or qualified hardware.
+Date: 2026-10-25; reconciles the 2026-10-18 requirements with the maintainer's first milestone. These requirements define the release-specific product contract. Source and protocol inputs remain pinned in the parent brief. The task graph records actual independent acceptance and integration; this document does not announce implemented features or qualified hardware.
 
 ## Portfolio and user outcome
 
 The first user is a Nostr user who wants the ordinary client to operate without holding the identity secret, and who can understand and approve each supported action on a separate device. The second independent user is a firmware author who wants a programmable security-oriented board without importing Nostr.
 
-Retain four separately qualified Signer profiles: commercial ESP32 without SE over USB, Pi over optical QR, ESP32-P4 over optical QR, and the custom Board's initially connected Signer. Retain generic Board + SDK as a separate release. Smartcards are retired. A profile release never waits for qualification of an unrelated profile. These are capability/threat profiles, not grades on a universal security scale.
+Phase one delivers three separately qualified Signer profiles: LILYGO
+T-Display-S3 non-touch with case/two buttons over USB/Bridge, without SE or
+persistent identity vault; Pi over optical QR; and ESP32-P4 over optical QR.
+All three keep identity secrets only for the locally loaded session. Complete
+Bridge/CLI/service/browser/client and TypeScript `packages/sdk` integration,
+installation/recovery, compatible versions and qualified release artifacts are
+part of their user outcome, not optional follow-up after firmware.
+
+Custom Board's connected Signer and generic embedded Board + SDK remain separate
+later releases. MCU/SE comparison, PCB/fabrication/EVT/DVT and persistent automation
+are deferred. S04's terminal platform/document/API/errata gate remains binding,
+with no retry by another model, machine, agent or rephrasing. Smartcards are
+retired. A profile release never waits for an unrelated profile. These are
+capability/threat profiles, not grades on a universal security scale.
 
 ## Semantic requirements
 
@@ -23,7 +36,35 @@ Retain four separately qualified Signer profiles: commercial ESP32 without SE ov
 | PROD-09 | A versioned profile manifest declares finite input/content/tag/frame bounds, cumulative retained bytes, pending counts, parse work, deadlines and output limits. Enforcement precedes unbounded allocation/expensive processing. Exact maxima are accepted from measured feasibility, not protocol maxima or inherited defaults. | S01/T01/K01/Q01/QH01; QP01/QP02 and each target measurement |
 | PROD-10 | The receiver independently validates response correlation, expected user identity, canonical ID and signature. Publication is reported separately from successful signing. A connect acknowledgement or selected origin label never grants device consent. | S01/C01/QH01; V01/V03/Q02/Q03 |
 | PROD-11 | Each profile declares boot, firmware authenticity enforcement, update/recovery, debug, persistence, PIN behavior, active interfaces and physical-attacker limits. Replacing firmware/ownership cannot silently inherit privileged secret state. Unsupported hardware properties are not emulated by successful flags. | D01/D02, QP01/QP02/Q02/Q03, S04/H02/H02S/B02/V02/V03 and release |
-| PROD-12 | The generic Board SDK provides documented peripheral, entropy, custody, storage, input/display and lifecycle boundaries without Nostr event schemas. A standalone non-Nostr example is independently built and run. Initially one trusted firmware image, with no hostile-app isolation claim. | B01/B02/B03, independently of Signer qualification |
+| PROD-12 | Retained later-phase requirement: the generic embedded Board SDK provides documented peripheral, entropy, custody, storage, input/display and lifecycle boundaries without Nostr event schemas. A standalone non-Nostr example is independently built and run. Initially one trusted firmware image, with no hostile-app isolation claim. | B01/B02/B03, independently of Signer qualification |
+
+## First S3 session-custody profile
+
+PROD-03/04/11 apply to this connected profile without a persistent vault. D01
+identifies the exact hardware and direct screen/two-button control path; V01
+proves the real shared-engine request/review/consent/verified-response slice with
+public test identities. D02 then qualifies local create/import, nsec backup and
+checksum-validated same-public-key reload, secret copies and no persistent writes,
+and lock/disconnect/reset/power-loss/update/debug behavior. D03 still requires
+D02, C01 and C02 before release. The earlier persistent encrypted custody/PIN
+contract is preserved in D02's deferred extension and is not silently completed
+or a prerequisite of this session-only release.
+
+Bridge, browser, CLI and service never generate/hold the identity as a substitute
+for device custody or accept plaintext recovery as an onboarding shortcut.
+NIP-46 host transport/client keys keep their separate bounded lifecycle. Identity
+and derived secrets must not enter flash/NVS, logs, dumps or update/recovery
+storage. State owned clear/zeroization and physical RAM-remanence limits honestly.
+Lock, cancel, relevant session/policy/account change and disconnect invalidate
+pending authorization; lock/disconnect/reset/power loss clear owned session
+custody and require local reload before new authority. Test reconnect and stale
+results/grants independently. The two-button recovery flow must actually be
+usable; inability to measure this blocks S3 admission, without a host fallback.
+
+The profile must state actual boot/authenticity/update/debug and physical-attacker
+limits, qualify its promised enforcement and reject invented protection flags.
+Session-only storage does not make modified firmware, blind signing or physical
+extraction safe. No irreversible provisioning is implied by this scope change.
 
 ## Exact public-event catalog and review
 
@@ -92,7 +133,7 @@ NIP-19 defines `nsec` as a user-facing encoding for the existing private scalar;
 
 For the first release, local text entry/display is the common semantic fallback. Optical import/export may use the same `nsec` locally on qualified camera/display profiles. Every target must demonstrate usable, checksum-validated entry and an actual expected-public-key recovery drill before admission. A two-button board with impractical recovery fails its product gate even if it can sign. No host-assisted plaintext fallback is allowed. The precise UI is designed and measured on each target rather than imposed as identical hardware interaction.
 
-NIP-06/BIP-39/SeedQR compatibility is optional migration work, not required for the initial native identity flow. Preserve useful legacy test/oracle knowledge without promising all historical source formats. NIP-49 encrypted export is deferred pending an explicit password/KDF/memory and usability design; do not weaken its parameters merely to fit an MCU. This decision does not invent a new password-based vault encryption scheme; persistent custody is separately specified in D02/S04.
+NIP-06/BIP-39/SeedQR compatibility is optional migration work, not required for the initial native identity flow. Preserve useful legacy test/oracle knowledge without promising all historical source formats. NIP-49 encrypted export is deferred pending an explicit password/KDF/memory and usability design; do not weaken its parameters merely to fit an MCU. This decision does not invent a new password-based vault encryption scheme; persistent custody remains in the deferred D02 extension and later S04/custom work, outside the S3 first milestone.
 
 | Journey | Required user-visible behavior and failure |
 | --- | --- |
@@ -101,7 +142,7 @@ NIP-06/BIP-39/SeedQR compatibility is optional migration work, not required for 
 | Connected operation | Receive, bound, validate, review and locally approve exact action; return verified result; client independently handles relay publication. Cancel/disconnect/timeout does not become consent. |
 | Offline operation | Keep the original client request, display request QR, scan and validate on signer, locally review/approve, display public response QR, correlate and verify at Bridge. Mixed/incomplete/replayed frames fail predictably. |
 | Message | Show admitted plaintext/recipient and bind them to the operation/seal actually authorized. Verify incoming context only when that context was supplied and checked. Client/Bridge can see plaintext when the admitted workflow returns it; never export stable conversation keys for convenience. |
-| Lock / recover / update | Cancel authority and clear owned session material within documented limits. Offline reloads locally; persistent restore reproduces the expected identity. Test interrupted writes/updates, reset, rollback behavior and permitted firmware-owner transitions on actual target. |
+| Lock / recover / update | Cancel authority and clear owned session material within documented limits. S3/Pi/P4 clear session custody on lock/disconnect or power loss as applicable and reload locally; every restore reproduces the expected identity. Deferred persistent profiles retain their own restore contract. Test interrupted writes/updates, reset, rollback behavior and permitted firmware-owner transitions on actual target. |
 
 ## First hardware candidates versus admission
 
@@ -113,7 +154,7 @@ Each candidate needs exact revision/package, manufacturer drawings/source, board
 
 ## Proof and remaining work
 
-Read with [the threat models](threat-models.md). The requirement owner is responsible for a positive case and hostile variants at the boundary of its claim, including identity substitution, changed/hidden fields, invalid parsing, queue floods, authorization replay, lock/reset/account switch, malformed QR, opaque DM substitution, interrupted vault write and firmware rollback.
+Read with [the threat models](threat-models.md). The requirement owner is responsible for a positive case and hostile variants at the boundary of its claim, including identity substitution, changed/hidden fields, invalid parsing, queue floods, authorization replay, lock/reset/account switch, malformed QR, opaque DM substitution, interrupted firmware update and rollback; interrupted vault writes/PIN persistence additionally belong to the retained persistent extensions.
 
 P01 can accept semantic scope and threat assumptions through source-backed review. Numeric capacities, actual recovery ergonomics and exact hardware admission remain measured task/release gates; this document does not close them. If final P01 review identifies a missing semantic decision, resolve it before acceptance rather than treating this document's existence as proof.
 

@@ -1,0 +1,39 @@
+[
+  {
+    "label": "root-update",
+    "command": [
+      "cargo",
+      "update",
+      "-p",
+      "crypto-bigint",
+      "--precise",
+      "0.7.9"
+    ],
+    "exit": 0
+  },
+  {
+    "label": "desktop-update",
+    "command": [
+      "cargo",
+      "update",
+      "--manifest-path",
+      "apps/desktop-simulator/Cargo.toml",
+      "-p",
+      "crypto-bigint",
+      "--precise",
+      "0.7.9"
+    ],
+    "exit": 0
+  },
+  {
+    "label": "official-vendor",
+    "command": [
+      "cargo",
+      "vendor",
+      "--locked",
+      "--versioned-dirs",
+      "/home/tux/nsealr/.restart-tools/mac-resume-2026-10-25/crypto-bigint-yank-runtime/vendor-staging"
+    ],
+    "exit": 0
+  }
+]

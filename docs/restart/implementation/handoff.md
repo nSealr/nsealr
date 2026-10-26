@@ -2,7 +2,30 @@
 
 Date: 2026-10-25. This handoff gives navigation and recovery procedures, not a second task-status ledger. Read the current graph before choosing work.
 
-## Resumed delivery — 25 October 2026
+## Current direction — phase one
+
+The new maintainer-created coordinator owns the 2026-10-25 milestone; prior
+coordinators/authors are retired. The sole graph and [current reconciliation
+contract](phase1-reconciliation.md) define three session-only device releases and
+their necessary host software. Custom Board/embedded SDK work is deferred;
+S04's terminal block is not bypassed. Do not reactivate old assignments or replay
+unchanged campaigns described below.
+
+PR52 synthetic inspection is already accepted on actual main19ab; its [original
+adoption packet](reviews/QP01-synthetic-inspection-adoption/actual-main-acceptance.json)
+retains source-specific22 runtime and distinct14 pure registration. The human-wait
+canary's original first14 negatives now have a [distinct readback](QP01/human-review-timing/first14-distinct-readback.json)
+without replay; remaining18 selectors and product API adoption are still open.
+[Sanitized actual device facts](hardware-access/device-facts-2026-10-25.json) bind
+S3 ROM/16MB flash and the observed P4 camera/display preview. These establish
+neither a complete signing flow nor a qualified physical task/release. The next
+physical/implementation step follows current measured dependencies in the graph.
+
+The following narrative is the earlier source-qualified handoff. Its “next”,
+“pending”, actor and unexecuted-physical statements belong to that earlier source,
+not a current parallel task ledger or authority over the graph.
+
+## Earlier resumed delivery — 25 October 2026
 
 The maintainer explicitly reactivated the goal. The [24October pause checkpoint](reviews/QH01-rgb-request-engine-delivery/pause-checkpoint.json)
 remains historical evidence. Repository mains and delivery source were unchanged;
@@ -15,7 +38,7 @@ actual-main qualification; see the current foundation below. Exact kit/access/
 operator information is collected through the existing resource follow-up;
 physical testing remains unexecuted. General Rust rewrites remain deferred.
 
-## Current software foundations and next dependency
+## Earlier software foundations and then-next dependencies
 
 The [automatic real-engine component](QH01/manual-port/python-rgb-composition/proof/request-engine-ci/README.md)
 is [accepted on actual main9c after protected PR51](reviews/QH01-rgb-request-engine-adoption/actual-main-acceptance.json).
