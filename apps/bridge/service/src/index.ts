@@ -229,7 +229,7 @@ function readPublicNativeFrame(): Promise<Uint8Array> {
       if (used < 4 || messageLength(buffer.subarray(0,4)) + 4 !== used) reject(new Error("public native input incomplete"));
       else resolve(buffer.subarray(0,used));
     };
-    const timer = setTimeout(() => failed(new Error("public native setup input expired")),60000);
+    const timer = setTimeout(() => failed(new Error("public native setup input expired")),120000);
     input.on("data",data); input.on("end",ended); input.on("error",failed); input.resume();
   });
 }

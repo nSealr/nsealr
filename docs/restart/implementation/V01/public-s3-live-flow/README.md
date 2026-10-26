@@ -40,7 +40,7 @@ DTR or reset the public device. Root must use the currently associated port.
 
 Only after the CLI has received the service's stream-open message does it ask
 the operator to Enable on S3 and press Enter on the host. That setup has a
-separate 60s ceiling. While waiting, no LocalServiceClient operation, signing
+separate 120s ceiling. While waiting, no LocalServiceClient operation, signing
 request, pending reservation or operation clock exists. USB/socket processing
 remains asynchronous. Enter starts transmission; S3 alone performs physical
 review and Approve/Reject. Enter never approves signing.
@@ -86,7 +86,7 @@ as a capability or identity-admission signal.
 Actual local bounds: request JSON320B, response JSON704B, one newline frame
 1024B, no parsed request queue; service stream8192B/nine lines and at most eight
 ignored diagnostic lines; IPC payload16384B. Context JSON is a regular file
-read with a64KiB ceiling. Setup handshake5s, CLI setup60s, local close grace4s.
+read with a64KiB ceiling. Setup handshake5s, CLI setup120s, local close grace4s.
 The raw relay accepts one connection within120s, then has a separate180s lease
 ceiling, 1024B chunks, 64KiB per direction and1s USB/socket write timeout.
 Overflow/EOF/error closes the single connection; no reconnect or replay loop.
@@ -199,3 +199,13 @@ including admission, buffered-frame reads and close; generic buffered-line
 parser behavior remains unchanged. The targeted EOF regression uses actual
 Node Duplex data/end/destroy events with allowHalfOpen to expose end before
 close. It does not claim physical USB behavior or remote-close attestation.
+
+
+The setup-only followup raises the CLI default/maximum and the child service's
+pre-operation IPC intake ceiling from60s to120s. Both precede dispatch or
+session.arm; neither extends the continuous100s operation or5s ACTIVE budget.
+The original physical-approve setup attempt remains a failed60.519564s setup
+with no Enter and no output, not a positive signing run. The relay/adapters'
+180s forwarding ceilings are unchanged and can abort before the full120s setup
+plus100s operation; those separate ceilings guarantee no minimum usable time.
+The5s USB-open handshake completes before the CLI prompt and stays unchanged.

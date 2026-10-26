@@ -26,7 +26,7 @@ export async function dispatchPublicS3(options: PublicS3CliFiles & {
   if (expectedKey !== KEY) throw new Error("public S3 requires independently pinned scalar3 identity");
   try { lstatSync(options.out); throw new Error("public S3 output already exists"); }
   catch (error) { if ((error as NodeJS.ErrnoException).code !== "ENOENT") throw error; }
-  const setupMs = Math.min(options.setupTimeoutMs ?? 60000, 60000);
+  const setupMs = Math.min(options.setupTimeoutMs ?? 120000, 120000);
   const operationMs = Math.min(options.operationTimeoutMs ?? 100000, 100000);
   if (!Number.isSafeInteger(setupMs) || setupMs < 1 || !Number.isSafeInteger(operationMs) || operationMs < 1)
     throw new Error("public S3 timeout unavailable");
