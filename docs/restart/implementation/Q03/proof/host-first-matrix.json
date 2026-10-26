@@ -1,0 +1,82 @@
+{
+  "scope": "No_std consumer/core with synthetic local callbacks and host CLOCK_MONOTONIC; no physical approval/target-memory claim",
+  "cases": [
+    {
+      "mode": "positive",
+      "frame": "request.qr",
+      "exit": 0,
+      "stdout": "mode=positive result=602 synthetic_presentations=31 output_policy=PASS\n",
+      "stderr": ""
+    },
+    {
+      "mode": "reject",
+      "frame": "request.qr",
+      "exit": 0,
+      "stdout": "mode=reject result=-10 synthetic_presentations=1 output_policy=PASS\n",
+      "stderr": ""
+    },
+    {
+      "mode": "expire",
+      "frame": "request.qr",
+      "exit": 0,
+      "stdout": "mode=expire result=-9 synthetic_presentations=1 output_policy=PASS\n",
+      "stderr": ""
+    },
+    {
+      "mode": "display-error",
+      "frame": "request.qr",
+      "exit": 0,
+      "stdout": "mode=display-error result=-9 synthetic_presentations=1 output_policy=PASS\n",
+      "stderr": ""
+    },
+    {
+      "mode": "approve-data",
+      "frame": "request.qr",
+      "exit": 0,
+      "stdout": "mode=approve-data result=-9 synthetic_presentations=1 output_policy=PASS\n",
+      "stderr": ""
+    },
+    {
+      "mode": "aux-short",
+      "frame": "request.qr",
+      "exit": 0,
+      "stdout": "mode=aux-short result=-11 synthetic_presentations=31 output_policy=PASS\n",
+      "stderr": ""
+    },
+    {
+      "mode": "aux-error",
+      "frame": "request.qr",
+      "exit": 0,
+      "stdout": "mode=aux-error result=-11 synthetic_presentations=31 output_policy=PASS\n",
+      "stderr": ""
+    },
+    {
+      "mode": "bad-prefix",
+      "frame": "bad-prefix.qr",
+      "exit": 0,
+      "stdout": "mode=bad-prefix result=-5 synthetic_presentations=0 output_policy=PASS\n",
+      "stderr": ""
+    },
+    {
+      "mode": "duplicate",
+      "frame": "duplicate.qr",
+      "exit": 0,
+      "stdout": "mode=duplicate result=-5 synthetic_presentations=0 output_policy=PASS\n",
+      "stderr": ""
+    },
+    {
+      "mode": "positive",
+      "frame": "boundary.qr",
+      "exit": 0,
+      "stdout": "mode=positive result=602 synthetic_presentations=31 output_policy=PASS\n",
+      "stderr": ""
+    },
+    {
+      "mode": "oversize",
+      "frame": "oversize.qr",
+      "exit": -6,
+      "stdout": "",
+      "stderr": "engine-host: tests/engine_host.c:51: main: Assertion `output[i]==0' failed.\n"
+    }
+  ]
+}

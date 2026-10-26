@@ -1,0 +1,42 @@
+{
+  "reason": "Corrected first mock to actual SDK GPIO54 OE reset default, no test weakening. Existing helper must reject this unnormalized config; expected RED availability defect before direct-register fix.",
+  "source_before_sha256": "08d7c7229a6f5e68852f809acc6ebd99dcc64b3b2f996adabc2547587032a85c",
+  "fixture_sha256": "31be93c20548919e21eaf18a37cd68982d64b7bc6f544561bf04671b8ec5d66b",
+  "commands": [
+    {
+      "argv": [
+        "/usr/bin/cc",
+        "-std=c11",
+        "-O1",
+        "-g",
+        "-Wall",
+        "-Wextra",
+        "-Werror",
+        "-fsanitize=address,undefined",
+        "-fno-omit-frame-pointer",
+        "-DP4_WDT_PROBE_MODE=0",
+        "-I/home/tux/nsealr/.restart-tools/mac-resume-2026-10-25/p4-session/apps/p4/tests/c6_guard_stubs",
+        "-I/home/tux/nsealr/.restart-tools/mac-resume-2026-10-25/p4-session/apps/p4/main",
+        "/home/tux/nsealr/.restart-tools/mac-resume-2026-10-25/p4-session/apps/p4/main/c6_guard.c",
+        "/home/tux/nsealr/.restart-tools/mac-resume-2026-10-25/p4-session/apps/p4/tests/c6_guard_test.c",
+        "-o",
+        "/home/tux/nsealr/.restart-tools/mac-resume-2026-10-25/p4-session/apps/p4/evidence/c6-normal-guard/native-guard-reset-model-red/guard-native"
+      ],
+      "exit": 0,
+      "expected_exit": 0,
+      "seconds": 0.10579390916973352,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "argv": [
+        "/home/tux/nsealr/.restart-tools/mac-resume-2026-10-25/p4-session/apps/p4/evidence/c6-normal-guard/native-guard-reset-model-red/guard-native"
+      ],
+      "exit": -6,
+      "expected_exit": -6,
+      "seconds": 0.004408429376780987,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "26c4f05f8cb06b1627c39ef10ef29f68fda1b906944054e871345b0be9adac26"
+    }
+  ]
+}

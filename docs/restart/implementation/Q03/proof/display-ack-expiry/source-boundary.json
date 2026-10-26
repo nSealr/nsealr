@@ -1,0 +1,63 @@
+{
+  "source_candidate": "53094ba7906eff671d7a2dd0a8b83d1120a94821",
+  "dependency_facts": [
+    {
+      "root": "peripheral",
+      "path": "vendor/examples/esp-idf/09_video_lcd_display/managed_components/waveshare__esp32_p4_wifi6_touch_lcd_3_5/esp32_p4_wifi6_touch_lcd_3_5.c",
+      "sha256": "f2a69a92e3fa305d84336bd25837f2b2c060f8df62280797cc52bc94f3ae98c3",
+      "lines": "424-468,486-516,526-540,554-566,569-599",
+      "meaning": "Exact BSP panel/touch initialization and OTHER/320x480/50rows/rotation0/internal singlebuffer/noPPA/tearNONE reproduced using public handles; brightnessPWM initialized0."
+    },
+    {
+      "root": "peripheral",
+      "path": "vendor/examples/esp-idf/09_video_lcd_display/managed_components/espressif__esp_lcd_st7796/esp_lcd_st7796_general.c",
+      "sha256": "5d17bb9d5de0e25a059c677b562f17939c9c198a4201e0a3f902468550eb0504",
+      "lines": "268-300",
+      "meaning": "Each panel draw sends command parameters then exactly one tx_color."
+    },
+    {
+      "root": "idf",
+      "path": "components/esp_lcd/spi/esp_lcd_panel_io_spi.c",
+      "sha256": "0e9b223dc6828209f91b4ceeb754d04f2e4ea15caa373997e54075f85109be3e",
+      "lines": "165-178,379-408,432-447",
+      "meaning": "Single registered IO callback; IDF sets done flag only on last color segment; callback has no hardware ID. Sender serializes before reuse, no default callback replacement."
+    },
+    {
+      "root": "peripheral",
+      "path": "components/esp_lvgl_adapter/src/adapter/esp_lv_adapter.c",
+      "sha256": "3aaf0e1b79c8f89afb1224f5f08957aee3e76e1ae2d9d3ae626d717a6b42b2f5",
+      "lines": "806-821,1335-1351",
+      "meaning": "refresh_now locks and calls LVGL; public defaultregistration setter and color notification wrapper."
+    },
+    {
+      "root": "peripheral",
+      "path": "components/esp_lvgl_adapter/src/display/bridge/v9/lvgl_bridge_v9.c",
+      "sha256": "424e7ef240aee67da6a42f9f065bcdc1114393ab7ea38e4f7e449edfcb33f2ed",
+      "lines": "1460-1504,1836-1851,1931-1949,2095-2103",
+      "meaning": "Dummy alone is not ACK; manual public color notification forwards to flush_ready in tearNONE; auto registration disabled before display start."
+    }
+  ],
+  "correlation_limit": "IDF callback has no per-transaction ID. Matching relies on no initial inflight color, one serialized physical sender, one callback on final color segment. Model stale-ID tests do not manufacture an absent hardware token.",
+  "startup_order": [
+    "adapterinit",
+    "disable automatic IDF callback registration",
+    "BSPpanel public handles",
+    "registerdisplay",
+    "own customdraw callback/semaphore",
+    "own IO callback",
+    "dummytrue before adapterstart",
+    "BSPtouch/registerinput",
+    "adapterstart",
+    "first committed public status before backlighton"
+  ],
+  "unchanged_sources": [
+    "Rust consumer/FFI/core",
+    "crypto079 vendor/locks/staticlib",
+    "camera adapter",
+    "RGB565/rawgray/crop",
+    "quirc decoder/fallback",
+    "gesture FSM",
+    "sdkconfig.public and effectiveconfig"
+  ],
+  "review": "PENDING_DISTINCT_AFFECTED_REVIEW"
+}
