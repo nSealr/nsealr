@@ -1,0 +1,338 @@
+{
+  "schema_version": 1,
+  "created_utc": "2026-10-26T12:01:55.590800+00:00",
+  "author": "/root/s3_native_finish",
+  "reviewer": "/root pending distinct review",
+  "base": "de388c9548bc04cdb44ea8ccd2197b2ab29befab",
+  "RED_source": "b59289df9d448f18c74f50e5c15efdcdf3f718f7",
+  "production_fix": "0ebfb45bd9c68dc0324b5b4bc5e48ed45a9a8ed6",
+  "source_candidate": "b2d9875aca08c8811cbcc3081560304a8a13e8ce",
+  "branch": "implementation/client-account-key-pin",
+  "worktree": "/home/tux/nsealr/.restart-tools/mac-resume-2026-10-25/client-account-binding",
+  "product_scope": [
+    "packages/client/src/service.ts",
+    "packages/client/src/service.test.ts"
+  ],
+  "source_files": [
+    {
+      "path": "packages/client/src/service.ts",
+      "sha256": "d2313eee2fd8ed38e0c88ef1bc16d62c95ae8514bf239fa480d1e03c48dca728"
+    },
+    {
+      "path": "packages/client/src/service.test.ts",
+      "sha256": "c4e1290be3e8f377cb36600c785d12baa8c6e5bf3f3f09ea644229eabf90cf16"
+    },
+    {
+      "path": "pnpm-lock.yaml",
+      "sha256": "6bb111659e2df436a81e4a566023e501e07573f49e5ff140b421835360ae2c48"
+    },
+    {
+      "path": "protocols/contracts/v1/examples/request-kind-1-basic.json",
+      "sha256": "f569e5b2f5bc0a3aa8586cba4b8afdeb96a0b93353e8d44212897fbc388c8377"
+    },
+    {
+      "path": "protocols/contracts/v1/examples/response-kind-1-basic.json",
+      "sha256": "3a398947e46c715a6ceaaeaa7198455ac840727c7f0f78dd079a1de8742350a1"
+    }
+  ],
+  "current_compiler_artifacts": [
+    {
+      "path": "packages/client/dist/service.js",
+      "sha256": "12af4be02c94785c0bf999d25b2a58b7aa0160d7c617e4e6809e3e399c5696f2",
+      "role": "Current checkout build07 output, no independent binary reproducibility claim"
+    },
+    {
+      "path": "packages/client/dist/service.d.ts",
+      "sha256": "c01f24678407002eb3765960c473a4e7cac1ae72c2e63eb6fd180a7e2bf52cb9",
+      "role": "Current checkout build07 output, no independent binary reproducibility claim"
+    },
+    {
+      "path": "packages/core/dist/nostr.js",
+      "sha256": "829b8abf892bdbf1ecdfcfd71da920513885dccf0860e678623f1543503c7316",
+      "role": "Current checkout build07 output, no independent binary reproducibility claim"
+    },
+    {
+      "path": "packages/policy/dist/policy.js",
+      "sha256": "8f28448937b4fc0254a998a8dfa6dd6c8dde0545f958214bec819a7257d0f8cb",
+      "role": "Current checkout build07 output, no independent binary reproducibility claim"
+    },
+    {
+      "path": "packages/browser-provider/dist/provider.js",
+      "sha256": "3507ca44074cbc120ebe4a712a24b3a088646046326cd4b24f4f0b1f3fed2c25",
+      "role": "Current checkout build07 output, no independent binary reproducibility claim"
+    },
+    {
+      "path": "packages/fixtures/dist/index.js",
+      "sha256": "ed88e4d33ed7881e402b90554baca8f73dbf42dbbb164b71477663db4505c4cb",
+      "role": "Current checkout build07 output, no independent binary reproducibility claim"
+    }
+  ],
+  "runs": [
+    {
+      "label": "01-offline-local-workspace-dependencies",
+      "exit": 0,
+      "expected_exit": 0,
+      "seconds": 0.5107317166402936,
+      "result_sha256": "2721571e5a90abd10a5b496688ae1d3c7df4bdb37e573b9c2e47bd0ce2996829",
+      "stdout_sha256": "ae5d6a82e81ab4c48e7ea87f2d0f7d3d42fb81bcf2f7ba58d46e05271a1463c7",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "argv": [
+        "/home/tux/nsealr/.restart-tools/goal/r00/tools/baseline/.work/final/.tools/node/bin/node",
+        "/home/tux/nsealr/.restart-tools/goal/r00/tools/baseline/.work/final/.tools/pnpm/bin/pnpm.cjs",
+        "install",
+        "--offline",
+        "--frozen-lockfile",
+        "--ignore-scripts",
+        "--store-dir",
+        "/home/tux/.local/share/pnpm/store"
+      ]
+    },
+    {
+      "label": "02-current-workspace-build-before-red",
+      "exit": 0,
+      "expected_exit": 0,
+      "seconds": 10.730457237921655,
+      "result_sha256": "5da5519b7ae376d04878d25b90c083cead080c35b027857c6c8c93a44d521dff",
+      "stdout_sha256": "1eb5ad7e26831012c19535080a82aac2b79c0f93a7db5f2579a7b7e8557dc07d",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "argv": [
+        "/home/tux/nsealr/.restart-tools/goal/r00/tools/baseline/.work/final/.tools/node/bin/node",
+        "tools/bridge/build_packages.mjs"
+      ]
+    },
+    {
+      "label": "03-red-private-account-key-regressions",
+      "exit": 1,
+      "expected_exit": 1,
+      "seconds": 1.022370065562427,
+      "result_sha256": "1137df7dc7cf1465bfa718b211a0fd9cb722df9cc8ab6f893a4b21d55295bb66",
+      "stdout_sha256": "93fd945ff96b9157230fddcd027e0109d03f1e99f8baf673315ce91c02378885",
+      "stderr_sha256": "f046ccbebca134820bf96f86b18a6c6aefbb9804eaa4ec5171078bda2415dc27",
+      "argv": [
+        "/home/tux/nsealr/.restart-tools/goal/r00/tools/baseline/.work/final/.tools/node/bin/node",
+        "/home/tux/nsealr/.restart-tools/goal/r00/tools/baseline/.work/final/.tools/pnpm/bin/pnpm.cjs",
+        "exec",
+        "vitest",
+        "run",
+        "packages/client/src/service.test.ts",
+        "--maxWorkers=1",
+        "-t",
+        "C01 private account key pin"
+      ]
+    },
+    {
+      "label": "04-workspace-local-resolution",
+      "exit": 1,
+      "expected_exit": 0,
+      "seconds": 0.5107079418376088,
+      "result_sha256": "48bc3c8c6c5b39d89c3a4e200263b471fcebe32d4865ffd5c009ac8c398b01a4",
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "06a75f0d30d6f4e254b3527ccceaaeb16a18d804872121221cf8ba8b62866a46",
+      "argv": [
+        "/home/tux/nsealr/.restart-tools/goal/r00/tools/baseline/.work/final/.tools/node/bin/node",
+        "--input-type=module",
+        "-e",
+        "import assert from \"node:assert/strict\";import{realpathSync,readFileSync}from\"node:fs\";import{fileURLToPath}from\"node:url\";import{createHash}from\"node:crypto\";const root=process.cwd();const names=[\"client\",\"core\",\"policy\",\"protocol\",\"framing\",\"review\",\"fixtures\",\"browser-provider\",\"transport\"];const entries=names.map(n=>{const link=realpathSync(\"node_modules/@nsealr/\"+n);const entry=realpathSync(fileURLToPath(import.meta.resolve(\"@nsealr/\"+n)));assert.equal(link,root+\"/packages/\"+n);assert.ok(entry.startsWith(root+\"/packages/\"+n+\"/dist/\"));return{name:n,workspace:link,entry,entry_sha256:createHash(\"sha256\").update(readFileSync(entry)).digest(\"hex\")};});console.log(JSON.stringify({node:process.version,checkout:root,workspace_modules:entries,old_S3_dist_used:false},null,2));"
+      ]
+    },
+    {
+      "label": "05-actual-consumer-workspace-resolution",
+      "exit": 0,
+      "expected_exit": 0,
+      "seconds": 0.5109206894412637,
+      "result_sha256": "2f7f2b8202c65f95dc13e4953dfd42cc219291cd21b41e9843b6da1d8a15142d",
+      "stdout_sha256": "b18ed4c0a22eb3af9fabc0d8f86ff3c5c1a4f6a209be17811e857cff81aa614f",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "argv": [
+        "/home/tux/nsealr/.restart-tools/goal/r00/tools/baseline/.work/final/.tools/node/bin/node",
+        "--input-type=module",
+        "-e",
+        "import assert from\"node:assert/strict\";import{realpathSync,readFileSync,readdirSync,existsSync}from\"node:fs\";import{join}from\"node:path\";const root=process.cwd();const dirs=[root,...[\"packages\",\"apps/bridge\"].flatMap(p=>readdirSync(join(root,p)).map(n=>join(root,p,n)).filter(d=>existsSync(join(d,\"package.json\"))))];const packages=dirs.map(d=>({directory:d,json:JSON.parse(readFileSync(join(d,\"package.json\"),\"utf8\"))}));const byName=new Map(packages.map(p=>[p.json.name,p.directory]));const links=[];for(const p of packages){for(const[name,version]of Object.entries({...p.json.dependencies,...p.json.devDependencies,...p.json.optionalDependencies})){if(!String(version).startsWith(\"workspace:\"))continue;const actual=realpathSync(join(p.directory,\"node_modules\",name));assert.equal(actual,byName.get(name));assert.ok(actual.startsWith(root+\"/\"));links.push({consumer:p.directory,name,target:actual});}}console.log(JSON.stringify({checkout:root,workspace_links_checked:links.length,old_S3_dist_used:false,transport_consumers:links.filter(x=>x.name===\"@nsealr/transport\"),all_links:links},null,2));"
+      ]
+    },
+    {
+      "label": "06-green-private-account-key-regressions",
+      "exit": 0,
+      "expected_exit": 0,
+      "seconds": 1.0222507612779737,
+      "result_sha256": "3f349686aa501faedc8a8ca146dfc6c28880da1aacd7de804e007a7173c17ff9",
+      "stdout_sha256": "964e7108c775d2398da92c3d98a38814818270acd45df30c78a013655ee68c55",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "argv": [
+        "/home/tux/nsealr/.restart-tools/goal/r00/tools/baseline/.work/final/.tools/node/bin/node",
+        "/home/tux/nsealr/.restart-tools/goal/r00/tools/baseline/.work/final/.tools/pnpm/bin/pnpm.cjs",
+        "exec",
+        "vitest",
+        "run",
+        "packages/client/src/service.test.ts",
+        "--maxWorkers=1",
+        "-t",
+        "C01 private account key pin"
+      ]
+    },
+    {
+      "label": "07-fixed-current-workspace-build",
+      "exit": 0,
+      "expected_exit": 0,
+      "seconds": 10.216852022334933,
+      "result_sha256": "0c4826cc16b32e0707fa1b89da228a700d92f754c8bd2d20e0f672142eb5e883",
+      "stdout_sha256": "1eb5ad7e26831012c19535080a82aac2b79c0f93a7db5f2579a7b7e8557dc07d",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "argv": [
+        "/home/tux/nsealr/.restart-tools/goal/r00/tools/baseline/.work/final/.tools/node/bin/node",
+        "tools/bridge/build_packages.mjs"
+      ]
+    },
+    {
+      "label": "08-focused-client-route-browser-driver-tests",
+      "exit": 0,
+      "expected_exit": 0,
+      "seconds": 1.532436778768897,
+      "result_sha256": "aedee3476367e0b812f6d26fcc51a2b913b37ee86fde3ded71e60529905819fb",
+      "stdout_sha256": "d266368eeb6be87bcbdacdfc316c0235f8a815ae701e9db7841886f010f2b4a2",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "argv": [
+        "/home/tux/nsealr/.restart-tools/goal/r00/tools/baseline/.work/final/.tools/node/bin/node",
+        "/home/tux/nsealr/.restart-tools/goal/r00/tools/baseline/.work/final/.tools/pnpm/bin/pnpm.cjs",
+        "exec",
+        "vitest",
+        "run",
+        "packages/client/src/service.test.ts",
+        "packages/client/src/profile-dispatch.test.ts",
+        "packages/browser-provider/src/provider.test.ts",
+        "apps/bridge/service/src/drivers.test.ts",
+        "--maxWorkers=1"
+      ]
+    },
+    {
+      "label": "09-workspace-typecheck",
+      "exit": 2,
+      "expected_exit": 0,
+      "seconds": 2.0425251135602593,
+      "result_sha256": "876a51c4361ee8d91a7afe3da45d4ccc267d9e81446ee9aab60532546b27dab3",
+      "stdout_sha256": "42f3c5b310e6cd2b69b8b127607d668b31d6719a4aa6147ee0c03a2643a6545b",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "argv": [
+        "/home/tux/nsealr/.restart-tools/goal/r00/tools/baseline/.work/final/.tools/node/bin/node",
+        "/home/tux/nsealr/.restart-tools/goal/r00/tools/baseline/.work/final/.tools/pnpm/bin/pnpm.cjs",
+        "exec",
+        "tsc",
+        "--noEmit"
+      ]
+    },
+    {
+      "label": "10-fixed-workspace-typecheck",
+      "exit": 0,
+      "expected_exit": 0,
+      "seconds": 2.042314628139138,
+      "result_sha256": "8b7c1e42e30ef8c86116ca83e696a41163b9b1d5736ef65271f47fe270d7f9ae",
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "argv": [
+        "/home/tux/nsealr/.restart-tools/goal/r00/tools/baseline/.work/final/.tools/node/bin/node",
+        "/home/tux/nsealr/.restart-tools/goal/r00/tools/baseline/.work/final/.tools/pnpm/bin/pnpm.cjs",
+        "exec",
+        "tsc",
+        "--noEmit"
+      ]
+    },
+    {
+      "label": "11-restart-plan-validator",
+      "exit": 0,
+      "expected_exit": 0,
+      "seconds": 0.5113034937530756,
+      "result_sha256": "58db5f42733e65e63369964ca325cd724da32680d26cdf465e52cf68302270fd",
+      "stdout_sha256": "5980d15f4ebd04675b98682ab9d1335eebe5835ac675e152b1261db501d9d3e4",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "argv": [
+        "/usr/bin/python3",
+        "scripts/validate_restart_plan.py"
+      ]
+    },
+    {
+      "label": "12-public-api-review-check",
+      "exit": 0,
+      "expected_exit": 0,
+      "seconds": 0.5107998242601752,
+      "result_sha256": "9ec45cd3b9d06ee7bd3da3782b4e69ea9c6e16ed7dde6b5464a50b27a6d6658d",
+      "stdout_sha256": "d81650cf7fb2ff85959003bb051d8e12dfc92df58807658903e04901b42c1834",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "argv": [
+        "/home/tux/nsealr/.restart-tools/goal/r00/tools/baseline/.work/final/.tools/node/bin/node",
+        "tools/bridge/check_api_review.mjs"
+      ]
+    },
+    {
+      "label": "13-final-private-account-key-regressions",
+      "exit": 0,
+      "expected_exit": 0,
+      "seconds": 1.0214366409927607,
+      "result_sha256": "9396bd188709c2f6188b459e5780ea377ecfad243ae52382eda7a7e89ec4ad71",
+      "stdout_sha256": "23054a9827b85fcb24201c9701bc636fc58647d32bd372acf6fa9acfbfccce68",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "argv": [
+        "/home/tux/nsealr/.restart-tools/goal/r00/tools/baseline/.work/final/.tools/node/bin/node",
+        "/home/tux/nsealr/.restart-tools/goal/r00/tools/baseline/.work/final/.tools/pnpm/bin/pnpm.cjs",
+        "exec",
+        "vitest",
+        "run",
+        "packages/client/src/service.test.ts",
+        "--maxWorkers=1",
+        "-t",
+        "C01 private account key pin"
+      ]
+    },
+    {
+      "label": "14-old-production-with-final-tests-red",
+      "exit": 1,
+      "expected_exit": 1,
+      "seconds": 1.0216055689379573,
+      "result_sha256": "a010e8eac911d733eea3033b704ad9c72b95804b0975cdd8780f74a532959bb7",
+      "stdout_sha256": "7cb315061a855ec81947d06a15259a085f54abd3c33caf529414fe3921836ce9",
+      "stderr_sha256": "29ca231ad243be183f2dfcfbc24666be8445a4001c5e82b3ce41bb21f2e567fa",
+      "argv": [
+        "/home/tux/nsealr/.restart-tools/goal/r00/tools/baseline/.work/final/.tools/node/bin/node",
+        "/home/tux/nsealr/.restart-tools/goal/r00/tools/baseline/.work/final/.tools/pnpm/bin/pnpm.cjs",
+        "exec",
+        "vitest",
+        "run",
+        "packages/client/src/service.test.ts",
+        "--maxWorkers=1",
+        "-t",
+        "C01 private account key pin"
+      ]
+    }
+  ],
+  "final_exact_RED_GREEN": {
+    "RED": "14-old-production-with-final-tests-red",
+    "GREEN": "13-final-private-account-key-regressions",
+    "final_tests_sha256": "c4e1290be3e8f377cb36600c785d12baa8c6e5bf3f3f09ea644229eabf90cf16",
+    "old_production_sha256": "d230d65ec2eb505afd940951c792c6ed0ac93a13e781ca70116db464ff59c509",
+    "fixed_production_sha256": "d2313eee2fd8ed38e0c88ef1bc16d62c95ae8514bf239fa480d1e03c48dca728",
+    "RED_observed": {
+      "expected_failure_cases": 6,
+      "passing_controls": 4
+    },
+    "GREEN_observed": {
+      "passed": 10
+    }
+  },
+  "focused_integration": {
+    "command": "08-focused-client-route-browser-driver-tests",
+    "passed": 79,
+    "files": 4,
+    "scope": "service,profile currentness,browser-provider,stock serial driver; injected ports, no USB"
+  },
+  "plan_modified": false,
+  "API_schema_changed": false,
+  "S3_modified": false,
+  "S3_delivery": "a1e9052ab2a0f9f3a281ca472e51e09ab1061e20",
+  "source_or_hardware_criteria_closed": [],
+  "limitations": [
+    "Private selected public key metadata, no identity-secret custody",
+    "Same-process dispatcher mutation, not demonstrated USB-only exploit",
+    "Raw transports/generic verify helper are not made account-aware",
+    "No hardware identity/entropy/secret admission/client release claim",
+    "No hostedCI/push/merge; root owns normal protected integration"
+  ]
+}
