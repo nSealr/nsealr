@@ -1,0 +1,184 @@
+{
+  "schema": "nsealr.root-actual-public-S3-live-positive.v1",
+  "recorded_utc": "2026-10-26T20:40:44.463445+00:00",
+  "verdict": "PASS_ONE_ACTUAL_LIVE_CLI_CLIENT_SERVICE_PHYSICAL_USB_APPROVAL_AND_VERIFIED_RESULT",
+  "host_source": "d00623b5b877dd491f05b1c4f95c7c66860a83f6",
+  "host_delivery": "e15812054765b7b6a55ead2fdf09ca1ccb48a168",
+  "host_setup_delta_review_sha256": "7c4c521155471793bd45e75b1365c5a4223a2cf2b0d90504e3ac96e9ed7f5b4a",
+  "device_source": "e7f04215fc97808acdafdbf9420f6ef6d0102c5b",
+  "device_image_sha256": "7943dbcf4a1e389718b1959086487b6b13cdb50bb0f577ced9d4539c6d1fd7da",
+  "path": "actual CLI -> LocalServiceClient -> spawned one-shot service -> approved public_s3_stream -> actual Unix/socket/SSHstdio/Mac rawUSBrelay -> physicalS3; no responder/playback",
+  "operator_before": "S\u00ec, READY after USB-open prompt",
+  "operator_after": "compare result queued",
+  "controls": [
+    {
+      "utc": "2026-10-26T20:35:45.342254+00:00",
+      "control": "enter"
+    },
+    {
+      "utc": "2026-10-26T20:35:51.482483+00:00",
+      "control": "eof"
+    }
+  ],
+  "result": {
+    "actual_real_client_service_result_matches_USB_bytes": true,
+    "request_id": "public-s3-71fe89c9-6a1f-4e33-803b-23f85826388c",
+    "expected_public_key": "f9308a019258c31049344f85f89d5229b531c845836f99b08601f113bce036f9",
+    "event_id": "e8d1ffd3a713900f1b342a507b15716b723cd9136649eae3c8a906054729aed3",
+    "request_serial_bytes": 315,
+    "request_serial_sha256": "60e984e81cdc14e77822ed2a7587a6531431f3594056f6830ac1c465082be940",
+    "response_serial_bytes": 668,
+    "response_serial_sha256": "1a41ed0b12f06ccb389a2cfe1d82c14c67e0bf14d4c3c7f21bf44040fdce98c4",
+    "raw_RX_bytes": 1403,
+    "raw_RX_sha256": "1645eb1bfcafa0712c4dd5d5ff9c8d3fc862957b7142584f4e86aeec1379c18e",
+    "CLI_service_settlement": {
+      "exit_code": 0,
+      "stdout_EOF": true,
+      "stderr_EOF": true,
+      "stdin_finished": true
+    },
+    "product_signed_event_verification": true,
+    "scope": "actual live CLI result and captured physical USB frame; no replay or generated responder"
+  },
+  "independent": {
+    "independent_BIP340": true,
+    "expected_public_key": "f9308a019258c31049344f85f89d5229b531c845836f99b08601f113bce036f9",
+    "event_id": "e8d1ffd3a713900f1b342a507b15716b723cd9136649eae3c8a906054729aed3",
+    "oracle_wrapper_sha256": "f69bd3446fd4dce92106d29a0dfb13bf9fbdf447cbfdcae1b2dcf9e6c0f1cda5",
+    "upstream_reference": "hash verified internally by existing oracle.reference()",
+    "scope": "Actual live result, separately wire-matched by product decoder; independent BIP340, no deterministic golden-byte comparison"
+  },
+  "settlement": {
+    "CLI_exit_observed": 0,
+    "CLI_exit_utc": "2026-10-26T20:36:48.464176+00:00",
+    "service_exit_and_pipe_end_observed_by_CLI_artifact": {
+      "exit_code": 0,
+      "stdout_EOF": true,
+      "stderr_EOF": true,
+      "stdin_finished": true
+    },
+    "USB_close_returned_observed": true,
+    "USB_close_utc": "2026-10-26T20:36:48.432554+00:00",
+    "SSH_exit_observed": 0,
+    "service_socket_close_returned": true,
+    "Linux_endpoint_owner_uid": 1000,
+    "local_close_not_remote_attestation": "separate actualMacrelay report establishes USBclose return; localchildfile alone does not"
+  },
+  "timing": {
+    "outer_capture_seconds_including_setup": 83.279988755472,
+    "device_reported_operation_elapsed_us": 62964670,
+    "setup_max_seconds": 120,
+    "host_operation_max_seconds": 100,
+    "target_floor_second_deadline_ticks": 100,
+    "service_ACTIVE_or_processCPU_max_ms": 5000,
+    "plumbing_loop_max_seconds": 180,
+    "limits": "No USER or targetCPU metric/globalC5000 admission; capture/setup not subtracted from operation. Separate180s plumbing may abort before120+100."
+  },
+  "device_runtime": {
+    "result_status": 0,
+    "reported_tx_bytes": 668,
+    "successful_display_DMA_commits_not_pages": 32,
+    "main_min_free_bytes": 34980,
+    "USB_observed_min_free_bytes": 3100,
+    "main_and_USB_internal_reported": true,
+    "configured_clocks_Hz": [
+      240000000,
+      80000000
+    ],
+    "frequency_measurement": false
+  },
+  "actual_auxiliary": {
+    "status": 0,
+    "SDK_words": 8,
+    "supplied_bytes": 32,
+    "elapsed_us": 2939,
+    "flags": "ffff/ffff/103",
+    "readable_banks": "7/31/31/7",
+    "ANA_refs": "0/1/1/0",
+    "ADC1_completion_progress": "f/f",
+    "raw_ADC_status": "14cef/14000 ->14000/14000",
+    "meaning": "source-defined ADC1 initial1,clear0,fresh1 eachphase, not ADC2/noise-quality proof. Startupdraw field0 because diagnostic skipped, not zero auxiliarycalls.",
+    "source_admission": "ADC183 manufacturer question remains open; no true-random/realidentity admission inferred from successful signature"
+  },
+  "backend_signing_invocations": null,
+  "startup_four_diagnostic_draws": "DELIBERATELY_SKIPPED; no4/4test claimed",
+  "criteria_closed": 0,
+  "limits": [
+    "public scalar3 only; no real private identity/session/recovery/release",
+    "No browser/nativeinstaller/SDK/relay production interoperability or allmethods qualification",
+    "No reset/RAM/ROM/debug/erasure or physical source quality proof",
+    "Errorcases retained separately: initialEACCES,setupEOF,physicalReject,old60ssetup expiry; none relabeled successfulsignature"
+  ],
+  "artifacts": [
+    {
+      "path": "physical-approve-120/relay.json",
+      "bytes": 275,
+      "sha256": "e62f4eaa14b40d28355cd9d34c2cdc2654095b6a8be1c434cea837474baedcb0"
+    },
+    {
+      "path": "physical-approve-120/usb-rx.raw",
+      "bytes": 1403,
+      "sha256": "1645eb1bfcafa0712c4dd5d5ff9c8d3fc862957b7142584f4e86aeec1379c18e"
+    },
+    {
+      "path": "physical-approve-120/usb-tx.raw",
+      "bytes": 315,
+      "sha256": "60e984e81cdc14e77822ed2a7587a6531431f3594056f6830ac1c465082be940"
+    },
+    {
+      "path": "physical-approve-120.tunnel.json",
+      "bytes": 730,
+      "sha256": "ebd5f46d226d9a6f832228498469461bf44f62ce05d9a33b8dbb8cdaed346c47"
+    },
+    {
+      "path": "linux-observer/physical-approve-120.socket.json",
+      "bytes": 363,
+      "sha256": "2963b081619892dd09abfe15c78350fc497a4b718d5ac7bd8142853b5b385fea"
+    },
+    {
+      "path": "linux-observer/physical-approve-120/launch.json",
+      "bytes": 2053,
+      "sha256": "a5a1003e77a096c931ae627970953465de06c4849be141be078fc23f496217e2"
+    },
+    {
+      "path": "linux-observer/physical-approve-120/result.json",
+      "bytes": 1253,
+      "sha256": "674fb342c8ca339ddb3a35fd2b5af22054ddf8488f3bba0a2535608137f97830"
+    },
+    {
+      "path": "linux-observer/actual-positive-verification.json",
+      "bytes": 1385,
+      "sha256": "5f6903a21bad91dccf47fbbc6393d5fd940848e0a53a645d4a10a1c206246030"
+    },
+    {
+      "path": "linux-observer/verify-actual-live-approve.mjs",
+      "bytes": 2222,
+      "sha256": "d252299f6033a66263297507a79e0594a894b2ebcf8dc45e8de0a4a26879e396"
+    },
+    {
+      "path": "linux-observer/verify-actual-live-independent.py",
+      "bytes": 1699,
+      "sha256": "7fad8f60d22624f047c2a84487eb5e00a5b6110f23bc2b75b9f421fb38e8f9e6"
+    },
+    {
+      "path": "linux-observer/product-wire-result.stdout",
+      "bytes": 870,
+      "sha256": "0319a26fdc8dd43dea3a50b9bfe7e3c780505ff9a30d2173caa93c345c148b69"
+    },
+    {
+      "path": "linux-observer/product-wire-result.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "linux-observer/independent.stdout",
+      "bytes": 510,
+      "sha256": "1120df3d4be56869a29a4c327a8dd4ab58fb89023c76ad19f4a9850696df5f9d"
+    },
+    {
+      "path": "linux-observer/independent.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ]
+}

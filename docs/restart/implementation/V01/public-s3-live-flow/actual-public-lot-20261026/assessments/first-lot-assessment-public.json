@@ -1,0 +1,112 @@
+{
+  "schema": "nsealr.root-actual-public-s3-live-host-first-lot.v1",
+  "recorded_utc": "2026-10-26T20:29:52.883941+00:00",
+  "host_candidate": "d19ccc51b6842b67e47b8115faae5ea300536791",
+  "host_source": "1fb2658393d7e4f696209c0f3523506d42b2a790",
+  "device_source": "e7f04215fc97808acdafdbf9420f6ef6d0102c5b",
+  "device_image_sha256": "7943dbcf4a1e389718b1959086487b6b13cdb50bb0f577ced9d4539c6d1fd7da",
+  "path": "actual CLI -> LocalServiceClient -> one child service -> user Unix socket -> authenticated SSH stdio -> unchanged raw Macrelay -> same physical S3",
+  "plumbing_review_sha256": "9aaacfdf9ee0101957456b03da6f7e9ff28dce4be826d7a4d2d626c83f92e100",
+  "cases": {
+    "setup-cancel-user-socket": {
+      "CLI_exit": 1,
+      "result_file_observed": false,
+      "controls": [
+        {
+          "utc": "2026-10-26T20:17:43.355617+00:00",
+          "control": "eof"
+        }
+      ],
+      "CLI_outer_seconds_including_setup_and_pnpm_stdin_wait": 4.51521110907197,
+      "USB_opened": true,
+      "USB_close_returned": true,
+      "USB_TX_bytes": 0,
+      "USB_RX_bytes": 281,
+      "SSH_exit": 0,
+      "socket_owner_uid": 1000,
+      "socket_close_returned": true,
+      "verdict": "PASS_ACTUAL_SETUP_INPUT_EOF_REFUSAL",
+      "scope": "before Enable/Enter/operation; no device request, no claim of in-flight operation cancellation"
+    },
+    "physical-reject": {
+      "CLI_exit": 1,
+      "result_file_observed": false,
+      "controls": [
+        {
+          "utc": "2026-10-26T20:18:43.449924+00:00",
+          "control": "enter"
+        },
+        {
+          "utc": "2026-10-26T20:21:00.441021+00:00",
+          "control": "eof"
+        }
+      ],
+      "CLI_outer_seconds_including_setup_and_pnpm_stdin_wait": 160.17768369149417,
+      "USB_opened": true,
+      "USB_close_returned": true,
+      "USB_TX_bytes": 315,
+      "USB_RX_bytes": 698,
+      "SSH_exit": 0,
+      "socket_owner_uid": 1000,
+      "socket_close_returned": true,
+      "verdict": "PASS_ACTUAL_PHYSICAL_REJECT_THROUGH_REAL_CLIENT_SERVICE",
+      "operator_before": "S\u00ec, READY",
+      "operator_after": "dice rejected - no signature",
+      "request_id": "public-s3-ddc6f701-b0b5-43e5-b3d3-e59f33d75fc7",
+      "error_payload": {
+        "error": "rejected"
+      },
+      "error_frame_bytes": 60,
+      "error_frame_sha256": "663d55038dcfef474c9a256fa43e574eb05da2a096d7865cb0617299d160c5ab",
+      "device_result_status": -5,
+      "device_reported_review_elapsed_us": 79860510,
+      "display_DMA_commits_not_pages": 32,
+      "new_auxiliary_draw_observed": false,
+      "aux_report": "draw0/status-2/words0/supplied0 with zero default register fields; no attempted RNG draw inferred",
+      "backend_signing_invocations": null,
+      "source_inference": "source REJECTED before sign_approved; no numeric backend counter exists",
+      "stdin_caveat": "CLI printed dispatch rejected and USB closed at20:20:03; pnpm wrapper remained until root EOF20:21:00. This outer elapsed time is not an extended100s operation."
+    },
+    "physical-approve": {
+      "CLI_exit": 1,
+      "result_file_observed": false,
+      "controls": [],
+      "CLI_outer_seconds_including_setup_and_pnpm_stdin_wait": 60.519564104266465,
+      "USB_opened": true,
+      "USB_close_returned": true,
+      "USB_TX_bytes": 0,
+      "USB_RX_bytes": 562,
+      "SSH_exit": 0,
+      "socket_owner_uid": 1000,
+      "socket_close_returned": true,
+      "verdict": "SETUP_FAILED_60S_NO_ENTER_NO_DEVICE_REQUEST",
+      "operator_after": "USB NOT READY after host setup expiry and serial close",
+      "scope": "not a positive signing test and not a device refusal/failure",
+      "correction_pending": "Both CLI and pre-arm child intake setup60s to120s; operation100s/ACTIVE5s/handshake5s unchanged. Separate180s plumbing may abort earlier."
+    }
+  },
+  "criteria_closed": 0,
+  "not_admitted": [
+    "productionidentity/custody",
+    "browser/installer/SDK interoperability",
+    "USER/targetCPU/globalC5000",
+    "wholeRAM/ROM/reset/debug/recovery/release",
+    "complete boot or source attestation"
+  ],
+  "runtime_binding": "Review ed862b post-run snapshot matches142 expected runtimepaths with4F1F2overrides; does not attest bytes already loaded by closed processes.",
+  "preflight_failure": {
+    "label": "setup-cancel",
+    "reason": "EACCES root-owned0600 SSHreverse socket",
+    "USB_opened": false,
+    "TX_bytes": 0,
+    "correction": "reviewed single user-owned Unix SSHstdio plumbing; no new authority/TCP/admin/system permissions"
+  },
+  "publication_derivation": {
+    "original_sha256": "bf89fb92f760f95da512833df007d8e7988c0b8cf8dc404518a63ca0cbbf9966",
+    "original_bytes": 15242,
+    "omitted_fields": [
+      "/artifacts"
+    ],
+    "reason": "Artifact index omitted because it includes private association record references; substantive cases/limits/source identities unchanged. Private original retained."
+  }
+}

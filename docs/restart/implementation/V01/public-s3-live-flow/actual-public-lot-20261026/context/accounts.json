@@ -1,0 +1,36 @@
+{
+  "format": "nsealr-service-account-store-v0",
+  "updated_at": 0,
+  "contains_secret_material": false,
+  "accounts": [
+    {
+      "format": "nsealr.account.v1",
+      "account_id": "public-s3",
+      "label": "PUBLIC scalar3 ONLY",
+      "public_key": "f9308a019258c31049344f85f89d5229b531c845836f99b08601f113bce036f9",
+      "profile": "esp32_no_se",
+      "implementation_id": "nsealr.s3.public.scalar3.e7f04215.v1",
+      "limits_id": "nsealr.limits.s3.public.e7.v1",
+      "signer_route": {
+        "type": "esp32_usb_nip46",
+        "repository": "nsealr",
+        "transport": "usb",
+        "custody": "volatile_session",
+        "trusted_review": "device_display",
+        "policy_support": "manual_only"
+      },
+      "recovery": {
+        "type": "device_slot",
+        "slot_id": "PUBLIC-scalar3-not-backup",
+        "backup_required": false
+      },
+      "capabilities": {
+        "methods": [
+          "get_public_key",
+          "sign_event"
+        ]
+      },
+      "policy_profile_id": "policy-public-s3-manual-only"
+    }
+  ]
+}

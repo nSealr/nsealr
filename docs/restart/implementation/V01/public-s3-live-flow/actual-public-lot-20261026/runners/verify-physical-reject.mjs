@@ -1,0 +1,13 @@
+import assert from "node:assert/strict";
+import {readFileSync} from "node:fs";
+import {createHash} from "node:crypto";
+import {decodeSerialFrame} from "../../client-account-binding/packages/framing/dist/index.js";
+const root=new URL("./mac-coordination/physical-reject/",import.meta.url);
+const tx=readFileSync(new URL("usb-tx.raw",root),"utf8"),rx=readFileSync(new URL("usb-rx.raw",root),"utf8");
+const request=decodeSerialFrame(tx);assert.equal(request.type,"request");
+assert.match(request.payload.request_id,/^public-s3-[0-9a-f-]{36}$/);assert.equal(request.payload.version,2);assert.equal(request.payload.method,"sign_event");
+assert.deepEqual(request.payload.params.event_template,{kind:1,created_at:1710000000,content:"S3 public physical approval",tags:[]});
+const frames=rx.split("\n").filter(x=>x.startsWith("nsealr1f:"));assert.equal(frames.length,1);
+const raw=frames[0]+"\n",error=decodeSerialFrame(raw);assert.equal(error.type,"error");assert.deepEqual(error.payload,{error:"rejected"});
+assert.equal(Buffer.byteLength(raw),60);assert.equal(createHash("sha256").update(raw).digest("hex"),"663d55038dcfef474c9a256fa43e574eb05da2a096d7865cb0617299d160c5ab");
+console.log(JSON.stringify({request_id:request.payload.request_id,request_serial_bytes:Buffer.byteLength(tx),error_frame_bytes:60,error:error.payload,signature_response_observed:false,association:"one root-owned exclusive actual pending operation; error frame itself has no request_id",scope:"actual captured product framing verification; no replay transport or hardware invocation"}));
