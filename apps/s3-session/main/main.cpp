@@ -84,7 +84,7 @@ static bool cells(const uint8_t *p,size_t n,int &row,uint16_t color) {
         const uint8_t c=p[i];
         if(c=='\n'){++row;col=0;continue;}
         if(c<32||c>126||col>=26||row>=8)return false;
-        glyph(4+col*12,20+row*16,c,color);++col;
+        glyph(4+col*12,28+row*16,c,color);++col;
     }
     ++row;return row<=8;
 }
@@ -101,8 +101,9 @@ static void flush_frame() {
 }
 static void banner() {
     std::memset(frame,0,width*height*sizeof(*frame));
-    const char *t=menu.rotated?"TEST KEY | BUTTONS RIGHT":"TEST KEY | BUTTONS LEFT";
+    const char *t="PUBLIC TEST KEY - S3";
     for(int x=4;*t;x+=12,++t)glyph(x,1,uint8_t(*t),0xffe0);
+    small(18,menu.rotated?"BUTTONS RIGHT":"BUTTONS LEFT",0x07ff);
 }
 static void status_screen(const char *status) {
     banner();int row=0;
