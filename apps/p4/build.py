@@ -99,7 +99,7 @@ def obtain(item, work, caches):
 
 
 def bootstrap(args, work):
-    require(args.base_python and args.uv, "python stage requires --base-python and --uv")
+    require(args.base_python and args.uv and args.sdk, "python stage requires --base-python, --uv and --sdk")
     require(sha(args.uv) == PINS["uv"]["binary_sha256"], "Unpinned uv binary")
     env = clean_env(work)
     base = Path(args.base_python).resolve()
@@ -129,10 +129,15 @@ def bootstrap(args, work):
     # esptool is rebuilt from the authenticated publisher sdist. The old local
     # wheel hash is historical only. No source build other than esptool is selected.
     run(work, "python-sync", uv + ["pip", "sync"] + common +
-        ["-c", str(RECIPE / "python-constraints.txt"),
-         str(RECIPE / "python-requirements.lock")], env)
+        [str(RECIPE / "python-requirements.lock")], env)
     run(work, "python-compatibility", uv + ["pip", "check",
         "--python", str(python_env / "bin/python")], env)
+    # uv hash-file parsing does not accept upstream range constraints. The
+    # unchanged SDK checker enforces their full body immediately after sync.
+    run(work, "python-sdk-constraints", [str(python_env / "bin/python"),
+        str(Path(args.sdk).resolve() / "tools/check_python_dependencies.py"),
+        "-r", str(Path(args.sdk).resolve() / "tools/requirements/requirements.core.txt"),
+        "-c", str(RECIPE / "python-constraints.txt")], env)
     (python_env / "idf_version.txt").write_text("6.0\n")
     write(work / "python-environment.json", dict(python_env=str(python_env), base=str(base),
         base_sha256=sha(base), source_lock_sha256=sha(RECIPE / "python-requirements.lock"),

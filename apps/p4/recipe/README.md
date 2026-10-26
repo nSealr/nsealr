@@ -56,7 +56,7 @@ TASK_RUSTUP/toolchains/1.95.0-x86_64-unknown-linux-gnu.
 
 ```sh
 python3 apps/p4/build.py python --work-dir "$TASK_WORK" \
-  --base-python "$TASK_BASE_PYTHON" --uv "$TASK_UV"
+  --base-python "$TASK_BASE_PYTHON" --uv "$TASK_UV" --sdk "$TASK_SDK"
 
 "$TASK_WORK/python/bin/python" apps/p4/build.py all \
   --work-dir "$TASK_WORK" --sdk "$TASK_SDK" --idf-tools "$TASK_IDF_TOOLS" \
@@ -66,7 +66,9 @@ python3 apps/p4/build.py python --work-dir "$TASK_WORK" \
 The python stage fetches only the exact public inputs in python-sources.json.
 Optionally repeat --download-cache DIR to reuse authenticated downloads. It
 creates an unseeded environment with uv, installs pinned setuptools84.2.1, then
-the exact57-version closure under unchanged admitted constraints. esptool5.6.0 is
+the exact57-version/hash closure. The unchanged SDK checker then enforces the full
+admitted range-constraint file immediately; passing ranges to uv hash-file parsing
+is unsupported. No constraint is skipped or relaxed. esptool5.6.0 is
 built from its authenticated public sdist, without isolation/network for the
 backend. The previous privately derived wheel hash remains history in pins.json;
 it is not an installation prerequisite or an asserted bit-reproduction target.
