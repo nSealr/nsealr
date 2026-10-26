@@ -1,0 +1,420 @@
+{
+  "schema": "nsealr.p4-sdk-entropy-supported-path-assurance-decision.v1",
+  "recorded_utc": "2026-10-26T20:04:54.596954+00:00",
+  "reviewer": {
+    "task": "/root/historical_cleanup",
+    "agent_id": "01a178b3-59c6-7ad2-9375-0c5614ede672",
+    "actual_model": "gpt-6.1-sol",
+    "actual_reasoning_effort": "xhigh",
+    "runtime_verification": "Root previously verified actual turn_context and matching collaboration settings for this new agent; model/effort unchanged.",
+    "role": "bounded read-only documentary decision; sole mutation this receipt"
+  },
+  "decision": "SUFFICIENT_FOR_EXACT_CONDITIONAL_SDK_SUPPORTED_HARDWARE_ENTROPY_CLAIM",
+  "answer": "Yes. The applicable manufacturer API expressly guarantees true-random output when its internal SAR entropy source has been enabled by bootloader_random_enable and not disabled. The exact P4 minrev300/hw_ver3 official SDK path enables ADC1 and LP_TRNG, and esp_random reads the rev3 RNG_DATA_REG. These sources provide sufficient manufacturer/interface assurance for the narrowly scoped future claim below. No identified applicable P4-rev3.2 erratum or source contradiction defeats that conditional claim. The preliminary TRM does not independently establish every connection to the new data register; this limits stronger physical-source attribution rather than adding an unstated P01 prerequisite to the supported-path claim.",
+  "precise_admissible_future_claim": "On ESP32-P4 revision3.2 with ESP-IDF v6.0.2 commit7101770dc6db2667b3c477cc31365dd1acd6db4e, minimum revision300/hw_ver3, the unchanged SDK bootloader_random_enable plus unchanged esp_random path is a manufacturer-supported hardware entropy source under the documented condition that its internal SAR entropy helper remains enabled throughout collection. This includes the SDK combined ADC1+LP_TRNG configuration. Adoption relies on the manufacturer's conditional true-random assurance and verified application ownership/configuration/invocation/failure boundaries. It does not independently prove internal physical routing or per-draw entropy quality.",
+  "binding": {
+    "SDK_commit": "7101770dc6db2667b3c477cc31365dd1acd6db4e",
+    "SDK_version": "6.0.2",
+    "part": "ESP32-P4 revision3.2",
+    "minimum_revision": 300,
+    "maximum_revision": 399,
+    "register_variant": "hw_ver3",
+    "source_commit": "b259d416c482569622e6467a121b6c4436e6ac9e",
+    "delivery_commit": "755fe94cc0953d88ced018fbca64735613b504b6",
+    "app_tree": "a28abb7ec022b2bd646b668fdae2fb96609acacb",
+    "normal_image_sha256": "d132fe939b6f6b471a54b9fb3b91d3574c34a883b3a7ee86d5b381b8140031ab",
+    "fixed_unavailable_image_sha256": "cffab6fae19e3c9ec2f491c9bc8792c6834ac1595434b35b1e19ed0596939ce1",
+    "packet_path": "/home/tux/nsealr/.restart-tools/mac-resume-2026-10-25/p4-session/apps/p4/evidence/entropy-public/final-packet",
+    "source_and_closure_sha256": "f93fb4f34a585c536a5226bf6702c2485b69ddf536bb741d57d65275bbf9bf6b",
+    "root_source_artifact_review": {
+      "path": "intake/p4-fallible-entropy-distinct-root-review.json",
+      "sha256": "86e9c8a17596ce6d11a6ce3b4d4746de2f8ef31af93ca362017bed95d8df6786"
+    },
+    "contract": {
+      "path": "intake/p4-fallible-entropy-contract.json",
+      "sha256": "b4336e6076c4f0b70de1a48d125306fe69c6143ab7acb59f9ac2ae1ef3b3b4d4"
+    },
+    "contract_root_approval": {
+      "path": "intake/p4-fallible-entropy-contract-root-review.json",
+      "sha256": "e6e473f65e7315714049ddb18313f2b72443e22f9f708d20d14bd00e7990ed95"
+    }
+  },
+  "requirements_basis": [
+    {
+      "path": "docs/restart/implementation/P01/requirements.md",
+      "sha256": "f8635e2941895b7d4043e769c9b73e2064036b1358e5f4266854b074a9b81326",
+      "lines": [
+        16,
+        22,
+        25,
+        99,
+        118
+      ],
+      "meaning": "PROD-02 requires a qualified fallible provider, uniformly sampled valid scalar, no guessed/deterministic/unqualified fallback and distinct scalar-rejection/provider-failure outcomes. PROD-08 is session-only P4; PROD-11 and Initialize retain custody/recovery/hardware gates. P01 accepts semantic assumptions by source-backed review and keeps measured target/release admission separate. No independent die-level diagram, certification or invented numeric min-entropy threshold is specified for this limited supported-source claim."
+    },
+    {
+      "path": "docs/restart/implementation/P01/threat-models.md",
+      "sha256": "ebf8d5a821eb4843d7b961840a4b21cc74a2997dfa5b9e15f0cc6907586ffee0",
+      "lines": [
+        38,
+        39,
+        40,
+        65,
+        69
+      ],
+      "meaning": "Exact SDK, actual entropy invocation and failure/stuck handling matter; physical/memory/fault limits remain. Source review cannot replace physical results at the claimed boundary. Existing hardware is used here for invocation/integration only."
+    },
+    {
+      "path": "plan/work-items.json",
+      "item": "Q03 acceptance6",
+      "meaning": "Trace approved source through linked/runtime provider to actual invocation; reject deterministic/unqualified fallback, exercise failure/stuck handling and record binary/instrumentation limits. Statistical checks alone cannot establish entropy quality. This decision supplies a documentary source-assurance premise and does not close the complete criterion."
+    }
+  ],
+  "primary_sources": [
+    {
+      "packet_path": "sdk-sources/docs/en/api-reference/system/random.rst",
+      "sha256": "30adc74597a2d7784f5c15e55ac57700b65bdae5f7aa65ba68cd37730a1331e4",
+      "lines": [
+        9,
+        11,
+        17,
+        19,
+        37,
+        42,
+        43,
+        45,
+        47,
+        68,
+        70,
+        72,
+        88,
+        94,
+        101,
+        120,
+        122,
+        137,
+        139
+      ],
+      "official_pinned_url": "https://github.com/espressif/esp-idf/blob/7101770dc6db2667b3c477cc31365dd1acd6db4e/docs/en/api-reference/system/random.rst",
+      "meaning": "Target-parametric manufacturer API. The no-RF SAR branch applies to P4. True-random guarantee requires helper enabled/not disabled, with physical noise continuously mixed. Without a documented main-source condition output is pseudorandom only. Secondary-source text101 retains the main-source requirement; getrandom/getentropy inherit it and add no health assurance."
+    },
+    {
+      "packet_path": "sdk-sources/components/bootloader_support/src/bootloader_random_esp32p4.c",
+      "sha256": "bfa44d0cdc840655a145fff384790e9f686000f79912853b2749627d412f9518",
+      "lines": [
+        17,
+        18,
+        26,
+        34,
+        36,
+        37,
+        41,
+        47,
+        49,
+        50,
+        53,
+        54,
+        55,
+        56,
+        60,
+        62,
+        63,
+        65,
+        66,
+        67,
+        68,
+        69,
+        73,
+        75,
+        78,
+        79,
+        86,
+        92,
+        93
+      ],
+      "official_pinned_url": "https://github.com/espressif/esp-idf/blob/7101770dc6db2667b3c477cc31365dd1acd6db4e/components/bootloader_support/src/bootloader_random_esp32p4.c",
+      "meaning": "Official helper configures ADC1 channel10/12dB, calibration2166, digital controller/software-on, XTAL/divider0, SARdiv15, trigger100. HAL minrev>=300 adds trng_ll_enable. Cleanup disables the configured source paths. Do not replace this combined configuration with an ADC1-only or TRNG-only physical theory."
+    },
+    {
+      "packet_path": "sdk-sources/components/esp_hal_ana_conv/esp32p4/include/hal/adc_ll.h",
+      "sha256": "c3632447e369ebca24eeb8391212fcfb30cf9ab545cba0c705828ebb13493368",
+      "lines": [
+        154,
+        158,
+        212,
+        216,
+        225,
+        241,
+        358,
+        370,
+        475,
+        479,
+        582,
+        595,
+        813,
+        817,
+        823,
+        827
+      ],
+      "official_pinned_url": "https://github.com/espressif/esp-idf/blob/7101770dc6db2667b3c477cc31365dd1acd6db4e/components/esp_hal_ana_conv/esp32p4/include/hal/adc_ll.h",
+      "meaning": "Actual controller clock/pattern/power/trigger writes and analog ent=1/dtest=0 init; deinit clears ent. These support configuration, not an independent physical-noise health measurement."
+    },
+    {
+      "packet_path": "sdk-sources/components/hal/esp32p4/include/hal/trng_ll.h",
+      "sha256": "a726d1d0c97cc4d69918d063598b00885324ff31f63c9d7d3e41db850025108a",
+      "lines": [
+        24,
+        26,
+        32,
+        35,
+        43,
+        45,
+        63,
+        65,
+        73,
+        75,
+        83,
+        85,
+        93,
+        99,
+        106,
+        110
+      ],
+      "official_pinned_url": "https://github.com/espressif/esp-idf/blob/7101770dc6db2667b3c477cc31365dd1acd6db4e/components/hal/esp32p4/include/hal/trng_ll.h",
+      "meaning": "Enable clock/reset/timer XOR/sample; disable sample/timer/clock.8-bit sample counter is diagnostic, no entropy-quality status."
+    },
+    {
+      "packet_path": "sdk-sources/components/soc/esp32p4/register/hw_ver3/soc/wdev_reg.h",
+      "sha256": "96562a722dcc3cbf5a538aa918c79725f76a8c757e6427753898c4d2d0c478bc",
+      "lines": [
+        9,
+        15,
+        16
+      ],
+      "official_pinned_url": "https://github.com/espressif/esp-idf/blob/7101770dc6db2667b3c477cc31365dd1acd6db4e/components/soc/esp32p4/register/hw_ver3/soc/wdev_reg.h",
+      "meaning": "Actual hw_ver3 WDEV_RND_REG aliases RNG_DATA_REG."
+    },
+    {
+      "packet_path": "sdk-sources/components/soc/esp32p4/register/hw_ver3/soc/trng_reg.h",
+      "sha256": "c4aabf15cafaae51290234e8802af9be94b8f6a8a3559d321204c6f4a859cf49",
+      "lines": [
+        17,
+        18,
+        19,
+        27,
+        34,
+        35,
+        41,
+        42,
+        49,
+        52,
+        64,
+        65,
+        76,
+        84
+      ],
+      "official_pinned_url": "https://github.com/espressif/esp-idf/blob/7101770dc6db2667b3c477cc31365dd1acd6db4e/components/soc/esp32p4/register/hw_ver3/soc/trng_reg.h",
+      "meaning": "RNG_DATA_REG is DR_REG_LP_TRNG_BASE+4. Sample bit enables RO; timer bit enables asynchronous timer XOR. This is not the older TRM LP_SYSTEM output address."
+    },
+    {
+      "packet_path": "sdk-sources/components/esp_hw_support/hw_random.c",
+      "sha256": "0cdd29d3b1696aba73056f87517552fe6c0343bfbca23a6c84730eadc50da057",
+      "lines": [
+        43,
+        45,
+        50,
+        70,
+        75,
+        78,
+        79,
+        80,
+        81,
+        82,
+        85,
+        86,
+        102,
+        106,
+        108
+      ],
+      "official_pinned_url": "https://github.com/espressif/esp-idf/blob/7101770dc6db2667b3c477cc31365dd1acd6db4e/components/esp_hw_support/hw_random.c",
+      "meaning": "P4-specific sampling/wait policy, WDEV reads/XOR and RTC mixing retained. Use unchanged manufacturer API rather than direct faster register draws/custom conditioner. uint32 return provides no health/error status."
+    },
+    {
+      "packet_path": "sdk-sources/components/soc/esp32p4/include/soc/soc_caps.h",
+      "sha256": "a96b24b7b3bbe4ec982c6ecb9a50b4b7ab1a9f8d118c82dfb7cebb6424c30942",
+      "lines": [
+        92,
+        111,
+        573
+      ],
+      "official_pinned_url": "https://github.com/espressif/esp-idf/blob/7101770dc6db2667b3c477cc31365dd1acd6db4e/components/soc/esp32p4/include/soc/soc_caps.h",
+      "meaning": "P4 hardware RNG/RTC support. SOC_WIFI_SUPPORTED/SOC_BT_SUPPORTED/SOC_IEEE802154_SUPPORTED absent; similarly named sleep/wakeup capability names do not enable those conditions."
+    },
+    {
+      "packet_path": "sdk-sources/components/bootloader_support/src/bootloader_utility.c",
+      "sha256": "a7b2896d12980a524c798c667e48c43732605ea2b1c616ef25663810ffa2576b",
+      "lines": [
+        791
+      ],
+      "official_pinned_url": "https://github.com/espressif/esp-idf/blob/7101770dc6db2667b3c477cc31365dd1acd6db4e/components/bootloader_support/src/bootloader_utility.c",
+      "meaning": "Exact boot application path disables bootloader randomness before app. Startup defaults do not establish provider readiness."
+    }
+  ],
+  "resolved_conditionals": {
+    "method": "Read existing pinned RST and actual capability/macro/preprocessor artifacts. No new Sphinx render, build or preprocessing command executed.",
+    "RST_SOC_WIFI_SUPPORTED_or_SOC_IEEE802154_SUPPORTED_or_SOC_BT_SUPPORTED": false,
+    "RST_not_SOC_WIFI_SUPPORTED_and_not_SOC_IEEE802154_SUPPORTED_and_not_SOC_BT_SUPPORTED": true,
+    "RST_not_esp32": true,
+    "consequence": "SAR text17-19 and non-ESP32 secondary caveat101 apply; RF list41 omitted; unconditional helper-active condition42 remains.",
+    "actual_macros": {
+      "path": "normal/hw_random.macros",
+      "sha256": "3b6a4d51dc0587b385eb1f4b8effb63ec012875e1ba072ca4a3d22f4db3da78d",
+      "CONFIG_IDF_TARGET_ESP32P4": 1,
+      "CONFIG_ESP_DEFAULT_CPU_FREQ_MHZ": 400,
+      "SOC_WIFI_SUPPORTED": "undefined",
+      "SOC_BT_SUPPORTED": "undefined",
+      "SOC_IEEE802154_SUPPORTED": "undefined"
+    },
+    "preprocessor": {
+      "path": "normal/rng-preprocessor.json",
+      "sha256": "8d1c334419bc27089dbfa3631dcc2feb5b22af4fc6e207bc7392daed06d4cd77",
+      "CONFIG_ESP32P4_REV_MIN_FULL": 300,
+      "WDEV_RND_REG": "RNG_DATA_REG",
+      "RNG_DATA_REG": "DR_REG_LP_TRNG_BASE+0x4",
+      "SOC_RNG_CLOCK_IS_INDEPENDENT": "undefined",
+      "SOC_RNG_BUF_CHAIN_ENTROPY_SOURCE": "undefined",
+      "SOC_RNG_RTC_TIMER_ENTROPY_SOURCE": "undefined",
+      "init_rng_body_present": false
+    },
+    "HAL_branch": "Actual minrev300 satisfies >=300 and hw_ver3 is selected, so helper includes trng_ll_enable. Do not attribute an active source to absent init_rng; RTC mixing is distinct from the undefined SOC_RNG_RTC_TIMER_ENTROPY_SOURCE condition."
+  },
+  "errata_reused": {
+    "provenance": "Existing official primary-page observations dated2026-10-26 in contractb433 primary_bindings.current_errata and root86e9; no new page/search campaign here.",
+    "actual_revision_url": "https://docs.espressif.com/projects/esp-chip-errata/en/latest/esp32p4/_tags/v3-2.html",
+    "summary_url": "https://docs.espressif.com/projects/esp-chip-errata/en/latest/esp32p4/02-errata-summary/index.html",
+    "observed_applicable_items": [
+      "ROM-816 flash-power sequencing/eFuse",
+      "ECDSA_DS-836 ECDSA peripheral signature validation"
+    ],
+    "interpretation": "No RNG/ADC entry in that observed v3.2 set; neither listed item contradicts the SDK RNG helper guarantee. Rust BIP340 is not the ECDSA hardware peripheral. Absence from this list is not exhaustive absence/health assurance. S3ADC183 is not applied to P4."
+  },
+  "TRM_mapping_limit": {
+    "text_path": "intake/p4-orientation-primary/trm.txt",
+    "text_sha256": "593c0ade1eb5f6e9bba75d32e12f50e3bc00e667d69d7bf777c6e778f971ef0d",
+    "PDF_sha256": "622fe9625d19cf00bd7aa49e65f0b5dd6ef2197f83cb7a88b4405078d6a957d4",
+    "PDF_pages": [
+      2052,
+      2053,
+      2054,
+      2055
+    ],
+    "text_lines": [
+      215529,
+      215530,
+      215542,
+      215543,
+      215547,
+      215548,
+      215583,
+      215591,
+      215601,
+      215604,
+      215627,
+      215644
+    ],
+    "observed": "Preliminary chapter35 gives SAR thermal-noise XOR plus RC_FAST/BUF_CHAIN and LPSYSREG_RNG_DATA_REG0x5011_01A4. SDKrev3 instead reads LP_TRNG base+4. The old prose does not independently establish all rev3 connections or individual ADC1/RO/timer entropy contributions.",
+    "decision": "OPEN_PHYSICAL_MAPPING_LIMIT_NOT_BLOCKER_FOR_NARROW_MANUFACTURER_SDK_CLAIM",
+    "reason": "The limited claim uses explicit applicable manufacturer API assurance plus the manufacturer's revision-selected implementation. It does not infer that a single internal unit independently feeds an entirely mapped RNG datapath. No read primary evidence contradicts the API under the combined helper-active conditions. A stronger ADC1-alone/TRNG-alone or independently proven physical-quality claim remains unsupported."
+  },
+  "contradictions_and_scope": [
+    {
+      "issue": "No-RF startup prose72 says SAR kept enabled; exact bootloader_utility791 disables before app.",
+      "disposition": "A real documentation/startup mismatch blocks presumed startup readiness, not explicit runtime-enable assurance. Reviewed provider snapshots/refuses unexpected state, acquires ownership and invokes exact helper throughout collection instead of relying on that startup sentence."
+    },
+    {
+      "issue": "Generic hw_random comment52-56 mentions Wi-Fi/BT entropy conditions.",
+      "disposition": "The common comment is incomplete for P4's no-RF case. Explicit P4 branch and applicable API SAR condition support the intended path. It does not impose an undocumented P4 RF requirement."
+    },
+    {
+      "issue": "Secondary oscillator statistical tests or changing sample counter might appear to prove quality.",
+      "disposition": "Not used: API101 retains the main-source condition;8-bit counter is diagnostic; neither statistical screens nor successful signature establishes entropy quality."
+    }
+  ],
+  "specified_conditions_and_assumptions": [
+    "Exact identified P4rev3.2, pinned unmodified SDK6.0.2/7101770, minrev300/hw_ver3 and normal source/image bindings.",
+    "Unchanged combined ADC1+LP_TRNG helper stays enabled during collection and unchanged esp_random rate/mixing implementation is used. Boot-time seed or oscillator-only output is insufficient under API.",
+    "Existing reviewed ownership, clock/configuration checks and balanced own SDK references remain required; foreign ownership, missing required state, timeout, provider failure or uncertain cleanup refuses output.",
+    "Manufacturer documentation and supported silicon behavior are trusted at their declared interface. Unreported defects/invasive faults/hidden physical routing are not independently excluded.",
+    "No independent entropy contribution assigned to ADC1, RO or timer; no per-draw quality/freshness inferred from counter/boolean/signature/timing/register readback. Raw API does not detect every physical source failure."
+  ],
+  "existing_hardware_interpretation": {
+    "provenance": "Normal/fixed runtime facts from root's current task report; current actual client/reference verification receipt read here, no rerun.",
+    "normal_root_reported": {
+      "supplied_bytes": 32,
+      "SDK_words": 8,
+      "elapsed_us": 7578,
+      "helper_enable_disable": "1/1",
+      "released": 1,
+      "flags": "0x1fffff",
+      "ANA_refs": "0/1/1/0",
+      "clock_API_Hz": {
+        "CPU": 400000000,
+        "APB": 100000000,
+        "XTAL": 40000000
+      },
+      "C6_pad": 0,
+      "worker_free_stack_bytes": 45756,
+      "sample_counter_before_after": [
+        181,
+        245
+      ]
+    },
+    "fixed_unavailable_root_reported": {
+      "provider_status": -2,
+      "sign_status": -11,
+      "output_bytes": 0,
+      "after_fresh_review": true
+    },
+    "client_verification": {
+      "path": "intake/p4-entropy-physical-20261026/normal/client-verification.json",
+      "sha256": "88ead975bb2d4972fe849601cbc928da465cea3859dd089b5c1f993fcd2f0189",
+      "actual_response_bytes": 608,
+      "response_sha256": "898e47cd16ee53224bc8cf371017ce5827d054fd6849531c9bcc660a210ab539",
+      "verdict": "PASS_CURRENT_PRODUCT_CLIENT_AND_SEPARATE_REFERENCE_BIP340"
+    },
+    "supports": "Actual linked/runtime invocation, integration and explicit Unavailable refusal in the public fixture workflow.",
+    "does_not_support": "Measured entropy quality, complete physical stuck-source detection, private identity use/custody/recovery or full Q03/release. Counter181/245 is diagnostic."
+  },
+  "precise_blocking_property_for_this_limited_claim": null,
+  "manufacturer_question_required": false,
+  "minimal_next_step": "Root may adopt this exact conditional manufacturer-supported-source premise, retaining SDK/revision/helper-lifetime and physical-health limits, as documentary input to future P4 provider/Q03 qualification. Preserve normal/fixed invocation evidence and continue only already accepted custody/lifecycle/recovery/resource gates when separately authorized. No new die-level diagram request, draw/statistical campaign or external contact is needed to decide this premise.",
+  "not_admitted": [
+    "real identity generation/import/use or scalar custody",
+    "complete qualified entropy-provider/all-fault assurance",
+    "Q03/vault task closure",
+    "RAM/ROM/reset/panic/debug erasure or recovery",
+    "persistent vault/PIN",
+    "USER/targetCPU/globalC5000",
+    "full release or independently proven physical mapping"
+  ],
+  "verification_scope": {
+    "reused": "Root86e9 full source/artifact review and653/47 bindings, b433 contract, existing primary errata observations and physical boots. No repeated SDK/packet campaign.",
+    "read_here": "Relevant P01 requirements/threat boundaries, Q03 entropy criterion, SDK API/helper/ADC_LL/TRNG_LL/WDEV/TRNG registers, existing actual macros/preprocessor, preliminary TRM RNG excerpts, existing current client/reference verification.",
+    "not_performed": {
+      "source_edits": 0,
+      "builds": 0,
+      "tests": 0,
+      "CI": 0,
+      "USB": 0,
+      "new_draws": 0,
+      "statistical_tests": 0,
+      "new_checkouts": 0,
+      "external_search_campaigns": 0,
+      "external_contacts": 0,
+      "agents_spawned": 0
+    },
+    "sole_output": "/home/tux/nsealr/.restart-tools/mac-resume-2026-10-25/intake/p4-sdk-entropy-supported-path-assurance-decision.json"
+  },
+  "criteria_closed": 0,
+  "stop": "Finite documentary decision complete; stop for root review."
+}
