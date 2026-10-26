@@ -1,0 +1,138 @@
+{
+  "reason": "Exact final source after real ISR placement/header changes; only affected four fixtures, not core/crypto/quirc replay",
+  "source_sha256": {
+    "main/display_ack.c": "e47f56fdba08709a1a408099ee4725d6b4e38f333c95c7845568f8948f9dffa4",
+    "tests/display_ack_test.c": "d9bf120e48faf594e1d49036259d7bed70896f6ef7392adcaae0f5665f1c0ad7",
+    "main/scan_admission.c": "6cbfc55450bd02884cd7548c9404e33c8fd931dcdf74a47be72d9fea577be0e4",
+    "tests/scan_admission_test.c": "c0fc206379b0fb447b59d6d3d2b8859db319b6a4ed2ff578d537e2ffdec99e1d",
+    "main/response_lifetime.c": "41a2452273d9c62e892c09c88e4e1a396056eaaf5416a8b34ea3624d309eca87",
+    "main/local_input.c": "b7d76dc47f8f0c051a13405d4ea5a7c49c4fabc91a207bf380c61ee4789a14b5",
+    "tests/response_lifetime_test.c": "4bdfff949e0f67bad82456c093f6bf6e25f604ba3766d03255cc2a7f039ce86d",
+    "main/worker_watchdog.c": "a28c529d85222298e306060f94a8800b81b133b696d0300b8644a9f8c59078ee",
+    "tests/worker_watchdog_test.c": "8487a7963ee4f907f624b575ee69b96f12e0589b993a0a5f71b91767726188f9"
+  },
+  "commands": [
+    {
+      "argv": [
+        "cc",
+        "-std=c11",
+        "-O1",
+        "-g",
+        "-Wall",
+        "-Wextra",
+        "-Werror",
+        "-fsanitize=address,undefined",
+        "-fno-omit-frame-pointer",
+        "-I/home/tux/nsealr/.restart-tools/mac-resume-2026-10-25/p4-session/apps/p4/tests/wdt_stubs",
+        "-I/home/tux/nsealr/.restart-tools/mac-resume-2026-10-25/p4-session/apps/p4/main",
+        "/home/tux/nsealr/.restart-tools/mac-resume-2026-10-25/p4-session/apps/p4/main/display_ack.c",
+        "/home/tux/nsealr/.restart-tools/mac-resume-2026-10-25/p4-session/apps/p4/tests/display_ack_test.c",
+        "-o",
+        "/home/tux/nsealr/.restart-tools/mac-resume-2026-10-25/p4-session/apps/p4/evidence/display-ack-expiry/ack"
+      ],
+      "exit": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "/home/tux/nsealr/.restart-tools/mac-resume-2026-10-25/p4-session/apps/p4/evidence/display-ack-expiry/ack"
+      ],
+      "exit": 0,
+      "stdout": "ACK model: serialized stripes, fixed deadline, missing/residual/duplicate/wrong-generation/wrong-serial/late ACK and wrap refused PASS; not hardware evidence\n",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "cc",
+        "-std=c11",
+        "-O1",
+        "-g",
+        "-Wall",
+        "-Wextra",
+        "-Werror",
+        "-fsanitize=address,undefined",
+        "-fno-omit-frame-pointer",
+        "-I/home/tux/nsealr/.restart-tools/mac-resume-2026-10-25/p4-session/apps/p4/tests/wdt_stubs",
+        "-I/home/tux/nsealr/.restart-tools/mac-resume-2026-10-25/p4-session/apps/p4/main",
+        "/home/tux/nsealr/.restart-tools/mac-resume-2026-10-25/p4-session/apps/p4/main/scan_admission.c",
+        "/home/tux/nsealr/.restart-tools/mac-resume-2026-10-25/p4-session/apps/p4/tests/scan_admission_test.c",
+        "-o",
+        "/home/tux/nsealr/.restart-tools/mac-resume-2026-10-25/p4-session/apps/p4/evidence/display-ack-expiry/admission"
+      ],
+      "exit": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "/home/tux/nsealr/.restart-tools/mac-resume-2026-10-25/p4-session/apps/p4/evidence/display-ack-expiry/admission"
+      ],
+      "exit": 0,
+      "stdout": "Actual scan helpers: camera cannot admit at feed boundary; outstanding raw token prevents feed PASS (native deterministic semaphore mocks)\n",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "cc",
+        "-std=c11",
+        "-O1",
+        "-g",
+        "-Wall",
+        "-Wextra",
+        "-Werror",
+        "-fsanitize=address,undefined",
+        "-fno-omit-frame-pointer",
+        "-I/home/tux/nsealr/.restart-tools/mac-resume-2026-10-25/p4-session/apps/p4/tests/wdt_stubs",
+        "-I/home/tux/nsealr/.restart-tools/mac-resume-2026-10-25/p4-session/apps/p4/main",
+        "/home/tux/nsealr/.restart-tools/mac-resume-2026-10-25/p4-session/apps/p4/main/response_lifetime.c",
+        "/home/tux/nsealr/.restart-tools/mac-resume-2026-10-25/p4-session/apps/p4/main/local_input.c",
+        "/home/tux/nsealr/.restart-tools/mac-resume-2026-10-25/p4-session/apps/p4/tests/response_lifetime_test.c",
+        "-o",
+        "/home/tux/nsealr/.restart-tools/mac-resume-2026-10-25/p4-session/apps/p4/evidence/display-ack-expiry/response"
+      ],
+      "exit": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "/home/tux/nsealr/.restart-tools/mac-resume-2026-10-25/p4-session/apps/p4/evidence/display-ack-expiry/response"
+      ],
+      "exit": 0,
+      "stdout": "response mode=0 elapsed_ms=201 clear_calls=1 zero_before_clear=PASS\nresponse mode=1 elapsed_ms=172 clear_calls=1 zero_before_clear=PASS\nresponse mode=2 elapsed_ms=200 clear_calls=1 zero_before_clear=PASS\nReal CLOCK_MONOTONIC: no-BOOT expiry, fresh tap clear and preheld release ignored; same absolute deadline PASS (mock UI clear only)\n",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "cc",
+        "-std=c11",
+        "-O1",
+        "-g",
+        "-Wall",
+        "-Wextra",
+        "-Werror",
+        "-fsanitize=address,undefined",
+        "-fno-omit-frame-pointer",
+        "-I/home/tux/nsealr/.restart-tools/mac-resume-2026-10-25/p4-session/apps/p4/tests/wdt_stubs",
+        "-I/home/tux/nsealr/.restart-tools/mac-resume-2026-10-25/p4-session/apps/p4/main",
+        "-DP4_WDT_PROBE_MODE=0",
+        "/home/tux/nsealr/.restart-tools/mac-resume-2026-10-25/p4-session/apps/p4/main/worker_watchdog.c",
+        "/home/tux/nsealr/.restart-tools/mac-resume-2026-10-25/p4-session/apps/p4/tests/worker_watchdog_test.c",
+        "-o",
+        "/home/tux/nsealr/.restart-tools/mac-resume-2026-10-25/p4-session/apps/p4/evidence/display-ack-expiry/watchdog"
+      ],
+      "exit": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "/home/tux/nsealr/.restart-tools/mac-resume-2026-10-25/p4-session/apps/p4/evidence/display-ack-expiry/watchdog"
+      ],
+      "exit": 0,
+      "stdout": "single registered worker; foreign/unregistered/duplicate owner and feed failure refused PASS (native mocks only)\n",
+      "stderr": ""
+    }
+  ]
+}

@@ -1,0 +1,45 @@
+{
+  "repository": "https://github.com/dlbeer/quirc",
+  "commit": "927d680904dc95fdff4cd9d022eb374b438ff8f2",
+  "license": "ISC permission and disclaimer preserved verbatim in every library source/header; README ISC declaration is consistent. GitHub NOASSERTION is not used as license evidence.",
+  "files": [
+    {
+      "path": "README.md",
+      "sha256": "df3307cb5dc49881e84bc20a3c25c8b9749f490c31d66b33645f4f8d8e8315a1"
+    },
+    {
+      "path": "lib/quirc.c",
+      "sha256": "0294b6c56f8c021b256c4c153d70483368164c6cf0cce643e1b6be03ed3585c0"
+    },
+    {
+      "path": "lib/identify.c",
+      "sha256": "ae858d86adcb12db80ad01f6d941cc2247fb5970abf0754f24dca027ede2ba99"
+    },
+    {
+      "path": "lib/decode.c",
+      "sha256": "d4468c55ecd0d2f905a6813513708005e6d609ef0a3d32a17673313c7552a7c1"
+    },
+    {
+      "path": "lib/version_db.c",
+      "sha256": "6764aa2f245085080e1e5cefd9dcd59b9727718a0d4606956e0502a57f5dff30"
+    },
+    {
+      "path": "lib/quirc.h",
+      "sha256": "49660ea710add2d6f304a1323f53190f5a2bf34db4dd160d633db0c3f22bfba5"
+    },
+    {
+      "path": "lib/quirc_internal.h",
+      "sha256": "e383ed1a0ca70c07b0530d76bfeb6bd5525efda182589f48c978921a9e54676b"
+    }
+  ],
+  "local_patch": {
+    "file": "lib/quirc.c",
+    "reason": "Skip memcpy when min==0: first resize has q->image==NULL and UBSan rejects even a zero-length null copy. No decoder algorithm or accepted pixel/profile bounds changed.",
+    "original_failure": "evidence/quirc-null-copy-red.json",
+    "patched_sha256": "8b2a8e98a736783592bbaa7d85d2d8dd2a1e2b3438ef18f1c5630156f488aaae"
+  },
+  "readme_format_only": {
+    "reason": "Trim upstream trailing line whitespace for repository diff hygiene; no source/license/algorithm change",
+    "normalized_sha256": "aaba4c50f3b9768240e1ccf1b385280ae836431a10bf7e32de376c71867c92c2"
+  }
+}

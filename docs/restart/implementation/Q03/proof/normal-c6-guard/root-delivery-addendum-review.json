@@ -1,0 +1,168 @@
+{
+  "schema_version": 1,
+  "role": "DISTINCT_READ_ONLY_METADATA_AND_EXISTING_EVIDENCE_REVIEW",
+  "reviewer": "/root/p4_optical_review",
+  "author_and_hardware_operator": "/root",
+  "verdict": "PASS_ONLY_P4_NORMAL_ROOT_DELIVERY_METADATA_ADDENDUM",
+  "compared": {
+    "base_delivery": "86b59a4b859e35cff6d822755d1448b55cdac53b",
+    "reviewed_delivery": "7752860db9ea749a6ced374fb1af24cbf7ff65f7",
+    "parent_is_base": true,
+    "worktree": "/home/tux/nsealr/.restart-tools/mac-resume-2026-10-25/p4-session",
+    "head_is_reviewed_delivery": true,
+    "worktree_clean": true,
+    "source_frozen": "33a6b4e3e29c4dd74b8557bc38d1c5b345c07290",
+    "source_review_reused_sha256": "cde6155e83709519624b9844326291ba6660e5420a1f8631814559b1ae11eeea",
+    "private_packet_manifest_reused_sha256": "56683c7e98615fff0b4ff9634fcb9d63da73ac9a02ce706207c061096e353873",
+    "binary_reused_sha256": "2a74a35788f438d30427c2d37398f41fdbd9babf322f05ba31374a77471347ee"
+  },
+  "scope_it": "Letto interamente il delta Git86..775: solo Q03.current_checkpoint e cinque nuove prove hardware pubbliche. Nessuna riapertura della review di implementazione33 o delle prove core/crypto/camera/WDT/C6 probe già ammesse.",
+  "unchanged": {
+    "app_tree": "393e5b179ad84ada89f5dd870da14d96bb6c9093",
+    "core_tree": "a6b8eaefca2487c8fb5d04ba53620223d64cdbbc",
+    "Cargo_lock_blob": "dab9e87b5a207c3e3ffba08aca8502c86c645ebd",
+    "Cargo_toml_blob": "6fd14e7212cd0b933bd89829d5915dd022a3310a",
+    "basis_it": "OID confrontati direttamente nei due commit; esattamente sei percorsi cambiati, tutti metadata/prove. Nessun SDK/configurazione/libreria/binario o file prodotto modificato da questo addendum. Binding SDK e binario della review precedente riusati."
+  },
+  "plan": {
+    "path": "plan/work-items.json",
+    "final_sha256": "144f0642c125da2a1029bfcc685fdbc0886716a242d2ab6c7685549890074a32",
+    "only_semantic_change": "/tasks/38/current_checkpoint",
+    "task_id": "Q03",
+    "task_count": 47,
+    "equality_after_removing_new_checkpoint": true,
+    "task_status": "planned",
+    "task_review_verdict": null,
+    "criteria_closed": 0,
+    "release_admitted": false,
+    "states_criteria_dependencies_other_tasks_unchanged": true,
+    "checkpoint_bindings_match_evidence": true,
+    "interpretation_it": "Il checkpoint registra un componente pubblico osservato e mantiene aperti i gate. Non costituisce completamento Q03, review_verdict del task, criterio chiuso o ammissione di rilascio. Q05 e ogni altra chiave del piano restano semanticamente identici.",
+    "existing_checks_reused_it": "Validator47 e diffcheck PASS comunicati dal root; non rieseguiti. Questa review ha confrontato direttamente i due JSON come dati. Il primo tentativo di inserimento arrestato dall'assert non ha lasciato delta aggiuntivi nel commit finale."
+  },
+  "evidence_prefix": "docs/restart/implementation/Q03/proof/normal-c6-guard/hardware",
+  "evidence": [
+    {
+      "file": "capture.json",
+      "bytes": 297,
+      "sha256": "fea680c2d0a4efda5957e926e3b18c726c92f5600811a9eee7b3dc6b78272425",
+      "exact_original": "intake/p4-normal-c6-runtime-capture.json"
+    },
+    {
+      "file": "client-verification.json",
+      "bytes": 1384,
+      "sha256": "e31798113cb88038a473b521aabdf9f5d0e381d47d9940218b3db76c8a7e6087",
+      "exact_original": "intake/p4-normal-physical-client-verification.json"
+    },
+    {
+      "file": "response.qr",
+      "bytes": 602,
+      "sha256": "fe87c8502e611ebcb85d9599df8051c87493d676d4c94fa14a9d9c9db0a0c8a0",
+      "exact_original": "intake/p4-normal-c6-actual-response.qr"
+    },
+    {
+      "file": "root-assessment.json",
+      "bytes": 3385,
+      "sha256": "032778d931b65fb9b23bfdb5e8c4458966b7660c1de31c711338766e5b759809",
+      "exact_original": "intake/p4-normal-c6-root-hardware-assessment.json"
+    },
+    {
+      "file": "runtime.log",
+      "bytes": 5412,
+      "sha256": "771bbf4c975b3792bed318664296aa6f6d6dda43cd124e6588e75428d82a4ef0",
+      "exact_original": "intake/p4-normal-c6-runtime.log"
+    }
+  ],
+  "evidence_checks_it": [
+    "Lette tutte cinque le prove dai blob Git775; dimensioni e SHA confrontati con checkpoint, assessment, capture e ricevuta client. Tutte cinque coincidono byte per byte con gli originali intake del root.",
+    "La review root già inclusa nella consegna86 coincide ancora byte per byte con intake/p4-normal-c6-guard-distinct-source-review.json e SHA cde6155e. Assessment, review, packet e binary fanno riferimento alla stessa fonte33/delivery86.",
+    "Il raw mostra POWERON/reset1, probe_mode0, versione33a6b4e3, prefisso ELF2e43e6577, ESP-IDF6.0.2 e fixture pubblica. La relazione col BIN completo2a74 è quella registrata dall'operatore root che ha associato/flashed il campione, non un'attestazione crittografica fornita dal log.",
+    "Capture300.0236796660174s/errornull e 5412byte coincidono con assessment e raw. Le sette righe GPIO54 corrispondono esattamente, nell'ordine, ai sette oggetti observed_guard_readbacks.",
+    "Raw riporta una singola operazione QR, operation-before/after, response-before e response-after-ACK; dopo l'ACK riaccende backlight e dichiara response ready. I minimi stack/free-internal riportati45756/224715 corrispondono all'assessment e restano telemetria del singolo campione.",
+    "QR decodificato soltanto come dato: envelopev2/requestp4-public-01/event template corrispondente al request-v2.json immutato, identità pubblica attesa ed eventID coerenti con ricevuta e checkpoint. Nessuna firma generata o nuovamente verificata dal reviewer."
+  ],
+  "sampled_guard_rows": [
+    {
+      "ms": 1400,
+      "phase": "begin"
+    },
+    {
+      "ms": 70508,
+      "phase": "engine-init-before"
+    },
+    {
+      "ms": 70526,
+      "phase": "engine-init-after"
+    },
+    {
+      "ms": 110458,
+      "phase": "operation-before"
+    },
+    {
+      "ms": 155200,
+      "phase": "operation-after"
+    },
+    {
+      "ms": 155201,
+      "phase": "response-before"
+    },
+    {
+      "ms": 155378,
+      "phase": "response-after-ACK"
+    }
+  ],
+  "sampled_guard_values": {
+    "pad": 0,
+    "input_enabled": true,
+    "output_enabled": true,
+    "gpio_function": 1,
+    "output_signal": 256
+  },
+  "client_and_oracle": {
+    "expected_identity": "4f355bdcb7cc0af728ef3cceb9615d90684bb5b2ca5f859ab0f0b704075871aa",
+    "event_id": "ed403ee9e9bf7ec38ce297f22a8431e9ecbc884d951a4d83805f5c765a49e701",
+    "host_equivalent_main": "99332719e0e116d3e013cd3bfa1969131dd40ecf",
+    "client_runner": "intake/verify-p4-normal-physical.mjs",
+    "client_runner_sha256": "37c4be5f2e2d70eb22b36d3c680e8897840a38b468b4dca98361838573cb06a9",
+    "client_stdout_sha256": "7f1a8a9bde3e068f440c9aa9b7bc4b3b088127f697cec6b4e210512f715e9bd6",
+    "client_stderr_empty": true,
+    "original_node_exit": 0,
+    "client_review_it": "Letti runner e stdout/stderr originali. Runner usa decoder QR e verify_signer_response del client esistente, verifica request/ok/identità attesa separatamente e asserisce validation.valid prima di produrre il riepilogo presente nella receipt.",
+    "oracle_wrapper": "/home/tux/nsealr/firmware/docs/restart/implementation/S03/oracle.py",
+    "oracle_wrapper_sha256": "f69bd3446fd4dce92106d29a0dfb13bf9fbdf447cbfdcae1b2dcf9e6c0f1cda5",
+    "upstream_reference_revision": "927b6de9915c9262615a6399de51b200f81e5aa4",
+    "upstream_reference_sha256_from_provenance": "4b1d4ad9e60820df4a6d239733d52b014bc03e4c47afd757a2fe4d3b586d892c",
+    "oracle_readback_it": "Letti wrapper e provenance. template valida il template JSON; canonical costruisce la serializzazione indipendente; reference controlla lo SHA della copia BIP340 upstream prima di caricarla. Nessun import né esecuzione del wrapper da parte del reviewer.",
+    "original_execution_provenance_it": "Il booleano independent_Python_hashlib_and_hash_pinned_upstream_BIP340_reference appartiene alla ricevuta root del run originale. Root ha chiarito direttamente che il comando originale inline costruì template/canonical, verificò SHA256(canonical)==event.id e schnorr_verify(digest,pubkey,sig), poi scrisse la receipt soltanto dopo gli assert; tool originale uscita0/reportPASS. Non è un output CLI autonomo di oracle.py, un nuovo run di questa review o una registrazione postuma di esecuzione.",
+    "negative_client_checks": "Quattro negativi precedenti invariati riusati dalla receipt; nessun replay o ampliamento in questo addendum."
+  },
+  "limits_it": [
+    "PASS limitato alla corrispondenza di metadata e prove esistenti del roundtrip pubblico fixture11 sul campione associato dal root. L'origine ottica/review/BOOT release è osservazione dell'operatore; bytes deterministici già ottenibili storicamente e log testuale non attestano da soli origine o consenso.",
+    "Sette campioni cooperativi GPIO54pad/config bassi non dimostrano continuità elettrica, tensione fisica chip-pin, identità die/firmware C6, assenza RF o comportamento durante reset/panic.",
+    "USB era collegata nel collaudo corrente: GPIO35BOOT con DTR/RTS non costituisce consenso umano fidato contro host avversario. Nessuna attestazione assenza host/offline o detector VBUS introdotto.",
+    "Disponibilità precedente batteria/PWR non prova continuità CPU. Profilo offline fisicamente disconnesso e gate PMIC/VBUS/reset/custodia restano separati e aperti.",
+    "Nessuna nuova identità, entropy/custody/recovery, secretwipe/RAM/panic/log, negativo ottico completo, boot/update o rilascio ammesso. Nessuna misura continua stack o hard bound inferita da questa telemetria.",
+    "Fonte33, packet5668 e ricevute precedenti restano invariati; questo addendum non riqualifica altri dispositivi o scope."
+  ],
+  "reviewer_execution": {
+    "product_edits": 0,
+    "plan_edits": 0,
+    "builds": 0,
+    "tests": 0,
+    "crypto_verifications": 0,
+    "oracle_imports_or_calls": 0,
+    "USB_or_flash_operations": 0,
+    "CI_queries": 0,
+    "push_or_merge": 0,
+    "repeated_old_evidence_campaigns": 0,
+    "only_persistent_output": "intake/p4-normal-root-delivery-addendum-review.json"
+  },
+  "findings": [],
+  "disposition": {
+    "metadata_addendum_admitted": true,
+    "criteria_closed": 0,
+    "release_admitted": false,
+    "extra_work_authorized": false
+  },
+  "recorded_utc": "2026-10-26T15:57:32.200411+00:00"
+}
