@@ -1,0 +1,112 @@
+{
+  "schema_version": 1,
+  "role": "CURRENT_R00_DEPENDENCY_AMENDMENT_NOT_HISTORICAL_REVIEW_REPLACEMENT",
+  "recorded_by": "/root/phase1_scope",
+  "recorded_at_utc": "2026-10-26T09:32:05.374481+00:00",
+  "assembled_source": "7e0f9d61b27e17b5ae9f247c54d02cde9f5d2b00",
+  "source_candidate": "563d10b3c933a0bdc4605d27710c0ff2610960e1",
+  "evidence_candidate": "9d312f3e8a9c088e839ea8182a40e71bb7bce0f9",
+  "reason": "PR53 unchanged cargo-deny rejected yanked crypto-bigint0.7.6. Official minimum compatible0.7.9 replaces only that registry package; existing policy/tests unchanged.",
+  "superseded_current_bindings": [
+    {
+      "commit": "19ab15d15aa8751174aa87119ae18853007c8222",
+      "path": "Cargo.lock",
+      "sha256": "27d2549f6854088d157a1054dfe355124a41e283b2f33f1d76b4f6ef12f87038"
+    },
+    {
+      "commit": "19ab15d15aa8751174aa87119ae18853007c8222",
+      "path": "apps/desktop-simulator/Cargo.lock",
+      "sha256": "2ab3af57590e8463210762e1c6218aa3694c39cf4abb8961bcf48ed7e47ce266"
+    }
+  ],
+  "current_bindings": [
+    {
+      "path": "Cargo.lock",
+      "sha256": "955146a124f4b18df969ce6e2172453403b4b801ad87139a225f5f342ec3a0dc"
+    },
+    {
+      "path": "apps/desktop-simulator/Cargo.lock",
+      "sha256": "22aa4303d335d4f93d7e6c49df6d88c0f873fa206a8b8ee13095b9f74fca3efd"
+    }
+  ],
+  "integration_metadata_failure": {
+    "role": "ACTUAL_LOCAL_ASSEMBLY_BINDING_MISMATCH_NOT_CRYPTO_TEST_FAILURE",
+    "input_commit": "7e0f9d61b27e17b5ae9f247c54d02cde9f5d2b00",
+    "argv": [
+      "python3",
+      "scripts/validate_restart_plan.py"
+    ],
+    "exit": 1,
+    "stdout": "ERROR: R00: artifact hash mismatch Cargo.lock\nERROR: R00: artifact hash mismatch apps/desktop-simulator/Cargo.lock\n",
+    "stderr": ""
+  },
+  "distinct_reviews": [
+    {
+      "private_origin": "intake/crypto-bigint-079-distinct-source-review.json",
+      "original_sha256": "e40357dd36d03569a4892e42507e26a5a6509bdd1ad68197fe3ca80932174220",
+      "receipt": {
+        "reviewer": "/root",
+        "author": "/root/pi_runtime",
+        "candidate": "563d10b3c933a0bdc4605d27710c0ff2610960e1",
+        "verdict": "PASS_SOURCE_AND_REUSED_FOCUSED_CHECKS",
+        "utc": "2026-10-26T09:04:21.721335+00:00",
+        "official_archive_sha256": "d811ea23fdfbcce2e2d5132344d471abdb8f901ac496a0893a3df92e70525e52",
+        "official_archive_files_equal": 225,
+        "author_checks_count": 14,
+        "runtime_diff_reviewed": [
+          "Montgomery carry Choice extraction",
+          "public PrimeParams variable-time construction",
+          "boxed safegcd retains modulus precision",
+          "NonZero trait bounds narrowed to Integer",
+          "Uint/BoxedUint special-modulus zero and maximum-carry fixes",
+          "upstream regressions including32bitP521 const-eval"
+        ],
+        "verification": [
+          "Archive/source metadata hashes and every vendored checksum",
+          "Only crypto-bigint package+checksum changes in2product locks",
+          "Audit policy/manifests/QRworker/plan unchanged",
+          "All actual14 author targeted commands/log hashes PASS; no root replay"
+        ],
+        "upstream_regression_disposition": "Inspected, not executed independently. Product feature closure excludes alloc/BoxedUint; selected k256 path uses fixed Uint inversion and own scalar/field implementations. Product vectors/oracles/ABI do not imply execution or universal coverage of upstream edge regressions.",
+        "reader_correction": "Initial read-only verification incorrectly expected15 commands; actual author set is14. Fixed count assumption, no source or test change.",
+        "status_limits": [
+          "0.7.9 source admitted for next target builds; prior binaries remain source-specific historical evidence",
+          "Final packet/evidence-only delivery review pending",
+          "No target custody/entropy/timing/physical/release admission"
+        ]
+      }
+    },
+    {
+      "private_origin": "intake/crypto-bigint-079-final-review.json",
+      "original_sha256": "2218d06a5caabe7324640b2ed088607dc086bc38fcb73ae0d0c7b52e75763ca6",
+      "receipt": {
+        "reviewer": "/root",
+        "author": "/root/pi_runtime",
+        "candidate": "9d312f3e8a9c088e839ea8182a40e71bb7bce0f9",
+        "source": "563d10b3c933a0bdc4605d27710c0ff2610960e1",
+        "verdict": "PASS_AFFECTED_EVIDENCE_REVIEW",
+        "utc": "2026-10-26T09:26:24.205803+00:00",
+        "source_review": "crypto-bigint-079-distinct-source-review.json",
+        "manifest_sha256": "adf1dd9eb45b27eda258639844cfaa4281deaf4f4108cfd075cad9d1cee23be1",
+        "members_checked": 63,
+        "preserved_source": true,
+        "verified": [
+          "All63bytes/hash/blobbindings",
+          "Source563d unchanged; only evidence/proof packaging",
+          "Old yank failure and all14passing focused commands retained",
+          "Upstream regressions explicitly source-inspected only",
+          "Exact Pi/P4/S3 old artifacts marked source-specific with rebuild/retest obligations",
+          "No physical/release/constanttime/custody qualification inferred"
+        ]
+      }
+    }
+  ],
+  "history_preserved": "R00 original assignee/reviewer/input/candidate/result_manifest, all historical artifacts and earlier0387 amendment remain unchanged. Only two current mutable lock bindings are advanced; their old hashes and exact19ab source are retained above.",
+  "invalidation": "Prior Pi/P4/S3 binaries remain historical on their original sources. New producers require their own builds/proofs; no physical/custody/entropy/constant-time/release qualification follows from this amendment.",
+  "protected_integration": {
+    "state": "PENDING_PROTECTED_PR53_AND_ACTUAL_MAIN",
+    "pr": "https://github.com/nSealr/nsealr/pull/53",
+    "metadata_review": "PENDING_DISTINCT_ROOT_REVIEW",
+    "runtime_replays_during_metadata_fix": 0
+  }
+}

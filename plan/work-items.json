@@ -1407,11 +1407,11 @@
         },
         {
           "path": "Cargo.lock",
-          "sha256": "27d2549f6854088d157a1054dfe355124a41e283b2f33f1d76b4f6ef12f87038"
+          "sha256": "955146a124f4b18df969ce6e2172453403b4b801ad87139a225f5f342ec3a0dc"
         },
         {
           "path": "apps/desktop-simulator/Cargo.lock",
-          "sha256": "2ab3af57590e8463210762e1c6218aa3694c39cf4abb8961bcf48ed7e47ce266"
+          "sha256": "22aa4303d335d4f93d7e6c49df6d88c0f873fa206a8b8ee13095b9f74fca3efd"
         },
         {
           "path": "vendor/ctutils/.cargo-checksum.json",
@@ -2221,6 +2221,14 @@
         {
           "path": "docs/restart/implementation/reviews/R00-crypto-bigint-remediation/artifact-manifest.json",
           "sha256": "4174c018615d0daa12408795e8fc2c7a973d07dca1222251f909e7e0aaa0ce3b"
+        },
+        {
+          "path": "docs/restart/implementation/R00/crypto-bigint-yank-079/plan-amendment.json",
+          "sha256": "0fa101558fabc7deee4327c370740a4d4fd723be0dc4fd9e88ba38fc3a493eb3"
+        },
+        {
+          "path": "docs/restart/implementation/R00/crypto-bigint-yank-079/artifact-manifest.json",
+          "sha256": "adf1dd9eb45b27eda258639844cfaa4281deaf4f4108cfd075cad9d1cee23be1"
         }
       ],
       "requires_physical_evidence": false,
@@ -2320,6 +2328,47 @@
             "findings": []
           },
           "new_root_complete_result": "docs/restart/implementation/reviews/QH01-python-rgb-lifecycle-integration/local-full-qualified/result.json"
+        },
+        "dependency_remediation_yank_079": {
+          "state": "SOURCE_AND_EVIDENCE_DISTINCT_REVIEW_PASS_METADATA_PENDING_ROOT_PROTECTED_PR53_PENDING",
+          "candidate": "563d10b3c933a0bdc4605d27710c0ff2610960e1",
+          "evidence_candidate": "9d312f3e8a9c088e839ea8182a40e71bb7bce0f9",
+          "versions": {
+            "crypto-bigint": "0.7.9",
+            "ctutils": "0.4.5"
+          },
+          "reason": "PR53 unchanged cargo-deny rejected yanked crypto-bigint0.7.6. Official minimum compatible0.7.9 replaces only that registry package; existing policy/tests unchanged.",
+          "amendment": "docs/restart/implementation/R00/crypto-bigint-yank-079/plan-amendment.json",
+          "artifact_manifest": "docs/restart/implementation/R00/crypto-bigint-yank-079/artifact-manifest.json",
+          "focused_commands_passed": 14,
+          "distinct_source_review": {
+            "reviewer": "/root",
+            "verdict": "PASS_SOURCE_AND_REUSED_FOCUSED_CHECKS",
+            "original_receipt_sha256": "e40357dd36d03569a4892e42507e26a5a6509bdd1ad68197fe3ca80932174220"
+          },
+          "distinct_evidence_review": {
+            "reviewer": "/root",
+            "verdict": "PASS_AFFECTED_EVIDENCE_REVIEW",
+            "original_receipt_sha256": "2218d06a5caabe7324640b2ed088607dc086bc38fcb73ae0d0c7b52e75763ca6"
+          },
+          "historical_lock_bindings": [
+            {
+              "commit": "19ab15d15aa8751174aa87119ae18853007c8222",
+              "path": "Cargo.lock",
+              "sha256": "27d2549f6854088d157a1054dfe355124a41e283b2f33f1d76b4f6ef12f87038"
+            },
+            {
+              "commit": "19ab15d15aa8751174aa87119ae18853007c8222",
+              "path": "apps/desktop-simulator/Cargo.lock",
+              "sha256": "2ab3af57590e8463210762e1c6218aa3694c39cf4abb8961bcf48ed7e47ce266"
+            }
+          ],
+          "protected_integration": {
+            "state": "PENDING_PROTECTED_PR53_AND_ACTUAL_MAIN",
+            "pr": "https://github.com/nSealr/nsealr/pull/53",
+            "metadata_review": "PENDING_DISTINCT_ROOT_REVIEW",
+            "runtime_replays_during_metadata_fix": 0
+          }
         }
       }
     },
@@ -12750,7 +12799,7 @@
         "implementation_admission": false,
         "physical_qualification": false,
         "next_step": "Continue independent Pi/P4 feasibility and all11 future verification procedures. Q01 supplies documentary requirements only; target hardware/runtime/custody and release qualification remain open.",
-        "source_reconciliation": "One-time proposed1e6\u2192actual7f; whole base tree and original normative/source bindings identical",
+        "source_reconciliation": "One-time proposed1e6→actual7f; whole base tree and original normative/source bindings identical",
         "documentary_delivery_source": "05a1b4c8e7e0cab9fa4c08e3358cc3ef72d97896",
         "documentary_delivery_source_review": "eab6d815b714903103d80ade1306e443f59dc4c8",
         "closure_result": "docs/restart/implementation/Q01/delivery/closure/result.json"
