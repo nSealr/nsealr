@@ -48,15 +48,6 @@ bool p4_display_failed(void) {
 
 
 int64_t IRAM_ATTR p4_monotonic_ms(void) {return esp_timer_get_time()/1000;}
-// This is an explicitly public deterministic test source, not qualified entropy.
-ptrdiff_t p4_fixture_auxiliary(uint8_t *destination,size_t capacity) {
-    if(!destination || capacity!=32)return -1;
-    if(!p4_c6_guard_check(NULL))return -1;
-    memset(destination,0x22,32);
-    if(!p4_c6_guard_check(NULL)) {memset(destination,0,32);return -1;}
-    return 32;
-}
-
 int p4_memory_internal(const uint8_t *p,size_t n) {
     return p && n && esp_ptr_internal(p) && esp_ptr_internal(p+n-1);
 }

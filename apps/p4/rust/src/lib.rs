@@ -21,7 +21,7 @@ unsafe extern "C" {
     fn p4_monotonic_ms() -> i64;
     fn p4_memory_internal(pointer: *const u8, length: usize) -> i32;
     fn p4_fatal() -> !;
-    fn p4_fixture_auxiliary(destination: *mut u8, capacity: usize) -> isize;
+    fn p4_entropy_fill32(destination: *mut u8, capacity: usize) -> isize;
     fn p4_present(decision: u32, label: *const u8, label_len: usize,
         body: *const u8, body_len: usize, position: *const u8, position_len: usize,
         index: usize, total: usize, deadline_ms: u64) -> i32;
@@ -65,8 +65,12 @@ impl LocalReviewIo for Ui {
 struct PublicFixtureAuxiliary;
 impl AuxiliarySource for PublicFixtureAuxiliary {
     fn fill(&mut self, out: &mut [u8; 32]) -> Result<usize, AuxiliaryError> {
-        let count = unsafe { p4_fixture_auxiliary(out.as_mut_ptr(), out.len()) };
-        if count != 32 { return Err(AuxiliaryError::Provider); }
+        let count = unsafe { p4_entropy_fill32(out.as_mut_ptr(), out.len()) };
+        if count != 32 {
+            for byte in out.iter_mut() { unsafe { core::ptr::write_volatile(byte, 0) }; }
+            core::sync::atomic::compiler_fence(Ordering::SeqCst);
+            return Err(AuxiliaryError::Provider);
+        }
         Ok(32)
     }
 }

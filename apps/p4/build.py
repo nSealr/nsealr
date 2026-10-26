@@ -6,7 +6,9 @@ APP=Path(__file__).resolve().parent
 parser=argparse.ArgumentParser();parser.add_argument("stage",choices=["rust","configure","app"])
 parser.add_argument("--rust-target",choices=["riscv32imafc-unknown-none-elf","x86_64-unknown-linux-gnu"],default="riscv32imafc-unknown-none-elf")
 parser.add_argument("--probe-mode",choices=["normal","busy-cpu","blocking-wait","c6-reset"],default="normal")
-args=parser.parse_args();probe_mode={"normal":0,"busy-cpu":1,"blocking-wait":2,"c6-reset":3}[args.probe_mode]
+parser.add_argument("--entropy-mode",choices=["normal","fixed-unavailable"],default="normal")
+parser.add_argument("--host-proof",action="store_true",help="Build the same Rust consumer for existing Linux FFI proof too")
+args=parser.parse_args();entropy_mode=int(args.entropy_mode=="fixed-unavailable");probe_mode={"normal":0,"busy-cpu":1,"blocking-wait":2,"c6-reset":3}[args.probe_mode]
 PROBE=Path(os.environ.get("NSEALR_P4_TOOLS","/home/tux/nsealr/.restart-tools/mac-resume-2026-10-25/p4-probe"))
 PERIPHERAL=PROBE/"candidates/lvgl96-public-headers"
 sys.path.insert(0,str(PROBE/"scripts"))
@@ -19,6 +21,7 @@ ENV["PATH"]=str(RUSTBIN)+":"+ENV["PATH"]
 ENV["RUSTFLAGS"]="-C force-frame-pointers=yes"
 if args.stage=="rust":
  argv=[str(RUSTBIN/"cargo"),"build","--release","--offline","--target",args.rust_target]
+ if args.host_proof and args.rust_target!="x86_64-unknown-linux-gnu":argv+=["--target","x86_64-unknown-linux-gnu"]
  cwd=APP/"rust"
 elif args.stage=="configure":
  baseline=PROBE/"sdkconfig.rev3_x-lvgl96"
@@ -42,16 +45,17 @@ elif args.stage=="configure":
  (APP/"sdkconfig").write_text("\n".join(lines)+"\n")
  if not (APP/"managed_components").exists():
   (APP/"managed_components").symlink_to(PERIPHERAL/"vendor/examples/esp-idf/09_video_lcd_display/managed_components",target_is_directory=True)
- argv=[str(PROBE/"tools/tools/cmake/4.0.3/bin/cmake"),"-S",str(APP),"-B",str(APP/"build"),"-G","Ninja","-DIDF_TARGET=esp32p4","-DSDKCONFIG="+str(APP/"sdkconfig"),"-DP4_PERIPHERAL_ROOT="+str(PERIPHERAL),"-DP4_WDT_PROBE_MODE="+str(probe_mode)]
+ argv=[str(PROBE/"tools/tools/cmake/4.0.3/bin/cmake"),"-S",str(APP),"-B",str(APP/"build"),"-G","Ninja","-DIDF_TARGET=esp32p4","-DSDKCONFIG="+str(APP/"sdkconfig"),"-DP4_PERIPHERAL_ROOT="+str(PERIPHERAL),"-DP4_WDT_PROBE_MODE="+str(probe_mode),"-DP4_ENTROPY_FIXED_UNAVAILABLE="+str(entropy_mode)]
  cwd=APP
 else:
  cache=(APP/"build/CMakeCache.txt").read_text()
  if "P4_WDT_PROBE_MODE:STRING="+str(probe_mode)+"\n" not in cache:raise RuntimeError("Configure the requested probe mode before app build")
+ if "P4_ENTROPY_FIXED_UNAVAILABLE:STRING="+str(entropy_mode)+"\n" not in cache:raise RuntimeError("Configure the requested public entropy mode before app build")
  argv=[str(PROBE/"tools/tools/ninja/1.12.1/ninja"),"-C",str(APP/"build"),"-j","8","all"]
  cwd=APP
 stamp=datetime.datetime.now(datetime.timezone.utc).strftime("%Y%m%dT%H%M%S")
 evidence=APP/"evidence"/(stamp+"-"+args.stage);evidence.mkdir(parents=True,exist_ok=False)
-record={"argv":argv,"cwd":str(cwd),"stage":args.stage,"probe_mode":args.probe_mode,"start_utc":stamp,"controlled_environment":{k:ENV.get(k) for k in ["IDF_PATH","IDF_TOOLS_PATH","IDF_PYTHON_ENV_PATH","CARGO_HOME","RUSTUP_HOME","RUSTFLAGS","P4_PERIPHERAL_ROOT"]}}
+record={"argv":argv,"cwd":str(cwd),"stage":args.stage,"probe_mode":args.probe_mode,"entropy_mode":args.entropy_mode,"host_proof":args.host_proof,"start_utc":stamp,"controlled_environment":{k:ENV.get(k) for k in ["IDF_PATH","IDF_TOOLS_PATH","IDF_PYTHON_ENV_PATH","CARGO_HOME","RUSTUP_HOME","RUSTFLAGS","P4_PERIPHERAL_ROOT"]}}
 (evidence/"command.json").write_text(json.dumps(record,indent=2)+"\n")
 start=time.monotonic();print("START",args.stage,evidence,flush=True)
 with (evidence/"stdout.log").open("w") as out,(evidence/"stderr.log").open("w") as err:

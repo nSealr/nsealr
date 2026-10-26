@@ -2,8 +2,8 @@
 
 This flashable engineering app connects the real camera to a bounded QR decoder,
 the one unchanged Rust Nostr engine, full local review, a GPIO decision and a
-public response QR. It uses the intentionally public11x32 identity and deterministic
-fixture-only auxiliary bytes. The banner and artifact name identify it as PUBLIC
+public response QR. It uses the intentionally public11x32 identity and the
+fallible public P4 auxiliary experiment described below. The banner and artifact name identify it as PUBLIC
 TEST; it accepts no personal identity/recovery import and has no qualified custody,
 entropy, channel-isolation, human-time, liveness or release claim.
 
@@ -112,3 +112,61 @@ cycle or radio initialization. Abnormal reset reasons stop without engine.
 See docs/restart/implementation/Q03/p4-normal-c6-guard.md for the exact sampled
 pad policy, USB/PMIC/operator precondition and remaining physical/reset limits.
 This remains a public fixture, not an offline/custody-qualified release.
+
+## Public fallible P4 auxiliary experiment
+
+The original33a6b4e3 image/proof remains historical and immutable. The current
+private callback replaces target0x22 bytes with the exact SDK6.0.2 helper and
+esp_random, through the same core AuxiliarySource. No identity import, generation,
+backup/recovery, production entropy admission or protocol/core/time change.
+Deterministic0x22 exists only in the synthetic host test provider.
+
+This identified rev3.2 target uses minrev300 and hw_ver3: WDEV_RND_REG selects
+LP_TRNG data base+4. The helper also configures ADC1 internal channel10, calibration
+2166, XTAL/divider0, SAR divider15, trigger100 and enables LP_TRNG clock/reset/
+sample/timer. The collected preliminary TRM describes an older data address;
+the exact rev3 source mapping remains a production qualification gap. Sample
+counter8bit wrap/alias is diagnostic only. No S3 DATA_STATUS/DONE/ADC183 policy is
+borrowed. Configured clock getters and output screens do not measure entropy.
+
+The one worker takes both real ADC try-locks, claims/frees the SDK ADC bus, and
+pairs helper enable/disable. ADC2 is locked because disable clears both calibration
+values. Empty reset-lock functions are not an ownership mechanism. The analog
+master is shared with PLL/MIPI; existing SDK references remain balanced and never
+rewritten to match a guessed baseline. One persistent helper reference and one
+temporary REGI2C reference require headroom<=253 in the SDK8bit count. Unexpected
+active consumers, register/ownership changes or missing cleanup refuse/poison.
+Camera/SPI LCD/FT5x06 touch and C6 guard remain their existing paths; no new
+battery/PMIC sampling, GPIO54 release, SDK patch, IRQ handler or scheduler freeze.
+
+A global50ms monotonic between-call budget and finite256settle polls surround
+eight SDK words into32bytes INTERNAL staging, all0/FF/repeated/duplicate-block
+screens, cleanup and final C6 checks. SDK/ROM calls that do not return cannot
+be interrupted by these checks; unchanged5sWDT is never fed in collection.
+This detects specified faults and never qualifies source quality. Gated or
+unpowered banks are UNKNOWN; disable does not promise every ADC block powered
+off or all registers restored. Busy/partial lock acquisition leaves unowned
+hardware untouched, and owned errors wipe full destination/staging/history.
+
+Only a fresh full review and the existing final BOOT hold/release can reach the
+callback. Touch never approves; the USB BOOT/DTR/RTS human-origin limitation
+remains. C6 pad/config is checked at entropy-before/after and between operations;
+samples are not chip-pin/RF/offline/reset-hold proof. One auxiliary attempt per
+CPUboot includes failure; after it the public app requires restart, never retries
+until green or reuses approval. No raw auxiliary/identity/payload logs.
+
+Build.py supports --entropy-mode normal or fixed-unavailable; fixedUnavailable
+is a separate compile-time public image, only with normal C6 guard mode0. It has
+no runtime host selector and returns a typed error after the same local review.
+Both images need distinct source/config/ELF/staticlib/flash identities and root
+review before flash. --host-proof on the single Rust build command also emits
+the existing Linux consumer for actual focused FFI negatives, using the same
+cached target/dependency/tool environment. It is not a new hardware port.
+
+Provider retained state<=256bytes and report<=512bytes INTERNAL,32byte staging,
+no new task/heap/DMA/DRBG; existing96KiB INTERNAL worker stack unchanged. Selected
+static frames and affected physical minimum>=4096bytes free remain separate
+checks. One fixedUnavailable public boot and one normal public boot are proposed
+for root only, with a new request/fresh confirmation per boot and explicit host
+expectedPublicKey plus independent BIP340 verification. No extra draw screen,
+output-statistical campaign, real identity or device/task closure is authorized.
