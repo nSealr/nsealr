@@ -42,8 +42,10 @@ event::ParsedRequest; do not add a C++ JSON/base64/Nostr parser.
 - Read quantum: at most 64 received bytes per scheduler iteration. The finite
   driver RX ring holds 2048 bytes, so one complete 1024-byte frame can arrive
   between scheduler polls; it is a byte buffer, not a queue of parsed requests.
-  Menu/settlement discard reads at most that ring capacity once and resets the
-  parser. A continuous sender receives no guaranteed lossless service.
+  Menu/settlement discard uses at most three nonblocking reads and that
+  cumulative ring capacity, then resets the parser. Two contiguous reads cover
+  a wrapped ring; a further read may confirm empty. Limit/error never enables
+  intake: the menu stays Locked/INPUT BUSY until a fresh gesture confirms empty. A continuous sender receives no guaranteed lossless service.
 - Decoded request: at most 320 bytes; content at most 128 decoded bytes,
   at most four tags/four fields each, 64 bytes per field and 160 aggregate text
   bytes; canonical bytes at most 1024; at most 128 complete review pages.
@@ -278,3 +280,8 @@ frames counts successful local DMA commits, not human reading. elapsed_us includ
 human wait inside the adapter call. stack_min_free_bytes is the Xtensa uint8_t
 stack high-water result since boot, not a new per-operation peak or ACTIVE ledger.
 No telemetry record is assumed present when a non-reading host blocks its queue.
+
+Distinct review found the single RX read did not drain both contiguous segments
+of an SDK byte ring. The finite helper now distinguishes Empty/Limit/Error; only
+an observed zero-byte nonblocking read permits Enable. The source200 packet is
+preserved as the candidate before this fix and is not the final flash artifact.

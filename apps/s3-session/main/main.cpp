@@ -24,6 +24,7 @@
 #include "display_init.h"
 #include "button_probe.h"
 #include "session_buttons.h"
+#include "session_input.h"
 #define PROGMEM
 #include "public_font.h"
 #undef PROGMEM
@@ -162,10 +163,12 @@ static int32_t present_review(uint32_t kind,uint32_t index,uint32_t total,
         vTaskDelay(1);
     }
 }
-static void discard_input() {
-    uint8_t discarded[2048];
-    (void)usb_serial_jtag_read_bytes(discarded,sizeof(discarded),0);
+static SessionDrain discard_input() {
+    const auto result=session_discard([](uint8_t *p,size_t n){
+        return usb_serial_jtag_read_bytes(p,n,0);
+    });
     (void)nsealr_s3_public_reset_input();
+    return result;
 }
 static void display_init() {
     gpio_set_direction(gpio_num_t(PIN_POWER_ON),GPIO_MODE_OUTPUT);
@@ -244,8 +247,10 @@ extern "C" void app_main() {
             ESP_ERROR_CHECK(esp_lcd_panel_mirror(panel,menu.rotated,!menu.rotated));
             status_screen("ROTATED - locked");idle=SessionGesture{};
         } else if(change==SessionMenuChange::Enable){
-            discard_input();local_locked=transport_failed;
+            const auto drained=discard_input();
+            local_locked=transport_failed||drained!=SessionDrain::Empty;
             if(transport_failed){menu.enabled=false;status_screen("TX UNCERTAIN - reset");}
+            else if(drained!=SessionDrain::Empty){menu.enabled=false;status_screen("INPUT BUSY - try again");}
             else status_screen("READY - public requests");
             idle=SessionGesture{};
         }
@@ -285,7 +290,7 @@ extern "C" void app_main() {
                 }
                 break; // Remaining bytes from this read cannot start another request.
             }
-            if(state<0){discard_input();break;}
+            if(state<0){menu.enabled=false;local_locked=true;discard_input();status_screen("INPUT FAILED - locked");idle=SessionGesture{};break;}
         }
         vTaskDelay(1);
     }

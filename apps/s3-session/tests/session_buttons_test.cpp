@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: MIT
 #include "../main/session_buttons.h"
+#include "../main/session_input.h"
 #include <cassert>
 int main(){
     using A=SessionAction;
@@ -50,4 +51,21 @@ int main(){
     assert(menu.rotated&&menu.enabled);
     menu.apply(A::Lock);
     assert(menu.rotated&&!menu.enabled); // RAM orientation survives local lock only
+
+    unsigned read_calls=0;size_t drained_bytes=0;
+    const int wrapped[]={300,700,0};
+    assert(session_discard([&](uint8_t*,size_t max){
+        const int n=wrapped[read_calls++];assert(size_t(n)<=max);drained_bytes+=size_t(n);return n;
+    })==SessionDrain::Empty);
+    assert(read_calls==3&&drained_bytes==1000);
+    read_calls=0;drained_bytes=0;
+    assert(session_discard([&](uint8_t*,size_t max){
+        ++read_calls;drained_bytes+=max;return int(max);
+    })==SessionDrain::Limit);
+    assert(read_calls==1&&drained_bytes==2048); // no false empty at the byte budget
+    read_calls=0;
+    assert(session_discard([&](uint8_t*,size_t){++read_calls;return 1;})==SessionDrain::Limit);
+    assert(read_calls==3); // continuously arriving data cannot create an unbounded loop
+    assert(session_discard([](uint8_t*,size_t){return -1;})==SessionDrain::Error);
+    assert(session_discard([](uint8_t*,size_t){return 0;})==SessionDrain::Empty);
 }
