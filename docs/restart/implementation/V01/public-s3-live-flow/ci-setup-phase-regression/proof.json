@@ -1,0 +1,216 @@
+{
+  "schema": "nsealr.pr57.setup-phase-test-proof.v1",
+  "base_failed_source": "ae77f2e70e83f61e5a6a15e66dbb82d29586e435",
+  "source_commit": "7444c8cf2301ee912792e56f8d0e314eb9ab83f1",
+  "source_delta": "Only apps/bridge/cli/src/public-s3.test.ts; original abort assertion retained and strengthened with readyEntered, plus separate before-OPEN case.",
+  "CI_original": {
+    "PR": 57,
+    "run": 40400388223,
+    "failed_source": "ae77f2e70e83f61e5a6a15e66dbb82d29586e435",
+    "original_private_log": "intake/ci/pr57-failed-step.log",
+    "original_bytes": 438215,
+    "original_sha256": "c3c86a051a38065bc854f00ffe8e48c7d04df3399393c4b733112b2bf70ab876",
+    "excerpt_lines_inclusive": [
+      1954,
+      2008
+    ],
+    "excerpt_byte_offset": 260433,
+    "excerpt_bytes": 7789,
+    "excerpt_sha256": "7381eda607b73e4b6378846e72ec8ca570e4473d724dc0b19c0739883a637729",
+    "conclusion": "1 failed,854 passed,1 skipped of856; originalcallback-aborted assertion only",
+    "new_CI_query": false
+  },
+  "CI_read_scope": "Root-supplied frozen failed-step log only; no query/retry/poll by author. Full original archived in R/v01-ci-setup-proof/00-ci-original, public exact relevant excerpt with offsets.",
+  "diagnosis": "Setup100ms includes child startup/OPEN, so absent callback entry does not imply abort delivery failure. CI did not instrument entry; exact original scheduling phase remains unmeasured. Default callback handles signal.aborted before stdin registration; a potential later OPEN continuation is distinguished from a demonstrated signer sideeffect. No product bug/edit claimed.",
+  "deterministic_RED": {
+    "execution": "execution/01-old-callback-assumption-expected-red",
+    "result": {
+      "exit": 1,
+      "elapsed_seconds": 0.7043069861829281,
+      "source_unchanged": true,
+      "end_utc": "2026-10-26T21:23:45.502111+00:00"
+    },
+    "meaning": "Header withheld, only setup timer advanced100ms before OPEN; original aborted=true assertion fails false. Test-input orchestration only; production equals ae77. No stress loop or host scheduling sleep."
+  },
+  "focused_GREEN": {
+    "execution": "execution/02-phase-barrier-focused",
+    "result": {
+      "exit": 0,
+      "elapsed_seconds": 0.956912899389863,
+      "source_unchanged": true,
+      "end_utc": "2026-10-26T21:25:03.857033+00:00"
+    },
+    "passed": 4,
+    "skipped": 14,
+    "scope": "ready-entry abort, preOPEN deadline, existing setup/no-write/child settlement, existing EOF refusal"
+  },
+  "frozen_file_GREEN": {
+    "execution": "execution/03-frozen-public-file-timer-lifecycle",
+    "result": {
+      "exit": 0,
+      "elapsed_seconds": 6.800109872594476,
+      "source_unchanged": true,
+      "end_utc": "2026-10-26T21:26:05.110730+00:00"
+    },
+    "passed": 18,
+    "real_external_wait_observed_ms": 5185,
+    "why_full_file": "One lifecycle check because fake scheduler state could affect following real EOF50ms/operation80ms cases; no unchanged broad suite rerun."
+  },
+  "timer_control": {
+    "only_faked": [
+      "setTimeout",
+      "clearTimeout"
+    ],
+    "ready_phase_barrier": "After actual child OPEN and abort listener registration; signal.aborted false and readyCalls1 required before timer advance.",
+    "original_override_ms": 100,
+    "override_raised": false,
+    "abort_assertion_retained": true,
+    "strengthened_assertions": [
+      "ready called exactly once",
+      "not aborted on entry",
+      "aborted after deadline",
+      "0 operation requests",
+      "no output file",
+      "dispatch awaited through actual child cleanup"
+    ],
+    "before_OPEN_case": "Withheld marker; readyCalls0,0 operation requests,no file, actual dispatch collection awaited. No impossible abort event demanded from unstarted callback.",
+    "restoration": "Nested finally awaits operation cleanup and restores real timers",
+    "not_faked": [
+      "Date",
+      "performance",
+      "process.hrtime",
+      "child process",
+      "child timers",
+      "Unix I/O",
+      "grants",
+      "operation budget",
+      "device behavior"
+    ]
+  },
+  "source_and_gate_boundaries": {
+    "apps/bridge/cli/src/index.ts": {
+      "failed_source": "505b5adfca805d3ac7ac359b701b6819ccdfdd9e",
+      "test_fix": "505b5adfca805d3ac7ac359b701b6819ccdfdd9e"
+    },
+    "apps/bridge/cli/src/public-s3.ts": {
+      "failed_source": "812141c9c6de08b522fd1177fdaacde1acc55303",
+      "test_fix": "812141c9c6de08b522fd1177fdaacde1acc55303"
+    },
+    "apps/bridge/service/src/index.ts": {
+      "failed_source": "4acb2760056a9902c6dca08465291e54b668d4db",
+      "test_fix": "4acb2760056a9902c6dca08465291e54b668d4db"
+    },
+    "apps/bridge/service/src/public-s3.ts": {
+      "failed_source": "b9dd4e492b9c37ec4c835242a02d51c2012c7be8",
+      "test_fix": "b9dd4e492b9c37ec4c835242a02d51c2012c7be8"
+    },
+    "apps/bridge/service/src/public-s3-budget.ts": {
+      "failed_source": "24ed32c417b2d29f5cefb8fdf3c6b19ce18f8c27",
+      "test_fix": "24ed32c417b2d29f5cefb8fdf3c6b19ce18f8c27"
+    },
+    "packages": {
+      "failed_source": "c4e6c040bf4fbd556c69a9bd4f46982f06914bd0",
+      "test_fix": "c4e6c040bf4fbd556c69a9bd4f46982f06914bd0"
+    },
+    "apps/s3-session": {
+      "failed_source": "73ffd5e3e6f63a479bee23a1d6dc7dc606e29919",
+      "test_fix": "73ffd5e3e6f63a479bee23a1d6dc7dc606e29919"
+    },
+    "apps/p4": {
+      "failed_source": "393e5b179ad84ada89f5dd870da14d96bb6c9093",
+      "test_fix": "393e5b179ad84ada89f5dd870da14d96bb6c9093"
+    },
+    "crates": {
+      "failed_source": "97bda3f330c47d4881b26f0474d50d3cb0320f55",
+      "test_fix": "97bda3f330c47d4881b26f0474d50d3cb0320f55"
+    },
+    "vendor": {
+      "failed_source": "e4be4ce356cb26af0825222d2ac90fa4a6eb4bb3",
+      "test_fix": "e4be4ce356cb26af0825222d2ac90fa4a6eb4bb3"
+    },
+    "plan/work-items.json": {
+      "failed_source": "1181e839baef98b8e4bed2e828f4ef5b02ebb722",
+      "test_fix": "1181e839baef98b8e4bed2e828f4ef5b02ebb722"
+    },
+    "plan/evidence-index.json": {
+      "failed_source": "442edf847787e9cd8b71893b7dc0a8486eca5bf4",
+      "test_fix": "442edf847787e9cd8b71893b7dc0a8486eca5bf4"
+    },
+    "docs/restart/implementation/QP01/request-engine/native-leaf.ts": {
+      "failed_source": "48ee5d2035c70d036dda7716efb9d712f48db1bb",
+      "test_fix": "48ee5d2035c70d036dda7716efb9d712f48db1bb"
+    }
+  },
+  "source_sha256": {
+    "apps/bridge/cli/src/public-s3.test.ts": "1b4ddbf7cac5082ec7b1e16d911426687f0339adf9fa1d8c8616c747b3efc1bd"
+  },
+  "compression_roundtrips": [
+    {
+      "path": "execution/01-old-callback-assumption-expected-red/stderr.log.gz",
+      "uncompressed_bytes": 1381,
+      "uncompressed_sha256": "00852f70f1418d7a4a141f2678da82bef4e68cb13795f4cf1099965865b222ee",
+      "kind": "lossless_gzip_mtime0"
+    },
+    {
+      "path": "execution/01-old-callback-assumption-expected-red/stdout.log.gz",
+      "uncompressed_bytes": 2254,
+      "uncompressed_sha256": "797ef5c28af4171e23f3c641369c9ff70694d0d632bbb8b7f5cb9ab28da354c1",
+      "kind": "lossless_gzip_mtime0"
+    },
+    {
+      "path": "execution/02-phase-barrier-focused/stderr.log.gz",
+      "uncompressed_bytes": 152,
+      "uncompressed_sha256": "208ad02e3f44344678b5e02ff6f4e63598ccc1d30778434fa70f84f3dcbc25a9",
+      "kind": "lossless_gzip_mtime0"
+    },
+    {
+      "path": "execution/02-phase-barrier-focused/stdout.log.gz",
+      "uncompressed_bytes": 593,
+      "uncompressed_sha256": "f1b98568600e514db62c78ac433416f2d78cab0fe2c7f24f38cbd493b132412e",
+      "kind": "lossless_gzip_mtime0"
+    },
+    {
+      "path": "execution/03-frozen-public-file-timer-lifecycle/stderr.log.gz",
+      "uncompressed_bytes": 760,
+      "uncompressed_sha256": "49df6ed14964fd986e1828a2f4175631929519774f19216fef1548f65666f538",
+      "kind": "lossless_gzip_mtime0"
+    },
+    {
+      "path": "execution/03-frozen-public-file-timer-lifecycle/stdout.log.gz",
+      "uncompressed_bytes": 672,
+      "uncompressed_sha256": "809cee6d424446d4ed1d2920804e68e31afeb7f884ba16c6c78e1817001d11cd",
+      "kind": "lossless_gzip_mtime0"
+    },
+    {
+      "path": "historical/original-ae77-test.ts.gz",
+      "uncompressed_bytes": 12443,
+      "uncompressed_sha256": "ba2c3f79760aa00bccfdd099044b57678259fcabdbb9e579fe29f7b665e1cc6a",
+      "kind": "lossless_gzip_mtime0"
+    },
+    {
+      "path": "historical/old-premise-reproducer.ts.gz",
+      "uncompressed_bytes": 12771,
+      "uncompressed_sha256": "501db5bc3b9daf6df081ae1d5a324fc165f0d3bbd7ba1122c634cd78daa8bc6e",
+      "kind": "lossless_gzip_mtime0"
+    },
+    {
+      "path": "ci/failure-excerpt.log.gz",
+      "uncompressed_bytes": 7789,
+      "uncompressed_sha256": "7381eda607b73e4b6378846e72ec8ca570e4473d724dc0b19c0739883a637729",
+      "kind": "lossless_gzip_mtime0"
+    }
+  ],
+  "environment": "Existing controlled PATH/env recorded in each command.json; Vitest4.1.5 reported by run. Existing Node/pnpm/workspace dependencies reused; no install, build or new environment.",
+  "actions": {
+    "local_product_file_tests": 2,
+    "deterministic_old_premise_red_runs": 1,
+    "full_local_CI": 0,
+    "unrelated_typecheck_API_build": 0,
+    "USB_oracle_hardware_CIquery_push": 0,
+    "product_source_changes": 0,
+    "new_worktrees": 0
+  },
+  "decision": "READY_FOR_DISTINCT_TEST_ONLY_DELTA_REVIEW_AND_NEW_HEAD_CI_BY_ROOT",
+  "criteria_closed": 0,
+  "recorded_utc": "2026-10-26T21:29:17.642710+00:00"
+}
