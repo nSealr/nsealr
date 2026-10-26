@@ -198,7 +198,7 @@ const S3EntropyReport &s3_entropy_last_report(){return last_report;}
 void s3_entropy_log_report(unsigned draw,const uint8_t *sample){
     // Fixed public diagnostics only. Banks omitted by readable are UNKNOWN.
     const auto &r=last_report;char line[384];
-    std::snprintf(line,sizeof(line),"s3-public-rng-v1 draw=%u status=%ld bytes=%u elapsed_us=%lld flags=%lx/%lx/%lx readable=%lu/%lu/%lu/%lu refs=%lu/%lu/%lu/%lu\n",draw,(long)r.status,unsigned(r.words*4),(long long)r.elapsed_us,
+    std::snprintf(line,sizeof(line),"s3-public-rng-v1 draw=%u status=%ld words=%lu supplied=%u elapsed_us=%lld flags=%lx/%lx/%lx readable=%lu/%lu/%lu/%lu refs=%lu/%lu/%lu/%lu\n",draw,(long)r.status,(unsigned long)r.words,r.status==S3EntropyStatus::PublicDraw?32U:0U,(long long)r.elapsed_us,
       (unsigned long)r.enabled.flags,(unsigned long)r.after.flags,(unsigned long)r.rest.flags,
       (unsigned long)r.before.readable,(unsigned long)r.enabled.readable,(unsigned long)r.after.readable,(unsigned long)r.rest.readable,
       (unsigned long)r.before.references,(unsigned long)r.enabled.references,(unsigned long)r.after.references,(unsigned long)r.rest.references);otg_line(line);
