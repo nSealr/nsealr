@@ -12,22 +12,10 @@ This app and its brief/proof change, plus the explicitly reviewed0.7.9 vendor/ro
 are unchanged. `inputs.json`, the dependency lock and quirc notices pin provenance.
 The frozen camera source is reused; no old std host fixture is a runtime dependency.
 
-Build with the already admitted Linux tool environment:
-
-```sh
-python3 apps/p4/build.py rust
-python3 apps/p4/build.py configure
-python3 apps/p4/build.py app
-```
-
-`NSEALR_P4_TOOLS` selects the existing P4 tool root; `NSEALR_RUST_TOOLS` selects
-the existing isolated Rust1.95.0 tool/cache root. Defaults match the active root.
-The temporary peripheral input remains read-only at its admitted source location.
-The recipe reuses its component store, versions and corrected LVGL adapter;
-no second SDK/toolchain installation is needed. The new consumer omits unused
-bsp_extra/audio-player/file-iterator/MP3 code. No retained component version/hash
-changed. Normal source migration and an independently reproduced distribution
-recipe remain Q03/Q05 work.
+Use the [versioned Linux build recipe](recipe/README.md). SDK/toolchain, Python,
+component cache and output roots are explicit user choices. The repository owns
+the config baseline, public dependency identities, lock and unchanged LVGL header
+patch; no private lab script or historical peripheral checkout is required.
 
 The Rust owner is allocation-free and section-bound to internal DRAM; the worker
 allocates/checks an internal96KiB stack. The final ELF/map proves link placement
@@ -71,14 +59,10 @@ prove a hard return bound, secret-free diagnostics, reset/wipe or core100s timin
 The approved public fault packet has three compiled modes, normal/busy-cpu/
 blocking-wait; fault modes autonomously start before engine/key initialization:
 
-```sh
-python3 apps/p4/build.py configure --probe-mode busy-cpu
-python3 apps/p4/build.py app --probe-mode busy-cpu
-python3 apps/p4/build.py configure --probe-mode blocking-wait
-python3 apps/p4/build.py app --probe-mode blocking-wait
-python3 apps/p4/build.py configure --probe-mode normal
-python3 apps/p4/build.py app --probe-mode normal
-```
+Use the same explicit recipe arguments with configure/app --probe-mode busy-cpu,
+blocking-wait or normal. The fixed-unavailable image requires normal guard mode.
+Historical fault receipts retain their original commands and source identities.
+
 
 Root reviews frozen sources/artifacts before separate bounded physical reset
 observations and restores normal. No host-triggered approval/fault mechanism.
@@ -161,7 +145,7 @@ no runtime host selector and returns a typed error after the same local review.
 Both images need distinct source/config/ELF/staticlib/flash identities and root
 review before flash. --host-proof on the single Rust build command also emits
 the existing Linux consumer for actual focused FFI negatives, using the same
-cached target/dependency/tool environment. It is not a new hardware port.
+explicitly selected dependency/tool environment. It is not a new hardware port.
 
 Provider retained state<=256bytes and report<=512bytes INTERNAL,32byte staging,
 no new task/DMA/DRBG and no new collection allocation after successful bind; existing96KiB INTERNAL worker stack unchanged. Selected

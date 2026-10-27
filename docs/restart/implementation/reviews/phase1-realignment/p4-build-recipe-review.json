@@ -1,0 +1,230 @@
+{
+  "schema_version": 1,
+  "role": "Distinct review of finite P4 public build-recipe maintenance while goal is paused",
+  "reviewer": "/root/historical_cleanup",
+  "agent_id": "01a178b3-59c6-7ad2-9375-0c5614ede672",
+  "model": "gpt-6.1-sol",
+  "effort": "xhigh",
+  "goal": "PAUSED",
+  "verdict": "PASS_SOURCE_AND_FOCUSED_ARTIFACT_REVIEW",
+  "source_base": "f4b71a9bb4f549868584403a7758a2b46f0483f9",
+  "reviewed_source": "3f16bc4189fd11cd8c0881a54c7dabeda59df00e",
+  "initial_source": "49647f4fcbe8f277e1b7174093ef796b47f920be",
+  "worktree": "/home/tux/nsealr/.restart-tools/mac-resume-2026-10-25/p4-session",
+  "branch": "maintenance/p4-build-recipe-20261027",
+  "scope": "17 build/docs/config/provenance files only. Stable public b259 application; paused fb43306 Stage B excluded. No source edits, tests, builds, downloads, CI, USB or oracle execution by reviewer.",
+  "source_review": {
+    "read": "Full339-line build.py, all new recipe README/THIRD_PARTY/pins/patch/provenance, full bootstrap and57-line requirements lock/98-line constraints, complete seven existing-file diffs and final496..c90 reader-selection/checker delta. Source table57 rows checked structurally;5592-line copied baseline validated by full byte equality to already admitted config, not a new full config review. Final3f16 provider-validation delta read in full; all three new SDK checker/input SHA pins match the existing pinned SDK bodies. Delivery source-provenance change is only its historical proof_status sentence.",
+    "unchanged_application": {
+      "source": "b259d416c482569622e6467a121b6c4436e6ac9e",
+      "enumerated_files": 38,
+      "all_exact_sha_and_bytes": true,
+      "core_tree": "a6b8eaefca2487c8fb5d04ba53620223d64cdbbc",
+      "core_tree_exact_to_b259": true
+    },
+    "baseline": {
+      "sha256": "e6a0837e1ced7c90cd0be254d693811a7fc93a4a2492f4eb6e1de51b4365698b",
+      "exact_to_previous_admitted_baseline": true
+    },
+    "adapter": {
+      "original_component_hash": "bcb316bedda9e934d32567082a969a8e8f8f406dd32d23c359a299249dc18e81",
+      "source_commit": "5d75f3f0dc499d9ed4b69284a3741187c2b75a70",
+      "patch_effect": "Only four LVGL9.6 include paths plus explicit local-change notice; patch--fuzz=0; patched file and whole component hash checked separately; original integrity markers removed.",
+      "after_sha256": "4190a9f84693b2cc4a902f1b0f766f4f10e960736daadb8b7e3f6b036ddc6008",
+      "exact_to_previous_admitted_patched_file": true,
+      "patched_component_hash": "fd55835919ccb87ca81bdc8b408c4839b528ebde8faa67739c6f32b4bf287765"
+    },
+    "python": {
+      "source_rows": 57,
+      "locked_rows": 57,
+      "mismatches": [],
+      "all_source_urls_https": true,
+      "source_hosts": [
+        "files.pythonhosted.org"
+      ],
+      "all_decoded_basenames_safe_and_unique": true,
+      "sdists": [
+        "esptool5.6.0 SHA86c7249e9cc3a824e032ede9ba20abad057a2c49e231418cc4f02b177bb36f42"
+      ],
+      "constraints_sha256": "0d15166a8412fba3d25787e46c6a53c3c00c6029236493cef3665a10367ac098",
+      "constraints_exact_to_previous_admitted_file": true,
+      "reader_correction": "UV receives exact hashes without unsupported range-file syntax. Unchanged SDK checker receives full admitted constraints immediately after sync, and prepare invokes original strict IDF environment checker. No constraints/pins weakened.",
+      "network_boundary": "Only exact publisher sources fetched/hashed. UV sync is offline/no-index/no-build-isolation; pinned setuptools backend; esptool source authenticated and rebuilt, historical private wheel not required."
+    },
+    "tools": {
+      "sdk": "7101770dc6db2667b3c477cc31365dd1acd6db4e (6.0.2)",
+      "four_archive_identities_exact_to_primary_SDK_tools_json": true,
+      "platform_note": "GCC/CMake/Ninja match linux-amd64; ROM ELF matches upstream any platform.",
+      "provider_roots": "Explicit caller-selected SDK/tool/Python/Rust roots; no default old checkout or import of active_environment/common. Cargo is offline/locked against checked-in vendor and external selected work/cache roots."
+    },
+    "licenses": "Existing Waveshare/quirc/vendor notices unchanged. THIRD_PARTY records upstream SDK/components/tools/Python/uv/Rust/esptool and retains downloaded component/Python source notices; no toolchain or image redistributed in this recipe.",
+    "path_command_boundary": "Fixed argv subprocesses; no untrusted download name becomes a shell command. URLs/versioned basenames controlled by repository. Download SHA checked before package selection; maintained UV/component-manager perform archive handling. Work must be operator-owned and outside apps/p4; existing stores/foreign managed_components links are refused. This is a trusted local build setup, not a sandbox against malicious tool installations or TOCTOU."
+  },
+  "findings": [
+    {
+      "id": "P4-RECIPE-F1",
+      "status": "RESOLVED",
+      "severity": "medium",
+      "title": "Authenticate selected providers before first execution",
+      "locations": [
+        {
+          "path": "apps/p4/build.py",
+          "lines": "105–108",
+          "problem": "c90 invokes selected base Python --version before verifying its binary SHA."
+        },
+        {
+          "path": "apps/p4/build.py",
+          "lines": "137–140;198–207",
+          "problem": "The newly added bootstrap SDK checker executes in python stage before the SDK commit/tracked/submodule checks in later prepare."
+        }
+      ],
+      "independent_adverse_case": "A selected Python path has unexpected bytes (even if it would print the requested version), or selected SDK has wrong/dirty tracked checker code. The rejection must happen before invoking that interpreter/checker; a marker in an invalid provider must remain absent.",
+      "expectation_source": "Existing public pin and command-boundary purpose; root explicitly adopted narrow automatic pre-execution rejection instead of relying only on manual setup authentication.",
+      "scope_limit": "Documented manual provider authentication makes the normal known-provider build different from an accepted invalid target. This finding does not claim the actual c90 build used a wrong provider or was a failed application build. Root requests only reordering/reusing existing validation, not a general sandbox, global TOCTOU guarantee or source/dependency upgrade.",
+      "root_action": "Author authorized to move Python SHA check before its first invocation and reuse SDK validation before checker. Only independent wrong-provider/marker negatives and affected valid phase; no full target rebuild if actual provider/app/flags unchanged.",
+      "reviewer_execution": "None; source causal assessment only.",
+      "resolution": {
+        "source": "3f16bc4189fd11cd8c0881a54c7dabeda59df00e",
+        "delta": "3 files,38additions/15deletions: build.py, pins.json, recipe README only.",
+        "python": "Selected binary SHA checked before first --version invocation.",
+        "sdk": "Shared verify_sdk authenticates full constraints body and exact checker/idf_tools/core-requirements hashes, commit/clean tracked state/recursive gitlinks+submodule bodies; invoked before SDK Python in bootstrap and prepare.",
+        "new_pin_body_readback": {
+          "new_checker_pins_match_existing_pinned_SDK": [
+            {
+              "path": "tools/check_python_dependencies.py",
+              "actual_sha256": "11b5c8edc2aaac5854fad759cb4d4ae50ed98ee944b4f5cf8c26725672ddc00e",
+              "pin_matches": true
+            },
+            {
+              "path": "tools/idf_tools.py",
+              "actual_sha256": "505c80315f64f1eefd1ef424da398b8cef69610438b80be9aea265b292d51102",
+              "pin_matches": true
+            },
+            {
+              "path": "tools/requirements/requirements.core.txt",
+              "actual_sha256": "7615240231241f4784f933d27b1e0508eababbd8692c3aaef248cf19b06fb23a",
+              "pin_matches": true
+            }
+          ],
+          "constraints_sha256": "0d15166a8412fba3d25787e46c6a53c3c00c6029236493cef3665a10367ac098"
+        },
+        "unchanged": "SDK/package/tool versions, constraints, source lock, app/core, normal compiler/config/target flags unchanged.",
+        "frontier": "Selected provider pre-execution checks only. No sandbox against malicious local tool installs, Git configuration or TOCTOU is claimed.",
+        "independent_evidence": {
+          "negative": "admission-negative/reproduce.py reviewed in full: deliberately wrong interpreter would write an EXECUTED marker and print expected version. Actual original result on3f16: exit1, Unpinned base Python binary, provider_marker_exists=false, bootstrap_commands_started=false. Expected side-effect boundary is independent of the build implementation.",
+          "positive": "Actual source3f16 base-version, shared SDK validation/submodule cleanliness, full SDK constraint checker and strict IDF environment checks all exit0. Their exact argv and original stdout/stderr were read.",
+          "limit": "One hostile Python-provider negative, not a claimed dynamic malicious-SDK or sandbox/TOCTOU campaign. SDK early rejection follows the reviewed shared hash/commit/body checks and valid-provider positive."
+        }
+      }
+    }
+  ],
+  "history": [
+    {
+      "source": "49647f4fcbe8f277e1b7174093ef796b47f920be",
+      "state": "Historical bootstrap UV range-constraint parser RED, before Rust/application build; retained by author."
+    },
+    {
+      "source": "c90baa6ba178983fdbbd6a2aaa59e4dac247c8aa",
+      "state": "Full bounded source review completed; one pre-execution provider finding adopted. Author normal target/Rust/configure build passed on this exact source; final fix and packet pending."
+    },
+    {
+      "source": "3f16bc4189fd11cd8c0881a54c7dabeda59df00e",
+      "state": "Complete affected delta read. F1 source resolved; all new SDK checker hashes match previously pinned SDK body. Final negative/affected-phase/packet metadata pending.",
+      "previous_receipt_sha256": "78d1296c0305b7a9460ef8146dd15f254aa43755d45bcfbfbcd18bf32b974ae4"
+    },
+    {
+      "source": "3f16bc4189fd11cd8c0881a54c7dabeda59df00e",
+      "delivery": "60186ec08313906cbeffe11d907517c5ed664816",
+      "state": "Final source and111-member metadata packet PASS; F1 closed by affected delta, one independent marker negative and affected valid-provider commands. Existingc90 Rust/configure/normal-target evidence reused without relabelling.",
+      "previous_receipt_sha256": "7a9fa22380928f98f1ccb89f7f370b5c18791fe5d2c4f35e8c0d59adbfc7b523"
+    }
+  ],
+  "active_inputs_keep": "P4probe selected SDK/tools/ROMs; R00 base Python and Rust toolchain; new python-final, locked component store/adapter and rust-target. Existing source-provenance scripts/baseline/private patched checkout cease being normative, but physical selected installations remain active until rebound. Root alone owns cleanup; no additional deletions authorized here.",
+  "remaining": "No remaining work within this finite source/artifact review. Root owns normal reviewed integration and any separately authorized hardware. Goal remains PAUSED; no StageB/general product work resumed.",
+  "not_admitted": [
+    "Stage B/vault features",
+    "fresh physical qualification or flashing",
+    "entropy health/real identity/custody/offline guarantees",
+    "bit reproducibility",
+    "release/task closure"
+  ],
+  "actions": {
+    "source_edits": 0,
+    "tests": 0,
+    "builds": 0,
+    "downloads_restores_fsck": 0,
+    "ci_usb_push": 0,
+    "oracles": 0,
+    "goal_resume": false,
+    "only_receipt_write": true
+  },
+  "delivery": "60186ec08313906cbeffe11d907517c5ed664816",
+  "delivery_tree": "81e9b4ec3957d0403c69076e80751db7a6702004",
+  "artifact_review": {
+    "status": "PASS",
+    "packet": "docs/restart/implementation/Q03/p4-build-recipe",
+    "manifest_sha256": "30f017450929323b8992aa97d3a83d3430163c5513dad94752f9df1665f769a4",
+    "manifest_payload_rows": 110,
+    "members_including_manifest": 111,
+    "hash_and_size_rows_checked": 110,
+    "matching_committed_Git_bodies": 111,
+    "hash_Git_mismatches": [],
+    "delivery_delta_from_admission_source": "112 files:111 packet members plus the single proof_status string in recipe/source-provenance.json. Runtime/source inputs unchanged; that exact small metadata diff was read.",
+    "ignored_proof_inputs": "Two generated config proof inputs explicitly included in the final Git delivery; independent committed111-member membership/body match confirms neither is omitted.",
+    "author_receipt": {
+      "path": "intake/p4-build-recipe-maintenance-author-receipt.json",
+      "sha256": "cd487a28532f089e7979e285a1e3e6d3a9cbea6863d635fd08887ed814fa8180"
+    },
+    "source_binding_rows": 10,
+    "source_binding_hash_checks": "All10 target/admission SHA rows independently matched their actual Git blobs in c90 and3f16.",
+    "original_log_bindings": 88,
+    "compressed_members": 3,
+    "raw_compressed_hash_size_mismatches": [],
+    "actual_external_artifact_rows": 9,
+    "actual_artifact_hash_size_mismatches": [],
+    "normal_build": {
+      "source": "c90baa6ba178983fdbbd6a2aaa59e4dac247c8aa",
+      "rust_attempts": 1,
+      "rust_seconds": 3.7703767782077193,
+      "configure_attempts": 1,
+      "configure_seconds": 30.81116329319775,
+      "target_attempts": 1,
+      "target_seconds": 24.05699132848531,
+      "target_steps": 2252,
+      "read": "Original command/result and original raw/decompressed stdout/stderr for sync RED/GREEN, Rust, configure and target; raw hashes match original results. No execution by reviewer."
+    },
+    "final_admission_source": "3f16bc4189fd11cd8c0881a54c7dabeda59df00e",
+    "target_reuse_reason": "Final delta adds/reorders provider validation only. No target command construction, flags, SDK/provider bodies, lock versions, constraints, baseline, application/core or patched component changes. c90 target is honestly attributed; no full bootstrap/Rust/configure/target replay after the validation-order fix.",
+    "bootstrap_failure_preserved": "Initial496 UV require-hashes/range-file parser exit2 preserved with exact stderr; successful c90 sync retains all57 hashes/versions and the entire unchanged constraint body. Partial setuptools-only environment retired only after preserving its original command/result/log; not an application failure.",
+    "python": {
+      "packages": 57,
+      "pip_installed": false,
+      "esptool_sdist_sha256": "86c7249e9cc3a824e032ede9ba20abad057a2c49e231418cc4f02b177bb36f42",
+      "installed_source_files_matching_publisher_sdist": 160,
+      "different_source_files": [],
+      "license_retained": true
+    },
+    "application": {
+      "bytes": 1236336,
+      "sha256": "7fdd674ccb434d1864f8ab7375ffee34d7bd78a8291e96407140fd3ed3df7083"
+    },
+    "historical_application": {
+      "bytes": 1236368,
+      "sha256": "d132fe939b6f6b471a54b9fb3b91d3574c34a883b3a7ee86d5b381b8140031ab"
+    },
+    "effective_sdkconfig_semantic_delta": {},
+    "artifact_properties": "ELF32 little-endian RISC-V/RVC single-float ABI; internal STORAGE5920B at0x4ff57578 from author original file readbacks. Actual flash metadata DIO/80MHz/16MB and offsets preserved as file facts, not a flash.",
+    "bit_reproducibility": false,
+    "hardware_requalification": false,
+    "old_preview_manifest_only": "2f6be65ef3663cfe091e512be771c6f55373cda30392db80bb3f30078b9b05bb was the earlier preview; final admission is exclusively30f01745."
+  },
+  "reused_review_boundaries": {
+    "p4_sdk_assurance": {
+      "path": "intake/p4-sdk-entropy-supported-path-assurance-decision.json",
+      "sha256": "1b4ca0e49e014f1346d00e103a1cfd6df2d9dd24225e2c40fd4428b159825b92"
+    },
+    "scope": "Existing SDK/app86e9 and stableb259 boundaries reused; no new physical/entropy assurance review or S04 work."
+  },
+  "root_action": "May proceed with normal finite maintenance delivery for exact60186 after root acceptance. Preserve selected active installations listed by residual-dependencies; this review is not a deletion, flash or release authorization.",
+  "utc": "2026-10-26T23:49:29.067438+00:00"
+}

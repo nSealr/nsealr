@@ -1,0 +1,136 @@
+{
+  "schema": "nsealr.distinct-review.v1",
+  "recorded_utc": "2026-10-27T00:41:07.479099+00:00",
+  "reviewer": "/root/p4_optical_review",
+  "scope": "Paused alignment only: complete saved PR60 failure-log readback and independent review of the one-link README correction.",
+  "decision": "PASS_MINIMAL_DOCUMENTATION_CORRECTION",
+  "goal_state": "PAUSED; no product work resumed",
+  "input": {
+    "failed_head": "f030b6d85f79a52dcb0e2159345d9c22c3e32a87",
+    "reviewed_head": "b809b4d90231c9fa7596bf240b529303b8dc6a15",
+    "reviewed_tree": "66cd98972c3ca17506b10f00bb87ffc0547a15ea",
+    "worktree": "/home/tux/nsealr/.restart-tools/mac-resume-2026-10-25/s3-session",
+    "observed_worktree_clean": true,
+    "changed_paths": [
+      "README.md"
+    ],
+    "reviewed_README_sha256": "f8ebc45ac143c31fb728d44dd703c1ca0e994fb7195b8748045dd88f5620b54e"
+  },
+  "saved_evidence": [
+    {
+      "path": "/home/tux/nsealr/.restart-tools/mac-resume-2026-10-25/intake/ci/realignment-product-PR-red.log",
+      "bytes": 1412153,
+      "sha256": "3829b4fb535bbe2624233014a59317f7159ff1730cc96ce4eaa46917044d4dce"
+    },
+    {
+      "path": "/home/tux/nsealr/.restart-tools/mac-resume-2026-10-25/intake/ci/realignment-gates-stop.json",
+      "bytes": 1514083,
+      "sha256": "d80e5daa9c4856530b11a19c0b63c35ae04c9d8af2e6690711c4daad93d88a88"
+    },
+    {
+      "path": "/home/tux/nsealr/.restart-tools/mac-resume-2026-10-25/intake/realignment-README-link-correction.json",
+      "bytes": 808,
+      "sha256": "61bb37d46a76ba79799e92f13e3fed3c6b671b59826ebd8ce07bb3482ffb0ecb"
+    }
+  ],
+  "failure_assessment": {
+    "workflow_run": 40425487148,
+    "saved_log_lines": 6933,
+    "true_failures": [
+      {
+        "log_lines": [
+          18,
+          19,
+          20
+        ],
+        "command": "python3 scripts/verify_evidence.py",
+        "make_target": "test (Makefile:17)",
+        "diagnostic": "dangling/escaping current link: README.md",
+        "cause": "README.md:30 referenced apps/s3-native, which does not exist in failed Git tree f030. The current adapter directory apps/s3-session exists in that same tree."
+      }
+    ],
+    "cascade": {
+      "log_lines": [
+        6931,
+        6932,
+        6933
+      ],
+      "explanation": "make -k ci continued independent targets, then returned failure from the earlier test recipe. failed_commands contains only product-ci. No second actual gate failure was found in the complete saved log."
+    },
+    "expected_negative": {
+      "log_lines": [
+        6554,
+        6557,
+        6564,
+        6565,
+        6566,
+        6567
+      ],
+      "diagnostic": "ERR_PNPM_RECURSIVE_RUN_FIRST_FAIL / ELIFECYCLE at 00:25:39",
+      "explanation": "Intentional rejection of retired get-signing-status. The unchanged integration test catches CalledProcessError, requires unsupported request method in stderr, requires absence of the request output file, then exercises get-capabilities. The very next saved log line reports serial-frame CLI verification passed.",
+      "source": "tests/integration/integration_companion_serial_frame_cli.py:157-183"
+    },
+    "other_error_text": "Unknown retired smartcard command and protocol_error/assertion text in hostile synthetic fixtures are expected negative evidence, not additional failed gates.",
+    "positive_log_summaries": {
+      "vitest": {
+        "lines": [
+          1885,
+          1886
+        ],
+        "test_files_passed": 82,
+        "test_files_skipped": 1,
+        "tests_passed": 856,
+        "tests_skipped": 1
+      },
+      "retained_integration": {
+        "line": 6930,
+        "steps_passed": 17
+      }
+    },
+    "coverage_limit": "The test recipe stopped at verify_evidence; subsequent recipe commands cannot all be inferred as run from successful independent targets. The failed required CI run remains failed."
+  },
+  "minimal_delta": {
+    "path": "README.md:30",
+    "before": "[apps/s3-native](apps/s3-native)",
+    "after": "[apps/s3-session](apps/s3-session)",
+    "assessment": "Exact one-link correction, including its label. Resolves navigation to the existing current S3 adapter. No checker, requirement, test, workflow, runtime, plan, gate, threshold or fixture changes."
+  },
+  "requirement_and_test_adequacy": {
+    "decision": "PASS_UNCHANGED_GUARDS",
+    "navigation_requirement": "Current local links must resolve inside the repository to existing paths; retired graph aliases remain forbidden.",
+    "checker": "scripts/verify_evidence.py:99-108 applies that existing rule to current navigation. It correctly rejected the stale README path; no checker relaxation or alias directory is justified.",
+    "existing_regression": "scripts/test_evidence.py:47-48 already rejects dangling current navigation. Escape, historical evidence, contract provenance and retired graph negatives remain unchanged.",
+    "retired_command_requirement": "Keep get-signing-status rejected with no request output. Do not restore the retired handler or suppress its expected failing subprocess merely to remove ELIFECYCLE text.",
+    "additional_tests": "No new test is needed for a single documentation target correction. Reuse existing affected checks and the root-managed required CI gate.",
+    "unchanged_git_blobs": {
+      "scripts/verify_evidence.py": "b5f5fc060ee720ccf2897012b03689bdf34726e0",
+      "scripts/test_evidence.py": "e41796dbc41cab16ba7160e932256dd42f6df5e0",
+      "Makefile": "07b55686da48d1dedba487ae9013b6b5d0d3cd6a",
+      "tests/integration/integration_companion_serial_frame_cli.py": "ece23c2baea75836f1df8eae462538a800528cf8",
+      "plan/work-items.json": "76944325ea72546fd96b76afe27a31748268fe9f"
+    }
+  },
+  "reused_root_checks": {
+    "receipt": "intake/realignment-README-link-correction.json",
+    "attribution": "Root's existing executions; independently read, not rerun by this reviewer.",
+    "verify_evidence": {
+      "exit": 0,
+      "closed_files": 1508,
+      "current_contracts": 5,
+      "current_navigation_files": 18,
+      "frozen_source": "f2ef70f522af4977e15f81554a8c6eadcdbe8097"
+    },
+    "validate_restart_plan": {
+      "exit": 0,
+      "tasks": 47,
+      "qualification": "Structural check only"
+    }
+  },
+  "limits_and_disposition": [
+    "No outstanding source finding in this tiny correction. Root may proceed with ordinary review/push/required CI for the corrected head.",
+    "This review does not assert a successful corrected-head CI run or authorize merge before required gates.",
+    "No custody, entropy, recovery, release, hardware or paused QH01 grant-expiry admission follows from these software/log results.",
+    ".github PR1 merge/check mapping is separately owned by root and outside this product correction.",
+    "Reviewer executed no tests, builds, CI queries, GitHub writes, USB actions, source edits, commits, pushes or ref mutations. Only this outside-candidate receipt was written."
+  ]
+}
