@@ -27,7 +27,7 @@ deferred. The USB-only S3 requires no battery.
 - [crates/nsealr-core](crates/nsealr-core): shared device engine, bounded parsing,
   review, authorization and signing. Oracles and fixtures are independent
   development tools, not another product signing engine.
-- [apps/s3-native](apps/s3-native), [apps/p4](apps/p4), [apps/pi](apps/pi):
+- [apps/s3-session](apps/s3-session), [apps/p4](apps/p4), [apps/pi](apps/pi):
   device adapters and target-specific build/qualification work.
 - [apps/bridge](apps/bridge): CLI, local service and browser integration.
 - [packages/sdk](packages/sdk): public TypeScript browser/Node entry points;
