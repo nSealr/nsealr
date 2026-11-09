@@ -33,7 +33,7 @@ bool platform_photo_start(void);
 bool platform_photo_capture(void);
 bool platform_photo_take(uint8_t digest32[32]);
 bool platform_photo_stop(void);
-bool platform_secret_qr_size(const uint8_t *bytes, size_t len, uint32_t *modules);
+bool platform_secret_qr_size(const uint8_t *bytes, size_t len, unsigned *modules);
 bool platform_secret_qr_region(const uint8_t *bytes, size_t len, unsigned column, unsigned row);
 bool platform_display_brightness(unsigned percent);
 enum { DEVICE_POWER_BATTERY, DEVICE_POWER_EXTERNAL, DEVICE_POWER_UNKNOWN };

@@ -413,7 +413,7 @@ bool platform_secret_qr(const uint8_t *p, size_t n) {
     p4_secret_qr_clear(&secret_qr);
     return ok;
 }
-bool platform_secret_qr_size(const uint8_t *p, size_t n, uint32_t *modules) {
+bool platform_secret_qr_size(const uint8_t *p, size_t n, unsigned *modules) {
     if (!modules)
         return false;
     *modules = 0;

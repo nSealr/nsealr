@@ -102,7 +102,7 @@ bool platform_photo_take(uint8_t digest[32]) {
     memset(digest, 0x5a, 32);
     return platform_photo_stop();
 }
-bool platform_secret_qr_size(const uint8_t *p, size_t n, uint32_t *modules) {
+bool platform_secret_qr_size(const uint8_t *p, size_t n, unsigned *modules) {
     bool ok = p4_secret_qr_encode(&secret_qr, p, n);
     if (ok)
         *modules = secret_qr.modules;
