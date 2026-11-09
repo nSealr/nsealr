@@ -15,6 +15,7 @@ static uint8_t qr_frame[NS_MAX_FRAME];
 static size_t source_len, passphrase_len, input_len, qr_length, secret_page_len;
 static uint32_t source_kind, words, account, requested_account, backup_kind, backup_page;
 static uint32_t review_index, review_flags, response_frame;
+static int32_t response_error;
 static uint64_t review_generation, deadline, last_frame;
 static size_t private_offset;
 static char *public_body;
@@ -60,6 +61,7 @@ enum {
     DECISION,
     PARTIAL,
     RESPONSE,
+    RESPONSE_REASON,
     BACKUP,
     REVEAL_WORDS,
     REVEAL_NSEC,
@@ -67,6 +69,7 @@ enum {
     BACKUP_OPTIONS,
     NSEC_REVIEW,
     GROUP_INTRO,
+    REPAIR_INTRO,
     GROUP_READY,
     GROUP_RECORD,
     GROUP_QR,
@@ -146,7 +149,10 @@ enum {
     A_GROUP_QR,
     A_IDENTITY_OPTIONS,
     A_ENTER_PASS,
-    A_SCAN_PASS
+    A_SCAN_PASS,
+    A_REPAIR_SHARE,
+    A_JOIN_REPAIR,
+    A_RESPONSE_REASON
 };
 enum { INPUT_NSEC = 1, INPUT_PASS, INPUT_ACCOUNT };
 
@@ -198,6 +204,7 @@ static void lock_identity(void) {
     editing_account = false;
     threshold_restoring = false;
     threshold_packet = 0;
+    response_error = 0;
     platform_wipe(public_key, sizeof(public_key));
     platform_wipe(npub, sizeof(npub));
     state = HOME;
@@ -614,7 +621,7 @@ static void response(void) {
     if (state == THRESHOLD_QR) {
         uint32_t phase = ns_threshold_state(core);
         view.title =
-            phase == NS_THRESHOLD_JOIN ? "Join group"
+            phase == NS_THRESHOLD_JOIN ? (threshold_restoring ? "Join repair" : "Join group")
             : phase == NS_THRESHOLD_READY && threshold_packet + 1 == ns_threshold_output_count(core)
                 ? "Group record"
             : phase == NS_THRESHOLD_RESULT ? "Return to client"
@@ -624,6 +631,10 @@ static void response(void) {
                  (unsigned)response_frame + 1, (unsigned)frames);
         view.left_label = "Captured";
         view.left_action = A_THRESHOLD_SENT;
+    } else if (state == RESPONSE && response_error) {
+        view.title = "Request refused";
+        view.left_label = "Reason";
+        view.left_action = A_RESPONSE_REASON;
     } else if (state == SHARE_QR) {
         view.title = "Private share";
         snprintf(caption, sizeof(caption), "Save every frame.\nFrame %u of %u",
@@ -676,6 +687,7 @@ static void approve(bool partial_prose) {
         return;
     }
     state = RESPONSE;
+    response_error = 0;
     response_frame = 0;
     response_paused = false;
     deadline = platform_now() + 120000;
@@ -806,13 +818,29 @@ static void show(void) {
         view.right_label = "Start group";
         view.right_action = A_START_GROUP;
         break;
+    case REPAIR_INTRO:
+        view.screen = UI_NOTICE;
+        view.title = "Repair lost share";
+        view.body = "Use both remaining devices to restore the missing share. The npub stays "
+                    "the same.\n\nOld copies remain valid. Keep old backups until all three "
+                    "updated group records agree.";
+        view.right_label = "Join repair";
+        view.right_action = A_JOIN_REPAIR;
+        break;
+    case RESPONSE_REASON:
+        view.screen = UI_READER;
+        view.title = "Request refused";
+        view.body = ns_error_text(response_error);
+        view.right_label = "Done";
+        view.right_action = UI_DONE;
+        break;
     case GROUP_READY: {
         static const ui_choice ready[] = {{"Back up this share", A_BACKUP},
                                           {"View group record", A_GROUP_RECORD},
                                           {"Use identity", A_CONTINUE}};
         view.screen = UI_MENU;
         view.title = threshold_restoring ? "Share restored" : "Group ready";
-        view.subtitle = "Keep each share in a separate safe place.";
+        view.subtitle = "Save your share and group record.";
         view.choices = ready;
         view.choice_count = 3;
         break;
@@ -851,12 +879,13 @@ static void show(void) {
     }
     case SHARE_RESTORE: {
         static const ui_choice methods[] = {{"Scan share QR", A_SHARE_SCAN},
-                                            {"Read from SD card", A_SHARE_LOAD}};
+                                            {"Read from SD card", A_SHARE_LOAD},
+                                            {"Repair lost share", A_REPAIR_SHARE}};
         view.screen = UI_MENU;
         view.title = "Restore share";
-        view.subtitle = "Use this device's QR or NSEALR.NSR file.";
+        view.subtitle = "Use a backup or both remaining devices.";
         view.choices = methods;
-        view.choice_count = 2;
+        view.choice_count = 3;
         break;
     }
     case SHARE_SAVE_CONSENT:
@@ -1345,6 +1374,8 @@ void device_action(unsigned action) {
             bool threshold = ns_threshold_state(core) != NS_THRESHOLD_NONE;
             if (ns_reject(core, review_generation) == NS_OK) {
                 state = threshold ? HOME : RESPONSE;
+                response_error = 0;
+                response_paused = false;
                 response_frame = 0;
                 deadline = platform_now() + 120000;
                 show();
@@ -1362,6 +1393,13 @@ void device_action(unsigned action) {
         return;
     }
     if (action == UI_BACK) {
+        if (state == REPAIR_INTRO || state == GROUP_INTRO || state == RESPONSE_REASON) {
+            state = state == REPAIR_INTRO  ? SHARE_RESTORE
+                    : state == GROUP_INTRO ? CREATE
+                                           : RESPONSE;
+            show();
+            return;
+        }
         if (state == PUBLIC_IDENTITY || state == PUBLIC_TEXT) {
             state = state == PUBLIC_TEXT ? PUBLIC_IDENTITY : public_return;
             show();
@@ -1454,10 +1492,19 @@ void device_action(unsigned action) {
         state = GROUP_INTRO;
         show();
         return;
+    case A_REPAIR_SHARE:
+        if (state != SHARE_RESTORE)
+            return;
+        state = REPAIR_INTRO;
+        show();
+        return;
     case A_START_GROUP:
-        if (state != GROUP_INTRO)
+    case A_JOIN_REPAIR:
+        if ((action == A_START_GROUP && state != GROUP_INTRO) ||
+            (action == A_JOIN_REPAIR && state != REPAIR_INTRO))
             return;
         lock_identity();
+        threshold_restoring = action == A_JOIN_REPAIR;
         platform_new_context();
         if (!platform_random32(entropy)) {
             error_message("Random source unavailable. No group was created.", HOME);
@@ -1728,7 +1775,15 @@ void device_action(unsigned action) {
         }
         return;
     case A_SCAN:
+        threshold_restoring = false;
+        response_error = 0;
         scan(threshold_loaded() ? SCAN_THRESHOLD : SCAN_REQUEST);
+        return;
+    case A_RESPONSE_REASON:
+        if (state != RESPONSE || !response_error)
+            return;
+        state = RESPONSE_REASON;
+        show();
         return;
     case A_PUBLIC:
         if (state != PUBLIC_TEXT)
@@ -1856,7 +1911,7 @@ void device_action(unsigned action) {
             show();
             return;
         }
-        if (state == RESPONSE) {
+        if (state == RESPONSE || state == RESPONSE_REASON) {
             ns_finish_response(core);
             state = HOME;
             show();
@@ -1997,7 +2052,16 @@ void device_scan_bytes(uint8_t *bytes, size_t len) {
     }
     stop_scan();
     if (result != NS_OK) {
-        error_message(ns_error_text(result), HOME);
+        ns_text output;
+        if (ns_response(core, &output) == NS_OK) {
+            response_error = result;
+            response_frame = 0;
+            response_paused = false;
+            deadline = platform_now() + 120000;
+            state = RESPONSE;
+            show();
+        } else
+            error_message(ns_error_text(result), HOME);
         return;
     }
     start_review();

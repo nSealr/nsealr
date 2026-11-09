@@ -151,7 +151,7 @@ def main():
     ]
     with (build / "preview.log").open("w") as log:
         for command in commands:
-            result = subprocess.run(command, stdout=log, stderr=subprocess.STDOUT)
+            result = subprocess.run(command, cwd=ROOT, stdout=log, stderr=subprocess.STDOUT)
             if result.returncode:
                 raise SystemExit(f"Preview failed; inspect {log.name}")
     for frame in output.glob("*.ppm"):
