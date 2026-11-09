@@ -68,7 +68,9 @@ int32_t ns_backup_word(const ns_context *ctx, uint32_t index,
 
 /* Replacing a request cancels old authority. now_ms is trusted monotonic time.
  * Each request expires after ten minutes. Frame intake returns NS_MORE until
- * complete; it verifies exact lengths/hash before invoking request parsing. */
+ * complete; it verifies exact lengths/hash before invoking request parsing.
+ * On a negative result, ns_response may hold an id-bound error for the client.
+ * Malformed or unidentified input has no response; never approve a failed request. */
 int32_t ns_request(ns_context *ctx, const uint8_t *json, size_t len, uint64_t now_ms);
 int32_t ns_receive_frame(ns_context *ctx, const uint8_t *frame, size_t len, uint64_t now_ms);
 uint32_t ns_frames_received(const ns_context *ctx);
