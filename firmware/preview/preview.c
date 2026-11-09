@@ -541,7 +541,18 @@ static void flow_test(void) {
     assert(ns_is_loaded(device_core()) && ns_word_count(device_core()) == 24);
     uint8_t plain24[64], with_pass[64];
     assert(ns_public_key(device_core(), 0, plain24, sizeof(plain24), &n) == NS_OK);
+    tap(140, 233);
+    tap(215, 442);
+    tap(60, 442);
+    assert(!strcmp(visible_title, "Public identity"));
+    tap(60, 442);
+    assert(!strcmp(visible_title, "Identity ready"));
+    tap(140, 175);
+    tap(140, 349);
+    assert(!strcmp(visible_title, "Identity ready"));
     tap(140, 291);
+    save_frame("31-passphrase-purpose");
+    tap(140, 175);
     text_key('t');
     text_key('e');
     text_key('s');
@@ -553,7 +564,16 @@ static void flow_test(void) {
     tap(215, 442);
     assert(ns_public_key(device_core(), 0, with_pass, sizeof(with_pass), &n) == NS_OK &&
            memcmp(plain24, with_pass, 64));
+    tap(140, 349);
+    tap(86, 194);
+    tap(215, 442);
+    assert(!strcmp(visible_title, "Passphrase"));
+    tap(60, 442);
+    assert(!strcmp(visible_title, "Identity ready") && strstr(visible_caption, "account 0"));
+    assert(ns_public_key(device_core(), 0, restored, sizeof(restored), &n) == NS_OK &&
+           !memcmp(with_pass, restored, 64));
     tap(140, 291);
+    tap(140, 175);
     for (unsigned i = 0; i < 80; i++)
         tap(195, 147);
     tap(215, 442);
@@ -569,6 +589,75 @@ static void flow_test(void) {
     assert(pages > 1 && !strcmp(visible_right, "Use passphrase"));
     tap(215, 442);
     assert(ns_public_key(device_core(), 0, with_pass, sizeof(with_pass), &n) == NS_OK);
+    tap(140, 291);
+    tap(140, 233);
+    assert(scanning && !strcmp(visible_title, "Scan passphrase"));
+    save_frame("33-passphrase-scan");
+    tap(60, 442);
+    assert(!scanning && !strcmp(visible_title, "Identity ready"));
+    assert(ns_public_key(device_core(), 0, restored, sizeof(restored), &n) == NS_OK &&
+           !memcmp(with_pass, restored, 64));
+    tap(140, 291);
+    tap(140, 233);
+    uint8_t invalid_pass[] = {0xc0, 0x80};
+    device_scan_bytes(invalid_pass, sizeof(invalid_pass));
+    assert(!strcmp(visible_title, "Please check") && ns_is_loaded(device_core()));
+    assert(!invalid_pass[0] && !invalid_pass[1]);
+    tap(215, 442);
+    tap(140, 291);
+    tap(140, 233);
+    uint8_t oversized_pass[257];
+    memset(oversized_pass, 'a', sizeof(oversized_pass));
+    device_scan_bytes(oversized_pass, sizeof(oversized_pass));
+    assert(!strcmp(visible_title, "Please check") && ns_is_loaded(device_core()));
+    for (size_t i = 0; i < sizeof(oversized_pass); i++)
+        assert(!oversized_pass[i]);
+    tap(215, 442);
+    tap(140, 291);
+    tap(140, 233);
+    uint8_t composed_pass[] = {0xc3, 0xa9, 0xe2, 0x82, 0xac};
+    device_scan_bytes(composed_pass, sizeof(composed_pass));
+    assert(!scanning && !strcmp(visible_title, "Check passphrase"));
+    for (size_t i = 0; i < sizeof(composed_pass); i++)
+        assert(!composed_pass[i]);
+    assert(ns_public_key(device_core(), 0, restored, sizeof(restored), &n) == NS_OK &&
+           !memcmp(with_pass, restored, 64));
+    save_frame("34-unicode-passphrase");
+    tap(60, 442);
+    tap(270, 147);
+    tap(215, 442);
+    assert(!strcmp(visible_title, "Check passphrase"));
+    tap(215, 442);
+    assert(ns_public_key(device_core(), 0, with_pass, sizeof(with_pass), &n) == NS_OK);
+    tap(140, 291);
+    tap(140, 233);
+    uint8_t decomposed_pass[] = {'e', 0xcc, 0x81};
+    device_scan_bytes(decomposed_pass, sizeof(decomposed_pass));
+    tap(215, 442);
+    assert(ns_public_key(device_core(), 0, restored, sizeof(restored), &n) == NS_OK &&
+           !memcmp(with_pass, restored, 64));
+    _Alignas(NS_CONTEXT_ALIGN) uint8_t expected_storage[NS_CONTEXT_BYTES];
+    ns_context *expected_identity = (ns_context *)expected_storage;
+    uint8_t public_words[256], public_pass[] = {'e', 0xcc, 0x81}, expected_key[64];
+    size_t words_len;
+    assert(ns_backup(device_core(), 2, public_words, sizeof(public_words), &words_len) == NS_OK);
+    assert(ns_init(expected_storage, sizeof(expected_storage)) == NS_OK);
+    assert(ns_import_mnemonic(expected_identity, public_words, words_len, public_pass,
+                              sizeof(public_pass), 1) == NS_OK);
+    assert(ns_public_key(expected_identity, 0, expected_key, sizeof(expected_key), &n) == NS_OK);
+    ns_deinit(expected_identity);
+    tap(140, 349);
+    tap(86, 194);
+    tap(215, 442);
+    tap(140, 233);
+    uint8_t account_pass[] = {0xc3, 0xa9};
+    device_scan_bytes(account_pass, sizeof(account_pass));
+    assert(ns_public_key(device_core(), 0, restored, sizeof(restored), &n) == NS_OK &&
+           !memcmp(with_pass, restored, 64));
+    tap(215, 442);
+    assert(strstr(visible_caption, "account 1"));
+    assert(ns_public_key(device_core(), 0, with_pass, sizeof(with_pass), &n) == NS_OK &&
+           !memcmp(with_pass, expected_key, 64));
     tap(140, 175);
     tap(140, 291);
     tap(140, 233);
@@ -606,6 +695,8 @@ static void flow_test(void) {
     assert(!ui_escape_text(invalid, sizeof(invalid), escaped, sizeof(escaped), &escaped_len));
     puts("PASS: real-core create/backup/clear/restore; QR frame collection; rendered review; sign, "
          "reject, cancel, response clear and lock");
+    puts("PASS: confirmation return/options, cancelled account preservation, local UTF8 "
+         "passphrase scan/review/edit, invalid/oversize rejection and NFKD-equivalent identity");
 }
 /* The UI is one real participant. Two public-data core peers exercise the
  * authenticated exchange without inventing device state or approval actions. */
@@ -780,6 +871,22 @@ static void threshold_flow_test(void) {
     tap(258, 122);
     assert(!strcmp(visible_title, "Group record"));
     save_frame("26-group-record");
+    assert(!ns_threshold_output_count(custody[0]));
+    uint8_t record[1024], encoded[NS_MAX_FRAME];
+    size_t record_len, encoded_len;
+    assert(ns_threshold_record(custody[0], record, sizeof(record), &record_len) == NS_OK);
+    tap(215, 442);
+    assert(ns_encode_frame(record, record_len, 0, encoded, sizeof(encoded), &encoded_len) == NS_OK);
+    assert(test_qr_len == encoded_len && !memcmp(test_qr, encoded, encoded_len));
+    assert(!ns_threshold_output_count(custody[0]));
+    save_frame("32-group-record-qr");
+    tap(258, 122);
+    assert(ns_encode_frame(record, record_len, 1, encoded, sizeof(encoded), &encoded_len) == NS_OK);
+    assert(test_qr_len == encoded_len && !memcmp(test_qr, encoded, encoded_len));
+    tap(60, 442);
+    assert(!strcmp(visible_title, "Group record"));
+    tap(60, 442);
+    assert(!strcmp(visible_title, "Public identity"));
     tap(270, 26);
     tap(140, 233);
     tap(140, 349);

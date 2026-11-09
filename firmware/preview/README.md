@@ -45,3 +45,10 @@ media, overwrite refusal, missing and oversized files, and clearing failed input
 These tests use only public test material in `.cache/ui-preview/NSEALR.NSR`, which
 is removed afterward. The P4 uses its real FatFs/SD driver and needs separate
 absent-card, read/write and removal/error measurements.
+
+The recovery replay also covers public-key confirmation return paths, reopening
+identity options, cancelled and completed account changes, deliberate UTF8
+passphrase scanning, complete-codepoint editing, invalid/oversized input cleanup,
+and equivalent composed/decomposed passphrases. Threshold checks redisplay the
+loaded public record after its original output has been dismissed and compare
+both displayed frames with the actual descriptor bytes.
