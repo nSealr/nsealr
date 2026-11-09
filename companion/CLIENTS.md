@@ -7,9 +7,17 @@ specific integration observations, not blanket compatibility or endorsement.
 | --- | --- | --- |
 | [noStrudel fa560a51](https://github.com/hzrd149/nostrudel/tree/fa560a51f9702728be3bb85a1203cb9fd7adff60) | NIP-07 and NIP-46 login and creation/publication of a plain text note | Actual client UI, packaged extension or encrypted remote session; Rust host approval, synthetic camera and local relay |
 | [Coracle 81581be7](https://github.com/coracle-social/coracle/tree/81581be7d1dec59e274dea2d65096ad5774c7eab) | NIP-07 and NIP-46 login and creation/publication of a plain text note | Actual client UI, packaged extension or encrypted remote session; same host boundaries |
+| [Amethyst1.21.0 CLI](https://github.com/vitorpamplona/amethyst/releases/tag/v1.21.0) | NIP-46 login, reconnect and plain-note signing/publication | Unmodified macOS ARM64 release, bundled JVM, actual companion QR pixels and native signer; loopback-only OS sandbox, no Android UI claim |
 | [Amethyst e3f14a9c](https://github.com/vitorpamplona/amethyst/tree/e3f14a9c8f1efa5d0a1362719f55c3e0fc7d0610) and its [Quartz 48ef376c](https://github.com/vitorpamplona/quartz/tree/48ef376cf41ed10bcb850142dd2022bda4bf6db4) | Source inspection of NIP-46 and concurrent recipient/self-copy requests | Android runtime not tested |
 
-The observed notes had kind 1 and no tags. The browser decoded actual
+The Amethyst release uses source `f3e6a6de6fd52ab182971807304793f266c7b4df`
+and Quartz2.13.0, distinct from the inspected HEAD above. Its CLI login/context/
+post sources match that HEAD. Login and a subsequent command reuse the same
+client transport identity; reconnect acknowledges that already paired peer
+without creating new grants. The OS sandbox blocked the CLI's default public
+outbox relays; only the local relay received the test note.
+
+The observed browser-client notes had kind 1 and no tags. The browser decoded actual
 displayed request QR pixels; the Rust owner generated response frames. A
 synthetic video stream then passed those response pixels through the production
 scanner. The client received the verified exact event and published it to an

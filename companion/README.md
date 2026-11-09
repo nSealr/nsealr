@@ -63,6 +63,7 @@ The browser generates a separate, disposable NIP-46 transport key. It encrypts
 and signs relay messages, while identity signing and NIP-44 requests use the
 same QR/device flow as the extension. Client names are not proof of identity.
 Pairing links contain a one-use secret; share them only with the intended client.
+An already paired client can reconnect while this companion session stays open.
 Keep the companion tab open. Closing or reloading it ends the remote session;
 pair again with a fresh link. Session transport keys and permissions are not
 saved to browser storage. JavaScript cannot promise physical memory erasure.
