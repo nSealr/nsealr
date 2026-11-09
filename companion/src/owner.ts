@@ -12,6 +12,8 @@ export class Owner {
   private pending: Pending | null = null;
   readonly collector = new Collector();
   readonly grants = new Map<string, Set<Method>>();
+  generation = 0;
+  reserved = false;
   private changed: () => void;
   private lifetime: number;
   constructor(changed: () => void = () => {}, lifetime = 10 * 60_000) { this.changed = changed; this.lifetime = lifetime; }
@@ -30,9 +32,11 @@ export class Owner {
   revoke(origin: string) {
     this.grants.delete(origin);
     if (this.pending?.origin === origin) this.cancel('Connection revoked.');
+    else this.generation++;
     this.changed();
   }
   start(origin: string, method: Method, params: unknown[], local = false): Promise<Result> {
+    if (this.reserved && !local) return Promise.reject(Error('A private-message operation is in progress.'));
     if (this.pending) return Promise.reject(Error('Another device request is already open.'));
     if (!local && !this.grants.get(origin)?.has(method)) return Promise.reject(Error('This application has no permission for that method.'));
     let prepared: Request;
@@ -59,6 +63,7 @@ export class Owner {
     }
   }
   cancel(reason = 'Request cancelled.') {
+    this.generation++;
     const pending = this.pending; this.pending = null; this.collector.clear();
     if (pending) { clearTimeout(pending.timer); pending.reject(Error(reason)); }
     this.changed();

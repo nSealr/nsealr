@@ -17,20 +17,21 @@ class Socket {
   onerror: (() => void) | null = null;
   onmessage: ((event: { data: string }) => void) | null = null;
   output: unknown[][] = [];
+  autoAck = true;
   constructor(_url: string) { Socket.current = this; queueMicrotask(() => { this.readyState = 1; this.onopen?.(); }); }
   send(message: string) {
     const packet = JSON.parse(message); this.output.push(packet);
-    if (packet[0] === 'EVENT') queueMicrotask(() => this.receive(['OK', packet[1].id, true, '']));
+    if (packet[0] === 'EVENT' && this.autoAck) queueMicrotask(() => this.receive(['OK', packet[1].id, true, '']));
   }
   receive(packet: unknown[]) { this.onmessage?.({ data: JSON.stringify(packet) }); }
   close() { if (this.readyState === 3) return; this.readyState = 3; queueMicrotask(() => this.onclose?.()); }
 }
 globalThis.WebSocket = Socket as unknown as typeof WebSocket;
 async function until(check: () => boolean) { for (let i = 0; i < 100; i++) { if (check()) return; await new Promise(resolve => setTimeout(resolve, 2)); } assert.fail('Condition did not become true.'); }
-async function setup(allow = true) {
+async function setup(allow = true, autoAck = true) {
   const owner = new Owner(); owner.select(devicePublic); const prompts: string[] = [];
   const remote = new RemoteSigner('wss://relay.example/', owner, async (origin, method) => { prompts.push(`${origin}:${method}`); return allow; }, () => {});
-  await remote.open(); const socket = Socket.current;
+  await remote.open(); const socket = Socket.current; socket.autoAck = autoAck;
   const conversation = nip44.utils.getConversationKey(clientKey, remote.transportKey);
   function send(id: string, method: string, params: string[]) {
     socket.receive(['EVENT', 'nsealr', finalizeEvent({ kind: 24133, created_at: Math.floor(Date.now() / 1000), tags: [['p', remote.transportKey]], content: nip44.encrypt(JSON.stringify({ id, method, params }), conversation) }, clientKey)]);
@@ -42,7 +43,12 @@ async function setup(allow = true) {
 }
 
 test('NIP46 pairs once with a transport identity separate from the user and refuses declined pairing', async () => {
-  const session = await setup(); assert.notEqual(session.remote.transportKey, devicePublic); assert.equal(session.remote.client, clientPublic); assert.equal(session.replies()[0].result, 'ack');
+  const session = await setup(true, false); assert.notEqual(session.remote.transportKey, devicePublic); assert.equal(session.remote.client, clientPublic); assert.equal(session.replies()[0].result, 'ack');
+  session.send('before-pairing-relay-ack', 'get_public_key', []);
+  await new Promise(resolve => setTimeout(resolve, 10)); assert.equal(session.owner.operation, null);
+  session.socket.autoAck = true;
+  session.socket.receive(['OK', (session.socket.output.find(row => row[0] === 'EVENT')![1] as any).id, true, '']);
+  await until(() => session.owner.operation?.request.method === 'get_public_key');
   session.remote.close();
   const denied = await setup(false); assert.match(denied.replies()[0].error, /rejected/); assert.equal(denied.remote.client, null); denied.remote.close();
 });
@@ -58,15 +64,16 @@ test('NIP46 maps arbitrary RPC IDs to fresh optical IDs and returns only the ver
   assert.equal(session.replies()[1].id, 'remote request with spaces'); assert.equal(JSON.parse(session.replies()[1].result).id, signed.id);
   session.remote.close();
 });
-test('NIP46 replay, concurrent requests and unsupported methods never create extra device operations', async () => {
+test('NIP46 queues at most four concurrent requests; replay and cancellation never create extra device operations', async () => {
   const session = await setup(); session.send('one', 'get_public_key', []); await until(() => !!session.owner.operation);
   const optical = session.owner.operation!.request.id;
-  session.send('one', 'get_public_key', []); session.send('two', 'get_public_key', []); await until(() => session.replies().length === 2);
-  session.send('three', 'get_public_key', []); await until(() => session.replies().length === 3);
-  assert.equal(session.owner.operation!.request.id, optical); assert.match(session.replies()[2].error, /already open/);
-  session.owner.cancel(); await until(() => session.replies().length === 4);
-  session.send('unsupported', 'nip04_encrypt', [clientPublic, 'text']); await until(() => session.replies().length === 5);
-  assert.match(session.replies()[4].error, /Unsupported/); assert.equal(session.owner.operation, null); session.remote.close();
+  session.send('one', 'get_public_key', []); session.send('two', 'get_public_key', []); session.send('three', 'get_public_key', []); session.send('four', 'get_public_key', []); session.send('overflow', 'get_public_key', []);
+  await until(() => session.replies().length === 2);
+  assert.equal(session.owner.operation!.request.id, optical); assert.match(session.replies()[1].error, /queue is full/);
+  session.owner.cancel(); await until(() => session.replies().length === 6);
+  assert.ok(session.replies().slice(2).every(row => /cancelled/.test(row.error)));
+  session.send('unsupported', 'nip04_encrypt', [clientPublic, 'text']); await until(() => session.replies().length === 7);
+  assert.match(session.replies()[6].error, /Unsupported/); assert.equal(session.owner.operation, null); session.remote.close();
 });
 test('NIP46 remote close cancels its pending operation, revokes permissions and cannot reopen', async () => {
   const session = await setup(); session.send('key', 'get_public_key', []); await until(() => !!session.owner.operation);

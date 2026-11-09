@@ -100,7 +100,7 @@ function cipher(input: string): Uint8Array {
   return Uint8Array.from(decoded, char => char.charCodeAt(0));
 }
 
-export function template(input: unknown, key: string): EventTemplate {
+export function template(input: unknown, key: string, contentLimit = MAX_CONTENT): EventTemplate {
   const row = object(input);
   if (Object.keys(row).some(k => !['pubkey', 'created_at', 'kind', 'tags', 'content', 'id'].includes(k))) throw Error('Unsupported event field.');
   if (row.pubkey !== undefined && row.pubkey !== key) throw Error('The request uses a different identity.');
@@ -111,17 +111,17 @@ export function template(input: unknown, key: string): EventTemplate {
     if (!Array.isArray(tag) || tag.length < 1 || tag.length > 8) throw Error('Invalid event tag.');
     return tag.map(field => text(field, MAX_CONTENT));
   });
-  const event = { pubkey: publicKey(key), created_at: row.created_at as number, kind: row.kind as number, tags, content: text(row.content, MAX_CONTENT) };
+  const event = { pubkey: publicKey(key), created_at: row.created_at as number, kind: row.kind as number, tags, content: text(row.content, contentLimit) };
   text(JSON.stringify(event));
   if (row.id !== undefined && row.id !== eventId(event)) throw Error('The supplied event ID does not match the event.');
   return event;
 }
 
-export function signedEvent(input: unknown, expected?: EventTemplate): SignedEvent {
+export function signedEvent(input: unknown, expected?: EventTemplate, contentLimit = MAX_CONTENT): SignedEvent {
   const row = object(input);
   if (Object.keys(row).length !== 7 || !Object.hasOwn(row, 'id') || !Object.hasOwn(row, 'sig')) throw Error('Invalid signed event fields.');
   const { sig, ...unsigned } = row;
-  const event = template(unsigned, publicKey(row.pubkey));
+  const event = template(unsigned, publicKey(row.pubkey), contentLimit);
   if (typeof sig !== 'string' || !/^[a-f0-9]{128}$/.test(sig)) throw Error('Invalid signature encoding.');
   const id = eventId(event);
   if (row.id !== id || !schnorr.verify(hexToBytes(sig), hexToBytes(id), hexToBytes(event.pubkey))) throw Error('Event ID or signature verification failed.');
