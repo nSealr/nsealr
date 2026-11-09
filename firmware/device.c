@@ -10,7 +10,7 @@
 static alignas(NS_CONTEXT_ALIGN) uint8_t core_storage[NS_CONTEXT_BYTES];
 static ns_context *core = (ns_context *)core_storage;
 static uint8_t source[512], passphrase[256], secret_page[136], entropy[32];
-static char account_text[12], public_key[65], npub[65], message[256], caption[96];
+static char account_text[12], public_key[65], npub[65], message[256], caption[96], confirmation[64];
 static uint8_t qr_frame[NS_MAX_FRAME];
 static size_t source_len, passphrase_len, input_len, qr_length, secret_page_len;
 static uint32_t source_kind, words, account, backup_kind, backup_page;
@@ -825,9 +825,16 @@ static void show(void) {
         view.screen = UI_MENU;
         view.title = "Your decision";
         view.subtitle = "Only this request will be approved.";
-        static const ui_choice decide[] = {{"Approve request", A_APPROVE},
-                                           {"View exact details", A_DETAILS},
-                                           {"Reject request", UI_CANCEL}};
+        ns_text label;
+        size_t length;
+        if (ns_review_confirmation(core, &label) != NS_OK ||
+            !ui_escape_text(label.data, label.len, confirmation, sizeof(confirmation), &length)) {
+            error_message("Request is no longer available.", HOME);
+            return;
+        }
+        static ui_choice decide[] = {
+            {NULL, A_APPROVE}, {"View exact details", A_DETAILS}, {"Reject request", UI_CANCEL}};
+        decide[0].label = confirmation;
         view.choices = decide;
         view.choice_count = 3;
         break;
