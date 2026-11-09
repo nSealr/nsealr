@@ -33,23 +33,42 @@ async function setup(allow = true, autoAck = true) {
   const remote = new RemoteSigner('wss://relay.example/', owner, async (origin, method) => { prompts.push(`${origin}:${method}`); return allow; }, () => {});
   await remote.open(); const socket = Socket.current; socket.autoAck = autoAck;
   const conversation = nip44.utils.getConversationKey(clientKey, remote.transportKey);
-  function send(id: string, method: string, params: string[]) {
-    socket.receive(['EVENT', 'nsealr', finalizeEvent({ kind: 24133, created_at: Math.floor(Date.now() / 1000), tags: [['p', remote.transportKey]], content: nip44.encrypt(JSON.stringify({ id, method, params }), conversation) }, clientKey)]);
+  function send(id: string, method: string, params: string[], key = clientKey) {
+    const channel = key === clientKey ? conversation : nip44.utils.getConversationKey(key, remote.transportKey);
+    socket.receive(['EVENT', 'nsealr', finalizeEvent({ kind: 24133, created_at: Math.floor(Date.now() / 1000), tags: [['p', remote.transportKey]], content: nip44.encrypt(JSON.stringify({ id, method, params }), channel) }, key)]);
   }
   function replies() { return socket.output.filter(row => row[0] === 'EVENT').map(row => JSON.parse(nip44.decrypt((row[1] as any).content, conversation))); }
   const secret = new URL(remote.bunker).searchParams.get('secret')!;
   send('connect-rpc', 'connect', [remote.transportKey, secret]); await until(() => replies().length === 1);
-  return { owner, remote, socket, send, replies, prompts, conversation };
+  return { owner, remote, socket, send, replies, prompts, conversation, secret };
 }
 
-test('NIP46 pairs once with a transport identity separate from the user and refuses declined pairing', async () => {
+test('NIP46 first pairing requires approval; only the same peer and target can reconnect without new authority', async () => {
   const session = await setup(true, false); assert.notEqual(session.remote.transportKey, devicePublic); assert.equal(session.remote.client, clientPublic); assert.equal(session.replies()[0].result, 'ack');
   session.send('before-pairing-relay-ack', 'get_public_key', []);
   await new Promise(resolve => setTimeout(resolve, 10)); assert.equal(session.owner.operation, null);
   session.socket.autoAck = true;
   session.socket.receive(['OK', (session.socket.output.find(row => row[0] === 'EVENT')![1] as any).id, true, '']);
   await until(() => session.owner.operation?.request.method === 'get_public_key');
+  for (const frame of frames(JSON.stringify({ id: session.owner.operation!.request.id, result: devicePublic }))) session.owner.scan(frame);
+  await until(() => session.replies().length === 2);
+  const grants = [...session.owner.grants].map(([origin, methods]) => [origin, [...methods]]), generation = session.owner.generation;
+  session.send('same-peer-reconnect', 'connect', [session.remote.transportKey]);
+  await until(() => session.replies().length === 3);
+  assert.equal(session.replies()[2].result, 'ack'); assert.equal(session.prompts.filter(prompt => prompt.endsWith(':connect')).length, 1);
+  assert.deepEqual([...session.owner.grants].map(([origin, methods]) => [origin, [...methods]]), grants);
+  assert.equal(session.owner.generation, generation); assert.equal(session.owner.operation, null);
+  assert.equal(new URL(session.remote.bunker).searchParams.get('secret'), '');
+  session.send('wrong-reconnect-target', 'connect', [devicePublic]); await until(() => session.replies().length === 4);
+  assert.match(session.replies()[3].error, /target/);
+  const before = session.socket.output.length, prompts = session.prompts.length;
+  session.send('new-peer-spent-token', 'connect', [session.remote.transportKey, session.secret], new Uint8Array(32).fill(3));
+  await new Promise(resolve => setTimeout(resolve, 10));
+  assert.equal(session.socket.output.length, before); assert.equal(session.prompts.length, prompts); assert.equal(session.remote.client, clientPublic);
   session.remote.close();
+  session.send('same-peer-after-close', 'connect', [session.remote.transportKey]);
+  await new Promise(resolve => setTimeout(resolve, 10));
+  assert.equal(session.socket.output.length, before); assert.equal(session.prompts.length, prompts); assert.equal(session.owner.grants.size, 0);
   const denied = await setup(false); assert.match(denied.replies()[0].error, /rejected/); assert.equal(denied.remote.client, null); denied.remote.close();
 });
 test('NIP46 maps arbitrary RPC IDs to fresh optical IDs and returns only the verified original event', async () => {
@@ -67,7 +86,7 @@ test('NIP46 maps arbitrary RPC IDs to fresh optical IDs and returns only the ver
 test('NIP46 queues at most four concurrent requests; replay and cancellation never create extra device operations', async () => {
   const session = await setup(); session.send('one', 'get_public_key', []); await until(() => !!session.owner.operation);
   const optical = session.owner.operation!.request.id;
-  session.send('one', 'get_public_key', []); session.send('two', 'get_public_key', []); session.send('three', 'get_public_key', []); session.send('four', 'get_public_key', []); session.send('overflow', 'get_public_key', []);
+  session.send('one', 'get_public_key', []); session.send('two', 'get_public_key', []); session.send('three', 'connect', [session.remote.transportKey]); session.send('four', 'get_public_key', []); session.send('overflow', 'get_public_key', []);
   await until(() => session.replies().length === 2);
   assert.equal(session.owner.operation!.request.id, optical); assert.match(session.replies()[1].error, /queue is full/);
   session.owner.cancel(); await until(() => session.replies().length === 6);

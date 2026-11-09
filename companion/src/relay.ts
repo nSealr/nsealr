@@ -134,6 +134,10 @@ export class RemoteSigner {
       if (event.pubkey === this.peer && method === 'logout' && !params.length) { await this.reply(event.pubkey, id, 'ack'); this.close(); return; }
       if (this.busy) throw Error('Another device request is already open.');
       if (method === 'connect') {
+        if (event.pubkey === this.peer) {
+          if (params[0] !== this.transportKey) throw Error('The reconnect target does not match this session.');
+          await this.reply(event.pubkey, id, 'ack'); return;
+        }
         if (this.peer || params[0] !== this.transportKey || !this.token || params[1] !== this.token) throw Error('Invalid or already used pairing token.');
         this.busy = true; acquired = true;
         if (!await this.approve(origin, 'connect', 'Pair this client for this session. Every identity operation still needs your device.')) throw Error('Pairing rejected.');
