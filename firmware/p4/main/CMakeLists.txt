@@ -5,11 +5,12 @@ set(ui "${CMAKE_CURRENT_LIST_DIR}/../../ui")
 file(GLOB fonts "${ui}/fonts/font_*.c")
 idf_component_register(
   SRCS "main.c" "app_video.c" "board_radio.c" "board_rng.c" "board_rng_logic.c"
-       "display_ack.c" "frame_pixels.c" "secret_raster.c" "secret_qr.c"
+       "display_ack.c" "frame_pixels.c" "secret_raster.c" "secret_qr.c" "share_file.c"
        "../../device.c" "../../word_input.c" "../../backup_check.c" "${ui}/ui.c" ${fonts}
   INCLUDE_DIRS "." "../vendor/quirc/lib" "../.." "${NSEALR_CORE_ROOT}/core/nsealr-device/include"
   REQUIRES esp_video waveshare__esp32_p4_wifi6_touch_lcd_3_5 esp_driver_gpio
-       esp_timer esp_system esp_lcd esp_lvgl_adapter bootloader_support esp_hw_support esp_hal_ana_conv)
+       esp_timer esp_system esp_lcd esp_lvgl_adapter bootloader_support esp_hw_support esp_hal_ana_conv
+       fatfs sdmmc)
 if(CMAKE_BUILD_EARLY_EXPANSION)
   return()
 endif()

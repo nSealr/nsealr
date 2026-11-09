@@ -2,9 +2,13 @@
 #include "secret_qr.h"
 #include "secret_raster.h"
 #include <assert.h>
+#include <errno.h>
+#include <fcntl.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <sys/stat.h>
+#include <unistd.h>
 
 /* A host simulator uses published test entropy. The P4 supplies qualified RNG. */
 static uint64_t clock_ms = 1000;
@@ -24,6 +28,8 @@ static bool testing;
 static char test_lines[8][14];
 static uint8_t test_qr[NS_MAX_FRAME];
 static size_t test_qr_len;
+static bool test_media_available;
+static const char *test_share_path = ".cache/ui-preview/NSEALR.NSR";
 
 static bool dispatching;
 static void dispatch(void);
@@ -55,6 +61,55 @@ bool platform_scan_start(void) {
 bool platform_scan_stop(void) {
     scanning = false;
     return true;
+}
+/* Native file tests exercise the local contract; physical SD uses FatFs. */
+share_file_result platform_share_save(const uint8_t *bytes, size_t length) {
+    if (!test_media_available)
+        return SHARE_FILE_UNAVAILABLE;
+    if (!length || length > NS_THRESHOLD_MAX_BACKUP)
+        return SHARE_FILE_INVALID;
+    int fd = open(test_share_path, O_RDWR | O_CREAT | O_EXCL, 0600);
+    if (fd < 0)
+        return errno == EEXIST ? SHARE_FILE_EXISTS : SHARE_FILE_IO;
+    uint8_t check[NS_THRESHOLD_MAX_BACKUP];
+    bool ok = write(fd, bytes, length) == (ssize_t)length && fsync(fd) == 0 &&
+              lseek(fd, 0, SEEK_SET) == 0 && read(fd, check, length) == (ssize_t)length &&
+              !memcmp(bytes, check, length);
+    if (close(fd))
+        ok = false;
+    platform_wipe(check, sizeof(check));
+    if (!ok)
+        (void)unlink(test_share_path);
+    return ok ? SHARE_FILE_OK : SHARE_FILE_IO;
+}
+share_file_result platform_share_load(uint8_t *bytes, size_t capacity, size_t *written) {
+    *written = 0;
+    platform_wipe(bytes, capacity);
+    if (!test_media_available)
+        return SHARE_FILE_UNAVAILABLE;
+    int fd = open(test_share_path, O_RDONLY | O_NOFOLLOW);
+    if (fd < 0)
+        return errno == ENOENT ? SHARE_FILE_MISSING : SHARE_FILE_IO;
+    struct stat st;
+    share_file_result result = SHARE_FILE_IO;
+    if (fstat(fd, &st) || !S_ISREG(st.st_mode))
+        goto done;
+    if (st.st_size <= 0 || st.st_size > (off_t)capacity || st.st_size > NS_THRESHOLD_MAX_BACKUP) {
+        result = SHARE_FILE_INVALID;
+        goto done;
+    }
+    if (read(fd, bytes, (size_t)st.st_size) == st.st_size) {
+        *written = (size_t)st.st_size;
+        result = SHARE_FILE_OK;
+    }
+done:
+    if (close(fd))
+        result = SHARE_FILE_IO;
+    if (result != SHARE_FILE_OK) {
+        platform_wipe(bytes, capacity);
+        *written = 0;
+    }
+    return result;
 }
 
 static void flush(lv_display_t *display, const lv_area_t *area, uint8_t *data) {
@@ -702,6 +757,7 @@ static void threshold_flow_test(void) {
                                    &custody_backup_len[i]) == NS_OK);
     tap(140, 175);
     assert(!strcmp(visible_title, "Back up share"));
+    tap(140, 233);
     tap(215, 442);
     save_frame("25-share-backup");
     tap(215, 442);
@@ -727,6 +783,7 @@ static void threshold_flow_test(void) {
     tap(270, 26);
     tap(140, 233);
     tap(140, 349);
+    tap(140, 175);
     custody_feed(0, custody_backups[0], custody_backup_len[0]);
     assert(!ns_is_loaded(custody[0]));
     save_frame("27-share-recovery");
@@ -748,6 +805,11 @@ static void threshold_flow_test(void) {
     assert(n > 0 && (size_t)n < sizeof(request));
     tap(140, 175);
     custody_feed(0, (uint8_t *)request, (size_t)n);
+    tap(60, 442);
+    assert(ns_is_loaded(custody[0]) && ns_threshold_state(custody[0]) == NS_THRESHOLD_READY &&
+           !ns_threshold_output_count(custody[0]));
+    tap(140, 175);
+    custody_feed(0, (uint8_t *)request, (size_t)n);
     custody_feed(1, (uint8_t *)request, (size_t)n);
     peer_approve(1);
     finish_visible_review();
@@ -761,13 +823,61 @@ static void threshold_flow_test(void) {
     assert(!strcmp(custody_packets[0], custody_packets[1]));
     assert(strstr(custody_packets[0], "Two shares, one Nostr identity."));
     assert(ns_is_loaded(custody[0]));
+    /* Local media remains an explicit action; missing card and existing file
+     * preserve the current share, and restore still needs group consent. */
+    (void)unlink(test_share_path);
+    test_media_available = false;
+    tap(140, 291);
+    tap(140, 175);
+    save_frame("29-share-file-consent");
+    tap(215, 442);
+    assert(!strcmp(visible_title, "Please check") && ns_is_loaded(custody[0]));
+    tap(215, 442);
+    test_media_available = true;
+    tap(140, 175);
+    tap(215, 442);
+    assert(!strcmp(visible_title, "Share saved"));
+    save_frame("30-share-file-saved");
+    tap(215, 442);
+    tap(140, 291);
+    tap(140, 175);
+    tap(215, 442);
+    assert(!strcmp(visible_title, "Please check") && ns_is_loaded(custody[0]));
+    uint8_t saved[NS_THRESHOLD_MAX_BACKUP];
+    size_t saved_len;
+    assert(platform_share_load(saved, sizeof(saved), &saved_len) == SHARE_FILE_OK);
+    assert(saved_len == custody_backup_len[0] && !memcmp(saved, custody_backups[0], saved_len));
+    platform_wipe(saved, sizeof(saved));
     tap(270, 26);
+    tap(140, 233);
+    tap(140, 349);
+    tap(140, 233);
+    assert(!ns_is_loaded(custody[0]) && ui_reader());
+    finish_visible_review();
+    tap(60, 442);
+    assert(ns_is_loaded(custody[0]));
+    uint8_t restored[64];
+    assert(ns_public_key(custody[0], 0, restored, sizeof(restored), &written) == NS_OK &&
+           !memcmp(group_key, restored, 64));
+    tap(270, 26);
+    assert(unlink(test_share_path) == 0);
+    assert(platform_share_load(saved, sizeof(saved), &saved_len) == SHARE_FILE_MISSING);
+    int fd = open(test_share_path, O_WRONLY | O_CREAT | O_EXCL, 0600);
+    assert(fd >= 0 && ftruncate(fd, NS_THRESHOLD_MAX_BACKUP + 1) == 0 && close(fd) == 0);
+    assert(platform_share_load(saved, sizeof(saved), &saved_len) == SHARE_FILE_INVALID);
+    assert(saved_len == 0);
+    for (size_t i = 0; i < sizeof(saved); i++)
+        assert(saved[i] == 0);
+    assert(unlink(test_share_path) == 0);
+    test_media_available = false;
     for (unsigned i = 1; i < 3; i++)
         ns_deinit(custody[i]);
     platform_wipe(custody_backups, sizeof(custody_backups));
     testing = false;
     puts("PASS: real 3-device setup, all packets, animated share backup/check/recovery, "
          "rendered group consent and 2-device signing through actual UI input");
+    puts("PASS: deliberate share-file save/read-back/restore, absent media, no overwrite, "
+         "missing/oversize rejection and cleared error buffers (native filesystem)");
 }
 
 int main(int argc, char **argv) {

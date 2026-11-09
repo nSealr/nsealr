@@ -20,6 +20,13 @@ Secret share QR capture requires an offline receiver, never the connected
 companion. Animated restoration requires confirmation of the recorded group and
 member. Scan-back checking compares the share without replacing the loaded one.
 Group custody signs events; it does not support private-message decryption.
+For durable local backup, the board can deliberately save its unencrypted share
+as `NSEALR.NSR` at the root of a FAT-formatted SD card. It never formats a card or
+overwrites a file. Save synchronizes the file, invalidates the sector cache, and
+reads back every byte before reporting success. Restore reads only this bounded
+file and still requires the core's group/member confirmation. Keep the card
+offline and separate from other shares; record the public group fingerprint
+independently. Missing or unreadable cards produce a recoverable error.
 The core determines accepted Nostr methods and event semantics; unknown semantics
 are rejected. Private text and backup/response QR pixels use bounded direct
 raster buffers rather than LVGL labels or generic image caches.
@@ -70,6 +77,11 @@ LCD transfer precedes completion of a review item. Critical fields are grouped i
 one continuous reader. Prose may be skipped only through a separate, local,
 per-request confirmation. Unsupported characters and controls have explicit,
 lossless escaped representations; literal backslashes are escaped as well.
+The SD operation owns slot 0 and its LDO4 lifetime. FatFs uses one sector window,
+checked for internal RAM before private I/O and wiped before unmount. File state,
+read-back scratch and export/import buffers are also wiped. Driver/controller
+remanence and actual removable-media durability require hardware qualification;
+the native file test does not establish either property.
 
 The native application exercises the same controller and UI with published test
 entropy. It cannot establish camera reliability, physical display/touch ordering,

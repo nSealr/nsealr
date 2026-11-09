@@ -28,6 +28,17 @@ bool platform_secret_clear(void);
 bool platform_random32(uint8_t out[32]);
 bool platform_scan_start(void);
 bool platform_scan_stop(void);
+typedef enum {
+    SHARE_FILE_OK,
+    SHARE_FILE_UNAVAILABLE,
+    SHARE_FILE_EXISTS,
+    SHARE_FILE_MISSING,
+    SHARE_FILE_INVALID,
+    SHARE_FILE_IO
+} share_file_result;
+/* Explicit local actions only. No overwrite, format, auto-load or secret logs. */
+share_file_result platform_share_save(const uint8_t *bytes, size_t len);
+share_file_result platform_share_load(uint8_t *bytes, size_t capacity, size_t *written);
 uint64_t platform_now(void);
 void platform_new_context(void);
 void platform_revoke(void);

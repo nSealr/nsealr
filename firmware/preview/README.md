@@ -40,3 +40,8 @@ every outgoing packet, renders group consent, checks a wrong and correct animate
 share backup without replacing the identity, restores the share, and completes
 two-device signing. The displayed QR bytes are compared with the actual queued
 protocol message. Native rendering does not establish optical capture quality.
+The native file adapter exercises explicit share save/read-back/restore, missing
+media, overwrite refusal, missing and oversized files, and clearing failed input.
+These tests use only public test material in `.cache/ui-preview/NSEALR.NSR`, which
+is removed afterward. The P4 uses its real FatFs/SD driver and needs separate
+absent-card, read/write and removal/error measurements.

@@ -29,7 +29,7 @@ static backup_check quiz;
 static bool backup_checked, has_passphrase, response_paused;
 static uint8_t backup_expected[512];
 static size_t backup_expected_len;
-static uint8_t share_backup[NS_THRESHOLD_MAX_BACKUP];
+static alignas(64) uint8_t share_backup[NS_THRESHOLD_MAX_BACKUP];
 static uint32_t threshold_packet;
 static bool threshold_restoring;
 
@@ -70,6 +70,10 @@ enum {
     GROUP_RECORD,
     THRESHOLD_QR,
     SHARE_BACKUP,
+    SHARE_QR_CONSENT,
+    SHARE_SAVE_CONSENT,
+    SHARE_RESTORE,
+    SHARE_SAVED,
     SHARE_QR,
     NOTICE
 };
@@ -129,7 +133,12 @@ enum {
     A_IMPORT_SHARE,
     A_SHARE_BACKUP,
     A_GROUP_RECORD,
-    A_THRESHOLD_SENT
+    A_THRESHOLD_SENT,
+    A_SHARE_QR,
+    A_SHARE_SAVE,
+    A_SHARE_SAVE_CONFIRM,
+    A_SHARE_LOAD,
+    A_SHARE_SCAN
 };
 enum { INPUT_NSEC = 1, INPUT_PASS, INPUT_ACCOUNT };
 
@@ -200,6 +209,18 @@ static bool result_ok(int32_t result) {
         return true;
     error_message(ns_error_text(result), HOME);
     return false;
+}
+static void share_file_error(share_file_result result, unsigned next) {
+    const char *text =
+        result == SHARE_FILE_UNAVAILABLE
+            ? "No readable SD card. Use a FAT-formatted card; the device never formats it."
+        : result == SHARE_FILE_EXISTS
+            ? "NSEALR.NSR already exists. No file was replaced. Use a different card."
+        : result == SHARE_FILE_MISSING ? "No NSEALR.NSR file was found at the root of this card."
+        : result == SHARE_FILE_INVALID
+            ? "The share file is empty or too large. No identity was loaded."
+            : "The card could not complete the transfer. The backup was not verified.";
+    error_message(text, next);
 }
 static bool public_identity(void) {
     size_t n = 0;
@@ -783,13 +804,49 @@ static void show(void) {
         view.body = public_body;
         break;
     }
-    case SHARE_BACKUP:
+    case SHARE_BACKUP: {
+        static const ui_choice methods[] = {{"Save to SD card", A_SHARE_SAVE_CONFIRM},
+                                            {"Show offline QR", A_SHARE_BACKUP}};
+        view.screen = UI_MENU;
+        view.title = "Back up share";
+        view.subtitle = "Keep this secret share offline.";
+        view.choices = methods;
+        view.choice_count = 2;
+        break;
+    }
+    case SHARE_RESTORE: {
+        static const ui_choice methods[] = {{"Scan share QR", A_SHARE_SCAN},
+                                            {"Read from SD card", A_SHARE_LOAD}};
+        view.screen = UI_MENU;
+        view.title = "Restore share";
+        view.subtitle = "Use this device's QR or NSEALR.NSR file.";
+        view.choices = methods;
+        view.choice_count = 2;
+        break;
+    }
+    case SHARE_SAVE_CONSENT:
+        view.screen = UI_NOTICE;
+        view.title = "Save private share";
+        view.body = "Write the unencrypted NSEALR.NSR file to this SD card. Keep the card offline "
+                    "and separate from other shares.\n\nExisting files are never replaced.";
+        view.right_label = "Save share";
+        view.right_action = A_SHARE_SAVE;
+        break;
+    case SHARE_SAVED:
+        view.screen = UI_NOTICE;
+        view.title = "Share saved";
+        view.body = "NSEALR.NSR was saved and read back successfully. Keep this SD card offline "
+                    "and separate from other shares.\n\nKeep the public group record elsewhere.";
+        view.right_label = "Continue";
+        view.right_action = A_CONTINUE;
+        break;
+    case SHARE_QR_CONSENT:
         view.screen = UI_NOTICE;
         view.title = "Back up share";
         view.body = "Capture every QR frame on an offline device. Never use the connected "
                     "companion.\n\nKeep shares separate. Any two can sign.";
         view.right_label = "Show share";
-        view.right_action = A_SHARE_BACKUP;
+        view.right_action = A_SHARE_QR;
         break;
     case WORD_COUNT: {
         static const ui_choice lengths[] = {{"12 words", A_WORD12},
@@ -1337,16 +1394,67 @@ void device_action(unsigned action) {
         return;
     case A_IMPORT_SHARE:
         threshold_restoring = true;
+        state = SHARE_RESTORE;
+        show();
+        return;
+    case A_SHARE_SCAN:
+        if (state != SHARE_RESTORE)
+            return;
         scan(SCAN_SHARE_IMPORT);
         return;
     case A_SHARE_BACKUP:
         if (state != SHARE_BACKUP || !threshold_loaded())
+            return;
+        state = SHARE_QR_CONSENT;
+        show();
+        return;
+    case A_SHARE_QR:
+        if (state != SHARE_QR_CONSENT || !threshold_loaded())
             return;
         response_frame = 0;
         response_paused = false;
         state = SHARE_QR;
         show();
         return;
+    case A_SHARE_SAVE_CONFIRM:
+        if (state != SHARE_BACKUP || !threshold_loaded())
+            return;
+        state = SHARE_SAVE_CONSENT;
+        show();
+        return;
+    case A_SHARE_SAVE: {
+        if (state != SHARE_SAVE_CONSENT || !threshold_loaded())
+            return;
+        size_t length = 0;
+        if (!result_ok(ns_threshold_backup(core, share_backup, sizeof(share_backup), &length)))
+            return;
+        share_file_result result = platform_share_save(share_backup, length);
+        platform_wipe(share_backup, sizeof(share_backup));
+        if (result != SHARE_FILE_OK)
+            share_file_error(result, SHARE_BACKUP);
+        else {
+            backup_checked = true;
+            state = SHARE_SAVED;
+            show();
+        }
+        return;
+    }
+    case A_SHARE_LOAD: {
+        if (state != SHARE_RESTORE)
+            return;
+        size_t length = 0;
+        share_file_result result = platform_share_load(share_backup, sizeof(share_backup), &length);
+        if (result != SHARE_FILE_OK) {
+            platform_wipe(share_backup, sizeof(share_backup));
+            share_file_error(result, SHARE_RESTORE);
+            return;
+        }
+        int32_t status = ns_threshold_import(core, share_backup, length, platform_now());
+        platform_wipe(share_backup, sizeof(share_backup));
+        if (result_ok(status))
+            start_review();
+        return;
+    }
     case A_GROUP_RECORD:
         if (!threshold_loaded())
             return;
