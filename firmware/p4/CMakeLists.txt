@@ -1,0 +1,6 @@
+cmake_minimum_required(VERSION 3.18)
+include($ENV{IDF_PATH}/tools/cmake/project.cmake)
+if(DEFINED NSEALR_COMPONENT_LOCK)
+  idf_build_set_property(DEPENDENCIES_LOCK "${NSEALR_COMPONENT_LOCK}")
+endif()
+project(nsealr)
