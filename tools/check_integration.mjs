@@ -34,6 +34,7 @@ function compile(source, name) {
 const native = compile('tests/integration/optical.c', 'optical');
 compile('tests/integration/threshold.c', 'threshold');
 checked(compile('core/nsealr-device/tests/custody.c', 'custody-check'), []);
+checked(compile('core/nsealr-device/tests/errors.c', 'error-check'), []);
 
 const key = 'f9308a019258c31049344f85f89d5229b531c845836f99b08601f113bce036f9';
 function exchange(pending, ordered = frames(JSON.stringify(pending))) {

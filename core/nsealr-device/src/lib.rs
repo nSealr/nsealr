@@ -521,20 +521,17 @@ pub unsafe extern "C" fn ns_receive_frame(
 ) -> i32 {
     match (|| {
         let c = context(ctx)?;
+        let bytes = input(p, len).inspect_err(|_| c.cancel())?;
         if c.threshold {
-            c.custody.receive_frame(input(p, len)?, &mut [], now)
+            c.custody.receive_frame(bytes, &mut [], now)
         } else {
-            c.owner.receive_frame(input(p, len)?, now)
+            c.owner.receive_frame(bytes, now)
         }
     })() {
         Ok(true) => 0,
         Ok(false) => 1,
-        Err(e) => {
-            if let Ok(c) = context(ctx) {
-                c.cancel();
-            }
-            e as i32
-        }
+        // Each owner revokes failed input; keep a validated request's error reply.
+        Err(e) => e as i32,
     }
 }
 #[no_mangle]
