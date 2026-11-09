@@ -164,19 +164,27 @@ impl Event {
         }
         Ok(out)
     }
-    pub fn review(&self) -> Result<Vec<Field>, Error> {
-        let action = match self.kind {
+    pub fn confirmation(&self) -> Result<&'static str, Error> {
+        Ok(match self.kind {
             0 => "Replace profile",
             1 => "Publish note",
             3 => "Replace follows",
             5 => "Request deletion",
             6 => "Repost note",
             7 => "React to note",
-            10002 => "Replace relay preferences",
-            10050 => "Replace private-message relays",
-            22242 => "Authorize relay connection",
+            13 => "Sign message",
+            10002 => "Replace relays",
+            10050 => "Replace inbox relays",
+            22242 => "Authorize relay",
             _ => return Err(Error::Unsupported),
-        };
+        })
+    }
+    pub fn review(&self) -> Result<Vec<Field>, Error> {
+        // Seals need the private-message receipt review in Owner.
+        if self.kind == 13 {
+            return Err(Error::Unsupported);
+        }
+        let action = self.confirmation()?;
         let mut fields = Vec::new();
         fields.push(Field::new("Action", action, CRITICAL));
         fields.push(Field::new(
@@ -237,7 +245,12 @@ impl Event {
                 }
                 fields.push(Field::new(
                     "Effect",
-                    "Replaces the complete follow list; no previous-list comparison is claimed",
+                    "Replaces all follows with this list. Previous follows outside it are removed.",
+                    CRITICAL,
+                ));
+                fields.push(Field::new(
+                    "List entries",
+                    self.tags.len().to_string(),
                     CRITICAL,
                 ));
                 for tag in &self.tags {
@@ -248,7 +261,7 @@ impl Event {
                     if tag.len() > 2 && !tag[2].is_empty() {
                         relay(&tag[2])?;
                     }
-                    fields.push(Field::new("Follow", joined(tag), CRITICAL));
+                    fields.push(Field::new("Follow", reference(tag), DETAIL));
                 }
             }
             5 => {
@@ -268,7 +281,15 @@ impl Event {
                         }
                         _ => return Err(Error::Unsupported),
                     }
-                    fields.push(Field::new("Deletion target", joined(tag), CRITICAL));
+                    fields.push(Field::new(
+                        if tag[0] == "e" {
+                            "Delete event"
+                        } else {
+                            "Event kind"
+                        },
+                        tag[1].as_str(),
+                        CRITICAL,
+                    ));
                 }
                 if targets == 0 {
                     return Err(Error::Input);
@@ -285,7 +306,7 @@ impl Event {
                     verify_original(&self.content, &event, &author)?;
                 }
                 for tag in &self.tags {
-                    fields.push(Field::new("Repost target", joined(tag), CRITICAL));
+                    fields.push(Field::new(target_label(tag), reference(tag), CRITICAL));
                 }
                 if !self.content.is_empty() {
                     fields.push(Field::new("Original event", self.content.as_str(), PROSE));
@@ -298,7 +319,7 @@ impl Event {
                 }
                 fields.push(Field::new("Reaction", self.content.as_str(), CRITICAL));
                 for tag in &self.tags {
-                    fields.push(Field::new("Reaction target", joined(tag), CRITICAL));
+                    fields.push(Field::new(target_label(tag), reference(tag), CRITICAL));
                 }
             }
             10002 | 10050 => {
@@ -307,7 +328,12 @@ impl Event {
                 }
                 fields.push(Field::new(
                     "Effect",
-                    "Replaces the complete relay list",
+                    "Replaces all relays with this list. Previous relays outside it are removed.",
+                    CRITICAL,
+                ));
+                fields.push(Field::new(
+                    "List entries",
+                    self.tags.len().to_string(),
                     CRITICAL,
                 ));
                 for tag in &self.tags {
@@ -322,7 +348,16 @@ impl Event {
                         return Err(Error::Unsupported);
                     }
                     relay(&tag[1])?;
-                    fields.push(Field::new("Relay", joined(tag), CRITICAL));
+                    let use_for = if self.kind == 10050 {
+                        "private messages"
+                    } else {
+                        tag.get(2).map_or("read and write", String::as_str)
+                    };
+                    fields.push(Field::new(
+                        "Relay",
+                        format!("{}\nUse: {use_for}", tag[1]),
+                        DETAIL,
+                    ));
                 }
             }
             22242 => {
@@ -407,6 +442,31 @@ pub(crate) fn relay(value: &str) -> Result<(), Error> {
 pub(crate) fn joined(tag: &[String]) -> String {
     serde_json::to_string(tag).expect("strings serialize")
 }
+fn target_label(tag: &[String]) -> &'static str {
+    match tag[0].as_str() {
+        "e" => "Target event",
+        "p" => "Target author",
+        _ => "Event kind",
+    }
+}
+fn reference(tag: &[String]) -> String {
+    let mut value = tag[1].clone();
+    if let Some(relay) = tag.get(2).filter(|s| !s.is_empty()) {
+        value.push_str(&format!("\nRelay: {relay}"));
+    }
+    if let Some(extra) = tag.get(3) {
+        let label = match tag[0].as_str() {
+            "p" => "Name hint",
+            "q" => "Author",
+            _ => "Role",
+        };
+        value.push_str(&format!("\n{label}: {extra}"));
+    }
+    if let Some(author) = tag.get(4) {
+        value.push_str(&format!("\nAuthor: {author}"));
+    }
+    value
+}
 fn note_tag(tag: &[String], fields: &mut Vec<Field>) -> Result<(), Error> {
     if tag[0] == "client" {
         client_tag(tag)?;
@@ -444,10 +504,13 @@ fn note_tag(tag: &[String], fields: &mut Vec<Field>) -> Result<(), Error> {
             }
             "Quoted event"
         }
-        "t" | "r" | "subject" | "content-warning" if tag.len() == 2 => "Note metadata",
+        "t" if tag.len() == 2 => "Hashtag",
+        "r" if tag.len() == 2 => "Link",
+        "subject" if tag.len() == 2 => "Subject",
+        "content-warning" if tag.len() == 2 => "Content warning",
         _ => return Err(Error::Unsupported),
     };
-    fields.push(Field::new(label, joined(tag), CRITICAL));
+    fields.push(Field::new(label, reference(tag), CRITICAL));
     Ok(())
 }
 pub(crate) fn address(value: &str) -> Result<(), Error> {
