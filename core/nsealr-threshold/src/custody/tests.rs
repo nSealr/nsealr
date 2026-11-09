@@ -597,3 +597,28 @@ fn secret_backup_frames_are_bounded_wiped_and_check_never_replaces_the_share() {
     assert_eq!(group.devices[0].collector.received(), 0);
     assert!(group.devices[0].loaded());
 }
+
+#[test]
+fn setup_replacement_cancels_pending_recipient_repair() {
+    let mut group = GroupTest::new();
+    group.setup();
+    group.start_repair(0);
+    let deltas = group.take_outputs();
+    assert_eq!(deltas.len(), 2);
+    let mut members = group.keys.clone();
+    members.sort();
+    let setup =
+        json!({"type":"nsealr_setup","session":"99".repeat(32),"members":wire::list(&members)})
+            .to_string();
+    assert_eq!(group.receive(0, &setup), Err(Error::Stale));
+    assert!(group.devices[0].repair.is_none());
+    assert!(group.devices[0].setup.is_none());
+    assert!(group.devices[0].review.is_none());
+    group.route(&deltas);
+    let sigmas = group.take_outputs();
+    assert_eq!(sigmas.len(), 2);
+    for sigma in sigmas {
+        assert!(group.receive(0, &sigma).is_err());
+    }
+    assert!(!group.devices[0].loaded());
+}

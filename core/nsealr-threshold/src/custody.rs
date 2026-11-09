@@ -397,7 +397,7 @@ impl Custody {
         result
     }
     fn setup_request(&mut self, value: &Value) -> Result<(), Error> {
-        if self.loaded() || self.setup.is_some() {
+        if self.loaded() || self.setup.is_some() || self.repair.is_some() {
             return Err(Error::Stale);
         }
         j::exact_keys(value, &["type", "session", "members"], &[])?;
@@ -817,7 +817,11 @@ impl Custody {
         Ok(json!({"type":"nsealr_group","group":j::hex_string(&self.group),"pubkey":j::hex_string(participant.group().public_key()),"descriptor":j::hex_string(participant.group().descriptor()),"members":wire::roster(&self.members),"participant":index+1}).to_string())
     }
     pub fn backup(&self) -> Result<Zeroizing<String>, Error> {
-        if self.setup.is_some() || self.signing.is_some() || self.review.is_some() || self.repair.is_some() {
+        if self.setup.is_some()
+            || self.signing.is_some()
+            || self.review.is_some()
+            || self.repair.is_some()
+        {
             return Err(Error::Stale);
         }
         let participant = self.signer.selected().ok_or(Error::Locked)?;
