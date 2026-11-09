@@ -1,5 +1,6 @@
 #include "photo_capture.h"
 #include "power_status.h"
+#include "quirc.h"
 #include "secret_qr.h"
 #include "src/libs/qrcode/qrcodegen.h"
 #include <assert.h>
@@ -59,6 +60,37 @@ static void capture(void) {
     assert(zero(&photo, sizeof(photo)));
     free(frame);
 }
+static void qr_roundtrip(const uint8_t *bytes, size_t length, unsigned modules) {
+    p4_secret_qr_t qr;
+    struct quirc_code code = {0};
+    struct quirc_data data;
+    assert(p4_secret_qr_encode(&qr, bytes, length));
+    assert(qr.modules == modules && zero(qr.work, sizeof(qr.work)));
+    code.size = (int)qr.modules;
+    for (unsigned y = 0; y < qr.modules; y++)
+        for (unsigned x = 0; x < qr.modules; x++)
+            if (qrcodegen_getModule(qr.matrix, (int)x, (int)y)) {
+                unsigned bit = y * qr.modules + x;
+                code.cell_bitmap[bit >> 3] |= (uint8_t)(1u << (bit & 7));
+            }
+    assert(quirc_decode(&code, &data) == QUIRC_SUCCESS);
+    assert(data.payload_len == (int)length && !memcmp(data.payload, bytes, length));
+    p4_secret_qr_clear(&qr);
+    assert(zero(&qr, sizeof(qr)));
+}
+static void qr_payloads(void) {
+    uint8_t digits[96];
+    memset(digits, '0', sizeof(digits));
+    digits[47] = '3';
+    digits[95] = '7';
+    qr_roundtrip(digits, 48, 25);
+    qr_roundtrip(digits, 96, 29);
+    /* A non-digit must retain binary encoding, including embedded NUL bytes. */
+    digits[0] = 0;
+    qr_roundtrip(digits, 48, 33);
+    qr_roundtrip(digits, 96, 41);
+    qr_roundtrip(digits, 16, 25);
+}
 static void qr_grid(void) {
     const uint8_t seed[] = "000000000000000000000000000000000000000000000003";
     p4_secret_qr_t qr;
@@ -89,6 +121,7 @@ static void qr_grid(void) {
 int main(void) {
     power();
     capture();
+    qr_payloads();
     qr_grid();
     puts("P4 photo admission, power states and QR transcription passed");
 }

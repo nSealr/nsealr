@@ -14,9 +14,21 @@ bool p4_secret_qr_encode(p4_secret_qr_t *state, const uint8_t *bytes, size_t len
     p4_secret_qr_clear(state);
     if (!bytes || !length || length > 586)
         return false;
-    memcpy(state->work, bytes, length);
-    bool encoded = qrcodegen_encodeBinary(state->work, length, state->matrix, qrcodegen_Ecc_MEDIUM,
-                                          1, 20, qrcodegen_Mask_AUTO, true);
+    bool numeric = length == 48 || length == 96;
+    for (size_t i = 0; numeric && i < length; i++)
+        numeric = bytes[i] >= '0' && bytes[i] <= '9';
+    bool encoded;
+    if (numeric) {
+        char text[97] = {0};
+        memcpy(text, bytes, length);
+        encoded = qrcodegen_encodeText(text, state->work, state->matrix, qrcodegen_Ecc_MEDIUM,
+                                      1, 20, qrcodegen_Mask_AUTO, true);
+        board_rng_wipe((uint8_t *)text, sizeof(text));
+    } else {
+        memcpy(state->work, bytes, length);
+        encoded = qrcodegen_encodeBinary(state->work, length, state->matrix, qrcodegen_Ecc_MEDIUM,
+                                        1, 20, qrcodegen_Mask_AUTO, true);
+    }
     board_rng_wipe(state->work, sizeof(state->work));
     if (!encoded) {
         p4_secret_qr_clear(state);
