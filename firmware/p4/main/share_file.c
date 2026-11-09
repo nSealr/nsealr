@@ -4,6 +4,7 @@
 
 #include "diskio_sdmmc.h"
 #include "driver/sdmmc_host.h"
+#include "esp_heap_caps.h"
 #include "esp_memory_utils.h"
 #include "esp_vfs_fat.h"
 #include "sd_pwr_ctrl_by_on_chip_ldo.h"
@@ -21,6 +22,8 @@ static share_file_result transfer(bool save, const uint8_t *input, size_t length
     sd_pwr_ctrl_handle_t power = NULL;
     sdmmc_card_t *card = NULL;
     FATFS *filesystem = NULL;
+    void *dma = NULL;
+    size_t dma_size = 0;
     FIL file = {0};
     uint8_t check[64] = {0};
     bool opened = false, created = false;
@@ -28,15 +31,30 @@ static share_file_result transfer(bool save, const uint8_t *input, size_t length
     sd_pwr_ctrl_ldo_config_t ldo = {.ldo_chan_id = 4};
     if (sd_pwr_ctrl_new_on_chip_ldo(&ldo, &power) != ESP_OK)
         return result;
+    dma = heap_caps_aligned_alloc(64, FF_MAX_SS,
+                                  MALLOC_CAP_INTERNAL | MALLOC_CAP_DMA | MALLOC_CAP_8BIT);
+    if (!dma)
+        goto cleanup;
+    dma_size = heap_caps_get_allocated_size(dma);
+    platform_wipe(dma, dma_size);
     sdmmc_host_t host = SDMMC_HOST_DEFAULT();
     host.slot = SDMMC_HOST_SLOT_0;
     host.pwr_ctrl_handle = power;
+    /* Own the driver's bounce buffer as well as FatFs's window. Otherwise
+     * unaligned sector I/O allocates/frees untracked, possibly external copies. */
+    host.flags &= ~SDMMC_HOST_FLAG_ALLOC_ALIGNED_BUF;
+    host.dma_aligned_buffer = dma;
     sdmmc_slot_config_t slot = SDMMC_SLOT_CONFIG_DEFAULT();
     slot.width = 4;
     const esp_vfs_fat_mount_config_t mount = {
         .format_if_mount_failed = false, .max_files = 1, .disk_status_check_enable = true};
     if (esp_vfs_fat_sdmmc_mount("/share", &host, &slot, &mount, &card) != ESP_OK)
         goto cleanup;
+    if (card->host.dma_aligned_buffer != dma || card->csd.sector_size > dma_size ||
+        !card->host.check_buffer_alignment(card->host.slot, dma, card->csd.sector_size)) {
+        result = SHARE_FILE_IO;
+        goto cleanup;
+    }
     BYTE drive = ff_diskio_get_pdrv_card(card);
     if (drive > 9) {
         result = SHARE_FILE_IO;
@@ -80,11 +98,12 @@ static share_file_result transfer(bool save, const uint8_t *input, size_t length
         if (difference)
             goto cleanup;
     } else {
-        length = (size_t)f_size(&file);
-        if (!length || length > capacity || length > NS_THRESHOLD_MAX_BACKUP) {
+        FSIZE_t file_length = f_size(&file);
+        if (!file_length || file_length > capacity || file_length > NS_THRESHOLD_MAX_BACKUP) {
             result = SHARE_FILE_INVALID;
             goto cleanup;
         }
+        length = (size_t)file_length;
         if (f_read(&file, output, (UINT)length, &count) != FR_OK || count != length)
             goto cleanup;
         *written = length;
@@ -101,8 +120,13 @@ cleanup:
      * it; unmount does not need cached file data, including after an I/O error. */
     if (filesystem)
         platform_wipe(filesystem->win, FF_MAX_SS);
+    platform_wipe(dma, dma_size);
     if (card && esp_vfs_fat_sdcard_unmount("/share", card) != ESP_OK)
         platform_fail();
+    if (dma) {
+        platform_wipe(dma, dma_size);
+        heap_caps_free(dma);
+    }
     if (sd_pwr_ctrl_del_on_chip_ldo(power) != ESP_OK)
         platform_fail();
     return result;

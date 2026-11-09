@@ -79,7 +79,10 @@ per-request confirmation. Unsupported characters and controls have explicit,
 lossless escaped representations; literal backslashes are escaped as well.
 The SD operation owns slot 0 and its LDO4 lifetime. FatFs uses one sector window,
 checked for internal RAM before private I/O and wiped before unmount. File state,
-read-back scratch and export/import buffers are also wiped. Driver/controller
+read-back scratch and export/import buffers are also wiped. The SD host receives
+an owned internal DMA-aligned bounce buffer, wiped before unmount and freeing;
+private unaligned sector transfers cannot allocate an untracked temporary copy.
+Driver/controller
 remanence and actual removable-media durability require hardware qualification;
 the native file test does not establish either property.
 
