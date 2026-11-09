@@ -40,30 +40,13 @@ bool backup_check_begin(backup_check *check, ns_context *core, const uint8_t ran
         check->shuffle = (check->shuffle * 33) ^ random[i];
     if (!check->shuffle)
         check->shuffle = 0x9e3779b9;
-    uint8_t digits[96] = {0};
-    size_t length = 0;
-    bool ok =
-        ns_backup(core, 3, digits, sizeof(digits), &length) == NS_OK && length == check->count * 4;
-    for (unsigned i = 0; i < check->count && ok; i++) {
-        unsigned word = 0;
-        for (unsigned j = 0; j < 4; j++) {
-            uint8_t digit = digits[i * 4 + j];
-            if (digit < '0' || digit > '9') {
-                ok = false;
-                break;
-            }
-            word = word * 10 + digit - '0';
+    for (unsigned i = 0; i < check->count; i++) {
+        if (ns_backup_word_index(core, i, &check->words[i]) != NS_OK) {
+            memset(check, 0, sizeof(*check));
+            return false;
         }
-        if (word >= 2048)
-            ok = false;
-        check->words[i] = (uint16_t)word;
         check->order[i] = (uint8_t)i;
     }
-    volatile uint8_t *wipe = digits;
-    for (size_t i = 0; i < sizeof(digits); i++)
-        wipe[i] = 0;
-    if (!ok)
-        return false;
     for (unsigned i = check->count - 1; i > 0; i--) {
         unsigned j = shuffle_next(check) % (i + 1);
         uint8_t temp = check->order[i];
