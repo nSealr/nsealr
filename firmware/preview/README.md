@@ -33,3 +33,10 @@ The ordinary entry paths use 60 taps for 12 words and 119 for the published
 passphrase spaces and multi-page passphrase confirmation, mismatch/retry during
 QR backup comparison, and pause/manual frame controls. These are measured tap
 counts in the host replay, not claims about human or physical-device speed.
+
+The threshold replay uses the real UI as one participant and two independent
+core contexts as its peers. It completes three-device group creation, captures
+every outgoing packet, renders group consent, checks a wrong and correct animated
+share backup without replacing the identity, restores the share, and completes
+two-device signing. The displayed QR bytes are compared with the actual queued
+protocol message. Native rendering does not establish optical capture quality.

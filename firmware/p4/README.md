@@ -11,6 +11,15 @@ passphrase and NIP-06 account, displays and verifies recovery backups, collects
 animated QR requests, reviews authority and prose, and returns the core response
 through QR. Supported local backups are words, nsec, SeedQR and compact SeedQR.
 The public identity has a normal npub QR. Lock and inactivity clear the owner.
+The local 2-of-3 flow creates a group across three devices, compares the complete
+setup fingerprint, exchanges authenticated peer packets through the companion,
+and signs with two shares after normal event review. Every outgoing packet must
+be captured before the scanner opens. The loaded group exposes its public record
+and a distinct four-frame secret share backup; it has no mnemonic or nsec export.
+Secret share QR capture requires an offline receiver, never the connected
+companion. Animated restoration requires confirmation of the recorded group and
+member. Scan-back checking compares the share without replacing the loaded one.
+Group custody signs events; it does not support private-message decryption.
 The core determines accepted Nostr methods and event semantics; unknown semantics
 are rejected. Private text and backup/response QR pixels use bounded direct
 raster buffers rather than LVGL labels or generic image caches.

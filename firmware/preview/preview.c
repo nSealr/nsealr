@@ -22,6 +22,8 @@ static char visible_title[80], visible_caption[100], visible_right[40];
 /* Test inspection is enabled only for the published, deterministic test vectors. */
 static bool testing;
 static char test_lines[8][14];
+static uint8_t test_qr[NS_MAX_FRAME];
+static size_t test_qr_len;
 
 static bool dispatching;
 static void dispatch(void);
@@ -184,6 +186,11 @@ bool platform_secret_text(const uint8_t *p, size_t n) {
     return true;
 }
 bool platform_secret_qr(const uint8_t *p, size_t n) {
+    if (testing) {
+        assert(n <= sizeof(test_qr));
+        memcpy(test_qr, p, n);
+        test_qr_len = n;
+    }
     if (!p4_secret_qr_encode(&secret_qr, p, n))
         return false;
     for (unsigned row = 0; row < 16; row++) {
@@ -545,6 +552,224 @@ static void flow_test(void) {
     puts("PASS: real-core create/backup/clear/restore; QR frame collection; rendered review; sign, "
          "reject, cancel, response clear and lock");
 }
+/* The UI is one real participant. Two public-data core peers exercise the
+ * authenticated exchange without inventing device state or approval actions. */
+static _Alignas(NS_CONTEXT_ALIGN) uint8_t peer_storage[2][NS_CONTEXT_BYTES];
+static ns_context *custody[3];
+static char custody_keys[3][65], custody_packets[6][NS_MAX_MESSAGE];
+static uint8_t custody_backups[2][NS_THRESHOLD_MAX_BACKUP];
+static size_t custody_backup_len[2];
+static void public_field(const char *json, const char *name, char out[65]) {
+    char needle[64];
+    snprintf(needle, sizeof(needle), "\"%s\":\"", name);
+    const char *start = strstr(json, needle);
+    assert(start);
+    start += strlen(needle);
+    assert(strlen(start) >= 65 && start[64] == '"');
+    memcpy(out, start, 64);
+    out[64] = 0;
+}
+static int public_key_order(const void *a, const void *b) { return strcmp(a, b); }
+static void peer_approve(unsigned i) {
+    uint64_t generation = ns_review_generation(custody[i]);
+    for (uint32_t k = 0; k < ns_review_count(custody[i]); k++)
+        assert(ns_review_seen(custody[i], generation, k) == NS_OK);
+    uint8_t random[32];
+    assert(platform_random32(random));
+    assert(ns_approve(custody[i], generation, false, random, 32, clock_ms) == NS_OK);
+}
+static void finish_visible_review(void) {
+    while (ui_reader()) {
+        lv_obj_t *reader = ui_reader();
+        while (lv_obj_get_scroll_bottom(reader) > 1)
+            drag(260, 370, 180);
+        tap(215, 442);
+    }
+    assert(!strcmp(visible_title, "Your decision"));
+    tap(140, 175);
+}
+static void custody_feed(unsigned recipient, const uint8_t *message, size_t length) {
+    unsigned count = (unsigned)((length + NS_QR_CHUNK - 1) / NS_QR_CHUNK);
+    for (unsigned i = 0; i < count; i++) {
+        uint8_t frame[NS_MAX_FRAME], random[32];
+        size_t written;
+        assert(ns_encode_frame(message, length, i, frame, sizeof(frame), &written) == NS_OK);
+        if (!recipient) {
+            assert(scanning);
+            device_scan_bytes(frame, written);
+            for (size_t j = 0; j < written; j++)
+                assert(frame[j] == 0);
+        } else {
+            assert(platform_random32(random));
+            assert(ns_threshold_receive_frame(custody[recipient], frame, written, random,
+                                              clock_ms) == (i + 1 == count ? NS_OK : NS_MORE));
+        }
+    }
+}
+static unsigned custody_collect(void) {
+    unsigned written = 0;
+    for (unsigned i = 0; i < 3; i++) {
+        unsigned count = ns_threshold_output_count(custody[i]);
+        for (unsigned k = 0; k < count; k++) {
+            ns_text output;
+            assert(written < 6 && ns_threshold_output(custody[i], k, &output) == NS_OK);
+            assert(output.len < NS_MAX_MESSAGE);
+            memcpy(custody_packets[written], output.data, output.len);
+            custody_packets[written++][output.len] = 0;
+            if (!i) {
+                uint8_t expected[NS_MAX_FRAME];
+                size_t length;
+                assert(ns_encode_frame(output.data, output.len, 0, expected, sizeof(expected),
+                                       &length) == NS_OK);
+                assert(test_qr_len == length && !memcmp(test_qr, expected, length));
+                tap(60, 442);
+            }
+        }
+        if (i)
+            ns_finish_response(custody[i]);
+    }
+    return written;
+}
+static void custody_route(unsigned count) {
+    for (unsigned i = 0; i < count; i++) {
+        char recipient[65];
+        public_field(custody_packets[i], "recipient", recipient);
+        unsigned device = 0;
+        while (device < 3 && strcmp(recipient, custody_keys[device]))
+            device++;
+        assert(device < 3);
+        custody_feed(device, (uint8_t *)custody_packets[i], strlen(custody_packets[i]));
+    }
+}
+static void threshold_flow_test(void) {
+    testing = true;
+    custody[0] = device_core();
+    assert(!ns_is_loaded(custody[0]));
+    tap(140, 175);
+    tap(140, 349);
+    assert(!strcmp(visible_title, "2-of-3 group"));
+    save_frame("20-group-intro");
+    tap(215, 442);
+    assert(ns_threshold_state(custody[0]) == NS_THRESHOLD_JOIN);
+    save_frame("21-group-join");
+    for (unsigned i = 0; i < 3; i++) {
+        if (i) {
+            custody[i] = (ns_context *)peer_storage[i - 1];
+            assert(ns_init(peer_storage[i - 1], NS_CONTEXT_BYTES) == NS_OK);
+            uint8_t random[32];
+            assert(platform_random32(random));
+            assert(ns_threshold_start(custody[i], random, clock_ms) == NS_OK);
+        }
+        ns_text output;
+        assert(ns_threshold_output(custody[i], 0, &output) == NS_OK);
+        char join[256];
+        assert(output.len < sizeof(join));
+        memcpy(join, output.data, output.len);
+        join[output.len] = 0;
+        public_field(join, "key", custody_keys[i]);
+    }
+    assert(custody_collect() == 3 && scanning);
+    char sorted[3][65];
+    memcpy(sorted, custody_keys, sizeof(sorted));
+    qsort(sorted, 3, sizeof(sorted[0]), public_key_order);
+    char setup[512];
+    int n = snprintf(
+        setup, sizeof(setup),
+        "{\"type\":\"nsealr_setup\",\"session\":\"%064u\",\"members\":[\"%s\",\"%s\",\"%s\"]}", 1u,
+        sorted[0], sorted[1], sorted[2]);
+    assert(n > 0 && (size_t)n < sizeof(setup));
+    for (unsigned i = 0; i < 3; i++) {
+        custody_feed(i, (uint8_t *)setup, (size_t)n);
+        if (i)
+            peer_approve(i);
+    }
+    save_frame("22-group-review");
+    finish_visible_review();
+    save_frame("23-group-exchange");
+    assert(custody_collect() == 6 && scanning);
+    custody_route(6);
+    assert(custody_collect() == 6 && scanning);
+    custody_route(6);
+    assert(ns_is_loaded(custody[0]) && ns_threshold_state(custody[0]) == NS_THRESHOLD_READY);
+    assert(custody_collect() == 3);
+    assert(!strcmp(visible_title, "Group ready"));
+    save_frame("24-group-ready");
+    uint8_t group_key[64];
+    size_t written;
+    assert(ns_public_key(custody[0], 0, group_key, sizeof(group_key), &written) == NS_OK);
+    for (unsigned i = 0; i < 2; i++)
+        assert(ns_threshold_backup(custody[i], custody_backups[i], sizeof(custody_backups[i]),
+                                   &custody_backup_len[i]) == NS_OK);
+    tap(140, 175);
+    assert(!strcmp(visible_title, "Back up share"));
+    tap(215, 442);
+    save_frame("25-share-backup");
+    tap(215, 442);
+    char paused[100];
+    snprintf(paused, sizeof(paused), "%s", visible_caption);
+    clock_ms += 1000;
+    device_tick(clock_ms);
+    assert(!strcmp(paused, visible_caption));
+    tap(258, 122);
+    assert(strcmp(paused, visible_caption));
+    tap(60, 442);
+    tap(140, 175);
+    custody_feed(0, custody_backups[1], custody_backup_len[1]);
+    assert(!strcmp(visible_title, "Different backup") && ns_is_loaded(custody[0]));
+    tap(215, 442);
+    custody_feed(0, custody_backups[0], custody_backup_len[0]);
+    assert(!strcmp(visible_title, "Backup checked"));
+    tap(215, 442);
+    tap(140, 233);
+    tap(258, 122);
+    assert(!strcmp(visible_title, "Group record"));
+    save_frame("26-group-record");
+    tap(270, 26);
+    tap(140, 233);
+    tap(140, 349);
+    custody_feed(0, custody_backups[0], custody_backup_len[0]);
+    assert(!ns_is_loaded(custody[0]));
+    save_frame("27-share-recovery");
+    finish_visible_review();
+    tap(60, 442);
+    assert(!strcmp(visible_title, "Share restored") && ns_is_loaded(custody[0]));
+    tap(140, 291);
+    char members[2][65];
+    memcpy(members[0], custody_keys[0], 65);
+    memcpy(members[1], custody_keys[1], 65);
+    qsort(members, 2, sizeof(members[0]), public_key_order);
+    char request[1024];
+    n = snprintf(request, sizeof(request),
+                 "{\"type\":\"nsealr_sign\",\"id\":\"native-group\",\"session\":\"%064u\","
+                 "\"members\":[\"%s\",\"%s\"],\"event\":\"{\\\"pubkey\\\":\\\"%.*s\\\","
+                 "\\\"created_at\\\":1794211200,\\\"kind\\\":1,\\\"tags\\\":[],"
+                 "\\\"content\\\":\\\"Two shares, one Nostr identity.\\\"}\"}",
+                 2u, members[0], members[1], 64, group_key);
+    assert(n > 0 && (size_t)n < sizeof(request));
+    tap(140, 175);
+    custody_feed(0, (uint8_t *)request, (size_t)n);
+    custody_feed(1, (uint8_t *)request, (size_t)n);
+    peer_approve(1);
+    finish_visible_review();
+    assert(custody_collect() == 2);
+    custody_route(2);
+    assert(custody_collect() == 2);
+    custody_route(2);
+    assert(ns_threshold_state(custody[0]) == NS_THRESHOLD_RESULT);
+    save_frame("28-group-signed");
+    assert(custody_collect() == 2);
+    assert(!strcmp(custody_packets[0], custody_packets[1]));
+    assert(strstr(custody_packets[0], "Two shares, one Nostr identity."));
+    assert(ns_is_loaded(custody[0]));
+    tap(270, 26);
+    for (unsigned i = 1; i < 3; i++)
+        ns_deinit(custody[i]);
+    platform_wipe(custody_backups, sizeof(custody_backups));
+    testing = false;
+    puts("PASS: real 3-device setup, all packets, animated share backup/check/recovery, "
+         "rendered group consent and 2-device signing through actual UI input");
+}
+
 int main(int argc, char **argv) {
     lv_init();
     lv_display_t *display = lv_display_create(320, 480);
@@ -556,11 +781,13 @@ int main(int argc, char **argv) {
     lv_indev_set_type(pointer, LV_INDEV_TYPE_POINTER);
     lv_indev_set_read_cb(pointer, read_pointer);
     assert(device_init());
-    if (argc == 2 && !strcmp(argv[1], "--test"))
+    if (argc == 2 && !strcmp(argv[1], "--test")) {
         flow_test();
-    else if (argc == 3 && !strcmp(argv[1], "--render")) {
+        threshold_flow_test();
+    } else if (argc == 3 && !strcmp(argv[1], "--render")) {
         render_dir = argv[2];
         flow_test();
+        threshold_flow_test();
         printf("Rendered %u actual-owner screens with published test entropy\n", frames);
     } else if (argc == 3 && !strcmp(argv[1], "--interactive")) {
         char command[128];
