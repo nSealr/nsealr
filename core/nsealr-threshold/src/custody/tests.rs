@@ -153,6 +153,9 @@ impl GroupTest {
     }
     fn repair_request(&mut self, lost: usize) -> String {
         let old: Value = serde_json::from_str(&self.devices[lost].record().unwrap()).unwrap();
+        self.repair_from_record(lost, old)
+    }
+    fn repair_from_record(&mut self, lost: usize, old: Value) -> String {
         self.devices[lost].lock();
         // Exercise a replacement whose lexical position differs from its ID.
         loop {
@@ -319,6 +322,72 @@ fn authenticated_bad_repair_contribution_cannot_install_a_share() {
     assert!(group.devices[0].repair.is_none());
     assert!(group.devices[0].identity.is_none());
     assert!(group.devices[1].loaded() && group.devices[2].loaded());
+}
+
+#[test]
+fn interrupted_repair_converges_from_old_backups_or_a_matching_live_quorum() {
+    for restore_backups in [false, true] {
+        for delivered in 0..=2 {
+            let mut group = GroupTest::new();
+            group.setup();
+            let public = *group.devices[0].public_key().unwrap();
+            let original: Value =
+                serde_json::from_str(&group.devices[0].record().unwrap()).unwrap();
+            let backups: Vec<_> = group.devices.iter().map(|d| d.backup().unwrap()).collect();
+            group.start_repair(0);
+            for _ in 0..2 {
+                let packets = group.take_outputs();
+                group.route(&packets);
+            }
+            let ready = group.take_outputs();
+            group.route(&ready[..delivered]);
+            // Losing the companion transcript means no pending packets survive.
+            for device in &mut group.devices {
+                device.cancel();
+            }
+            let (target, record) = if restore_backups {
+                for (i, backup) in backups.iter().enumerate().skip(1) {
+                    let mut bytes = backup.as_bytes().to_vec();
+                    group.now += 1;
+                    group.devices[i].import(&mut bytes, group.now).unwrap();
+                    assert!(bytes.iter().all(|b| *b == 0));
+                    group.approve(i);
+                }
+                (0, original)
+            } else {
+                let pair = [(0, 1), (0, 2), (1, 2)]
+                    .into_iter()
+                    .find(|(a, b)| {
+                        group.devices[*a].group().unwrap() == group.devices[*b].group().unwrap()
+                    })
+                    .unwrap();
+                let target = (0..3).find(|i| *i != pair.0 && *i != pair.1).unwrap();
+                let mut record: Value =
+                    serde_json::from_str(&group.devices[pair.0].record().unwrap()).unwrap();
+                record["participant"] = group.devices[target].member().unwrap().into();
+                (target, record)
+            };
+            let request = group.repair_from_record(target, record);
+            for i in 0..3 {
+                group.receive(i, &request).unwrap();
+                group.approve(i);
+            }
+            for _ in 0..2 {
+                let packets = group.take_outputs();
+                group.route(&packets);
+            }
+            let ready = group.take_outputs();
+            group.route(&ready[..2]);
+            group.take_outputs();
+            let fingerprint = *group.devices[0].group().unwrap();
+            for device in &group.devices {
+                assert_eq!(device.public_key().unwrap(), &public);
+                assert_eq!(device.group().unwrap(), &fingerprint);
+            }
+            group.begin_sign([0, 1], 90);
+            group.finish_sign([0, 1]);
+        }
+    }
 }
 
 #[test]
