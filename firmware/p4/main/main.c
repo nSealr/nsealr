@@ -70,6 +70,7 @@ static uint64_t preview_at;
 static uint64_t camera_frame_at;
 static lv_obj_t *camera_widget;
 static bool photo_mode, photo_frozen;
+static bool camera_owner_held, camera_callback_waiting;
 static unsigned brightness = 100;
 static bool preview_attach(void);
 static bool camera_stop(bool keep_preview);
@@ -484,12 +485,31 @@ static bool wipe_camera_pixels(void *pixels, size_t length) {
     platform_wipe(pixels, length);
     return esp_cache_msync(pixels, length, ESP_CACHE_MSYNC_FLAG_DIR_C2M) == ESP_OK;
 }
+static void camera_copy_done(void) {
+    camera_rgb = NULL;
+    camera_length = 0;
+    if (camera_callback_waiting) {
+        camera_callback_waiting = false;
+        xSemaphoreGive(camera_copied);
+    }
+}
+static void camera_owner_release(void) {
+    camera_copy_done();
+    camera_owner_held = false;
+    xSemaphoreGive(camera_owned);
+}
 static bool camera_stop(bool keep_preview) {
     atomic_store(&camera_active, false);
     bool ok = true, own = false;
     if (video >= 0) {
+        /* Fatal cleanup may interrupt processing after ready was consumed. */
+        if (camera_owner_held) {
+            camera_copy_done();
+            camera_owner_held = false;
+            own = true;
+        }
         uint64_t end = platform_now() + 1000;
-        while (!(own = xSemaphoreTake(camera_owned, 0) == pdTRUE)) {
+        while (!own && !(own = xSemaphoreTake(camera_owned, 0) == pdTRUE)) {
             if (xSemaphoreTake(camera_ready, pdMS_TO_TICKS(10)) == pdTRUE) {
                 camera_rgb = NULL;
                 xSemaphoreGive(camera_copied);
@@ -604,10 +624,7 @@ static bool photo_frame(bool final) {
             camera_preview[y * 256 + x] =
                 (uint16_t)(camera_rgb[offset] | (camera_rgb[offset + 1] << 8));
         }
-    camera_rgb = NULL;
-    camera_length = 0;
-    xSemaphoreGive(camera_copied);
-    xSemaphoreGive(camera_owned);
+    camera_owner_release();
     if (!preview_attach() || !refresh(false))
         platform_fail();
     return accepted;
@@ -623,6 +640,7 @@ bool platform_photo_capture(void) {
         if (now >= end ||
             xSemaphoreTake(camera_ready, pdMS_TO_TICKS((uint32_t)(end - now))) != pdTRUE)
             return false;
+        camera_owner_held = camera_callback_waiting = true;
         if (!camera_rgb || camera_length != P4_PHOTO_FRAME_BYTES)
             platform_fail();
         bool accepted = photo_frame(frame == 2);
@@ -650,6 +668,7 @@ bool platform_photo_take(uint8_t digest[32]) {
 static void process_camera(void) {
     if (xSemaphoreTake(camera_ready, 0) != pdTRUE)
         return;
+    camera_owner_held = camera_callback_waiting = true;
     if (!camera_rgb)
         platform_fail();
     camera_frame_at = platform_now();
@@ -663,9 +682,7 @@ static void process_camera(void) {
     uint8_t *gray = quirc_begin(decoder, &w, &h);
     bool good = w == 800 && h == 800 &&
                 p4_frame_gray_raw(camera_rgb, camera_length, 800, 800, gray, 640000);
-    camera_rgb = NULL;
-    camera_length = 0;
-    xSemaphoreGive(camera_copied);
+    camera_copy_done();
     if (!good)
         platform_fail();
     if (platform_now() - preview_at > 150) {
@@ -698,7 +715,7 @@ static void process_camera(void) {
         memcpy(payload, qr_data->payload, (size_t)length);
     platform_wipe(qr_code, sizeof(*qr_code));
     platform_wipe(qr_data, sizeof(*qr_data));
-    xSemaphoreGive(camera_owned);
+    camera_owner_release();
     if (length)
         device_scan_bytes(payload, (size_t)length);
     platform_wipe(payload, sizeof(payload));

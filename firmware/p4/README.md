@@ -101,7 +101,7 @@ Board logic checks use the host core library and the pinned downloaded LVGL:
 ```sh
 cargo build --release --locked -p nsealr-device
 python3 firmware/p4/tests/check.py \
-  --components firmware/p4/managed_components \
+  --lvgl firmware/p4/managed_components/lvgl__lvgl \
   --rust-library target/release/libnsealr_device.a
 ```
 
