@@ -20,6 +20,14 @@ Public upstream licenses remain in the source and vendor directories. The two
 secret QR mask-history wipes are applied to a hash-admitted original source at
 build time; the generated file lives in the build directory.
 
+`main/patch_sdmmc.py` also admits the pinned IDF SD transaction source by SHA-256
+and generates a build-local replacement. It still performs the required final
+cache synchronization, but retains an existing failed transaction result. An
+otherwise successful cache synchronization must not turn a data timeout into a
+successful read or write. The SDK checkout and its Apache-2.0 source stay intact.
+
+- <https://github.com/espressif/esp-idf/blob/7101770dc6db2667b3c477cc31365dd1acd6db4e/components/esp_driver_sdmmc/src/sd_trans_sdmmc.c>
+
 Recovery interaction references also include the ESP32 port's pending-word and
 scan-purpose flows at commit `fd9ba8fc766f715668bc37fbb5485499def9e52f`, and native
 entry screens at `33ddc0763c31b5ae0b6380147ba624a7fc0c9273`. The implementation
