@@ -19,7 +19,9 @@ use rand_core::SeedableRng;
 use sha2::{Digest, Sha256};
 use zeroize::{Zeroize, Zeroizing};
 
+pub mod custody;
 pub mod dkg;
+mod transport;
 
 /// Initial, explicit resource bound. Raising it requires new target measurements.
 pub const MAX_PARTICIPANTS: usize = 5;
@@ -522,8 +524,9 @@ impl ReviewIntent<'_> {
 }
 
 /// Trusted-image boundary, analogous to the core's synchronous local display IO.
-/// `review` must semantically admit and completely display the unchanged event,
-/// exact group descriptor, selected participants and operation before approval.
+/// `review` must admit the unchanged event under the device review policy and
+/// display the group, selected participants and operation before approval.
+/// Partial prose review is an explicit local choice; authority fields remain mandatory.
 /// `check_live` checks the same physical authority/context has not been revoked.
 /// `admit_round` authenticates every peer commitment and binds the full transcript;
 /// checksums/host claims alone are not authentication. No method is a host grant.

@@ -93,6 +93,40 @@ int32_t ns_response(const ns_context *ctx, ns_text *json);
 int32_t ns_encode_frame(const uint8_t *message, size_t len, uint32_t index,
                        uint8_t *out, size_t capacity, size_t *written);
 
+/* Local 2-of-3 custody. These are deliberate device actions, not NIP46 methods.
+ * Same QR framing and common review/approve/reject/cancel/tick APIs as above.
+ * Setup confirms the complete matching roster fingerprint on all three devices.
+ * Only authenticated encrypted peer packets reach the companion. */
+#define NS_THRESHOLD_NONE 0u
+#define NS_THRESHOLD_JOIN 1u
+#define NS_THRESHOLD_REVIEW 2u
+#define NS_THRESHOLD_EXCHANGE 3u
+#define NS_THRESHOLD_READY 4u
+#define NS_THRESHOLD_RESULT 5u
+#define NS_THRESHOLD_MAX_BACKUP 2048u
+int32_t ns_threshold_start(ns_context *ctx, uint8_t entropy32[32], uint64_t now_ms);
+int32_t ns_threshold_receive(ns_context *ctx, const uint8_t *json, size_t len,
+                             uint8_t entropy32[32], uint64_t now_ms);
+int32_t ns_threshold_receive_frame(ns_context *ctx, const uint8_t *frame, size_t len,
+                                   uint8_t entropy32[32], uint64_t now_ms);
+uint32_t ns_threshold_state(const ns_context *ctx);
+/* Received peer messages in the current exchange, always 0..2. */
+uint32_t ns_threshold_progress(const ns_context *ctx);
+uint32_t ns_threshold_output_count(const ns_context *ctx);
+int32_t ns_threshold_output(const ns_context *ctx, uint32_t index, ns_text *json);
+/* Secret share backup is a distinct checksummed QR format, never mnemonic/nsec.
+ * Export requires deliberate local backup consent; no network action reaches it.
+ * Import wipes input, then requires displayed group/member confirmation. */
+int32_t ns_threshold_backup(const ns_context *ctx, uint8_t *out, size_t capacity, size_t *written);
+int32_t ns_threshold_import(ns_context *ctx, uint8_t *backup, size_t len, uint64_t now_ms);
+/* Local secret animation: same framing, at most2048 assembled bytes. Frame
+ * input is wiped. Restore completion starts review; check keeps the loaded share.
+ * Neither API exposes backup contents through ordinary request/result outputs. */
+int32_t ns_threshold_import_frame(ns_context *ctx, uint8_t *frame, size_t len, uint64_t now_ms);
+int32_t ns_threshold_check_backup_frame(ns_context *ctx, uint8_t *frame, size_t len, uint64_t now_ms);
+/* Public record for independent recovery checks; member is 1..3. */
+int32_t ns_threshold_info(const ns_context *ctx, uint8_t group_hex[64], uint32_t *member);
+
 /* Bare-metal staticlib hooks: internal RAM only, correct alignment, no unwind.
  * Rust wraps every allocation in a bounded wipe-before-free allocator. OOM or
  * panic is fatal; abort must stop signing and reset into a locked session. */

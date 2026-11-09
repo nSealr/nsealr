@@ -157,4 +157,21 @@ impl Identity {
             .map(|s| s.to_bytes())
             .map_err(|_| Error::Crypto)
     }
+    pub fn encrypt(
+        &self,
+        peer: &[u8; 32],
+        plaintext: &str,
+        nonce: &[u8; 32],
+        out: &mut [u8],
+    ) -> Result<usize, Error> {
+        crate::nip44::encrypt(&self.secret, peer, plaintext, nonce, out).map_err(|_| Error::Crypto)
+    }
+    pub fn decrypt(
+        &self,
+        peer: &[u8; 32],
+        ciphertext: &str,
+        out: &mut [u8],
+    ) -> Result<usize, Error> {
+        crate::nip44::decrypt(&self.secret, peer, ciphertext, out).map_err(|_| Error::Crypto)
+    }
 }

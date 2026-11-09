@@ -30,14 +30,25 @@ impl Collector {
         self.count
     }
     pub fn accept(&mut self, frame: &[u8]) -> Result<Option<Zeroizing<Vec<u8>>>, Error> {
-        let result = self.accept_inner(frame);
+        self.accept_limited(frame, MAX_MESSAGE)
+    }
+    pub fn accept_limited(
+        &mut self,
+        frame: &[u8],
+        limit: usize,
+    ) -> Result<Option<Zeroizing<Vec<u8>>>, Error> {
+        let result = self.accept_inner(frame, limit);
         if result.is_err() {
             self.clear();
         }
         result
     }
-    fn accept_inner(&mut self, frame: &[u8]) -> Result<Option<Zeroizing<Vec<u8>>>, Error> {
-        if frame.len() > MAX_FRAME {
+    fn accept_inner(
+        &mut self,
+        frame: &[u8],
+        limit: usize,
+    ) -> Result<Option<Zeroizing<Vec<u8>>>, Error> {
+        if frame.len() > MAX_FRAME || limit == 0 || limit > MAX_MESSAGE {
             return Err(Error::Bounds);
         }
         let text = core::str::from_utf8(frame).map_err(|_| Error::Input)?;
@@ -49,25 +60,25 @@ impl Collector {
         let index = number(parts.next().ok_or(Error::Input)?)?;
         let count = number(parts.next().ok_or(Error::Input)?)?;
         let chunk = parts.next().ok_or(Error::Input)?;
-        if parts.next().is_some() || count == 0 || count > MAX_FRAMES || index >= count {
+        if parts.next().is_some() || count == 0 || count > limit.div_ceil(CHUNK) || index >= count {
             return Err(Error::Input);
         }
         let mut decoded = Zeroizing::new([0; CHUNK]);
         let bytes = Base64UrlUnpadded::decode(chunk, &mut *decoded).map_err(|_| Error::Input)?;
         if bytes.is_empty()
             || index + 1 < count && bytes.len() != CHUNK
-            || index + 1 == count && (count - 1) * CHUNK + bytes.len() > MAX_MESSAGE
+            || index + 1 == count && (count - 1) * CHUNK + bytes.len() > limit
         {
             return Err(Error::Bounds);
         }
         if let Some(current) = self.id {
-            if id != current || count != self.count {
+            if id != current || count != self.count || self.bytes.len() != limit {
                 return Err(Error::Input);
             }
         } else {
             self.id = Some(id);
             self.count = count;
-            self.bytes = Zeroizing::new(vec![0; MAX_MESSAGE]);
+            self.bytes = Zeroizing::new(vec![0; limit]);
         }
         let offset = index * CHUNK;
         if self.received & (1u128 << index) != 0 {
@@ -116,9 +127,9 @@ pub fn encode(message: &[u8], index: usize) -> Result<String, Error> {
     }
     let start = index * CHUNK;
     let end = (start + CHUNK).min(message.len());
-    let mut base64 = [0; 512];
+    let mut base64 = Zeroizing::new([0; 512]);
     let chunk =
-        Base64UrlUnpadded::encode(&message[start..end], &mut base64).map_err(|_| Error::Output)?;
+        Base64UrlUnpadded::encode(&message[start..end], &mut *base64).map_err(|_| Error::Output)?;
     Ok(format!(
         "ns:{}:{index}:{count}:{chunk}",
         hex_string(&sha256(message))
