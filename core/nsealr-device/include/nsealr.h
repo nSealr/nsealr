@@ -51,16 +51,17 @@ int32_t ns_import_secret_qr(ns_context *ctx, uint32_t kind, uint8_t *input, size
  * The platform must qualify entropy before calling. Never use fixture entropy. */
 int32_t ns_generate(ns_context *ctx, uint32_t words, uint8_t entropy32[32],
                     uint8_t *passphrase, size_t passphrase_len, uint32_t account);
-/* Local generation, initially without a passphrase at account0. Dice requires
- * exactly50/100 ASCII digits1..6 for12/24 words. SHA256 of the exact digits is
+/* Local generation, initially without a passphrase at account 0. Dice requires
+ * exactly 50/100 ASCII digits 1..6 for 12/24 words. SHA256 of the exact digits is
  * deterministic; hashing does not compensate for biased or dependent rolls.
  * Photo input is SHA256(domain || image_digest32 || hardware_entropy32).
  * The platform owns capture/consent and source qualification. All inputs wipe. */
 int32_t ns_generate_dice(ns_context *ctx, uint32_t words, uint8_t *rolls, size_t len);
 int32_t ns_generate_photo(ns_context *ctx, uint32_t words,
                           uint8_t image_digest32[32], uint8_t hardware_entropy32[32]);
-/* P4 camera helper: SHA256("nsealr/photo-frame\\0" || final byte || chain || frame).
- * Exactly800x800 RGB565 bytes are borrowed; the board owns their cleanup.
+/* P4 camera helper: SHA256(domain || final byte || chain || frame).
+ * Domain is "nsealr/photo-frame" followed by a NUL byte.
+ * Exactly 800x800 RGB565 bytes are borrowed; the board owns their cleanup.
  * Start chain with zeros. Chain becomes zero on error. No entropy claim follows. */
 int32_t ns_photo_frame_hash(uint8_t chain32[32], const uint8_t *frame,
                             size_t len, bool final_frame);

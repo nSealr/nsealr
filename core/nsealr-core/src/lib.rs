@@ -7,6 +7,7 @@ extern crate std;
 
 pub mod bip39;
 pub mod event;
+pub mod generation;
 pub mod hash;
 pub mod identity;
 pub mod json;
@@ -17,6 +18,7 @@ mod private;
 pub mod qr;
 mod recovery;
 pub mod seedqr;
+pub mod staged;
 
 pub const MAX_MESSAGE: usize = 32768;
 pub const MAX_CONTENT: usize = 8192;

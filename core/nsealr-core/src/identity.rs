@@ -92,12 +92,15 @@ impl Identity {
         self.words.as_ref().map_or(0, |w| w.as_slice().len())
     }
     pub fn word(&self, index: usize) -> Result<&'static str, Error> {
-        let word = self
-            .words
+        let word = self.word_index(index)?;
+        bip39::word_at(word).map_err(|_| Error::Input)
+    }
+    pub fn word_index(&self, index: usize) -> Result<u16, Error> {
+        self.words
             .as_ref()
             .and_then(|w| w.as_slice().get(index))
-            .ok_or(Error::Input)?;
-        bip39::word_at(*word).map_err(|_| Error::Input)
+            .copied()
+            .ok_or(Error::Input)
     }
     /// Local UI only. Caller supplies deliberate physical backup consent and
     /// clears its output/rendering. No optical method exposes this operation.
