@@ -462,6 +462,10 @@ pub unsafe extern "C" fn ns_review_count(ctx: *const Context) -> u32 {
     shared(ctx).map_or(0, |o| o.fields().len() as u32)
 }
 #[no_mangle]
+pub unsafe extern "C" fn ns_review_confirmation(ctx: *const Context, label: *mut Text) -> i32 {
+    code((|| text(label, shared(ctx)?.confirmation()?))())
+}
+#[no_mangle]
 pub unsafe extern "C" fn ns_review_item(
     ctx: *const Context,
     index: u32,

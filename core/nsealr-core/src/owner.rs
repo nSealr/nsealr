@@ -99,6 +99,16 @@ impl Owner {
     pub fn fields(&self) -> &[Field] {
         self.pending.as_ref().map_or(&[], |p| p.fields.as_slice())
     }
+    pub fn confirmation(&self) -> Result<&'static str, Error> {
+        Ok(
+            match &self.pending.as_ref().ok_or(Error::Stale)?.operation {
+                Operation::PublicKey => "Share public key",
+                Operation::Sign(event) => return event.confirmation(),
+                Operation::Encrypt { .. } => "Encrypt message",
+                Operation::Decrypt { .. } => "Share plaintext",
+            },
+        )
+    }
     pub fn response(&self) -> Result<&str, Error> {
         self.response
             .as_deref()

@@ -1,5 +1,5 @@
 use nsealr_core::{
-    event::{Event, CRITICAL, PRIVATE, PROSE},
+    event::{Event, CRITICAL, DETAIL, PRIVATE, PROSE},
     identity::Identity,
     json::{hex, hex_string},
     nip19, nip44,
@@ -125,6 +125,7 @@ fn review_partial_choice_cannot_skip_authority_and_approval_is_consumed() {
     let pubkey = owner.identity().unwrap().public_key();
     let req = request("a", "sign_event", json!([note(&pubkey, "Full text café")]));
     owner.request(&req, 10).unwrap();
+    assert_eq!(owner.confirmation().unwrap(), "Publish note");
     let generation = owner.generation();
     assert_eq!(
         owner.approve(generation, true, &mut [7; 32], 11),
@@ -150,6 +151,7 @@ fn review_partial_choice_cannot_skip_authority_and_approval_is_consumed() {
     owner.request(&req, 40).unwrap();
     let stale = owner.generation();
     owner.cancel();
+    assert_eq!(owner.confirmation(), Err(Error::Stale));
     assert_eq!(owner.seen(stale, 0), Err(Error::Stale));
     assert!(owner.response().is_err());
     owner.request(&req, 50).unwrap();
@@ -196,7 +198,7 @@ fn malformed_unknown_and_wrong_identity_fail_before_review() {
 }
 
 #[test]
-fn supported_actions_present_every_authority_field() {
+fn supported_actions_present_authority_and_exact_list_details() {
     let key = scalar(3).public_key();
     let peer = hex_string(&scalar(2).public_key());
     let cases = [
@@ -221,15 +223,66 @@ fn supported_actions_present_every_authority_field() {
         let event = Event::parse(raw.to_string().as_bytes(), &key).unwrap();
         let fields = event.review().unwrap();
         assert!(fields.iter().filter(|f| f.flags & CRITICAL != 0).count() >= 3);
+        let mask = if [3, 10002, 10050].contains(&kind) {
+            DETAIL
+        } else {
+            CRITICAL
+        };
         for tag in tags.as_array().unwrap() {
             for value in tag.as_array().unwrap().iter().skip(1) {
                 assert!(fields
                     .iter()
-                    .filter(|f| f.flags & CRITICAL != 0)
+                    .filter(|f| f.flags & mask != 0)
                     .any(|f| f.value.contains(value.as_str().unwrap())));
             }
         }
     }
+}
+
+#[test]
+fn whole_list_consent_is_bounded_and_signs_the_exact_ordered_list() {
+    let mut owner = Owner::default();
+    owner.select(scalar(3));
+    let key = hex_string(&owner.identity().unwrap().public_key());
+    let tags: Vec<_> = (0..256)
+        .map(|n| json!(["p", format!("{n:064x}")]))
+        .collect();
+    let mut template =
+        json!({"pubkey":key,"created_at":1700000000,"kind":3,"tags":tags,"content":""});
+    owner
+        .request(
+            &request("list", "sign_event", json!([template.to_string()])),
+            1,
+        )
+        .unwrap();
+    assert_eq!(owner.confirmation().unwrap(), "Replace follows");
+    assert_eq!(
+        owner
+            .fields()
+            .iter()
+            .filter(|f| f.flags & CRITICAL != 0)
+            .count(),
+        5
+    );
+    assert!(owner
+        .fields()
+        .iter()
+        .any(|f| f.label == "List entries" && f.value.as_str() == "256" && f.flags == CRITICAL));
+    mark(&mut owner, CRITICAL);
+    owner
+        .approve(owner.generation(), false, &mut [19; 32], 2)
+        .unwrap();
+    let signed: Value = serde_json::from_str(result(&owner)["result"].as_str().unwrap()).unwrap();
+    assert_eq!(signed["tags"], template["tags"]);
+    template["tags"][255] = json!(["unknown", "not a follow"]);
+    assert!(owner
+        .request(
+            &request("bad", "sign_event", json!([template.to_string()])),
+            3
+        )
+        .is_err());
+    assert!(owner.fields().is_empty());
+    assert_eq!(owner.confirmation(), Err(Error::Stale));
 }
 
 #[test]

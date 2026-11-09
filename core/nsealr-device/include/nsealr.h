@@ -75,6 +75,9 @@ uint32_t ns_frames_received(const ns_context *ctx);
 uint32_t ns_frames_expected(const ns_context *ctx);
 uint64_t ns_review_generation(const ns_context *ctx);
 uint32_t ns_review_count(const ns_context *ctx);
+/* Use this action label for final consent. List replacement approves the whole
+ * displayed count and effect; optional DETAIL entries are not marked as read. */
+int32_t ns_review_confirmation(const ns_context *ctx, ns_text *label);
 int32_t ns_review_item(const ns_context *ctx, uint32_t index,
                       ns_text *label, ns_text *value, uint32_t *flags);
 /* Mark only after the complete item was actually presented. Rendering a prefix

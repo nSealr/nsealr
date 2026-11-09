@@ -14,6 +14,9 @@ static void zero(const uint8_t *bytes, size_t len) {
 }
 static void review_all(void) {
     uint64_t generation = ns_review_generation(ctx);
+    ns_text confirmation;
+    assert(ns_review_confirmation(ctx, &confirmation) == 0);
+    assert(confirmation.len > 0);
     for (uint32_t i = 0; i < ns_review_count(ctx); ++i) {
         ns_text label, value; uint32_t flags;
         assert(ns_review_item(ctx, i, &label, &value, &flags) == 0);
@@ -40,11 +43,15 @@ int main(void) {
         64, original_key);
     assert(n > 0 && (size_t)n < sizeof(request));
     assert(ns_request(ctx, (uint8_t *)request, (size_t)n, 1) == 0);
+    ns_text confirmation;
+    assert(ns_review_confirmation(ctx, &confirmation) == 0);
+    assert(confirmation.len == 12 && memcmp(confirmation.data, "Publish note", 12) == 0);
     uint64_t generation = ns_review_generation(ctx);
     memset(entropy, 4, sizeof(entropy));
     assert(ns_approve(ctx, generation, true, entropy, sizeof(entropy), 2) < 0);
     zero(entropy, sizeof(entropy));
     assert(ns_review_count(ctx) == 0);
+    assert(ns_review_confirmation(ctx, &confirmation) < 0);
     assert(ns_request(ctx, (uint8_t *)request, (size_t)n, 3) == 0);
     assert(ns_request(ctx, (uint8_t *)request, NS_MAX_MESSAGE + 1, 3) < 0);
     assert(ns_review_count(ctx) == 0);
