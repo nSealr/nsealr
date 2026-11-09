@@ -1,0 +1,237 @@
+--- a/src/keys/dkg.rs
++++ b/src/keys/dkg.rs
+@@ -39,6 +39,7 @@
+ use alloc::collections::BTreeMap;
+ 
+ use rand_core::CryptoRng;
++use zeroize::Zeroizing;
+ 
+ use crate::{
+     Challenge, Ciphersuite, Element, Error, Field, Group, Header, Identifier, Scalar, Signature,
+@@ -58,7 +59,7 @@
+ pub mod round1 {
+     use alloc::vec::Vec;
+     use derive_getters::Getters;
+-    use zeroize::{Zeroize, ZeroizeOnDrop};
++    use zeroize::{Zeroize, ZeroizeOnDrop, Zeroizing};
+ 
+     use super::*;
+ 
+@@ -156,9 +157,10 @@
+             min_signers: u16,
+             max_signers: u16,
+         ) -> Self {
++            let coefficients = Zeroizing::new(coefficients);
+             Self {
+                 identifier,
+-                coefficients: coefficients.into_iter().map(SerializableScalar).collect(),
++                coefficients: coefficients.iter().copied().map(SerializableScalar).collect(),
+                 commitment,
+                 min_signers,
+                 max_signers,
+@@ -167,8 +169,8 @@
+ 
+         /// Returns the secret coefficients.
+         #[cfg_attr(feature = "internals", visibility::make(pub))]
+-        pub(crate) fn coefficients(&self) -> Vec<Scalar<C>> {
+-            self.coefficients.iter().map(|s| s.0).collect()
++        pub(crate) fn coefficients(&self) -> Zeroizing<Vec<Scalar<C>>> {
++            Zeroizing::new(self.coefficients.iter().map(|s| s.0).collect())
+         }
+     }
+ 
+@@ -378,12 +380,13 @@
+ 
+     let (coefficients, commitment) =
+         generate_secret_polynomial(&secret, max_signers, min_signers, coefficients)?;
++    let mut coefficients = Zeroizing::new(coefficients);
+     let proof_of_knowledge =
+         compute_proof_of_knowledge(identifier, &coefficients, &commitment, &mut rng)?;
+ 
+     let secret_package = round1::SecretPackage::new(
+         identifier,
+-        coefficients,
++        core::mem::take(&mut *coefficients),
+         commitment.clone(),
+         min_signers,
+         max_signers,
+--- a/src/keys.rs
++++ b/src/keys.rs
+@@ -17,7 +17,7 @@
+ use hex::FromHex;
+ 
+ use rand_core::CryptoRng;
+-use zeroize::{DefaultIsZeroes, Zeroize, ZeroizeOnDrop};
++use zeroize::{DefaultIsZeroes, Zeroize, ZeroizeOnDrop, Zeroizing};
+ 
+ use crate::{
+     Ciphersuite, Element, Error, Field, Group, Header, Identifier, Scalar, SigningKey,
+@@ -864,8 +864,9 @@
+     secret: &SigningKey<C>,
+     max_signers: u16,
+     min_signers: u16,
+-    mut coefficients: Vec<Scalar<C>>,
++    coefficients: Vec<Scalar<C>>,
+ ) -> Result<(Vec<Scalar<C>>, VerifiableSecretSharingCommitment<C>), Error<C>> {
++    let coefficients = Zeroizing::new(coefficients);
+     validate_num_of_signers(min_signers, max_signers)?;
+ 
+     if coefficients.len() != min_signers as usize - 1 {
+@@ -873,17 +874,19 @@
+     }
+ 
+     // Prepend the secret, which is the 0th coefficient
+-    coefficients.insert(0, secret.scalar);
++    let mut secret_coefficients = Vec::with_capacity(min_signers as usize);
++    secret_coefficients.push(secret.scalar);
++    secret_coefficients.extend_from_slice(&coefficients);
+ 
+     // Create the vector of commitments
+-    let commitment: Vec<_> = coefficients
++    let commitment: Vec<_> = secret_coefficients
+         .iter()
+         .map(|c| CoefficientCommitment::new(<C::Group as Group>::generator() * *c))
+         .collect();
+     let commitment: VerifiableSecretSharingCommitment<C> =
+         VerifiableSecretSharingCommitment(commitment);
+ 
+-    Ok((coefficients, commitment))
++    Ok((secret_coefficients, commitment))
+ }
+ 
+ /// Creates secret shares for a given secret using the given coefficients.
+@@ -916,6 +919,7 @@
+ 
+     let (coefficients, commitment) =
+         generate_secret_polynomial(secret, max_signers, min_signers, coefficients)?;
++    let coefficients = Zeroizing::new(coefficients);
+ 
+     let identifiers_set: BTreeSet<_> = identifiers.iter().collect();
+     if identifiers_set.len() != identifiers.len() {
+--- a/src/round1.rs
++++ b/src/round1.rs
+@@ -14,7 +14,7 @@
+ use hex::FromHex;
+ 
+ use rand_core::CryptoRng;
+-use zeroize::{Zeroize, ZeroizeOnDrop};
++use zeroize::{Zeroize, ZeroizeOnDrop, Zeroizing};
+ 
+ use crate::{
+     Ciphersuite, Element, Error, Field, Group, Header,
+@@ -53,7 +53,9 @@
+         let mut random_bytes = [0; 32];
+         rng.fill_bytes(&mut random_bytes[..]);
+ 
+-        Self::nonce_generate_from_random_bytes(secret, random_bytes)
++        let nonce = Self::nonce_generate_from_random_bytes(secret, random_bytes);
++        random_bytes.zeroize();
++        nonce
+     }
+ 
+     /// Create a nonce from a scalar.
+@@ -78,13 +80,14 @@
+         secret: &SigningShare<C>,
+         random_bytes: [u8; 32],
+     ) -> Self {
+-        let secret_enc = secret.0.serialize();
+-
+-        let input: Vec<u8> = random_bytes
++        let random_bytes = Zeroizing::new(random_bytes);
++        let secret_enc = Zeroizing::new(secret.0.serialize());
++
++        let input: Zeroizing<Vec<u8>> = Zeroizing::new(random_bytes
+             .iter()
+             .chain(secret_enc.iter())
+             .cloned()
+-            .collect();
++            .collect());
+ 
+         Self::from_scalar(C::H3(input.as_slice()))
+     }
+@@ -105,7 +108,7 @@
+     C: Ciphersuite,
+ {
+     fn zeroize(&mut self) {
+-        *self = Nonce::from_scalar(<<C::Group as Group>::Field>::zero());
++        self.0.zeroize();
+     }
+ }
+ 
+--- a/src/serialization.rs
++++ b/src/serialization.rs
+@@ -33,17 +33,19 @@
+ {
+     /// Serialize a Scalar.
+     pub fn serialize(&self) -> Vec<u8> {
+-        <<C::Group as Group>::Field>::serialize(&self.0)
+-            .as_ref()
+-            .to_vec()
++        let mut serialized = <<C::Group as Group>::Field>::serialize(&self.0);
++        let bytes = serialized.as_ref().to_vec();
++        serialized.as_mut().zeroize();
++        bytes
+     }
+ 
+     /// Deserialize a Scalar from a serialized buffer.
+     pub fn deserialize(bytes: &[u8]) -> Result<Self, Error<C>> {
+-        let serialized: <<C::Group as Group>::Field as Field>::Serialization =
++        let mut serialized: <<C::Group as Group>::Field as Field>::Serialization =
+             bytes.try_into().map_err(|_| FieldError::MalformedScalar)?;
+-        let scalar = <<C::Group as Group>::Field>::deserialize(&serialized)?;
+-        Ok(Self(scalar))
++        let scalar = <<C::Group as Group>::Field>::deserialize(&serialized);
++        serialized.as_mut().zeroize();
++        Ok(Self(scalar?))
+     }
+ }
+ 
+@@ -52,7 +54,7 @@
+     C: Ciphersuite,
+ {
+     fn zeroize(&mut self) {
+-        self.0 = <<C::Group as Group>::Field as Field>::zero();
++        self.0.zeroize();
+     }
+ }
+ 
+--- a/src/signing_key.rs
++++ b/src/signing_key.rs
+@@ -2,7 +2,7 @@
+ 
+ use alloc::vec::Vec;
+ use rand_core::CryptoRng;
+-use zeroize::ZeroizeOnDrop;
++use zeroize::{Zeroize, ZeroizeOnDrop};
+ 
+ use crate::{
+     Challenge, Ciphersuite, Error, Field, Group, Scalar, Signature, VerifyingKey, random_nonzero,
+@@ -83,7 +83,7 @@
+     C: Ciphersuite,
+ {
+     fn drop(&mut self) {
+-        self.scalar = <<C::Group as Group>::Field as Field>::zero();
++        self.scalar.zeroize();
+     }
+ }
+ 
+--- a/src/traits.rs
++++ b/src/traits.rs
+@@ -7,6 +7,7 @@
+ 
+ use alloc::{borrow::Cow, collections::BTreeMap, vec::Vec};
+ use rand_core::CryptoRng;
++use zeroize::Zeroize;
+ 
+ use crate::{
+     BindingFactor, BindingFactorList, Challenge, Error, FieldError, GroupCommitment, GroupError,
+@@ -35,7 +36,8 @@
+         + PartialEq
+         + Sub<Output = Self::Scalar>
+         + Send
+-        + Sync;
++        + Sync
++        + Zeroize;
+ 
+     /// A unique byte array buf of fixed length N.
+     type Serialization: Clone + AsRef<[u8]> + AsMut<[u8]> + for<'a> TryFrom<&'a [u8]> + Debug;

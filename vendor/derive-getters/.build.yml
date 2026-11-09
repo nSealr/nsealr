@@ -1,0 +1,24 @@
+image: debian/stable
+packages:
+  - build-essential
+  - pkg-config
+  - curl
+secrets:
+  - 1aeb435f-7837-4290-9e6e-915401a14d6e
+sources:
+  - git@git.sr.ht:~kvsari/derive-getters
+tasks:
+  - setup: |
+      curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs > rustup.sh
+      chmod +x rustup.sh
+      ./rustup.sh -y
+      cat .cargo/env >> .buildenv
+      cargo +stable install cargo-hack --locked
+  - build: |
+      cd derive-getters
+      cargo build
+      cargo build --release
+  - test: |
+      cd derive-getters
+      cargo hack test --feature-powerset
+      cargo hack test --feature-powerset --release

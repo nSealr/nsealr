@@ -1,0 +1,69 @@
+--- a/vendor/pbkdf2/Cargo.toml
++++ b/vendor/pbkdf2/Cargo.toml
+@@ -49,6 +49,7 @@
+     "password-hash?/alloc",
+ ]
+ default = ["hmac"]
++zeroize = ["digest/zeroize", "hmac?/zeroize"]
+ getrandom = ["password-hash/getrandom"]
+ kdf = [
+     "sha2",
+--- a/vendor/pbkdf2/Cargo.toml.orig
++++ b/vendor/pbkdf2/Cargo.toml.orig
+@@ -32,6 +32,7 @@
+ streebog = "0.11"
+ 
+ [features]
++zeroize = ["digest/zeroize", "hmac?/zeroize"]
+ default = ["hmac"]
+ alloc = ["mcf?/alloc", "password-hash?/alloc"]
+ 
+--- a/vendor/pbkdf2/src/lib.rs
++++ b/vendor/pbkdf2/src/lib.rs
+@@ -102,7 +102,9 @@
+ #[cfg(feature = "sha2")]
+ pub use sha2;
+ 
+-use digest::{FixedOutput, InvalidLength, KeyInit, Update, typenum::Unsigned};
++use digest::{FixedOutput, InvalidLength, KeyInit, Output, Update, typenum::Unsigned};
++#[cfg(feature = "zeroize")]
++use digest::zeroize::{Zeroize, Zeroizing};
+ 
+ #[cfg(feature = "hmac")]
+ use hmac::EagerHash;
+@@ -124,22 +126,26 @@
+         *v = 0;
+     }
+ 
+-    let mut salt = {
++    let mut u = Output::<PRF>::default();
++    #[cfg(feature = "zeroize")]
++    let mut u = Zeroizing::new(u);
++    {
+         let mut prfc = prf.clone();
+         prfc.update(salt);
+         prfc.update(&(i + 1).to_be_bytes());
+ 
+-        let salt = prfc.finalize_fixed();
+-        xor(chunk, &salt);
+-        salt
+-    };
++        prfc.finalize_into(&mut u);
++        xor(chunk, &u);
++    }
+ 
+     for _ in 1..rounds {
+         let mut prfc = prf.clone();
+-        prfc.update(&salt);
+-        salt = prfc.finalize_fixed();
+-
+-        xor(chunk, &salt);
++        prfc.update(&u);
++        #[cfg(feature = "zeroize")]
++        u.zeroize();
++        prfc.finalize_into(&mut u);
++
++        xor(chunk, &u);
+     }
+ }
+ 

@@ -1,0 +1,23 @@
+[package]
+name = "hash2curve"
+version = "0.14.0"
+description = "hash2curve algorithm implementation"
+authors = ["RustCrypto Developers"]
+license = "Apache-2.0 OR MIT"
+documentation = "https://docs.rs/hash2curve"
+homepage = "https://github.com/RustCrypto/elliptic-curves/tree/master/hash2curve"
+repository = "https://github.com/RustCrypto/elliptic-curves"
+readme = "README.md"
+categories = ["cryptography", "no-std"]
+keywords = ["hash2curve", "crypto", "ecc"]
+edition = "2024"
+rust-version = "1.85"
+
+[dependencies]
+digest = { version = "0.11" }
+elliptic-curve = { version = "0.14", default-features = false, features = ["arithmetic"] }
+
+[dev-dependencies]
+hex-literal = "1"
+sha2 = { version = "0.11", default-features = false }
+shake = { version = "0.1", default-features = false }

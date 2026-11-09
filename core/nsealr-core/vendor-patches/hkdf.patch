@@ -1,0 +1,94 @@
+--- a/vendor/hkdf/Cargo.toml
++++ b/vendor/hkdf/Cargo.toml
+@@ -62,6 +62,7 @@
+ 
+ [dependencies.hmac]
+ version = "0.13"
++features = ["zeroize"]
+ 
+ [dependencies.kdf]
+ version = "0.1"
+@@ -120,3 +121,12 @@
+ unsafe_code = "forbid"
+ unused_lifetimes = "warn"
+ unused_qualifications = "warn"
++
++# nSealr: clear HKDF intermediate output arrays and HMAC state.
++[dependencies.zeroize]
++version = "1.9.1"
++default-features = false
++
++[dependencies.hybrid-array]
++version = "0.4.7"
++features = ["zeroize"]
+--- a/vendor/hkdf/Cargo.toml.orig
++++ b/vendor/hkdf/Cargo.toml.orig
+@@ -13,7 +13,9 @@
+ rust-version = "1.85"
+ 
+ [dependencies]
+-hmac = "0.13"
++hmac = { version = "0.13", features = ["zeroize"] }
++zeroize = { version = "1.9.1", default-features = false }
++hybrid-array = { version = "0.4.7", features = ["zeroize"] }
+ 
+ # optional dependencies
+ kdf = { version = "0.1", optional = true }
+--- a/vendor/hkdf/src/lib.rs
++++ b/vendor/hkdf/src/lib.rs
+@@ -10,6 +10,8 @@
+     Hmac, SimpleHmac,
+     digest::{Output, OutputSizeUser, array::typenum::Unsigned},
+ };
++
++use zeroize::Zeroizing;
+ 
+ mod errors;
+ mod hmac_impl;
+@@ -70,7 +72,8 @@
+     fn derive_key(&self, secret: &[u8], info: &[u8], out: &mut [u8]) -> kdf::Result<()> {
+         let mut extract = self.clone();
+         extract.input_ikm(secret);
+-        let (_, hkdf) = extract.finalize();
++        let (prk, hkdf) = extract.finalize();
++        let _prk = Zeroizing::new(prk);
+         hkdf.expand(info, out).map_err(|_| kdf::Error)
+     }
+ }
+@@ -92,7 +95,8 @@
+     /// common constructor.
+     #[must_use]
+     pub fn new(salt: Option<&[u8]>, ikm: &[u8]) -> Self {
+-        let (_, hkdf) = Self::extract(salt, ikm);
++        let (prk, hkdf) = Self::extract(salt, ikm);
++        let _prk = Zeroizing::new(prk);
+         hkdf
+     }
+ 
+@@ -132,7 +136,7 @@
+         info_components: &[&[u8]],
+         okm: &mut [u8],
+     ) -> Result<(), InvalidLength> {
+-        let mut prev: Option<Output<H>> = None;
++        let mut prev: Option<Zeroizing<Output<H>>> = None;
+ 
+         let chunk_len = <H as OutputSizeUser>::OutputSize::USIZE;
+         if okm.len() > chunk_len * 255 {
+@@ -143,7 +147,7 @@
+             let mut hmac = self.hmac.clone();
+ 
+             if let Some(ref prev) = prev {
+-                hmac.update(prev);
++                hmac.update(&prev[..]);
+             };
+ 
+             // Feed in the info components in sequence. This is equivalent to feeding in the
+@@ -154,7 +158,7 @@
+ 
+             hmac.update(&[u8::try_from(block_n).expect("should convert") + 1]);
+ 
+-            let output = hmac.finalize();
++            let output = Zeroizing::new(hmac.finalize());
+ 
+             let block_len = block.len();
+             block.copy_from_slice(&output[..block_len]);

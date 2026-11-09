@@ -1,0 +1,58 @@
+--- a/vendor/hmac/src/block_api.rs
++++ b/vendor/hmac/src/block_api.rs
+@@ -61,6 +61,8 @@
+ 
+         let mut opad_digest = D::Core::default();
+         opad_digest.update_blocks(slice::from_ref(&buf));
++        #[cfg(feature = "zeroize")]
++        digest::zeroize::Zeroize::zeroize(buf.as_mut_slice());
+ 
+         Ok(Self {
+             opad_digest,
+@@ -87,6 +89,8 @@
+         let h = &mut self.opad_digest;
+         buffer.digest_blocks(&hash, |b| h.update_blocks(b));
+         h.finalize_fixed_core(buffer, out);
++        #[cfg(feature = "zeroize")]
++        digest::zeroize::Zeroize::zeroize(hash.as_mut_slice());
+     }
+ }
+ 
+@@ -160,6 +164,8 @@
+ 
+         let mut opad_digest = D::Core::default();
+         opad_digest.update_blocks(slice::from_ref(&buf));
++        #[cfg(feature = "zeroize")]
++        digest::zeroize::Zeroize::zeroize(buf.as_mut_slice());
+ 
+         Ok(Self {
+             ipad_digest: digest.clone(),
+@@ -187,6 +193,8 @@
+         let mut h = self.opad_digest.clone();
+         buffer.digest_blocks(&hash, |b| h.update_blocks(b));
+         h.finalize_fixed_core(buffer, out);
++        #[cfg(feature = "zeroize")]
++        digest::zeroize::Zeroize::zeroize(hash.as_mut_slice());
+     }
+ }
+ 
+--- a/vendor/hmac/src/utils.rs
++++ b/vendor/hmac/src/utils.rs
+@@ -15,7 +15,7 @@
+     if key.len() <= der_key.len() {
+         der_key[..key.len()].copy_from_slice(key);
+     } else {
+-        let hash = D::digest(key);
++        let mut hash = D::digest(key);
+         // All commonly used hash functions have block size bigger
+         // than output hash size, but to be extra rigorous we
+         // handle the potential uncommon cases as well.
+@@ -27,6 +27,8 @@
+             let n = der_key.len();
+             der_key.copy_from_slice(&hash[..n]);
+         }
++        #[cfg(feature = "zeroize")]
++        digest::zeroize::Zeroize::zeroize(hash.as_mut_slice());
+     }
+     der_key
+ }
