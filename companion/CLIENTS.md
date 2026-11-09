@@ -40,7 +40,10 @@ independent native host contexts, followed by actual extension public-key
 retrieval and a two-member signing request. It routed the real Rust custody
 implementation's encrypted DKG/commitment/share packets and independently
 verified the resulting aggregate BIP340 signature against the exact original
-client event. Review was automatic in the host driver and QR input came from a
+client event. The same flow then replaced one lost member through the real
+repair protocol, compared all three updated records, and signed again with the
+replacement and a survivor under the unchanged npub. Review was automatic in
+the host driver and QR input came from a
 synthetic camera. This does not establish three-device physical operation,
 entropy quality, custody recovery on hardware or audit coverage.
 
