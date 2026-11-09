@@ -11,10 +11,26 @@ by QR. The companion connects your device to Nostr clients.
 - Keep the identity key on the device during normal use.
 - Use standard Nostr events and client APIs.
 
+## Use
+
+See the [device guide](https://nsealr.com/docs/device/) for hardware and the
+[companion guide](companion/README.md) for browser and remote client connections.
+
 ## Source
 
 - `core/`: identity, Nostr events and signing.
 - `firmware/`: device application and native screen renderer.
 - `companion/`: client connection and QR exchange.
+
+To check the core and companion together, use Rust from `rust-toolchain.toml`
+and Node 24.22 or later:
+
+```sh
+npm --prefix companion ci --ignore-scripts
+node tools/check_integration.mjs
+```
+
+This native check exchanges real optical frames between the Rust signer and the
+browser verifier. It uses a public test key; it does not test a physical camera.
 
 MIT license. Third-party code retains its own licenses.
