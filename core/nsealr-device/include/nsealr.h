@@ -59,6 +59,11 @@ int32_t ns_generate(ns_context *ctx, uint32_t words, uint8_t entropy32[32],
 int32_t ns_generate_dice(ns_context *ctx, uint32_t words, uint8_t *rolls, size_t len);
 int32_t ns_generate_photo(ns_context *ctx, uint32_t words,
                           uint8_t image_digest32[32], uint8_t hardware_entropy32[32]);
+/* P4 camera helper: SHA256("nsealr/photo-frame\\0" || final byte || chain || frame).
+ * Exactly800x800 RGB565 bytes are borrowed; the board owns their cleanup.
+ * Start chain with zeros. Chain becomes zero on error. No entropy claim follows. */
+int32_t ns_photo_frame_hash(uint8_t chain32[32], const uint8_t *frame,
+                            size_t len, bool final_frame);
 /* Check English BIP39 words/checksum without deriving or replacing an identity.
  * The input is wiped on success and failure. */
 int32_t ns_validate_mnemonic(uint8_t *input, size_t len);
