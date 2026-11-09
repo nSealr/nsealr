@@ -120,6 +120,8 @@ void ui_show(const ui_view *v, ui_action_cb callback, void *context) {
     lv_obj_set_style_bg_color(root, lv_color_hex(BG), 0);
     lv_obj_set_style_bg_opa(root, LV_OPA_COVER, 0);
     text(root, 16, 15, 170, "nSealr", &font_title22, FG);
+    if (v->header_label)
+        button(root, 116, 8, 108, 36, v->header_label, v->header_action, false);
     if (v->loaded)
         button(root, 236, 8, 68, 36, "Lock", UI_LOCK, false);
     else

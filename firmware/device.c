@@ -633,8 +633,13 @@ static void response(void) {
         view.left_action = A_THRESHOLD_SENT;
     } else if (state == RESPONSE && response_error) {
         view.title = "Request refused";
-        view.left_label = "Reason";
-        view.left_action = A_RESPONSE_REASON;
+        if (frames > 1) {
+            view.header_label = "Reason";
+            view.header_action = A_RESPONSE_REASON;
+        } else {
+            view.right_label = "Reason";
+            view.right_action = A_RESPONSE_REASON;
+        }
     } else if (state == SHARE_QR) {
         view.title = "Private share";
         snprintf(caption, sizeof(caption), "Save every frame.\nFrame %u of %u",
@@ -644,10 +649,13 @@ static void response(void) {
         view.left_label = "View text";
         view.left_action = A_GROUP_RECORD;
     }
-    view.right_label = response_paused ? "Resume" : "Pause";
-    view.right_action = A_PAUSE_QR;
-    view.aux_label = "Next";
-    view.aux_action = A_STEP_QR;
+    if (frames > 1) {
+        view.right_label = response_paused ? "Resume" : "Pause";
+        view.right_action = A_PAUSE_QR;
+        view.aux_label = "Next";
+        view.aux_action = A_STEP_QR;
+    } else
+        response_paused = true;
     if (!platform_present(&view) || !platform_secret_qr(qr_frame, qr_length))
         platform_fail();
     last_frame = platform_now();

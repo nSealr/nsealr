@@ -22,7 +22,8 @@ static bool down, scanning, presenting;
 static bool secrets_visible;
 static const char *render_dir;
 static unsigned frames, pending_action, touches;
-static char visible_title[80], visible_caption[100], visible_right[40];
+static char visible_title[80], visible_caption[100], visible_right[40], visible_left[40],
+    visible_aux[40], visible_header[40];
 /* Test inspection is enabled only for the published, deterministic test vectors. */
 static bool testing;
 static char test_lines[8][14];
@@ -158,6 +159,10 @@ bool platform_present(const ui_view *view) {
     snprintf(visible_caption, sizeof(visible_caption), "%s", view->subtitle ? view->subtitle : "");
     snprintf(visible_right, sizeof(visible_right), "%s",
              view->right_label ? view->right_label : "");
+    snprintf(visible_left, sizeof(visible_left), "%s", view->left_label ? view->left_label : "");
+    snprintf(visible_aux, sizeof(visible_aux), "%s", view->aux_label ? view->aux_label : "");
+    snprintf(visible_header, sizeof(visible_header), "%s",
+             view->header_label ? view->header_label : "");
     ui_show(view, callback, NULL);
     presenting = true;
     draw();
@@ -382,15 +387,36 @@ static void refused_request_test(void) {
     size_t length;
     assert(ns_encode_frame(response.data, response.len, 0, frame, sizeof(frame), &length) == NS_OK);
     assert(test_qr_len == length && !memcmp(test_qr, frame, length));
+    assert(!strcmp(visible_left, "Done") && !strcmp(visible_right, "Reason") && !visible_aux[0]);
     save_frame("35-request-refused");
-    tap(60, 442);
+    tap(215, 442);
     assert(ui_reader() && !strcmp(visible_title, "Request refused"));
     save_frame("36-refusal-reason");
     tap(60, 442);
     assert(!ui_reader() && test_qr_len == length && !memcmp(test_qr, frame, length));
     tap(60, 442);
-    tap(215, 442);
     assert(ns_response(device_core(), &response) != NS_OK && ns_is_loaded(device_core()));
+    /* JSON escaping can make a bounded request ID span multiple response frames. */
+    char multi[1024] = "{\"id\":\"";
+    for (unsigned i = 0; i < 128; i++)
+        strcat(multi, "\\u0001");
+    strcat(multi, "\",\"method\":\"unsupported\",\"params\":[]}");
+    tap(140, 175);
+    feed_message(multi);
+    assert(!strcmp(visible_left, "Done") && !strcmp(visible_right, "Pause") &&
+           !strcmp(visible_aux, "Next") && !strcmp(visible_header, "Reason"));
+    assert(ns_response(device_core(), &response) == NS_OK && response.len > NS_QR_CHUNK);
+    tap(258, 122);
+    assert(ns_encode_frame(response.data, response.len, 1, frame, sizeof(frame), &length) == NS_OK);
+    assert(test_qr_len == length && !memcmp(test_qr, frame, length));
+    save_frame("42-refusal-multiple-frames");
+    tap(170, 26);
+    assert(ui_reader());
+    tap(60, 442);
+    assert(!strcmp(visible_right, "Resume") && test_qr_len == length &&
+           !memcmp(test_qr, frame, length));
+    tap(60, 442);
+    assert(ns_response(device_core(), &response) != NS_OK);
     tap(140, 175);
     uint8_t invalid[] = "invalid";
     device_scan_bytes(invalid, sizeof(invalid) - 1);
