@@ -391,3 +391,28 @@ fn private_plaintext_is_reviewed_before_client_release() {
         assert_eq!(result(&receiver)["result"], text);
     }
 }
+
+#[test]
+fn qr_collection_binds_the_limit_and_handles_short_final_frames_first() {
+    let data = vec![b'x'; 500];
+    let first = qr::encode(&data, 0).unwrap();
+    let last = qr::encode(&data, 1).unwrap();
+    let mut collector = qr::Collector::default();
+    assert!(collector
+        .accept_limited(last.as_bytes(), 2048)
+        .unwrap()
+        .is_none());
+    assert!(collector.accept(first.as_bytes()).is_err());
+    assert_eq!(collector.received(), 0);
+    assert!(collector
+        .accept_limited(last.as_bytes(), 500)
+        .unwrap()
+        .is_none());
+    assert_eq!(
+        &**collector
+            .accept_limited(first.as_bytes(), 500)
+            .unwrap()
+            .unwrap(),
+        &data
+    );
+}

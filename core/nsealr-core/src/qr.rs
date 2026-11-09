@@ -15,6 +15,7 @@ pub const MAX_FRAME: usize = 586;
 pub struct Collector {
     id: Option<[u8; 32]>,
     count: usize,
+    limit: usize,
     received: u128,
     bytes: Zeroizing<Vec<u8>>,
     last_len: usize,
@@ -72,13 +73,14 @@ impl Collector {
             return Err(Error::Bounds);
         }
         if let Some(current) = self.id {
-            if id != current || count != self.count || self.bytes.len() != limit {
+            if id != current || count != self.count || self.limit != limit {
                 return Err(Error::Input);
             }
         } else {
             self.id = Some(id);
             self.count = count;
-            self.bytes = Zeroizing::new(vec![0; limit]);
+            self.limit = limit;
+            self.bytes = Zeroizing::new(vec![0; (count * CHUNK).min(limit)]);
         }
         let offset = index * CHUNK;
         if self.received & (1u128 << index) != 0 {
