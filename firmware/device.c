@@ -13,7 +13,7 @@ static uint8_t source[512], passphrase[256], secret_page[136], entropy[32];
 static char account_text[12], public_key[65], npub[65], message[256], caption[96], confirmation[64];
 static uint8_t qr_frame[NS_MAX_FRAME];
 static size_t source_len, passphrase_len, input_len, qr_length, secret_page_len;
-static uint32_t source_kind, words, account, backup_kind, backup_page;
+static uint32_t source_kind, words, account, requested_account, backup_kind, backup_page;
 static uint32_t review_index, review_flags, response_frame;
 static uint64_t review_generation, deadline, last_frame;
 static size_t private_offset;
@@ -26,9 +26,12 @@ static word_input word_draft;
 static bool have_word_draft, editing_word;
 static unsigned word_review_page;
 static backup_check quiz;
-static bool backup_checked, has_passphrase, response_paused;
+static bool backup_checked, has_passphrase, response_paused, editing_account;
 static uint8_t backup_expected[512];
 static size_t backup_expected_len;
+static alignas(64) uint8_t share_backup[NS_THRESHOLD_MAX_BACKUP];
+static uint32_t threshold_packet;
+static bool threshold_restoring;
 
 static ui_view view;
 
@@ -43,6 +46,7 @@ enum {
     WORD_REVIEW,
     WORD_INVALID,
     PASSPHRASE_REVIEW,
+    PASSPHRASE_HELP,
     QUIZ,
     QUIZ_WRONG,
     BACKUP_GOOD,
@@ -62,9 +66,30 @@ enum {
     REVEAL_QR,
     BACKUP_OPTIONS,
     NSEC_REVIEW,
+    GROUP_INTRO,
+    GROUP_READY,
+    GROUP_RECORD,
+    GROUP_QR,
+    THRESHOLD_QR,
+    SHARE_BACKUP,
+    SHARE_QR_CONSENT,
+    SHARE_SAVE_CONSENT,
+    SHARE_RESTORE,
+    SHARE_SAVED,
+    SHARE_QR,
     NOTICE
 };
 static unsigned state, scan_target, notice_return = HOME;
+static unsigned public_return = HOME, record_return = HOME;
+enum {
+    SCAN_REQUEST,
+    SCAN_KEY,
+    SCAN_BACKUP_CHECK,
+    SCAN_THRESHOLD,
+    SCAN_SHARE_IMPORT,
+    SCAN_SHARE_CHECK,
+    SCAN_PASSPHRASE
+};
 enum {
     A_CREATE = 1000,
     A_IMPORT,
@@ -106,7 +131,22 @@ enum {
     A_CONTINUE,
     A_PAUSE_QR,
     A_STEP_QR,
-    A_KEY_QR
+    A_KEY_QR,
+    A_GROUP,
+    A_START_GROUP,
+    A_IMPORT_SHARE,
+    A_SHARE_BACKUP,
+    A_GROUP_RECORD,
+    A_THRESHOLD_SENT,
+    A_SHARE_QR,
+    A_SHARE_SAVE,
+    A_SHARE_SAVE_CONFIRM,
+    A_SHARE_LOAD,
+    A_SHARE_SCAN,
+    A_GROUP_QR,
+    A_IDENTITY_OPTIONS,
+    A_ENTER_PASS,
+    A_SCAN_PASS
 };
 enum { INPUT_NSEC = 1, INPUT_PASS, INPUT_ACCOUNT };
 
@@ -114,7 +154,11 @@ static void show(void);
 static void start_review(void);
 static void finish_identity(void);
 static void input_done(void);
+static void threshold_next(void);
 ns_context *device_core(void) { return core; }
+static bool threshold_loaded(void) {
+    return ns_is_loaded(core) && ns_threshold_state(core) != NS_THRESHOLD_NONE;
+}
 static void wipe_inputs(void) {
     platform_wipe(source, sizeof(source));
     platform_wipe(passphrase, sizeof(passphrase));
@@ -126,6 +170,7 @@ static void clear_presentation(void) {
         platform_fail();
     platform_wipe(secret_page, sizeof(secret_page));
     platform_wipe(qr_frame, sizeof(qr_frame));
+    platform_wipe(share_backup, sizeof(share_backup));
     qr_length = 0;
     if (public_body) {
         platform_public_free(public_body);
@@ -150,6 +195,9 @@ static void lock_identity(void) {
     backup_expected_len = 0;
     backup_checked = false;
     has_passphrase = false;
+    editing_account = false;
+    threshold_restoring = false;
+    threshold_packet = 0;
     platform_wipe(public_key, sizeof(public_key));
     platform_wipe(npub, sizeof(npub));
     state = HOME;
@@ -160,6 +208,7 @@ static void error_message(const char *text, unsigned next) {
     clear_presentation();
     ns_cancel(core);
     wipe_inputs();
+    editing_account = false;
     snprintf(message, sizeof(message), "%s", text);
     notice_return = next;
     state = NOTICE;
@@ -170,6 +219,18 @@ static bool result_ok(int32_t result) {
         return true;
     error_message(ns_error_text(result), HOME);
     return false;
+}
+static void share_file_error(share_file_result result, unsigned next) {
+    const char *text =
+        result == SHARE_FILE_UNAVAILABLE
+            ? "No readable SD card. Use a FAT-formatted card; the device never formats it."
+        : result == SHARE_FILE_EXISTS
+            ? "NSEALR.NSR already exists. No file was replaced. Use a different card."
+        : result == SHARE_FILE_MISSING ? "No NSEALR.NSR file was found at the root of this card."
+        : result == SHARE_FILE_INVALID
+            ? "The share file is empty or too large. No identity was loaded."
+            : "The card could not complete the transfer. The backup was not verified.";
+    error_message(text, next);
 }
 static bool public_identity(void) {
     size_t n = 0;
@@ -204,6 +265,7 @@ static void entry(unsigned target) {
 static void recover(void) {
     int32_t status;
     bool applied_pass = passphrase_len > 0;
+    uint32_t derive_account = editing_account ? requested_account : account;
     if (have_word_draft && !words_assemble(&word_draft, source, sizeof(source), &source_len))
         platform_fail();
     if (generating) {
@@ -211,14 +273,15 @@ static void recover(void) {
             error_message("Random source unavailable. No identity was created.", HOME);
             return;
         }
-        status = ns_generate(core, words, entropy, passphrase, passphrase_len, account);
+        status = ns_generate(core, words, entropy, passphrase, passphrase_len, derive_account);
     } else if (source_kind == 1)
         status = ns_import_nsec(core, source, source_len);
     else if (source_kind == 2)
-        status = ns_import_mnemonic(core, source, source_len, passphrase, passphrase_len, account);
+        status = ns_import_mnemonic(core, source, source_len, passphrase, passphrase_len,
+                                    derive_account);
     else
         status = ns_import_secret_qr(core, source_kind - 2, source, source_len, passphrase,
-                                     passphrase_len, account);
+                                     passphrase_len, derive_account);
     wipe_inputs();
     if (!result_ok(status))
         return;
@@ -230,6 +293,8 @@ static void recover(void) {
         return;
     }
     has_passphrase = applied_pass;
+    account = derive_account;
+    editing_account = false;
     state = IDENTITY;
     show();
 }
@@ -243,9 +308,10 @@ static void input_done(void) {
             error_message("Use an account number from 0 to 2147483647.", IDENTITY);
             return;
         }
-        account = (uint32_t)n;
+        requested_account = (uint32_t)n;
         if (has_passphrase) {
-            entry(INPUT_PASS);
+            state = PASSPHRASE_HELP;
+            show();
             return;
         }
         recover();
@@ -329,14 +395,16 @@ static void show_word_review(void) {
 static void scan(unsigned target) {
     scan_target = target;
     state = SCAN;
-    if (target)
+    if (target != SCAN_REQUEST && target != SCAN_THRESHOLD)
         ns_cancel(core);
     deadline = platform_now() + 600000;
     show();
     if (!platform_scan_start()) {
-        error_message("Camera could not start.", target == 2 ? BACKUP_OPTIONS
-                                                 : target    ? IMPORT
-                                                             : HOME);
+        error_message("Camera could not start.",
+                      target == SCAN_BACKUP_CHECK || target == SCAN_SHARE_CHECK ? BACKUP_OPTIONS
+                      : target == SCAN_KEY || target == SCAN_SHARE_IMPORT       ? IMPORT
+                      : target == SCAN_PASSPHRASE                               ? IDENTITY
+                                                                                : HOME);
         return;
     }
     scanning = true;
@@ -507,7 +575,22 @@ static bool review_view(void) {
 }
 static void response(void) {
     ns_text json;
-    if (ns_response(core, &json) != NS_OK) {
+    size_t share_len = 0;
+    int32_t result;
+    if (state == SHARE_QR) {
+        result = ns_threshold_backup(core, share_backup, sizeof(share_backup), &share_len);
+        json = (ns_text){share_backup, share_len};
+    } else if (state == GROUP_QR) {
+        public_body = platform_public_alloc(1024);
+        if (!public_body)
+            platform_fail();
+        result = ns_threshold_record(core, (uint8_t *)public_body, 1024, &share_len);
+        json = (ns_text){(const uint8_t *)public_body, share_len};
+    } else if (state == THRESHOLD_QR)
+        result = ns_threshold_output(core, threshold_packet, &json);
+    else
+        result = ns_response(core, &json);
+    if (result != NS_OK) {
         error_message("No response is available.", HOME);
         return;
     }
@@ -520,6 +603,7 @@ static void response(void) {
         error_message("The response is too large for QR.", HOME);
         return;
     }
+    platform_wipe(share_backup, sizeof(share_backup));
     snprintf(caption, sizeof(caption), "Frame %u of %u", (unsigned)response_frame + 1,
              (unsigned)frames);
     view.screen = UI_SECRET;
@@ -527,6 +611,28 @@ static void response(void) {
     view.subtitle = caption;
     view.left_label = "Done";
     view.left_action = UI_DONE;
+    if (state == THRESHOLD_QR) {
+        uint32_t phase = ns_threshold_state(core);
+        view.title =
+            phase == NS_THRESHOLD_JOIN ? "Join group"
+            : phase == NS_THRESHOLD_READY && threshold_packet + 1 == ns_threshold_output_count(core)
+                ? "Group record"
+            : phase == NS_THRESHOLD_RESULT ? "Return to client"
+                                           : "Share with client";
+        snprintf(caption, sizeof(caption), "Packet %u of %u\nFrame %u of %u",
+                 (unsigned)threshold_packet + 1, (unsigned)ns_threshold_output_count(core),
+                 (unsigned)response_frame + 1, (unsigned)frames);
+        view.left_label = "Captured";
+        view.left_action = A_THRESHOLD_SENT;
+    } else if (state == SHARE_QR) {
+        view.title = "Private share";
+        snprintf(caption, sizeof(caption), "Save every frame.\nFrame %u of %u",
+                 (unsigned)response_frame + 1, (unsigned)frames);
+    } else if (state == GROUP_QR) {
+        view.title = "Group record";
+        view.left_label = "View text";
+        view.left_action = A_GROUP_RECORD;
+    }
     view.right_label = response_paused ? "Resume" : "Pause";
     view.right_action = A_PAUSE_QR;
     view.aux_label = "Next";
@@ -534,6 +640,27 @@ static void response(void) {
     if (!platform_present(&view) || !platform_secret_qr(qr_frame, qr_length))
         platform_fail();
     last_frame = platform_now();
+}
+static void threshold_next(void) {
+    if (ns_threshold_state(core) == NS_THRESHOLD_REVIEW) {
+        start_review();
+        return;
+    }
+    if (ns_threshold_state(core) == NS_THRESHOLD_READY && !public_identity()) {
+        lock_identity();
+        error_message("Could not read the group identity.", HOME);
+        return;
+    }
+    if (ns_threshold_output_count(core)) {
+        threshold_packet = response_frame = 0;
+        response_paused = false;
+        state = THRESHOLD_QR;
+        show();
+    } else if (ns_threshold_state(core) == NS_THRESHOLD_READY) {
+        state = GROUP_READY;
+        show();
+    } else
+        scan(SCAN_THRESHOLD);
 }
 static void approve(bool partial_prose) {
     clear_presentation();
@@ -544,6 +671,10 @@ static void approve(bool partial_prose) {
     if (!result_ok(ns_approve(core, review_generation, partial_prose, entropy, sizeof(entropy),
                               platform_now())))
         return;
+    if (ns_threshold_state(core) != NS_THRESHOLD_NONE) {
+        threshold_next();
+        return;
+    }
     state = RESPONSE;
     response_frame = 0;
     response_paused = false;
@@ -617,12 +748,19 @@ static void show(void) {
                                            {"Public identity", A_PUBLIC},
                                            {"Back up identity", A_BACKUP},
                                            {"Clear identity", UI_LOCK}};
+    static const ui_choice home_words[] = {{"Scan a request", A_SCAN},
+                                           {"Public identity", A_PUBLIC},
+                                           {"Back up identity", A_BACKUP},
+                                           {"Identity options", A_IDENTITY_OPTIONS},
+                                           {"Clear identity", UI_LOCK}};
     static const ui_choice create[] = {{"12 recovery words", A_GEN12},
                                        {"24 recovery words", A_GEN24},
-                                       {"Standalone private key", A_GEN_RAW}};
+                                       {"Standalone private key", A_GEN_RAW},
+                                       {"2-of-3 signing group", A_GROUP}};
     static const ui_choice imports[] = {{"Scan a backup", A_SECRET_QR},
                                         {"Enter recovery words", A_WORDS},
-                                        {"Enter private key", A_NSEC}};
+                                        {"Enter private key", A_NSEC},
+                                        {"Restore a group share", A_IMPORT_SHARE}};
     static const ui_choice backups[] = {{"Recovery words", A_BACKUP_WORDS},
                                         {"SeedQR", A_BACKUP_SEEDQR},
                                         {"Compact SeedQR", A_BACKUP_COMPACT},
@@ -635,13 +773,15 @@ static void show(void) {
         view.title = "Your identity";
         if (view.loaded) {
             snprintf(caption, sizeof(caption), "%.13s...%.8s\n%s%s", npub, npub + strlen(npub) - 8,
-                     ns_word_count(core) ? "Recovery words" : "Standalone nsec",
+                     threshold_loaded()    ? "2-of-3 group share"
+                     : ns_word_count(core) ? "Recovery words"
+                                           : "Standalone nsec",
                      backup_checked ? " - checked" : "");
             view.subtitle = caption;
         } else
             view.subtitle = "Create or recover your Nostr key.";
-        view.choices = view.loaded ? home_ready : home_locked;
-        view.choice_count = view.loaded ? 4 : 2;
+        view.choices = ns_word_count(core) ? home_words : view.loaded ? home_ready : home_locked;
+        view.choice_count = ns_word_count(core) ? 5 : view.loaded ? 4 : 2;
         view.left_label = NULL;
         break;
     case CREATE:
@@ -649,14 +789,99 @@ static void show(void) {
         view.title = "Create identity";
         view.subtitle = "Your backup restores your identity.";
         view.choices = create;
-        view.choice_count = 3;
+        view.choice_count = 4;
         break;
     case IMPORT:
         view.screen = UI_MENU;
         view.title = "Import identity";
         view.subtitle = "Enter secrets only on this device.";
         view.choices = imports;
+        view.choice_count = 4;
+        break;
+    case GROUP_INTRO:
+        view.screen = UI_NOTICE;
+        view.title = "2-of-3 group";
+        view.body = "Three devices. Any two shares can sign for one Nostr identity.\n\n"
+                    "Use the companion to connect them. Private messages are not supported.";
+        view.right_label = "Start group";
+        view.right_action = A_START_GROUP;
+        break;
+    case GROUP_READY: {
+        static const ui_choice ready[] = {{"Back up this share", A_BACKUP},
+                                          {"View group record", A_GROUP_RECORD},
+                                          {"Use identity", A_CONTINUE}};
+        view.screen = UI_MENU;
+        view.title = threshold_restoring ? "Share restored" : "Group ready";
+        view.subtitle = "Keep each share in a separate safe place.";
+        view.choices = ready;
         view.choice_count = 3;
+        break;
+    }
+    case GROUP_RECORD: {
+        uint8_t group[64];
+        uint32_t member;
+        if (ns_threshold_info(core, group, &member) != NS_OK) {
+            error_message("Group record is unavailable.", HOME);
+            return;
+        }
+        public_body = platform_public_alloc(384);
+        if (!public_body)
+            platform_fail();
+        snprintf(public_body, 384,
+                 "Member %u of 3. Any two shares can sign.\n\nGroup fingerprint\n%.*s\n\n"
+                 "Nostr identity\n%s\n\nKeep this public record separately from your share "
+                 "backup. Compare it when restoring.",
+                 (unsigned)member, 64, group, npub);
+        view.screen = UI_READER;
+        view.title = "Group record";
+        view.body = public_body;
+        view.right_label = "Show QR";
+        view.right_action = A_GROUP_QR;
+        break;
+    }
+    case SHARE_BACKUP: {
+        static const ui_choice methods[] = {{"Save to SD card", A_SHARE_SAVE_CONFIRM},
+                                            {"Show offline QR", A_SHARE_BACKUP}};
+        view.screen = UI_MENU;
+        view.title = "Back up share";
+        view.subtitle = "Keep this secret share offline.";
+        view.choices = methods;
+        view.choice_count = 2;
+        break;
+    }
+    case SHARE_RESTORE: {
+        static const ui_choice methods[] = {{"Scan share QR", A_SHARE_SCAN},
+                                            {"Read from SD card", A_SHARE_LOAD}};
+        view.screen = UI_MENU;
+        view.title = "Restore share";
+        view.subtitle = "Use this device's QR or NSEALR.NSR file.";
+        view.choices = methods;
+        view.choice_count = 2;
+        break;
+    }
+    case SHARE_SAVE_CONSENT:
+        view.screen = UI_NOTICE;
+        view.title = "Save private share";
+        view.body = "Write the unencrypted NSEALR.NSR file to this SD card. Keep the card offline "
+                    "and separate from other shares.\n\nExisting files are never replaced.";
+        view.right_label = "Save share";
+        view.right_action = A_SHARE_SAVE;
+        break;
+    case SHARE_SAVED:
+        view.screen = UI_NOTICE;
+        view.title = "Share saved";
+        view.body = "NSEALR.NSR was saved and read back successfully. Keep this SD card offline "
+                    "and separate from other shares.\n\nKeep the public group record elsewhere.";
+        view.right_label = "Continue";
+        view.right_action = A_CONTINUE;
+        break;
+    case SHARE_QR_CONSENT:
+        view.screen = UI_NOTICE;
+        view.title = "Back up share";
+        view.body = "Capture every QR frame on an offline device. Never use the connected "
+                    "companion.\n\nKeep shares separate. Any two can sign.";
+        view.right_label = "Show share";
+        view.right_action = A_SHARE_QR;
         break;
     case WORD_COUNT: {
         static const ui_choice lengths[] = {{"12 words", A_WORD12},
@@ -748,7 +973,7 @@ static void show(void) {
             size_t first = private_offset;
             if (!format_private_page((ns_text){passphrase, passphrase_len}, &secret_page_len))
                 platform_fail();
-            snprintf(caption, sizeof(caption), "Chars %zu-%zu of %zu\n[space] means a space.",
+            snprintf(caption, sizeof(caption), "Bytes %zu-%zu of %zu\n[space] means a space.",
                      passphrase_len ? first + 1 : 0, private_offset, passphrase_len);
         }
         view.subtitle = caption;
@@ -756,6 +981,17 @@ static void show(void) {
         view.right_label = private_offset < passphrase_len ? "Next page" : "Use passphrase";
         view.right_action = A_CONFIRM_PASS;
         break;
+    case PASSPHRASE_HELP: {
+        static const ui_choice methods[] = {{"Type passphrase", A_ENTER_PASS},
+                                            {"Scan passphrase", A_SCAN_PASS}};
+        view.screen = UI_MENU;
+        view.title = "Passphrase";
+        view.subtitle = editing_account ? "Use your existing passphrase."
+                                        : "Changes your npub. Back up separately.";
+        view.choices = methods;
+        view.choice_count = 2;
+        break;
+    }
     case QUIZ: {
         snprintf(message, sizeof(message), "Choose word %u",
                  (unsigned)quiz.order[quiz.position] + 1);
@@ -781,7 +1017,10 @@ static void show(void) {
     case BACKUP_GOOD:
         view.screen = UI_NOTICE;
         view.title = "Backup checked";
-        view.body = backup_kind == 1
+        view.body = threshold_loaded()
+                        ? "This backup matches this device's group share. Keep shares in separate "
+                          "safe places, and keep the public group record separately."
+                    : backup_kind == 1
                         ? "This backup matches your Nostr private key. Keep it private."
                         : "Recovery words match. Save your passphrase and account separately; they "
                           "are not in this backup.";
@@ -804,11 +1043,31 @@ static void show(void) {
         view.qr_length = strlen(npub);
         view.right_label = "View text";
         view.right_action = A_PUBLIC_TEXT;
+        if (threshold_loaded()) {
+            view.aux_label = "Record";
+            view.aux_action = A_GROUP_RECORD;
+        }
         break;
     case SCAN:
         view.screen = UI_SCAN;
-        view.title = scan_target ? "Scan your backup" : "Scan a request";
+        view.title =
+            scan_target == SCAN_PASSPHRASE                                ? "Scan passphrase"
+            : scan_target == SCAN_SHARE_IMPORT                            ? "Restore share"
+            : scan_target == SCAN_SHARE_CHECK                             ? "Check share"
+            : scan_target == SCAN_KEY || scan_target == SCAN_BACKUP_CHECK ? "Scan your backup"
+            : scan_target == SCAN_THRESHOLD && ns_threshold_state(core) == NS_THRESHOLD_JOIN
+                ? "Scan group setup"
+            : scan_target == SCAN_THRESHOLD && ns_threshold_state(core) == NS_THRESHOLD_EXCHANGE
+                ? "Scan next packet"
+                : "Scan a request";
         view.subtitle = "Keep the QR inside the camera view.";
+        if (scan_target == SCAN_PASSPHRASE)
+            view.subtitle = "Offline text QR. Up to 256 UTF8 bytes.";
+        if (scan_target == SCAN_THRESHOLD && ns_threshold_state(core) == NS_THRESHOLD_EXCHANGE) {
+            snprintf(caption, sizeof(caption), "Peer packets received: %u of %u",
+                     (unsigned)ns_threshold_progress(core), ns_is_loaded(core) ? 1u : 2u);
+            view.subtitle = caption;
+        }
         view.progress = ns_frames_received(core);
         view.total = ns_frames_expected(core);
         view.left_label = "Cancel";
@@ -841,12 +1100,17 @@ static void show(void) {
     case PARTIAL:
         view.screen = UI_CONFIRM;
         view.title = "Partial review";
-        view.body = "You did not view all the text. Unseen words could change what you are "
-                    "publishing. This applies only to this request.";
+        view.body = "You did not view all the text. Unseen text may change the meaning of this "
+                    "request. This approval applies only to this request.";
         view.right_label = "Approve anyway";
         view.right_action = A_PARTIAL_APPROVE;
         break;
     case RESPONSE:
+    case THRESHOLD_QR:
+    case SHARE_QR:
+    case GROUP_QR:
+        if (state == THRESHOLD_QR)
+            view.loaded = true;
         response();
         return;
     case BACKUP:
@@ -868,9 +1132,10 @@ static void show(void) {
                                              {"Continue", A_CONTINUE}};
         view.screen = UI_MENU;
         view.title = "Backup saved?";
-        view.subtitle = ns_word_count(core) ? "Seed backups exclude passphrase and account."
-                                            : "Your nsec restores this identity.";
-        view.choices = backup_kind == 2 ? check_words : check_qr;
+        view.subtitle = threshold_loaded()    ? "A share backup contains all QR frames."
+                        : ns_word_count(core) ? "Seed backups exclude passphrase and account."
+                                              : "Your nsec restores this identity.";
+        view.choices = !threshold_loaded() && backup_kind == 2 ? check_words : check_qr;
         view.choice_count = 2;
         break;
     }
@@ -1041,8 +1306,14 @@ void device_action(unsigned action) {
             return;
         }
         if (action == UI_KEY_BACKSPACE) {
-            if (input_len)
-                buf[--input_len] = 0;
+            if (input_len) {
+                size_t start = input_len - 1;
+                if (input_target == INPUT_PASS)
+                    while (start && (buf[start] & 0xc0) == 0x80)
+                        start--;
+                platform_wipe(buf + start, input_len - start);
+                input_len = start;
+            }
             if (input_target == INPUT_ACCOUNT)
                 show();
             else
@@ -1065,12 +1336,15 @@ void device_action(unsigned action) {
         }
     }
     if (action == UI_CANCEL) {
+        bool cancelled_passphrase = state == SCAN && scan_target == SCAN_PASSPHRASE;
         stop_scan();
         clear_presentation();
         wipe_inputs();
+        editing_account = false;
         if (state == REVIEW || state == DETAILS || state == DECISION || state == PARTIAL) {
+            bool threshold = ns_threshold_state(core) != NS_THRESHOLD_NONE;
             if (ns_reject(core, review_generation) == NS_OK) {
-                state = RESPONSE;
+                state = threshold ? HOME : RESPONSE;
                 response_frame = 0;
                 deadline = platform_now() + 120000;
                 show();
@@ -1083,11 +1357,28 @@ void device_action(unsigned action) {
         platform_wipe(&quiz, sizeof(quiz));
         platform_wipe(backup_expected, sizeof(backup_expected));
         backup_expected_len = 0;
-        state = HOME;
+        state = cancelled_passphrase ? IDENTITY : HOME;
         show();
         return;
     }
     if (action == UI_BACK) {
+        if (state == PUBLIC_IDENTITY || state == PUBLIC_TEXT) {
+            state = state == PUBLIC_TEXT ? PUBLIC_IDENTITY : public_return;
+            show();
+            return;
+        }
+        if (state == GROUP_RECORD) {
+            state = record_return;
+            show();
+            return;
+        }
+        if (state == PASSPHRASE_HELP) {
+            wipe_inputs();
+            editing_account = false;
+            state = IDENTITY;
+            show();
+            return;
+        }
         if (state == NSEC_REVIEW) {
             input_target = INPUT_NSEC;
             input_len = source_len;
@@ -1154,10 +1445,124 @@ void device_action(unsigned action) {
         backup_expected_len = 0;
         state = ns_is_loaded(core) ? HOME : IMPORT;
         wipe_inputs();
+        editing_account = false;
         show();
         return;
     }
     switch (action) {
+    case A_GROUP:
+        state = GROUP_INTRO;
+        show();
+        return;
+    case A_START_GROUP:
+        if (state != GROUP_INTRO)
+            return;
+        lock_identity();
+        platform_new_context();
+        if (!platform_random32(entropy)) {
+            error_message("Random source unavailable. No group was created.", HOME);
+            return;
+        }
+        if (result_ok(ns_threshold_start(core, entropy, platform_now()))) {
+            deadline = platform_now() + 600000;
+            threshold_next();
+        }
+        return;
+    case A_IMPORT_SHARE:
+        threshold_restoring = true;
+        state = SHARE_RESTORE;
+        show();
+        return;
+    case A_SHARE_SCAN:
+        if (state != SHARE_RESTORE)
+            return;
+        scan(SCAN_SHARE_IMPORT);
+        return;
+    case A_SHARE_BACKUP:
+        if (state != SHARE_BACKUP || !threshold_loaded())
+            return;
+        state = SHARE_QR_CONSENT;
+        show();
+        return;
+    case A_SHARE_QR:
+        if (state != SHARE_QR_CONSENT || !threshold_loaded())
+            return;
+        response_frame = 0;
+        response_paused = false;
+        state = SHARE_QR;
+        show();
+        return;
+    case A_SHARE_SAVE_CONFIRM:
+        if (state != SHARE_BACKUP || !threshold_loaded())
+            return;
+        state = SHARE_SAVE_CONSENT;
+        show();
+        return;
+    case A_SHARE_SAVE: {
+        if (state != SHARE_SAVE_CONSENT || !threshold_loaded())
+            return;
+        size_t length = 0;
+        if (!result_ok(ns_threshold_backup(core, share_backup, sizeof(share_backup), &length)))
+            return;
+        share_file_result result = platform_share_save(share_backup, length);
+        platform_wipe(share_backup, sizeof(share_backup));
+        if (result != SHARE_FILE_OK)
+            share_file_error(result, SHARE_BACKUP);
+        else {
+            backup_checked = true;
+            state = SHARE_SAVED;
+            show();
+        }
+        return;
+    }
+    case A_SHARE_LOAD: {
+        if (state != SHARE_RESTORE)
+            return;
+        size_t length = 0;
+        share_file_result result = platform_share_load(share_backup, sizeof(share_backup), &length);
+        if (result != SHARE_FILE_OK) {
+            platform_wipe(share_backup, sizeof(share_backup));
+            share_file_error(result, SHARE_RESTORE);
+            return;
+        }
+        int32_t status = ns_threshold_import(core, share_backup, length, platform_now());
+        platform_wipe(share_backup, sizeof(share_backup));
+        if (result_ok(status))
+            start_review();
+        return;
+    }
+    case A_GROUP_RECORD:
+        if (!threshold_loaded())
+            return;
+        if (state != GROUP_QR)
+            record_return = state;
+        state = GROUP_RECORD;
+        show();
+        return;
+    case A_GROUP_QR:
+        if (state != GROUP_RECORD || !threshold_loaded())
+            return;
+        response_frame = 0;
+        response_paused = false;
+        state = GROUP_QR;
+        show();
+        return;
+    case A_THRESHOLD_SENT:
+        if (state != THRESHOLD_QR)
+            return;
+        if (++threshold_packet < ns_threshold_output_count(core)) {
+            response_frame = 0;
+            response_paused = false;
+            show();
+            return;
+        }
+        ns_finish_response(core);
+        if (ns_threshold_state(core) == NS_THRESHOLD_RESULT) {
+            state = HOME;
+            show();
+        } else
+            threshold_next();
+        return;
     case A_CREATE:
         begin_identity(true);
         return;
@@ -1218,7 +1623,7 @@ void device_action(unsigned action) {
             recover();
         return;
     case A_SECRET_QR:
-        scan(1);
+        scan(SCAN_KEY);
         return;
     case A_ADD_PASS:
         if (ns_word_count(core)) {
@@ -1227,7 +1632,19 @@ void device_action(unsigned action) {
             generating = false;
             source_kind = 2;
         }
+        editing_account = false;
+        state = PASSPHRASE_HELP;
+        show();
+        return;
+    case A_ENTER_PASS:
+        if (state != PASSPHRASE_HELP)
+            return;
         entry(INPUT_PASS);
+        return;
+    case A_SCAN_PASS:
+        if (state != PASSPHRASE_HELP)
+            return;
+        scan(SCAN_PASSPHRASE);
         return;
     case A_CONFIRM_PASS:
         if (state != PASSPHRASE_REVIEW)
@@ -1245,7 +1662,16 @@ void device_action(unsigned action) {
             generating = false;
             source_kind = 2;
         }
+        requested_account = account;
+        editing_account = true;
         entry(INPUT_ACCOUNT);
+        return;
+    case A_IDENTITY_OPTIONS:
+        if (!ns_word_count(core))
+            return;
+        backup_prompt = false;
+        state = IDENTITY;
+        show();
         return;
     case A_USE:
         if (backup_prompt && ns_word_count(core)) {
@@ -1279,28 +1705,34 @@ void device_action(unsigned action) {
         show();
         return;
     case A_CHECK_QR:
+        if (threshold_loaded()) {
+            scan(SCAN_SHARE_CHECK);
+            return;
+        }
         if (ns_backup(core, backup_kind, backup_expected, sizeof(backup_expected),
                       &backup_expected_len) != NS_OK)
             platform_fail();
-        scan(2);
+        scan(SCAN_BACKUP_CHECK);
         return;
     case A_PAUSE_QR:
-        if (state == RESPONSE) {
+        if (state == RESPONSE || state == THRESHOLD_QR || state == SHARE_QR || state == GROUP_QR) {
             response_paused = !response_paused;
             show();
         }
         return;
     case A_STEP_QR:
-        if (state == RESPONSE) {
+        if (state == RESPONSE || state == THRESHOLD_QR || state == SHARE_QR || state == GROUP_QR) {
             response_paused = true;
             response_frame++;
             show();
         }
         return;
     case A_SCAN:
-        scan(0);
+        scan(threshold_loaded() ? SCAN_THRESHOLD : SCAN_REQUEST);
         return;
     case A_PUBLIC:
+        if (state != PUBLIC_TEXT)
+            public_return = state;
         state = PUBLIC_IDENTITY;
         show();
         return;
@@ -1309,7 +1741,7 @@ void device_action(unsigned action) {
         show();
         return;
     case A_BACKUP:
-        state = BACKUP;
+        state = threshold_loaded() ? SHARE_BACKUP : BACKUP;
         deadline = platform_now() + 600000;
         show();
         return;
@@ -1419,6 +1851,11 @@ void device_action(unsigned action) {
         }
         break;
     case UI_DONE:
+        if (state == SHARE_QR) {
+            state = BACKUP_OPTIONS;
+            show();
+            return;
+        }
         if (state == RESPONSE) {
             ns_finish_response(core);
             state = HOME;
@@ -1443,7 +1880,73 @@ void device_scan_bytes(uint8_t *bytes, size_t len) {
         platform_wipe(bytes, len);
         return;
     }
-    if (scan_target == 2) {
+    if (scan_target == SCAN_PASSPHRASE) {
+        stop_scan();
+        char escaped[sizeof(passphrase) * 10 + 1];
+        size_t written;
+        bool valid = len <= sizeof(passphrase) &&
+                     ui_escape_text(bytes, len, escaped, sizeof(escaped), &written);
+        platform_wipe(escaped, sizeof(escaped));
+        if (!valid) {
+            platform_wipe(bytes, len);
+            error_message("Use a raw UTF8 passphrase QR of at most 256 bytes.", IDENTITY);
+            return;
+        }
+        platform_wipe(passphrase, sizeof(passphrase));
+        memcpy(passphrase, bytes, len);
+        passphrase_len = input_len = len;
+        platform_wipe(bytes, len);
+        private_offset = 0;
+        state = PASSPHRASE_REVIEW;
+        show();
+        return;
+    }
+    if (scan_target == SCAN_SHARE_IMPORT || scan_target == SCAN_SHARE_CHECK) {
+        uint32_t received = ns_frames_received(core);
+        int32_t result = scan_target == SCAN_SHARE_IMPORT
+                             ? ns_threshold_import_frame(core, bytes, len, platform_now())
+                             : ns_threshold_check_backup_frame(core, bytes, len, platform_now());
+        platform_wipe(bytes, len);
+        if (result == NS_MORE) {
+            if (ns_frames_received(core) != received)
+                show();
+            return;
+        }
+        stop_scan();
+        if (scan_target == SCAN_SHARE_CHECK) {
+            state = result == NS_OK ? BACKUP_GOOD : BACKUP_BAD;
+            if (result == NS_OK)
+                backup_checked = true;
+            show();
+        } else if (result_ok(result))
+            start_review();
+        return;
+    }
+    if (scan_target == SCAN_THRESHOLD) {
+        uint32_t received = ns_frames_received(core);
+        if (!platform_random32(entropy)) {
+            platform_wipe(bytes, len);
+            error_message("Random source unavailable. Group operation cancelled.", HOME);
+            return;
+        }
+        int32_t result = ns_threshold_receive_frame(core, bytes, len, entropy, platform_now());
+        platform_wipe(bytes, len);
+        if (result == NS_MORE) {
+            if (ns_frames_received(core) != received)
+                show();
+            return;
+        }
+        if (result == NS_OK && ns_threshold_state(core) == NS_THRESHOLD_EXCHANGE &&
+            !ns_threshold_output_count(core)) {
+            show();
+            return;
+        }
+        stop_scan();
+        if (result_ok(result))
+            threshold_next();
+        return;
+    }
+    if (scan_target == SCAN_BACKUP_CHECK) {
         stop_scan();
         bool same = len == backup_expected_len;
         unsigned difference = 0;
@@ -1460,7 +1963,7 @@ void device_scan_bytes(uint8_t *bytes, size_t len) {
         show();
         return;
     }
-    if (scan_target) {
+    if (scan_target == SCAN_KEY) {
         stop_scan();
         if (len > sizeof(source)) {
             platform_wipe(bytes, len);
@@ -1509,7 +2012,8 @@ void device_tick(uint64_t now) {
         show();
         return;
     }
-    if (state == RESPONSE && !response_paused && now - last_frame >= 800) {
+    if ((state == RESPONSE || state == THRESHOLD_QR || state == SHARE_QR || state == GROUP_QR) &&
+        !response_paused && now - last_frame >= 800) {
         response_frame++;
         show();
     }
@@ -1536,4 +2040,5 @@ void device_emergency_clear(void) {
     platform_wipe(secret_page, sizeof(secret_page));
     platform_wipe(entropy, sizeof(entropy));
     platform_wipe(qr_frame, sizeof(qr_frame));
+    platform_wipe(share_backup, sizeof(share_backup));
 }

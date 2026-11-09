@@ -224,7 +224,7 @@ void ui_show(const ui_view *v, ui_action_cb callback, void *context) {
 void ui_set_input_length(size_t length) {
     if (input_count) {
         char s[48];
-        snprintf(s, sizeof(s), "%zu characters entered", length);
+        snprintf(s, sizeof(s), "%zu bytes entered", length);
         lv_label_set_text(input_count, s);
     }
 }

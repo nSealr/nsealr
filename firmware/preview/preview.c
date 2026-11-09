@@ -2,9 +2,13 @@
 #include "secret_qr.h"
 #include "secret_raster.h"
 #include <assert.h>
+#include <errno.h>
+#include <fcntl.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <sys/stat.h>
+#include <unistd.h>
 
 /* A host simulator uses published test entropy. The P4 supplies qualified RNG. */
 static uint64_t clock_ms = 1000;
@@ -22,6 +26,10 @@ static char visible_title[80], visible_caption[100], visible_right[40];
 /* Test inspection is enabled only for the published, deterministic test vectors. */
 static bool testing;
 static char test_lines[8][14];
+static uint8_t test_qr[NS_MAX_FRAME];
+static size_t test_qr_len;
+static bool test_media_available;
+static const char *test_share_path = ".cache/ui-preview/NSEALR.NSR";
 
 static bool dispatching;
 static void dispatch(void);
@@ -53,6 +61,55 @@ bool platform_scan_start(void) {
 bool platform_scan_stop(void) {
     scanning = false;
     return true;
+}
+/* Native file tests exercise the local contract; physical SD uses FatFs. */
+share_file_result platform_share_save(const uint8_t *bytes, size_t length) {
+    if (!test_media_available)
+        return SHARE_FILE_UNAVAILABLE;
+    if (!length || length > NS_THRESHOLD_MAX_BACKUP)
+        return SHARE_FILE_INVALID;
+    int fd = open(test_share_path, O_RDWR | O_CREAT | O_EXCL, 0600);
+    if (fd < 0)
+        return errno == EEXIST ? SHARE_FILE_EXISTS : SHARE_FILE_IO;
+    uint8_t check[NS_THRESHOLD_MAX_BACKUP];
+    bool ok = write(fd, bytes, length) == (ssize_t)length && fsync(fd) == 0 &&
+              lseek(fd, 0, SEEK_SET) == 0 && read(fd, check, length) == (ssize_t)length &&
+              !memcmp(bytes, check, length);
+    if (close(fd))
+        ok = false;
+    platform_wipe(check, sizeof(check));
+    if (!ok)
+        (void)unlink(test_share_path);
+    return ok ? SHARE_FILE_OK : SHARE_FILE_IO;
+}
+share_file_result platform_share_load(uint8_t *bytes, size_t capacity, size_t *written) {
+    *written = 0;
+    platform_wipe(bytes, capacity);
+    if (!test_media_available)
+        return SHARE_FILE_UNAVAILABLE;
+    int fd = open(test_share_path, O_RDONLY | O_NOFOLLOW);
+    if (fd < 0)
+        return errno == ENOENT ? SHARE_FILE_MISSING : SHARE_FILE_IO;
+    struct stat st;
+    share_file_result result = SHARE_FILE_IO;
+    if (fstat(fd, &st) || !S_ISREG(st.st_mode))
+        goto done;
+    if (st.st_size <= 0 || st.st_size > (off_t)capacity || st.st_size > NS_THRESHOLD_MAX_BACKUP) {
+        result = SHARE_FILE_INVALID;
+        goto done;
+    }
+    if (read(fd, bytes, (size_t)st.st_size) == st.st_size) {
+        *written = (size_t)st.st_size;
+        result = SHARE_FILE_OK;
+    }
+done:
+    if (close(fd))
+        result = SHARE_FILE_IO;
+    if (result != SHARE_FILE_OK) {
+        platform_wipe(bytes, capacity);
+        *written = 0;
+    }
+    return result;
 }
 
 static void flush(lv_display_t *display, const lv_area_t *area, uint8_t *data) {
@@ -184,6 +241,11 @@ bool platform_secret_text(const uint8_t *p, size_t n) {
     return true;
 }
 bool platform_secret_qr(const uint8_t *p, size_t n) {
+    if (testing) {
+        assert(n <= sizeof(test_qr));
+        memcpy(test_qr, p, n);
+        test_qr_len = n;
+    }
     if (!p4_secret_qr_encode(&secret_qr, p, n))
         return false;
     for (unsigned row = 0; row < 16; row++) {
@@ -479,7 +541,18 @@ static void flow_test(void) {
     assert(ns_is_loaded(device_core()) && ns_word_count(device_core()) == 24);
     uint8_t plain24[64], with_pass[64];
     assert(ns_public_key(device_core(), 0, plain24, sizeof(plain24), &n) == NS_OK);
+    tap(140, 233);
+    tap(215, 442);
+    tap(60, 442);
+    assert(!strcmp(visible_title, "Public identity"));
+    tap(60, 442);
+    assert(!strcmp(visible_title, "Identity ready"));
+    tap(140, 175);
+    tap(140, 349);
+    assert(!strcmp(visible_title, "Identity ready"));
     tap(140, 291);
+    save_frame("31-passphrase-purpose");
+    tap(140, 175);
     text_key('t');
     text_key('e');
     text_key('s');
@@ -491,7 +564,16 @@ static void flow_test(void) {
     tap(215, 442);
     assert(ns_public_key(device_core(), 0, with_pass, sizeof(with_pass), &n) == NS_OK &&
            memcmp(plain24, with_pass, 64));
+    tap(140, 349);
+    tap(86, 194);
+    tap(215, 442);
+    assert(!strcmp(visible_title, "Passphrase"));
+    tap(60, 442);
+    assert(!strcmp(visible_title, "Identity ready") && strstr(visible_caption, "account 0"));
+    assert(ns_public_key(device_core(), 0, restored, sizeof(restored), &n) == NS_OK &&
+           !memcmp(with_pass, restored, 64));
     tap(140, 291);
+    tap(140, 175);
     for (unsigned i = 0; i < 80; i++)
         tap(195, 147);
     tap(215, 442);
@@ -507,6 +589,75 @@ static void flow_test(void) {
     assert(pages > 1 && !strcmp(visible_right, "Use passphrase"));
     tap(215, 442);
     assert(ns_public_key(device_core(), 0, with_pass, sizeof(with_pass), &n) == NS_OK);
+    tap(140, 291);
+    tap(140, 233);
+    assert(scanning && !strcmp(visible_title, "Scan passphrase"));
+    save_frame("33-passphrase-scan");
+    tap(60, 442);
+    assert(!scanning && !strcmp(visible_title, "Identity ready"));
+    assert(ns_public_key(device_core(), 0, restored, sizeof(restored), &n) == NS_OK &&
+           !memcmp(with_pass, restored, 64));
+    tap(140, 291);
+    tap(140, 233);
+    uint8_t invalid_pass[] = {0xc0, 0x80};
+    device_scan_bytes(invalid_pass, sizeof(invalid_pass));
+    assert(!strcmp(visible_title, "Please check") && ns_is_loaded(device_core()));
+    assert(!invalid_pass[0] && !invalid_pass[1]);
+    tap(215, 442);
+    tap(140, 291);
+    tap(140, 233);
+    uint8_t oversized_pass[257];
+    memset(oversized_pass, 'a', sizeof(oversized_pass));
+    device_scan_bytes(oversized_pass, sizeof(oversized_pass));
+    assert(!strcmp(visible_title, "Please check") && ns_is_loaded(device_core()));
+    for (size_t i = 0; i < sizeof(oversized_pass); i++)
+        assert(!oversized_pass[i]);
+    tap(215, 442);
+    tap(140, 291);
+    tap(140, 233);
+    uint8_t composed_pass[] = {0xc3, 0xa9, 0xe2, 0x82, 0xac};
+    device_scan_bytes(composed_pass, sizeof(composed_pass));
+    assert(!scanning && !strcmp(visible_title, "Check passphrase"));
+    for (size_t i = 0; i < sizeof(composed_pass); i++)
+        assert(!composed_pass[i]);
+    assert(ns_public_key(device_core(), 0, restored, sizeof(restored), &n) == NS_OK &&
+           !memcmp(with_pass, restored, 64));
+    save_frame("34-unicode-passphrase");
+    tap(60, 442);
+    tap(270, 147);
+    tap(215, 442);
+    assert(!strcmp(visible_title, "Check passphrase"));
+    tap(215, 442);
+    assert(ns_public_key(device_core(), 0, with_pass, sizeof(with_pass), &n) == NS_OK);
+    tap(140, 291);
+    tap(140, 233);
+    uint8_t decomposed_pass[] = {'e', 0xcc, 0x81};
+    device_scan_bytes(decomposed_pass, sizeof(decomposed_pass));
+    tap(215, 442);
+    assert(ns_public_key(device_core(), 0, restored, sizeof(restored), &n) == NS_OK &&
+           !memcmp(with_pass, restored, 64));
+    _Alignas(NS_CONTEXT_ALIGN) uint8_t expected_storage[NS_CONTEXT_BYTES];
+    ns_context *expected_identity = (ns_context *)expected_storage;
+    uint8_t public_words[256], public_pass[] = {'e', 0xcc, 0x81}, expected_key[64];
+    size_t words_len;
+    assert(ns_backup(device_core(), 2, public_words, sizeof(public_words), &words_len) == NS_OK);
+    assert(ns_init(expected_storage, sizeof(expected_storage)) == NS_OK);
+    assert(ns_import_mnemonic(expected_identity, public_words, words_len, public_pass,
+                              sizeof(public_pass), 1) == NS_OK);
+    assert(ns_public_key(expected_identity, 0, expected_key, sizeof(expected_key), &n) == NS_OK);
+    ns_deinit(expected_identity);
+    tap(140, 349);
+    tap(86, 194);
+    tap(215, 442);
+    tap(140, 233);
+    uint8_t account_pass[] = {0xc3, 0xa9};
+    device_scan_bytes(account_pass, sizeof(account_pass));
+    assert(ns_public_key(device_core(), 0, restored, sizeof(restored), &n) == NS_OK &&
+           !memcmp(with_pass, restored, 64));
+    tap(215, 442);
+    assert(strstr(visible_caption, "account 1"));
+    assert(ns_public_key(device_core(), 0, with_pass, sizeof(with_pass), &n) == NS_OK &&
+           !memcmp(with_pass, expected_key, 64));
     tap(140, 175);
     tap(140, 291);
     tap(140, 233);
@@ -544,7 +695,298 @@ static void flow_test(void) {
     assert(!ui_escape_text(invalid, sizeof(invalid), escaped, sizeof(escaped), &escaped_len));
     puts("PASS: real-core create/backup/clear/restore; QR frame collection; rendered review; sign, "
          "reject, cancel, response clear and lock");
+    puts("PASS: confirmation return/options, cancelled account preservation, local UTF8 "
+         "passphrase scan/review/edit, invalid/oversize rejection and NFKD-equivalent identity");
 }
+/* The UI is one real participant. Two public-data core peers exercise the
+ * authenticated exchange without inventing device state or approval actions. */
+static _Alignas(NS_CONTEXT_ALIGN) uint8_t peer_storage[2][NS_CONTEXT_BYTES];
+static ns_context *custody[3];
+static char custody_keys[3][65], custody_packets[6][NS_MAX_MESSAGE];
+static uint8_t custody_backups[2][NS_THRESHOLD_MAX_BACKUP];
+static size_t custody_backup_len[2];
+static void public_field(const char *json, const char *name, char out[65]) {
+    char needle[64];
+    snprintf(needle, sizeof(needle), "\"%s\":\"", name);
+    const char *start = strstr(json, needle);
+    assert(start);
+    start += strlen(needle);
+    assert(strlen(start) >= 65 && start[64] == '"');
+    memcpy(out, start, 64);
+    out[64] = 0;
+}
+static int public_key_order(const void *a, const void *b) { return strcmp(a, b); }
+static void peer_approve(unsigned i) {
+    uint64_t generation = ns_review_generation(custody[i]);
+    for (uint32_t k = 0; k < ns_review_count(custody[i]); k++)
+        assert(ns_review_seen(custody[i], generation, k) == NS_OK);
+    uint8_t random[32];
+    assert(platform_random32(random));
+    assert(ns_approve(custody[i], generation, false, random, 32, clock_ms) == NS_OK);
+}
+static void finish_visible_review(void) {
+    while (ui_reader()) {
+        lv_obj_t *reader = ui_reader();
+        while (lv_obj_get_scroll_bottom(reader) > 1)
+            drag(260, 370, 180);
+        tap(215, 442);
+    }
+    assert(!strcmp(visible_title, "Your decision"));
+    tap(140, 175);
+}
+static void custody_feed(unsigned recipient, const uint8_t *message, size_t length) {
+    unsigned count = (unsigned)((length + NS_QR_CHUNK - 1) / NS_QR_CHUNK);
+    for (unsigned i = 0; i < count; i++) {
+        uint8_t frame[NS_MAX_FRAME], random[32];
+        size_t written;
+        assert(ns_encode_frame(message, length, i, frame, sizeof(frame), &written) == NS_OK);
+        if (!recipient) {
+            assert(scanning);
+            device_scan_bytes(frame, written);
+            for (size_t j = 0; j < written; j++)
+                assert(frame[j] == 0);
+        } else {
+            assert(platform_random32(random));
+            assert(ns_threshold_receive_frame(custody[recipient], frame, written, random,
+                                              clock_ms) == (i + 1 == count ? NS_OK : NS_MORE));
+        }
+    }
+}
+static unsigned custody_collect(void) {
+    unsigned written = 0;
+    for (unsigned i = 0; i < 3; i++) {
+        unsigned count = ns_threshold_output_count(custody[i]);
+        for (unsigned k = 0; k < count; k++) {
+            ns_text output;
+            assert(written < 6 && ns_threshold_output(custody[i], k, &output) == NS_OK);
+            assert(output.len < NS_MAX_MESSAGE);
+            memcpy(custody_packets[written], output.data, output.len);
+            custody_packets[written++][output.len] = 0;
+            if (!i) {
+                uint8_t expected[NS_MAX_FRAME];
+                size_t length;
+                assert(ns_encode_frame(output.data, output.len, 0, expected, sizeof(expected),
+                                       &length) == NS_OK);
+                assert(test_qr_len == length && !memcmp(test_qr, expected, length));
+                tap(60, 442);
+            }
+        }
+        if (i)
+            ns_finish_response(custody[i]);
+    }
+    return written;
+}
+static void custody_route(unsigned count) {
+    for (unsigned i = 0; i < count; i++) {
+        char recipient[65];
+        public_field(custody_packets[i], "recipient", recipient);
+        unsigned device = 0;
+        while (device < 3 && strcmp(recipient, custody_keys[device]))
+            device++;
+        assert(device < 3);
+        custody_feed(device, (uint8_t *)custody_packets[i], strlen(custody_packets[i]));
+    }
+}
+static void threshold_flow_test(void) {
+    testing = true;
+    custody[0] = device_core();
+    assert(!ns_is_loaded(custody[0]));
+    tap(140, 175);
+    tap(140, 349);
+    assert(!strcmp(visible_title, "2-of-3 group"));
+    save_frame("20-group-intro");
+    tap(215, 442);
+    assert(ns_threshold_state(custody[0]) == NS_THRESHOLD_JOIN);
+    save_frame("21-group-join");
+    for (unsigned i = 0; i < 3; i++) {
+        if (i) {
+            custody[i] = (ns_context *)peer_storage[i - 1];
+            assert(ns_init(peer_storage[i - 1], NS_CONTEXT_BYTES) == NS_OK);
+            uint8_t random[32];
+            assert(platform_random32(random));
+            assert(ns_threshold_start(custody[i], random, clock_ms) == NS_OK);
+        }
+        ns_text output;
+        assert(ns_threshold_output(custody[i], 0, &output) == NS_OK);
+        char join[256];
+        assert(output.len < sizeof(join));
+        memcpy(join, output.data, output.len);
+        join[output.len] = 0;
+        public_field(join, "key", custody_keys[i]);
+    }
+    assert(custody_collect() == 3 && scanning);
+    char sorted[3][65];
+    memcpy(sorted, custody_keys, sizeof(sorted));
+    qsort(sorted, 3, sizeof(sorted[0]), public_key_order);
+    char setup[512];
+    int n = snprintf(
+        setup, sizeof(setup),
+        "{\"type\":\"nsealr_setup\",\"session\":\"%064u\",\"members\":[\"%s\",\"%s\",\"%s\"]}", 1u,
+        sorted[0], sorted[1], sorted[2]);
+    assert(n > 0 && (size_t)n < sizeof(setup));
+    for (unsigned i = 0; i < 3; i++) {
+        custody_feed(i, (uint8_t *)setup, (size_t)n);
+        if (i)
+            peer_approve(i);
+    }
+    save_frame("22-group-review");
+    finish_visible_review();
+    save_frame("23-group-exchange");
+    assert(custody_collect() == 6 && scanning);
+    custody_route(6);
+    assert(custody_collect() == 6 && scanning);
+    custody_route(6);
+    assert(ns_is_loaded(custody[0]) && ns_threshold_state(custody[0]) == NS_THRESHOLD_READY);
+    assert(custody_collect() == 3);
+    assert(!strcmp(visible_title, "Group ready"));
+    save_frame("24-group-ready");
+    uint8_t group_key[64];
+    size_t written;
+    assert(ns_public_key(custody[0], 0, group_key, sizeof(group_key), &written) == NS_OK);
+    for (unsigned i = 0; i < 2; i++)
+        assert(ns_threshold_backup(custody[i], custody_backups[i], sizeof(custody_backups[i]),
+                                   &custody_backup_len[i]) == NS_OK);
+    tap(140, 175);
+    assert(!strcmp(visible_title, "Back up share"));
+    tap(140, 233);
+    tap(215, 442);
+    save_frame("25-share-backup");
+    tap(215, 442);
+    char paused[100];
+    snprintf(paused, sizeof(paused), "%s", visible_caption);
+    clock_ms += 1000;
+    device_tick(clock_ms);
+    assert(!strcmp(paused, visible_caption));
+    tap(258, 122);
+    assert(strcmp(paused, visible_caption));
+    tap(60, 442);
+    tap(140, 175);
+    custody_feed(0, custody_backups[1], custody_backup_len[1]);
+    assert(!strcmp(visible_title, "Different backup") && ns_is_loaded(custody[0]));
+    tap(215, 442);
+    custody_feed(0, custody_backups[0], custody_backup_len[0]);
+    assert(!strcmp(visible_title, "Backup checked"));
+    tap(215, 442);
+    tap(140, 233);
+    tap(258, 122);
+    assert(!strcmp(visible_title, "Group record"));
+    save_frame("26-group-record");
+    assert(!ns_threshold_output_count(custody[0]));
+    uint8_t record[1024], encoded[NS_MAX_FRAME];
+    size_t record_len, encoded_len;
+    assert(ns_threshold_record(custody[0], record, sizeof(record), &record_len) == NS_OK);
+    tap(215, 442);
+    assert(ns_encode_frame(record, record_len, 0, encoded, sizeof(encoded), &encoded_len) == NS_OK);
+    assert(test_qr_len == encoded_len && !memcmp(test_qr, encoded, encoded_len));
+    assert(!ns_threshold_output_count(custody[0]));
+    save_frame("32-group-record-qr");
+    tap(258, 122);
+    assert(ns_encode_frame(record, record_len, 1, encoded, sizeof(encoded), &encoded_len) == NS_OK);
+    assert(test_qr_len == encoded_len && !memcmp(test_qr, encoded, encoded_len));
+    tap(60, 442);
+    assert(!strcmp(visible_title, "Group record"));
+    tap(60, 442);
+    assert(!strcmp(visible_title, "Public identity"));
+    tap(270, 26);
+    tap(140, 233);
+    tap(140, 349);
+    tap(140, 175);
+    custody_feed(0, custody_backups[0], custody_backup_len[0]);
+    assert(!ns_is_loaded(custody[0]));
+    save_frame("27-share-recovery");
+    finish_visible_review();
+    tap(60, 442);
+    assert(!strcmp(visible_title, "Share restored") && ns_is_loaded(custody[0]));
+    tap(140, 291);
+    char members[2][65];
+    memcpy(members[0], custody_keys[0], 65);
+    memcpy(members[1], custody_keys[1], 65);
+    qsort(members, 2, sizeof(members[0]), public_key_order);
+    char request[1024];
+    n = snprintf(request, sizeof(request),
+                 "{\"type\":\"nsealr_sign\",\"id\":\"native-group\",\"session\":\"%064u\","
+                 "\"members\":[\"%s\",\"%s\"],\"event\":\"{\\\"pubkey\\\":\\\"%.*s\\\","
+                 "\\\"created_at\\\":1794211200,\\\"kind\\\":1,\\\"tags\\\":[],"
+                 "\\\"content\\\":\\\"Two shares, one Nostr identity.\\\"}\"}",
+                 2u, members[0], members[1], 64, group_key);
+    assert(n > 0 && (size_t)n < sizeof(request));
+    tap(140, 175);
+    custody_feed(0, (uint8_t *)request, (size_t)n);
+    tap(60, 442);
+    assert(ns_is_loaded(custody[0]) && ns_threshold_state(custody[0]) == NS_THRESHOLD_READY &&
+           !ns_threshold_output_count(custody[0]));
+    tap(140, 175);
+    custody_feed(0, (uint8_t *)request, (size_t)n);
+    custody_feed(1, (uint8_t *)request, (size_t)n);
+    peer_approve(1);
+    finish_visible_review();
+    assert(custody_collect() == 2);
+    custody_route(2);
+    assert(custody_collect() == 2);
+    custody_route(2);
+    assert(ns_threshold_state(custody[0]) == NS_THRESHOLD_RESULT);
+    save_frame("28-group-signed");
+    assert(custody_collect() == 2);
+    assert(!strcmp(custody_packets[0], custody_packets[1]));
+    assert(strstr(custody_packets[0], "Two shares, one Nostr identity."));
+    assert(ns_is_loaded(custody[0]));
+    /* Local media remains an explicit action; missing card and existing file
+     * preserve the current share, and restore still needs group consent. */
+    (void)unlink(test_share_path);
+    test_media_available = false;
+    tap(140, 291);
+    tap(140, 175);
+    save_frame("29-share-file-consent");
+    tap(215, 442);
+    assert(!strcmp(visible_title, "Please check") && ns_is_loaded(custody[0]));
+    tap(215, 442);
+    test_media_available = true;
+    tap(140, 175);
+    tap(215, 442);
+    assert(!strcmp(visible_title, "Share saved"));
+    save_frame("30-share-file-saved");
+    tap(215, 442);
+    tap(140, 291);
+    tap(140, 175);
+    tap(215, 442);
+    assert(!strcmp(visible_title, "Please check") && ns_is_loaded(custody[0]));
+    uint8_t saved[NS_THRESHOLD_MAX_BACKUP];
+    size_t saved_len;
+    assert(platform_share_load(saved, sizeof(saved), &saved_len) == SHARE_FILE_OK);
+    assert(saved_len == custody_backup_len[0] && !memcmp(saved, custody_backups[0], saved_len));
+    platform_wipe(saved, sizeof(saved));
+    tap(270, 26);
+    tap(140, 233);
+    tap(140, 349);
+    tap(140, 233);
+    assert(!ns_is_loaded(custody[0]) && ui_reader());
+    finish_visible_review();
+    tap(60, 442);
+    assert(ns_is_loaded(custody[0]));
+    uint8_t restored[64];
+    assert(ns_public_key(custody[0], 0, restored, sizeof(restored), &written) == NS_OK &&
+           !memcmp(group_key, restored, 64));
+    tap(270, 26);
+    assert(unlink(test_share_path) == 0);
+    assert(platform_share_load(saved, sizeof(saved), &saved_len) == SHARE_FILE_MISSING);
+    int fd = open(test_share_path, O_WRONLY | O_CREAT | O_EXCL, 0600);
+    assert(fd >= 0 && ftruncate(fd, NS_THRESHOLD_MAX_BACKUP + 1) == 0 && close(fd) == 0);
+    assert(platform_share_load(saved, sizeof(saved), &saved_len) == SHARE_FILE_INVALID);
+    assert(saved_len == 0);
+    for (size_t i = 0; i < sizeof(saved); i++)
+        assert(saved[i] == 0);
+    assert(unlink(test_share_path) == 0);
+    test_media_available = false;
+    for (unsigned i = 1; i < 3; i++)
+        ns_deinit(custody[i]);
+    platform_wipe(custody_backups, sizeof(custody_backups));
+    testing = false;
+    puts("PASS: real 3-device setup, all packets, animated share backup/check/recovery, "
+         "rendered group consent and 2-device signing through actual UI input");
+    puts("PASS: deliberate share-file save/read-back/restore, absent media, no overwrite, "
+         "missing/oversize rejection and cleared error buffers (native filesystem)");
+}
+
 int main(int argc, char **argv) {
     lv_init();
     lv_display_t *display = lv_display_create(320, 480);
@@ -556,11 +998,13 @@ int main(int argc, char **argv) {
     lv_indev_set_type(pointer, LV_INDEV_TYPE_POINTER);
     lv_indev_set_read_cb(pointer, read_pointer);
     assert(device_init());
-    if (argc == 2 && !strcmp(argv[1], "--test"))
+    if (argc == 2 && !strcmp(argv[1], "--test")) {
         flow_test();
-    else if (argc == 3 && !strcmp(argv[1], "--render")) {
+        threshold_flow_test();
+    } else if (argc == 3 && !strcmp(argv[1], "--render")) {
         render_dir = argv[2];
         flow_test();
+        threshold_flow_test();
         printf("Rendered %u actual-owner screens with published test entropy\n", frames);
     } else if (argc == 3 && !strcmp(argv[1], "--interactive")) {
         char command[128];

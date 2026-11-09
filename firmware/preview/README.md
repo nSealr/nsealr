@@ -33,3 +33,22 @@ The ordinary entry paths use 60 taps for 12 words and 119 for the published
 passphrase spaces and multi-page passphrase confirmation, mismatch/retry during
 QR backup comparison, and pause/manual frame controls. These are measured tap
 counts in the host replay, not claims about human or physical-device speed.
+
+The threshold replay uses the real UI as one participant and two independent
+core contexts as its peers. It completes three-device group creation, captures
+every outgoing packet, renders group consent, checks a wrong and correct animated
+share backup without replacing the identity, restores the share, and completes
+two-device signing. The displayed QR bytes are compared with the actual queued
+protocol message. Native rendering does not establish optical capture quality.
+The native file adapter exercises explicit share save/read-back/restore, missing
+media, overwrite refusal, missing and oversized files, and clearing failed input.
+These tests use only public test material in `.cache/ui-preview/NSEALR.NSR`, which
+is removed afterward. The P4 uses its real FatFs/SD driver and needs separate
+absent-card, read/write and removal/error measurements.
+
+The recovery replay also covers public-key confirmation return paths, reopening
+identity options, cancelled and completed account changes, deliberate UTF8
+passphrase scanning, complete-codepoint editing, invalid/oversized input cleanup,
+and equivalent composed/decomposed passphrases. Threshold checks redisplay the
+loaded public record after its original output has been dismissed and compare
+both displayed frames with the actual descriptor bytes.
