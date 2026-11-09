@@ -3,6 +3,8 @@ import { spawn } from 'node:child_process';
 import { mkdir, mkdtemp } from 'node:fs/promises';
 import { resolve } from 'node:path';
 import { chromium } from 'playwright';
+import jsQR from 'jsqr';
+import { PNG } from 'pngjs';
 import { fixtureCamera, requestFromPixels, scanResponse } from './optical.mjs';
 import { finalizeEvent, getPublicKey } from 'nostr-tools/pure';
 
@@ -33,6 +35,19 @@ try {
   const note = 'Actual QR pixels, exact note. '.repeat(24);
   await page.locator('#note').fill(note);
   await page.getByRole('button', { name: 'Review on device', exact: true }).click();
+  await page.getByRole('button', { name: 'Pause', exact: true }).click();
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.waitForFunction(() => {
+    const canvas = document.querySelector('#request-qr'), box = canvas.getBoundingClientRect();
+    return canvas.width === 303 && box.width === canvas.width && box.height === canvas.height;
+  });
+  const box = await page.locator('#request-qr').boundingBox(); assert.ok(box);
+  const screen = PNG.sync.read(await page.screenshot({ clip: box }));
+  const decodedScreen = jsQR(new Uint8ClampedArray(screen.data), screen.width, screen.height);
+  assert.ok(decodedScreen?.data.startsWith('ns:'), 'Decode the rendered mobile screen pixels, not only the intrinsic canvas.');
+  await page.setViewportSize({ width: 1100, height: 900 });
+  await page.waitForFunction(() => document.querySelector('#request-qr').width === 505);
+  await page.getByRole('button', { name: 'Play', exact: true }).click();
   request = await requestFromPixels(page); assert.equal(request.method, 'sign_event');
   const unsigned = JSON.parse(request.params[0]); assert.equal(unsigned.pubkey, key); assert.equal(unsigned.content, note);
   const signed = finalizeEvent(unsigned, secret); await scanResponse(page, request, signed);
