@@ -50,8 +50,8 @@ typedef struct {
     const ui_choice *choices;
     size_t choice_count;
     const char *left_label, *right_label;
-    const char *aux_label;
-    unsigned aux_action;
+    const char *aux_label, *header_label;
+    unsigned aux_action, header_action;
     unsigned left_action, right_action;
     bool loaded, right_enabled, keyboard_upper, quiz;
     unsigned keyboard_page, word_choices;

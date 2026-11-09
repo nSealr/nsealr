@@ -150,6 +150,36 @@ impl Group {
     pub fn descriptor(&self) -> &[u8] {
         &self.descriptor
     }
+    fn from_descriptor(descriptor: &[u8]) -> Result<Self, Error> {
+        if descriptor.len() < 35 {
+            return Err(Error::Encoding);
+        }
+        let threshold = descriptor[0] as u16;
+        let count = descriptor[1] as usize;
+        dimensions(threshold, count)?;
+        if descriptor.len() != 35 + count * 65 {
+            return Err(Error::Encoding);
+        }
+        let verifying_key =
+            frost::VerifyingKey::deserialize(&descriptor[2..35]).map_err(|_| Error::Encoding)?;
+        let mut shares = BTreeMap::new();
+        let mut last = None;
+        for entry in descriptor[35..].chunks_exact(65) {
+            let member = id(&fixed(&entry[..32])?)?;
+            if last.is_some_and(|previous| previous >= member) {
+                return Err(Error::Participant);
+            }
+            last = Some(member);
+            let share = frost::keys::VerifyingShare::deserialize(&entry[32..])
+                .map_err(|_| Error::Encoding)?;
+            shares.insert(member, share);
+        }
+        Self::new(frost::keys::PublicKeyPackage::new(
+            shares,
+            verifying_key,
+            Some(threshold),
+        ))
+    }
 }
 
 /// Long-term secret owner. It is deliberately neither Clone nor Debug.
@@ -218,32 +248,7 @@ impl Participant {
         if &participant != expected_participant {
             return Err(Error::Participant);
         }
-        let descriptor = &bytes[68..end];
-        let threshold = descriptor[0] as u16;
-        let count = descriptor[1] as usize;
-        dimensions(threshold, count)?;
-        if descriptor.len() != 35 + count * 65 {
-            return Err(Error::Encoding);
-        }
-        let verifying_key =
-            frost::VerifyingKey::deserialize(&descriptor[2..35]).map_err(|_| Error::Encoding)?;
-        let mut shares = BTreeMap::new();
-        let mut last = None;
-        for entry in descriptor[35..].chunks_exact(65) {
-            let member = id(&fixed(&entry[..32])?)?;
-            if last.is_some_and(|previous| previous >= member) {
-                return Err(Error::Participant);
-            }
-            last = Some(member);
-            let share = frost::keys::VerifyingShare::deserialize(&entry[32..])
-                .map_err(|_| Error::Encoding)?;
-            shares.insert(member, share);
-        }
-        let group = Group::new(frost::keys::PublicKeyPackage::new(
-            shares,
-            verifying_key,
-            Some(threshold),
-        ))?;
+        let group = Group::from_descriptor(&bytes[68..end])?;
         if group.identity() != expected_group {
             return Err(Error::Group);
         }
@@ -259,8 +264,8 @@ impl Participant {
             identifier,
             signing_share,
             verifying_share,
-            verifying_key,
-            threshold,
+            *group.public.verifying_key(),
+            group.threshold,
         );
         Self::new(key, group)
     }

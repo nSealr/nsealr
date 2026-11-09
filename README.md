@@ -9,7 +9,9 @@ by QR. The companion connects your device to Nostr clients.
 - Recover an identity from an nsec or BIP39 words, with an optional passphrase.
 - Read the action and content before you sign. Open exact details when needed.
 - Keep the identity key on the device during normal use.
-- Use standard Nostr events and client APIs.
+- Connect browser and remote clients through NIP-07 and NIP-46.
+- Review private text messages before encryption or release.
+- Share custody across three devices, sign with two, and recover a lost share.
 
 ## Use
 

@@ -235,3 +235,112 @@
  
      /// A unique byte array buf of fixed length N.
      type Serialization: Clone + AsRef<[u8]> + AsMut<[u8]> + for<'a> TryFrom<&'a [u8]> + Debug;
+--- a/src/keys/repairable.rs
++++ b/src/keys/repairable.rs
+@@ -22,6 +22,7 @@
+ use alloc::collections::{BTreeMap, BTreeSet};
+ 
+ use alloc::vec::Vec;
++use zeroize::{Zeroize, Zeroizing};
+ 
+ use crate::keys::{KeyPackage, PublicKeyPackage};
+ use crate::serialization::SerializableScalar;
+@@ -38,6 +39,12 @@
+ #[cfg_attr(feature = "serde", serde(transparent))]
+ pub struct Delta<C: Ciphersuite>(pub(crate) SerializableScalar<C>);
+ 
++impl<C: Ciphersuite> Zeroize for Delta<C> {
++    fn zeroize(&mut self) {
++        self.0.zeroize();
++    }
++}
++
+ impl<C> Delta<C>
+ where
+     C: Ciphersuite,
+@@ -73,6 +80,12 @@
+ #[cfg_attr(feature = "serde", serde(bound = "C: Ciphersuite"))]
+ #[cfg_attr(feature = "serde", serde(transparent))]
+ pub struct Sigma<C: Ciphersuite>(pub(crate) SerializableScalar<C>);
++
++impl<C: Ciphersuite> Zeroize for Sigma<C> {
++    fn zeroize(&mut self) {
++        self.0.zeroize();
++    }
++}
+ 
+ impl<C> Sigma<C>
+ where
+@@ -127,7 +140,7 @@
+         return Err(Error::DuplicatedIdentifier);
+     }
+ 
+-    let rand_val: Vec<Scalar<C>> = generate_coefficients::<C, R>(helpers.len() - 1, rng);
++    let rand_val = Zeroizing::new(generate_coefficients::<C, R>(helpers.len() - 1, rng));
+ 
+     compute_last_random_value(&xset, key_package_i, &rand_val, participant)
+ }
+@@ -146,7 +159,7 @@
+     let zeta_i =
+         compute_lagrange_coefficient(helpers, Some(participant), key_package_i.identifier)?;
+ 
+-    let lhs = zeta_i * key_package_i.signing_share.to_scalar();
++    let lhs = Zeroizing::new(zeta_i * key_package_i.signing_share.to_scalar());
+ 
+     let mut out: BTreeMap<Identifier<C>, Delta<C>> = helpers
+         .iter()
+@@ -154,15 +167,15 @@
+         .zip(random_values.iter().map(|v| Delta::new(*v)))
+         .collect();
+ 
+-    let mut sum_i_deltas = <<C::Group as Group>::Field>::zero();
++    let mut sum_i_deltas = Zeroizing::new(<<C::Group as Group>::Field>::zero());
+ 
+     for v in random_values {
+-        sum_i_deltas = sum_i_deltas + *v;
++        *sum_i_deltas = *sum_i_deltas + *v;
+     }
+ 
+     out.insert(
+         *helpers.last().ok_or(Error::IncorrectNumberOfIdentifiers)?,
+-        Delta::new(lhs - sum_i_deltas),
++        Delta::new(*lhs - *sum_i_deltas),
+     );
+ 
+     Ok(out)
+@@ -173,13 +186,13 @@
+ /// Generates the "sigma" value from all `deltas` received from all helpers.
+ /// The "sigma" value must be sent to the participant repairing their share.
+ pub fn repair_share_part2<C: Ciphersuite>(deltas: &[Delta<C>]) -> Sigma<C> {
+-    let mut sigma_j = <<C::Group as Group>::Field>::zero();
++    let mut sigma_j = Zeroizing::new(<<C::Group as Group>::Field>::zero());
+ 
+     for d in deltas {
+-        sigma_j = sigma_j + d.to_scalar();
+-    }
+-
+-    Sigma::new(sigma_j)
++        *sigma_j = *sigma_j + d.to_scalar();
++    }
++
++    Sigma::new(*sigma_j)
+ }
+ 
+ /// Part 3 of RTS.
+@@ -196,12 +209,12 @@
+     identifier: Identifier<C>,
+     public_key_package: &PublicKeyPackage<C>,
+ ) -> Result<KeyPackage<C>, Error<C>> {
+-    let mut share = <<C::Group as Group>::Field>::zero();
++    let mut share = Zeroizing::new(<<C::Group as Group>::Field>::zero());
+ 
+     for s in sigmas {
+-        share = share + s.to_scalar();
+-    }
+-    let signing_share = SigningShare::new(share);
++        *share = *share + s.to_scalar();
++    }
++    let signing_share = SigningShare::new(*share);
+     let verifying_share = signing_share.into();
+ 
+     Ok(KeyPackage {

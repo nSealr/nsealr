@@ -151,6 +151,271 @@ impl GroupTest {
             self.devices[index].cancel();
         }
     }
+    fn repair_request(&mut self, lost: usize) -> String {
+        let old: Value = serde_json::from_str(&self.devices[lost].record().unwrap()).unwrap();
+        self.repair_from_record(lost, old)
+    }
+    fn repair_from_record(&mut self, lost: usize, old: Value) -> String {
+        self.devices[lost].lock();
+        // Exercise a replacement whose lexical position differs from its ID.
+        loop {
+            let mut entropy = self.next();
+            self.devices[lost].start(&mut entropy, self.now).unwrap();
+            let join: Value = serde_json::from_str(&self.devices[lost].outputs()[0]).unwrap();
+            let key = j::hex(j::string(&join["key"]).unwrap()).unwrap();
+            let mut roster = wire::read_roster(&old["members"]).unwrap();
+            roster[old["participant"].as_u64().unwrap() as usize - 1] = key;
+            if roster.windows(2).any(|w| w[0] >= w[1]) {
+                self.keys[lost] = key;
+                break;
+            }
+        }
+        self.take_outputs();
+        json!({"type":"nsealr_repair","session":"66".repeat(32),"group":old["group"],
+            "descriptor":old["descriptor"],"members":old["members"],"participant":old["participant"],
+            "replacement":j::hex_string(&self.keys[lost])}).to_string()
+    }
+    fn start_repair(&mut self, lost: usize) {
+        let request = self.repair_request(lost);
+        let mut fingerprint = None;
+        for i in 0..3 {
+            self.receive(i, &request).unwrap();
+            let field = self.devices[i]
+                .fields()
+                .iter()
+                .find(|f| f.label == "Match on all three devices")
+                .unwrap();
+            if let Some(expected) = &fingerprint {
+                assert_eq!(&field.value, expected);
+            } else {
+                fingerprint = Some(field.value.clone());
+            }
+            self.approve(i);
+        }
+    }
+}
+
+#[test]
+fn lost_share_repair_preserves_ids_npub_and_all_signing_pairs() {
+    for lost in 0..3 {
+        let mut group = GroupTest::new();
+        group.setup();
+        let public = *group.devices[0].public_key().unwrap();
+        let before = *group.devices[0].group().unwrap();
+        let ids: Vec<_> = group.devices.iter().map(|d| d.member().unwrap()).collect();
+        group.start_repair(lost);
+        for phase in ["repair_delta", "repair_sigma"] {
+            let packets = group.take_outputs();
+            assert_eq!(packets.len(), 2);
+            for message in &packets {
+                let value: Value = serde_json::from_str(message).unwrap();
+                assert_eq!(value["phase"], phase);
+            }
+            group.route(&packets);
+        }
+        let outputs = group.take_outputs();
+        assert_eq!(outputs.len(), 3);
+        group.route(&outputs[..2]);
+        let mut records = vec![outputs[2].clone()];
+        records.extend(group.take_outputs());
+        assert_eq!(records.len(), 3);
+        let after = *group.devices[0].group().unwrap();
+        assert_ne!(before, after);
+        for (i, device) in group.devices.iter().enumerate() {
+            assert_eq!(device.member().unwrap(), ids[i]);
+            assert_eq!(device.public_key().unwrap(), &public);
+            assert_eq!(device.group().unwrap(), &after);
+            assert!(device.record().unwrap().len() < 1024);
+        }
+        for i in 0..3 {
+            let mut backup = group.devices[i].backup().unwrap().as_bytes().to_vec();
+            group.devices[i].lock();
+            group.now += 1;
+            group.devices[i].import(&mut backup, group.now).unwrap();
+            assert!(backup.iter().all(|b| *b == 0));
+            group.approve(i);
+        }
+        group.take_outputs();
+        for (pair, session) in [([0, 1], 21), ([0, 2], 22), ([1, 2], 23)] {
+            group.begin_sign(pair, session);
+            let generation = group.devices[pair[0]].generation();
+            let pending = group.devices[pair[0]].outputs().to_vec();
+            group.devices[pair[0]].record().unwrap();
+            assert_eq!(group.devices[pair[0]].generation(), generation);
+            assert_eq!(group.devices[pair[0]].outputs(), pending);
+            group.finish_sign(pair);
+        }
+    }
+}
+
+#[test]
+fn repair_requires_matching_roster_fresh_permission_and_live_round() {
+    let mut group = GroupTest::new();
+    group.setup();
+    let original = group.devices[1].record().unwrap();
+    let request = group.repair_request(0);
+    for field in ["group", "descriptor"] {
+        let mut changed: Value = serde_json::from_str(&request).unwrap();
+        let mut text = changed[field].as_str().unwrap().as_bytes().to_vec();
+        text[0] = if text[0] == b'0' { b'1' } else { b'0' };
+        changed[field] = String::from_utf8(text).unwrap().into();
+        assert!(group.receive(1, &changed.to_string()).is_err());
+        assert_eq!(group.devices[1].record().unwrap(), original);
+    }
+    group.receive(1, &request).unwrap();
+    let generation = group.devices[1].generation();
+    let mut entropy = group.next();
+    assert_eq!(
+        group.devices[1].approve(generation, true, &mut entropy, group.now),
+        Err(Error::Review)
+    );
+    assert_eq!(entropy, [0; 32]);
+    assert_eq!(group.devices[1].record().unwrap(), original);
+    for i in 0..3 {
+        group.receive(i, &request).unwrap();
+        group.approve(i);
+    }
+    let packets = group.take_outputs();
+    let mut mixed: Value = serde_json::from_str(&packets[0]).unwrap();
+    let recipient = j::hex::<32>(mixed["recipient"].as_str().unwrap()).unwrap();
+    let index = group.keys.iter().position(|k| k == &recipient).unwrap();
+    mixed["session"] = "77".repeat(32).into();
+    assert!(group.receive(index, &mixed.to_string()).is_err());
+    assert!(group.devices[index].loaded());
+    assert!(group.receive(index, &packets[0]).is_err());
+    group.now += SETUP_MS;
+    assert!(group.devices[0].tick(group.now).unwrap());
+    assert!(!group.devices[0].loaded());
+    assert!(group.devices[0].identity.is_none());
+    for device in &mut group.devices[1..] {
+        device.cancel();
+        assert!(device.loaded());
+        assert!(device.repair.is_none());
+    }
+}
+
+#[test]
+fn authenticated_bad_repair_contribution_cannot_install_a_share() {
+    let mut group = GroupTest::new();
+    group.setup();
+    group.start_repair(0);
+    let deltas = group.take_outputs();
+    group.route(&deltas);
+    let mut sigmas = group.take_outputs();
+    let packet: Value = serde_json::from_str(&sigmas[0]).unwrap();
+    let sender = j::hex::<32>(packet["sender"].as_str().unwrap()).unwrap();
+    let helper = group.keys.iter().position(|k| k == &sender).unwrap();
+    sigmas[0] = wire::seal(
+        group.devices[helper].identity.as_ref().unwrap(),
+        &group.keys[0],
+        "repair_sigma",
+        &j::hex(packet["group"].as_str().unwrap()).unwrap(),
+        &j::hex(packet["session"].as_str().unwrap()).unwrap(),
+        &json!({"sigma":"00".repeat(32)}),
+        &mut wire::Random::new([80; 32], 1),
+    )
+    .unwrap();
+    group.receive(0, &sigmas[0]).unwrap();
+    assert_eq!(group.receive(0, &sigmas[1]), Err(Error::Crypto));
+    assert!(!group.devices[0].loaded());
+    assert!(group.devices[0].outputs().is_empty());
+    assert!(group.devices[0].repair.is_none());
+    assert!(group.devices[0].identity.is_none());
+    assert!(group.devices[1].loaded() && group.devices[2].loaded());
+}
+
+#[test]
+fn interrupted_repair_converges_from_old_backups_or_a_matching_live_quorum() {
+    for restore_backups in [false, true] {
+        for delivered in 0..=2 {
+            let mut group = GroupTest::new();
+            group.setup();
+            let public = *group.devices[0].public_key().unwrap();
+            let original: Value =
+                serde_json::from_str(&group.devices[0].record().unwrap()).unwrap();
+            let backups: Vec<_> = group.devices.iter().map(|d| d.backup().unwrap()).collect();
+            group.start_repair(0);
+            for _ in 0..2 {
+                let packets = group.take_outputs();
+                group.route(&packets);
+            }
+            let ready = group.take_outputs();
+            group.route(&ready[..delivered]);
+            // Losing the companion transcript means no pending packets survive.
+            for device in &mut group.devices {
+                device.cancel();
+            }
+            let (target, record) = if restore_backups {
+                for (i, backup) in backups.iter().enumerate().skip(1) {
+                    let mut bytes = backup.as_bytes().to_vec();
+                    group.now += 1;
+                    group.devices[i].import(&mut bytes, group.now).unwrap();
+                    assert!(bytes.iter().all(|b| *b == 0));
+                    group.approve(i);
+                }
+                (0, original)
+            } else {
+                let pair = [(0, 1), (0, 2), (1, 2)]
+                    .into_iter()
+                    .find(|(a, b)| {
+                        group.devices[*a].group().unwrap() == group.devices[*b].group().unwrap()
+                    })
+                    .unwrap();
+                let target = (0..3).find(|i| *i != pair.0 && *i != pair.1).unwrap();
+                let mut record: Value =
+                    serde_json::from_str(&group.devices[pair.0].record().unwrap()).unwrap();
+                record["participant"] = group.devices[target].member().unwrap().into();
+                (target, record)
+            };
+            let request = group.repair_from_record(target, record);
+            for i in 0..3 {
+                group.receive(i, &request).unwrap();
+                group.approve(i);
+            }
+            for _ in 0..2 {
+                let packets = group.take_outputs();
+                group.route(&packets);
+            }
+            let ready = group.take_outputs();
+            group.route(&ready[..2]);
+            group.take_outputs();
+            let fingerprint = *group.devices[0].group().unwrap();
+            for device in &group.devices {
+                assert_eq!(device.public_key().unwrap(), &public);
+                assert_eq!(device.group().unwrap(), &fingerprint);
+            }
+            group.begin_sign([0, 1], 90);
+            group.finish_sign([0, 1]);
+        }
+    }
+}
+
+#[test]
+fn repair_cleanup_keeps_the_pinned_upstream_answer() {
+    use frost::keys::repairable::{repair_share_part2, Delta, Sigma};
+    let vector: Value = serde_json::from_str(include_str!(
+        "../../../../vendor/frost-secp256k1-tr/tests/helpers/repair-share.json"
+    ))
+    .unwrap();
+    let values = &vector["scalar_generation"];
+    let mut deltas = Zeroizing::new(Vec::new());
+    for key in ["random_scalar_1", "random_scalar_2", "random_scalar_3"] {
+        deltas.push(
+            Delta::deserialize(&j::hex::<32>(values[key].as_str().unwrap()).unwrap()).unwrap(),
+        );
+    }
+    let mut sigma = Zeroizing::new(repair_share_part2(&deltas));
+    assert_eq!(
+        sigma.serialize(),
+        j::hex::<32>(values["random_scalar_sum"].as_str().unwrap()).unwrap()
+    );
+    deltas[0].zeroize();
+    assert_eq!(deltas[0].serialize(), [0; 32]);
+    sigma.zeroize();
+    assert_eq!(
+        sigma.serialize(),
+        Sigma::deserialize(&[0; 32]).unwrap().serialize()
+    );
 }
 
 #[test]
@@ -400,4 +665,29 @@ fn secret_backup_frames_are_bounded_wiped_and_check_never_replaces_the_share() {
     assert!(group.devices[0].tick(group.now).unwrap());
     assert_eq!(group.devices[0].collector.received(), 0);
     assert!(group.devices[0].loaded());
+}
+
+#[test]
+fn setup_replacement_cancels_pending_recipient_repair() {
+    let mut group = GroupTest::new();
+    group.setup();
+    group.start_repair(0);
+    let deltas = group.take_outputs();
+    assert_eq!(deltas.len(), 2);
+    let mut members = group.keys.clone();
+    members.sort();
+    let setup =
+        json!({"type":"nsealr_setup","session":"99".repeat(32),"members":wire::list(&members)})
+            .to_string();
+    assert_eq!(group.receive(0, &setup), Err(Error::Stale));
+    assert!(group.devices[0].repair.is_none());
+    assert!(group.devices[0].setup.is_none());
+    assert!(group.devices[0].review.is_none());
+    group.route(&deltas);
+    let sigmas = group.take_outputs();
+    assert_eq!(sigmas.len(), 2);
+    for sigma in sigmas {
+        assert!(group.receive(0, &sigma).is_err());
+    }
+    assert!(!group.devices[0].loaded());
 }

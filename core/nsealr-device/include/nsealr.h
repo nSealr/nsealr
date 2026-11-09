@@ -131,6 +131,13 @@ int32_t ns_threshold_info(const ns_context *ctx, uint8_t group_hex[64], uint32_t
 /* Same public nsealr_group JSON as setup completion;1024 bytes suffice.
  * Does not change pending state. Output is cleared on failure; no NUL added. */
 int32_t ns_threshold_record(const ns_context *ctx, uint8_t *out, size_t capacity, size_t *written);
+/* Lost-share repair uses start/join on the replacement and normal receive/review
+ * on the two loaded helpers. nsealr_repair binds the old public descriptor,
+ * stable roster members:[{id:1,key:hex},...], lost participant and replacement key.
+ * Repair preserves npub; it does not revoke copies of the original share.
+ * The replacement emits2 ready peer packets then its group record (3 outputs).
+ * Each helper emits its new record after receiving its ready packet. Keep old
+ * backups until all3 records agree, then save updated share backups. */
 
 /* Bare-metal staticlib hooks: internal RAM only, correct alignment, no unwind.
  * Rust wraps every allocation in a bounded wipe-before-free allocator. OOM or

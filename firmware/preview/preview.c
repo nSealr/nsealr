@@ -22,7 +22,8 @@ static bool down, scanning, presenting;
 static bool secrets_visible;
 static const char *render_dir;
 static unsigned frames, pending_action, touches;
-static char visible_title[80], visible_caption[100], visible_right[40];
+static char visible_title[80], visible_caption[100], visible_right[40], visible_left[40],
+    visible_aux[40], visible_header[40];
 /* Test inspection is enabled only for the published, deterministic test vectors. */
 static bool testing;
 static char test_lines[8][14];
@@ -158,6 +159,10 @@ bool platform_present(const ui_view *view) {
     snprintf(visible_caption, sizeof(visible_caption), "%s", view->subtitle ? view->subtitle : "");
     snprintf(visible_right, sizeof(visible_right), "%s",
              view->right_label ? view->right_label : "");
+    snprintf(visible_left, sizeof(visible_left), "%s", view->left_label ? view->left_label : "");
+    snprintf(visible_aux, sizeof(visible_aux), "%s", view->aux_label ? view->aux_label : "");
+    snprintf(visible_header, sizeof(visible_header), "%s",
+             view->header_label ? view->header_label : "");
     ui_show(view, callback, NULL);
     presenting = true;
     draw();
@@ -349,19 +354,78 @@ static void text_key(char value) {
     unsigned i = (unsigned)(at - keys);
     tap(37 + (int)(i % 6) * 49, 194 + (int)(i / 6) * 44);
 }
+static void feed_message(const char *input) {
+    size_t length = strlen(input);
+    for (unsigned i = 0; i < (length + NS_QR_CHUNK - 1) / NS_QR_CHUNK; i++) {
+        uint8_t frame[NS_MAX_FRAME];
+        size_t size = 0;
+        assert(ns_encode_frame((const uint8_t *)input, length, i, frame, sizeof(frame), &size) ==
+               NS_OK);
+        device_scan_bytes(frame, size);
+        for (size_t j = 0; j < size; j++)
+            assert(frame[j] == 0);
+    }
+}
 static void feed_request(const char *event) {
     char input[NS_MAX_MESSAGE];
     int n =
         snprintf(input, sizeof(input),
                  "{\"id\":\"native-flow\",\"method\":\"sign_event\",\"params\":[\"%s\"]}", event);
     assert(n > 0 && (size_t)n < sizeof(input));
-    for (unsigned i = 0; i < ((unsigned)n + NS_QR_CHUNK - 1) / NS_QR_CHUNK; i++) {
-        uint8_t frame[NS_MAX_FRAME];
-        size_t size = 0;
-        assert(ns_encode_frame((const uint8_t *)input, (size_t)n, i, frame, sizeof(frame), &size) ==
-               NS_OK);
-        device_scan_bytes(frame, size);
-    }
+    feed_message(input);
+}
+static void refused_request_test(void) {
+    feed_message("{\"id\":\"native-refused\",\"method\":\"unsupported\",\"params\":[]}");
+    ns_text response;
+    assert(!scanning && !strcmp(visible_title, "Request refused"));
+    assert(ns_review_count(device_core()) == 0);
+    assert(ns_response(device_core(), &response) == NS_OK);
+    const char expected[] =
+        "{\"id\":\"native-refused\",\"error\":\"Unsupported operation or event semantics\"}";
+    assert(response.len == sizeof(expected) - 1 && !memcmp(response.data, expected, response.len));
+    uint8_t frame[NS_MAX_FRAME];
+    size_t length;
+    assert(ns_encode_frame(response.data, response.len, 0, frame, sizeof(frame), &length) == NS_OK);
+    assert(test_qr_len == length && !memcmp(test_qr, frame, length));
+    assert(!strcmp(visible_left, "Done") && !strcmp(visible_right, "Reason") && !visible_aux[0]);
+    save_frame("35-request-refused");
+    tap(215, 442);
+    assert(ui_reader() && !strcmp(visible_title, "Request refused"));
+    save_frame("36-refusal-reason");
+    tap(60, 442);
+    assert(!ui_reader() && test_qr_len == length && !memcmp(test_qr, frame, length));
+    tap(60, 442);
+    assert(ns_response(device_core(), &response) != NS_OK && ns_is_loaded(device_core()));
+    /* JSON escaping can make a bounded request ID span multiple response frames. */
+    char multi[1024] = "{\"id\":\"";
+    for (unsigned i = 0; i < 128; i++)
+        strcat(multi, "\\u0001");
+    strcat(multi, "\",\"method\":\"unsupported\",\"params\":[]}");
+    tap(140, 175);
+    feed_message(multi);
+    assert(!strcmp(visible_left, "Done") && !strcmp(visible_right, "Pause") &&
+           !strcmp(visible_aux, "Next") && !strcmp(visible_header, "Reason"));
+    assert(ns_response(device_core(), &response) == NS_OK && response.len > NS_QR_CHUNK);
+    tap(258, 122);
+    assert(ns_encode_frame(response.data, response.len, 1, frame, sizeof(frame), &length) == NS_OK);
+    assert(test_qr_len == length && !memcmp(test_qr, frame, length));
+    save_frame("42-refusal-multiple-frames");
+    tap(170, 26);
+    assert(ui_reader());
+    tap(60, 442);
+    assert(!strcmp(visible_right, "Resume") && test_qr_len == length &&
+           !memcmp(test_qr, frame, length));
+    tap(60, 442);
+    assert(ns_response(device_core(), &response) != NS_OK);
+    tap(140, 175);
+    uint8_t invalid[] = "invalid";
+    device_scan_bytes(invalid, sizeof(invalid) - 1);
+    assert(!strcmp(visible_title, "Please check") &&
+           ns_response(device_core(), &response) != NS_OK);
+    tap(215, 442);
+    tap(140, 175);
+    puts("PASS: validated-id refusal QR/reason/Done, unchanged returned bytes, malformed "
+         "input without a reply and subsequent normal request");
 }
 static void flow_test(void) {
     testing = true;
@@ -423,6 +487,7 @@ static void flow_test(void) {
     tap(60, 442);
     assert(!scanning && ns_is_loaded(device_core()));
     tap(140, 175);
+    refused_request_test();
     char event[1024];
     int wrote =
         snprintf(event, sizeof(event),
@@ -966,6 +1031,105 @@ static void threshold_flow_test(void) {
     uint8_t restored[64];
     assert(ns_public_key(custody[0], 0, restored, sizeof(restored), &written) == NS_OK &&
            !memcmp(group_key, restored, 64));
+    uint8_t old_record[1024], fingerprint[64];
+    size_t old_record_len;
+    uint32_t lost_member;
+    assert(ns_threshold_record(custody[1], old_record, sizeof(old_record) - 1, &old_record_len) ==
+           NS_OK);
+    old_record[old_record_len] = 0;
+    assert(ns_threshold_info(custody[0], fingerprint, &lost_member) == NS_OK);
+    const char *descriptor_start = strstr((const char *)old_record, "\"descriptor\":\"");
+    assert(descriptor_start);
+    descriptor_start += strlen("\"descriptor\":\"");
+    char descriptor[461];
+    memcpy(descriptor, descriptor_start, 460);
+    descriptor[460] = 0;
+    assert(descriptor_start[460] == '"');
+    tap(270, 26);
+    tap(140, 233);
+    tap(140, 349);
+    tap(140, 291);
+    assert(!strcmp(visible_title, "Repair lost share"));
+    save_frame("37-repair-entry");
+    tap(60, 442);
+    assert(!strcmp(visible_title, "Restore share"));
+    tap(140, 291);
+    tap(215, 442);
+    assert(!strcmp(visible_title, "Join repair"));
+    save_frame("38-repair-join");
+    ns_text join;
+    assert(ns_threshold_output(custody[0], 0, &join) == NS_OK && join.len < sizeof(setup));
+    memcpy(setup, join.data, join.len);
+    setup[join.len] = 0;
+    public_field(setup, "key", custody_keys[0]);
+    assert(custody_collect() == 1 && scanning);
+    char repair[1536];
+    n = snprintf(repair, sizeof(repair),
+                 "{\"type\":\"nsealr_repair\",\"session\":\"%064u\",\"group\":\"%.*s\","
+                 "\"descriptor\":\"%s\",\"members\":[{\"id\":1,\"key\":\"%s\"},"
+                 "{\"id\":2,\"key\":\"%s\"},{\"id\":3,\"key\":\"%s\"}],"
+                 "\"participant\":%u,\"replacement\":\"%s\"}",
+                 3u, 64, fingerprint, descriptor, sorted[0], sorted[1], sorted[2],
+                 (unsigned)lost_member, custody_keys[0]);
+    assert(n > 0 && (size_t)n < sizeof(repair));
+    for (unsigned i = 0; i < 3; i++) {
+        custody_feed(i, (const uint8_t *)repair, (size_t)n);
+        if (i)
+            peer_approve(i);
+    }
+    save_frame("39-repair-review");
+    finish_visible_review();
+    assert(custody_collect() == 2);
+    custody_route(2);
+    assert(custody_collect() == 2);
+    custody_route(2);
+    assert(ns_threshold_output_count(custody[0]) == 3);
+    save_frame("40-repair-acknowledgements");
+    assert(custody_collect() == 3);
+    assert(!strcmp(visible_title, "Share restored"));
+    custody_route(2);
+    assert(custody_collect() == 2);
+    for (unsigned i = 0; i < 3; i++) {
+        uint8_t repaired_key[64], repaired_group[64];
+        uint32_t member;
+        assert(ns_public_key(custody[i], 0, repaired_key, sizeof(repaired_key), &written) ==
+                   NS_OK &&
+               !memcmp(group_key, repaired_key, 64));
+        assert(ns_threshold_info(custody[i], repaired_group, &member) == NS_OK);
+        if (!i) {
+            assert(member == lost_member);
+            memcpy(fingerprint, repaired_group, 64);
+        } else
+            assert(!memcmp(fingerprint, repaired_group, 64));
+    }
+    save_frame("41-repair-complete");
+    tap(140, 291);
+    /* The replacement can sign with either surviving share. Each request still
+     * crosses the actual device scanner, reader, consent and outgoing QR. */
+    for (unsigned helper = 1; helper < 3; helper++) {
+        memcpy(members[0], custody_keys[0], 65);
+        memcpy(members[1], custody_keys[helper], 65);
+        qsort(members, 2, sizeof(members[0]), public_key_order);
+        n = snprintf(request, sizeof(request),
+                     "{\"type\":\"nsealr_sign\",\"id\":\"repaired-native\",\"session\":\"%064u\","
+                     "\"members\":[\"%s\",\"%s\"],\"event\":\"{\\\"pubkey\\\":\\\"%.*s\\\","
+                     "\\\"created_at\\\":1794211200,\\\"kind\\\":1,\\\"tags\\\":[],"
+                     "\\\"content\\\":\\\"Repaired share, same Nostr identity.\\\"}\"}",
+                     3u + helper, members[0], members[1], 64, group_key);
+        assert(n > 0 && (size_t)n < sizeof(request));
+        tap(140, 175);
+        custody_feed(0, (uint8_t *)request, (size_t)n);
+        custody_feed(helper, (uint8_t *)request, (size_t)n);
+        peer_approve(helper);
+        finish_visible_review();
+        assert(custody_collect() == 2);
+        custody_route(2);
+        assert(custody_collect() == 2);
+        custody_route(2);
+        assert(custody_collect() == 2);
+        assert(!strcmp(custody_packets[0], custody_packets[1]));
+        assert(strstr(custody_packets[0], "Repaired share, same Nostr identity."));
+    }
     tap(270, 26);
     assert(unlink(test_share_path) == 0);
     assert(platform_share_load(saved, sizeof(saved), &saved_len) == SHARE_FILE_MISSING);
@@ -983,6 +1147,8 @@ static void threshold_flow_test(void) {
     testing = false;
     puts("PASS: real 3-device setup, all packets, animated share backup/check/recovery, "
          "rendered group consent and 2-device signing through actual UI input");
+    puts("PASS: deliberate lost-share repair, all three final packets, stable member/npub and "
+         "signing with either surviving share through actual UI input");
     puts("PASS: deliberate share-file save/read-back/restore, absent media, no overwrite, "
          "missing/oversize rejection and cleared error buffers (native filesystem)");
 }

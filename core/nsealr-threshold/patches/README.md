@@ -7,7 +7,7 @@ https://github.com/ZcashFoundation/frost/tree/0966bd1529aa062ad3b621af99e277f976
 `frost-core-original-hashes.json` retains SHA-256 of every original changed
 source file. `vendor-admission.json` additionally pins every retained file in all
 three FROST packages and the ChaCha20 archive, including original/patched hashes
-for the six changed files. Local Cargo checksums are checked against these
+for the changed files. Local Cargo checksums are checked against these
 independent maps; modifying source and its checksum together cannot admit it.
 The three FROST packages include upstream root license texts, which cargo vendor
 did not include automatically. No existing dependency was upgraded.
@@ -81,6 +81,10 @@ coefficient vectors with `Zeroizing`, avoids secret polynomial reallocation,
 and clears temporary scalar serialization buffers. It changes no mathematical
 operation, cryptographic transcript, point/scalar encoding, or final signature.
 Other FROST ciphersuites have not been qualified against the added scalar bound.
+
+Lost-share repair additionally gives `Delta` and `Sigma` a `Zeroize` implementation
+for guarded local custody, and guards RTS random coefficients and scalar sums.
+The public APIs, equations and serialized contribution bytes are unchanged.
 
 The host allocator test probes known public fixture key/share patterns before
 scalar/byte-vector sized allocations are freed, in debug and optimized builds.

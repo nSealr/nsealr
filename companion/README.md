@@ -63,6 +63,7 @@ The browser generates a separate, disposable NIP-46 transport key. It encrypts
 and signs relay messages, while identity signing and NIP-44 requests use the
 same QR/device flow as the extension. Client names are not proof of identity.
 Pairing links contain a one-use secret; share them only with the intended client.
+An already paired client can reconnect while this companion session stays open.
 Keep the companion tab open. Closing or reloading it ends the remote session;
 pair again with a fresh link. Session transport keys and permissions are not
 saved to browser storage. JavaScript cannot promise physical memory erasure.
@@ -131,9 +132,41 @@ final QR would not authenticate which device displayed it, so it is not required
 Group identities support signing and public-key requests; NIP-44 encryption and
 decryption are unsupported for these groups.
 
-Setup lasts at most ten minutes and a signing ceremony five minutes. After a
-rejection, cancellation or expiry, cancel the ceremony on every participating
-device and start with a fresh session. Closing the companion loses its transient
+### Recover a lost share
+
+Load a current public group record, open **Recover a lost share**, and choose the
+missing member number. Back up both surviving shares and keep them loaded. On the fresh replacement
+device, choose **Import identity → Restore a group share → Repair lost share →
+Join repair**. Scan its public join code into the companion, then scan the repair
+request on all three devices. The loaded helpers use **Scan a request**. Compare
+the complete repair fingerprint and approve on every device.
+
+Follow the named recipients through three exchanges: collect both helper packets
+before routing them, collect both contributions before routing them to the
+replacement, then collect and route both replacement confirmations. The
+replacement's third output is its public group record; keep it for the last step.
+Scan the final public record from all three devices. The companion requires the
+same npub and public descriptor, the same member numbers, and one new transport
+key in the lost member's slot. The new roster fingerprint must agree everywhere.
+
+Keep old backups until all three updated records agree. Then save a fresh share
+backup directly from every device and retain the new public group record. These
+backups contain the updated routing information. Recovery **does not revoke a
+stolen share or any old copy**; it restores the missing member's signing ability.
+Never scan a share backup into this computer.
+
+If repair stops, cancel it on every device and compare their public records. If
+all three agree, save the new backups. If two agree, keep that pair loaded. Clear
+only the inconsistent third device and obtain a fresh join code from it. Load the
+matching pair's record and start a new repair for the third device's member number.
+If no matching live pair remains, restore both original helpers from their
+retained backups, reset the replacement and restart from the old public record.
+Never replay old packets after cancellation.
+
+Setup and repair last at most ten minutes; signing lasts five minutes. After a
+setup or signing rejection, cancellation or expiry, cancel on every participating
+device and start with a fresh session. For interrupted repair, follow the recovery
+steps above. Closing the companion loses its transient
 coordination state. A device's public group record can reload the routing
 information; it does not contain or replace the private shares.
 
@@ -157,7 +190,8 @@ models and synthetic camera input. See [client qualification](CLIENTS.md) for
 the source pins, commands, observed paths and remaining limits.
 
 `THRESHOLD_RUNNER=/path/to/threshold node tests/threshold-browser.mjs` exercises
-setup and signing through three isolated native host contexts, the actual
+setup, lost-share repair and signing with the replacement through three isolated
+native host contexts, the actual
 packaged extension and QR pixels. The test-only runner automatically completes
 device review; it does not establish operation across three physical devices.
 
