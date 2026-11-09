@@ -97,16 +97,14 @@ static void keyboard(lv_obj_t *root, const ui_view *v) {
         char label[2] = {c, 0};
         button(root, 16 + (i % 6) * 49, 210 + (i / 6) * 38, 43, 34, label, (unsigned char)c, false);
     }
-    button(root, 16, 170, 43, 32,
-           v->keyboard_page == 2   ? "ABC"
-           : v->keyboard_page == 1 ? "More"
-                                   : "123",
+    button(root, 16, 170, 44, 32,
+           v->keyboard_page == 2 ? "abc" : v->keyboard_page == 1 ? "#+=" : "123",
            UI_KEY_MODE, false);
-    button(root, 65, 170, 43, 32, v->keyboard_upper ? "abc" : "ABC", UI_KEY_CASE, false);
-    button(root, 114, 170, 43, 32, "Space", UI_KEY_SPACE, false);
-    button(root, 163, 170, 43, 32, "Del", UI_KEY_BACKSPACE, false);
-    button(root, 212, 170, 43, 32, "<", UI_KEY_LEFT, false);
-    button(root, 261, 170, 43, 32, ">", UI_KEY_RIGHT, false);
+    button(root, 64, 170, 44, 32, v->keyboard_upper ? "A/a" : "a/A", UI_KEY_CASE, false);
+    button(root, 112, 170, 64, 32, "Space", UI_KEY_SPACE, false);
+    button(root, 180, 170, 44, 32, "Del", UI_KEY_BACKSPACE, false);
+    button(root, 228, 170, 36, 32, "<", UI_KEY_LEFT, false);
+    button(root, 268, 170, 36, 32, ">", UI_KEY_RIGHT, false);
 }
 void ui_show(const ui_view *v, ui_action_cb callback, void *context) {
     action_callback = callback;
