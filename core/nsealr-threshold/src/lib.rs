@@ -14,7 +14,7 @@ extern crate alloc;
 use alloc::{collections::BTreeMap, vec::Vec};
 use chacha20::ChaCha20Rng;
 use frost_secp256k1_tr as frost;
-use nsealr_core::event::EventTemplate;
+use nsealr_core::event::Event;
 use rand_core::SeedableRng;
 use sha2::{Digest, Sha256};
 use zeroize::{Zeroize, Zeroizing};
@@ -318,7 +318,7 @@ pub struct RoundIntent {
 impl RoundIntent {
     pub fn for_event(
         group: &Group,
-        event: &EventTemplate,
+        event: &Event,
         session: [u8; 32],
         participants: &[ParticipantId],
     ) -> Result<Self, Error> {
@@ -337,9 +337,11 @@ impl RoundIntent {
                 return Err(Error::Participant);
             }
         }
-        let event_id = event
-            .event_id(group.public_key())
-            .map_err(|_| Error::Encoding)?;
+        if event.public_key() != group.public_key() {
+            return Err(Error::Binding);
+        }
+        event.review().map_err(|_| Error::Review)?;
+        let event_id = event.id();
         let mut h = Sha256::new();
         h.update(hash(&[
             b"nsealr.threshold.intent.v1",
@@ -507,7 +509,7 @@ impl ReviewBinding {
 
 /// Only the synchronous full-event callback receives this approval constructor.
 pub struct ReviewIntent<'a> {
-    pub event: &'a EventTemplate,
+    pub event: &'a Event,
     pub group: &'a Group,
     pub binding: &'a ReviewBinding,
 }
@@ -612,7 +614,7 @@ impl Signer {
     /// Complete local review precedes fresh nonce creation and its sole emission.
     pub fn begin(
         &mut self,
-        event: EventTemplate,
+        event: Event,
         intent: RoundIntent,
         deadline_ms: u64,
         authority: &mut impl ReviewAuthority,
@@ -631,7 +633,7 @@ impl Signer {
     }
     fn begin_inner(
         &mut self,
-        event: EventTemplate,
+        event: Event,
         intent: RoundIntent,
         deadline_ms: u64,
         authority: &mut impl ReviewAuthority,
@@ -646,10 +648,8 @@ impl Signer {
         if intent.group() != participant.group.identity()
             || intent.public_key() != participant.group.public_key()
             || !intent.participants.contains(&participant.identifier())
-            || event
-                .event_id(participant.group.public_key())
-                .map_err(|_| Error::Encoding)?
-                != intent.event_id
+            || event.public_key() != participant.group.public_key()
+            || event.id() != intent.event_id
         {
             return Err(Error::Binding);
         }

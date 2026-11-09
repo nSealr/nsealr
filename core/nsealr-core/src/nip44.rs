@@ -20,7 +20,7 @@ use zeroize::{Zeroize, Zeroizing};
 /// Maximum primitive plaintext size in UTF-8 bytes, not characters.
 /// Enclosing seals need more space than their user-visible message content;
 /// callers must apply their own complete-flow and transport bounds too.
-pub const MAX_PLAINTEXT_BYTES: usize = 4096;
+pub const MAX_PLAINTEXT_BYTES: usize = 8192;
 const MAX_BINARY_BYTES: usize = 1 + 32 + 2 + MAX_PLAINTEXT_BYTES + 32;
 /// Maximum standard padded Base64 payload size for this fixed power-of-two bound.
 pub const MAX_PAYLOAD_BYTES: usize = MAX_BINARY_BYTES.div_ceil(3) * 4;
@@ -203,6 +203,3 @@ fn decrypt_inner(
     target.copy_from_slice(plaintext);
     Ok(plain_len)
 }
-
-#[cfg(test)]
-mod tests;

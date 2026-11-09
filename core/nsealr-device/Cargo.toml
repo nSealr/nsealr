@@ -1,0 +1,14 @@
+[package]
+name = "nsealr-device"
+version = "0.1.0"
+edition = "2021"
+license = "MIT"
+publish = false
+
+[lib]
+crate-type = ["rlib", "staticlib"]
+
+[dependencies]
+nsealr-core = { path = "../nsealr-core" }
+nsealr-allocator = { path = "../nsealr-allocator" }
+zeroize = { version = "=1.9.1", default-features = false, features = ["alloc"] }

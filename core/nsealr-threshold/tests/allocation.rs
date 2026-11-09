@@ -1,5 +1,5 @@
 //! Host allocator probe, not a device RAM/remanence qualification.
-use nsealr_core::event::{EventTemplate, OperationLimits};
+use nsealr_core::event::Event;
 use nsealr_threshold::*;
 use std::{
     alloc::{GlobalAlloc, Layout, System},
@@ -116,13 +116,13 @@ impl ReviewAuthority for Local {
         Ok(())
     }
 }
-fn event() -> EventTemplate {
-    EventTemplate::parse(
-        br#"{"created_at":1700000000,"kind":1,"tags":[],"content":"public fixture"}"#,
-        OperationLimits::conformance(),
-    )
-    .unwrap()
+fn event(pubkey: &[u8; 32]) -> Event {
+    Event::parse(&serde_json::to_vec(&serde_json::json!({"pubkey":hex(pubkey),"created_at":1700000000,"kind":1,"tags":[],"content":"allocation test"})).unwrap(),pubkey).unwrap()
 }
+fn hex(bytes: &[u8]) -> String {
+    bytes.iter().map(|b| format!("{b:02x}")).collect()
+}
+
 #[test]
 fn bounded_heap_and_secret_vector_cleanup() {
     patterns(&[[0x4b; 32]]);
@@ -153,10 +153,16 @@ fn bounded_heap_and_secret_vector_cleanup() {
     drop(restored);
     let mut signer = Signer::new();
     signer.select(participants.remove(0));
-    let intent = RoundIntent::for_event(&group, &event(), [1; 32], &ids).unwrap();
+    let intent = RoundIntent::for_event(&group, &event(group.public_key()), [1; 32], &ids).unwrap();
     let first = measure("commit-5-of-5", || {
         signer
-            .begin(event(), intent.clone(), 100, &mut Local, &mut Source(30))
+            .begin(
+                event(group.public_key()),
+                intent.clone(),
+                100,
+                &mut Local,
+                &mut Source(30),
+            )
             .unwrap()
     });
     let mut others: Vec<_> = participants
@@ -172,7 +178,7 @@ fn bounded_heap_and_secret_vector_cleanup() {
     for (index, s) in others.iter_mut().enumerate() {
         commitments.push(
             s.begin(
-                event(),
+                event(group.public_key()),
                 intent.clone(),
                 100,
                 &mut Local,

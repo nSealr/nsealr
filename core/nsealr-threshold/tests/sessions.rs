@@ -1,4 +1,4 @@
-use nsealr_core::event::{EventTemplate, OperationLimits};
+use nsealr_core::event::Event;
 use nsealr_threshold::*;
 use zeroize::Zeroizing;
 
@@ -68,10 +68,7 @@ impl ReviewAuthority for Local {
             intent.group.public_key(),
             intent.binding.intent.public_key()
         );
-        assert_eq!(
-            intent.event.event_id(intent.group.public_key()).unwrap(),
-            *intent.binding.intent.event_id()
-        );
+        assert_eq!(intent.event.id(), *intent.binding.intent.event_id());
         assert!(intent
             .binding
             .intent
@@ -109,9 +106,13 @@ impl ReviewAuthority for Local {
         }
     }
 }
-fn event() -> EventTemplate {
-    EventTemplate::parse(br#"{"created_at":1700000000,"kind":1,"tags":[],"content":"threshold test: complete event"}"#, OperationLimits::conformance()).unwrap()
+fn event(pubkey: &[u8; 32]) -> Event {
+    Event::parse(&serde_json::to_vec(&serde_json::json!({"pubkey":hex(pubkey),"created_at":1700000000,"kind":1,"tags":[],"content":"threshold test: complete event"})).unwrap(),pubkey).unwrap()
 }
+fn hex(bytes: &[u8]) -> String {
+    bytes.iter().map(|b| format!("{b:02x}")).collect()
+}
+
 fn setup(threshold: u16, count: u16) -> Vec<Participant> {
     dealer(threshold, count, None, &mut Entropy::new(1)).unwrap()
 }
@@ -132,14 +133,21 @@ fn commit(
     session: u8,
     source: &mut Entropy,
 ) -> (RoundIntent, Vec<Commitment>, Vec<Local>) {
-    let intent = RoundIntent::for_event(group, &event(), [session; 32], set).unwrap();
+    let intent =
+        RoundIntent::for_event(group, &event(group.public_key()), [session; 32], set).unwrap();
     let mut authorities: Vec<_> = signers.iter().map(|_| Local::new()).collect();
     let commitments = signers
         .iter_mut()
         .zip(&mut authorities)
         .map(|(signer, local)| {
             signer
-                .begin(event(), intent.clone(), 100, local, source)
+                .begin(
+                    event(group.public_key()),
+                    intent.clone(),
+                    100,
+                    local,
+                    source,
+                )
                 .unwrap()
         })
         .collect();
@@ -211,22 +219,25 @@ fn signing_rejects_changed_event_group_session_participant_set_and_own_commitmen
             commit(&mut signers[..2], &group, &ids, 9, &mut Entropy::new(10));
         let changed = match attack {
             0 => {
-                let other = EventTemplate::parse(
-                    br#"{"created_at":1700000001,"kind":1,"tags":[],"content":"changed"}"#,
-                    OperationLimits::conformance(),
+                let other = Event::parse(
+                    &serde_json::to_vec(&serde_json::json!({"pubkey":hex(group.public_key()),"created_at":1700000001,"kind":1,"tags":[],"content":"changed"})).unwrap(),
+                    group.public_key(),
                 )
                 .unwrap();
                 RoundIntent::for_event(&group, &other, [9; 32], &ids).unwrap()
             }
-            1 => RoundIntent::for_event(&group, &event(), [10; 32], &ids).unwrap(),
-            2 => RoundIntent::for_event(&group, &event(), [9; 32], &all[1..]).unwrap(),
+            1 => {
+                RoundIntent::for_event(&group, &event(group.public_key()), [10; 32], &ids).unwrap()
+            }
+            2 => RoundIntent::for_event(&group, &event(group.public_key()), [9; 32], &all[1..])
+                .unwrap(),
             3 => {
                 let other = dealer(2, 3, None, &mut Entropy::new(90))
                     .unwrap()
                     .remove(0)
                     .group()
                     .clone();
-                RoundIntent::for_event(&other, &event(), [9; 32], &ids).unwrap()
+                RoundIntent::for_event(&other, &event(other.public_key()), [9; 32], &ids).unwrap()
             }
             _ => intent.clone(),
         };
@@ -274,15 +285,25 @@ fn malformed_duplicate_unknown_and_mixed_commitments_fail_before_signing() {
         Err(Error::Bounds)
     ));
     assert!(matches!(
-        RoundIntent::for_event(&group, &event(), [0; 32], &[ids[0], ids[0]]),
+        RoundIntent::for_event(
+            &group,
+            &event(group.public_key()),
+            [0; 32],
+            &[ids[0], ids[0]]
+        ),
         Err(Error::Participant)
     ));
     assert!(matches!(
-        RoundIntent::for_event(&group, &event(), [0; 32], &[[0; 32], [0; 32]]),
+        RoundIntent::for_event(
+            &group,
+            &event(group.public_key()),
+            [0; 32],
+            &[[0; 32], [0; 32]]
+        ),
         Err(Error::Participant)
     ));
     assert!(matches!(
-        RoundIntent::for_event(&group, &event(), [0; 32], &[ids[0]; 6]),
+        RoundIntent::for_event(&group, &event(group.public_key()), [0; 32], &[ids[0]; 6]),
         Err(Error::Bounds)
     ));
 }
@@ -320,7 +341,8 @@ fn review_entropy_and_busy_errors_emit_no_commitment_and_no_old_nonce() {
         let group = p[0].group().clone();
         let ids: Vec<_> = p.iter().take(2).map(Participant::identifier).collect();
         let mut s = owners(p);
-        let intent = RoundIntent::for_event(&group, &event(), [1; 32], &ids).unwrap();
+        let intent =
+            RoundIntent::for_event(&group, &event(group.public_key()), [1; 32], &ids).unwrap();
         let mut local = Local::new();
         let mut entropy = Entropy::new(10);
         match failure {
@@ -332,7 +354,13 @@ fn review_entropy_and_busy_errors_emit_no_commitment_and_no_old_nonce() {
             _ => local.now = 101,
         }
         assert!(s[0]
-            .begin(event(), intent.clone(), 100, &mut local, &mut entropy)
+            .begin(
+                event(group.public_key()),
+                intent.clone(),
+                100,
+                &mut local,
+                &mut entropy
+            )
             .is_err());
         assert_ne!(s[0].state(), State::Committed);
     }
@@ -343,7 +371,13 @@ fn review_entropy_and_busy_errors_emit_no_commitment_and_no_old_nonce() {
     let (intent, c, mut local) = commit(&mut s[..2], &group, &ids, 1, &mut Entropy::new(10));
     let round = SigningRound::new(&intent, &c).unwrap();
     assert_eq!(
-        s[0].begin(event(), intent, 100, &mut local[0], &mut Entropy::new(15)),
+        s[0].begin(
+            event(group.public_key()),
+            intent,
+            100,
+            &mut local[0],
+            &mut Entropy::new(15)
+        ),
         Err(Error::State)
     );
     assert_eq!(s[0].sign(&round, &mut local[0]), Err(Error::State));
@@ -383,11 +417,11 @@ fn repeat_seed_after_cancel_is_rejected_and_nonconsecutive_repeat_uses_new_strea
     let ids: Vec<_> = p.iter().take(2).map(Participant::identifier).collect();
     let mut s = Signer::new();
     s.select(p.remove(0));
-    let intent = RoundIntent::for_event(&group, &event(), [1; 32], &ids).unwrap();
+    let intent = RoundIntent::for_event(&group, &event(group.public_key()), [1; 32], &ids).unwrap();
     let mut local = Local::new();
     let first = s
         .begin(
-            event(),
+            event(group.public_key()),
             intent.clone(),
             100,
             &mut local,
@@ -397,7 +431,7 @@ fn repeat_seed_after_cancel_is_rejected_and_nonconsecutive_repeat_uses_new_strea
     s.cancel();
     assert_eq!(
         s.begin(
-            event(),
+            event(group.public_key()),
             intent.clone(),
             100,
             &mut local,
@@ -407,7 +441,7 @@ fn repeat_seed_after_cancel_is_rejected_and_nonconsecutive_repeat_uses_new_strea
     );
     let second = s
         .begin(
-            event(),
+            event(group.public_key()),
             intent.clone(),
             100,
             &mut local,
@@ -416,7 +450,13 @@ fn repeat_seed_after_cancel_is_rejected_and_nonconsecutive_repeat_uses_new_strea
         .unwrap();
     s.cancel();
     let third = s
-        .begin(event(), intent, 100, &mut local, &mut Entropy::new(10))
+        .begin(
+            event(group.public_key()),
+            intent,
+            100,
+            &mut local,
+            &mut Entropy::new(10),
+        )
         .unwrap();
     assert_ne!(first.points, second.points);
     assert_ne!(first.points, third.points);
@@ -428,10 +468,10 @@ fn stale_typed_approval_cannot_approve_new_round() {
     let ids: Vec<_> = p.iter().take(2).map(Participant::identifier).collect();
     let mut s = Signer::new();
     s.select(p.remove(0));
-    let intent = RoundIntent::for_event(&group, &event(), [1; 32], &ids).unwrap();
+    let intent = RoundIntent::for_event(&group, &event(group.public_key()), [1; 32], &ids).unwrap();
     let mut local = Local::new();
     s.begin(
-        event(),
+        event(group.public_key()),
         intent.clone(),
         100,
         &mut local,
@@ -441,7 +481,13 @@ fn stale_typed_approval_cannot_approve_new_round() {
     s.cancel();
     local.use_saved = true;
     assert_eq!(
-        s.begin(event(), intent, 100, &mut local, &mut Entropy::new(11)),
+        s.begin(
+            event(group.public_key()),
+            intent,
+            100,
+            &mut local,
+            &mut Entropy::new(11)
+        ),
         Err(Error::Review)
     );
 }
