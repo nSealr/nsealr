@@ -24,10 +24,16 @@ function checked(command, args) {
 }
 checked('cargo', ['build', '-p', 'nsealr-device', '--release', '--locked', '--offline']);
 const target = resolve(process.env.CARGO_TARGET_DIR || resolve(root, 'target'));
-const native = resolve(output, 'optical');
-checked(process.env.CC || 'cc', ['-std=c11', '-O2', '-Wall', '-Wextra', '-Werror',
-  '-Icore/nsealr-device/include', 'tests/integration/optical.c',
-  resolve(target, 'release/libnsealr_device.a'), '-lpthread', '-ldl', '-lm', '-o', native]);
+function compile(source, name) {
+  const binary = resolve(output, name);
+  checked(process.env.CC || 'cc', ['-std=c11', '-O2', '-Wall', '-Wextra', '-Werror',
+    '-Icore/nsealr-device/include', source,
+    resolve(target, 'release/libnsealr_device.a'), '-lpthread', '-ldl', '-lm', '-o', binary]);
+  return binary;
+}
+const native = compile('tests/integration/optical.c', 'optical');
+compile('tests/integration/threshold.c', 'threshold');
+checked(compile('core/nsealr-device/tests/custody.c', 'custody-check'), []);
 
 const key = 'f9308a019258c31049344f85f89d5229b531c845836f99b08601f113bce036f9';
 function exchange(pending, ordered = frames(JSON.stringify(pending))) {
