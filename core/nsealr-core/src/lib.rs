@@ -1,66 +1,54 @@
-//! `nsealr-core` — the portable `no_std` core for the nSealr offline signer.
-//!
-//! This crate contains the portable Rust protocol, transport framing, review,
-//! policy and session foundations used by host tests and device adapters.
-//! Compiling this crate does not qualify an MCU application, custody or
-//! physical review. See `docs/core-provenance.md` for inherited test fixtures.
-//!
-//! # Build configuration
-//!
-//! The crate is `#![no_std]` so it links on bare-metal firmware targets (for
-//! example `riscv32imafc-unknown-none-elf`). The opt-in `std` feature links the
-//! [`std`] facade for host/desktop consumers and test tooling; it is off by
-//! default and pulls in nothing on-device.
-//!
-//! Implemented modules include: the low-level primitives [`hash`] (SHA-256) and
-//! [`base64url`] (URL-safe unpadded Base64), the encoding layer [`bip39`]
-//! (English mnemonic parsing), [`nip19`] (`nsec` Bech32), [`seedqr`]
-//! (Standard/Compact SeedQR), and [`unicode`] (UTF-8 + JSON `\uXXXX` helpers), the
-//! transport layer [`qr`] (QR envelope / animated envelope / response-display
-//! framing + shared limits) and [`serial`] (`nsealr1f:` serial framing plus the
-//! byte-wise line accumulator with overlong-frame draining), and the
-//! session/custody core [`session`] (RAM-only keyring with volatile secret
-//! wiping, source parsing/generation, secret-hiding import/backup reviews,
-//! account selection) with the fixed-capacity text type [`text`], the
-//! policy/approval layer [`policy`] (approval-digest binding gate,
-//! signing-readiness gates, policy-change review), the trusted-review layer
-//! [`review`] (data model, signer identity, display rendering, physical
-//! controls with button debounce classification, review sessions, QR/serial
-//! review flows), and the device
-//! protocol [`protocol`] (serial frame in, response frame out, trusted-review
-//! preview).
+//! One offline identity and one locally reviewed operation. The firmware owns
+//! trusted input, rendering, time and entropy; the network owns none of them.
 #![no_std]
-#![deny(missing_docs)]
-
-// The `std` feature links the standard library facade for host/desktop
-// consumers. It is opt-in and off by default; on-device builds never pull it in.
-#[cfg(feature = "std")]
+extern crate alloc;
+#[cfg(any(test, feature = "std"))]
 extern crate std;
 
-// Unit tests always run on a host where libtest already links std; making the
-// facade importable under cfg(test) lets fixture-replay tests build dynamic
-// inputs (Vec/String) without touching the shipped `no_std` surface.
-#[cfg(all(test, not(feature = "std")))]
-extern crate std;
-
-#[cfg(test)]
-mod board_profile_tests;
-
-pub mod authorization;
-pub mod base64url;
 pub mod bip39;
-pub mod capabilities;
 pub mod event;
 pub mod hash;
-pub mod nip17;
+pub mod identity;
+pub mod json;
 pub mod nip19;
 pub mod nip44;
-pub mod policy;
-pub mod protocol;
+pub mod owner;
 pub mod qr;
-pub mod review;
+mod recovery;
 pub mod seedqr;
-pub mod serial;
-pub mod session;
-pub mod text;
-pub mod unicode;
+
+pub const MAX_MESSAGE: usize = 32768;
+pub const MAX_CONTENT: usize = 8192;
+pub const MAX_TAGS: usize = 256;
+pub const MAX_TAG_FIELDS: usize = 8;
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+#[repr(i32)]
+pub enum Error {
+    Input = -1,
+    Bounds = -2,
+    Locked = -3,
+    Unsupported = -4,
+    Identity = -5,
+    Review = -6,
+    Stale = -7,
+    Crypto = -8,
+    Entropy = -9,
+    Output = -10,
+}
+impl Error {
+    pub const fn message(self) -> &'static str {
+        match self {
+            Self::Input => "Malformed input",
+            Self::Bounds => "Request exceeds device limits",
+            Self::Locked => "Load an identity first",
+            Self::Unsupported => "Unsupported operation or event semantics",
+            Self::Identity => "Request identity does not match this session",
+            Self::Review => "Review all required fields before approval",
+            Self::Stale => "Request cancelled, replaced or expired",
+            Self::Crypto => "Cryptographic verification failed",
+            Self::Entropy => "Fresh qualified randomness is required",
+            Self::Output => "Output buffer is too small",
+        }
+    }
+}

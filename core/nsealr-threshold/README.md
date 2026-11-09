@@ -16,7 +16,7 @@ still exist elsewhere. DKG makes a new identity.
 
 - Dealer 2-of-3 and 3-of-5, bounded consuming DKG, and fresh share backup/restore
   produce valid standard Nostr signatures, independently verified outside Rust.
-- Every signer receives a complete core `EventTemplate`; the core computes its
+- Every signer receives a complete core `Event`; the core computes its
   full 32-byte ID using the selected actual group key. No hash-only signing API.
 - Full group descriptor, selected participant set, session and event ID are bound
   into a common immutable `RoundIntent`. A local owner epoch and deadline bind

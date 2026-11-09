@@ -1,0 +1,95 @@
+#ifndef NSEALR_H
+#define NSEALR_H
+#include <stdbool.h>
+#include <stddef.h>
+#include <stdint.h>
+
+/* One serialized caller owns this storage. No concurrent or reentrant calls.
+ * Every pointer/length describes a live allocation; mutable buffers must not
+ * overlap each other or context storage. Deinitialize before reinitializing. */
+#define NS_CONTEXT_BYTES 2048u
+#define NS_CONTEXT_ALIGN 16u
+#define NS_MAX_MESSAGE 32768u
+#define NS_MAX_CONTENT 8192u
+#define NS_QR_CHUNK 384u
+#define NS_MAX_FRAMES 86u
+#define NS_MAX_FRAME 586u
+#define NS_REVIEW_CRITICAL 1u
+#define NS_REVIEW_PROSE 2u
+#define NS_REVIEW_DETAIL 4u
+#define NS_REVIEW_PRIVATE 8u
+#define NS_OK 0
+#define NS_MORE 1
+
+typedef struct ns_context ns_context;
+typedef struct { const uint8_t *data; size_t len; } ns_text;
+
+/* All returned slices expire on the next mutating call. They are never secrets
+ * except reviewed private plaintext; do not log or persist them. */
+int32_t ns_init(void *storage, size_t bytes);
+void ns_deinit(ns_context *ctx);
+void ns_lock(ns_context *ctx);
+void ns_cancel(ns_context *ctx);
+bool ns_is_loaded(const ns_context *ctx);
+const char *ns_error_text(int32_t error);
+
+/* Secret input/passphrase/entropy buffers are wiped on success and failure.
+ * Nsec has no passphrase/account. English mnemonic imports accept 12/15/18/21/24.
+ * Local QR kind: 1=nsec, 2=standard SeedQR digits, 3=compact SeedQR bytes. */
+int32_t ns_import_nsec(ns_context *ctx, uint8_t *input, size_t len);
+int32_t ns_import_mnemonic(ns_context *ctx, uint8_t *input, size_t len,
+                         uint8_t *passphrase, size_t passphrase_len, uint32_t account);
+int32_t ns_import_secret_qr(ns_context *ctx, uint32_t kind, uint8_t *input, size_t len,
+                          uint8_t *passphrase, size_t passphrase_len, uint32_t account);
+/* words=0 creates a raw nsec from entropy32; words=12/24 creates a mnemonic.
+ * The platform must qualify entropy before calling. Never use fixture entropy. */
+int32_t ns_generate(ns_context *ctx, uint32_t words, uint8_t entropy32[32],
+                    uint8_t *passphrase, size_t passphrase_len, uint32_t account);
+/* public format: 0=64-byte hex, 1=npub. Output is not NUL-terminated. */
+int32_t ns_public_key(const ns_context *ctx, uint32_t format,
+                     uint8_t *out, size_t capacity, size_t *written);
+uint32_t ns_word_count(const ns_context *ctx);
+int32_t ns_wordlist_word(uint32_t index, ns_text *word);
+int32_t ns_wordlist_find(const uint8_t *prefix, size_t len,
+                        uint16_t *indices, size_t capacity, size_t *written);
+/* Local physical backup consent is mandatory before these calls. No network
+ * method reaches them. Caller clears the entire output and display on exit.
+ * Backup kind: 1=nsec, 2=mnemonic, 3=standard SeedQR, 4=compact SeedQR. */
+int32_t ns_backup(const ns_context *ctx, uint32_t kind,
+                 uint8_t *out, size_t capacity, size_t *written);
+int32_t ns_backup_word(const ns_context *ctx, uint32_t index,
+                      uint8_t *out, size_t capacity, size_t *written);
+
+/* Replacing a request cancels old authority. now_ms is trusted monotonic time.
+ * Each request expires after ten minutes. Frame intake returns NS_MORE until
+ * complete; it verifies exact lengths/hash before invoking request parsing. */
+int32_t ns_request(ns_context *ctx, const uint8_t *json, size_t len, uint64_t now_ms);
+int32_t ns_receive_frame(ns_context *ctx, const uint8_t *frame, size_t len, uint64_t now_ms);
+uint32_t ns_frames_received(const ns_context *ctx);
+uint32_t ns_frames_expected(const ns_context *ctx);
+uint64_t ns_review_generation(const ns_context *ctx);
+uint32_t ns_review_count(const ns_context *ctx);
+int32_t ns_review_item(const ns_context *ctx, uint32_t index,
+                      ns_text *label, ns_text *value, uint32_t *flags);
+/* Mark only after the complete item was actually presented. Rendering a prefix
+ * is not completion. CRITICAL fields cannot be skipped by partial approval. */
+int32_t ns_review_seen(ns_context *ctx, uint64_t generation, uint32_t index);
+/* Explicit local partial_prose applies to this request only. Pending authority
+ * is consumed before signing/encryption; failures cannot be retried. Fresh
+ * entropy32 is required for sign/encrypt and wiped for every outcome. */
+int32_t ns_approve(ns_context *ctx, uint64_t generation, bool partial_prose,
+                  uint8_t *entropy32, size_t entropy_len, uint64_t now_ms);
+int32_t ns_reject(ns_context *ctx, uint64_t generation);
+int32_t ns_response(const ns_context *ctx, ns_text *json);
+int32_t ns_encode_frame(const uint8_t *message, size_t len, uint32_t index,
+                       uint8_t *out, size_t capacity, size_t *written);
+
+/* Bare-metal staticlib hooks: internal RAM only, correct alignment, no unwind.
+ * Rust wraps every allocation in a bounded wipe-before-free allocator. OOM or
+ * panic is fatal; abort must stop signing and reset into a locked session. */
+void *ns_platform_alloc(size_t size, size_t align);
+void ns_platform_free(void *ptr, size_t size, size_t align);
+_Noreturn void ns_platform_abort(void);
+size_t ns_heap_reserved(void);
+size_t ns_heap_peak(void);
+#endif

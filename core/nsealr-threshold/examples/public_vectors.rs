@@ -1,5 +1,5 @@
 //! Public deterministic test fixtures. This authority is not a device adapter.
-use nsealr_core::event::{EventTemplate, OperationLimits};
+use nsealr_core::event::Event;
 use nsealr_threshold::*;
 use serde_json::{json, Value};
 use zeroize::Zeroizing;
@@ -94,8 +94,10 @@ fn signed(label: &str, participants: Vec<Participant>, source: Option<[u8; 32]>)
         .map(Participant::identifier)
         .collect();
     let template = json!({"created_at":1700000000,"kind":1,"tags":[["p","79be667ef9dcbbac55a06295ce870b07029bfcdb2dce28d959f2815b16f81798"],["t","threshold"]],"content":"Nostr threshold café\nfull \"event\" intent"});
+    let mut template = template;
+    template["pubkey"] = json!(hex(group.public_key()));
     let bytes = serde_json::to_vec(&template).unwrap();
-    let event = || EventTemplate::parse(&bytes, OperationLimits::conformance()).unwrap();
+    let event = || Event::parse(&bytes, group.public_key()).unwrap();
     let intent = RoundIntent::for_event(&group, &event(), [55; 32], &ids).unwrap();
     let mut signers: Vec<_> = participants
         .into_iter()
