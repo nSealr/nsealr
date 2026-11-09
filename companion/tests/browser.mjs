@@ -1,11 +1,9 @@
 import assert from 'node:assert/strict';
-import { createHash } from 'node:crypto';
 import { spawn } from 'node:child_process';
 import { mkdir, mkdtemp } from 'node:fs/promises';
 import { resolve } from 'node:path';
 import { chromium } from 'playwright';
-import QRCode from 'qrcode';
-import jsQR from 'jsqr';
+import { fixtureCamera, requestFromPixels, scanResponse } from './optical.mjs';
 import { finalizeEvent, getPublicKey } from 'nostr-tools/pure';
 
 // Optical simulation: real browser pixels/decoder, public test key, no device claim.
@@ -25,61 +23,18 @@ try {
   context = await chromium.launchPersistentContext(profile, { channel: 'chromium', headless: true,
     args: [`--disable-extensions-except=${resolve(root, 'dist')}`, `--load-extension=${resolve(root, 'dist')}`],
     viewport: { width: 1100, height: 900 } });
-  await context.addInitScript(() => {
-    window.__testQRImages = [];
-    window.__testTracks = [];
-    if (!navigator.mediaDevices) return;
-    Object.defineProperty(navigator.mediaDevices, 'enumerateDevices', { configurable: true, value: async () => [{ kind: 'videoinput', deviceId: 'pixels', label: 'QR pixel stream', groupId: 'test' }] });
-    Object.defineProperty(navigator.mediaDevices, 'getUserMedia', { configurable: true, value: async () => {
-      if (!window.__testQRImages.length) throw Error('No test QR pixels supplied.');
-      const images = await Promise.all(window.__testQRImages.map(source => new Promise(resolve => { const image = new Image(); image.onload = () => resolve(image); image.src = source; })));
-      const canvas = document.createElement('canvas'); canvas.width = canvas.height = 512;
-      const ctx = canvas.getContext('2d'); let index = 0;
-      const draw = () => { ctx.fillStyle = 'white'; ctx.fillRect(0, 0, 512, 512); ctx.drawImage(images[index++ % images.length], 0, 0, 512, 512); };
-      draw(); const timer = setInterval(draw, 350); const stream = canvas.captureStream(15);
-      for (const track of stream.getTracks()) { const stop = track.stop.bind(track); track.stop = () => { clearInterval(timer); stop(); }; window.__testTracks.push(track); }
-      return stream;
-    } });
-  });
-  async function requestFromPixels(page) {
-    await page.locator('#operation[open]').waitFor();
-    const chunks = new Map(); let id, total;
-    for (let attempt = 0; attempt < 30; attempt++) {
-      const pixels = await page.locator('#request-qr').evaluate(canvas => ({ data: [...canvas.getContext('2d').getImageData(0, 0, canvas.width, canvas.height).data], width: canvas.width, height: canvas.height }));
-      const qr = jsQR(Uint8ClampedArray.from(pixels.data), pixels.width, pixels.height);
-      if (qr) {
-        const parts = qr.data.split(':'); assert.equal(parts[0], 'ns');
-        id ??= parts[1]; total ??= Number(parts[3]); assert.equal(parts[1], id); assert.equal(Number(parts[3]), total);
-        chunks.set(Number(parts[2]), Buffer.from(parts[4], 'base64url'));
-        if (chunks.size === total) {
-          const message = Buffer.concat(Array.from({ length: total }, (_, index) => chunks.get(index)));
-          assert.equal(createHash('sha256').update(message).digest('hex'), id);
-          return JSON.parse(message.toString('utf8'));
-        }
-      }
-      await page.waitForTimeout(150);
-    }
-    throw Error('Could not decode the displayed request pixels.');
-  }
-  async function scanResponse(page, request, result) {
-    const message = Buffer.from(JSON.stringify({ id: request.id, result: typeof result === 'string' ? result : JSON.stringify(result) }));
-    const digest = createHash('sha256').update(message).digest('hex'), count = Math.ceil(message.length / 384);
-    const codes = await Promise.all(Array.from({ length: count }, (_, index) => QRCode.toDataURL(`ns:${digest}:${index}:${count}:${message.subarray(index * 384, (index + 1) * 384).toString('base64url')}`, { width: 512, margin: 4, errorCorrectionLevel: 'M' })));
-    await page.evaluate(images => { window.__testQRImages = images; }, codes);
-    await page.getByRole('button', { name: 'Scan device response', exact: true }).click();
-    await page.locator('#operation').waitFor({ state: 'hidden', timeout: 20000 });
-    assert.equal(await page.evaluate(() => window.__testTracks.every(track => track.readyState === 'ended')), true);
-  }
+  await fixtureCamera(context);
   const page = await context.newPage(); const errors = [];
   page.on('pageerror', error => errors.push(error.message));
   await page.goto('http://127.0.0.1:8787');
   await page.getByRole('button', { name: 'Read from device', exact: true }).click();
   let request = await requestFromPixels(page); assert.equal(request.method, 'get_public_key');
   await scanResponse(page, request, key); await page.waitForFunction(() => !document.querySelector('#result-panel').hidden);
-  await page.locator('#note').fill('Actual QR pixels, exact note.');
+  const note = 'Actual QR pixels, exact note. '.repeat(24);
+  await page.locator('#note').fill(note);
   await page.getByRole('button', { name: 'Review on device', exact: true }).click();
   request = await requestFromPixels(page); assert.equal(request.method, 'sign_event');
-  const unsigned = JSON.parse(request.params[0]); assert.equal(unsigned.pubkey, key); assert.equal(unsigned.content, 'Actual QR pixels, exact note.');
+  const unsigned = JSON.parse(request.params[0]); assert.equal(unsigned.pubkey, key); assert.equal(unsigned.content, note);
   const signed = finalizeEvent(unsigned, secret); await scanResponse(page, request, signed);
   await page.waitForFunction(() => document.querySelector('#result-title').textContent === 'Verified signed event');
   assert.equal(JSON.parse(await page.locator('#result').inputValue()).id, signed.id);

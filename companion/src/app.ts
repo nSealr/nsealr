@@ -5,6 +5,7 @@ import type { Result } from './owner.ts';
 import { npub, methods } from './protocol.ts';
 import type { Method, SignedEvent } from './protocol.ts';
 import { RemoteSigner, publishNote, relayURL } from './relay.ts';
+import { messagesUI } from './messages-ui.ts';
 
 declare const chrome: any;
 const get = <T extends HTMLElement>(id: string) => document.getElementById(id) as T;
@@ -14,13 +15,14 @@ const dialog = (id: string) => get<HTMLDialogElement>(id);
 const status = (message: string, error = false) => { get('status').textContent = message; get('status').classList.toggle('error', error); };
 const fail = (error: unknown) => status(error instanceof Error ? error.message : String(error), true);
 const owner = new Owner(render);
+const messages = messagesUI(owner);
 let frame = 0, paused = false, activeId = '', signed: SignedEvent | null = null, remote: RemoteSigner | null = null;
 let cameraMode: 'identity' | 'response' = 'response';
 let permission: { resolve: (allowed: boolean) => void; origin: string } | null = null;
 let extensionPort: any;
 const camera = new Camera(get<HTMLVideoElement>('video'), code => {
   try {
-    if (cameraMode === 'identity') { closeRemote(); owner.select(code); stopCamera(); status('Public identity selected. Read it from the device to confirm.'); }
+    if (cameraMode === 'identity') { messages.clear(); closeRemote(); owner.select(code); stopCamera(); status('Public identity selected. Read it from the device to confirm.'); }
     else if (owner.scan(code)) { stopCamera(); status('Device response received.'); }
     else { const { received, total } = owner.collector.progress; get('camera-status').textContent = `Collected ${received} of ${total} response frames.`; }
   } catch (error) { get('camera-status').textContent = error instanceof Error ? error.message : 'Could not read this QR.'; }
@@ -30,7 +32,7 @@ function closePermission(allowed: boolean) {
   const current = permission; permission = null; dialog('permission').close(); current?.resolve(allowed);
 }
 function ask(origin: string, method: Method | 'connect', detail: string): Promise<boolean> {
-  if (permission || owner.operation) return Promise.resolve(false);
+  if (permission || owner.operation || owner.reserved) return Promise.resolve(false);
   get('permission-title').textContent = method === 'connect' ? 'Pair this client?' : `Allow ${method.replaceAll('_', ' ')}?`;
   get('permission-origin').textContent = origin; get('permission-detail').textContent = detail;
   dialog('permission').showModal(); return new Promise(resolve => { permission = { resolve, origin }; });
@@ -61,7 +63,7 @@ function drawQR() {
   const operation = owner.operation; if (!operation) return;
   frame %= operation.frames.length;
   get('frame-count').textContent = `${frame + 1} / ${operation.frames.length}`;
-  void QRCode.toCanvas(get<HTMLCanvasElement>('request-qr'), operation.frames[frame], { width: 384, margin: 4, errorCorrectionLevel: 'M', color: { dark: '#000000', light: '#ffffff' } }).catch(fail);
+  void QRCode.toCanvas(get<HTMLCanvasElement>('request-qr'), operation.frames[frame], { scale: 5, margin: 4, errorCorrectionLevel: 'M', color: { dark: '#000000', light: '#ffffff' } }).catch(fail);
 }
 function render() {
   get('selected').textContent = owner.key ? npub(owner.key) : 'No identity selected.';
@@ -78,7 +80,7 @@ function render() {
   } else {
     activeId = ''; dialog('operation').close();
     if (cameraMode === 'response') stopCamera();
-    get<HTMLCanvasElement>('request-qr').getContext('2d')?.clearRect(0, 0, 384, 384);
+    const canvas = get<HTMLCanvasElement>('request-qr'); canvas.getContext('2d')?.clearRect(0, 0, canvas.width, canvas.height);
   }
   const grants = get('grants'); grants.replaceChildren();
   for (const [origin, permissions] of owner.grants) {
@@ -89,7 +91,7 @@ function render() {
   get('grants-panel').hidden = !owner.grants.size;
 }
 setInterval(() => { if (owner.operation && !paused) { frame++; drawQR(); } }, 500);
-button('select', () => { closeRemote(); owner.select(input('identity').value); status('Public identity selected. Read it from the device to confirm.'); });
+button('select', () => { messages.clear(); closeRemote(); owner.select(input('identity').value); status('Public identity selected. Read it from the device to confirm.'); });
 button('connect', () => local('get_public_key', []));
 button('scan-identity', () => startCamera('identity'));
 button('sign', () => local('sign_event', [{ kind: 1, created_at: Math.floor(Date.now() / 1000), tags: [], content: input('note').value }]));
@@ -116,8 +118,8 @@ button('remote-start', async () => {
 button('accept-client', async () => { if (!remote) throw Error('Open a relay session first.'); await remote.acceptClient(input('client-link').value); input('bunker').value = ''; input('client-link').value = ''; });
 function closeRemote() { if (permission?.origin.startsWith('NIP-46 ')) closePermission(false); remote?.close(); remote = null; input('bunker').value = ''; input('client-link').value = ''; get('remote-info').hidden = true; get('remote-stop').hidden = true; }
 button('remote-stop', closeRemote);
-button('disconnect', () => { closePermission(false); closeRemote(); owner.disconnect(); clearResult(); stopCamera(); input('identity').value = ''; input('note').value = ''; status('Disconnected.'); });
-window.addEventListener('pagehide', () => { closePermission(false); remote?.close(); owner.disconnect(); camera.stop(); });
+button('disconnect', () => { messages.clear(); closePermission(false); closeRemote(); owner.disconnect(); clearResult(); stopCamera(); input('identity').value = ''; input('note').value = ''; status('Disconnected.'); });
+window.addEventListener('pagehide', () => { messages.cancel(); closePermission(false); remote?.close(); owner.disconnect(); camera.stop(); });
 
 if (typeof chrome !== 'undefined' && chrome.runtime?.id) {
   extensionPort = chrome.runtime.connect({ name: 'companion' });
@@ -139,6 +141,6 @@ if (typeof chrome !== 'undefined' && chrome.runtime?.id) {
       status(`${message.method === 'sign_event' ? 'Verified signed event' : 'Device result'} returned to ${message.origin}.`);
     } catch (error) { extensionPort.postMessage({ type: 'response', id: message.id, error: error instanceof Error ? error.message : 'Request failed.' }); }
   });
-  extensionPort.onDisconnect.addListener(() => { clearInterval(heartbeat); owner.disconnect(); closePermission(false); status('Browser connection closed. Reload the companion to reconnect.', true); });
+  extensionPort.onDisconnect.addListener(() => { clearInterval(heartbeat); messages.clear(); owner.disconnect(); closePermission(false); status('Browser connection closed. Reload the companion to reconnect.', true); });
 }
 render();

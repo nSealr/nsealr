@@ -68,9 +68,38 @@ pair again with a fresh link. Session transport keys and permissions are not
 saved to browser storage. JavaScript cannot promise physical memory erasure.
 
 NIP-44 decrypt releases plaintext to the requesting client after device consent.
-That client can store or disclose it. NIP-44 primitives alone do not implement
-or verify a complete NIP-17 conversation, gift-wrap chain or delivery history.
-The device determines which complete workflows are admitted.
+That client can store or disclose it. The device determines which workflows are
+admitted. The remote service queues at most four operations for one paired client,
+so recipient and sender-copy requests can proceed one device operation at a time.
+Cancellation or an identity change invalidates the queued work.
+
+## Private text messages
+
+Enter one to three discovery relays under **Private messages**. The companion
+uses signed kind-10050 preferences to find inbox relays for you and the recipient.
+It does not send to a guessed inbox. Use **Your message inbox** to sign and publish
+your own preferences when needed. A relay list is the newest valid list observed
+on your chosen discovery relays; this does not prove there is no newer list elsewhere.
+
+Choose one recipient and write your message. The complete unsigned rumor must fit
+4096 UTF8 bytes, including its metadata and JSON escaping. The device reviews each
+encryption and seal signature. The companion then makes separate ephemeral gift
+wraps for the recipient and your own copy, and publishes each only to its signed
+inbox list. Per-copy status distinguishes relay acceptance and failure. Retrying
+reuses the same encrypted event and skips relays that already accepted it.
+
+**Load recent inbox** fetches encrypted envelopes from the last 30 days, up to
+30 per inbox and 60 total. Nothing is decrypted automatically. Select a message,
+review the requests on the device, and scan both responses. The companion verifies
+the outer signature and recipient, the seal signature, and the inner author's
+identity, recipient set and rumor ID before displaying the selected plaintext.
+**Clear local messages** removes it from the interface. Browser memory erasure
+is not guaranteed, and another client may keep plaintext after release.
+
+An inbox relay may request NIP-42 authorization. That exact socket's relay URL
+and challenge go to the device for approval. Group/file messages, disappearing
+message metadata and legacy NIP-04 are not admitted by this text-message flow.
+Relay acceptance does not prove the recipient received or read the message.
 
 ## Development checks
 
@@ -85,11 +114,20 @@ QR pixels from a synthetic video stream, checks NIP-07 requests and cancellation
 and waits through the browser's worker idle interval. It does not access a
 physical camera or publish test events. Outputs stay under `.cache/`.
 
+`tests/clients.mjs` drives the real Coracle or noStrudel interface with a loaded
+extension or NIP-46 session. `tests/messages-browser.mjs` checks composition and
+selected receive against the persistent native Rust owner. Both use local relay
+models and synthetic camera input. See [client qualification](CLIENTS.md) for
+the source pins, commands, observed paths and remaining limits.
+
 Sources: [NIP-01](https://github.com/nostr-protocol/nips/blob/master/01.md),
 [NIP-07](https://github.com/nostr-protocol/nips/blob/master/07.md),
+[NIP-17](https://github.com/nostr-protocol/nips/blob/master/17.md),
 [NIP-19](https://github.com/nostr-protocol/nips/blob/master/19.md),
+[NIP-42](https://github.com/nostr-protocol/nips/blob/master/42.md),
 [NIP-44](https://github.com/nostr-protocol/nips/blob/master/44.md), and
-[NIP-46](https://github.com/nostr-protocol/nips/blob/master/46.md).
+[NIP-46](https://github.com/nostr-protocol/nips/blob/master/46.md),
+[NIP-59](https://github.com/nostr-protocol/nips/blob/master/59.md).
 
 Fonts are unchanged website assets: Inter and JetBrains Mono. Their upstream
 OFL licenses are included in `fonts/`. Build dependencies are pinned by the

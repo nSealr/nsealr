@@ -38,6 +38,8 @@ export class RemoteSigner {
   private seen = new Set<string>();
   private closed = false;
   private busy = false;
+  private operations = Promise.resolve();
+  private queued = 0;
   private opening: Promise<void> | null = null;
   private acknowledgements = new Map<string, { resolve: () => void; reject: (error: Error) => void; timer: ReturnType<typeof setTimeout> }>();
   readonly relay: string;
@@ -114,8 +116,22 @@ export class RemoteSigner {
     if (this.seen.size >= 512) { this.close(); throw Error('Start a new remote session to continue.'); }
     this.seen.add(seenKey);
     const origin = `NIP-46 ${event.pubkey}`;
+    const generation = this.owner.generation;
+    let releaseQueue = () => {};
+    let queued = false;
+    if (method === 'connect' || (event.pubkey === this.peer && methods.includes(method as Method))) {
+      if (this.queued >= 4) { await this.reply(event.pubkey, id, undefined, 'The device request queue is full.'); return; }
+      const previous = this.operations;
+      this.operations = new Promise<void>(resolve => { releaseQueue = resolve; });
+      this.queued++; queued = true; await previous;
+    }
     let acquired = false;
     try {
+      if (this.closed) return;
+      if (generation !== this.owner.generation) throw Error('Queued request cancelled with the previous operation.');
+      if (event.pubkey === this.peer && method === 'ping' && !params.length) { await this.reply(event.pubkey, id, 'pong'); return; }
+      if (event.pubkey === this.peer && method === 'switch_relays' && !params.length) { await this.reply(event.pubkey, id, 'null'); return; }
+      if (event.pubkey === this.peer && method === 'logout' && !params.length) { await this.reply(event.pubkey, id, 'ack'); this.close(); return; }
       if (this.busy) throw Error('Another device request is already open.');
       if (method === 'connect') {
         if (this.peer || params[0] !== this.transportKey || !this.token || params[1] !== this.token) throw Error('Invalid or already used pairing token.');
@@ -126,13 +142,10 @@ export class RemoteSigner {
         await this.reply(event.pubkey, id, 'ack'); this.status('Client paired. Keep this companion open.'); return;
       }
       if (event.pubkey !== this.peer) throw Error('Pair this client first.');
-      if (method === 'ping' && !params.length) { await this.reply(event.pubkey, id, 'pong'); return; }
-      if (method === 'switch_relays' && !params.length) { await this.reply(event.pubkey, id, 'null'); return; }
-      if (method === 'logout' && !params.length) { await this.reply(event.pubkey, id, 'ack'); this.close(); return; }
       if (!methods.includes(method as Method)) throw Error('Unsupported signer method.');
       this.busy = true; acquired = true;
       if (!this.owner.grants.get(origin)?.has(method as Method)) {
-        if (!await this.approve(origin, method as Method, 'Allow this method for this connection. The device asks you for every operation.')) throw Error('Permission rejected.');
+        if (!await this.approve(origin, method as Method, 'Allow this method for this connection. The device asks you for every operation.')) { this.owner.revoke(origin); throw Error('Permission rejected.'); }
         if (this.closed) return;
         this.owner.grant(origin, method as Method);
       }
@@ -140,7 +153,7 @@ export class RemoteSigner {
       await this.reply(event.pubkey, id, typeof result === 'string' ? result : JSON.stringify(result));
     } catch (error) {
       await this.reply(event.pubkey, id, undefined, error instanceof Error ? error.message : 'Request failed.');
-    } finally { if (acquired) this.busy = false; }
+    } finally { if (acquired) this.busy = false; if (queued) { this.queued--; releaseQueue(); } }
   }
   async acceptClient(uri: string) {
     const parsed = new URL(uri);
@@ -149,12 +162,14 @@ export class RemoteSigner {
     if (!secret || parsed.searchParams.getAll('relay').map(relayURL).indexOf(this.relay) < 0) throw Error('Pairing link must include this relay and a secret.');
     if (this.peer || this.closed || this.busy) throw Error('This session is already paired, busy or closed.');
     this.busy = true;
+    let releaseQueue = () => {};
+    this.operations = new Promise<void>(resolve => { releaseQueue = resolve; });
     try {
       if (!await this.approve(`NIP-46 ${peer}`, 'connect', 'Pair this client for this session. Client names and URLs do not establish identity.')) throw Error('Pairing rejected.');
       if (this.closed) throw Error('Remote session closed.');
       await this.open(); this.peer = peer; this.token = '';
       await this.reply(peer, crypto.randomUUID(), secret); this.status('Client paired. Keep this companion open.');
-    } finally { this.busy = false; }
+    } finally { this.busy = false; releaseQueue(); }
   }
   close() {
     if (this.closed) return;
