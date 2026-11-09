@@ -1,0 +1,46 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Use nSealr</title>
+  <link rel="stylesheet" href="app.css">
+</head>
+<body>
+<header><a class="brand" href="index.html">nSealr</a><a href="index.html">Back to companion</a></header>
+<main>
+  <p class="eyebrow">YOUR KEY STAYS OFFLINE</p>
+  <h1>Use your signer</h1>
+  <p class="intro">The companion connects your Nostr client to the device. Keep recovery words, private keys, passphrases and share backups on the device or in your offline backup.</p>
+  <section class="card">
+    <h2>Load your identity</h2>
+    <p>Create or import an identity on the device. In the companion, choose <strong>Read from device</strong>, scan the request with the device, then scan its response. Compare the full public identity before you continue.</p>
+  </section>
+  <section class="card">
+    <h2>Review a request</h2>
+    <ol>
+      <li>Ask your client to sign, or write a note in the companion.</li>
+      <li>Scan the displayed QR with the device. Keep scanning until all frames arrive.</li>
+      <li>Check the action, identity, targets and text on the device. Open exact details when needed. Approve or reject there.</li>
+      <li>Choose <strong>Scan device response</strong>. Point the camera at the device QR until every frame is captured.</li>
+    </ol>
+    <p>The companion checks the returned event and signature. Publishing is a separate action; a valid signature alone does not mean a relay accepted the note.</p>
+  </section>
+  <section class="card">
+    <h2>Connect a client</h2>
+    <p>For a Nostr website, <a href="https://nsealr.com/downloads/">install the browser extension</a> and reload that website. Check its origin before allowing access. Each key operation still needs the device.</p>
+    <p>For a remote client, choose a secure relay and <strong>Open session</strong>. Use the pairing link in the client, then confirm its displayed key. Keep the companion open. Reloading or closing it ends that session.</p>
+  </section>
+  <section class="card">
+    <h2>Private messages</h2>
+    <p>Set your message inbox, then choose one recipient. The device reviews the message and recipient before encryption. To read a selected message, approve its verification and plaintext release on the device. Once released, the client can store that text.</p>
+  </section>
+  <section class="card">
+    <h2>Shared identities</h2>
+    <p>Create a group with three devices and sign with two. Load the public group record into the companion; secret share backups stay offline. Two surviving participants can repair a lost share while keeping the same npub. This does not revoke a stolen copy.</p>
+    <p><a href="https://nsealr.com/docs/threshold/">Follow the setup and recovery guide</a> before starting a group ceremony.</p>
+  </section>
+  <footer><a href="index.html">Back to companion</a> · <a href="https://nsealr.com/docs/">Device guides</a></footer>
+</main>
+</body>
+</html>
