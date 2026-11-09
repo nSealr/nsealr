@@ -314,6 +314,51 @@ fn cancellation_expiry_and_wrong_round_consume_nonces_without_losing_share() {
 }
 
 #[test]
+fn replacement_frames_and_finish_consume_pending_authority_and_collection() {
+    let mut group = GroupTest::new();
+    group.setup();
+    let mut peers = vec![group.keys[0], group.keys[1]];
+    peers.sort();
+    let event = json!({"pubkey":j::hex_string(group.devices[0].public_key().unwrap()),"created_at":1,"kind":1,"tags":[],"content":"Old request"});
+    let request = json!({"type":"nsealr_sign","id":"old","session":"22".repeat(32),"members":wire::list(&peers),"event":event.to_string()}).to_string();
+    group.receive(0, &request).unwrap();
+    let device = &mut group.devices[0];
+    let generation = device.generation();
+    for index in 0..device.fields().len() {
+        device.seen(generation, index).unwrap();
+    }
+    let frame = nsealr_core::qr::encode(&vec![b'x'; 500], 0).unwrap();
+    assert_eq!(
+        device.receive_frame(frame.as_bytes(), &mut [60; 32], group.now + 1),
+        Err(Error::Stale)
+    );
+    assert_eq!(
+        device.approve(generation, false, &mut [61; 32], group.now + 2),
+        Err(Error::Stale)
+    );
+    assert!(device.outputs().is_empty());
+    assert!(device.loaded());
+    assert_eq!(
+        device.receive_frame(frame.as_bytes(), &mut [62; 32], group.now + 3),
+        Ok(false)
+    );
+    device.finish_response();
+    assert_eq!(device.collector.received(), 0);
+    let backup = device.backup().unwrap();
+    let mut frame = nsealr_core::qr::encode(backup.as_bytes(), 0)
+        .unwrap()
+        .into_bytes();
+    assert_eq!(
+        device.backup_frame(&mut frame, true, group.now + 4),
+        Ok(false)
+    );
+    device.finish_response();
+    assert_eq!(device.collector.received(), 0);
+    assert_eq!(device.backup_scan, None);
+    assert!(device.loaded());
+}
+
+#[test]
 fn secret_backup_frames_are_bounded_wiped_and_check_never_replaces_the_share() {
     let mut group = GroupTest::new();
     group.setup();

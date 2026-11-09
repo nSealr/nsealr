@@ -13,6 +13,7 @@ static uint8_t backup[3][NS_THRESHOLD_MAX_BACKUP], entropy[32];
 static size_t backup_len[3];
 static unsigned sequence=1;
 static uint64_t now=1;
+static uint64_t previous_generation[3];
 static void fresh(void){memset(entropy,(int)sequence++,32);++now;}
 static void wiped(const uint8_t *bytes,size_t len){for(size_t i=0;i<len;i++)assert(bytes[i]==0);}
 static int compare(const void *a,const void *b){return strcmp(a,b);}
@@ -63,6 +64,10 @@ static void route(unsigned count){
 int main(void){
     for(int i=0;i<3;i++){
         device[i]=(ns_context*)storage[i];assert(ns_init(storage[i],sizeof storage[i])==0);
+        fresh();assert(ns_generate(device[i],0,entropy,NULL,0,0)==0);wiped(entropy,32);
+        const char *normal="{\"id\":\"normal\",\"method\":\"get_public_key\",\"params\":[]}";
+        assert(ns_request(device[i],(const uint8_t*)normal,strlen(normal),now)==0);
+        previous_generation[i]=ns_review_generation(device[i]);
         fresh();assert(ns_threshold_start(device[i],entropy,now)==0);wiped(entropy,32);
         ns_text output;assert(ns_threshold_output(device[i],0,&output)==0);
         memcpy(input,output.data,output.len);input[output.len]=0;field(input,"key",keys[i]);strcpy(roster[i],keys[i]);
@@ -72,7 +77,10 @@ int main(void){
     snprintf(input,sizeof input,"{\"type\":\"nsealr_setup\",\"session\":\"%064d\",\"members\":[\"%s\",\"%s\",\"%s\"]}",1,roster[0],roster[1],roster[2]);
     for(int i=0;i<3;i++){
         fresh();assert(ns_threshold_receive(device[i],(const uint8_t*)input,strlen(input),entropy,now)==0);wiped(entropy,32);
-        assert(ns_threshold_state(device[i])==NS_THRESHOLD_REVIEW);approve(i);
+        assert(ns_threshold_state(device[i])==NS_THRESHOLD_REVIEW);
+        assert(ns_review_generation(device[i])!=previous_generation[i]);
+        assert(ns_review_seen(device[i],previous_generation[i],0)<0);
+        approve(i);
     }
     assert(outputs()==6);route(6);assert(outputs()==6);route(6);
     for(int i=0;i<3;i++){

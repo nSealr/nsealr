@@ -60,11 +60,24 @@ impl Context {
             self.owner.fields()
         }
     }
-    fn generation(&self) -> u64 {
+    fn raw_generation(&self) -> u64 {
         if self.threshold {
             self.custody.generation()
         } else {
             self.owner.generation()
+        }
+    }
+    fn generation(&self) -> u64 {
+        self.raw_generation()
+            .checked_mul(2)
+            .and_then(|value| value.checked_add(u64::from(self.threshold)))
+            .unwrap_or(0)
+    }
+    fn check_generation(&self, generation: u64) -> Result<u64, Error> {
+        if generation == 0 || generation != self.generation() {
+            Err(Error::Stale)
+        } else {
+            Ok(self.raw_generation())
         }
     }
     fn cancel(&mut self) {
@@ -580,6 +593,7 @@ pub unsafe extern "C" fn ns_review_item(
 pub unsafe extern "C" fn ns_review_seen(ctx: *mut Context, generation: u64, index: u32) -> i32 {
     code((|| {
         let c = context(ctx)?;
+        let generation = c.check_generation(generation)?;
         if c.threshold {
             c.custody.seen(generation, index as usize)
         } else {
@@ -604,6 +618,7 @@ pub unsafe extern "C" fn ns_approve(
     };
     let result = (|| {
         let c = context(ctx)?;
+        let generation = c.check_generation(generation).inspect_err(|_| c.cancel())?;
         if c.threshold {
             c.custody.approve(generation, partial, bytes, now)
         } else {
@@ -617,6 +632,7 @@ pub unsafe extern "C" fn ns_approve(
 pub unsafe extern "C" fn ns_reject(ctx: *mut Context, generation: u64) -> i32 {
     code((|| {
         let c = context(ctx)?;
+        let generation = c.check_generation(generation).inspect_err(|_| c.cancel())?;
         if c.threshold {
             c.custody.reject(generation)
         } else {

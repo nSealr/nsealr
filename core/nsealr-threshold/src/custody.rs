@@ -200,7 +200,7 @@ impl Custody {
         &self.outputs
     }
     pub fn finish_response(&mut self) {
-        if self.review.is_some() {
+        if self.review.is_some() || self.collector.received() != 0 || self.backup_scan.is_some() {
             self.cancel();
         } else {
             self.outputs.clear();
@@ -313,7 +313,7 @@ impl Custody {
         now: u64,
     ) -> Result<bool, Error> {
         let result = (|| {
-            if self.backup_scan.is_some() {
+            if self.review.is_some() || self.backup_scan.is_some() {
                 return Err(Error::Stale);
             }
             if self.tick(now)? {
