@@ -14,8 +14,7 @@ fn main() {
     );
     println!(
         "cargo:rerun-if-changed={}",
-        root.join("tests/core/authorization-vectors.json")
-            .display()
+        root.join("tests/core/authorization-vectors.json").display()
     );
     let status = Command::new("python3")
         .arg(script)

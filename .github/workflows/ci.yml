@@ -1,0 +1,36 @@
+name: CI
+
+on:
+  push:
+    branches: [main, restart/product]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09
+        with:
+          persist-credentials: false
+      - name: Install the pinned Rust toolchain
+        run: rustup toolchain install 1.95.0 --profile minimal --component clippy --component rustfmt --target riscv32imafc-unknown-none-elf
+      - name: Check portable behavior and boundaries
+        run: |
+          cargo fmt --all -- --check
+          cargo test --workspace --all-features --locked --offline
+          cargo clippy --workspace --all-targets --all-features --locked --offline -- -D warnings
+          cargo build --workspace --lib --release --locked --offline --target riscv32imafc-unknown-none-elf
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09
+        with:
+          repository: lvgl/lvgl
+          ref: 60b614c23c816ca5edc5f2840c9945eff7da0ad4
+          path: .cache/lvgl
+          persist-credentials: false
+      - name: Build native screens and test pointer navigation
+        env:
+          LVGL_DIR: ${{ github.workspace }}/.cache/lvgl
+        run: python3 tools/ui_preview.py

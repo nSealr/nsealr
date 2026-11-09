@@ -3,8 +3,7 @@ use serde_json::Value;
 use sha2::Digest;
 use std::{string::String, vec, vec::Vec};
 
-const VECTORS: &str =
-    include_str!("../../../../tests/core/nip44-official-vectors.json");
+const VECTORS: &str = include_str!("../../../../tests/core/nip44-official-vectors.json");
 
 fn vectors() -> Value {
     assert_eq!(

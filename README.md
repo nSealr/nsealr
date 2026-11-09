@@ -19,6 +19,21 @@ We are rebuilding the interface and simplifying the project around one device,
 while retaining reviewed Rust core code, established cryptography and useful
 independent tests. Historical experiments are preserved separately.
 
+<img src="docs/images/home.png" alt="Native home screen preview" width="240"> <img src="docs/images/review.png" alt="Native post review preview" width="240">
+
+These are actual LVGL renders with public examples, not screenshots of qualified
+firmware. [Build or explore the native preview](firmware/preview/README.md).
+
+The portable core can be checked with Rust 1.95.0 and Python 3:
+
+```sh
+cargo test --workspace --locked --offline
+```
+
+Vendored dependency source, patches and license notices are preserved for offline
+builds. [Core provenance and remaining coupling](docs/core-provenance.md) records
+what was recovered and checked.
+
 See [product](docs/product.md), [development status](docs/status.md) and
 [source provenance](docs/provenance.md). Features listed as planned are not
 implemented or qualified by being listed here.
