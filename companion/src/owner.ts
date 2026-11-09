@@ -36,7 +36,7 @@ export class Owner {
     this.changed();
   }
   start(origin: string, method: Method, params: unknown[], local = false): Promise<Result> {
-    if (this.reserved && !local) return Promise.reject(Error('A private-message operation is in progress.'));
+    if (this.reserved && !local) return Promise.reject(Error('Another coordinated device operation is in progress.'));
     if (this.pending) return Promise.reject(Error('Another device request is already open.'));
     if (!local && !this.grants.get(origin)?.has(method)) return Promise.reject(Error('This application has no permission for that method.'));
     let prepared: Request;

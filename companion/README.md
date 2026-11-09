@@ -101,6 +101,42 @@ and challenge go to the device for approval. Group/file messages, disappearing
 message metadata and legacy NIP-04 are not admitted by this text-message flow.
 Relay acceptance does not prove the recipient received or read the message.
 
+## Two devices to sign
+
+**Create group** coordinates three independent devices into a 2-of-3 identity.
+Open threshold setup on each device and scan its public join code into the
+companion. Scan the resulting setup request on all three. Compare the complete
+fingerprint on every device before approval.
+
+The companion first collects both encrypted outputs from each device, then
+displays the six packets one at a time for their named recipients. Check the
+receiving device before choosing **Next packet**. That button records your
+progress; it is not a cryptographic receipt. Repeat for the second setup phase,
+then scan all three public group records. They must agree on the identity,
+fingerprint and members. Keep share backups on the devices; never scan a private
+share backup into this computer. One share cannot recover the group identity.
+
+After setup, or after **Load group from device**, choose two available members.
+A note or connected client's signing request for this group starts a ceremony
+with the exact original event and request ID. Both devices review the event and
+cosigner. The companion verifies every participant's packet signature and binds
+it to the roster, session and phase before forwarding its encrypted bytes
+unchanged. It collects every commitment before forwarding commitments, and every
+share packet before forwarding shares. The browser cannot decrypt these packets.
+
+Scan the final result from either participant. The ordinary operation owner
+still verifies the original request, group public key, complete event, canonical
+ID and BIP340 signature before returning it to the client. A second identical
+final QR would not authenticate which device displayed it, so it is not required.
+Group identities support signing and public-key requests; NIP-44 encryption and
+decryption are unsupported for these groups.
+
+Setup lasts at most ten minutes and a signing ceremony five minutes. After a
+rejection, cancellation or expiry, cancel the ceremony on every participating
+device and start with a fresh session. Closing the companion loses its transient
+coordination state. A device's public group record can reload the routing
+information; it does not contain or replace the private shares.
+
 ## Development checks
 
 `npm test` exercises the optical bounds, hostile data, immutable event matching,
@@ -119,6 +155,11 @@ extension or NIP-46 session. `tests/messages-browser.mjs` checks composition and
 selected receive against the persistent native Rust owner. Both use local relay
 models and synthetic camera input. See [client qualification](CLIENTS.md) for
 the source pins, commands, observed paths and remaining limits.
+
+`THRESHOLD_RUNNER=/path/to/threshold node tests/threshold-browser.mjs` exercises
+setup and signing through three isolated native host contexts, the actual
+packaged extension and QR pixels. The test-only runner automatically completes
+device review; it does not establish operation across three physical devices.
 
 Sources: [NIP-01](https://github.com/nostr-protocol/nips/blob/master/01.md),
 [NIP-07](https://github.com/nostr-protocol/nips/blob/master/07.md),

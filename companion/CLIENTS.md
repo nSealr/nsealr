@@ -30,13 +30,26 @@ copies were independently decrypted and their signatures/rumor IDs checked.
 Clearing local messages removed the displayed plaintext. This flow uses the
 same synthetic camera and local relay boundaries described above. Full-size
 request chunks exposed a decoding failure at the original 384-pixel canvas;
-request QR codes now render with whole five-pixel modules, and the browser
-regression uses a multipart public note.
+request QR codes now render with whole pixel modules, up to five pixels per
+module, and resize to the available dialog width. Multipart codes retain one
+matrix size. The browser regression uses a multipart public note and checks
+the rendered mobile screen pixels as well as the intrinsic canvas.
+
+The threshold browser flow also passed complete 2-of-3 setup using three
+independent native host contexts, followed by actual extension public-key
+retrieval and a two-member signing request. It routed the real Rust custody
+implementation's encrypted DKG/commitment/share packets and independently
+verified the resulting aggregate BIP340 signature against the exact original
+client event. Review was automatic in the host driver and QR input came from a
+synthetic camera. This does not establish three-device physical operation,
+entropy quality, custody recovery on hardware or audit coverage.
 
 ## Reproduce the checked paths
 
 Build the companion first. Build the native host runner from the repository root
 with `node tools/check_integration.mjs`; it appears at `.cache/integration/optical`.
+The same command builds the three-participant threshold driver at
+`.cache/integration/threshold` and runs its native ABI checks.
 This runner uses the public scalar-3 test identity and automatically approves
 review fields. It is test infrastructure, not a production signer application.
 
@@ -71,3 +84,14 @@ available to subsequent seal signatures and selected decryptions. The test
 independently decrypts and verifies both outgoing copies, then opens the sender's
 copy through the actual two-stage UI. It does not test a public relay's retention,
 recipient availability, physical optical quality or disconnected operation.
+
+The threshold UI check uses its separate three-participant native driver:
+
+```sh
+THRESHOLD_RUNNER=/path/to/threshold node tests/threshold-browser.mjs
+```
+
+It creates the group through the displayed/scanned QR flow, then requests its
+public key and an exact event signature through the actual packaged extension.
+Native contexts hold the test shares; the coordinator receives only public
+records, encrypted participant packets and the final signed event.
