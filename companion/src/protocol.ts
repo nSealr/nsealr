@@ -136,7 +136,7 @@ export function request(method: Method, params: unknown[], key: string | null): 
     if (params.length) throw Error('This method takes no parameters.');
     values = [];
   } else {
-    if (!key) throw Error('Connect your device identity first.');
+    if (!key) throw Error('Select your public identity first.');
     if (method === 'sign_event') {
       if (params.length !== 1) throw Error('One event is required.');
       values = [JSON.stringify(template(typeof params[0] === 'string' ? parseJSON(params[0]) : params[0], key))];

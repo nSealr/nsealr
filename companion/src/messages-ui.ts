@@ -27,7 +27,7 @@ export function messagesUI(owner: Owner) {
   };
   const run = async (work: (signal: AbortSignal) => Promise<void>) => {
     if (active || owner.operation) throw Error('Finish or cancel the current device request first.');
-    if (!owner.key) throw Error('Connect your device identity first.');
+    if (!owner.key) throw Error('Select your public identity first.');
     const controller = new AbortController(); active = controller; owner.reserved = true;
     for (const id of lockedButtons) get<HTMLButtonElement>(id).disabled = true;
     get('cancel-message').hidden = false;

@@ -44,3 +44,5 @@ jobs:
         env:
           LVGL_DIR: ${{ github.workspace }}/.cache/lvgl
         run: python3 tools/ui_preview.py
+      - name: Check camera custody, power admission and paper QR
+        run: python3 firmware/p4/tests/check.py --lvgl .cache/lvgl --rust-library target/release/libnsealr_device.a

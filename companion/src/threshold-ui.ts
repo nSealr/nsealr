@@ -67,7 +67,7 @@ export function thresholdUI(owner: Owner, scan: () => Promise<void>, selectIdent
       instruction.textContent = `On member ${index}, scan this packet. Check that the device accepts it, then choose Next packet. A click here only records your progress.`;
       progress.textContent = `${c.phase}: packet ${c.deliveryNumber} of ${c.expected} · recipient ${current!.recipient}`;
     } else if (c.phase === 'joins') {
-      instruction.textContent = c.mode === 'repair' ? 'Keep the two surviving shares loaded. On the replacement, choose Import identity → Restore a group share → Repair lost share → Join repair. Scan its public join code here. Old copies of the lost share remain valid; this does not revoke a stolen share.' : 'On each of three devices, open threshold setup. Scan each device’s public join code here. Keep all three devices ready.';
+      instruction.textContent = c.mode === 'repair' ? 'Keep the two surviving shares loaded. On the replacement, choose Tools → Restore a group share → Repair lost share → Join repair. Scan its public join code here. Old copies of the lost share remain valid; this does not revoke a stolen share.' : 'On each of three devices, choose Tools → 2-of-3 signing group → Start group. Scan each device’s public join code here. Keep all three devices ready.';
       progress.textContent = c.mode === 'repair' ? 'One fresh replacement join code required.' : `${c.count} of 3 distinct join codes collected.`;
     } else if (c.phase === 'setup1') {
       instruction.textContent = 'Scan this setup request on all three devices. Compare the complete fingerprint and approve on each device. Then scan both encrypted outputs from every device here.'; progress.textContent = `${c.count} of 6 signed setup packets collected.`;

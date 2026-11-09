@@ -116,7 +116,7 @@ button('copy-result', () => navigator.clipboard.writeText(input('result').value)
 button('copy-bunker', () => navigator.clipboard.writeText(input('bunker').value));
 button('publish', async () => { if (!signed) throw Error('There is no verified event to publish.'); await publishNote(signed, input('publish-relay').value); status('Relay accepted the signed event.'); });
 button('remote-start', async () => {
-  if (!owner.key) throw Error('Connect your device identity first.');
+  if (!owner.key) throw Error('Select your public identity first.');
   remote?.close(); remote = new RemoteSigner(relayURL(input('relay').value), owner, ask, message => { if (remote?.client) input('bunker').value = ''; status(message); });
   await remote.open(); input('bunker').value = remote.bunker; get('remote-info').hidden = false; get('remote-stop').hidden = false;
 });

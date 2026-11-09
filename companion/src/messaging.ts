@@ -142,7 +142,7 @@ export async function publishCopies(owner: Owner, copies: Copy[], signal: AbortS
   }
 }
 export async function readMessage(owner: Owner, input: unknown, signal: AbortSignal): Promise<Rumor> {
-  const recipient = owner.key; if (!recipient) throw Error('Connect your device identity first.');
+  const recipient = owner.key; if (!recipient) throw Error('Select your public identity first.');
   const wrap = readWrap(input, recipient); checkSignal(signal);
   const clearSeal = await owner.start('Open selected message', 'nip44_decrypt', [wrap.pubkey, wrap.content], true);
   checkSignal(signal); if (typeof clearSeal !== 'string') throw Error('Invalid gift-wrap result.');
