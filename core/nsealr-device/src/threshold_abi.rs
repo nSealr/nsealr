@@ -8,6 +8,7 @@ pub unsafe extern "C" fn ns_threshold_start(ctx: *mut Context, entropy: *mut u8,
     };
     let result = (|| {
         let c = context(ctx)?;
+        c.staged.clear();
         c.owner.lock();
         c.threshold = true;
         c.custody.start(bytes, now)
@@ -140,6 +141,7 @@ pub unsafe extern "C" fn ns_threshold_import(
     };
     let result = (|| {
         let c = context(ctx)?;
+        c.staged.clear();
         c.owner.lock();
         c.threshold = true;
         c.custody.import(bytes, now)
@@ -176,6 +178,7 @@ unsafe fn backup_frame(ctx: *mut Context, p: *mut u8, len: usize, now: u64, chec
             return Err(Error::Unsupported);
         }
         if !check {
+            c.staged.clear();
             c.owner.lock();
             c.threshold = true;
         }

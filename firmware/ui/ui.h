@@ -16,13 +16,15 @@ typedef enum {
     UI_SCAN,
     UI_QR,
     UI_SECRET,
-    UI_NOTICE
+    UI_NOTICE,
+    UI_PHOTO,
+    UI_DICE
 } ui_screen;
 enum {
     UI_BACK = 256,
     UI_NEXT,
     UI_CANCEL,
-    UI_LOCK,
+    UI_CLEAR,
     UI_DONE,
     UI_READER_END,
     UI_KEY_BACKSPACE,
@@ -38,7 +40,10 @@ enum {
     UI_WORD_EDIT2,
     UI_WORD_EDIT3,
     UI_KEY_CLEAR,
-    UI_KEY_SCAN
+    UI_KEY_SCAN,
+    UI_KEY_LEFT,
+    UI_KEY_RIGHT,
+    UI_ACTIVITY
 };
 typedef struct {
     const char *label;
@@ -55,14 +60,12 @@ typedef struct {
     unsigned left_action, right_action;
     bool loaded, right_enabled, keyboard_upper, quiz;
     unsigned keyboard_page, word_choices;
-    size_t input_length;
     unsigned progress, total;
     const uint8_t *qr;
     size_t qr_length;
 } ui_view;
 typedef void (*ui_action_cb)(unsigned action, void *context);
 void ui_show(const ui_view *, ui_action_cb, void *);
-void ui_set_input_length(size_t length);
 void ui_enable_next(void);
 lv_obj_t *ui_reader(void);
 /* Escapes unsupported codepoints and controls; never silently drops bytes. */

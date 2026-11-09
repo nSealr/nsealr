@@ -38,3 +38,20 @@ the upstream two-step touch selection and overflow issue were not copied.
 - <https://github.com/kdmukAI-bot/seedsigner/tree/fd9ba8fc766f715668bc37fbb5485499def9e52f>
 - <https://github.com/kdmukAI-bot/seedsigner-lvgl-screens/tree/33ddc0763c31b5ae0b6380147ba624a7fc0c9273>
 - <https://github.com/kdmukai/seedsigner-micropython-builder/issues/61>
+
+The photo flow follows the preview, capture and explicit acceptance pattern in
+the ESP32 app above. Its incremental frame hashing was compared with
+`cam_pipeline_entropy` at `be2d8f55f39932021af3682834a0b498d15747d0`; this board
+uses its own fixed-size, domain-separated core hash and caller-owned buffers.
+Uniform/repeated frame rejection is a failure check, not an entropy estimate.
+
+- <https://github.com/kdmukAI-bot/esp-camera-pipeline/tree/be2d8f55f39932021af3682834a0b498d15747d0/components/cam_pipeline_entropy>
+
+Power admission uses the AXP2101 at I2C address 0x34. Both USB-C connectors share
+USB0_5V, routed through input protection to VCC_5V and PMIC VBUS pin 37. The
+read-only status mapping is VBUS-good bit 5 and battery-present bit 3 at 0x00;
+discharging is bits 6:5 = 2 at 0x01. Chip ID at 0x03 must equal 0x4a. Sources
+were inspected on 2026-11-09. No PMIC power-rail writes are required.
+
+- <https://github.com/waveshareteam/ESP32-P4-WIFI6-Touch-LCD-3.5/blob/main/schematic/ESP32-P4-WIFI6-Touch-LCD-3.5-schematic.pdf>
+- <https://github.com/kdmukAI-bot/seedsigner-micropython-builder/blob/a9f865c68b20457692ab4547e3394785114b507f/ports/esp32/XPowersLib/src/XPowersAXP2101.tpp>

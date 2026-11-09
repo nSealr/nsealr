@@ -13,7 +13,7 @@
 
 static ui_action_cb action_callback;
 static void *action_context;
-static lv_obj_t *reader, *input_count, *next_button;
+static lv_obj_t *reader, *next_button;
 static unsigned generation, pressed_generation;
 
 static lv_obj_t *box(lv_obj_t *parent, int x, int y, int w, int h, uint32_t color) {
@@ -65,7 +65,11 @@ static lv_obj_t *button(lv_obj_t *parent, int x, int y, int w, int h, const char
 }
 static void reader_event(lv_event_t *e) {
     lv_obj_t *o = lv_event_get_target_obj(e);
-    if (lv_obj_get_scroll_bottom(o) <= 1 && action_callback)
+    if (!action_callback)
+        return;
+    if (lv_event_get_code(e) == LV_EVENT_PRESSING)
+        action_callback(UI_ACTIVITY, action_context);
+    else if (lv_obj_get_scroll_bottom(o) <= 1)
         action_callback(UI_READER_END, action_context);
 }
 static void footer(lv_obj_t *root, const ui_view *v) {
@@ -84,26 +88,23 @@ static void keyboard(lv_obj_t *root, const ui_view *v) {
     static const char symbols[] = "0123456789!#$%&()*+/:;=?[]_{}<>";
     static const char extra[] = "\"'\\^`|~@.,-:";
     const char *keys = v->keyboard_page == 2 ? extra : v->keyboard_page == 1 ? symbols : letters;
-    input_count = text(root, 16, 105, 288, "", &font_body16, MUTED);
     if (v->body)
-        lv_label_set_text(input_count, v->body);
-    else
-        ui_set_input_length(v->input_length);
+        text(root, 16, 111, 288, v->body, &font_body18, FG);
     for (unsigned i = 0; i < strlen(keys); i++) {
         char c = keys[i];
         if (v->keyboard_upper && c >= 'a' && c <= 'z')
             c = (char)(c - 'a' + 'A');
         char label[2] = {c, 0};
-        button(root, 16 + (i % 6) * 49, 174 + (i / 6) * 44, 43, 40, label, (unsigned char)c, false);
+        button(root, 16 + (i % 6) * 49, 210 + (i / 6) * 38, 43, 34, label, (unsigned char)c, false);
     }
-    button(root, 16, 128, 68, 38,
-           v->keyboard_page == 2   ? "ABC"
-           : v->keyboard_page == 1 ? "More"
-                                   : "123",
+    button(root, 16, 170, 44, 32,
+           v->keyboard_page == 2 ? "abc" : v->keyboard_page == 1 ? "#+=" : "123",
            UI_KEY_MODE, false);
-    button(root, 91, 128, 65, 38, v->keyboard_upper ? "abc" : "ABC", UI_KEY_CASE, false);
-    button(root, 163, 128, 65, 38, "Space", UI_KEY_SPACE, false);
-    button(root, 235, 128, 69, 38, "Erase", UI_KEY_BACKSPACE, false);
+    button(root, 64, 170, 44, 32, v->keyboard_upper ? "A/a" : "a/A", UI_KEY_CASE, false);
+    button(root, 112, 170, 64, 32, "Space", UI_KEY_SPACE, false);
+    button(root, 180, 170, 44, 32, "Del", UI_KEY_BACKSPACE, false);
+    button(root, 228, 170, 36, 32, "<", UI_KEY_LEFT, false);
+    button(root, 268, 170, 36, 32, ">", UI_KEY_RIGHT, false);
 }
 void ui_show(const ui_view *v, ui_action_cb callback, void *context) {
     action_callback = callback;
@@ -111,7 +112,6 @@ void ui_show(const ui_view *v, ui_action_cb callback, void *context) {
     generation++;
     pressed_generation = 0;
     reader = NULL;
-    input_count = NULL;
     next_button = NULL;
     lv_obj_t *root = lv_screen_active();
     lv_obj_clean(root);
@@ -123,9 +123,7 @@ void ui_show(const ui_view *v, ui_action_cb callback, void *context) {
     if (v->header_label)
         button(root, 116, 8, 108, 36, v->header_label, v->header_action, false);
     if (v->loaded)
-        button(root, 236, 8, 68, 36, "Lock", UI_LOCK, false);
-    else
-        text(root, 204, 23, 100, "OFFLINE", &font_body16, MUTED);
+        button(root, 236, 8, 68, 36, "Clear", UI_CLEAR, false);
     box(root, 16, 51, 288, 1, BORDER);
     text(root, 16, 66, 288, v->title, &font_title26, FG);
     if (v->subtitle && v->screen != UI_INPUT && v->screen != UI_WORD_ENTRY)
@@ -189,6 +187,7 @@ void ui_show(const ui_view *v, ui_action_cb callback, void *context) {
         lv_obj_set_style_bg_opa(reader, LV_OPA_COVER, LV_PART_SCROLLBAR);
         text(reader, 0, 0, 252, v->body, &font_body18, FG);
         lv_obj_add_event_cb(reader, reader_event, LV_EVENT_SCROLL, NULL);
+        lv_obj_add_event_cb(reader, reader_event, LV_EVENT_PRESSING, NULL);
         break;
     case UI_CONFIRM:
     case UI_NOTICE: {
@@ -196,6 +195,17 @@ void ui_show(const ui_view *v, ui_action_cb callback, void *context) {
         text(card, 16, 16, 256, v->body, &font_body18, FG);
         break;
     }
+    case UI_PHOTO:
+        box(root, 32, 166, 256, 194, PANEL);
+        break;
+    case UI_DICE:
+        for (unsigned i = 0; i < 6; i++) {
+            char label[2] = {(char)('1' + i), 0};
+            button(root, 16 + (i % 3) * 98, 221 + (i / 3) * 60, 92, 52, label, '1' + i, false);
+        }
+        button(root, 16, 350, 141, 44, "Undo roll", UI_KEY_BACKSPACE, false);
+        button(root, 163, 350, 141, 44, "Clear rolls", UI_KEY_CLEAR, false);
+        break;
     case UI_SCAN: {
         lv_obj_t *card = box(root, 32, 166, 256, 194, PANEL);
         text(card, 20, 68, 216, "Hold the QR steady", &font_body18, FG);
@@ -222,13 +232,6 @@ void ui_show(const ui_view *v, ui_action_cb callback, void *context) {
         break; /* Direct, acknowledged secret raster is drawn by the board. */
     }
     footer(root, v);
-}
-void ui_set_input_length(size_t length) {
-    if (input_count) {
-        char s[48];
-        snprintf(s, sizeof(s), "%zu bytes entered", length);
-        lv_label_set_text(input_count, s);
-    }
 }
 void ui_enable_next(void) {
     if (next_button)

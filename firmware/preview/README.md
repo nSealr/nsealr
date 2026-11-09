@@ -1,13 +1,11 @@
 # Native device UI
 
-This executable uses the production `device.c`, LVGL UI and Rust C ABI. Its
-software framebuffer reproduces the target RGB565 colors. Secret text and QR
-pixels use the same controlled raster code. The host supplies **published test
-entropy**, so it must never be used for a real identity. There is no host camera;
-the tests feed complete optical transport frames into the actual collector.
-
-Build the native Rust static library, then pass its location and the pinned LVGL
-source to the runner:
+This executable runs the production controller, LVGL UI and Rust C ABI with real
+pointer events. Its framebuffer uses the target RGB565 colors and controlled
+secret raster. The host has published test entropy, a synthetic camera picture
+and simulated battery status. Never use it for a real identity. Optical frames
+are fed into the actual collector; no host test proves physical camera, power,
+entropy, display transfer or memory cleanup behavior.
 
 ```sh
 cargo build --release --locked -p nsealr-device
@@ -16,39 +14,26 @@ python3 tools/ui_preview.py --lvgl /path/to/lvgl-9.6 \
 ```
 
 Use `--cmake /path/to/cmake` when needed. `--core-root` supports an isolated core
-worktree during integration. The runner checks the LVGL source identity, builds,
-executes the owner/navigation tests and writes actual framebuffer PNGs under
-`.cache/ui-preview/screens/`. `--serve` starts a loopback viewer; its browser only
-forwards pointer input to the native executable and displays its pixels.
+worktree. The runner checks the LVGL pin, builds, replays the flows and writes
+framebuffer PNGs and source identities under `.cache/ui-preview/`. `--serve`
+opens a loopback viewer that forwards pointer events to the native executable.
 
-The essential flow checks creation, all-position backup quiz, 12/24-word prefix
-entry with real pointer events, Back/edit and checksum repair, QR import,
-request collection, complete rendering before approval, explicit partial prose
-consent, rejection, cancellation, response clearing and lock. This is host evidence;
-physical camera, entropy, LCD transfer completion and hardware cleanup still need
-separate device measurements.
+The replay covers load-first and scan-first signing, wrong-key refusal, fixed
+request expiry, idle clear, cancellation, explicit session clear and simulated
+power faults. Camera checks cover capture, retake, acceptance, cancellation and
+idle cleanup. Dice entry checks edits and independent 50/100-roll public-key
+vectors. Backup checks cover every position for all five BIP39 word counts,
+supported QR menus, paper-copy grid navigation and wrong/correct scan-back.
 
-The ordinary entry paths use 60 taps for 12 words and 119 for the published
-24-word test vector. Additional tests exercise repair navigation, explicit
-passphrase spaces and multi-page passphrase confirmation, mismatch/retry during
-QR backup comparison, and pause/manual frame controls. These are measured tap
-counts in the host replay, not claims about human or physical-device speed.
+Recovery checks include prefix entry, Back/edit, checksum repair, controlled
+passphrase editing, spaces, Unicode, account changes and complete review before
+use. The published 12/24-word fixtures take 60/119 entry taps; these are host
+replay counts, not measured human speed. Nostr checks retain complete rendered
+review, explicit partial prose consent, signing, rejection and returned QR bytes.
 
-The threshold replay uses the real UI as one participant and two independent
-core contexts as its peers. It completes three-device group creation, captures
-every outgoing packet, renders group consent, checks a wrong and correct animated
-share backup without replacing the identity, restores the share, and completes
-two-device signing. The displayed QR bytes are compared with the actual queued
-protocol message. Native rendering does not establish optical capture quality.
-The native file adapter exercises explicit share save/read-back/restore, missing
-media, overwrite refusal, missing and oversized files, and clearing failed input.
-These tests use only public test material in `.cache/ui-preview/NSEALR.NSR`, which
-is removed afterward. The P4 uses its real FatFs/SD driver and needs separate
-absent-card, read/write and removal/error measurements.
-
-The recovery replay also covers public-key confirmation return paths, reopening
-identity options, cancelled and completed account changes, deliberate UTF8
-passphrase scanning, complete-codepoint editing, invalid/oversized input cleanup,
-and equivalent composed/decomposed passphrases. Threshold checks redisplay the
-loaded public record after its original output has been dismissed and compare
-both displayed frames with the actual descriptor bytes.
+Threshold checks use the UI as one participant and two core peers. They complete
+group setup, every exchange packet, share backup/check/recovery, public-record
+QR, two-device signing, and lost-share repair followed by signing with either
+survivor. The native file adapter checks explicit save/read-back/restore, absent
+media, overwrite refusal, missing/oversize input and error-buffer clearing. It
+uses public test data in `.cache/ui-preview/NSEALR.NSR` and removes it afterward.

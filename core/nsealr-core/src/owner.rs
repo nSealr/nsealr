@@ -180,6 +180,26 @@ impl Owner {
             }
         }
     }
+    /// Resume an immutable staged message without extending its scan lifetime.
+    pub fn resume(&mut self, input: &[u8], now: u64, deadline: u64) -> Result<(), Error> {
+        if now >= deadline {
+            self.cancel();
+            return Err(Error::Stale);
+        }
+        let result = self.request(input, now);
+        if let Some(pending) = self.pending.as_mut() {
+            pending.deadline = pending.deadline.min(deadline);
+            if let Operation::Decrypt {
+                receipt: Some(receipt),
+                ..
+            } = &mut pending.operation
+            {
+                receipt.deadline = receipt.deadline.min(deadline);
+            }
+        }
+        self.response_deadline = self.response_deadline.min(deadline);
+        result
+    }
     fn prepare(
         &self,
         request: &Value,

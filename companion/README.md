@@ -113,8 +113,8 @@ Relay acceptance does not prove the recipient received or read the message.
 ## Two devices to sign
 
 **Create group** coordinates three independent devices into a 2-of-3 identity.
-Open threshold setup on each device and scan its public join code into the
-companion. Scan the resulting setup request on all three. Compare the complete
+On each device, choose **Tools → 2-of-3 signing group → Start group** and scan
+its public join code into the companion. Scan the resulting setup request on all three. Compare the complete
 fingerprint on every device before approval.
 
 The companion first collects both encrypted outputs from each device, then
@@ -122,7 +122,7 @@ displays the six packets one at a time for their named recipients. Check the
 receiving device before choosing **Next packet**. That button records your
 progress; it is not a cryptographic receipt. Repeat for the second setup phase,
 then scan all three public group records. They must agree on the identity,
-fingerprint and members. Keep share backups on the devices; never scan a private
+fingerprint and members. Keep share backups offline; never scan a private
 share backup into this computer. One share cannot recover the group identity.
 
 After setup, or after **Load group from device**, choose two available members.
@@ -144,7 +144,7 @@ decryption are unsupported for these groups.
 
 Load a current public group record, open **Recover a lost share**, and choose the
 missing member number. Back up both surviving shares and keep them loaded. On the fresh replacement
-device, choose **Import identity → Restore a group share → Repair lost share →
+device, choose **Tools → Restore a group share → Repair lost share →
 Join repair**. Scan its public join code into the companion, then scan the repair
 request on all three devices. The loaded helpers use **Scan a request**. Compare
 the complete repair fingerprint and approve on every device.

@@ -51,6 +51,23 @@ int32_t ns_import_secret_qr(ns_context *ctx, uint32_t kind, uint8_t *input, size
  * The platform must qualify entropy before calling. Never use fixture entropy. */
 int32_t ns_generate(ns_context *ctx, uint32_t words, uint8_t entropy32[32],
                     uint8_t *passphrase, size_t passphrase_len, uint32_t account);
+/* Local generation, initially without a passphrase at account 0. Dice requires
+ * exactly 50/100 ASCII digits 1..6 for 12/24 words. SHA256 of the exact digits is
+ * deterministic; hashing does not compensate for biased or dependent rolls.
+ * Photo input is SHA256(domain || image_digest32 || hardware_entropy32).
+ * The platform owns capture/consent and source qualification. All inputs wipe. */
+int32_t ns_generate_dice(ns_context *ctx, uint32_t words, uint8_t *rolls, size_t len);
+int32_t ns_generate_photo(ns_context *ctx, uint32_t words,
+                          uint8_t image_digest32[32], uint8_t hardware_entropy32[32]);
+/* P4 camera helper: SHA256(domain || final byte || chain || frame).
+ * Domain is "nsealr/photo-frame" followed by a NUL byte.
+ * Exactly 800x800 RGB565 bytes are borrowed; the board owns their cleanup.
+ * Start chain with zeros. Chain becomes zero on error. No entropy claim follows. */
+int32_t ns_photo_frame_hash(uint8_t chain32[32], const uint8_t *frame,
+                            size_t len, bool final_frame);
+/* Check English BIP39 words/checksum without deriving or replacing an identity.
+ * The input is wiped on success and failure. */
+int32_t ns_validate_mnemonic(uint8_t *input, size_t len);
 /* public format: 0=64-byte hex, 1=npub. Output is not NUL-terminated. */
 int32_t ns_public_key(const ns_context *ctx, uint32_t format,
                      uint8_t *out, size_t capacity, size_t *written);
@@ -65,6 +82,18 @@ int32_t ns_backup(const ns_context *ctx, uint32_t kind,
                  uint8_t *out, size_t capacity, size_t *written);
 int32_t ns_backup_word(const ns_context *ctx, uint32_t index,
                       uint8_t *out, size_t capacity, size_t *written);
+/* Local backup/quiz only; works for every supported mnemonic length.
+ * The caller wipes the returned secret index. Output is zero on failure. */
+int32_t ns_backup_word_index(const ns_context *ctx, uint32_t index, uint16_t *out);
+
+/* Scan an ordinary request before loading an identity. No review authority is
+ * created. NS_MORE means more frames; NS_OK means a complete staged request.
+ * Local key imports preserve it. Cancel, Lock, invalid input and expiry clear it.
+ * Resume consumes it once, checks the loaded identity and starts fresh review;
+ * the original ten-minute scan deadline also bounds that review. */
+int32_t ns_stage_frame(ns_context *ctx, const uint8_t *frame, size_t len, uint64_t now_ms);
+bool ns_has_staged_request(const ns_context *ctx);
+int32_t ns_resume_request(ns_context *ctx, uint64_t now_ms);
 
 /* Replacing a request cancels old authority. now_ms is trusted monotonic time.
  * Each request expires after ten minutes. Frame intake returns NS_MORE until

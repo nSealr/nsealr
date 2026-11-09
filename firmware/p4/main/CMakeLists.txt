@@ -4,7 +4,7 @@ endif()
 set(ui "${CMAKE_CURRENT_LIST_DIR}/../../ui")
 file(GLOB fonts "${ui}/fonts/font_*.c")
 idf_component_register(
-  SRCS "main.c" "app_video.c" "board_radio.c" "board_rng.c" "board_rng_logic.c"
+  SRCS "main.c" "app_video.c" "board_radio.c" "board_rng.c" "board_rng_logic.c" "board_power.c" "photo_capture.c"
        "display_ack.c" "frame_pixels.c" "secret_raster.c" "secret_qr.c" "share_file.c"
        "../../device.c" "../../word_input.c" "../../backup_check.c" "${ui}/ui.c" ${fonts}
   INCLUDE_DIRS "." "../vendor/quirc/lib" "../.." "${NSEALR_CORE_ROOT}/core/nsealr-device/include"

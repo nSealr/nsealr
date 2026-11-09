@@ -65,6 +65,12 @@ static app_video_t app_camera_video = {
 };
 /* Uncertain capture ownership is permanent until a power-cycle. */
 static atomic_bool video_faulted;
+static atomic_bool capture_failed;
+
+bool app_video_stream_failed(void)
+{
+    return atomic_load(&capture_failed) || atomic_load(&video_faulted);
+}
 
 static esp_err_t app_video_lock_device(int video_fd)
 {
@@ -492,6 +498,7 @@ static void video_stream_task(void *arg)
 
     while (ulTaskNotifyTake(pdTRUE, 0) == 0) {
         if (video_receive_video_frame(video_fd) != ESP_OK) {
+            atomic_store(&capture_failed, true);
             break;
         }
         if (ulTaskNotifyTake(pdTRUE, 0) != 0) {
@@ -499,10 +506,12 @@ static void video_stream_task(void *arg)
             break;
         }
         if (video_operation_video_frame() != ESP_OK) {
+            atomic_store(&capture_failed, true);
             video_free_video_frame(video_fd);
             break;
         }
         if (video_free_video_frame(video_fd) != ESP_OK) {
+            atomic_store(&capture_failed, true);
             break;
         }
     }
@@ -568,6 +577,7 @@ esp_err_t app_video_stream_task_start(int video_fd, int core_id, void *user_data
         return ESP_FAIL;
     }
 
+    atomic_store(&capture_failed, false);
     BaseType_t result = xTaskCreatePinnedToCore(video_stream_task, "video stream task", VIDEO_TASK_STACK_SIZE, &app_camera_video.video_fd, VIDEO_TASK_PRIORITY, &app_camera_video.video_stream_task_handle, core_id);
 
     if (result != pdPASS) {

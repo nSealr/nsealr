@@ -1,5 +1,6 @@
 #include "app_video.h"
 #include "board.h"
+#include "board_power.h"
 #include "board_radio.h"
 #include "board_rng.h"
 #include "board_rng_logic.h"
@@ -26,6 +27,8 @@
 #include "freertos/FreeRTOS.h"
 #include "freertos/semphr.h"
 #include "freertos/task.h"
+#include "photo_capture.h"
+#include "power_status.h"
 #include "quirc.h"
 #include "secret_qr.h"
 #include "secret_raster.h"
@@ -45,6 +48,7 @@ static uint32_t render_generation;
 static uint64_t released_at;
 static _Alignas(64) DRAM_ATTR uint16_t secret_tile[P4_SECRET_TILE_PIXELS];
 static DRAM_ATTR p4_secret_qr_t secret_qr;
+static DRAM_ATTR p4_photo_capture photo;
 typedef struct allocation {
     struct allocation *next, *previous;
     void *base, *payload;
@@ -63,7 +67,26 @@ static size_t camera_length;
 static uint16_t *camera_preview;
 static lv_image_dsc_t camera_image;
 static uint64_t preview_at;
+static uint64_t camera_frame_at;
 static lv_obj_t *camera_widget;
+static bool photo_mode, photo_frozen;
+static bool camera_owner_held, camera_callback_waiting;
+static unsigned brightness = 100;
+static bool preview_attach(void);
+static bool camera_stop(bool keep_preview);
+
+_Static_assert((unsigned)DEVICE_POWER_BATTERY == (unsigned)P4_POWER_BATTERY &&
+                   (unsigned)DEVICE_POWER_EXTERNAL == (unsigned)P4_POWER_EXTERNAL &&
+                   (unsigned)DEVICE_POWER_UNKNOWN == (unsigned)P4_POWER_UNKNOWN,
+               "Power state ABI");
+unsigned platform_power_state(void) { return board_power_state(); }
+bool platform_display_brightness(unsigned percent) {
+    if (percent < 20 || percent > 100 || bsp_display_brightness_set((int)percent) != ESP_OK)
+        return false;
+    brightness = percent;
+    return true;
+}
+static esp_err_t backlight_on(void) { return bsp_display_brightness_set((int)brightness); }
 
 uint32_t board_epoch(void) { return atomic_load(&epoch); }
 bool board_revoked(void) { return atomic_load(&revoked) || atomic_load(&fault); }
@@ -139,6 +162,11 @@ _Noreturn void platform_fail(void) {
     /* All core calls and their fatal paths run on this sole owner task. Other
      * tasks only latch a fault; they never race a key teardown. */
     if (xTaskGetCurrentTaskHandle() == owner_task) {
+        p4_photo_clear(&photo);
+        photo_mode = photo_frozen = false;
+        /* Bounded, nonrecursive cleanup. A failed join leaves DMA buffers alone;
+         * restart is mandatory and is not a claim of verified memory erasure. */
+        (void)camera_stop(false);
         device_emergency_clear();
         for (allocation *entry = allocations; entry; entry = entry->next)
             platform_wipe(entry->payload, entry->size);
@@ -216,8 +244,6 @@ static void queue_action(unsigned selected, void *unused) {
     (void)unused;
     if (!atomic_exchange(&navigation, false))
         return;
-    if (selected == UI_LOCK)
-        platform_revoke();
     atomic_store(&action, selected);
 }
 static bool refresh(bool invalidate) {
@@ -250,7 +276,9 @@ bool platform_present(const ui_view *v) {
     ui_show(v, queue_action, NULL);
     camera_widget = NULL;
     esp_lv_adapter_unlock();
-    if (!refresh(true) || bsp_display_backlight_on() != ESP_OK)
+    if (photo_frozen && !preview_attach())
+        return false;
+    if (!refresh(true) || backlight_on() != ESP_OK)
         return false;
     if (esp_lv_adapter_lock(1000) != ESP_OK)
         return false;
@@ -260,14 +288,6 @@ bool platform_present(const ui_view *v) {
     device_presented(at_end);
     return true;
 }
-void platform_input_changed(size_t n) {
-    if (esp_lv_adapter_lock(1000) != ESP_OK)
-        platform_fail();
-    ui_set_input_length(n);
-    esp_lv_adapter_unlock();
-    if (!refresh(false))
-        platform_fail();
-}
 void platform_review_ready(void) {
     if (esp_lv_adapter_lock(1000) != ESP_OK)
         platform_fail();
@@ -276,7 +296,8 @@ void platform_review_ready(void) {
     if (!refresh(false))
         platform_fail();
 }
-static bool secret_draw(const uint8_t *bytes, size_t len, bool qr, bool blank) {
+static bool secret_draw(const uint8_t *bytes, size_t len, bool qr, bool blank, bool region,
+                        unsigned column, unsigned block_row) {
     atomic_store(&navigation, false);
     atomic_store(&action, 0);
     released_at = platform_now();
@@ -298,7 +319,10 @@ static bool secret_draw(const uint8_t *bytes, size_t len, bool qr, bool blank) {
             for (size_t i = 0; i < P4_SECRET_TILE_PIXELS; i++)
                 secret_tile[i] = 0x0021;
             rendered = true;
-        } else if (qr)
+        } else if (region)
+            rendered = p4_secret_qr_region_tile(&secret_qr, column, block_row, row, secret_tile,
+                                                P4_SECRET_TILE_PIXELS);
+        else if (qr)
             rendered = p4_secret_qr_tile(&secret_qr, row, secret_tile, P4_SECRET_TILE_PIXELS);
         else if (lines)
             rendered = p4_secret_raster_lines(bytes, len, row, secret_tile, P4_SECRET_TILE_PIXELS);
@@ -318,7 +342,7 @@ static bool secret_draw(const uint8_t *bytes, size_t len, bool qr, bool blank) {
     secret_visible = !blank;
     if (!ok)
         return false;
-    return blank || bsp_display_backlight_on() == ESP_OK;
+    return blank || backlight_on() == ESP_OK;
 }
 static bool secret_lines(const ns_text *lines, const uint16_t *y, size_t count, bool keyboard,
                          uint32_t valid) {
@@ -372,7 +396,7 @@ static bool secret_lines(const ns_text *lines, const uint16_t *y, size_t count, 
     atomic_store(&direct, false);
     esp_lv_adapter_unlock();
     secret_visible = true;
-    return ok && bsp_display_backlight_on() == ESP_OK;
+    return ok && backlight_on() == ESP_OK;
 }
 bool platform_secret_lines(const ns_text *lines, const uint16_t *y, size_t count) {
     return secret_lines(lines, y, count, false, 0);
@@ -380,12 +404,34 @@ bool platform_secret_lines(const ns_text *lines, const uint16_t *y, size_t count
 bool platform_word_entry(const ns_text *lines, const uint16_t *y, size_t count, uint32_t valid) {
     return secret_lines(lines, y, count, true, valid);
 }
-bool platform_secret_text(const uint8_t *p, size_t n) { return secret_draw(p, n, false, false); }
+bool platform_secret_text(const uint8_t *p, size_t n) {
+    return secret_draw(p, n, false, false, false, 0, 0);
+}
 bool platform_secret_qr(const uint8_t *p, size_t n) {
-    return p4_secret_qr_encode(&secret_qr, p, n) && secret_draw(NULL, 0, true, false);
+    bool ok =
+        p4_secret_qr_encode(&secret_qr, p, n) && secret_draw(NULL, 0, true, false, false, 0, 0);
+    p4_secret_qr_clear(&secret_qr);
+    return ok;
+}
+bool platform_secret_qr_size(const uint8_t *p, size_t n, unsigned *modules) {
+    if (!modules)
+        return false;
+    *modules = 0;
+    bool ok = p4_secret_qr_encode(&secret_qr, p, n);
+    if (ok)
+        *modules = secret_qr.modules;
+    p4_secret_qr_clear(&secret_qr);
+    return ok;
+}
+bool platform_secret_qr_region(const uint8_t *p, size_t n, unsigned column, unsigned row) {
+    bool ok = p4_secret_qr_encode(&secret_qr, p, n) && column < (secret_qr.modules + 4) / 5 &&
+              row < (secret_qr.modules + 4) / 5 &&
+              secret_draw(NULL, 0, true, false, true, column, row);
+    p4_secret_qr_clear(&secret_qr);
+    return ok;
 }
 bool platform_secret_clear(void) {
-    bool ok = !secret_visible || secret_draw(NULL, 0, false, true);
+    bool ok = !secret_visible || secret_draw(NULL, 0, false, true, false, 0, 0);
     p4_secret_qr_clear(&secret_qr);
     platform_wipe(secret_tile, sizeof(secret_tile));
     return ok;
@@ -420,8 +466,105 @@ static void camera_frame(uint8_t *rgb, uint8_t index, uint32_t width, uint32_t h
     if (xSemaphoreTake(camera_copied, pdMS_TO_TICKS(3000)) != pdTRUE)
         atomic_store(&fault, true);
 }
+static bool preview_attach(void) {
+    if (esp_lv_adapter_lock(1000) != ESP_OK)
+        return false;
+    if (!camera_widget) {
+        camera_widget = lv_image_create(lv_screen_active());
+        lv_obj_set_pos(camera_widget, 32, 166);
+    }
+    lv_image_cache_drop(&camera_image);
+    lv_image_set_src(camera_widget, &camera_image);
+    lv_obj_invalidate(camera_widget);
+    esp_lv_adapter_unlock();
+    return true;
+}
+static bool wipe_camera_pixels(void *pixels, size_t length) {
+    if (!pixels)
+        return true;
+    platform_wipe(pixels, length);
+    return esp_cache_msync(pixels, length, ESP_CACHE_MSYNC_FLAG_DIR_C2M) == ESP_OK;
+}
+static void camera_copy_done(void) {
+    camera_rgb = NULL;
+    camera_length = 0;
+    if (camera_callback_waiting) {
+        camera_callback_waiting = false;
+        xSemaphoreGive(camera_copied);
+    }
+}
+static void camera_owner_release(void) {
+    camera_copy_done();
+    camera_owner_held = false;
+    xSemaphoreGive(camera_owned);
+}
+static bool camera_stop(bool keep_preview) {
+    atomic_store(&camera_active, false);
+    bool ok = true, own = false;
+    if (video >= 0) {
+        /* Fatal cleanup may interrupt processing after ready was consumed. */
+        if (camera_owner_held) {
+            camera_copy_done();
+            camera_owner_held = false;
+            own = true;
+        }
+        uint64_t end = platform_now() + 1000;
+        while (!own && !(own = xSemaphoreTake(camera_owned, 0) == pdTRUE)) {
+            if (xSemaphoreTake(camera_ready, pdMS_TO_TICKS(10)) == pdTRUE) {
+                camera_rgb = NULL;
+                xSemaphoreGive(camera_copied);
+                own = true;
+                break;
+            }
+            if (platform_now() >= end) {
+                atomic_store(&fault, true);
+                return false;
+            }
+        }
+        esp_err_t stopped = app_video_stream_task_stop(video);
+        ok = (stopped == ESP_OK || stopped == ESP_ERR_INVALID_STATE) &&
+             app_video_wait_video_stop() == ESP_OK;
+        /* Never wipe a buffer while the camera may still own its DMA writes. */
+        if (ok) {
+            if (decoder) {
+                quirc_destroy(decoder);
+                decoder = NULL;
+            }
+            if (qr_code)
+                platform_wipe(qr_code, sizeof(*qr_code));
+            if (qr_data)
+                platform_wipe(qr_data, sizeof(*qr_data));
+            for (unsigned i = 0; i < 2; i++)
+                if (!wipe_camera_pixels(camera_buffers[i], P4_PHOTO_FRAME_BYTES))
+                    ok = false;
+        }
+        camera_rgb = NULL;
+        camera_length = 0;
+        if (own)
+            xSemaphoreGive(camera_owned);
+    }
+    if (!keep_preview) {
+        photo_frozen = false;
+        if (display && esp_lv_adapter_lock(1000) == ESP_OK) {
+            lv_image_cache_drop(&camera_image);
+            if (camera_widget) {
+                lv_obj_delete(camera_widget);
+                camera_widget = NULL;
+            }
+            if (!wipe_camera_pixels(camera_preview, 256 * 192 * 2))
+                ok = false;
+            esp_lv_adapter_unlock();
+            if (!atomic_load(&fault) && !refresh(true))
+                ok = false;
+        } else if (display)
+            ok = false;
+    }
+    if (!ok)
+        atomic_store(&fault, true);
+    return ok;
+}
 bool platform_scan_start(void) {
-    if (video < 0 || decoder || atomic_load(&camera_active))
+    if (video < 0 || decoder || photo_mode || atomic_load(&camera_active))
         return false;
     decoder = quirc_new();
     if (!decoder)
@@ -432,65 +575,114 @@ bool platform_scan_start(void) {
         return false;
     }
     if (app_video_stream_task_restart(video) != ESP_OK) {
-        quirc_destroy(decoder);
-        decoder = NULL;
+        if (!camera_stop(false))
+            platform_fail();
         return false;
     }
+    preview_at = 0;
+    camera_frame_at = platform_now();
     atomic_store(&camera_active, true);
     return true;
 }
 bool platform_scan_stop(void) {
-    atomic_store(&camera_active, false);
-    uint64_t end = platform_now() + 1000;
-    bool own = false;
-    while (!(own = xSemaphoreTake(camera_owned, 0) == pdTRUE)) {
-        if (xSemaphoreTake(camera_ready, pdMS_TO_TICKS(10)) == pdTRUE) {
-            camera_rgb = NULL;
-            xSemaphoreGive(camera_copied);
-            own = true;
-            break;
+    p4_photo_clear(&photo);
+    photo_mode = false;
+    return camera_stop(false);
+}
+bool platform_photo_start(void) {
+    if (video < 0 || decoder || photo_mode || atomic_load(&camera_active))
+        return false;
+    p4_photo_begin(&photo);
+    if (app_video_stream_task_restart(video) != ESP_OK) {
+        p4_photo_clear(&photo);
+        if (!camera_stop(false))
+            platform_fail();
+        return false;
+    }
+    photo_mode = true;
+    photo_frozen = false;
+    preview_at = 0;
+    camera_frame_at = platform_now();
+    atomic_store(&camera_active, true);
+    return true;
+}
+bool platform_photo_stop(void) {
+    p4_photo_clear(&photo);
+    photo_mode = false;
+    return camera_stop(false);
+}
+/* The callback retains the dequeued buffer until this owner releases copied.
+ * The complete RGB565 frame is hashed; the small crop is display-only. */
+static bool photo_frame(bool final) {
+    camera_frame_at = platform_now();
+    bool accepted = p4_photo_add(&photo, camera_rgb, camera_length, final);
+    if (!photo.active)
+        platform_fail();
+    for (unsigned y = 0; y < 192; y++)
+        for (unsigned x = 0; x < 256; x++) {
+            size_t offset = ((100 + y * 25 / 8) * 800 + x * 25 / 8) * 2;
+            camera_preview[y * 256 + x] =
+                (uint16_t)(camera_rgb[offset] | (camera_rgb[offset + 1] << 8));
         }
-        if (platform_now() >= end)
+    camera_owner_release();
+    if (!preview_attach() || !refresh(false))
+        platform_fail();
+    return accepted;
+}
+bool platform_photo_capture(void) {
+    if (!photo_mode || !atomic_load(&camera_active) || photo.frames < 4 || photo.captured)
+        return false;
+    /* Both queued buffers may predate the shutter. Consume two completions,
+     * then accept a new final frame. No cached preview can become the final. */
+    uint64_t end = platform_now() + 1800;
+    for (unsigned frame = 0; frame < 3; frame++) {
+        uint64_t now = platform_now();
+        if (now >= end ||
+            xSemaphoreTake(camera_ready, pdMS_TO_TICKS((uint32_t)(end - now))) != pdTRUE)
+            return false;
+        camera_owner_held = camera_callback_waiting = true;
+        if (!camera_rgb || camera_length != P4_PHOTO_FRAME_BYTES)
+            platform_fail();
+        bool accepted = photo_frame(frame == 2);
+        if (frame == 2 && !accepted)
             return false;
     }
-    esp_err_t stopped = app_video_stream_task_stop(video);
-    if ((stopped != ESP_OK && stopped != ESP_ERR_INVALID_STATE) ||
-        app_video_wait_video_stop() != ESP_OK)
-        return false;
-    if (decoder) {
-        quirc_destroy(decoder);
-        decoder = NULL;
-    }
-    platform_wipe(qr_code, sizeof(*qr_code));
-    platform_wipe(qr_data, sizeof(*qr_data));
-    for (unsigned i = 0; i < 2; i++)
-        platform_wipe(camera_buffers[i], 1280000);
-    if (esp_lv_adapter_lock(1000) != ESP_OK)
-        return false;
-    lv_image_cache_drop(&camera_image);
-    if (camera_widget) {
-        lv_obj_delete(camera_widget);
-        camera_widget = NULL;
-    }
-    if (camera_preview)
-        platform_wipe(camera_preview, 256 * 192 * 2);
-    esp_lv_adapter_unlock();
-    camera_rgb = NULL;
-    if (own)
-        xSemaphoreGive(camera_owned);
+    if (!camera_stop(true))
+        platform_fail();
+    photo_frozen = true;
     return true;
+}
+bool platform_photo_take(uint8_t digest[32]) {
+    if (!digest)
+        return false;
+    platform_wipe(digest, 32);
+    uint8_t accepted[32] = {0};
+    bool ok = photo_mode && photo_frozen && p4_photo_take(&photo, accepted);
+    if (!platform_photo_stop())
+        ok = false;
+    if (ok)
+        memcpy(digest, accepted, 32);
+    platform_wipe(accepted, sizeof(accepted));
+    return ok;
 }
 static void process_camera(void) {
     if (xSemaphoreTake(camera_ready, 0) != pdTRUE)
         return;
-    if (!camera_rgb || !decoder)
+    camera_owner_held = camera_callback_waiting = true;
+    if (!camera_rgb)
+        platform_fail();
+    camera_frame_at = platform_now();
+    if (photo_mode) {
+        (void)photo_frame(false);
+        return;
+    }
+    if (!decoder)
         platform_fail();
     int w, h;
     uint8_t *gray = quirc_begin(decoder, &w, &h);
     bool good = w == 800 && h == 800 &&
                 p4_frame_gray_raw(camera_rgb, camera_length, 800, 800, gray, 640000);
-    camera_rgb = NULL;
-    xSemaphoreGive(camera_copied);
+    camera_copy_done();
     if (!good)
         platform_fail();
     if (platform_now() - preview_at > 150) {
@@ -500,17 +692,7 @@ static void process_camera(void) {
                 camera_preview[y * 256 + x] =
                     (uint16_t)(((g >> 3) << 11) | ((g >> 2) << 5) | (g >> 3));
             }
-        if (esp_lv_adapter_lock(1000) != ESP_OK)
-            platform_fail();
-        if (!camera_widget) {
-            camera_widget = lv_image_create(lv_screen_active());
-            lv_obj_set_pos(camera_widget, 32, 166);
-        }
-        lv_image_cache_drop(&camera_image);
-        lv_image_set_src(camera_widget, &camera_image);
-        lv_obj_invalidate(camera_widget);
-        esp_lv_adapter_unlock();
-        if (!refresh(false))
+        if (!preview_attach() || !refresh(false))
             platform_fail();
         preview_at = platform_now();
     }
@@ -533,7 +715,7 @@ static void process_camera(void) {
         memcpy(payload, qr_data->payload, (size_t)length);
     platform_wipe(qr_code, sizeof(*qr_code));
     platform_wipe(qr_data, sizeof(*qr_data));
-    xSemaphoreGive(camera_owned);
+    camera_owner_release();
     if (length)
         device_scan_bytes(payload, (size_t)length);
     platform_wipe(payload, sizeof(payload));
@@ -581,6 +763,8 @@ static void owner(void *unused) {
         platform_fail();
     ESP_ERROR_CHECK(esp_task_wdt_add(NULL));
     init_display();
+    if (!board_power_init(bsp_i2c_get_handle()))
+        platform_fail();
     ESP_ERROR_CHECK(app_video_main(bsp_i2c_get_handle()));
     video = app_video_open(ESP_VIDEO_MIPI_CSI_DEVICE_NAME, APP_VIDEO_FMT);
     if (video < 0 || app_video_get_buf_size() != 1280000)
@@ -597,8 +781,8 @@ static void owner(void *unused) {
     ESP_ERROR_CHECK(app_video_register_frame_operation_cb(camera_frame));
     qr_code = heap_caps_calloc(1, sizeof(*qr_code), MALLOC_CAP_SPIRAM | MALLOC_CAP_8BIT);
     qr_data = heap_caps_calloc(1, sizeof(*qr_data), MALLOC_CAP_SPIRAM | MALLOC_CAP_8BIT);
-    camera_preview =
-        heap_caps_calloc(256 * 192, sizeof(uint16_t), MALLOC_CAP_SPIRAM | MALLOC_CAP_8BIT);
+    camera_preview = heap_caps_aligned_calloc(alignment, 256 * 192, sizeof(uint16_t),
+                                              MALLOC_CAP_SPIRAM | MALLOC_CAP_8BIT);
     if (!qr_code || !qr_data || !camera_preview)
         platform_fail();
     camera_image = (lv_image_dsc_t){.header = {.magic = LV_IMAGE_HEADER_MAGIC,
@@ -610,8 +794,6 @@ static void owner(void *unused) {
                                     .data = (const uint8_t *)camera_preview};
     if (!device_init())
         platform_fail();
-    ESP_LOGI("nsealr", "Ready; internal free=%u; core peak=%u",
-             (unsigned)heap_caps_get_free_size(MALLOC_CAP_INTERNAL), (unsigned)ns_heap_peak());
     uint64_t last_refresh = 0;
     for (;;) {
         if (atomic_load(&fault) || !board_radio_check(NULL))
@@ -622,8 +804,12 @@ static void owner(void *unused) {
                 platform_fail();
             device_action(selected);
         }
-        if (atomic_load(&camera_active))
-            process_camera();
+        if (atomic_load(&camera_active)) {
+            if (app_video_stream_failed() || platform_now() - camera_frame_at > 3000)
+                device_scan_error();
+            else
+                process_camera();
+        }
         device_tick(platform_now());
         if (platform_now() - last_refresh > 40 && !secret_visible) {
             if (!refresh(false))

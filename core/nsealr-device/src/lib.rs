@@ -4,12 +4,14 @@
 #![allow(clippy::missing_safety_doc)]
 extern crate alloc;
 use alloc::boxed::Box;
+#[cfg(test)]
+mod signer_tests;
 mod threshold_abi;
 #[cfg(target_os = "none")]
 use core::alloc::{GlobalAlloc, Layout};
 use core::{ptr, slice};
 use nsealr_allocator::ZeroizingAllocator;
-use nsealr_core::{bip39, identity::Identity, owner::Owner, qr, Error};
+use nsealr_core::{bip39, generation, identity::Identity, owner::Owner, qr, staged::Staged, Error};
 use nsealr_threshold::custody::Custody;
 use zeroize::Zeroize;
 
@@ -51,6 +53,7 @@ pub struct Context {
     owner: Owner,
     custody: Box<Custody>,
     threshold: bool,
+    staged: Staged,
 }
 impl Context {
     fn fields(&self) -> &[nsealr_core::event::Field] {
@@ -83,6 +86,7 @@ impl Context {
     fn cancel(&mut self) {
         self.owner.cancel();
         self.custody.cancel();
+        self.staged.clear();
     }
 }
 const _: () = assert!(core::mem::size_of::<Context>() <= 2048);
@@ -93,6 +97,12 @@ pub struct Text {
 }
 fn code(result: Result<(), Error>) -> i32 {
     result.map_or_else(|e| e as i32, |_| 0)
+}
+unsafe fn cancel_on_error(ctx: *mut Context, result: Result<(), Error>) -> i32 {
+    if result.is_err() {
+        ns_cancel(ctx);
+    }
+    code(result)
 }
 unsafe fn owner<'a>(ctx: *mut Context) -> Result<&'a mut Owner, Error> {
     Ok(&mut context(ctx)?.owner)
@@ -187,6 +197,7 @@ pub unsafe extern "C" fn ns_init(storage: *mut u8, bytes: usize) -> i32 {
             owner: Owner::default(),
             custody: Box::default(),
             threshold: false,
+            staged: Staged::default(),
         },
     );
     0
@@ -208,6 +219,7 @@ pub unsafe extern "C" fn ns_lock(ctx: *mut Context) {
         c.owner.lock();
         c.custody.lock();
         c.threshold = false;
+        c.staged.clear();
     }
 }
 #[no_mangle]
@@ -246,6 +258,7 @@ pub extern "C" fn ns_error_text(error: i32) -> *const core::ffi::c_char {
 #[no_mangle]
 pub unsafe extern "C" fn ns_import_nsec(ctx: *mut Context, p: *mut u8, len: usize) -> i32 {
     let Ok(bytes) = secret(p, len) else {
+        ns_cancel(ctx);
         return Error::Input as i32;
     };
     let result = (|| {
@@ -256,7 +269,7 @@ pub unsafe extern "C" fn ns_import_nsec(ctx: *mut Context, p: *mut u8, len: usiz
         Ok(())
     })();
     bytes.zeroize();
-    code(result)
+    cancel_on_error(ctx, result)
 }
 #[no_mangle]
 pub unsafe extern "C" fn ns_import_mnemonic(
@@ -291,10 +304,12 @@ unsafe fn import(
     account: u32,
 ) -> i32 {
     let Ok(bytes) = secret(p, len) else {
+        ns_cancel(ctx);
         return Error::Input as i32;
     };
     let Ok(password) = secret(pass, passlen) else {
         bytes.zeroize();
+        ns_cancel(ctx);
         return Error::Input as i32;
     };
     let result = (|| {
@@ -321,7 +336,7 @@ unsafe fn import(
     })();
     bytes.zeroize();
     password.zeroize();
-    code(result)
+    cancel_on_error(ctx, result)
 }
 #[no_mangle]
 pub unsafe extern "C" fn ns_generate(
@@ -333,10 +348,12 @@ pub unsafe extern "C" fn ns_generate(
     account: u32,
 ) -> i32 {
     let Ok(bytes) = secret(p, 32) else {
+        ns_cancel(ctx);
         return Error::Input as i32;
     };
     let Ok(password) = secret(pass, passlen) else {
         bytes.zeroize();
+        ns_cancel(ctx);
         return Error::Input as i32;
     };
     let result = (|| {
@@ -353,6 +370,97 @@ pub unsafe extern "C" fn ns_generate(
     })();
     bytes.zeroize();
     password.zeroize();
+    cancel_on_error(ctx, result)
+}
+#[no_mangle]
+pub unsafe extern "C" fn ns_generate_dice(
+    ctx: *mut Context,
+    words: u32,
+    p: *mut u8,
+    len: usize,
+) -> i32 {
+    let Ok(rolls) = secret(p, len) else {
+        ns_cancel(ctx);
+        return Error::Input as i32;
+    };
+    let result = (|| {
+        let owner = full_owner(ctx)?;
+        owner.lock();
+        owner.select(generation::dice(words, rolls)?);
+        Ok(())
+    })();
+    rolls.zeroize();
+    cancel_on_error(ctx, result)
+}
+#[no_mangle]
+pub unsafe extern "C" fn ns_generate_photo(
+    ctx: *mut Context,
+    words: u32,
+    digest: *mut u8,
+    hardware: *mut u8,
+) -> i32 {
+    let image = secret(digest, 32);
+    let random = secret(hardware, 32);
+    let result = match (image, random) {
+        (Ok(image), Ok(random)) => {
+            let generated = (|| {
+                let owner = full_owner(ctx)?;
+                owner.lock();
+                let identity = generation::photo(
+                    words,
+                    (&mut *image).try_into().map_err(|_| Error::Input)?,
+                    (&mut *random).try_into().map_err(|_| Error::Input)?,
+                )?;
+                owner.select(identity);
+                Ok(())
+            })();
+            image.zeroize();
+            random.zeroize();
+            generated
+        }
+        (Ok(bytes), Err(error)) | (Err(error), Ok(bytes)) => {
+            bytes.zeroize();
+            Err(error)
+        }
+        (Err(error), Err(_)) => Err(error),
+    };
+    cancel_on_error(ctx, result)
+}
+#[no_mangle]
+pub unsafe extern "C" fn ns_photo_frame_hash(
+    chain: *mut u8,
+    frame: *const u8,
+    len: usize,
+    final_frame: bool,
+) -> i32 {
+    let Ok(chain) = secret(chain, 32) else {
+        return Error::Input as i32;
+    };
+    if frame.is_null() || len != 800 * 800 * 2 {
+        chain.zeroize();
+        return Error::Input as i32;
+    }
+    let mut hash = nsealr_core::hash::Sha256::new();
+    hash.update(b"nsealr/photo-frame\0");
+    hash.update(&[u8::from(final_frame)]);
+    hash.update(chain);
+    hash.update(slice::from_raw_parts(frame, len));
+    let mut digest = hash.finalize();
+    chain.copy_from_slice(&digest);
+    digest.zeroize();
+    0
+}
+#[no_mangle]
+pub unsafe extern "C" fn ns_validate_mnemonic(p: *mut u8, len: usize) -> i32 {
+    let Ok(bytes) = secret(p, len) else {
+        return Error::Input as i32;
+    };
+    let result = (|| {
+        let text = core::str::from_utf8(bytes).map_err(|_| Error::Input)?;
+        bip39::parse_mnemonic_indexes(text).map_err(|_| Error::Input)?;
+        Ok(())
+    })();
+    bytes.zeroize();
     code(result)
 }
 #[no_mangle]
@@ -470,9 +578,70 @@ pub unsafe extern "C" fn ns_backup_word(
     })())
 }
 #[no_mangle]
+pub unsafe extern "C" fn ns_backup_word_index(
+    ctx: *const Context,
+    index: u32,
+    out: *mut u16,
+) -> i32 {
+    code((|| {
+        if out.is_null() {
+            return Err(Error::Input);
+        }
+        *out = 0;
+        *out = shared(ctx)?.identity()?.word_index(index as usize)?;
+        Ok(())
+    })())
+}
+#[no_mangle]
+pub unsafe extern "C" fn ns_stage_frame(
+    ctx: *mut Context,
+    p: *const u8,
+    len: usize,
+    now: u64,
+) -> i32 {
+    let result = (|| {
+        let c = context(ctx)?;
+        if c.threshold || c.owner.identity().is_ok() {
+            return Err(Error::Unsupported);
+        }
+        if !c.staged.active() {
+            c.owner.cancel();
+        }
+        c.staged.receive(input(p, len)?, now)
+    })();
+    match result {
+        Ok(true) => 0,
+        Ok(false) => 1,
+        Err(error) => {
+            ns_cancel(ctx);
+            error as i32
+        }
+    }
+}
+#[no_mangle]
+pub unsafe extern "C" fn ns_has_staged_request(ctx: *const Context) -> bool {
+    context_ref(ctx).is_ok_and(|c| c.staged.ready())
+}
+#[no_mangle]
+pub unsafe extern "C" fn ns_resume_request(ctx: *mut Context, now: u64) -> i32 {
+    code((|| {
+        let c = context(ctx)?;
+        let staged = c.staged.take(now);
+        if c.threshold || staged.is_err() {
+            c.cancel();
+            return Err(Error::Stale);
+        }
+        let (message, deadline) = staged?;
+        // The bytes are consumed before identity/semantic verification. The
+        // owner can retain only a bound error reply on validation failure.
+        c.owner.resume(&message, now, deadline)
+    })())
+}
+#[no_mangle]
 pub unsafe extern "C" fn ns_request(ctx: *mut Context, p: *const u8, len: usize, now: u64) -> i32 {
     code((|| {
         let c = context(ctx)?;
+        c.staged.clear();
         match input(p, len) {
             Ok(bytes) => {
                 if c.threshold {
@@ -492,7 +661,9 @@ pub unsafe extern "C" fn ns_request(ctx: *mut Context, p: *const u8, len: usize,
 #[no_mangle]
 pub unsafe extern "C" fn ns_finish_response(ctx: *mut Context) {
     if let Ok(c) = context(ctx) {
-        if c.threshold {
+        if c.staged.active() {
+            c.cancel();
+        } else if c.threshold {
             c.custody.finish_response();
         } else {
             c.owner.finish_response();
@@ -502,11 +673,19 @@ pub unsafe extern "C" fn ns_finish_response(ctx: *mut Context) {
 #[no_mangle]
 pub unsafe extern "C" fn ns_tick(ctx: *mut Context, now: u64) -> i32 {
     match context(ctx).and_then(|c| {
-        if c.threshold {
-            c.custody.tick(now)
-        } else {
-            c.owner.tick(now)
+        let result = (|| {
+            let staged_expired = c.staged.tick(now)?;
+            let expired = if c.threshold {
+                c.custody.tick(now)?
+            } else {
+                c.owner.tick(now)?
+            };
+            Ok(staged_expired || expired)
+        })();
+        if !matches!(result, Ok(false)) {
+            c.cancel();
         }
+        result
     }) {
         Ok(expired) => i32::from(expired),
         Err(error) => error as i32,
@@ -521,6 +700,7 @@ pub unsafe extern "C" fn ns_receive_frame(
 ) -> i32 {
     match (|| {
         let c = context(ctx)?;
+        c.staged.clear();
         let bytes = input(p, len).inspect_err(|_| c.cancel())?;
         if c.threshold {
             c.custody.receive_frame(bytes, &mut [], now)
@@ -536,11 +716,29 @@ pub unsafe extern "C" fn ns_receive_frame(
 }
 #[no_mangle]
 pub unsafe extern "C" fn ns_frames_received(ctx: *const Context) -> u32 {
-    context_ref(ctx).map_or(0, |c| if c.threshold {c.custody.collector.received()} else {c.owner.collector.received()} as u32)
+    context_ref(ctx).map_or(0, |c| {
+        let collector = if c.staged.active() {
+            &c.staged.collector
+        } else if c.threshold {
+            &c.custody.collector
+        } else {
+            &c.owner.collector
+        };
+        collector.received() as u32
+    })
 }
 #[no_mangle]
 pub unsafe extern "C" fn ns_frames_expected(ctx: *const Context) -> u32 {
-    context_ref(ctx).map_or(0, |c| if c.threshold {c.custody.collector.expected()} else {c.owner.collector.expected()} as u32)
+    context_ref(ctx).map_or(0, |c| {
+        let collector = if c.staged.active() {
+            &c.staged.collector
+        } else if c.threshold {
+            &c.custody.collector
+        } else {
+            &c.owner.collector
+        };
+        collector.expected() as u32
+    })
 }
 #[no_mangle]
 pub unsafe extern "C" fn ns_review_generation(ctx: *const Context) -> u64 {
@@ -615,6 +813,7 @@ pub unsafe extern "C" fn ns_approve(
     };
     let result = (|| {
         let c = context(ctx)?;
+        c.staged.clear();
         let generation = c.check_generation(generation).inspect_err(|_| c.cancel())?;
         if c.threshold {
             c.custody.approve(generation, partial, bytes, now)
@@ -629,6 +828,7 @@ pub unsafe extern "C" fn ns_approve(
 pub unsafe extern "C" fn ns_reject(ctx: *mut Context, generation: u64) -> i32 {
     code((|| {
         let c = context(ctx)?;
+        c.staged.clear();
         let generation = c.check_generation(generation).inspect_err(|_| c.cancel())?;
         if c.threshold {
             c.custody.reject(generation)

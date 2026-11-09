@@ -6,11 +6,27 @@ board's actual camera, touch screen, display and qualified random-source sequenc
 The companion ESP32-C6 is held in reset on GPIO54. No transport is accepted over
 USB, Wi-Fi or Bluetooth.
 
+Use the signer on battery with both USB cables removed. Powered USB locks the
+normal interface and clears the loaded key. Missing battery, invalid PMIC state
+or I2C failure also blocks use. PMIC status detects a valid external supply,
+including a charger; it cannot prove that an unpowered cable is absent. The
+application has no UART or USB console. ROM recovery flashing remains available.
+
+Photo generation uses at least four distinct preview frames and a new full frame
+after the shutter. Accept the frozen image or retake it. The core mixes the image
+digest with hardware randomness. Camera statistics do not establish a number of
+entropy bits. Complete camera frames remain in two owned PSRAM buffers, wiped
+and synchronized after confirmed DMA shutdown. Cancel and acceptance also clear
+the preview and digest. Photos are never saved. A failed shutdown forces restart;
+it does not establish memory erasure after an uncontrolled hardware fault.
+
 The implemented flow creates or imports an identity, offers an optional BIP39
 passphrase and NIP-06 account, displays and verifies recovery backups, collects
 animated QR requests, reviews authority and prose, and returns the core response
 through QR. Supported local backups are words, nsec, SeedQR and compact SeedQR.
 The public identity has a normal npub QR. Lock and inactivity clear the owner.
+SeedQR transcription enlarges one numbered 5-by-5 region at a time. Gray hatched
+cells lie outside the QR matrix. Use scan-back checking after a paper backup.
 For a loaded mnemonic, `Identity options` reopens passphrase and account settings.
 Viewing the public npub returns to the same confirmation screen. Account changes
 take effect only after successful derivation; cancelling retains the current key
@@ -76,9 +92,22 @@ when several worktrees share an SDK. It accepts `--sdk`, `--tools`, `--python-en
 may be copied with `--reuse-components`; they are not an authoritative source of
 configuration. The tool writes build logs and the image hash but never flashes.
 
-Flash a built image using the usual `idf.py -p PORT flash monitor`. This replaces
+Flash a built image using `idf.py -p PORT flash`. This replaces
 the firmware; it does not install persistent user keys. Only use disposable test
 identities while qualifying a new firmware image.
+
+Board logic checks use the host core library and the pinned downloaded LVGL:
+
+```sh
+cargo build --release --locked -p nsealr-device
+python3 firmware/p4/tests/check.py \
+  --lvgl firmware/p4/managed_components/lvgl__lvgl \
+  --rust-library target/release/libnsealr_device.a
+```
+
+These checks cover photo frame admission and digest consumption, power-state
+classification and every transcription cell. They do not measure physical USB
+detection, entropy, DMA erasure or camera usability.
 
 ## Ownership and limits
 

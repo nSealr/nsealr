@@ -108,6 +108,19 @@ fn independent_seals_authenticate_before_any_plaintext_release() {
         assert_eq!(opened["id"], row["expected"]["rumor_id"]);
         assert_eq!(opened["content"], row["expected"]["content"]);
         assert!(owner.request(&next, 5).is_err(), "receipt cannot replay");
+
+        // A scan-first gift wrap cannot renew its receipt after loading a key.
+        owner
+            .resume(
+                &request("nip44_decrypt", json!([wrap["pubkey"], wrap["content"]])),
+                LIFETIME_MS - 2,
+                LIFETIME_MS,
+            )
+            .unwrap();
+        approve(&mut owner, LIFETIME_MS - 1);
+        owner.finish_response();
+        assert_eq!(owner.tick(LIFETIME_MS), Ok(true));
+        assert!(owner.request(&next, LIFETIME_MS + 1).is_err());
     }
 }
 

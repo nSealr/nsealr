@@ -1,6 +1,7 @@
 #include "device.h"
 #include "secret_qr.h"
 #include "secret_raster.h"
+#include "src/libs/qrcode/qrcodegen.h"
 #include <assert.h>
 #include <errno.h>
 #include <fcntl.h>
@@ -10,7 +11,8 @@
 #include <sys/stat.h>
 #include <unistd.h>
 
-/* A host simulator uses published test entropy. The P4 supplies qualified RNG. */
+/* A host simulator uses published test entropy. The P4 supplies qualified RNG.
+ */
 static uint64_t clock_ms = 1000;
 static uint32_t draw_buffer[320 * 480];
 static uint8_t pixels[320 * 480 * 3];
@@ -24,7 +26,8 @@ static const char *render_dir;
 static unsigned frames, pending_action, touches;
 static char visible_title[80], visible_caption[100], visible_right[40], visible_left[40],
     visible_aux[40], visible_header[40];
-/* Test inspection is enabled only for the published, deterministic test vectors. */
+/* Test inspection is enabled only for the published, deterministic test
+ * vectors. */
 static bool testing;
 static char test_lines[8][14];
 static uint8_t test_qr[NS_MAX_FRAME];
@@ -63,6 +66,70 @@ bool platform_scan_stop(void) {
     scanning = false;
     return true;
 }
+/* Host-only fixtures. These are not camera, battery or entropy measurements. */
+static unsigned simulated_power = DEVICE_POWER_BATTERY, simulated_brightness = 100;
+static bool simulated_photo, simulated_capture;
+static unsigned simulated_photo_start;
+unsigned platform_power_state(void) { return simulated_power; }
+bool platform_display_brightness(unsigned percent) {
+    simulated_brightness = percent;
+    return percent >= 20 && percent <= 100;
+}
+bool platform_photo_start(void) {
+    simulated_photo = true;
+    simulated_capture = false;
+    simulated_photo_start++;
+    for (unsigned y = 166; y < 358; y++)
+        for (unsigned x = 32; x < 288; x++) {
+            size_t at = ((size_t)y * 320 + x) * 3;
+            pixels[at] = (uint8_t)x;
+            pixels[at + 1] = (uint8_t)y;
+            pixels[at + 2] = 128;
+        }
+    return true;
+}
+bool platform_photo_capture(void) {
+    simulated_capture = simulated_photo;
+    return simulated_capture;
+}
+bool platform_photo_stop(void) {
+    simulated_photo = simulated_capture = false;
+    return true;
+}
+bool platform_photo_take(uint8_t digest[32]) {
+    if (!simulated_photo || !simulated_capture)
+        return false;
+    memset(digest, 0x5a, 32);
+    return platform_photo_stop();
+}
+bool platform_secret_qr_size(const uint8_t *p, size_t n, unsigned *modules) {
+    bool ok = p4_secret_qr_encode(&secret_qr, p, n);
+    if (ok)
+        *modules = secret_qr.modules;
+    p4_secret_qr_clear(&secret_qr);
+    return ok;
+}
+bool platform_secret_qr_region(const uint8_t *p, size_t n, unsigned col, unsigned row) {
+    if (!p4_secret_qr_encode(&secret_qr, p, n))
+        return false;
+    if (col * 5 >= secret_qr.modules || row * 5 >= secret_qr.modules)
+        return false;
+    for (unsigned y = 0; y < 250; y++)
+        for (unsigned x = 0; x < 250; x++) {
+            unsigned mx = col * 5 + x / 50, my = row * 5 + y / 50;
+            uint8_t value = mx >= secret_qr.modules || my >= secret_qr.modules        ? 100
+                            : qrcodegen_getModule(secret_qr.matrix, (int)mx, (int)my) ? 0
+                                                                                      : 255;
+            if (!(x % 50) || !(y % 50))
+                value = 170;
+            size_t at = ((size_t)(148 + y) * 320 + 35 + x) * 3;
+            memset(pixels + at, value, 3);
+        }
+    p4_secret_qr_clear(&secret_qr);
+    secrets_visible = true;
+    return true;
+}
+
 /* Native file tests exercise the local contract; physical SD uses FatFs. */
 share_file_result platform_share_save(const uint8_t *bytes, size_t length) {
     if (!test_media_available)
@@ -167,13 +234,18 @@ bool platform_present(const ui_view *view) {
     presenting = true;
     draw();
     presenting = false;
+    if (view->screen == UI_PHOTO && simulated_capture) {
+        for (unsigned y = 166; y < 358; y++)
+            for (unsigned x = 32; x < 288; x++) {
+                size_t at = ((size_t)y * 320 + x) * 3;
+                pixels[at] = (uint8_t)x;
+                pixels[at + 1] = (uint8_t)y;
+                pixels[at + 2] = 128;
+            }
+    }
     lv_obj_t *reader = ui_reader();
     device_presented(reader && lv_obj_get_scroll_bottom(reader) <= 1);
     return true;
-}
-void platform_input_changed(size_t n) {
-    ui_set_input_length(n);
-    draw();
 }
 void platform_review_ready(void) {
     ui_enable_next();
@@ -284,6 +356,12 @@ static void tap(int x, int y) {
     if (!secrets_visible)
         draw();
 }
+static void clear_loaded(void) {
+    tap(270, 26);
+    assert(!strcmp(visible_title, "Clear this key?"));
+    tap(215, 442);
+    assert(!ns_is_loaded(device_core()));
+}
 static void drag(int x, int y0, int y1) {
     point = (lv_point_t){.x = x, .y = y0};
     down = true;
@@ -340,7 +418,8 @@ static void enter_public_words(unsigned count, bool repair) {
         entry_taps += touches - before;
     }
     assert(entry_taps <= count * 5);
-    printf("PASS: %u-word recovery entry: %u pointer taps; %u extra Back/navigation checks\n",
+    printf("PASS: %u-word recovery entry: %u pointer taps; %u extra "
+           "Back/navigation checks\n",
            count, entry_taps, extra_taps);
 }
 static void complete_word_review(unsigned count) {
@@ -352,7 +431,7 @@ static void text_key(char value) {
     const char *at = strchr(keys, value);
     assert(at);
     unsigned i = (unsigned)(at - keys);
-    tap(37 + (int)(i % 6) * 49, 194 + (int)(i / 6) * 44);
+    tap(37 + (int)(i % 6) * 49, 227 + (int)(i / 6) * 38);
 }
 static void feed_message(const char *input) {
     size_t length = strlen(input);
@@ -380,8 +459,8 @@ static void refused_request_test(void) {
     assert(!scanning && !strcmp(visible_title, "Request refused"));
     assert(ns_review_count(device_core()) == 0);
     assert(ns_response(device_core(), &response) == NS_OK);
-    const char expected[] =
-        "{\"id\":\"native-refused\",\"error\":\"Unsupported operation or event semantics\"}";
+    const char expected[] = "{\"id\":\"native-refused\",\"error\":\"Unsupported "
+                            "operation or event semantics\"}";
     assert(response.len == sizeof(expected) - 1 && !memcmp(response.data, expected, response.len));
     uint8_t frame[NS_MAX_FRAME];
     size_t length;
@@ -396,7 +475,8 @@ static void refused_request_test(void) {
     assert(!ui_reader() && test_qr_len == length && !memcmp(test_qr, frame, length));
     tap(60, 442);
     assert(ns_response(device_core(), &response) != NS_OK && ns_is_loaded(device_core()));
-    /* JSON escaping can make a bounded request ID span multiple response frames. */
+    /* JSON escaping can make a bounded request ID span multiple response frames.
+     */
     char multi[1024] = "{\"id\":\"";
     for (unsigned i = 0; i < 128; i++)
         strcat(multi, "\\u0001");
@@ -424,20 +504,25 @@ static void refused_request_test(void) {
            ns_response(device_core(), &response) != NS_OK);
     tap(215, 442);
     tap(140, 175);
-    puts("PASS: validated-id refusal QR/reason/Done, unchanged returned bytes, malformed "
+    puts("PASS: validated-id refusal QR/reason/Done, unchanged returned bytes, "
+         "malformed "
          "input without a reply and subsequent normal request");
 }
 static void flow_test(void) {
     testing = true;
     save_frame("01-home");
+    tap(140, 233);
+    save_frame("02-load");
     tap(140, 175);
-    save_frame("02-create");
-    tap(140, 175);
+    uint8_t compact[16] = {0};
+    device_scan_bytes(compact, sizeof(compact));
     assert(ns_is_loaded(device_core()) && ns_word_count(device_core()) == 12);
     save_frame("03-identity");
     uint8_t original[64], restored[64];
     size_t n = 0;
     assert(ns_public_key(device_core(), 0, original, sizeof(original), &n) == NS_OK && n == 64);
+    tap(140, 175);
+    tap(140, 291);
     tap(140, 175);
     save_frame("04-backup-words");
     tap(215, 442);
@@ -459,7 +544,7 @@ static void flow_test(void) {
     }
     assert(!strcmp(visible_title, "Backup checked"));
     tap(215, 442);
-    tap(270, 26);
+    clear_loaded();
     assert(!ns_is_loaded(device_core()));
     tap(140, 233);
     tap(140, 233);
@@ -489,11 +574,12 @@ static void flow_test(void) {
     tap(140, 175);
     refused_request_test();
     char event[1024];
-    int wrote =
-        snprintf(event, sizeof(event),
-                 "{\\\"pubkey\\\":\\\"%.*s\\\",\\\"created_at\\\":1794211200,\\\"kind\\\":1,"
-                 "\\\"tags\\\":[],\\\"content\\\":\\\"Hello from an offline Nostr signer.\\\"}",
-                 64, original);
+    int wrote = snprintf(event, sizeof(event),
+                         "{\\\"pubkey\\\":\\\"%.*s\\\",\\\"created_at\\\":"
+                         "1794211200,\\\"kind\\\":1,"
+                         "\\\"tags\\\":[],\\\"content\\\":\\\"Hello from an "
+                         "offline Nostr signer.\\\"}",
+                         64, original);
     assert(wrote > 0 && (size_t)wrote < sizeof(event));
     feed_request(event);
     assert(!scanning);
@@ -545,7 +631,7 @@ static void flow_test(void) {
     size_t nsec_len = 0;
     assert(ns_backup(device_core(), 1, public_test_nsec, sizeof(public_test_nsec), &nsec_len) ==
            NS_OK);
-    tap(270, 26);
+    clear_loaded();
     assert(!ns_is_loaded(device_core()));
     /* A stale Next action cannot resurrect the prior request after lock. */
     device_action(UI_NEXT);
@@ -570,7 +656,8 @@ static void flow_test(void) {
     memset(long_text, 'a', sizeof(long_text) - 1);
     long_text[sizeof(long_text) - 1] = 0;
     wrote = snprintf(long_event, sizeof(long_event),
-                     "{\\\"pubkey\\\":\\\"%.*s\\\",\\\"created_at\\\":1794211200,\\\"kind\\\":1,"
+                     "{\\\"pubkey\\\":\\\"%.*s\\\",\\\"created_at\\\":1794211200,"
+                     "\\\"kind\\\":1,"
                      "\\\"tags\\\":[],\\\"content\\\":\\\"%s\\\"}",
                      64, original, long_text);
     assert(wrote > 0 && (size_t)wrote < sizeof(long_event));
@@ -595,7 +682,7 @@ static void flow_test(void) {
     tap(215, 442);
     assert(ns_response(device_core(), &result) == NS_OK);
     tap(60, 442);
-    tap(270, 26);
+    clear_loaded();
     assert(!ns_is_loaded(device_core()));
 
     tap(140, 233);
@@ -622,7 +709,15 @@ static void flow_test(void) {
     text_key('e');
     text_key('s');
     text_key('t');
-    tap(195, 147);
+    tap(135, 186);
+    assert(!strcmp(test_lines[0], "test[ ]|"));
+    tap(233, 186);
+    assert(!strcmp(test_lines[0], "test|[ ]"));
+    tap(184, 186);
+    text_key('t');
+    assert(!strcmp(test_lines[0], "test|[ ]"));
+    save_frame("52-passphrase-editor");
+    tap(282, 186);
     tap(215, 442);
     assert(!strcmp(visible_title, "Check passphrase"));
     save_frame("16-passphrase-review");
@@ -630,7 +725,7 @@ static void flow_test(void) {
     assert(ns_public_key(device_core(), 0, with_pass, sizeof(with_pass), &n) == NS_OK &&
            memcmp(plain24, with_pass, 64));
     tap(140, 349);
-    tap(86, 194);
+    tap(86, 227);
     tap(215, 442);
     assert(!strcmp(visible_title, "Passphrase"));
     tap(60, 442);
@@ -640,7 +735,7 @@ static void flow_test(void) {
     tap(140, 291);
     tap(140, 175);
     for (unsigned i = 0; i < 80; i++)
-        tap(195, 147);
+        tap(135, 186);
     tap(215, 442);
     unsigned pages = 0;
     while (!strcmp(visible_right, "Next page")) {
@@ -689,7 +784,7 @@ static void flow_test(void) {
            !memcmp(with_pass, restored, 64));
     save_frame("34-unicode-passphrase");
     tap(60, 442);
-    tap(270, 147);
+    tap(184, 186);
     tap(215, 442);
     assert(!strcmp(visible_title, "Check passphrase"));
     tap(215, 442);
@@ -712,7 +807,7 @@ static void flow_test(void) {
     assert(ns_public_key(expected_identity, 0, expected_key, sizeof(expected_key), &n) == NS_OK);
     ns_deinit(expected_identity);
     tap(140, 349);
-    tap(86, 194);
+    tap(86, 227);
     tap(215, 442);
     tap(140, 233);
     uint8_t account_pass[] = {0xc3, 0xa9};
@@ -747,7 +842,7 @@ static void flow_test(void) {
     assert(ns_public_key(device_core(), 0, restored, sizeof(restored), &n) == NS_OK &&
            !memcmp(with_pass, restored, 64));
     tap(215, 442);
-    tap(270, 26);
+    clear_loaded();
     assert(!ns_is_loaded(device_core()));
     testing = false;
 
@@ -758,10 +853,249 @@ static void flow_test(void) {
     assert(!strcmp(escaped, "a\\u{202e}\\\\b\\u{0}"));
     const uint8_t invalid[] = {0xc0, 0x80};
     assert(!ui_escape_text(invalid, sizeof(invalid), escaped, sizeof(escaped), &escaped_len));
-    puts("PASS: real-core create/backup/clear/restore; QR frame collection; rendered review; sign, "
-         "reject, cancel, response clear and lock");
-    puts("PASS: confirmation return/options, cancelled account preservation, local UTF8 "
-         "passphrase scan/review/edit, invalid/oversize rejection and NFKD-equivalent identity");
+    puts("PASS: real-core load/backup/clear/restore; QR frame collection; "
+         "rendered review; sign, "
+         "reject, cancel, response and session clear");
+    puts("PASS: confirmation return/options, cancelled account preservation, "
+         "local UTF8 "
+         "passphrase scan/review/edit, invalid/oversize rejection and "
+         "NFKD-equivalent identity");
+}
+/* These fixtures check controller transitions, not physical camera or power. */
+static void load_zero_words(unsigned count) {
+    static const char *last[] = {"about", "address", "agent", "admit", "art"};
+    uint8_t words[256] = {0};
+    for (unsigned i = 1; i < count; i++)
+        strcat((char *)words, "abandon ");
+    strcat((char *)words, last[(count - 12) / 3]);
+    tap(140, 175);
+    assert(scanning);
+    device_scan_bytes(words, strlen((char *)words));
+    assert(ns_is_loaded(device_core()) && ns_word_count(device_core()) == count);
+}
+static void quiz_words(unsigned count) {
+    static const char *last[] = {"about", "address", "agent", "admit", "art"};
+    for (unsigned i = 0; i < count; i++) {
+        unsigned position = 0;
+        assert(sscanf(visible_title, "Choose word %u", &position) == 1);
+        const char *expected = position == count ? last[(count - 12) / 3] : "abandon";
+        unsigned choice = 0;
+        while (choice < 4 && strcmp(test_lines[choice], expected))
+            choice++;
+        assert(choice < 4);
+        tap(140, 162 + (int)choice * 56);
+    }
+    assert(!strcmp(visible_title, "Backup checked"));
+    tap(215, 442);
+}
+static void signer_flow_test(void) {
+    testing = true;
+    /* Brightness uses the platform, and session preferences do not retain keys.
+     */
+    tap(140, 291);
+    tap(140, 349);
+    tap(140, 175);
+    assert(simulated_brightness == 60);
+    tap(140, 175);
+    tap(140, 175);
+    assert(simulated_brightness == 100);
+    tap(140, 233);
+    tap(140, 233);
+    tap(140, 233);
+    save_frame("43-display-settings");
+    tap(60, 442);
+    tap(60, 442);
+    /* Photo fixture is visibly synthetic, with accept, retake and cancel paths.
+     */
+    tap(140, 291);
+    tap(140, 175);
+    tap(140, 175);
+    assert(simulated_photo && !simulated_capture);
+    save_frame("44-camera-fixture");
+    tap(215, 442);
+    assert(simulated_capture && !strcmp(visible_title, "Use this picture?"));
+    save_frame("53-camera-frozen-fixture");
+    unsigned starts = simulated_photo_start;
+    tap(60, 442);
+    assert(simulated_photo_start == starts + 1 && !simulated_capture);
+    tap(215, 442);
+    tap(215, 442);
+    assert(!simulated_photo && !strcmp(visible_title, "Recovery words"));
+    tap(140, 175);
+    assert(ns_is_loaded(device_core()) && ns_word_count(device_core()) == 12);
+    tap(140, 175);
+    assert(!strcmp(visible_title, "Secret backup"));
+    clear_loaded();
+    tap(140, 291);
+    tap(140, 175);
+    tap(140, 175);
+    tap(60, 442);
+    assert(!simulated_photo && !ns_is_loaded(device_core()));
+    tap(140, 291);
+    tap(140, 175);
+    tap(140, 175);
+    clock_ms += 600001;
+    device_tick(clock_ms);
+    assert(!simulated_photo && !ns_is_loaded(device_core()));
+    /* Published independent dice vectors, entered through real pointer buttons.
+     */
+    for (unsigned variant = 0; variant < 2; variant++) {
+        tap(140, 291);
+        tap(140, 175);
+        tap(140, 233);
+        tap(140, variant ? 233 : 175);
+        tap(215, 442);
+        assert(!strcmp(visible_title, "Roll dice"));
+        tap(60, 247);
+        tap(60, 371);
+        assert(strstr(visible_caption, "0 of"));
+        tap(60, 247);
+        tap(215, 371);
+        assert(strstr(visible_caption, "0 of"));
+        unsigned count = variant ? 100 : 50;
+        for (unsigned i = 0; i < count; i++) {
+            unsigned die = variant ? 5 - i % 6 : i % 6;
+            tap(62 + (int)(die % 3) * 98, 247 + (int)(die / 3) * 60);
+        }
+        save_frame(variant ? "46-dice-100" : "45-dice-50");
+        tap(215, 442);
+        assert(!strcmp(visible_title, "Use these rolls?"));
+        tap(60, 442);
+        assert(!strcmp(visible_title, "Roll dice"));
+        tap(215, 442);
+        tap(215, 442);
+        assert(ns_word_count(device_core()) == (variant ? 24 : 12));
+        uint8_t key[64];
+        size_t length;
+        assert(ns_public_key(device_core(), 0, key, sizeof(key), &length) == NS_OK && length == 64);
+        const char *expected =
+            variant ? "46af5629c6dab5ec4c666c94636a1ef5b103008713f0339d517c342df9275cd5"
+                    : "99b6e95ef71c899a4bd8561a3c2fc1920a5b2da85e50c72a9a054a14168a543"
+                      "5";
+        assert(!memcmp(key, expected, 64));
+        clear_loaded();
+    }
+    for (unsigned count = 12; count <= 24; count += 3) {
+        load_zero_words(count);
+        tap(140, 175);
+        tap(140, 291);
+        if (count != 12 && count != 24) {
+            /* Unsupported SeedQR exports must not be offered. */
+            tap(140, 291);
+            assert(!strcmp(visible_title, "Back up identity"));
+        }
+        tap(140, 175);
+        for (unsigned i = 0; i < (count + 5) / 6; i++)
+            tap(215, 442);
+        tap(140, 175);
+        quiz_words(count);
+        if (count == 12) {
+            tap(140, 291);
+            tap(140, 233);
+            uint8_t qr[96];
+            size_t length;
+            assert(ns_backup(device_core(), 3, qr, sizeof(qr), &length) == NS_OK);
+            tap(258, 122);
+            assert(!strcmp(visible_title, "Copy SeedQR"));
+            unsigned block, total;
+            assert(sscanf(visible_caption, "Block %u/%u", &block, &total) == 2 && block == 1);
+            save_frame("47-copy-seedqr");
+            tap(215, 442);
+            tap(60, 442);
+            for (unsigned i = 1; i < total; i++)
+                tap(215, 442);
+            save_frame("48-copy-seedqr-last");
+            assert(!strcmp(visible_right, "Scan to check"));
+            tap(215, 442);
+            assert(scanning);
+            device_scan_bytes(qr, length);
+            assert(!strcmp(visible_title, "Backup checked"));
+            tap(215, 442);
+        }
+        clear_loaded();
+    }
+    /* Scan first, then load and deliberately resume the saved request. */
+    tap(140, 175);
+    feed_message("{\"id\":\"scan-first\",\"method\":\"get_public_key\",\"params\":[]}");
+    assert(ns_has_staged_request(device_core()) && !ns_is_loaded(device_core()));
+    assert(!strcmp(visible_title, "Load a key"));
+    save_frame("49-scan-first-load");
+    tap(140, 175);
+    uint8_t zero[16] = {0};
+    device_scan_bytes(zero, sizeof(zero));
+    assert(ns_has_staged_request(device_core()) && ns_is_loaded(device_core()));
+    tap(140, 175);
+    assert(!ns_has_staged_request(device_core()) && ui_reader());
+    while (lv_obj_get_scroll_bottom(ui_reader()) > 1)
+        drag(260, 370, 180);
+    tap(215, 442);
+    tap(140, 175);
+    ns_text response;
+    assert(ns_response(device_core(), &response) == NS_OK);
+    tap(60, 442);
+    clear_loaded();
+    tap(140, 175);
+    feed_request(
+        "{\\\"pubkey\\\":\\\"99b6e95ef71c899a4bd8561a3c2fc1920a5b2da85e50c72a9a054a14168a5435\\\","
+        "\\\"created_at\\\":1794211200,\\\"kind\\\":1,\\\"tags\\\":[],\\\"content\\\":\\\"Wrong "
+        "key\\\"}");
+    assert(ns_has_staged_request(device_core()));
+    tap(140, 175);
+    device_scan_bytes(zero, sizeof(zero));
+    tap(140, 175);
+    assert(!strcmp(visible_title, "Request refused") &&
+           ns_response(device_core(), &response) == NS_OK);
+    assert(!ns_has_staged_request(device_core()) && !ns_review_count(device_core()));
+    tap(60, 442);
+    clear_loaded();
+    tap(140, 175);
+    feed_message("{\"id\":\"cancel-stage\",\"method\":\"get_public_key\",\"params\":[]}");
+    tap(60, 442);
+    assert(!ns_has_staged_request(device_core()) && !ns_is_loaded(device_core()));
+    /* User activity extends only the idle window, never a staged deadline. */
+    tap(140, 175);
+    feed_message("{\"id\":\"expires\",\"method\":\"get_public_key\",\"params\":[]}");
+    tap(140, 175);
+    device_scan_bytes(zero, sizeof(zero));
+    clock_ms += 590000;
+    tap(140, 233);
+    clock_ms += 20000;
+    device_tick(clock_ms);
+    assert(!ns_has_staged_request(device_core()) && ns_is_loaded(device_core()));
+    tap(140, 233);
+    clock_ms += 590000;
+    device_action(UI_READER_END);
+    clock_ms += 20000;
+    device_tick(clock_ms);
+    assert(!ns_is_loaded(device_core()));
+    /* Session clear is explicit and can be cancelled without dropping the key. */
+    load_zero_words(12);
+    tap(270, 26);
+    assert(ns_is_loaded(device_core()) && !strcmp(visible_title, "Clear this key?"));
+    save_frame("50-clear-key");
+    tap(60, 442);
+    assert(ns_is_loaded(device_core()));
+    /* A powered cable or unknown state blocks input and immediately clears keys.
+     */
+    simulated_power = DEVICE_POWER_EXTERNAL;
+    device_tick(clock_ms);
+    assert(!ns_is_loaded(device_core()) && !strcmp(visible_title, "Use battery power"));
+    tap(140, 175);
+    assert(!scanning);
+    save_frame("51-external-power-fixture");
+    simulated_power = DEVICE_POWER_UNKNOWN;
+    device_tick(clock_ms);
+    assert(!strcmp(visible_title, "Check battery power"));
+    simulated_power = DEVICE_POWER_BATTERY;
+    device_tick(clock_ms);
+    assert(!strcmp(visible_title, "Your Nostr key"));
+    testing = false;
+    puts("PASS: camera fixture capture/retake/accept/cancel/idle cleanup; "
+         "independent 50/100-roll dice UI vectors");
+    puts("PASS: all five word-count quizzes, supported QR menus, paper block "
+         "navigation and scan-back");
+    puts("PASS: scan-first load/resume, fixed request expiry, idle clear, "
+         "deliberate clear and simulated power gating");
 }
 /* The UI is one real participant. Two public-data core peers exercise the
  * authenticated exchange without inventing device state or approval actions. */
@@ -856,8 +1190,8 @@ static void threshold_flow_test(void) {
     testing = true;
     custody[0] = device_core();
     assert(!ns_is_loaded(custody[0]));
-    tap(140, 175);
-    tap(140, 349);
+    tap(140, 291);
+    tap(140, 233);
     assert(!strcmp(visible_title, "2-of-3 group"));
     save_frame("20-group-intro");
     tap(215, 442);
@@ -884,10 +1218,10 @@ static void threshold_flow_test(void) {
     memcpy(sorted, custody_keys, sizeof(sorted));
     qsort(sorted, 3, sizeof(sorted[0]), public_key_order);
     char setup[512];
-    int n = snprintf(
-        setup, sizeof(setup),
-        "{\"type\":\"nsealr_setup\",\"session\":\"%064u\",\"members\":[\"%s\",\"%s\",\"%s\"]}", 1u,
-        sorted[0], sorted[1], sorted[2]);
+    int n = snprintf(setup, sizeof(setup),
+                     "{\"type\":\"nsealr_setup\",\"session\":\"%064u\","
+                     "\"members\":[\"%s\",\"%s\",\"%s\"]}",
+                     1u, sorted[0], sorted[1], sorted[2]);
     assert(n > 0 && (size_t)n < sizeof(setup));
     for (unsigned i = 0; i < 3; i++) {
         custody_feed(i, (uint8_t *)setup, (size_t)n);
@@ -952,9 +1286,9 @@ static void threshold_flow_test(void) {
     assert(!strcmp(visible_title, "Group record"));
     tap(60, 442);
     assert(!strcmp(visible_title, "Public identity"));
-    tap(270, 26);
-    tap(140, 233);
-    tap(140, 349);
+    clear_loaded();
+    tap(140, 291);
+    tap(140, 291);
     tap(140, 175);
     custody_feed(0, custody_backups[0], custody_backup_len[0]);
     assert(!ns_is_loaded(custody[0]));
@@ -1020,9 +1354,9 @@ static void threshold_flow_test(void) {
     assert(platform_share_load(saved, sizeof(saved), &saved_len) == SHARE_FILE_OK);
     assert(saved_len == custody_backup_len[0] && !memcmp(saved, custody_backups[0], saved_len));
     platform_wipe(saved, sizeof(saved));
-    tap(270, 26);
-    tap(140, 233);
-    tap(140, 349);
+    clear_loaded();
+    tap(140, 291);
+    tap(140, 291);
     tap(140, 233);
     assert(!ns_is_loaded(custody[0]) && ui_reader());
     finish_visible_review();
@@ -1045,9 +1379,9 @@ static void threshold_flow_test(void) {
     memcpy(descriptor, descriptor_start, 460);
     descriptor[460] = 0;
     assert(descriptor_start[460] == '"');
-    tap(270, 26);
-    tap(140, 233);
-    tap(140, 349);
+    clear_loaded();
+    tap(140, 291);
+    tap(140, 291);
     tap(140, 291);
     assert(!strcmp(visible_title, "Repair lost share"));
     save_frame("37-repair-entry");
@@ -1111,7 +1445,8 @@ static void threshold_flow_test(void) {
         memcpy(members[1], custody_keys[helper], 65);
         qsort(members, 2, sizeof(members[0]), public_key_order);
         n = snprintf(request, sizeof(request),
-                     "{\"type\":\"nsealr_sign\",\"id\":\"repaired-native\",\"session\":\"%064u\","
+                     "{\"type\":\"nsealr_sign\",\"id\":\"repaired-native\",\"session\":\"%"
+                     "064u\","
                      "\"members\":[\"%s\",\"%s\"],\"event\":\"{\\\"pubkey\\\":\\\"%.*s\\\","
                      "\\\"created_at\\\":1794211200,\\\"kind\\\":1,\\\"tags\\\":[],"
                      "\\\"content\\\":\\\"Repaired share, same Nostr identity.\\\"}\"}",
@@ -1130,7 +1465,7 @@ static void threshold_flow_test(void) {
         assert(!strcmp(custody_packets[0], custody_packets[1]));
         assert(strstr(custody_packets[0], "Repaired share, same Nostr identity."));
     }
-    tap(270, 26);
+    clear_loaded();
     assert(unlink(test_share_path) == 0);
     assert(platform_share_load(saved, sizeof(saved), &saved_len) == SHARE_FILE_MISSING);
     int fd = open(test_share_path, O_WRONLY | O_CREAT | O_EXCL, 0600);
@@ -1145,12 +1480,16 @@ static void threshold_flow_test(void) {
         ns_deinit(custody[i]);
     platform_wipe(custody_backups, sizeof(custody_backups));
     testing = false;
-    puts("PASS: real 3-device setup, all packets, animated share backup/check/recovery, "
+    puts("PASS: real 3-device setup, all packets, animated share "
+         "backup/check/recovery, "
          "rendered group consent and 2-device signing through actual UI input");
-    puts("PASS: deliberate lost-share repair, all three final packets, stable member/npub and "
+    puts("PASS: deliberate lost-share repair, all three final packets, stable "
+         "member/npub and "
          "signing with either surviving share through actual UI input");
-    puts("PASS: deliberate share-file save/read-back/restore, absent media, no overwrite, "
-         "missing/oversize rejection and cleared error buffers (native filesystem)");
+    puts("PASS: deliberate share-file save/read-back/restore, absent media, no "
+         "overwrite, "
+         "missing/oversize rejection and cleared error buffers (native "
+         "filesystem)");
 }
 
 int main(int argc, char **argv) {
@@ -1167,10 +1506,12 @@ int main(int argc, char **argv) {
     if (argc == 2 && !strcmp(argv[1], "--test")) {
         flow_test();
         threshold_flow_test();
+        signer_flow_test();
     } else if (argc == 3 && !strcmp(argv[1], "--render")) {
         render_dir = argv[2];
         flow_test();
         threshold_flow_test();
+        signer_flow_test();
         printf("Rendered %u actual-owner screens with published test entropy\n", frames);
     } else if (argc == 3 && !strcmp(argv[1], "--interactive")) {
         char command[128];
