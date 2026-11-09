@@ -58,6 +58,32 @@ pub(crate) fn members(value: &Value, count: usize) -> Result<Vec<[u8; 32]>, Erro
 pub(crate) fn list(keys: &[[u8; 32]]) -> Vec<String> {
     keys.iter().map(|k| j::hex_string(k)).collect()
 }
+/// The slot is a stable FROST identifier, not the key's lexical position.
+pub(crate) fn roster(keys: &[[u8; 32]]) -> Vec<Value> {
+    keys.iter()
+        .enumerate()
+        .map(|(i, key)| json!({"id":i+1,"key":j::hex_string(key)}))
+        .collect()
+}
+pub(crate) fn read_roster(value: &Value) -> Result<Vec<[u8; 32]>, Error> {
+    let rows = value.as_array().ok_or(Error::Input)?;
+    if rows.len() != 3 {
+        return Err(Error::Bounds);
+    }
+    let mut keys = Vec::with_capacity(3);
+    for (i, row) in rows.iter().enumerate() {
+        j::exact_keys(row, &["id", "key"], &[])?;
+        if row["id"].as_u64() != Some(i as u64 + 1) {
+            return Err(Error::Identity);
+        }
+        let key = key(&row["key"])?;
+        if keys.contains(&key) {
+            return Err(Error::Identity);
+        }
+        keys.push(key);
+    }
+    Ok(keys)
+}
 fn digest(
     phase: &str,
     group: &str,

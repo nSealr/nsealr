@@ -118,6 +118,33 @@ int main(void){
         assert(!ns_is_loaded(device[i]));approve(i);assert(ns_is_loaded(device[i]));
     }
     outputs();
+    /* Lose member0 entirely: the surviving quorum repairs a new transport owner. */
+    uint8_t record[1024];size_t record_len;uint32_t lost_member;
+    assert(ns_threshold_record(device[1],record,sizeof record-1,&record_len)==0);
+    record[record_len]=0;
+    char descriptor[461];const char *descriptor_start=strstr((const char*)record,"\"descriptor\":\"");
+    assert(descriptor_start);descriptor_start+=14;
+    memcpy(descriptor,descriptor_start,460);descriptor[460]=0;assert(descriptor_start[460]=='"');
+    assert(ns_threshold_info(device[0],group_record,&lost_member)==0);
+    fresh();assert(ns_threshold_start(device[0],entropy,now)==0);wiped(entropy,32);
+    ns_text join;assert(ns_threshold_output(device[0],0,&join)==0);
+    memcpy(input,join.data,join.len);input[join.len]=0;field(input,"key",keys[0]);
+    ns_finish_response(device[0]);
+    snprintf(input,sizeof input,"{\"type\":\"nsealr_repair\",\"session\":\"%064d\",\"group\":\"%.*s\",\"descriptor\":\"%s\",\"members\":[{\"id\":1,\"key\":\"%s\"},{\"id\":2,\"key\":\"%s\"},{\"id\":3,\"key\":\"%s\"}],\"participant\":%u,\"replacement\":\"%s\"}",3,64,group_record,descriptor,roster[0],roster[1],roster[2],lost_member,keys[0]);
+    for(int i=0;i<3;i++){
+        fresh();assert(ns_threshold_receive(device[i],(const uint8_t*)input,strlen(input),entropy,now)==0);approve(i);
+    }
+    assert(outputs()==2);route(2);assert(outputs()==2);route(2);
+    assert(outputs()==3);route(2);assert(outputs()==2);
+    for(int i=0;i<3;i++){
+        uint8_t key[64],fingerprint[64];size_t written;uint32_t member;
+        assert(ns_threshold_state(device[i])==NS_THRESHOLD_READY);
+        assert(ns_public_key(device[i],0,key,sizeof key,&written)==0 && written==64);
+        assert(memcmp(public_key,key,64)==0);
+        assert(ns_threshold_info(device[i],fingerprint,&member)==0);
+        if(i==0){assert(member==lost_member);memcpy(group_record,fingerprint,64);}
+        else assert(memcmp(group_record,fingerprint,64)==0);
+    }
     char selected[2][65];strcpy(selected[0],keys[0]);strcpy(selected[1],keys[1]);
     qsort(selected,2,sizeof selected[0],compare);
     size_t offset=(size_t)snprintf(event,sizeof event,"{\"pubkey\":\"%s\",\"created_at\":1,\"kind\":1,\"tags\":[",public_key);
@@ -134,6 +161,6 @@ int main(void){
     assert(strcmp(messages[0],messages[1])==0);assert(strstr(messages[0],"native-threshold"));assert(strstr(messages[0],"Native custody signing"));
     now+=300000;assert(ns_tick(device[0],now)==1);assert(ns_is_loaded(device[0]));
     for(int i=0;i<3;i++){ns_lock(device[i]);ns_deinit(device[i]);wiped(storage[i],sizeof storage[i]);}
-    printf("PASS C ABI 3-party setup, share recovery, 2-party sign, animated QR; backup=%zu heap peak=%zu live=%zu\n",backup_len[0],ns_heap_peak(),ns_heap_reserved());
+    printf("PASS C ABI setup, backup restore, quorum repair, 2-party sign, animated QR; backup=%zu heap peak=%zu live=%zu\n",backup_len[0],ns_heap_peak(),ns_heap_reserved());
     assert(ns_heap_reserved()==0);return 0;
 }

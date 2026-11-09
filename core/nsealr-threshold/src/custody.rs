@@ -27,6 +27,7 @@ use zeroize::{Zeroize, Zeroizing};
 pub const MAX_BACKUP: usize = 2048;
 const SETUP_MS: u64 = 600_000;
 const SIGN_MS: u64 = crate::MAX_ROUND_LIFETIME_MS;
+mod repair;
 #[cfg(test)]
 mod tests;
 
@@ -68,6 +69,7 @@ enum Action {
         members: Vec<[u8; 32]>,
     },
     Restore(Box<Recovery>),
+    Repair(Box<repair::Plan>),
     Sign {
         id: String,
         text: String,
@@ -90,6 +92,7 @@ pub struct Custody {
     signer: Signer,
     group: [u8; 32],
     setup: Option<Setup>,
+    repair: Option<repair::Exchange>,
     signing: Option<Signing>,
     review: Option<Review>,
     outputs: Vec<String>,
@@ -103,7 +106,7 @@ pub struct Custody {
     backup_scan: Option<bool>,
     pub collector: Collector,
 }
-fn crypto<T>(result: Result<T, crate::Error>) -> Result<T, Error> {
+fn crypto<T, E>(result: Result<T, E>) -> Result<T, Error> {
     result.map_err(|_| Error::Crypto)
 }
 fn member_id(index: usize) -> ParticipantId {
@@ -127,10 +130,13 @@ fn setup_fingerprint(session: &[u8; 32], members: &[[u8; 32]]) -> [u8; 32] {
     )
 }
 fn group_fingerprint(participant: &Participant, members: &[[u8; 32]]) -> [u8; 32] {
+    roster_fingerprint(participant.group(), members)
+}
+fn roster_fingerprint(group: &crate::Group, members: &[[u8; 32]]) -> [u8; 32] {
     sha256(
         &serde_json::to_vec(&(
             "nSealr 2-of-3 custody",
-            j::hex_string(participant.group().identity()),
+            j::hex_string(group.identity()),
             wire::list(members),
         ))
         .expect("strings serialize"),
@@ -165,7 +171,7 @@ impl Custody {
             2
         } else if self.finished {
             5
-        } else if self.setup.is_some() || self.signing.is_some() {
+        } else if self.setup.is_some() || self.signing.is_some() || self.repair.is_some() {
             3
         } else if self.loaded() {
             4
@@ -176,6 +182,9 @@ impl Custody {
         }
     }
     pub fn progress(&self) -> u32 {
+        if let Some(repair) = &self.repair {
+            return repair.progress();
+        }
         match self.setup.as_ref().map(|s| &s.stage) {
             Some(SetupStage::First { incoming, .. }) => incoming.len() as u32,
             Some(SetupStage::Second { incoming, .. }) => incoming.len() as u32,
@@ -192,6 +201,7 @@ impl Custody {
         Ok(match &self.review.as_ref().ok_or(Error::Stale)?.action {
             Action::Setup { .. } => "Create group",
             Action::Restore(_) => "Restore share",
+            Action::Repair(_) => "Repair lost share",
             Action::Sign { confirmation, .. } => confirmation,
             Action::PublicKey(_) => "Share identity",
         })
@@ -209,6 +219,7 @@ impl Custody {
     pub fn cancel(&mut self) {
         self.signer.cancel();
         self.setup = None;
+        self.repair = None;
         self.signing = None;
         self.review = None;
         self.outputs.clear();
@@ -359,10 +370,13 @@ impl Custody {
             }
             match j::string(&value["type"])? {
                 "nsealr_setup" => self.setup_request(&value),
+                "nsealr_repair" => self.repair_request(&value, now),
                 "nsealr_sign" => self.sign_request(&value, now),
                 "nsealr_peer" => {
                     let mut random = self.random(entropy)?;
-                    if self.setup.is_some() {
+                    if self.repair.is_some() {
+                        self.repair_peer(&value, &mut random)?;
+                    } else if self.setup.is_some() {
                         self.setup_peer(&value, &mut random)?;
                     } else {
                         self.sign_peer(&value, &mut random, now)?;
@@ -400,6 +414,9 @@ impl Custody {
         self.prepare(Action::Setup { session, members }, fields)
     }
     fn sign_request(&mut self, value: &Value, now: u64) -> Result<(), Error> {
+        if self.repair.is_some() {
+            return Err(Error::Stale);
+        }
         j::exact_keys(value, &["type", "id", "session", "members", "event"], &[])?;
         self.signer.cancel();
         self.signing = None;
@@ -510,6 +527,7 @@ impl Custody {
                     self.install(recovery.participant, recovery.identity, recovery.members);
                     self.ready_output()
                 }
+                Action::Repair(plan) => self.begin_repair(*plan, &mut random),
                 Action::PublicKey(id) => {
                     self.outputs.push(
                         json!({"id":id,"result":j::hex_string(self.public_key()?)}).to_string(),
@@ -796,10 +814,10 @@ impl Custody {
             &self.members,
             &self.identity.as_ref().ok_or(Error::Locked)?.public_key(),
         )?;
-        Ok(json!({"type":"nsealr_group","group":j::hex_string(&self.group),"pubkey":j::hex_string(participant.group().public_key()),"members":wire::list(&self.members),"participant":index+1}).to_string())
+        Ok(json!({"type":"nsealr_group","group":j::hex_string(&self.group),"pubkey":j::hex_string(participant.group().public_key()),"descriptor":j::hex_string(participant.group().descriptor()),"members":wire::roster(&self.members),"participant":index+1}).to_string())
     }
     pub fn backup(&self) -> Result<Zeroizing<String>, Error> {
-        if self.setup.is_some() || self.signing.is_some() || self.review.is_some() {
+        if self.setup.is_some() || self.signing.is_some() || self.review.is_some() || self.repair.is_some() {
             return Err(Error::Stale);
         }
         let participant = self.signer.selected().ok_or(Error::Locked)?;
@@ -810,7 +828,7 @@ impl Custody {
             .as_ref()
             .ok_or(Error::Locked)?
             .backup(1, &mut *nsec)?;
-        let mut value = json!({"type":"nsealr_share","group":j::hex_string(&self.group),"descriptor":j::hex_string(participant.group().identity()),"members":wire::list(&self.members),"transport":core::str::from_utf8(&nsec[..n]).map_err(|_|Error::Input)?,"share":j::hex_string(&share)});
+        let mut value = json!({"type":"nsealr_share","group":j::hex_string(&self.group),"descriptor":j::hex_string(participant.group().identity()),"members":wire::roster(&self.members),"transport":core::str::from_utf8(&nsec[..n]).map_err(|_|Error::Input)?,"share":j::hex_string(&share)});
         value["checksum"] = j::hex_string(&sha256(value.to_string().as_bytes())).into();
         let backup = Zeroizing::new(value.to_string());
         if backup.len() > MAX_BACKUP {
@@ -893,7 +911,7 @@ impl Custody {
             if sha256(value.to_string().as_bytes()) != checksum {
                 return Err(Error::Crypto);
             }
-            let members = wire::members(&value["members"], 3)?;
+            let members = wire::read_roster(&value["members"])?;
             let identity = Identity::nsec(j::string(&value["transport"])?)?;
             let index = member_index(&members, &identity.public_key())?;
             let descriptor = j::hex(j::string(&value["descriptor"])?)?;
