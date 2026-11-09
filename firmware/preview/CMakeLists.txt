@@ -1,0 +1,22 @@
+cmake_minimum_required(VERSION 3.18)
+project(nsealr_ui_preview LANGUAGES C)
+set(CMAKE_C_STANDARD 11)
+
+# The same native screen source will be linked by the P4 adapter. This executable
+# supplies only a software framebuffer, public examples and pointer input.
+if(NOT DEFINED LVGL_DIR OR NOT EXISTS "${LVGL_DIR}/CMakeLists.txt")
+  message(FATAL_ERROR "Pass -DLVGL_DIR=/path/to/lvgl at the recorded source pin")
+endif()
+set(LV_BUILD_CONF_PATH "${CMAKE_CURRENT_SOURCE_DIR}/lv_conf.h" CACHE PATH "" FORCE)
+set(CONFIG_LV_BUILD_DEMOS OFF CACHE BOOL "" FORCE)
+set(CONFIG_LV_BUILD_EXAMPLES OFF CACHE BOOL "" FORCE)
+set(CONFIG_LV_USE_THORVG OFF CACHE BOOL "" FORCE)
+set(LV_FETCH_DEPENDENCIES OFF CACHE BOOL "" FORCE)
+set(LV_USE_PKG_CONFIG OFF CACHE BOOL "" FORCE)
+add_subdirectory("${LVGL_DIR}" "${CMAKE_CURRENT_BINARY_DIR}/lvgl")
+add_executable(ui-preview preview.c ../ui/ui.c)
+target_include_directories(ui-preview PRIVATE ../ui)
+target_compile_options(ui-preview PRIVATE -Wall -Wextra -Werror -UNDEBUG)
+target_link_libraries(ui-preview PRIVATE lvgl m)
+enable_testing()
+add_test(NAME ui-navigation COMMAND ui-preview --test)
