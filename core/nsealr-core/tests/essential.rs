@@ -300,43 +300,41 @@ fn official_nip44_payloads_and_modified_ciphertext_zero_output() {
 
 #[test]
 fn private_plaintext_is_reviewed_before_client_release() {
-    let mut sender = Owner::default();
-    sender.select(scalar(1));
-    let peer = scalar(2).public_key();
-    sender
-        .request(
-            &request(
-                "enc",
-                "nip44_encrypt",
-                json!([hex_string(&peer), "private café"]),
-            ),
-            1,
-        )
-        .unwrap();
-    assert!(sender.fields().iter().any(|f| f.flags & PRIVATE != 0));
-    mark(&mut sender, CRITICAL | PROSE);
-    let generation = sender.generation();
-    sender.approve(generation, false, &mut [3; 32], 2).unwrap();
-    let ciphertext = result(&sender)["result"].as_str().unwrap().to_owned();
-    let mut receiver = Owner::default();
-    receiver.select(scalar(2));
-    receiver
-        .request(
-            &request(
-                "dec",
-                "nip44_decrypt",
-                json!([hex_string(&scalar(1).public_key()), ciphertext]),
-            ),
-            3,
-        )
-        .unwrap();
-    assert!(receiver.response().is_err());
-    assert!(receiver
-        .fields()
-        .iter()
-        .any(|f| f.value.as_str() == "private café" && f.flags & PRIVATE != 0));
-    mark(&mut receiver, CRITICAL | PROSE);
-    let generation = receiver.generation();
-    receiver.approve(generation, false, &mut [], 4).unwrap();
-    assert_eq!(result(&receiver)["result"], "private café");
+    for text in ["private café", r#"{"setting":"dark","nested":{"value":1}}"#] {
+        let mut sender = Owner::default();
+        sender.select(scalar(1));
+        let peer = scalar(2).public_key();
+        sender
+            .request(
+                &request("enc", "nip44_encrypt", json!([hex_string(&peer), text])),
+                1,
+            )
+            .unwrap();
+        assert!(sender.fields().iter().any(|f| f.flags & PRIVATE != 0));
+        mark(&mut sender, CRITICAL | PROSE);
+        let generation = sender.generation();
+        sender.approve(generation, false, &mut [3; 32], 2).unwrap();
+        let ciphertext = result(&sender)["result"].as_str().unwrap().to_owned();
+        let mut receiver = Owner::default();
+        receiver.select(scalar(2));
+        receiver
+            .request(
+                &request(
+                    "dec",
+                    "nip44_decrypt",
+                    json!([hex_string(&scalar(1).public_key()), ciphertext]),
+                ),
+                3,
+            )
+            .unwrap();
+        assert!(receiver.response().is_err());
+        assert!(receiver
+            .fields()
+            .iter()
+            .any(|f| f.value.as_str() == text && f.flags & PRIVATE != 0));
+        mark(&mut receiver, CRITICAL | PROSE);
+        let generation = receiver.generation();
+        receiver.approve(generation, false, &mut [], 4).unwrap();
+        assert_eq!(result(&receiver)["result"], text);
+    }
 }
