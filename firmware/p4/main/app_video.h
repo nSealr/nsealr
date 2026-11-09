@@ -143,6 +143,8 @@ esp_err_t app_video_stream_task_stop(int video_fd);
  * an error.
  */
 esp_err_t app_video_wait_video_stop(void);
+/* Capture errors are recoverable only after a successful stop/join. */
+bool app_video_stream_failed(void);
 
 /**
  * @brief Register a callback for frame operations.
