@@ -1,0 +1,30 @@
+--- esp_lvgl_adapter-0.6.4/src/display/bridge/v9/lvgl_ppa_accel_v9.c
++++ local-lvgl96/src/display/bridge/v9/lvgl_ppa_accel_v9.c
+@@ -4,6 +4,7 @@
+  * SPDX-License-Identifier: Apache-2.0
+  *
+  * LVGL v9 PPA Hardware Acceleration
++ * Local nSealr change (2026-10-25): use the LVGL 9.6 public header paths.
+  */
+ 
+ #include "lvgl_port_ppa.h"
+@@ -19,15 +20,15 @@
+ #include "src/draw/sw/blend/lv_draw_sw_blend_private.h"
+ #include "src/draw/sw/blend/lv_draw_sw_blend_to_rgb565.h"
+ #include "src/draw/sw/blend/lv_draw_sw_blend_to_rgb888.h"
+-#include "src/draw/lv_draw.h"
+-#include "src/draw/lv_draw_buf.h"
++#include "include/lvgl/draw/lv_draw.h"
++#include "include/lvgl/draw/lv_draw_buf.h"
+ #include "driver/ppa.h"
+ #include "esp_cache.h"
+ #include "esp_private/esp_cache_private.h"
+ #include "esp_memory_utils.h"
+ #include "common/display_bridge_common.h"
+-#include "stdlib/lv_mem.h"
+-#include "misc/lv_color.h"
++#include "include/lvgl/stdlib/lv_mem.h"
++#include "include/lvgl/draw/lv_color.h"
+ 
+ static ppa_client_handle_t s_blend_handle = NULL;
+ static ppa_client_handle_t s_fill_handle = NULL;

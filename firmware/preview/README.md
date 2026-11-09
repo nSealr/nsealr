@@ -1,60 +1,28 @@
-# Native interface preview
+# Native device UI
 
-This is the actual LVGL screen renderer at 320x480, with a software framebuffer
-and pointer input. The preview supplies public fixtures. It does not load keys,
-scan a camera, hash/approve/sign an event, clear secret memory or run on the P4.
+This executable uses the production `device.c`, LVGL UI and Rust C ABI. Its
+software framebuffer reproduces the target RGB565 colors. Secret text and QR
+pixels use the same controlled raster code. The host supplies **published test
+entropy**, so it must never be used for a real identity. There is no host camera;
+the tests feed complete optical transport frames into the actual collector.
 
-Build, test pointer navigation and render all screens:
+Build the native Rust static library, then pass its location and the pinned LVGL
+source to the runner:
 
 ```sh
-LVGL_DIR=/path/to/pinned/lvgl python3 tools/ui_preview.py
+cargo build --release --locked -p nsealr-device
+python3 tools/ui_preview.py --lvgl /path/to/lvgl-9.6 \
+  --rust-library target/release/libnsealr_device.a
 ```
 
-Requires Python 3, a C/C++ compiler, make and CMake >=3.18. Use `--cmake /path/to/cmake`
-when CMake is not on PATH. No Python packages, SDL or network fetches are needed.
-Obtain LVGL from its upstream repository at the pin below, or reuse the existing
-ESP-IDF managed component. The script checks the declared Git/component pin;
-it does not authenticate arbitrary local modifications to that source.
+Use `--cmake /path/to/cmake` when needed. `--core-root` supports an isolated core
+worktree during integration. The runner checks the LVGL source identity, builds,
+executes the owner/navigation tests and writes actual framebuffer PNGs under
+`.cache/ui-preview/screens/`. `--serve` starts a loopback viewer; its browser only
+forwards pointer input to the native executable and displays its pixels.
 
-Add `--serve` for a local interactive preview at `http://127.0.0.1:8765`.
-The browser displays native framebuffer pixels and passes pointer coordinates.
-It does not implement the device layout. Click buttons and drag the reader.
-Ctrl-C stops the server and native process. No browser opens automatically.
-
-Output is under `.cache/ui-preview/`: `preview.log`, the executable and
-`screens/index.html` with fourteen PNGs. The C executable also accepts `--test`,
-`--render DIRECTORY` and `--interactive FRAME.ppm` for simple automation.
-
-## Sources and boundaries
-
-- Shared renderer: `firmware/ui/ui.c`; native-only examples/controller/input:
-  `firmware/preview/preview.c`. The callback reports user intent to an eventual
-  owner; this presentation layer cannot grant signing authority.
-- LVGL 9.6.0~1, upstream commit
-  `60b614c23c816ca5edc5f2840c9945eff7da0ad4`, from the existing P4 managed component.
-  Source: https://github.com/lvgl/lvgl/tree/60b614c23c816ca5edc5f2840c9945eff7da0ad4
-  LVGL is MIT; retain its `LICENCE.txt` and `COPYRIGHTS.md` when redistributing it.
-- Fonts are LVGL's bundled Montserrat 12/14/16/18/28 and bundled Font Awesome
-  symbol glyphs. Their provenance is retained in LVGL's font sources; Montserrat
-  and Font Awesome fonts have separate OFL licensing. No SeedSigner artwork is copied.
-  Font licenses: https://github.com/JulietaUla/Montserrat/blob/master/OFL.txt and
-  https://github.com/FortAwesome/Font-Awesome/blob/5.x/LICENSE.txt
-- The result QR uses LVGL's bundled Nayuki encoder (MIT) and encodes only the
-  published NIP-19 public identity: https://github.com/nostr-protocol/nips/blob/master/19.md
-  It is not a signature, a secret backup, or the nSealr request/response protocol.
-
-All labels are public display data. Mnemonic and secret-QR screens must continue
-to use the separately owned secret renderer; ordinary LVGL text/image objects
-are not a suitable replacement without a memory-lifetime review.
-
-The review's action/metadata are currently a fixed public-note example. The actual
-core must supply validated typed fields and enforce critical-field presentation
-before this layout can become a production review adapter. The preview's
-`content_seen` flag records reaching the reader's end; it neither proves reading
-nor constitutes a core approval token. Unknown kinds and unsupported glyphs are
-not parsed or admitted by this fixture controller.
-
-The current typography covers the public Latin example. Production Unicode,
-bidirectional text, control-character rendering, secret input, Rust binding,
-camera/QR exchange and physical readability remain unqualified. Touch timing
-and display/DMA behavior are simulated, not measured on hardware.
+The essential flow checks creation, backup, clear and recovery, QR import,
+request collection, complete rendering before approval, explicit partial prose
+consent, rejection, cancellation, response clearing and lock. This is host evidence;
+physical camera, entropy, LCD transfer completion and hardware cleanup still need
+separate device measurements.

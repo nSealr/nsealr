@@ -1,0 +1,72 @@
+# P4 application
+
+This application is for the Waveshare ESP32-P4-WIFI6-Touch-LCD-3.5 with its OV5647
+camera. It uses one owner task, the Rust `nsealr-device` core, LVGL 9.6 and the
+board's actual camera, touch screen, display and qualified random-source sequence.
+The companion ESP32-C6 is held in reset on GPIO54. No transport is accepted over
+USB, Wi-Fi or Bluetooth.
+
+The implemented flow creates or imports an identity, offers an optional BIP39
+passphrase and NIP-06 account, displays and verifies recovery backups, collects
+animated QR requests, reviews authority and prose, and returns the core response
+through QR. Supported local backups are words, nsec, SeedQR and compact SeedQR.
+The public identity has a normal npub QR. Lock and inactivity clear the owner.
+The core determines accepted Nostr methods and event semantics; unknown semantics
+are rejected. Private text and backup/response QR pixels use bounded direct
+raster buffers rather than LVGL labels or generic image caches.
+
+## Build from a fresh checkout
+
+Use Rust 1.95 and ESP-IDF **6.0.2**, source commit
+`7101770dc6db2667b3c477cc31365dd1acd6db4e`, with its installed ESP32-P4 toolchain
+and Python environment. Follow Espressif's normal installation and `export.sh`
+steps. The target must support `riscv32imafc-unknown-none-elf`.
+
+From this repository root:
+
+```sh
+rustup target add riscv32imafc-unknown-none-elf
+cargo build --release --locked -p nsealr-device --target riscv32imafc-unknown-none-elf
+python3 tools/prepare_adapter.py
+export NSEALR_COMPONENT_ROOT="$PWD/.cache/p4/components"
+export NSEALR_SOURCE_ROOT="$PWD"
+cd firmware/p4
+idf.py -DIDF_TARGET=esp32p4 \
+  -DNSEALR_CORE_ROOT="$NSEALR_SOURCE_ROOT" \
+  -DRUST_LIBRARY="$NSEALR_SOURCE_ROOT/target/riscv32imafc-unknown-none-elf/release/libnsealr_device.a" build
+```
+
+`prepare_adapter.py` fetches the exact published adapter 0.6.4 source archive,
+checks its SHA-256 and applies `adapter.patch`. The patch only adjusts public
+header paths for LVGL 9.6. The remaining managed components use `dependencies.lock`.
+`idf.py` reads the checked-in `sdkconfig.defaults`; an older project or its
+configuration is not needed. Build outputs and downloaded components are ignored.
+
+`tools/build_p4.py` is an alternative for explicit tool/cache locations, useful
+when several worktrees share an SDK. It accepts `--sdk`, `--tools`, `--python-env`,
+`--rust-library`, and optional `--core-root` and `--work-dir`. Cached components
+may be copied with `--reuse-components`; they are not an authoritative source of
+configuration. The tool writes build logs and the image hash but never flashes.
+
+Flash a built image using the usual `idf.py -p PORT flash monitor`. This replaces
+the firmware; it does not install persistent user keys. Only use disposable test
+identities while qualifying a new firmware image.
+
+## Ownership and limits
+
+`main/main.c` owns the hardware and core allocator. Core allocations use internal
+RAM only; public rendering and camera decoding use external RAM. The sole owner
+performs signing, camera stop/join, key teardown and fatal cleanup. An acknowledged
+LCD transfer precedes completion of a review item. Critical fields are grouped in
+one continuous reader. Prose may be skipped only through a separate, local,
+per-request confirmation. Unsupported characters and controls have explicit,
+lossless escaped representations; literal backslashes are escaped as well.
+
+The native application exercises the same controller and UI with published test
+entropy. It cannot establish camera reliability, physical display/touch ordering,
+entropy quality, reset cleanup or radio isolation. A build alone does not establish
+those properties either. Production release qualification must include actual
+hardware measurements and review of the complete dependency and firmware image.
+
+Hardware source attribution is recorded in `SOURCES.md`. Fonts retain their OFL
+licenses and source assets under `../ui/fonts/`.

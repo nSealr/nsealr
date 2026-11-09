@@ -43,10 +43,10 @@ def serve(binary, output, port):
     ready()
     page = b"""<!doctype html><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>nSealr native UI preview</title><style>
-body{margin:24px;background:#080d12;color:#dce4ec;font:16px system-ui;text-align:center}
+body{margin:24px;background:#07060d;color:#ece6f7;font:16px system-ui;text-align:center}
 img{width:320px;height:480px;max-width:100%;border:1px solid #34404d;border-radius:18px;touch-action:none}
 p{color:#a9b5c2}a{color:#d7f29a}</style>
-<h2>nSealr native UI preview</h2><p>Actual LVGL pixels. Public examples only; no camera, keys or signing.</p>
+<h2>nSealr native UI preview</h2><p>Actual device UI and core. Public test entropy; never use this simulator for a real identity.</p>
 <img id="screen" src="/frame.png" alt="Native device preview" draggable="false">
 <p>Click buttons. Drag inside the text reader to scroll.</p><script>
 const screen=document.getElementById('screen');let start,busy=false;
@@ -112,6 +112,8 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--lvgl", default=os.environ.get("LVGL_DIR"), help="Pinned LVGL checkout/component")
     parser.add_argument("--cmake", default=os.environ.get("CMAKE", shutil.which("cmake")))
+    parser.add_argument("--core-root", default=str(ROOT))
+    parser.add_argument("--rust-library", help="Native nsealr-device static library; otherwise build it")
     parser.add_argument("--serve", action="store_true", help="Use a browser only as framebuffer viewer/input")
     parser.add_argument("--port", type=int, default=8765)
     args = parser.parse_args()
@@ -126,10 +128,17 @@ def main():
     elif not metadata.exists() or f"commit_sha: {LVGL_COMMIT}" not in metadata.read_text():
         parser.error(f"LVGL component must declare the recorded source pin {LVGL_COMMIT}")
     build = ROOT / ".cache" / "ui-preview"
+    if not args.rust_library:
+        core_target = build / "core-target"
+        core_env = os.environ.copy()
+        core_env["CARGO_TARGET_DIR"] = str(core_target)
+        subprocess.run(["cargo", "build", "--release", "--locked", "-p", "nsealr-device"],
+                       cwd=Path(args.core_root).resolve(), env=core_env, check=True)
+        args.rust_library = str(core_target / "release/libnsealr_device.a")
     output = build / "screens"
     output.mkdir(parents=True, exist_ok=True)
     commands = [
-        [args.cmake, "-S", str(ROOT / "firmware/preview"), "-B", str(build), f"-DLVGL_DIR={lvgl}", "-DCMAKE_BUILD_TYPE=Debug"],
+        [args.cmake, "-S", str(ROOT / "firmware/preview"), "-B", str(build), f"-DLVGL_DIR={lvgl}", f"-DNSEALR_CORE_ROOT={Path(args.core_root).resolve()}", f"-DRUST_LIBRARY={Path(args.rust_library).resolve()}", "-DCMAKE_BUILD_TYPE=Debug"],
         [args.cmake, "--build", str(build), "--parallel", str(min(os.cpu_count() or 2, 8))],
         [str(build / "ui-preview"), "--test"],
         [str(build / "ui-preview"), "--render", str(output)],
@@ -146,8 +155,8 @@ def main():
     (output / "index.html").write_text('<!doctype html><meta charset="utf-8"><title>nSealr native screens</title>'
         '<style>body{background:#080d12;color:#dce4ec;font:16px system-ui}main{display:flex;flex-wrap:wrap;gap:24px}'
         'figure{margin:0}img{border:1px solid #34404d;border-radius:16px}figcaption{margin:12px 0 28px}</style>'
-        '<h1>nSealr native screens</h1><p>Actual LVGL renders. Public examples only; no custody or signing.</p><main>' + figures + '</main>')
-    print(f"Native navigation test passed; 14 screens rendered: {output / 'index.html'}")
+        '<h1>nSealr native screens</h1><p>Actual device flow with published test entropy. Never use the simulator for real identities.</p><main>' + figures + '</main>')
+    print(f"Native real-core flow passed; screens rendered: {output / 'index.html'}")
     if args.serve:
         serve(build / "ui-preview", output, args.port)
 
