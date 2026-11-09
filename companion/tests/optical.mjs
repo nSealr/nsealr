@@ -21,13 +21,13 @@ export async function fixtureCamera(context) {
     } });
   });
 }
-export async function opticalFromPixels(page) {
-    await page.locator('#operation[open]').waitFor();
+export async function opticalFromPixels(page, options = {}) {
+    await page.locator(`${options.dialog ?? '#operation'}[open]`).waitFor();
     const chunks = new Map(), encoded = new Map(); let id, total;
     for (let attempt = 0; attempt < 360; attempt++) {
-      const pixels = await page.locator('#request-qr').evaluate(canvas => ({ data: [...canvas.getContext('2d').getImageData(0, 0, canvas.width, canvas.height).data], width: canvas.width, height: canvas.height }));
+      const pixels = await page.locator(options.canvas ?? '#request-qr').evaluate(canvas => ({ data: [...canvas.getContext('2d').getImageData(0, 0, canvas.width, canvas.height).data], width: canvas.width, height: canvas.height }));
       const qr = jsQR(Uint8ClampedArray.from(pixels.data), pixels.width, pixels.height);
-      if (qr) {
+      if (qr && qr.data.split(':')[1] !== options.previousDigest) {
         const parts = qr.data.split(':'); assert.equal(parts[0], 'ns');
         id ??= parts[1]; total ??= Number(parts[3]); assert.equal(parts[1], id); assert.equal(Number(parts[3]), total);
         chunks.set(Number(parts[2]), Buffer.from(parts[4], 'base64url'));
@@ -48,10 +48,10 @@ export async function scanResponse(page, request, result) {
     const digest = createHash('sha256').update(message).digest('hex'), count = Math.ceil(message.length / 384);
     return scanFrames(page, Array.from({ length: count }, (_, index) => `ns:${digest}:${index}:${count}:${message.subarray(index * 384, (index + 1) * 384).toString('base64url')}`));
   }
-export async function scanFrames(page, frames) {
+export async function scanFrames(page, frames, button = 'Scan device response') {
     const codes = await Promise.all(frames.map(frame => QRCode.toDataURL(frame, { width: 512, margin: 4, errorCorrectionLevel: 'M' })));
     await page.evaluate(images => { window.__testQRImages = images; }, codes);
-    await page.getByRole('button', { name: 'Scan device response', exact: true }).click();
+    await page.getByRole('button', { name: button, exact: true }).click();
     // A private-message chain can immediately open its next request.
     await page.locator('#camera').waitFor({ state: 'hidden', timeout: 60000 });
     assert.equal(await page.evaluate(() => window.__testTracks.every(track => track.readyState === 'ended')), true);
