@@ -1,7 +1,8 @@
 import { build } from 'esbuild';
-import { cp, mkdir, readFile, readdir, writeFile } from 'node:fs/promises';
+import { cp, mkdir, readFile, readdir, rm, writeFile } from 'node:fs/promises';
 const root = new URL('.', import.meta.url);
 const output = new URL('./dist/', root);
+await rm(output, { recursive: true, force: true });
 await mkdir(output, { recursive: true });
 const bundled = await build({ entryPoints: ['src/app.ts', 'extension/background.ts', 'extension/content.ts', 'extension/injected.ts'], entryNames: '[name]', outdir: 'dist', bundle: true, minify: true, sourcemap: false, target: ['chrome120', 'firefox128'], format: 'iife', legalComments: 'linked', metafile: true });
 const dependencies = new Set();
@@ -40,8 +41,5 @@ await writeFile('dist/firefox/manifest.json', JSON.stringify({ ...manifest,
   background: { scripts: ['background.js'] },
   browser_specific_settings: { gecko: { id: 'companion@nsealr.com', strict_min_version: '128.0', data_collection_permissions: { required: ['none'] } } },
 }, null, 2) + '\n');
-const readme = await readFile('README.md', 'utf8');
-const escaped = readme.replaceAll('&', '&amp;').replaceAll('<', '&lt;').replaceAll('>', '&gt;');
-const help = `<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>nSealr companion help</title><link rel="stylesheet" href="app.css"><main><a href="index.html">Back to companion</a><pre style="white-space:pre-wrap;font:14px/1.8 Inter,sans-serif">${escaped}</pre></main></html>`;
-await writeFile('dist/README.html', help); await writeFile('dist/firefox/README.html', help);
+await cp('help.html', 'dist/help.html'); await cp('help.html', 'dist/firefox/help.html');
 console.log('Built browser app and Chromium/Firefox extension packages in dist/.');

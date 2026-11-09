@@ -6,6 +6,13 @@ signatures before returning them to the application.
 
 ## Open the companion
 
+Open [nsealr.com/connect](https://nsealr.com/connect/). For a Nostr website,
+[download the browser extension](https://nsealr.com/downloads/) and follow the
+installation steps below. Recovery words, private keys, passphrases and share
+backups stay on the device or in your offline backup.
+
+## Run locally
+
 Use Node 24 or later. In this directory:
 
 ```sh
@@ -32,10 +39,11 @@ signature alone does not mean a relay accepted the event.
 
 ## Browser extension
 
-Build first. In Chromium's extension settings, enable developer mode and load
-`dist/` as an unpacked extension. In Firefox, open `about:debugging`, choose
-**This Firefox**, then **Load Temporary Add-on** and select
-`dist/firefox/manifest.json`. Temporary Firefox installation ends on restart.
+Download and unzip the package for your browser, or build it locally.
+In Chromium's extension settings, enable developer mode and load the extracted
+folder as an unpacked extension. In Firefox, open `about:debugging`, choose
+**This Firefox**, then **Load Temporary Add-on** and select the extracted
+`manifest.json`. Local builds use `dist/` for Chromium and `dist/firefox/` for Firefox. Temporary Firefox installation ends on restart.
 Use Firefox 128 or later. Signed store distribution is a separate installation
 step; these instructions do not install or publish an extension automatically.
 
