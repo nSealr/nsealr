@@ -48,7 +48,14 @@ static share_file_result transfer(bool save, const uint8_t *input, size_t length
     slot.width = 4;
     const esp_vfs_fat_mount_config_t mount = {
         .format_if_mount_failed = false, .max_files = 1, .disk_status_check_enable = true};
-    if (esp_vfs_fat_sdmmc_mount("/share", &host, &slot, &mount, &card) != ESP_OK)
+    esp_err_t mounted = esp_vfs_fat_sdmmc_mount("/share", &host, &slot, &mount, &card);
+    if (mounted == ESP_ERR_NO_MEM) {
+        /* IDF6.0.2 can free the card after a late context-allocation failure
+         * without unregistering diskio. Reset instead of retrying dangling SDK state. */
+        platform_wipe(dma, dma_size);
+        platform_fail();
+    }
+    if (mounted != ESP_OK)
         goto cleanup;
     if (card->host.dma_aligned_buffer != dma || card->csd.sector_size > dma_size ||
         !card->host.check_buffer_alignment(card->host.slot, dma, card->csd.sector_size)) {
