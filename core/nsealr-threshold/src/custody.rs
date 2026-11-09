@@ -786,13 +786,17 @@ impl Custody {
         self.deadline = 0;
     }
     fn ready_output(&mut self) -> Result<(), Error> {
+        self.outputs.push(self.record()?);
+        Ok(())
+    }
+    /// Public descriptor only; reading it never consumes pending authority.
+    pub fn record(&self) -> Result<String, Error> {
         let participant = self.signer.selected().ok_or(Error::Locked)?;
         let index = member_index(
             &self.members,
             &self.identity.as_ref().ok_or(Error::Locked)?.public_key(),
         )?;
-        self.outputs.push(json!({"type":"nsealr_group","group":j::hex_string(&self.group),"pubkey":j::hex_string(participant.group().public_key()),"members":wire::list(&self.members),"participant":index+1}).to_string());
-        Ok(())
+        Ok(json!({"type":"nsealr_group","group":j::hex_string(&self.group),"pubkey":j::hex_string(participant.group().public_key()),"members":wire::list(&self.members),"participant":index+1}).to_string())
     }
     pub fn backup(&self) -> Result<Zeroizing<String>, Error> {
         if self.setup.is_some() || self.signing.is_some() || self.review.is_some() {

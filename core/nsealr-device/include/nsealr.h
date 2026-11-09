@@ -126,6 +126,9 @@ int32_t ns_threshold_import_frame(ns_context *ctx, uint8_t *frame, size_t len, u
 int32_t ns_threshold_check_backup_frame(ns_context *ctx, uint8_t *frame, size_t len, uint64_t now_ms);
 /* Public record for independent recovery checks; member is 1..3. */
 int32_t ns_threshold_info(const ns_context *ctx, uint8_t group_hex[64], uint32_t *member);
+/* Same public nsealr_group JSON as setup completion;1024 bytes suffice.
+ * Does not change pending state. Output is cleared on failure; no NUL added. */
+int32_t ns_threshold_record(const ns_context *ctx, uint8_t *out, size_t capacity, size_t *written);
 
 /* Bare-metal staticlib hooks: internal RAM only, correct alignment, no unwind.
  * Rust wraps every allocation in a bounded wipe-before-free allocator. OOM or

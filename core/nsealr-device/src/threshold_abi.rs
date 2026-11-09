@@ -192,6 +192,22 @@ unsafe fn backup_frame(ctx: *mut Context, p: *mut u8, len: usize, now: u64, chec
     }
 }
 #[no_mangle]
+pub unsafe extern "C" fn ns_threshold_record(
+    ctx: *const Context,
+    out: *mut u8,
+    capacity: usize,
+    written: *mut usize,
+) -> i32 {
+    code((|| {
+        copy(out, capacity, written, &[])?;
+        let c = context_ref(ctx)?;
+        if !c.threshold {
+            return Err(Error::Unsupported);
+        }
+        copy(out, capacity, written, c.custody.record()?.as_bytes())
+    })())
+}
+#[no_mangle]
 pub unsafe extern "C" fn ns_threshold_info(
     ctx: *const Context,
     out: *mut u8,

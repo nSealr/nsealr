@@ -86,6 +86,12 @@ int main(void){
     for(int i=0;i<3;i++){
         uint8_t key[64];size_t written;
         assert(ns_is_loaded(device[i]));assert(ns_threshold_state(device[i])==NS_THRESHOLD_READY);
+        uint8_t record[1024];
+        assert(ns_threshold_record(device[i],record,sizeof record,&written)==0 && written>0);
+        ns_text ready;assert(ns_threshold_output(device[i],0,&ready)==0);
+        assert(ready.len==written && memcmp(ready.data,record,written)==0);
+        assert(ns_threshold_record(device[i],record,1,&written)<0 && written==0 && record[0]==0);
+        assert(ns_threshold_state(device[i])==NS_THRESHOLD_READY);
         assert(ns_word_count(device[i])==0);
         assert(ns_backup(device[i],1,backup[i],sizeof backup[i],&written)<0 && written==0);
         wiped(backup[i],sizeof backup[i]);
