@@ -2,7 +2,7 @@ name: CI
 
 on:
   push:
-    branches: [main, restart/product]
+    branches: [main]
   pull_request:
   workflow_dispatch:
 
@@ -24,6 +24,16 @@ jobs:
           cargo test --workspace --all-features --locked --offline
           cargo clippy --workspace --all-targets --all-features --locked --offline -- -D warnings
           cargo build --workspace --lib --release --locked --offline --target riscv32imafc-unknown-none-elf
+      - uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38
+        with:
+          node-version: 24.22.0
+      - name: Check companion and native optical exchange
+        run: |
+          npm --prefix companion ci --ignore-scripts
+          npm --prefix companion run check
+          npm --prefix companion test
+          npm --prefix companion run build
+          node tools/check_integration.mjs
       - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09
         with:
           repository: lvgl/lvgl
