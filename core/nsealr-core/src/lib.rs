@@ -13,6 +13,7 @@ pub mod json;
 pub mod nip19;
 pub mod nip44;
 pub mod owner;
+mod private;
 pub mod qr;
 mod recovery;
 pub mod seedqr;

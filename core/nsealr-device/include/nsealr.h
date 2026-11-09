@@ -30,6 +30,12 @@ int32_t ns_init(void *storage, size_t bytes);
 void ns_deinit(ns_context *ctx);
 void ns_lock(ns_context *ctx);
 void ns_cancel(ns_context *ctx);
+/* Dismiss completed output, retaining bounded private-message continuations.
+ * If review or collection is pending this cancels everything instead. */
+void ns_finish_response(ns_context *ctx);
+/* Monotonic event-loop cleanup: 0 unchanged, 1 expired, negative clock/error.
+ * On nonzero clear rendered private/review/output text; identity stays loaded. */
+int32_t ns_tick(ns_context *ctx, uint64_t now_ms);
 bool ns_is_loaded(const ns_context *ctx);
 const char *ns_error_text(int32_t error);
 

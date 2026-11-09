@@ -404,9 +404,28 @@ pub unsafe extern "C" fn ns_backup_word(
 pub unsafe extern "C" fn ns_request(ctx: *mut Context, p: *const u8, len: usize, now: u64) -> i32 {
     code((|| {
         let o = owner(ctx)?;
-        o.cancel();
-        o.request(input(p, len)?, now)
+        match input(p, len) {
+            Ok(bytes) => o.request(bytes, now),
+            Err(error) => {
+                o.cancel();
+                Err(error)
+            }
+        }
     })())
+}
+/// Dismiss completed output; cancellation and locking still destroy all receipts.
+#[no_mangle]
+pub unsafe extern "C" fn ns_finish_response(ctx: *mut Context) {
+    if let Ok(o) = owner(ctx) {
+        o.finish_response();
+    }
+}
+#[no_mangle]
+pub unsafe extern "C" fn ns_tick(ctx: *mut Context, now: u64) -> i32 {
+    match owner(ctx).and_then(|o| o.tick(now)) {
+        Ok(expired) => i32::from(expired),
+        Err(error) => error as i32,
+    }
 }
 #[no_mangle]
 pub unsafe extern "C" fn ns_receive_frame(

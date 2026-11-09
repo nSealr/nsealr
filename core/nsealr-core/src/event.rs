@@ -55,8 +55,16 @@ impl Event {
     pub fn content(&self) -> &str {
         &self.content
     }
+    pub(crate) fn created_at(&self) -> u64 {
+        self.created_at
+    }
+    pub(crate) fn tags(&self) -> &[Vec<String>] {
+        &self.tags
+    }
     pub fn parse(input: &[u8], expected: &[u8; 32]) -> Result<Self, Error> {
-        let mut value = strict::parse(input)?;
+        Self::from_value(strict::parse(input)?, expected)
+    }
+    pub(crate) fn from_value(mut value: Value, expected: &[u8; 32]) -> Result<Self, Error> {
         strict::exact_keys(
             &value,
             &["pubkey", "created_at", "kind", "tags", "content"],
@@ -66,7 +74,8 @@ impl Event {
         if &pubkey != expected {
             return Err(Error::Identity);
         }
-        let kind = u32::try_from(strict::integer(&value["kind"])?).map_err(|_| Error::Input)?;
+        let kind =
+            u16::try_from(strict::integer(&value["kind"])?).map_err(|_| Error::Input)? as u32;
         let created_at = strict::integer(&value["created_at"])?;
         let content = match value["content"].take() {
             Value::String(v) => v,
@@ -113,6 +122,25 @@ impl Event {
             tags,
             content,
         })
+    }
+    pub(crate) fn authenticated(input: &[u8]) -> Result<Self, Error> {
+        let mut value = strict::parse(input)?;
+        let id = strict::hex::<32>(strict::string(&value["id"])?)?;
+        let signature = strict::hex::<64>(strict::string(&value["sig"])?)?;
+        let author = strict::hex::<32>(strict::string(&value["pubkey"])?)?;
+        let map = value.as_object_mut().ok_or(Error::Input)?;
+        map.remove("id");
+        map.remove("sig");
+        let event = Self::from_value(value, &author)?;
+        if event.id() != id {
+            return Err(Error::Crypto);
+        }
+        let key =
+            k256::schnorr::VerifyingKey::from_bytes((&author).into()).map_err(|_| Error::Crypto)?;
+        let sig =
+            k256::schnorr::Signature::try_from(signature.as_slice()).map_err(|_| Error::Crypto)?;
+        key.verify_raw(&id, &sig).map_err(|_| Error::Crypto)?;
+        Ok(event)
     }
     pub fn id(&self) -> [u8; 32] {
         sha256(
@@ -349,7 +377,7 @@ impl Event {
         Ok(fields)
     }
 }
-fn key(value: &str) -> Result<(), Error> {
+pub(crate) fn key(value: &str) -> Result<(), Error> {
     strict::hex::<32>(value).map(|_| ())
 }
 fn numeric(value: &str) -> Result<u32, Error> {
@@ -361,7 +389,7 @@ fn numeric(value: &str) -> Result<u32, Error> {
     }
     value.parse().map_err(|_| Error::Input)
 }
-fn relay(value: &str) -> Result<(), Error> {
+pub(crate) fn relay(value: &str) -> Result<(), Error> {
     let host = value
         .strip_prefix("wss://")
         .or_else(|| value.strip_prefix("ws://"))
@@ -376,10 +404,15 @@ fn relay(value: &str) -> Result<(), Error> {
     }
     Ok(())
 }
-fn joined(tag: &[String]) -> String {
+pub(crate) fn joined(tag: &[String]) -> String {
     serde_json::to_string(tag).expect("strings serialize")
 }
 fn note_tag(tag: &[String], fields: &mut Vec<Field>) -> Result<(), Error> {
+    if tag[0] == "client" {
+        client_tag(tag)?;
+        fields.push(Field::new("Client metadata", joined(tag), DETAIL));
+        return Ok(());
+    }
     let label = match tag[0].as_str() {
         "e" if (2..=5).contains(&tag.len()) => {
             key(&tag[1])?;
@@ -417,6 +450,31 @@ fn note_tag(tag: &[String], fields: &mut Vec<Field>) -> Result<(), Error> {
     fields.push(Field::new(label, joined(tag), CRITICAL));
     Ok(())
 }
+pub(crate) fn address(value: &str) -> Result<(), Error> {
+    let mut parts = value.splitn(3, ':');
+    let kind = numeric(parts.next().ok_or(Error::Input)?)?;
+    if kind > u16::MAX as u32 {
+        return Err(Error::Input);
+    }
+    key(parts.next().ok_or(Error::Input)?)?;
+    parts.next().ok_or(Error::Input)?;
+    Ok(())
+}
+pub(crate) fn client_tag(tag: &[String]) -> Result<(), Error> {
+    if !(2..=4).contains(&tag.len()) || tag[1].is_empty() || tag[1].len() > 128 {
+        return Err(Error::Input);
+    }
+    if tag.len() > 2 {
+        address(&tag[2])?;
+        if !tag[2].starts_with("31990:") {
+            return Err(Error::Input);
+        }
+    }
+    if tag.len() > 3 && !tag[3].is_empty() {
+        relay(&tag[3])?;
+    }
+    Ok(())
+}
 fn reference_pair(tags: &[Vec<String>]) -> Result<([u8; 32], [u8; 32]), Error> {
     let mut event = None;
     let mut author = None;
@@ -441,37 +499,13 @@ fn reference_pair(tags: &[Vec<String>]) -> Result<([u8; 32], [u8; 32]), Error> {
     Ok((event.ok_or(Error::Input)?, author.ok_or(Error::Input)?))
 }
 fn verify_original(text: &str, expected_id: &[u8; 32], author: &[u8; 32]) -> Result<(), Error> {
-    let mut value = strict::parse(text.as_bytes())?;
-    strict::exact_keys(
-        &value,
-        &[
-            "pubkey",
-            "created_at",
-            "kind",
-            "tags",
-            "content",
-            "id",
-            "sig",
-        ],
-        &[],
-    )?;
-    let id = strict::hex::<32>(strict::string(&value["id"])?)?;
-    let signature = strict::hex::<64>(strict::string(&value["sig"])?)?;
-    value.as_object_mut().ok_or(Error::Input)?.remove("id");
-    value.as_object_mut().ok_or(Error::Input)?.remove("sig");
-    let event = Event::parse(
-        &serde_json::to_vec(&value).map_err(|_| Error::Input)?,
-        author,
-    )?;
+    let event = Event::authenticated(text.as_bytes())?;
     if event.kind != 1
-        || event.id() != id
-        || &id != expected_id
+        || &event.id() != expected_id
+        || &event.pubkey != author
         || event.tags.iter().any(|t| t[0] == "-")
     {
         return Err(Error::Input);
     }
-    let key = k256::schnorr::VerifyingKey::from_bytes(author.into()).map_err(|_| Error::Crypto)?;
-    let sig =
-        k256::schnorr::Signature::try_from(signature.as_slice()).map_err(|_| Error::Crypto)?;
-    key.verify_raw(&id, &sig).map_err(|_| Error::Crypto)
+    Ok(())
 }
