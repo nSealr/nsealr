@@ -2,7 +2,9 @@
 """Build/test/render native LVGL screens; optionally serve their framebuffer."""
 
 import argparse
+from datetime import datetime, timezone
 import html
+import hashlib
 import json
 import os
 from pathlib import Path
@@ -136,6 +138,10 @@ def main():
                        cwd=Path(args.core_root).resolve(), env=core_env, check=True)
         args.rust_library = str(core_target / "release/libnsealr_device.a")
     output = build / "screens"
+    if output.exists():
+        history=build / "screens-history"
+        history.mkdir(exist_ok=True)
+        output.rename(history / datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%S%f"))
     output.mkdir(parents=True, exist_ok=True)
     commands = [
         [args.cmake, "-S", str(ROOT / "firmware/preview"), "-B", str(build), f"-DLVGL_DIR={lvgl}", f"-DNSEALR_CORE_ROOT={Path(args.core_root).resolve()}", f"-DRUST_LIBRARY={Path(args.rust_library).resolve()}", "-DCMAKE_BUILD_TYPE=Debug"],
@@ -156,6 +162,13 @@ def main():
         '<style>body{background:#080d12;color:#dce4ec;font:16px system-ui}main{display:flex;flex-wrap:wrap;gap:24px}'
         'figure{margin:0}img{border:1px solid #34404d;border-radius:16px}figcaption{margin:12px 0 28px}</style>'
         '<h1>nSealr native screens</h1><p>Actual device flow with published test entropy. Never use the simulator for real identities.</p><main>' + figures + '</main>')
+    def identity(directory):
+        return {"commit":subprocess.check_output(["git","-C",str(directory),"rev-parse","HEAD"],text=True).strip(),
+                "dirty":bool(subprocess.check_output(["git","-C",str(directory),"status","--porcelain"]))}
+    report={"firmware":identity(ROOT),"core":identity(Path(args.core_root).resolve()),
+            "rust_library_sha256":hashlib.sha256(Path(args.rust_library).read_bytes()).hexdigest(),
+            "lvgl_commit":LVGL_COMMIT,"frames":len(list(output.glob("*.png")))}
+    (build/"source-report.json").write_text(json.dumps(report,indent=2)+"\n")
     print(f"Native real-core flow passed; screens rendered: {output / 'index.html'}")
     if args.serve:
         serve(build / "ui-preview", output, args.port)

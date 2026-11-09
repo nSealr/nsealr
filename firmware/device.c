@@ -1,4 +1,6 @@
 #include "device.h"
+#include "backup_check.h"
+#include "word_input.h"
 #include <stdalign.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -8,27 +10,44 @@
 static alignas(NS_CONTEXT_ALIGN) uint8_t core_storage[NS_CONTEXT_BYTES];
 static ns_context *core = (ns_context *)core_storage;
 static uint8_t source[512], passphrase[256], secret_page[136], entropy[32];
-static char account_text[12], public_key[65], expected_key[65], npub[65], message[256], caption[96];
+static char account_text[12], public_key[65], npub[65], message[256], caption[96];
 static uint8_t qr_frame[NS_MAX_FRAME];
-static size_t source_len, passphrase_len, input_len, qr_length;
+static size_t source_len, passphrase_len, input_len, qr_length, secret_page_len;
 static uint32_t source_kind, words, account, backup_kind, backup_page;
 static uint32_t review_index, review_flags, response_frame;
 static uint64_t review_generation, deadline, last_frame;
 static size_t private_offset;
 static char *public_body;
-static bool generating, verify_required, verifying, partial, reader_done, scanning, reading_details;
+static bool generating, backup_prompt, partial, reader_done, scanning, reading_details;
 static bool keyboard_upper;
 static unsigned keyboard_page;
 static unsigned input_target;
+static word_input word_draft;
+static bool have_word_draft, editing_word;
+static unsigned word_review_page;
+static backup_check quiz;
+static bool backup_checked, has_passphrase, response_paused;
+static uint8_t backup_expected[512];
+static size_t backup_expected_len;
+
 static ui_view view;
 
 enum {
     HOME,
     CREATE,
     IMPORT,
-    PASS,
-    ACCOUNT,
     ENTRY,
+    WORD_COUNT,
+    WORD_MORE_LENGTHS,
+    WORD_ENTRY,
+    WORD_REVIEW,
+    WORD_INVALID,
+    PASSPHRASE_REVIEW,
+    QUIZ,
+    QUIZ_WRONG,
+    BACKUP_GOOD,
+    BACKUP_BAD,
+    PUBLIC_TEXT,
     IDENTITY,
     PUBLIC_IDENTITY,
     SCAN,
@@ -41,7 +60,8 @@ enum {
     REVEAL_WORDS,
     REVEAL_NSEC,
     REVEAL_QR,
-    VERIFY,
+    BACKUP_OPTIONS,
+    NSEC_REVIEW,
     NOTICE
 };
 static unsigned state, scan_target, notice_return = HOME;
@@ -57,25 +77,38 @@ enum {
     A_WORDS,
     A_NSEC,
     A_SECRET_QR,
-    A_NO_PASS,
     A_ADD_PASS,
-    A_ACCOUNT0,
     A_ACCOUNT_EDIT,
     A_USE,
     A_BACKUP_WORDS,
     A_BACKUP_NSEC,
     A_BACKUP_SEEDQR,
     A_BACKUP_COMPACT,
-    A_VERIFY,
     A_DETAILS,
     A_RESUME_REVIEW,
     A_SKIP_TEXT,
     A_APPROVE,
     A_PARTIAL_APPROVE,
-    A_SHOW,
-    A_PUBLIC_TEXT
+    A_PUBLIC_TEXT,
+    A_WORD12,
+    A_WORD24,
+    A_WORD15,
+    A_WORD18,
+    A_WORD21,
+    A_WORD_MORE_LENGTHS,
+    A_WORD_REVIEW,
+    A_WORD_RESTART,
+    A_CONFIRM_PASS,
+    A_CONFIRM_NSEC,
+    A_CHECK_BACKUP,
+    A_CHECK_QR,
+    A_RETRY_QUIZ,
+    A_CONTINUE,
+    A_PAUSE_QR,
+    A_STEP_QR,
+    A_KEY_QR
 };
-enum { INPUT_WORDS = 1, INPUT_NSEC, INPUT_PASS, INPUT_ACCOUNT };
+enum { INPUT_NSEC = 1, INPUT_PASS, INPUT_ACCOUNT };
 
 static void show(void);
 static void start_review(void);
@@ -110,6 +143,13 @@ static void lock_identity(void) {
     clear_presentation();
     ns_lock(core);
     wipe_inputs();
+    platform_wipe(&word_draft, sizeof(word_draft));
+    have_word_draft = false;
+    platform_wipe(&quiz, sizeof(quiz));
+    platform_wipe(backup_expected, sizeof(backup_expected));
+    backup_expected_len = 0;
+    backup_checked = false;
+    has_passphrase = false;
     platform_wipe(public_key, sizeof(public_key));
     platform_wipe(npub, sizeof(npub));
     state = HOME;
@@ -148,7 +188,7 @@ static void begin_identity(bool create) {
     words = 0;
     account = 0;
     source_kind = 0;
-    verify_required = create;
+    backup_prompt = create;
     state = create ? CREATE : IMPORT;
     deadline = platform_now() + 600000;
     show();
@@ -163,6 +203,9 @@ static void entry(unsigned target) {
 }
 static void recover(void) {
     int32_t status;
+    bool applied_pass = passphrase_len > 0;
+    if (have_word_draft && !words_assemble(&word_draft, source, sizeof(source), &source_len))
+        platform_fail();
     if (generating) {
         if (!platform_random32(entropy)) {
             error_message("Random source unavailable. No identity was created.", HOME);
@@ -179,63 +222,121 @@ static void recover(void) {
     wipe_inputs();
     if (!result_ok(status))
         return;
+    platform_wipe(&word_draft, sizeof(word_draft));
+    have_word_draft = false;
     if (!public_identity()) {
         lock_identity();
         error_message("Could not read the identity.", HOME);
         return;
     }
-    if (verifying) {
-        if (strcmp(expected_key, public_key) != 0) {
-            ns_lock(core);
-            error_message("This is a different identity. Check the backup, passphrase and account.",
-                          IMPORT);
-            return;
-        }
-        verifying = false;
-        verify_required = false;
-        memset(expected_key, 0, sizeof(expected_key));
-    }
+    has_passphrase = applied_pass;
     state = IDENTITY;
     show();
 }
-static void finish_identity(void) {
-    state = source_kind == 1 ? IDENTITY : PASS;
-    if (source_kind == 1)
-        recover();
-    else
-        show();
-}
+static void finish_identity(void) { recover(); }
 static void input_done(void) {
     if (input_target == INPUT_ACCOUNT) {
         account_text[input_len] = 0;
         char *end = NULL;
         unsigned long n = strtoul(account_text, &end, 10);
         if (!input_len || *end || n > 0x7fffffffUL) {
-            error_message("Use an account number from 0 to 2147483647.", ACCOUNT);
+            error_message("Use an account number from 0 to 2147483647.", IDENTITY);
             return;
         }
         account = (uint32_t)n;
+        if (has_passphrase) {
+            entry(INPUT_PASS);
+            return;
+        }
         recover();
         return;
     }
     if (input_target == INPUT_PASS) {
         passphrase_len = input_len;
-        state = ACCOUNT;
+        private_offset = 0;
+        state = PASSPHRASE_REVIEW;
         show();
         return;
     }
     source_len = input_len;
-    source_kind = input_target == INPUT_NSEC ? 1 : 2;
-    finish_identity();
+    source_kind = 1;
+    state = NSEC_REVIEW;
+    show();
+}
+static void validate_words(void) {
+    if (!words_assemble(&word_draft, source, sizeof(source), &source_len))
+        platform_fail();
+    int32_t result = ns_import_mnemonic(core, source, source_len, passphrase, 0, 0);
+    ns_lock(core);
+    source_len = 0;
+    source_kind = 2;
+    have_word_draft = true;
+    state = result == NS_OK ? WORD_REVIEW : WORD_INVALID;
+    show();
+}
+static void show_word_entry(void) {
+    snprintf(message, sizeof(message), "Word %u of %u", word_draft.position + 1, word_draft.count);
+    view.screen = UI_WORD_ENTRY;
+    view.title = message;
+    view.left_label = word_draft.position ? "Previous" : "Back";
+    view.left_action = UI_WORD_PREVIOUS;
+    unsigned remaining = word_draft.match_count - word_draft.match_page;
+    view.word_choices = word_draft.prefix_len >= 2 ? (remaining > 2 ? 2 : remaining) : 0;
+    if (word_draft.prefix_len >= 2 && word_draft.match_count > 2) {
+        view.right_label = "More matches";
+        view.right_action = UI_WORD_MORE;
+    }
+    if (!platform_present(&view))
+        platform_fail();
+    static const uint8_t hint[] = "Start typing";
+    ns_text lines[3] = {{word_draft.prefix_len ? word_draft.prefix : hint,
+                         word_draft.prefix_len ? word_draft.prefix_len : sizeof(hint) - 1}};
+    uint16_t y[3] = {108, 146, 190};
+    for (unsigned i = 0; i < view.word_choices; i++)
+        if (ns_wordlist_word(word_draft.matches[word_draft.match_page + i], &lines[i + 1]) != NS_OK)
+            platform_fail();
+    if (!platform_word_entry(lines, y, view.word_choices + 1, words_valid_letters(&word_draft)))
+        platform_fail();
+}
+static void show_word_review(void) {
+    unsigned first = word_review_page * 4, remaining = word_draft.count - first;
+    view.screen = UI_WORD_REVIEW;
+    view.title = "Review words";
+    view.subtitle = "Tap a word to change it.";
+    view.word_choices = remaining > 4 ? 4 : remaining;
+    view.right_label = remaining > 4 ? "Next words" : "Continue";
+    view.right_action = UI_NEXT;
+    if (!platform_present(&view))
+        platform_fail();
+    uint8_t rows[4][14] = {{0}};
+    ns_text lines[4];
+    uint16_t y[4] = {146, 202, 258, 314};
+    for (unsigned i = 0; i < view.word_choices; i++) {
+        ns_text word;
+        if (ns_wordlist_word(word_draft.words[first + i], &word) != NS_OK)
+            platform_fail();
+        int n = snprintf((char *)rows[i], sizeof(rows[i]), "%02u %.*s", first + i + 1,
+                         (int)word.len, word.data);
+        if (n < 0 || n > 13)
+            platform_fail();
+        lines[i] = (ns_text){rows[i], (size_t)n};
+    }
+    bool ok = platform_secret_lines(lines, y, view.word_choices);
+    platform_wipe(rows, sizeof(rows));
+    if (!ok)
+        platform_fail();
 }
 static void scan(unsigned target) {
     scan_target = target;
     state = SCAN;
-    ns_cancel(core);
+    if (target)
+        ns_cancel(core);
     deadline = platform_now() + 600000;
     show();
     if (!platform_scan_start()) {
-        error_message("Camera could not start.", HOME);
+        error_message("Camera could not start.", target == 2 ? BACKUP_OPTIONS
+                                                 : target    ? IMPORT
+                                                             : HOME);
         return;
     }
     scanning = true;
@@ -263,7 +364,8 @@ static void next_review(void) {
             error_message("Request changed.", HOME);
             return;
         }
-        if ((f & NS_REVIEW_PROSE) && !(f & NS_REVIEW_CRITICAL))
+        if (((f & NS_REVIEW_PROSE) && !(f & NS_REVIEW_CRITICAL)) ||
+            ((f & NS_REVIEW_PRIVATE) && (f & NS_REVIEW_CRITICAL)))
             break;
         review_index++;
     }
@@ -272,17 +374,25 @@ static void next_review(void) {
     state = review_index < count ? REVIEW : DECISION;
     show();
 }
-static bool private_page(ns_text value) {
+static bool format_private_page(ns_text value, size_t *written) {
     size_t out = 0, columns = 0;
     unsigned lines = 0;
     while (private_offset < value.len && lines < 6) {
         uint8_t first = value.data[private_offset];
         size_t bytes = first < 128 ? 1 : first < 224 ? 2 : first < 240 ? 3 : 4;
-        char token[16];
+        char token[16] = {0};
         size_t token_len = 0;
         if (bytes > value.len - private_offset ||
             !ui_escape_text(value.data + private_offset, bytes, token, sizeof(token), &token_len))
             return false;
+        if (state == PASSPHRASE_REVIEW && token_len == 1 && token[0] == ' ') {
+            memcpy(token, "[space]", 7);
+            token_len = 7;
+        } else if (state == PASSPHRASE_REVIEW && token_len == 1 && token[0] == '[') {
+            token[0] = '\\';
+            token[1] = '[';
+            token_len = 2;
+        }
         if (token_len == 1 && token[0] == '\n') {
             token[0] = '\\';
             token[1] = 'n';
@@ -291,15 +401,23 @@ static bool private_page(ns_text value) {
         if (columns + token_len > 16) {
             secret_page[out++] = '\n';
             columns = 0;
-            if (++lines == 6)
+            if (++lines == 6) {
+                platform_wipe(token, sizeof(token));
                 break;
+            }
         }
         memcpy(secret_page + out, token, token_len);
         out += token_len;
         columns += token_len;
         private_offset += bytes;
+        platform_wipe(token, sizeof(token));
     }
-    return platform_secret_text(secret_page, out);
+    *written = out;
+    return true;
+}
+static bool private_page(ns_text value) {
+    size_t n = 0;
+    return format_private_page(value, &n) && platform_secret_text(secret_page, n);
 }
 static bool authority_view(void) {
     size_t cap = 1, at = 0;
@@ -309,10 +427,8 @@ static bool authority_view(void) {
         uint32_t f;
         if (!read_item(i, &l, &v, &f))
             return false;
-        if (!(f & NS_REVIEW_CRITICAL))
+        if (!(f & NS_REVIEW_CRITICAL) || (f & NS_REVIEW_PRIVATE))
             continue;
-        if (f & NS_REVIEW_PRIVATE)
-            return false;
         size_t extra = (l.len + v.len) * 10 + 3;
         if (extra > 327680 - cap)
             return false;
@@ -327,7 +443,7 @@ static bool authority_view(void) {
         size_t n;
         if (!read_item(i, &l, &v, &f))
             return false;
-        if (!(f & NS_REVIEW_CRITICAL))
+        if (!(f & NS_REVIEW_CRITICAL) || (f & NS_REVIEW_PRIVATE))
             continue;
         if (!ui_escape_text(l.data, l.len, public_body + at, cap - at, &n))
             return false;
@@ -411,7 +527,10 @@ static void response(void) {
     view.subtitle = caption;
     view.left_label = "Done";
     view.left_action = UI_DONE;
-    view.right_label = NULL;
+    view.right_label = response_paused ? "Resume" : "Pause";
+    view.right_action = A_PAUSE_QR;
+    view.aux_label = "Next";
+    view.aux_action = A_STEP_QR;
     if (!platform_present(&view) || !platform_secret_qr(qr_frame, qr_length))
         platform_fail();
     last_frame = platform_now();
@@ -427,6 +546,7 @@ static void approve(bool partial_prose) {
         return;
     state = RESPONSE;
     response_frame = 0;
+    response_paused = false;
     deadline = platform_now() + 120000;
     show();
 }
@@ -467,9 +587,15 @@ static void show_backup(void) {
     } else {
         if (ns_backup(core, backup_kind, source, sizeof(source), &n) != NS_OK)
             platform_fail();
-        view.right_label = "Done";
-        snprintf(caption, sizeof(caption), "Keep this private. Account %lu",
-                 (unsigned long)account);
+        view.right_label = state == REVEAL_NSEC ? "Show QR" : "Done";
+        if (state == REVEAL_NSEC)
+            view.right_action = A_KEY_QR;
+        view.title = backup_kind == 1 ? (ns_word_count(core) ? "Derived nsec" : "Private key")
+                                      : "Recovery words QR";
+        snprintf(caption, sizeof(caption), "%s",
+                 backup_kind == 1 ? (ns_word_count(core) ? "Only this identity, not recovery words."
+                                                         : "Keep this private key safe.")
+                                  : "Passphrase and account are excluded.");
         if (!platform_present(&view))
             platform_fail();
         bool ok =
@@ -490,17 +616,13 @@ static void show(void) {
     static const ui_choice home_ready[] = {{"Scan a request", A_SCAN},
                                            {"Public identity", A_PUBLIC},
                                            {"Back up identity", A_BACKUP},
-                                           {"Lock device", UI_LOCK}};
+                                           {"Clear identity", UI_LOCK}};
     static const ui_choice create[] = {{"12 recovery words", A_GEN12},
                                        {"24 recovery words", A_GEN24},
                                        {"Standalone private key", A_GEN_RAW}};
     static const ui_choice imports[] = {{"Scan a backup", A_SECRET_QR},
                                         {"Enter recovery words", A_WORDS},
                                         {"Enter private key", A_NSEC}};
-    static const ui_choice pass[] = {{"No passphrase", A_NO_PASS},
-                                     {"Add a passphrase", A_ADD_PASS}};
-    static const ui_choice accounts[] = {{"Default account (0)", A_ACCOUNT0},
-                                         {"Choose account", A_ACCOUNT_EDIT}};
     static const ui_choice backups[] = {{"Recovery words", A_BACKUP_WORDS},
                                         {"SeedQR", A_BACKUP_SEEDQR},
                                         {"Compact SeedQR", A_BACKUP_COMPACT},
@@ -511,8 +633,13 @@ static void show(void) {
     case HOME:
         view.screen = UI_HOME;
         view.title = "Your identity";
-        view.subtitle =
-            view.loaded ? "Ready to review a request." : "Create or recover your Nostr key.";
+        if (view.loaded) {
+            snprintf(caption, sizeof(caption), "%.13s...%.8s\n%s%s", npub, npub + strlen(npub) - 8,
+                     ns_word_count(core) ? "Recovery words" : "Standalone nsec",
+                     backup_checked ? " - checked" : "");
+            view.subtitle = caption;
+        } else
+            view.subtitle = "Create or recover your Nostr key.";
         view.choices = view.loaded ? home_ready : home_locked;
         view.choice_count = view.loaded ? 4 : 2;
         view.left_label = NULL;
@@ -526,31 +653,54 @@ static void show(void) {
         break;
     case IMPORT:
         view.screen = UI_MENU;
-        view.title = verifying ? "Test recovery" : "Import identity";
+        view.title = "Import identity";
         view.subtitle = "Enter secrets only on this device.";
         view.choices = imports;
         view.choice_count = 3;
         break;
-    case PASS:
+    case WORD_COUNT: {
+        static const ui_choice lengths[] = {{"12 words", A_WORD12},
+                                            {"24 words", A_WORD24},
+                                            {"Other word counts", A_WORD_MORE_LENGTHS}};
         view.screen = UI_MENU;
-        view.title = "Passphrase";
-        view.subtitle = "Use the exact passphrase from your backup.";
-        view.choices = pass;
+        view.title = "Recovery words";
+        view.subtitle = "How many words are in your backup?";
+        view.choices = lengths;
+        view.choice_count = 3;
+        break;
+    }
+    case WORD_MORE_LENGTHS: {
+        static const ui_choice lengths[] = {
+            {"15 words", A_WORD15}, {"18 words", A_WORD18}, {"21 words", A_WORD21}};
+        view.screen = UI_MENU;
+        view.title = "Word count";
+        view.choices = lengths;
+        view.choice_count = 3;
+        break;
+    }
+    case WORD_ENTRY:
+        show_word_entry();
+        return;
+    case WORD_REVIEW:
+        show_word_review();
+        return;
+    case WORD_INVALID: {
+        static const ui_choice repair[] = {{"Review and edit", A_WORD_REVIEW},
+                                           {"Start again", A_WORD_RESTART}};
+        view.screen = UI_MENU;
+        view.title = "Check your words";
+        view.subtitle = "Checksum did not match. Your words are kept.";
+        view.choices = repair;
         view.choice_count = 2;
         break;
-    case ACCOUNT:
-        view.screen = UI_MENU;
-        view.title = "Nostr account";
-        view.subtitle = "Use the same account when recovering.";
-        view.choices = accounts;
-        view.choice_count = 2;
-        break;
+    }
     case ENTRY:
         view.screen = UI_INPUT;
-        view.title = input_target == INPUT_WORDS  ? "Recovery words"
-                     : input_target == INPUT_NSEC ? "Private key"
+        view.title = input_target == INPUT_NSEC   ? "Enter nsec"
                      : input_target == INPUT_PASS ? "Passphrase"
                                                   : "Account number";
+        if (input_target == INPUT_ACCOUNT)
+            view.body = account_text;
         view.input_length = input_len;
         view.keyboard_page = keyboard_page;
         view.keyboard_upper = keyboard_upper;
@@ -559,14 +709,92 @@ static void show(void) {
         view.right_label = "Continue";
         view.right_action = UI_DONE;
         break;
-    case IDENTITY:
-        view.screen = UI_READER;
-        view.title = "Check identity";
-        snprintf(caption, sizeof(caption), "NIP-06 account %lu", (unsigned long)account);
+    case IDENTITY: {
+        static const ui_choice mnemonic[] = {{"Use identity", A_USE},
+                                             {"Public npub", A_PUBLIC},
+                                             {"Add / change passphrase", A_ADD_PASS},
+                                             {"Advanced account", A_ACCOUNT_EDIT}};
+        static const ui_choice raw[] = {{"Use identity", A_USE}, {"Public npub", A_PUBLIC}};
+        snprintf(caption, sizeof(caption),
+                 ns_word_count(core) ? "%u words - account %lu%s" : "Standalone nsec",
+                 (unsigned)ns_word_count(core), (unsigned long)account,
+                 has_passphrase ? "\nPassphrase applied" : "");
+        view.screen = UI_MENU;
+        view.title = "Identity ready";
         view.subtitle = caption;
+        view.choices = ns_word_count(core) ? mnemonic : raw;
+        view.choice_count = ns_word_count(core) ? 4 : 2;
+        break;
+    }
+    case PUBLIC_TEXT:
+        view.screen = UI_READER;
+        view.title = "Your public npub";
         view.body = npub;
-        view.right_label = "Use identity";
-        view.right_action = A_USE;
+        view.right_label = "Show QR";
+        view.right_action = A_PUBLIC;
+        break;
+    case NSEC_REVIEW:
+        view.screen = UI_SECRET;
+        view.title = "Check private key";
+        view.subtitle = "Keep this screen private.";
+        view.left_label = "Edit";
+        view.right_label = "Import key";
+        view.right_action = A_CONFIRM_NSEC;
+        break;
+    case PASSPHRASE_REVIEW:
+        view.screen = UI_SECRET;
+        view.title = "Check passphrase";
+        {
+            size_t first = private_offset;
+            if (!format_private_page((ns_text){passphrase, passphrase_len}, &secret_page_len))
+                platform_fail();
+            snprintf(caption, sizeof(caption), "Chars %zu-%zu of %zu\n[space] means a space.",
+                     passphrase_len ? first + 1 : 0, private_offset, passphrase_len);
+        }
+        view.subtitle = caption;
+        view.left_label = "Edit";
+        view.right_label = private_offset < passphrase_len ? "Next page" : "Use passphrase";
+        view.right_action = A_CONFIRM_PASS;
+        break;
+    case QUIZ: {
+        snprintf(message, sizeof(message), "Choose word %u",
+                 (unsigned)quiz.order[quiz.position] + 1);
+        snprintf(caption, sizeof(caption), "Backup check %u of %u", quiz.position + 1, quiz.count);
+        view.screen = UI_WORD_REVIEW;
+        view.title = message;
+        view.subtitle = caption;
+        view.word_choices = 4;
+        view.quiz = true;
+        break;
+    }
+    case QUIZ_WRONG: {
+        static const ui_choice retry[] = {{"Try this word again", A_RETRY_QUIZ},
+                                          {"Review recovery words", A_BACKUP_WORDS},
+                                          {"Continue without checking", A_CONTINUE}};
+        view.screen = UI_MENU;
+        view.title = "Check that word";
+        view.subtitle = "That choice did not match your backup.";
+        view.choices = retry;
+        view.choice_count = 3;
+        break;
+    }
+    case BACKUP_GOOD:
+        view.screen = UI_NOTICE;
+        view.title = "Backup checked";
+        view.body = backup_kind == 1
+                        ? "This backup matches your Nostr private key. Keep it private."
+                        : "Recovery words match. Save your passphrase and account separately; they "
+                          "are not in this backup.";
+        view.right_label = "Continue";
+        view.right_action = A_CONTINUE;
+        break;
+    case BACKUP_BAD:
+        view.screen = UI_NOTICE;
+        view.title = "Different backup";
+        view.body =
+            "This QR does not match the backup shown. Your loaded identity has not changed.";
+        view.right_label = "Try again";
+        view.right_action = A_CHECK_QR;
         break;
     case PUBLIC_IDENTITY:
         view.screen = UI_QR;
@@ -626,14 +854,19 @@ static void show(void) {
     case REVEAL_QR:
         show_backup();
         return;
-    case VERIFY:
-        view.screen = UI_CONFIRM;
-        view.title = "Verify recovery";
-        view.body = "Restore your backup now. The device will clear the key, then check that your "
-                    "backup restores the same identity.";
-        view.right_label = "Restore backup";
-        view.right_action = A_VERIFY;
+    case BACKUP_OPTIONS: {
+        static const ui_choice check_words[] = {{"Check my backup", A_CHECK_BACKUP},
+                                                {"Continue", A_CONTINUE}};
+        static const ui_choice check_qr[] = {{"Scan to check", A_CHECK_QR},
+                                             {"Continue", A_CONTINUE}};
+        view.screen = UI_MENU;
+        view.title = "Backup saved?";
+        view.subtitle = ns_word_count(core) ? "Seed backups exclude passphrase and account."
+                                            : "Your nsec restores this identity.";
+        view.choices = backup_kind == 2 ? check_words : check_qr;
+        view.choice_count = 2;
         break;
+    }
     case NOTICE:
         view.screen = UI_NOTICE;
         view.title = "Please check";
@@ -645,6 +878,26 @@ static void show(void) {
     }
     if (!platform_present(&view))
         platform_fail();
+    if (state == NSEC_REVIEW) {
+        if (!platform_secret_text(source, source_len))
+            platform_fail();
+        return;
+    }
+    if (state == PASSPHRASE_REVIEW) {
+        if (!platform_secret_text(secret_page, secret_page_len))
+            platform_fail();
+        return;
+    }
+    if (state == QUIZ) {
+        ns_text lines[4];
+        uint16_t y[4] = {146, 202, 258, 314};
+        for (unsigned i = 0; i < 4; i++)
+            if (ns_wordlist_word(quiz.choices[i], &lines[i]) != NS_OK)
+                platform_fail();
+        if (!platform_secret_lines(lines, y, 4))
+            platform_fail();
+        return;
+    }
     if ((state == REVIEW || state == DETAILS) && (review_flags & NS_REVIEW_PRIVATE)) {
         ns_text l, v;
         uint32_t f;
@@ -668,7 +921,7 @@ void device_presented(bool at_end) {
                     uint32_t f;
                     if (!read_item(i, &l, &v, &f))
                         platform_fail();
-                    if ((f & NS_REVIEW_CRITICAL) &&
+                    if ((f & NS_REVIEW_CRITICAL) && !(f & NS_REVIEW_PRIVATE) &&
                         ns_review_seen(core, review_generation, i) != NS_OK)
                         platform_fail();
                 }
@@ -681,13 +934,78 @@ void device_presented(bool at_end) {
 void device_action(unsigned action) {
     if (action == UI_LOCK) {
         lock_identity();
-        verifying = false;
-        verify_required = false;
+        backup_prompt = false;
         show();
         return;
     }
     if (action == UI_READER_END) {
         device_presented(true);
+        return;
+    }
+    if (state == QUIZ && action >= UI_WORD_EDIT0 && action <= UI_WORD_EDIT3) {
+        if (!backup_check_answer(&quiz, action - UI_WORD_EDIT0))
+            state = QUIZ_WRONG;
+        else if (quiz.position == quiz.count) {
+            backup_checked = true;
+            platform_wipe(&quiz, sizeof(quiz));
+            state = BACKUP_GOOD;
+        }
+        show();
+        return;
+    }
+    if (state == WORD_ENTRY) {
+        if (action >= 'a' && action <= 'z') {
+            words_type(&word_draft, action);
+            show();
+            return;
+        }
+        if (action == UI_KEY_BACKSPACE) {
+            words_erase(&word_draft);
+            show();
+            return;
+        }
+        if (action == UI_KEY_CLEAR) {
+            while (word_draft.prefix_len)
+                words_erase(&word_draft);
+            show();
+            return;
+        }
+        if (action == UI_WORD_MORE) {
+            word_draft.match_page += 2;
+            if (word_draft.match_page >= word_draft.match_count)
+                word_draft.match_page = 0;
+            show();
+            return;
+        }
+        if (action == UI_WORD_PREVIOUS) {
+            if (word_draft.position)
+                words_edit(&word_draft, word_draft.position - 1);
+            else
+                state = WORD_COUNT;
+            show();
+            return;
+        }
+        if (action == UI_WORD_FIRST || action == UI_WORD_SECOND) {
+            if (!words_choose(&word_draft, action == UI_WORD_SECOND ? 1 : 0))
+                return;
+            if (editing_word || word_draft.position + 1 == word_draft.count) {
+                editing_word = false;
+                validate_words();
+            } else {
+                words_edit(&word_draft, word_draft.position + 1);
+                show();
+            }
+            return;
+        }
+    }
+    if (state == WORD_REVIEW && action >= UI_WORD_EDIT0 && action <= UI_WORD_EDIT3) {
+        unsigned position = word_review_page * 4 + action - UI_WORD_EDIT0;
+        if (position >= word_draft.count)
+            return;
+        words_edit(&word_draft, position);
+        editing_word = true;
+        state = WORD_ENTRY;
+        show();
         return;
     }
     if (state == ENTRY) {
@@ -696,23 +1014,32 @@ void device_action(unsigned action) {
                                                        : source;
         size_t cap = input_target == INPUT_PASS      ? sizeof(passphrase)
                      : input_target == INPUT_ACCOUNT ? sizeof(account_text) - 1
-                                                     : sizeof(source);
+                                                     : 63;
         if (action >= 32 && action < 127) {
             if (input_len < cap)
                 buf[input_len++] = (uint8_t)action;
-            platform_input_changed(input_len);
+            if (input_target == INPUT_ACCOUNT)
+                show();
+            else
+                platform_input_changed(input_len);
             return;
         }
         if (action == UI_KEY_SPACE) {
             if (input_len < cap)
                 buf[input_len++] = ' ';
-            platform_input_changed(input_len);
+            if (input_target == INPUT_ACCOUNT)
+                show();
+            else
+                platform_input_changed(input_len);
             return;
         }
         if (action == UI_KEY_BACKSPACE) {
             if (input_len)
                 buf[--input_len] = 0;
-            platform_input_changed(input_len);
+            if (input_target == INPUT_ACCOUNT)
+                show();
+            else
+                platform_input_changed(input_len);
             return;
         }
         if (action == UI_KEY_MODE) {
@@ -744,11 +1071,59 @@ void device_action(unsigned action) {
             }
         }
         ns_cancel(core);
+        platform_wipe(&word_draft, sizeof(word_draft));
+        have_word_draft = false;
+        platform_wipe(&quiz, sizeof(quiz));
+        platform_wipe(backup_expected, sizeof(backup_expected));
+        backup_expected_len = 0;
         state = HOME;
         show();
         return;
     }
     if (action == UI_BACK) {
+        if (state == NSEC_REVIEW) {
+            input_target = INPUT_NSEC;
+            input_len = source_len;
+            state = ENTRY;
+            show();
+            return;
+        }
+        if (state == PASSPHRASE_REVIEW) {
+            input_target = INPUT_PASS;
+            input_len = passphrase_len;
+            state = ENTRY;
+            show();
+            return;
+        }
+        if (state == QUIZ || state == QUIZ_WRONG) {
+            platform_wipe(&quiz, sizeof(quiz));
+            state = BACKUP;
+            show();
+            return;
+        }
+        if (state == WORD_REVIEW) {
+            if (word_review_page)
+                word_review_page--;
+            else {
+                words_edit(&word_draft, 0);
+                editing_word = true;
+                state = WORD_ENTRY;
+            }
+            show();
+            return;
+        }
+        if (state == WORD_MORE_LENGTHS) {
+            state = WORD_COUNT;
+            show();
+            return;
+        }
+        if (state == WORD_COUNT) {
+            platform_wipe(&word_draft, sizeof(word_draft));
+            have_word_draft = false;
+            state = IMPORT;
+            show();
+            return;
+        }
         if (state == REVEAL_WORDS && backup_page) {
             backup_page--;
             show();
@@ -764,6 +1139,12 @@ void device_action(unsigned action) {
             show();
             return;
         }
+        ns_cancel(core);
+        platform_wipe(&word_draft, sizeof(word_draft));
+        have_word_draft = false;
+        platform_wipe(&quiz, sizeof(quiz));
+        platform_wipe(backup_expected, sizeof(backup_expected));
+        backup_expected_len = 0;
         state = ns_is_loaded(core) ? HOME : IMPORT;
         wipe_inputs();
         show();
@@ -771,11 +1152,9 @@ void device_action(unsigned action) {
     }
     switch (action) {
     case A_CREATE:
-        verifying = false;
         begin_identity(true);
         return;
     case A_IMPORT:
-        verifying = false;
         begin_identity(false);
         return;
     case A_GEN12:
@@ -783,40 +1162,133 @@ void device_action(unsigned action) {
     case A_GEN_RAW:
         words = action == A_GEN12 ? 12 : action == A_GEN24 ? 24 : 0;
         source_kind = words ? 2 : 1;
-        if (!words)
-            recover();
-        else {
-            state = PASS;
-            show();
-        }
+        recover();
         return;
     case A_WORDS:
-        entry(INPUT_WORDS);
+        state = WORD_COUNT;
+        show();
+        return;
+    case A_WORD12:
+    case A_WORD24:
+    case A_WORD15:
+    case A_WORD18:
+    case A_WORD21:
+        words_begin(&word_draft, action == A_WORD12   ? 12
+                                 : action == A_WORD24 ? 24
+                                 : action == A_WORD15 ? 15
+                                 : action == A_WORD18 ? 18
+                                                      : 21);
+        have_word_draft = true;
+        word_review_page = 0;
+        editing_word = false;
+        state = WORD_ENTRY;
+        show();
+        return;
+    case A_WORD_MORE_LENGTHS:
+        state = WORD_MORE_LENGTHS;
+        show();
+        return;
+    case A_WORD_REVIEW:
+        word_review_page = 0;
+        state = WORD_REVIEW;
+        show();
+        return;
+    case A_WORD_RESTART:
+        platform_wipe(&word_draft, sizeof(word_draft));
+        have_word_draft = false;
+        state = WORD_COUNT;
+        show();
         return;
     case A_NSEC:
+        memcpy(source, "nsec1", 5);
+        source_len = 5;
         entry(INPUT_NSEC);
+        input_len = 5;
+        show();
+        return;
+    case A_CONFIRM_NSEC:
+        if (state == NSEC_REVIEW)
+            recover();
         return;
     case A_SECRET_QR:
         scan(1);
         return;
-    case A_NO_PASS:
-        passphrase_len = 0;
-        state = ACCOUNT;
-        show();
-        return;
     case A_ADD_PASS:
+        if (ns_word_count(core)) {
+            if (ns_backup(core, 2, source, sizeof(source), &source_len) != NS_OK)
+                platform_fail();
+            generating = false;
+            source_kind = 2;
+        }
         entry(INPUT_PASS);
         return;
-    case A_ACCOUNT0:
-        account = 0;
+    case A_CONFIRM_PASS:
+        if (state != PASSPHRASE_REVIEW)
+            return;
+        if (private_offset < passphrase_len) {
+            show();
+            return;
+        }
         recover();
         return;
     case A_ACCOUNT_EDIT:
+        if (ns_word_count(core)) {
+            if (ns_backup(core, 2, source, sizeof(source), &source_len) != NS_OK)
+                platform_fail();
+            generating = false;
+            source_kind = 2;
+        }
         entry(INPUT_ACCOUNT);
         return;
     case A_USE:
-        state = verify_required ? BACKUP : HOME;
+        if (backup_prompt && ns_word_count(core)) {
+            backup_kind = 2;
+            backup_page = 0;
+            state = REVEAL_WORDS;
+        } else if (backup_prompt)
+            state = BACKUP;
+        else
+            state = HOME;
         show();
+        return;
+    case A_CONTINUE:
+        platform_wipe(&quiz, sizeof(quiz));
+        platform_wipe(backup_expected, sizeof(backup_expected));
+        backup_expected_len = 0;
+        backup_prompt = false;
+        state = HOME;
+        show();
+        return;
+    case A_CHECK_BACKUP:
+        if (!platform_random32(entropy) || !backup_check_begin(&quiz, core, entropy))
+            platform_fail();
+        platform_wipe(entropy, sizeof(entropy));
+        state = QUIZ;
+        show();
+        return;
+    case A_RETRY_QUIZ:
+        backup_check_question(&quiz);
+        state = QUIZ;
+        show();
+        return;
+    case A_CHECK_QR:
+        if (ns_backup(core, backup_kind, backup_expected, sizeof(backup_expected),
+                      &backup_expected_len) != NS_OK)
+            platform_fail();
+        scan(2);
+        return;
+    case A_PAUSE_QR:
+        if (state == RESPONSE) {
+            response_paused = !response_paused;
+            show();
+        }
+        return;
+    case A_STEP_QR:
+        if (state == RESPONSE) {
+            response_paused = true;
+            response_frame++;
+            show();
+        }
         return;
     case A_SCAN:
         scan(0);
@@ -826,7 +1298,7 @@ void device_action(unsigned action) {
         show();
         return;
     case A_PUBLIC_TEXT:
-        state = IDENTITY;
+        state = PUBLIC_TEXT;
         show();
         return;
     case A_BACKUP:
@@ -838,6 +1310,11 @@ void device_action(unsigned action) {
         backup_kind = 2;
         backup_page = 0;
         state = REVEAL_WORDS;
+        show();
+        return;
+    case A_KEY_QR:
+        backup_kind = 1;
+        state = REVEAL_QR;
         show();
         return;
     case A_BACKUP_NSEC:
@@ -854,11 +1331,6 @@ void device_action(unsigned action) {
         backup_kind = 4;
         state = REVEAL_QR;
         show();
-        return;
-    case A_VERIFY:
-        snprintf(expected_key, sizeof(expected_key), "%s", public_key);
-        verifying = true;
-        begin_identity(false);
         return;
     case A_DETAILS:
         review_index = 0;
@@ -894,16 +1366,27 @@ void device_action(unsigned action) {
         }
         return;
     case UI_NEXT:
+        if (state == WORD_REVIEW) {
+            if ((word_review_page + 1) * 4 < word_draft.count)
+                word_review_page++;
+            else {
+                source_kind = 2;
+                recover();
+                return;
+            }
+            show();
+            return;
+        }
         if (state == REVEAL_WORDS) {
             if ((backup_page + 1) * 6 < ns_word_count(core))
                 backup_page++;
             else
-                state = verify_required ? VERIFY : BACKUP;
+                state = BACKUP_OPTIONS;
             show();
             return;
         }
         if (state == REVEAL_NSEC || state == REVEAL_QR) {
-            state = verify_required ? VERIFY : BACKUP;
+            state = BACKUP_OPTIONS;
             show();
             return;
         }
@@ -929,6 +1412,12 @@ void device_action(unsigned action) {
         }
         break;
     case UI_DONE:
+        if (state == RESPONSE) {
+            ns_finish_response(core);
+            state = HOME;
+            show();
+            return;
+        }
         if (state == NOTICE) {
             state = notice_return;
             show();
@@ -945,6 +1434,23 @@ void device_action(unsigned action) {
 void device_scan_bytes(uint8_t *bytes, size_t len) {
     if (state != SCAN || !scanning) {
         platform_wipe(bytes, len);
+        return;
+    }
+    if (scan_target == 2) {
+        stop_scan();
+        bool same = len == backup_expected_len;
+        unsigned difference = 0;
+        if (same)
+            for (size_t i = 0; i < len; i++)
+                difference |= bytes[i] ^ backup_expected[i];
+        platform_wipe(bytes, len);
+        state = same && !difference ? BACKUP_GOOD : BACKUP_BAD;
+        if (state == BACKUP_GOOD) {
+            backup_checked = true;
+            platform_wipe(backup_expected, sizeof(backup_expected));
+            backup_expected_len = 0;
+        }
+        show();
         return;
     }
     if (scan_target) {
@@ -988,7 +1494,15 @@ void device_scan_bytes(uint8_t *bytes, size_t len) {
 }
 void device_scan_error(void) { error_message("Camera stopped. The request was cancelled.", HOME); }
 void device_tick(uint64_t now) {
-    if (state == RESPONSE && now - last_frame >= 400) {
+    if (ns_tick(core, now) != NS_OK) {
+        stop_scan();
+        clear_presentation();
+        ns_cancel(core);
+        state = HOME;
+        show();
+        return;
+    }
+    if (state == RESPONSE && !response_paused && now - last_frame >= 800) {
         response_frame++;
         show();
     }
@@ -1007,6 +1521,9 @@ bool device_init(void) {
     return true;
 }
 void device_emergency_clear(void) {
+    platform_wipe(&word_draft, sizeof(word_draft));
+    platform_wipe(&quiz, sizeof(quiz));
+    platform_wipe(backup_expected, sizeof(backup_expected));
     platform_wipe(core_storage, sizeof(core_storage));
     wipe_inputs();
     platform_wipe(secret_page, sizeof(secret_page));

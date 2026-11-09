@@ -20,6 +20,8 @@ ns_context *device_core(void);
 bool platform_present(const ui_view *view);
 void platform_input_changed(size_t length);
 void platform_review_ready(void);
+bool platform_word_entry(const ns_text *lines, const uint16_t *y, size_t count, uint32_t valid);
+bool platform_secret_lines(const ns_text *lines, const uint16_t *y, size_t count);
 bool platform_secret_text(const uint8_t *bytes, size_t len);
 bool platform_secret_qr(const uint8_t *bytes, size_t len);
 bool platform_secret_clear(void);

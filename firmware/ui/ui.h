@@ -9,6 +9,8 @@ typedef enum {
     UI_HOME,
     UI_MENU,
     UI_INPUT,
+    UI_WORD_ENTRY,
+    UI_WORD_REVIEW,
     UI_READER,
     UI_CONFIRM,
     UI_SCAN,
@@ -27,6 +29,15 @@ enum {
     UI_KEY_SPACE,
     UI_KEY_MODE,
     UI_KEY_CASE,
+    UI_WORD_FIRST,
+    UI_WORD_SECOND,
+    UI_WORD_MORE,
+    UI_WORD_PREVIOUS,
+    UI_WORD_EDIT0,
+    UI_WORD_EDIT1,
+    UI_WORD_EDIT2,
+    UI_WORD_EDIT3,
+    UI_KEY_CLEAR,
     UI_KEY_SCAN
 };
 typedef struct {
@@ -42,8 +53,8 @@ typedef struct {
     const char *aux_label;
     unsigned aux_action;
     unsigned left_action, right_action;
-    bool loaded, right_enabled, keyboard_upper;
-    unsigned keyboard_page;
+    bool loaded, right_enabled, keyboard_upper, quiz;
+    unsigned keyboard_page, word_choices;
     size_t input_length;
     unsigned progress, total;
     const uint8_t *qr;

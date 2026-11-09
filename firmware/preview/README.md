@@ -21,8 +21,15 @@ executes the owner/navigation tests and writes actual framebuffer PNGs under
 `.cache/ui-preview/screens/`. `--serve` starts a loopback viewer; its browser only
 forwards pointer input to the native executable and displays its pixels.
 
-The essential flow checks creation, backup, clear and recovery, QR import,
+The essential flow checks creation, all-position backup quiz, 12/24-word prefix
+entry with real pointer events, Back/edit and checksum repair, QR import,
 request collection, complete rendering before approval, explicit partial prose
 consent, rejection, cancellation, response clearing and lock. This is host evidence;
 physical camera, entropy, LCD transfer completion and hardware cleanup still need
 separate device measurements.
+
+The ordinary entry paths use 60 taps for 12 words and 119 for the published
+24-word test vector. Additional tests exercise repair navigation, explicit
+passphrase spaces and multi-page passphrase confirmation, mismatch/retry during
+QR backup comparison, and pause/manual frame controls. These are measured tap
+counts in the host replay, not claims about human or physical-device speed.

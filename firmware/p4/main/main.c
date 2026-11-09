@@ -304,7 +304,7 @@ static bool secret_draw(const uint8_t *bytes, size_t len, bool qr, bool blank) {
             rendered = p4_secret_raster_lines(bytes, len, row, secret_tile, P4_SECRET_TILE_PIXELS);
         else
             rendered = p4_secret_raster(bytes, len, row, secret_tile, P4_SECRET_TILE_PIXELS);
-        unsigned y = blank ? row * 16 : qr ? 144 + row * 16 : 152 + row * 16;
+        unsigned y = blank ? row * 16 : qr ? 148 + row * 16 : 152 + row * 16;
         if (!rendered ||
             draw_bitmap(display, panel, 0, (int)y, 320, (int)y + 16, secret_tile, NULL) != ESP_OK) {
             esp_lv_adapter_unlock();
@@ -319,6 +319,66 @@ static bool secret_draw(const uint8_t *bytes, size_t len, bool qr, bool blank) {
     if (!ok)
         return false;
     return blank || bsp_display_backlight_on() == ESP_OK;
+}
+static bool secret_lines(const ns_text *lines, const uint16_t *y, size_t count, bool keyboard,
+                         uint32_t valid) {
+    if (!lines || !y || count > 8)
+        return false;
+    atomic_store(&navigation, false);
+    atomic_store(&action, 0);
+    released_at = platform_now();
+    if (bsp_display_backlight_off() != ESP_OK || esp_lv_adapter_lock(1000) != ESP_OK)
+        return false;
+    if (!begin_draw() || esp_lv_adapter_set_dummy_draw(display, true) != ESP_OK) {
+        esp_lv_adapter_unlock();
+        return false;
+    }
+    atomic_store(&direct, true);
+    bool ok = true;
+    for (size_t i = 0; i < count && ok; i++) {
+        if (lines[i].len > 13 || y[i] < 96 || y[i] > 368) {
+            ok = false;
+            break;
+        }
+        for (unsigned row = 0; row < 2; row++) {
+            if (!p4_secret_raster(lines[i].data, lines[i].len, row, secret_tile,
+                                  P4_SECRET_TILE_PIXELS)) {
+                ok = false;
+                break;
+            }
+            for (unsigned r = 0; r < 16; r++)
+                memmove(secret_tile + r * 208, secret_tile + r * 320 + 32, 208 * sizeof(uint16_t));
+            if (draw_bitmap(display, panel, 32, y[i] + row * 16, 240, y[i] + row * 16 + 16,
+                            secret_tile, NULL) != ESP_OK) {
+                ok = false;
+                break;
+            }
+            platform_wipe(secret_tile, sizeof(secret_tile));
+        }
+    }
+    if (keyboard && ok) {
+        for (unsigned row = 0; row < 10; row++) {
+            if (!p4_word_keyboard_tile(valid, row, secret_tile, P4_SECRET_TILE_PIXELS) ||
+                draw_bitmap(display, panel, 0, 244 + row * 16, 320, 260 + row * 16, secret_tile,
+                            NULL) != ESP_OK) {
+                ok = false;
+                break;
+            }
+            platform_wipe(secret_tile, sizeof(secret_tile));
+        }
+    }
+    if (!end_draw(false))
+        ok = false;
+    atomic_store(&direct, false);
+    esp_lv_adapter_unlock();
+    secret_visible = true;
+    return ok && bsp_display_backlight_on() == ESP_OK;
+}
+bool platform_secret_lines(const ns_text *lines, const uint16_t *y, size_t count) {
+    return secret_lines(lines, y, count, false, 0);
+}
+bool platform_word_entry(const ns_text *lines, const uint16_t *y, size_t count, uint32_t valid) {
+    return secret_lines(lines, y, count, true, valid);
 }
 bool platform_secret_text(const uint8_t *p, size_t n) { return secret_draw(p, n, false, false); }
 bool platform_secret_qr(const uint8_t *p, size_t n) {

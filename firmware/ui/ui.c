@@ -85,7 +85,10 @@ static void keyboard(lv_obj_t *root, const ui_view *v) {
     static const char extra[] = "\"'\\^`|~@.,-:";
     const char *keys = v->keyboard_page == 2 ? extra : v->keyboard_page == 1 ? symbols : letters;
     input_count = text(root, 16, 105, 288, "", &font_body16, MUTED);
-    ui_set_input_length(v->input_length);
+    if (v->body)
+        lv_label_set_text(input_count, v->body);
+    else
+        ui_set_input_length(v->input_length);
     for (unsigned i = 0; i < strlen(keys); i++) {
         char c = keys[i];
         if (v->keyboard_upper && c >= 'a' && c <= 'z')
@@ -123,7 +126,7 @@ void ui_show(const ui_view *v, ui_action_cb callback, void *context) {
         text(root, 204, 23, 100, "OFFLINE", &font_body16, MUTED);
     box(root, 16, 51, 288, 1, BORDER);
     text(root, 16, 66, 288, v->title, &font_title26, FG);
-    if (v->subtitle && v->screen != UI_INPUT)
+    if (v->subtitle && v->screen != UI_INPUT && v->screen != UI_WORD_ENTRY)
         text(root, 16, 105, v->aux_label ? 192 : 288, v->subtitle, &font_body16, MUTED);
     if (v->aux_label)
         button(root, 214, 105, 90, 34, v->aux_label, v->aux_action, false);
@@ -140,6 +143,38 @@ void ui_show(const ui_view *v, ui_action_cb callback, void *context) {
     }
     case UI_INPUT:
         keyboard(root, v);
+        break;
+    case UI_WORD_ENTRY: {
+        for (unsigned i = 0; i < v->word_choices; i++) {
+            lv_obj_t *choice = button(root, 16, 140 + (int)i * 44, 288, 44, "",
+                                      i ? UI_WORD_SECOND : UI_WORD_FIRST, false);
+            lv_obj_set_style_bg_color(choice, lv_color_hex(BG), 0);
+            lv_obj_set_style_border_width(choice, 1, 0);
+            lv_obj_set_style_border_color(choice, lv_color_hex(BORDER), 0);
+            text(choice, 236, 11, 46, "Use", &font_body16, SOFT);
+        }
+        if (!v->word_choices)
+            text(root, 32, 154, 256, "Type the first letters.\nTap a matching word.", &font_body16,
+                 MUTED);
+        static const char alphabet[] = "abcdefghijklmnopqrstuvwxyz";
+        for (unsigned i = 0; i < 26; i++) {
+            char label[2] = {alphabet[i], 0};
+            button(root, 16 + (i % 7) * 42, 244 + (i / 7) * 39, 38, 36, label,
+                   (unsigned char)alphabet[i], false);
+        }
+        button(root, 226, 361, 38, 36, "Del", UI_KEY_BACKSPACE, false);
+        button(root, 268, 361, 38, 36, "Clr", UI_KEY_CLEAR, false);
+        break;
+    }
+    case UI_WORD_REVIEW:
+        for (unsigned i = 0; i < v->word_choices; i++) {
+            lv_obj_t *choice =
+                button(root, 16, 140 + (int)i * 56, 288, 44, "", UI_WORD_EDIT0 + i, false);
+            lv_obj_set_style_bg_color(choice, lv_color_hex(BG), 0);
+            lv_obj_set_style_border_width(choice, 1, 0);
+            lv_obj_set_style_border_color(choice, lv_color_hex(BORDER), 0);
+            text(choice, 236, 11, 46, v->quiz ? "Use" : "Edit", &font_body16, SOFT);
+        }
         break;
     case UI_READER:
         reader = box(root, 16, 146, 288, 252, PANEL);

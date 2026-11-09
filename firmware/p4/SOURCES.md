@@ -19,3 +19,14 @@ regenerated from the current JetBrains Mono source asset.
 Public upstream licenses remain in the source and vendor directories. The two
 secret QR mask-history wipes are applied to a hash-admitted original source at
 build time; the generated file lives in the build directory.
+
+Recovery interaction references also include the ESP32 port's pending-word and
+scan-purpose flows at commit `fd9ba8fc766f715668bc37fbb5485499def9e52f`, and native
+entry screens at `33ddc0763c31b5ae0b6380147ba624a7fc0c9273`. The implementation
+here uses its own bounded C word-entry and backup-check controllers. Candidate
+selection needs one deliberate tap, and a long passphrase is paged before apply;
+the upstream two-step touch selection and overflow issue were not copied.
+
+- <https://github.com/kdmukAI-bot/seedsigner/tree/fd9ba8fc766f715668bc37fbb5485499def9e52f>
+- <https://github.com/kdmukAI-bot/seedsigner-lvgl-screens/tree/33ddc0763c31b5ae0b6380147ba624a7fc0c9273>
+- <https://github.com/kdmukai/seedsigner-micropython-builder/issues/61>

@@ -67,3 +67,43 @@ bool p4_secret_raster_lines(const uint8_t *text, size_t n, unsigned row, uint16_
                             size_t capacity) {
     return raster(text, n, row, tile, capacity, true);
 }
+
+bool p4_word_keyboard_tile(uint32_t valid, unsigned row, uint16_t *tile, size_t capacity) {
+    if (!tile || capacity != P4_SECRET_TILE_PIXELS || row >= 10)
+        return false;
+    for (unsigned py = 0; py < 16; py++)
+        for (unsigned x = 0; x < 320; x++) {
+            unsigned y = row * 16 + py;
+            uint16_t color = ink(0);
+            if (x >= 16 && x < 306 && y < 156) {
+                unsigned col = (x - 16) / 42, keyrow = y / 39, dx = (x - 16) % 42, dy = y % 39,
+                         index = keyrow * 7 + col;
+                if (dx < 38 && dy < 36 && index < 28) {
+                    bool enabled = index >= 26 || (valid & (1u << index));
+                    color = enabled ? 0x0862 : 0x0021;
+                    if (dx == 0 || dx == 37 || dy == 0 || dy == 35)
+                        color = enabled ? 0x20e7 : 0x0862;
+                    if (dy >= 6 && dy < 30) {
+                        unsigned alpha = 0;
+                        if (index < 26 && dx >= 11 && dx < 27) {
+                            unsigned gx = dx - 11;
+                            alpha = (secret_glyph['a' + index - 32][dy - 6][gx / 2] >>
+                                     (gx % 2 ? 0 : 4)) &
+                                    15;
+                        } else if (index >= 26 && dx >= 3 && dx < 36) {
+                            const char *label = index == 26 ? "Del" : "Clr";
+                            unsigned part = (dx - 3) / 11, gx = (dx - 3) % 11 + 2;
+                            alpha =
+                                (secret_glyph[(unsigned char)label[part] - 32][dy - 6][gx / 2] >>
+                                 (gx % 2 ? 0 : 4)) &
+                                15;
+                        }
+                        if (alpha)
+                            color = ink(enabled ? alpha : alpha / 4);
+                    }
+                }
+            }
+            tile[py * 320 + x] = color;
+        }
+    return true;
+}
